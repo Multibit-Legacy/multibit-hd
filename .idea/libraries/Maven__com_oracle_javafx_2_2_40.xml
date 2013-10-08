@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.oracle:javafx:2.2.40">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/oracle/javafx/2.2.40/javafx-2.2.40.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/oracle/javafx/2.2.40/javafx-2.2.40-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/oracle/javafx/2.2.40/javafx-2.2.40-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

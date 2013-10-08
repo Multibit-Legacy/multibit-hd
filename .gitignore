@@ -4,3 +4,10 @@
 *.jar
 *.war
 *.ear
+
+/target
+.idea
+multibit.iml
+
+
+
