@@ -3,8 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
+    <groupId>org.multibit.hd</groupId>
     <artifactId>mbhd-parent</artifactId>
-    <groupId>uk.co.bitcoin-solutions.mbhd</groupId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -23,131 +23,146 @@
 
   </properties>
 
-  <!--
-
-    <!-- To active this build as 'mvn -DupdateProtobuf=true clean compile' -->
+  <!-- To activate this, build as 'mvn -Djavafx=true clean package' -->
   <profiles>
-  <profile>
-  <id>update-protobuf</id>
-  <activation>
-    <property>
-      <name>updateProtobuf</name>
-      <value>true</value>
-    </property>
-  </activation>
+    <profile>
+      <id>package-javafx</id>
+      <activation>
+        <property>
+          <name>javafx</name>
+          <value>true</value>
+        </property>
+      </activation>
 
-  -->
-
-  <build>
-
-    <plugins>
-
-      <!-- Configure the JavaFx packager -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>1.2.1</version>
-        <executions>
-          <execution>
-            <id>unpack-dependencies</id>
-            <phase>package</phase>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <executable>${java.home}/../bin/javafxpackager</executable>
-          <arguments>
-            <argument>-createjar</argument>
-            <argument>-nocss2bin</argument>
-            <argument>-appclass</argument>
-            <argument>${exec.mainClass}</argument>
-            <argument>-srcdir</argument>
-            <argument>target/classes</argument>
-            <argument>-outdir</argument>
-            <argument>target</argument>
-            <argument>-outfile</argument>
-            <argument>multibit-hd-exe</argument>
-          </arguments>
-        </configuration>
-      </plugin>
-
-      <!-- This will copy all your dependencies to target/libs, which will be picked up by the ant task below -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
+      <!-- Only use these plugins if building the final JavaFx installer -->
+      <build>
+        <plugins>
+          <!-- Configure the JavaFx packager -->
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.2.1</version>
+            <executions>
+              <execution>
+                <id>unpack-dependencies</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+              </execution>
+            </executions>
             <configuration>
-              <outputDirectory>target/libs</outputDirectory>
-              <includeScope>compile</includeScope>
-              <includeScope>runtime</includeScope>
-              <excludeArtifactIds>javafx</excludeArtifactIds>
+              <executable>${java.home}/../bin/javafxpackager</executable>
+              <arguments>
+                <argument>-createjar</argument>
+                <argument>-nocss2bin</argument>
+                <argument>-appclass</argument>
+                <argument>${exec.mainClass}</argument>
+                <argument>-srcdir</argument>
+                <argument>target/classes</argument>
+                <argument>-outdir</argument>
+                <argument>target</argument>
+                <argument>-outfile</argument>
+                <argument>multibit-hd-exe</argument>
+              </arguments>
             </configuration>
-          </execution>
-        </executions>
-      </plugin>
+          </plugin>
 
-      <!-- AntRun plugin for JavaFx packaging (requires javafx.jar in JDK) -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.6</version>
-        <executions>
-          <execution>
-            <id>create-javafx-packages</id>
-            <phase>package</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <target xmlns:fx="javafx:com.sun.javafx.tools.ant">
-                <echo>Start of Ant tasks.</echo>
-                <taskdef
-                  uri="javafx:com.sun.javafx.tools.ant"
-                  resource="com/sun/javafx/tools/ant/antlib.xml">
-                  <classpath path="${javafx.tools.ant.jar}"/>
-                </taskdef>
-                <!-- TODO consider branding here -->
-                <fx:application id="multibitApp"
-                                name="MultiBit"
-                                mainClass="${exec.mainClass}"/>
-                <echo>Application defined.</echo>
-                <!-- Note: this will overwrite the JAR produced by maven-jar-plugin, change destfile if you don't want this -->
-                <!-- TODO consider branding here -->
-                <fx:jar destfile="target/multibit-mac-exe.jar" verbose="true">
-                  <fx:application refid="multibitApp"/>
-                  <fx:fileset dir="target/classes"/>
-                  <fx:resources>
-                    <fx:fileset dir="target" includes="libs/*.jar"/>
-                  </fx:resources>
-                </fx:jar>
-                <echo>Jar created.</echo>
-                <fx:deploy width="600" height="400" outdir="target-mac" embedJNLP="true" verbose="true" outfile="MultiBit" nativeBundles="all">
-                  <!-- TODO consider branding here -->
-                  <fx:application refid="multibitApp"/>
-                  <fx:resources>
-                    <!-- If you changed <fx:jar> above, don't forget to modify the line below -->
+          <!-- This will copy all your dependencies to target/libs, which will be picked up by the ant task below -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy</id>
+                <phase>prepare-package</phase>
+                <goals>
+                  <goal>copy-dependencies</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>target/libs</outputDirectory>
+                  <includeScope>compile</includeScope>
+                  <includeScope>runtime</includeScope>
+                  <excludeArtifactIds>javafx</excludeArtifactIds>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <!-- AntRun plugin for JavaFx packaging (requires javafx.jar in JDK) -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.6</version>
+            <executions>
+              <execution>
+                <id>create-javafx-packages</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <!-- Ignore this namespace -->
+                  <target xmlns:fx="javafx:com.sun.javafx.tools.ant">
+                    <echo>Start of Ant tasks.</echo>
+                    <taskdef
+                      uri="javafx:com.sun.javafx.tools.ant"
+                      resource="com/sun/javafx/tools/ant/antlib.xml">
+                      <classpath path="${javafx.tools.ant.jar}"/>
+                    </taskdef>
                     <!-- TODO consider branding here -->
-                    <fx:fileset dir="target" includes="multibit-mac-exe.jar"/>
-                    <fx:fileset dir="target" includes="libs/*.jar"/>
-                  </fx:resources>
-                  <fx:permissions/>
-                </fx:deploy>
-                <echo>End of Ant tasks.</echo>
-              </target>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+                    <fx:application id="multibitApp"
+                                    name="MultiBit"
+                                    mainClass="${exec.mainClass}"/>
+                    <echo>Application defined.</echo>
+                    <!-- Note: this will overwrite the JAR produced by maven-jar-plugin, change destfile if you don't want this -->
+                    <!-- TODO consider branding here -->
+                    <fx:jar destfile="target/multibit-mac-exe.jar" verbose="true">
+                      <fx:application refid="multibitApp"/>
+                      <fx:fileset dir="target/classes"/>
+                      <fx:resources>
+                        <fx:fileset dir="target" includes="libs/*.jar"/>
+                      </fx:resources>
+                    </fx:jar>
+                    <echo>Jar created.</echo>
+                    <fx:deploy width="600" height="400" outdir="target-mac" embedJNLP="true" verbose="true" outfile="MultiBit" nativeBundles="all">
+                      <!-- TODO consider branding here -->
+                      <fx:application refid="multibitApp"/>
+                      <fx:resources>
+                        <!-- If you changed <fx:jar> above, don't forget to modify the line below -->
+                        <!-- TODO consider branding here -->
+                        <fx:fileset dir="target" includes="multibit-mac-exe.jar"/>
+                        <fx:fileset dir="target" includes="libs/*.jar"/>
+                      </fx:resources>
+                      <fx:permissions/>
+                    </fx:deploy>
+                    <echo>End of Ant tasks.</echo>
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
 
-    </plugins>
-  </build>
+        </plugins>
+      </build>
+
+    </profile>
+  </profiles>
+
+  <dependencies>
+
+    <!-- MultiBit HD support libraries -->
+    <dependency>
+      <groupId>org.multibit.hd</groupId>
+      <artifactId>mbhd-core</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.multibit.hd</groupId>
+      <artifactId>mbhd-brit</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+
+  </dependencies>
 
 </project>

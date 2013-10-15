@@ -3,7 +3,7 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>uk.co.bitcoin-solutions.mbhd</groupId>
+  <groupId>org.multibit.hd</groupId>
   <artifactId>mbhd-parent</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
@@ -23,11 +23,6 @@
     <bitcoinj.version>0.10</bitcoinj.version>
     <xchange.version>1.7.0</xchange.version>
     <sc-light-jdk15on.version>1.47.0.2</sc-light-jdk15on.version>
-
-    <!-- Installer configuration -->
-    <!-- Location of staging directory for creation of linux IzPack installer -->
-    <!-- TODO Consider if still required -->
-    <staging.linux.dir>${project.build.directory}/linux-staging</staging.linux.dir>
 
   </properties>
 
