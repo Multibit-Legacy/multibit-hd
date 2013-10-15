@@ -1,179 +1,336 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.bitcoinj</groupId>
-    <artifactId>multibit-hd</artifactId>
-    <version>1.0-SNAPSHOT</version>
+  <modelVersion>4.0.0</modelVersion>
 
-    <repositories>
-        <repository>
-            <id>bitcoinj-releases</id>
-            <name>Bitcoinj Releases</name>
-            <url>http://distribution.bitcoinj.googlecode.com/git/releases</url>
-            <releases />
-        </repository>
-    </repositories>
+  <groupId>uk.co.bitcoin-solutions.mbhd</groupId>
+  <artifactId>mbhd-parent</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
 
-    <build>
+  <name>MultiBit HD</name>
+  <description>MultiBit HD is a Java Bitcoin wallet providing a simple to use wallet based on hierarchical deterministic wallets and hardware wallets. It
+    relies on the Simplified Payment Verification (SPV) mode of Bitcoin.
+  </description>
+
+  <properties>
+    <!-- Source encoding -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    <!-- Library versions -->
+    <slf4j.version>1.7.2</slf4j.version>
+    <bitcoinj.version>0.10</bitcoinj.version>
+    <xchange.version>1.7.0</xchange.version>
+    <sc-light-jdk15on.version>1.47.0.2</sc-light-jdk15on.version>
+
+    <!-- Installer configuration -->
+    <!-- Location of staging directory for creation of linux IzPack installer -->
+    <!-- TODO Consider if still required -->
+    <staging.linux.dir>${project.build.directory}/linux-staging</staging.linux.dir>
+
+  </properties>
+
+  <modules>
+    <module>mbhd-core</module>
+    <module>mbhd-brit</module>
+    <module>mbhd-javafx</module>
+  </modules>
+
+  <url>http://github.com/bitcoin-solutions/multibit-hd</url>
+  <inceptionYear>2013</inceptionYear>
+
+  <organization>
+    <name>Bitcoin Solutions Ltd</name>
+    <url>http://bitcoin-solutions.co.uk</url>
+  </organization>
+
+  <developers>
+    <developer>
+      <name>Jim Burton</name>
+      <email>jim.burton@bitcoin-solutions.co.uk</email>
+    </developer>
+    <developer>
+      <name>Gary Rowe</name>
+      <email>gary.rowe@bitcoin-solutions.co.uk</email>
+    </developer>
+  </developers>
+
+  <licenses>
+    <license>
+      <name>MIT</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+      <distribution>repo</distribution>
+      <comments>All source code is under the MIT license.</comments>
+    </license>
+  </licenses>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/bitcoin-solutions/multibit-hd/issues</url>
+  </issueManagement>
+
+  <repositories>
+    <repository>
+      <id>bitcoinj-releases</id>
+      <name>Bitcoinj Releases</name>
+      <url>http://distribution.bitcoinj.googlecode.com/git/releases</url>
+      <releases/>
+    </repository>
+  </repositories>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>sonatype-nexus-snapshots</id>
+      <name>Sonatype Nexus Snapshots</name>
+      <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>sonatype-nexus-staging</id>
+      <name>Nexus Release Repository</name>
+      <url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+    <downloadUrl>https://oss.sonatype.org/content/groups/public/uk/co/bitcoin-solutions</downloadUrl>
+  </distributionManagement>
+
+  <scm>
+    <connection>scm:git:git@github.com:bitcoin-solutions/multibit-hd.git</connection>
+    <developerConnection>scm:git:git@github.com:bitcoin-solutions/multibit-hd.git</developerConnection>
+    <url>git@github.com:bitcoin-solutions/multibit-hd.git</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <profiles>
+    <profile>
+      <id>release-sign-artifacts</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.2.1</version>
-                <executions>
-                    <execution>
-                        <id>unpack-dependencies</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <executable>${java.home}/../bin/javafxpackager</executable>
-                    <arguments>
-                        <argument>-createjar</argument>
-                        <argument>-nocss2bin</argument>
-                        <argument>-appclass</argument>
-                        <argument>${exec.mainClass}</argument>
-                        <argument>-srcdir</argument>
-                        <argument>target/classes</argument>
-                        <argument>-outdir</argument>
-                        <argument>target</argument>
-                        <argument>-outfile</argument>
-                        <argument>multibit-hd-exe</argument>
-                    </arguments>
-                </configuration>
-            </plugin>
-
-            <!-- This will copy all your dependencies to target/libs, which will be picked up by the ant task below -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>target/libs</outputDirectory>
-                            <includeScope>compile</includeScope>
-                            <includeScope>runtime</includeScope>
-                            <excludeArtifactIds>javafx</excludeArtifactIds>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.6</version>
-                <executions>
-                    <execution>
-                        <id>create-javafx-packages</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target xmlns:fx="javafx:com.sun.javafx.tools.ant">
-                                    <echo>Start of Ant tasks.</echo>
-                                    <taskdef
-                                            uri="javafx:com.sun.javafx.tools.ant"
-                                            resource="com/sun/javafx/tools/ant/antlib.xml">
-                                        <classpath path="${javafx.tools.ant.jar}" />
-                                    </taskdef>
-                                    <fx:application id="multibitApp"
-                                                    name="MultiBit"
-                                                    mainClass="${exec.mainClass}"/>
-                                    <echo>Application defined.</echo>
-                                    <!-- Note: this will overwrite the JAR produced by maven-jar-plugin, change destfile if you don't want this -->
-                                    <fx:jar destfile="target/multibit-mac-exe.jar" verbose="true">
-                                        <fx:application refid="multibitApp"/>
-                                        <fx:fileset dir="target/classes"/>
-                                        <fx:resources>
-                                            <fx:fileset dir="target" includes="libs/*.jar"/>
-                                        </fx:resources>
-                                    </fx:jar>
-                                    <echo>Jar created.</echo>
-                                    <fx:deploy  width="600" height="400" outdir="target-mac" embedJNLP="true" verbose="true" outfile="MultiBit" nativeBundles="all">
-                                        <fx:application refid="multibitApp"/>
-                                        <fx:resources>
-                                            <!-- If you changed <fx:jar> above, don't forget to modify the line below -->
-                                            <fx:fileset dir="target" includes="multibit-mac-exe.jar"/>
-                                            <fx:fileset dir="target" includes="libs/*.jar"/>
-                                        </fx:resources>
-                                        <fx:permissions/>
-                                    </fx:deploy>
-                                    <echo>End of Ant tasks.</echo>
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.4</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
-    </build>
+      </build>
+    </profile>
+  </profiles>
 
+  <build>
+    <plugins>
+      <!-- Ensure compilation is done under Java 7 in all environments -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+          <showDeprecation>true</showDeprecation>
+          <showWarnings>true</showWarnings>
+        </configuration>
+      </plugin>
+
+      <!-- Generates a source code JAR during package -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.2.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Generates a Javadoc JAR during package -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.9.1</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- For deploying to Maven Central -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.4.1</version>
+        <configuration>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <!-- Provide defaults for all modules to use -->
+  <dependencyManagement>
     <dependencies>
-        <dependency>
-            <groupId>com.google</groupId>
-            <artifactId>bitcoinj</artifactId>
-            <version>${bitcoinj.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jdk14</artifactId>
-            <version>1.6.4</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>13.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>javafx</artifactId>
-            <version>2.2.40</version>
-            <systemPath>${java.home}/lib/jfxrt.jar</systemPath>
-            <scope>system</scope>
-        </dependency>
+
+      <!-- JavaFX for UI -->
+      <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>javafx</artifactId>
+        <version>2.2.40</version>
+        <systemPath>${java.home}/lib/jfxrt.jar</systemPath>
+        <scope>system</scope>
+      </dependency>
+
+      <!-- Logging is through SLF4J -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+
+      <!-- MultiBit HD consumers are expected to provide their own SLF4J adapters
+           such as logback, slf4j-log4j12, slf4j-jcl and so on
+           The SLF4J Simple is just for console logging for the tests
+           Logback is used specifically in the /examples modules since they are external
+           See http://www.slf4j.org/faq.html -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-simple</artifactId>
+        <version>${slf4j.version}</version>
+        <scope>test</scope>
+        <optional>true</optional>
+      </dependency>
+
+      <!-- Google Guava for code utilities -->
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>13.0.1</version>
+      </dependency>
+
+      <!-- Findbugs annotations -->
+      <dependency>
+        <groupId>com.google.code.findbugs</groupId>
+        <artifactId>jsr305</artifactId>
+        <version>1.3.9</version>
+      </dependency>
+
+      <!-- Bitcoinj for Bitcoin operations -->
+      <dependency>
+        <groupId>com.google</groupId>
+        <artifactId>bitcoinj</artifactId>
+        <version>0.10</version>
+      </dependency>
+
+      <!-- Testing -->
+
+      <!-- JUnit for testing -->
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.11</version>
+        <scope>test</scope>
+      </dependency>
+
+      <!-- FEST for fluent test assertions -->
+      <dependency>
+        <groupId>org.easytesting</groupId>
+        <artifactId>fest-assert-core</artifactId>
+        <version>2.0M10</version>
+        <scope>test</scope>
+      </dependency>
+
+      <!-- Mockito for mocking -->
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>1.8.5</version>
+      </dependency>
+
     </dependencies>
+  </dependencyManagement>
 
-    <properties>
-        <!-- Source encoding -->
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  <!-- All modules will have these dependencies -->
+  <dependencies>
 
-        <!-- Location of staging directory for creation of linux IzPack installer -->
-        <staging.linux.dir>${project.build.directory}/linux-staging
-        </staging.linux.dir>
+    <!-- All logging is through SLF4J -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
 
-        <!-- Version of BitCoinJ to use (multiple uses) -->
-        <bitcoinj.version>0.10</bitcoinj.version>
+    <!-- Google Guava for code utilities -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
 
-        <!-- Version of XChange to use (multiple uses) -->
-        <xchange.version>1.7.0</xchange.version>
+    <!-- Findbugs annotations -->
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+    </dependency>
 
-        <!-- Version of spongycastle to use -->
-        <sc-light-jdk15on.version>1.47.0.2</sc-light-jdk15on.version>
+    <!-- Bitcoinj for Bitcoin operations -->
+    <dependency>
+      <groupId>com.google</groupId>
+      <artifactId>bitcoinj</artifactId>
+    </dependency>
 
-        <exec.mainClass>sample.Main</exec.mainClass>
-        <javafx.tools.ant.jar>${java.home}/../lib/ant-javafx.jar</javafx.tools.ant.jar>
+    <!-- JavaFX for UI -->
+    <dependency>
+      <groupId>com.oracle</groupId>
+      <artifactId>javafx</artifactId>
+      <version>2.2.40</version>
+      <systemPath>${java.home}/lib/jfxrt.jar</systemPath>
+      <scope>system</scope>
+    </dependency>
+    <!-- Testing -->
 
-    </properties>
+    <!-- SLF4J simple for logging test output -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- JUnit for testing -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+
+    <!-- FEST for fluent test assertions -->
+    <dependency>
+      <groupId>org.easytesting</groupId>
+      <artifactId>fest-assert-core</artifactId>
+    </dependency>
+
+    <!-- Mockito for mocking -->
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+    </dependency>
+
+  </dependencies>
+
 </project>
