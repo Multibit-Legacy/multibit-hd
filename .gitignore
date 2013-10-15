@@ -1,13 +1,19 @@
-*.class
+# Eclipse
+.classpath
+.project
+.settings/
 
-# Package Files #
-*.jar
-*.war
-*.ear
+# Intellij
+.idea/
+*.iml
+*.iws
 
-/target
-.idea
-multibit.iml
+# Mac
+.DS_Store
 
+# Maven
+target/
+
+# MultiBit HD
 
 
