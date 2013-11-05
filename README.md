@@ -11,6 +11,7 @@ desktop clients. Support for external hardware wallets (such as the Trezor) is a
 * [Bitcoinj](https://code.google.com/p/bitcoinj/) - Providing various Bitcoin protocol utilities
 * [Java HID API](https://code.google.com/p/javahidapi/) - Java library providing USB Human Interface Device (HID) native interface
 * [Google Protocol Buffers](https://code.google.com/p/protobuf/) (protobuf) - For use with communicating with the Trezor device
+* Java 7 and JavaFX2 (with [JavaFX Scene Builder](http://www.oracle.com/technetwork/java/javafx/tools/index.html))
 
 ### Project status
 

@@ -163,6 +163,13 @@
       <version>${project.parent.version}</version>
     </dependency>
 
+    <!-- Integrate Font Awesome -->
+    <dependency>
+      <groupId>com.cathive.fonts</groupId>
+      <artifactId>fonts-fontawesome</artifactId>
+      <version>3.2.1.0</version>
+    </dependency>
+
   </dependencies>
 
 </project>
