@@ -7,7 +7,6 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 <?import org.multibit.hd.ui.javafx.fonts.*?>
-<?import org.multibit.hd.ui.javafx.fonts.AwesomeLabel ?>
 <?scenebuilder-classpath-element ../../../../target/classes?>
 <?scenebuilder-stylesheet ../../../../target/classes/css/main.css?>
 
@@ -73,9 +72,6 @@
       </children>
     </HBox>
     <Label fx:id="messageBar" layoutX="164.0" layoutY="41.0" prefWidth="356.0" text="Label">
-      <graphic>
-        <AwesomeLabel icon="BITCOIN" />
-      </graphic>
     </Label>
   </children>
   <stylesheets>

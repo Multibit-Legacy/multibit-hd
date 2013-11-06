@@ -2,12 +2,12 @@ package org.multibit.hd.ui.javafx;
 
 import com.google.common.io.Resources;
 import javafx.application.Application;
-import javafx.scene.Group;
-import javafx.scene.Scene;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import org.multibit.hd.ui.javafx.screens.Screen;
+import org.multibit.hd.ui.javafx.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.javafx.screens.ScreenTransitionManager;
+
+import java.util.Locale;
 
 public class MultiBitHD extends Application {
 
@@ -23,24 +23,18 @@ public class MultiBitHD extends Application {
   @Override
   public void start(Stage primaryStage) throws Exception {
 
-    Font.loadFont(Resources.getResource("assets/fonts/FontAwesome.otf").toExternalForm(), 10);
+    Font.loadFont(Resources.getResource(AwesomeDecorator.FONT_AWESOME_TTF_PATH).toExternalForm(), 10.0);
 
-    ScreenTransitionManager stm = new ScreenTransitionManager();
-    stm.addScreen(Screen.WELCOME_LOGIN, Screen.WELCOME_LOGIN.getFxmlResource());
-    stm.addScreen(Screen.WELCOME_PROVIDE_INITIAL_SEED, Screen.WELCOME_PROVIDE_INITIAL_SEED.getFxmlResource());
-    stm.addScreen(Screen.MAIN_HOME, Screen.MAIN_HOME.getFxmlResource());
-    stm.setInitialScreen(Screen.WELCOME_LOGIN);
+    // TODO Get the preferred locale
+    Locale preferredLocale = Locale.UK;
 
-    Group root = new Group();
-    root.getChildren().addAll(stm);
+    // TODO Get the preferred starting position
+    primaryStage.centerOnScreen();
 
-    Scene scene = new Scene(root);
-    scene.getStylesheets().add(Resources.getResource("assets/css/main.css").toExternalForm());
-
-    primaryStage.setScene(scene);
-    primaryStage.setTitle("MultiBit HD");
-    primaryStage.setScene(scene);
-    primaryStage.show();
+    // The screen manager handles the stage for different languages
+    ScreenTransitionManager stm = new ScreenTransitionManager(primaryStage);
+    stm.onLocaleChanged(preferredLocale);
 
   }
+
 }

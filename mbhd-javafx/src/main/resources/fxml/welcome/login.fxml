@@ -3,6 +3,7 @@
 <?import java.lang.*?>
 <?import java.net.*?>
 <?import java.util.*?>
+<?import javafx.collections.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -12,21 +13,31 @@
 
 <AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" styleClass="descriptionValue" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="org.multibit.hd.ui.javafx.controllers.welcome.LoginController">
   <children>
-    <GridPane alignment="CENTER" hgap="10.0" layoutX="211.0" layoutY="191.0" vgap="10.0">
+    <GridPane alignment="CENTER" focusTraversable="true" hgap="10.0" layoutX="99.0" layoutY="177.0" vgap="10.0">
       <children>
-        <Button mnemonicParsing="false" onAction="#onLoginFired" prefHeight="21.9998779296875" text="Login" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
+        <Button id="" fx:id="loginButton" mnemonicParsing="false" onAction="#onLoginFired" prefHeight="21.9998779296875" text="Login" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
         <Text id="welcome-text" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-        <Label text="Password" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <Label text="%showPreferencesPanel.languageTitle" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <Label text="%showExportPrivateKeysPanel.passwordPrompt" GridPane.columnIndex="0" GridPane.rowIndex="1" />
         <PasswordField prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="1" />
-        <Hyperlink onAction="#onForgottenClicked" text="Forgotten password" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2">
+        <Hyperlink onAction="#onForgottenClicked" text="Forgotten password" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="3">
           <GridPane.margin>
             <Insets />
           </GridPane.margin>
         </Hyperlink>
+        <ChoiceBox fx:id="languageChoice" prefWidth="188.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+          <items>
+            <FXCollections fx:factory="observableArrayList">
+              <String fx:value="Item 1" />
+              <String fx:value="Item 2" />
+              <String fx:value="Item 3" />
+            </FXCollections>
+          </items>
+        </ChoiceBox>
       </children>
       <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="150.0" />
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="200.0" />
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
         <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
       </columnConstraints>
@@ -34,6 +45,7 @@
         <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
       </padding>
       <rowConstraints>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
