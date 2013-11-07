@@ -5,7 +5,7 @@
     <property file="ant-win-build.properties"/>
 
     <target name="make-exe"  xmlns:fx="javafx:com.sun.javafx.tools.ant">
-        <taskdef resource="com/sun/javafx/tools/ant/antlib.xml" uri="javafx:com.sun.javafx.tools.ant" classpath=".:package/windows:${jdk.home.1.7}/lib/ant-javafx.jar"/>
+        <taskdef resource="com/sun/javafx/tools/ant/antlib.xml" uri="javafx:com.sun.javafx.tools.ant" classpath=".:mbhd-javafx/package/windows:${jdk.home.1.7}/lib/ant-javafx.jar"/>
 
         <!-- Mark application as Swing-based --> 
         <fx:application id="multibitApp" mainClass="org.multibit.MultiBitInExecutableJar" toolkit="swing" name="MultiBit-${multibit-version}" version=""/>

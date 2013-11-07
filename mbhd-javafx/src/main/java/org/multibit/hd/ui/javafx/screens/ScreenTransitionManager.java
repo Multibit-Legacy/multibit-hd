@@ -10,6 +10,8 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.multibit.hd.ui.javafx.exceptions.UIException;
@@ -43,14 +45,35 @@ public class ScreenTransitionManager extends StackPane {
 
   private Screen currentScreen;
   private final Stage primaryStage;
+  //private final GenericApplication genericApplication;
 
-  public ScreenTransitionManager(Stage primaryStage) {
+  public ScreenTransitionManager(Stage primaryStage, Screen initialScreen) {
 
     Preconditions.checkNotNull(primaryStage, "'primaryStage' must be present");
 
     this.primaryStage = primaryStage;
 
-    this.currentScreen = Screen.WELCOME_LOGIN;
+    this.currentScreen = initialScreen;
+
+    log.info("Configuring native event handling");
+
+    // TODO Get this working
+    //GenericApplicationSpecification specification = new GenericApplicationSpecification();
+    //GenericEventController controller = new GenericEventController();
+    //specification.getOpenURIEventListeners().add(controller);
+    //genericApplication = GenericApplicationFactory.INSTANCE.buildGenericApplication(specification);
+
+    // Configure the system menu
+
+    MenuBar mb = new MenuBar();
+    mb.setUseSystemMenuBar(true);
+
+    final Menu menu1 = new Menu("File");
+    final Menu menu2 = new Menu("Options");
+    final Menu menu3 = new Menu("Help");
+
+    MenuBar menuBar = new MenuBar();
+    menuBar.getMenus().addAll(menu1, menu2, menu3);
 
   }
 

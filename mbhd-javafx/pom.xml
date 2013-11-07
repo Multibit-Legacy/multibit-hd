@@ -15,10 +15,14 @@
   <description>The JavaFX implementation of the MultiBit HD user interface.</description>
 
   <properties>
-    <!-- Main class -->
-    <exec.mainClass>example.Main</exec.mainClass>
+    <!-- JavaFX packaging (make sure to update Info.plist if changing) -->
+    <javafx.mainClass>org.multibit.hd.ui.javafx.MultiBitHD</javafx.mainClass>
+    <!-- Icon names are attached to this -->
+    <javafx.appName>MultiBit HD</javafx.appName>
+    <javafx.jarName>multibit-hd</javafx.jarName>
+    <javafx.appId>MultiBitHD</javafx.appId>
 
-    <!-- JavaFX configuration -->
+    <!-- JavaFX Ant JAR -->
     <javafx.tools.ant.jar>${java.home}/../lib/ant-javafx.jar</javafx.tools.ant.jar>
 
   </properties>
@@ -57,13 +61,13 @@
                 <argument>-createjar</argument>
                 <argument>-nocss2bin</argument>
                 <argument>-appclass</argument>
-                <argument>${exec.mainClass}</argument>
+                <argument>${javafx.mainClass}</argument>
                 <argument>-srcdir</argument>
                 <argument>target/classes</argument>
                 <argument>-outdir</argument>
                 <argument>target</argument>
                 <argument>-outfile</argument>
-                <argument>multibit-hd-exe</argument>
+                <argument>${javafx.jarName}</argument>
               </arguments>
             </configuration>
           </plugin>
@@ -104,38 +108,46 @@
                 <configuration>
                   <!-- Ignore this namespace -->
                   <target xmlns:fx="javafx:com.sun.javafx.tools.ant">
+
                     <echo>Start of Ant tasks.</echo>
+
                     <taskdef
                       uri="javafx:com.sun.javafx.tools.ant"
                       resource="com/sun/javafx/tools/ant/antlib.xml">
-                      <classpath path="${javafx.tools.ant.jar}"/>
+
+                      <!-- Configure the classpath to include the current working directory
+                           and the Ant JavaFX JAR -->
+                      <classpath path=".:${javafx.tools.ant.jar}"/>
+
                     </taskdef>
-                    <!-- TODO consider branding here -->
-                    <fx:application id="multibitApp"
-                                    name="MultiBit"
-                                    mainClass="${exec.mainClass}"/>
-                    <echo>Application defined.</echo>
-                    <!-- Note: this will overwrite the JAR produced by maven-jar-plugin, change destfile if you don't want this -->
-                    <!-- TODO consider branding here -->
-                    <fx:jar destfile="target/multibit-mac-exe.jar" verbose="true">
-                      <fx:application refid="multibitApp"/>
+
+                    <echo>Define application...</echo>
+                    <fx:application id="${javafx.appId}"
+                                    name="${javafx.appName}"
+                                    mainClass="${javafx.mainClass}"/>
+
+                    <echo>Creating JAR...</echo>
+                    <fx:jar destfile="target/${javafx.jarName}.jar" verbose="true">
+                      <fx:application refid="${javafx.appId}"/>
                       <fx:fileset dir="target/classes"/>
                       <fx:resources>
                         <fx:fileset dir="target" includes="libs/*.jar"/>
                       </fx:resources>
                     </fx:jar>
-                    <echo>Jar created.</echo>
-                    <fx:deploy width="600" height="400" outdir="target-mac" embedJNLP="true" verbose="true" outfile="MultiBit" nativeBundles="all">
-                      <!-- TODO consider branding here -->
-                      <fx:application refid="multibitApp"/>
+
+                    <fx:deploy width="600" height="400"
+                               outdir="target/packaged"
+                               embedJNLP="true" verbose="true"
+                               outfile="${javafx.appName}"
+                               nativeBundles="all">
+                      <fx:application refid="${javafx.appId}"/>
                       <fx:resources>
-                        <!-- If you changed <fx:jar> above, don't forget to modify the line below -->
-                        <!-- TODO consider branding here -->
-                        <fx:fileset dir="target" includes="multibit-mac-exe.jar"/>
+                        <fx:fileset dir="target" includes="${javafx.jarName}.jar"/>
                         <fx:fileset dir="target" includes="libs/*.jar"/>
                       </fx:resources>
                       <fx:permissions/>
                     </fx:deploy>
+
                     <echo>End of Ant tasks.</echo>
                   </target>
                 </configuration>
@@ -161,13 +173,6 @@
       <groupId>org.multibit.hd</groupId>
       <artifactId>mbhd-brit</artifactId>
       <version>${project.parent.version}</version>
-    </dependency>
-
-    <!-- Integrate Font Awesome -->
-    <dependency>
-      <groupId>com.cathive.fonts</groupId>
-      <artifactId>fonts-fontawesome</artifactId>
-      <version>3.2.1.0</version>
     </dependency>
 
   </dependencies>

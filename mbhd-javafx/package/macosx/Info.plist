@@ -1,0 +1,103 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <!-- Linked: The app name -->
+    <key>CFBundleExecutable</key>
+    <string>MultiBit HD</string>
+
+    <!-- Linked: The icons -->
+    <key>CFBundleIconFile</key>
+    <string>MultiBit HD.icns</string>
+
+    <!-- Linked: The JAR version -->
+    <key>CFBundleShortVersionString</key>
+    <string>0.0.1</string>
+
+    <!-- Linked: The JAR name -->
+    <key>JVMMainJarName</key>
+    <string>multibit-hd.jar</string>
+
+    <key>NSHumanReadableCopyright</key>
+    <string>Copyright © MultiBit developers 2013</string>
+
+    <key>CFBundleGetInfoString</key>
+    <string>MultiBit, © 2013 MultiBit developers</string>
+
+    <key>CFBundleIdentifier</key>
+    <string>multibithd</string>
+
+    <key>JVMPreferencesID</key>
+    <string>multibithd</string>
+
+    <key>CFBundleVersion</key>
+    <string>100</string>
+
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+
+    <key>CFBundleName</key>
+    <string>MultiBit HD</string>
+
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>10.7.4</string>
+
+    <key>CFBundleDevelopmentRegion</key>
+    <string>English</string>
+
+    <key>CFBundleSignature</key>
+    <string>????</string>
+
+    <!-- See
+         https://developer.apple.com/library/mac/releasenotes/General/SubmittingToMacAppStore/index.html
+         for list of AppStore categories -->
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.finance</string>
+
+    <!-- The bundled JDK -->
+    <key>JVMRuntime</key>
+    <string>jdk1.7.0_40.jdk</string>
+
+    <!-- JavaFX provides the startup file -->
+    <key>JVMMainClassName</key>
+    <string>com.javafx.main.Main</string>
+
+    <key>JVMAppClasspath</key>
+    <string/>
+
+    <key>JVMOptions</key>
+    <array>
+
+    </array>
+    <key>JVMUserOptions</key>
+    <dict>
+
+    </dict>
+
+    <!-- Register as a protocol handler -->
+    <key>CFBundleURLTypes</key>
+    <array>
+      <dict>
+        <key>CFBundleTypeRole</key>
+        <string>Shell</string>
+
+        <key>CFBundleURLIconFile</key>
+        <string>MultiBit HD.icns</string>
+
+        <key>CFBundleURLName</key>
+        <string>org.multibit.bitcoin.url</string>
+
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>bitcoin</string>
+        </array>
+      </dict>
+    </array>
+
+    <key>NSHighResolutionCapable</key>
+    <string>true</string>
+
+  </dict>
+</plist>

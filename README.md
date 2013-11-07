@@ -22,6 +22,14 @@ Alpha: Expect bugs and API changes. Not suitable for production, but early adopt
 Have a read of [the wiki pages](https://github.com/bitcoin-solutions/multibit-hd/wiki/_pages) which gives comprehensive instructions
 for a variety of environments.
 
+### IDE configuration notes
+
+You can set the application name for MacOS using a VM argument of
+
+```
+-Xdock:name="MultiBit HD"
+```
+
 ### Use cases documentation
 
 The use cases are described here:

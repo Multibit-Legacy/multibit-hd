@@ -155,21 +155,6 @@
         </executions>
       </plugin>
 
-      <!-- Generates a Javadoc JAR during package -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.9.1</version>
-        <executions>
-          <execution>
-            <id>attach-javadocs</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
       <!-- For deploying to Maven Central -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -195,24 +180,16 @@
         <scope>system</scope>
       </dependency>
 
-      <!-- Logging is through SLF4J -->
+      <!-- Logging is through SLF4J and Logback -->
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
         <version>${slf4j.version}</version>
       </dependency>
-
-      <!-- MultiBit HD consumers are expected to provide their own SLF4J adapters
-           such as logback, slf4j-log4j12, slf4j-jcl and so on
-           The SLF4J Simple is just for console logging for the tests
-           Logback is used specifically in the /examples modules since they are external
-           See http://www.slf4j.org/faq.html -->
       <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-simple</artifactId>
-        <version>${slf4j.version}</version>
-        <scope>test</scope>
-        <optional>true</optional>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.0.10</version>
       </dependency>
 
       <!-- Google Guava for code utilities -->
@@ -267,10 +244,14 @@
   <!-- All modules will have these dependencies -->
   <dependencies>
 
-    <!-- All logging is through SLF4J -->
+    <!-- All logging is through SLF4J and Logback -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
     </dependency>
 
     <!-- Google Guava for code utilities -->
@@ -300,13 +281,6 @@
       <scope>system</scope>
     </dependency>
     <!-- Testing -->
-
-    <!-- SLF4J simple for logging test output -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <scope>test</scope>
-    </dependency>
 
     <!-- JUnit for testing -->
     <dependency>
