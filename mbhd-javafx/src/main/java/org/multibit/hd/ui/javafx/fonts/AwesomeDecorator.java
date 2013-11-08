@@ -16,7 +16,7 @@ import javafx.scene.control.*;
  */
 public class AwesomeDecorator {
 
-  private final static String DEFAULT_ICON_SIZE = "16.0";
+  private final static String DEFAULT_ICON_SIZE = "20.0";
   private final static String DEFAULT_FONT_SIZE = "1em";
 
   public static Label createIconLabel(AwesomeIcon icon, String iconSize) {
