@@ -1,12 +1,8 @@
 package org.multibit.hd.ui.javafx;
 
-import com.google.common.io.Resources;
-import com.sun.javafx.tk.Toolkit;
 import javafx.application.Application;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.multibit.hd.ui.javafx.controllers.main.GenericEventController;
-import org.multibit.hd.ui.javafx.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.javafx.platform.GenericApplication;
 import org.multibit.hd.ui.javafx.platform.GenericApplicationFactory;
 import org.multibit.hd.ui.javafx.platform.GenericApplicationSpecification;
@@ -34,7 +30,6 @@ public class MultiBitHD extends Application {
   @Override
   public void init() throws Exception {
 
-    Toolkit.getToolkit();
     registerEventListeners();
 
   }
@@ -44,9 +39,6 @@ public class MultiBitHD extends Application {
 
     // Load preferences
     loadPreferences();
-
-    // Load fonts
-    loadFonts();
 
     // TODO Get the preferred locale
     Locale preferredLocale = Locale.UK;
@@ -96,13 +88,4 @@ public class MultiBitHD extends Application {
   private void loadPreferences() {
     //To change body of created methods use File | Settings | File Templates.
   }
-
-  /**
-   * <p>Load all the supporting fonts from the classpath</p>
-   * <p>This must be done before any screens are loaded</p>
-   */
-  private void loadFonts() {
-    Font.loadFont(Resources.getResource(AwesomeDecorator.FONT_AWESOME_TTF_PATH).toExternalForm(), 10.0);
-  }
-
 }

@@ -7,15 +7,17 @@ import javafx.scene.control.*;
  * <ul>
  * <li>Apply Font Awesome iconography to various controls</li>
  * </ul>
+ * <p>Relies on the font being loaded by an external process</p>
+ * <p>Note that getting a custom font to work with JavaFX seems rather harder than it should
+ * be and so the CatHive JAR is being used to correctly register the fonts</p>
  *
  * @since 0.0.1
  *         
  */
 public class AwesomeDecorator {
 
-  public final static String FONT_AWESOME_TTF_PATH = "assets/fonts/fontawesome-webfont.ttf";
-  public final static String DEFAULT_ICON_SIZE = "16.0";
-  public final static String DEFAULT_FONT_SIZE = "1em";
+  private final static String DEFAULT_ICON_SIZE = "16.0";
+  private final static String DEFAULT_FONT_SIZE = "1em";
 
   public static Label createIconLabel(AwesomeIcon icon, String iconSize) {
 
@@ -115,5 +117,4 @@ public class AwesomeDecorator {
     Label label = createIconLabel(icon, iconSize);
     treeItem.setGraphic(label);
   }
-
 }

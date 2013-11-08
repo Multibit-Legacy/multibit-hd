@@ -10,8 +10,6 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.multibit.hd.ui.javafx.exceptions.UIException;
@@ -45,35 +43,19 @@ public class ScreenTransitionManager extends StackPane {
 
   private Screen currentScreen;
   private final Stage primaryStage;
-  //private final GenericApplication genericApplication;
 
-  public ScreenTransitionManager(Stage primaryStage, Screen initialScreen) {
+  /**
+   * @param stage         The stage that these screens belong to
+   * @param initialScreen The initial screen to present (triggered by selecting the locale)
+   */
+  public ScreenTransitionManager(Stage stage, Screen initialScreen) {
 
-    Preconditions.checkNotNull(primaryStage, "'primaryStage' must be present");
+    Preconditions.checkNotNull(stage, "'stage' must be present");
+    Preconditions.checkNotNull(stage, "'initialScreen' must be present");
 
-    this.primaryStage = primaryStage;
+    this.primaryStage = stage;
 
     this.currentScreen = initialScreen;
-
-    log.info("Configuring native event handling");
-
-    // TODO Get this working
-    //GenericApplicationSpecification specification = new GenericApplicationSpecification();
-    //GenericEventController controller = new GenericEventController();
-    //specification.getOpenURIEventListeners().add(controller);
-    //genericApplication = GenericApplicationFactory.INSTANCE.buildGenericApplication(specification);
-
-    // Configure the system menu
-
-    MenuBar mb = new MenuBar();
-    mb.setUseSystemMenuBar(true);
-
-    final Menu menu1 = new Menu("File");
-    final Menu menu2 = new Menu("Options");
-    final Menu menu3 = new Menu("Help");
-
-    MenuBar menuBar = new MenuBar();
-    menuBar.getMenus().addAll(menu1, menu2, menu3);
 
   }
 
@@ -101,6 +83,7 @@ public class ScreenTransitionManager extends StackPane {
     Group root = new Group();
     root.getChildren().addAll(this);
 
+    // Ensure the scene uses the same stylesheet
     Scene scene = new Scene(root);
     scene.getStylesheets().add(Resources.getResource("assets/css/main.css").toExternalForm());
 
@@ -122,10 +105,10 @@ public class ScreenTransitionManager extends StackPane {
 
     FXMLLoader fxmlLoader = new FXMLLoader(Resources.getResource(screen.getFxmlResource()));
     fxmlLoader.setResources(resourceBundle);
-    Parent rootNode;
+    Parent page;
 
     try {
-      rootNode = (Parent) fxmlLoader.load();
+      page = (Parent) fxmlLoader.load();
     } catch (IOException e) {
       throw new UIException(e);
     }
@@ -134,7 +117,7 @@ public class ScreenTransitionManager extends StackPane {
     TransitionAware controller = fxmlLoader.getController();
     controller.setScreenTransitionManager(this);
 
-    return screens.put(screen, rootNode) == null;
+    return screens.put(screen, page) == null;
 
   }
 

@@ -25,15 +25,7 @@
             <Insets />
           </GridPane.margin>
         </Hyperlink>
-        <ChoiceBox fx:id="languageChoice" prefWidth="188.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
-          <items>
-            <FXCollections fx:factory="observableArrayList">
-              <String fx:value="Item 1" />
-              <String fx:value="Item 2" />
-              <String fx:value="Item 3" />
-            </FXCollections>
-          </items>
-        </ChoiceBox>
+        <ChoiceBox fx:id="languageChoice" prefWidth="188.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
       </children>
       <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="150.0" />

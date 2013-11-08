@@ -2,6 +2,7 @@ package org.multibit.hd.ui.javafx.controllers.main;
 
 import javafx.application.Platform;
 import org.multibit.hd.ui.javafx.platform.listener.*;
+import org.multibit.hd.ui.javafx.screens.Screen;
 import org.multibit.hd.ui.javafx.screens.ScreenTransitionManager;
 import org.multibit.hd.ui.javafx.screens.TransitionAware;
 import org.slf4j.Logger;
@@ -65,6 +66,8 @@ public class GenericEventController implements
   public synchronized void onOpenURIEvent(GenericOpenURIEvent event) {
 
     log.debug("Controller received 'Open URI' event with URI='{}'", event.getURI().toASCIIString());
+
+    transitionManager.transitionTo(Screen.MAIN_HOME);
 
   }
 
