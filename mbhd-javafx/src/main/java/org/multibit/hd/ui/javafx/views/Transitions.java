@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.javafx.screens;
+package org.multibit.hd.ui.javafx.views;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;

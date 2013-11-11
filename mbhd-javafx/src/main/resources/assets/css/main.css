@@ -1,44 +1,74 @@
 .root {
+
+  /* Define a custom colour palette */
+  /* List controls */
+  -mbhd-list-background: #e0e0e0;
+  -mbhd-list-background-dark: derive(-mbhd-list-background, -5%);
+  -mbhd-list-background-darker: derive(-mbhd-list-background, -50%);
+  -mbhd-list-background-light: derive(-mbhd-list-background, 5%);
+  -mbhd-list-background-lighter: derive(-mbhd-list-background, 50%);
+
+  /* Detail controls */
+  -mbhd-detail-background: white;
+
+  /* Text controls */
+  -mbhd-text: #030303;
+  -mbhd-text-dark: derive(-mbhd-text, -5%);
+  -mbhd-text-darker: derive(-mbhd-text, -50%);
+  -mbhd-text-light: derive(-mbhd-text, 5%);
+  -mbhd-text-lighter: derive(-mbhd-text, 50%);
+  
+  /* Overall background */
   -fx-background-image: url("../images/escheresque.png");
+  
 }
 
 .titlebar {
 
-  -fx-background-color: #f0f0f0;
+  -fx-background-color: -mbhd-list-background-dark;
 
-}
-
-.sidebar {
-
-  -fx-background-color: #f0f0f0;
-
-}
-
-.sidebarSection {
-  -fx-font-size: 14px;
-  -fx-font-weight: bold;
 }
 
 .header {
   -fx-font-size: 32px;
+  -fx-text-fill: -mbhd-text;
 }
 
+/* Splitter LHS showing sections */
+.sidebar {
+
+  -fx-background-color: -mbhd-list-background;
+  -fx-padding: 0px;
+
+}
+
+/* Splitter RHS showing details */
+.detail {
+
+  -fx-background-color: -mbhd-detail-background;
+  -fx-padding: 0px;
+}
+
+/* Splitter LHS section header  */
+.sidebarSection {
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+  -fx--mbhd-text-fill: -mbhd-text-lighter;
+}
+
+/* Sidebar divider */
 .split-pane:horizontal > * > .split-pane-divider {
-  -fx-border-color: transparent -fx-box-border transparent #BBBBBB;
-  -fx-background-color: transparent, -fx-inner-border-horizontal;
+  -fx-border-color: transparent -mbhd-list-background transparent -mbhd-list-background;
+  -fx-background-color: transparent, -mbhd-detail-background;
   -fx-background-insets: 0, 0 1 0 1;
 }
 
-/* vertical the two nodes are placed on top of each other. */
-.split-pane:vertical > * > .split-pane-divider {
-  -fx-border-color:  transparent;
-  -fx-background-color: transparent;
-  -fx-background-insets: 0;
-}
+.split-pane {
 
-.split-pane *.vertical-grabber {
-  -fx-padding: 0;
-  -fx-background-color: transparent;
-  -fx-background-insets: 0;
-  -fx-shape: " ";
+  -fx-background-color: -mbhd-list-background;
+  -fx-border-color: -mbhd-text -mbhd-list-background -mbhd-list-background transparent;
+  -fx-padding: 0px;
+  /* The grabber dots */
+  -fx-box-border: -mbhd-text;
+
 }

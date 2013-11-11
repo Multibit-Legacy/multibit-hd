@@ -1,13 +1,9 @@
 package org.multibit.hd.ui.javafx.controllers.welcome;
 
 import javafx.event.ActionEvent;
-import javafx.fxml.Initializable;
-import org.multibit.hd.ui.javafx.screens.TransitionAware;
-import org.multibit.hd.ui.javafx.screens.Screen;
-import org.multibit.hd.ui.javafx.screens.ScreenTransitionManager;
-
-import java.net.URL;
-import java.util.ResourceBundle;
+import org.multibit.hd.ui.javafx.controllers.MultiBitController;
+import org.multibit.hd.ui.javafx.views.Screen;
+import org.multibit.hd.ui.javafx.views.StageManager;
 
 /**
  * <p>Controller to provide the following to UI:</p>
@@ -18,21 +14,10 @@ import java.util.ResourceBundle;
  * @since 0.0.1
  *         
  */
-public class ProvideInitialSeedController implements Initializable, TransitionAware {
-
-  ScreenTransitionManager transitionManager;
-
-  @Override
-  public void initialize(URL url, ResourceBundle rb) {
-    // TODO
-  }
-
-  public void setScreenTransitionManager(ScreenTransitionManager screenTransitionManager) {
-    this.transitionManager = screenTransitionManager;
-  }
-
+public class ProvideInitialSeedController extends MultiBitController {
 
   public void onRecoverFired(ActionEvent actionEvent) {
-    transitionManager.transitionTo(Screen.MAIN_HOME);
+    StageManager.handOver(StageManager.MAIN_STAGE, Screen.MAIN_HOME);
   }
+
 }

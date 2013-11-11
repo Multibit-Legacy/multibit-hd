@@ -1,10 +1,8 @@
 package org.multibit.hd.ui.javafx.controllers.main;
 
 import javafx.application.Platform;
+import org.multibit.hd.ui.javafx.controllers.MultiBitController;
 import org.multibit.hd.ui.javafx.platform.listener.*;
-import org.multibit.hd.ui.javafx.screens.Screen;
-import org.multibit.hd.ui.javafx.screens.ScreenTransitionManager;
-import org.multibit.hd.ui.javafx.screens.TransitionAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,12 +18,11 @@ import org.slf4j.LoggerFactory;
  * @since 0.0.1
  *         
  */
-public class GenericEventController implements
+public class GenericEventController extends MultiBitController implements
   GenericOpenURIEventListener,
   GenericPreferencesEventListener,
   GenericAboutEventListener,
-  GenericQuitEventListener,
-  TransitionAware
+  GenericQuitEventListener
 {
 
   private Logger log = LoggerFactory.getLogger(GenericEventController.class);
@@ -41,12 +38,6 @@ public class GenericEventController implements
       log.debug("Performed Quit");
     }
   };
-
-  private ScreenTransitionManager transitionManager;
-
-  public void setScreenTransitionManager(ScreenTransitionManager screenTransitionManager) {
-    transitionManager = screenTransitionManager;
-  }
 
   @Override
   public void onPreferencesEvent(GenericPreferencesEvent event) {
@@ -66,8 +57,6 @@ public class GenericEventController implements
   public synchronized void onOpenURIEvent(GenericOpenURIEvent event) {
 
     log.debug("Controller received 'Open URI' event with URI='{}'", event.getURI().toASCIIString());
-
-    transitionManager.transitionTo(Screen.MAIN_HOME);
 
   }
 
