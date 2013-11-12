@@ -40,6 +40,11 @@ public enum Screen {
    */
   MAIN_CONTACTS("fxml/main/contacts.fxml"),
 
+  /**
+   * The help screen within the main stage
+   */
+  MAIN_HELP("fxml/main/help.fxml"),
+
   // End of enum
   ;
 

@@ -11,5 +11,5 @@
 <?import javafx.scene.text.*?>
 <?scenebuilder-stylesheet ../../assets/css/main.css?>
 
-<AnchorPane fx:id="detailAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" styleClass="descriptionValue" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="org.multibit.hd.ui.javafx.controllers.welcome.WelcomeController">
+<AnchorPane fx:id="detailAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1024.0" prefWidth="1280.0" styleClass="descriptionValue" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="org.multibit.hd.ui.javafx.controllers.welcome.WelcomeController">
 </AnchorPane>

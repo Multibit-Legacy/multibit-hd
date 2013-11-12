@@ -16,9 +16,6 @@ import org.multibit.hd.ui.javafx.views.StageManager;
 public class MainController extends MultiBitController  {
 
   @FXML
-  public Label contactsLabel  ;
-
-  @FXML
   public Label currentWalletLabel;
 
   @FXML
@@ -26,6 +23,9 @@ public class MainController extends MultiBitController  {
 
   @FXML
   public Label homeLabel;
+
+  @FXML
+  public Label contactsLabel  ;
 
   @FXML
   public Label helpLabel;
@@ -56,6 +56,15 @@ public class MainController extends MultiBitController  {
       }
     });
 
+    helpLabel.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+      @Override
+      public void handle(MouseEvent mouseEvent) {
+        if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
+          StageManager.MAIN_STAGE.changeScreen(Screen.MAIN_HELP);
+        }
+      }
+    });
   }
 
   @Override

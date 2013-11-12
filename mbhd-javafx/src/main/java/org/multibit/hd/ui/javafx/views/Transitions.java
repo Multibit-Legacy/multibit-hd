@@ -79,4 +79,18 @@ public class Transitions {
       new KeyFrame(LONG, new KeyValue(opacity, 0.0)));
   }
 
+  /**
+   * <p>Provides a smooth fade out using the opacity property (1.0 to 0.0)</p>
+   *
+   * @param opacity The starting opacity (less than 1.0)
+   *
+   * @return A time line
+   */
+  public static Timeline newShortFadeOut(DoubleProperty opacity) {
+
+    return new Timeline(
+      new KeyFrame(Duration.ZERO, new KeyValue(opacity, 1.0)),
+      new KeyFrame(SHORT, new KeyValue(opacity, 0.0)));
+  }
+
 }

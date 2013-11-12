@@ -143,6 +143,17 @@ public enum StageManager {
   }
 
   /**
+   *
+   * @param anchorPane The anchor pane acting as the root of the screens
+   * @return The stage manager
+   */
+  public StageManager withAnchorPane(AnchorPane anchorPane) {
+    this.anchorPane = anchorPane;
+    return this;
+  }
+
+
+  /**
    * @param locale The current locale
    *
    * @return The stage manager
@@ -151,7 +162,6 @@ public enum StageManager {
     this.locale = locale;
     return this;
   }
-
 
   /**
    * @param screen The initial screen to display
@@ -238,20 +248,12 @@ public enum StageManager {
    * @param stageManager The replacement stage manager
    * @param screen       The initial screen
    */
-  public static void handOver(StageManager stageManager, Screen screen) {
+  public void handOver(StageManager stageManager, Screen screen) {
 
     log.debug("Hand over to {}.{}", stageManager, screen);
-    for (StageManager sm : StageManager.values()) {
-      sm.hide();
-    }
-
-    stageManager.show();
+    this.hide();
     stageManager.changeScreen(screen);
+    stageManager.show();
 
-  }
-
-  public StageManager withAnchorPane(AnchorPane anchorPane) {
-    this.anchorPane = anchorPane;
-    return this;
   }
 }

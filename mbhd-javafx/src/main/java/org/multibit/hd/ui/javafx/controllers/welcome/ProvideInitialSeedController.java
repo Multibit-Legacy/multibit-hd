@@ -17,7 +17,7 @@ import org.multibit.hd.ui.javafx.views.StageManager;
 public class ProvideInitialSeedController extends MultiBitController {
 
   public void onRecoverFired(ActionEvent actionEvent) {
-    StageManager.handOver(StageManager.MAIN_STAGE, Screen.MAIN_HOME);
+    StageManager.WELCOME_STAGE.handOver(StageManager.MAIN_STAGE, Screen.MAIN_HOME);
   }
 
 }

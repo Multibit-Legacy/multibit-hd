@@ -14,6 +14,10 @@ import org.multibit.hd.ui.javafx.fonts.AwesomeIcon;
 import org.multibit.hd.ui.javafx.i18n.Languages;
 import org.multibit.hd.ui.javafx.views.Screen;
 import org.multibit.hd.ui.javafx.views.StageManager;
+import org.multibit.hd.ui.javafx.views.Stages;
+
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * <p>Controller to provide the following to UI:</p>
@@ -56,8 +60,12 @@ public class LoginController extends MultiBitController {
       @Override
       public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
 
+        Locale locale = Languages.newLocaleFromIndex((Integer) newValue);
+        ResourceBundle resourceBundle = Languages.newResourceBundle(locale);
+
         // Update all the stages to the new locale
-        StageManager.changeLocale(Languages.newLocaleFromIndex((Integer) newValue));
+        Stages.buildWelcomeStage(locale, resourceBundle);
+        Stages.buildMainStage(locale, resourceBundle);
 
       }
     });
@@ -65,7 +73,7 @@ public class LoginController extends MultiBitController {
   }
 
   public void onLoginFired(ActionEvent actionEvent) {
-    StageManager.handOver(StageManager.MAIN_STAGE, Screen.MAIN_HOME);
+    StageManager.WELCOME_STAGE.handOver(StageManager.MAIN_STAGE, Screen.MAIN_HOME);
   }
 
   public void onForgottenClicked(ActionEvent actionEvent) {

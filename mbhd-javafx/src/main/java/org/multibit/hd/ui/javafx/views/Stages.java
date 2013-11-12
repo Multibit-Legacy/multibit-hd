@@ -42,9 +42,13 @@ public class Stages {
     AnchorPane welcomeStageAnchorPane = ((WelcomeController) welcomeStageView.getController()).getDetailAnchorPane();
 
     // Build the welcome stage
+    Stage welcomeStage = new Stage();
+    welcomeStage.setHeight(600);
+    welcomeStage.setWidth(800);
+
     StageManager
       .WELCOME_STAGE
-      .withStage(new Stage())
+      .withStage(welcomeStage)
       .withSceneGroup(welcomeStageSceneGroup)
       .withAnchorPane(welcomeStageAnchorPane)
       .withScreens(EnumSet.of(
@@ -72,14 +76,19 @@ public class Stages {
     AnchorPane mainStageAnchorPane = ((MainController) mainStageView.getController()).getDetailAnchorPane();
 
     // Build the main stage
+    Stage mainStage = new Stage();
+    mainStage.setHeight(1024);
+    mainStage.setWidth(1280);
+
     StageManager
       .MAIN_STAGE
-      .withStage(new Stage())
+      .withStage(mainStage)
       .withSceneGroup(mainStageSceneGroup)
       .withAnchorPane(mainStageAnchorPane)
       .withScreens(EnumSet.of(
         Screen.MAIN_HOME,
-        Screen.MAIN_CONTACTS
+        Screen.MAIN_CONTACTS,
+        Screen.MAIN_HELP
       ))
       .withLocale(locale)
       .withCurrentScreen(Screen.MAIN_HOME)

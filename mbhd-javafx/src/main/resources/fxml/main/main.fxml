@@ -12,9 +12,9 @@
 <?scenebuilder-preview-i18n-resource ../../i18n/viewer_en.properties?>
 <?scenebuilder-stylesheet ../../assets/css/main.css?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" styleClass="titlebar" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="org.multibit.hd.ui.javafx.controllers.main.MainController">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1024.0" prefWidth="1280.0" styleClass="titlebar" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="org.multibit.hd.ui.javafx.controllers.main.MainController">
   <children>
-    <SplitPane dividerPositions="0.2606516290726817" focusTraversable="true" prefHeight="502.0" prefWidth="800.0" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="98.0">
+    <SplitPane dividerPositions="0.2605633802816901" focusTraversable="true" prefHeight="502.0" prefWidth="800.0" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="98.0">
       <items>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" styleClass="sidebar">
           <children>
@@ -32,11 +32,7 @@
             <Label fx:id="currentWalletLabel" layoutX="14.0" layoutY="140.0" text="Current" />
           </children>
         </AnchorPane>
-        <AnchorPane fx:id="detailAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-          <children>
-            <VBox prefHeight="500.0" prefWidth="587.0" styleClass="detail" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-          </children>
-        </AnchorPane>
+        <AnchorPane fx:id="detailAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
       </items>
     </SplitPane>
     <Label fx:id="balanceLabel" layoutX="15.0" layoutY="26.0" maxWidth="1.7976931348623157E308" prefWidth="438.0" styleClass="header" text="20,999,999.1234567890" />
