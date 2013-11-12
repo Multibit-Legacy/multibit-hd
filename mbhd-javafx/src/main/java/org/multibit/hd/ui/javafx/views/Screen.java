@@ -12,7 +12,7 @@ package org.multibit.hd.ui.javafx.views;
 public enum Screen {
 
   /**
-   * The main stage (ongoing interactions)
+   * The welcome stage (present during startup and major configuration)
    */
   WELCOME_STAGE("fxml/welcome/welcome.fxml"),
 
@@ -41,9 +41,19 @@ public enum Screen {
   MAIN_CONTACTS("fxml/main/contacts.fxml"),
 
   /**
+   * The settings screen within the main stage
+   */
+  MAIN_SETTINGS("fxml/main/settings.fxml"),
+
+  /**
    * The help screen within the main stage
    */
   MAIN_HELP("fxml/main/help.fxml"),
+
+  /**
+   * The wallet screen within the main stage
+   */
+  MAIN_WALLET("fxml/main/wallet.fxml"),
 
   // End of enum
   ;

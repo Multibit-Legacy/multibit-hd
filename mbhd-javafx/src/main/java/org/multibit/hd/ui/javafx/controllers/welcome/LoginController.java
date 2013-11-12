@@ -18,8 +18,6 @@ import org.multibit.hd.ui.javafx.views.Stages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Locale;
-
 /**
  * <p>Controller to provide the following to UI:</p>
  * <ul>
@@ -63,10 +61,10 @@ public class LoginController extends MultiBitController {
       @Override
       public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
 
-        Locale locale = Languages.newLocaleFromIndex((Integer) newValue);
+        Stages.getConfiguration().setLocale(Languages.newLocaleFromIndex((Integer) newValue));
 
         // Update all the stages to the new locale
-        Stages.build(locale);
+        Stages.build();
         StageManager.WELCOME_STAGE.show();
 
       }

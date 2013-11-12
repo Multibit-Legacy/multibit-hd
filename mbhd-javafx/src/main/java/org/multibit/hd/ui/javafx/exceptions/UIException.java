@@ -12,7 +12,7 @@ package org.multibit.hd.ui.javafx.exceptions;
 public class UIException extends RuntimeException {
 
   public UIException(Throwable cause) {
-    super(cause);
+    super(cause.getMessage(), cause);
   }
 
   public UIException(String message, Throwable cause) {

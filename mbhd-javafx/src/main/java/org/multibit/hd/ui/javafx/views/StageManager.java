@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.EnumSet;
-import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -46,11 +45,6 @@ public enum StageManager {
    * The group that acts as the root of the overall scene (e.g. an anchor pane with title, split pane etc)
    */
   private Group sceneGroup = new Group();
-
-  /**
-   * The current locale
-   */
-  private Locale locale = Locale.getDefault();
 
   /**
    * The stage screens (e.g. WELCOME_LOGIN, WELCOME_PROVIDE_INITIAL_SEED etc)
@@ -114,17 +108,6 @@ public enum StageManager {
     return this;
   }
 
-
-  /**
-   * @param locale The current locale
-   *
-   * @return The stage manager
-   */
-  public StageManager withLocale(Locale locale) {
-    this.locale = locale;
-    return this;
-  }
-
   /**
    * @param screen The initial screen to display
    *
@@ -142,11 +125,10 @@ public enum StageManager {
 
     log.debug("Building {}", this.name());
 
-    Preconditions.checkNotNull(locale, "'locale' must be present");
     Preconditions.checkNotNull(screens, "'screens' must be present");
     Preconditions.checkNotNull(screenViewMap, "'screenViewMap' must be present");
 
-    ResourceBundle resourceBundle = Languages.newResourceBundle(locale);
+    ResourceBundle resourceBundle = Languages.newResourceBundle(Stages.getConfiguration().getLocale());
 
     // Clear any existing views
     screenViewMap.clear();
@@ -183,7 +165,6 @@ public enum StageManager {
 
     screens = null;
     sceneGroup = null;
-    locale = null;
     screenViewMap.clear();
     currentScreen = null;
     screenChanger = null;

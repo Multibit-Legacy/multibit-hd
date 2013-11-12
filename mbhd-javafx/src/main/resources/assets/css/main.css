@@ -16,7 +16,7 @@
   -mbhd-text-dark: derive(-mbhd-text, -5%);
   -mbhd-text-darker: derive(-mbhd-text, -50%);
   -mbhd-text-light: derive(-mbhd-text, 5%);
-  -mbhd-text-lighter: derive(-mbhd-text, 50%);
+  -mbhd-text-lighter: derive(-mbhd-text, 80%);
   
   /* Overall background */
   -fx-background-image: url("../images/escheresque.png");
@@ -29,11 +29,6 @@
 
 }
 
-.header {
-  -fx-font-size: 32px;
-  -fx-text-fill: -mbhd-text;
-}
-
 /* Splitter LHS showing sections */
 .sidebar {
 
@@ -42,25 +37,13 @@
 
 }
 
-/* Splitter RHS showing details */
-.detail {
-
-  -fx-background-color: -mbhd-detail-background;
-  -fx-padding: 0px;
-}
-
-/* Splitter LHS section header  */
-.sidebarSection {
-  -fx-font-size: 14px;
-  -fx-font-weight: bold;
-  -fx--mbhd-text-fill: -mbhd-text-lighter;
-}
-
 /* Sidebar divider */
 .split-pane:horizontal > * > .split-pane-divider {
+
   -fx-border-color: transparent -mbhd-list-background transparent -mbhd-list-background;
   -fx-background-color: transparent, -mbhd-detail-background;
   -fx-background-insets: 0, 0 1 0 1;
+
 }
 
 .split-pane {
@@ -71,4 +54,24 @@
   /* The grabber dots */
   -fx-box-border: -mbhd-text;
 
+}
+
+/* Balance display */
+.balanceLHS {
+  -fx-font-size: 32px;
+  -fx-text-fill: -mbhd-text;
+  /* -fx-effect: dropshadow( one-pass-box , -mbhd-text-light , 4 , 0.0 , 1 , 1 );  */
+}
+
+.balanceRHS {
+  -fx-font-size: 24px;
+  -fx-text-fill: -mbhd-text-lighter;
+  /* -fx-effect: dropshadow( one-pass-box , -mbhd-text-light , 4 , 0.0 , 1 , 1 ); */
+}
+
+/* Splitter RHS anchor pane */
+#detailAnchorPane {
+
+  -fx-background-color: -mbhd-detail-background;
+  -fx-padding: 0px;
 }

@@ -1,21 +1,37 @@
 package org.multibit.hd.ui.javafx;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.google.common.base.Preconditions;
 import javafx.application.Application;
 import javafx.stage.Stage;
+import org.multibit.hd.ui.javafx.config.Configuration;
 import org.multibit.hd.ui.javafx.controllers.main.GenericEventController;
+import org.multibit.hd.ui.javafx.exceptions.UIException;
+import org.multibit.hd.ui.javafx.logging.LoggingFactory;
 import org.multibit.hd.ui.javafx.platform.GenericApplication;
 import org.multibit.hd.ui.javafx.platform.GenericApplicationFactory;
 import org.multibit.hd.ui.javafx.platform.GenericApplicationSpecification;
+import org.multibit.hd.ui.javafx.utils.Streams;
 import org.multibit.hd.ui.javafx.views.StageManager;
 import org.multibit.hd.ui.javafx.views.Stages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Locale;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class MultiBitHD extends Application {
 
   private static final Logger log = LoggerFactory.getLogger(MultiBitHD.class);
+
+  /**
+   * The location of the configuration file
+   */
+  private static final String CONFIGURATION_PATH = "mbhd.yml";
+
+  // TODO Implement this
   private static GenericApplication genericApplication = null;
 
   /**
@@ -24,6 +40,18 @@ public class MultiBitHD extends Application {
    * @param args None specified
    */
   public static void main(final String[] args) {
+
+    // Start the logging factory
+    LoggingFactory.bootstrap();
+
+    // Provide a default uncaught exception handler
+    Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+      @Override
+      public void uncaughtException(Thread t, Throwable e) {
+        log.error(e.getMessage(), e);
+      }
+    });
+
     launch(args);
   }
 
@@ -37,21 +65,41 @@ public class MultiBitHD extends Application {
   @Override
   public void start(Stage primaryStage) throws Exception {
 
-    // Load preferences
-    loadPreferences();
+    // Load configuration
+    loadConfiguration();
 
-    // TODO Get the preferred locale
-    Locale preferredLocale = Locale.UK;
-
-    // TODO Get the initial screen
+    // Configure logging
+    new LoggingFactory(Stages.getConfiguration().getLogging(), "MultiBit HD").configure();
 
     // Build the stages
-    Stages.build(preferredLocale);
-
-    primaryStage.show();
+    Stages.build();
 
     // Always start with the welcome stage
     StageManager.WELCOME_STAGE.show();
+
+  }
+
+  /**
+   * <p>Load the configuration from the file system</p>
+   */
+  private void loadConfiguration() {
+
+    // Read the external configuration
+    ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+    InputStream fis = null;
+    Configuration configuration;
+    try {
+      fis = new FileInputStream(CONFIGURATION_PATH);
+      configuration = mapper.readValue(fis, Configuration.class);
+    } catch (IOException e) {
+      throw new UIException(e);
+    } finally {
+      Streams.closeQuietly(fis);
+    }
+
+    Preconditions.checkNotNull(configuration, "Configuration must be present");
+
+    Stages.setConfiguration(configuration);
 
   }
 
@@ -89,9 +137,5 @@ public class MultiBitHD extends Application {
     genericApplication = GenericApplicationFactory.INSTANCE.buildGenericApplication(specification);
 
 
-  }
-
-  private void loadPreferences() {
-    // TODO
   }
 }

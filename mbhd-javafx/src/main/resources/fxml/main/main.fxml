@@ -14,27 +14,33 @@
 
 <AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1024.0" prefWidth="1280.0" styleClass="titlebar" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="org.multibit.hd.ui.javafx.controllers.main.MainController">
   <children>
-    <SplitPane dividerPositions="0.2605633802816901" focusTraversable="true" prefHeight="502.0" prefWidth="800.0" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="98.0">
+    <SplitPane dividerPositions="0.15023474178403756" focusTraversable="true" prefHeight="502.0" prefWidth="800.0" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="98.0">
       <items>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" styleClass="sidebar">
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="924.0" prefWidth="242.0" styleClass="sidebar">
           <children>
-            <VBox id="VBox" alignment="CENTER" layoutX="14.0" layoutY="14.0" spacing="10.0">
+            <VBox id="VBox" alignment="TOP_LEFT" prefHeight="924.0" prefWidth="189.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <children>
                 <Label fx:id="homeLabel" prefWidth="103.0" text="Home" />
                 <Label fx:id="contactsLabel" prefWidth="103.0" text="Contacts" />
+                <Label fx:id="settingsLabel" prefWidth="103.0" text="Settings" />
                 <Label fx:id="helpLabel" prefWidth="103.0" text="Help" />
+                <Separator prefWidth="200.0" />
+                <Label fx:id="transactionsLabel" prefWidth="103.0" text="Wallet" />
               </children>
               <padding>
-                <Insets />
+                <Insets left="10.0" top="10.0" />
               </padding>
             </VBox>
-            <Label layoutX="14.0" layoutY="86.0" prefHeight="47.0" prefWidth="170.0" styleClass="sidebarSection" text="Wallets" />
-            <Label fx:id="currentWalletLabel" layoutX="14.0" layoutY="140.0" text="Current" />
           </children>
         </AnchorPane>
-        <AnchorPane fx:id="detailAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
+        <AnchorPane fx:id="detailAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="924.0" prefWidth="1064.0" />
       </items>
     </SplitPane>
-    <Label fx:id="balanceLabel" layoutX="15.0" layoutY="26.0" maxWidth="1.7976931348623157E308" prefWidth="438.0" styleClass="header" text="20,999,999.1234567890" />
+    <HBox id="HBox" fx:id="balanceHBox" alignment="TOP_LEFT" layoutX="15.0" layoutY="26.0" spacing="5.0">
+      <children>
+        <Label id="balanceLabel" fx:id="balanceLHSLabel" alignment="BOTTOM_LEFT" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefHeight="38.0" prefWidth="-1.0" styleClass="balanceLHS" text="20,999,999.12" wrapText="true" />
+        <Label id="balanceLabel" fx:id="balanceRHSLabel" alignment="BOTTOM_LEFT" maxWidth="1.7976931348623157E308" minHeight="24.0" prefHeight="38.0" prefWidth="-1.0" styleClass="balanceRHS" text="345678" wrapText="true" />
+      </children>
+    </HBox>
   </children>
 </AnchorPane>

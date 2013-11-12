@@ -1,8 +1,6 @@
 package org.multibit.hd.ui.javafx.controllers;
 
 import javafx.fxml.Initializable;
-import org.multibit.hd.ui.javafx.views.Screen;
-import org.multibit.hd.ui.javafx.views.StageManager;
 import org.multibit.hd.ui.javafx.views.View;
 import org.multibit.hd.ui.javafx.views.ViewAware;
 
@@ -62,20 +60,14 @@ public abstract class MultiBitController implements Initializable, ViewAware {
 
   }
 
+  @Override
   public View getView() {
     return view;
   }
 
+  @Override
   public void setView(View view) {
     this.view = view;
-  }
-
-  private void changeStage(StageManager mainStage, Screen mainHome) {
-
-  }
-
-  private void changeView(Screen screen) {
-    //To change body of created methods use File | Settings | File Templates.
   }
 
 }

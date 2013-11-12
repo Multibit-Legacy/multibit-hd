@@ -1,0 +1,47 @@
+# MultiBit HD application configuration
+locale: en_GB
+
+# Provide logging
+logging:
+
+  level: WARN
+
+  # Logger-specific levels
+  loggers:
+
+    # Set specific levels for each package
+    # Bitcoinj at DEBUG can provide deep insight, but a *lot* of log messages
+    - "com.google.bitcoinj:WARN"
+    - "org.multibit:DEBUG"
+
+  # Settings for logging to stdout
+  console:
+
+    # If true, write log statements to stdout
+    enabled: true
+
+    # Do not display log statements below this threshold to stdout
+    threshold: ALL
+
+  # Settings for logging to a file
+  file:
+
+    # If true, write log statements to a file
+    enabled: false
+
+    # Do not write log statements below this threshold to the file
+    threshold: ALL
+
+    # The file to which current statements will be logged
+    currentLogFilename: log/multibit.log
+
+    # When the log file rotates, the archived log will be renamed to this and gzipped. The
+    # %d is replaced with the previous day (yyyy-MM-dd). Custom rolling windows can be created
+    # by passing a SimpleDateFormat-compatible format as an argument: "%d{yyyy-MM-dd-hh}"
+    archivedLogFilenamePattern: log/multibit-%d.log.gz
+
+    # The number of archived files to keep
+    archivedFileCount: 3
+
+    # The timezone used to format dates. HINT: USE THE DEFAULT, UTC.
+    timeZone: UTC

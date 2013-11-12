@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import javafx.scene.Group;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import org.multibit.hd.ui.javafx.config.Configuration;
 import org.multibit.hd.ui.javafx.controllers.main.MainController;
 import org.multibit.hd.ui.javafx.controllers.welcome.WelcomeController;
 import org.multibit.hd.ui.javafx.i18n.Languages;
@@ -11,13 +12,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.EnumSet;
-import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
  * <p>Factory to provide the following to UI startup:</p>
  * <ul>
  * <li>Stage builders</li>
+ * <li>Global resource bundle</li>
+ * <li>Global configuration</li>
  * </ul>
  *
  * @since 0.0.1
@@ -28,7 +30,7 @@ public class Stages {
   private static final Logger log = LoggerFactory.getLogger(Stages.class);
 
   private static ResourceBundle resourceBundle;
-  private static Locale locale;
+  private static Configuration configuration;
 
   /**
    * Utilities have private constructor
@@ -37,25 +39,29 @@ public class Stages {
   }
 
   /**
-   * @return The current locale
+   * @param configuration The runtime configuration
    */
-  public static Locale currentLocale() {
-    return locale;
+  public static void setConfiguration(Configuration configuration) {
+    Stages.configuration = configuration;
   }
 
   /**
-   * <p>Build all the stages using the given locale</p>
-   *
-   * @param locale The preferred locale
+   * @return The runtime configuration
    */
-  public static void build(Locale locale) {
+  public static Configuration getConfiguration() {
+    return configuration;
+  }
 
-    Preconditions.checkNotNull(locale, "'locale' must be present");
+  /**
+   * <p>Build all the stages</p>
+   */
+  public static void build() {
 
-    log.debug("Locale change to {}", locale);
+    Preconditions.checkNotNull(configuration, "'confiugration' must be present");
 
-    Stages.locale = locale;
-    Stages.resourceBundle = Languages.newResourceBundle(locale);
+    log.debug("Configuration change: {}", configuration);
+
+    Stages.resourceBundle = Languages.newResourceBundle(configuration.getLocale());
 
     Preconditions.checkNotNull(resourceBundle, "'resourceBundle' must be present");
 
@@ -93,7 +99,6 @@ public class Stages {
         Screen.WELCOME_LOGIN,
         Screen.WELCOME_PROVIDE_INITIAL_SEED
       ))
-      .withLocale(locale)
       .withCurrentScreen(Screen.WELCOME_LOGIN)
       .build();
   }
@@ -126,9 +131,10 @@ public class Stages {
       .withScreens(EnumSet.of(
         Screen.MAIN_HOME,
         Screen.MAIN_CONTACTS,
-        Screen.MAIN_HELP
+        Screen.MAIN_SETTINGS,
+        Screen.MAIN_HELP,
+        Screen.MAIN_WALLET
       ))
-      .withLocale(locale)
       .withCurrentScreen(Screen.MAIN_HOME)
       .build();
   }
