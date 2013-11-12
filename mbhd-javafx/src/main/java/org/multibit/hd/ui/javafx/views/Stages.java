@@ -1,10 +1,14 @@
 package org.multibit.hd.ui.javafx.views;
 
+import com.google.common.base.Preconditions;
 import javafx.scene.Group;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.multibit.hd.ui.javafx.controllers.main.MainController;
 import org.multibit.hd.ui.javafx.controllers.welcome.WelcomeController;
+import org.multibit.hd.ui.javafx.i18n.Languages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.EnumSet;
 import java.util.Locale;
@@ -21,6 +25,11 @@ import java.util.ResourceBundle;
  */
 public class Stages {
 
+  private static final Logger log = LoggerFactory.getLogger(Stages.class);
+
+  private static ResourceBundle resourceBundle;
+  private static Locale locale;
+
   /**
    * Utilities have private constructor
    */
@@ -28,12 +37,40 @@ public class Stages {
   }
 
   /**
-   * <p>Build the welcome stage</p>
-   *
-   * @param locale         The locale
-   * @param resourceBundle The resource bundle
+   * @return The current locale
    */
-  public static void buildWelcomeStage(Locale locale, ResourceBundle resourceBundle) {
+  public static Locale currentLocale() {
+    return locale;
+  }
+
+  /**
+   * <p>Build all the stages using the given locale</p>
+   *
+   * @param locale The preferred locale
+   */
+  public static void build(Locale locale) {
+
+    Preconditions.checkNotNull(locale, "'locale' must be present");
+
+    log.debug("Locale change to {}", locale);
+
+    Stages.locale = locale;
+    Stages.resourceBundle = Languages.newResourceBundle(locale);
+
+    Preconditions.checkNotNull(resourceBundle, "'resourceBundle' must be present");
+
+    Stages.buildWelcomeStage();
+    Stages.buildMainStage();
+
+  }
+
+  /**
+   * <p>Build the welcome stage</p>
+   */
+  private static void buildWelcomeStage() {
+
+    log.debug("Building welcome stage");
+
     Group welcomeStageSceneGroup = new Group();
     View welcomeStageView = Views.loadView(Screen.WELCOME_STAGE, resourceBundle);
     welcomeStageSceneGroup.getChildren().addAll(welcomeStageView.getScreenParentNode());
@@ -48,6 +85,7 @@ public class Stages {
 
     StageManager
       .WELCOME_STAGE
+      .reset()
       .withStage(welcomeStage)
       .withSceneGroup(welcomeStageSceneGroup)
       .withAnchorPane(welcomeStageAnchorPane)
@@ -62,11 +100,10 @@ public class Stages {
 
   /**
    * <p>Build the main stage</p>
-   *
-   * @param locale         The locale
-   * @param resourceBundle The resource bundle
    */
-  public static void buildMainStage(Locale locale, ResourceBundle resourceBundle) {
+  private static void buildMainStage() {
+
+    log.debug("Building main stage");
 
     Group mainStageSceneGroup = new Group();
     View mainStageView = Views.loadView(Screen.MAIN_STAGE, resourceBundle);
@@ -82,6 +119,7 @@ public class Stages {
 
     StageManager
       .MAIN_STAGE
+      .reset()
       .withStage(mainStage)
       .withSceneGroup(mainStageSceneGroup)
       .withAnchorPane(mainStageAnchorPane)

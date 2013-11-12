@@ -3,7 +3,6 @@ package org.multibit.hd.ui.javafx;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import org.multibit.hd.ui.javafx.controllers.main.GenericEventController;
-import org.multibit.hd.ui.javafx.i18n.Languages;
 import org.multibit.hd.ui.javafx.platform.GenericApplication;
 import org.multibit.hd.ui.javafx.platform.GenericApplicationFactory;
 import org.multibit.hd.ui.javafx.platform.GenericApplicationSpecification;
@@ -13,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Locale;
-import java.util.ResourceBundle;
 
 public class MultiBitHD extends Application {
 
@@ -37,7 +35,7 @@ public class MultiBitHD extends Application {
   }
 
   @Override
-  public void start(Stage welcomeStage) throws Exception {
+  public void start(Stage primaryStage) throws Exception {
 
     // Load preferences
     loadPreferences();
@@ -45,13 +43,12 @@ public class MultiBitHD extends Application {
     // TODO Get the preferred locale
     Locale preferredLocale = Locale.UK;
 
-    ResourceBundle resourceBundle = Languages.newResourceBundle(preferredLocale);
-
     // TODO Get the initial screen
 
     // Build the stages
-    Stages.buildWelcomeStage(preferredLocale, resourceBundle);
-    Stages.buildMainStage(preferredLocale, resourceBundle);
+    Stages.build(preferredLocale);
+
+    primaryStage.show();
 
     // Always start with the welcome stage
     StageManager.WELCOME_STAGE.show();

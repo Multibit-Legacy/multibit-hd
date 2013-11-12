@@ -15,8 +15,8 @@
 
 <AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" styleClass="titlebar" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="org.multibit.hd.ui.javafx.controllers.main.HomeController">
   <children>
-    <Button fx:id="sendButton" layoutX="147.0" layoutY="205.0" mnemonicParsing="false" prefHeight="64.0" prefWidth="210.0" text="Send" />
-    <Button fx:id="receiveButton" layoutX="390.0" layoutY="205.0" mnemonicParsing="false" prefHeight="64.0" prefWidth="210.0" text="Receive" />
+    <Button fx:id="sendButton" layoutX="147.0" layoutY="205.0" mnemonicParsing="false" prefHeight="64.0" prefWidth="210.0" text="%sendBitcoinAction.text" />
+    <Button fx:id="receiveButton" layoutX="390.0" layoutY="205.0" mnemonicParsing="false" prefHeight="64.0" prefWidth="210.0" text="%receiveBitcoinAction.textShort" />
     <ImageView fx:id="receivingQRImage" fitHeight="150.0" fitWidth="200.0" layoutX="525.0" layoutY="29.0" pickOnBounds="true" preserveRatio="true">
       <image>
         <Image url="@../../assets/images/donate0.01.png" />
@@ -24,8 +24,7 @@
     </ImageView>
     <Label fx:id="receivingAddress" layoutX="64.0" layoutY="57.0" prefWidth="394.0" text="1abcabcabcabcabcabcabcabcabcbacbacbacbc" />
     <Label id="receivingAddress" fx:id="exchangeRateLabel" layoutX="64.0" layoutY="307.0" prefWidth="394.0" text="1 BTC ~ USD 342 (Bitstamp)" />
-    <Button id="sendButton" fx:id="copyButton" layoutX="64.0" layoutY="88.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="97.0" text="Copy" />
-    <Button id="sendButton" fx:id="shareButton" layoutX="195.0" layoutY="88.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="97.0" text="Share" />
-    <Button id="sendButton" fx:id="refreshButton" layoutX="330.0" layoutY="88.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="97.0" text="Refresh" />
+    <Button id="sendButton" fx:id="copyButton" layoutX="64.0" layoutY="88.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="97.0" text="copyQRCodeTextAction.text" />
+    <Button id="sendButton" fx:id="shareButton" layoutX="195.0" layoutY="88.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="97.0" text="* Share *" />
   </children>
 </AnchorPane>

@@ -12,9 +12,6 @@ import org.multibit.hd.ui.javafx.fonts.AwesomeIcon;
 public class HomeController extends MultiBitController  {
 
   @FXML
-  public Label helpLabel;
-
-  @FXML
   public Button sendButton  ;
 
   @FXML
@@ -35,9 +32,6 @@ public class HomeController extends MultiBitController  {
   @FXML
   public Button shareButton;
 
-  @FXML
-  public Button refreshButton;
-
   @Override
   public void initClickEvents() {
 
@@ -48,7 +42,6 @@ public class HomeController extends MultiBitController  {
 
     AwesomeDecorator.applyIcon(copyButton, AwesomeIcon.COPY, ContentDisplay.LEFT);
     AwesomeDecorator.applyIcon(shareButton, AwesomeIcon.SHARE, ContentDisplay.LEFT);
-    AwesomeDecorator.applyIcon(refreshButton, AwesomeIcon.REFRESH, ContentDisplay.LEFT);
 
     AwesomeDecorator.applyIcon(sendButton, AwesomeIcon.ARROW_UP, ContentDisplay.LEFT);
     AwesomeDecorator.applyIcon(receiveButton, AwesomeIcon.ARROW_DOWN, ContentDisplay.LEFT);

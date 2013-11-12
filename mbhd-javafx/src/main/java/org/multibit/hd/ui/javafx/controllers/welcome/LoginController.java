@@ -15,9 +15,10 @@ import org.multibit.hd.ui.javafx.i18n.Languages;
 import org.multibit.hd.ui.javafx.views.Screen;
 import org.multibit.hd.ui.javafx.views.StageManager;
 import org.multibit.hd.ui.javafx.views.Stages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Locale;
-import java.util.ResourceBundle;
 
 /**
  * <p>Controller to provide the following to UI:</p>
@@ -30,6 +31,8 @@ import java.util.ResourceBundle;
  *         
  */
 public class LoginController extends MultiBitController {
+
+  private static final Logger log = LoggerFactory.getLogger(LoginController.class);
 
   @FXML
   private Button loginButton;
@@ -61,11 +64,10 @@ public class LoginController extends MultiBitController {
       public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
 
         Locale locale = Languages.newLocaleFromIndex((Integer) newValue);
-        ResourceBundle resourceBundle = Languages.newResourceBundle(locale);
 
         // Update all the stages to the new locale
-        Stages.buildWelcomeStage(locale, resourceBundle);
-        Stages.buildMainStage(locale, resourceBundle);
+        Stages.build(locale);
+        StageManager.WELCOME_STAGE.show();
 
       }
     });

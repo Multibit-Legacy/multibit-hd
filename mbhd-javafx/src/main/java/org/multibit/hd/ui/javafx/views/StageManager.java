@@ -34,27 +34,18 @@ public enum StageManager {
   ;
 
   /**
-   * Shared across all stage managers
-   */
-  private static ResourceBundle resourceBundle;
-
-  /**
    * Provide logging for this class
    */
   private static final Logger log = LoggerFactory.getLogger(StageManager.class);
 
   private Stage stage;
+
   private EnumSet<Screen> screens;
 
   /**
    * The group that acts as the root of the overall scene (e.g. an anchor pane with title, split pane etc)
    */
   private Group sceneGroup = new Group();
-
-  /**
-   * An optional group that acts as the root of stage screens (e.g. a split pane from sceneGroup)
-   */
-  private Group screenGroup = sceneGroup;
 
   /**
    * The current locale
@@ -82,30 +73,14 @@ public enum StageManager {
   private AnchorPane anchorPane;
 
   /**
-   * @param locale The locale to change to (all stage managers will update)
+   * @param latchedStage If the stage is already set this will be ignored to ensure a smooth language transition
+   *
+   * @return The stage manager
    */
-  public static synchronized void changeLocale(Locale locale) {
+  public StageManager withStage(Stage latchedStage) {
+    Preconditions.checkState(this.stage == null, "Cannot set a new stage since locale change will look awkward");
 
-    log.debug("Changing locale to {}", locale);
-
-    for (StageManager stageManager : StageManager.values()) {
-
-      stageManager
-        .withLocale(locale)
-        .build();
-
-      stageManager.getStage().setTitle(resourceBundle.getString("multiBitFrame.title"));
-    }
-
-
-  }
-
-  public Stage getStage() {
-    return stage;
-  }
-
-  public StageManager withStage(Stage stage) {
-    this.stage = stage;
+    this.stage = latchedStage;
     return this;
   }
 
@@ -120,31 +95,18 @@ public enum StageManager {
   }
 
   /**
-   * @param sceneGroup  The group that acts as the root of the overall scene
-   * @param screenGroup An optional group that acts as the root of stage screens (e.g. a split pane)
-   *
-   * @return The stage manager
-   */
-  public StageManager withSceneGroup(Group sceneGroup, Group screenGroup) {
-    this.sceneGroup = sceneGroup;
-    this.screenGroup = screenGroup;
-    return this;
-  }
-
-  /**
    * @param sceneGroup The group that acts as the root of the overall scene
    *
    * @return The stage manager
    */
   public StageManager withSceneGroup(Group sceneGroup) {
     this.sceneGroup = sceneGroup;
-    this.screenGroup = sceneGroup;
     return this;
   }
 
   /**
-   *
    * @param anchorPane The anchor pane acting as the root of the screens
+   *
    * @return The stage manager
    */
   public StageManager withAnchorPane(AnchorPane anchorPane) {
@@ -184,7 +146,7 @@ public enum StageManager {
     Preconditions.checkNotNull(screens, "'screens' must be present");
     Preconditions.checkNotNull(screenViewMap, "'screenViewMap' must be present");
 
-    resourceBundle = Languages.newResourceBundle(locale);
+    ResourceBundle resourceBundle = Languages.newResourceBundle(locale);
 
     // Clear any existing views
     screenViewMap.clear();
@@ -195,7 +157,7 @@ public enum StageManager {
       screenViewMap.put(screen, view);
     }
 
-    Preconditions.checkState(screenViewMap.containsKey(currentScreen),"Screen view map does not contain "+currentScreen);
+    Preconditions.checkState(screenViewMap.containsKey(currentScreen), "Screen view map does not contain " + currentScreen);
 
     screenChanger = new ScreenChangingStackPane(
       stage,
@@ -209,8 +171,25 @@ public enum StageManager {
 
     stage.setScene(scene);
 
-
     changeScreen(currentScreen);
+  }
+
+  /**
+   * <p>Reset the stage in preparation for a language change</p>
+   *
+   * @return The stage manager
+   */
+  public synchronized StageManager reset() {
+
+    screens = null;
+    sceneGroup = null;
+    locale = null;
+    screenViewMap.clear();
+    currentScreen = null;
+    screenChanger = null;
+    anchorPane = null;
+
+    return this;
   }
 
   /**
@@ -254,6 +233,5 @@ public enum StageManager {
     this.hide();
     stageManager.changeScreen(screen);
     stageManager.show();
-
   }
 }
