@@ -94,6 +94,10 @@ public class AwesomeDecorator {
     labeled.setContentDisplay(contentDisplay);
   }
 
+  public static void removeIcon(Labeled labeled) {
+    labeled.setGraphic(null);
+  }
+
   public static void applyIcon(MenuItem menuItem, AwesomeIcon icon) {
     applyIcon(menuItem, icon, DEFAULT_FONT_SIZE, DEFAULT_ICON_SIZE);
   }
@@ -109,6 +113,10 @@ public class AwesomeDecorator {
     menuItem.setGraphic(label);
   }
 
+  public static void removeIcon(MenuItem menuItem) {
+    menuItem.setGraphic(null);
+  }
+
   public static void applyIcon(TreeItem treeItem, AwesomeIcon icon) {
     applyIcon(treeItem, icon, DEFAULT_ICON_SIZE);
   }
@@ -117,4 +125,9 @@ public class AwesomeDecorator {
     Label label = createIconLabel(icon, iconSize);
     treeItem.setGraphic(label);
   }
+
+  public static void removeIcon(TreeItem treeItem) {
+    treeItem.setGraphic(null);
+  }
+
 }

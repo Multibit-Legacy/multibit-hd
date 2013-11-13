@@ -11,6 +11,7 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import java.lang.management.ManagementFactory;
+import java.util.Map;
 import java.util.TimeZone;
 
 /**
@@ -112,17 +113,9 @@ public class LoggingFactory {
 
     root.setLevel(config.getLevel());
 
-    // Decode the array (effectively a map)
-    String[] loggers = config.getLoggers();
-    if (loggers != null) {
-      for (String logger : loggers) {
-
-        String[] tokens = logger.split(":");
-        String key = tokens[0];
-        Level level = Level.valueOf(tokens[1]);
-
-        ((Logger) LoggerFactory.getLogger(key)).setLevel(level);
-      }
+    // Decode the packages and levels
+    for (Map.Entry<String, Level> entry : config.getLoggers().entrySet()) {
+      ((Logger) LoggerFactory.getLogger(entry.getKey())).setLevel(entry.getValue());
     }
 
     return root;

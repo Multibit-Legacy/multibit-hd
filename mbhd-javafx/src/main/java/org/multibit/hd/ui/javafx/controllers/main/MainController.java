@@ -46,6 +46,8 @@ public class MainController extends MultiBitController {
   @FXML
   public Label walletLabel;
 
+  @FXML
+  public Label balanceRHSSymbolLabel;
 
   @Override
   public void initClickEvents() {
@@ -65,7 +67,29 @@ public class MainController extends MultiBitController {
       @Override
       public void handle(MouseEvent mouseEvent) {
         if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-          StageManager.MAIN_STAGE.changeScreen(Screen.MAIN_CONTACTS);
+
+          Configuration configuration = Stages.getConfiguration();
+
+          BitcoinSymbol symbol = configuration.getBitcoinSymbol();
+
+          // Get the next ordinal
+          int ordinal = symbol.ordinal() + 1;
+          if (ordinal == BitcoinSymbol.values().length) {
+            ordinal = 0;
+          }
+          // Toggle the placement
+          if (ordinal == 0) {
+            configuration.getI18NConfiguration().setCurrencySymbolPrefixed(
+              !configuration.getI18NConfiguration().isCurrencySymbolPrefixed()
+            );
+          }
+
+          BitcoinSymbol[] symbols = BitcoinSymbol.class.getEnumConstants();
+          configuration.setBitcoinSymbol(symbols[ordinal]);
+
+          // Update all the stages to the new locale
+          updateBalance(new BigDecimal("20999999.12345678"));
+
         }
       }
     });
@@ -78,9 +102,9 @@ public class MainController extends MultiBitController {
 
           Configuration configuration = Stages.getConfiguration();
           if (configuration.getLocale().equals(Locale.UK)) {
-            configuration.setLocale(new Locale("RU"));
+            configuration.getI18NConfiguration().setLocale(new Locale("RU"));
           } else {
-            configuration.setLocale(Locale.UK);
+            configuration.getI18NConfiguration().setLocale(Locale.UK);
           }
           // Update all the stages to the new locale
           Stages.build();
@@ -137,19 +161,33 @@ public class MainController extends MultiBitController {
 
     String[] balance = Formats.formatBitcoinBalance(amount);
 
-    if (configuration.isCurrencySymbolPrefixed()) {
+    if (configuration.getI18NConfiguration().isCurrencySymbolPrefixed()) {
 
-      if (BitcoinSymbol.FONT_AWESOME_ICON.equals(configuration.getBitcoinSymbol())) {
+      // Place currency symbol before the number
+      if (BitcoinSymbol.ICON.equals(configuration.getBitcoinSymbol())) {
+        // Add icon to LHS, remove from elsewhere
         AwesomeDecorator.applyIcon(balanceLHSLabel, AwesomeIcon.BITCOIN, ContentDisplay.LEFT, "32px");
+        AwesomeDecorator.removeIcon(balanceRHSSymbolLabel);
+        balanceRHSSymbolLabel.setText("");
       } else {
-        balance[0] = configuration.getBitcoinSymbol().getSymbol() + balance[0];
+        // Add symbol to LHS, remove from elsewhere
+        balance[0] = configuration.getBitcoinSymbol().getSymbol() + " " + balance[0];
+        AwesomeDecorator.removeIcon(balanceLHSLabel);
       }
 
     } else {
-      if (BitcoinSymbol.FONT_AWESOME_ICON.equals(configuration.getBitcoinSymbol())) {
-        AwesomeDecorator.applyIcon(balanceRHSLabel, AwesomeIcon.BITCOIN, ContentDisplay.RIGHT, "32px");
+
+      // Place currency symbol after the number
+      if (BitcoinSymbol.ICON.equals(configuration.getBitcoinSymbol())) {
+        // Add icon to RHS, remove from elsewhere
+        AwesomeDecorator.applyIcon(balanceRHSSymbolLabel, AwesomeIcon.BITCOIN, ContentDisplay.LEFT, "32px");
+        AwesomeDecorator.removeIcon(balanceLHSLabel);
+        balanceRHSSymbolLabel.setText("");
       } else {
-        balance[1] = configuration.getBitcoinSymbol().getSymbol() + balance[1];
+        // Add symbol to RHS, remove from elsewhere
+        balanceRHSSymbolLabel.setText(configuration.getBitcoinSymbol().getSymbol());
+        AwesomeDecorator.removeIcon(balanceLHSLabel);
+        AwesomeDecorator.removeIcon(balanceRHSSymbolLabel);
       }
     }
 

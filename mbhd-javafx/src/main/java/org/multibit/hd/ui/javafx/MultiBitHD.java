@@ -1,26 +1,28 @@
 package org.multibit.hd.ui.javafx;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.base.Preconditions;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import org.multibit.hd.ui.javafx.config.Configuration;
+import org.multibit.hd.ui.javafx.config.ConfigurationAdapter;
 import org.multibit.hd.ui.javafx.controllers.main.GenericEventController;
 import org.multibit.hd.ui.javafx.exceptions.UIException;
 import org.multibit.hd.ui.javafx.logging.LoggingFactory;
 import org.multibit.hd.ui.javafx.platform.GenericApplication;
 import org.multibit.hd.ui.javafx.platform.GenericApplicationFactory;
 import org.multibit.hd.ui.javafx.platform.GenericApplicationSpecification;
+import org.multibit.hd.ui.javafx.utils.MultiBitFiles;
 import org.multibit.hd.ui.javafx.utils.Streams;
 import org.multibit.hd.ui.javafx.views.StageManager;
 import org.multibit.hd.ui.javafx.views.Stages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Properties;
 
 public class MultiBitHD extends Application {
 
@@ -80,17 +82,26 @@ public class MultiBitHD extends Application {
   }
 
   /**
-   * <p>Load the configuration from the file system</p>
+   * <p>Load the configuration from the application data directory</p>
    */
   private void loadConfiguration() {
 
     // Read the external configuration
-    ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
     InputStream fis = null;
     Configuration configuration;
     try {
-      fis = new FileInputStream(CONFIGURATION_PATH);
-      configuration = mapper.readValue(fis, Configuration.class);
+      Properties properties = new Properties();
+
+      File configurationFile = MultiBitFiles.getConfigurationFile();
+      if (configurationFile.exists()) {
+        fis = new FileInputStream(configurationFile);
+        properties.load(fis);
+      } else {
+        log.warn("Configuration file is missing. Using defaults.");
+      }
+
+      configuration = new ConfigurationAdapter(properties).adapt();
+
     } catch (IOException e) {
       throw new UIException(e);
     } finally {

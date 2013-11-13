@@ -2,6 +2,8 @@ package org.multibit.hd.ui.javafx.i18n;
 
 import org.multibit.hd.ui.javafx.fonts.AwesomeIcon;
 
+import java.math.BigDecimal;
+
 /**
  * <p>Enum to provide the following to controllers:</p>
  * <ul>
@@ -13,21 +15,24 @@ import org.multibit.hd.ui.javafx.fonts.AwesomeIcon;
  */
 public enum BitcoinSymbol {
 
-  FONT_AWESOME_ICON(AwesomeIcon.BITCOIN.getChar().toString()),
-  ECOGEX("\u0243"),
-  BTC("BTC"),
-  XBT("XBT"),
-  MBTC("mBTC"),
-  UBTC("\u00B5BTC"),
-  SATOSHI("s"),
+  ICON(AwesomeIcon.BITCOIN.getChar().toString(),BigDecimal.ONE),
+  BTC("BTC",BigDecimal.ONE),
+  MBTC("mBTC",new BigDecimal(1_000)),
+  UBTC("\u00B5BTC",new BigDecimal(1_000_000)),
+  XBT("XBT",BigDecimal.ONE),
+  MXBT("mXBT",new BigDecimal(1_000)),
+  UXBT("\u00B5XBT",new BigDecimal(1_000_000)),
+  SATOSHI("satoshi",new BigDecimal(100_000_000)),
 
   // End of enum
   ;
 
   private final String symbol;
+  private final BigDecimal multiplier;
 
-  BitcoinSymbol(String symbol) {
+  BitcoinSymbol(String symbol, BigDecimal multiplier) {
     this.symbol = symbol;
+    this.multiplier = multiplier;
   }
 
   /**
@@ -35,5 +40,12 @@ public enum BitcoinSymbol {
    */
   public String getSymbol() {
     return symbol;
+  }
+
+  /**
+   * @return The multiplier to use on plain amounts for this symbol to be accurate
+   */
+  public BigDecimal multiplier() {
+    return multiplier;
   }
 }

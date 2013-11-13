@@ -61,7 +61,7 @@ public class LoginController extends MultiBitController {
       @Override
       public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
 
-        Stages.getConfiguration().setLocale(Languages.newLocaleFromIndex((Integer) newValue));
+        Stages.getConfiguration().getI18NConfiguration().setLocale(Languages.newLocaleFromIndex((Integer) newValue));
 
         // Update all the stages to the new locale
         Stages.build();

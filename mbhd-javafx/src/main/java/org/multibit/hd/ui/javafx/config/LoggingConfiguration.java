@@ -1,11 +1,10 @@
 package org.multibit.hd.ui.javafx.config;
 
 import ch.qos.logback.classic.Level;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.common.collect.Maps;
 
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 /**
@@ -23,19 +22,14 @@ public class LoggingConfiguration {
 
   static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
-  @JsonProperty
   private Level level = Level.INFO;
 
-  @JsonProperty
-  private String[] loggers;
+  private Map<String, Level> loggers = Maps.newHashMap();
 
-  @JsonProperty
   private ConsoleConfiguration console = new ConsoleConfiguration();
 
-  @JsonProperty
   private FileConfiguration file = new FileConfiguration();
 
-  @JsonProperty
   private SyslogConfiguration syslog = new SyslogConfiguration();
 
   public Level getLevel() {
@@ -46,12 +40,11 @@ public class LoggingConfiguration {
     this.level = level;
   }
 
-  public String[] getLoggers() {
+  public Map<String, Level> getLoggers() {
     return loggers;
   }
 
-  @SuppressWarnings("unchecked")
-  public void setLoggers(String[] loggers) {
+  public void setLoggers(Map<String, Level> loggers) {
     this.loggers = loggers;
   }
 
@@ -83,16 +76,12 @@ public class LoggingConfiguration {
 
   public static class ConsoleConfiguration {
 
-    @JsonProperty
     private boolean enabled = true;
 
-    @JsonProperty
     private Level threshold = Level.ALL;
 
-    @JsonProperty
     private TimeZone timeZone = UTC;
 
-    @JsonProperty
     private String logFormat;
 
     public boolean isEnabled() {
@@ -130,28 +119,20 @@ public class LoggingConfiguration {
 
   public static class FileConfiguration {
 
-    @JsonProperty
     private boolean enabled = false;
 
-    @JsonProperty
     private Level threshold = Level.ALL;
 
-    @JsonProperty
     private String currentLogFilename;
 
-    @JsonProperty
     private boolean archive = true;
 
-    @JsonProperty
     private String archivedLogFilenamePattern;
 
-    @JsonProperty
     private int archivedFileCount = 5;
 
-    @JsonProperty
     private TimeZone timeZone = UTC;
 
-    @JsonProperty
     private String logFormat;
 
     public boolean isValidArchiveConfiguration() {
@@ -234,33 +215,25 @@ public class LoggingConfiguration {
       LOCAL0, LOCAL1, LOCAL2, LOCAL3, LOCAL4, LOCAL5, LOCAL6, LOCAL7;
 
       @Override
-      @JsonValue
       public String toString() {
         return super.toString().replace("_", "+").toLowerCase(Locale.ENGLISH);
       }
 
-      @JsonCreator
       public static Facility parse(String facility) {
         return valueOf(facility.toUpperCase(Locale.ENGLISH).replace('+', '_'));
       }
     }
 
-    @JsonProperty
     private boolean enabled = false;
 
-    @JsonProperty
     private Level threshold = Level.ALL;
 
-    @JsonProperty
     private String host = "localhost";
 
-    @JsonProperty
     private Facility facility = Facility.LOCAL0;
 
-    @JsonProperty
     private TimeZone timeZone = UTC;
 
-    @JsonProperty
     private String logFormat;
 
     public boolean isEnabled() {

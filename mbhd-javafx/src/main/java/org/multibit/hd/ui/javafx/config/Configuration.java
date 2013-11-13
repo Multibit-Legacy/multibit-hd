@@ -1,7 +1,5 @@
 package org.multibit.hd.ui.javafx.config;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.base.Optional;
 import org.multibit.hd.ui.javafx.i18n.BitcoinSymbol;
 
 import java.util.Locale;
@@ -17,22 +15,15 @@ import java.util.Locale;
  */
 public class Configuration {
 
-  @JsonProperty
-  private BitcoinSymbol bitcoinSymbol = BitcoinSymbol.FONT_AWESOME_ICON;
+  private BitcoinSymbol bitcoinSymbol = BitcoinSymbol.ICON;
 
-  @JsonProperty
-  private Optional<Character> decimalSeparator = Optional.absent();
-
-  private Optional<Character> groupingSeparator = Optional.absent();
-
-  @JsonProperty
-  private Locale locale = Locale.UK;
-
-  @JsonProperty
   private LoggingConfiguration logging = new LoggingConfiguration();
 
-  private boolean currencySymbolPrefixed = true;
+  private I18NConfiguration i18nConfiguration = new I18NConfiguration();
 
+  /**
+   * @return The logging configuration
+   */
   public LoggingConfiguration getLogging() {
     return logging;
   }
@@ -41,6 +32,17 @@ public class Configuration {
     this.logging = logging;
   }
 
+  public I18NConfiguration getI18NConfiguration() {
+    return i18nConfiguration;
+  }
+
+  public void setI18NConfiguration(I18NConfiguration i18nConfiguration) {
+    this.i18nConfiguration = i18nConfiguration;
+  }
+
+  /**
+   * @return The Bitcoin symbol to use
+   */
   public BitcoinSymbol getBitcoinSymbol() {
     return bitcoinSymbol;
   }
@@ -49,30 +51,12 @@ public class Configuration {
     this.bitcoinSymbol = bitcoinSymbol;
   }
 
-  public Optional<Character> getDecimalSeparator() {
-    return decimalSeparator;
-  }
-
-  public void setDecimalSeparator(Character separator) {
-    this.decimalSeparator = Optional.fromNullable(separator);
-  }
-
-  public Locale getLocale() {
-    return locale;
-  }
-
-  public void setLocale(Locale locale) {
-    this.locale = locale;
-  }
-
-  public Optional<Character> getGroupingSeparator() {
-    return groupingSeparator;
-  }
-
   /**
-   * @return True if the currency symbol should be placed before the start of the numerical element (always read as left to right)
+   * <p>Shortcut to the i18n configuration</p>
+   *
+   * @return The current locale
    */
-  public boolean isCurrencySymbolPrefixed() {
-    return currencySymbolPrefixed;
+  public Locale getLocale() {
+    return getI18NConfiguration().getLocale();
   }
 }

@@ -40,6 +40,7 @@
       <children>
         <Label id="balanceLabel" fx:id="balanceLHSLabel" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefHeight="38.0" prefWidth="-1.0" styleClass="balanceLHS" text="20,999,999.12" wrapText="true" />
         <Label id="balanceLabel" fx:id="balanceRHSLabel" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefHeight="44.0" prefWidth="-1.0" styleClass="balanceRHS" text="345678" wrapText="true" />
+        <Label id="balanceLabel" fx:id="balanceRHSSymbolLabel" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefHeight="38.0" prefWidth="-1.0" styleClass="balanceLHS" text="BTC" wrapText="true" />
       </children>
     </HBox>
   </children>
