@@ -72,7 +72,11 @@ public enum StageManager {
    * @return The stage manager
    */
   public StageManager withStage(Stage latchedStage) {
-    Preconditions.checkState(this.stage == null, "Cannot set a new stage since locale change will look awkward");
+
+    // Cannot set a new stage since locale change will look awkward
+    if (stage != null) {
+      return this;
+    }
 
     this.stage = latchedStage;
     return this;

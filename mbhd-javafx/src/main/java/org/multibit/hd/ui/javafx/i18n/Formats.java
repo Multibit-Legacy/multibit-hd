@@ -1,8 +1,10 @@
 package org.multibit.hd.ui.javafx.i18n;
 
+import com.google.common.base.Preconditions;
 import org.multibit.hd.ui.javafx.config.Configuration;
 import org.multibit.hd.ui.javafx.views.Stages;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
@@ -18,8 +20,17 @@ import java.util.Locale;
  */
 public class Formats {
 
+  /**
+   * <p>Provide a split representation for the balance display.</p>
+   * <p>For example, 12345.6789 becomes "12,345.67", "89" </p>
+   *
+   * @param amount The amount
+   *
+   * @return The left [0] and right [0] components suitable for presentation as a balance
+   */
+  public static String[] formatBitcoinBalance(BigDecimal amount) {
 
-  public static String formatCurrency(String amount) {
+    Preconditions.checkNotNull(amount, "'amount' must be present");
 
     Configuration configuration = Stages.getConfiguration();
     Locale currentLocale = configuration.getLocale();
@@ -29,16 +40,28 @@ public class Formats {
     if (configuration.getDecimalSeparator().isPresent()) {
       dfs.setDecimalSeparator(configuration.getDecimalSeparator().get());
     }
+    if (configuration.getGroupingSeparator().isPresent()) {
+      dfs.setGroupingSeparator(configuration.getDecimalSeparator().get());
+    }
 
-    DecimalFormat nf = new DecimalFormat();
-    nf.setDecimalFormatSymbols(dfs);
-    nf.setMaximumIntegerDigits(8);
-    nf.setMinimumIntegerDigits(1);
-    nf.setMinimumFractionDigits(4);
-    nf.setMaximumFractionDigits(8);
-    nf.setMinimumFractionDigits(4);
-    nf.setDecimalSeparatorAlwaysShown(true);
+    DecimalFormat format = new DecimalFormat();
+    format.setDecimalFormatSymbols(dfs);
+    format.setMaximumIntegerDigits(8);
+    format.setMinimumIntegerDigits(1);
+    format.setMinimumFractionDigits(4);
+    format.setMaximumFractionDigits(8);
+    format.setMinimumFractionDigits(4);
+    format.setDecimalSeparatorAlwaysShown(true);
 
-    return null;
+    String formattedAmount = format.format(amount);
+
+    int decimalIndex = formattedAmount.lastIndexOf(dfs.getDecimalSeparator());
+
+    Preconditions.checkState(decimalIndex > 0, "'decimalIndex' is incorrect");
+
+    return new String[]{
+      formattedAmount.substring(0, decimalIndex + 3), // 12,345.67 (significant figures)
+      formattedAmount.substring(decimalIndex + 3) // 89 (lesser figures truncated )
+    };
   }
 }

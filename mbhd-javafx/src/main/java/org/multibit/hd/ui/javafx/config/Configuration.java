@@ -23,11 +23,15 @@ public class Configuration {
   @JsonProperty
   private Optional<Character> decimalSeparator = Optional.absent();
 
+  private Optional<Character> groupingSeparator = Optional.absent();
+
   @JsonProperty
-  private Locale locale;
+  private Locale locale = Locale.UK;
 
   @JsonProperty
   private LoggingConfiguration logging = new LoggingConfiguration();
+
+  private boolean currencySymbolPrefixed = true;
 
   public LoggingConfiguration getLogging() {
     return logging;
@@ -59,5 +63,16 @@ public class Configuration {
 
   public void setLocale(Locale locale) {
     this.locale = locale;
+  }
+
+  public Optional<Character> getGroupingSeparator() {
+    return groupingSeparator;
+  }
+
+  /**
+   * @return True if the currency symbol should be placed before the start of the numerical element (always read as left to right)
+   */
+  public boolean isCurrencySymbolPrefixed() {
+    return currencySymbolPrefixed;
   }
 }

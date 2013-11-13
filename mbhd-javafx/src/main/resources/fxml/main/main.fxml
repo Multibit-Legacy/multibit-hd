@@ -25,7 +25,7 @@
                 <Label fx:id="settingsLabel" prefWidth="103.0" text="Settings" />
                 <Label fx:id="helpLabel" prefWidth="103.0" text="Help" />
                 <Separator prefWidth="200.0" />
-                <Label fx:id="transactionsLabel" prefWidth="103.0" text="Wallet" />
+                <Label fx:id="walletLabel" prefWidth="103.0" text="Wallet" />
               </children>
               <padding>
                 <Insets left="10.0" top="10.0" />
@@ -38,8 +38,8 @@
     </SplitPane>
     <HBox id="HBox" fx:id="balanceHBox" alignment="TOP_LEFT" layoutX="15.0" layoutY="26.0" spacing="5.0">
       <children>
-        <Label id="balanceLabel" fx:id="balanceLHSLabel" alignment="BOTTOM_LEFT" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefHeight="38.0" prefWidth="-1.0" styleClass="balanceLHS" text="20,999,999.12" wrapText="true" />
-        <Label id="balanceLabel" fx:id="balanceRHSLabel" alignment="BOTTOM_LEFT" maxWidth="1.7976931348623157E308" minHeight="24.0" prefHeight="38.0" prefWidth="-1.0" styleClass="balanceRHS" text="345678" wrapText="true" />
+        <Label id="balanceLabel" fx:id="balanceLHSLabel" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefHeight="38.0" prefWidth="-1.0" styleClass="balanceLHS" text="20,999,999.12" wrapText="true" />
+        <Label id="balanceLabel" fx:id="balanceRHSLabel" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefHeight="44.0" prefWidth="-1.0" styleClass="balanceRHS" text="345678" wrapText="true" />
       </children>
     </HBox>
   </children>
