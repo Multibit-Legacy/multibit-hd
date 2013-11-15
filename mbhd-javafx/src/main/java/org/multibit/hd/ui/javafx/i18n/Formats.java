@@ -1,8 +1,8 @@
 package org.multibit.hd.ui.javafx.i18n;
 
 import com.google.common.base.Preconditions;
+import org.multibit.hd.ui.javafx.config.Configurations;
 import org.multibit.hd.ui.javafx.config.I18NConfiguration;
-import org.multibit.hd.ui.javafx.views.Stages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,8 +36,8 @@ public class Formats {
 
     Preconditions.checkNotNull(amount, "'amount' must be present");
 
-    I18NConfiguration configuration = Stages.getConfiguration().getI18NConfiguration();
-    BitcoinSymbol symbol = Stages.getConfiguration().getBitcoinSymbol();
+    I18NConfiguration configuration = Configurations.currentConfiguration.getI18NConfiguration();
+    BitcoinSymbol symbol = Configurations.currentConfiguration.getBitcoinConfiguration().getBitcoinSymbol();
 
     BigDecimal symbolicAmount = amount.multiply(symbol.multiplier());
 

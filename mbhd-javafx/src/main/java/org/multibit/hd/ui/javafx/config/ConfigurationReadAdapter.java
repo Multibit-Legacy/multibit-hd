@@ -19,12 +19,12 @@ import static org.multibit.hd.ui.javafx.config.Configurations.*;
  * @since 0.0.1
  *         
  */
-public class ConfigurationAdapter {
+public class ConfigurationReadAdapter {
 
   private final Properties properties;
   private final Configuration configuration = new Configuration();
 
-  public ConfigurationAdapter(Properties properties) {
+  public ConfigurationReadAdapter(Properties properties) {
     this.properties = properties;
   }
 
@@ -38,23 +38,16 @@ public class ConfigurationAdapter {
       String key = (String) entry.getKey();
       String value = (String) entry.getValue();
 
+      Preconditions.checkNotNull(key, "'key' must be present");
+      Preconditions.checkNotNull(value, "'value' must be present");
+
       // Application
 
       // Bitcoin
-      if (BITCOIN_SYMBOL.equalsIgnoreCase(key)) {
-        configuration.setBitcoinSymbol(BitcoinSymbol.valueOf(value));
-      }
+      adaptBitcoin(key, value);
 
       // Internationalisation
-      if (I18N_LOCALE.equalsIgnoreCase(key)) {
-        configuration.getI18NConfiguration().setLocale(new Locale(value));
-      }
-      if (I18N_DECIMAL_SEPARATOR.equalsIgnoreCase(key)) {
-        configuration.getI18NConfiguration().setDecimalSeparator(value.charAt(0));
-      }
-      if (I18N_GROUPING_SEPARATOR.equalsIgnoreCase(key)) {
-        configuration.getI18NConfiguration().setGroupingSeparator(value.charAt(0));
-      }
+      adaptI18N(key, value);
 
       // Logging
       if (key.startsWith(LOGGING)) {
@@ -66,16 +59,38 @@ public class ConfigurationAdapter {
     return configuration;
   }
 
+  private void adaptBitcoin(String key, String value) {
+
+    if (BITCOIN_SYMBOL.equalsIgnoreCase(key)) {
+      configuration.getBitcoinConfiguration().setBitcoinSymbol(BitcoinSymbol.valueOf(value));
+    }
+
+  }
+
+  private void adaptI18N(String key, String value) {
+
+    if (I18N_LOCALE.equalsIgnoreCase(key)) {
+      configuration.getI18NConfiguration().setLocale(new Locale(value));
+    }
+    if (I18N_DECIMAL_SEPARATOR.equalsIgnoreCase(key)) {
+      configuration.getI18NConfiguration().setDecimalSeparator(value.charAt(0));
+    }
+    if (I18N_GROUPING_SEPARATOR.equalsIgnoreCase(key)) {
+      configuration.getI18NConfiguration().setGroupingSeparator(value.charAt(0));
+    }
+    if (I18N_IS_CURRENCY_PREFIXED.equalsIgnoreCase(key)) {
+      configuration.getI18NConfiguration().setCurrencySymbolPrefixed(Boolean.valueOf(value));
+    }
+
+  }
+
   /**
    * @param key The key
    * @param value The value
    */
   private void adaptLogging(String key, String value) {
 
-    Preconditions.checkNotNull(key, "'key' must be present");
-    Preconditions.checkNotNull(value, "'value' must be present");
-
-    LoggingConfiguration logging = configuration.getLogging();
+    LoggingConfiguration logging = configuration.getLoggingConfiguration();
 
     if (LOGGING_LEVEL.equalsIgnoreCase(key)) {
       logging.setLevel(Level.valueOf(value));

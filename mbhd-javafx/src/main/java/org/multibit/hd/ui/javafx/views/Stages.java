@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import javafx.scene.Group;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import org.multibit.hd.ui.javafx.config.Configuration;
+import org.multibit.hd.ui.javafx.config.Configurations;
 import org.multibit.hd.ui.javafx.controllers.main.MainController;
 import org.multibit.hd.ui.javafx.controllers.welcome.WelcomeController;
 import org.multibit.hd.ui.javafx.i18n.Languages;
@@ -30,7 +30,6 @@ public class Stages {
   private static final Logger log = LoggerFactory.getLogger(Stages.class);
 
   private static ResourceBundle resourceBundle;
-  private static Configuration configuration;
 
   /**
    * Utilities have private constructor
@@ -39,29 +38,15 @@ public class Stages {
   }
 
   /**
-   * @param configuration The runtime configuration
-   */
-  public static void setConfiguration(Configuration configuration) {
-    Stages.configuration = configuration;
-  }
-
-  /**
-   * @return The runtime configuration
-   */
-  public static Configuration getConfiguration() {
-    return configuration;
-  }
-
-  /**
    * <p>Build all the stages</p>
    */
   public static void build() {
 
-    Preconditions.checkNotNull(configuration, "'confiugration' must be present");
+    Preconditions.checkNotNull(Configurations.currentConfiguration, "'confiugration' must be present");
 
-    log.debug("Configuration change: {}", configuration);
+    log.debug("Configuration change: {}", Configurations.currentConfiguration);
 
-    Stages.resourceBundle = Languages.newResourceBundle(configuration.getLocale());
+    Stages.resourceBundle = Languages.newResourceBundle(Configurations.currentConfiguration.getLocale());
 
     Preconditions.checkNotNull(resourceBundle, "'resourceBundle' must be present");
 

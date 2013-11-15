@@ -1,7 +1,5 @@
 package org.multibit.hd.ui.javafx.config;
 
-import org.multibit.hd.ui.javafx.i18n.BitcoinSymbol;
-
 import java.util.Locale;
 
 /**
@@ -15,23 +13,50 @@ import java.util.Locale;
  */
 public class Configuration {
 
-  private BitcoinSymbol bitcoinSymbol = BitcoinSymbol.ICON;
-
-  private LoggingConfiguration logging = new LoggingConfiguration();
+  private LoggingConfiguration loggingConfiguration = new LoggingConfiguration();
 
   private I18NConfiguration i18nConfiguration = new I18NConfiguration();
+
+  private ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration();
+
+  private BitcoinConfiguration bitcoinConfiguration = new BitcoinConfiguration();
+
+  private String propertiesVersion = "0.0.1";
+
+  /**
+   * <p>Shortcut to the i18n configuration</p>
+   *
+   * @return The current locale
+   */
+  public Locale getLocale() {
+    return getI18NConfiguration().getLocale();
+  }
 
   /**
    * @return The logging configuration
    */
-  public LoggingConfiguration getLogging() {
-    return logging;
+  public LoggingConfiguration getLoggingConfiguration() {
+    return loggingConfiguration;
   }
 
-  public void setLogging(LoggingConfiguration logging) {
-    this.logging = logging;
+  public void setLoggingConfiguration(LoggingConfiguration loggingConfiguration) {
+    this.loggingConfiguration = loggingConfiguration;
   }
 
+  /**
+   * @return The Bitcoin configuration
+   */
+  public BitcoinConfiguration getBitcoinConfiguration() {
+    return bitcoinConfiguration;
+  }
+
+  public void setBitcoinConfiguration(BitcoinConfiguration bitcoinConfiguration) {
+    this.bitcoinConfiguration = bitcoinConfiguration;
+  }
+
+  /**
+   * @return The internationalisation configuration
+   */
   public I18NConfiguration getI18NConfiguration() {
     return i18nConfiguration;
   }
@@ -41,22 +66,24 @@ public class Configuration {
   }
 
   /**
-   * @return The Bitcoin symbol to use
+   * @return The application configuration
    */
-  public BitcoinSymbol getBitcoinSymbol() {
-    return bitcoinSymbol;
+  public ApplicationConfiguration getApplicationConfiguration() {
+    return applicationConfiguration;
   }
 
-  public void setBitcoinSymbol(BitcoinSymbol bitcoinSymbol) {
-    this.bitcoinSymbol = bitcoinSymbol;
+  public void setApplicationConfiguration(ApplicationConfiguration applicationConfiguration) {
+    this.applicationConfiguration = applicationConfiguration;
   }
 
   /**
-   * <p>Shortcut to the i18n configuration</p>
-   *
-   * @return The current locale
+   * @return The properties file version
    */
-  public Locale getLocale() {
-    return getI18NConfiguration().getLocale();
+  public String getPropertiesVersion() {
+    return propertiesVersion;
+  }
+
+  public void setPropertiesVersion(String propertiesVersion) {
+    this.propertiesVersion = propertiesVersion;
   }
 }

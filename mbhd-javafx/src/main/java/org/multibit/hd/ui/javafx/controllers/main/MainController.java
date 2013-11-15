@@ -4,10 +4,14 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import org.multibit.hd.ui.javafx.config.Configuration;
+import org.multibit.hd.ui.javafx.config.BitcoinConfiguration;
+import org.multibit.hd.ui.javafx.config.Configurations;
+import org.multibit.hd.ui.javafx.config.I18NConfiguration;
 import org.multibit.hd.ui.javafx.controllers.MultiBitController;
 import org.multibit.hd.ui.javafx.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.javafx.fonts.AwesomeIcon;
@@ -15,24 +19,20 @@ import org.multibit.hd.ui.javafx.i18n.BitcoinSymbol;
 import org.multibit.hd.ui.javafx.i18n.Formats;
 import org.multibit.hd.ui.javafx.views.Screen;
 import org.multibit.hd.ui.javafx.views.StageManager;
-import org.multibit.hd.ui.javafx.views.Stages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.util.Locale;
 
 public class MainController extends MultiBitController {
+
+  private static final Logger log = LoggerFactory.getLogger(MainController.class);
 
   @FXML
   public Label balanceLHSLabel;
 
   @FXML
   public Label balanceRHSLabel;
-
-  @FXML
-  public Label homeLabel;
-
-  @FXML
-  public Label contactsLabel;
 
   @FXML
   public Label settingsLabel;
@@ -49,46 +49,19 @@ public class MainController extends MultiBitController {
   @FXML
   public Label balanceRHSSymbolLabel;
 
+  @FXML
+  public TreeView<String> walletTreeView;
+
   @Override
   public void initClickEvents() {
 
-    homeLabel.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
-      @Override
-      public void handle(MouseEvent mouseEvent) {
-        if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-          StageManager.MAIN_STAGE.changeScreen(Screen.MAIN_HOME);
-        }
-      }
-    });
-
-    contactsLabel.setOnMouseClicked(new EventHandler<MouseEvent>() {
+    helpLabel.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
       @Override
       public void handle(MouseEvent mouseEvent) {
         if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
 
-          Configuration configuration = Stages.getConfiguration();
-
-          BitcoinSymbol symbol = configuration.getBitcoinSymbol();
-
-          // Get the next ordinal
-          int ordinal = symbol.ordinal() + 1;
-          if (ordinal == BitcoinSymbol.values().length) {
-            ordinal = 0;
-          }
-          // Toggle the placement
-          if (ordinal == 0) {
-            configuration.getI18NConfiguration().setCurrencySymbolPrefixed(
-              !configuration.getI18NConfiguration().isCurrencySymbolPrefixed()
-            );
-          }
-
-          BitcoinSymbol[] symbols = BitcoinSymbol.class.getEnumConstants();
-          configuration.setBitcoinSymbol(symbols[ordinal]);
-
-          // Update all the stages to the new locale
-          updateBalance(new BigDecimal("20999999.12345678"));
+          StageManager.MAIN_STAGE.changeScreen(Screen.MAIN_HELP);
 
         }
       }
@@ -100,39 +73,47 @@ public class MainController extends MultiBitController {
       public void handle(MouseEvent mouseEvent) {
         if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
 
-          Configuration configuration = Stages.getConfiguration();
-          if (configuration.getLocale().equals(Locale.UK)) {
-            configuration.getI18NConfiguration().setLocale(new Locale("RU"));
-          } else {
-            configuration.getI18NConfiguration().setLocale(Locale.UK);
-          }
-          // Update all the stages to the new locale
-          Stages.build();
-          StageManager.MAIN_STAGE.show();
+          StageManager.MAIN_STAGE.changeScreen(Screen.MAIN_SETTINGS);
 
         }
       }
     });
 
-    helpLabel.setOnMouseClicked(new EventHandler<MouseEvent>() {
+    TreeItem<String> root = new TreeItem<>("");
+    root.setExpanded(false);
 
-      @Override
-      public void handle(MouseEvent mouseEvent) {
-        if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-          StageManager.MAIN_STAGE.changeScreen(Screen.MAIN_HELP);
-        }
-      }
-    });
+    TreeItem<String> wallet = new TreeItem<>("Wallet");
+    wallet.setExpanded(true);
+    wallet.getChildren().add(new TreeItem<>("Account 1"));
+    wallet.getChildren().add(new TreeItem<>("Account 2"));
+    wallet.getChildren().add(new TreeItem<>("All Contacts"));
+    wallet.getChildren().add(new TreeItem<>("All Transactions"));
+    wallet.getChildren().add(new TreeItem<>("All Messages"));
 
-    walletLabel.setOnMouseClicked(new EventHandler<MouseEvent>() {
+    root.getChildren().add(wallet);
 
-      @Override
-      public void handle(MouseEvent mouseEvent) {
-        if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-          StageManager.MAIN_STAGE.changeScreen(Screen.MAIN_WALLET);
-        }
-      }
-    });
+    TreeItem<String> trezor1 = new TreeItem<>("Trezor 1");
+    trezor1.setExpanded(true);
+    trezor1.getChildren().add(new TreeItem<>("Account 1"));
+    trezor1.getChildren().add(new TreeItem<>("Account 2"));
+    trezor1.getChildren().add(new TreeItem<>("All Contacts"));
+    trezor1.getChildren().add(new TreeItem<>("All Transactions"));
+    trezor1.getChildren().add(new TreeItem<>("All Messages"));
+
+    root.getChildren().add(trezor1);
+
+    TreeItem<String> trezor2 = new TreeItem<>("Trezor 2");
+    trezor2.setExpanded(true);
+    trezor2.getChildren().add(new TreeItem<>("Account 1"));
+    trezor2.getChildren().add(new TreeItem<>("Account 2"));
+    trezor2.getChildren().add(new TreeItem<>("All Contacts"));
+    trezor2.getChildren().add(new TreeItem<>("All Transactions"));
+    trezor2.getChildren().add(new TreeItem<>("All Messages"));
+
+    root.getChildren().add(trezor2);
+
+    walletTreeView.setShowRoot(false);
+    walletTreeView.setRoot(root);
 
   }
 
@@ -146,46 +127,64 @@ public class MainController extends MultiBitController {
     updateBalance(new BigDecimal("20999999.12345678"));
 
     // Top icons
-    AwesomeDecorator.applyIcon(homeLabel, AwesomeIcon.HOME, ContentDisplay.LEFT);
-    AwesomeDecorator.applyIcon(contactsLabel, AwesomeIcon.USER, ContentDisplay.LEFT);
     AwesomeDecorator.applyIcon(settingsLabel, AwesomeIcon.GEAR, ContentDisplay.LEFT);
     AwesomeDecorator.applyIcon(helpLabel, AwesomeIcon.QUESTION_CIRCLE, ContentDisplay.LEFT);
 
     // Wallets
-    AwesomeDecorator.applyIcon(walletLabel, AwesomeIcon.BITCOIN, ContentDisplay.LEFT);
+    AwesomeDecorator.applyIcon(walletTreeView.getRoot().getChildren().get(0), AwesomeIcon.BITCOIN);
+    AwesomeDecorator.applyIcon(walletTreeView.getRoot().getChildren().get(0).getChildren().get(0), AwesomeIcon.BOOK);
+    AwesomeDecorator.applyIcon(walletTreeView.getRoot().getChildren().get(0).getChildren().get(1), AwesomeIcon.BOOK);
+    AwesomeDecorator.applyIcon(walletTreeView.getRoot().getChildren().get(0).getChildren().get(2), AwesomeIcon.USER);
+    AwesomeDecorator.applyIcon(walletTreeView.getRoot().getChildren().get(0).getChildren().get(3), AwesomeIcon.LIST, "18px");
+    AwesomeDecorator.applyIcon(walletTreeView.getRoot().getChildren().get(0).getChildren().get(4), AwesomeIcon.ENVELOPE);
+
+    AwesomeDecorator.applyIcon(walletTreeView.getRoot().getChildren().get(1), AwesomeIcon.SHIELD);
+    AwesomeDecorator.applyIcon(walletTreeView.getRoot().getChildren().get(1).getChildren().get(0), AwesomeIcon.BOOK);
+    AwesomeDecorator.applyIcon(walletTreeView.getRoot().getChildren().get(1).getChildren().get(1), AwesomeIcon.BOOK);
+    AwesomeDecorator.applyIcon(walletTreeView.getRoot().getChildren().get(1).getChildren().get(2), AwesomeIcon.USER);
+    AwesomeDecorator.applyIcon(walletTreeView.getRoot().getChildren().get(1).getChildren().get(3), AwesomeIcon.LIST, "18px");
+    AwesomeDecorator.applyIcon(walletTreeView.getRoot().getChildren().get(1).getChildren().get(4), AwesomeIcon.ENVELOPE);
+
+    AwesomeDecorator.applyIcon(walletTreeView.getRoot().getChildren().get(2), AwesomeIcon.SHIELD);
+    AwesomeDecorator.applyIcon(walletTreeView.getRoot().getChildren().get(2).getChildren().get(0), AwesomeIcon.BOOK);
+    AwesomeDecorator.applyIcon(walletTreeView.getRoot().getChildren().get(2).getChildren().get(1), AwesomeIcon.BOOK);
+    AwesomeDecorator.applyIcon(walletTreeView.getRoot().getChildren().get(2).getChildren().get(2), AwesomeIcon.USER);
+    AwesomeDecorator.applyIcon(walletTreeView.getRoot().getChildren().get(2).getChildren().get(3), AwesomeIcon.LIST, "18px");
+    AwesomeDecorator.applyIcon(walletTreeView.getRoot().getChildren().get(2).getChildren().get(4), AwesomeIcon.ENVELOPE);
   }
 
   private void updateBalance(BigDecimal amount) {
 
-    Configuration configuration = Stages.getConfiguration();
+    BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
+    I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration();
 
     String[] balance = Formats.formatBitcoinBalance(amount);
 
-    if (configuration.getI18NConfiguration().isCurrencySymbolPrefixed()) {
+    if (i18nConfiguration.isCurrencySymbolPrefixed()) {
 
       // Place currency symbol before the number
-      if (BitcoinSymbol.ICON.equals(configuration.getBitcoinSymbol())) {
+      if (BitcoinSymbol.ICON.equals(bitcoinConfiguration.getBitcoinSymbol())) {
         // Add icon to LHS, remove from elsewhere
         AwesomeDecorator.applyIcon(balanceLHSLabel, AwesomeIcon.BITCOIN, ContentDisplay.LEFT, "32px");
         AwesomeDecorator.removeIcon(balanceRHSSymbolLabel);
         balanceRHSSymbolLabel.setText("");
       } else {
         // Add symbol to LHS, remove from elsewhere
-        balance[0] = configuration.getBitcoinSymbol().getSymbol() + " " + balance[0];
+        balance[0] = bitcoinConfiguration.getBitcoinSymbol().getSymbol() + " " + balance[0];
         AwesomeDecorator.removeIcon(balanceLHSLabel);
       }
 
     } else {
 
       // Place currency symbol after the number
-      if (BitcoinSymbol.ICON.equals(configuration.getBitcoinSymbol())) {
+      if (BitcoinSymbol.ICON.equals(bitcoinConfiguration.getBitcoinSymbol())) {
         // Add icon to RHS, remove from elsewhere
         AwesomeDecorator.applyIcon(balanceRHSSymbolLabel, AwesomeIcon.BITCOIN, ContentDisplay.LEFT, "32px");
         AwesomeDecorator.removeIcon(balanceLHSLabel);
         balanceRHSSymbolLabel.setText("");
       } else {
         // Add symbol to RHS, remove from elsewhere
-        balanceRHSSymbolLabel.setText(configuration.getBitcoinSymbol().getSymbol());
+        balanceRHSSymbolLabel.setText(bitcoinConfiguration.getBitcoinSymbol().getSymbol());
         AwesomeDecorator.removeIcon(balanceLHSLabel);
         AwesomeDecorator.removeIcon(balanceRHSSymbolLabel);
       }

@@ -23,6 +23,7 @@
   
 }
 
+/* The main horizontal banner */
 .titlebar {
 
   -fx-background-color: -mbhd-list-background-dark;
@@ -37,7 +38,43 @@
 
 }
 
+/* TreeView in LHS showing wallet info */
+.sidebarTreeView {
+
+  /* Shows through as horizontal dividers */
+  -fx-background-color: transparent;
+  -fx-padding: 0px;
+  -fx-border-color: transparent;
+
+}
+
+.sidebarTreeView .scroll-bar:vertical > * > .thumb {
+
+  -fx-background-color: -mbhd-text;
+
+}
+
+.sidebarTreeView .tree-cell {
+
+  -fx-background-color: transparent;
+  -fx-padding: 0px;
+
+}
+
+.sidebarTreeView .tree-cell > .tree-disclosure-node > .arrow {
+
+  -fx-background-image: null;
+
+}
+
+.sidebarTreeView:expanded .tree-cell > .tree-disclosure-node > .arrow {
+
+  -fx-background-image: null;
+
+}
+
 /* Sidebar divider */
+
 .split-pane:horizontal > * > .split-pane-divider {
 
   -fx-border-color: transparent -mbhd-list-background transparent -mbhd-list-background;
@@ -45,14 +82,13 @@
   -fx-background-insets: 0, 0 1 0 1;
 
 }
-
 .split-pane {
 
   -fx-background-color: -mbhd-list-background;
   -fx-border-color: -mbhd-text -mbhd-list-background -mbhd-list-background transparent;
   -fx-padding: 0px;
-  /* The grabber dots */
-  -fx-box-border: -mbhd-text;
+/* The grabber dots */
+-fx-box-border: -mbhd-text;
 
 }
 
@@ -60,14 +96,13 @@
 .balanceLHS {
   -fx-font-size: 32px;
   -fx-text-fill: -mbhd-text;
-  /* -fx-effect: dropshadow( one-pass-box , -mbhd-text-light , 4 , 0.0 , 1 , 1 );  */
 }
 
 .balanceRHS {
   -fx-font-size: 24px;
   -fx-text-fill: -mbhd-text-lighter;
-  /* -fx-effect: dropshadow( one-pass-box , -mbhd-text-light , 4 , 0.0 , 1 , 1 ); */
 }
+
 
 /* Splitter RHS anchor pane */
 #detailAnchorPane {
@@ -75,3 +110,4 @@
   -fx-background-color: -mbhd-detail-background;
   -fx-padding: 0px;
 }
+

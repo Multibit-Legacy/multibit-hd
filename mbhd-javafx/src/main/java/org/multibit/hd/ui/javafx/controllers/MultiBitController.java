@@ -36,14 +36,14 @@ public abstract class MultiBitController implements Initializable, ViewAware {
     this.url = url;
     this.resourceBundle = resourceBundle1;
 
-    initAwesome();
-
     initClickEvents();
+
+    initAwesome();
 
   }
 
   /**
-   * <p>Decorate any components with Font Awesome icons</p>
+   * <p>Decorate any screen-level components with Font Awesome icons (sub-screens are usually treated separately)</p>
    */
   public void initAwesome() {
 

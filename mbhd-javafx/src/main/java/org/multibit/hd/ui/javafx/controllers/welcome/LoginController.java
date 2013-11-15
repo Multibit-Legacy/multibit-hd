@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContentDisplay;
+import org.multibit.hd.ui.javafx.config.Configurations;
 import org.multibit.hd.ui.javafx.controllers.MultiBitController;
 import org.multibit.hd.ui.javafx.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.javafx.fonts.AwesomeIcon;
@@ -33,15 +34,15 @@ public class LoginController extends MultiBitController {
   private static final Logger log = LoggerFactory.getLogger(LoginController.class);
 
   @FXML
-  private Button loginButton;
+  private Button signInButton;
 
   @FXML
-  private ChoiceBox<String> languageChoice;
+  private ChoiceBox<String> languageChoiceBox;
 
   @Override
   public void initAwesome() {
 
-    AwesomeDecorator.applyIcon(loginButton, AwesomeIcon.ARROW_RIGHT, ContentDisplay.RIGHT);
+    AwesomeDecorator.applyIcon(signInButton, AwesomeIcon.SIGN_IN, ContentDisplay.RIGHT);
 
   }
 
@@ -49,19 +50,19 @@ public class LoginController extends MultiBitController {
   public void initClickEvents() {
 
     // Fill in the language names and standard codes
-    languageChoice.setItems(
+    languageChoiceBox.setItems(
       FXCollections.observableList(
         Languages.getLanguageNames(resourceBundle, true)));
-    languageChoice.getSelectionModel().select(
+    languageChoiceBox.getSelectionModel().select(
       Languages.getIndexFromLocale(resourceBundle.getLocale()));
 
     // Register a change listener for language transition (after setting the initial value)
-    languageChoice.getSelectionModel().selectedIndexProperty().addListener(
+    languageChoiceBox.getSelectionModel().selectedIndexProperty().addListener(
       new ChangeListener<Number>() {
       @Override
       public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
 
-        Stages.getConfiguration().getI18NConfiguration().setLocale(Languages.newLocaleFromIndex((Integer) newValue));
+        Configurations.currentConfiguration.getI18NConfiguration().setLocale(Languages.newLocaleFromIndex((Integer) newValue));
 
         // Update all the stages to the new locale
         Stages.build();
@@ -72,7 +73,7 @@ public class LoginController extends MultiBitController {
 
   }
 
-  public void onLoginFired(ActionEvent actionEvent) {
+  public void onSignInFired(ActionEvent actionEvent) {
     StageManager.WELCOME_STAGE.handOver(StageManager.MAIN_STAGE, Screen.MAIN_HOME);
   }
 

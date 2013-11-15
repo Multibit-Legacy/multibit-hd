@@ -7,6 +7,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import org.multibit.hd.ui.javafx.config.Configurations;
 import org.multibit.hd.ui.javafx.i18n.Languages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,7 +133,7 @@ public enum StageManager {
     Preconditions.checkNotNull(screens, "'screens' must be present");
     Preconditions.checkNotNull(screenViewMap, "'screenViewMap' must be present");
 
-    ResourceBundle resourceBundle = Languages.newResourceBundle(Stages.getConfiguration().getLocale());
+    ResourceBundle resourceBundle = Languages.newResourceBundle(Configurations.currentConfiguration.getLocale());
 
     // Clear any existing views
     screenViewMap.clear();

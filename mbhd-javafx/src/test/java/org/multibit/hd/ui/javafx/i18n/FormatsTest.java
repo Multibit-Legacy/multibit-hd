@@ -2,9 +2,8 @@ package org.multibit.hd.ui.javafx.i18n;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.ui.javafx.config.Configuration;
+import org.multibit.hd.ui.javafx.config.BitcoinConfiguration;
 import org.multibit.hd.ui.javafx.config.Configurations;
-import org.multibit.hd.ui.javafx.views.Stages;
 
 import java.math.BigDecimal;
 
@@ -12,12 +11,12 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 public class FormatsTest {
 
-  private Configuration configuration;
+  private BitcoinConfiguration configuration;
 
   @Before
   public void setUp() {
-    configuration = Configurations.newDefaultConfiguration();
-    Stages.setConfiguration(configuration);
+    Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
+    configuration = Configurations.currentConfiguration.getBitcoinConfiguration();
   }
 
   @Test

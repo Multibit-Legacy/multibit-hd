@@ -1,20 +1,180 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.net.*?>
-<?import java.util.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.paint.*?>
-<?import org.multibit.hd.ui.javafx.fonts.*?>
 <?scenebuilder-classpath-element ../../../../target/classes?>
 <?scenebuilder-preview-i18n-resource ../../i18n/viewer_en.properties?>
 <?scenebuilder-stylesheet ../../assets/css/main.css?>
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" styleClass="titlebar" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="org.multibit.hd.ui.javafx.controllers.main.ContactsController">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" styleClass="titlebar" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="org.multibit.hd.ui.javafx.controllers.main.SettingsController">
   <children>
     <Label layoutX="64.0" layoutY="57.0" prefWidth="394.0" text="Settings" />
+    <TabPane fx:id="settingsTabPane" prefHeight="534.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="66.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <tabs>
+        <Tab fx:id="exchangeRatesTab" id="exchangeRatesTab" text="Exchange Rates">
+          <content>
+            <AnchorPane id="Content" prefHeight="452.0" prefWidth="800.0">
+              <children>
+                <CheckBox fx:id="showCurrencyTickerCheckBox" layoutX="14.0" layoutY="33.0" mnemonicParsing="false" text="Show currency ticker" />
+                <CheckBox fx:id="showFiatConversionCheckBox" layoutX="14.0" layoutY="59.0" mnemonicParsing="false" text="Show bitcoin converted to fiat currency" />
+                <VBox id="VBox" alignment="TOP_LEFT" layoutX="14.0" layoutY="121.0" spacing="5.0">
+                  <children>
+                    <CheckBox fx:id="exchangeColumnCheckBox" mnemonicParsing="false" text="Exchange" />
+                    <CheckBox fx:id="currencyColumnCheckBox" mnemonicParsing="false" text="Currency" />
+                    <CheckBox fx:id="lastColumnCheckBox" mnemonicParsing="false" text="Last" />
+                    <CheckBox fx:id="bidColumnCheckBox" mnemonicParsing="false" text="Bid" />
+                    <CheckBox fx:id="askColumnCheckBox" mnemonicParsing="false" text="Ask" />
+                  </children>
+                </VBox>
+                <Label layoutX="14.0" layoutY="14.0" text="Currency ticker and exchange rate" />
+                <Label layoutX="14.0" layoutY="91.0" text="Columns to show" />
+                <Label layoutX="14.0" layoutY="257.0" text="Exchange (prices updated every 15min to avoid flooding)" />
+                <VBox id="VBox" alignment="CENTER" layoutX="24.0" layoutY="283.0" spacing="5.0">
+                  <children>
+                    <HBox id="HBox" alignment="CENTER" spacing="5.0">
+                      <children>
+                        <Label text="Exchange" />
+                        <ChoiceBox fx:id="exchange1ChoiceBox" prefWidth="208.0">
+                          <items>
+                            <FXCollections fx:factory="observableArrayList" />
+                          </items>
+                        </ChoiceBox>
+                      </children>
+                    </HBox>
+                    <HBox id="HBox" alignment="CENTER" spacing="5.0">
+                      <children>
+                        <Label text="Currency" />
+                        <ChoiceBox fx:id="currency1ChoiceBox" prefWidth="208.0">
+                          <items>
+                            <FXCollections fx:factory="observableArrayList" />
+                          </items>
+                        </ChoiceBox>
+                      </children>
+                    </HBox>
+                  </children>
+                </VBox>
+                <HBox id="HBox" alignment="CENTER" layoutX="14.0" layoutY="363.0" spacing="5.0">
+                  <children>
+                    <Label text="OpenExchangeRates App ID" />
+                    <TextField prefWidth="200.0" />
+                    <Button mnemonicParsing="false" text="Get App ID" />
+                  </children>
+                </HBox>
+              </children>
+            </AnchorPane>
+          </content>
+        </Tab>
+        <Tab fx:id="bitcoinTab" id="bitcoinTab" text="Bitcoin">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <children>
+                <HBox id="HBox" alignment="CENTER" layoutX="14.0" layoutY="29.0" spacing="5.0">
+                  <children>
+                    <Label text="Bitcoin symbol:" />
+                    <ChoiceBox fx:id="bitcoinSymbolChoiceBox" prefWidth="225.0">
+                      <items>
+                        <FXCollections fx:factory="observableArrayList" />
+                      </items>
+                    </ChoiceBox>
+                    <CheckBox fx:id="beforeAmountCheckBox" mnemonicParsing="false" text="Place before the amount" />
+                  </children>
+                </HBox>
+                <Button fx:id="resetBlockChainButton" layoutX="14.0" layoutY="195.0" mnemonicParsing="false" text="Reset block chain and transactions" />
+                <Label layoutX="14.0" layoutY="70.0" prefHeight="66.0" prefWidth="772.0" text="If you are concerned that a transaction is taking too long to confirm or is missing then you can safely reset MultiBit HD's copy of the blockchain." wrapText="true" />
+                <HBox id="HBox" alignment="CENTER" layoutX="14.0" layoutY="186.0" spacing="5.0" />
+                <VBox id="VBox" alignment="TOP_LEFT" layoutX="14.0" layoutY="129.0" spacing="5.0">
+                  <children>
+                    <RadioButton mnemonicParsing="false" text="Reset from date of first transaction" />
+                    <HBox id="HBox" alignment="CENTER" spacing="5.0">
+                      <children>
+                        <RadioButton mnemonicParsing="false" text="Specify reset date:" />
+                        <TextField prefWidth="200.0" />
+                        <Button id="resetBlockChainButton" mnemonicParsing="false" text="..." />
+                      </children>
+                    </HBox>
+                  </children>
+                </VBox>
+              </children>
+            </AnchorPane>
+          </content>
+        </Tab>
+        <Tab fx:id="applicationTab" id="applicationTab" text="Application">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <children>
+                <VBox id="VBox" alignment="TOP_LEFT" layoutX="14.0" layoutY="102.0" spacing="5.0">
+                  <children>
+                    <RadioButton mnemonicParsing="false" text="Ignore all Bitcoin payment requests" />
+                    <RadioButton mnemonicParsing="false" text="Fill out the send form automatically" />
+                    <RadioButton mnemonicParsing="false" text="Ask me every time" />
+                  </children>
+                </VBox>
+                <CheckBox fx:id="restoreLayoutCheckBox" layoutX="14.0" layoutY="40.0" mnemonicParsing="false" prefWidth="257.0" text="Restore application layout on startup" />
+                <Label layoutX="14.0" layoutY="77.0" text="What would you like to happen when a Bitcoin link is clicked in a browser?" />
+                <Label layoutX="14.0" layoutY="186.0" text="Which directory should MultiBit HD use to store its files?" />
+                <HBox id="HBox" alignment="CENTER" layoutX="14.0" layoutY="214.0" spacing="5.0">
+                  <children>
+                    <TextField prefWidth="407.0" />
+                    <Button mnemonicParsing="false" text="..." />
+                  </children>
+                </HBox>
+                <CheckBox layoutX="14.0" layoutY="267.0" mnemonicParsing="false" text="Provide detailed logging information. Only tick this if instructed by a member of MultiBit support staff." />
+              </children>
+            </AnchorPane>
+          </content>
+        </Tab>
+        <Tab fx:id="languageTab" id="languageTab" text="Language">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <children>
+                <VBox id="VBox" alignment="TOP_LEFT" layoutX="14.0" layoutY="42.0" prefWidth="407.0" spacing="5.0">
+                  <children>
+                    <RadioButton fx:id="languageRadio1" mnemonicParsing="false" text="Use default locale for user" />
+                    <HBox id="HBox" alignment="TOP_LEFT" spacing="5.0">
+                      <children>
+                        <RadioButton fx:id="languageRadio2" alignment="TOP_LEFT" mnemonicParsing="false" text="Use specific language" />
+                        <ChoiceBox fx:id="languageChoiceBox" prefWidth="143.0">
+                          <items>
+                            <FXCollections fx:factory="observableArrayList" />
+                          </items>
+                        </ChoiceBox>
+                      </children>
+                    </HBox>
+                  </children>
+                </VBox>
+                <Label layoutX="14.0" layoutY="14.0" text="Display language" />
+                <Label layoutX="14.0" layoutY="124.0" text="Appearance" />
+                <HBox id="HBox" alignment="CENTER" layoutX="14.0" layoutY="154.0" spacing="5.0">
+                  <children>
+                    <Label text="Font details:" />
+                    <Label prefWidth="187.0" text="Lucida Grande - 14 - plain" />
+                    <Button minHeight="2.0" mnemonicParsing="false" prefHeight="21.0" text="Font ..." />
+                  </children>
+                </HBox>
+                <HBox id="HBox" alignment="TOP_LEFT" layoutX="14.0" layoutY="202.0" prefWidth="306.0" spacing="5.0">
+                  <children>
+                    <Label prefWidth="163.0" text="Theme:" />
+                    <ChoiceBox fx:id="fontChoiceBox" prefWidth="143.0">
+                      <items>
+                        <FXCollections fx:factory="observableArrayList" />
+                      </items>
+                    </ChoiceBox>
+                  </children>
+                </HBox>
+              </children>
+            </AnchorPane>
+          </content>
+        </Tab>
+      </tabs>
+    </TabPane>
+    <HBox id="HBox" alignment="BOTTOM_RIGHT" layoutX="358.0" layoutY="553.0" spacing="20.0">
+      <children>
+        <Button fx:id="cancelSettingsButton" mnemonicParsing="false" text="Cancel" />
+        <Button fx:id="applySettingsButton" mnemonicParsing="false" text="Apply" />
+        <Button fx:id="undoSettingsButton" mnemonicParsing="false" text="Undo last font or language change" />
+      </children>
+    </HBox>
   </children>
 </AnchorPane>

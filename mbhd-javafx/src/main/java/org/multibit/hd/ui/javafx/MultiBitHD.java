@@ -4,7 +4,8 @@ import com.google.common.base.Preconditions;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import org.multibit.hd.ui.javafx.config.Configuration;
-import org.multibit.hd.ui.javafx.config.ConfigurationAdapter;
+import org.multibit.hd.ui.javafx.config.ConfigurationReadAdapter;
+import org.multibit.hd.ui.javafx.config.Configurations;
 import org.multibit.hd.ui.javafx.controllers.main.GenericEventController;
 import org.multibit.hd.ui.javafx.exceptions.UIException;
 import org.multibit.hd.ui.javafx.logging.LoggingFactory;
@@ -71,13 +72,13 @@ public class MultiBitHD extends Application {
     loadConfiguration();
 
     // Configure logging
-    new LoggingFactory(Stages.getConfiguration().getLogging(), "MultiBit HD").configure();
+    new LoggingFactory(Configurations.currentConfiguration.getLoggingConfiguration(), "MultiBit HD").configure();
 
     // Build the stages
     Stages.build();
 
     // Always start with the welcome stage
-    StageManager.WELCOME_STAGE.show();
+    StageManager.MAIN_STAGE.show();
 
   }
 
@@ -100,7 +101,7 @@ public class MultiBitHD extends Application {
         log.warn("Configuration file is missing. Using defaults.");
       }
 
-      configuration = new ConfigurationAdapter(properties).adapt();
+      configuration = new ConfigurationReadAdapter(properties).adapt();
 
     } catch (IOException e) {
       throw new UIException(e);
@@ -110,7 +111,7 @@ public class MultiBitHD extends Application {
 
     Preconditions.checkNotNull(configuration, "Configuration must be present");
 
-    Stages.setConfiguration(configuration);
+    Configurations.currentConfiguration = configuration;
 
   }
 

@@ -15,7 +15,7 @@
   <children>
     <GridPane alignment="CENTER" focusTraversable="true" hgap="10.0" layoutX="99.0" layoutY="177.0" vgap="10.0">
       <children>
-        <Button id="" fx:id="loginButton" mnemonicParsing="false" onAction="#onLoginFired" prefHeight="21.9998779296875" text="Login" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
+        <Button id="" fx:id="signInButton" mnemonicParsing="false" onAction="#onSignInFired" prefHeight="21.9998779296875" text="Sign In" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
         <Text id="welcome-text" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome" GridPane.columnIndex="0" GridPane.rowIndex="0" />
         <Label text="%showPreferencesPanel.languageTitle" GridPane.columnIndex="0" GridPane.rowIndex="2" />
         <Label text="%showExportPrivateKeysPanel.passwordPrompt" GridPane.columnIndex="0" GridPane.rowIndex="1" />
@@ -25,7 +25,7 @@
             <Insets />
           </GridPane.margin>
         </Hyperlink>
-        <ChoiceBox fx:id="languageChoice" prefWidth="188.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+        <ChoiceBox fx:id="languageChoiceBox" prefWidth="188.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
       </children>
       <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="150.0" />
