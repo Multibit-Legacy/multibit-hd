@@ -35,6 +35,7 @@
       <children>
         <Label fx:id="helpLabel" maxHeight="-1.0" prefHeight="38.0" prefWidth="-1.0" text="Help" />
         <Label fx:id="settingsLabel" prefHeight="38.0" prefWidth="-1.0" text="Settings" />
+        <Label fx:id="signOutLabel" prefHeight="38.0" prefWidth="-1.0" text="Sign Out" />
       </children>
     </HBox>
   </children>

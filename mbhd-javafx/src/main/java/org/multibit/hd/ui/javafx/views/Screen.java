@@ -55,6 +55,11 @@ public enum Screen {
    */
   MAIN_WALLET("fxml/main/wallet.fxml"),
 
+  /**
+   * The error reporting screen within the main stage
+   */
+  MAIN_ERROR("fxml/main/error.fxml"),
+
   // End of enum
   ;
 

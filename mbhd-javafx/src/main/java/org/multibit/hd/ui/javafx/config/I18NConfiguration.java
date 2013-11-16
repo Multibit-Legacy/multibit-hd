@@ -68,4 +68,19 @@ public class I18NConfiguration {
     return currencySymbolPrefixed;
   }
 
+  /**
+   * @return A deep copy of this object
+   */
+  public I18NConfiguration deepCopy() {
+
+    I18NConfiguration i18n = new I18NConfiguration();
+
+    i18n.setCurrencySymbolPrefixed(isCurrencySymbolPrefixed());
+    i18n.setLocale(getLocale());
+    i18n.setDecimalSeparator(getDecimalSeparator().orNull());
+    i18n.setGroupingSeparator(getGroupingSeparator().orNull());
+
+    return i18n;
+
+  }
 }

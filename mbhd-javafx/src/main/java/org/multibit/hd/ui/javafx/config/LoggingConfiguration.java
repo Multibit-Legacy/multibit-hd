@@ -2,6 +2,7 @@ package org.multibit.hd.ui.javafx.config;
 
 import ch.qos.logback.classic.Level;
 import com.google.common.collect.Maps;
+import org.multibit.hd.ui.javafx.utils.MultiBitFiles;
 
 import java.util.Locale;
 import java.util.Map;
@@ -72,6 +73,22 @@ public class LoggingConfiguration {
     this.syslog = config;
   }
 
+  /**
+   * @return A deep copy of this object
+   */
+  public LoggingConfiguration deepCopy() {
+
+    LoggingConfiguration logging = new LoggingConfiguration();
+
+    // Only configure the basics to match the properties file
+    logging.setLevel(getLevel());
+    logging.setLoggers(getLoggers());
+    logging.getFileConfiguration().setArchivedLogFilenamePattern(getFileConfiguration().getArchivedLogFilenamePattern());
+    logging.getFileConfiguration().setCurrentLogFilename(getFileConfiguration().getCurrentLogFilename());
+
+    return logging;
+  }
+
   // Output configurations (console, file, system etc)
 
   public static class ConsoleConfiguration {
@@ -123,7 +140,7 @@ public class LoggingConfiguration {
 
     private Level threshold = Level.ALL;
 
-    private String currentLogFilename;
+    private String currentLogFilename = MultiBitFiles.MBHD_PREFIX;
 
     private boolean archive = true;
 

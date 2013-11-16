@@ -86,4 +86,28 @@ public class Configuration {
   public void setPropertiesVersion(String propertiesVersion) {
     this.propertiesVersion = propertiesVersion;
   }
+
+  /**
+   * @return A deep copy of this configuration
+   */
+  public Configuration deepCopy() {
+
+    I18NConfiguration i18n = getI18NConfiguration().deepCopy();
+    ApplicationConfiguration app = getApplicationConfiguration().deepCopy();
+    BitcoinConfiguration bitcoin = getBitcoinConfiguration().deepCopy();
+    LoggingConfiguration logging = getLoggingConfiguration().deepCopy();
+
+    Configuration configuration = new Configuration();
+
+    // Bind the copies
+    configuration.setApplicationConfiguration(app);
+    configuration.setI18NConfiguration(i18n);
+    configuration.setBitcoinConfiguration(bitcoin);
+    configuration.setLoggingConfiguration(logging);
+
+    // Copy top level properties
+    configuration.setPropertiesVersion(getPropertiesVersion());
+
+    return configuration;
+  }
 }

@@ -171,9 +171,8 @@
     </TabPane>
     <HBox id="HBox" alignment="BOTTOM_RIGHT" layoutX="358.0" layoutY="553.0" spacing="20.0">
       <children>
-        <Button fx:id="cancelSettingsButton" mnemonicParsing="false" text="Cancel" />
-        <Button fx:id="applySettingsButton" mnemonicParsing="false" text="Apply" />
-        <Button fx:id="undoSettingsButton" mnemonicParsing="false" text="Undo last font or language change" />
+        <Button fx:id="applySettingsButton" onAction="#onApplyFired" mnemonicParsing="false" text="Apply" />
+        <Button fx:id="undoSettingsButton" onAction="#onUndoFired" mnemonicParsing="false" text="Undo" />
       </children>
     </HBox>
   </children>

@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Maven: com.oracle:javafx:2.2.40">
-    <CLASSES>
-      <root url="jar:///System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home/lib/jfxrt.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

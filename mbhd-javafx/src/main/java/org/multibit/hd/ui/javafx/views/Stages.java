@@ -104,8 +104,8 @@ public class Stages {
 
     // Build the main stage
     Stage mainStage = new Stage();
-    mainStage.setHeight(1024);
     mainStage.setWidth(1280);
+    mainStage.setHeight(1024);
 
     StageManager
       .MAIN_STAGE
@@ -118,7 +118,8 @@ public class Stages {
         Screen.MAIN_CONTACTS,
         Screen.MAIN_SETTINGS,
         Screen.MAIN_HELP,
-        Screen.MAIN_WALLET
+        Screen.MAIN_WALLET,
+        Screen.MAIN_ERROR
       ))
       .withCurrentScreen(Screen.MAIN_HOME)
       .build();

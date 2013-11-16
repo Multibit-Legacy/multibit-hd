@@ -26,4 +26,15 @@ public class BitcoinConfiguration {
     this.bitcoinSymbol = bitcoinSymbol;
   }
 
+  /**
+   * @return A deep copy of this object
+   */
+  public BitcoinConfiguration deepCopy() {
+
+    BitcoinConfiguration bitcoin = new BitcoinConfiguration();
+
+    bitcoin.setBitcoinSymbol(getBitcoinSymbol());
+
+    return bitcoin;
+  }
 }

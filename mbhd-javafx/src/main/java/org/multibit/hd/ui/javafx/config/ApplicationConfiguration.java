@@ -87,4 +87,20 @@ public class ApplicationConfiguration {
   public void setRestoreApplicationLayoutOnStartup(boolean restoreApplicationLayoutOnStartup) {
     this.restoreApplicationLayoutOnStartup = restoreApplicationLayoutOnStartup;
   }
+
+  /**
+   * @return A deep copy of this object
+   */
+  public ApplicationConfiguration deepCopy() {
+
+    ApplicationConfiguration app = new ApplicationConfiguration();
+
+    app.setCurrentTab(getCurrentTab().orNull());
+    app.setApplicationDirectory(getApplicationDirectory());
+    app.setBitcoinUriHandling(getBitcoinUriHandling());
+    app.setCurrentScreen(getCurrentScreen().orNull());
+    app.setCurrentStageManager(getCurrentStageManager().orNull());
+
+    return app;
+  }
 }

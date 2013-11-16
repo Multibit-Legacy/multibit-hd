@@ -52,6 +52,9 @@ public class MainController extends MultiBitController {
   @FXML
   public TreeView<String> walletTreeView;
 
+  @FXML
+  public Label signOutLabel;
+
   @Override
   public void initClickEvents() {
 
@@ -74,6 +77,18 @@ public class MainController extends MultiBitController {
         if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
 
           StageManager.MAIN_STAGE.changeScreen(Screen.MAIN_SETTINGS);
+
+        }
+      }
+    });
+
+    signOutLabel.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+      @Override
+      public void handle(MouseEvent mouseEvent) {
+        if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
+
+          StageManager.MAIN_STAGE.handOver(StageManager.WELCOME_STAGE, Screen.WELCOME_LOGIN);
 
         }
       }
@@ -127,8 +142,9 @@ public class MainController extends MultiBitController {
     updateBalance(new BigDecimal("20999999.12345678"));
 
     // Top icons
-    AwesomeDecorator.applyIcon(settingsLabel, AwesomeIcon.GEAR, ContentDisplay.LEFT);
     AwesomeDecorator.applyIcon(helpLabel, AwesomeIcon.QUESTION_CIRCLE, ContentDisplay.LEFT);
+    AwesomeDecorator.applyIcon(settingsLabel, AwesomeIcon.GEAR, ContentDisplay.LEFT);
+    AwesomeDecorator.applyIcon(signOutLabel, AwesomeIcon.SIGN_OUT, ContentDisplay.LEFT);
 
     // Wallets
     AwesomeDecorator.applyIcon(walletTreeView.getRoot().getChildren().get(0), AwesomeIcon.BITCOIN);

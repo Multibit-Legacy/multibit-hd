@@ -5,8 +5,10 @@ import com.google.common.collect.Maps;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import org.multibit.hd.ui.javafx.config.Configuration;
 import org.multibit.hd.ui.javafx.config.Configurations;
 import org.multibit.hd.ui.javafx.controllers.MultiBitController;
 import org.multibit.hd.ui.javafx.fonts.AwesomeDecorator;
@@ -19,6 +21,8 @@ import org.multibit.hd.ui.javafx.views.Stages;
 import java.util.Map;
 
 public class SettingsController extends MultiBitController {
+
+  private Configuration tempConfiguration;
 
   @FXML
   public CheckBox showCurrencyTickerCheckBox;
@@ -69,9 +73,6 @@ public class SettingsController extends MultiBitController {
   public ChoiceBox fontChoiceBox;
 
   @FXML
-  public Button cancelSettingsButton;
-
-  @FXML
   public Button applySettingsButton;
 
   @FXML
@@ -104,10 +105,13 @@ public class SettingsController extends MultiBitController {
     tabMap.put(languageTab.getId(), languageTab);
     tabMap.put(exchangeRatesTab.getId(), exchangeRatesTab);
 
+    // Create a temporary configuration as a backing model
+    tempConfiguration = Configurations.currentConfiguration.deepCopy();
+
     initExchangeRatesTab();
     initBitcoinTab();
     initApplicationTab();
-    initLanguagesTab();
+    initLanguageTab();
 
     Optional<String> currentTab = Configurations
       .currentConfiguration
@@ -135,7 +139,7 @@ public class SettingsController extends MultiBitController {
 
   }
 
-  private void initLanguagesTab() {
+  private void initLanguageTab() {
 
     // Fill in the language names and standard codes
     languageChoiceBox.setItems(
@@ -150,14 +154,8 @@ public class SettingsController extends MultiBitController {
         @Override
         public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
 
-          Configurations.currentConfiguration.getI18NConfiguration().setLocale(Languages.newLocaleFromIndex((Integer) newValue));
-          Configurations.currentConfiguration.getApplicationConfiguration().setCurrentTab(languageTab.getId());
-
-          // Update all the stages to the new locale
-          Stages.build();
-
-
-          StageManager.MAIN_STAGE.changeScreen(Screen.MAIN_SETTINGS);
+          // Update the temp configuration with the new language (wait for Apply to allow Undo)
+          tempConfiguration.getI18NConfiguration().setLocale(Languages.newLocaleFromIndex((Integer) newValue));
 
         }
       });
@@ -167,10 +165,55 @@ public class SettingsController extends MultiBitController {
   @Override
   public void initAwesome() {
 
-    // Apply buttons
-    AwesomeDecorator.applyIcon(cancelSettingsButton, AwesomeIcon.TIMES, ContentDisplay.LEFT);
+    // Apply/undo buttons
     AwesomeDecorator.applyIcon(applySettingsButton, AwesomeIcon.CHECK, ContentDisplay.LEFT);
     AwesomeDecorator.applyIcon(undoSettingsButton, AwesomeIcon.UNDO, ContentDisplay.LEFT);
+
+    AwesomeDecorator.applyIcon(exchangeRatesTab, AwesomeIcon.MOON_ALT);
+    AwesomeDecorator.applyIcon(bitcoinTab, AwesomeIcon.BITCOIN);
+    AwesomeDecorator.applyIcon(applicationTab, AwesomeIcon.DESKTOP);
+    AwesomeDecorator.applyIcon(languageTab, AwesomeIcon.GLOBE);
+
+  }
+
+  public void onApplyFired(ActionEvent actionEvent) {
+
+    // Track the current active tab
+    SingleSelectionModel<Tab> selectionModel = settingsTabPane.getSelectionModel();
+    tempConfiguration.getApplicationConfiguration().setCurrentTab(selectionModel.getSelectedItem().getId());
+
+    // Keep track of the previous configuration
+    Configurations.previousConfiguration = Configurations.currentConfiguration;
+    Configurations.currentConfiguration = tempConfiguration;
+
+    // Persist the configuration
+    Configurations.writeCurrentConfiguration();
+
+    // Update all the stages to the new locale
+    Stages.build();
+
+    // Show this screen with the new settings in place
+    StageManager.MAIN_STAGE.changeScreen(Screen.MAIN_SETTINGS);
+
+  }
+
+  public void onUndoFired(ActionEvent actionEvent) {
+
+    // Track the current active tab
+    SingleSelectionModel<Tab> selectionModel = settingsTabPane.getSelectionModel();
+    tempConfiguration.getApplicationConfiguration().setCurrentTab(selectionModel.getSelectedItem().getId());
+
+    // Replace the previous configuration
+    Configurations.currentConfiguration = Configurations.previousConfiguration;
+
+    // Persist the configuration
+    Configurations.writeCurrentConfiguration();
+
+    // Update all the stages to the new locale
+    Stages.build();
+
+    // Show this screen with the new settings in place
+    StageManager.MAIN_STAGE.changeScreen(Screen.MAIN_SETTINGS);
 
   }
 

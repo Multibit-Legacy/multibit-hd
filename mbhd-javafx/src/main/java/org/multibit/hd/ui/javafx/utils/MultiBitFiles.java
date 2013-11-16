@@ -27,7 +27,9 @@ public class MultiBitFiles {
 
   private static final Logger log = LoggerFactory.getLogger(MultiBitFiles.class);
 
-  private static final String MBHD_CONFIGURATION_FILE = MBHD_PREFIX + ".properties";
+  public static final String MBHD_CONFIGURATION_FILE = MBHD_PREFIX + ".properties";
+  public static final String MBHD_LOG_FILE = "log/"+MBHD_PREFIX + ".log";
+  public static final String MBHD_ARCHIVE_FILE = "log/"+MBHD_PREFIX + "-%d.log.gz";
 
   /**
    * Utilities have private constructor
@@ -158,12 +160,14 @@ public class MultiBitFiles {
       applicationDataDirectory = System.getProperty("user.home") + "/" + MBHD_APP_NAME;
     }
 
+    log.debug("Application data directory is '{}'", applicationDataDirectory);
+
     // Create the application data directory if it does not exist
     File directory = new File(applicationDataDirectory);
-    Preconditions.checkState(directory.isDirectory(), "Incorrectly identified the application data directory as a file");
     if (!directory.exists()) {
       Preconditions.checkState(directory.mkdir(), "Could not create the application data directory of '" + applicationDataDirectory + "'");
     }
+    Preconditions.checkState(directory.isDirectory(), "Incorrectly identified the application data directory as a file");
 
     return applicationDataDirectory;
   }

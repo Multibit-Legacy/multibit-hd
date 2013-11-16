@@ -93,7 +93,7 @@
             </executions>
           </plugin>
 
-          <!-- AntRun plugin for JavaFx packaging (requires javafx.jar in JDK) -->
+          <!-- AntRun plugin for JavaFx packaging (requires lib/ant-javafx.jar in JDK) -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
