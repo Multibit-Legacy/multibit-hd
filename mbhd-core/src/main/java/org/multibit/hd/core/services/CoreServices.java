@@ -1,5 +1,6 @@
 package org.multibit.hd.core.services;
 
+import com.google.common.eventbus.EventBus;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.logging.LoggingFactory;
 
@@ -13,6 +14,8 @@ import org.multibit.hd.core.logging.LoggingFactory;
  *         
  */
 public class CoreServices {
+
+  private static final EventBus eventBus = new EventBus();
 
   /**
    * <p>Initialises the core services, and can act as an independent starting point for headless operations</p>
@@ -43,4 +46,17 @@ public class CoreServices {
   }
 
 
+  /**
+   * @param event The event to post
+   */
+  public static void postEvent(Object event) {
+    eventBus.post(event);
+  }
+
+  /**
+   * @param subscriber An event subscriber with zero or more annotated methods
+   */
+  public static void registerEventSubscriber(Object subscriber) {
+    eventBus.register(subscriber);
+  }
 }

@@ -33,12 +33,14 @@ public class MultiBitHD {
 
     // Create the views
     final MainView mainView = new MainView();
+
+    // Create and register the controllers
+    CoreServices.registerEventSubscriber(new MainController(mainView));
+
+    // Show the UI
     mainView.pack();
     mainView.setVisible(true);
 
-    // Create the controllers
-    final MainController mainController = new MainController(mainView, exchangeService.getTickerQueue());
-    mainController.start();
   }
 
   private void registerEventListeners() {

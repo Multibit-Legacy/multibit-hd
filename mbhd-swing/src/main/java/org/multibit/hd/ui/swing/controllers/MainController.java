@@ -1,14 +1,12 @@
 package org.multibit.hd.ui.swing.controllers;
 
-import com.xeiam.xchange.dto.marketdata.Ticker;
-import org.multibit.hd.core.concurrent.SafeExecutors;
+import com.google.common.eventbus.Subscribe;
+import org.multibit.hd.core.api.BalanceChangeEvent;
 import org.multibit.hd.ui.swing.views.MainView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.math.BigDecimal;
 
 /**
  * <p>Controller for the Mmin view </p>
@@ -22,56 +20,26 @@ public class MainController {
 
   private final MainView mainView;
 
-  private final BlockingQueue<Ticker> tickerQueue;
-
-  private ScheduledExecutorService executorService;
-
-  public MainController(MainView mainView, BlockingQueue<Ticker> tickerQueue) {
+  public MainController(MainView mainView) {
 
     this.mainView = mainView;
-    this.tickerQueue = tickerQueue;
 
   }
 
-  public void start() {
+  @Subscribe
+  public void onBalanceChanged(BalanceChangeEvent event) {
 
-    log.debug("Starting service");
+    // Build the exchange string
+    // TODO (GR) i18n
+    String rate = String.format("~ %s (%s)",
+      event.getLocalAmount().multiply(new BigDecimal("12.3456")).toPlainString(),
+      event.getExchangeName()
+    );
 
-    this.executorService = SafeExecutors.newSingleThreadScheduledExecutor();
-    executorService.scheduleAtFixedRate(new Runnable() {
-      @Override
-      public void run() {
+    // Perform an update
+    mainView.updateBalance(new BigDecimal("12.3456"), rate);
 
-        try {
 
-          log.debug("View ticker check");
-
-          // Wait forever for the ticker
-          Ticker ticker = tickerQueue.take();
-
-          log.debug("Updating");
-
-          // Perform an update
-          mainView.updateBalance(ticker.getLast().getAmount());
-
-        } catch (InterruptedException e) {
-          log.error(e.getMessage(), e);
-        }
-
-      }
-    }, 1, 1, TimeUnit.SECONDS);
-
-    log.debug("Started");
-
-  }
-
-  public void stopAndWait() {
-
-    log.debug("Stopping service");
-
-    executorService.shutdownNow();
-
-    log.debug("Stopped");
   }
 
 }

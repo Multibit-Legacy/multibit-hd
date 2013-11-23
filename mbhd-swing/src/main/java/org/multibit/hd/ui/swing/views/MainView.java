@@ -33,7 +33,10 @@ public class MainView extends JFrame {
   private JLabel balanceLHSLabel;
   private JLabel balanceRHSLabel;
   private JLabel balanceRHSSymbolLabel;
+  private JLabel exchangeLabel;
+
   private JTree sidebarTree;
+
   private JLabel helpLabel;
   private JLabel settingsLabel;
   private JLabel signOutLabel;
@@ -134,6 +137,7 @@ public class MainView extends JFrame {
     balanceLHSLabel = new JLabel("0.00");
     balanceRHSLabel = new JLabel("000000");
     balanceRHSSymbolLabel = new JLabel("BTC");
+    exchangeLabel = new JLabel("~ 0.00 (Mt Gox)");
 
     Font balanceFont = balanceLHSLabel.getFont().deriveFont(42.0f);
     Font decimalFont = balanceLHSLabel.getFont().deriveFont(28.0f);
@@ -141,6 +145,7 @@ public class MainView extends JFrame {
     balanceLHSLabel.setFont(balanceFont);
     balanceRHSLabel.setFont(decimalFont);
     balanceRHSSymbolLabel.setFont(balanceFont);
+    exchangeLabel.setFont(balanceFont);
 
     // TODO Colors for a ColorPalette
     // TODO Fix the decimal alignment
@@ -149,6 +154,7 @@ public class MainView extends JFrame {
     balancePanel.add(balanceLHSLabel);
     balancePanel.add(balanceRHSLabel);
     balancePanel.add(balanceRHSSymbolLabel);
+    balancePanel.add(exchangeLabel);
 
     return balancePanel;
   }
@@ -341,8 +347,9 @@ public class MainView extends JFrame {
    * <p>Handles the representation of the balance based on the current configuration</p>
    *
    * @param amount The amount
+   * @param rate The equivalent rate in local currency
    */
-  public void updateBalance(BigDecimal amount) {
+  public void updateBalance(BigDecimal amount, String rate) {
 
     BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
     I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration();
@@ -383,7 +390,7 @@ public class MainView extends JFrame {
 
     balanceLHSLabel.setText(balance[0]);
     balanceRHSLabel.setText(balance[1]);
-
+    exchangeLabel.setText(rate);
   }
 
 
@@ -413,5 +420,9 @@ public class MainView extends JFrame {
 
   public JLabel getSignOutLabel() {
     return signOutLabel;
+  }
+
+  public JLabel getExchangeLabel() {
+    return exchangeLabel;
   }
 }

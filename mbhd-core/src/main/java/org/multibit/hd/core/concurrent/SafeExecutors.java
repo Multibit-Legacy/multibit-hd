@@ -1,5 +1,9 @@
 package org.multibit.hd.core.concurrent;
 
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.ListeningScheduledExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
+
 import java.util.concurrent.*;
 
 /**
@@ -28,14 +32,14 @@ public class SafeExecutors {
    *
    * @throws IllegalArgumentException if {@code nThreads <= 0}
    */
-  public static ExecutorService newFixedThreadPool(int nThreads) {
-    return new SafeThreadPoolExecutor(
+  public static ListeningExecutorService newFixedThreadPool(int nThreads) {
+    return MoreExecutors.listeningDecorator(new SafeThreadPoolExecutor(
       nThreads,
       nThreads,
       0L,
       TimeUnit.MILLISECONDS,
       new LinkedBlockingQueue<Runnable>()
-    );
+    ));
   }
 
   /**
@@ -59,15 +63,15 @@ public class SafeExecutors {
    * @throws NullPointerException     if threadFactory is null
    * @throws IllegalArgumentException if {@code nThreads <= 0}
    */
-  public static ExecutorService newFixedThreadPool(int nThreads, ThreadFactory threadFactory) {
-    return new SafeThreadPoolExecutor(
+  public static ListeningExecutorService newFixedThreadPool(int nThreads, ThreadFactory threadFactory) {
+    return MoreExecutors.listeningDecorator(new SafeThreadPoolExecutor(
       nThreads,
       nThreads,
       0L,
       TimeUnit.MILLISECONDS,
       new LinkedBlockingQueue<Runnable>(),
       threadFactory
-    );
+    ));
   }
 
   /**
@@ -83,8 +87,8 @@ public class SafeExecutors {
    *
    * @return the newly created single-threaded Executor
    */
-  public static ExecutorService newSingleThreadExecutor() {
-    return newFixedThreadPool(1);
+  public static ListeningExecutorService newSingleThreadExecutor() {
+    return MoreExecutors.listeningDecorator(newFixedThreadPool(1));
   }
 
   /**
@@ -101,8 +105,8 @@ public class SafeExecutors {
    *
    * @return the newly created scheduled executor
    */
-  public static ScheduledExecutorService newSingleThreadScheduledExecutor() {
-    return new SafeScheduledThreadPoolExecutor(1);
+  public static ListeningScheduledExecutorService newSingleThreadScheduledExecutor() {
+    return MoreExecutors.listeningDecorator(new SafeScheduledThreadPoolExecutor(1));
   }
 
   /**
@@ -116,8 +120,8 @@ public class SafeExecutors {
    *
    * @throws IllegalArgumentException if {@code corePoolSize < 0}
    */
-  public static ScheduledExecutorService newScheduledThreadPool(int corePoolSize) {
-    return new SafeScheduledThreadPoolExecutor(corePoolSize);
+  public static ListeningScheduledExecutorService newScheduledThreadPool(int corePoolSize) {
+    return MoreExecutors.listeningDecorator(new SafeScheduledThreadPoolExecutor(corePoolSize));
   }
 
   /**
@@ -134,8 +138,8 @@ public class SafeExecutors {
    * @throws IllegalArgumentException if {@code corePoolSize < 0}
    * @throws NullPointerException     if threadFactory is null
    */
-  public static ScheduledExecutorService newScheduledThreadPool(int corePoolSize, ThreadFactory threadFactory) {
-    return new SafeScheduledThreadPoolExecutor(corePoolSize, threadFactory);
+  public static ListeningScheduledExecutorService newScheduledThreadPool(int corePoolSize, ThreadFactory threadFactory) {
+    return MoreExecutors.listeningDecorator(new SafeScheduledThreadPoolExecutor(corePoolSize, threadFactory));
   }
 
 }
