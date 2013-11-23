@@ -1,6 +1,7 @@
 package org.multibit.hd.core.config;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Preconditions;
 import com.google.common.io.Files;
 import org.multibit.hd.core.exceptions.CoreException;
 import org.multibit.hd.core.utils.MultiBitFiles;
@@ -11,6 +12,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -58,6 +60,12 @@ public class Configurations {
   public static Configuration previousConfiguration;
 
   /**
+   * Utilities have private constructors
+   */
+  private Configurations() {
+  }
+
+  /**
    * @return A new default configuration based on the default locale
    */
   public static Configuration newDefaultConfiguration() {
@@ -88,55 +96,122 @@ public class Configurations {
   }
 
   /**
-   * @return A new default configuration based on the default locale
+   * @return The persisted configuration
    */
   public static Configuration readConfiguration() {
 
-    // Read the external configuration
-    final Configuration configuration;
-
-    Properties properties = new Properties();
-
     File configurationFile = MultiBitFiles.getConfigurationFile();
-    if (configurationFile.exists()) {
-      try (FileInputStream fis = new FileInputStream(configurationFile)) {
-        properties.load(fis);
-      } catch (IOException e) {
-        throw new CoreException(e);
-      }
+
+    Properties properties = readProperties(configurationFile);
+    if (!properties.isEmpty()) {
+      return new ConfigurationReadAdapter(properties).adapt();
     } else {
       log.warn("Configuration file is missing. Using defaults.");
       return newDefaultConfiguration();
     }
 
-    return new ConfigurationReadAdapter(properties).adapt();
+  }
 
+  /**
+   * <p>Loads a properties file from the given location</p>
+   *
+   * @param propertiesFile The location of the properties file
+   *
+   * @return The raw properties file used for storing the configuration, or empty if not found
+   */
+  /* package for testing */
+  static Properties readProperties(File propertiesFile) {
+
+    Preconditions.checkNotNull(propertiesFile, "'propertiesFile' must be present");
+
+    // Create an empty set of properties
+    Properties properties = new Properties();
+
+    if (propertiesFile.exists()) {
+      log.debug("Loading properties from '{}'", propertiesFile.getAbsolutePath());
+      try (FileInputStream fis = new FileInputStream(propertiesFile)) {
+        properties.load(fis);
+        log.debug("Properties loaded");
+      } catch (IOException e) {
+        throw new CoreException(e);
+      }
+    }
+
+    return properties;
   }
 
   /**
    * <p>Writes the current configuration to the application directory</p>
    */
-  public static void writeCurrentConfiguration() {
+  /* package for testing */
+  static void writeCurrentConfiguration() {
 
-    // Get the existing configuration file and delete it if necessary
     File configurationFile = MultiBitFiles.getConfigurationFile();
-    if (configurationFile.exists()) {
-      if (!configurationFile.delete()) {
-        throw new CoreException("Unable to delete configuration file");
+
+    // Read in the existing properties in case we are legacy running
+    // in a more recent version's environment
+    Properties existingProperties = readProperties(configurationFile);
+
+    // Create a properties file representation
+    Properties newProperties = new ConfigurationWriteAdapter(currentConfiguration).adapt();
+
+    // Merge the new into the existing, preserving the existing
+    mergeProperties(newProperties, existingProperties);
+
+    // Write the properties
+    writeProperties(configurationFile, newProperties);
+
+  }
+
+  /**
+   * <p>Writes the given properties to the given file location, deleting any existing file.</p>
+   *
+   * @param propertiesFile The file for writing the properties
+   * @param properties     The properties that will replace
+   */
+  /* package for testing */
+  static void writeProperties(File propertiesFile, Properties properties) {
+
+    Preconditions.checkNotNull(propertiesFile, "'propertiesFile' must be present");
+    Preconditions.checkNotNull(properties, "'properties' must be present");
+
+    // Remove the old properties file to make way for the new
+    if (propertiesFile.exists()) {
+      if (!propertiesFile.delete()) {
+        throw new CoreException("Unable to delete '" + propertiesFile.getAbsolutePath() + "'");
       }
     }
 
-    // Create a properties file representation
-    Properties properties = new ConfigurationWriteAdapter(currentConfiguration).adapt();
-
-    // Uses Java7 try-with-resources syntax
-    try (Writer writer = Files.newWriter(configurationFile, Charsets.UTF_8)) {
-      properties.store(writer, "MultiBit HD " + currentConfiguration.getPropertiesVersion());
+    try (Writer writer = Files.newWriter(propertiesFile, Charsets.UTF_8)) {
+      properties.store(writer, "MultiBit HD Information");
       writer.flush();
     } catch (IOException e) {
       throw new CoreException(e);
     }
+  }
 
+  /**
+   * <p>Merge the subset into the existing superset. The subset will overwrite the superset.
+   * Items in the superset and not in the subset will be preserved.</p>
+   *
+   * @param subset   The subset contains the items that will overwrite those in the superset
+   * @param superset The superset contains any items not in the subset that will be preserved
+   */
+  /* package for testing */
+  static void mergeProperties(Properties subset, Properties superset) {
+
+    Preconditions.checkNotNull(subset, "'subset' must be present");
+    Preconditions.checkNotNull(superset, "'superset' must be present");
+
+    // Drive the merge from the subset
+    for (Map.Entry<Object, Object> entry : subset.entrySet()) {
+
+      String key = (String) entry.getKey();
+      String value = (String) entry.getValue();
+
+      superset.put(key, value);
+
+    }
   }
 
 }
