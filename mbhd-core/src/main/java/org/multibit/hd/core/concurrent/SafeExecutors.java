@@ -1,4 +1,4 @@
-package org.multibit.hd.core.concurrency;
+package org.multibit.hd.core.concurrent;
 
 import java.util.concurrent.*;
 

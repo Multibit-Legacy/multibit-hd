@@ -3,7 +3,6 @@ package org.multibit.hd.core.config;
 import ch.qos.logback.classic.Level;
 import com.google.common.collect.Maps;
 import org.multibit.hd.core.utils.MultiBitFiles;
-import org.multibit.hd.core.utils.MultiBitFiles;
 
 import java.util.Locale;
 import java.util.Map;
@@ -37,6 +36,8 @@ public class LoggingConfiguration {
   public LoggingConfiguration() {
 
     loggers.put("org.multibit", Level.DEBUG);
+    loggers.put("com.xeiam", Level.DEBUG);
+    loggers.put("com.google.bitcoinj", Level.DEBUG);
   }
 
   public Level getLevel() {

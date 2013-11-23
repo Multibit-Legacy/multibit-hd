@@ -1,4 +1,4 @@
-package org.multibit.hd.core.concurrency;
+package org.multibit.hd.core.concurrent;
 
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 
