@@ -12,6 +12,7 @@ package org.multibit.hd.core.config;
 public class BitcoinConfiguration {
 
   private String bitcoinSymbol = "ICON";
+  private String exchangeClassName;
 
   /**
    * @return The Bitcoin symbol to use
@@ -34,5 +35,13 @@ public class BitcoinConfiguration {
     bitcoin.setBitcoinSymbol(getBitcoinSymbol());
 
     return bitcoin;
+  }
+
+  public String getExchangeClassName() {
+    return exchangeClassName;
+  }
+
+  public void setExchangeClassName(String exchangeClassName) {
+    this.exchangeClassName = exchangeClassName;
   }
 }

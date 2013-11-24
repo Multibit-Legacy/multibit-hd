@@ -4,7 +4,10 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Factory that partially wraps the standard Java Executors concurrency to allow any runtime exceptions to be passed
@@ -33,13 +36,15 @@ public class SafeExecutors {
    * @throws IllegalArgumentException if {@code nThreads <= 0}
    */
   public static ListeningExecutorService newFixedThreadPool(int nThreads) {
-    return MoreExecutors.listeningDecorator(new SafeThreadPoolExecutor(
-      nThreads,
-      nThreads,
-      0L,
-      TimeUnit.MILLISECONDS,
-      new LinkedBlockingQueue<Runnable>()
-    ));
+    return MoreExecutors.listeningDecorator(
+      MoreExecutors.getExitingExecutorService(
+        new SafeThreadPoolExecutor(
+          nThreads,
+          nThreads,
+          0L,
+          TimeUnit.MILLISECONDS,
+          new LinkedBlockingQueue<Runnable>()
+        )));
   }
 
   /**
@@ -64,14 +69,16 @@ public class SafeExecutors {
    * @throws IllegalArgumentException if {@code nThreads <= 0}
    */
   public static ListeningExecutorService newFixedThreadPool(int nThreads, ThreadFactory threadFactory) {
-    return MoreExecutors.listeningDecorator(new SafeThreadPoolExecutor(
-      nThreads,
-      nThreads,
-      0L,
-      TimeUnit.MILLISECONDS,
-      new LinkedBlockingQueue<Runnable>(),
-      threadFactory
-    ));
+    return MoreExecutors.listeningDecorator(
+      MoreExecutors.getExitingExecutorService(
+        new SafeThreadPoolExecutor(
+          nThreads,
+          nThreads,
+          0L,
+          TimeUnit.MILLISECONDS,
+          new LinkedBlockingQueue<Runnable>(),
+          threadFactory
+        )));
   }
 
   /**
@@ -106,7 +113,10 @@ public class SafeExecutors {
    * @return the newly created scheduled executor
    */
   public static ListeningScheduledExecutorService newSingleThreadScheduledExecutor() {
-    return MoreExecutors.listeningDecorator(new SafeScheduledThreadPoolExecutor(1));
+    return MoreExecutors.listeningDecorator(
+      MoreExecutors.getExitingScheduledExecutorService(
+        new SafeScheduledThreadPoolExecutor(1)
+      ));
   }
 
   /**
@@ -121,7 +131,10 @@ public class SafeExecutors {
    * @throws IllegalArgumentException if {@code corePoolSize < 0}
    */
   public static ListeningScheduledExecutorService newScheduledThreadPool(int corePoolSize) {
-    return MoreExecutors.listeningDecorator(new SafeScheduledThreadPoolExecutor(corePoolSize));
+    return MoreExecutors.listeningDecorator(
+      MoreExecutors.getExitingScheduledExecutorService(
+        new SafeScheduledThreadPoolExecutor(corePoolSize)
+      ));
   }
 
   /**
@@ -139,7 +152,10 @@ public class SafeExecutors {
    * @throws NullPointerException     if threadFactory is null
    */
   public static ListeningScheduledExecutorService newScheduledThreadPool(int corePoolSize, ThreadFactory threadFactory) {
-    return MoreExecutors.listeningDecorator(new SafeScheduledThreadPoolExecutor(corePoolSize, threadFactory));
+    return MoreExecutors.listeningDecorator(
+      MoreExecutors.getExitingScheduledExecutorService(
+        new SafeScheduledThreadPoolExecutor(corePoolSize, threadFactory)
+      ));
   }
 
 }

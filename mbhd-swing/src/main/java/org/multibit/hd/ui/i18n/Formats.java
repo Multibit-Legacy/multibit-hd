@@ -49,11 +49,7 @@ public class Formats {
     DecimalFormatSymbols dfs = configureDecimalFormatSymbols(configuration, currentLocale);
     DecimalFormat format = configureBitcoinDecimalFormat(dfs);
 
-    log.debug("Formatting symbolic amount: '{}' '{}'", symbolicAmount.toPlainString(), symbol);
-
     String formattedAmount = format.format(symbolicAmount);
-
-    log.debug("Formatted '{}'", formattedAmount);
 
     int decimalIndex = formattedAmount.lastIndexOf(dfs.getDecimalSeparator());
 

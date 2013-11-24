@@ -15,7 +15,10 @@ import org.multibit.hd.core.logging.LoggingFactory;
  */
 public class CoreServices {
 
-  private static final EventBus eventBus = new EventBus();
+  /**
+   * Send or register events to the user interface subscribers
+   */
+  public static final EventBus uiEventBus = new EventBus();
 
   /**
    * <p>Initialises the core services, and can act as an independent starting point for headless operations</p>
@@ -36,27 +39,15 @@ public class CoreServices {
   }
 
   /**
-   * @return The currently selected exchange service
+   * @param exchangeClassName The exchange class name taken from the XChange library
+   *
+   * @return A new exchange service based on the current configuration
    */
-  public static ExchangeService newExchangeService() {
+  public static ExchangeService newExchangeService(String exchangeClassName) {
 
     // TODO Link this in to the configuration system
-    return new ExchangeService();
+    return new ExchangeService(exchangeClassName);
 
   }
 
-
-  /**
-   * @param event The event to post
-   */
-  public static void postEvent(Object event) {
-    eventBus.post(event);
-  }
-
-  /**
-   * @param subscriber An event subscriber with zero or more annotated methods
-   */
-  public static void registerEventSubscriber(Object subscriber) {
-    eventBus.register(subscriber);
-  }
 }

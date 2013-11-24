@@ -39,7 +39,6 @@ public class MainController {
     // Perform an update
     mainView.updateBalance(new BigDecimal("12.3456"), rate);
 
-
   }
 
 }

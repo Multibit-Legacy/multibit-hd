@@ -1,5 +1,6 @@
 package org.multibit.hd.ui;
 
+import com.xeiam.xchange.mtgox.v2.MtGoxExchange;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.ExchangeService;
 import org.multibit.hd.ui.platform.GenericApplication;
@@ -28,14 +29,17 @@ public class MultiBitHD {
     // Start the core services
     CoreServices.main(args);
 
-    ExchangeService exchangeService = CoreServices.newExchangeService();
-    exchangeService.start();
+    ExchangeService exchangeService = CoreServices.newExchangeService(MtGoxExchange.class.getName());
+    exchangeService.initialise();
 
     // Create the views
     final MainView mainView = new MainView();
 
     // Create and register the controllers
-    CoreServices.registerEventSubscriber(new MainController(mainView));
+    CoreServices.uiEventBus.register(new MainController(mainView));
+
+    // Start the services
+    exchangeService.start();
 
     // Show the UI
     mainView.pack();
