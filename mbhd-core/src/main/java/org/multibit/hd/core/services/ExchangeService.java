@@ -5,6 +5,7 @@ import com.xeiam.xchange.ExchangeFactory;
 import com.xeiam.xchange.currency.Currencies;
 import com.xeiam.xchange.dto.marketdata.Ticker;
 import com.xeiam.xchange.service.polling.PollingMarketDataService;
+import org.joda.money.BigMoney;
 import org.multibit.hd.core.api.BalanceChangeEvent;
 import org.multibit.hd.core.exceptions.CoreException;
 import org.slf4j.Logger;
@@ -41,7 +42,7 @@ public class ExchangeService extends AbstractService implements ManagedService {
    * of instances of MultiBit out there
    * 15 minutes =
    */
-  public static final int TICKER_REFRESH_SECONDS = 1;
+  public static final int TICKER_REFRESH_SECONDS = 5;
 
   public ExchangeService(String exchangeClassName) {
 
@@ -70,16 +71,25 @@ public class ExchangeService extends AbstractService implements ManagedService {
     // Use the provided executor service management
     getScheduledExecutorService().scheduleAtFixedRate(new Runnable() {
 
+      private BigMoney previous;
+
       public void run() {
         // Get the latest ticker data showing BTC to GBP
         Ticker ticker;
         try {
-          ticker = pollingMarketDataService.getTicker(Currencies.BTC, Currencies.GBP);
+          ticker = pollingMarketDataService.getTicker(Currencies.BTC, Currencies.USD);
 
-          CoreServices.uiEventBus.post(new BalanceChangeEvent(
-            ticker.getLast().getAmount(),
-            exchangeName)
-          );
+          if (previous== null || !ticker.getLast().isEqual(previous)) {
+            CoreServices.uiEventBus.post(new BalanceChangeEvent(
+              ticker.getLast().getAmount(),
+              exchangeName)
+            );
+
+            log.debug("Updated {} ticker: {}", exchangeName, ticker.getLast());
+          }
+
+          previous = ticker.getLast();
+
         } catch (IOException e) {
           throw new CoreException(e);
         }
