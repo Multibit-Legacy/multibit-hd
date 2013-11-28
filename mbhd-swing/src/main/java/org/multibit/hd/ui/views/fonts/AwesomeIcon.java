@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fonts;
+package org.multibit.hd.ui.views.fonts;
 
 /**
  * <p>Enum to provide the following to UI:</p>

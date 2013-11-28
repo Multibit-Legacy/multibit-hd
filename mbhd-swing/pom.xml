@@ -175,39 +175,13 @@
       <version>${project.parent.version}</version>
     </dependency>
 
-    <!-- Integrate Font Awesome -->
-    <!--<dependency>-->
-      <!--<groupId>com.cathive.fonts</groupId>-->
-      <!--<artifactId>fonts-fontawesome</artifactId>-->
-      <!--<version>3.2.1.0</version>-->
-    <!--</dependency>-->
-
-    <!-- JGoodies for better Swing presentation -->
+    <!-- MigLayout for better Swing presentation -->
     <!-- Encourages good layout design of forms -->
     <dependency>
-      <groupId>com.jgoodies</groupId>
-      <artifactId>jgoodies-forms</artifactId>
-      <version>1.6.0</version>
+      <groupId>com.miglayout</groupId>
+      <artifactId>miglayout-swing</artifactId>
+      <version>4.2</version>
     </dependency>
-    <!-- Make components look better -->
-    <dependency>
-      <groupId>com.jgoodies</groupId>
-      <artifactId>jgoodies-looks</artifactId>
-      <version>2.5.2</version>
-    </dependency>
-    <!-- Decouple UI presentation from model state -->
-    <dependency>
-      <groupId>com.jgoodies</groupId>
-      <artifactId>jgoodies-binding</artifactId>
-      <version>2.7.0</version>
-    </dependency>
-    <!-- Validate user input -->
-    <dependency>
-      <groupId>com.jgoodies</groupId>
-      <artifactId>jgoodies-validation</artifactId>
-      <version>2.4.2</version>
-    </dependency>
-
 
   </dependencies>
 

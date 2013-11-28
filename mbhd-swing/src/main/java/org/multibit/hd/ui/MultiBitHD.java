@@ -1,11 +1,13 @@
 package org.multibit.hd.ui;
 
 import com.xeiam.xchange.mtgox.v2.MtGoxExchange;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.core.services.ExchangeService;
+import org.multibit.hd.core.services.ExchangeTickerService;
+import org.multibit.hd.ui.controllers.MainController;
+import org.multibit.hd.ui.events.LocaleChangeEvent;
 import org.multibit.hd.ui.platform.GenericApplication;
-import org.multibit.hd.ui.swing.controllers.MainController;
-import org.multibit.hd.ui.swing.views.MainView;
+import org.multibit.hd.ui.views.MainView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,21 +31,20 @@ public class MultiBitHD {
     // Start the core services
     CoreServices.main(args);
 
-    ExchangeService exchangeService = CoreServices.newExchangeService(MtGoxExchange.class.getName());
-    exchangeService.initialise();
+    ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(MtGoxExchange.class.getName());
+    exchangeTickerService.initialise();
 
     // Create the views
-    final MainView mainView = new MainView();
 
     // Create and register the controllers
-    CoreServices.uiEventBus.register(new MainController(mainView));
+    CoreServices.uiEventBus.register(new MainController());
+    CoreServices.uiEventBus.register(new MainView());
 
-    // Start the services
-    exchangeService.start();
+    // Start the services (triggers events)
+    exchangeTickerService.start();
 
     // Show the UI
-    mainView.pack();
-    mainView.setVisible(true);
+    CoreServices.uiEventBus.post(new LocaleChangeEvent(Configurations.currentConfiguration.getLocale()));
 
   }
 

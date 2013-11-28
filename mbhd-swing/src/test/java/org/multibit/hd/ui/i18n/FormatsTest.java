@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.swing.i18n;
+package org.multibit.hd.ui.i18n;
 
 import org.junit.Before;
 import org.junit.Test;

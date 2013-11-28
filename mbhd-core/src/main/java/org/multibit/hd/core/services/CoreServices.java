@@ -1,6 +1,8 @@
 package org.multibit.hd.core.services;
 
 import com.google.common.eventbus.EventBus;
+import com.xeiam.xchange.Exchange;
+import com.xeiam.xchange.ExchangeFactory;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.logging.LoggingFactory;
 
@@ -19,6 +21,12 @@ public class CoreServices {
    * Send or register events to the user interface subscribers
    */
   public static final EventBus uiEventBus = new EventBus();
+
+  /**
+   * Utilities have a private constructor
+   */
+  private CoreServices() {
+  }
 
   /**
    * <p>Initialises the core services, and can act as an independent starting point for headless operations</p>
@@ -43,10 +51,12 @@ public class CoreServices {
    *
    * @return A new exchange service based on the current configuration
    */
-  public static ExchangeService newExchangeService(String exchangeClassName) {
+  public static ExchangeTickerService newExchangeService(String exchangeClassName) {
 
-    // TODO Link this in to the configuration system
-    return new ExchangeService(exchangeClassName);
+    // Use the factory to get the exchange API using default settings
+    final Exchange exchange = ExchangeFactory.INSTANCE.createExchange(exchangeClassName);
+
+    return new ExchangeTickerService(exchange.getExchangeSpecification().getExchangeName(), exchange.getPollingMarketDataService());
 
   }
 

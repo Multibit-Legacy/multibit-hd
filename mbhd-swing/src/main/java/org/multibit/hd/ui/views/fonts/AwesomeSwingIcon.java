@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fonts;
+package org.multibit.hd.ui.views.fonts;
 
 import javax.swing.*;
 import java.awt.*;

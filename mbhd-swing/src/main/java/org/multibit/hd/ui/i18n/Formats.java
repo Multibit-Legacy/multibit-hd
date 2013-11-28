@@ -26,12 +26,12 @@ public class Formats {
   private static final Logger log = LoggerFactory.getLogger(Formats.class);
 
   /**
-   * <p>Provide a split representation for the balance display.</p>
+   * <p>Provide a split representation for the Bitcoin balance display.</p>
    * <p>For example, 12345.6789 becomes "12,345.67", "89" </p>
    *
    * @param amount The amount as a plain number (no multipliers)
    *
-   * @return The left [0] and right [0] components suitable for presentation as a balance
+   * @return The left [0] and right [0] components suitable for presentation as a balance with no symbolic decoration
    */
   public static String[] formatBitcoinBalance(BigDecimal amount) {
 
@@ -74,6 +74,26 @@ public class Formats {
   }
 
   /**
+   * <p>Provide a simple representation for the local currency balance display.</p>
+   *
+   * @param amount The amount as a plain number (no multipliers)
+   *
+   * @return The local currency representation with no symbolic decoration
+   */
+  public static String formatLocalBalance(BigDecimal amount) {
+
+    I18NConfiguration configuration = Configurations.currentConfiguration.getI18NConfiguration();
+
+    Locale currentLocale = configuration.getLocale();
+
+    DecimalFormatSymbols dfs = configureDecimalFormatSymbols(configuration, currentLocale);
+    DecimalFormat format = configureLocalDecimalFormat(dfs);
+
+    return format.format(amount);
+
+  }
+
+  /**
    * @param dfs The decimal format symbols
    *
    * @return A decimal format suitable for Bitcoin balance representation
@@ -81,12 +101,31 @@ public class Formats {
   private static DecimalFormat configureBitcoinDecimalFormat(DecimalFormatSymbols dfs) {
 
     DecimalFormat format = new DecimalFormat();
+
     format.setDecimalFormatSymbols(dfs);
     format.setMaximumIntegerDigits(16);
     format.setMinimumIntegerDigits(1);
     format.setMaximumFractionDigits(8);
     format.setMinimumFractionDigits(0);
     format.setDecimalSeparatorAlwaysShown(false);
+
+    return format;
+  }
+
+  /**
+   * @param dfs The decimal format symbols
+   *
+   * @return A decimal format suitable for local currency balance representation
+   */
+  private static DecimalFormat configureLocalDecimalFormat(DecimalFormatSymbols dfs) {
+
+    DecimalFormat format = new DecimalFormat();
+
+    format.setDecimalFormatSymbols(dfs);
+    format.setMinimumIntegerDigits(1);
+    format.setMaximumFractionDigits(2);
+    format.setMinimumFractionDigits(2);
+    format.setDecimalSeparatorAlwaysShown(true);
 
     return format;
   }

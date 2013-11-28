@@ -1,12 +1,10 @@
 package org.multibit.hd.core.services;
 
-import com.xeiam.xchange.Exchange;
-import com.xeiam.xchange.ExchangeFactory;
 import com.xeiam.xchange.currency.Currencies;
 import com.xeiam.xchange.dto.marketdata.Ticker;
 import com.xeiam.xchange.service.polling.PollingMarketDataService;
 import org.joda.money.BigMoney;
-import org.multibit.hd.core.api.BalanceChangeEvent;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.exceptions.CoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,9 +21,9 @@ import java.util.concurrent.TimeUnit;
  * @since 0.0.1
  *         
  */
-public class ExchangeService extends AbstractService implements ManagedService {
+public class ExchangeTickerService extends AbstractService implements ManagedService {
 
-  private static final Logger log = LoggerFactory.getLogger(ExchangeService.class);
+  private static final Logger log = LoggerFactory.getLogger(ExchangeTickerService.class);
 
   /**
    * The polling market data service for tickers
@@ -40,18 +38,18 @@ public class ExchangeService extends AbstractService implements ManagedService {
   /**
    * This is a hard coded value to avoid hammering the exchanges with the number
    * of instances of MultiBit out there
-   * 15 minutes =
+   * 15 minutes = 900 seconds and is the recommended value
    */
   public static final int TICKER_REFRESH_SECONDS = 5;
 
-  public ExchangeService(String exchangeClassName) {
+  /**
+   * @param exchangeName             The friendly exchange name (e.g. "Bitstamp")
+   * @param pollingMarketDataService The polling market data service for this exchange
+   */
+  public ExchangeTickerService(String exchangeName, PollingMarketDataService pollingMarketDataService) {
 
-    // Use the factory to get the exchange API using default settings
-    final Exchange exchange = ExchangeFactory.INSTANCE.createExchange(exchangeClassName);
-    exchangeName = exchange.getExchangeSpecification().getExchangeName();
-
-    // Interested in the public polling market data feed (no authentication)
-    this.pollingMarketDataService = exchange.getPollingMarketDataService();
+    this.exchangeName = exchangeName;
+    this.pollingMarketDataService = pollingMarketDataService;
 
   }
 
@@ -79,11 +77,8 @@ public class ExchangeService extends AbstractService implements ManagedService {
         try {
           ticker = pollingMarketDataService.getTicker(Currencies.BTC, Currencies.USD);
 
-          if (previous== null || !ticker.getLast().isEqual(previous)) {
-            CoreServices.uiEventBus.post(new BalanceChangeEvent(
-              ticker.getLast().getAmount(),
-              exchangeName)
-            );
+          if (previous == null || !ticker.getLast().isEqual(previous)) {
+            CoreEvents.fireExchangeRateChangeEvent(ticker.getLast().getAmount(), exchangeName);
 
             log.debug("Updated {} ticker: {}", exchangeName, ticker.getLast());
           }
@@ -95,7 +90,7 @@ public class ExchangeService extends AbstractService implements ManagedService {
         }
       }
 
-    }, 1, TICKER_REFRESH_SECONDS, TimeUnit.SECONDS);
+    }, 0, TICKER_REFRESH_SECONDS, TimeUnit.SECONDS);
 
   }
 

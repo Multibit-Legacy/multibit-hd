@@ -1,26 +1,27 @@
 package org.multibit.hd.ui.i18n;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.ui.exceptions.UIException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.List;
+import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
- * <p>[Pattern] to provide the following to {@link Object}:</p>
+ * <p>Utility to provide the following to Views:</p>
  * <ul>
- * <li></li>
+ * <li>Access to internationalised text strings</li>
  * </ul>
- * <p>Example:</p>
- * <pre>
- * </pre>
  *
  * @since 0.0.1
  *         
  */
 public class Languages {
+
+  private static final Logger log = LoggerFactory.getLogger(Languages.class);
 
   private static final String BASE_NAME = "i18n.viewer";
 
@@ -42,11 +43,23 @@ public class Languages {
     "sl", "ta", "ro", "af", "tl", "sw",
   };
 
-  public static List<String> getLanguageNames(ResourceBundle rb, boolean includeCodes) {
+  /**
+   * Utilities have private constructors
+   */
+  private Languages() {
+  }
+
+  /**
+   * @param rb           The resource bundle to use
+   * @param includeCodes True if the list should prefix the names with the ISO language code
+   *
+   * @return An unsorted array of the available languages
+   */
+  public static String[] getLanguageNames(ResourceBundle rb, boolean includeCodes) {
 
     Preconditions.checkNotNull(rb, "'rb' must be present");
 
-    List<String> items = Lists.newArrayList();
+    String[] items = new String[LANGUAGE_CODES.length];
 
     for (int i = 0; i < LANGUAGE_CODES.length; i++) {
 
@@ -55,9 +68,9 @@ public class Languages {
       String value = rb.getString(key);
 
       if (includeCodes) {
-        items.add(LANGUAGE_CODES[i] + ": " + value);
+        items[i] = LANGUAGE_CODES[i] + ": " + value;
       } else {
-        items.add(value);
+        items[i] = value;
       }
 
     }
@@ -67,27 +80,33 @@ public class Languages {
   }
 
   /**
-   * @param locale The locale
-   *
-   * @return A new resource bundle based on the locale
+   * @return The resource bundle based on the current locale
    */
-  public static ResourceBundle newResourceBundle(Locale locale) {
+  public static ResourceBundle currentResourceBundle() {
 
-    Preconditions.checkNotNull(locale, "'locale' must be present");
-
-    return ResourceBundle.getBundle(BASE_NAME, locale);
+    return ResourceBundle.getBundle(BASE_NAME, currentLocale());
   }
 
   /**
-   * @param index The 0-based index of the language
+   * @return Current locale
+   */
+  public static Locale currentLocale() {
+
+    Preconditions.checkNotNull(Configurations.currentConfiguration, "'currentConfiguration' must be present");
+
+    return Configurations.currentConfiguration.getLocale();
+  }
+
+  /**
+   * @param code The 2 letter ISO code of the language
    *
    * @return A new resource bundle based on the locale
    */
-  public static Locale newLocaleFromIndex(int index) {
+  public static Locale newLocaleFromCode(String code) {
 
-    Preconditions.checkElementIndex(index, LANGUAGE_CODES.length);
+    Preconditions.checkNotNull(code, "'code' must be present");
 
-    return new Locale(LANGUAGE_CODES[index]);
+    return new Locale(code);
   }
 
   /**
@@ -95,7 +114,8 @@ public class Languages {
    *
    * @return The matching index (0-based)
    *
-   * @throws org.multibit.hd.ui.exceptions.UIException If there is no match
+   * @throws org.multibit.hd.ui.exceptions.UIException
+   *          If there is no match
    */
   public static int getIndexFromLocale(Locale locale) {
 
@@ -113,4 +133,28 @@ public class Languages {
 
     throw new UIException("Unknown locale: " + locale);
   }
+
+  /**
+   * @param key    The key (treated as a direct format string if not present)
+   * @param values An optional collection of value substitutions for {@link MessageFormat}
+   *
+   * @return The localised text with any substitutions made
+   */
+  public static String safeText(String key, Object... values) {
+
+    ResourceBundle rb = currentResourceBundle();
+
+    final String message;
+
+    if (!rb.containsKey(key)) {
+      // If no key is present then use it direct
+      message = key;
+    } else {
+      // Must have the key to be here
+      message = rb.getString(key);
+    }
+
+    return MessageFormat.format(message, values);
+  }
+
 }

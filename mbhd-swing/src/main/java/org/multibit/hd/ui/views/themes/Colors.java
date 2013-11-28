@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.swing.views;
+package org.multibit.hd.ui.views.themes;
 
 /**
  * <p>[Pattern] to provide the following to {@link Object}:</p>
@@ -12,5 +12,8 @@ package org.multibit.hd.ui.swing.views;
  * @since 0.0.1
  *         
  */
-public class SettingsLanguageView {
+public class Colors {
+
+
+
 }

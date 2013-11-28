@@ -140,6 +140,18 @@
         </configuration>
       </plugin>
 
+      <!-- Filter out functional tests by Maven (an IDE will run all tests including functional) -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.16</version>
+        <configuration>
+          <excludes>
+            <exclude>**/*FunctionalTest.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
       <!-- Generates a source code JAR during package -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -300,21 +312,6 @@
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
     </dependency>
-
-    <!-- Jersey client for upstream REST requests -->
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-client</artifactId>
-    </dependency>
-
-    <!--&lt;!&ndash; JavaFX for UI &ndash;&gt;-->
-    <!--<dependency>-->
-      <!--<groupId>com.oracle</groupId>-->
-      <!--<artifactId>javafx</artifactId>-->
-      <!--<version>2.2.40</version>-->
-      <!--<systemPath>${java.home}/lib/jfxrt.jar</systemPath>-->
-      <!--<scope>system</scope>-->
-    <!--</dependency>-->
 
     <!-- Testing -->
 

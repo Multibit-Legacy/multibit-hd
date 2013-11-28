@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.i18n;
 
-import org.multibit.hd.ui.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
 import java.math.BigDecimal;
 

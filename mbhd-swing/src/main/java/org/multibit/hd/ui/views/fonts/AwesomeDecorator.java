@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fonts;
+package org.multibit.hd.ui.views.fonts;
 
 import com.google.common.base.Preconditions;
 import org.multibit.hd.ui.exceptions.UIException;
@@ -63,6 +63,18 @@ public class AwesomeDecorator {
     return label;
   }
 
+  public static JButton createIconButton(AwesomeIcon icon, String text) {
+
+    JButton button = new JButton();
+
+    Icon swingIcon = new AwesomeSwingIcon(button, icon.getChar());
+
+    button.setText(text);
+    button.setIcon(swingIcon);
+
+    return button;
+  }
+
   /**
    * <p>Apply an icon to a label. Both icon states (enabled/disabled) will be added.</p>
    *
@@ -80,6 +92,22 @@ public class AwesomeDecorator {
   }
 
   /**
+   * <p>Apply an icon to a button. Both icon states (enabled/disabled) will be added.</p>
+   *
+   * @param icon   The icon reference
+   * @param button The button
+   */
+  public static void applyIcon(AwesomeIcon icon, JButton button) {
+
+    Icon enabledIcon = new AwesomeSwingIcon(button, icon.getChar());
+    Icon disabledIcon = new AwesomeSwingIcon(button, icon.getChar());
+
+    button.setIcon(enabledIcon);
+    button.setDisabledIcon(disabledIcon);
+
+  }
+
+  /**
    * <p>Remove an icon from a label. Both icon states (enabled/disabled) will be removed.</p>
    *
    * @param label The label
@@ -87,5 +115,15 @@ public class AwesomeDecorator {
   public static void removeIcon(JLabel label) {
     label.setIcon(null);
     label.setDisabledIcon(null);
+  }
+
+  /**
+   * <p>Remove an icon from a button. Both icon states (enabled/disabled) will be removed.</p>
+   *
+   * @param button The label
+   */
+  public static void removeIcon(JButton button) {
+    button.setIcon(null);
+    button.setDisabledIcon(null);
   }
 }

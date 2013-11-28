@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.swing.views;
+package org.multibit.hd.ui.views;
 
 /**
  * <p>Enum to provide the following to UI controllers:</p>
