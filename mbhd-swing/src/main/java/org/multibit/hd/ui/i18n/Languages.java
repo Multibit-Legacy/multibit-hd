@@ -50,14 +50,13 @@ public class Languages {
   }
 
   /**
-   * @param rb           The resource bundle to use
    * @param includeCodes True if the list should prefix the names with the ISO language code
    *
    * @return An unsorted array of the available languages
    */
-  public static String[] getLanguageNames(ResourceBundle rb, boolean includeCodes) {
+  public static String[] getLanguageNames(boolean includeCodes) {
 
-    Preconditions.checkNotNull(rb, "'rb' must be present");
+    ResourceBundle rb = currentResourceBundle();
 
     String[] items = new String[LANGUAGE_CODES.length];
 
@@ -77,14 +76,6 @@ public class Languages {
 
     return items;
 
-  }
-
-  /**
-   * @return The resource bundle based on the current locale
-   */
-  public static ResourceBundle currentResourceBundle() {
-
-    return ResourceBundle.getBundle(BASE_NAME, currentLocale());
   }
 
   /**
@@ -155,6 +146,16 @@ public class Languages {
     }
 
     return MessageFormat.format(message, values);
+  }
+
+  /**
+   * <p>Internal access only</p>
+   *
+   * @return The resource bundle based on the current locale
+   */
+  private static ResourceBundle currentResourceBundle() {
+
+    return ResourceBundle.getBundle(BASE_NAME, currentLocale());
   }
 
 }

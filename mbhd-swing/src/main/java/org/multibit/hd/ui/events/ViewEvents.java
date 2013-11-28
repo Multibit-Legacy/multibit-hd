@@ -3,8 +3,6 @@ package org.multibit.hd.ui.events;
 import org.joda.money.BigMoney;
 import org.multibit.hd.core.services.CoreServices;
 
-import java.math.BigDecimal;
-
 /**
  * <p>Factory to provide the following to application API:</p>
  * <ul>
@@ -39,5 +37,8 @@ public class ViewEvents {
 
   }
 
+  public static void fireBalanceClickEvent() {
+    CoreServices.uiEventBus.post(new BalanceClickEvent());
+  }
 }
 

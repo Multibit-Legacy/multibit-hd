@@ -15,14 +15,15 @@ import java.math.BigDecimal;
  */
 public enum BitcoinSymbol {
 
-  ICON(AwesomeIcon.BITCOIN.getChar().toString(),BigDecimal.ONE),
-  BTC("BTC",BigDecimal.ONE),
-  MBTC("mBTC",new BigDecimal(1_000)),
-  UBTC("\u00B5BTC",new BigDecimal(1_000_000)),
-  XBT("XBT",BigDecimal.ONE),
-  MXBT("mXBT",new BigDecimal(1_000)),
-  UXBT("\u00B5XBT",new BigDecimal(1_000_000)),
-  SATOSHI("s",new BigDecimal(100_000_000)),
+  ICON(AwesomeIcon.BITCOIN.getChar().toString(), BigDecimal.ONE),
+  BTC("BTC", BigDecimal.ONE),
+  MBTC("mBTC", new BigDecimal(1_000)),
+  UBTC("\u00B5BTC", new BigDecimal(1_000_000)),
+  XBT("XBT", BigDecimal.ONE),
+  MXBT("mXBT", new BigDecimal(1_000)),
+  UXBT("\u00B5XBT", new BigDecimal(1_000_000)),
+  BIT("bit", new BigDecimal(1_000_000)),
+  SATOSHI("s", new BigDecimal(100_000_000)),
 
   // End of enum
   ;
@@ -34,7 +35,6 @@ public enum BitcoinSymbol {
     this.symbol = symbol;
     this.multiplier = multiplier;
   }
-
   /**
    * @return The Unicode value of the symbol if applicable (Font Awesome requires a
    */
@@ -47,5 +47,18 @@ public enum BitcoinSymbol {
    */
   public BigDecimal multiplier() {
     return multiplier;
+  }
+
+  /**
+   * @return The next Bitcoin symbol in the enum wrapping as required
+   */
+  public BitcoinSymbol next() {
+
+    int ordinal = this.ordinal();
+
+    ordinal = (ordinal + 1) % BitcoinSymbol.values().length;
+
+    return BitcoinSymbol.class.getEnumConstants()[ordinal];
+
   }
 }

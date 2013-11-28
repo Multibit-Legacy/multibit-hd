@@ -1,11 +1,10 @@
 package org.multibit.hd.ui.views.components;
 
+import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
-import org.multibit.hd.ui.i18n.Languages;
 
 import javax.swing.*;
-import java.util.ResourceBundle;
 
 /**
  * <p>Utility to provide the following to UI:</p>
@@ -32,11 +31,9 @@ public class Buttons {
    */
   public static JButton newApplyButton() {
 
-    ResourceBundle rb = Languages.currentResourceBundle();
-
     return AwesomeDecorator.createIconButton(
       AwesomeIcon.ARROW_RIGHT,
-      rb.getString(APPLY_BUTTON)
+      Languages.safeText(APPLY_BUTTON)
     );
 
   }
@@ -46,11 +43,9 @@ public class Buttons {
    */
   public static JButton newUndoButton() {
 
-    ResourceBundle rb = Languages.currentResourceBundle();
-
     return AwesomeDecorator.createIconButton(
       AwesomeIcon.UNDO,
-      rb.getString(UNDO_BUTTON)
+      Languages.safeText(UNDO_BUTTON)
     );
 
   }

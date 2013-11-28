@@ -3,7 +3,6 @@ package org.multibit.hd.ui.views.components;
 import org.multibit.hd.ui.i18n.Languages;
 
 import javax.swing.*;
-import java.util.ResourceBundle;
 
 /**
  * <p>Utility to provide the following to UI:</p>
@@ -27,8 +26,7 @@ public class ComboBoxes {
    */
   public static JComboBox<String> newLanguagesComboBox() {
 
-    ResourceBundle rb = Languages.currentResourceBundle();
-    return new JComboBox<>(Languages.getLanguageNames(rb, true));
+    return new JComboBox<>(Languages.getLanguageNames(true));
 
   }
 
