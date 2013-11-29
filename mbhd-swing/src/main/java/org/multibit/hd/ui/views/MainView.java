@@ -3,9 +3,9 @@ package org.multibit.hd.ui.views;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.LocaleChangeEvent;
+import org.multibit.hd.ui.events.SignOutEvent;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 
 /**
@@ -23,14 +23,20 @@ public class MainView extends JFrame {
 
   private final JPanel headerPanel;
   private final JPanel footerPanel;
+  private final JPanel sidebarPanel;
+  private final JPanel detailPanel;
 
   public MainView(
     JPanel headerPanel,
-    JPanel footerPanel
+    JPanel footerPanel,
+    JPanel sidebarPanel,
+    JPanel detailPanel
   ) {
 
     this.headerPanel = headerPanel;
     this.footerPanel = footerPanel;
+    this.sidebarPanel = sidebarPanel;
+    this.detailPanel = detailPanel;
 
     CoreServices.uiEventBus.register(this);
 
@@ -42,6 +48,8 @@ public class MainView extends JFrame {
 
     // TODO Configuration
     setPreferredSize(new Dimension(1280, 1024));
+
+    setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
   }
 
@@ -61,110 +69,38 @@ public class MainView extends JFrame {
 
   }
 
+  @Subscribe
+  public void onSignOutEvent(SignOutEvent event) {
+
+    // TODO Graceful shutdown required
+    System.exit(0);
+
+  }
 
   /**
-   * @return The contents of the main panel
+   * @return The contents of the main panel (header, body and footer)
    */
   private JPanel createMainContent() {
 
     // Create the main panel and place it in this frame
     JPanel mainPanel = new JPanel(new BorderLayout());
 
+    // Create a splitter pane
+    JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+
+    splitPane.setLeftComponent(sidebarPanel);
+    splitPane.setRightComponent(detailPanel);
+
+    splitPane.setDividerSize(3);
+
+    // TODO Add this to themes
+    splitPane.setBackground(new Color(128, 128, 128));
+
     // Add the supporting panels
     mainPanel.add(headerPanel, BorderLayout.PAGE_START);
-    mainPanel.add(createCenterContent(), BorderLayout.CENTER);
+    mainPanel.add(splitPane, BorderLayout.CENTER);
     mainPanel.add(footerPanel, BorderLayout.PAGE_END);
 
     return mainPanel;
   }
-
-
-  private JComponent createCenterContent() {
-
-    // Create a splitter pane
-    JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-
-    // Create the LHS
-    JScrollPane sidebarPane = createSidebarContent();
-
-    // Create the RHS
-    JScrollPane detailPane = createDetailContent();
-
-    splitPane.setLeftComponent(sidebarPane);
-    splitPane.setRightComponent(detailPane);
-
-    splitPane.setDividerSize(3);
-
-    splitPane.setBackground(new Color(128, 128, 128));
-
-    return splitPane;
-
-  }
-
-  /**
-   * @return The sidebar content
-   */
-  private JScrollPane createSidebarContent() {
-
-    JScrollPane sidebarPane = new JScrollPane();
-
-    sidebarTree = new JTree(createSidebarTreeNodes());
-    sidebarTree.setShowsRootHandles(false);
-    sidebarTree.setRootVisible(false);
-    // TODO Integrate with styles
-    sidebarTree.setBackground(new Color(240, 240, 240));
-    sidebarTree.setVisibleRowCount(10);
-    sidebarTree.setExpandsSelectedPaths(true);
-
-    sidebarPane.setViewportView(sidebarTree);
-    // TODO Integrate with configuration
-    sidebarPane.setPreferredSize(new Dimension(150, 1024));
-
-    return sidebarPane;
-  }
-
-  /**
-   * @return The detail content pane
-   */
-  private JScrollPane createDetailContent() {
-
-    JScrollPane detailPane = new JScrollPane();
-    detailPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-    detailPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-
-    return detailPane;
-
-  }
-
-  private DefaultMutableTreeNode createSidebarTreeNodes() {
-
-    DefaultMutableTreeNode root = new DefaultMutableTreeNode("Wallet");
-
-    DefaultMutableTreeNode wallet = new DefaultMutableTreeNode("Wallet");
-    wallet.add(new DefaultMutableTreeNode("Account 1"));
-    wallet.add(new DefaultMutableTreeNode("Account 2"));
-    wallet.add(new DefaultMutableTreeNode("Messages"));
-    wallet.add(new DefaultMutableTreeNode("Contacts"));
-    wallet.add(new DefaultMutableTreeNode("Transactions"));
-    root.add(wallet);
-
-    DefaultMutableTreeNode trezor1 = new DefaultMutableTreeNode("Trezor 1");
-    trezor1.add(new DefaultMutableTreeNode("Account 1"));
-    trezor1.add(new DefaultMutableTreeNode("Account 2"));
-    trezor1.add(new DefaultMutableTreeNode("Messages"));
-    trezor1.add(new DefaultMutableTreeNode("Contacts"));
-    trezor1.add(new DefaultMutableTreeNode("Transactions"));
-    root.add(trezor1);
-
-    DefaultMutableTreeNode trezor2 = new DefaultMutableTreeNode("Trezor 2");
-    trezor2.add(new DefaultMutableTreeNode("Account 1"));
-    trezor2.add(new DefaultMutableTreeNode("Account 2"));
-    trezor2.add(new DefaultMutableTreeNode("Messages"));
-    trezor2.add(new DefaultMutableTreeNode("Contacts"));
-    trezor2.add(new DefaultMutableTreeNode("Transactions"));
-    root.add(trezor2);
-
-    return root;
-  }
-
 }

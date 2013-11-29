@@ -7,6 +7,7 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.I18NConfiguration;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.BalanceChangeEvent;
+import org.multibit.hd.ui.events.ViewEvents;
 import org.multibit.hd.ui.i18n.BitcoinSymbol;
 import org.multibit.hd.ui.i18n.Formats;
 import org.multibit.hd.ui.i18n.Languages;
@@ -74,6 +75,9 @@ public class HeaderView {
 
     // Bind event handlers
     bindBalanceClickEvent();
+    bindHelpClickEvent();
+    bindSettingsClickEvent();
+    bindSignOutClickEvent();
 
   }
 
@@ -85,11 +89,11 @@ public class HeaderView {
   }
 
   /**
-   * Configure a mouse click event to change the presentation format
+   * <p>Configure a mouse click event to change the presentation format</p>
    */
   private void bindBalanceClickEvent() {
 
-    MouseListener balanceMouseListener = new MouseAdapter() {
+    MouseListener mouseListener = new MouseAdapter() {
 
       @Override
       public void mouseClicked(MouseEvent e) {
@@ -112,12 +116,68 @@ public class HeaderView {
 
     };
 
-    balanceLHSLabel.addMouseListener(balanceMouseListener);
-    balanceRHSLabel.addMouseListener(balanceMouseListener);
-    balanceRHSSymbolLabel.addMouseListener(balanceMouseListener);
+    balanceLHSLabel.addMouseListener(mouseListener);
+    balanceRHSLabel.addMouseListener(mouseListener);
+    balanceRHSSymbolLabel.addMouseListener(mouseListener);
 
   }
 
+  /**
+   * <p>Configure a mouse click event to display the Settings view</p>
+   */
+  private void bindSettingsClickEvent() {
+
+    MouseListener mouseListener = new MouseAdapter() {
+
+      @Override
+      public void mouseClicked(MouseEvent e) {
+
+        ViewEvents.fireShowDetailScreenEvent(Screen.MAIN_SETTINGS);
+
+      }
+    };
+
+    settingsLabel.addMouseListener(mouseListener);
+
+  }
+
+  /**
+   * <p>Configure a mouse click event to display the Help view</p>
+   */
+  private void bindHelpClickEvent() {
+
+    MouseListener mouseListener = new MouseAdapter() {
+
+      @Override
+      public void mouseClicked(MouseEvent e) {
+
+        ViewEvents.fireShowDetailScreenEvent(Screen.MAIN_HELP);
+
+      }
+    };
+
+    helpLabel.addMouseListener(mouseListener);
+
+  }
+
+  /**
+   * <p>Configure a mouse click event to initiate the Sign Out process</p>
+   */
+  private void bindSignOutClickEvent() {
+
+    MouseListener mouseListener = new MouseAdapter() {
+
+      @Override
+      public void mouseClicked(MouseEvent e) {
+
+        ViewEvents.fireSignOutEvent();
+
+      }
+    };
+
+    signOutLabel.addMouseListener(mouseListener);
+
+  }
 
   /**
    * <p>Handles the representation of the balance based on the current configuration</p>
@@ -208,6 +268,5 @@ public class HeaderView {
     }
 
   }
-
 
 }

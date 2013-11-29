@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views;
+package org.multibit.hd.ui.views.components;
 
 /**
  * <p>Factory to provide the following to views:</p>

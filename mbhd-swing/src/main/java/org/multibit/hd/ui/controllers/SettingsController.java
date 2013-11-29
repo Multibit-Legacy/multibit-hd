@@ -1,7 +1,9 @@
 package org.multibit.hd.ui.controllers;
 
+import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.config.Configuration;
-import org.multibit.hd.ui.views.SettingsLanguageView;
+import org.multibit.hd.ui.events.ShowDetailScreenEvent;
+import org.multibit.hd.ui.views.Screen;
 import org.multibit.hd.ui.views.SettingsView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +20,8 @@ public class SettingsController {
 
   private final SettingsView view;
 
+  private final Screen screen = Screen.MAIN_SETTINGS;
+
   public SettingsController(SettingsView view) {
 
     this.view = view;
@@ -29,4 +33,19 @@ public class SettingsController {
     Configuration newConfiguration = view.takeSnapshot();
 
   }
+
+  /**
+   * <p>Called when a detail screen is requested</p>
+   *
+   * @param event The exchange rate change event
+   */
+  @Subscribe
+  public void onDetailScreenChangeEvent(ShowDetailScreenEvent event) {
+
+
+    // Post the event
+    //ViewEvents.fireBalanceChangeEvent(btcBalance, localBalance, event.getExchangeName());
+
+  }
+
 }
