@@ -33,6 +33,10 @@ public class Configurations {
   // Application
   public static final String APP_VERSION = "app.version";
 
+  // Location of current wallet directory (may be empty)
+  public static final String APP_CURRENT_WALLET_FILENAME = "app.current-wallet-filename";
+
+
   // Bitcoin
   public static final String BITCOIN_SYMBOL = "bitcoin.symbol";
 
@@ -48,6 +52,7 @@ public class Configurations {
   public static final String LOGGING_FILE = LOGGING + ".file";
   public static final String LOGGING_ARCHIVE = LOGGING + ".archive";
   public static final String LOGGING_PACKAGE_PREFIX = LOGGING + ".package.";
+
 
   /**
    * The current runtime configuration (preserved across soft restarts)

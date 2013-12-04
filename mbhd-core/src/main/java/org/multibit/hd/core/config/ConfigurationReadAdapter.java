@@ -39,6 +39,7 @@ public class ConfigurationReadAdapter {
       Preconditions.checkNotNull(value, "'value' must be present");
 
       // Application
+      adaptApplication(key, value);
 
       // Bitcoin
       adaptBitcoin(key, value);
@@ -56,6 +57,15 @@ public class ConfigurationReadAdapter {
     return configuration;
   }
 
+  private void adaptApplication(String key, String value) {
+
+    if (Configurations.APP_CURRENT_WALLET_FILENAME.equalsIgnoreCase(key)) {
+      configuration.getApplicationConfiguration().setCurrentWalletFilename(value);
+    }
+    // TODO more application fields to adapt.
+
+  }
+
   private void adaptBitcoin(String key, String value) {
 
     if (Configurations.BITCOIN_SYMBOL.equalsIgnoreCase(key)) {
@@ -63,7 +73,6 @@ public class ConfigurationReadAdapter {
     }
 
   }
-
   private void adaptI18N(String key, String value) {
 
     if (Configurations.I18N_LOCALE.equalsIgnoreCase(key)) {

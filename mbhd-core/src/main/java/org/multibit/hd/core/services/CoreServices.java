@@ -44,6 +44,8 @@ public class CoreServices {
     // Configure logging
     new LoggingFactory(Configurations.currentConfiguration.getLoggingConfiguration(), "MultiBit HD").configure();
 
+
+
   }
 
   /**
@@ -58,6 +60,13 @@ public class CoreServices {
 
     return new ExchangeTickerService(exchange.getExchangeSpecification().getExchangeName(), exchange.getPollingMarketDataService());
 
+  }
+
+  /**
+   * @return create a new BitcoinNetworkService for access to the Bitcoin network
+   */
+  public static BitcoinNetworkService newBitcoinNetworkService() {
+    return new BitcoinNetworkService();
   }
 
 }
