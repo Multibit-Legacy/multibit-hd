@@ -13,6 +13,6 @@ import java.awt.*;
  */
 public interface Theme {
 
-  public Color foreground();
+  public Color fontColor();
 
 }

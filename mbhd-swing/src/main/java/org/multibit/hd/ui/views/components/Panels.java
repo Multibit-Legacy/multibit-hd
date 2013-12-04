@@ -1,5 +1,7 @@
 package org.multibit.hd.ui.views.components;
 
+import javax.swing.*;
+
 /**
  * <p>Factory to provide the following to views:</p>
  * <ul>
@@ -10,4 +12,17 @@ package org.multibit.hd.ui.views.components;
  *         
  */
 public class Panels {
+
+  public static JFrame frame;
+
+  /**
+   * @param panel The component panel to act as the focus of the light box
+   *
+   * @return A light box panel wrapping the original
+   */
+  public static LightBoxPanel applyLightBoxPanel(JPanel panel) {
+
+    return new LightBoxPanel(panel);
+
+  }
 }

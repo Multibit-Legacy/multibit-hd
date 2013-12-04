@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.controllers;
 
+import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.SignOutEvent;
 import org.slf4j.Logger;
@@ -22,13 +23,11 @@ public class MainController {
 
   }
 
-  /**
-   * @param event The sign out event
-   */
+  @Subscribe
   public void onSignOutEvent(SignOutEvent event) {
 
-
+    // TODO Graceful shutdown required
+    System.exit(0);
 
   }
-
 }

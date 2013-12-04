@@ -19,18 +19,7 @@ import org.multibit.hd.ui.platform.GenericApplication;
 import org.multibit.hd.ui.platform.GenericApplicationSpecification;
 import org.multibit.hd.ui.platform.builder.generic.DefaultApplicationBuilder;
 import org.multibit.hd.ui.platform.handler.DefaultAboutHandler;
-import org.multibit.hd.ui.platform.handler.DefaultPreferencesHandler;
-import org.multibit.hd.ui.platform.handler.DefaultQuitHandler;
-import org.multibit.hd.ui.platform.GenericApplication;
-import org.multibit.hd.ui.platform.GenericApplicationSpecification;
-import org.multibit.hd.ui.platform.builder.generic.DefaultApplicationBuilder;
-import org.multibit.hd.ui.platform.handler.DefaultAboutHandler;
 import org.multibit.hd.ui.platform.handler.DefaultOpenURIHandler;
-import org.multibit.hd.ui.platform.handler.DefaultPreferencesHandler;
-import org.multibit.hd.ui.platform.handler.DefaultQuitHandler;
-import org.multibit.hd.ui.platform.GenericApplication;
-import org.multibit.hd.ui.platform.GenericApplicationSpecification;
-import org.multibit.hd.ui.platform.handler.DefaultAboutHandler;
 import org.multibit.hd.ui.platform.handler.DefaultPreferencesHandler;
 import org.multibit.hd.ui.platform.handler.DefaultQuitHandler;
 import org.slf4j.Logger;
@@ -91,6 +80,7 @@ public class MacApplicationBuilder {
    *
    * @return A {@link org.multibit.hd.ui.platform.GenericApplication}
    */
+  @SuppressWarnings("unchecked")
   public GenericApplication build(GenericApplicationSpecification specification) {
 
     Object nativeApplication;

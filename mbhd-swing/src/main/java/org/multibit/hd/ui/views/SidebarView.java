@@ -2,8 +2,11 @@ package org.multibit.hd.ui.views;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.events.ViewEvents;
 
 import javax.swing.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 
@@ -29,7 +32,7 @@ public class SidebarView {
     MigLayout layout = new MigLayout("filly");
     contentPanel = new JPanel(layout);
 
-    contentPanel.add(createSidebarContent(),"push");
+    contentPanel.add(createSidebarContent(), "push");
 
   }
 
@@ -55,6 +58,16 @@ public class SidebarView {
     sidebarTree.setVisibleRowCount(10);
     sidebarTree.setExpandsSelectedPaths(true);
 
+    sidebarTree.addTreeSelectionListener(new TreeSelectionListener() {
+      public void valueChanged(TreeSelectionEvent e) {
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
+
+        ViewEvents.fireShowDetailScreenEvent(Screen.MAIN_WALLET);
+
+
+      }
+    });
+
     sidebarPane.setViewportView(sidebarTree);
     // TODO Integrate with configuration
     sidebarPane.setPreferredSize(new Dimension(150, 1024));
@@ -68,28 +81,24 @@ public class SidebarView {
     DefaultMutableTreeNode root = new DefaultMutableTreeNode("Wallet");
 
     DefaultMutableTreeNode wallet = new DefaultMutableTreeNode("Wallet");
-    wallet.add(new DefaultMutableTreeNode("Account 1"));
-    wallet.add(new DefaultMutableTreeNode("Account 2"));
-    wallet.add(new DefaultMutableTreeNode("Messages"));
     wallet.add(new DefaultMutableTreeNode("Contacts"));
     wallet.add(new DefaultMutableTreeNode("Transactions"));
     root.add(wallet);
 
     DefaultMutableTreeNode trezor1 = new DefaultMutableTreeNode("Trezor 1");
-    trezor1.add(new DefaultMutableTreeNode("Account 1"));
-    trezor1.add(new DefaultMutableTreeNode("Account 2"));
-    trezor1.add(new DefaultMutableTreeNode("Messages"));
     trezor1.add(new DefaultMutableTreeNode("Contacts"));
     trezor1.add(new DefaultMutableTreeNode("Transactions"));
     root.add(trezor1);
 
     DefaultMutableTreeNode trezor2 = new DefaultMutableTreeNode("Trezor 2");
-    trezor2.add(new DefaultMutableTreeNode("Account 1"));
-    trezor2.add(new DefaultMutableTreeNode("Account 2"));
-    trezor2.add(new DefaultMutableTreeNode("Messages"));
     trezor2.add(new DefaultMutableTreeNode("Contacts"));
     trezor2.add(new DefaultMutableTreeNode("Transactions"));
     root.add(trezor2);
+
+    root.add(new DefaultMutableTreeNode("Help"));
+    root.add(new DefaultMutableTreeNode("History"));
+    root.add(new DefaultMutableTreeNode("Preferences"));
+    root.add(new DefaultMutableTreeNode("Tools"));
 
     return root;
   }

@@ -13,7 +13,6 @@ import java.awt.*;
  * <ul>
  * <li>Provision of localised buttons</li>
  * </ul>
- * new JComboBox<>(Languages.getLanguageNames(resourceBundle, true))
  *
  * @since 0.0.1
  *         

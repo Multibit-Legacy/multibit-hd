@@ -51,6 +51,12 @@ public class AwesomeDecorator {
 
   }
 
+  /**
+   * @param icon The font awesome icon
+   * @param text The text
+   *
+   * @return A suitable button
+   */
   public static JLabel createIconLabel(AwesomeIcon icon, String text) {
 
     JLabel label = new JLabel();
@@ -63,9 +69,16 @@ public class AwesomeDecorator {
     return label;
   }
 
-  public static JButton createIconButton(AwesomeIcon icon, String text) {
+  /**
+   * @param icon   The font awesome icon
+   * @param text   The text
+   * @param action The action
+   *
+   * @return A suitable button
+   */
+  public static JButton createIconButton(AwesomeIcon icon, String text, Action action) {
 
-    JButton button = new JButton();
+    JButton button = new JButton(action);
 
     Icon swingIcon = new AwesomeSwingIcon(button, icon.getChar());
 

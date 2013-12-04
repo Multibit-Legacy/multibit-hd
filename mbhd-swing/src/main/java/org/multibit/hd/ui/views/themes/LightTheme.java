@@ -14,7 +14,7 @@ import java.awt.*;
 public class LightTheme implements Theme {
 
   @Override
-  public Color foreground() {
+  public Color fontColor() {
     return Color.BLACK;
   }
 }

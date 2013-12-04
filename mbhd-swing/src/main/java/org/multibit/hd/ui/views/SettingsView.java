@@ -65,8 +65,8 @@ public class SettingsView {
     tabbedPane.addTab("Language 4", new SettingsLanguageView().initComponents());
     tabbedPane.setMnemonicAt(3, KeyEvent.VK_4);
 
-    applyButton = Buttons.newApplyButton();
-    undoButton = Buttons.newUndoButton();
+    applyButton = Buttons.newApplyButton(null);
+    undoButton = Buttons.newUndoButton(null);
 
     panel.add(tabbedPane, "grow,wrap");
     panel.add(applyButton, "split,right");

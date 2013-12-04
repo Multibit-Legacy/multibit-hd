@@ -3,7 +3,7 @@ package org.multibit.hd.ui.views;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.LocaleChangeEvent;
-import org.multibit.hd.ui.events.SignOutEvent;
+import org.multibit.hd.ui.views.components.Panels;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,26 +19,24 @@ import java.awt.*;
  */
 public class MainView extends JFrame {
 
-  private JTree sidebarTree;
-
   private final JPanel headerPanel;
-  private final JPanel footerPanel;
   private final JPanel sidebarPanel;
   private final JPanel detailPanel;
 
   public MainView(
     JPanel headerPanel,
-    JPanel footerPanel,
     JPanel sidebarPanel,
     JPanel detailPanel
   ) {
 
     this.headerPanel = headerPanel;
-    this.footerPanel = footerPanel;
     this.sidebarPanel = sidebarPanel;
     this.detailPanel = detailPanel;
 
     CoreServices.uiEventBus.register(this);
+
+    // Provide all panels with a reference to the main frame
+    Panels.frame = this;
 
     // TODO i18n
     setTitle("MultiBit HD");
@@ -69,14 +67,6 @@ public class MainView extends JFrame {
 
   }
 
-  @Subscribe
-  public void onSignOutEvent(SignOutEvent event) {
-
-    // TODO Graceful shutdown required
-    System.exit(0);
-
-  }
-
   /**
    * @return The contents of the main panel (header, body and footer)
    */
@@ -99,7 +89,6 @@ public class MainView extends JFrame {
     // Add the supporting panels
     mainPanel.add(headerPanel, BorderLayout.PAGE_START);
     mainPanel.add(splitPane, BorderLayout.CENTER);
-    mainPanel.add(footerPanel, BorderLayout.PAGE_END);
 
     return mainPanel;
   }

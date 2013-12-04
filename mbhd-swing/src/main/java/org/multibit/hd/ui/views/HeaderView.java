@@ -7,7 +7,6 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.I18NConfiguration;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.BalanceChangeEvent;
-import org.multibit.hd.ui.events.ViewEvents;
 import org.multibit.hd.ui.i18n.BitcoinSymbol;
 import org.multibit.hd.ui.i18n.Formats;
 import org.multibit.hd.ui.i18n.Languages;
@@ -16,9 +15,6 @@ import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
 import javax.swing.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -37,10 +33,6 @@ public class HeaderView {
   private JLabel exchangeLabel;
 
   private BalanceChangeEvent latestBalanceChangeEvent;
-
-  private JLabel helpLabel;
-  private JLabel settingsLabel;
-  private JLabel signOutLabel;
 
   private final JPanel contentPanel;
 
@@ -64,21 +56,6 @@ public class HeaderView {
     contentPanel.add(exchangeLabel, "gap unrelated");
     contentPanel.add(new JLabel(), "push");
 
-    // Add the right hand controls
-    helpLabel = Labels.newHelpLabel();
-    settingsLabel = Labels.newSettingsLabel();
-    signOutLabel = Labels.newSignOutLabel();
-
-    contentPanel.add(helpLabel, "gap unrelated");
-    contentPanel.add(settingsLabel, "gap unrelated");
-    contentPanel.add(signOutLabel, "gap unrelated");
-
-    // Bind event handlers
-    bindBalanceClickEvent();
-    bindHelpClickEvent();
-    bindSettingsClickEvent();
-    bindSignOutClickEvent();
-
   }
 
   /**
@@ -86,97 +63,6 @@ public class HeaderView {
    */
   public JPanel getContentPanel() {
     return contentPanel;
-  }
-
-  /**
-   * <p>Configure a mouse click event to change the presentation format</p>
-   */
-  private void bindBalanceClickEvent() {
-
-    MouseListener mouseListener = new MouseAdapter() {
-
-      @Override
-      public void mouseClicked(MouseEvent e) {
-
-        // Change the unit
-        BitcoinSymbol currentSymbol = BitcoinSymbol.valueOf(Configurations
-          .currentConfiguration
-          .getBitcoinConfiguration()
-          .getBitcoinSymbol()
-        );
-
-        Configurations
-          .currentConfiguration
-          .getBitcoinConfiguration()
-          .setBitcoinSymbol(currentSymbol.next().name());
-
-        // Refresh the UI using the last balance event
-        handleBalanceChange();
-      }
-
-    };
-
-    balanceLHSLabel.addMouseListener(mouseListener);
-    balanceRHSLabel.addMouseListener(mouseListener);
-    balanceRHSSymbolLabel.addMouseListener(mouseListener);
-
-  }
-
-  /**
-   * <p>Configure a mouse click event to display the Settings view</p>
-   */
-  private void bindSettingsClickEvent() {
-
-    MouseListener mouseListener = new MouseAdapter() {
-
-      @Override
-      public void mouseClicked(MouseEvent e) {
-
-        ViewEvents.fireShowDetailScreenEvent(Screen.MAIN_SETTINGS);
-
-      }
-    };
-
-    settingsLabel.addMouseListener(mouseListener);
-
-  }
-
-  /**
-   * <p>Configure a mouse click event to display the Help view</p>
-   */
-  private void bindHelpClickEvent() {
-
-    MouseListener mouseListener = new MouseAdapter() {
-
-      @Override
-      public void mouseClicked(MouseEvent e) {
-
-        ViewEvents.fireShowDetailScreenEvent(Screen.MAIN_HELP);
-
-      }
-    };
-
-    helpLabel.addMouseListener(mouseListener);
-
-  }
-
-  /**
-   * <p>Configure a mouse click event to initiate the Sign Out process</p>
-   */
-  private void bindSignOutClickEvent() {
-
-    MouseListener mouseListener = new MouseAdapter() {
-
-      @Override
-      public void mouseClicked(MouseEvent e) {
-
-        ViewEvents.fireSignOutEvent();
-
-      }
-    };
-
-    signOutLabel.addMouseListener(mouseListener);
-
   }
 
   /**
