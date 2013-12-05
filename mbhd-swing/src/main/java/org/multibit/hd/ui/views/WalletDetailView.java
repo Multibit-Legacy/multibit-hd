@@ -59,6 +59,7 @@ public class WalletDetailView {
     public void actionPerformed(ActionEvent e) {
 
       // TODO Add ViewEvent instead of direct creation
+      // And this is develop
       Panels.applyLightBoxPanel(Wizards.newSendBitcoinWizard().getContentPanel());
 
     }
