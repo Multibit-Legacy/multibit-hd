@@ -46,7 +46,7 @@ public class BitcoinNetworkServiceTest {
     bitcoinNetworkService.start();
     bitcoinNetworkService.downloadBlockChain();
 
-    Uninterruptibles.sleepUninterruptibly(30, TimeUnit.SECONDS);
+    Uninterruptibles.sleepUninterruptibly(10, TimeUnit.SECONDS);
 
     bitcoinNetworkService.stopAndWait();
   }
