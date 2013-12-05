@@ -123,7 +123,7 @@ public class HeaderView {
     // Place currency symbol before the number
     if (BitcoinSymbol.ICON.equals(symbol)) {
       // Add icon to LHS, remove from elsewhere
-      AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, balanceLHSLabel);
+      AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, balanceLHSLabel, true);
       AwesomeDecorator.removeIcon(balanceRHSSymbolLabel);
       balanceRHSSymbolLabel.setText("");
     } else {
@@ -143,7 +143,7 @@ public class HeaderView {
 
     if (BitcoinSymbol.ICON.equals(symbol)) {
       // Add icon to RHS, remove from elsewhere
-      AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, balanceRHSSymbolLabel);
+      AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, balanceRHSSymbolLabel, true);
       AwesomeDecorator.removeIcon(balanceLHSLabel);
       balanceRHSSymbolLabel.setText("");
     } else {

@@ -5,6 +5,7 @@ import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * <p>Utility to provide the following to UI:</p>
@@ -42,6 +43,7 @@ public class Buttons {
     return AwesomeDecorator.createIconButton(
       AwesomeIcon.ARROW_RIGHT,
       Languages.safeText(APPLY_BUTTON),
+      true,
       action
     );
 
@@ -57,6 +59,7 @@ public class Buttons {
     return AwesomeDecorator.createIconButton(
       AwesomeIcon.UNDO,
       Languages.safeText(UNDO_BUTTON),
+      true,
       action
     );
 
@@ -71,6 +74,7 @@ public class Buttons {
     return AwesomeDecorator.createIconButton(
       AwesomeIcon.TIMES,
       Languages.safeText(CANCEL_BUTTON),
+      true,
       action
     );
   }
@@ -84,6 +88,7 @@ public class Buttons {
     return AwesomeDecorator.createIconButton(
       AwesomeIcon.SIGN_OUT,
       Languages.safeText(EXIT_BUTTON),
+      true,
       action
     );
   }
@@ -91,12 +96,14 @@ public class Buttons {
   /**
    * @param action The click action
    *
-   * @return A new "Next" button with icon
+   * @return A new "Next" button with icon (not prefixed)
    */
   public static JButton newNextButton(Action action) {
+
     return AwesomeDecorator.createIconButton(
-      AwesomeIcon.ANGLE_DOUBLE_RIGHT,
+      select(AwesomeIcon.ANGLE_DOUBLE_RIGHT,AwesomeIcon.ANGLE_DOUBLE_LEFT),
       Languages.safeText(NEXT_BUTTON),
+      false,
       action
     );
   }
@@ -108,8 +115,9 @@ public class Buttons {
    */
   public static JButton newPreviousButton(Action action) {
     return AwesomeDecorator.createIconButton(
-      AwesomeIcon.ANGLE_DOUBLE_LEFT,
+      select(AwesomeIcon.ANGLE_DOUBLE_LEFT,AwesomeIcon.ANGLE_DOUBLE_RIGHT),
       Languages.safeText(PREVIOUS_BUTTON),
+      true,
       action
     );
   }
@@ -123,6 +131,7 @@ public class Buttons {
     return AwesomeDecorator.createIconButton(
       AwesomeIcon.CLOUD_UPLOAD,
       Languages.safeText(SEND_BUTTON),
+      true,
       action
     );
   }
@@ -136,8 +145,24 @@ public class Buttons {
     return AwesomeDecorator.createIconButton(
       AwesomeIcon.CLOUD_DOWNLOAD,
       Languages.safeText(RECEIVE_BUTTON),
+      true,
       action
     );
+  }
+
+  /**
+   * @param ltrIcon The left-to-right icon
+   * @param rtlIcon The right-to-left icon
+   *
+   * @return The appropriate icon based on the current locale
+   */
+  private static AwesomeIcon select(AwesomeIcon ltrIcon, AwesomeIcon rtlIcon) {
+
+    if (ComponentOrientation.getOrientation(Languages.currentLocale()).isLeftToRight()) {
+      return ltrIcon;
+    }
+
+    return rtlIcon;
   }
 
 }

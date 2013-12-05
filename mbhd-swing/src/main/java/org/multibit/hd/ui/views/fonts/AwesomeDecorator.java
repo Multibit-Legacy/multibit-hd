@@ -43,21 +43,22 @@ public class AwesomeDecorator {
   /**
    * @param icon The font awesome icon
    *
-   * @return A JLabel containing the icon with blank text
+   * @return A JLabel containing the icon with blank text using standard prefixing
    */
   public static JLabel createIconLabel(AwesomeIcon icon) {
 
-    return createIconLabel(icon, "");
+    return createIconLabel(icon, "", true);
 
   }
 
   /**
-   * @param icon The font awesome icon
-   * @param text The text
+   * @param icon     The font awesome icon
+   * @param text     The text
+   * @param prefixed True if the icon comes before the text in the reading direction (LTR and RTL is handled automatically)
    *
    * @return A suitable button
    */
-  public static JLabel createIconLabel(AwesomeIcon icon, String text) {
+  public static JLabel createIconLabel(AwesomeIcon icon, String text, boolean prefixed) {
 
     JLabel label = new JLabel();
 
@@ -66,17 +67,23 @@ public class AwesomeDecorator {
     label.setText(text);
     label.setIcon(swingIcon);
 
+    if (!prefixed) {
+      // Icon presentation is opposite to standard layout
+      label.setHorizontalTextPosition(SwingConstants.LEADING);
+    }
+
     return label;
   }
 
   /**
-   * @param icon   The font awesome icon
-   * @param text   The text
-   * @param action The action
+   * @param icon     The font awesome icon
+   * @param text     The text
+   * @param prefixed True if the icon comes before the text in the reading direction (LTR and RTL is handled automatically)
+   * @param action   The action
    *
    * @return A suitable button
    */
-  public static JButton createIconButton(AwesomeIcon icon, String text, Action action) {
+  public static JButton createIconButton(AwesomeIcon icon, String text, boolean prefixed, Action action) {
 
     JButton button = new JButton(action);
 
@@ -85,16 +92,22 @@ public class AwesomeDecorator {
     button.setText(text);
     button.setIcon(swingIcon);
 
+    if (!prefixed) {
+      // Icon presentation is opposite to standard layout
+      button.setHorizontalTextPosition(SwingConstants.LEADING);
+    }
+
     return button;
   }
 
   /**
    * <p>Apply an icon to a label. Both icon states (enabled/disabled) will be added.</p>
    *
-   * @param icon  The icon reference
-   * @param label The label
+   * @param icon     The icon reference
+   * @param label    The label
+   * @param prefixed True if the icon comes before the text in the reading direction (LTR and RTL is handled automatically)
    */
-  public static void applyIcon(AwesomeIcon icon, JLabel label) {
+  public static void applyIcon(AwesomeIcon icon, JLabel label, boolean prefixed) {
 
     Icon enabledIcon = new AwesomeSwingIcon(label, icon.getChar());
     Icon disabledIcon = new AwesomeSwingIcon(label, icon.getChar());
@@ -102,21 +115,33 @@ public class AwesomeDecorator {
     label.setIcon(enabledIcon);
     label.setDisabledIcon(disabledIcon);
 
+    if (!prefixed) {
+      // Icon presentation is opposite to standard layout
+      label.setHorizontalTextPosition(SwingConstants.LEADING);
+    }
+
   }
 
   /**
    * <p>Apply an icon to a button. Both icon states (enabled/disabled) will be added.</p>
    *
-   * @param icon   The icon reference
-   * @param button The button
+   * @param icon     The icon reference
+   * @param button   The button
+   * @param prefixed True if the icon comes before the text in the reading direction (LTR and RTL is handled automatically)
    */
-  public static void applyIcon(AwesomeIcon icon, JButton button) {
+
+  public static void applyIcon(AwesomeIcon icon, JButton button, boolean prefixed) {
 
     Icon enabledIcon = new AwesomeSwingIcon(button, icon.getChar());
     Icon disabledIcon = new AwesomeSwingIcon(button, icon.getChar());
 
     button.setIcon(enabledIcon);
     button.setDisabledIcon(disabledIcon);
+
+    if (!prefixed) {
+      // Icon presentation is opposite to standard layout
+      button.setHorizontalTextPosition(SwingConstants.LEADING);
+    }
 
   }
 

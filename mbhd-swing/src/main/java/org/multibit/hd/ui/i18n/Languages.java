@@ -6,6 +6,7 @@ import org.multibit.hd.ui.exceptions.UIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -158,4 +159,10 @@ public class Languages {
     return ResourceBundle.getBundle(BASE_NAME, currentLocale());
   }
 
+  /**
+   * @return True if text is to be placed left to right (standard Western language presentation)
+   */
+  public static boolean isLeftToRight() {
+    return ComponentOrientation.getOrientation(currentLocale()).isLeftToRight();
+  }
 }

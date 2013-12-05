@@ -45,7 +45,7 @@ public class Labels {
    */
   public static JLabel newHelpLabel() {
 
-    JLabel label = AwesomeDecorator.createIconLabel(AwesomeIcon.QUESTION, Languages.safeText(HELP_LABEL));
+    JLabel label = AwesomeDecorator.createIconLabel(AwesomeIcon.QUESTION, Languages.safeText(HELP_LABEL), true);
     label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
     return label;
@@ -56,7 +56,7 @@ public class Labels {
    */
   public static JLabel newSettingsLabel() {
 
-    JLabel label = AwesomeDecorator.createIconLabel(AwesomeIcon.GEAR, Languages.safeText(SETTINGS_LABEL));
+    JLabel label = AwesomeDecorator.createIconLabel(AwesomeIcon.GEAR, Languages.safeText(SETTINGS_LABEL), true);
     label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
     return label;
@@ -67,7 +67,7 @@ public class Labels {
    */
   public static JLabel newSignOutLabel() {
 
-    JLabel label = AwesomeDecorator.createIconLabel(AwesomeIcon.SIGN_OUT, Languages.safeText(SIGN_OUT_LABEL));
+    JLabel label = AwesomeDecorator.createIconLabel(AwesomeIcon.SIGN_OUT, Languages.safeText(SIGN_OUT_LABEL), true);
     label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
     return label;
