@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.views.components.Buttons;
+import org.multibit.hd.ui.views.wizards.AbstractWizard;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -18,7 +19,14 @@ import java.awt.event.ActionEvent;
 
 public class SendBitcoinConfirmSendPanel extends JPanel {
 
-  public SendBitcoinConfirmSendPanel() {
+  private final AbstractWizard wizard;
+
+  /**
+   * @param wizard The wizard managing the states
+   */
+  public SendBitcoinConfirmSendPanel(AbstractWizard wizard) {
+
+    this.wizard = wizard;
 
     MigLayout layout = new MigLayout(
       "fill", // Layout constrains
@@ -27,40 +35,35 @@ public class SendBitcoinConfirmSendPanel extends JPanel {
     );
     setLayout(layout);
 
-    add(panelControls(),"grow,wrap");
+    add(panelControls(), "grow,wrap");
 
-    add(Buttons.newCancelButton(onCancelAction()),"left");
-    add(Buttons.newPreviousButton(onPreviousAction()),"right");
-    add(Buttons.newSendButton(onFinishAction()),"right");
+    add(Buttons.newCancelButton(cancelAction), "left");
+    add(Buttons.newPreviousButton(previousAction), "right");
+    add(Buttons.newNextButton(nextAction), "right");
 
   }
 
-  private Action onCancelAction() {
-    return new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
+  Action cancelAction = new AbstractAction() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      wizard.close();
+    }
+  };
 
-      }
-    };
-  }
+  Action previousAction = new AbstractAction() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      wizard.previous();
+    }
+  };
 
-  private Action onPreviousAction() {
-    return new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
+  Action nextAction = new AbstractAction() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      wizard.next();
+    }
+  };
 
-      }
-    };
-  }
-
-  private Action onFinishAction() {
-    return new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-
-      }
-    };
-  }
 
   private JPanel panelControls() {
 

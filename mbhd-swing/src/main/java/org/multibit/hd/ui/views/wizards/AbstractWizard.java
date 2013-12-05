@@ -1,5 +1,8 @@
 package org.multibit.hd.ui.views.wizards;
 
+import javax.swing.*;
+import java.awt.*;
+
 /**
  * <p>Abstract base class to provide the following to UI:</p>
  * <ul>
@@ -11,6 +14,39 @@ package org.multibit.hd.ui.views.wizards;
  */
 public abstract class AbstractWizard {
 
+  private CardLayout cardLayout = new CardLayout();
+  protected final JPanel contentPanel = new JPanel(cardLayout);
 
+  /**
+   * <p>Close the wizard</p>
+   */
+  public void close() {
+
+
+  }
+
+  public JPanel getContentPanel() {
+
+    return contentPanel;
+
+  }
+
+  public CardLayout getCardLayout() {
+    return cardLayout;
+  }
+
+  /**
+   * Show the previous panel
+   */
+  public void previous() {
+    cardLayout.previous(contentPanel);
+  }
+
+  /**
+   * Show the next panel
+   */
+  public void next() {
+    cardLayout.next(contentPanel);
+  }
 
 }

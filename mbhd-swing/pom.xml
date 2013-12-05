@@ -169,11 +169,6 @@
       <artifactId>mbhd-core</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.multibit.hd</groupId>
-      <artifactId>mbhd-brit</artifactId>
-      <version>${project.parent.version}</version>
-    </dependency>
 
     <!-- MigLayout for better Swing presentation -->
     <!-- Encourages good layout design of forms -->

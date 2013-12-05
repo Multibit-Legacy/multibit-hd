@@ -19,6 +19,14 @@
   </properties>
 
   <dependencies>
+
+    <!-- BRIT for receiving payments -->
+    <dependency>
+      <groupId>org.multibit.hd</groupId>
+      <artifactId>mbhd-brit</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+
     <!-- XChange for accessing Bitcoin exchanges -->
     <dependency>
       <groupId>com.xeiam.xchange</groupId>

@@ -151,6 +151,38 @@ public class Buttons {
   }
 
   /**
+   * @param action The click action
+   *
+   * @return A new "Send Bitcoin" wizard button with icon
+   */
+  public static JButton newSendBitcoinWizardButton(Action action) {
+
+    return AwesomeDecorator.createIconButton(
+      AwesomeIcon.CLOUD_UPLOAD,
+      Languages.safeText(SEND_BUTTON),
+      true,
+      action
+    );
+
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "Receive Bitcoin" wizard button with icon
+   */
+  public static JButton newReceiveBitcoinWizardButton(Action action) {
+
+    return AwesomeDecorator.createIconButton(
+      AwesomeIcon.CLOUD_DOWNLOAD,
+      Languages.safeText(RECEIVE_BUTTON),
+      true,
+      action
+    );
+
+  }
+
+  /**
    * @param ltrIcon The left-to-right icon
    * @param rtlIcon The right-to-left icon
    *
@@ -164,5 +196,4 @@ public class Buttons {
 
     return rtlIcon;
   }
-
 }

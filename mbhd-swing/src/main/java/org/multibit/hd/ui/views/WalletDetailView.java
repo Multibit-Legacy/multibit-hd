@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.wizards.Wizards;
 
@@ -26,20 +27,28 @@ public class WalletDetailView {
     CoreServices.uiEventBus.register(this);
 
     MigLayout layout = new MigLayout(
-      "fill", // Layout constrains
+      "fillx", // Layout constrains
       "[]10[]", // Column constraints
       "[grow]" // Row constraints
     );
     contentPanel = new JPanel(layout);
 
-    Action[] actions = {
-      new ShowSendBitcoinWizardAction(),
-      new ShowReceiveBitcoinWizardAction()
+    Action showSendBitcoinWizardAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        Panels.applyLightBoxPanel(Wizards.newSendBitcoinWizard().getContentPanel());
+      }
     };
 
-    for (Action action : actions) {
-      contentPanel.add(new JButton(action),"grow");
-    }
+    Action showReceiveBitcoinWizardAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        Panels.applyLightBoxPanel(Wizards.newSendBitcoinWizard().getContentPanel());
+      }
+    };
+
+    contentPanel.add(Buttons.newSendBitcoinWizardButton(showSendBitcoinWizardAction),"grow");
+    contentPanel.add(Buttons.newReceiveBitcoinWizardButton(showReceiveBitcoinWizardAction),"grow");
 
   }
 
@@ -48,32 +57,6 @@ public class WalletDetailView {
    */
   public JPanel getContentPanel() {
     return contentPanel;
-  }
-
-  private class ShowSendBitcoinWizardAction extends AbstractAction {
-    public ShowSendBitcoinWizardAction() {
-      super("Send");
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
-      // TODO Add ViewEvent instead of direct creation
-      // And this is develop
-      Panels.applyLightBoxPanel(Wizards.newSendBitcoinWizard().getContentPanel());
-
-    }
-  }
-
-  private class ShowReceiveBitcoinWizardAction extends AbstractAction {
-    public ShowReceiveBitcoinWizardAction() {
-      super("Receive");
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      Panels.applyLightBoxPanel(Wizards.newSendBitcoinWizard().getContentPanel());
-    }
   }
 
 }

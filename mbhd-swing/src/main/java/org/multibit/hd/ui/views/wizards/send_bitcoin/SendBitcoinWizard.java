@@ -18,22 +18,13 @@ import java.util.Map;
  */
 public class SendBitcoinWizard extends AbstractWizard {
 
-  private CardLayout cardLayout = new CardLayout();
-  private final JPanel contentPanel = new JPanel(cardLayout);
-
   public SendBitcoinWizard() {
 
-    contentPanel.setSize(400, 400);
+    getContentPanel().setSize(400, 400);
 
     Map<String,Action> actionMap = Maps.newHashMap();
-    contentPanel.add(new SendBitcoinEnterAmountPanel(), "Send Bitcoin");
-    contentPanel.add(new SendBitcoinConfirmSendPanel(), "Confirm Send");
-  }
-
-  public JPanel getContentPanel() {
-
-    return contentPanel;
-
+    getContentPanel().add(new SendBitcoinEnterAmountPanel(this), "Send Bitcoin");
+    getContentPanel().add(new SendBitcoinConfirmSendPanel(this), "Confirm Send");
   }
 
 }

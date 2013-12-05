@@ -241,7 +241,7 @@ public enum AwesomeIcon {
   LIGHTBULB_ALT('\uf0Eb'),
   EXCHANGE('\uf0Ec'),
   CLOUD_DOWNLOAD('\uf0Ed'),
-  CLOUD_UPLOAD('\uf0Ed'),
+  CLOUD_UPLOAD('\uf0Ee'),
   USER_MD('\uf0F0'),
   STETHOSCOPE('\uf0F1'),
   SUITCASE('\uf0F2'),
