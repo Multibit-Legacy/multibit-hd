@@ -23,6 +23,19 @@ public class ApplicationConfiguration {
 
   private String applicationDirectory = ".";
 
+  private String currentWalletFilename = "";
+
+  /**
+   * @return The filename of the current wallet (may be blank if no wallet has been created yet)
+   */
+  public String getCurrentWalletFilename() {
+     return currentWalletFilename;
+   }
+
+   public void setCurrentWalletFilename(String currentWalletFilename) {
+     this.currentWalletFilename = currentWalletFilename;
+   }
+
   /**
    * @return The application directory path (e.g. ".")
    */
@@ -82,6 +95,7 @@ public class ApplicationConfiguration {
 
     app.setCurrentScreen(getCurrentScreen().orNull());
     app.setCurrentTab(getCurrentTab().orNull());
+    app.setCurrentWalletFilename((getCurrentWalletFilename()));
     app.setApplicationDirectory(getApplicationDirectory());
     app.setBitcoinUriHandling(getBitcoinUriHandling());
 

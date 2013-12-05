@@ -24,6 +24,9 @@ public class MultiBitFiles {
   public static final String MBHD_APP_NAME = "MultiBitHD";
   public static final String MBHD_PREFIX = "multibit-hd";
 
+  public static final String SPV_BLOCKCHAIN_SUFFIX = ".spvchain";
+  public static final String CHECKPOINTS_SUFFIX = ".checkpoints";
+
   private static final Logger log = LoggerFactory.getLogger(MultiBitFiles.class);
 
   public static final String MBHD_CONFIGURATION_FILE = MBHD_PREFIX + ".properties";
