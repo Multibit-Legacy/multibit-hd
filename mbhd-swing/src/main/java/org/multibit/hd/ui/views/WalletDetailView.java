@@ -58,6 +58,7 @@ public class WalletDetailView {
     @Override
     public void actionPerformed(ActionEvent e) {
 
+      // TODO Add ViewEvent instead of direct creation
       Panels.applyLightBoxPanel(Wizards.newSendBitcoinWizard().getContentPanel());
 
     }
