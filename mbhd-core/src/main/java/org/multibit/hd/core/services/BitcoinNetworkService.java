@@ -8,6 +8,7 @@ import com.google.bitcoin.params.MainNetParams;
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
 import com.google.bitcoin.store.SPVBlockStore;
+import com.google.common.base.Preconditions;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.managers.MultiBitCheckpointManager;
 import org.multibit.hd.core.utils.MultiBitFiles;
@@ -61,9 +62,7 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
     log.debug("The current wallet filename is '" + currentWalletFilename + "'");
 
     // Check the application data directory and current wallet directories exist.
-    if (applicationDataDirectoryName == null) {
-      throw new IllegalArgumentException("applicationDataDirectory cannot be null");
-    }
+    Preconditions.checkNotNull(applicationDataDirectoryName);
 
     File applicationDataDirectory = new File(applicationDataDirectoryName);
     if (!applicationDataDirectory.exists()) {
