@@ -67,10 +67,9 @@ public class ViewEvents {
   }
 
   /**
-   * <p>Broadcast a new sign out event</p>
-   * TODO Consider removing this
+   * <p>Broadcast a new system status change event</p>
    */
-  public static void fireSignOutEvent() {
-    CoreServices.uiEventBus.post(new SignOutEvent());
+  public static void fireSystemStatusEvent(RAGStatus severity) {
+    CoreServices.uiEventBus.post(new SystemStatusChangeEvent(severity));
   }
 }

@@ -8,6 +8,7 @@ import org.multibit.hd.core.config.I18NConfiguration;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.BalanceChangeEvent;
 import org.multibit.hd.ui.events.ShowAlertEvent;
+import org.multibit.hd.ui.events.ViewEvents;
 import org.multibit.hd.ui.i18n.BitcoinSymbol;
 import org.multibit.hd.ui.i18n.Formats;
 import org.multibit.hd.ui.i18n.Languages;
@@ -47,7 +48,7 @@ public class HeaderView {
 
     contentPanel = new JPanel(new MigLayout(
       "", // Layout
-      "[][][][]", // Columns
+      "[][][][][]", // Columns
       "[]10[shrink]" // Rows
     ));
 
@@ -66,8 +67,10 @@ public class HeaderView {
     contentPanel.add(primaryBalanceLabel, "shrink,baseline");
     contentPanel.add(secondaryBalanceLabel, "shrink,gap 0");
     contentPanel.add(trailingSymbolLabel, "shrink,gap 0");
-    contentPanel.add(exchangeLabel, "shrink,gap 0,wrap");
-    //contentPanel.add(alertPanel, "grow,split,push");
+    contentPanel.add(exchangeLabel, "shrink,gap 0");
+    contentPanel.add(new JLabel(), "push,wrap"); // Provides a flexible column
+
+    contentPanel.add(alertPanel, "grow,span 5");
 
   }
 
@@ -100,6 +103,8 @@ public class HeaderView {
    */
   @Subscribe
   public void onShowAlertEvent(ShowAlertEvent event) {
+
+    ViewEvents.fireSystemStatusEvent(event.getSeverity());
 
     alertPanel.add(Alerts.newBitcoinNetworkAlert(event.getMessage()).getContentPanel());
 

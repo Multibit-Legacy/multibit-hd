@@ -7,6 +7,7 @@ import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 
 /**
  * <p>Utility to provide the following to UI:</p>
@@ -21,13 +22,11 @@ public class Labels {
 
   private static final float BALANCE_LARGE_FONT_SIZE = 42.0f;
   private static final float BALANCE_NORMAL_FONT_SIZE = 28.0f;
+  private static final float PANEL_CLOSE_FONT_SIZE = 28.0f;
 
   private static final String USE_LANGUAGE_LABEL = "showPreferencesPanel.useSpecific";
   private static final String HELP_LABEL = "multiBitFrame.helpMenuText";
   private static final String SETTINGS_LABEL = "showPreferencesPanel.title";
-
-  // TODO Require keys
-  private static final String SIGN_OUT_LABEL = "Sign Out";
 
   /**
    * Utilities have no public constructor
@@ -44,36 +43,23 @@ public class Labels {
   }
 
   /**
-   * @return A new "Help" label with icon
+   * @param mouseAdapter The mouse adapter that provides the event handling
+   *
+   * @return A new panel close "X" label with icon
    */
-  public static JLabel newHelpLabel() {
+  public static JLabel newPanelCloseLabel(MouseAdapter mouseAdapter) {
 
-    JLabel label = AwesomeDecorator.createIconLabel(AwesomeIcon.QUESTION, Languages.safeText(HELP_LABEL), true);
-    label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    JLabel panelCloseLabel = new JLabel();
 
-    return label;
-  }
+    // Font
+    Font panelCloseFont = panelCloseLabel.getFont().deriveFont(PANEL_CLOSE_FONT_SIZE);
+    panelCloseLabel.setFont(panelCloseFont);
 
-  /**
-   * @return A new "Settings" label with icon
-   */
-  public static JLabel newSettingsLabel() {
+    AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, panelCloseLabel, true);
+    panelCloseLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    panelCloseLabel.addMouseListener(mouseAdapter);
 
-    JLabel label = AwesomeDecorator.createIconLabel(AwesomeIcon.GEAR, Languages.safeText(SETTINGS_LABEL), true);
-    label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-    return label;
-  }
-
-  /**
-   * @return A new "Sign Out" label with icon
-   */
-  public static JLabel newSignOutLabel() {
-
-    JLabel label = AwesomeDecorator.createIconLabel(AwesomeIcon.SIGN_OUT, Languages.safeText(SIGN_OUT_LABEL), true);
-    label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-    return label;
+    return panelCloseLabel;
   }
 
   /**

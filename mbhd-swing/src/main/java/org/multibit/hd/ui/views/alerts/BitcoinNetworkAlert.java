@@ -1,11 +1,12 @@
 package org.multibit.hd.ui.views.alerts;
 
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
-import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.components.Labels;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * <p>Wizard to provide the following to UI:</p>
@@ -23,25 +24,21 @@ public class BitcoinNetworkAlert {
   public BitcoinNetworkAlert(String localisedMessage) {
 
     panel = new JPanel(new MigLayout(
-      "debug,fillx",
-      "[][right]", // Columns
+      "fill,ins 0,hidemode 3",
+      "[grow][]", // Columns
       "[]" // Rows
     ));
 
-    panel.add(new JLabel(localisedMessage), "grow,push");
-    panel.add(AwesomeDecorator.createIconButton(
-      AwesomeIcon.TIMES,
-      "",
-      true,
-      new AbstractAction() {
+    panel.add(new JLabel(localisedMessage), "push");
+    panel.add(
+      Labels.newPanelCloseLabel(new MouseAdapter() {
         @Override
-        public void actionPerformed(ActionEvent e) {
+        public void mouseClicked(MouseEvent e) {
           close();
         }
-      }
-
-    ),
+      }),
       "shrink,right");
+    panel.setBackground(Color.RED);
   }
 
   private void close() {

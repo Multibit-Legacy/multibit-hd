@@ -1,7 +1,9 @@
 package org.multibit.hd.ui.views;
 
+import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.events.SystemStatusChangeEvent;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
@@ -20,23 +22,27 @@ import java.awt.*;
 public class FooterView {
 
   private final JPanel contentPanel;
+  private final JProgressBar progressBar;
+  private final JLabel messageLabel;
+  private final JLabel statusLabel;
+  private final JLabel statusIcon;
+
 
   public FooterView() {
 
     CoreServices.uiEventBus.register(this);
 
-    // TODO trim this by 5px on insets
     contentPanel = new JPanel(new MigLayout(
-      "",
+      "ins 7",
       "[][][]",
       "[]"
     ));
 
-    JProgressBar progressBar = new JProgressBar();
-    JLabel messageLabel = new JLabel("A message");
+    progressBar = new JProgressBar();
+    messageLabel = new JLabel("A message");
 
-    JLabel statusLabel = new JLabel("OK");
-    JLabel statusIcon = AwesomeDecorator.createIconLabel(
+    statusLabel = new JLabel("OK");
+    statusIcon = AwesomeDecorator.createIconLabel(
       AwesomeIcon.CIRCLE,
       "",
       false
@@ -55,6 +61,34 @@ public class FooterView {
    */
   public JPanel getContentPanel() {
     return contentPanel;
+  }
+
+  /**
+   * <p>Handles the representation of a system status change</p>
+   *
+   * @param event The system status change event
+   */
+  @Subscribe
+  public void onSystemStatusChangeEvent(SystemStatusChangeEvent event) {
+
+    switch (event.getSeverity()) {
+      case RED:
+        statusLabel.setText("Problem");
+        statusIcon.setForeground(Color.RED);
+        break;
+      case AMBER:
+        statusLabel.setText("Warning");
+        statusIcon.setForeground(Color.YELLOW);
+        break;
+      case GREEN:
+        statusLabel.setText("OK");
+        statusIcon.setForeground(Color.GREEN);
+        break;
+      default:
+        // Unknown status
+        throw new IllegalStateException("Unknown event severity "+event.getSeverity());
+    }
+
   }
 
 }
