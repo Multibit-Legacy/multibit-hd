@@ -1,9 +1,11 @@
 package org.multibit.hd.ui.views;
 
 import com.google.common.eventbus.Subscribe;
+import com.xeiam.xchange.currency.MoneyUtils;
 import org.multibit.hd.core.events.BitcoinNetworkChangeEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.LocaleChangeEvent;
+import org.multibit.hd.ui.events.ViewEvents;
 import org.multibit.hd.ui.views.components.Panels;
 
 import javax.swing.*;
@@ -23,16 +25,19 @@ public class MainView extends JFrame {
   private final JPanel headerPanel;
   private final JPanel sidebarPanel;
   private final JPanel detailPanel;
+  private final JPanel footerPanel;
 
   public MainView(
     JPanel headerPanel,
     JPanel sidebarPanel,
-    JPanel detailPanel
+    JPanel detailPanel,
+    JPanel footerPanel
   ) {
 
     this.headerPanel = headerPanel;
     this.sidebarPanel = sidebarPanel;
     this.detailPanel = detailPanel;
+    this.footerPanel = footerPanel;
 
     CoreServices.uiEventBus.register(this);
 
@@ -97,6 +102,7 @@ public class MainView extends JFrame {
     // Add the supporting panels
     mainPanel.add(headerPanel, BorderLayout.PAGE_START);
     mainPanel.add(splitPane, BorderLayout.CENTER);
+    mainPanel.add(footerPanel, BorderLayout.PAGE_END);
 
     return mainPanel;
   }

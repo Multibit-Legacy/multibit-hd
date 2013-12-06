@@ -11,6 +11,7 @@ import org.multibit.hd.ui.events.ShowAlertEvent;
 import org.multibit.hd.ui.i18n.BitcoinSymbol;
 import org.multibit.hd.ui.i18n.Formats;
 import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.views.alerts.Alerts;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -29,9 +30,9 @@ import java.awt.*;
  */
 public class HeaderView {
 
-  private JLabel balanceLHSLabel;
-  private JLabel balanceRHSLabel;
-  private JLabel balanceRHSSymbolLabel;
+  private JLabel primaryBalanceLabel;
+  private JLabel secondaryBalanceLabel;
+  private JLabel trailingSymbolLabel;
   private JLabel exchangeLabel;
 
   private BalanceChangeEvent latestBalanceChangeEvent;
@@ -44,24 +45,29 @@ public class HeaderView {
 
     CoreServices.uiEventBus.register(this);
 
-    contentPanel = new JPanel(new MigLayout("fillx"));
+    contentPanel = new JPanel(new MigLayout(
+      "", // Layout
+      "[][][][]", // Columns
+      "[]10[shrink]" // Rows
+    ));
 
+    // Create the alert panel
     CardLayout cardLayout = new CardLayout();
     alertPanel = new JPanel(cardLayout);
+    alertPanel.setVisible(false);
 
     // Create the balance labels
     JLabel[] balanceLabels = Labels.newBalanceLabels();
-    balanceLHSLabel = balanceLabels[0];
-    balanceRHSLabel = balanceLabels[1];
-    balanceRHSSymbolLabel = balanceLabels[2];
+    primaryBalanceLabel = balanceLabels[0];
+    secondaryBalanceLabel = balanceLabels[1];
+    trailingSymbolLabel = balanceLabels[2];
     exchangeLabel = balanceLabels[3];
 
-    contentPanel.add(balanceLHSLabel, "baseline grow");
-    contentPanel.add(balanceRHSLabel, "gap 0");
-    contentPanel.add(balanceRHSSymbolLabel, "gap 0");
-    contentPanel.add(exchangeLabel, "gap unrelated");
-
-    contentPanel.add(new JLabel(), "push");
+    contentPanel.add(primaryBalanceLabel, "shrink,baseline");
+    contentPanel.add(secondaryBalanceLabel, "shrink,gap 0");
+    contentPanel.add(trailingSymbolLabel, "shrink,gap 0");
+    contentPanel.add(exchangeLabel, "shrink,gap 0,wrap");
+    //contentPanel.add(alertPanel, "grow,split,push");
 
   }
 
@@ -95,6 +101,9 @@ public class HeaderView {
   @Subscribe
   public void onShowAlertEvent(ShowAlertEvent event) {
 
+    alertPanel.add(Alerts.newBitcoinNetworkAlert(event.getMessage()).getContentPanel());
+
+    alertPanel.setVisible(true);
 
   }
 
@@ -117,8 +126,8 @@ public class HeaderView {
       handleSuffixSymbol(symbol);
     }
 
-    balanceLHSLabel.setText(balance[0]);
-    balanceRHSLabel.setText(balance[1]);
+    primaryBalanceLabel.setText(balance[0]);
+    secondaryBalanceLabel.setText(balance[1]);
 
     // TODO Add this to resource bundles
     String exchangeText = "~ ${0} ({1})";
@@ -141,13 +150,13 @@ public class HeaderView {
     // Place currency symbol before the number
     if (BitcoinSymbol.ICON.equals(symbol)) {
       // Add icon to LHS, remove from elsewhere
-      AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, balanceLHSLabel, true);
-      AwesomeDecorator.removeIcon(balanceRHSSymbolLabel);
-      balanceRHSSymbolLabel.setText("");
+      AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, primaryBalanceLabel, true);
+      AwesomeDecorator.removeIcon(trailingSymbolLabel);
+      trailingSymbolLabel.setText("");
     } else {
       // Add symbol to LHS, remove from elsewhere
       balance[0] = symbol.getSymbol() + " " + balance[0];
-      AwesomeDecorator.removeIcon(balanceLHSLabel);
+      AwesomeDecorator.removeIcon(primaryBalanceLabel);
     }
 
   }
@@ -161,14 +170,14 @@ public class HeaderView {
 
     if (BitcoinSymbol.ICON.equals(symbol)) {
       // Add icon to RHS, remove from elsewhere
-      AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, balanceRHSSymbolLabel, true);
-      AwesomeDecorator.removeIcon(balanceLHSLabel);
-      balanceRHSSymbolLabel.setText("");
+      AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, trailingSymbolLabel, true);
+      AwesomeDecorator.removeIcon(primaryBalanceLabel);
+      trailingSymbolLabel.setText("");
     } else {
       // Add symbol to RHS, remove from elsewhere
-      balanceRHSSymbolLabel.setText(symbol.getSymbol());
-      AwesomeDecorator.removeIcon(balanceLHSLabel);
-      AwesomeDecorator.removeIcon(balanceRHSSymbolLabel);
+      trailingSymbolLabel.setText(symbol.getSymbol());
+      AwesomeDecorator.removeIcon(primaryBalanceLabel);
+      AwesomeDecorator.removeIcon(trailingSymbolLabel);
     }
 
   }

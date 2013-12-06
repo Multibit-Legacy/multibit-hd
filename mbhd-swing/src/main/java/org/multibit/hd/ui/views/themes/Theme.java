@@ -3,9 +3,9 @@ package org.multibit.hd.ui.views.themes;
 import java.awt.*;
 
 /**
- * <p>Strategy to provide the following to {@link Object}:</p>
+ * <p>Strategy to provide the following to themes:</p>
  * <ul>
- * <li></li>
+ * <li>Various accessor methods</li>
  * </ul>
  *
  * @since 0.0.1
@@ -13,6 +13,13 @@ import java.awt.*;
  */
 public interface Theme {
 
-  public Color fontColor();
+  /**
+   * @return The normal font colour
+   */
+  public Color normalFontColor();
 
+  /**
+   * @return A lighter version of the normal font colour
+   */
+  public Color lightFontColor();
 }

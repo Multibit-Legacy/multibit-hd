@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.events;
 
-import java.awt.*;
+import org.multibit.hd.core.api.RAGStatus;
 
 /**
  * <p>Event to provide the following to views:</p>
@@ -14,24 +14,17 @@ import java.awt.*;
 public class ShowAlertEvent {
 
   private final String message;
-  private final Color background;
+  private final RAGStatus severity;
 
   /**
-   * @param message    The localised message to display
-   * @param background The background colour
+   * @param message  The localised message to display
+   * @param severity The severity
    */
-  public ShowAlertEvent(String message, Color background) {
+  public ShowAlertEvent(String message, RAGStatus severity) {
 
     this.message = message;
-    this.background = background;
+    this.severity = severity;
 
-  }
-
-  /**
-   * @return The background colour
-   */
-  public Color getBackground() {
-    return background;
   }
 
   /**
@@ -39,5 +32,12 @@ public class ShowAlertEvent {
    */
   public String getMessage() {
     return message;
+  }
+
+  /**
+   * @return A severity indicator
+   */
+  public RAGStatus getSeverity() {
+    return severity;
   }
 }

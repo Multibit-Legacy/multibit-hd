@@ -51,8 +51,6 @@ public class Formats {
 
     String formattedAmount = format.format(symbolicAmount);
 
-    int decimalIndex = formattedAmount.lastIndexOf(dfs.getDecimalSeparator());
-
     if (BitcoinSymbol.SATOSHI.equals(symbol)) {
 
       return new String[]{
@@ -62,9 +60,14 @@ public class Formats {
 
     }
 
-    // All other representations have a decimal
+    // All other representations require a decimal
 
-    Preconditions.checkState(decimalIndex > 0, "Require a leading zero for this representation");
+    int decimalIndex = formattedAmount.lastIndexOf(dfs.getDecimalSeparator());
+
+    if (decimalIndex == -1) {
+      formattedAmount += dfs.getDecimalSeparator()+"00";
+      decimalIndex = formattedAmount.lastIndexOf(dfs.getDecimalSeparator());
+    }
 
     return new String[]{
       formattedAmount.substring(0, decimalIndex + 3), // 12,345.67 (significant figures)

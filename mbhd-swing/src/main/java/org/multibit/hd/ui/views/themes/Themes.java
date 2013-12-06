@@ -24,12 +24,17 @@ public class Themes {
 
   public static class H1 {
 
-    public static Color foreground = theme.fontColor();
+    public static Color foreground = theme.normalFontColor();
+  }
+
+  public static class H2 {
+
+    public static Color foreground = theme.lightFontColor();
   }
 
   public static class LIGHT_BOX {
 
-    public static Color foreground = theme.fontColor();
+    public static Color foreground = theme.normalFontColor();
 
   }
 }
