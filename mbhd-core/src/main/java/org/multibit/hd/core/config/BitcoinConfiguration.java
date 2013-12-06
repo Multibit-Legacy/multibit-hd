@@ -9,7 +9,7 @@ package org.multibit.hd.core.config;
  * @since 0.0.1
  *         
  */
-public clasinConfiguration {
+public BitcoinConfiguration {
 
   private String bitcoinSymbol = "ICON";
   private String exchangeClassName;
