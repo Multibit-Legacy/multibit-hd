@@ -7,6 +7,7 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.I18NConfiguration;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.BalanceChangeEvent;
+import org.multibit.hd.ui.events.ShowAlertEvent;
 import org.multibit.hd.ui.i18n.BitcoinSymbol;
 import org.multibit.hd.ui.i18n.Formats;
 import org.multibit.hd.ui.i18n.Languages;
@@ -15,6 +16,7 @@ import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -36,12 +38,16 @@ public class HeaderView {
 
   private final JPanel contentPanel;
 
+  private final JPanel alertPanel;
+
   public HeaderView() {
 
     CoreServices.uiEventBus.register(this);
 
-    MigLayout layout = new MigLayout("fillx");
-    contentPanel = new JPanel(layout);
+    contentPanel = new JPanel(new MigLayout("fillx"));
+
+    CardLayout cardLayout = new CardLayout();
+    alertPanel = new JPanel(cardLayout);
 
     // Create the balance labels
     JLabel[] balanceLabels = Labels.newBalanceLabels();
@@ -54,6 +60,7 @@ public class HeaderView {
     contentPanel.add(balanceRHSLabel, "gap 0");
     contentPanel.add(balanceRHSSymbolLabel, "gap 0");
     contentPanel.add(exchangeLabel, "gap unrelated");
+
     contentPanel.add(new JLabel(), "push");
 
   }
@@ -78,6 +85,17 @@ public class HeaderView {
 
     // Handle the update
     handleBalanceChange();
+  }
+
+  /**
+   * <p>Handles the representation of the balance based on the current configuration</p>
+   *
+   * @param event The balance change event
+   */
+  @Subscribe
+  public void onShowAlertEvent(ShowAlertEvent event) {
+
+
   }
 
   /**

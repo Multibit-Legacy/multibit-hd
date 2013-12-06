@@ -69,9 +69,9 @@ public class LightBoxPanel extends JPanel {
   }
 
   @Override
-  protected void paintComponent(Graphics g1) {
+  protected void paintComponent(Graphics graphics) {
 
-    Graphics2D g = (Graphics2D) g1;
+    Graphics2D g = (Graphics2D) graphics;
 
     // Always use black even for light themes
     g.setPaint(Color.BLACK);

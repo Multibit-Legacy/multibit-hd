@@ -8,6 +8,7 @@ import com.google.bitcoin.params.MainNetParams;
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
 import com.google.bitcoin.store.SPVBlockStore;
+import org.multibit.hd.core.api.BitcoinNetworkSummary;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.managers.MultiBitCheckpointManager;
 import org.multibit.hd.core.utils.MultiBitFiles;
@@ -265,6 +266,16 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
           }
       };
       worker.execute();
+  }
+
+  /**
+   *
+   * @return A snapshot of the Bitcoin network summary
+   */
+  public BitcoinNetworkSummary getNetworkSummary() {
+
+    // TODO Implement this
+    return null;
   }
 
 }
