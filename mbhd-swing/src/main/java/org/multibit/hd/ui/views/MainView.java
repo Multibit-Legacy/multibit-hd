@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views;
 
 import com.google.common.eventbus.Subscribe;
+import org.multibit.hd.core.events.BitcoinNetworkChangeEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.LocaleChangeEvent;
 import org.multibit.hd.ui.views.components.Panels;
@@ -64,6 +65,13 @@ public class MainView extends JFrame {
 
     pack();
     setVisible(true);
+
+  }
+
+  @Subscribe
+  public void onBitcoinNetworkChangeEvent(BitcoinNetworkChangeEvent event) {
+
+    // TODO Do something!
 
   }
 

@@ -1,5 +1,6 @@
 package org.multibit.hd.core.events;
 
+import org.multibit.hd.core.api.BitcoinNetworkSummary;
 import org.multibit.hd.core.services.CoreServices;
 
 import java.math.BigDecimal;
@@ -30,6 +31,17 @@ public class CoreEvents {
   public static void fireExchangeRateChangeEvent(BigDecimal rate, String exchangeName) {
 
     CoreServices.uiEventBus.post(new ExchangeRateChangeEvent(rate, exchangeName));
+
+  }
+
+  /**
+   * <p>Broadcast a new Bitcoin network change event</p>
+   *
+   * @param bitcoinNetworkSummary The Bitcoin network summary
+   */
+  public static void fireBitcoinNetworkChangevent(BitcoinNetworkSummary bitcoinNetworkSummary) {
+
+    CoreServices.uiEventBus.post(new BitcoinNetworkChangeEvent(bitcoinNetworkSummary));
 
   }
 

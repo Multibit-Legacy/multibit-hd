@@ -25,4 +25,16 @@ public class Panels {
     return new LightBoxPanel(panel);
 
   }
+
+  /**
+   * @param message The message to display
+   *
+   * @return A light box panel wrapping the original
+   */
+  public static JPanel newAlertPanel(String message) {
+
+    //return new AlertPanel("Alert!");
+    return null;
+
+  }
 }
