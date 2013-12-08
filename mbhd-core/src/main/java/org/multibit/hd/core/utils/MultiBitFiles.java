@@ -169,7 +169,7 @@ public class MultiBitFiles {
     if (!directory.exists()) {
       Preconditions.checkState(directory.mkdir(), "Could not create the application data directory of '" + applicationDataDirectory + "'");
     }
-    Preconditions.checkState(directory.isDirectory(), "Incorrectly identified the application data directory as a file");
+    Preconditions.checkState(directory.isDirectory(), "Incorrectly identified the application data directory of '" + applicationDataDirectory + " as a file");
 
     return applicationDataDirectory;
   }

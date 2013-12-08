@@ -27,11 +27,6 @@ public abstract class AbstractService implements ManagedService {
   private Optional<ListeningExecutorService> service = Optional.absent();
 
   @Override
-  public void initialise() {
-    // Do nothing
-  }
-
-  @Override
   public void start() {
     // Do nothing
   }

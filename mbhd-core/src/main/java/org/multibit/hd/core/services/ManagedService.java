@@ -12,11 +12,6 @@ package org.multibit.hd.core.services;
 public interface ManagedService {
 
   /**
-   * Initialise any processes (no events should be fired)
-   */
-  void initialise();
-
-  /**
    * Start the service (events are fired)
    */
   void start();

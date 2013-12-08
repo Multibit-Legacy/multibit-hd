@@ -54,17 +54,10 @@ public class ExchangeTickerService extends AbstractService implements ManagedSer
   }
 
   @Override
-  public void initialise() {
-
+  public void start() {
+    log.debug("Starting service");
     // Use the provided executor service management
     requireSingleThreadScheduledExecutor();
-
-  }
-
-  @Override
-  public void start() {
-
-    log.debug("Starting service");
 
     // Use the provided executor service management
     getScheduledExecutorService().scheduleAtFixedRate(new Runnable() {

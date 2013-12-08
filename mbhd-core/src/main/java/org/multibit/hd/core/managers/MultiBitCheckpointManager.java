@@ -5,15 +5,17 @@ import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.VerificationException;
 
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 
 public class MultiBitCheckpointManager extends CheckpointManager {
 
-    public MultiBitCheckpointManager(NetworkParameters params, InputStream inputStream) throws IOException {
-        super(params, inputStream);
-    }
+
+  public MultiBitCheckpointManager(NetworkParameters params, String checkpointFilename) throws IOException {
+       // The created fileInputStream is closed in the super.
+       super(params, new FileInputStream(checkpointFilename));
+   }
 
     /**
      * Returns a {@link com.google.bitcoin.core.StoredBlock} representing the last managers before the given block height, for example, normally
