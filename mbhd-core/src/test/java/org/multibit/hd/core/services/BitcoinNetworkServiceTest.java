@@ -32,8 +32,6 @@ public class BitcoinNetworkServiceTest {
   public void testBasic() throws Exception {
     assertThat(bitcoinNetworkService).isNotNull();
 
-    bitcoinNetworkService.initialise();
-
     String nameOfTestWallet = "test";
 
 

@@ -51,7 +51,6 @@ public class ExchangeTickerServiceTest {
 
     CoreServices.uiEventBus.register(this);
 
-    testObject.initialise();
     testObject.start();
 
     Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);

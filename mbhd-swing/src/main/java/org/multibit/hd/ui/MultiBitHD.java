@@ -36,7 +36,6 @@ public class MultiBitHD {
     CoreServices.main(args);
 
     ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(MtGoxExchange.class.getName());
-    exchangeTickerService.initialise();
 
     // Create views
     HeaderView headerView = new HeaderView();

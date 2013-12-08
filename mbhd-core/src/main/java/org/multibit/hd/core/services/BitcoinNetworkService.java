@@ -70,7 +70,7 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
     }
 
     try {
-      String filenameRoot = currentWalletDirectoryName + File.separator + MultiBitFiles.MBHD_PREFIX +;
+      String filenameRoot = currentWalletDirectoryName + File.separator + MultiBitFiles.MBHD_PREFIX;
       String blockchainFilename =  filenameRoot + MultiBitFiles.SPV_BLOCKCHAIN_SUFFIX;
       String checkpointsFilename = filenameRoot + MultiBitFiles.CHECKPOINTS_SUFFIX;
 
@@ -103,14 +103,17 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
 
   @Override
   public void stopAndWait() {
-    // Shutdown any running download.
-    super.stopAndWait();
-
-    if (peerGroup != null) {
+     if (peerGroup != null) {
       log.debug("Stopping peerGroup service...");
       peerGroup.stopAndWait();
       log.debug("Service peerGroup stopped");
     }
+
+    // Shutdown any executor running a download.
+    if (getExecutorService() != null) {
+      getExecutorService().shutdown();
+    }
+
 
     if (blockStore != null) {
       try {
