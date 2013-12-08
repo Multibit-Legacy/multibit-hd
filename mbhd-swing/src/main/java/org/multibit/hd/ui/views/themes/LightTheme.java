@@ -14,7 +14,12 @@ import java.awt.*;
 public class LightTheme implements Theme {
 
   @Override
-  public Color fontColor() {
-    return Color.BLACK;
+  public Color normalFontColor() {
+    return new Color(6,6,6);
+  }
+
+  @Override
+  public Color lightFontColor() {
+    return new Color(96,96,96);
   }
 }

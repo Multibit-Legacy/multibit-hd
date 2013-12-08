@@ -39,7 +39,7 @@ public class CoreEvents {
    *
    * @param bitcoinNetworkSummary The Bitcoin network summary
    */
-  public static void fireBitcoinNetworkChangevent(BitcoinNetworkSummary bitcoinNetworkSummary) {
+  public static void fireBitcoinNetworkChangEvent(BitcoinNetworkSummary bitcoinNetworkSummary) {
 
     CoreServices.uiEventBus.post(new BitcoinNetworkChangeEvent(bitcoinNetworkSummary));
 

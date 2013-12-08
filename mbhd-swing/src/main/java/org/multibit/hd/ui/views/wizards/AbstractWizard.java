@@ -22,7 +22,6 @@ public abstract class AbstractWizard {
    */
   public void close() {
 
-
   }
 
   public JPanel getContentPanel() {
@@ -32,13 +31,17 @@ public abstract class AbstractWizard {
   }
 
   public CardLayout getCardLayout() {
+
     return cardLayout;
+
   }
 
   /**
    * Show the previous panel
    */
   public void previous() {
+
+    // TODO Limit to first page
     cardLayout.previous(contentPanel);
   }
 
@@ -46,6 +49,8 @@ public abstract class AbstractWizard {
    * Show the next panel
    */
   public void next() {
+
+    // TODO Limit to last page
     cardLayout.next(contentPanel);
   }
 

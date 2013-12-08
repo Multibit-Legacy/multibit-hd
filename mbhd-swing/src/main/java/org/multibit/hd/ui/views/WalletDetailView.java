@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.events.ViewEvents;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.wizards.Wizards;
@@ -43,7 +44,7 @@ public class WalletDetailView {
     Action showReceiveBitcoinWizardAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        //Panels.applyAlertPanel("Receive bitcoins? Are you mad?");
+        ViewEvents.fireShowAlertEvent();
       }
     };
 

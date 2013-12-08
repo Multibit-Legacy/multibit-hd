@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.events;
 
 import org.joda.money.BigMoney;
+import org.multibit.hd.core.api.RAGStatus;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.views.Screen;
 
@@ -36,7 +37,11 @@ public class ViewEvents {
     String rateProvider
   ) {
 
-    CoreServices.uiEventBus.post(new BalanceChangeEvent(btcbalance, localBalance, rateProvider));
+    CoreServices.uiEventBus.post(new BalanceChangeEvent(
+      btcbalance,
+      localBalance,
+      rateProvider
+    ));
 
   }
 
@@ -55,9 +60,16 @@ public class ViewEvents {
   }
 
   /**
-   * <p>Broadcast a new sign out event</p>
+   * <p>Broadcast a new show detail screen event</p>
    */
-  public static void fireSignOutEvent() {
-    CoreServices.uiEventBus.post(new SignOutEvent());
+  public static void fireShowAlertEvent() {
+    CoreServices.uiEventBus.post(new ShowAlertEvent("Something happened", RAGStatus.RED));
+  }
+
+  /**
+   * <p>Broadcast a new system status change event</p>
+   */
+  public static void fireSystemStatusEvent(RAGStatus severity) {
+    CoreServices.uiEventBus.post(new SystemStatusChangeEvent(severity));
   }
 }
