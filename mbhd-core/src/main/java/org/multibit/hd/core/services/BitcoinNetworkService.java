@@ -9,6 +9,7 @@ import com.google.bitcoin.store.BlockStoreException;
 import com.google.common.base.Optional;
 import org.multibit.hd.core.api.BitcoinNetworkSummary;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.managers.BlockStoreManager;
 import org.multibit.hd.core.managers.MultiBitCheckpointManager;
 import org.multibit.hd.core.utils.MultiBitFiles;
@@ -47,13 +48,13 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
 
   @Override
   public void start() {
-    networkSummary = BitcoinNetworkSummary.newNetworkNotInitialised();
+    setBitcoinNetworkSummary(BitcoinNetworkSummary.newNetworkNotInitialised());
     requireSingleThreadExecutor();
 
     try {
       applicationDataDirectoryName = MultiBitFiles.createApplicationDataDirectory();
     } catch (IllegalStateException ise) {
-      networkSummary = BitcoinNetworkSummary.newNetworkStartupFailed("bitcoin-network.configuration-error", Optional.<String[]>absent());
+      setBitcoinNetworkSummary(BitcoinNetworkSummary.newNetworkStartupFailed("bitcoin-network.configuration-error", Optional.<String[]>absent()));
       return;
     }
 
@@ -65,7 +66,8 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
     File currentWalletDirectory = new File(currentWalletDirectoryName);
 
     if ("".equals(currentWalletFilename.trim()) || !currentWalletDirectory.exists() || !currentWalletDirectory.isDirectory()) {
-      networkSummary = BitcoinNetworkSummary.newNetworkStartupFailed("bitcoin-network.wallet-directory-error", Optional.of(new String[]{currentWalletDirectoryName}));
+      setBitcoinNetworkSummary(BitcoinNetworkSummary.newNetworkStartupFailed("bitcoin-network.wallet-directory-error",
+              Optional.of(new String[]{currentWalletDirectoryName})));
       return;
     }
 
@@ -97,7 +99,8 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
 
     } catch (Exception e) {
       log.error(e.getClass().getName() + " " + e.getMessage());
-      networkSummary = BitcoinNetworkSummary.newNetworkStartupFailed("bitcoin-network.start-network-connection-error", Optional.<String[]>absent());
+      setBitcoinNetworkSummary(BitcoinNetworkSummary.newNetworkStartupFailed("bitcoin-network.start-network-connection-error",
+              Optional.<String[]>absent()));
     }
   }
 
@@ -114,7 +117,7 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
       getExecutorService().shutdown();
     }
 
-
+    // Close the blockstore.
     if (blockStore != null) {
       try {
         blockStore.close();
@@ -172,6 +175,14 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
    */
   public BitcoinNetworkSummary getNetworkSummary() {
     return networkSummary;
+  }
+
+  /**
+   * Setter for Bitcoin network summary which also fires a network change event
+   */
+  public void setBitcoinNetworkSummary(BitcoinNetworkSummary bitcoinNetworkSummary) {
+    networkSummary = bitcoinNetworkSummary;
+    CoreEvents.fireBitcoinNetworkChangeEvent(networkSummary);
   }
 
 }

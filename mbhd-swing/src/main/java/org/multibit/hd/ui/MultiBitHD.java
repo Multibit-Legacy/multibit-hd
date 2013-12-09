@@ -3,6 +3,7 @@ package org.multibit.hd.ui;
 import com.xeiam.xchange.currency.MoneyUtils;
 import com.xeiam.xchange.mtgox.v2.MtGoxExchange;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.ExchangeTickerService;
 import org.multibit.hd.ui.controllers.HeaderController;
@@ -36,6 +37,7 @@ public class MultiBitHD {
     CoreServices.main(args);
 
     ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(MtGoxExchange.class.getName());
+    BitcoinNetworkService bitcoinNetworkService = CoreServices.newBitcoinNetworkService();
 
     // Create views
     HeaderView headerView = new HeaderView();
@@ -57,6 +59,7 @@ public class MultiBitHD {
 
     // Start the services (triggers events)
     exchangeTickerService.start();
+    bitcoinNetworkService.start();
 
     // Show the UI for the current locale
     CoreServices.uiEventBus.post(new LocaleChangeEvent(Configurations.currentConfiguration.getLocale()));
