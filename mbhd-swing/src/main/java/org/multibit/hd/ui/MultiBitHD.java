@@ -61,6 +61,9 @@ public class MultiBitHD {
     exchangeTickerService.start();
     bitcoinNetworkService.start();
 
+    // Start downloading blocks to catch up with the current blockchain
+    bitcoinNetworkService.downloadBlockChain();
+
     // Show the UI for the current locale
     CoreServices.uiEventBus.post(new LocaleChangeEvent(Configurations.currentConfiguration.getLocale()));
 

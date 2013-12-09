@@ -12,6 +12,7 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.managers.BlockStoreManager;
 import org.multibit.hd.core.managers.MultiBitCheckpointManager;
+import org.multibit.hd.core.network.MultiBitPeerEventListener;
 import org.multibit.hd.core.utils.MultiBitFiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,9 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
   private static final Logger log = LoggerFactory.getLogger(BitcoinNetworkService.class);
 
   public static final MainNetParams NETWORK_PARAMETERS = MainNetParams.get();
+
+  private static final String NO_WALLET_DIRECTORY = "nowallet";
+
   private String applicationDataDirectoryName;
 
   private BlockStore blockStore;
@@ -42,6 +46,8 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
   private BlockChain blockChain;
 
   private MultiBitCheckpointManager checkpointManager;
+
+  private MultiBitPeerEventListener peerEventListener;
 
   private BitcoinNetworkSummary networkSummary;
 
@@ -62,10 +68,23 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
     String currentWalletFilename = Configurations.currentConfiguration.getApplicationConfiguration().getCurrentWalletFilename();
     log.debug("The current wallet filename is '" + currentWalletFilename + "'");
 
+    if ("".equals(currentWalletFilename.trim())) {
+      // Use a no-wallet directory i.e. run things without a wallet
+      currentWalletFilename = NO_WALLET_DIRECTORY;
+    }
+
     String currentWalletDirectoryName = applicationDataDirectoryName + File.separator + currentWalletFilename;
     File currentWalletDirectory = new File(currentWalletDirectoryName);
 
-    if ("".equals(currentWalletFilename.trim()) || !currentWalletDirectory.exists() || !currentWalletDirectory.isDirectory()) {
+    if (!currentWalletDirectory.exists()) {
+      // Create the wallet directory.
+      if (!currentWalletDirectory.mkdir()) {
+        setBitcoinNetworkSummary(BitcoinNetworkSummary.newNetworkStartupFailed("bitcoin-network.wallet-directory-error",
+                Optional.of(new String[]{currentWalletDirectoryName})));
+        return;
+      }
+    }
+    if (!currentWalletDirectory.isDirectory()) {
       setBitcoinNetworkSummary(BitcoinNetworkSummary.newNetworkStartupFailed("bitcoin-network.wallet-directory-error",
               Optional.of(new String[]{currentWalletDirectoryName})));
       return;
@@ -73,7 +92,7 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
 
     try {
       String filenameRoot = currentWalletDirectoryName + File.separator + MultiBitFiles.MBHD_PREFIX;
-      String blockchainFilename =  filenameRoot + MultiBitFiles.SPV_BLOCKCHAIN_SUFFIX;
+      String blockchainFilename = filenameRoot + MultiBitFiles.SPV_BLOCKCHAIN_SUFFIX;
       String checkpointsFilename = filenameRoot + MultiBitFiles.CHECKPOINTS_SUFFIX;
 
       // Load or create the blockStore..
@@ -106,8 +125,10 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
 
   @Override
   public void stopAndWait() {
-     if (peerGroup != null) {
+    if (peerGroup != null) {
       log.debug("Stopping peerGroup service...");
+      peerGroup.removeEventListener(peerEventListener);
+
       peerGroup.stopAndWait();
       log.debug("Service peerGroup stopped");
     }
@@ -151,8 +172,8 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
 
     peerGroup.addPeerDiscovery(new DnsDiscovery(NETWORK_PARAMETERS));
 
-    // TODO Add the controller as a PeerEventListener.
-    // peerGroup.addEventListener(bitcoinController.getPeerEventListener());
+    peerEventListener = new MultiBitPeerEventListener();
+    peerGroup.addEventListener(peerEventListener);
 
     // TODO Add the wallet to the PeerGroup.
   }
