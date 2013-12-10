@@ -1,12 +1,17 @@
 package org.multibit.hd.core.managers;
 
+import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.crypto.KeyCrypter;
+import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.bitcoin.store.WalletProtobufSerializer;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.exceptions.WalletSaveException;
 import org.multibit.hd.core.exceptions.WalletVersionException;
+import org.multibit.hd.core.services.BitcoinNetworkService;
+import org.multibit.hd.core.utils.MultiBitFiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +31,15 @@ import java.util.Collection;
 public class WalletManager {
   private static final Logger log = LoggerFactory.getLogger(WalletManager.class);
 
+  public static final String SIMPLE_WALLET_DIRECTORY_NAME = "simple";
+
+  /**
+   * The wallet version number for protobuf encrypted wallets - compatible with MultiBit
+   */
+  public static final int ENCRYPTED_WALLET_VERSION = 3;
+
+  public static final String MBHD_WALLET_NAME = "mbhd.wallet";
+
   private WalletProtobufSerializer walletProtobufSerializer;
 
   public WalletManager() {
@@ -33,10 +47,54 @@ public class WalletManager {
     // TODO was originally multibit protobuf serializer - ok ?
   }
 
+
   /**
-   * Load up a Wallet rom a specified wallet file.
-   * If the main wallet cannot be loaded, the most recent backup is tried,
-   * followed by the next recent.
+   * Create a simple wallet that contains only a single, random private key.
+   * This is stored in the MultiBitHD application data directory and is called "simple"
+   * <p/>
+   * If the wallet file already exists it is loaded and returned (and the input password is not used)
+   *
+   * @param password to use to encrypt the wallet
+   * @return Wallet
+   * @throws IllegalStateException  if applicationDataDirectory is incorrect
+   * @throws WalletLoadException    if there is already a simple wallet created but it could not be loaded
+   * @throws WalletVersionException if there is already a simple wallet but the wallet version cannot be understood
+   */
+  public Wallet createSimpleWallet(CharSequence password) throws WalletLoadException, WalletVersionException {
+    // Work out the file location of the simple wallet
+    String applicationDataDirectoryName = MultiBitFiles.createApplicationDataDirectory();
+
+    File simpleDirectory = WalletManager.getWalletDirectory(applicationDataDirectoryName, SIMPLE_WALLET_DIRECTORY_NAME);
+    File simpleWalletFile = new File(simpleDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME);
+    if (simpleWalletFile.exists()) {
+      // There is already a simple wallet created - if so load it and return that
+      return loadFromFile(simpleWalletFile);
+    } else {
+      // Create the containing directory if it does not exist
+      if (!simpleDirectory.exists()) {
+        if (!simpleDirectory.mkdir()) {
+          throw new IllegalStateException("The directory for the simple wallet '" + simpleDirectory.getAbsoluteFile() + "' could not be created");
+        }
+      }
+      // Create a simple wallet with a single private key, encrypted with the password
+      KeyCrypter keyCrypter = new KeyCrypterScrypt();
+
+      Wallet newWallet = new Wallet(BitcoinNetworkService.NETWORK_PARAMETERS, keyCrypter);
+      newWallet.setVersion(ENCRYPTED_WALLET_VERSION);
+
+      ECKey newKey = new ECKey();
+      newKey = newKey.encrypt(newWallet.getKeyCrypter(), newWallet.getKeyCrypter().deriveKey(password));
+      newWallet.addKey(newKey);
+
+      // Save it
+      saveWallet(newWallet, simpleWalletFile.getAbsolutePath());
+
+      return newWallet;
+    }
+  }
+
+  /**
+   * Load up a Wallet from a specified wallet file.
    *
    * @param walletFile
    * @return Wallet - the loaded wallet
@@ -183,8 +241,8 @@ public class WalletManager {
   /**
    * Save the wallet
    *
-   * @param wallet
-   * @param walletFilename
+   * @param wallet         wallet to save
+   * @param walletFilename location to save the wallet
    */
   public void saveWallet(Wallet wallet, String walletFilename) {
     File walletFile = new File(walletFilename);
@@ -223,6 +281,10 @@ public class WalletManager {
     }
   }
 
+  /**
+   * @param walletFile
+   * @return true if the wallet file specified is serialised (this format is no longer supported)
+   */
   private boolean isWalletSerialised(File walletFile) {
     boolean isWalletSerialised = false;
     InputStream stream = null;
@@ -247,6 +309,11 @@ public class WalletManager {
     return isWalletSerialised;
   }
 
+  /**
+   * Returns the name of the current wallet.
+   *
+   * @throws IllegalStateException if no wallet is currently defined
+   */
   public String getCurrentWalletFilename() {
     String currentWalletFilename = Configurations.currentConfiguration.getApplicationConfiguration().getCurrentWalletFilename();
 
@@ -255,6 +322,15 @@ public class WalletManager {
     return currentWalletFilename;
   }
 
+  /**
+   * Create a directory composed of the root directory and a suddirectory.
+   * The subdirectory is created if it does not exist
+   *
+   * @param rootDirectory       The root directory in which to create the directory
+   * @param walletDirectoryName The name of the wallet which will be used to create a subdirectory
+   * @return The directory composed of rootDirectory plus the walletDirectoryName
+   * @throws IllegalStateException if wallet could not be created
+   */
   public static File getWalletDirectory(String rootDirectory, String walletDirectoryName) {
     String fullWalletDirectoryName = rootDirectory + File.separator + walletDirectoryName;
     File walletDirectory = new File(fullWalletDirectoryName);

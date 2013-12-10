@@ -135,5 +135,26 @@ public class WalletManagerTest {
             assertEquals("Byte " + i + " of the reborn second private key did not match the original", originalPrivateKeyBytes2[i], secondRebornPrivateKeyBytes[i]);
         }
     }
+
+    @Test
+    public void testGetWalletDirectory() throws Exception {
+      File temporaryFile = File.createTempFile("something", ".txt");
+      temporaryFile.deleteOnExit();
+
+      File walletDirectory = WalletManager.getWalletDirectory(temporaryFile.getParent(), "aName");
+
+      assertEquals(temporaryFile.getParent() + File.separator + "aName", walletDirectory.getAbsolutePath());
+      assertTrue(walletDirectory.isDirectory());
+
+    }
+
+  @Test
+    public void testCreateSimpleWallet() throws Exception {
+      WalletManager walletManager = new WalletManager();
+
+      Wallet wallet = walletManager.createSimpleWallet("testPassword");
+
+      assertNotNull(wallet);
+    }
 }
 
