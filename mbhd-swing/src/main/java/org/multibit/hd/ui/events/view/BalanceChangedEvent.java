@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.events;
+package org.multibit.hd.ui.events.view;
 
 import org.joda.money.BigMoney;
 
@@ -11,7 +11,7 @@ import org.joda.money.BigMoney;
  * @since 0.0.1
  *         
  */
-public class BalanceChangeEvent {
+public class BalanceChangedEvent {
 
   private final BigMoney btcBalance;
   private final BigMoney localBalance;
@@ -22,7 +22,7 @@ public class BalanceChangeEvent {
    * @param localBalance The current balance in local currency
    * @param rateProvider The exchange rate provider (e.g. "Bitstamp")
    */
-  public BalanceChangeEvent(BigMoney btcbalance, BigMoney localBalance, String rateProvider) {
+  public BalanceChangedEvent(BigMoney btcbalance, BigMoney localBalance, String rateProvider) {
 
     this.btcBalance = btcbalance;
     this.localBalance = localBalance;

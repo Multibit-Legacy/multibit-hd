@@ -1,11 +1,9 @@
 package org.multibit.hd.ui.views;
 
 import com.google.common.eventbus.Subscribe;
-import com.xeiam.xchange.currency.MoneyUtils;
 import org.multibit.hd.core.events.BitcoinNetworkChangeEvent;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.events.LocaleChangeEvent;
-import org.multibit.hd.ui.events.ViewEvents;
+import org.multibit.hd.ui.events.view.LocaleChangeEvent;
 import org.multibit.hd.ui.views.components.Panels;
 
 import javax.swing.*;

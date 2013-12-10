@@ -3,7 +3,7 @@ package org.multibit.hd.ui.views;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.events.ShowDetailScreenEvent;
+import org.multibit.hd.ui.events.controller.ShowDetailScreenEvent;
 
 import javax.swing.*;
 import java.awt.*;

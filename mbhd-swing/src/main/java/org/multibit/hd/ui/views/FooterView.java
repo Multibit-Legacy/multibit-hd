@@ -3,7 +3,7 @@ package org.multibit.hd.ui.views;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.events.SystemStatusChangeEvent;
+import org.multibit.hd.ui.events.SystemStatusChangedEvent;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
@@ -69,7 +69,7 @@ public class FooterView {
    * @param event The system status change event
    */
   @Subscribe
-  public void onSystemStatusChangeEvent(SystemStatusChangeEvent event) {
+  public void onSystemStatusChangeEvent(SystemStatusChangedEvent event) {
 
     switch (event.getSeverity()) {
       case RED:

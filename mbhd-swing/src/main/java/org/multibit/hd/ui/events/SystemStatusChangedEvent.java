@@ -11,14 +11,14 @@ import org.multibit.hd.core.api.RAGStatus;
  * @since 0.0.1
  *         
  */
-public class SystemStatusChangeEvent {
+public class SystemStatusChangedEvent {
 
   private final RAGStatus severity;
 
   /**
    * @param severity The severity
    */
-  public SystemStatusChangeEvent(RAGStatus severity) {
+  public SystemStatusChangedEvent(RAGStatus severity) {
 
     this.severity = severity;
 

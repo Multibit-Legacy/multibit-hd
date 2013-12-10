@@ -6,19 +6,22 @@ import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.I18NConfiguration;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.events.BalanceChangeEvent;
-import org.multibit.hd.ui.events.ShowAlertEvent;
-import org.multibit.hd.ui.events.ViewEvents;
+import org.multibit.hd.ui.events.controller.ControllerEvents;
+import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
+import org.multibit.hd.ui.events.view.AlertChangedEvent;
+import org.multibit.hd.ui.events.view.BalanceChangedEvent;
 import org.multibit.hd.ui.i18n.BitcoinSymbol;
 import org.multibit.hd.ui.i18n.Formats;
 import org.multibit.hd.ui.i18n.Languages;
-import org.multibit.hd.ui.views.alerts.Alerts;
+import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -35,8 +38,10 @@ public class HeaderView {
   private JLabel secondaryBalanceLabel;
   private JLabel trailingSymbolLabel;
   private JLabel exchangeLabel;
+  private JLabel alertMessageLabel;
+  private JLabel alertRemainingLabel;
 
-  private BalanceChangeEvent latestBalanceChangeEvent;
+  private BalanceChangedEvent latestBalanceChangedEvent;
 
   private final JPanel contentPanel;
 
@@ -47,14 +52,15 @@ public class HeaderView {
     CoreServices.uiEventBus.register(this);
 
     contentPanel = new JPanel(new MigLayout(
-      "", // Layout
+      "hidemode 2", // Layout
       "[][][][][]", // Columns
       "[]10[shrink]" // Rows
     ));
 
     // Create the alert panel
-    CardLayout cardLayout = new CardLayout();
-    alertPanel = new JPanel(cardLayout);
+    alertPanel = createAlertPanel();
+
+    // Start off in hiding
     alertPanel.setVisible(false);
 
     // Create the balance labels
@@ -74,6 +80,32 @@ public class HeaderView {
 
   }
 
+  private JPanel createAlertPanel() {
+
+    JPanel panel = new JPanel(new MigLayout(
+      "fill,ins 5,hidemode 3",
+      "[grow][][]", // Columns
+      "[]" // Rows
+    ));
+
+    alertMessageLabel = new JLabel();
+    panel.add(alertMessageLabel, "push");
+
+    alertRemainingLabel = new JLabel();
+    panel.add(alertRemainingLabel, "shrink,right");
+
+    JLabel closeLabel = Labels.newPanelCloseLabel(new MouseAdapter() {
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        ControllerEvents.fireRemoveAlertEvent();
+      }
+    });
+
+    panel.add(closeLabel);
+
+    return panel;
+  }
+
   /**
    * @return The content panel for this View
    */
@@ -87,28 +119,58 @@ public class HeaderView {
    * @param event The balance change event
    */
   @Subscribe
-  public void onBalanceChangeEvent(BalanceChangeEvent event) {
+  public void onBalanceChangedEvent(BalanceChangedEvent event) {
 
     // Keep track of the latest balance
-    this.latestBalanceChangeEvent = event;
+    this.latestBalanceChangedEvent = event;
 
     // Handle the update
     handleBalanceChange();
   }
 
   /**
-   * <p>Handles the representation of the balance based on the current configuration</p>
+   * <p>Handles the presentation of a new alert</p>
    *
-   * @param event The balance change event
+   * @param event The show alert event
    */
   @Subscribe
-  public void onShowAlertEvent(ShowAlertEvent event) {
+  public void onAlertChangedEvent(AlertChangedEvent event) {
 
-    ViewEvents.fireSystemStatusEvent(event.getSeverity());
+    AlertModel alertModel = event.getAlertModel();
 
-    alertPanel.add(Alerts.newBitcoinNetworkAlert(event.getMessage()).getContentPanel());
+    // Update the text according to the model
+    alertMessageLabel.setText(alertModel.getLocalisedMessage());
+    alertRemainingLabel.setText(alertModel.getRemainingText());
+
+    // TODO Link this to Themes
+    switch (alertModel.getSeverity()) {
+      case RED:
+        alertPanel.setBackground(Color.RED);
+        break;
+      case AMBER:
+        alertPanel.setBackground(Color.YELLOW);
+        break;
+      case GREEN:
+        alertPanel.setBackground(Color.GREEN);
+        break;
+      default:
+        throw new IllegalStateException("Unknown severity: " + alertModel.getSeverity().name());
+    }
 
     alertPanel.setVisible(true);
+
+  }
+
+  /**
+   * <p>Remove any existing alert</p>
+   *
+   * @param event The remove alert event
+   */
+  @Subscribe
+  public void onAlertRemovedEvent(RemoveAlertEvent event) {
+
+    // Hide the alert panel
+    alertPanel.setVisible(false);
 
   }
 
@@ -120,8 +182,8 @@ public class HeaderView {
     BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
     I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration();
 
-    String[] balance = Formats.formatBitcoinBalance(latestBalanceChangeEvent.getBtcBalance().getAmount());
-    String localBalance = Formats.formatLocalBalance(latestBalanceChangeEvent.getLocalBalance().getAmount());
+    String[] balance = Formats.formatBitcoinBalance(latestBalanceChangedEvent.getBtcBalance().getAmount());
+    String localBalance = Formats.formatLocalBalance(latestBalanceChangedEvent.getLocalBalance().getAmount());
 
     BitcoinSymbol symbol = BitcoinSymbol.valueOf(bitcoinConfiguration.getBitcoinSymbol());
 
@@ -140,7 +202,7 @@ public class HeaderView {
       Languages.safeText(
         exchangeText,
         localBalance,
-        latestBalanceChangeEvent.getRateProvider()
+        latestBalanceChangedEvent.getRateProvider()
       ));
   }
 

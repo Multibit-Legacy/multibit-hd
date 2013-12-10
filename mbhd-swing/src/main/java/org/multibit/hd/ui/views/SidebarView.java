@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.events.ViewEvents;
+import org.multibit.hd.ui.events.view.ViewEvents;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
