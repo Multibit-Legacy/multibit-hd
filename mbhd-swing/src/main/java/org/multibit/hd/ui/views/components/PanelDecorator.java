@@ -74,6 +74,7 @@ public class PanelDecorator {
     panel.setBackground(background);
     panel.setForeground(text);
 
+    // Use a simple rounded border
     panel.setBorder(new TextBubbleBorder(border));
 
     for (Component component : panel.getComponents()) {

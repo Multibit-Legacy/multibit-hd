@@ -1,5 +1,7 @@
 package org.multibit.hd.ui.views.wizards;
 
+import org.multibit.hd.ui.views.components.Panels;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -21,6 +23,9 @@ public abstract class AbstractWizard {
    * <p>Close the wizard</p>
    */
   public void close() {
+
+    Panels.hideLightBox();
+
 
   }
 

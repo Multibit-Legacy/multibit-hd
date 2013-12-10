@@ -1,5 +1,8 @@
 package org.multibit.hd.ui.views.components;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+
 import javax.swing.*;
 
 /**
@@ -15,26 +18,30 @@ public class Panels {
 
   public static JFrame frame;
 
-  /**
-   * @param panel The component panel to act as the focus of the light box
-   *
-   * @return A light box panel wrapping the original
-   */
-  public static LightBoxPanel applyLightBoxPanel(JPanel panel) {
+  private static Optional<LightBoxPanel> lightBoxPanel = Optional.absent();
 
-    return new LightBoxPanel(panel);
+  /**
+   * <p>Show a light box</p>
+   * @param panel The panel to act as the focus of the light box
+   */
+  public synchronized static void showLightBox(JPanel panel) {
+
+    Preconditions.checkState(!lightBoxPanel.isPresent(),"Light box should never be called twice");
+
+    lightBoxPanel = Optional.of(new LightBoxPanel(panel));
 
   }
 
   /**
-   * @param message The message to display
-   *
-   * @return A light box panel wrapping the original
+   * <p>Hides the currently showing light box panel</p>
    */
-  public static JPanel newAlertPanel(String message) {
+  public synchronized static void hideLightBox() {
 
-    //return new AlertPanel("Alert!");
-    return null;
+    if (lightBoxPanel.isPresent()) {
+      lightBoxPanel.get().close();
+    }
+
+    lightBoxPanel = Optional.absent();
 
   }
 }
