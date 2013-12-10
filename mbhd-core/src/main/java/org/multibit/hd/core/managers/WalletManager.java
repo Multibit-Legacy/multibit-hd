@@ -2,6 +2,8 @@ package org.multibit.hd.core.managers;
 
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.store.WalletProtobufSerializer;
+import com.google.common.base.Preconditions;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.exceptions.WalletSaveException;
 import org.multibit.hd.core.exceptions.WalletVersionException;
@@ -126,13 +128,13 @@ public class WalletManager {
 
 
 //      if (walletWasLoadedSuccessfully) {
-        // Ensure that the directories for the backups of the
-        // rolling backups and regular backups exist.
-        //BackupManager.INSTANCE.createBackupDirectories(walletFile);
+      // Ensure that the directories for the backups of the
+      // rolling backups and regular backups exist.
+      //BackupManager.INSTANCE.createBackupDirectories(walletFile);
 
 
-        // If the backup files were used save them immediately and don't
-        // delete any rolling backups.
+      // If the backup files were used save them immediately and don't
+      // delete any rolling backups.
 //             if (useBackupWallets) {
 //                 // Wipe the wallet backup property so that the rolling
 //                 // backup file will not be overwritten
@@ -243,5 +245,31 @@ public class WalletManager {
       }
     }
     return isWalletSerialised;
+  }
+
+  public String getCurrentWalletFilename() {
+    String currentWalletFilename = Configurations.currentConfiguration.getApplicationConfiguration().getCurrentWalletFilename();
+
+    Preconditions.checkState(currentWalletFilename != null && !"".equals(currentWalletFilename.trim()));
+
+    return currentWalletFilename;
+  }
+
+  public static File getWalletDirectory(String rootDirectory, String walletDirectoryName) {
+    String fullWalletDirectoryName = rootDirectory + File.separator + walletDirectoryName;
+    File walletDirectory = new File(fullWalletDirectoryName);
+
+    if (!walletDirectory.exists()) {
+      // Create the wallet directory.
+      if (!walletDirectory.mkdir()) {
+        throw new IllegalStateException("Could not create missing wallet directory '" + walletDirectoryName + "'");
+      }
+    }
+
+    if (!walletDirectory.isDirectory()) {
+      throw new IllegalStateException("Wallet directory '" + walletDirectoryName + "' is not actually a directory");
+    }
+
+    return walletDirectory;
   }
 }

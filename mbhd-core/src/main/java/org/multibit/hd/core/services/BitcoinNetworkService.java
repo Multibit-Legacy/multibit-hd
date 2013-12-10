@@ -12,6 +12,7 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.managers.BlockStoreManager;
 import org.multibit.hd.core.managers.MultiBitCheckpointManager;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.network.MultiBitPeerEventListener;
 import org.multibit.hd.core.utils.MultiBitFiles;
 import org.slf4j.Logger;
@@ -36,9 +37,9 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
 
   public static final MainNetParams NETWORK_PARAMETERS = MainNetParams.get();
 
-  private static final String NO_WALLET_DIRECTORY = "nowallet";
-
   private String applicationDataDirectoryName;
+
+  private WalletManager walletManager;
 
   private BlockStore blockStore;
   private PeerGroup peerGroup;  // May need to add listener as in MultiBitPeerGroup
@@ -57,56 +58,49 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
     setBitcoinNetworkSummary(BitcoinNetworkSummary.newNetworkNotInitialised());
     requireSingleThreadExecutor();
 
+    String currentWalletFilename;
     try {
       applicationDataDirectoryName = MultiBitFiles.createApplicationDataDirectory();
+      log.debug("The current applicationDataDirectoryName is '{}'.", applicationDataDirectoryName);
+
+      // Create a wallet manager.
+      walletManager = new WalletManager();
+
+      // Get the current wallet, if it is set.
+      currentWalletFilename = walletManager.getCurrentWalletFilename();
+      log.debug("The current wallet filename is '{}'.", currentWalletFilename);
     } catch (IllegalStateException ise) {
-      setBitcoinNetworkSummary(BitcoinNetworkSummary.newNetworkStartupFailed("bitcoin-network.configuration-error", Optional.<String[]>absent()));
+      setBitcoinNetworkSummary(BitcoinNetworkSummary.newNetworkStartupFailed("bitcoin-network.configuration-error",
+              Optional.<String[]>absent()));
       return;
     }
 
-    // Get the current wallet
-    String currentWalletFilename = Configurations.currentConfiguration.getApplicationConfiguration().getCurrentWalletFilename();
-    log.debug("The current wallet filename is '" + currentWalletFilename + "'");
-
-    if ("".equals(currentWalletFilename.trim())) {
-      // Use a no-wallet directory i.e. run things without a wallet
-      currentWalletFilename = NO_WALLET_DIRECTORY;
-    }
-
-    String currentWalletDirectoryName = applicationDataDirectoryName + File.separator + currentWalletFilename;
-    File currentWalletDirectory = new File(currentWalletDirectoryName);
-
-    if (!currentWalletDirectory.exists()) {
-      // Create the wallet directory.
-      if (!currentWalletDirectory.mkdir()) {
-        setBitcoinNetworkSummary(BitcoinNetworkSummary.newNetworkStartupFailed("bitcoin-network.wallet-directory-error",
-                Optional.of(new String[]{currentWalletDirectoryName})));
-        return;
-      }
-    }
-    if (!currentWalletDirectory.isDirectory()) {
+    File currentWalletDirectory;
+    try {
+      currentWalletDirectory = WalletManager.getWalletDirectory(applicationDataDirectoryName, currentWalletFilename);
+    } catch (IllegalStateException ise) {
       setBitcoinNetworkSummary(BitcoinNetworkSummary.newNetworkStartupFailed("bitcoin-network.wallet-directory-error",
-              Optional.of(new String[]{currentWalletDirectoryName})));
+              Optional.of(new String[]{applicationDataDirectoryName, currentWalletFilename})));
       return;
     }
 
     try {
-      String filenameRoot = currentWalletDirectoryName + File.separator + MultiBitFiles.MBHD_PREFIX;
+      String filenameRoot = currentWalletDirectory.getCanonicalPath() + File.separator + MultiBitFiles.MBHD_PREFIX;
       String blockchainFilename = filenameRoot + MultiBitFiles.SPV_BLOCKCHAIN_SUFFIX;
       String checkpointsFilename = filenameRoot + MultiBitFiles.CHECKPOINTS_SUFFIX;
 
       // Load or create the blockStore..
       log.debug("Loading/ creating blockstore ...");
       blockStore = BlockStoreManager.createBlockStore(blockchainFilename, checkpointsFilename, null, false);
-      log.debug("Blockstore is '" + blockStore + "'");
+      log.debug("Blockstore is '{}'", blockStore);
 
       log.debug("Creating blockchain ...");
       blockChain = new BlockChain(NETWORK_PARAMETERS, blockStore);
-      log.debug("Created blockchain '" + blockChain + "' with height " + blockChain.getBestChainHeight());
+      log.debug("Created blockchain '{}' with height '{}'", blockChain, blockChain.getBestChainHeight());
 
       log.debug("Creating peergroup ...");
       createNewPeerGroup();
-      log.debug("Created peergroup '" + peerGroup + "'");
+      log.debug("Created peergroup '{}'", peerGroup);
 
       log.debug("Starting peergroup ...");
       peerGroup.start();
