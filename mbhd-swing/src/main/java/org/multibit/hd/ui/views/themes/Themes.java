@@ -1,7 +1,5 @@
 package org.multibit.hd.ui.views.themes;
 
-import java.awt.*;
-
 /**
  * <p>utility to provide the following to Views:</p>
  * <ul>
@@ -14,7 +12,7 @@ import java.awt.*;
 public class Themes {
 
   // TODO Link this to the configuration
-  public static Theme theme = new LightTheme();
+  public static Theme currentTheme = new LightTheme();
 
   /**
    * Utilities do not have public constructors
@@ -22,19 +20,4 @@ public class Themes {
   private Themes() {
   }
 
-  public static class H1 {
-
-    public static Color foreground = theme.normalFontColor();
-  }
-
-  public static class H2 {
-
-    public static Color foreground = theme.lightFontColor();
-  }
-
-  public static class LIGHT_BOX {
-
-    public static Color foreground = theme.normalFontColor();
-
-  }
 }

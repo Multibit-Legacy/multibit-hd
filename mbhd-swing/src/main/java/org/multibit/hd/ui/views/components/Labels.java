@@ -90,10 +90,10 @@ public class Labels {
     exchangeLabel.setFont(decimalFont);
 
     // Theme
-    primaryBalanceLabel.setForeground(Themes.H1.foreground);
-    secondaryBalanceLabel.setForeground(Themes.H2.foreground);
-    trailingSymbolLabel.setForeground(Themes.H1.foreground);
-    exchangeLabel.setForeground(Themes.H1.foreground);
+    primaryBalanceLabel.setForeground(Themes.currentTheme.text());
+    secondaryBalanceLabel.setForeground(Themes.currentTheme.lightText());
+    trailingSymbolLabel.setForeground(Themes.currentTheme.text());
+    exchangeLabel.setForeground(Themes.currentTheme.text());
 
     return new JLabel[]{
 

@@ -6,9 +6,9 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.SystemStatusChangedEvent;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
-import java.awt.*;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -39,7 +39,7 @@ public class FooterView {
     ));
 
     progressBar = new JProgressBar();
-    messageLabel = new JLabel("A message");
+    messageLabel = new JLabel();
 
     statusLabel = new JLabel("OK");
     statusIcon = AwesomeDecorator.createIconLabel(
@@ -47,7 +47,7 @@ public class FooterView {
       "",
       false
     );
-    statusIcon.setForeground(Color.GREEN);
+    statusIcon.setForeground(Themes.currentTheme.successText());
 
     contentPanel.add(progressBar, "shrink,left");
     contentPanel.add(messageLabel, "grow,push");
@@ -74,15 +74,15 @@ public class FooterView {
     switch (event.getSeverity()) {
       case RED:
         statusLabel.setText("Problem");
-        statusIcon.setForeground(Color.RED);
+        statusIcon.setForeground(Themes.currentTheme.dangerText());
         break;
       case AMBER:
         statusLabel.setText("Warning");
-        statusIcon.setForeground(Color.YELLOW);
+        statusIcon.setForeground(Themes.currentTheme.warningText());
         break;
       case GREEN:
         statusLabel.setText("OK");
-        statusIcon.setForeground(Color.GREEN);
+        statusIcon.setForeground(Themes.currentTheme.successText());
         break;
       default:
         // Unknown status
