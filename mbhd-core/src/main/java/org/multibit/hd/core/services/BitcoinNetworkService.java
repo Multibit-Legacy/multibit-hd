@@ -10,11 +10,13 @@ import com.google.common.base.Optional;
 import org.multibit.hd.core.api.BitcoinNetworkSummary;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.exceptions.WalletLoadException;
+import org.multibit.hd.core.exceptions.WalletVersionException;
 import org.multibit.hd.core.managers.BlockStoreManager;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.MultiBitCheckpointManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.network.MultiBitPeerEventListener;
-import org.multibit.hd.core.utils.MultiBitFiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,8 +61,9 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
     requireSingleThreadExecutor();
 
     String currentWalletFilename;
+    File currentWalletDirectory;
     try {
-      applicationDataDirectoryName = MultiBitFiles.createApplicationDataDirectory();
+      applicationDataDirectoryName = InstallationManager.createApplicationDataDirectory();
       log.debug("The current applicationDataDirectoryName is '{}'.", applicationDataDirectoryName);
 
       // Create a wallet manager.
@@ -69,25 +72,22 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
       // Get the current wallet, if it is set.
       currentWalletFilename = walletManager.getCurrentWalletFilename();
       log.debug("The current wallet filename is '{}'.", currentWalletFilename);
-    } catch (IllegalStateException ise) {
+
+      // Load the wallet
+      walletManager.loadFromFile(new File(currentWalletFilename));
+
+      currentWalletDirectory = (new File(currentWalletFilename)).getParentFile();
+
+    } catch (IllegalStateException | IllegalArgumentException | WalletLoadException |WalletVersionException e) {
       setBitcoinNetworkSummary(BitcoinNetworkSummary.newNetworkStartupFailed("bitcoin-network.configuration-error",
               Optional.<String[]>absent()));
       return;
     }
 
-    File currentWalletDirectory;
     try {
-      currentWalletDirectory = WalletManager.getWalletDirectory(applicationDataDirectoryName, currentWalletFilename);
-    } catch (IllegalStateException ise) {
-      setBitcoinNetworkSummary(BitcoinNetworkSummary.newNetworkStartupFailed("bitcoin-network.wallet-directory-error",
-              Optional.of(new String[]{applicationDataDirectoryName, currentWalletFilename})));
-      return;
-    }
-
-    try {
-      String filenameRoot = currentWalletDirectory.getCanonicalPath() + File.separator + MultiBitFiles.MBHD_PREFIX;
-      String blockchainFilename = filenameRoot + MultiBitFiles.SPV_BLOCKCHAIN_SUFFIX;
-      String checkpointsFilename = filenameRoot + MultiBitFiles.CHECKPOINTS_SUFFIX;
+      String filenameRoot = currentWalletDirectory.getCanonicalPath() + File.separator + InstallationManager.MBHD_PREFIX;
+      String blockchainFilename = filenameRoot + InstallationManager.SPV_BLOCKCHAIN_SUFFIX;
+      String checkpointsFilename = filenameRoot + InstallationManager.CHECKPOINTS_SUFFIX;
 
       // Load or create the blockStore..
       log.debug("Loading/ creating blockstore ...");
@@ -159,17 +159,17 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
 
   }
 
-  public void createNewPeerGroup() {
+  private void createNewPeerGroup() {
     peerGroup = new PeerGroup(NETWORK_PARAMETERS, blockChain);
     peerGroup.setFastCatchupTimeSecs(0); // genesis block
-    peerGroup.setUserAgent(MultiBitFiles.MBHD_APP_NAME, Configurations.APP_VERSION);
+    peerGroup.setUserAgent(InstallationManager.MBHD_APP_NAME, Configurations.APP_VERSION);
 
     peerGroup.addPeerDiscovery(new DnsDiscovery(NETWORK_PARAMETERS));
 
     peerEventListener = new MultiBitPeerEventListener();
     peerGroup.addEventListener(peerEventListener);
 
-    // TODO Add the wallet to the PeerGroup.
+    peerGroup.addWallet(walletManager.getCurrentWallet());
   }
 
   /**

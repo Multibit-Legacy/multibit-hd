@@ -11,7 +11,6 @@ import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.exceptions.WalletSaveException;
 import org.multibit.hd.core.exceptions.WalletVersionException;
 import org.multibit.hd.core.services.BitcoinNetworkService;
-import org.multibit.hd.core.utils.MultiBitFiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +30,7 @@ import java.util.Collection;
 public class WalletManager {
   private static final Logger log = LoggerFactory.getLogger(WalletManager.class);
 
-  public static final String SIMPLE_WALLET_DIRECTORY_NAME = "simple";
+  public static final String SIMPLE_WALLET_ROOT_NAME = "simple";
 
   /**
    * The wallet version number for protobuf encrypted wallets - compatible with MultiBit
@@ -41,6 +40,8 @@ public class WalletManager {
   public static final String MBHD_WALLET_NAME = "mbhd.wallet";
 
   private WalletProtobufSerializer walletProtobufSerializer;
+
+  private Wallet currentWallet;
 
   public WalletManager() {
     walletProtobufSerializer = new WalletProtobufSerializer();
@@ -60,15 +61,18 @@ public class WalletManager {
    * @throws WalletLoadException    if there is already a simple wallet created but it could not be loaded
    * @throws WalletVersionException if there is already a simple wallet but the wallet version cannot be understood
    */
-  public Wallet createSimpleWallet(CharSequence password) throws WalletLoadException, WalletVersionException {
+  public Wallet createSimpleWallet(CharSequence password) throws WalletLoadException, WalletVersionException, IOException {
     // Work out the file location of the simple wallet
-    String applicationDataDirectoryName = MultiBitFiles.createApplicationDataDirectory();
+    String applicationDataDirectoryName = InstallationManager.createApplicationDataDirectory();
 
-    File simpleDirectory = WalletManager.getWalletDirectory(applicationDataDirectoryName, SIMPLE_WALLET_DIRECTORY_NAME);
+    Wallet walletToReturn;
+
+    File simpleDirectory = WalletManager.getWalletDirectory(applicationDataDirectoryName, SIMPLE_WALLET_ROOT_NAME);
     File simpleWalletFile = new File(simpleDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME);
     if (simpleWalletFile.exists()) {
       // There is already a simple wallet created - if so load it and return that
-      return loadFromFile(simpleWalletFile);
+      walletToReturn = loadFromFile(simpleWalletFile);
+      Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(SIMPLE_WALLET_ROOT_NAME);
     } else {
       // Create the containing directory if it does not exist
       if (!simpleDirectory.exists()) {
@@ -79,18 +83,24 @@ public class WalletManager {
       // Create a simple wallet with a single private key, encrypted with the password
       KeyCrypter keyCrypter = new KeyCrypterScrypt();
 
-      Wallet newWallet = new Wallet(BitcoinNetworkService.NETWORK_PARAMETERS, keyCrypter);
-      newWallet.setVersion(ENCRYPTED_WALLET_VERSION);
+      walletToReturn = new Wallet(BitcoinNetworkService.NETWORK_PARAMETERS, keyCrypter);
+      walletToReturn.setVersion(ENCRYPTED_WALLET_VERSION);
 
       ECKey newKey = new ECKey();
-      newKey = newKey.encrypt(newWallet.getKeyCrypter(), newWallet.getKeyCrypter().deriveKey(password));
-      newWallet.addKey(newKey);
+      newKey = newKey.encrypt(walletToReturn.getKeyCrypter(), walletToReturn.getKeyCrypter().deriveKey(password));
+      walletToReturn.addKey(newKey);
 
       // Save it
-      saveWallet(newWallet, simpleWalletFile.getAbsolutePath());
-
-      return newWallet;
+      saveWallet(walletToReturn, simpleWalletFile.getAbsolutePath());
+      Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(SIMPLE_WALLET_ROOT_NAME);
+      setCurrentWallet(walletToReturn);
     }
+
+    // See if there is a checkpoints file - if not then get the InstallationManager to copy one in
+    String checkpointsFilename = simpleDirectory.getAbsolutePath() + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX;
+    InstallationManager.copyCheckpointsTo(checkpointsFilename);
+
+    return walletToReturn;
   }
 
   /**
@@ -98,13 +108,12 @@ public class WalletManager {
    *
    * @param walletFile
    * @return Wallet - the loaded wallet
+   * @throws IllegalArgumentException if wallet file is null
    * @throws WalletLoadException
    * @throws WalletVersionException
    */
   public Wallet loadFromFile(File walletFile) throws WalletLoadException, WalletVersionException {
-    if (walletFile == null) {
-      return null;
-    }
+    Preconditions.checkNotNull(walletFile);
 
     String walletFilenameToUseInModel = walletFile.getAbsolutePath();
 
@@ -227,6 +236,7 @@ public class WalletManager {
 //             }
 //             MessageManager.INSTANCE.addMessage(new Message(messageText));
 //      }
+      setCurrentWallet(wallet);
       return wallet;
     } catch (WalletVersionException wve) {
       // We want this to propagate out.
@@ -310,42 +320,53 @@ public class WalletManager {
   }
 
   /**
-   * Returns the name of the current wallet.
+   * Returns the filename of the current wallet.
    *
-   * @throws IllegalStateException if no wallet is currently defined
+   * @throws IllegalStateException if no wallet is currently defined or if the application data directory is undefined
    */
   public String getCurrentWalletFilename() {
-    String currentWalletFilename = Configurations.currentConfiguration.getApplicationConfiguration().getCurrentWalletFilename();
+    String currentWalletRoot = Configurations.currentConfiguration.getApplicationConfiguration().getCurrentWalletRoot();
 
-    Preconditions.checkState(currentWalletFilename != null && !"".equals(currentWalletFilename.trim()));
+    String applicationDataDirectoryName = InstallationManager.createApplicationDataDirectory();
 
-    return currentWalletFilename;
+    File walletRootFile = getWalletDirectory(applicationDataDirectoryName, currentWalletRoot);
+    String walletFilename = walletRootFile.getAbsolutePath() + File.separator + MBHD_WALLET_NAME;
+
+    return walletFilename;
   }
 
   /**
-   * Create a directory composed of the root directory and a suddirectory.
+   * Create a directory composed of the root directory and a subdirectory.
    * The subdirectory is created if it does not exist
    *
-   * @param rootDirectory       The root directory in which to create the directory
-   * @param walletDirectoryName The name of the wallet which will be used to create a subdirectory
-   * @return The directory composed of rootDirectory plus the walletDirectoryName
+   * @param parentDirectory The root directory in which to create the directory
+   * @param walletRoot      The name of the wallet which will be used to create a subdirectory
+   * @return The directory composed of parentDirectory plus the walletRoot
    * @throws IllegalStateException if wallet could not be created
    */
-  public static File getWalletDirectory(String rootDirectory, String walletDirectoryName) {
-    String fullWalletDirectoryName = rootDirectory + File.separator + walletDirectoryName;
+  public static File getWalletDirectory(String parentDirectory, String walletRoot) {
+    String fullWalletDirectoryName = parentDirectory + File.separator + walletRoot;
     File walletDirectory = new File(fullWalletDirectoryName);
 
     if (!walletDirectory.exists()) {
       // Create the wallet directory.
       if (!walletDirectory.mkdir()) {
-        throw new IllegalStateException("Could not create missing wallet directory '" + walletDirectoryName + "'");
+        throw new IllegalStateException("Could not create missing wallet directory '" + walletRoot + "'");
       }
     }
 
     if (!walletDirectory.isDirectory()) {
-      throw new IllegalStateException("Wallet directory '" + walletDirectoryName + "' is not actually a directory");
+      throw new IllegalStateException("Wallet directory '" + walletRoot + "' is not actually a directory");
     }
 
     return walletDirectory;
+  }
+
+  public Wallet getCurrentWallet() {
+    return currentWallet;
+  }
+
+  public void setCurrentWallet(Wallet currentWallet) {
+    this.currentWallet = currentWallet;
   }
 }

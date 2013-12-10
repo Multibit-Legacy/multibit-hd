@@ -1,6 +1,7 @@
 package org.multibit.hd.core.config;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 
 /**
  * <p>Configuration to provide the following to application:</p>
@@ -23,17 +24,20 @@ public class ApplicationConfiguration {
 
   private String applicationDirectory = ".";
 
-  private String currentWalletFilename = "";
+  private String currentWalletRoot = "";
 
   /**
-   * @return The filename of the current wallet (may be blank if no wallet has been created yet)
+   * Wallets are stored one per directory. The name of this containing directory is called the wallet root.
+   *
+   * @return The root of the current wallet
    */
-  public String getCurrentWalletFilename() {
-     return currentWalletFilename;
+  public String getCurrentWalletRoot() {
+     Preconditions.checkState(currentWalletRoot != null && !"".equals(currentWalletRoot.trim()));
+     return currentWalletRoot;
    }
 
-   public void setCurrentWalletFilename(String currentWalletFilename) {
-     this.currentWalletFilename = currentWalletFilename;
+   public void setCurrentWalletRoot(String currentWalletRoot) {
+     this.currentWalletRoot = currentWalletRoot;
    }
 
   /**
@@ -95,7 +99,7 @@ public class ApplicationConfiguration {
 
     app.setCurrentScreen(getCurrentScreen().orNull());
     app.setCurrentTab(getCurrentTab().orNull());
-    app.setCurrentWalletFilename((getCurrentWalletFilename()));
+    app.setCurrentWalletRoot((getCurrentWalletRoot()));
     app.setApplicationDirectory(getApplicationDirectory());
     app.setBitcoinUriHandling(getBitcoinUriHandling());
 

@@ -60,7 +60,7 @@ public class ConfigurationReadAdapter {
   private void adaptApplication(String key, String value) {
 
     if (Configurations.APP_CURRENT_WALLET_FILENAME.equalsIgnoreCase(key)) {
-      configuration.getApplicationConfiguration().setCurrentWalletFilename(value);
+      configuration.getApplicationConfiguration().setCurrentWalletRoot(value);
     }
     // TODO more application fields to adapt.
 

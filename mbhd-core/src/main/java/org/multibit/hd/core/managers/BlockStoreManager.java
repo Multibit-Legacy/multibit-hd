@@ -16,7 +16,7 @@ import java.util.Date;
 /**
  *  <p>Manager to provide the following to BitcoinNetworkService:<br>
  *  <ul>
- *  <li>Load blockstores</li>
+ *  <li>Create a blockstore</li>
  *  </ul>
  */
 public class BlockStoreManager {

@@ -21,17 +21,7 @@ import java.io.IOException;
  */
 public class MultiBitFiles {
 
-  public static final String MBHD_APP_NAME = "MultiBitHD";
-  public static final String MBHD_PREFIX = "multibit-hd";
-
-  public static final String SPV_BLOCKCHAIN_SUFFIX = ".spvchain";
-  public static final String CHECKPOINTS_SUFFIX = ".checkpoints";
-
   private static final Logger log = LoggerFactory.getLogger(MultiBitFiles.class);
-
-  public static final String MBHD_CONFIGURATION_FILE = MBHD_PREFIX + ".properties";
-  public static final String MBHD_LOG_FILE = "log/"+MBHD_PREFIX + ".log";
-  public static final String MBHD_ARCHIVE_FILE = "log/"+MBHD_PREFIX + "-%d.log.gz";
 
   /**
    * Utilities have private constructor
@@ -79,7 +69,7 @@ public class MultiBitFiles {
    *
    * @return True if the file is locked
    */
-  public static boolean isFileLocked(String message, File file) {
+  private static boolean isFileLocked(String message, File file) {
 
     Preconditions.checkNotNull(message, "'message' must be present");
     Preconditions.checkNotNull(file, "'file' must be present");
@@ -117,61 +107,6 @@ public class MultiBitFiles {
     } else {
       log.debug("Deleted '{}'", fileToDelete);
     }
-  }
-
-  /**
-   * @return A reference to the configuration file
-   */
-  public static File getConfigurationFile() {
-
-    return new File(createApplicationDataDirectory() + "/" + MBHD_CONFIGURATION_FILE);
-
-  }
-
-  /**
-   * <p>Get the directory for the user's application data, creating if not present</p>
-   * <p>Checks a few OS-dependent locations first</p>
-   */
-  public static String createApplicationDataDirectory() {
-
-    // Check the current working directory for the configuration file
-    File multibitPropertiesFile = new File(MBHD_CONFIGURATION_FILE);
-    if (multibitPropertiesFile.exists()) {
-      return ".";
-    }
-
-    final String applicationDataDirectory;
-
-    // Locations are OS-dependent
-    if (OSUtils.isWindows()) {
-
-      // Windows
-      applicationDataDirectory = System.getenv("APPDATA") + File.separator + MBHD_APP_NAME;
-
-    } else if (OSUtils.isMac()) {
-
-      // OSX
-      if ((new File("../../../../" + MBHD_CONFIGURATION_FILE)).exists()) {
-        applicationDataDirectory = new File("../../../..").getAbsolutePath();
-      } else {
-        applicationDataDirectory = System.getProperty("user.home") + "/Library/Application Support/" + MBHD_APP_NAME;
-      }
-    } else {
-
-      // Other (probably a Unix variant)
-      applicationDataDirectory = System.getProperty("user.home") + "/" + MBHD_APP_NAME;
-    }
-
-    log.debug("Application data directory is '{}'", applicationDataDirectory);
-
-    // Create the application data directory if it does not exist
-    File directory = new File(applicationDataDirectory);
-    if (!directory.exists()) {
-      Preconditions.checkState(directory.mkdir(), "Could not create the application data directory of '" + applicationDataDirectory + "'");
-    }
-    Preconditions.checkState(directory.isDirectory(), "Incorrectly identified the application data directory of '" + applicationDataDirectory + " as a file");
-
-    return applicationDataDirectory;
   }
 
   /**

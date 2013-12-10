@@ -3,10 +3,9 @@ package org.multibit.hd.core.services;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.utils.MultiBitFiles;
+import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.managers.WalletManager;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -16,7 +15,7 @@ public class BitcoinNetworkServiceTest {
 
   private BitcoinNetworkService bitcoinNetworkService;
 
-  private String applicationDataDirectoryName = MultiBitFiles.createApplicationDataDirectory();
+  private String applicationDataDirectoryName = InstallationManager.createApplicationDataDirectory();
 
   @Before
   public void setUp() throws IOException {
@@ -24,22 +23,16 @@ public class BitcoinNetworkServiceTest {
 
     bitcoinNetworkService = CoreServices.newBitcoinNetworkService();
 
-    applicationDataDirectoryName = MultiBitFiles.createApplicationDataDirectory();
+    applicationDataDirectoryName = InstallationManager.createApplicationDataDirectory();
   }
 
 
   @Test
-  public void testBasic() throws Exception {
+  public void testSimple() throws Exception {
     assertThat(bitcoinNetworkService).isNotNull();
 
-    String nameOfTestWallet = "test";
-
-
-    // Create wallet directory (into which config files will be written)
-    String testWalletDirectory = applicationDataDirectoryName + File.separator + nameOfTestWallet;
-    (new File(testWalletDirectory)).mkdir();
-
-    Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletFilename(nameOfTestWallet);
+    WalletManager walletManager = new WalletManager();
+    walletManager.createSimpleWallet("password");
 
     bitcoinNetworkService.start();
     bitcoinNetworkService.downloadBlockChain();

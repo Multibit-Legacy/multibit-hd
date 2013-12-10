@@ -4,7 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.io.Files;
 import org.multibit.hd.core.exceptions.CoreException;
-import org.multibit.hd.core.utils.MultiBitFiles;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,7 +105,7 @@ public class Configurations {
    */
   public static Configuration readConfiguration() {
 
-    File configurationFile = MultiBitFiles.getConfigurationFile();
+    File configurationFile = InstallationManager.getConfigurationFile();
 
     Properties properties = readProperties(configurationFile);
     if (!properties.isEmpty()) {
@@ -151,7 +151,7 @@ public class Configurations {
   /* package for testing */
   static void writeCurrentConfiguration() {
 
-    File configurationFile = MultiBitFiles.getConfigurationFile();
+    File configurationFile = InstallationManager.getConfigurationFile();
 
     // Read in the existing properties in case we are legacy running
     // in a more recent version's environment

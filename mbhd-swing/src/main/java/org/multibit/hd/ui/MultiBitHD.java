@@ -3,6 +3,9 @@ package org.multibit.hd.ui;
 import com.xeiam.xchange.currency.MoneyUtils;
 import com.xeiam.xchange.mtgox.v2.MtGoxExchange;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.exceptions.WalletLoadException;
+import org.multibit.hd.core.exceptions.WalletVersionException;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.ExchangeTickerService;
@@ -15,6 +18,8 @@ import org.multibit.hd.ui.platform.GenericApplication;
 import org.multibit.hd.ui.views.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 /**
  * <p>Main entry point to the application</p>
@@ -57,11 +62,20 @@ public class MultiBitHD {
     HeaderController headerController = new HeaderController();
     SidebarController sidebarController = new SidebarController();
 
+    // Create or load a simple wallet
+    WalletManager walletManager = new WalletManager();
+    try {
+      walletManager.createSimpleWallet("password");  // TODO replace with HDWallet
+    } catch (IOException | WalletLoadException |WalletVersionException e) {
+      // TODO error should also appear on UI
+      log.error(e.getClass().getName() + " " + e.getMessage());
+    }
+
     // Start the services (triggers events)
     exchangeTickerService.start();
     bitcoinNetworkService.start();
 
-    // Start downloading blocks to catch up with the current blockchain
+    // If the network starts ok start downloading blocks to catch up with the current blockchain
     bitcoinNetworkService.downloadBlockChain();
 
     // Show the UI for the current locale
