@@ -148,8 +148,7 @@ public class HeaderView {
         PanelDecorator.applyDanger(alertPanel);
         break;
       case AMBER:
-        PanelDecorator.applyHide(alertPanel);
-//        PanelDecorator.applyWarning(alertPanel);
+        PanelDecorator.applyWarning(alertPanel);
         break;
       case GREEN:
         PanelDecorator.applySuccess(alertPanel);

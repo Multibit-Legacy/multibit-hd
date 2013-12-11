@@ -57,7 +57,7 @@ public class TextBubbleBorder extends AbstractBorder {
    */
   public TextBubbleBorder(Color color) {
 
-    this(color, 2, 10, 0, true);
+    this(color, 1, 10, 0, true);
 
   }
 
@@ -95,6 +95,7 @@ public class TextBubbleBorder extends AbstractBorder {
     this.stroke = new BasicStroke(thickness);
     this.strokePad = thickness / 2;
 
+    // Require anti-aliasing to ensure smooth edges
     this.hints = new RenderingHints(
       RenderingHints.KEY_ANTIALIASING,
       RenderingHints.VALUE_ANTIALIAS_ON);

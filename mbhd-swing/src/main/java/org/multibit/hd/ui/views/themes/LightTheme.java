@@ -22,7 +22,7 @@ public class LightTheme implements Theme {
     {
       new Color(0x00BF32),
       new Color(0x248F40),
-      new Color(0x007C21),
+      new Color(0x003C21),
       new Color(0x38DF64),
       new Color(0x64DF85),
     },
@@ -43,22 +43,11 @@ public class LightTheme implements Theme {
     {
       new Color(0xFF1E00),
       new Color(0xBF4030),
-      new Color(0xA61300),
+      new Color(0x761300),
       new Color(0xFF5640),
       new Color(0xFF8373),
     }
   };
-
-  /**
-   * @param r Red
-   * @param g Green
-   * @param b Blue
-   *
-   * @return A color from the given values
-   */
-  private static Color rgb(int r, int g, int b) {
-    return new Color(r, g, b);
-  }
 
   @Override
   public Color applicationBackground() {
@@ -82,12 +71,12 @@ public class LightTheme implements Theme {
 
   @Override
   public Color successBackground() {
-    return colors[0][0];
+    return colors[0][1];
   }
 
   @Override
   public Color successBorder() {
-    return colors[0][1];
+    return colors[0][2];
   }
 
   @Override
@@ -97,12 +86,12 @@ public class LightTheme implements Theme {
 
   @Override
   public Color infoBackground() {
-    return colors[1][3];
+    return colors[2][4];
   }
 
   @Override
   public Color infoBorder() {
-    return colors[1][4];
+    return colors[2][4];
   }
 
   @Override
@@ -112,12 +101,12 @@ public class LightTheme implements Theme {
 
   @Override
   public Color warningBackground() {
-    return colors[2][3];
+    return colors[2][4];
   }
 
   @Override
   public Color warningBorder() {
-    return colors[2][4];
+    return colors[2][2];
   }
 
   @Override
@@ -127,12 +116,12 @@ public class LightTheme implements Theme {
 
   @Override
   public Color dangerBackground() {
-    return colors[3][3];
+    return colors[3][1];
   }
 
   @Override
   public Color dangerBorder() {
-    return colors[3][4];
+    return colors[3][2];
   }
 
   @Override
