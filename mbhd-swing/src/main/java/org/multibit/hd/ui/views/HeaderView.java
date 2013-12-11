@@ -52,7 +52,7 @@ public class HeaderView {
     CoreServices.uiEventBus.register(this);
 
     contentPanel = new JPanel(new MigLayout(
-      "hidemode 2", // Layout
+      "hidemode 1", // Layout
       "[][][][][]", // Columns
       "[]10[shrink]" // Rows
     ));
@@ -142,12 +142,14 @@ public class HeaderView {
     alertMessageLabel.setText(alertModel.getLocalisedMessage());
     alertRemainingLabel.setText(alertModel.getRemainingText());
 
+
     switch (alertModel.getSeverity()) {
       case RED:
         PanelDecorator.applyDanger(alertPanel);
         break;
       case AMBER:
-        PanelDecorator.applyWarning(alertPanel);
+        PanelDecorator.applyHide(alertPanel);
+//        PanelDecorator.applyWarning(alertPanel);
         break;
       case GREEN:
         PanelDecorator.applySuccess(alertPanel);

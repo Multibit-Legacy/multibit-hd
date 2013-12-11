@@ -116,40 +116,45 @@ public class TextBubbleBorder extends AbstractBorder {
   }
 
   @Override
-  public void paintBorder(Component c, Graphics g, int x, int y,  int width, int height) {
+  public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
 
-    // Work out the lowest line
-    int bottomLineY = height - thickness - pointerSize;
+    // Work out the lowest inside line of the bubble
+    int bottomLineY = height - thickness - pointerSize - 1;
 
-    // Draw the "speech pointer" polygon
-    Polygon pointer = new Polygon();
-    int pointerPad = 4;
-    if (pointerLeft) {
-      // Left point
-      pointer.addPoint(strokePad + radii + pointerPad, bottomLineY);
-      // Right point
-      pointer.addPoint(strokePad + radii + pointerPad + pointerSize, bottomLineY);
-      // Bottom point
-      pointer.addPoint(strokePad + radii + pointerPad + (pointerSize / 2), height - strokePad);
-    } else {
-      // Left point
-      pointer.addPoint(width - (strokePad + radii + pointerPad), bottomLineY);
-      // Right point
-      pointer.addPoint(width - (strokePad + radii + pointerPad + pointerSize), bottomLineY);
-      // Bottom point
-      pointer.addPoint(width - (strokePad + radii + pointerPad + (pointerSize / 2)), height - strokePad);
-    }
-
-    // Draw the bubble
+    // Draw the rounded bubble border
     RoundRectangle2D.Double bubble = new RoundRectangle2D.Double(
       strokePad,
       strokePad,
-      width - thickness,
+      width - thickness - strokePad,
       bottomLineY,
       radii,
       radii);
+
     Area area = new Area(bubble);
-    area.add(new Area(pointer));
+
+    // Should the "speech pointer" polygon be included?
+    if (pointerSize > 0) {
+      Polygon pointer = new Polygon();
+      int pointerPad = 4;
+
+      // Place on left
+      if (pointerLeft) {
+        // Left point
+        pointer.addPoint(strokePad + radii + pointerPad, bottomLineY);
+        // Right point
+        pointer.addPoint(strokePad + radii + pointerPad + pointerSize, bottomLineY);
+        // Bottom point
+        pointer.addPoint(strokePad + radii + pointerPad + (pointerSize / 2), height - strokePad);
+      } else {
+        // Left point
+        pointer.addPoint(width - (strokePad + radii + pointerPad), bottomLineY);
+        // Right point
+        pointer.addPoint(width - (strokePad + radii + pointerPad + pointerSize), bottomLineY);
+        // Bottom point
+        pointer.addPoint(width - (strokePad + radii + pointerPad + (pointerSize / 2)), height - strokePad);
+      }
+      area.add(new Area(pointer));
+    }
 
     // Get the 2D graphics context
     Graphics2D g2 = (Graphics2D) g;
@@ -173,6 +178,7 @@ public class TextBubbleBorder extends AbstractBorder {
 
     }
 
+    // Set the border color
     g2.setColor(color);
     g2.setStroke(stroke);
     g2.draw(area);

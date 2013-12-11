@@ -62,6 +62,20 @@ public class PanelDecorator {
   }
 
   /**
+   * <p>Make the panel invisible (invalidates errant pixels)</p>
+   *
+   * @param panel The panel to decorate
+   */
+  public static void applyHide(JPanel panel) {
+
+    Color background = Themes.currentTheme.panelBackground();
+    Color border = Themes.currentTheme.panelBackground();
+    Color text = Themes.currentTheme.panelBackground();
+
+    apply(panel, background, border, text);
+  }
+
+  /**
    * <p>Apply panel colours</p>
    *
    * @param panel      The target panel
@@ -84,5 +98,4 @@ public class PanelDecorator {
     }
 
   }
-
 }

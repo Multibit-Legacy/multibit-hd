@@ -54,14 +54,14 @@ public class WalletDetailView {
         final AlertModel alertModel;
         switch (count % 3) {
           case 0:
-            alertModel = new AlertModel("Some noise "+count, RAGStatus.GREEN);
-            Sounds.playReceiveBitcoin();
+            alertModel = new AlertModel("Bad thing "+count, RAGStatus.RED);
             break;
           case 1:
             alertModel = new AlertModel("Warning thing "+count, RAGStatus.AMBER);
             break;
           case 2:
             alertModel = new AlertModel("Good thing "+count, RAGStatus.GREEN);
+            Sounds.playReceiveBitcoin();
             break;
           default:
             throw new IllegalStateException("Bang");
