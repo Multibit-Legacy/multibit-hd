@@ -9,7 +9,7 @@ import java.awt.*;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class LightTheme implements Theme {
 
@@ -65,17 +65,19 @@ public class LightTheme implements Theme {
 
   @Override
   public Color successBackground() {
-    return new Color(0xdff0d8);
+    // Bootstrap 0xdff0d8
+    return new Color(0x63ae55);
   }
 
   @Override
   public Color successBorder() {
-    return new Color(0xd6e9c6);
+    // Bootstrap 0xd6e9c6
+    return new Color(0x5a994e);
   }
 
   @Override
   public Color successText() {
-    return new Color(0x468847);
+    return new Color(0xffffff);
   }
 
   @Override

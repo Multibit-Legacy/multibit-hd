@@ -23,6 +23,7 @@ public class Buttons {
   private static final String CANCEL_BUTTON = "Cancel";
   private static final String NEXT_BUTTON = "Next";
   private static final String PREVIOUS_BUTTON = "Previous";
+  private static final String FINISH_BUTTON = "Finish";
   private static final String EXIT_BUTTON = "Exit";
   private static final String SEND_BUTTON = "Send";
   private static final String RECEIVE_BUTTON = "Receive";
@@ -125,13 +126,27 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "Finish" button with icon
+   */
+  public static JButton newFinishButton(Action action) {
+    return AwesomeDecorator.createIconButton(
+      AwesomeIcon.FLAG_CHECKERED,
+      Languages.safeText(FINISH_BUTTON),
+      false,
+      action
+    );
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "Send" button with icon
    */
   public static JButton newSendButton(Action action) {
     return AwesomeDecorator.createIconButton(
       AwesomeIcon.CLOUD_UPLOAD,
       Languages.safeText(SEND_BUTTON),
-      true,
+      false,
       action
     );
   }

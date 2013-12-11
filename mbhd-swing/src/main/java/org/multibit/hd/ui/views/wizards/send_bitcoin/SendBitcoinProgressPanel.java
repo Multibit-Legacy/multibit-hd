@@ -19,14 +19,14 @@ import java.awt.event.ActionEvent;
  *         
  */
 
-public class SendBitcoinConfirmSendPanel extends JPanel {
+public class SendBitcoinProgressPanel extends JPanel {
 
   private final AbstractWizard wizard;
 
   /**
-   * The "cancel" action
+   * The "finish" action
    */
-  private Action cancelAction = new AbstractAction() {
+  private Action finishAction = new AbstractAction() {
     @Override
     public void actionPerformed(ActionEvent e) {
       wizard.close();
@@ -34,29 +34,9 @@ public class SendBitcoinConfirmSendPanel extends JPanel {
   };
 
   /**
-   * The "previous" action
-   */
-  private Action previousAction = new AbstractAction() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      wizard.previous();
-    }
-  };
-
-  /**
-   * The "send" action
-   */
-  private Action sendAction = new AbstractAction() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      wizard.next();
-    }
-  };
-
-  /**
    * @param wizard The wizard managing the states
    */
-  public SendBitcoinConfirmSendPanel(AbstractWizard wizard) {
+  public SendBitcoinProgressPanel(AbstractWizard wizard) {
 
     this.wizard = wizard;
 
@@ -69,11 +49,10 @@ public class SendBitcoinConfirmSendPanel extends JPanel {
 
     add(addWizardComponents(), "grow,wrap");
 
-    add(Buttons.newCancelButton(cancelAction), "left");
-    add(Buttons.newPreviousButton(previousAction), "right");
-    add(Buttons.newSendButton(sendAction), "right");
+    add(Buttons.newFinishButton(finishAction), "right");
 
   }
+
 
   private JPanel addWizardComponents() {
 

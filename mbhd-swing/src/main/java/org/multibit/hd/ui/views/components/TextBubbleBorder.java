@@ -20,35 +20,35 @@ public class TextBubbleBorder extends AbstractBorder {
   /**
    * The border color
    */
-  private Color color;
+  private final Color color;
 
   /**
    * The border thickness
    */
-  private int thickness = 2;
+  private final int thickness;
 
   /**
    * The border radii
    */
-  private int radii = 10;
+  private final int radii;
 
   /**
    * The "speech pointer"
    */
-  private int pointerSize = 0;
+  private final int pointerSize;
 
   /**
    * The positioning of the "speech pointer"
    */
-  private boolean left = true;
+  private final boolean pointerLeft;
 
-  private Insets insets = null;
+  private final Insets insets;
 
-  private BasicStroke stroke = null;
+  private final BasicStroke stroke;
 
-  private int strokePad;
+  private final int strokePad;
 
-  private RenderingHints hints;
+  private final RenderingHints hints;
 
   /**
    * <p>A default rounded panel with no pointer</p>
@@ -57,53 +57,51 @@ public class TextBubbleBorder extends AbstractBorder {
    */
   public TextBubbleBorder(Color color) {
 
-    this(color, 1, 5, 1);
+    this(color, 2, 10, 0, true);
 
   }
 
   /**
-   * <p>A customised text bubble with its pointer on the left</p>
+   * <p>A customised text bubble with no pointer</p>
+   *
+   * @param color     The color
+   * @param thickness The thickness (in px)
+   * @param radii     The radius to use for each corner (default 10)
+   */
+  public TextBubbleBorder(Color color, int thickness, int radii) {
+
+    this(color, thickness, radii, 0, true);
+
+  }
+
+  /**
+   * <p>A customised text bubble with pointer defined</p>
    *
    * @param color       The color
    * @param thickness   The thickness (in px)
    * @param radii       The radius to use for each corner (default 10)
    * @param pointerSize The pointer size
+   * @param pointerLeft True if the pointer is on the left
    */
-  public TextBubbleBorder(Color color, int thickness, int radii, int pointerSize) {
+  public TextBubbleBorder(Color color, int thickness, int radii, int pointerSize, boolean pointerLeft) {
 
-    this(color, thickness, radii, pointerSize, true);
-
-  }
-
-  /**
-   * <p>A fully-customised text bubble</p>
-   *
-   * @param color       The color
-   * @param thickness   The thickness (in px)
-   * @param radii       The radius to use for each corner (default 10)
-   * @param pointerSize The pointer size
-   * @param left        True if the pointer is on the left
-   */
-  public TextBubbleBorder(Color color, int thickness, int radii, int pointerSize, boolean left) {
-
-    this.left = left;
+    this.pointerLeft = pointerLeft;
 
     this.thickness = thickness;
     this.radii = radii;
     this.pointerSize = pointerSize;
     this.color = color;
 
-    stroke = new BasicStroke(thickness);
-    strokePad = thickness / 2;
+    this.stroke = new BasicStroke(thickness);
+    this.strokePad = thickness / 2;
 
-    hints = new RenderingHints(
+    this.hints = new RenderingHints(
       RenderingHints.KEY_ANTIALIASING,
       RenderingHints.VALUE_ANTIALIAS_ON);
 
-    int pad = radii + strokePad;
-    int bottomPad = pad + pointerSize + strokePad;
+    int bottomPad = pointerSize + strokePad;
 
-    insets = new Insets(pad, pad, bottomPad, pad);
+    insets = new Insets(0, 4, bottomPad, 4);
 
   }
 
@@ -118,11 +116,7 @@ public class TextBubbleBorder extends AbstractBorder {
   }
 
   @Override
-  public void paintBorder(
-    Component c,
-    Graphics g,
-    int x, int y,
-    int width, int height) {
+  public void paintBorder(Component c, Graphics g, int x, int y,  int width, int height) {
 
     // Work out the lowest line
     int bottomLineY = height - thickness - pointerSize;
@@ -130,7 +124,7 @@ public class TextBubbleBorder extends AbstractBorder {
     // Draw the "speech pointer" polygon
     Polygon pointer = new Polygon();
     int pointerPad = 4;
-    if (left) {
+    if (pointerLeft) {
       // Left point
       pointer.addPoint(strokePad + radii + pointerPad, bottomLineY);
       // Right point
@@ -165,14 +159,18 @@ public class TextBubbleBorder extends AbstractBorder {
     // outside the clip of the text bubble
     Component parent = c.getParent();
     if (parent != null) {
+
       Color bg = parent.getBackground();
       Rectangle rect = new Rectangle(0, 0, width, height);
+
       Area borderRegion = new Area(rect);
       borderRegion.subtract(area);
+
       g2.setClip(borderRegion);
       g2.setColor(bg);
       g2.fillRect(0, 0, width, height);
       g2.setClip(null);
+
     }
 
     g2.setColor(color);

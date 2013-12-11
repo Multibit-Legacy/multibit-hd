@@ -53,7 +53,7 @@ public class WalletDetailView {
         final AlertModel alertModel;
         switch (count % 3) {
           case 0:
-            alertModel = new AlertModel("Bad thing "+count, RAGStatus.RED);
+            alertModel = new AlertModel("Bad thing "+count, RAGStatus.GREEN);
             break;
           case 1:
             alertModel = new AlertModel("Warning thing "+count, RAGStatus.AMBER);
