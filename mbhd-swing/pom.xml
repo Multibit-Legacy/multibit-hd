@@ -178,6 +178,13 @@
       <version>4.2</version>
     </dependency>
 
+    <!-- JLayer for MP3 playback -->
+    <dependency>
+      <groupId>com.googlecode.soundlibs</groupId>
+      <artifactId>jlayer</artifactId>
+      <version>1.0.1-1</version>
+    </dependency>
+
   </dependencies>
 
 </project>

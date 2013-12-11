@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.RAGStatus;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.components.Buttons;
@@ -53,7 +54,8 @@ public class WalletDetailView {
         final AlertModel alertModel;
         switch (count % 3) {
           case 0:
-            alertModel = new AlertModel("Bad thing "+count, RAGStatus.GREEN);
+            alertModel = new AlertModel("Some noise "+count, RAGStatus.GREEN);
+            Sounds.playReceiveBitcoin();
             break;
           case 1:
             alertModel = new AlertModel("Warning thing "+count, RAGStatus.AMBER);
