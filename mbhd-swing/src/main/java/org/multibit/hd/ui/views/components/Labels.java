@@ -31,7 +31,7 @@ public class Labels {
   private static final String SEND_TITLE_LABEL = "sendBitcoinAction.text";
   private static final String CONFIRM_SEND_TITLE_LABEL = "sendBitcoinConfirmView.title";
   private static final String CONFIRM_SEND_MESSAGE_LABEL = "sendBitcoinConfirmView.message";
-  private static final String SEND_PROGRESS_TITLE_LABEL = "sendBitcoinConfirmView.message";
+  private static final String SEND_PROGRESS_TITLE_LABEL = "Send Progress";
 
   /**
    * Utilities have no public constructor

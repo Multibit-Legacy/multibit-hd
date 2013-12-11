@@ -25,32 +25,62 @@ public class LightBoxPanel extends JPanel {
    */
   public LightBoxPanel(JPanel panel) {
 
-    Preconditions.checkNotNull(panel,"'panel' must be present");
-    Preconditions.checkState(panel.getWidth() > 0,"'width' must be greater than zero");
-    Preconditions.checkState(panel.getHeight() > 0,"'height' must be greater than zero");
+    Preconditions.checkNotNull(panel, "'panel' must be present");
+    Preconditions.checkState(panel.getWidth() > 0, "'width' must be greater than zero");
+    Preconditions.checkState(panel.getHeight() > 0, "'height' must be greater than zero");
 
     this.panel = panel;
 
     // Ensure we set the opacity (platform dependent)
-    this.setOpaque(false);
+    setOpaque(false);
 
-    // Ensure this panel covers all the available screen area and force a repaint
-    this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
+    // Ensure this panel covers all the available frame area
+    setSize(Panels.frame.getWidth() + 100, Panels.frame.getHeight() + 100);
 
     // Prevent mouse events reaching through the darkened border
-    this.addMouseListener(new ModalMouseListener());
+    addMouseListener(new ModalMouseListener());
 
     // Add this panel to the frame's layered panel as the palette layer (directly above the default)
     Panels.frame.getLayeredPane().add(this, JLayeredPane.PALETTE_LAYER);
 
-    // Center the light box panel in the frame
-    int x = (Panels.frame.getWidth() - panel.getWidth()) / 2;
-    int y = (Panels.frame.getHeight() - panel.getHeight()) / 2;
-    panel.setLocation(x, y);
+    // Provide a starting position
+    calculatePosition();
 
     // Add the light box panel to the frame as the popup layer (over everything except a drag/drop layer)
     Panels.frame.getLayeredPane().add(panel, JLayeredPane.POPUP_LAYER);
 
+  }
+
+  /**
+   * <p>Calculate the position of the center panel</p>
+   */
+  private void calculatePosition() {
+
+    int currentFrameWidth = Panels.frame.getWidth();
+    int currentFrameHeight = Panels.frame.getHeight();
+
+    int minPanelWidth = (int) panel.getMinimumSize().getWidth();
+    int minPanelHeight = (int) panel.getMinimumSize().getHeight();
+
+    // Use the panel's minimum size to prevent further resizing
+    int frameWidth = currentFrameWidth < minPanelWidth ? minPanelWidth : currentFrameWidth;
+    int frameHeight = currentFrameHeight < minPanelHeight ? minPanelHeight : currentFrameHeight;
+
+    // Lock in the calculated height
+    Panels.frame.setSize(frameWidth, frameHeight);
+
+    // Ensure this panel covers all the available frame area allowing for fast dragging
+    setSize(frameWidth * 2, frameHeight * 2);
+
+    // Center the light box panel in the frame
+    int x = (frameWidth - panel.getWidth()) / 2;
+    int y = (frameHeight - panel.getHeight()) / 2;
+
+    // Avoid any negative values if resizing gets cramped
+    x = x < 0 ? 0 : x;
+    y = y < 0 ? 0 : y;
+
+    panel.setLocation(x, y);
   }
 
   /**
@@ -71,6 +101,9 @@ public class LightBoxPanel extends JPanel {
   @Override
   protected void paintComponent(Graphics graphics) {
 
+    // Reposition the center panel on the fly
+    calculatePosition();
+
     Graphics2D g = (Graphics2D) graphics;
 
     // Always use black even for light themes
@@ -80,7 +113,7 @@ public class LightBoxPanel extends JPanel {
     g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
 
     // Create the darkened border rectangle (will appear beneath the panel layer)
-    g.fillRect(0, 0, getWidth(), getHeight());
+    g.fillRect(0, 0, Panels.frame.getWidth(), Panels.frame.getHeight());
 
   }
 
@@ -88,7 +121,6 @@ public class LightBoxPanel extends JPanel {
    * Prevent mouse events reaching through the light box border
    */
   private class ModalMouseListener implements MouseListener {
-
 
     @Override
     public void mouseClicked(MouseEvent e) {

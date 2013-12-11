@@ -178,12 +178,21 @@
       <version>4.2</version>
     </dependency>
 
+    <!-- SwingX for improved Swing components -->
+    <dependency>
+      <groupId>org.swinglabs</groupId>
+      <artifactId>swingx</artifactId>
+      <version>1.6.1</version>
+    </dependency>
+
     <!-- JLayer for MP3 playback -->
     <dependency>
       <groupId>com.googlecode.soundlibs</groupId>
       <artifactId>jlayer</artifactId>
       <version>1.0.1-1</version>
     </dependency>
+
+
 
   </dependencies>
 

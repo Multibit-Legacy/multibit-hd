@@ -82,7 +82,7 @@ public class SendBitcoinEnterAmountPanel extends JPanel {
     JPanel panel = new JPanel(new MigLayout(
       "fill", // Layout constrains
       "[][][]", // Column constraints
-      "[]10[]10[]10[]" // Row constraints
+      "[]10[]10[]" // Row constraints
     ));
     panel.add(Labels.newSendTitle(),"wrap");
     panel.add(Panels.newContactSearch(),"wrap");

@@ -43,7 +43,7 @@ public class SendBitcoinProgressPanel extends JPanel {
     MigLayout layout = new MigLayout(
       "fill", // Layout constrains
       "[]", // Column constraints
-      "[grow]10[shrink]" // Row constraints
+      "[grow]" // Row constraints
     );
     setLayout(layout);
 
@@ -61,10 +61,10 @@ public class SendBitcoinProgressPanel extends JPanel {
       "[][][]", // Column constraints
       "[]10[]10[]10[]" // Row constraints
     ));
-    panel.add(Labels.newConfirmSendTitle(),"wrap");
-    panel.add(Labels.newConfirmSendAmount(),"wrap");
-    panel.add(Panels.newNotes(),"wrap");
-    panel.add(Panels.newWalletPassword(),"wrap");
+    panel.add(Labels.newSendProgressTitle(),"wrap");
+    panel.add(Panels.newBroadcastStatus(),"wrap");
+    panel.add(Panels.newRelayStatus(),"wrap");
+    panel.add(Panels.newConfirmationCount(),"wrap");
 
     return panel;
   }
