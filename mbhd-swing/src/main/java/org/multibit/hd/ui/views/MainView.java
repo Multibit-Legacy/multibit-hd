@@ -5,6 +5,7 @@ import org.multibit.hd.core.events.BitcoinNetworkChangeEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.LocaleChangeEvent;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import java.awt.*;
@@ -45,8 +46,7 @@ public class MainView extends JFrame {
     // TODO i18n
     setTitle("MultiBit HD");
 
-    // TODO Configuration
-    setBackground(Color.gray);
+    setBackground(Themes.currentTheme.panelBackground());
 
     // TODO Configuration
     setPreferredSize(new Dimension(1280, 1024));
@@ -95,7 +95,7 @@ public class MainView extends JFrame {
     splitPane.setDividerSize(3);
 
     // TODO Add this to themes
-    splitPane.setBackground(new Color(128, 128, 128));
+    splitPane.setBackground(Themes.currentTheme.applicationBackground());
 
     // Add the supporting panels
     mainPanel.add(headerPanel, BorderLayout.PAGE_START);

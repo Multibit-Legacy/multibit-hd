@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -53,8 +54,7 @@ public class SidebarView {
     sidebarTree = new JTree(createSidebarTreeNodes());
     sidebarTree.setShowsRootHandles(false);
     sidebarTree.setRootVisible(false);
-    // TODO Integrate with styles
-    sidebarTree.setBackground(new Color(240, 240, 240));
+    sidebarTree.setBackground(Themes.currentTheme.panelBackground());
     sidebarTree.setVisibleRowCount(10);
     sidebarTree.setExpandsSelectedPaths(true);
 

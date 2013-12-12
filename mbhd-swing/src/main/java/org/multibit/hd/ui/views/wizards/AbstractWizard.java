@@ -1,5 +1,7 @@
 package org.multibit.hd.ui.views.wizards;
 
+import org.multibit.hd.ui.views.components.Panels;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -14,13 +16,27 @@ import java.awt.*;
  */
 public abstract class AbstractWizard {
 
+  private static final int WIZARD_MIN_WIDTH = 600;
+  private static final int WIZARD_MIN_HEIGHT = 400;
+
   private CardLayout cardLayout = new CardLayout();
   protected final JPanel contentPanel = new JPanel(cardLayout);
+
+  protected AbstractWizard() {
+
+    contentPanel.setMinimumSize(new Dimension(WIZARD_MIN_WIDTH, WIZARD_MIN_HEIGHT));
+    contentPanel.setPreferredSize(new Dimension(WIZARD_MIN_WIDTH, WIZARD_MIN_HEIGHT));
+
+    contentPanel.setSize(WIZARD_MIN_WIDTH, WIZARD_MIN_HEIGHT);
+
+  }
 
   /**
    * <p>Close the wizard</p>
    */
   public void close() {
+
+    Panels.hideLightBox();
 
   }
 

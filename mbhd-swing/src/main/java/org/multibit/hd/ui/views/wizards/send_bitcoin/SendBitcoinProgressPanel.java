@@ -12,21 +12,21 @@ import java.awt.event.ActionEvent;
 /**
  * <p>Wizard to provide the following to UI:</p>
  * <ul>
- * <li>Send bitcoin: Enter amount</li>
+ * <li>Send bitcoin: Confirm send</li>
  * </ul>
  *
  * @since 0.0.1
  *         
  */
 
-public class SendBitcoinEnterAmountPanel extends JPanel {
+public class SendBitcoinProgressPanel extends JPanel {
 
   private final AbstractWizard wizard;
 
   /**
-   * The "cancel" action
+   * The "finish" action
    */
-  private Action cancelAction = new AbstractAction() {
+  private Action finishAction = new AbstractAction() {
     @Override
     public void actionPerformed(ActionEvent e) {
       wizard.close();
@@ -34,60 +34,39 @@ public class SendBitcoinEnterAmountPanel extends JPanel {
   };
 
   /**
-   * The "previous" action
-   */
-  private Action previousAction = new AbstractAction() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      wizard.previous();
-    }
-  };
-
-  /**
-   * The "next" action
-   */
-  private Action nextAction = new AbstractAction() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      wizard.next();
-    }
-  };
-
-  /**
    * @param wizard The wizard managing the states
    */
-  public SendBitcoinEnterAmountPanel(AbstractWizard wizard) {
+  public SendBitcoinProgressPanel(AbstractWizard wizard) {
 
     this.wizard = wizard;
 
-    // TODO Create a WizardPanel
-    // Standard wizard layout
     MigLayout layout = new MigLayout(
       "fill", // Layout constrains
       "[]", // Column constraints
-      "[grow]10[shrink]" // Row constraints
+      "[grow]" // Row constraints
     );
     setLayout(layout);
 
     add(addWizardComponents(), "grow,wrap");
 
-    add(Buttons.newCancelButton(cancelAction), "left");
-    add(Buttons.newPreviousButton(previousAction), "right");
-    add(Buttons.newNextButton(nextAction), "right");
+    add(Buttons.newFinishButton(finishAction), "right");
 
   }
+
 
   private JPanel addWizardComponents() {
 
     JPanel panel = new JPanel(new MigLayout(
       "fill", // Layout constrains
       "[][][]", // Column constraints
-      "[]10[]10[]" // Row constraints
+      "[]10[]10[]10[]" // Row constraints
     ));
-    panel.add(Labels.newSendTitle(),"wrap");
-    panel.add(Panels.newContactSearch(),"wrap");
-    panel.add(Panels.newBitcoinAmount(),"wrap");
+    panel.add(Labels.newSendProgressTitle(),"wrap");
+    panel.add(Panels.newBroadcastStatus(),"wrap");
+    panel.add(Panels.newRelayStatus(),"wrap");
+    panel.add(Panels.newConfirmationCount(),"wrap");
 
     return panel;
   }
+
 }

@@ -15,11 +15,11 @@ import org.multibit.hd.ui.i18n.Formats;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.components.Labels;
+import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -52,7 +52,7 @@ public class HeaderView {
     CoreServices.uiEventBus.register(this);
 
     contentPanel = new JPanel(new MigLayout(
-      "hidemode 2", // Layout
+      "hidemode 1", // Layout
       "[][][][][]", // Columns
       "[]10[shrink]" // Rows
     ));
@@ -142,16 +142,16 @@ public class HeaderView {
     alertMessageLabel.setText(alertModel.getLocalisedMessage());
     alertRemainingLabel.setText(alertModel.getRemainingText());
 
-    // TODO Link this to Themes
+
     switch (alertModel.getSeverity()) {
       case RED:
-        alertPanel.setBackground(Color.RED);
+        PanelDecorator.applyDanger(alertPanel);
         break;
       case AMBER:
-        alertPanel.setBackground(Color.YELLOW);
+        PanelDecorator.applyWarning(alertPanel);
         break;
       case GREEN:
-        alertPanel.setBackground(Color.GREEN);
+        PanelDecorator.applySuccess(alertPanel);
         break;
       default:
         throw new IllegalStateException("Unknown severity: " + alertModel.getSeverity().name());

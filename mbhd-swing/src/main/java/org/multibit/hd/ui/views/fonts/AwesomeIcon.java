@@ -288,7 +288,7 @@ public enum AwesomeIcon {
   GAMEPAD('\uf11b'),
   KEYBOARD_ALT('\uf11c'),
   FLAG_ALT('\uf11d'),
-  FLAG_CHECKERED('\uf11d'),
+  FLAG_CHECKERED('\uf11e'),
   TERMINAL('\uf120'),
   CODE('\uf121'),
   REPLY_ALL('\uf122'),

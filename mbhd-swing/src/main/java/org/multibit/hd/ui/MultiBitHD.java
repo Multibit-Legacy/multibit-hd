@@ -9,6 +9,7 @@ import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.ExchangeTickerService;
+import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.controllers.HeaderController;
 import org.multibit.hd.ui.controllers.MainController;
 import org.multibit.hd.ui.controllers.SidebarController;
@@ -40,6 +41,9 @@ public class MultiBitHD {
 
     // Start the core services
     CoreServices.main(args);
+
+    // Pre-load sound library
+    Sounds.initialise();
 
     ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(MtGoxExchange.class.getName());
     BitcoinNetworkService bitcoinNetworkService = CoreServices.newBitcoinNetworkService();

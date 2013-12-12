@@ -28,6 +28,11 @@ public class Labels {
   private static final String HELP_LABEL = "multiBitFrame.helpMenuText";
   private static final String SETTINGS_LABEL = "showPreferencesPanel.title";
 
+  private static final String SEND_TITLE_LABEL = "sendBitcoinAction.text";
+  private static final String CONFIRM_SEND_TITLE_LABEL = "sendBitcoinConfirmView.title";
+  private static final String CONFIRM_SEND_MESSAGE_LABEL = "sendBitcoinConfirmView.message";
+  private static final String SEND_PROGRESS_TITLE_LABEL = "Send Progress";
+
   /**
    * Utilities have no public constructor
    */
@@ -90,10 +95,10 @@ public class Labels {
     exchangeLabel.setFont(decimalFont);
 
     // Theme
-    primaryBalanceLabel.setForeground(Themes.H1.foreground);
-    secondaryBalanceLabel.setForeground(Themes.H2.foreground);
-    trailingSymbolLabel.setForeground(Themes.H1.foreground);
-    exchangeLabel.setForeground(Themes.H1.foreground);
+    primaryBalanceLabel.setForeground(Themes.currentTheme.text());
+    secondaryBalanceLabel.setForeground(Themes.currentTheme.lightText());
+    trailingSymbolLabel.setForeground(Themes.currentTheme.text());
+    exchangeLabel.setForeground(Themes.currentTheme.text());
 
     return new JLabel[]{
 
@@ -102,6 +107,56 @@ public class Labels {
       trailingSymbolLabel,
       exchangeLabel
     };
+
+  }
+
+  /**
+   * @return A new "Send Bitcoin" title
+   */
+  public static JLabel newSendTitle() {
+
+    return newTitleLabel(SEND_TITLE_LABEL);
+
+  }
+
+  /**
+   * @return A new "Confirm Send" title
+   */
+  public static JLabel newConfirmSendTitle() {
+    return newTitleLabel(CONFIRM_SEND_TITLE_LABEL);
+  }
+
+  /**
+   * @return A new "You are about to send" message
+   */
+  public static JLabel newConfirmSendAmount() {
+    return new JLabel(Languages.safeText(CONFIRM_SEND_MESSAGE_LABEL));
+  }
+
+  /**
+   * @return A new "Send Progress" title
+   */
+  public static JLabel newSendProgressTitle() {
+    return newTitleLabel(SEND_PROGRESS_TITLE_LABEL);
+  }
+
+  /**
+   * @param key The i18n key
+   *
+   * @return A new label with appropriate font and theme
+   */
+  private static JLabel newTitleLabel(String key) {
+
+    JLabel label = new JLabel(Languages.safeText(key));
+
+    // Font
+    Font font = label.getFont().deriveFont(BALANCE_LARGE_FONT_SIZE);
+    label.setFont(font);
+
+    // Theme
+    label.setForeground(Themes.currentTheme.text());
+
+    return label;
 
   }
 }

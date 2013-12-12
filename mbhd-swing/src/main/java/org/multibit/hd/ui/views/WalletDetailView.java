@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.RAGStatus;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.components.Buttons;
@@ -41,7 +42,7 @@ public class WalletDetailView {
     Action showSendBitcoinWizardAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        Panels.applyLightBoxPanel(Wizards.newSendBitcoinWizard().getContentPanel());
+        Panels.showLightBox(Wizards.newSendBitcoinWizard().getContentPanel());
       }
     };
 
@@ -60,6 +61,7 @@ public class WalletDetailView {
             break;
           case 2:
             alertModel = new AlertModel("Good thing "+count, RAGStatus.GREEN);
+            Sounds.playReceiveBitcoin();
             break;
           default:
             throw new IllegalStateException("Bang");

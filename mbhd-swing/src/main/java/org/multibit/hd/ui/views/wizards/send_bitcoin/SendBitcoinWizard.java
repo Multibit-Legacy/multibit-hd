@@ -3,10 +3,12 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 
 /**
- * <p>Wizard to provide the following to UI:</p>
- * <ul>
- * <li>Send bitcoin sequence</li>
- * </ul>
+ * <p>Wizard to provide the following to UI for "Send Bitcoin":</p>
+ * <ol>
+ * <li>Enter amount</li>
+ * <li>Confirm details</li>
+ * <li>Watch progress</li>
+ * </ol>
  *
  * @since 0.0.1
  *         
@@ -15,10 +17,12 @@ public class SendBitcoinWizard extends AbstractWizard {
 
   public SendBitcoinWizard() {
 
-    getContentPanel().setSize(400, 400);
+    super();
 
-    getContentPanel().add(new SendBitcoinEnterAmountPanel(this), "Send Bitcoin");
-    getContentPanel().add(new SendBitcoinConfirmSendPanel(this), "Confirm Send");
+    getContentPanel().add(new SendBitcoinEnterAmountPanel(this), "Enter amount");
+    getContentPanel().add(new SendBitcoinConfirmSendPanel(this), "Confirm");
+    getContentPanel().add(new SendBitcoinProgressPanel(this), "Progress");
+
   }
 
 }
