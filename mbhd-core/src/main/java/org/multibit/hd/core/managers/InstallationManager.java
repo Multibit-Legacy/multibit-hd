@@ -86,7 +86,7 @@ public class InstallationManager {
   /**
    * Copy the checkpoints file from the MultiBitHD installation to the specified filename
    *
-   * @param destinationCheckpointsFilename
+   * @param destinationCheckpointsFilename The file location to which to copy the checkpoints file
    */
   public static void copyCheckpointsTo(String destinationCheckpointsFilename) throws IOException {
     Preconditions.checkNotNull(destinationCheckpointsFilename);
