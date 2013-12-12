@@ -16,8 +16,10 @@ import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.PanelDecorator;
+import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
@@ -51,11 +53,14 @@ public class HeaderView {
 
     CoreServices.uiEventBus.register(this);
 
-    contentPanel = new JPanel(new MigLayout(
-      "hidemode 1", // Layout
+    contentPanel = Panels.newPanel(new MigLayout(
+      "insets 15 8,hidemode 1", // Layout
       "[][][][][]", // Columns
       "[]10[shrink]" // Rows
     ));
+
+    // Apply the theme
+    contentPanel.setBackground(Themes.currentTheme.headerPanelBackground());
 
     // Create the alert panel
     alertPanel = createAlertPanel();
@@ -82,7 +87,7 @@ public class HeaderView {
 
   private JPanel createAlertPanel() {
 
-    JPanel panel = new JPanel(new MigLayout(
+    JPanel panel = Panels.newPanel(new MigLayout(
       "fill,ins 5,hidemode 3",
       "[grow][][]", // Columns
       "[]" // Rows

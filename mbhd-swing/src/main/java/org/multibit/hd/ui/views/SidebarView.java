@@ -3,12 +3,15 @@ package org.multibit.hd.ui.views;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.ThemeAwareTreeCellRenderer;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 
 /**
@@ -30,8 +33,15 @@ public class SidebarView {
 
     CoreServices.uiEventBus.register(this);
 
-    MigLayout layout = new MigLayout("filly");
-    contentPanel = new JPanel(layout);
+    MigLayout layout = new MigLayout(
+      "filly, insets 6 10, ", // Layout
+      "[]", // Columns
+      "[]" // Rows
+    );
+    contentPanel = Panels.newPanel(layout);
+
+    // Apply the sidebar theme
+    contentPanel.setBackground(Themes.currentTheme.sidebarPanelBackground());
 
     contentPanel.add(createSidebarContent(), "push");
 
@@ -54,9 +64,19 @@ public class SidebarView {
     sidebarTree = new JTree(createSidebarTreeNodes());
     sidebarTree.setShowsRootHandles(false);
     sidebarTree.setRootVisible(false);
-    sidebarTree.setBackground(Themes.currentTheme.panelBackground());
+
+    // Apply the theme
+    sidebarTree.setBackground(Themes.currentTheme.sidebarPanelBackground());
+    sidebarTree.setCellRenderer(new ThemeAwareTreeCellRenderer());
+
     sidebarTree.setVisibleRowCount(10);
-    sidebarTree.setExpandsSelectedPaths(true);
+    //sidebarTree.setExpandsSelectedPaths(true);
+    sidebarTree.setToggleClickCount(1);
+
+    // Ensure we always have the soft wallet open
+    TreePath walletPath =sidebarTree.getPathForRow(0);
+    sidebarTree.getSelectionModel().setSelectionPath(walletPath);
+    sidebarTree.expandPath(walletPath);
 
     sidebarTree.addTreeSelectionListener(new TreeSelectionListener() {
       public void valueChanged(TreeSelectionEvent e) {
@@ -69,6 +89,8 @@ public class SidebarView {
     });
 
     sidebarPane.setViewportView(sidebarTree);
+    sidebarPane.setBorder(null);
+
     // TODO Integrate with configuration
     sidebarPane.setPreferredSize(new Dimension(150, 1024));
 
@@ -78,6 +100,7 @@ public class SidebarView {
 
   private DefaultMutableTreeNode createSidebarTreeNodes() {
 
+    // TODO Convert this to proper tree model with actions
     DefaultMutableTreeNode root = new DefaultMutableTreeNode("Wallet");
 
     DefaultMutableTreeNode wallet = new DefaultMutableTreeNode("Wallet");

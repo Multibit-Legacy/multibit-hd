@@ -4,6 +4,8 @@ import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.controller.ShowDetailScreenEvent;
+import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +25,7 @@ public class DetailView {
 
   private CardLayout cardLayout = new CardLayout();
 
-  private JPanel cardHolder = new JPanel(cardLayout);
+  private JPanel cardHolder = Panels.newPanel(cardLayout);
 
 
   public DetailView() {
@@ -35,7 +37,10 @@ public class DetailView {
       "[]", // Column constraints
       "[grow]10[shrink]" // Row constraints
     );
-    contentPanel = new JPanel(layout);
+    contentPanel = Panels.newPanel(layout);
+
+    // Override the default theme
+    contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
     cardHolder.add(new WalletDetailView().getContentPanel());
 

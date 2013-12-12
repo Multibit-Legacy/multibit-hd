@@ -2,11 +2,13 @@ package org.multibit.hd.ui.views.components;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
+import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * <p>Factory to provide the following to views:</p>
@@ -22,6 +24,36 @@ public class Panels {
   public static JFrame frame;
 
   private static Optional<LightBoxPanel> lightBoxPanel = Optional.absent();
+
+  /**
+   * @return A simple theme-aware panel with a single cell MigLayout
+   */
+  public static JPanel newPanel() {
+
+    JPanel panel = Panels.newPanel(new MigLayout(
+      "fill", // Layout
+      "[]", // Columns
+      "[]" // Rows
+    ));
+
+    return panel;
+
+  }
+
+  /**
+   * @param layout The layout manager for the panel (typically MigLayout)
+   *
+   * @return A simple theme-aware detail panel with the given layout
+   */
+  public static JPanel newPanel(LayoutManager2 layout) {
+
+    JPanel panel = new JPanel(layout);
+
+    panel.setBackground(Themes.currentTheme.detailPanelBackground());
+
+    return panel;
+
+  }
 
   /**
    * <p>Show a light box</p>
@@ -56,34 +88,9 @@ public class Panels {
    */
   public static JPanel newContactSearch() {
 
-    JComboBox<String> recipient = new JComboBox<>(new String[]{
-      "19siB8yMyB1yt8KKwNMWK3dwe5VWNE3a84 (Ester)",
-      "1Hten6Nzz8UFwtX8b5MUEosuhYRSxuQ3xQ (Jordi)",
-      "123MtBH8uWuPRV1ZPAANZ45WqUs3TUzGv9 (Jordina)",
-      "19FBfiMKECgxMSxtSZcLL5YqoMnLkrrsqd (Sergi)",
-      "175Qrvh9kEPw5YEziK4QSNUw9mpWDMmBmN",
-      "1EJD7f5myxrRSNAHK19zTcdVf8fu1hHNNW",
-      "1LNVqN9Zbxa8AiLjKfc3e3jUpud8zLNH5Q",
-      "17XJpq7NW9ovtuyKfECUrFFjddGWinwR4U",
-      "1Q735J518JU9GyEeGf5B9dt5n5hLjZWm4E",
-      "1J2Zems2DJQkHC84ybQYceSk54tcPinDAZ",
-      "1DuRsLdMdxMnSHJni9mHxX9YPnW98DjkSs",
-      "1JUtwDGram1WTf4CJ7mmi5cftso2wqLmDM",
-      "1P3vBYPwdbxz4EKWKR6FyK3Vvg1vLtFao9",
-      "14gzTg4qmsAWQyEfLjvhoUuz7Lo5vjhheb",
-      "1Q5m8YUdEwhfXfxPNLoGpdMVFxMV9xi2R4",
-      "13Y9Acs7mpJT5nsXERKHLjmFcuGHUiRYXB",
-      "17uqqD7LuznoENBnkgGbTcc6HucxYGQGi8",
-      "1ELZYpgoZkKXVxPWFpnF2QXVDGyYSybuun",
-      "1Aga3oj2iDcSgkuCTE7FrQXtGitA8itXP9",
-      "1MhN7RTt1NwfhB3cypBBuUG3RXAxdvJbHg"
-    });
-    recipient.setEditable(true);
-    AutoCompleteDecorator.decorate(recipient);
-
-    JPanel panel = new JPanel();
+    JPanel panel = newPanel();
     panel.add(new JLabel("Recipient"));
-    panel.add(recipient);
+    panel.add(TextBoxes.newRecipient());
     panel.add(new JLabel("Image"));
 
     return panel;
@@ -96,7 +103,7 @@ public class Panels {
    */
   public static JPanel newBitcoinAmount() {
 
-    JPanel panel = new JPanel();
+    JPanel panel = Panels.newPanel();
 
     panel.add(new JLabel("Amount"));
     panel.add(new JLabel("BTC"));
@@ -116,10 +123,10 @@ public class Panels {
    */
   public static JPanel newNotes() {
 
-    JPanel panel = new JPanel();
+    JPanel panel = newPanel();
 
     panel.add(new JLabel("Notes"));
-    panel.add(new JTextArea("0.00"));
+    panel.add(TextBoxes.newNotes());
 
     return panel;
   }
@@ -131,10 +138,10 @@ public class Panels {
    */
   public static JPanel newWalletPassword() {
 
-    JPanel panel = new JPanel();
+    JPanel panel = newPanel();
 
     panel.add(new JLabel("Wallet password:"));
-    panel.add(new JPasswordField());
+    panel.add(TextBoxes.newPassword());
     panel.add(new JLabel("Reveal"));
 
     return panel;
@@ -147,7 +154,7 @@ public class Panels {
    */
   public static JPanel newBroadcastStatus() {
 
-    JPanel panel = new JPanel();
+    JPanel panel = newPanel();
 
     panel.add(AwesomeDecorator.createIconLabel(
       AwesomeIcon.CHECK,
@@ -165,7 +172,7 @@ public class Panels {
    */
   public static JPanel newRelayStatus() {
 
-    JPanel panel = new JPanel();
+    JPanel panel = newPanel();
 
     panel.add(AwesomeDecorator.createIconLabel(
       AwesomeIcon.CHECK,
@@ -183,7 +190,7 @@ public class Panels {
    */
   public static JPanel newConfirmationCount() {
 
-    JPanel panel = new JPanel();
+    JPanel panel = newPanel();
 
     panel.add(AwesomeDecorator.createIconLabel(
       AwesomeIcon.CHECK,

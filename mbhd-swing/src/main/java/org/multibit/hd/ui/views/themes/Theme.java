@@ -14,25 +14,44 @@ import java.awt.*;
 public interface Theme {
 
   /**
-   * @return The application background colour
+   * @return The panel background colour for headers/footers
    */
-  Color applicationBackground();
+  Color headerPanelBackground();
 
   /**
-   *
-   * @return The panel background colour
+   * @return The panel background colour for detail/wizards
    */
-  Color panelBackground();
+  Color detailPanelBackground();
 
   /**
-   * @return The normal font colour
+   * @return The panel background colour for the sidebar
    */
-  public Color text();
+  Color sidebarPanelBackground();
 
   /**
-   * @return A lighter version of the normal font colour
+   * @return The background colour for data handling elements (like text areas, tree views etc)
    */
-  public Color lightText();
+  Color dataEntryBackground();
+
+  /**
+   * @return The normal font colour for the theme
+   */
+  Color text();
+
+  /**
+   * @return A faded version of the normal font colour for the theme
+   */
+  Color fadedText();
+
+  /**
+   * @return The inverse font colour for the theme (to avoid clashing with panel backgrounds)
+   */
+  Color inverseText();
+
+  /**
+   * @return A faded version of the inverse font colour for the theme (to avoid clashing with panel backgrounds)
+   */
+  Color inverseFadedText();
 
   /**
    * @return The background colour of a danger alert
@@ -88,6 +107,7 @@ public interface Theme {
    * @return The border of an info alert
    */
   Color infoBorder();
+
 
   /**
    * @return The text of an info alert

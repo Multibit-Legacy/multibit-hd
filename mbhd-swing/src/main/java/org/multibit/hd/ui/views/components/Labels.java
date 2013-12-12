@@ -96,7 +96,7 @@ public class Labels {
 
     // Theme
     primaryBalanceLabel.setForeground(Themes.currentTheme.text());
-    secondaryBalanceLabel.setForeground(Themes.currentTheme.lightText());
+    secondaryBalanceLabel.setForeground(Themes.currentTheme.fadedText());
     trailingSymbolLabel.setForeground(Themes.currentTheme.text());
     exchangeLabel.setForeground(Themes.currentTheme.text());
 

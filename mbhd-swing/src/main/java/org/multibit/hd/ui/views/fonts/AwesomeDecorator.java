@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.fonts;
 
 import com.google.common.base.Preconditions;
 import org.multibit.hd.ui.exceptions.UIException;
+import org.multibit.hd.ui.i18n.Languages;
 
 import javax.swing.*;
 import java.awt.*;
@@ -38,6 +39,16 @@ public class AwesomeDecorator {
       throw new UIException(e);
     }
 
+  }
+
+  /**
+   * @param awesomeIcon The awesome icon reference
+   *
+   * @return The icon
+   */
+  public static Icon createIcon(AwesomeIcon awesomeIcon) {
+
+    return new AwesomeSwingIcon(new JLabel(), awesomeIcon.getChar());
   }
 
   /**
@@ -164,4 +175,22 @@ public class AwesomeDecorator {
     button.setIcon(null);
     button.setDisabledIcon(null);
   }
+
+  /**
+   * <p>Select between the LTR and RTL icon forms depending on component orientation</p>
+   *
+   * @param ltrIcon The left-to-right icon
+   * @param rtlIcon The right-to-left icon
+   *
+   * @return The appropriate icon based on the current locale
+   */
+  public static AwesomeIcon select(AwesomeIcon ltrIcon, AwesomeIcon rtlIcon) {
+
+    if (ComponentOrientation.getOrientation(Languages.currentLocale()).isLeftToRight()) {
+      return ltrIcon;
+    }
+
+    return rtlIcon;
+  }
+
 }

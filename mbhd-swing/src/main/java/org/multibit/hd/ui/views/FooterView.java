@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.SystemStatusChangedEvent;
+import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -32,11 +33,14 @@ public class FooterView {
 
     CoreServices.uiEventBus.register(this);
 
-    contentPanel = new JPanel(new MigLayout(
+    contentPanel = Panels.newPanel(new MigLayout(
       "ins 7",
       "[][][]",
       "[]"
     ));
+
+    // Apply the theme
+    contentPanel.setBackground(Themes.currentTheme.headerPanelBackground());
 
     progressBar = new JProgressBar();
     messageLabel = new JLabel();

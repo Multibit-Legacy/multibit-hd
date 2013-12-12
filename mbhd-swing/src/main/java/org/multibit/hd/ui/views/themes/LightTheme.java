@@ -8,7 +8,7 @@ import java.awt.*;
  * <li>A soothing light theme using an accented analogic colour wheel</li>
  * </ul>
  * <p>Use the <a href="http://colorschemedesigner.com/#2U62lw0w0w0w0">colour scheme</a> and Export to a file</p>
- * <p>The export file can be fitted into the color array given below with minimal editing</p>
+ * <p>The export file can be fitted into the array given below with minimal editing</p>
  *
  * @since 0.0.1
  *         
@@ -50,13 +50,23 @@ public class LightTheme implements Theme {
   };
 
   @Override
-  public Color applicationBackground() {
-    return new Color(0xeeeeee);
+  public Color dataEntryBackground() {
+    return colors[2][4];
   }
 
   @Override
-  public Color panelBackground() {
-    return new Color(0xeeeeee);
+  public Color headerPanelBackground() {
+    return new Color(0xe0e0e0);
+  }
+
+  @Override
+  public Color detailPanelBackground() {
+    return new Color(0xf0f0e0);
+  }
+
+  @Override
+  public Color sidebarPanelBackground() {
+    return new Color(0xf0f0f0);
   }
 
   @Override
@@ -65,8 +75,18 @@ public class LightTheme implements Theme {
   }
 
   @Override
-  public Color lightText() {
-    return new Color(96, 96, 96);
+  public Color fadedText() {
+    return new Color(0x606060);
+  }
+
+  @Override
+  public Color inverseText() {
+    return new Color(0xffffff);
+  }
+
+  @Override
+  public Color inverseFadedText() {
+    return fadedText();
   }
 
   @Override
@@ -81,7 +101,7 @@ public class LightTheme implements Theme {
 
   @Override
   public Color successText() {
-    return new Color(0xffffff);
+    return inverseText();
   }
 
   @Override
@@ -96,7 +116,7 @@ public class LightTheme implements Theme {
 
   @Override
   public Color infoText() {
-    return text();
+    return inverseText();
   }
 
   @Override
@@ -126,7 +146,7 @@ public class LightTheme implements Theme {
 
   @Override
   public Color dangerText() {
-    return text();
+    return inverseText();
   }
 
 }

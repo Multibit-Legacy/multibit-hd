@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views;
 
 import com.google.common.eventbus.Subscribe;
+import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.events.BitcoinNetworkChangeEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.LocaleChangeEvent;
@@ -46,7 +47,7 @@ public class MainView extends JFrame {
     // TODO i18n
     setTitle("MultiBit HD");
 
-    setBackground(Themes.currentTheme.panelBackground());
+    setBackground(Themes.currentTheme.headerPanelBackground());
 
     // TODO Configuration
     setPreferredSize(new Dimension(1280, 1024));
@@ -84,7 +85,15 @@ public class MainView extends JFrame {
   private JPanel createMainContent() {
 
     // Create the main panel and place it in this frame
-    JPanel mainPanel = new JPanel(new BorderLayout());
+    MigLayout layout = new MigLayout(
+      "fill,insets 0,novisualpadding", // Layout
+      "[]", // Columns
+      "[][][]"  // Rows
+    );
+    JPanel mainPanel = Panels.newPanel(layout);
+
+    // Set the overall tone
+    mainPanel.setBackground(Themes.currentTheme.headerPanelBackground());
 
     // Create a splitter pane
     JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
@@ -94,13 +103,15 @@ public class MainView extends JFrame {
 
     splitPane.setDividerSize(3);
 
-    // TODO Add this to themes
-    splitPane.setBackground(Themes.currentTheme.applicationBackground());
+    // Sets the colouring for divider and borders
+    splitPane.setBackground(Themes.currentTheme.text());
+    splitPane.setBorder(BorderFactory
+      .createMatteBorder(1,0,1,0,Themes.currentTheme.text()));
 
     // Add the supporting panels
-    mainPanel.add(headerPanel, BorderLayout.PAGE_START);
-    mainPanel.add(splitPane, BorderLayout.CENTER);
-    mainPanel.add(footerPanel, BorderLayout.PAGE_END);
+    mainPanel.add(headerPanel, "grow,wrap");
+    mainPanel.add(splitPane, "grow,wrap");
+    mainPanel.add(footerPanel, "grow,wrap");
 
     return mainPanel;
   }

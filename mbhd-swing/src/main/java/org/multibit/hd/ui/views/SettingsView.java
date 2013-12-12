@@ -3,9 +3,10 @@ package org.multibit.hd.ui.views;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.controllers.SettingsController;
 import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.views.components.Buttons;
+import org.multibit.hd.ui.views.components.Panels;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -47,7 +48,7 @@ public class SettingsView {
       "[]", // Column constraints
       "[grow]10[shrink]" // Row constraints
     );
-    JPanel panel = new JPanel(settingsLayout);
+    JPanel panel = Panels.newPanel(settingsLayout);
 
     // Create the tabbed pane
     JTabbedPane tabbedPane = new JTabbedPane();

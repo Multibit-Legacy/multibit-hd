@@ -3,9 +3,9 @@ package org.multibit.hd.ui.views.components;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
-import java.awt.*;
 
 /**
  * <p>Utility to provide the following to UI:</p>
@@ -102,7 +102,7 @@ public class Buttons {
   public static JButton newNextButton(Action action) {
 
     return AwesomeDecorator.createIconButton(
-      select(AwesomeIcon.ANGLE_DOUBLE_RIGHT,AwesomeIcon.ANGLE_DOUBLE_LEFT),
+      AwesomeDecorator.select(AwesomeIcon.ANGLE_DOUBLE_RIGHT,AwesomeIcon.ANGLE_DOUBLE_LEFT),
       Languages.safeText(NEXT_BUTTON),
       false,
       action
@@ -116,7 +116,7 @@ public class Buttons {
    */
   public static JButton newPreviousButton(Action action) {
     return AwesomeDecorator.createIconButton(
-      select(AwesomeIcon.ANGLE_DOUBLE_LEFT,AwesomeIcon.ANGLE_DOUBLE_RIGHT),
+      AwesomeDecorator.select(AwesomeIcon.ANGLE_DOUBLE_LEFT,AwesomeIcon.ANGLE_DOUBLE_RIGHT),
       Languages.safeText(PREVIOUS_BUTTON),
       true,
       action
@@ -143,12 +143,16 @@ public class Buttons {
    * @return A new "Send" button with icon
    */
   public static JButton newSendButton(Action action) {
-    return AwesomeDecorator.createIconButton(
+    JButton button = AwesomeDecorator.createIconButton(
       AwesomeIcon.CLOUD_UPLOAD,
       Languages.safeText(SEND_BUTTON),
       false,
       action
     );
+
+    button.setBackground(Themes.currentTheme.dangerBackground());
+
+    return button;
   }
 
   /**
@@ -157,12 +161,17 @@ public class Buttons {
    * @return A new "Receive" button with icon
    */
   public static JButton newReceiveButton(Action action) {
-    return AwesomeDecorator.createIconButton(
+
+    JButton button = AwesomeDecorator.createIconButton(
       AwesomeIcon.CLOUD_DOWNLOAD,
       Languages.safeText(RECEIVE_BUTTON),
       true,
       action
     );
+
+    button.setBackground(Themes.currentTheme.infoBackground());
+
+    return button;
   }
 
   /**
@@ -197,18 +206,4 @@ public class Buttons {
 
   }
 
-  /**
-   * @param ltrIcon The left-to-right icon
-   * @param rtlIcon The right-to-left icon
-   *
-   * @return The appropriate icon based on the current locale
-   */
-  private static AwesomeIcon select(AwesomeIcon ltrIcon, AwesomeIcon rtlIcon) {
-
-    if (ComponentOrientation.getOrientation(Languages.currentLocale()).isLeftToRight()) {
-      return ltrIcon;
-    }
-
-    return rtlIcon;
-  }
 }

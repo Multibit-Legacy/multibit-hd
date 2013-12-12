@@ -4,6 +4,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 
 import javax.swing.*;
@@ -67,6 +68,9 @@ public class SendBitcoinConfirmSendPanel extends JPanel {
     );
     setLayout(layout);
 
+    // Apply the theme
+    setBackground(Themes.currentTheme.detailPanelBackground());
+
     add(addWizardComponents(), "grow,wrap");
 
     add(Buttons.newCancelButton(cancelAction), "left");
@@ -77,11 +81,12 @@ public class SendBitcoinConfirmSendPanel extends JPanel {
 
   private JPanel addWizardComponents() {
 
-    JPanel panel = new JPanel(new MigLayout(
+    JPanel panel = Panels.newPanel(new MigLayout(
       "fill", // Layout constrains
       "[][][]", // Column constraints
       "[]10[]10[]10[]" // Row constraints
     ));
+
     panel.add(Labels.newConfirmSendTitle(),"wrap");
     panel.add(Labels.newConfirmSendAmount(),"wrap");
     panel.add(Panels.newNotes(),"wrap");

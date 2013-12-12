@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.views.components.ComboBoxes;
 import org.multibit.hd.ui.views.components.Labels;
+import org.multibit.hd.ui.views.components.Panels;
 
 import javax.swing.*;
 
@@ -34,7 +35,7 @@ public class SettingsLanguageView {
       "[right]rel[grow,fill]", // Column constraints
       "[]10[]" // Row constraints
     );
-    JPanel panel = new JPanel(layout);
+    JPanel panel = Panels.newPanel(layout);
 
     languageComboBox = ComboBoxes.newLanguagesComboBox();
 

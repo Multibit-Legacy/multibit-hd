@@ -37,7 +37,7 @@ public class WalletDetailView {
       "[]10[]", // Column constraints
       "[grow]" // Row constraints
     );
-    contentPanel = new JPanel(layout);
+    contentPanel = Panels.newPanel(layout);
 
     Action showSendBitcoinWizardAction = new AbstractAction() {
       @Override

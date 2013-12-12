@@ -20,7 +20,7 @@ public abstract class AbstractWizard {
   private static final int WIZARD_MIN_HEIGHT = 400;
 
   private CardLayout cardLayout = new CardLayout();
-  protected final JPanel contentPanel = new JPanel(cardLayout);
+  protected final JPanel contentPanel = Panels.newPanel(cardLayout);
 
   protected AbstractWizard() {
 
