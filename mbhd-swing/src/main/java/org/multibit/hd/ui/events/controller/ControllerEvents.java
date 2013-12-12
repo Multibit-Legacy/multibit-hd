@@ -1,8 +1,6 @@
 package org.multibit.hd.ui.events.controller;
 
-import org.multibit.hd.core.api.RAGStatus;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.events.SystemStatusChangedEvent;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.Screen;
 
@@ -48,15 +46,6 @@ public class ControllerEvents {
    */
   public static void fireRemoveAlertEvent() {
     CoreServices.uiEventBus.post(new RemoveAlertEvent());
-  }
-
-  /**
-   * <p>Broadcast a new system status change event</p>
-   *
-   * @param severity The system status severity (normally in line with an alert)
-   */
-  public static void fireSystemStatusEvent(RAGStatus severity) {
-    CoreServices.uiEventBus.post(new SystemStatusChangedEvent(severity));
   }
 
 }

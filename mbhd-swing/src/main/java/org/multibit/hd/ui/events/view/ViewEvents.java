@@ -60,10 +60,11 @@ public class ViewEvents {
   /**
    * <p>Broadcast a new system status change event</p>
    *
-   * @param severity The system status severity (normally in line with an alert)
+   * @param localisedMessage The localised message to display alongside the severity
+   * @param severity         The system status severity (normally in line with an alert)
    */
-  public static void fireSystemStatusChangedEvent(RAGStatus severity) {
-    CoreServices.uiEventBus.post(new SystemStatusChangedEvent(severity));
+  public static void fireSystemStatusChangedEvent(String localisedMessage, RAGStatus severity) {
+    CoreServices.uiEventBus.post(new SystemStatusChangedEvent(localisedMessage, severity));
   }
 
   /**

@@ -30,6 +30,10 @@ import java.math.BigInteger;
  * <li>Ability to send bitcoin</li>
  * </ul>
  *
+ * <p>Emits the following events:</p>
+ * <ul>
+ *   <li><code>BitcoinNetworkChangeEvent</code></li>
+ * </ul>
  * @since 0.0.1
  *         
  */
@@ -55,7 +59,9 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
 
   @Override
   public void start() {
+
     setBitcoinNetworkSummary(BitcoinNetworkSummary.newNetworkNotInitialised());
+
     requireSingleThreadExecutor();
 
     String currentWalletFilename;
@@ -168,6 +174,9 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
       @Override
       public void run() {
         log.debug("Downloading blockchain");
+
+        setBitcoinNetworkSummary(BitcoinNetworkSummary.newChainDownloadStarted());
+
         peerGroup.downloadBlockChain();
       }
     });

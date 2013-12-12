@@ -13,15 +13,25 @@ import org.multibit.hd.core.api.RAGStatus;
  */
 public class SystemStatusChangedEvent {
 
+  private final String localisedMessage;
   private final RAGStatus severity;
 
   /**
-   * @param severity The severity
+   * @param localisedMessage The localised message describing the system status
+   * @param severity         The severity
    */
-  public SystemStatusChangedEvent(RAGStatus severity) {
+  public SystemStatusChangedEvent(String localisedMessage, RAGStatus severity) {
 
+    this.localisedMessage = localisedMessage;
     this.severity = severity;
 
+  }
+
+  /**
+   * @return The localised message describing the system status
+   */
+  public String getLocalisedMessage() {
+    return localisedMessage;
   }
 
   /**
