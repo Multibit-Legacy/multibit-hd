@@ -39,8 +39,6 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
 
   public static final MainNetParams NETWORK_PARAMETERS = MainNetParams.get();
 
-  private String applicationDataDirectoryName;
-
   private WalletManager walletManager;
 
   private BlockStore blockStore;
@@ -63,7 +61,7 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
     String currentWalletFilename;
     File currentWalletDirectory;
     try {
-      applicationDataDirectoryName = InstallationManager.createApplicationDataDirectory();
+      String applicationDataDirectoryName = InstallationManager.createApplicationDataDirectory();
       log.debug("The current applicationDataDirectoryName is '{}'.", applicationDataDirectoryName);
 
       // Create a wallet manager.
@@ -78,9 +76,9 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
 
       currentWalletDirectory = (new File(currentWalletFilename)).getParentFile();
 
-    } catch (IllegalStateException | IllegalArgumentException | WalletLoadException |WalletVersionException e) {
+    } catch (IllegalStateException | IllegalArgumentException | WalletLoadException | WalletVersionException e) {
       setBitcoinNetworkSummary(BitcoinNetworkSummary.newNetworkStartupFailed("bitcoin-network.configuration-error",
-              Optional.<String[]>absent()));
+        Optional.<String[]>absent()));
       return;
     }
 
@@ -113,7 +111,7 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
     } catch (Exception e) {
       log.error(e.getClass().getName() + " " + e.getMessage());
       setBitcoinNetworkSummary(BitcoinNetworkSummary.newNetworkStartupFailed("bitcoin-network.start-network-connection-error",
-              Optional.<String[]>absent()));
+        Optional.<String[]>absent()));
     }
   }
 
@@ -143,37 +141,27 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
   }
 
   /**
-   * Send bitcoin with the following parameters:
+   * <p>Send bitcoin</p>
    *
-   * @param sendAddress
-   * @param sendAmount
-   * @param changeAddress
-   * @param feePerKB
-   * @param password      In the future will also need:
-   *                      the wallet to send from - when Trezor comes onstream
-   *                      a CoinSelector - when HD subnodes are supported
-   *                      <p/>
-   *                      The result of the operation is sent to the UIEventBus as a BitcoinSentEvent
+   * <p>In the future will also need:</p>
+   * <ul>
+   * <li>the wallet to send from - when Trezor comes onstream</li>
+   * <li>a CoinSelector - when HD subnodes are supported</li>
+   * </ul>
+   * <p>The result of the operation is sent to the UIEventBus as a BitcoinSentEvent</p>
+   *
+   * @param sendAddress   The send address
+   * @param sendAmount    The amount to send (in satoshis)
+   * @param changeAddress The change address
+   * @param feePerKB      The fee per Kb (in satoshis)
+   * @param password      The wallet password
    */
   public void send(String sendAddress, BigInteger sendAmount, String changeAddress, BigInteger feePerKB, CharSequence password) {
 
   }
 
-  private void createNewPeerGroup() {
-    peerGroup = new PeerGroup(NETWORK_PARAMETERS, blockChain);
-    peerGroup.setFastCatchupTimeSecs(0); // genesis block
-    peerGroup.setUserAgent(InstallationManager.MBHD_APP_NAME, Configurations.APP_VERSION);
-
-    peerGroup.addPeerDiscovery(new DnsDiscovery(NETWORK_PARAMETERS));
-
-    peerEventListener = new MultiBitPeerEventListener();
-    peerGroup.addEventListener(peerEventListener);
-
-    peerGroup.addWallet(walletManager.getCurrentWallet());
-  }
-
   /**
-   * Download the block chain.
+   * <p>Download the block chain</p>
    */
   public void downloadBlockChain() {
     getExecutorService().submit(new Runnable() {
@@ -198,6 +186,24 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
   public void setBitcoinNetworkSummary(BitcoinNetworkSummary bitcoinNetworkSummary) {
     networkSummary = bitcoinNetworkSummary;
     CoreEvents.fireBitcoinNetworkChangeEvent(networkSummary);
+  }
+
+  /**
+   * <p>Create a new peer group</p>
+   */
+  private void createNewPeerGroup() {
+
+    peerGroup = new PeerGroup(NETWORK_PARAMETERS, blockChain);
+    peerGroup.setFastCatchupTimeSecs(0); // genesis block
+    peerGroup.setUserAgent(InstallationManager.MBHD_APP_NAME, Configurations.APP_VERSION);
+
+    peerGroup.addPeerDiscovery(new DnsDiscovery(NETWORK_PARAMETERS));
+
+    peerEventListener = new MultiBitPeerEventListener();
+    peerGroup.addEventListener(peerEventListener);
+
+    peerGroup.addWallet(walletManager.getCurrentWallet());
+
   }
 
 }
