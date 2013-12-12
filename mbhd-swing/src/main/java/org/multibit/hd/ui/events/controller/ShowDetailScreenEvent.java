@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.events;
+package org.multibit.hd.ui.events.controller;
 
 import org.multibit.hd.ui.views.Screen;
 
