@@ -71,7 +71,7 @@ public class Sounds {
    */
   private static void play(String name) {
 
-    Preconditions.checkState(allSounds.containsKey(name), "'" + name + "' is not a valid sound clip");
+    Preconditions.checkState(allSounds.containsKey(name), "'" + name + "' must be present (did you initialise?)");
 
     byte[] sound = allSounds.get(name);
 
