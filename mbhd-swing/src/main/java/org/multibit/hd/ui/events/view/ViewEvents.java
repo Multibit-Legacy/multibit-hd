@@ -3,7 +3,6 @@ package org.multibit.hd.ui.events.view;
 import org.joda.money.BigMoney;
 import org.multibit.hd.core.api.RAGStatus;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.events.SystemStatusChangedEvent;
 import org.multibit.hd.ui.events.controller.ShowDetailScreenEvent;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.Screen;
@@ -28,7 +27,7 @@ public class ViewEvents {
   }
 
   /**
-   * <p>Broadcast a new exchange rate change event</p>
+   * <p>Broadcast a new "exchange rate change" event</p>
    *
    * @param btcbalance   The current balance in BTC
    * @param localBalance The current balance in local currency
@@ -49,7 +48,7 @@ public class ViewEvents {
   }
 
   /**
-   * <p>Broadcast a new show detail screen event</p>
+   * <p>Broadcast a new "show detail screen" event</p>
    *
    * @param screen The screen to show
    */
@@ -58,7 +57,7 @@ public class ViewEvents {
   }
 
   /**
-   * <p>Broadcast a new system status change event</p>
+   * <p>Broadcast a new "system status changed" event</p>
    *
    * @param localisedMessage The localised message to display alongside the severity
    * @param severity         The system status severity (normally in line with an alert)
@@ -68,7 +67,17 @@ public class ViewEvents {
   }
 
   /**
-   * <p>Broadcast a new alert change event</p>
+   * <p>Broadcast a new "progress changed" event </p>
+   *
+   * @param localisedMessage The localised message to display alongside the progress bar
+   * @param percent          The amount to display in percent
+   */
+  public static void fireProgressChangedEvent(String localisedMessage, int percent) {
+    CoreServices.uiEventBus.post(new ProgressChangedEvent(localisedMessage, percent));
+  }
+
+  /**
+   * <p>Broadcast a new "alert changed" event</p>
    *
    * @param alertModel The alert model for the new display
    */
@@ -77,10 +86,9 @@ public class ViewEvents {
   }
 
   /**
-   * <p>Broadcast a new alert removed event</p>
+   * <p>Broadcast a new "alert removed" event</p>
    */
   public static void fireAlertRemovedEvent() {
     CoreServices.uiEventBus.post(new AlertRemovedEvent());
   }
-
 }

@@ -3,7 +3,8 @@ package org.multibit.hd.ui.views;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.events.SystemStatusChangedEvent;
+import org.multibit.hd.ui.events.view.ProgressChangedEvent;
+import org.multibit.hd.ui.events.view.SystemStatusChangedEvent;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -28,7 +29,6 @@ public class FooterView {
   private final JLabel statusLabel;
   private final JLabel statusIcon;
 
-
   public FooterView() {
 
     CoreServices.uiEventBus.register(this);
@@ -43,6 +43,9 @@ public class FooterView {
     contentPanel.setBackground(Themes.currentTheme.headerPanelBackground());
 
     progressBar = new JProgressBar();
+    progressBar.setMinimum(0);
+    progressBar.setMaximum(100);
+    progressBar.setForeground(Themes.currentTheme.infoBackground());
 
     messageLabel = new JLabel();
 
@@ -94,6 +97,26 @@ public class FooterView {
         // Unknown status
         throw new IllegalStateException("Unknown event severity "+event.getSeverity());
     }
+
+  }
+
+  /**
+   * <p>Handles the representation of a progress change</p>
+   *
+   * @param event The progress change event
+   */
+  @Subscribe
+  public void onProgressChangedEvent(ProgressChangedEvent event) {
+
+    // Show the downloading message until it finishes
+    if (event.getPercent() < 100) {
+      messageLabel.setText(event.getLocalisedMessage());
+    } else {
+      // Synchronized so clear the message
+      messageLabel.setText("");
+    }
+
+    progressBar.setValue(event.getPercent());
 
   }
 

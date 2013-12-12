@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.events;
+package org.multibit.hd.ui.events.view;
 
 import org.multibit.hd.core.api.RAGStatus;
 

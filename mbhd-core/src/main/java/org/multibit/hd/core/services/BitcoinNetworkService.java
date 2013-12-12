@@ -8,6 +8,7 @@ import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
 import com.google.common.base.Optional;
 import org.multibit.hd.core.api.BitcoinNetworkSummary;
+import org.multibit.hd.core.api.MessageKeys;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.exceptions.WalletLoadException;
@@ -32,8 +33,9 @@ import java.math.BigInteger;
  *
  * <p>Emits the following events:</p>
  * <ul>
- *   <li><code>BitcoinNetworkChangeEvent</code></li>
+ * <li><code>BitcoinNetworkChangeEvent</code></li>
  * </ul>
+ *
  * @since 0.0.1
  *         
  */
@@ -54,13 +56,10 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
 
   private MultiBitPeerEventListener peerEventListener;
 
-  private BitcoinNetworkSummary networkSummary;
-
-
   @Override
   public void start() {
 
-    setBitcoinNetworkSummary(BitcoinNetworkSummary.newNetworkNotInitialised());
+    CoreEvents.fireBitcoinNetworkChangeEvent(BitcoinNetworkSummary.newNetworkNotInitialised());
 
     requireSingleThreadExecutor();
 
@@ -83,8 +82,9 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
       currentWalletDirectory = (new File(currentWalletFilename)).getParentFile();
 
     } catch (IllegalStateException | IllegalArgumentException | WalletLoadException | WalletVersionException e) {
-      setBitcoinNetworkSummary(BitcoinNetworkSummary.newNetworkStartupFailed("bitcoin-network.configuration-error",
-        Optional.<String[]>absent()));
+      CoreEvents.fireBitcoinNetworkChangeEvent(BitcoinNetworkSummary
+        .newNetworkStartupFailed(MessageKeys.NETWORK_CONFIGURATION_ERROR,
+          Optional.<String[]>absent()));
       return;
     }
 
@@ -116,13 +116,17 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
 
     } catch (Exception e) {
       log.error(e.getClass().getName() + " " + e.getMessage());
-      setBitcoinNetworkSummary(BitcoinNetworkSummary.newNetworkStartupFailed("bitcoin-network.start-network-connection-error",
-        Optional.<String[]>absent()));
+      CoreEvents.fireBitcoinNetworkChangeEvent(
+        BitcoinNetworkSummary.newNetworkStartupFailed(
+          MessageKeys.START_NETWORK_CONNECTION_ERROR,
+          Optional.<String[]>absent()
+        ));
     }
   }
 
   @Override
   public void stopAndWait() {
+
     if (peerGroup != null) {
       log.debug("Stopping peerGroup service...");
       peerGroup.removeEventListener(peerEventListener);
@@ -144,6 +148,7 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
         log.error("Blockstore not closed successfully, error was '" + e.getClass().getName() + " " + e.getMessage() + "'");
       }
     }
+
   }
 
   /**
@@ -170,31 +175,30 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
    * <p>Download the block chain</p>
    */
   public void downloadBlockChain() {
+
     getExecutorService().submit(new Runnable() {
       @Override
       public void run() {
+
         log.debug("Downloading blockchain");
 
-        setBitcoinNetworkSummary(BitcoinNetworkSummary.newChainDownloadStarted());
+        // Issue a "network change" event
+        CoreEvents.fireBitcoinNetworkChangeEvent(BitcoinNetworkSummary.newChainDownloadStarted());
 
+        // Method will block until download completes
         peerGroup.downloadBlockChain();
+
+        // Indicate 100% progress
+        CoreEvents.fireBitcoinNetworkChangeEvent(BitcoinNetworkSummary.newChainDownloadProgress(100));
+
+        // Issue a "network ready" event
+        CoreEvents.fireBitcoinNetworkChangeEvent(
+          BitcoinNetworkSummary.newNetworkReady(
+            peerEventListener.getNumberOfConnectedPeers()
+          ));
+
       }
     });
-  }
-
-  /**
-   * @return A snapshot of the Bitcoin network summary
-   */
-  public BitcoinNetworkSummary getNetworkSummary() {
-    return networkSummary;
-  }
-
-  /**
-   * Setter for Bitcoin network summary which also fires a network change event
-   */
-  public void setBitcoinNetworkSummary(BitcoinNetworkSummary bitcoinNetworkSummary) {
-    networkSummary = bitcoinNetworkSummary;
-    CoreEvents.fireBitcoinNetworkChangeEvent(networkSummary);
   }
 
   /**

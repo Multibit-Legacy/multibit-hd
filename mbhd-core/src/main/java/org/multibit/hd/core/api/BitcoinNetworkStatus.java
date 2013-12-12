@@ -11,11 +11,25 @@ package org.multibit.hd.core.api;
  */
 public enum BitcoinNetworkStatus {
 
+  /**
+   * No connection to the network
+   */
   NOT_CONNECTED,
 
+  /**
+   * In the process of making a connection (no peers)
+   */
   CONNECTING,
 
-  CONNECTED,
+  /**
+   * In the process of downloading the blockchain (not ready for a send)
+   */
+  DOWNLOADING_BLOCKCHAIN,
+
+  /**
+   * Connected and synchronized (ready to send)
+   */
+  SYNCHRONIZED,
 
   // End of enum
   ;

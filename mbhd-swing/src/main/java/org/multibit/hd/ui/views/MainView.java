@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.api.BitcoinNetworkStatus;
 import org.multibit.hd.core.api.BitcoinNetworkSummary;
 import org.multibit.hd.core.events.BitcoinNetworkChangeEvent;
 import org.multibit.hd.core.services.CoreServices;
@@ -80,24 +81,29 @@ public class MainView extends JFrame {
   public void onBitcoinNetworkChangeEvent(BitcoinNetworkChangeEvent event) {
 
     Preconditions.checkNotNull(event, "'event' must be present");
-    Preconditions.checkNotNull(event.getSummary(),"'summary' must be present");
+    Preconditions.checkNotNull(event.getSummary(), "'summary' must be present");
 
     BitcoinNetworkSummary summary = event.getSummary();
 
-    Preconditions.checkNotNull(summary.getSeverity(),"'severity' must be present");
-    Preconditions.checkNotNull(summary.getErrorKey(),"'errorKey' must be present");
-    Preconditions.checkNotNull(summary.getErrorData(),"'errorData' must be present");
+    Preconditions.checkNotNull(summary.getSeverity(), "'severity' must be present");
+    Preconditions.checkNotNull(summary.getErrorKey(), "'errorKey' must be present");
+    Preconditions.checkNotNull(summary.getErrorData(), "'errorData' must be present");
 
     final String localisedMessage;
     if (summary.getErrorKey().isPresent()) {
-      localisedMessage= Languages.safeText(summary.getErrorKey().get(), summary.getErrorData().get());
+      localisedMessage = Languages.safeText(summary.getErrorKey().get(), summary.getErrorData().get());
     } else {
       localisedMessage = summary.getStatus().name();
     }
 
-    // Determine the nature of the event
-    ViewEvents.fireSystemStatusChangedEvent(localisedMessage, event.getSummary().getSeverity());
+    if (BitcoinNetworkStatus.DOWNLOADING_BLOCKCHAIN.equals(summary.getStatus())) {
 
+      ViewEvents.fireProgressChangedEvent(localisedMessage, summary.getPercent());
+
+    }
+
+      // Determine the nature of the event
+      ViewEvents.fireSystemStatusChangedEvent(localisedMessage, summary.getSeverity());
   }
 
   /**

@@ -16,6 +16,7 @@ public class BitcoinNetworkSummary {
   private final BitcoinNetworkStatus status;
 
   private final int peerCount;
+  private final int percent;
 
   private final RAGStatus severity;
 
@@ -32,6 +33,7 @@ public class BitcoinNetworkSummary {
       RAGStatus.RED,
       Optional.<String>absent(),
       Optional.<String[]>absent(),
+      0,
       0
     );
   }
@@ -41,11 +43,28 @@ public class BitcoinNetworkSummary {
    */
   public static BitcoinNetworkSummary newChainDownloadStarted() {
     return new BitcoinNetworkSummary(
-      BitcoinNetworkStatus.CONNECTING,
+      BitcoinNetworkStatus.DOWNLOADING_BLOCKCHAIN,
       RAGStatus.AMBER,
-      Optional.<String>absent(),
-      Optional.<String[]>absent(),
+      Optional.of(MessageKeys.CHAIN_DOWNLOAD),
+      Optional.of(new String[]{"0"}),
+      0,
       0
+    );
+  }
+
+  /**
+   * @param percent The percentage of blocks downloaded
+   *
+   * @return A new "progress update" summary
+   */
+  public static BitcoinNetworkSummary newChainDownloadProgress(int percent) {
+    return new BitcoinNetworkSummary(
+      BitcoinNetworkStatus.DOWNLOADING_BLOCKCHAIN,
+      RAGStatus.AMBER,
+      Optional.of(MessageKeys.CHAIN_DOWNLOAD),
+      Optional.of(new String[]{String.valueOf(percent)}),
+      0,
+      percent
     );
   }
 
@@ -56,11 +75,12 @@ public class BitcoinNetworkSummary {
    */
   public static BitcoinNetworkSummary newNetworkReady(int peerCount) {
     return new BitcoinNetworkSummary(
-      BitcoinNetworkStatus.CONNECTED,
+      BitcoinNetworkStatus.SYNCHRONIZED,
       RAGStatus.GREEN,
       Optional.of(MessageKeys.PEER_COUNT),
       Optional.of(new String[]{String.valueOf(peerCount)}),
-      peerCount
+      peerCount,
+      0
     );
   }
 
@@ -75,6 +95,7 @@ public class BitcoinNetworkSummary {
       RAGStatus.RED,
       Optional.of(messageKey),
       messageData,
+      0,
       0
     );
   }
@@ -91,7 +112,8 @@ public class BitcoinNetworkSummary {
     RAGStatus severity,
     Optional<String> errorKey,
     Optional<String[]> errorData,
-    int peerCount) {
+    int peerCount,
+    int percent) {
 
     this.status = status;
     this.severity = severity;
@@ -100,10 +122,18 @@ public class BitcoinNetworkSummary {
     this.errorData = errorData;
 
     this.peerCount = peerCount;
+    this.percent = percent;
   }
 
   public int getPeerCount() {
     return peerCount;
+  }
+
+  /**
+   * @return A percent value for a progress bar (such as blockchain download progress)
+   */
+  public int getPercent() {
+    return percent;
   }
 
   public RAGStatus getSeverity() {
@@ -125,11 +155,12 @@ public class BitcoinNetworkSummary {
   @Override
   public String toString() {
     return "BitcoinNetworkSummary{" +
-      "errorKey=" + errorKey +
-      ", errorData=" + errorData +
+      "errorData=" + errorData +
       ", status=" + status +
       ", peerCount=" + peerCount +
+      ", percent=" + percent +
       ", severity=" + severity +
+      ", errorKey=" + errorKey +
       '}';
   }
 }
