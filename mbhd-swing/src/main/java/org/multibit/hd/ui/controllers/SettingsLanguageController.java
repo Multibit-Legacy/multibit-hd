@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.controllers;
 
-import org.multibit.hd.ui.views.SettingsLanguageView;
+import org.multibit.hd.ui.views.detail_views.SettingsLanguageView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,9 +1,11 @@
 package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
+import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.core.events.ShutdownEvent;
 
 /**
  * <p>Abstract base class to provide the following to application services:</p>
@@ -26,9 +28,12 @@ public abstract class AbstractService implements ManagedService {
    */
   private Optional<ListeningExecutorService> service = Optional.absent();
 
+  protected AbstractService() {
+    CoreServices.uiEventBus.register(this);
+  }
+
   @Override
   public void start() {
-    // Do nothing
   }
 
   @Override
@@ -70,4 +75,11 @@ public abstract class AbstractService implements ManagedService {
     return scheduledService.get();
   }
 
+  @Override
+  @Subscribe
+  public void onShutdownEvent(ShutdownEvent shutdownEvent) {
+
+    stopAndWait();
+
+  }
 }

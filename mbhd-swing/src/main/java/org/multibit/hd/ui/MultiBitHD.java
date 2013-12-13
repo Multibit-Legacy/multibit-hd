@@ -3,6 +3,7 @@ package org.multibit.hd.ui;
 import com.xeiam.xchange.currency.MoneyUtils;
 import com.xeiam.xchange.mtgox.v2.MtGoxExchange;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.exceptions.WalletVersionException;
 import org.multibit.hd.core.managers.WalletManager;
@@ -17,6 +18,7 @@ import org.multibit.hd.ui.events.view.LocaleChangeEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.platform.GenericApplication;
 import org.multibit.hd.ui.views.*;
+import org.multibit.hd.ui.views.components.Panels;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,6 +103,17 @@ public class MultiBitHD {
     // TODO Get this working
 
     log.info("Configuring native event handling");
+
+  }
+
+  /**
+   * Handles the graceful shutdown of the application
+   */
+  public static void shutdown() {
+
+    Panels.frame.dispose();
+
+    CoreEvents.fireShutdownEvent();
 
   }
 }

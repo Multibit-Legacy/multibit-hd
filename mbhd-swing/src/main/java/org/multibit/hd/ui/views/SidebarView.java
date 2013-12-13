@@ -6,6 +6,7 @@ import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.ThemeAwareTreeCellRenderer;
 import org.multibit.hd.ui.views.themes.Themes;
+import org.multibit.hd.ui.views.wizards.Wizards;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -86,11 +87,25 @@ public class SidebarView {
 
 
     sidebarTree.addTreeSelectionListener(new TreeSelectionListener() {
+
       public void valueChanged(TreeSelectionEvent e) {
+
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
 
-        ViewEvents.fireShowDetailScreenEvent(Screen.MAIN_WALLET);
-
+        switch (node.toString()) {
+          case "Wallet":
+            ViewEvents.fireShowDetailScreenEvent(Screen.MAIN_WALLET);
+            break;
+          case "Trezor 1":
+            ViewEvents.fireShowDetailScreenEvent(Screen.MAIN_WALLET);
+            break;
+          case "Trezor 2":
+            ViewEvents.fireShowDetailScreenEvent(Screen.MAIN_WALLET);
+            break;
+          case "Exit":
+            Panels.showLightBox(Wizards.newExitWizard().getContentPanel());
+            break;
+        }
 
       }
     });

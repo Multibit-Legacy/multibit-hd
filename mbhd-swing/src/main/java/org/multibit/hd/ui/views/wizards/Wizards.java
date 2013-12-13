@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards;
 
+import org.multibit.hd.ui.views.wizards.exit.ExitWizard;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinWizard;
 
 /**
@@ -14,7 +15,7 @@ import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinWizard;
 public class Wizards {
 
   /**
-   * @return A new send bitcoin wizard
+   * @return A new "send bitcoin" wizard
    */
   public static SendBitcoinWizard newSendBitcoinWizard() {
 
@@ -22,4 +23,11 @@ public class Wizards {
 
   }
 
+  /**
+   * @return A new "exit" wizard
+   */
+  public static ExitWizard newExitWizard() {
+
+    return new ExitWizard();
+  }
 }

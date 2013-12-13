@@ -45,4 +45,9 @@ public class CoreEvents {
 
   }
 
+  public static void fireShutdownEvent() {
+
+    CoreServices.uiEventBus.post(new ShutdownEvent());
+
+  }
 }

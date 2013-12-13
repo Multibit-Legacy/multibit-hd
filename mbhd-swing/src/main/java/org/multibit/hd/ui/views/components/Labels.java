@@ -145,6 +145,16 @@ public class Labels {
   }
 
   /**
+   * @return A new "Exit" title
+   */
+  public static JLabel newExitTitle() {
+
+    JLabel label = newTitleLabel(MessageKey.EXIT_TITLE_LABEL);
+
+    return label;
+  }
+
+  /**
    * @return A new "You are about to send" message
    */
   public static JLabel newConfirmSendAmount() {

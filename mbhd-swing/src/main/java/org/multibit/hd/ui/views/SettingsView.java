@@ -7,6 +7,7 @@ import org.multibit.hd.ui.controllers.SettingsController;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.detail_views.SettingsLanguageView;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

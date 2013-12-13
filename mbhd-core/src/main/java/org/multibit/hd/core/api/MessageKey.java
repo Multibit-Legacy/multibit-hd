@@ -22,6 +22,8 @@ public enum MessageKey {
   CLOSE("close"),
 
   // Nouns
+  YES("yes"),
+  NO("no"),
   NEXT("next"),
   PREVIOUS("previous"),
 
@@ -39,6 +41,7 @@ public enum MessageKey {
   CONFIRM_SEND_TITLE_LABEL("sendBitcoinConfirmView.title"),
   CONFIRM_SEND_MESSAGE_LABEL("sendBitcoinConfirmView.message"),
   SEND_PROGRESS_TITLE_LABEL("Send Progress"),
+  EXIT_TITLE_LABEL("Exit application ?"),
 
   BROADCAST_STATUS_OK("Broadcast OK"),
   RELAY_STATUS_OK("Relayed OK"),
