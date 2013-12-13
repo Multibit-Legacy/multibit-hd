@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.i18n;
 
 import com.google.common.base.Preconditions;
+import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.ui.exceptions.UIException;
 import org.slf4j.Logger;
@@ -132,18 +133,18 @@ public class Languages {
    *
    * @return The localised text with any substitutions made
    */
-  public static String safeText(String key, Object... values) {
+  public static String safeText(MessageKey key, Object... values) {
 
     ResourceBundle rb = currentResourceBundle();
 
     final String message;
 
-    if (!rb.containsKey(key)) {
+    if (!rb.containsKey(key.getKey())) {
       // If no key is present then use it direct
-      message = key;
+      message = key.name();
     } else {
       // Must have the key to be here
-      message = rb.getString(key);
+      message = rb.getString(key.getKey());
     }
 
     return MessageFormat.format(message, values);

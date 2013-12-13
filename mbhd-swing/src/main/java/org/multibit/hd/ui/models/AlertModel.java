@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.models;
 
+import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.api.RAGStatus;
 import org.multibit.hd.ui.i18n.Languages;
 
@@ -42,7 +43,7 @@ public class AlertModel {
 
   public String getRemainingText() {
     if (remaining > 0) {
-      return Languages.safeText("alert.remaining",remaining);
+      return Languages.safeText(MessageKey.ALERT_REMAINING,remaining);
     }
     return "";
   }

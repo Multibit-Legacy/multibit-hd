@@ -20,9 +20,6 @@ import java.io.InputStream;
  */
 public class AwesomeDecorator {
 
-  private final static String DEFAULT_ICON_SIZE = "20.0";
-  private final static String DEFAULT_FONT_SIZE = "1em";
-
   public static Font AWESOME_FONT;
 
   static {
@@ -33,7 +30,7 @@ public class AwesomeDecorator {
 
       Preconditions.checkNotNull(AWESOME_FONT, "'awesome' font not loaded");
 
-      AWESOME_FONT = AWESOME_FONT.deriveFont(16.0f);
+      AWESOME_FONT = AWESOME_FONT.deriveFont(25.0f);
 
     } catch (FontFormatException | IOException e) {
       throw new UIException(e);
@@ -49,66 +46,6 @@ public class AwesomeDecorator {
   public static Icon createIcon(AwesomeIcon awesomeIcon) {
 
     return new AwesomeSwingIcon(new JLabel(), awesomeIcon.getChar());
-  }
-
-  /**
-   * @param icon The font awesome icon
-   *
-   * @return A JLabel containing the icon with blank text using standard prefixing
-   */
-  public static JLabel createIconLabel(AwesomeIcon icon) {
-
-    return createIconLabel(icon, "", true);
-
-  }
-
-  /**
-   * @param icon     The font awesome icon
-   * @param text     The text
-   * @param prefixed True if the icon comes before the text in the reading direction (LTR and RTL is handled automatically)
-   *
-   * @return A suitable button
-   */
-  public static JLabel createIconLabel(AwesomeIcon icon, String text, boolean prefixed) {
-
-    JLabel label = new JLabel();
-
-    Icon swingIcon = new AwesomeSwingIcon(label, icon.getChar());
-
-    label.setText(text);
-    label.setIcon(swingIcon);
-
-    if (!prefixed) {
-      // Icon presentation is opposite to standard layout
-      label.setHorizontalTextPosition(SwingConstants.LEADING);
-    }
-
-    return label;
-  }
-
-  /**
-   * @param icon     The font awesome icon
-   * @param text     The text
-   * @param prefixed True if the icon comes before the text in the reading direction (LTR and RTL is handled automatically)
-   * @param action   The action
-   *
-   * @return A suitable button
-   */
-  public static JButton createIconButton(AwesomeIcon icon, String text, boolean prefixed, Action action) {
-
-    JButton button = new JButton(action);
-
-    Icon swingIcon = new AwesomeSwingIcon(button, icon.getChar());
-
-    button.setText(text);
-    button.setIcon(swingIcon);
-
-    if (!prefixed) {
-      // Icon presentation is opposite to standard layout
-      button.setHorizontalTextPosition(SwingConstants.LEADING);
-    }
-
-    return button;
   }
 
   /**

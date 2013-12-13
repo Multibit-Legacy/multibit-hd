@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views;
 
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.I18NConfiguration;
@@ -201,11 +202,9 @@ public class HeaderView {
     primaryBalanceLabel.setText(balance[0]);
     secondaryBalanceLabel.setText(balance[1]);
 
-    // TODO Add this to resource bundles
-    String exchangeText = "~ ${0} ({1})";
     exchangeLabel.setText(
       Languages.safeText(
-        exchangeText,
+        MessageKey.EXCHANGE_FIAT_RATE,
         localBalance,
         latestBalanceChangedEvent.getRateProvider()
       ));

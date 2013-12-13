@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
+import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -24,15 +25,6 @@ public class Labels {
   private static final float BALANCE_NORMAL_FONT_SIZE = 28.0f;
   private static final float PANEL_CLOSE_FONT_SIZE = 28.0f;
 
-  private static final String USE_LANGUAGE_LABEL = "showPreferencesPanel.useSpecific";
-  private static final String HELP_LABEL = "multiBitFrame.helpMenuText";
-  private static final String SETTINGS_LABEL = "showPreferencesPanel.title";
-
-  private static final String SEND_TITLE_LABEL = "sendBitcoinAction.text";
-  private static final String CONFIRM_SEND_TITLE_LABEL = "sendBitcoinConfirmView.title";
-  private static final String CONFIRM_SEND_MESSAGE_LABEL = "sendBitcoinConfirmView.message";
-  private static final String SEND_PROGRESS_TITLE_LABEL = "Send Progress";
-
   /**
    * Utilities have no public constructor
    */
@@ -40,11 +32,21 @@ public class Labels {
   }
 
   /**
+   * @param key    The resource key for the i18n message text
+   * @param values The data values for token replacement in the message text
+   *
+   * @return A new label with default styling
+   */
+  public static JLabel newLabel(MessageKey key, Object... values) {
+    return new JLabel(Languages.safeText(key, values));
+  }
+
+  /**
    * @return A new "Select language" label
    */
-  public static JLabel newLanguageLabel() {
+  public static JLabel newSelectLanguageLabel() {
 
-    return new JLabel(Languages.safeText(USE_LANGUAGE_LABEL));
+    return new JLabel(Languages.safeText(MessageKey.USE_LANGUAGE_LABEL));
   }
 
   /**
@@ -115,7 +117,7 @@ public class Labels {
    */
   public static JLabel newSendTitle() {
 
-    return newTitleLabel(SEND_TITLE_LABEL);
+    return newTitleLabel(MessageKey.SEND_TITLE_LABEL);
 
   }
 
@@ -123,29 +125,29 @@ public class Labels {
    * @return A new "Confirm Send" title
    */
   public static JLabel newConfirmSendTitle() {
-    return newTitleLabel(CONFIRM_SEND_TITLE_LABEL);
+    return newTitleLabel(MessageKey.CONFIRM_SEND_TITLE_LABEL);
   }
 
   /**
    * @return A new "You are about to send" message
    */
   public static JLabel newConfirmSendAmount() {
-    return new JLabel(Languages.safeText(CONFIRM_SEND_MESSAGE_LABEL));
+    return new JLabel(Languages.safeText(MessageKey.CONFIRM_SEND_MESSAGE_LABEL));
   }
 
   /**
    * @return A new "Send Progress" title
    */
   public static JLabel newSendProgressTitle() {
-    return newTitleLabel(SEND_PROGRESS_TITLE_LABEL);
+    return newTitleLabel(MessageKey.SEND_PROGRESS_TITLE_LABEL);
   }
 
   /**
-   * @param key The i18n key
+   * @param key The message key
    *
    * @return A new label with appropriate font and theme
    */
-  private static JLabel newTitleLabel(String key) {
+  private static JLabel newTitleLabel(MessageKey key) {
 
     JLabel label = new JLabel(Languages.safeText(key));
 

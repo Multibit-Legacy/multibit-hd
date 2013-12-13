@@ -39,7 +39,7 @@ public class SettingsLanguageView {
 
     languageComboBox = ComboBoxes.newLanguagesComboBox();
 
-    panel.add(Labels.newLanguageLabel(), "");
+    panel.add(Labels.newSelectLanguageLabel(), "");
     panel.add(languageComboBox, "wrap");
 
     return panel;

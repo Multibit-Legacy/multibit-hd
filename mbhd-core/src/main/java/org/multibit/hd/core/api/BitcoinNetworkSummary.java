@@ -20,8 +20,8 @@ public class BitcoinNetworkSummary {
 
   private final RAGStatus severity;
 
-  private final Optional<String> errorKey;
-  private final Optional<String[]> errorData;
+  private final Optional<MessageKey> messageKey;
+  private final Optional<Object[]> messageData;
 
 
   /**
@@ -31,8 +31,8 @@ public class BitcoinNetworkSummary {
     return new BitcoinNetworkSummary(
       BitcoinNetworkStatus.NOT_CONNECTED,
       RAGStatus.RED,
-      Optional.<String>absent(),
-      Optional.<String[]>absent(),
+      Optional.<MessageKey>absent(),
+      Optional.<Object[]>absent(),
       0,
       0
     );
@@ -45,8 +45,8 @@ public class BitcoinNetworkSummary {
     return new BitcoinNetworkSummary(
       BitcoinNetworkStatus.DOWNLOADING_BLOCKCHAIN,
       RAGStatus.AMBER,
-      Optional.of(MessageKeys.CHAIN_DOWNLOAD),
-      Optional.of(new String[]{"0"}),
+      Optional.of(MessageKey.CHAIN_DOWNLOAD),
+      Optional.of(new Object[]{"0"}),
       0,
       0
     );
@@ -61,8 +61,8 @@ public class BitcoinNetworkSummary {
     return new BitcoinNetworkSummary(
       BitcoinNetworkStatus.DOWNLOADING_BLOCKCHAIN,
       RAGStatus.AMBER,
-      Optional.of(MessageKeys.CHAIN_DOWNLOAD),
-      Optional.of(new String[]{String.valueOf(percent)}),
+      Optional.of(MessageKey.CHAIN_DOWNLOAD),
+      Optional.of(new Object[]{percent}),
       0,
       percent
     );
@@ -77,8 +77,8 @@ public class BitcoinNetworkSummary {
     return new BitcoinNetworkSummary(
       BitcoinNetworkStatus.SYNCHRONIZED,
       RAGStatus.GREEN,
-      Optional.of(MessageKeys.PEER_COUNT),
-      Optional.of(new String[]{String.valueOf(peerCount)}),
+      Optional.of(MessageKey.PEER_COUNT),
+      Optional.of(new Object[]{peerCount}),
       peerCount,
       0
     );
@@ -89,7 +89,7 @@ public class BitcoinNetworkSummary {
    *
    * @return A new "startup failed" summary
    */
-  public static BitcoinNetworkSummary newNetworkStartupFailed(String messageKey, Optional<String[]> messageData) {
+  public static BitcoinNetworkSummary newNetworkStartupFailed(MessageKey messageKey, Optional<Object[]> messageData) {
     return new BitcoinNetworkSummary(
       BitcoinNetworkStatus.NOT_CONNECTED,
       RAGStatus.RED,
@@ -103,23 +103,23 @@ public class BitcoinNetworkSummary {
   /**
    * @param status    The network status (e.g. NOT_CONNECTED)
    * @param severity  The severity (Red, Amber, Green)
-   * @param errorKey  The error key to allow localisation
-   * @param errorData The error data for insertion into the error message
+   * @param messageKey  The error key to allow localisation
+   * @param messageData The error data for insertion into the error message
    * @param peerCount The current peer count
    */
   public BitcoinNetworkSummary(
     BitcoinNetworkStatus status,
     RAGStatus severity,
-    Optional<String> errorKey,
-    Optional<String[]> errorData,
+    Optional<MessageKey> messageKey,
+    Optional<Object[]> messageData,
     int peerCount,
     int percent) {
 
     this.status = status;
     this.severity = severity;
 
-    this.errorKey = errorKey;
-    this.errorData = errorData;
+    this.messageKey = messageKey;
+    this.messageData = messageData;
 
     this.peerCount = peerCount;
     this.percent = percent;
@@ -136,31 +136,40 @@ public class BitcoinNetworkSummary {
     return percent;
   }
 
+  /**
+   * @return The severity (e.g. AMBER)
+   */
   public RAGStatus getSeverity() {
     return severity;
   }
 
+  /**
+   * @return The network status (e.g. "CONNECTING")
+   */
   public BitcoinNetworkStatus getStatus() {
     return status;
   }
 
-  public Optional<String[]> getErrorData() {
-    return errorData;
+  /**
+   * @return An optional array of arbitrary objects, often for insertion into a resource bundle string
+   */
+  public Optional<Object[]> getMessageData() {
+    return messageData;
   }
 
-  public Optional<String> getErrorKey() {
-    return errorKey;
+  public Optional<MessageKey> getMessageKey() {
+    return messageKey;
   }
 
   @Override
   public String toString() {
     return "BitcoinNetworkSummary{" +
-      "errorData=" + errorData +
+      "errorData=" + messageData +
       ", status=" + status +
       ", peerCount=" + peerCount +
       ", percent=" + percent +
       ", severity=" + severity +
-      ", errorKey=" + errorKey +
+      ", errorKey=" + messageKey +
       '}';
   }
 }

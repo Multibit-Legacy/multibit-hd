@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.components;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -182,11 +183,9 @@ public class Panels {
 
     JPanel panel = newPanel();
 
-    panel.add(AwesomeDecorator.createIconLabel(
-      AwesomeIcon.CHECK,
-      "Broadcast OK",
-      true
-    ));
+    JLabel label = Labels.newLabel(MessageKey.BROADCAST_STATUS_OK);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true);
 
     return panel;
   }
@@ -200,11 +199,9 @@ public class Panels {
 
     JPanel panel = newPanel();
 
-    panel.add(AwesomeDecorator.createIconLabel(
-      AwesomeIcon.CHECK,
-      "Relayed OK",
-      true
-    ));
+    JLabel label = Labels.newLabel(MessageKey.RELAY_STATUS_OK);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK,label, true);
 
     return panel;
   }
@@ -218,11 +215,9 @@ public class Panels {
 
     JPanel panel = newPanel();
 
-    panel.add(AwesomeDecorator.createIconLabel(
-      AwesomeIcon.CHECK,
-      "Confirmations 6+",
-      true
-    ));
+    JLabel label = Labels.newLabel(MessageKey.CONFIRMATION_STATUS_OK);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK,label, true);
 
     return panel;
   }

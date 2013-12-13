@@ -89,12 +89,12 @@ public class MainView extends JFrame {
     BitcoinNetworkSummary summary = event.getSummary();
 
     Preconditions.checkNotNull(summary.getSeverity(), "'severity' must be present");
-    Preconditions.checkNotNull(summary.getErrorKey(), "'errorKey' must be present");
-    Preconditions.checkNotNull(summary.getErrorData(), "'errorData' must be present");
+    Preconditions.checkNotNull(summary.getMessageKey(), "'errorKey' must be present");
+    Preconditions.checkNotNull(summary.getMessageData(), "'errorData' must be present");
 
     final String localisedMessage;
-    if (summary.getErrorKey().isPresent()) {
-      localisedMessage = Languages.safeText(summary.getErrorKey().get(), summary.getErrorData().get());
+    if (summary.getMessageKey().isPresent()) {
+      localisedMessage = Languages.safeText(summary.getMessageKey().get(), summary.getMessageData().get());
     } else {
       localisedMessage = summary.getStatus().name();
     }

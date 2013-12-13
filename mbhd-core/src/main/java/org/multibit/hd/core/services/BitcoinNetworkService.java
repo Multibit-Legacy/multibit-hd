@@ -8,7 +8,7 @@ import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
 import com.google.common.base.Optional;
 import org.multibit.hd.core.api.BitcoinNetworkSummary;
-import org.multibit.hd.core.api.MessageKeys;
+import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.exceptions.WalletLoadException;
@@ -83,8 +83,8 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
 
     } catch (IllegalStateException | IllegalArgumentException | WalletLoadException | WalletVersionException e) {
       CoreEvents.fireBitcoinNetworkChangeEvent(BitcoinNetworkSummary
-        .newNetworkStartupFailed(MessageKeys.NETWORK_CONFIGURATION_ERROR,
-          Optional.<String[]>absent()));
+        .newNetworkStartupFailed(MessageKey.NETWORK_CONFIGURATION_ERROR,
+          Optional.<Object[]>absent()));
       return;
     }
 
@@ -118,8 +118,8 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
       log.error(e.getClass().getName() + " " + e.getMessage());
       CoreEvents.fireBitcoinNetworkChangeEvent(
         BitcoinNetworkSummary.newNetworkStartupFailed(
-          MessageKeys.START_NETWORK_CONNECTION_ERROR,
-          Optional.<String[]>absent()
+          MessageKey.START_NETWORK_CONNECTION_ERROR,
+          Optional.<Object[]>absent()
         ));
     }
   }
