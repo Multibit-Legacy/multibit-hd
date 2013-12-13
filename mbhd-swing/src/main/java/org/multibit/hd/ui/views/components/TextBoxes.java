@@ -7,7 +7,7 @@ import javax.swing.*;
 /**
  * <p>Utility to provide the following to UI:</p>
  * <ul>
- * <li>Provision of localised buttons</li>
+ * <li>Provision of localised text boxes</li>
  * </ul>
  *
  * @since 0.0.1
@@ -26,7 +26,7 @@ public class TextBoxes {
    */
   public static JTextField newRecipient() {
 
-    JTextField textField = new JTextField();
+    JTextField textField = new JTextField(40);
     textField.setBackground(Themes.currentTheme.dataEntryBackground());
 
     return textField;
@@ -37,7 +37,7 @@ public class TextBoxes {
    */
   public static JPasswordField newPassword() {
 
-    JPasswordField passwordField = new JPasswordField();
+    JPasswordField passwordField = new JPasswordField(40);
     passwordField.setBackground(Themes.currentTheme.dataEntryBackground());
 
     return passwordField;
@@ -48,9 +48,20 @@ public class TextBoxes {
    */
   public static JTextArea newNotes() {
 
-    JTextArea textArea = new JTextArea();
+    JTextArea textArea = new JTextArea(5, 40);
     textArea.setBackground(Themes.currentTheme.dataEntryBackground());
 
     return textArea;
+  }
+
+  /**
+   * @return A new "Amount" text field for currency entry
+   */
+  public static JTextField newCurrency(String amount) {
+
+    JTextField textField = new JTextField(amount, 20);
+    textField.setBackground(Themes.currentTheme.dataEntryBackground());
+
+    return textField;
   }
 }

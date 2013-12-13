@@ -117,7 +117,9 @@ public class Labels {
    */
   public static JLabel newSendTitle() {
 
-    return newTitleLabel(MessageKey.SEND_TITLE_LABEL);
+    JLabel label = newTitleLabel(MessageKey.SEND_TITLE_LABEL);
+
+    return label;
 
   }
 
@@ -125,21 +127,29 @@ public class Labels {
    * @return A new "Confirm Send" title
    */
   public static JLabel newConfirmSendTitle() {
-    return newTitleLabel(MessageKey.CONFIRM_SEND_TITLE_LABEL);
-  }
 
-  /**
-   * @return A new "You are about to send" message
-   */
-  public static JLabel newConfirmSendAmount() {
-    return new JLabel(Languages.safeText(MessageKey.CONFIRM_SEND_MESSAGE_LABEL));
+    JLabel label = newTitleLabel(MessageKey.CONFIRM_SEND_TITLE_LABEL);
+
+    return label;
+
   }
 
   /**
    * @return A new "Send Progress" title
    */
   public static JLabel newSendProgressTitle() {
-    return newTitleLabel(MessageKey.SEND_PROGRESS_TITLE_LABEL);
+
+    JLabel label = newTitleLabel(MessageKey.SEND_PROGRESS_TITLE_LABEL);
+
+    return label;
+  }
+
+  /**
+   * @return A new "You are about to send" message
+   */
+  public static JLabel newConfirmSendAmount() {
+
+    return new JLabel(Languages.safeText(MessageKey.CONFIRM_SEND_MESSAGE_LABEL));
   }
 
   /**

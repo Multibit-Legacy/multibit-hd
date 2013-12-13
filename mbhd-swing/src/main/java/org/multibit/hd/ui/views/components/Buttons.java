@@ -95,7 +95,7 @@ public class Buttons {
     JButton button = newButton(action, MessageKey.UNDO);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.UNDO, button, true, 16);
+    AwesomeDecorator.applyIcon(AwesomeIcon.UNDO, button, true, 20);
 
     return button;
 
@@ -111,7 +111,7 @@ public class Buttons {
     JButton button = newButton(action, MessageKey.CANCEL);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, button, true, 16);
+    AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, button, true, 20);
 
     return button;
 
@@ -127,7 +127,7 @@ public class Buttons {
     JButton button = newButton(action, MessageKey.EXIT);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.SIGN_OUT, button, true, 16);
+    AwesomeDecorator.applyIcon(AwesomeIcon.SIGN_OUT, button, true, 20);
 
     return button;
 
@@ -145,7 +145,7 @@ public class Buttons {
 
     AwesomeIcon icon = AwesomeDecorator.select(AwesomeIcon.ANGLE_DOUBLE_RIGHT, AwesomeIcon.ANGLE_DOUBLE_LEFT);
 
-    AwesomeDecorator.applyIcon(icon, button, false, 16);
+    AwesomeDecorator.applyIcon(icon, button, false, 20);
 
     return button;
 
@@ -163,7 +163,7 @@ public class Buttons {
 
     AwesomeIcon icon = AwesomeDecorator.select(AwesomeIcon.ANGLE_DOUBLE_LEFT, AwesomeIcon.ANGLE_DOUBLE_RIGHT);
 
-    AwesomeDecorator.applyIcon(icon, button, true, 16);
+    AwesomeDecorator.applyIcon(icon, button, true, 20);
 
     return button;
 
@@ -179,7 +179,7 @@ public class Buttons {
     JButton button = newButton(action, MessageKey.FINISH);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.FLAG_CHECKERED, button, false, 16);
+    AwesomeDecorator.applyIcon(AwesomeIcon.FLAG_CHECKERED, button, false, 20);
 
     return button;
 
@@ -196,7 +196,7 @@ public class Buttons {
     JButton button = newButton(action, MessageKey.SEND);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD, button, false, 16);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD, button, false, 20);
 
     button.setBackground(Themes.currentTheme.dangerBackground());
 
@@ -214,7 +214,7 @@ public class Buttons {
     JButton button = newButton(action, MessageKey.RECEIVE);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, true, 16);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, true, 20);
 
     button.setBackground(Themes.currentTheme.infoBackground());
 

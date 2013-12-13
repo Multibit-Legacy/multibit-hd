@@ -119,7 +119,7 @@ public enum AwesomeIcon {
   GIFT('\uf06b'),
   LEAF('\uf06c'),
   FIRE('\uf06d'),
-  EYE('\uf06d'),
+  EYE('\uf06e'),
   EYE_SLASH('\uf070'),
   WARNING('\uf071'),
   EXCLAMATION_TRIANGLE('\uf071'),

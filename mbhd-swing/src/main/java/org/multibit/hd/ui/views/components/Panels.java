@@ -118,7 +118,10 @@ public class Panels {
     JPanel panel = newPanel();
     panel.add(new JLabel("Recipient"));
     panel.add(TextBoxes.newRecipient());
-    panel.add(new JLabel("Image"));
+
+    JLabel recipientIcon = new JLabel();
+    AwesomeDecorator.applyIcon(AwesomeIcon.USER,recipientIcon,false,40);
+    panel.add(recipientIcon);
 
     return panel;
   }
@@ -134,10 +137,10 @@ public class Panels {
 
     panel.add(new JLabel("Amount"));
     panel.add(new JLabel("BTC"));
-    panel.add(new JTextField("0.00"));
+    panel.add(TextBoxes.newCurrency("0.00"));
     panel.add(new JLabel("="));
     panel.add(new JLabel("$"));
-    panel.add(new JTextField("0.00"));
+    panel.add(TextBoxes.newCurrency("0.00"));
     panel.add(new JLabel("(MtGox)"));
 
     return panel;
@@ -169,7 +172,10 @@ public class Panels {
 
     panel.add(new JLabel("Wallet password:"));
     panel.add(TextBoxes.newPassword());
-    panel.add(new JLabel("Reveal"));
+
+    JLabel eyeIcon = new JLabel();
+    AwesomeDecorator.applyIcon(AwesomeIcon.EYE,eyeIcon,false,16);
+    panel.add(eyeIcon);
 
     return panel;
   }
