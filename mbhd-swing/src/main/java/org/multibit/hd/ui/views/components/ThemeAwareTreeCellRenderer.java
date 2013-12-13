@@ -83,6 +83,9 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
         case "Tools":
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.WRENCH, Color.BLACK, 20));
           break;
+        case "Exit":
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.SIGN_OUT, Color.BLACK, 20));
+          break;
       }
     } else {
 

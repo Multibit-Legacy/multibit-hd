@@ -80,6 +80,8 @@ public class SidebarView {
     // Get the tree cell renderer to handle the row height
     sidebarTree.setRowHeight(0);
 
+    sidebarTree.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
     sidebarTree.setFont(sidebarTree.getFont().deriveFont(16.0f));
 
 
@@ -127,6 +129,7 @@ public class SidebarView {
     root.add(new DefaultMutableTreeNode("History"));
     root.add(new DefaultMutableTreeNode("Preferences"));
     root.add(new DefaultMutableTreeNode("Tools"));
+    root.add(new DefaultMutableTreeNode("Exit"));
 
     return root;
   }

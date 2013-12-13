@@ -11,6 +11,7 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import java.awt.*;
 
 /**
  * <p>Utility to provide the following to UI:</p>
@@ -45,6 +46,9 @@ public class Buttons {
     // Apply the current theme
     button.setForeground(Themes.currentTheme.text());
     button.setOpaque(true);
+
+    // Reinforce the idea of clicking
+    button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
     // Create a flat appearance
     Border line = new LineBorder(Themes.currentTheme.infoBorder());
