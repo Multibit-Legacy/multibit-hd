@@ -141,7 +141,7 @@ public class Languages {
 
     if (!rb.containsKey(key.getKey())) {
       // If no key is present then use it direct
-      message = key.name();
+      message = key.getKey();
     } else {
       // Must have the key to be here
       message = rb.getString(key.getKey());

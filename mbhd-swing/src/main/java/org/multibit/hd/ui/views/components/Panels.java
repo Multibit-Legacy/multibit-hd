@@ -97,13 +97,13 @@ public class Panels {
 
     JPanel panel = newPanel(layout);
 
-    panel.add(new JLabel("Summary"),"wrap");
+    panel.add(new JLabel("Summary"), "wrap");
     panel.add(new JLabel("Location:"));
-    panel.add(new JLabel("/Users/<someone>/Library/Application Support/MultiBitHD/mbhd-2412897490823174231947"),"push,wrap");
+    panel.add(new JLabel("/Users/<someone>/Library/Application Support/MultiBitHD/mbhd-2412897490823174231947"), "push,wrap");
     panel.add(new JLabel("Contacts:"));
-    panel.add(new JLabel("357"),"push,wrap");
+    panel.add(new JLabel("357"), "push,wrap");
     panel.add(new JLabel("Transactions:"));
-    panel.add(new JLabel("165"),"push,wrap");
+    panel.add(new JLabel("165"), "push,wrap");
 
     return panel;
   }
@@ -175,7 +175,7 @@ public class Panels {
   }
 
   /**
-   * <p>A wallet password panel provides a means of entering a user password</p>
+   * <p>A "broadcast status" panel provides a means of observing broadcast activity</p>
    *
    * @return A new wallet password panel
    */
@@ -184,14 +184,15 @@ public class Panels {
     JPanel panel = newPanel();
 
     JLabel label = Labels.newLabel(MessageKey.BROADCAST_STATUS_OK);
-
     AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true, 16);
+
+    panel.add(label);
 
     return panel;
   }
 
   /**
-   * <p>A wallet password panel provides a means of entering a user password</p>
+   * <p>A "relay status" panel provides a means of observing relay activity</p>
    *
    * @return A new wallet password panel
    */
@@ -200,14 +201,15 @@ public class Panels {
     JPanel panel = newPanel();
 
     JLabel label = Labels.newLabel(MessageKey.RELAY_STATUS_OK);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true, 16);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK,label, true, 16);
+    panel.add(label);
 
     return panel;
   }
 
   /**
-   * <p>A wallet password panel provides a means of entering a user password</p>
+   * <p>A "confirmation count" panel provides a means of observing confirmations</p>
    *
    * @return A new wallet password panel
    */
@@ -216,8 +218,9 @@ public class Panels {
     JPanel panel = newPanel();
 
     JLabel label = Labels.newLabel(MessageKey.CONFIRMATION_STATUS_OK);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true, 16);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK,label, true, 16);
+    panel.add(label);
 
     return panel;
   }

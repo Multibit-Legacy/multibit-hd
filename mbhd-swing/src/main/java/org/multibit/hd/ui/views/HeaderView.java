@@ -151,13 +151,13 @@ public class HeaderView {
 
     switch (alertModel.getSeverity()) {
       case RED:
-        PanelDecorator.applyDanger(alertPanel);
+        PanelDecorator.applyDangerTheme(alertPanel);
         break;
       case AMBER:
-        PanelDecorator.applyWarning(alertPanel);
+        PanelDecorator.applyWarningTheme(alertPanel);
         break;
       case GREEN:
-        PanelDecorator.applySuccess(alertPanel);
+        PanelDecorator.applySuccessTheme(alertPanel);
         break;
       default:
         throw new IllegalStateException("Unknown severity: " + alertModel.getSeverity().name());

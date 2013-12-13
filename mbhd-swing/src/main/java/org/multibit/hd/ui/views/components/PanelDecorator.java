@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
+import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
@@ -17,17 +18,42 @@ import java.awt.*;
 public class PanelDecorator {
 
   /**
+   * <p>Create the standard "wizard" theme</p>
+   *
+   * @param panel The panel to decorate (contains wizard components at the top and buttons at the bottom)
+   * @param wizardComponents  The wizard components arranged in a panel
+   */
+  public static void applyWizardTheme(JPanel panel, JPanel wizardComponents) {
+
+    // Standard wizard layout
+    MigLayout layout = new MigLayout(
+      "fill", // Layout constrains
+      "[]", // Column constraints
+      "[grow]10[shrink]" // Row constraints
+    );
+
+    panel.setLayout(layout);
+
+    // Apply the theme
+    panel.setBackground(Themes.currentTheme.detailPanelBackground());
+
+    // Add the wizard components
+    panel.add(wizardComponents, "span 4,grow,wrap");
+
+  }
+
+  /**
    * <p>Make the panel have the "danger" theme</p>
    *
    * @param panel The panel to decorate
    */
-  public static void applyDanger(JPanel panel) {
+  public static void applyDangerTheme(JPanel panel) {
 
     Color background = Themes.currentTheme.dangerBackground();
     Color border = Themes.currentTheme.dangerBorder();
     Color text = Themes.currentTheme.dangerText();
 
-    apply(panel, background, border, text);
+    applyTheme(panel, background, border, text);
 
   }
 
@@ -36,13 +62,13 @@ public class PanelDecorator {
    *
    * @param panel The panel to decorate
    */
-  public static void applyWarning(JPanel panel) {
+  public static void applyWarningTheme(JPanel panel) {
 
     Color background = Themes.currentTheme.warningBackground();
     Color border = Themes.currentTheme.warningBorder();
     Color text = Themes.currentTheme.warningText();
 
-    apply(panel, background, border, text);
+    applyTheme(panel, background, border, text);
 
   }
 
@@ -51,13 +77,13 @@ public class PanelDecorator {
    *
    * @param panel The panel to decorate
    */
-  public static void applySuccess(JPanel panel) {
+  public static void applySuccessTheme(JPanel panel) {
 
     Color background = Themes.currentTheme.successBackground();
     Color border = Themes.currentTheme.successBorder();
     Color text = Themes.currentTheme.successText();
 
-    apply(panel, background, border, text);
+    applyTheme(panel, background, border, text);
 
   }
 
@@ -69,7 +95,7 @@ public class PanelDecorator {
    * @param border     The border colour
    * @param text       The text colour
    */
-  private static void apply(JPanel panel, Color background, Color border, Color text) {
+  private static void applyTheme(JPanel panel, Color background, Color border, Color text) {
 
     panel.setBackground(background);
     panel.setForeground(text);

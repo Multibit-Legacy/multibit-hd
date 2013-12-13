@@ -3,8 +3,8 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Labels;
+import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 
 import javax.swing.*;
@@ -61,27 +61,15 @@ public class SendBitcoinEnterAmountPanel extends JPanel {
 
     this.wizard = wizard;
 
-    // TODO Create a WizardPanel
-    // Standard wizard layout
-    MigLayout layout = new MigLayout(
-      "fill", // Layout constrains
-      "[]", // Column constraints
-      "[grow]10[shrink]" // Row constraints
-    );
-    setLayout(layout);
+    PanelDecorator.applyWizardTheme(this,wizardComponents());
 
-    // Apply the theme
-    setBackground(Themes.currentTheme.detailPanelBackground());
-
-    add(addWizardComponents(), "grow,wrap");
-
-    add(Buttons.newCancelButton(cancelAction), "left");
-    add(Buttons.newPreviousButton(previousAction), "right");
+    add(Buttons.newCancelButton(cancelAction), "span 2,left,push");
+    add(Buttons.newPreviousButton(previousAction), "push,right");
     add(Buttons.newNextButton(nextAction), "right");
 
   }
 
-  private JPanel addWizardComponents() {
+  private JPanel wizardComponents() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       "fill", // Layout constrains
