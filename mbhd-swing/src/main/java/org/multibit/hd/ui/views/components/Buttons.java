@@ -181,13 +181,16 @@ public class Buttons {
    */
   public static JButton newSendBitcoinWizardButton(Action action) {
 
-    return AwesomeDecorator.createIconButton(
+    JButton button = AwesomeDecorator.createIconButton(
       AwesomeIcon.CLOUD_UPLOAD,
       Languages.safeText(SEND_BUTTON),
       true,
       action
     );
 
+    button.setBackground(Themes.currentTheme.dangerBackground());
+
+    return button;
   }
 
   /**
@@ -197,12 +200,16 @@ public class Buttons {
    */
   public static JButton newReceiveBitcoinWizardButton(Action action) {
 
-    return AwesomeDecorator.createIconButton(
+    JButton button = AwesomeDecorator.createIconButton(
       AwesomeIcon.CLOUD_DOWNLOAD,
       Languages.safeText(RECEIVE_BUTTON),
       true,
       action
     );
+
+    button.setBackground(Themes.currentTheme.infoBackground());
+
+    return button;
 
   }
 

@@ -106,12 +106,12 @@ public class LightTheme implements Theme {
 
   @Override
   public Color infoBackground() {
-    return colors[2][4];
+    return colors[1][4];
   }
 
   @Override
   public Color infoBorder() {
-    return colors[2][4];
+    return colors[1][4];
   }
 
   @Override

@@ -33,9 +33,9 @@ public class WalletDetailView {
     CoreServices.uiEventBus.register(this);
 
     MigLayout layout = new MigLayout(
-      "fillx", // Layout constrains
+      "fill", // Layout constrains
       "[]10[]", // Column constraints
-      "[grow]" // Row constraints
+      "[]50[]" // Row constraints
     );
     contentPanel = Panels.newPanel(layout);
 
@@ -73,8 +73,9 @@ public class WalletDetailView {
       }
     };
 
-    contentPanel.add(Buttons.newSendBitcoinWizardButton(showSendBitcoinWizardAction),"grow");
-    contentPanel.add(Buttons.newReceiveBitcoinWizardButton(showReceiveBitcoinWizardAction),"grow");
+    contentPanel.add(Buttons.newSendBitcoinWizardButton(showSendBitcoinWizardAction),"w 240,h 200,align center,push");
+    contentPanel.add(Buttons.newReceiveBitcoinWizardButton(showReceiveBitcoinWizardAction),"w 240, h 200,align center,push,wrap");
+    contentPanel.add(Panels.newWalletDetailPanel(),"span 2,grow");
 
   }
 

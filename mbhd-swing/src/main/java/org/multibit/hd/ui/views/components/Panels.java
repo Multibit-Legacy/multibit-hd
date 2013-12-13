@@ -82,6 +82,32 @@ public class Panels {
   }
 
   /**
+   * <p>A wallet detail panel provides a summary of the information contained within the wallet</p>
+   *
+   * @return A new wallet detail panel
+   */
+  public static JPanel newWalletDetailPanel() {
+
+    MigLayout layout = new MigLayout(
+      "fillx", // Layout
+      "[]10[grow]", // Columns
+      "[][][][]"  // Rows
+    );
+
+    JPanel panel = newPanel(layout);
+
+    panel.add(new JLabel("Summary"),"wrap");
+    panel.add(new JLabel("Location:"));
+    panel.add(new JLabel("/Users/<someone>/Library/Application Support/MultiBitHD/mbhd-2412897490823174231947"),"push,wrap");
+    panel.add(new JLabel("Contacts:"));
+    panel.add(new JLabel("357"),"push,wrap");
+    panel.add(new JLabel("Transactions:"));
+    panel.add(new JLabel("165"),"push,wrap");
+
+    return panel;
+  }
+
+  /**
    * <p>A contact search panel provides a means of finding a contact through their name or a Bitcoin address</p>
    *
    * @return A new recipient panel
@@ -200,5 +226,4 @@ public class Panels {
 
     return panel;
   }
-
 }
