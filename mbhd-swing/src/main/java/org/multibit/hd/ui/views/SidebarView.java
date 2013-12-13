@@ -70,13 +70,18 @@ public class SidebarView {
     sidebarTree.setCellRenderer(new ThemeAwareTreeCellRenderer());
 
     sidebarTree.setVisibleRowCount(10);
-    //sidebarTree.setExpandsSelectedPaths(true);
     sidebarTree.setToggleClickCount(1);
 
     // Ensure we always have the soft wallet open
     TreePath walletPath =sidebarTree.getPathForRow(0);
     sidebarTree.getSelectionModel().setSelectionPath(walletPath);
     sidebarTree.expandPath(walletPath);
+
+    // Get the tree cell renderer to handle the row height
+    sidebarTree.setRowHeight(0);
+
+    sidebarTree.setFont(sidebarTree.getFont().deriveFont(16.0f));
+
 
     sidebarTree.addTreeSelectionListener(new TreeSelectionListener() {
       public void valueChanged(TreeSelectionEvent e) {

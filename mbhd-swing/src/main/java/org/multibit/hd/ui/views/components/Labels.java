@@ -21,9 +21,9 @@ import java.awt.event.MouseAdapter;
  */
 public class Labels {
 
-  private static final float BALANCE_LARGE_FONT_SIZE = 42.0f;
-  private static final float BALANCE_NORMAL_FONT_SIZE = 28.0f;
-  private static final float PANEL_CLOSE_FONT_SIZE = 28.0f;
+  public static final float BALANCE_LARGE_FONT_SIZE = 42.0f;
+  public static final float BALANCE_NORMAL_FONT_SIZE = 28.0f;
+  public static final float PANEL_CLOSE_FONT_SIZE = 28.0f;
 
   /**
    * Utilities have no public constructor
@@ -62,7 +62,7 @@ public class Labels {
     Font panelCloseFont = panelCloseLabel.getFont().deriveFont(PANEL_CLOSE_FONT_SIZE);
     panelCloseLabel.setFont(panelCloseFont);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, panelCloseLabel, true);
+    AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, panelCloseLabel, true, 16);
     panelCloseLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     panelCloseLabel.addMouseListener(mouseAdapter);
 

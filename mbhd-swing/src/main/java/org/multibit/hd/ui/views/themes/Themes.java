@@ -1,5 +1,8 @@
 package org.multibit.hd.ui.views.themes;
 
+import javax.swing.*;
+import java.awt.*;
+
 /**
  * <p>utility to provide the following to Views:</p>
  * <ul>
@@ -18,6 +21,15 @@ public class Themes {
    * Utilities do not have public constructors
    */
   private Themes() {
+  }
+
+  /**
+   * @param font The font to use
+   */
+  public static void setDefaultFont(Font font) {
+
+    UIManager.getLookAndFeelDefaults().put("defaultFont", font);
+
   }
 
 }

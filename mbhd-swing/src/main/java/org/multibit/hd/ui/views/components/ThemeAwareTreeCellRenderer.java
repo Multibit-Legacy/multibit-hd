@@ -5,23 +5,25 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import java.awt.*;
 
 /**
- * <p>[Pattern] to provide the following to {@link Object}:</p>
+ * <p>Tree cell renderer to provide the following to sidebar tree:</p>
  * <ul>
- * <li></li>
+ * <li>Adding appropriate spacing across platforms</li>
+ * <li>Font Awesome iconography</li>
  * </ul>
- * <p>Example:</p>
- * <pre>
- * </pre>
  *
  * @since 0.0.1
  *         
  */
 public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
+
+  // Provide padding for rows
+  private Border border = BorderFactory.createEmptyBorder(5, 0, 5, 0);
 
   @Override
   public Color getBackgroundNonSelectionColor() {
@@ -40,7 +42,8 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
 
   @Override
   public Component getTreeCellRendererComponent(final JTree tree, final Object value, final boolean sel, final boolean expanded, final boolean leaf, final int row, final boolean hasFocus) {
-    final Component ret = super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+
+    final JLabel ret = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 
     DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
 
@@ -54,40 +57,42 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
 
      */
 
-    setText(value.toString());
-    setForeground(Themes.currentTheme.text());
+    ret.setBorder(border);
+
+    ret.setText(value.toString());
+    ret.setForeground(Themes.currentTheme.text());
 
     if (leaf) {
       switch (node.toString()) {
 
         case "Contacts":
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.USER));
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.USER, Color.BLACK, 20));
           break;
         case "Transactions":
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.LIST));
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.LIST, Color.BLACK, 18));
           break;
         case "Help":
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.QUESTION));
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.QUESTION, Color.BLACK, 20));
           break;
         case "History":
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.ARCHIVE));
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.ARCHIVE, Color.BLACK, 20));
           break;
         case "Preferences":
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.GEARS));
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.GEARS, Color.BLACK, 20));
           break;
         case "Tools":
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.WRENCH));
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.WRENCH, Color.BLACK, 20));
           break;
       }
     } else {
 
-      setOpenIcon(AwesomeDecorator.createIcon(AwesomeIcon.CARET_DOWN));
+      setOpenIcon(AwesomeDecorator.createIcon(AwesomeIcon.CARET_DOWN, Color.BLACK, 20));
       setClosedIcon(
         AwesomeDecorator.createIcon(
           AwesomeDecorator.select(
             AwesomeIcon.CARET_RIGHT,
-            AwesomeIcon.CARET_LEFT)
-        ));
+            AwesomeIcon.CARET_LEFT),
+          Color.BLACK, 20));
 
     }
 

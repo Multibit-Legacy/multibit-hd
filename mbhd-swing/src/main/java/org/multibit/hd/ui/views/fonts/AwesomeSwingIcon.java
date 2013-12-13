@@ -29,7 +29,7 @@ public class AwesomeSwingIcon implements Icon, PropertyChangeListener {
   private int iconHeight;
 
   /**
-   * <p>Create an icon matching the component font</p>
+   * <p>Create an "enabled" icon matching the component font</p>
    *
    * @param component The component to which the icon will be added
    * @param text      The text to be rendered on the Icon
@@ -41,7 +41,20 @@ public class AwesomeSwingIcon implements Icon, PropertyChangeListener {
   }
 
   /**
-   * <p>Create an icon matching the component font with specified size</p>
+   * <p>Create an "enabled" icon matching the component font with specified size</p>
+   *
+   * @param component The component to which the icon will be added
+   * @param text      The text to be rendered on the Icon
+   * @param enabled   True if the icon should be enabled, false for a more faded style
+   */
+  public AwesomeSwingIcon(JComponent component, Character text, boolean enabled) {
+
+    this(component, text, component.getFont().getSize(), enabled);
+
+  }
+
+  /**
+   * <p>Create an "enabled" icon matching the component font with specified size</p>
    *
    * @param component The component to which the icon will be added
    * @param text      The text to be rendered on the Icon
@@ -49,10 +62,28 @@ public class AwesomeSwingIcon implements Icon, PropertyChangeListener {
    */
   public AwesomeSwingIcon(JComponent component, Character text, int size) {
 
+    this(component, text, size, true);
+
+  }
+
+  /**
+   * <p>Create an icon matching the component font with specified size</p>
+   *
+   * @param component The component to which the icon will be added
+   * @param text      The text to be rendered on the Icon
+   * @param size      The font size to use
+   * @param enabled   True if the icon should be enabled, false for a more faded style
+   */
+  public AwesomeSwingIcon(JComponent component, Character text, int size, boolean enabled) {
+
     this.component = component;
 
-    font = font.deriveFont( (float) size);
+    font = font.deriveFont((float) size);
     setText(String.valueOf(text));
+
+    if (!enabled) {
+      setForeground(component.getForeground().brighter());
+    }
 
     component.addPropertyChangeListener("font", this);
 

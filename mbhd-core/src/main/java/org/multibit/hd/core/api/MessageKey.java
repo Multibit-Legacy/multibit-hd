@@ -12,18 +12,18 @@ package org.multibit.hd.core.api;
 public enum MessageKey {
 
   // Verbs
-  APPLY_BUTTON("showPreferencesSubmitAction.text"),
-  UNDO_BUTTON("undoPreferencesChangesSubmitAction.text"),
-  CANCEL_BUTTON("Cancel"),
-  NEXT_BUTTON("Next"),
-  PREVIOUS_BUTTON("Previous"),
-  FINISH_BUTTON("Finish"),
-  EXIT_BUTTON("Exit"),
-  SEND_BUTTON("Send"),
-  RECEIVE_BUTTON("Receive"),
-
+  APPLY("apply"),
+  UNDO("undo"),
+  CANCEL("cancel"),
+  EXIT("exit"),
+  SEND("send"),
+  RECEIVE("receive"),
+  FINISH("finish"),
+  CLOSE("close"),
 
   // Nouns
+  NEXT("next"),
+  PREVIOUS("previous"),
 
 
   // Panels

@@ -7,6 +7,10 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 /**
  * <p>Utility to provide the following to UI:</p>
@@ -31,8 +35,40 @@ public class Buttons {
    *
    * @return A new JButton with default styling
    */
-  public static JButton newButton(MessageKey key, Object... values) {
-    return new JButton(Languages.safeText(key, values));
+  public static JButton newButton(Action action, MessageKey key, Object... values) {
+
+    // The action resets all text
+    JButton button = new JButton(action);
+
+    button.setText(Languages.safeText(key, values));
+
+    // Apply the current theme
+    button.setForeground(Themes.currentTheme.text());
+    button.setOpaque(true);
+
+    // Create a flat appearance
+    Border line = new LineBorder(Themes.currentTheme.infoBorder());
+    Border margin = new EmptyBorder(5, 15, 5, 15);
+    Border compound = new CompoundBorder(line, margin);
+    button.setBorder(compound);
+
+    return button;
+  }
+
+  /**
+   * @param key    The resource key for the i18n string
+   * @param values The values to apply to the string (can be null)
+   *
+   * @return A new JButton with default styling and text arranged below the icon
+   */
+  public static JButton newLargeButton(Action action, MessageKey key, Object... values) {
+
+    JButton button = newButton(action, key, values);
+
+    button.setVerticalTextPosition(SwingConstants.BOTTOM);
+    button.setHorizontalTextPosition(SwingConstants.CENTER);
+
+    return button;
   }
 
   /**
@@ -42,7 +78,7 @@ public class Buttons {
    */
   public static JButton newApplyButton(Action action) {
 
-    JButton button = newButton(MessageKey.APPLY_BUTTON);
+    JButton button = newButton(action, MessageKey.APPLY);
     button.setAction(action);
 
     return button;
@@ -56,10 +92,10 @@ public class Buttons {
    */
   public static JButton newUndoButton(Action action) {
 
-    JButton button = newButton(MessageKey.UNDO_BUTTON);
+    JButton button = newButton(action, MessageKey.UNDO);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.UNDO, button, true);
+    AwesomeDecorator.applyIcon(AwesomeIcon.UNDO, button, true, 16);
 
     return button;
 
@@ -72,10 +108,10 @@ public class Buttons {
    */
   public static JButton newCancelButton(Action action) {
 
-    JButton button = newButton(MessageKey.CANCEL_BUTTON);
+    JButton button = newButton(action, MessageKey.CANCEL);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, button, true);
+    AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, button, true, 16);
 
     return button;
 
@@ -88,10 +124,10 @@ public class Buttons {
    */
   public static JButton newExitButton(Action action) {
 
-    JButton button = newButton(MessageKey.EXIT_BUTTON);
+    JButton button = newButton(action, MessageKey.EXIT);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.SIGN_OUT, button, true);
+    AwesomeDecorator.applyIcon(AwesomeIcon.SIGN_OUT, button, true, 16);
 
     return button;
 
@@ -104,12 +140,12 @@ public class Buttons {
    */
   public static JButton newNextButton(Action action) {
 
-    JButton button = newButton(MessageKey.NEXT_BUTTON);
+    JButton button = newButton(action, MessageKey.NEXT);
     button.setAction(action);
 
     AwesomeIcon icon = AwesomeDecorator.select(AwesomeIcon.ANGLE_DOUBLE_RIGHT, AwesomeIcon.ANGLE_DOUBLE_LEFT);
 
-    AwesomeDecorator.applyIcon(icon, button, true);
+    AwesomeDecorator.applyIcon(icon, button, false, 16);
 
     return button;
 
@@ -122,12 +158,12 @@ public class Buttons {
    */
   public static JButton newPreviousButton(Action action) {
 
-    JButton button = newButton(MessageKey.PREVIOUS_BUTTON);
+    JButton button = newButton(action, MessageKey.PREVIOUS);
     button.setAction(action);
 
     AwesomeIcon icon = AwesomeDecorator.select(AwesomeIcon.ANGLE_DOUBLE_LEFT, AwesomeIcon.ANGLE_DOUBLE_RIGHT);
 
-    AwesomeDecorator.applyIcon(icon, button, true);
+    AwesomeDecorator.applyIcon(icon, button, true, 16);
 
     return button;
 
@@ -140,10 +176,10 @@ public class Buttons {
    */
   public static JButton newFinishButton(Action action) {
 
-    JButton button = newButton(MessageKey.FINISH_BUTTON);
+    JButton button = newButton(action, MessageKey.FINISH);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.FLAG_CHECKERED, button, false);
+    AwesomeDecorator.applyIcon(AwesomeIcon.FLAG_CHECKERED, button, false, 16);
 
     return button;
 
@@ -157,10 +193,10 @@ public class Buttons {
   public static JButton newSendButton(Action action) {
 
     // TODO New Danger button
-    JButton button = newButton(MessageKey.SEND_BUTTON);
+    JButton button = newButton(action, MessageKey.SEND);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD, button, false);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD, button, false, 16);
 
     button.setBackground(Themes.currentTheme.dangerBackground());
 
@@ -175,10 +211,10 @@ public class Buttons {
   public static JButton newReceiveButton(Action action) {
 
     // TODO New Info button
-    JButton button = newButton(MessageKey.RECEIVE_BUTTON);
+    JButton button = newButton(action, MessageKey.RECEIVE);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, true);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, true, 16);
 
     button.setBackground(Themes.currentTheme.infoBackground());
 
@@ -193,13 +229,9 @@ public class Buttons {
    */
   public static JButton newSendBitcoinWizardButton(Action action) {
 
-    // TODO New tool button
-    JButton button = newButton(MessageKey.SEND_BUTTON);
-    button.setAction(action);
+    JButton button = newLargeButton(action, MessageKey.SEND);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD, button, true);
-
-    button.setBackground(Themes.currentTheme.dangerBackground());
+    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD, button, true, 70);
 
     return button;
   }
@@ -211,13 +243,9 @@ public class Buttons {
    */
   public static JButton newReceiveBitcoinWizardButton(Action action) {
 
-    // TODO New tool button
-    JButton button = newButton(MessageKey.RECEIVE_BUTTON);
-    button.setAction(action);
+    JButton button = newLargeButton(action, MessageKey.RECEIVE);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, true);
-
-    button.setBackground(Themes.currentTheme.infoBackground());
+    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, true, 70);
 
     return button;
 

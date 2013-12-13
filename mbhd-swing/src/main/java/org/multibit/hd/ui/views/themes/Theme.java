@@ -108,7 +108,6 @@ public interface Theme {
    */
   Color infoBorder();
 
-
   /**
    * @return The text of an info alert
    */

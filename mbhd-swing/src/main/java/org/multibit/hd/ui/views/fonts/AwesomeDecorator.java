@@ -39,26 +39,64 @@ public class AwesomeDecorator {
   }
 
   /**
+   * <p>Create an icon of the given size</p>
+   *
    * @param awesomeIcon The awesome icon reference
+   * @param color       The icon color
+   * @param size        The icon size (font metrics)
    *
    * @return The icon
    */
-  public static Icon createIcon(AwesomeIcon awesomeIcon) {
+  public static Icon createIcon(AwesomeIcon awesomeIcon, Color color, int size) {
 
-    return new AwesomeSwingIcon(new JLabel(), awesomeIcon.getChar());
+    JLabel iconLabel = new JLabel();
+    iconLabel.setFont(iconLabel.getFont().deriveFont((float) size));
+    iconLabel.setForeground(color);
+
+    return new AwesomeSwingIcon(iconLabel, awesomeIcon.getChar());
   }
 
   /**
    * <p>Apply an icon to a label. Both icon states (enabled/disabled) will be added.</p>
+   * <p>The icon will use the font and color from the label, but <strong>will not</strong> reflect any subsequent updates.</p>
    *
    * @param icon     The icon reference
    * @param label    The label
    * @param prefixed True if the icon comes before the text in the reading direction (LTR and RTL is handled automatically)
+   * @param size     The icon size (font metrics)
    */
-  public static void applyIcon(AwesomeIcon icon, JLabel label, boolean prefixed) {
+  public static void applyIcon(AwesomeIcon icon, JLabel label, boolean prefixed, int size) {
+
+    JLabel iconLabel = new JLabel();
+    iconLabel.setFont(iconLabel.getFont().deriveFont((float) size));
+    iconLabel.setForeground(label.getForeground());
+
+    Icon enabledIcon = new AwesomeSwingIcon(iconLabel, icon.getChar());
+    Icon disabledIcon = new AwesomeSwingIcon(iconLabel, icon.getChar(), true);
+
+    label.setIcon(enabledIcon);
+    label.setDisabledIcon(disabledIcon);
+
+    if (!prefixed) {
+      // Icon presentation is opposite to standard layout
+      label.setHorizontalTextPosition(SwingConstants.LEADING);
+    }
+
+  }
+
+  /**
+   * <p>Apply an icon to a label. Both icon states (enabled/disabled) will be added.</p>
+   * <p>The icon will use the font and color from the label and will reflect any subsequent updates.</p>
+   *
+   * @param icon     The icon reference
+   * @param label    The label (iconography will change will changes to the label color and font)
+   * @param prefixed True if the icon comes before the text in the reading direction (LTR and RTL is handled automatically)
+   * @param size     The icon size (font metrics)
+   */
+  public static void bindIcon(AwesomeIcon icon, JLabel label, boolean prefixed, int size) {
 
     Icon enabledIcon = new AwesomeSwingIcon(label, icon.getChar());
-    Icon disabledIcon = new AwesomeSwingIcon(label, icon.getChar());
+    Icon disabledIcon = new AwesomeSwingIcon(label, icon.getChar(), true);
 
     label.setIcon(enabledIcon);
     label.setDisabledIcon(disabledIcon);
@@ -72,16 +110,47 @@ public class AwesomeDecorator {
 
   /**
    * <p>Apply an icon to a button. Both icon states (enabled/disabled) will be added.</p>
+   * <p>The icon will use the font and color from the button, but <strong>will not</strong> reflect any subsequent updates.</p>
    *
    * @param icon     The icon reference
    * @param button   The button
    * @param prefixed True if the icon comes before the text in the reading direction (LTR and RTL is handled automatically)
+   * @param size     The icon size (font metrics)
    */
 
-  public static void applyIcon(AwesomeIcon icon, JButton button, boolean prefixed) {
+  public static void applyIcon(AwesomeIcon icon, JButton button, boolean prefixed, int size) {
+
+    JLabel iconLabel = new JLabel();
+    iconLabel.setFont(iconLabel.getFont().deriveFont((float) size));
+    iconLabel.setForeground(button.getForeground());
+
+    Icon enabledIcon = new AwesomeSwingIcon(iconLabel, icon.getChar());
+    Icon disabledIcon = new AwesomeSwingIcon(iconLabel, icon.getChar(), true);
+
+    button.setIcon(enabledIcon);
+    button.setDisabledIcon(disabledIcon);
+
+    if (!prefixed) {
+      // Icon presentation is opposite to standard layout
+      button.setHorizontalTextPosition(SwingConstants.LEADING);
+    }
+
+  }
+
+  /**
+   * <p>Apply an icon to a button. Both icon states (enabled/disabled) will be added.</p>
+   * <p>The icon will use the font and color from the button and will reflect any subsequent updates.</p>
+   *
+   * @param icon     The icon reference
+   * @param button   The button (iconography will change will changes to the label color and font)
+   * @param prefixed True if the icon comes before the text in the reading direction (LTR and RTL is handled automatically)
+   * @param size     The icon size (font metrics)
+   */
+
+  public static void bindIcon(AwesomeIcon icon, JButton button, boolean prefixed, int size) {
 
     Icon enabledIcon = new AwesomeSwingIcon(button, icon.getChar());
-    Icon disabledIcon = new AwesomeSwingIcon(button, icon.getChar());
+    Icon disabledIcon = new AwesomeSwingIcon(button, icon.getChar(), true);
 
     button.setIcon(enabledIcon);
     button.setDisabledIcon(disabledIcon);
@@ -99,8 +168,10 @@ public class AwesomeDecorator {
    * @param label The label
    */
   public static void removeIcon(JLabel label) {
+
     label.setIcon(null);
     label.setDisabledIcon(null);
+
   }
 
   /**
@@ -109,8 +180,10 @@ public class AwesomeDecorator {
    * @param button The label
    */
   public static void removeIcon(JButton button) {
+
     button.setIcon(null);
     button.setDisabledIcon(null);
+
   }
 
   /**

@@ -185,7 +185,7 @@ public class Panels {
 
     JLabel label = Labels.newLabel(MessageKey.BROADCAST_STATUS_OK);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true, 16);
 
     return panel;
   }
@@ -201,7 +201,7 @@ public class Panels {
 
     JLabel label = Labels.newLabel(MessageKey.RELAY_STATUS_OK);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK,label, true);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK,label, true, 16);
 
     return panel;
   }
@@ -217,7 +217,7 @@ public class Panels {
 
     JLabel label = Labels.newLabel(MessageKey.CONFIRMATION_STATUS_OK);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK,label, true);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK,label, true, 16);
 
     return panel;
   }

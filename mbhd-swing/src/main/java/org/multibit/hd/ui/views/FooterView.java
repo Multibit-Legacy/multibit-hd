@@ -52,7 +52,7 @@ public class FooterView {
     // Label text and icon are different colours so must be separated
     statusLabel = new JLabel("");
     statusIcon = new JLabel("");
-    AwesomeDecorator.applyIcon(AwesomeIcon.CIRCLE,statusIcon,false);
+    AwesomeDecorator.bindIcon(AwesomeIcon.CIRCLE, statusIcon, false, 16);
 
     // Start with no knowledge so assume the worst
     statusIcon.setForeground(Themes.currentTheme.dangerBackground());
