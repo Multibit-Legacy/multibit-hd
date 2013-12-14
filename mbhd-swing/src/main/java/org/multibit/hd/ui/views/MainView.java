@@ -55,10 +55,10 @@ public class MainView extends JFrame {
     setBackground(Themes.currentTheme.headerPanelBackground());
 
     // TODO Configuration
-    setPreferredSize(new Dimension(1000, 800));
+    setPreferredSize(new Dimension(1000, 700));
 
     // Hard coded
-    setMinimumSize(new Dimension(1000, 800));
+    setMinimumSize(new Dimension(1000, 700));
 
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
