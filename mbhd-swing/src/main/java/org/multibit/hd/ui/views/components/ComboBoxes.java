@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.components;
 import org.multibit.hd.ui.i18n.Languages;
 
 import javax.swing.*;
+import java.awt.event.ActionListener;
 
 /**
  * <p>Utility to provide the following to UI:</p>
@@ -22,11 +23,15 @@ public class ComboBoxes {
   }
 
   /**
+   * @param listener The action listener
    * @return A new languages combo box
    */
-  public static JComboBox<String> newLanguagesComboBox() {
+  public static JComboBox<String> newLanguagesComboBox(ActionListener listener) {
 
-    return new JComboBox<>(Languages.getLanguageNames(true));
+    JComboBox comboBox = new JComboBox<>(Languages.getLanguageNames(true));
+    comboBox.addActionListener(listener);
+
+    return comboBox;
 
   }
 

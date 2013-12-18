@@ -71,7 +71,7 @@ public class ExchangeTickerService extends AbstractService implements ManagedSer
           ticker = pollingMarketDataService.getTicker(Currencies.BTC, Currencies.USD);
 
           if (previous == null || !ticker.getLast().isEqual(previous)) {
-            CoreEvents.fireExchangeRateChangeEvent(ticker.getLast().getAmount(), exchangeName);
+            CoreEvents.fireExchangeRateChangedEvent(ticker.getLast().getAmount(), exchangeName);
 
             log.debug("Updated {} ticker: {}", exchangeName, ticker.getLast());
           }

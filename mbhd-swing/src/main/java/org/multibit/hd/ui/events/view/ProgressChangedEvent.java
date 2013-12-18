@@ -1,15 +1,15 @@
 package org.multibit.hd.ui.events.view;
 
 /**
- * <p>Event to provide the following to views:</p>
+ * <p>Event to provide the following to View Event API:</p>
  * <ul>
- * <li>Essential information for a progress change</li>
+ * <li>Indicates the progress gauge value has changed</li>
  * </ul>
  *
  * @since 0.0.1
  *         
  */
-public class ProgressChangedEvent {
+public class ProgressChangedEvent implements ViewEvent {
 
   private final String localisedMessage;
   private final int percent;

@@ -3,7 +3,7 @@ package org.multibit.hd.ui.events.controller;
 import org.multibit.hd.ui.views.Screen;
 
 /**
- * <p>Event to provide the following to views:</p>
+ * <p>Event to provide the following to the Controller Event API:</p>
  * <ul>
  * <li>Essential information to show a detail screen</li>
  * </ul>

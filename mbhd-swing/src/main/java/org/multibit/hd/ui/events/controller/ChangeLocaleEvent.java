@@ -1,9 +1,9 @@
-package org.multibit.hd.ui.events.view;
+package org.multibit.hd.ui.events.controller;
 
 import java.util.Locale;
 
 /**
- * <p>Event to provide the following to views:</p>
+ * <p>Event to provide the following to the Controller Event API:</p>
  * <ul>
  * <li>Essential information for a locale change</li>
  * </ul>
@@ -11,14 +11,14 @@ import java.util.Locale;
  * @since 0.0.1
  *         
  */
-public class LocaleChangeEvent {
+public class ChangeLocaleEvent implements ControllerEvent {
 
   private final Locale locale;
 
   /**
    * @param locale The new locale
    */
-  public LocaleChangeEvent(Locale locale) {
+  public ChangeLocaleEvent(Locale locale) {
 
     this.locale = locale;
 

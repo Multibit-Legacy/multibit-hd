@@ -3,15 +3,15 @@ package org.multibit.hd.ui.events.view;
 import org.joda.money.BigMoney;
 
 /**
- * <p>Event to provide the following to views:</p>
+ * <p>Event to provide the following to View Event API:</p>
  * <ul>
- * <li>Essential information for a balance change</li>
+ * <li>Indicates a balance change has occurred</li>
  * </ul>
  *
  * @since 0.0.1
  *         
  */
-public class BalanceChangedEvent {
+public class BalanceChangedEvent implements ViewEvent {
 
   private final BigMoney btcBalance;
   private final BigMoney localBalance;

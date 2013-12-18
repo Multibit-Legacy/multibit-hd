@@ -1,17 +1,14 @@
 package org.multibit.hd.ui.views;
 
-import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.api.BitcoinNetworkStatus;
-import org.multibit.hd.core.api.BitcoinNetworkSummary;
-import org.multibit.hd.core.events.BitcoinNetworkChangeEvent;
+import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.events.view.LocaleChangeEvent;
-import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.events.view.LocaleChangedEvent;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.themes.Themes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,6 +23,8 @@ import java.awt.*;
  *         
  */
 public class MainView extends JFrame {
+
+  private static final Logger log = LoggerFactory.getLogger(MainView.class);
 
   private final JPanel headerPanel;
   private final JPanel sidebarPanel;
@@ -65,48 +64,24 @@ public class MainView extends JFrame {
   }
 
   @Subscribe
-  public void onLocaleChangeEvent(LocaleChangeEvent event) {
+  public void onShutdownEvent(ShutdownEvent shutdownEvent) {
 
-    setVisible(false);
+    Panels.frame.dispose();
 
-    // TODO Check if the Swing way can be made to work here
-    setLocale(event.getLocale());
+  }
+
+  @Subscribe
+  public void onLocaleChangedEvent(LocaleChangedEvent event) {
+
+    log.debug("Received 'locale changed' event");
 
     getContentPane().removeAll();
     getContentPane().add(createMainContent());
 
     pack();
+
     setVisible(true);
 
-  }
-
-  @Subscribe
-  public void onBitcoinNetworkChangeEvent(BitcoinNetworkChangeEvent event) {
-
-    Preconditions.checkNotNull(event, "'event' must be present");
-    Preconditions.checkNotNull(event.getSummary(), "'summary' must be present");
-
-    BitcoinNetworkSummary summary = event.getSummary();
-
-    Preconditions.checkNotNull(summary.getSeverity(), "'severity' must be present");
-    Preconditions.checkNotNull(summary.getMessageKey(), "'errorKey' must be present");
-    Preconditions.checkNotNull(summary.getMessageData(), "'errorData' must be present");
-
-    final String localisedMessage;
-    if (summary.getMessageKey().isPresent()) {
-      localisedMessage = Languages.safeText(summary.getMessageKey().get(), summary.getMessageData().get());
-    } else {
-      localisedMessage = summary.getStatus().name();
-    }
-
-    if (BitcoinNetworkStatus.DOWNLOADING_BLOCKCHAIN.equals(summary.getStatus())) {
-
-      ViewEvents.fireProgressChangedEvent(localisedMessage, summary.getPercent());
-
-    }
-
-      // Determine the nature of the event
-      ViewEvents.fireSystemStatusChangedEvent(localisedMessage, summary.getSeverity());
   }
 
   /**

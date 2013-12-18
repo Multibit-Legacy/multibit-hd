@@ -4,7 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.core.events.BitcoinNetworkChangeEvent;
+import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.services.CoreServices;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -38,7 +38,7 @@ public class MultiBitPeerEventListenerTest {
   }
 
   @Subscribe
-  public void onBitcoinNetworkChangeEvent(BitcoinNetworkChangeEvent event) {
+  public void onBitcoinNetworkChangeEvent(BitcoinNetworkChangedEvent event) {
 
     // Progress 25%
     assertThat(event.getSummary().getPercent()).isEqualTo(25);

@@ -6,6 +6,8 @@ import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * <p>[Pattern] to provide the following to {@link Object}:</p>
@@ -19,7 +21,7 @@ import javax.swing.*;
  * @since 0.0.1
  *         
  */
-public class SettingsLanguageView {
+public class SettingsLanguageView implements ActionListener {
 
 
   private JComboBox<String> languageComboBox;
@@ -37,7 +39,7 @@ public class SettingsLanguageView {
     );
     JPanel panel = Panels.newPanel(layout);
 
-    languageComboBox = ComboBoxes.newLanguagesComboBox();
+    languageComboBox = ComboBoxes.newLanguagesComboBox(this);
 
     panel.add(Labels.newSelectLanguageLabel(), "");
     panel.add(languageComboBox, "wrap");
@@ -56,5 +58,10 @@ public class SettingsLanguageView {
 
     return ( (String) languageComboBox.getSelectedItem()).substring(2);
 
+  }
+
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    // TODO Implement this
   }
 }

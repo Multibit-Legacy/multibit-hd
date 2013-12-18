@@ -2,6 +2,8 @@ package org.multibit.hd.ui.views.wizards.exit;
 
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 
+import javax.swing.*;
+
 /**
  * <p>Wizard to provide the following to UI for "Exit":</p>
  * <ol>
@@ -13,11 +15,10 @@ import org.multibit.hd.ui.views.wizards.AbstractWizard;
  */
 public class ExitWizard extends AbstractWizard {
 
-  public ExitWizard() {
+  @Override
+  protected void addWizardContent(JPanel wizardPanel) {
 
-    super();
-
-    getContentPanel().add(new ExitPanel(this), "Exit");
+    wizardPanel.add(new ExitPanel(this), "Exit");
 
   }
 

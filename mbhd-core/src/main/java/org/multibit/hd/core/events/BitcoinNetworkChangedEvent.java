@@ -5,19 +5,17 @@ import org.multibit.hd.core.api.BitcoinNetworkSummary;
 /**
  * <p>Event to provide the following to application API:</p>
  * <ul>
- * <li>Notification of a Bitcoin network change event</li>
+ * <li>Notification of a change to the Bitcoin network status</li>
  * </ul>
  *
  * @since 0.0.1
  *         
  */
-public class BitcoinNetworkChangeEvent {
+public class BitcoinNetworkChangedEvent implements CoreEvent {
 
   private final BitcoinNetworkSummary summary;
 
-  // TODO Consider a hint
-
-  public BitcoinNetworkChangeEvent(BitcoinNetworkSummary summary) {
+  public BitcoinNetworkChangedEvent(BitcoinNetworkSummary summary) {
     this.summary = summary;
   }
 

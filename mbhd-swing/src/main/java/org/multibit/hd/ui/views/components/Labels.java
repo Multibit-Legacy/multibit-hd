@@ -163,6 +163,24 @@ public class Labels {
   }
 
   /**
+   * @return A new "Welcome" title
+   */
+  public static JLabel newWelcomeTitle() {
+
+    JLabel label = newTitleLabel(MessageKey.WELCOME_TITLE_LABEL);
+
+    return label;
+  }
+
+  /**
+   * @return A new "Welcome" note
+   */
+  public static JLabel newWelcomeNote() {
+
+    return new JLabel(Languages.safeText(MessageKey.WELCOME_NOTE));
+  }
+
+  /**
    * @param key The message key
    *
    * @return A new label with appropriate font and theme

@@ -10,6 +10,7 @@ import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 /**
  * <p>Factory to provide the following to views:</p>
@@ -21,6 +22,9 @@ import java.awt.*;
  *         
  */
 public class Panels {
+
+  private static final int STANDARD_ICON = 16;
+  private static final int LARGE_ICON = 40;
 
   public static JFrame frame;
 
@@ -120,7 +124,7 @@ public class Panels {
     panel.add(TextBoxes.newRecipient());
 
     JLabel recipientIcon = new JLabel();
-    AwesomeDecorator.applyIcon(AwesomeIcon.USER,recipientIcon,false,40);
+    AwesomeDecorator.applyIcon(AwesomeIcon.USER, recipientIcon, false, LARGE_ICON);
     panel.add(recipientIcon);
 
     return panel;
@@ -174,7 +178,7 @@ public class Panels {
     panel.add(TextBoxes.newPassword());
 
     JLabel eyeIcon = new JLabel();
-    AwesomeDecorator.applyIcon(AwesomeIcon.EYE,eyeIcon,false,16);
+    AwesomeDecorator.applyIcon(AwesomeIcon.EYE, eyeIcon, false, STANDARD_ICON);
     panel.add(eyeIcon);
 
     return panel;
@@ -190,7 +194,7 @@ public class Panels {
     JPanel panel = newPanel();
 
     JLabel label = Labels.newLabel(MessageKey.BROADCAST_STATUS_OK);
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true, 16);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true, STANDARD_ICON);
 
     panel.add(label);
 
@@ -207,7 +211,7 @@ public class Panels {
     JPanel panel = newPanel();
 
     JLabel label = Labels.newLabel(MessageKey.RELAY_STATUS_OK);
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true, 16);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true, STANDARD_ICON);
 
     panel.add(label);
 
@@ -224,9 +228,31 @@ public class Panels {
     JPanel panel = newPanel();
 
     JLabel label = Labels.newLabel(MessageKey.CONFIRMATION_STATUS_OK);
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true, 16);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true, STANDARD_ICON);
 
     panel.add(label);
+
+    return panel;
+  }
+
+  /**
+   * <p>A "language selector" panel provides a means of changing the display language</p>
+   *
+   * @param listener The action listener
+   *
+   * @return A new "language selector" panel
+   */
+  public static JPanel newLanguageSelector(ActionListener listener) {
+
+    JPanel panel = newPanel();
+
+    JLabel label = Labels.newLabel(MessageKey.SELECT_LANGUAGE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.GLOBE, label, true, LARGE_ICON);
+
+    JComboBox<String> languages = ComboBoxes.newLanguagesComboBox(listener);
+
+    panel.add(label);
+    panel.add(languages);
 
     return panel;
   }

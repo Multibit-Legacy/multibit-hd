@@ -59,7 +59,7 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
   @Override
   public void start() {
 
-    CoreEvents.fireBitcoinNetworkChangeEvent(BitcoinNetworkSummary.newNetworkNotInitialised());
+    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkNotInitialised());
 
     requireSingleThreadExecutor();
 
@@ -82,7 +82,7 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
       currentWalletDirectory = (new File(currentWalletFilename)).getParentFile();
 
     } catch (IllegalStateException | IllegalArgumentException | WalletLoadException | WalletVersionException e) {
-      CoreEvents.fireBitcoinNetworkChangeEvent(BitcoinNetworkSummary
+      CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary
         .newNetworkStartupFailed(MessageKey.NETWORK_CONFIGURATION_ERROR,
           Optional.<Object[]>absent()));
       return;
@@ -116,7 +116,7 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
 
     } catch (Exception e) {
       log.error(e.getClass().getName() + " " + e.getMessage());
-      CoreEvents.fireBitcoinNetworkChangeEvent(
+      CoreEvents.fireBitcoinNetworkChangedEvent(
         BitcoinNetworkSummary.newNetworkStartupFailed(
           MessageKey.START_NETWORK_CONNECTION_ERROR,
           Optional.<Object[]>absent()
@@ -183,16 +183,16 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
         log.debug("Downloading blockchain");
 
         // Issue a "network change" event
-        CoreEvents.fireBitcoinNetworkChangeEvent(BitcoinNetworkSummary.newChainDownloadStarted());
+        CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadStarted());
 
         // Method will block until download completes
         peerGroup.downloadBlockChain();
 
         // Indicate 100% progress
-        CoreEvents.fireBitcoinNetworkChangeEvent(BitcoinNetworkSummary.newChainDownloadProgress(100));
+        CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(100));
 
         // Issue a "network ready" event
-        CoreEvents.fireBitcoinNetworkChangeEvent(
+        CoreEvents.fireBitcoinNetworkChangedEvent(
           BitcoinNetworkSummary.newNetworkReady(
             peerEventListener.getNumberOfConnectedPeers()
           ));

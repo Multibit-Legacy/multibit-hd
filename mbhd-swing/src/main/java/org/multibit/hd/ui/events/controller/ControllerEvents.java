@@ -3,6 +3,10 @@ package org.multibit.hd.ui.events.controller;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.Screen;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Locale;
 
 /**
  * <p>Factory to provide the following to application API:</p>
@@ -17,6 +21,8 @@ import org.multibit.hd.ui.views.Screen;
  */
 public class ControllerEvents {
 
+  private static final Logger log = LoggerFactory.getLogger(ControllerEvents.class);
+
   /**
    * Utilities have a private constructor
    */
@@ -24,27 +30,40 @@ public class ControllerEvents {
   }
 
   /**
-   * <p>Broadcast a new show detail screen event</p>
+   * <p>Broadcast a new "change locale" event</p>
+   *
+   * @param locale The new locale
+   */
+  public static void fireChangeLocaleEvent(Locale locale) {
+    log.debug("Firing 'change locale' event");
+    CoreServices.uiEventBus.post(new ChangeLocaleEvent(locale));
+  }
+
+  /**
+   * <p>Broadcast a new "show detail screen" event</p>
    *
    * @param screen The screen to show
    */
   public static void fireShowDetailScreenEvent(Screen screen) {
+    log.debug("Firing 'show detail screen' event");
     CoreServices.uiEventBus.post(new ShowDetailScreenEvent(screen));
   }
 
   /**
-   * <p>Broadcast a new add alert event</p>
+   * <p>Broadcast a new "add alert" event</p>
    *
    * @param alertModel The alert model
    */
   public static void fireAddAlertEvent(AlertModel alertModel) {
+    log.debug("Firing 'add alert' event");
     CoreServices.uiEventBus.post(new AddAlertEvent(alertModel));
   }
 
   /**
-   * <p>Broadcast a new remove alert event</p>
+   * <p>Broadcast a new "remove alert" event</p>
    */
   public static void fireRemoveAlertEvent() {
+    log.debug("Firing 'remove alert' event");
     CoreServices.uiEventBus.post(new RemoveAlertEvent());
   }
 

@@ -3,7 +3,7 @@ package org.multibit.hd.ui.events.controller;
 import org.multibit.hd.ui.models.AlertModel;
 
 /**
- * <p>Event to provide the following to views/controllers:</p>
+ * <p>Event to provide the following to  Controller Event API:</p>
  * <ul>
  * <li>Adding an alert model to the controller</li>
  * </ul>
@@ -11,7 +11,7 @@ import org.multibit.hd.ui.models.AlertModel;
  * @since 0.0.1
  *         
  */
-public class AddAlertEvent {
+public class AddAlertEvent implements ControllerEvent {
 
   private final AlertModel alertModel;
 

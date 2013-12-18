@@ -42,7 +42,8 @@ public class WalletDetailView {
     Action showSendBitcoinWizardAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        Panels.showLightBox(Wizards.newSendBitcoinWizard().getContentPanel());
+
+        Panels.showLightBox(Wizards.newSendBitcoinWizard().getWizardPanel());
       }
     };
 

@@ -1,7 +1,6 @@
-package org.multibit.hd.ui.views.wizards.exit;
+package org.multibit.hd.ui.views.wizards.welcome;
 
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.PanelDecorator;
@@ -21,7 +20,7 @@ import java.awt.event.ActionEvent;
  *         
  */
 
-public class ExitPanel extends JPanel {
+public class RestoreWalletPanel extends JPanel {
 
   private final AbstractWizard wizard;
 
@@ -36,28 +35,37 @@ public class ExitPanel extends JPanel {
   };
 
   /**
-   * The "exit" action
+   * The "previous" action
    */
-  private Action exitAction = new AbstractAction() {
+  private Action previousAction = new AbstractAction() {
     @Override
     public void actionPerformed(ActionEvent e) {
+      wizard.previous();
+    }
+  };
 
-      CoreEvents.fireShutdownEvent();
-
+  /**
+   * The "next" action
+   */
+  private Action nextAction = new AbstractAction() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      wizard.next();
     }
   };
 
   /**
    * @param wizard The wizard managing the states
    */
-  public ExitPanel(AbstractWizard wizard) {
+  public RestoreWalletPanel(AbstractWizard wizard) {
 
     this.wizard = wizard;
 
     PanelDecorator.applyWizardTheme(this,wizardComponents());
 
     add(Buttons.newCancelButton(cancelAction), "span 2,left,push");
-    add(Buttons.newExitButton(exitAction), "right");
+    add(Buttons.newPreviousButton(previousAction), "push,right");
+    add(Buttons.newNextButton(nextAction), "right");
 
   }
 
@@ -69,7 +77,9 @@ public class ExitPanel extends JPanel {
       "[]10[]10[]" // Row constraints
     ));
 
-    panel.add(Labels.newExitTitle(),"wrap");
+    panel.add(Labels.newSendTitle(),"wrap");
+    panel.add(Panels.newContactSearch(),"wrap");
+    panel.add(Panels.newBitcoinAmount(),"wrap");
 
     return panel;
   }

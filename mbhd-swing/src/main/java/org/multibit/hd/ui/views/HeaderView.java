@@ -9,7 +9,7 @@ import org.multibit.hd.core.config.I18NConfiguration;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
-import org.multibit.hd.ui.events.view.AlertChangedEvent;
+import org.multibit.hd.ui.events.view.AlertAddedEvent;
 import org.multibit.hd.ui.events.view.BalanceChangedEvent;
 import org.multibit.hd.ui.i18n.BitcoinSymbol;
 import org.multibit.hd.ui.i18n.Formats;
@@ -140,7 +140,7 @@ public class HeaderView {
    * @param event The show alert event
    */
   @Subscribe
-  public void onAlertChangedEvent(AlertChangedEvent event) {
+  public void onAlertAddedEvent(AlertAddedEvent event) {
 
     AlertModel alertModel = event.getAlertModel();
 

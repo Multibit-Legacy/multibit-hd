@@ -2,6 +2,8 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 
+import javax.swing.*;
+
 /**
  * <p>Wizard to provide the following to UI for "Send Bitcoin":</p>
  * <ol>
@@ -15,13 +17,12 @@ import org.multibit.hd.ui.views.wizards.AbstractWizard;
  */
 public class SendBitcoinWizard extends AbstractWizard {
 
-  public SendBitcoinWizard() {
+  @Override
+  protected void addWizardContent(JPanel wizardPanel) {
 
-    super();
-
-    getContentPanel().add(new SendBitcoinEnterAmountPanel(this), "Enter amount");
-    getContentPanel().add(new SendBitcoinConfirmSendPanel(this), "Confirm");
-    getContentPanel().add(new SendBitcoinProgressPanel(this), "Progress");
+    wizardPanel.add(new SendBitcoinEnterAmountPanel(this), "Enter amount");
+    wizardPanel.add(new SendBitcoinConfirmSendPanel(this), "Confirm");
+    wizardPanel.add(new SendBitcoinProgressPanel(this), "Progress");
 
   }
 

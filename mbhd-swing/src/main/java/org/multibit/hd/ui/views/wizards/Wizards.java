@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards;
 
 import org.multibit.hd.ui.views.wizards.exit.ExitWizard;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinWizard;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizard;
 
 /**
  * <p>Factory to provide the following to UI:</p>
@@ -29,5 +30,13 @@ public class Wizards {
   public static ExitWizard newExitWizard() {
 
     return new ExitWizard();
+  }
+
+  /**
+   * @return A new "welcome" wizard for the initial set up
+   */
+  public static WelcomeWizard newWelcomeWizard() {
+
+    return new WelcomeWizard();
   }
 }

@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import com.xeiam.xchange.currency.MoneyUtils;
 import org.joda.money.BigMoney;
-import org.multibit.hd.core.events.ExchangeRateChangeEvent;
+import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.controller.AddAlertEvent;
 import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
@@ -40,7 +40,7 @@ public class HeaderController {
    * @param event The exchange rate change event
    */
   @Subscribe
-  public void onBalanceChanged(ExchangeRateChangeEvent event) {
+  public void onBalanceChanged(ExchangeRateChangedEvent event) {
 
     // Build the exchange string
     // TODO Link to a real balance
@@ -48,7 +48,7 @@ public class HeaderController {
     BigMoney localBalance = btcBalance.multipliedBy(event.getRate());
 
     // Post the event
-    ViewEvents.fireBalanceChangeEvent(btcBalance, localBalance, event.getExchangeName());
+    ViewEvents.fireBalanceChangedEvent(btcBalance, localBalance, event.getExchangeName());
 
   }
 
@@ -67,7 +67,7 @@ public class HeaderController {
     updateRemaining();
 
     // The alert structure has changed so inform the view
-    ViewEvents.fireAlertChangedEvent(alertModels.get(0));
+    ViewEvents.fireAlertAddedEvent(alertModels.get(0));
 
   }
 
@@ -88,7 +88,7 @@ public class HeaderController {
       updateRemaining();
 
       // The alert structure has changed so inform the view
-      ViewEvents.fireAlertChangedEvent(alertModels.get(0));
+      ViewEvents.fireAlertAddedEvent(alertModels.get(0));
 
     } else {
 

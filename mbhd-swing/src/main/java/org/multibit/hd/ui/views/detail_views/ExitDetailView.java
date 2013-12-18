@@ -32,7 +32,7 @@ public class ExitDetailView {
 
     contentPanel = Panels.newPanel(layout);
 
-    Panels.showLightBox(Wizards.newExitWizard().getContentPanel());
+    Panels.showLightBox(Wizards.newExitWizard().getWizardPanel());
 
   }
 

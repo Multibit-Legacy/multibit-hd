@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.ThemeAwareTreeCellRenderer;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -94,16 +94,16 @@ public class SidebarView {
 
         switch (node.toString()) {
           case "Wallet":
-            ViewEvents.fireShowDetailScreenEvent(Screen.MAIN_WALLET);
+            ControllerEvents.fireShowDetailScreenEvent(Screen.MAIN_WALLET);
             break;
           case "Trezor 1":
-            ViewEvents.fireShowDetailScreenEvent(Screen.MAIN_WALLET);
+            ControllerEvents.fireShowDetailScreenEvent(Screen.MAIN_WALLET);
             break;
           case "Trezor 2":
-            ViewEvents.fireShowDetailScreenEvent(Screen.MAIN_WALLET);
+            ControllerEvents.fireShowDetailScreenEvent(Screen.MAIN_WALLET);
             break;
           case "Exit":
-            Panels.showLightBox(Wizards.newExitWizard().getContentPanel());
+            Panels.showLightBox(Wizards.newExitWizard().getWizardPanel());
             break;
         }
 

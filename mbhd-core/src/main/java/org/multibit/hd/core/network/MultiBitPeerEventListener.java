@@ -31,7 +31,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
     if (blocksLeft > 0) {
       // Keep the progress updated
-      CoreEvents.fireBitcoinNetworkChangeEvent(BitcoinNetworkSummary.newChainDownloadProgress(downloadPercent));
+      CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(downloadPercent));
     }
 
   }
@@ -56,7 +56,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
     // Don't interfere with blockchain download
     if (downloadPercent == 100) {
-      CoreEvents.fireBitcoinNetworkChangeEvent(
+      CoreEvents.fireBitcoinNetworkChangedEvent(
         BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers)
       );
     }
@@ -69,7 +69,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
     // Don't interfere with blockchain download
     if (downloadPercent == 100) {
-      CoreEvents.fireBitcoinNetworkChangeEvent(
+      CoreEvents.fireBitcoinNetworkChangedEvent(
         BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers)
       );
     }

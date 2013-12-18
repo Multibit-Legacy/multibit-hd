@@ -3,15 +3,15 @@ package org.multibit.hd.ui.events.view;
 import org.multibit.hd.core.api.RAGStatus;
 
 /**
- * <p>Event to provide the following to views:</p>
+ * <p>Event to provide the following to View Event API:</p>
  * <ul>
- * <li>Essential information for a system status change</li>
+ * <li>Indicates the system status has changed</li>
  * </ul>
  *
  * @since 0.0.1
  *         
  */
-public class SystemStatusChangedEvent {
+public class SystemStatusChangedEvent implements ViewEvent {
 
   private final String localisedMessage;
   private final RAGStatus severity;

@@ -11,7 +11,7 @@ import java.math.BigDecimal;
  * @since 0.0.1
  *         
  */
-public class ExchangeRateChangeEvent {
+public class ExchangeRateChangedEvent {
 
   private final BigDecimal rate;
   private final String exchangeName;
@@ -20,7 +20,7 @@ public class ExchangeRateChangeEvent {
    * @param rate         The amount in the local currency (e.g. USD)
    * @param exchangeName The exchange name
    */
-  public ExchangeRateChangeEvent(BigDecimal rate, String exchangeName) {
+  public ExchangeRateChangedEvent(BigDecimal rate, String exchangeName) {
     this.rate = rate;
     this.exchangeName = exchangeName;
   }

@@ -9,7 +9,7 @@ import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.core.events.ExchangeRateChangeEvent;
+import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -59,7 +59,7 @@ public class ExchangeTickerServiceTest {
   }
 
   @Subscribe
-  public void onTickerUpdateEvent(ExchangeRateChangeEvent exchangeRateChangeEvent) {
+  public void onTickerUpdateEvent(ExchangeRateChangedEvent exchangeRateChangeEvent) {
 
     receivedTickerUpdate = true;
 
