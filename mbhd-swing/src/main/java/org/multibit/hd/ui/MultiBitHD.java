@@ -58,6 +58,9 @@ public class MultiBitHD {
     DetailView detailView = new DetailView();
     FooterView footerView = new FooterView();
 
+    // Allow time for initialisation
+    Uninterruptibles.sleepUninterruptibly(500,TimeUnit.MILLISECONDS);
+
     MainView mainView = new MainView(
       headerView.getContentPanel(),
       sidebarView.getContentPanel(),

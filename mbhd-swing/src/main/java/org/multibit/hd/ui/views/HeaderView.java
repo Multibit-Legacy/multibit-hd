@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views;
 
+import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
@@ -11,6 +12,7 @@ import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
 import org.multibit.hd.ui.events.view.AlertAddedEvent;
 import org.multibit.hd.ui.events.view.BalanceChangedEvent;
+import org.multibit.hd.ui.events.view.LocaleChangedEvent;
 import org.multibit.hd.ui.i18n.BitcoinSymbol;
 import org.multibit.hd.ui.i18n.Formats;
 import org.multibit.hd.ui.i18n.Languages;
@@ -44,30 +46,43 @@ public class HeaderView {
   private JLabel alertMessageLabel;
   private JLabel alertRemainingLabel;
 
-  private BalanceChangedEvent latestBalanceChangedEvent;
+  private Optional<BalanceChangedEvent> latestBalanceChangedEvent = Optional.absent();
 
   private final JPanel contentPanel;
-
   private final JPanel alertPanel;
+  private final JPanel balancePanel;
 
   public HeaderView() {
 
     CoreServices.uiEventBus.register(this);
 
+    // Create the content panel
     contentPanel = Panels.newPanel(new MigLayout(
       "insets 15 8,hidemode 1", // Layout
+      "[]", // Columns
+      "[]10[shrink]" // Rows
+    ));
+
+    // Create the balance panel - forcing a LTR layout to ensure correct placement of labels
+    balancePanel = Panels.newPanel(new MigLayout(
+      "fill,ltr", // Layout
       "[][][][][]", // Columns
       "[]10[shrink]" // Rows
     ));
 
-    // Apply the theme
-    contentPanel.setBackground(Themes.currentTheme.headerPanelBackground());
-
     // Create the alert panel
-    alertPanel = createAlertPanel();
+    alertPanel = Panels.newPanel(new MigLayout(
+      "fill,ins 5,hidemode 3",
+      "[grow][][]", // Columns
+      "[]" // Rows
+    ));
 
     // Start off in hiding
     alertPanel.setVisible(false);
+
+    // Apply the theme
+    contentPanel.setBackground(Themes.currentTheme.headerPanelBackground());
+    balancePanel.setBackground(Themes.currentTheme.headerPanelBackground());
 
     // Create the balance labels
     JLabel[] balanceLabels = Labels.newBalanceLabels();
@@ -76,40 +91,10 @@ public class HeaderView {
     trailingSymbolLabel = balanceLabels[2];
     exchangeLabel = balanceLabels[3];
 
-    contentPanel.add(primaryBalanceLabel, "shrink,baseline");
-    contentPanel.add(secondaryBalanceLabel, "shrink,gap 0");
-    contentPanel.add(trailingSymbolLabel, "shrink,gap 0");
-    contentPanel.add(exchangeLabel, "shrink,gap 0");
-    contentPanel.add(new JLabel(), "push,wrap"); // Provides a flexible column
+    contentPanel.add(balancePanel, "grow");
+    contentPanel.add(alertPanel, "grow");
 
-    contentPanel.add(alertPanel, "grow,span 5");
-
-  }
-
-  private JPanel createAlertPanel() {
-
-    JPanel panel = Panels.newPanel(new MigLayout(
-      "fill,ins 5,hidemode 3",
-      "[grow][][]", // Columns
-      "[]" // Rows
-    ));
-
-    alertMessageLabel = new JLabel();
-    panel.add(alertMessageLabel, "push");
-
-    alertRemainingLabel = new JLabel();
-    panel.add(alertRemainingLabel, "shrink,right");
-
-    JLabel closeLabel = Labels.newPanelCloseLabel(new MouseAdapter() {
-      @Override
-      public void mouseClicked(MouseEvent e) {
-        ControllerEvents.fireRemoveAlertEvent();
-      }
-    });
-
-    panel.add(closeLabel);
-
-    return panel;
+    onLocaleChangedEvent(null);
   }
 
   /**
@@ -117,6 +102,19 @@ public class HeaderView {
    */
   public JPanel getContentPanel() {
     return contentPanel;
+  }
+
+  /**
+   * <p>Handles the representation of the header when a locale change occurs</p>
+   *
+   * @param event The balance change event
+   */
+  @Subscribe
+  public void onLocaleChangedEvent(LocaleChangedEvent event) {
+
+    populateBalancePanel();
+    populateAlertPanel();
+
   }
 
   /**
@@ -128,7 +126,7 @@ public class HeaderView {
   public void onBalanceChangedEvent(BalanceChangedEvent event) {
 
     // Keep track of the latest balance
-    this.latestBalanceChangedEvent = event;
+    latestBalanceChangedEvent = Optional.of(event);
 
     // Handle the update
     handleBalanceChange();
@@ -180,6 +178,58 @@ public class HeaderView {
 
   }
 
+  private void populateAlertPanel() {
+
+    alertPanel.removeAll();
+
+    alertMessageLabel = new JLabel();
+    alertRemainingLabel = new JLabel();
+
+    JLabel closeLabel = Labels.newPanelCloseLabel(new MouseAdapter() {
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        ControllerEvents.fireRemoveAlertEvent();
+      }
+    });
+
+    // Determine how to add them back into the panel
+    if (Languages.isLeftToRight()) {
+      alertPanel.add(alertMessageLabel, "push");
+      alertPanel.add(alertRemainingLabel, "shrink,right");
+      alertPanel.add(closeLabel);
+    } else {
+      alertPanel.add(closeLabel);
+      alertPanel.add(alertRemainingLabel, "shrink,left");
+      alertPanel.add(alertMessageLabel, "push");
+    }
+
+  }
+
+  private void populateBalancePanel() {
+
+    balancePanel.removeAll();
+
+    // Determine how to add them back into the panel
+    if (Languages.isLeftToRight()) {
+      balancePanel.add(primaryBalanceLabel, "left,shrink,baseline");
+      balancePanel.add(secondaryBalanceLabel, "left,shrink,gap 0");
+      balancePanel.add(trailingSymbolLabel, "left,shrink,gap 0");
+      balancePanel.add(exchangeLabel, "left,shrink,gap 0");
+      balancePanel.add(new JLabel(), "push,wrap"); // Provides a flexible column
+    } else {
+
+      balancePanel.add(exchangeLabel, "right,shrink,gap 0");
+      balancePanel.add(primaryBalanceLabel, "right,shrink,baseline");
+      balancePanel.add(secondaryBalanceLabel, "right,shrink,gap 0");
+      balancePanel.add(trailingSymbolLabel, "right,shrink,gap 0");
+      balancePanel.add(new JLabel(), "push,wrap"); // Provides a flexible column
+    }
+
+    if (latestBalanceChangedEvent.isPresent()) {
+      handleBalanceChange();
+    }
+  }
+
   /**
    * <p>Reflect the current balance on the UI</p>
    */
@@ -188,15 +238,15 @@ public class HeaderView {
     BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
     I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration();
 
-    String[] balance = Formats.formatBitcoinBalance(latestBalanceChangedEvent.getBtcBalance().getAmount());
-    String localBalance = Formats.formatLocalBalance(latestBalanceChangedEvent.getLocalBalance().getAmount());
+    String[] balance = Formats.formatBitcoinBalance(latestBalanceChangedEvent.get().getBtcBalance().getAmount());
+    String localBalance = Formats.formatLocalBalance(latestBalanceChangedEvent.get().getLocalBalance().getAmount());
 
     BitcoinSymbol symbol = BitcoinSymbol.valueOf(bitcoinConfiguration.getBitcoinSymbol());
 
-    if (i18nConfiguration.isCurrencySymbolPrefixed()) {
-      handlePrefixedSymbol(balance, symbol);
+    if (i18nConfiguration.isCurrencySymbolLeading()) {
+      handleLeadingSymbol(balance, symbol);
     } else {
-      handleSuffixSymbol(symbol);
+      handleTrailingSymbol(symbol);
     }
 
     primaryBalanceLabel.setText(balance[0]);
@@ -206,7 +256,7 @@ public class HeaderView {
       Languages.safeText(
         MessageKey.EXCHANGE_FIAT_RATE,
         localBalance,
-        latestBalanceChangedEvent.getRateProvider()
+        latestBalanceChangedEvent.get().getRateProvider()
       ));
   }
 
@@ -216,18 +266,28 @@ public class HeaderView {
    *
    * @param symbol The symbol to use
    */
-  private void handlePrefixedSymbol(String[] balance, BitcoinSymbol symbol) {
+  private void handleLeadingSymbol(String[] balance, BitcoinSymbol symbol) {
 
-    // Place currency symbol before the number
+    // Placement is primary, secondary, trailing, exchange (reading LTR)
+
     if (BitcoinSymbol.ICON.equals(symbol)) {
-      // Add icon to LHS, remove from elsewhere
-      AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, primaryBalanceLabel, true, (int) Labels.BALANCE_LARGE_FONT_SIZE);
+
+      // Icon leads primary balance but decorator will automatically swap which is undesired
+      if (Languages.isLeftToRight()) {
+        AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, primaryBalanceLabel, true, (int) Labels.BALANCE_LARGE_FONT_SIZE);
+      } else {
+        AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, primaryBalanceLabel, false, (int) Labels.BALANCE_LARGE_FONT_SIZE);
+      }
       AwesomeDecorator.removeIcon(trailingSymbolLabel);
       trailingSymbolLabel.setText("");
+
     } else {
-      // Add symbol to LHS, remove from elsewhere
+
+      // Symbol leads primary balance
       balance[0] = symbol.getSymbol() + " " + balance[0];
       AwesomeDecorator.removeIcon(primaryBalanceLabel);
+      AwesomeDecorator.removeIcon(trailingSymbolLabel);
+
     }
 
   }
@@ -237,19 +297,24 @@ public class HeaderView {
    *
    * @param symbol The symbol to use
    */
-  private void handleSuffixSymbol(BitcoinSymbol symbol) {
+  private void handleTrailingSymbol(BitcoinSymbol symbol) {
 
     if (BitcoinSymbol.ICON.equals(symbol)) {
-      // Add icon to RHS, remove from elsewhere
+
+      // Icon trails secondary balance
       AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, trailingSymbolLabel, true, (int) Labels.BALANCE_LARGE_FONT_SIZE);
       AwesomeDecorator.removeIcon(primaryBalanceLabel);
       trailingSymbolLabel.setText("");
+
     } else {
-      // Add symbol to RHS, remove from elsewhere
+
+      // Symbol trails secondary balance
       trailingSymbolLabel.setText(symbol.getSymbol());
       AwesomeDecorator.removeIcon(primaryBalanceLabel);
       AwesomeDecorator.removeIcon(trailingSymbolLabel);
+
     }
+
 
   }
 

@@ -22,7 +22,7 @@ public class I18NConfiguration {
 
   private Locale locale = Locale.UK;
 
-  private boolean currencySymbolPrefixed = true;
+  private boolean currencySymbolLeading = true;
 
   /**
    * @return The decimal separator
@@ -57,15 +57,15 @@ public class I18NConfiguration {
     this.locale = locale;
   }
 
-  public void setCurrencySymbolPrefixed(boolean currencySymbolPrefixed) {
-    this.currencySymbolPrefixed = currencySymbolPrefixed;
+  public void setCurrencySymbolLeading(boolean currencySymbolLeading) {
+    this.currencySymbolLeading = currencySymbolLeading;
   }
 
   /**
-   * @return True if the currency symbol should be placed before the start of the numerical element (always read as left to right)
+   * @return True if the currency symbol should lead the numerical element which is always read left to right
    */
-  public boolean isCurrencySymbolPrefixed() {
-    return currencySymbolPrefixed;
+  public boolean isCurrencySymbolLeading() {
+    return currencySymbolLeading;
   }
 
   /**
@@ -75,7 +75,7 @@ public class I18NConfiguration {
 
     I18NConfiguration i18n = new I18NConfiguration();
 
-    i18n.setCurrencySymbolPrefixed(isCurrencySymbolPrefixed());
+    i18n.setCurrencySymbolLeading(isCurrencySymbolLeading());
     i18n.setLocale(getLocale());
     i18n.setDecimalSeparator(getDecimalSeparator().orNull());
     i18n.setGroupingSeparator(getGroupingSeparator().orNull());

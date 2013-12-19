@@ -40,7 +40,7 @@ public class ConfigurationsTest {
     assertThat(configuration.getLocale().getLanguage()).isEqualTo("en_gb");
     assertThat(configuration.getI18NConfiguration().getDecimalSeparator().get()).isEqualTo('.');
     assertThat(configuration.getI18NConfiguration().getGroupingSeparator().get()).isEqualTo(',');
-    assertThat(configuration.getI18NConfiguration().isCurrencySymbolPrefixed()).isTrue();
+    assertThat(configuration.getI18NConfiguration().isCurrencySymbolLeading()).isTrue();
 
     // Logging
     assertThat(configuration.getLoggingConfiguration().getLoggers().get("org.multibit")).isEqualTo(Level.DEBUG);

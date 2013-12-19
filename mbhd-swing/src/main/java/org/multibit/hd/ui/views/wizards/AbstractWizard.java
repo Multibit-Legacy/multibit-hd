@@ -54,9 +54,8 @@ public abstract class AbstractWizard {
     // Re-populate based on the new locale (could involve an LTR or RTL transition)
     addWizardContent(wizardPanel);
 
-    // Added new content so validate/repaint
-    wizardPanel.validate();
-    wizardPanel.repaint();
+    // Invalidate for new layout
+    Panels.invalidate(wizardPanel);
 
   }
 

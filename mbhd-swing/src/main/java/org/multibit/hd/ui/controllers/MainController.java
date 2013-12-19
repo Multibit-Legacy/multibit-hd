@@ -16,7 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -49,11 +51,21 @@ public class MainController {
 
     Locale locale = event.getLocale();
 
+    // Configure all Swing components to use the new locale
+    Locale.setDefault(locale);
+    Panels.frame.setLocale(locale);
+
+    // Ensure the resource bundle is reset
+    ResourceBundle.clearCache();
+
     // Update the main configuration
     Configurations.currentConfiguration.getI18NConfiguration().setLocale(locale);
 
     // Update the frame to allow for LTR or RTL transition
     Panels.frame.setLocale(locale);
+
+    // Ensure LTR and RTL language formats are in place
+    Panels.frame.applyComponentOrientation(ComponentOrientation.getOrientation(locale));
 
     // Update the views
     ViewEvents.fireLocaleChangedEvent();
@@ -61,6 +73,7 @@ public class MainController {
     // Allow time for the views to update
     Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
+    // Ensure the Swing thread can perform a complete refresh
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {
         Panels.frame.invalidate();

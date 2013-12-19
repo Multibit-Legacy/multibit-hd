@@ -62,8 +62,14 @@ public class WelcomePanel extends JPanel implements ActionListener {
 
     PanelDecorator.applyWizardTheme(this, wizardComponents());
 
-    add(Buttons.newExitButton(exitAction), "span 2,left,push");
-    add(Buttons.newNextButton(nextAction), "push,right");
+    // Swap buttons to maintain reading order
+    if (Languages.isLeftToRight()) {
+      add(Buttons.newExitButton(exitAction), "span 2,push");
+      add(Buttons.newNextButton(nextAction), "right,shrink");
+    } else {
+      add(Buttons.newNextButton(nextAction), "left,push");
+      add(Buttons.newExitButton(exitAction), "span 2,shrink");
+    }
 
   }
 
@@ -91,7 +97,7 @@ public class WelcomePanel extends JPanel implements ActionListener {
   public void actionPerformed(ActionEvent e) {
 
     JComboBox source = (JComboBox) e.getSource();
-    String localeCode = ((String) source.getSelectedItem()).substring(0,2);
+    String localeCode = String.valueOf(source.getSelectedItem()).substring(0,2);
 
     Locale locale = Languages.newLocaleFromCode(localeCode);
 

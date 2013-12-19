@@ -85,7 +85,7 @@ public class ConfigurationReadAdapter {
       configuration.getI18NConfiguration().setGroupingSeparator(value.charAt(0));
     }
     if (Configurations.I18N_IS_CURRENCY_PREFIXED.equalsIgnoreCase(key)) {
-      configuration.getI18NConfiguration().setCurrencySymbolPrefixed(Boolean.valueOf(value));
+      configuration.getI18NConfiguration().setCurrencySymbolLeading(Boolean.valueOf(value));
     }
 
   }

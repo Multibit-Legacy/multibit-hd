@@ -60,12 +60,12 @@ public class AwesomeDecorator {
    * <p>Apply an icon to a label. Both icon states (enabled/disabled) will be added.</p>
    * <p>The icon will use the font and color from the label, but <strong>will not</strong> reflect any subsequent updates.</p>
    *
-   * @param icon     The icon reference
-   * @param label    The label
-   * @param prefixed True if the icon comes before the text in the reading direction (LTR and RTL is handled automatically)
-   * @param size     The icon size (font metrics)
+   * @param icon    The icon reference
+   * @param label   The label
+   * @param leading True if the icon comes before the text in the reading direction (LTR and RTL is handled automatically)
+   * @param size    The icon size (font metrics)
    */
-  public static void applyIcon(AwesomeIcon icon, JLabel label, boolean prefixed, int size) {
+  public static void applyIcon(AwesomeIcon icon, JLabel label, boolean leading, int size) {
 
     JLabel iconLabel = new JLabel();
     iconLabel.setFont(iconLabel.getFont().deriveFont((float) size));
@@ -77,10 +77,7 @@ public class AwesomeDecorator {
     label.setIcon(enabledIcon);
     label.setDisabledIcon(disabledIcon);
 
-    if (!prefixed) {
-      // Icon presentation is opposite to standard layout
-      label.setHorizontalTextPosition(SwingConstants.LEADING);
-    }
+    align(label, leading);
 
   }
 
@@ -88,12 +85,12 @@ public class AwesomeDecorator {
    * <p>Apply an icon to a label. Both icon states (enabled/disabled) will be added.</p>
    * <p>The icon will use the font and color from the label and will reflect any subsequent updates.</p>
    *
-   * @param icon     The icon reference
-   * @param label    The label (iconography will change will changes to the label color and font)
-   * @param prefixed True if the icon comes before the text in the reading direction (LTR and RTL is handled automatically)
-   * @param size     The icon size (font metrics)
+   * @param icon    The icon reference
+   * @param label   The label (iconography will change will changes to the label color and font)
+   * @param leading True if the icon comes before the text in the reading direction (LTR and RTL is handled automatically)
+   * @param size    The icon size (font metrics)
    */
-  public static void bindIcon(AwesomeIcon icon, JLabel label, boolean prefixed, int size) {
+  public static void bindIcon(AwesomeIcon icon, JLabel label, boolean leading, int size) {
 
     Icon enabledIcon = new AwesomeSwingIcon(label, icon.getChar());
     Icon disabledIcon = new AwesomeSwingIcon(label, icon.getChar(), true);
@@ -101,10 +98,7 @@ public class AwesomeDecorator {
     label.setIcon(enabledIcon);
     label.setDisabledIcon(disabledIcon);
 
-    if (!prefixed) {
-      // Icon presentation is opposite to standard layout
-      label.setHorizontalTextPosition(SwingConstants.LEADING);
-    }
+    align(label, leading);
 
   }
 
@@ -112,13 +106,13 @@ public class AwesomeDecorator {
    * <p>Apply an icon to a button. Both icon states (enabled/disabled) will be added.</p>
    * <p>The icon will use the font and color from the button, but <strong>will not</strong> reflect any subsequent updates.</p>
    *
-   * @param icon     The icon reference
-   * @param button   The button
-   * @param prefixed True if the icon comes before the text in the reading direction (LTR and RTL is handled automatically)
-   * @param size     The icon size (font metrics)
+   * @param icon    The icon reference
+   * @param button  The button
+   * @param leading True if the icon comes before the text in the reading direction (LTR and RTL is handled automatically)
+   * @param size    The icon size (font metrics)
    */
 
-  public static void applyIcon(AwesomeIcon icon, JButton button, boolean prefixed, int size) {
+  public static void applyIcon(AwesomeIcon icon, JButton button, boolean leading, int size) {
 
     JLabel iconLabel = new JLabel();
     iconLabel.setFont(iconLabel.getFont().deriveFont((float) size));
@@ -130,10 +124,7 @@ public class AwesomeDecorator {
     button.setIcon(enabledIcon);
     button.setDisabledIcon(disabledIcon);
 
-    if (!prefixed) {
-      // Icon presentation is opposite to standard layout
-      button.setHorizontalTextPosition(SwingConstants.LEADING);
-    }
+    align(button, leading);
 
   }
 
@@ -141,13 +132,12 @@ public class AwesomeDecorator {
    * <p>Apply an icon to a button. Both icon states (enabled/disabled) will be added.</p>
    * <p>The icon will use the font and color from the button and will reflect any subsequent updates.</p>
    *
-   * @param icon     The icon reference
-   * @param button   The button (iconography will change will changes to the label color and font)
-   * @param prefixed True if the icon comes before the text in the reading direction (LTR and RTL is handled automatically)
-   * @param size     The icon size (font metrics)
+   * @param icon    The icon reference
+   * @param button  The button (iconography will change will changes to the label color and font)
+   * @param leading True if the icon comes before the text in the reading direction (LTR and RTL is handled automatically)
+   * @param size    The icon size (font metrics)
    */
-
-  public static void bindIcon(AwesomeIcon icon, JButton button, boolean prefixed, int size) {
+  public static void bindIcon(AwesomeIcon icon, JButton button, boolean leading, int size) {
 
     Icon enabledIcon = new AwesomeSwingIcon(button, icon.getChar());
     Icon disabledIcon = new AwesomeSwingIcon(button, icon.getChar(), true);
@@ -155,9 +145,46 @@ public class AwesomeDecorator {
     button.setIcon(enabledIcon);
     button.setDisabledIcon(disabledIcon);
 
-    if (!prefixed) {
-      // Icon presentation is opposite to standard layout
+    align(button, leading);
+
+  }
+
+  /**
+   * <p>Align the icon according to the locale (leading or trailing)</p>
+   *
+   * @param button  The button (iconography will change will changes to the label color and font)
+   * @param leading True if the icon comes before the text in the reading direction (LTR and RTL is handled automatically)
+   */
+
+  private static void align(JButton button, boolean leading) {
+
+    button.applyComponentOrientation(ComponentOrientation.getOrientation(Languages.currentLocale()));
+
+    if (leading) {
+      // Text trails the icon in LTR
+      button.setHorizontalTextPosition(SwingConstants.TRAILING);
+    } else {
       button.setHorizontalTextPosition(SwingConstants.LEADING);
+    }
+
+  }
+
+  /**
+   * <p>Align the icon according to the locale (leading or trailing)</p>
+   *
+   * @param label   The label (iconography will change will changes to the label color and font)
+   * @param leading True if the icon comes before the text in the reading direction (LTR and RTL is handled automatically)
+   */
+
+  private static void align(JLabel label, boolean leading) {
+
+    label.applyComponentOrientation(ComponentOrientation.getOrientation(Languages.currentLocale()));
+
+    if (leading) {
+      // Text trails the icon in LTR
+      label.setHorizontalTextPosition(SwingConstants.TRAILING);
+    } else {
+      label.setHorizontalTextPosition(SwingConstants.LEADING);
     }
 
   }

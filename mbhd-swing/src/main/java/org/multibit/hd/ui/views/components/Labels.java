@@ -82,10 +82,10 @@ public class Labels {
    */
   public static JLabel[] newBalanceLabels() {
 
-    JLabel primaryBalanceLabel = new JLabel();
-    JLabel secondaryBalanceLabel = new JLabel();
-    JLabel trailingSymbolLabel = new JLabel();
-    JLabel exchangeLabel = new JLabel();
+    JLabel primaryBalanceLabel = new JLabel("0.00");
+    JLabel secondaryBalanceLabel = new JLabel("");
+    JLabel trailingSymbolLabel = new JLabel("");
+    JLabel exchangeLabel = new JLabel("");
 
     // Font
     Font balanceFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_LARGE_FONT_SIZE);

@@ -59,7 +59,7 @@ public class ConfigurationWriteAdapter {
     properties.put(I18N_LOCALE, i18n.getLocale().toString());
     properties.put(I18N_DECIMAL_SEPARATOR, i18n.getDecimalSeparator().or('.'));
     properties.put(I18N_GROUPING_SEPARATOR, i18n.getGroupingSeparator().or(','));
-    properties.put(I18N_IS_CURRENCY_PREFIXED, String.valueOf(i18n.isCurrencySymbolPrefixed()));
+    properties.put(I18N_IS_CURRENCY_PREFIXED, String.valueOf(i18n.isCurrencySymbolLeading()));
   }
 
   private void adaptLogging() {
