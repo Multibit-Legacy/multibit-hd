@@ -5,6 +5,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;
+import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.slf4j.Logger;
@@ -47,6 +48,8 @@ public class MainView extends JFrame {
 
     // Provide all panels with a reference to the main frame
     Panels.frame = this;
+
+    setDefaultLookAndFeelDecorated(true);
 
     // TODO i18n
     setTitle("MultiBit HD");
@@ -103,8 +106,13 @@ public class MainView extends JFrame {
     // Create a splitter pane
     JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
+    if (Languages.isLeftToRight()) {
     splitPane.setLeftComponent(sidebarPanel);
     splitPane.setRightComponent(detailPanel);
+    } else {
+      splitPane.setLeftComponent(detailPanel);
+      splitPane.setRightComponent(sidebarPanel);
+    }
 
     splitPane.setDividerSize(3);
 

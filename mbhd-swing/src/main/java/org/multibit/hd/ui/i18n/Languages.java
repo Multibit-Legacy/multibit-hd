@@ -114,11 +114,11 @@ public class Languages {
 
     Preconditions.checkNotNull(locale, "'locale' must be present");
 
-    String language = locale.getLanguage();
+    String language = locale.getLanguage().toLowerCase().substring(0,2);
 
     for (int i = 0; i < LANGUAGE_CODES.length; i++) {
 
-      if (LANGUAGE_CODES[i].equals(language)) {
+      if (LANGUAGE_CODES[i].startsWith(language)) {
         return i;
       }
 
@@ -151,13 +151,20 @@ public class Languages {
   }
 
   /**
-   * <p>Internal access only</p>
+   * <p>Internal access only - external consumers should use safeText()</p>
    *
    * @return The resource bundle based on the current locale
    */
   private static ResourceBundle currentResourceBundle() {
 
     return ResourceBundle.getBundle(BASE_NAME, currentLocale());
+  }
+
+  /**
+   * @return The component orientation based on the current locale
+   */
+  public static ComponentOrientation currentComponentOrientation() {
+    return ComponentOrientation.getOrientation(Languages.currentLocale());
   }
 
   /**

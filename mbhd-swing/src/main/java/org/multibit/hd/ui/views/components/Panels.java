@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
+import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -31,6 +32,25 @@ public class Panels {
   private static Optional<LightBoxPanel> lightBoxPanel = Optional.absent();
 
   /**
+   * @param layout The layout manager for the panel (typically MigLayout)
+   *
+   * @return A simple theme-aware detail panel with the given layout
+   */
+  public static JPanel newPanel(LayoutManager2 layout) {
+
+    JPanel panel = new JPanel(layout);
+
+    // Theme
+    panel.setBackground(Themes.currentTheme.detailPanelBackground());
+
+    // Ensure LTR and RTL is detected by the layout
+    panel.applyComponentOrientation(Languages.currentComponentOrientation());
+
+    return panel;
+
+  }
+
+  /**
    * @return A simple theme-aware panel with a single cell MigLayout
    */
   public static JPanel newPanel() {
@@ -40,21 +60,6 @@ public class Panels {
       "[]", // Columns
       "[]" // Rows
     ));
-
-    return panel;
-
-  }
-
-  /**
-   * @param layout The layout manager for the panel (typically MigLayout)
-   *
-   * @return A simple theme-aware detail panel with the given layout
-   */
-  public static JPanel newPanel(LayoutManager2 layout) {
-
-    JPanel panel = new JPanel(layout);
-
-    panel.setBackground(Themes.currentTheme.detailPanelBackground());
 
     return panel;
 

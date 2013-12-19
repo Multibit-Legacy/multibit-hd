@@ -31,6 +31,7 @@ public class ComboBoxes {
   public static JComboBox<String> newLanguagesComboBox(ActionListener listener) {
 
     JComboBox<String> comboBox = new JComboBox<>(Languages.getLanguageNames(true));
+    comboBox.setSelectedIndex(Languages.getIndexFromLocale(Languages.currentLocale()));
     comboBox.addActionListener(listener);
     comboBox.setEditable(false);
 

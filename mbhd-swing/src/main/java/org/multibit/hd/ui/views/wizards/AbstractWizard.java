@@ -60,7 +60,8 @@ public abstract class AbstractWizard {
   }
 
   /**
-   * <p>Add fresh content to the wizard panel. The panel will be empty whenever this is called.</p>
+   * <p>Add fresh content to the wizard panel</p>
+   * <p>The panel will be empty whenever this is called</p>
    */
   protected abstract void addWizardContent(JPanel wizardPanel);
 
