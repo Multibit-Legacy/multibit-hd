@@ -11,6 +11,7 @@ import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
@@ -27,6 +28,15 @@ public class Panels {
   private static final int STANDARD_ICON = 16;
   private static final int LARGE_ICON = 40;
 
+  public static final String CREATE_WALLET_ACTION_NAME = "Create";
+  public static final String RESTORE_WALLET_ACTION_NAME = "Restore";
+  public static final String HARDWARE_WALLET_ACTION_NAME = "Hardware";
+  public static final String SELECT_WALLET_ACTION_NAME = "Select";
+  public static final String WELCOME_ACTION_NAME = "Welcome";
+
+  /**
+   * A global reference to the application frame
+   */
   public static JFrame frame;
 
   private static Optional<LightBoxPanel> lightBoxPanel = Optional.absent();
@@ -56,7 +66,7 @@ public class Panels {
   public static JPanel newPanel() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fill", // Layout
+      "debug,fill,insets 0", // Layout
       "[]", // Columns
       "[]" // Rows
     ));
@@ -257,7 +267,141 @@ public class Panels {
     JComboBox<String> languages = ComboBoxes.newLanguagesComboBox(listener);
 
     panel.add(label);
-    panel.add(languages);
+    panel.add(languages, "wrap");
+
+    return panel;
+  }
+
+  /**
+   * <p>A "wallet selector" panel provides a means of choosing how a wallet is to be created</p>
+   *
+   * @param listener The action listener
+   *
+   * @return A new "wallet selector" panel
+   */
+  public static JPanel newWalletSelector(ActionListener listener) {
+
+    JPanel panel = newPanel();
+
+    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.CREATE_WALLET);
+    radio1.setSelected(true);
+    radio1.setActionCommand(Panels.CREATE_WALLET_ACTION_NAME);
+
+    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.RESTORE_WALLET);
+    radio2.setActionCommand(Panels.RESTORE_WALLET_ACTION_NAME);
+
+    JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.USE_HARDWARE_WALLET);
+    radio3.setActionCommand(Panels.HARDWARE_WALLET_ACTION_NAME);
+
+    // Wallet selection is mutually exclusive
+    ButtonGroup group = new ButtonGroup();
+    group.add(radio1);
+    group.add(radio2);
+    group.add(radio3);
+
+    // Add to the panel
+    panel.add(radio1, "wrap");
+    panel.add(radio2, "wrap");
+    panel.add(radio3, "wrap");
+
+    return panel;
+  }
+
+  /**
+   * <p>A "seed size selector" panel provides a means of choosing how many words are used in a BIP0039 seed</p>
+   *
+   * @param listener The action listener
+   *
+   * @return A new "seed size selector" panel
+   */
+  public static JPanel newSeedSizeSelector(ActionListener listener) {
+
+    JPanel panel = newPanel();
+
+    // Add to the panel
+    panel.add(Labels.newSeedSize());
+    panel.add(ComboBoxes.newSeedSizeComboBox(listener));
+
+    return panel;
+  }
+
+  /**
+   * <p>A "seed phrase display" panel shows the words used in a BIP0039 seed</p>
+   *
+   * @param listener The action listener
+   *
+   * @return A new "seed size selector" panel
+   */
+  public static JPanel newSeedPhraseDisplay(ActionListener listener) {
+
+    JPanel panel = newPanel(new MigLayout(
+      "debug,fill,insets 0", // Layout
+      "[][][]", // Columns
+      "[]" // Rows
+    ));
+
+    final JTextArea seedPhrase = TextBoxes.newSeedPhrase();
+
+    Action refreshAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        // TODO Implement this
+      }
+    };
+
+    Action toggleShowAction = new AbstractAction() {
+
+      private boolean clickToShow = true;
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        JButton button = (JButton) e.getSource();
+        if (clickToShow) {
+          AwesomeDecorator.applyIcon(
+            AwesomeIcon.EYE_SLASH,
+            button,
+            true,
+            STANDARD_ICON
+          );
+
+        } else {
+          AwesomeDecorator.applyIcon(
+            AwesomeIcon.EYE,
+            button,
+            true,
+            STANDARD_ICON
+          );
+        }
+        clickToShow = !clickToShow;
+      }
+    };
+
+    // Add to the panel
+    panel.add(seedPhrase,"grow,push");
+    panel.add(Buttons.newShowButton(toggleShowAction),"shrink");
+    panel.add(Buttons.newRefreshButton(refreshAction),"shrink");
+
+    return panel;
+
+  }
+
+  /**
+   * <p>A "seed phrase warning" panel displays the instructions to write down the seed phrase on a piece of paper</p>
+   *
+   * @return A new "seed phrase warning" panel
+   */
+  public static JPanel newSeedPhraseWarning() {
+
+    JPanel panel = newPanel(new MigLayout(
+      "debug,fill,insets 0", // Layout
+      "[]", // Columns
+      "[]" // Rows
+    ));
+
+    PanelDecorator.applyDangerFadedTheme(panel);
+
+    // Add to the panel
+    panel.add(Labels.newSeedWarningNote(),"shrink");
 
     return panel;
   }

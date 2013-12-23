@@ -29,6 +29,11 @@ public interface Theme {
   Color sidebarPanelBackground();
 
   /**
+   * @return The background colour for read only data display elements (like seed phrase display etc)
+   */
+  Color readOnlyBackground();
+
+  /**
    * @return The background colour for data handling elements (like text areas, tree views etc)
    */
   Color dataEntryBackground();
@@ -56,60 +61,65 @@ public interface Theme {
   /**
    * @return The background colour of a danger alert
    */
-  Color dangerBackground();
+  Color dangerAlertBackground();
+
+  /**
+   * @return The background colour of a danger alert
+   */
+  Color dangerAlertFadedBackground();
 
   /**
    * @return The border of a danger alert
    */
-  Color dangerBorder();
+  Color dangerAlertBorder();
 
   /**
    * @return The text of a danger alert
    */
-  Color dangerText();
+  Color dangerAlertText();
 
   /**
    * @return The background colour of a warning alert
    */
-  Color warningBackground();
+  Color warningAlertBackground();
 
   /**
    * @return The border of a warning alert
    */
-  Color warningBorder();
+  Color warningAlertBorder();
 
   /**
    * @return The text of a warning alert
    */
-  Color warningText();
+  Color warningAlertText();
 
   /**
    * @return The background colour of a success alert
    */
-  Color successBackground();
+  Color successAlertBackground();
 
   /**
    * @return The border of a success alert
    */
-  Color successBorder();
+  Color successAlertBorder();
 
   /**
    * @return The text of a success alert
    */
-  Color successText();
+  Color successAlertText();
 
   /**
    * @return The background colour of an info alert
    */
-  Color infoBackground();
+  Color infoAlertBackground();
 
   /**
    * @return The border of an info alert
    */
-  Color infoBorder();
+  Color infoAlertBorder();
 
   /**
    * @return The text of an info alert
    */
-  Color infoText();
+  Color infoAlertText();
 }

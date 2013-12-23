@@ -18,14 +18,14 @@ import java.awt.event.ActionListener;
 /**
  * <p>Wizard to provide the following to UI:</p>
  * <ul>
- * <li>Send bitcoin: Enter amount</li>
+ * <li>Send bitcoin: Show send progress</li>
  * </ul>
  *
  * @since 0.0.1
  *         
  */
 
-public class RestoreWalletPanel extends JPanel implements ActionListener {
+public class CreateWalletPanel extends JPanel implements ActionListener {
 
   private static final Logger log = LoggerFactory.getLogger(WelcomePanel.class);
 
@@ -64,7 +64,7 @@ public class RestoreWalletPanel extends JPanel implements ActionListener {
   /**
    * @param wizard The wizard managing the states
    */
-  public RestoreWalletPanel(AbstractWizard wizard) {
+  public CreateWalletPanel(AbstractWizard wizard) {
 
     this.wizard = wizard;
 
@@ -73,11 +73,11 @@ public class RestoreWalletPanel extends JPanel implements ActionListener {
     // Swap buttons to maintain reading order
     if (Languages.isLeftToRight()) {
       add(Buttons.newExitButton(exitAction), "span 2,push");
-      add(Buttons.newPreviousButton(nextAction), "right,shrink");
+      add(Buttons.newPreviousButton(previousAction), "right,shrink");
       add(Buttons.newNextButton(nextAction), "right,shrink");
     } else {
       add(Buttons.newNextButton(nextAction), "left,push");
-      add(Buttons.newPreviousButton(nextAction), "left,push");
+      add(Buttons.newPreviousButton(previousAction), "left,push");
       add(Buttons.newExitButton(exitAction), "span 2,shrink");
     }
 
@@ -86,19 +86,21 @@ public class RestoreWalletPanel extends JPanel implements ActionListener {
   private JPanel wizardComponents() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fill", // Layout constrains
-      "[][][]", // Column constraints
-      "[]10[]10[]10[]" // Row constraints
+      "debug,fill", // Layout constrains
+      "[]", // Column constraints
+      "[]10[]10[]10[]10[]" // Row constraints
     ));
 
-    panel.add(Labels.newSelectWalletTitle(), "wrap");
-    panel.add(Panels.newWalletSelector(this), "wrap");
+    panel.add(Labels.newCreateWalletTitle(), "wrap");
+    panel.add(Panels.newSeedSizeSelector(this), "wrap");
+    panel.add(Panels.newSeedPhraseDisplay(this), "wrap");
+    panel.add(Panels.newSeedPhraseWarning(), "wrap");
 
     return panel;
   }
 
   /**
-   * <p>Handle the "select wallet" action event</p>
+   * <p>Handle the "change size" action event</p>
    *
    * @param e The action event
    */

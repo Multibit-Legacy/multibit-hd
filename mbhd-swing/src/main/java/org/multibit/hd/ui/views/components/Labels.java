@@ -46,7 +46,7 @@ public class Labels {
    */
   public static JLabel newSelectLanguageLabel() {
 
-    return new JLabel(Languages.safeText(MessageKey.USE_LANGUAGE_LABEL));
+    return new JLabel(Languages.safeText(MessageKey.DISPLAY_LANGUAGE));
   }
 
   /**
@@ -117,7 +117,7 @@ public class Labels {
    */
   public static JLabel newSendTitle() {
 
-    JLabel label = newTitleLabel(MessageKey.SEND_TITLE_LABEL);
+    JLabel label = newTitleLabel(MessageKey.SEND_BITCOIN_TITLE);
 
     return label;
 
@@ -128,7 +128,7 @@ public class Labels {
    */
   public static JLabel newConfirmSendTitle() {
 
-    JLabel label = newTitleLabel(MessageKey.CONFIRM_SEND_TITLE_LABEL);
+    JLabel label = newTitleLabel(MessageKey.CONFIRM_SEND_TITLE);
 
     return label;
 
@@ -139,7 +139,7 @@ public class Labels {
    */
   public static JLabel newSendProgressTitle() {
 
-    JLabel label = newTitleLabel(MessageKey.SEND_PROGRESS_TITLE_LABEL);
+    JLabel label = newTitleLabel(MessageKey.SEND_PROGRESS_TITLE);
 
     return label;
   }
@@ -149,7 +149,7 @@ public class Labels {
    */
   public static JLabel newExitTitle() {
 
-    JLabel label = newTitleLabel(MessageKey.EXIT_TITLE_LABEL);
+    JLabel label = newTitleLabel(MessageKey.EXIT_TITLE);
 
     return label;
   }
@@ -159,7 +159,7 @@ public class Labels {
    */
   public static JLabel newConfirmSendAmount() {
 
-    return new JLabel(Languages.safeText(MessageKey.CONFIRM_SEND_MESSAGE_LABEL));
+    return new JLabel(Languages.safeText(MessageKey.CONFIRM_SEND_MESSAGE));
   }
 
   /**
@@ -167,7 +167,27 @@ public class Labels {
    */
   public static JLabel newWelcomeTitle() {
 
-    JLabel label = newTitleLabel(MessageKey.WELCOME_TITLE_LABEL);
+    JLabel label = newTitleLabel(MessageKey.WELCOME_TITLE);
+
+    return label;
+  }
+
+  /**
+   * @return A new "Select Wallet" title
+   */
+  public static JLabel newSelectWalletTitle() {
+
+    JLabel label = newTitleLabel(MessageKey.SELECT_WALLET_TITLE);
+
+    return label;
+  }
+
+  /**
+   * @return A new "Create Wallet" title
+   */
+  public static JLabel newCreateWalletTitle() {
+
+    JLabel label = newTitleLabel(MessageKey.CREATE_WALLET_TITLE);
 
     return label;
   }
@@ -178,6 +198,24 @@ public class Labels {
   public static JLabel newWelcomeNote() {
 
     return new JLabel(Languages.safeText(MessageKey.WELCOME_NOTE));
+  }
+
+  public static JLabel newSeedSize() {
+    return new JLabel(Languages.safeText(MessageKey.SEED_SIZE));
+  }
+
+  /**
+   * @return A new "seed warning" note
+   */
+  public static JLabel newSeedWarningNote() {
+
+    // Wrap in HTML to allow for line breaks
+    JLabel note = new JLabel("<html>"+
+      Languages.safeText(MessageKey.SEED_WARNING_NOTE) +
+      "</html>");
+
+    return note;
+
   }
 
   /**

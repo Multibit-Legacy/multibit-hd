@@ -18,8 +18,11 @@ public enum MessageKey {
   EXIT("exit"),
   SEND("send"),
   RECEIVE("receive"),
+  REFRESH("refresh"),
   FINISH("finish"),
   CLOSE("close"),
+  SHOW("show"),
+  HIDE("hide"),
 
   // Nouns
   YES("yes"),
@@ -34,17 +37,22 @@ public enum MessageKey {
   CHAIN_DOWNLOAD("status.chainDownload"),
   START_NETWORK_CONNECTION_ERROR("bitcoin-network.start-network-connection-error"),
   NETWORK_CONFIGURATION_ERROR("bitcoin-network.configuration-error"),
-  USE_LANGUAGE_LABEL("showPreferencesPanel.useSpecific"),
-  HELP_LABEL("multiBitFrame.helpMenuText"),
-  SETTINGS_LABEL("showPreferencesPanel.title"),
+  DISPLAY_LANGUAGE("showPreferencesPanel.useSpecific"),
+  HELP("multiBitFrame.helpMenuText"),
+  SETTINGS("showPreferencesPanel.title"),
+  CREATE_WALLET("Create new wallet"),
+  RESTORE_WALLET("Restore from seed or backup"),
+  USE_HARDWARE_WALLET("Use hardware wallet"),
 
   // Titles
-  SEND_TITLE_LABEL("sendBitcoinAction.text"),
-  CONFIRM_SEND_TITLE_LABEL("sendBitcoinConfirmView.title"),
-  CONFIRM_SEND_MESSAGE_LABEL("sendBitcoinConfirmView.message"),
-  SEND_PROGRESS_TITLE_LABEL("Send Progress"),
-  EXIT_TITLE_LABEL("Exit application ?"),
-  WELCOME_TITLE_LABEL("Welcome !"),
+  SEND_BITCOIN_TITLE("sendBitcoinAction.text"),
+  CONFIRM_SEND_TITLE("sendBitcoinConfirmView.title"),
+  CONFIRM_SEND_MESSAGE("sendBitcoinConfirmView.message"),
+  SEND_PROGRESS_TITLE("Send Progress"),
+  EXIT_TITLE("Exit application ?"),
+  WELCOME_TITLE("Welcome !"),
+  SELECT_WALLET_TITLE("Select wallet"),
+  CREATE_WALLET_TITLE("Create wallet"),
 
   BROADCAST_STATUS_OK("Broadcast OK"),
   RELAY_STATUS_OK("Relayed OK"),
@@ -53,6 +61,8 @@ public enum MessageKey {
   EXCHANGE_FIAT_RATE("exchange.fiat-rate"),
   SELECT_LANGUAGE("showPreferencesPanel.languageTitle"),
   WELCOME_NOTE("MultiBit HD provides secure access to the Bitcoin network. Click next to get started."),
+  SEED_WARNING_NOTE("You must write down the words shown above on a piece of paper. You will never see them again and they protect all your money."),
+  SEED_SIZE("Words in seed"),
 
   // End of enum
   ;

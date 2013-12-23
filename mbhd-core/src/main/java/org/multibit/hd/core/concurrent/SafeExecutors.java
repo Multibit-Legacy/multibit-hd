@@ -19,6 +19,11 @@ import java.util.concurrent.TimeUnit;
 public class SafeExecutors {
 
   /**
+   * The number of seconds to wait before terminating the thread during a shutdown
+   */
+  private static final long DURATION_BEFORE_QUIT = 5;
+
+  /**
    * Creates a thread pool that reuses a fixed number of threads
    * operating off a shared unbounded queue.  At any point, at most
    * <tt>nThreads</tt> threads will be active processing tasks.
@@ -44,7 +49,7 @@ public class SafeExecutors {
           0L,
           TimeUnit.MILLISECONDS,
           new LinkedBlockingQueue<Runnable>()
-        )));
+        ), 10, TimeUnit.SECONDS));
   }
 
   /**
@@ -78,7 +83,7 @@ public class SafeExecutors {
           TimeUnit.MILLISECONDS,
           new LinkedBlockingQueue<Runnable>(),
           threadFactory
-        )));
+        ), DURATION_BEFORE_QUIT, TimeUnit.SECONDS));
   }
 
   /**
@@ -115,7 +120,8 @@ public class SafeExecutors {
   public static ListeningScheduledExecutorService newSingleThreadScheduledExecutor() {
     return MoreExecutors.listeningDecorator(
       MoreExecutors.getExitingScheduledExecutorService(
-        new SafeScheduledThreadPoolExecutor(1)
+        new SafeScheduledThreadPoolExecutor(1),
+        DURATION_BEFORE_QUIT, TimeUnit.SECONDS
       ));
   }
 
@@ -133,7 +139,8 @@ public class SafeExecutors {
   public static ListeningScheduledExecutorService newScheduledThreadPool(int corePoolSize) {
     return MoreExecutors.listeningDecorator(
       MoreExecutors.getExitingScheduledExecutorService(
-        new SafeScheduledThreadPoolExecutor(corePoolSize)
+        new SafeScheduledThreadPoolExecutor(corePoolSize),
+        DURATION_BEFORE_QUIT, TimeUnit.SECONDS
       ));
   }
 
@@ -154,7 +161,8 @@ public class SafeExecutors {
   public static ListeningScheduledExecutorService newScheduledThreadPool(int corePoolSize, ThreadFactory threadFactory) {
     return MoreExecutors.listeningDecorator(
       MoreExecutors.getExitingScheduledExecutorService(
-        new SafeScheduledThreadPoolExecutor(corePoolSize, threadFactory)
+        new SafeScheduledThreadPoolExecutor(corePoolSize, threadFactory),
+        DURATION_BEFORE_QUIT, TimeUnit.SECONDS
       ));
   }
 

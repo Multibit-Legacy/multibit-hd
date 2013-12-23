@@ -50,6 +50,11 @@ public class LightTheme implements Theme {
   };
 
   @Override
+  public Color readOnlyBackground() {
+    return colors[1][4];
+  }
+
+  @Override
   public Color dataEntryBackground() {
     return colors[2][4];
   }
@@ -90,62 +95,67 @@ public class LightTheme implements Theme {
   }
 
   @Override
-  public Color successBackground() {
+  public Color successAlertBackground() {
     return colors[0][1];
   }
 
   @Override
-  public Color successBorder() {
+  public Color successAlertBorder() {
     return colors[0][2];
   }
 
   @Override
-  public Color successText() {
+  public Color successAlertText() {
     return inverseText();
   }
 
   @Override
-  public Color infoBackground() {
+  public Color infoAlertBackground() {
     return colors[1][4];
   }
 
   @Override
-  public Color infoBorder() {
+  public Color infoAlertBorder() {
     return colors[1][4];
   }
 
   @Override
-  public Color infoText() {
+  public Color infoAlertText() {
     return inverseText();
   }
 
   @Override
-  public Color warningBackground() {
+  public Color warningAlertBackground() {
     return colors[2][4];
   }
 
   @Override
-  public Color warningBorder() {
+  public Color warningAlertBorder() {
     return colors[2][2];
   }
 
   @Override
-  public Color warningText() {
+  public Color warningAlertText() {
     return text();
   }
 
   @Override
-  public Color dangerBackground() {
+  public Color dangerAlertBackground() {
     return colors[3][1];
   }
 
   @Override
-  public Color dangerBorder() {
+  public Color dangerAlertFadedBackground() {
+    return colors[3][1].brighter();
+  }
+
+  @Override
+  public Color dangerAlertBorder() {
     return colors[3][2];
   }
 
   @Override
-  public Color dangerText() {
+  public Color dangerAlertText() {
     return inverseText();
   }
 

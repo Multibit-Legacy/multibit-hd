@@ -1,15 +1,18 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
-import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * <p>Wizard to provide the following to UI:</p>
@@ -21,17 +24,42 @@ import java.awt.event.ActionEvent;
  *         
  */
 
-public class SelectWalletPanel extends JPanel {
+public class SelectWalletPanel extends JPanel implements ActionListener {
+
+  private static final Logger log = LoggerFactory.getLogger(WelcomePanel.class);
 
   private final AbstractWizard wizard;
 
+  private String currentSelection = Panels.CREATE_WALLET_ACTION_NAME;
+
   /**
-   * The "finish" action
+   * The "exit" action
    */
-  private Action finishAction = new AbstractAction() {
+  private Action exitAction = new AbstractAction() {
     @Override
     public void actionPerformed(ActionEvent e) {
-      wizard.close();
+      CoreEvents.fireShutdownEvent();
+    }
+  };
+
+  /**
+   * The "previous" action
+   */
+  private Action previousAction = new AbstractAction() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      wizard.show(Panels.CREATE_WALLET_ACTION_NAME);
+    }
+  };
+
+  /**
+   * The "next" action
+   */
+  private Action nextAction = new AbstractAction() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+      wizard.show(currentSelection);
     }
   };
 
@@ -44,28 +72,41 @@ public class SelectWalletPanel extends JPanel {
 
     PanelDecorator.applyWizardTheme(this, wizardComponents());
 
-    add(Buttons.newFinishButton(finishAction), "span 4,push,right");
+    // Swap buttons to maintain reading order
+    if (Languages.isLeftToRight()) {
+      add(Buttons.newExitButton(exitAction), "span 2,push");
+      add(Buttons.newPreviousButton(previousAction), "right,shrink");
+      add(Buttons.newNextButton(nextAction), "right,shrink");
+    } else {
+      add(Buttons.newNextButton(nextAction), "left,push");
+      add(Buttons.newPreviousButton(previousAction), "left,push");
+      add(Buttons.newExitButton(exitAction), "span 2,shrink");
+    }
 
   }
 
-
   private JPanel wizardComponents() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
-      "fill", // Layout constrains
-      "[][][]", // Column constraints
-      "[]10[]10[]10[]" // Row constraints
-    ));
+    JPanel panel = Panels.newPanel();
 
-    // Apply the theme
-    panel.setBackground(Themes.currentTheme.detailPanelBackground());
-
-    panel.add(Labels.newSendProgressTitle(),"wrap");
-    panel.add(Panels.newBroadcastStatus(),"wrap");
-    panel.add(Panels.newRelayStatus(),"wrap");
-    panel.add(Panels.newConfirmationCount(),"wrap");
+    panel.add(Labels.newSelectWalletTitle(), "wrap");
+    panel.add(Panels.newWalletSelector(this));
 
     return panel;
   }
 
+  /**
+   * <p>Handle the "select wallet" action event</p>
+   *
+   * @param e The action event
+   */
+  @Override
+  public void actionPerformed(ActionEvent e) {
+
+    JRadioButton source = (JRadioButton) e.getSource();
+    currentSelection = String.valueOf(source.getActionCommand());
+
+    log.debug("Selection changed to '{}'",currentSelection);
+
+  }
 }

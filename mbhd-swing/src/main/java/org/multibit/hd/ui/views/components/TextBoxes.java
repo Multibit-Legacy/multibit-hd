@@ -55,6 +55,27 @@ public class TextBoxes {
   }
 
   /**
+   * @return A new "seed phrase" text area
+   */
+  public static JTextArea newSeedPhrase() {
+
+    JTextArea textArea = new JTextArea(4, 60);
+    textArea.setBackground(Themes.currentTheme.readOnlyBackground());
+    textArea.setEditable(false);
+
+    // Prevent copy/paste operations
+    textArea.setTransferHandler(null);
+
+    // TODO Link this to a HD wallet service? Controller injection?
+    textArea.setText(
+      "abandon ability able about above absent\n"+
+       "absorb abstract absurd abuse access accident");
+
+    return textArea;
+
+  }
+
+  /**
    * @return A new "Amount" text field for currency entry
    */
   public static JTextField newCurrency(String amount) {

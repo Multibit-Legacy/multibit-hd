@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.layouts.WizardCardLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,12 +27,15 @@ public abstract class AbstractWizard {
   private static final int WIZARD_MIN_WIDTH = 600;
   private static final int WIZARD_MIN_HEIGHT = 400;
 
-  private CardLayout cardLayout = new CardLayout();
-  private final JPanel wizardPanel = Panels.newPanel(cardLayout);
+  private final WizardCardLayout cardLayout;
+  private final JPanel wizardPanel;
 
   protected AbstractWizard() {
 
     CoreServices.uiEventBus.register(this);
+
+    cardLayout = new WizardCardLayout(0,0);
+    wizardPanel = Panels.newPanel(cardLayout);
 
     // Use current local for initial creation
     onLocaleChangedEvent(null);
@@ -75,21 +79,32 @@ public abstract class AbstractWizard {
   }
 
   /**
-   * Show the previous panel
+   * <p>Show the previous panel</p>
    */
   public void previous() {
 
-    // TODO Limit to first page
-    cardLayout.previous(wizardPanel);
+    if (cardLayout.hasPrevious()) {
+      cardLayout.previous(wizardPanel);
+    }
   }
 
   /**
-   * Show the next panel
+   * <p>Show the next panel</p>
    */
   public void next() {
 
-    // TODO Limit to last page
-    cardLayout.next(wizardPanel);
+    if (cardLayout.hasNext()) {
+      cardLayout.next(wizardPanel);
+    }
+  }
+
+  /**
+   * <p>Show the named panel</p>
+   */
+  public void show(String name) {
+
+    cardLayout.show(wizardPanel, name);
+
   }
 
   /**

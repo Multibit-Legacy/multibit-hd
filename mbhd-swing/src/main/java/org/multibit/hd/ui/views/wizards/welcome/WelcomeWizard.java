@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
+import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 
 import javax.swing.*;
@@ -25,9 +26,11 @@ public class WelcomeWizard extends AbstractWizard {
   @Override
   protected void addWizardContent(JPanel wizardPanel) {
 
-    wizardPanel.add(new WelcomePanel(this), "Welcome");
+    wizardPanel.add(new WelcomePanel(this), Panels.WELCOME_ACTION_NAME);
+    wizardPanel.add(new SelectWalletPanel(this), Panels.SELECT_WALLET_ACTION_NAME);
+    wizardPanel.add(new CreateWalletPanel(this), Panels.CREATE_WALLET_ACTION_NAME);
+    wizardPanel.add(new RestoreWalletPanel(this), Panels.RESTORE_WALLET_ACTION_NAME);
 
   }
-
 
 }

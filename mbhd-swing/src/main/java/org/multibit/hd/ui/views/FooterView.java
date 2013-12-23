@@ -45,7 +45,7 @@ public class FooterView {
     progressBar = new JProgressBar();
     progressBar.setMinimum(0);
     progressBar.setMaximum(100);
-    progressBar.setForeground(Themes.currentTheme.infoBackground());
+    progressBar.setForeground(Themes.currentTheme.infoAlertBackground());
 
     messageLabel = new JLabel();
 
@@ -55,7 +55,7 @@ public class FooterView {
     AwesomeDecorator.bindIcon(AwesomeIcon.CIRCLE, statusIcon, false, 16);
 
     // Start with no knowledge so assume the worst
-    statusIcon.setForeground(Themes.currentTheme.dangerBackground());
+    statusIcon.setForeground(Themes.currentTheme.dangerAlertBackground());
 
     contentPanel.add(progressBar, "shrink,left");
     contentPanel.add(messageLabel, "grow,push");
@@ -82,13 +82,13 @@ public class FooterView {
     statusLabel.setText(event.getLocalisedMessage());
     switch (event.getSeverity()) {
       case RED:
-        statusIcon.setForeground(Themes.currentTheme.dangerBackground());
+        statusIcon.setForeground(Themes.currentTheme.dangerAlertBackground());
         break;
       case AMBER:
-        statusIcon.setForeground(Themes.currentTheme.warningBackground());
+        statusIcon.setForeground(Themes.currentTheme.warningAlertBackground());
         break;
       case GREEN:
-        statusIcon.setForeground(Themes.currentTheme.successBackground());
+        statusIcon.setForeground(Themes.currentTheme.successAlertBackground());
         break;
       default:
         // Unknown status

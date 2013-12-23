@@ -49,9 +49,24 @@ public class PanelDecorator {
    */
   public static void applyDangerTheme(JPanel panel) {
 
-    Color background = Themes.currentTheme.dangerBackground();
-    Color border = Themes.currentTheme.dangerBorder();
-    Color text = Themes.currentTheme.dangerText();
+    Color background = Themes.currentTheme.dangerAlertBackground();
+    Color border = Themes.currentTheme.dangerAlertBorder();
+    Color text = Themes.currentTheme.dangerAlertText();
+
+    applyTheme(panel, background, border, text);
+
+  }
+
+  /**
+   * <p>Make the panel have the "danger faded" theme</p>
+   *
+   * @param panel The panel to decorate
+   */
+  public static void applyDangerFadedTheme(JPanel panel) {
+
+    Color background = Themes.currentTheme.dangerAlertFadedBackground();
+    Color border = Themes.currentTheme.dangerAlertBorder();
+    Color text = Themes.currentTheme.dangerAlertText();
 
     applyTheme(panel, background, border, text);
 
@@ -64,9 +79,9 @@ public class PanelDecorator {
    */
   public static void applyWarningTheme(JPanel panel) {
 
-    Color background = Themes.currentTheme.warningBackground();
-    Color border = Themes.currentTheme.warningBorder();
-    Color text = Themes.currentTheme.warningText();
+    Color background = Themes.currentTheme.warningAlertBackground();
+    Color border = Themes.currentTheme.warningAlertBorder();
+    Color text = Themes.currentTheme.warningAlertText();
 
     applyTheme(panel, background, border, text);
 
@@ -79,9 +94,9 @@ public class PanelDecorator {
    */
   public static void applySuccessTheme(JPanel panel) {
 
-    Color background = Themes.currentTheme.successBackground();
-    Color border = Themes.currentTheme.successBorder();
-    Color text = Themes.currentTheme.successText();
+    Color background = Themes.currentTheme.successAlertBackground();
+    Color border = Themes.currentTheme.successAlertBorder();
+    Color text = Themes.currentTheme.successAlertText();
 
     applyTheme(panel, background, border, text);
 

@@ -34,17 +34,12 @@ public class Buttons {
   }
 
   /**
-   * @param key    The resource key for the i18n string
-   * @param values The values to apply to the string (can be null)
-   *
    * @return A new JButton with default styling
    */
-  public static JButton newButton(Action action, MessageKey key, Object... values) {
+  public static JButton newButton(Action action) {
 
     // The action resets all text
     JButton button = new JButton(action);
-
-    button.setText(Languages.safeText(key, values));
 
     // Apply the current theme
     button.setForeground(Themes.currentTheme.text());
@@ -54,10 +49,29 @@ public class Buttons {
     button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
     // Create a flat appearance
-    Border line = new LineBorder(Themes.currentTheme.infoBorder());
+    Border line = new LineBorder(Themes.currentTheme.infoAlertBorder());
     Border margin = new EmptyBorder(5, 15, 5, 15);
     Border compound = new CompoundBorder(line, margin);
     button.setBorder(compound);
+
+    // Ensure we use the correct component orientation
+    button.applyComponentOrientation(Languages.currentComponentOrientation());
+
+    return button;
+  }
+
+  /**
+   * @param key    The resource key for the i18n string
+   * @param values The values to apply to the string (can be null)
+   *
+   * @return A new JButton with default styling
+   */
+  public static JButton newButton(Action action, MessageKey key, Object... values) {
+
+    // The action resets all text
+    JButton button = newButton(action);
+
+    button.setText(Languages.safeText(key, values));
 
     return button;
   }
@@ -171,7 +185,7 @@ public class Buttons {
 
     AwesomeDecorator.applyIcon(AwesomeIcon.SIGN_OUT, button, true, NORMAL_ICON_SIZE);
 
-    button.setBackground(Themes.currentTheme.dangerBackground());
+    button.setBackground(Themes.currentTheme.dangerAlertBackground());
 
     return button;
 
@@ -242,7 +256,7 @@ public class Buttons {
 
     AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD, button, false, NORMAL_ICON_SIZE);
 
-    button.setBackground(Themes.currentTheme.dangerBackground());
+    button.setBackground(Themes.currentTheme.dangerAlertBackground());
 
     return button;
   }
@@ -260,11 +274,56 @@ public class Buttons {
 
     AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, true, NORMAL_ICON_SIZE);
 
-    button.setBackground(Themes.currentTheme.infoBackground());
+    button.setBackground(Themes.currentTheme.infoAlertBackground());
 
     return button;
   }
 
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "Refresh" button with icon
+   */
+  public static JButton newRefreshButton(Action action) {
+
+    JButton button = newButton(action);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.UNDO, button, true, NORMAL_ICON_SIZE);
+
+    return button;
+
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "show" button with icon
+   */
+  public static JButton newShowButton(Action action) {
+
+    JButton button = newButton(action);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.EYE, button, true, NORMAL_ICON_SIZE);
+
+    return button;
+
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "hide" button with icon
+   */
+  public static JButton newHideButton(Action action) {
+
+    JButton button = newButton(action);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.EYE_SLASH, button, true, NORMAL_ICON_SIZE);
+
+    return button;
+
+  }
 
   /**
    * @param action The click action
@@ -294,5 +353,4 @@ public class Buttons {
     return button;
 
   }
-
 }
