@@ -43,20 +43,28 @@ public class SeedPhraseDisplayView implements View<SeedPhraseDisplayModel> {
 
     seedPhrase.setText(model.displaySeedPhrase());
 
-    // Create a new seed on a refresh
-    Action refreshAction = new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
+    // Configure the actions
+    Action refreshAction = getRefreshAction(seedPhrase);
+    Action toggleDisplayAction = getToggleDisplayAction(seedPhrase);
 
-        model.newSeedPhrase();
+    // Add to the panel
+    panel.add(seedPhrase, "shrink");
+    panel.add(Buttons.newShowButton(toggleDisplayAction), "shrink");
+    panel.add(Buttons.newRefreshButton(refreshAction), "shrink");
 
-        seedPhrase.setText(model.displaySeedPhrase());
+    return panel;
 
-      }
-    };
 
+  }
+
+  /**
+   * @param seedPhrase The seed phrase text area
+   *
+   * @return A new action for toggling the display of the seed phrase
+   */
+  private Action getToggleDisplayAction(final JTextArea seedPhrase) {
     // Show or hide the seed phrase
-    Action toggleShowAction = new AbstractAction() {
+    return new AbstractAction() {
 
       private boolean asClearText = model.asClearText();
 
@@ -67,7 +75,7 @@ public class SeedPhraseDisplayView implements View<SeedPhraseDisplayModel> {
 
         if (asClearText) {
           AwesomeDecorator.applyIcon(
-            AwesomeIcon.EYE_SLASH,
+            AwesomeIcon.EYE,
             button,
             true,
             Components.STANDARD_ICON
@@ -75,7 +83,7 @@ public class SeedPhraseDisplayView implements View<SeedPhraseDisplayModel> {
 
         } else {
           AwesomeDecorator.applyIcon(
-            AwesomeIcon.EYE,
+            AwesomeIcon.EYE_SLASH,
             button,
             true,
             Components.STANDARD_ICON
@@ -90,15 +98,24 @@ public class SeedPhraseDisplayView implements View<SeedPhraseDisplayModel> {
       }
 
     };
+  }
 
-    // Add to the panel
-    panel.add(seedPhrase, "shrink");
-    panel.add(Buttons.newShowButton(toggleShowAction), "shrink");
-    panel.add(Buttons.newRefreshButton(refreshAction), "shrink");
+  /**
+   * @param seedPhrase The seed phrase text area
+   *
+   * @return A new action for generating a new seed phrase
+   */
+  private Action getRefreshAction(final JTextArea seedPhrase) {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
 
-    return panel;
+        model.newSeedPhrase();
 
+        seedPhrase.setText(model.displaySeedPhrase());
 
+      }
+    };
   }
 
   @Override
