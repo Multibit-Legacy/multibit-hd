@@ -24,9 +24,6 @@ import java.awt.*;
  */
 public class Buttons {
 
-  public static final int NORMAL_ICON_SIZE = 20;
-  public static final int LARGE_ICON_SIZE = 70;
-
   /**
    * Utilities have no public constructor
    */
@@ -102,7 +99,7 @@ public class Buttons {
     JButton button = newButton(action, MessageKey.YES);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, button, true, NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -118,7 +115,7 @@ public class Buttons {
     JButton button = newButton(action, MessageKey.NO);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, button, true, NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -135,7 +132,7 @@ public class Buttons {
     JButton button = newButton(action, MessageKey.APPLY);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.EDIT, button, true, NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.EDIT, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -151,7 +148,7 @@ public class Buttons {
     JButton button = newButton(action, MessageKey.UNDO);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.UNDO, button, true, NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.UNDO, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -167,7 +164,7 @@ public class Buttons {
     JButton button = newButton(action, MessageKey.CANCEL);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, button, true, NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -183,7 +180,7 @@ public class Buttons {
     JButton button = newButton(action, MessageKey.EXIT);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.SIGN_OUT, button, true, NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.SIGN_OUT, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
 
     button.setBackground(Themes.currentTheme.dangerAlertBackground());
 
@@ -203,7 +200,7 @@ public class Buttons {
 
     AwesomeIcon icon = AwesomeDecorator.select(AwesomeIcon.ANGLE_DOUBLE_RIGHT, AwesomeIcon.ANGLE_DOUBLE_LEFT);
 
-    AwesomeDecorator.applyIcon(icon, button, false, NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(icon, button, false, AwesomeDecorator.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -221,7 +218,7 @@ public class Buttons {
 
     AwesomeIcon icon = AwesomeDecorator.select(AwesomeIcon.ANGLE_DOUBLE_LEFT, AwesomeIcon.ANGLE_DOUBLE_RIGHT);
 
-    AwesomeDecorator.applyIcon(icon, button, true, NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(icon, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -237,7 +234,7 @@ public class Buttons {
     JButton button = newButton(action, MessageKey.FINISH);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.FLAG_CHECKERED, button, false, NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.FLAG_CHECKERED, button, false, AwesomeDecorator.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -254,7 +251,7 @@ public class Buttons {
     JButton button = newButton(action, MessageKey.SEND);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD, button, false, NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD, button, false, AwesomeDecorator.NORMAL_ICON_SIZE);
 
     button.setBackground(Themes.currentTheme.dangerAlertBackground());
 
@@ -272,7 +269,7 @@ public class Buttons {
     JButton button = newButton(action, MessageKey.RECEIVE);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, true, NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
 
     button.setBackground(Themes.currentTheme.infoAlertBackground());
 
@@ -289,7 +286,7 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.UNDO, button, true, NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.UNDO, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -304,7 +301,7 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.EYE, button, true, NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.EYE, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -319,7 +316,7 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.EYE_SLASH, button, true, NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.EYE_SLASH, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -334,7 +331,7 @@ public class Buttons {
 
     JButton button = newLargeButton(action, MessageKey.SEND);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD, button, true, LARGE_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD, button, true, AwesomeDecorator.LARGE_ICON_SIZE);
 
     return button;
   }
@@ -348,7 +345,7 @@ public class Buttons {
 
     JButton button = newLargeButton(action, MessageKey.RECEIVE);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, true, LARGE_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, true, AwesomeDecorator.LARGE_ICON_SIZE);
 
     return button;
 

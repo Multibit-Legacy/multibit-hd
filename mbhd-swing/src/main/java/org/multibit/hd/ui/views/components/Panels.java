@@ -107,7 +107,7 @@ public class Panels {
     JPanel panel = Panels.newPanel();
 
     JLabel label = Labels.newLabel(MessageKey.BROADCAST_STATUS_OK);
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true, Components.STANDARD_ICON);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true, AwesomeDecorator.NORMAL_ICON_SIZE);
 
     panel.add(label);
 
@@ -124,7 +124,7 @@ public class Panels {
     JPanel panel = Panels.newPanel();
 
     JLabel label = Labels.newLabel(MessageKey.RELAY_STATUS_OK);
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true, Components.STANDARD_ICON);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true, AwesomeDecorator.NORMAL_ICON_SIZE);
 
     panel.add(label);
 
@@ -141,7 +141,7 @@ public class Panels {
     JPanel panel = Panels.newPanel();
 
     JLabel label = Labels.newLabel(MessageKey.CONFIRMATION_STATUS_OK);
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true, Components.STANDARD_ICON);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true, AwesomeDecorator.NORMAL_ICON_SIZE);
 
     panel.add(label);
 
@@ -160,7 +160,7 @@ public class Panels {
     JPanel panel = Panels.newPanel();
 
     JLabel label = Labels.newLabel(MessageKey.SELECT_LANGUAGE);
-    AwesomeDecorator.applyIcon(AwesomeIcon.GLOBE, label, true, Components.LARGE_ICON);
+    AwesomeDecorator.applyIcon(AwesomeIcon.GLOBE, label, true, AwesomeDecorator.LARGE_ICON_SIZE);
 
     JComboBox<String> languages = ComboBoxes.newLanguagesComboBox(listener);
 

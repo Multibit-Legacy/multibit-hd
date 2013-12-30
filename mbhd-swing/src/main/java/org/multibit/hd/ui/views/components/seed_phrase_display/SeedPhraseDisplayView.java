@@ -80,7 +80,7 @@ public class SeedPhraseDisplayView implements View<SeedPhraseDisplayModel>, Acti
             AwesomeIcon.EYE,
             button,
             true,
-            Components.STANDARD_ICON
+            AwesomeDecorator.NORMAL_ICON_SIZE
           );
 
         } else {
@@ -88,7 +88,7 @@ public class SeedPhraseDisplayView implements View<SeedPhraseDisplayModel>, Acti
             AwesomeIcon.EYE_SLASH,
             button,
             true,
-            Components.STANDARD_ICON
+            AwesomeDecorator.NORMAL_ICON_SIZE
           );
         }
         asClearText = !asClearText;

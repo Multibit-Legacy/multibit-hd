@@ -20,6 +20,9 @@ import java.io.InputStream;
  */
 public class AwesomeDecorator {
 
+  public static final int NORMAL_ICON_SIZE = 20;
+  public static final int LARGE_ICON_SIZE = 70;
+
   public static Font AWESOME_FONT;
 
   static {
@@ -114,12 +117,12 @@ public class AwesomeDecorator {
 
   public static void applyIcon(AwesomeIcon icon, JButton button, boolean leading, int size) {
 
-    JLabel iconLabel = new JLabel();
-    iconLabel.setFont(iconLabel.getFont().deriveFont((float) size));
-    iconLabel.setForeground(button.getForeground());
+    JButton iconButton = new JButton();
+    iconButton.setFont(iconButton.getFont().deriveFont((float) size));
+    iconButton.setForeground(button.getForeground());
 
-    Icon enabledIcon = new AwesomeSwingIcon(iconLabel, icon.getChar());
-    Icon disabledIcon = new AwesomeSwingIcon(iconLabel, icon.getChar(), true);
+    Icon enabledIcon = new AwesomeSwingIcon(iconButton, icon.getChar());
+    Icon disabledIcon = new AwesomeSwingIcon(iconButton, icon.getChar(), true);
 
     button.setIcon(enabledIcon);
     button.setDisabledIcon(disabledIcon);

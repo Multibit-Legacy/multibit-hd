@@ -20,9 +20,6 @@ import javax.swing.*;
  */
 public class Components {
 
-  public static final int STANDARD_ICON = 16;
-  public static final int LARGE_ICON = 40;
-
   public static final String CREATE_WALLET_ACTION_NAME = "Create";
   public static final String RESTORE_WALLET_ACTION_NAME = "Restore";
   public static final String HARDWARE_WALLET_ACTION_NAME = "Hardware";
@@ -67,7 +64,7 @@ public class Components {
     panel.add(TextBoxes.newRecipient());
 
     JLabel recipientIcon = new JLabel();
-    AwesomeDecorator.applyIcon(AwesomeIcon.USER, recipientIcon, false, LARGE_ICON);
+    AwesomeDecorator.applyIcon(AwesomeIcon.USER, recipientIcon, false, AwesomeDecorator.LARGE_ICON_SIZE);
     panel.add(recipientIcon);
 
     return panel;
@@ -120,8 +117,9 @@ public class Components {
     panel.add(new JLabel("Wallet password:"));
     panel.add(TextBoxes.newPassword());
 
-    JLabel eyeIcon = new JLabel();
-    AwesomeDecorator.applyIcon(AwesomeIcon.EYE, eyeIcon, false, STANDARD_ICON);
+    // TODO Convert this to use a hide/show button
+    JButton eyeIcon = new JButton();
+    AwesomeDecorator.applyIcon(AwesomeIcon.EYE, eyeIcon, false, AwesomeDecorator.NORMAL_ICON_SIZE);
     panel.add(eyeIcon);
 
     return panel;
