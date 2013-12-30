@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components.seed_phrase_display;
 
 import com.google.common.base.Strings;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
 import org.multibit.hd.ui.models.Model;
 
 import java.util.Arrays;
@@ -31,6 +32,15 @@ public class SeedPhraseDisplayModel implements Model {
    */
   public void dispose() {
     Arrays.fill(seedPhrase, '0');
+  }
+
+  /**
+   * <p>Generates a new seed phrase based on a new size</p>
+   *
+   * @param size The new size for subsequent seed phrases
+   */
+  public void newSeedPhrase(SeedPhraseSize size) {
+    this.seedPhrase = generator.newSeedPhrase(size);
   }
 
   /**

@@ -1,16 +1,15 @@
 package org.multibit.hd.ui.views.components.seed_phrase_display;
 
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
 import org.multibit.hd.ui.views.View;
-import org.multibit.hd.ui.views.components.Buttons;
-import org.multibit.hd.ui.views.components.Components;
-import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.components.TextBoxes;
+import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -22,9 +21,11 @@ import java.awt.event.ActionEvent;
  * @since 0.0.1
  *  
  */
-public class SeedPhraseDisplayView implements View<SeedPhraseDisplayModel> {
+public class SeedPhraseDisplayView implements View<SeedPhraseDisplayModel>, ActionListener {
 
   private SeedPhraseDisplayModel model;
+
+  private JTextArea seedPhrase;
 
   public SeedPhraseDisplayView(SeedPhraseDisplayModel model) {
     this.model = model;
@@ -36,18 +37,21 @@ public class SeedPhraseDisplayView implements View<SeedPhraseDisplayModel> {
     JPanel panel = Panels.newPanel(new MigLayout(
       "debug,insets 0", // Layout
       "[][][]", // Columns
-      "[]" // Rows
+      "[][]" // Rows
     ));
 
-    final JTextArea seedPhrase = TextBoxes.newSeedPhrase();
+    final JComboBox<String> seedSize = ComboBoxes.newSeedSizeComboBox(this);
+    seedPhrase = TextBoxes.newSeedPhrase();
 
     seedPhrase.setText(model.displaySeedPhrase());
 
     // Configure the actions
-    Action refreshAction = getRefreshAction(seedPhrase);
-    Action toggleDisplayAction = getToggleDisplayAction(seedPhrase);
+    Action refreshAction = getRefreshAction();
+    Action toggleDisplayAction = getToggleDisplayAction();
 
     // Add to the panel
+    panel.add(Labels.newSeedSize(),"split 2");
+    panel.add(seedSize,"wrap");
     panel.add(seedPhrase, "shrink");
     panel.add(Buttons.newShowButton(toggleDisplayAction), "shrink");
     panel.add(Buttons.newRefreshButton(refreshAction), "shrink");
@@ -58,11 +62,9 @@ public class SeedPhraseDisplayView implements View<SeedPhraseDisplayModel> {
   }
 
   /**
-   * @param seedPhrase The seed phrase text area
-   *
    * @return A new action for toggling the display of the seed phrase
    */
-  private Action getToggleDisplayAction(final JTextArea seedPhrase) {
+  private Action getToggleDisplayAction() {
     // Show or hide the seed phrase
     return new AbstractAction() {
 
@@ -101,17 +103,14 @@ public class SeedPhraseDisplayView implements View<SeedPhraseDisplayModel> {
   }
 
   /**
-   * @param seedPhrase The seed phrase text area
-   *
    * @return A new action for generating a new seed phrase
    */
-  private Action getRefreshAction(final JTextArea seedPhrase) {
+  private Action getRefreshAction() {
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
 
         model.newSeedPhrase();
-
         seedPhrase.setText(model.displaySeedPhrase());
 
       }
@@ -122,4 +121,20 @@ public class SeedPhraseDisplayView implements View<SeedPhraseDisplayModel> {
   public void setModel(SeedPhraseDisplayModel model) {
     this.model = model;
   }
+
+  /**
+   * <p>Handle the "change seed phrase size" action event</p>
+   *
+   * @param e The action event
+   */
+  @Override
+  public void actionPerformed(ActionEvent e) {
+
+    JComboBox source = (JComboBox) e.getSource();
+
+    model.newSeedPhrase(SeedPhraseSize.fromOrdinal(source.getSelectedIndex()));
+    seedPhrase.setText(model.displaySeedPhrase());
+
+  }
+
 }

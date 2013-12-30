@@ -60,7 +60,7 @@ public class TextBoxes {
   public static JTextArea newSeedPhrase() {
 
     // Allow for 256 characters
-    JTextArea textArea = new JTextArea(4, 64);
+    JTextArea textArea = new JTextArea(8, 32);
     textArea.setBackground(Themes.currentTheme.readOnlyBackground());
     textArea.setEditable(false);
     textArea.setLineWrap(true);

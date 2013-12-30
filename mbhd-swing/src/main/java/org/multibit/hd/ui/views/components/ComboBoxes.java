@@ -66,7 +66,7 @@ public class ComboBoxes {
    * @return A new "seed size" combo box
    */
   @SuppressWarnings("unchecked")
-  public static JComboBox newSeedSizeComboBox(ActionListener listener) {
+  public static JComboBox<String> newSeedSizeComboBox(ActionListener listener) {
 
     JComboBox<String> comboBox = newComboBox(new String[]{
       "12",

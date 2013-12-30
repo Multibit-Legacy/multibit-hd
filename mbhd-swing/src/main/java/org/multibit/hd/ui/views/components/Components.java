@@ -238,24 +238,6 @@ public class Components {
   }
 
   /**
-   * <p>A "seed size selector" panel provides a means of choosing how many words are used in a BIP0039 seed</p>
-   *
-   * @param listener The action listener
-   *
-   * @return A new "seed size selector" panel
-   */
-  public static JPanel newSeedSizeSelector(ActionListener listener) {
-
-    JPanel panel = Panels.newPanel();
-
-    // Add to the panel
-    panel.add(Labels.newSeedSize());
-    panel.add(ComboBoxes.newSeedSizeComboBox(listener));
-
-    return panel;
-  }
-
-  /**
    * <p>A "seed phrase display" panel shows the words used in a BIP0039 seed</p>
    *
    * @param generator The seed phrase generator

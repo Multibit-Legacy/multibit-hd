@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * <p>Wizard to provide the following to UI:</p>
@@ -25,7 +24,7 @@ import java.awt.event.ActionListener;
  *         
  */
 
-public class CreateWalletPanel extends JPanel implements ActionListener {
+public class CreateWalletPanel extends JPanel {
 
   private static final Logger log = LoggerFactory.getLogger(WelcomePanel.class);
 
@@ -96,24 +95,10 @@ public class CreateWalletPanel extends JPanel implements ActionListener {
     ));
 
     panel.add(Labels.newCreateWalletTitle(), "wrap");
-    panel.add(Components.newSeedSizeSelector(this), "wrap");
     panel.add(seedPhraseMaV.getView().newPanel(), "wrap");
     panel.add(Components.newSeedPhraseWarning(), "wrap");
 
     return panel;
   }
 
-  /**
-   * <p>Handle the "change seed phrase size" action event</p>
-   *
-   * @param e The action event
-   */
-  @Override
-  public void actionPerformed(ActionEvent e) {
-
-    JComboBox source = (JComboBox) e.getSource();
-
-    seedPhraseMaV.getModel().newSeedPhrase();
-
-  }
 }

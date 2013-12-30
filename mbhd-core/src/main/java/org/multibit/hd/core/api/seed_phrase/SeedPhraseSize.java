@@ -44,4 +44,24 @@ public enum SeedPhraseSize {
   public int getSize() {
     return size;
   }
+
+  /**
+   * @param ordinal The ordinal (zero-based)
+   *
+   * @return A matching SeedPhraseSize
+   */
+  public static SeedPhraseSize fromOrdinal(int ordinal) {
+
+    switch (ordinal) {
+      case 0:
+        return TWELVE_WORDS;
+      case 1:
+        return EIGHTEEN_WORDS;
+      case 2:
+        return TWENTY_FOUR_WORDS;
+      default:
+        throw new IllegalArgumentException("Unknown index: " + ordinal);
+    }
+
+  }
 }
