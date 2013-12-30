@@ -17,16 +17,16 @@ public class DefaultSeedPhraseGenerator implements SeedPhraseGenerator {
 
   private final String[] mnemonics = new String[]{
     // 12 words
-    "abandon ability able about above absent\n" +
+    "abandon ability able about above absent " +
       "absorb abstract absurd abuse access accident",
     // 18 words
-    "abandon ability able about above absent\n" +
-      "absorb abstract absurd abuse access accident\n" +
+    "abandon ability able about above absent " +
+      "absorb abstract absurd abuse access accident " +
       "account accuse achieve acid acoustic acquire",
     // 24 words
-    "abandon ability able about above absent\n" +
-      "absorb abstract absurd abuse access accident\n" +
-      "account accuse achieve acid acoustic acquire" +
+    "abandon ability able about above absent " +
+      "absorb abstract absurd abuse access accident " +
+      "account accuse achieve acid acoustic acquire " +
       "across act action actor actress actual"
   };
 

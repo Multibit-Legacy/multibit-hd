@@ -57,7 +57,7 @@ public class SeedPhraseDisplayModel implements Model {
     if (asClearText) {
       return String.valueOf(seedPhrase);
     } else {
-      return Strings.repeat("*", 256);
+      return Strings.repeat("*", 200);
     }
   }
 

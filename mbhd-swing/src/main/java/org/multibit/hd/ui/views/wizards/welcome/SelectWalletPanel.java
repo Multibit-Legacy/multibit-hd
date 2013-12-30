@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
+import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.*;
@@ -84,10 +85,14 @@ public class SelectWalletPanel extends JPanel implements ActionListener {
 
   private JPanel wizardComponents() {
 
-    JPanel panel = Panels.newPanel();
+    JPanel panel = Panels.newPanel(new MigLayout(
+      "fill,ins 0", // Layout constrains
+      "[]", // Column constraints
+      "[]10[]10[]10[]10[]" // Row constraints
+    ));
 
     panel.add(Labels.newSelectWalletTitle(), "wrap");
-    panel.add(Components.newWalletSelector(this));
+    panel.add(Panels.newWalletSelector(this));
 
     return panel;
   }

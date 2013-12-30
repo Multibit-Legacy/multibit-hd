@@ -68,7 +68,7 @@ public class CreateWalletPanel extends JPanel {
   public CreateWalletPanel(AbstractWizard wizard) {
 
     this.wizard = wizard;
-    this.seedPhraseMaV = Components.newSeedPhraseDisplay(CoreServices.newSeedPhraseGenerator());
+    this.seedPhraseMaV = Components.newSeedPhraseMaV(CoreServices.newSeedPhraseGenerator());
 
     PanelDecorator.applyWizardTheme(this, wizardComponents());
 
@@ -89,14 +89,14 @@ public class CreateWalletPanel extends JPanel {
   private JPanel wizardComponents() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "debug,fill", // Layout constrains
+      "fill,ins 0", // Layout constrains
       "[]", // Column constraints
       "[]10[]10[]10[]10[]" // Row constraints
     ));
 
     panel.add(Labels.newCreateWalletTitle(), "wrap");
     panel.add(seedPhraseMaV.getView().newPanel(), "wrap");
-    panel.add(Components.newSeedPhraseWarning(), "wrap");
+    panel.add(Panels.newSeedPhraseWarning(), "wrap");
 
     return panel;
   }

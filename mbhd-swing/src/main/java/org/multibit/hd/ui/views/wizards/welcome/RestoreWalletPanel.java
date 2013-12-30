@@ -89,7 +89,7 @@ public class RestoreWalletPanel extends JPanel implements ActionListener {
     ));
 
     panel.add(Labels.newSelectWalletTitle(), "wrap");
-    panel.add(Components.newWalletSelector(this), "wrap");
+    panel.add(Panels.newWalletSelector(this), "wrap");
 
     return panel;
   }

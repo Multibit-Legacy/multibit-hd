@@ -79,7 +79,7 @@ public class WelcomePanel extends JPanel implements ActionListener {
     ));
 
     panel.add(Labels.newWelcomeTitle(), "wrap");
-    panel.add(Components.newLanguageSelector(this), "wrap");
+    panel.add(Panels.newLanguageSelector(this), "wrap");
     panel.add(Labels.newWelcomeNote(), "wrap");
 
     return panel;

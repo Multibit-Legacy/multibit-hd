@@ -58,9 +58,9 @@ public class SendBitcoinProgressPanel extends JPanel {
     panel.setBackground(Themes.currentTheme.detailPanelBackground());
 
     panel.add(Labels.newSendProgressTitle(),"wrap");
-    panel.add(Components.newBroadcastStatus(),"wrap");
-    panel.add(Components.newRelayStatus(),"wrap");
-    panel.add(Components.newConfirmationCount(),"wrap");
+    panel.add(Panels.newBroadcastStatus(),"wrap");
+    panel.add(Panels.newRelayStatus(),"wrap");
+    panel.add(Panels.newConfirmationCount(),"wrap");
 
     return panel;
   }

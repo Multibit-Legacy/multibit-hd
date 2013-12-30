@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.components;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * <p>Utility to provide the following to UI:</p>
@@ -60,13 +61,17 @@ public class TextBoxes {
   public static JTextArea newSeedPhrase() {
 
     // Allow for 256 characters
-    JTextArea textArea = new JTextArea(8, 32);
+    JTextArea textArea = new JTextArea(5, 40);
     textArea.setBackground(Themes.currentTheme.readOnlyBackground());
-    textArea.setEditable(false);
+    textArea.setFont(new Font("Courier New", Font.PLAIN, 14));
+
+    // Ensure line and word wrapping occur as required
     textArea.setLineWrap(true);
+    textArea.setWrapStyleWord(true);
 
     // Prevent copy/paste operations
     textArea.setTransferHandler(null);
+    textArea.setEditable(false);
 
     return textArea;
 
