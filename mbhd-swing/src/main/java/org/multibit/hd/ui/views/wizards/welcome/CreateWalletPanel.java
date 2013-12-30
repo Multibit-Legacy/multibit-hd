@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.i18n.Languages;
@@ -70,7 +71,7 @@ public class CreateWalletPanel extends JPanel {
     this.wizard = wizard;
     this.seedPhraseMaV = Components.newSeedPhraseMaV(CoreServices.newSeedPhraseGenerator());
 
-    PanelDecorator.applyWizardTheme(this, wizardComponents());
+    PanelDecorator.applyWizardTheme(this, wizardComponents(), MessageKey.CREATE_WALLET_TITLE);
 
     // Swap buttons to maintain reading order
     if (Languages.isLeftToRight()) {
@@ -91,10 +92,9 @@ public class CreateWalletPanel extends JPanel {
     JPanel panel = Panels.newPanel(new MigLayout(
       "fill,ins 0", // Layout constrains
       "[]", // Column constraints
-      "[]10[]10[]10[]10[]" // Row constraints
+      "[]10[]" // Row constraints
     ));
 
-    panel.add(Labels.newCreateWalletTitle(), "wrap");
     panel.add(seedPhraseMaV.getView().newPanel(), "wrap");
     panel.add(Panels.newSeedPhraseWarning(), "wrap");
 

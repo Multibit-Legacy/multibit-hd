@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.*;
@@ -65,7 +66,7 @@ public class RestoreWalletPanel extends JPanel implements ActionListener {
 
     this.wizard = wizard;
 
-    PanelDecorator.applyWizardTheme(this, wizardComponents());
+    PanelDecorator.applyWizardTheme(this, wizardComponents(), MessageKey.RESTORE_WALLET_TITLE);
 
     // Swap buttons to maintain reading order
     if (Languages.isLeftToRight()) {
@@ -85,10 +86,9 @@ public class RestoreWalletPanel extends JPanel implements ActionListener {
     JPanel panel = Panels.newPanel(new MigLayout(
       "fill", // Layout constrains
       "[][][]", // Column constraints
-      "[]10[]10[]10[]" // Row constraints
+      "[]" // Row constraints
     ));
 
-    panel.add(Labels.newSelectWalletTitle(), "wrap");
     panel.add(Panels.newWalletSelector(this), "wrap");
 
     return panel;

@@ -113,85 +113,12 @@ public class Labels {
   }
 
   /**
-   * @return A new "Send Bitcoin" title
-   */
-  public static JLabel newSendTitle() {
-
-    JLabel label = newTitleLabel(MessageKey.SEND_BITCOIN_TITLE);
-
-    return label;
-
-  }
-
-  /**
-   * @return A new "Confirm Send" title
-   */
-  public static JLabel newConfirmSendTitle() {
-
-    JLabel label = newTitleLabel(MessageKey.CONFIRM_SEND_TITLE);
-
-    return label;
-
-  }
-
-  /**
-   * @return A new "Send Progress" title
-   */
-  public static JLabel newSendProgressTitle() {
-
-    JLabel label = newTitleLabel(MessageKey.SEND_PROGRESS_TITLE);
-
-    return label;
-  }
-
-  /**
-   * @return A new "Exit" title
-   */
-  public static JLabel newExitTitle() {
-
-    JLabel label = newTitleLabel(MessageKey.EXIT_TITLE);
-
-    return label;
-  }
-
-  /**
    * @return A new "You are about to send" message
    */
   public static JLabel newConfirmSendAmount() {
 
     return new JLabel(Languages.safeText(MessageKey.CONFIRM_SEND_MESSAGE));
   }
-
-  /**
-   * @return A new "Welcome" title
-   */
-  public static JLabel newWelcomeTitle() {
-
-    JLabel label = newTitleLabel(MessageKey.WELCOME_TITLE);
-
-    return label;
-  }
-
-  /**
-   * @return A new "Select Wallet" title
-   */
-  public static JLabel newSelectWalletTitle() {
-
-    JLabel label = newTitleLabel(MessageKey.SELECT_WALLET_TITLE);
-
-    return label;
-  }
-
-  /**
-   * @return A new "Create Wallet" title
-   */
-  public static JLabel newCreateWalletTitle() {
-
-    JLabel label = newTitleLabel(MessageKey.CREATE_WALLET_TITLE);
-
-    return label;
-  }
-
   /**
    * @return A new "Welcome" note
    */
@@ -210,11 +137,10 @@ public class Labels {
   public static JLabel newSeedWarningNote() {
 
     // Wrap in HTML to allow for line breaks
-    JLabel note = new JLabel("<html>"+
+
+    return new JLabel("<html>"+
       Languages.safeText(MessageKey.SEED_WARNING_NOTE) +
       "</html>");
-
-    return note;
 
   }
 
@@ -223,7 +149,7 @@ public class Labels {
    *
    * @return A new label with appropriate font and theme
    */
-  private static JLabel newTitleLabel(MessageKey key) {
+  public static JLabel newTitleLabel(MessageKey key) {
 
     JLabel label = new JLabel(Languages.safeText(key));
 

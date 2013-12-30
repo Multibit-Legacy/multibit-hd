@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.i18n.Languages;
@@ -57,7 +58,7 @@ public class WelcomePanel extends JPanel implements ActionListener {
 
     this.wizard = wizard;
 
-    PanelDecorator.applyWizardTheme(this, wizardComponents());
+    PanelDecorator.applyWizardTheme(this, wizardComponents(), MessageKey.WELCOME_TITLE);
 
     // Swap buttons to maintain reading order
     if (Languages.isLeftToRight()) {
@@ -73,12 +74,11 @@ public class WelcomePanel extends JPanel implements ActionListener {
   private JPanel wizardComponents() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fill", // Layout constrains
+      "debug,fill,ins 0", // Layout constrains
       "[][][]", // Column constraints
-      "[]10[]10[]10[]" // Row constraints
+      "[]10[]" // Row constraints
     ));
 
-    panel.add(Labels.newWelcomeTitle(), "wrap");
     panel.add(Panels.newLanguageSelector(this), "wrap");
     panel.add(Labels.newWelcomeNote(), "wrap");
 

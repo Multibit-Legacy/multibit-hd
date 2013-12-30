@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.components;
 
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
@@ -23,13 +24,13 @@ public class PanelDecorator {
    * @param panel The panel to decorate (contains wizard components at the top and buttons at the bottom)
    * @param wizardComponents  The wizard components arranged in a panel
    */
-  public static void applyWizardTheme(JPanel panel, JPanel wizardComponents) {
+  public static void applyWizardTheme(JPanel panel, JPanel wizardComponents, MessageKey titleKey) {
 
     // Standard wizard layout
     MigLayout layout = new MigLayout(
-      "fill", // Layout constrains
+      "debug,fill", // Layout constrains
       "[]", // Column constraints
-      "[grow]10[shrink]" // Row constraints
+      "[shrink]10[grow]10[shrink]" // Row constraints
     );
 
     panel.setLayout(layout);
@@ -38,6 +39,7 @@ public class PanelDecorator {
     panel.setBackground(Themes.currentTheme.detailPanelBackground());
 
     // Add the wizard components
+    panel.add(Labels.newTitleLabel(titleKey), "span 4,shrink,wrap,aligny top");
     panel.add(wizardComponents, "span 4,grow,wrap");
 
   }

@@ -1,9 +1,9 @@
 package org.multibit.hd.ui.views.wizards.exit;
 
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.ui.views.components.Buttons;
-import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -54,7 +54,7 @@ public class ExitPanel extends JPanel {
 
     this.wizard = wizard;
 
-    PanelDecorator.applyWizardTheme(this,wizardComponents());
+    PanelDecorator.applyWizardTheme(this,wizardComponents(), MessageKey.EXIT_TITLE);
 
     add(Buttons.newCancelButton(cancelAction), "span 2,left,push");
     add(Buttons.newExitButton(exitAction), "right");
@@ -66,10 +66,8 @@ public class ExitPanel extends JPanel {
     JPanel panel = Panels.newPanel(new MigLayout(
       "fill", // Layout constrains
       "[][][]", // Column constraints
-      "[]10[]10[]" // Row constraints
+      "[]" // Row constraints
     ));
-
-    panel.add(Labels.newExitTitle(),"wrap");
 
     return panel;
   }

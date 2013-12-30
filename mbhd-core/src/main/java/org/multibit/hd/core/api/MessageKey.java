@@ -53,6 +53,7 @@ public enum MessageKey {
   WELCOME_TITLE("Welcome !"),
   SELECT_WALLET_TITLE("Select wallet"),
   CREATE_WALLET_TITLE("Create wallet"),
+  RESTORE_WALLET_TITLE("Restore wallet"),
 
   BROADCAST_STATUS_OK("Broadcast OK"),
   RELAY_STATUS_OK("Relayed OK"),

@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -39,7 +40,7 @@ public class SendBitcoinProgressPanel extends JPanel {
 
     this.wizard = wizard;
 
-    PanelDecorator.applyWizardTheme(this, wizardComponents());
+    PanelDecorator.applyWizardTheme(this, wizardComponents(), MessageKey.SEND_PROGRESS_TITLE);
 
     add(Buttons.newFinishButton(finishAction), "span 4,push,right");
 
@@ -51,13 +52,12 @@ public class SendBitcoinProgressPanel extends JPanel {
     JPanel panel = Panels.newPanel(new MigLayout(
       "fill", // Layout constrains
       "[][][]", // Column constraints
-      "[]10[]10[]10[]" // Row constraints
+      "[]10[]10[]" // Row constraints
     ));
 
     // Apply the theme
     panel.setBackground(Themes.currentTheme.detailPanelBackground());
 
-    panel.add(Labels.newSendProgressTitle(),"wrap");
     panel.add(Panels.newBroadcastStatus(),"wrap");
     panel.add(Panels.newRelayStatus(),"wrap");
     panel.add(Panels.newConfirmationCount(),"wrap");
