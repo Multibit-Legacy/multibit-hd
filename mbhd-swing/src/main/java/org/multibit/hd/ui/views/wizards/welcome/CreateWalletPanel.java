@@ -2,11 +2,11 @@ package org.multibit.hd.ui.views.wizards.welcome;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.i18n.Languages;
-import org.multibit.hd.ui.views.components.Buttons;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.PanelDecorator;
-import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.*;
+import org.multibit.hd.ui.views.components.seed_phrase_display.SeedPhraseDisplayModel;
+import org.multibit.hd.ui.views.components.seed_phrase_display.SeedPhraseDisplayView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +30,8 @@ public class CreateWalletPanel extends JPanel implements ActionListener {
   private static final Logger log = LoggerFactory.getLogger(WelcomePanel.class);
 
   private final AbstractWizard wizard;
+
+  private final ModelAndView<SeedPhraseDisplayModel, SeedPhraseDisplayView> seedPhraseMaV;
 
   /**
    * The "exit" action
@@ -67,6 +69,7 @@ public class CreateWalletPanel extends JPanel implements ActionListener {
   public CreateWalletPanel(AbstractWizard wizard) {
 
     this.wizard = wizard;
+    this.seedPhraseMaV = Components.newSeedPhraseDisplay(CoreServices.newSeedPhraseGenerator());
 
     PanelDecorator.applyWizardTheme(this, wizardComponents());
 
@@ -81,6 +84,7 @@ public class CreateWalletPanel extends JPanel implements ActionListener {
       add(Buttons.newExitButton(exitAction), "span 2,shrink");
     }
 
+
   }
 
   private JPanel wizardComponents() {
@@ -92,25 +96,24 @@ public class CreateWalletPanel extends JPanel implements ActionListener {
     ));
 
     panel.add(Labels.newCreateWalletTitle(), "wrap");
-    panel.add(Panels.newSeedSizeSelector(this), "wrap");
-    panel.add(Panels.newSeedPhraseDisplay(this), "wrap");
-    panel.add(Panels.newSeedPhraseWarning(), "wrap");
+    panel.add(Components.newSeedSizeSelector(this), "wrap");
+    panel.add(seedPhraseMaV.getView().newPanel(), "wrap");
+    panel.add(Components.newSeedPhraseWarning(), "wrap");
 
     return panel;
   }
 
   /**
-   * <p>Handle the "change size" action event</p>
+   * <p>Handle the "change seed phrase size" action event</p>
    *
    * @param e The action event
    */
   @Override
   public void actionPerformed(ActionEvent e) {
 
-    JRadioButton source = (JRadioButton) e.getSource();
-    String command = String.valueOf(source.getActionCommand());
+    JComboBox source = (JComboBox) e.getSource();
 
-    wizard.show(command);
+    seedPhraseMaV.getModel().newSeedPhrase();
 
   }
 }

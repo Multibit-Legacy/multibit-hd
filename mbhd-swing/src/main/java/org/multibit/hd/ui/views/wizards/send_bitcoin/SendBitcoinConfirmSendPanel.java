@@ -1,10 +1,7 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.views.components.Buttons;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.PanelDecorator;
-import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 
 import javax.swing.*;
@@ -79,8 +76,8 @@ public class SendBitcoinConfirmSendPanel extends JPanel {
 
     panel.add(Labels.newConfirmSendTitle(),"wrap");
     panel.add(Labels.newConfirmSendAmount(),"wrap");
-    panel.add(Panels.newNotes(),"wrap");
-    panel.add(Panels.newWalletPassword(),"wrap");
+    panel.add(Components.newNotes(),"wrap");
+    panel.add(Components.newWalletPassword(),"wrap");
 
     return panel;
   }

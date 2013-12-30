@@ -13,7 +13,7 @@ import org.multibit.hd.ui.i18n.Languages;
  * @since 0.0.1
  *         
  */
-public class AlertModel {
+public class AlertModel implements Model {
 
   private final RAGStatus severity;
   private final String localisedMessage;

@@ -59,17 +59,14 @@ public class TextBoxes {
    */
   public static JTextArea newSeedPhrase() {
 
-    JTextArea textArea = new JTextArea(4, 60);
+    // Allow for 256 characters
+    JTextArea textArea = new JTextArea(4, 64);
     textArea.setBackground(Themes.currentTheme.readOnlyBackground());
     textArea.setEditable(false);
+    textArea.setLineWrap(true);
 
     // Prevent copy/paste operations
     textArea.setTransferHandler(null);
-
-    // TODO Link this to a HD wallet service? Controller injection?
-    textArea.setText(
-      "abandon ability able about above absent\n"+
-       "absorb abstract absurd abuse access accident");
 
     return textArea;
 

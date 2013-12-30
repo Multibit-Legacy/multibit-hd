@@ -1,10 +1,7 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.views.components.Buttons;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.PanelDecorator;
-import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 
@@ -61,9 +58,9 @@ public class SendBitcoinProgressPanel extends JPanel {
     panel.setBackground(Themes.currentTheme.detailPanelBackground());
 
     panel.add(Labels.newSendProgressTitle(),"wrap");
-    panel.add(Panels.newBroadcastStatus(),"wrap");
-    panel.add(Panels.newRelayStatus(),"wrap");
-    panel.add(Panels.newConfirmationCount(),"wrap");
+    panel.add(Components.newBroadcastStatus(),"wrap");
+    panel.add(Components.newRelayStatus(),"wrap");
+    panel.add(Components.newConfirmationCount(),"wrap");
 
     return panel;
   }

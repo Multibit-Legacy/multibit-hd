@@ -61,7 +61,7 @@ public enum MessageKey {
   EXCHANGE_FIAT_RATE("exchange.fiat-rate"),
   SELECT_LANGUAGE("showPreferencesPanel.languageTitle"),
   WELCOME_NOTE("MultiBit HD provides secure access to the Bitcoin network. Click next to get started."),
-  SEED_WARNING_NOTE("You must write down the words shown above on a piece of paper. You will never see them again and they protect all your money."),
+  SEED_WARNING_NOTE("You must write down the words shown above on a piece of paper. You will never see them again and they protect all your bitcoins."),
   SEED_SIZE("Words in seed"),
 
   // End of enum

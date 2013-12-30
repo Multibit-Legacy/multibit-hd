@@ -3,6 +3,8 @@ package org.multibit.hd.core.services;
 import com.google.common.eventbus.EventBus;
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
+import org.multibit.hd.core.api.seed_phrase.DefaultSeedPhraseGenerator;
+import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.logging.LoggingFactory;
 
@@ -13,7 +15,7 @@ import org.multibit.hd.core.logging.LoggingFactory;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class CoreServices {
 
@@ -45,7 +47,6 @@ public class CoreServices {
     new LoggingFactory(Configurations.currentConfiguration.getLoggingConfiguration(), "MultiBit HD").configure();
 
 
-
   }
 
   /**
@@ -63,10 +64,17 @@ public class CoreServices {
   }
 
   /**
-   * @return create a new BitcoinNetworkService for access to the Bitcoin network
+   * @return Create a new BitcoinNetworkService for access to the Bitcoin network
    */
   public static BitcoinNetworkService newBitcoinNetworkService() {
     return new BitcoinNetworkService();
+  }
+
+  /**
+   * @return Create a new seed phrase generator
+   */
+  public static SeedPhraseGenerator newSeedPhraseGenerator() {
+    return new DefaultSeedPhraseGenerator();
   }
 
 }

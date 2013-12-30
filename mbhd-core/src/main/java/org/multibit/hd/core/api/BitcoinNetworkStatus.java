@@ -1,7 +1,7 @@
 package org.multibit.hd.core.api;
 
 /**
- * <p>Value object to provide the following to Core API:</p>
+ * <p>Enum to provide the following to Core API:</p>
  * <ul>
  * <li>Information about the Bitcoin network status</li>
  * </ul>

@@ -7,6 +7,7 @@ import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.components.Buttons;
+import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.wizards.Wizards;
 
@@ -76,7 +77,7 @@ public class WalletDetailView {
 
     contentPanel.add(Buttons.newSendBitcoinWizardButton(showSendBitcoinWizardAction),"w 240,h 200,align center,push");
     contentPanel.add(Buttons.newReceiveBitcoinWizardButton(showReceiveBitcoinWizardAction),"w 240, h 200,align center,push,wrap");
-    contentPanel.add(Panels.newWalletDetailPanel(),"span 2,grow");
+    contentPanel.add(Components.newWalletDetailPanel(),"span 2,grow");
 
   }
 

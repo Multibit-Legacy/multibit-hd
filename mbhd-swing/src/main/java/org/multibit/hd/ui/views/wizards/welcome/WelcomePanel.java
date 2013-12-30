@@ -4,10 +4,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.i18n.Languages;
-import org.multibit.hd.ui.views.components.Buttons;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.PanelDecorator;
-import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +79,7 @@ public class WelcomePanel extends JPanel implements ActionListener {
     ));
 
     panel.add(Labels.newWelcomeTitle(), "wrap");
-    panel.add(Panels.newLanguageSelector(this), "wrap");
+    panel.add(Components.newLanguageSelector(this), "wrap");
     panel.add(Labels.newWelcomeNote(), "wrap");
 
     return panel;
