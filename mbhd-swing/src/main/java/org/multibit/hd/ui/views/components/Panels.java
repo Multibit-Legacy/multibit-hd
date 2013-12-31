@@ -29,6 +29,7 @@ public class Panels {
   public static final String HARDWARE_WALLET_ACTION_NAME = "Hardware";
   public static final String SELECT_WALLET_ACTION_NAME = "Select";
   public static final String WELCOME_ACTION_NAME = "Welcome";
+  public static final String CREATE_WALLET_PASSWORD_ACTION_NAME = "CreatePassword";
 
   /**
    * A global reference to the application frame

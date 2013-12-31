@@ -5,6 +5,8 @@ import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.*;
+import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
+import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,11 +25,13 @@ import java.awt.event.ActionListener;
  *         
  */
 
-public class RestoreWalletPanel extends JPanel implements ActionListener {
+public class CreateWalletPasswordPanel extends JPanel implements ActionListener {
 
   private static final Logger log = LoggerFactory.getLogger(WelcomePanel.class);
 
   private final AbstractWizard wizard;
+
+  private final ModelAndView<ConfirmPasswordModel, ConfirmPasswordView> confirmPasswordMaV;
 
   /**
    * The "exit" action
@@ -62,11 +66,12 @@ public class RestoreWalletPanel extends JPanel implements ActionListener {
   /**
    * @param wizard The wizard managing the states
    */
-  public RestoreWalletPanel(AbstractWizard wizard) {
+  public CreateWalletPasswordPanel(AbstractWizard wizard) {
 
     this.wizard = wizard;
+    this.confirmPasswordMaV = Components.newConfirmPassword();
 
-    PanelDecorator.applyWizardTheme(this, wizardComponents(), MessageKey.RESTORE_WALLET_TITLE);
+    PanelDecorator.applyWizardTheme(this, wizardComponents(), MessageKey.CREATE_WALLET_PASSWORD_TITLE);
 
     // Swap buttons to maintain reading order
     if (Languages.isLeftToRight()) {
@@ -85,11 +90,12 @@ public class RestoreWalletPanel extends JPanel implements ActionListener {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       "fill", // Layout constrains
-      "[][][]", // Column constraints
-      "[]" // Row constraints
+      "[]", // Column constraints
+      "[]10[]" // Row constraints
     ));
 
-    panel.add(Panels.newWalletSelector(this), "wrap");
+    panel.add(Labels.newWalletPasswordNote(),"wrap");
+    panel.add(confirmPasswordMaV.getView().newPanel(),"wrap");
 
     return panel;
   }

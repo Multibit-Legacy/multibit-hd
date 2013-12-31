@@ -2,6 +2,8 @@ package org.multibit.hd.ui.views.components;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
+import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordView;
 import org.multibit.hd.ui.views.components.seed_phrase_display.SeedPhraseDisplayModel;
 import org.multibit.hd.ui.views.components.seed_phrase_display.SeedPhraseDisplayView;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
@@ -106,23 +108,17 @@ public class Components {
   }
 
   /**
-   * <p>A wallet password panel provides a means of entering a user password</p>
+   * <p>A "confirm password" model and view handles a password with confirmation and reveal</p>
    *
-   * @return A new wallet password panel
+   * @return A new "confirm password" model and view
    */
-  public static JPanel newWalletPassword() {
+  public static ModelAndView<ConfirmPasswordModel, ConfirmPasswordView> newConfirmPassword() {
 
-    JPanel panel = Panels.newPanel();
+    ConfirmPasswordModel model = new ConfirmPasswordModel();
+    ConfirmPasswordView view = new ConfirmPasswordView(model);
 
-    panel.add(new JLabel("Wallet password:"));
-    panel.add(TextBoxes.newPassword());
+    return new ModelAndView<>(model ,view);
 
-    // TODO Convert this to use a hide/show button
-    JButton eyeIcon = new JButton();
-    AwesomeDecorator.applyIcon(AwesomeIcon.EYE, eyeIcon, false, AwesomeDecorator.NORMAL_ICON_SIZE);
-    panel.add(eyeIcon);
-
-    return panel;
   }
 
   /**
@@ -130,7 +126,7 @@ public class Components {
    *
    * @param generator The seed phrase generator
    *
-   * @return A new "seed size selector" panel
+   * @return A new "seed phrase" model and view
    */
   public static ModelAndView<SeedPhraseDisplayModel, SeedPhraseDisplayView> newSeedPhraseMaV(final SeedPhraseGenerator generator) {
 

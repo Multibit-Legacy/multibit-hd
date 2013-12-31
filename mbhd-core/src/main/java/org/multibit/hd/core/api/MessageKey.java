@@ -53,17 +53,27 @@ public enum MessageKey {
   WELCOME_TITLE("Welcome !"),
   SELECT_WALLET_TITLE("Select wallet"),
   CREATE_WALLET_TITLE("Create wallet"),
+  CREATE_WALLET_PASSWORD_TITLE("Create wallet password"),
   RESTORE_WALLET_TITLE("Restore wallet"),
 
+  // Labels
+  ENTER_PASSWORD("Enter password"),
+  CONFIRM_PASSWORD("Confirm password"),
+
+  // Statuses
   BROADCAST_STATUS_OK("Broadcast OK"),
   RELAY_STATUS_OK("Relayed OK"),
   CONFIRMATION_STATUS_OK("Confirmations 6+"),
+
   ALERT_REMAINING("alert.remaining"),
   EXCHANGE_FIAT_RATE("exchange.fiat-rate"),
   SELECT_LANGUAGE("showPreferencesPanel.languageTitle"),
+  SEED_SIZE("Words in seed"),
+
+  // Notes
   WELCOME_NOTE("MultiBit HD provides secure access to the Bitcoin network. Click next to get started."),
   SEED_WARNING_NOTE("You must write down the words shown above on a piece of paper. You will never see them again and they protect all your bitcoins."),
-  SEED_SIZE("Words in seed"),
+  WALLET_PASSWORD_NOTE("This password will be needed whenever you send bitcoins. You can always recover it using your seed phrase."),
 
   // End of enum
   ;

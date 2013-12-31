@@ -113,6 +113,21 @@ public class Labels {
   }
 
   /**
+   * @return A new "Enter password" label
+   */
+  public static JLabel newEnterPassword() {
+
+    return new JLabel(Languages.safeText(MessageKey.ENTER_PASSWORD));
+  }
+  /**
+   * @return A new "Confirm password" label
+   */
+  public static JLabel newConfirmPassword() {
+
+    return new JLabel(Languages.safeText(MessageKey.CONFIRM_PASSWORD));
+  }
+
+  /**
    * @return A new "You are about to send" message
    */
   public static JLabel newConfirmSendAmount() {
@@ -137,11 +152,17 @@ public class Labels {
   public static JLabel newSeedWarningNote() {
 
     // Wrap in HTML to allow for line breaks
-
     return new JLabel("<html>"+
       Languages.safeText(MessageKey.SEED_WARNING_NOTE) +
       "</html>");
 
+  }
+
+  public static JLabel newWalletPasswordNote() {
+    // Wrap in HTML to allow for line breaks
+    return new JLabel("<html>"+
+      Languages.safeText(MessageKey.WALLET_PASSWORD_NOTE) +
+      "</html>");
   }
 
   /**

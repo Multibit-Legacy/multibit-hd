@@ -77,7 +77,8 @@ public class SendBitcoinConfirmSendPanel extends JPanel {
 
     panel.add(Labels.newConfirmSendAmount(),"wrap");
     panel.add(Components.newNotes(),"wrap");
-    panel.add(Components.newWalletPassword(),"wrap");
+    panel.add(Labels.newEnterPassword());
+    panel.add(TextBoxes.newPassword(),"wrap");
 
     return panel;
   }
