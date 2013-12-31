@@ -20,11 +20,15 @@ public class SeedPhraseDisplayModel implements Model {
 
   private final SeedPhraseGenerator generator;
   private List<String> seedPhrase;
+  private SeedPhraseSize currentSeedSize;
   private boolean asClearText = true;
 
   public SeedPhraseDisplayModel(SeedPhraseGenerator generator) {
     this.generator = generator;
-    newSeedPhrase();
+
+    // Default to twelve word seed
+    currentSeedSize = SeedPhraseSize.TWELVE_WORDS;
+    newSeedPhrase(currentSeedSize);
   }
 
   /**
@@ -33,14 +37,8 @@ public class SeedPhraseDisplayModel implements Model {
    * @param size The new size for subsequent seed phrases
    */
   public void newSeedPhrase(SeedPhraseSize size) {
+    currentSeedSize = size;
     this.seedPhrase = generator.newSeedPhrase(size);
-  }
-
-  /**
-   * <p>Generates a new seed phrase</p>
-   */
-  public void newSeedPhrase() {
-    this.seedPhrase = generator.newSeedPhrase();
   }
 
   /**
@@ -75,5 +73,12 @@ public class SeedPhraseDisplayModel implements Model {
    */
   public boolean asClearText() {
     return asClearText;
+  }
+
+  /**
+   * @return The current seed size
+   */
+  public SeedPhraseSize getCurrentSeedSize() {
+    return currentSeedSize;
   }
 }

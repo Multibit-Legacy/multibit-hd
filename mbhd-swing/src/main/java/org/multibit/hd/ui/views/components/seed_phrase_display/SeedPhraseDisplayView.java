@@ -111,7 +111,7 @@ public class SeedPhraseDisplayView implements View<SeedPhraseDisplayModel>, Acti
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        model.newSeedPhrase();
+        model.newSeedPhrase(model.getCurrentSeedSize());
         seedPhrase.setText(model.displaySeedPhrase());
 
       }
