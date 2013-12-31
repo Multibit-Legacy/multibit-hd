@@ -1,5 +1,8 @@
 package org.multibit.hd.core.api.seed_phrase;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * <p>Seed phrase generator to provide the following to Core API:</p>
  * <ul>
@@ -11,9 +14,6 @@ package org.multibit.hd.core.api.seed_phrase;
  *  
  */
 public class DefaultSeedPhraseGenerator implements SeedPhraseGenerator {
-
-  private SeedPhraseSize size = SeedPhraseSize.TWELVE_WORDS;
-  private int count = 0;
 
   private final String[] mnemonics = new String[]{
     // 12 words
@@ -31,16 +31,12 @@ public class DefaultSeedPhraseGenerator implements SeedPhraseGenerator {
   };
 
   @Override
-  public char[] newSeedPhrase() {
-    count++;
-    return (count + mnemonics[size.ordinal()]).toCharArray();
+  public List<String> newSeedPhrase() {
+    return newSeedPhrase(SeedPhraseSize.TWELVE_WORDS);
   }
 
   @Override
-  public char[] newSeedPhrase(SeedPhraseSize size) {
-
-    this.size = size;
-
-    return newSeedPhrase();
+  public List<String> newSeedPhrase(SeedPhraseSize size) {
+    return Arrays.asList(mnemonics[size.ordinal()]);
   }
 }

@@ -5,7 +5,7 @@ import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
 import org.multibit.hd.ui.models.Model;
 
-import java.util.Arrays;
+import java.util.List;
 
 /**
  * <p>Model to provide the following to view:</p>
@@ -19,19 +19,12 @@ import java.util.Arrays;
 public class SeedPhraseDisplayModel implements Model {
 
   private final SeedPhraseGenerator generator;
-  private char[] seedPhrase;
+  private List<String> seedPhrase;
   private boolean asClearText = false;
 
   public SeedPhraseDisplayModel(SeedPhraseGenerator generator) {
     this.generator = generator;
     newSeedPhrase();
-  }
-
-  /**
-   * Zero out the seed phrase before closing
-   */
-  public void dispose() {
-    Arrays.fill(seedPhrase, '0');
   }
 
   /**
@@ -55,7 +48,16 @@ public class SeedPhraseDisplayModel implements Model {
    */
   public String displaySeedPhrase() {
     if (asClearText) {
-      return String.valueOf(seedPhrase);
+      StringBuffer buffer = new StringBuffer();
+      int count = 0;
+      for (String word : seedPhrase) {
+        buffer.append(word);
+        count++;
+        if (count != seedPhrase.size()) {
+          buffer.append(" ");
+        }
+      }
+      return buffer.toString();
     } else {
       return Strings.repeat("*", 200);
     }

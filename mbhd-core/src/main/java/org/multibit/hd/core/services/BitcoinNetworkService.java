@@ -2,7 +2,7 @@ package org.multibit.hd.core.services;
 
 import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.PeerGroup;
-import com.google.bitcoin.discovery.DnsDiscovery;
+import com.google.bitcoin.net.discovery.DnsDiscovery;
 import com.google.bitcoin.params.MainNetParams;
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;

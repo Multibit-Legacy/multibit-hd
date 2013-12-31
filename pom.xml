@@ -296,6 +296,7 @@
     <dependency>
       <groupId>com.google</groupId>
       <artifactId>bitcoinj</artifactId>
+        <version>0.11-SNAPSHOT</version>
     </dependency>
 
     <!-- Joda time for timestamps -->

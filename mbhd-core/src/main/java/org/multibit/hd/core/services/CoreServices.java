@@ -3,7 +3,7 @@ package org.multibit.hd.core.services;
 import com.google.common.eventbus.EventBus;
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
-import org.multibit.hd.core.api.seed_phrase.DefaultSeedPhraseGenerator;
+import org.multibit.hd.core.api.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.logging.LoggingFactory;
@@ -74,7 +74,7 @@ public class CoreServices {
    * @return Create a new seed phrase generator
    */
   public static SeedPhraseGenerator newSeedPhraseGenerator() {
-    return new DefaultSeedPhraseGenerator();
+    return new Bip39SeedPhraseGenerator();
   }
 
 }

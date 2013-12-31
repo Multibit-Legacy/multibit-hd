@@ -1,5 +1,9 @@
 package org.multibit.hd.core.api.seed_phrase;
 
+import org.multibit.hd.core.exceptions.SeedPhraseException;
+
+import java.util.List;
+
 /**
  * <p>Interface to provide the following to Core API:</p>
  * <ul>
@@ -12,15 +16,15 @@ package org.multibit.hd.core.api.seed_phrase;
 public interface SeedPhraseGenerator {
 
   /**
-   * @return A new seed phrase using the current size
+   * @return A new seed phrase using the default size
    */
-  char[] newSeedPhrase();
+  List<String> newSeedPhrase() throws SeedPhraseException;
 
   /**
    * @param size The seed phrase size to use
    *
    * @return A new seed phrase based on the new size
    */
-  char[] newSeedPhrase(SeedPhraseSize size);
+  List<String> newSeedPhrase(SeedPhraseSize size) throws SeedPhraseException;
 
 }
