@@ -3,8 +3,6 @@ package org.multibit.hd.core.api.seed_phrase;
 import com.google.bitcoin.crypto.MnemonicCode;
 import com.google.bitcoin.crypto.MnemonicException;
 import org.multibit.hd.core.exceptions.SeedPhraseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.security.SecureRandom;
@@ -21,10 +19,6 @@ import java.util.List;
  *  
  */
 public class Bip39SeedPhraseGenerator implements SeedPhraseGenerator {
-
-  private static final Logger log = LoggerFactory.getLogger(Bip39SeedPhraseGenerator.class);
-
-  private SeedPhraseSize size = SeedPhraseSize.TWELVE_WORDS;
 
   private MnemonicCode mnemonicCode;
   private SecureRandom secureRandom;
