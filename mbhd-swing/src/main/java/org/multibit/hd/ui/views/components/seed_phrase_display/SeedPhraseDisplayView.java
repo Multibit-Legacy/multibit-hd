@@ -75,6 +75,8 @@ public class SeedPhraseDisplayView implements View<SeedPhraseDisplayModel>, Acti
 
         JButton button = (JButton) e.getSource();
 
+        asClearText = !asClearText;
+
         if (asClearText) {
           AwesomeDecorator.applyIcon(
             AwesomeIcon.EYE,
@@ -91,7 +93,6 @@ public class SeedPhraseDisplayView implements View<SeedPhraseDisplayModel>, Acti
             AwesomeDecorator.NORMAL_ICON_SIZE
           );
         }
-        asClearText = !asClearText;
 
         model.setAsClearText(asClearText);
 

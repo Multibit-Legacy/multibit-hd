@@ -20,7 +20,7 @@ public class SeedPhraseDisplayModel implements Model {
 
   private final SeedPhraseGenerator generator;
   private List<String> seedPhrase;
-  private boolean asClearText = false;
+  private boolean asClearText = true;
 
   public SeedPhraseDisplayModel(SeedPhraseGenerator generator) {
     this.generator = generator;
