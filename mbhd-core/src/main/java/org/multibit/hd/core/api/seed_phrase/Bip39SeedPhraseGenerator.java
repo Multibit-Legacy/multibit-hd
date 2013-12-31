@@ -48,4 +48,16 @@ public class Bip39SeedPhraseGenerator implements SeedPhraseGenerator {
       throw new SeedPhraseException("Wrong length of entropy bytes", mle);
     }
   }
+
+  @Override
+  public byte[] convertToSeed(List<String> seedPhrase) throws SeedPhraseException {
+    try {
+      mnemonicCode.check(seedPhrase);
+
+      // Convert to seed byte array using an empty password
+      return MnemonicCode.toSeed(seedPhrase, "");
+    } catch (MnemonicException e) {
+      throw new SeedPhraseException("The seed phrase is not valid", e);
+    }
+  }
 }
