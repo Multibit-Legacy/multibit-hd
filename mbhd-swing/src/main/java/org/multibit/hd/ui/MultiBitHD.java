@@ -1,6 +1,5 @@
 package org.multibit.hd.ui;
 
-import com.google.common.util.concurrent.Uninterruptibles;
 import com.xeiam.xchange.currency.MoneyUtils;
 import com.xeiam.xchange.mtgox.v2.MtGoxExchange;
 import org.multibit.hd.core.config.Configurations;
@@ -18,13 +17,10 @@ import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.platform.GenericApplication;
 import org.multibit.hd.ui.views.*;
-import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.wizards.Wizards;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Main entry point to the application</p>
@@ -96,11 +92,6 @@ public class MultiBitHD {
       MoneyUtils.fromSatoshi(0),
       "Unknown"
     );
-
-    // TODO Check configuration before determining lightbox
-    Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
-
-    Panels.showLightBox(Wizards.newWelcomeWizard().getWizardPanel());
 
   }
 
