@@ -58,7 +58,7 @@ public class HeaderView {
 
     // Create the content panel
     contentPanel = Panels.newPanel(new MigLayout(
-      "insets 15 8,hidemode 1", // Layout
+      "insets 15 8,hidemode 1,fillx", // Layout
       "[]", // Columns
       "[]10[shrink]" // Rows
     ));
@@ -72,7 +72,7 @@ public class HeaderView {
 
     // Create the alert panel
     alertPanel = Panels.newPanel(new MigLayout(
-      "fill,ins 5,hidemode 3",
+      "fillx,ins 5,hidemode 3",
       "[grow][][]", // Columns
       "[]" // Rows
     ));
@@ -91,8 +91,8 @@ public class HeaderView {
     trailingSymbolLabel = balanceLabels[2];
     exchangeLabel = balanceLabels[3];
 
-    contentPanel.add(balancePanel, "grow");
-    contentPanel.add(alertPanel, "grow");
+    contentPanel.add(balancePanel, "grow,wrap");
+    contentPanel.add(alertPanel, "grow,push");
 
     onLocaleChangedEvent(null);
   }
