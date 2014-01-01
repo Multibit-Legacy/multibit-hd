@@ -83,7 +83,7 @@ public class Bip39SeedPhraseGeneratorTest {
     SeedPhraseGenerator generator = new Bip39SeedPhraseGenerator();
 
     // Create a seed from a bad phrase
-    List<String> badPhrase = new ArrayList<String>();
+    List<String> badPhrase = new ArrayList<>();
     badPhrase.add("blah");
     badPhrase.add("blah di");
     badPhrase.add("blah");

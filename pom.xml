@@ -220,6 +220,11 @@
         <artifactId>bitcoinj</artifactId>
         <version>0.10</version>
       </dependency>
+      <dependency>
+        <groupId>com.madgag</groupId>
+        <artifactId>scprov-jdk15on</artifactId>
+        <version>1.47.0.3</version>
+      </dependency>
 
       <!-- Joda time for timestamps -->
       <dependency>

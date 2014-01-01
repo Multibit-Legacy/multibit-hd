@@ -6,16 +6,15 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * <p>Seed phrase generator to provide the following to Core API:</p>
+ * <p>Seed phrase generator to provide the following to tests:</p>
  * <ul>
- * <li>Implementation of BIP0039 seed phrase generation</li>
+ * <li>Mock implementation of BIP0039 seed phrase generation</li>
  * </ul>
- * TODO Requires proper implementation
  *
  * @since 0.0.1
  *  
  */
-public class DefaultSeedPhraseGenerator implements SeedPhraseGenerator {
+public class MockSeedPhraseGenerator implements SeedPhraseGenerator {
 
   private final String[] mnemonics = new String[]{
     // 12 words
