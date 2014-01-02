@@ -16,6 +16,8 @@ import java.util.List;
  */
 public interface SeedPhraseGenerator {
 
+  public static final int EXPECTED_SEED_LENGTH_IN_BYTES = 64;
+
   /**
    * @return A new seed phrase using the default size
    */
