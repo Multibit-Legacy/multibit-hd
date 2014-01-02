@@ -70,7 +70,7 @@ public class ComponentTestBed {
   public JPanel createTestPanel() {
 
     // Choose a panel to test
-    WelcomeWizard wizard = Wizards.newWelcomeWizard();
+    WelcomeWizard wizard = Wizards.newExitingWelcomeWizard();
     wizard.show(Panels.CREATE_WALLET_PASSWORD_ACTION_NAME);
     return wizard.getWizardPanel();
 

@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.wizards;
 
 import com.google.common.eventbus.Subscribe;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;
 import org.multibit.hd.ui.views.components.Panels;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 
 /**
  * <p>Abstract base class to provide the following to UI:</p>
@@ -18,7 +20,7 @@ import java.awt.*;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public abstract class AbstractWizard {
 
@@ -30,11 +32,13 @@ public abstract class AbstractWizard {
   private final WizardCardLayout cardLayout;
   private final JPanel wizardPanel;
 
+  private boolean exiting = false;
+
   protected AbstractWizard() {
 
     CoreServices.uiEventBus.register(this);
 
-    cardLayout = new WizardCardLayout(0,0);
+    cardLayout = new WizardCardLayout(0, 0);
     wizardPanel = Panels.newPanel(cardLayout);
 
     // Use current local for initial creation
@@ -113,4 +117,48 @@ public abstract class AbstractWizard {
   public JPanel getWizardPanel() {
     return wizardPanel;
   }
+
+  /**
+   * @param exiting True if the wizard should trigger an "exit" event rather than a "close"
+   */
+  public void setExiting(boolean exiting) {
+    this.exiting = exiting;
+  }
+
+  /**
+   * @return True if the wizard should trigger an "exit" event rather than a "close"
+   */
+  public boolean isExiting() {
+    return exiting;
+  }
+
+  /**
+   * @return The standard "exit" action to trigger application shutdown
+   */
+  public Action getExitAction() {
+
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        CoreEvents.fireShutdownEvent();
+      }
+    };
+
+  }
+
+  /**
+   * @return The standard "cancel" action to trigger the removal of the lightbox
+   */
+  public Action getCancelAction() {
+
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        Panels.hideLightBox();
+      }
+    };
+
+  }
+
+
 }

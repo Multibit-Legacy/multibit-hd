@@ -2,7 +2,7 @@ package org.multibit.hd.ui.events.controller;
 
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.models.AlertModel;
-import org.multibit.hd.ui.views.DetailScreen;
+import org.multibit.hd.ui.views.detail_views.DetailScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

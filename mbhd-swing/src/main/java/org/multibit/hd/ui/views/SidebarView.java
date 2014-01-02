@@ -8,6 +8,7 @@ import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.SidebarNodeInfo;
 import org.multibit.hd.ui.views.components.ThemeAwareTreeCellRenderer;
 import org.multibit.hd.ui.views.components.TreeNodes;
+import org.multibit.hd.ui.views.detail_views.DetailScreen;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
 

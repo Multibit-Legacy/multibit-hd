@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
-import org.multibit.hd.ui.views.DetailScreen;
+import org.multibit.hd.ui.views.detail_views.DetailScreen;
 
 /**
  * <p>Value object to provide the following to sidebar tree nodes:</p>

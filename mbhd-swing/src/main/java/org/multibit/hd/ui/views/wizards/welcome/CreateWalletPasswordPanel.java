@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.wizards.welcome;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
-import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
@@ -32,16 +31,6 @@ public class CreateWalletPasswordPanel extends JPanel implements ActionListener 
   private final AbstractWizard wizard;
 
   private final ModelAndView<ConfirmPasswordModel, ConfirmPasswordView> confirmPasswordMaV;
-
-  /**
-   * The "exit" action
-   */
-  private Action exitAction = new AbstractAction() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      CoreEvents.fireShutdownEvent();
-    }
-  };
 
   /**
    * The "previous" action
@@ -75,13 +64,21 @@ public class CreateWalletPasswordPanel extends JPanel implements ActionListener 
 
     // Swap buttons to maintain reading order
     if (Languages.isLeftToRight()) {
-      add(Buttons.newExitButton(exitAction), "span 2,push");
+      if (wizard.isExiting()) {
+        add(Buttons.newExitButton(wizard.getExitAction()), "span 2,push");
+      } else {
+        add(Buttons.newCancelButton(wizard.getCancelAction()), "span 2,push");
+      }
       add(Buttons.newPreviousButton(nextAction), "right,shrink");
       add(Buttons.newNextButton(nextAction), "right,shrink");
     } else {
       add(Buttons.newNextButton(nextAction), "left,push");
       add(Buttons.newPreviousButton(previousAction), "left,push");
-      add(Buttons.newExitButton(exitAction), "span 2,shrink");
+      if (wizard.isExiting()) {
+        add(Buttons.newExitButton(wizard.getExitAction()), "span 2,shrink");
+      } else {
+        add(Buttons.newCancelButton(wizard.getCancelAction()), "span 2,shrink");
+      }
     }
 
   }

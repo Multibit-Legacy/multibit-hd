@@ -5,6 +5,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.controller.ShowDetailScreenEvent;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.detail_views.DetailScreen;
 import org.multibit.hd.ui.views.detail_views.ToolsDetailView;
 import org.multibit.hd.ui.views.detail_views.WalletDetailView;
 import org.multibit.hd.ui.views.themes.Themes;

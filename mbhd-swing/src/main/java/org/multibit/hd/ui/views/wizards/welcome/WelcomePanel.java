@@ -2,10 +2,12 @@ package org.multibit.hd.ui.views.wizards.welcome;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
-import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.i18n.Languages;
-import org.multibit.hd.ui.views.components.*;
+import org.multibit.hd.ui.views.components.Buttons;
+import org.multibit.hd.ui.views.components.Labels;
+import org.multibit.hd.ui.views.components.PanelDecorator;
+import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,16 +34,6 @@ public class WelcomePanel extends JPanel implements ActionListener {
   private final AbstractWizard wizard;
 
   /**
-   * The "exit" action
-   */
-  private Action exitAction = new AbstractAction() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      CoreEvents.fireShutdownEvent();
-    }
-  };
-
-  /**
    * The "next" action
    */
   private Action nextAction = new AbstractAction() {
@@ -62,11 +54,19 @@ public class WelcomePanel extends JPanel implements ActionListener {
 
     // Swap buttons to maintain reading order
     if (Languages.isLeftToRight()) {
-      add(Buttons.newExitButton(exitAction), "span 2,push");
+      if (wizard.isExiting()) {
+        add(Buttons.newExitButton(wizard.getExitAction()), "span 2,push");
+      } else {
+        add(Buttons.newCancelButton(wizard.getCancelAction()), "span 2,push");
+      }
       add(Buttons.newNextButton(nextAction), "right,shrink");
     } else {
       add(Buttons.newNextButton(nextAction), "left,push");
-      add(Buttons.newExitButton(exitAction), "span 2,shrink");
+      if (wizard.isExiting()) {
+        add(Buttons.newExitButton(wizard.getExitAction()), "span 2,shrink");
+      } else {
+        add(Buttons.newCancelButton(wizard.getCancelAction()), "span 2,shrink");
+      }
     }
 
   }

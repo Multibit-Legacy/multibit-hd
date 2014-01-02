@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.events.controller;
 
-import org.multibit.hd.ui.views.DetailScreen;
+import org.multibit.hd.ui.views.detail_views.DetailScreen;
 
 /**
  * <p>Event to provide the following to the Controller Event API:</p>

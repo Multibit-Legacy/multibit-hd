@@ -3,7 +3,7 @@ package org.multibit.hd.ui.controllers;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.ui.events.controller.ShowDetailScreenEvent;
-import org.multibit.hd.ui.views.DetailScreen;
+import org.multibit.hd.ui.views.detail_views.DetailScreen;
 import org.multibit.hd.ui.views.SettingsView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

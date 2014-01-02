@@ -39,7 +39,7 @@ public class ToolsDetailView {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        Panels.showLightBox(Wizards.newWelcomeWizard().getWizardPanel());
+        Panels.showLightBox(Wizards.newClosingWelcomeWizard().getWizardPanel());
       }
     };
 

@@ -35,8 +35,23 @@ public class Wizards {
   /**
    * @return A new "welcome" wizard for the initial set up
    */
-  public static WelcomeWizard newWelcomeWizard() {
+  public static WelcomeWizard newExitingWelcomeWizard() {
 
-    return new WelcomeWizard();
+    WelcomeWizard wizard = new WelcomeWizard();
+    wizard.setExiting(true);
+
+    return wizard;
   }
+
+  /**
+   * @return A new "welcome" wizard for recovery set up
+   */
+  public static WelcomeWizard newClosingWelcomeWizard() {
+
+    WelcomeWizard wizard = new WelcomeWizard();
+    wizard.setExiting(false);
+
+    return wizard;
+  }
+
 }

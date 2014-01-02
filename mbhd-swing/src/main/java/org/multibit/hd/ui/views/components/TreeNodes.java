@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.components;
 
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.ui.i18n.Languages;
-import org.multibit.hd.ui.views.DetailScreen;
+import org.multibit.hd.ui.views.detail_views.DetailScreen;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
