@@ -31,8 +31,6 @@ public class SidebarView {
 
   private final JPanel contentPanel;
 
-  private JTree sidebarTree;
-
   public SidebarView() {
 
     CoreServices.uiEventBus.register(this);
@@ -65,7 +63,7 @@ public class SidebarView {
 
     JScrollPane sidebarPane = new JScrollPane();
 
-    sidebarTree = new JTree(createSidebarTreeNodes());
+    JTree sidebarTree = new JTree(createSidebarTreeNodes());
     sidebarTree.setShowsRootHandles(false);
     sidebarTree.setRootVisible(false);
 
@@ -77,7 +75,7 @@ public class SidebarView {
     sidebarTree.setToggleClickCount(1);
 
     // Ensure we always have the soft wallet open
-    TreePath walletPath =sidebarTree.getPathForRow(0);
+    TreePath walletPath = sidebarTree.getPathForRow(0);
     sidebarTree.getSelectionModel().setSelectionPath(walletPath);
     sidebarTree.expandPath(walletPath);
 
@@ -121,7 +119,6 @@ public class SidebarView {
 
   private DefaultMutableTreeNode createSidebarTreeNodes() {
 
-    // TODO Convert this to proper tree model with actions
     DefaultMutableTreeNode root = TreeNodes.newSidebarTreeNode("", DetailScreen.WALLET);
 
     DefaultMutableTreeNode wallet = TreeNodes.newSidebarTreeNode("Wallet", DetailScreen.WALLET);
