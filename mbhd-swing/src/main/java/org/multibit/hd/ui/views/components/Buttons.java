@@ -350,4 +350,13 @@ public class Buttons {
     return button;
 
   }
+
+  public static JButton newShowWelcomeWizardButton(Action action) {
+
+    JButton button = newLargeButton(action, MessageKey.SHOW_WELCOME_WIZARD);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.WRENCH, button, true, AwesomeDecorator.LARGE_ICON_SIZE);
+
+    return button;
+  }
 }

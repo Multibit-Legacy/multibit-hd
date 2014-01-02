@@ -3,7 +3,7 @@ package org.multibit.hd.ui.controllers;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.ui.events.controller.ShowDetailScreenEvent;
-import org.multibit.hd.ui.views.Screen;
+import org.multibit.hd.ui.views.DetailScreen;
 import org.multibit.hd.ui.views.SettingsView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,7 @@ public class SettingsController {
 
   private final SettingsView view;
 
-  private final Screen screen = Screen.MAIN_SETTINGS;
+  private final DetailScreen detailScreen = DetailScreen.SETTINGS;
 
   public SettingsController(SettingsView view) {
 

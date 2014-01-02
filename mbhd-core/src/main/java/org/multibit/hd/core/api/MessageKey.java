@@ -60,6 +60,9 @@ public enum MessageKey {
   ENTER_PASSWORD("Enter password"),
   CONFIRM_PASSWORD("Confirm password"),
 
+  // Tool buttons
+  SHOW_WELCOME_WIZARD("Welcome wizard"),
+
   // Statuses
   BROADCAST_STATUS_OK("Broadcast OK"),
   RELAY_STATUS_OK("Relayed OK"),
@@ -76,7 +79,7 @@ public enum MessageKey {
   WALLET_PASSWORD_NOTE("This password will be needed whenever you send bitcoins. You can always recover it using your seed phrase."),
 
   // End of enum
-  ;
+  CONTACTS("Contacts"), TRANSACTIONS("Transactions"), HISTORY("History"), PREFERENCES("Preferences"), TOOLS("Tools");
 
   private final String key;
 

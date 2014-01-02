@@ -47,46 +47,42 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
 
     DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
 
-    /*
-    TODO Use this later
-    DefaultMutableTreeNode node =
-                (DefaultMutableTreeNode)value;
-        BookInfo nodeInfo =
-                (BookInfo)(node.getUserObject());
-        String title = nodeInfo.bookName;
+    SidebarNodeInfo nodeInfo = (SidebarNodeInfo) node.getUserObject();
 
-     */
+    // Content
+    ret.setText(nodeInfo.getText());
 
+    // Theme
     ret.setBorder(border);
-
-    ret.setText(value.toString());
     ret.setForeground(Themes.currentTheme.text());
 
+    // Iconography
     if (leaf) {
-      switch (node.toString()) {
+      switch (nodeInfo.getDetailScreen()) {
 
-        case "Contacts":
+        case CONTACTS:
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.USER, Color.BLACK, 20));
           break;
-        case "Transactions":
+        case TRANSACTIONS:
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.LIST, Color.BLACK, 18));
           break;
-        case "Help":
+        case HELP:
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.QUESTION, Color.BLACK, 20));
           break;
-        case "History":
+        case HISTORY:
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.ARCHIVE, Color.BLACK, 20));
           break;
-        case "Preferences":
+        case PREFERENCES:
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.GEARS, Color.BLACK, 20));
           break;
-        case "Tools":
+        case TOOLS:
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.WRENCH, Color.BLACK, 20));
           break;
-        case "Exit":
+        case EXIT:
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.SIGN_OUT, Color.BLACK, 20));
           break;
       }
+
     } else {
 
       setOpenIcon(AwesomeDecorator.createIcon(AwesomeIcon.CARET_DOWN, Color.BLACK, 20));

@@ -5,6 +5,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.controller.ShowDetailScreenEvent;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.detail_views.ToolsDetailView;
 import org.multibit.hd.ui.views.detail_views.WalletDetailView;
 import org.multibit.hd.ui.views.themes.Themes;
 
@@ -43,7 +44,8 @@ public class DetailView {
     // Override the default theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
-    cardHolder.add(new WalletDetailView().getContentPanel());
+    cardHolder.add(new WalletDetailView().getContentPanel(), DetailScreen.WALLET.name());
+    cardHolder.add(new ToolsDetailView().getContentPanel(), DetailScreen.TOOLS.name());
 
     contentPanel.add(cardHolder, "grow,wrap");
 
@@ -59,7 +61,7 @@ public class DetailView {
   @Subscribe
   public void onShowDetailScreen(ShowDetailScreenEvent event) {
 
-    cardLayout.show(cardHolder, event.getScreen().name());
+    cardLayout.show(cardHolder, event.getDetailScreen().name());
 
   }
 

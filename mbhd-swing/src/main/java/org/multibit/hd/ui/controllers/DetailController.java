@@ -30,8 +30,8 @@ public class DetailController {
   @Subscribe
   public void onDetailScreenChanged(ShowDetailScreenEvent event) {
 
-    switch (event.getScreen()) {
-      case MAIN_SETTINGS:
+    switch (event.getDetailScreen()) {
+      case SETTINGS:
 
         break;
     }

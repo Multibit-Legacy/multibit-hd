@@ -1,10 +1,13 @@
 package org.multibit.hd.ui.views;
 
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.SidebarNodeInfo;
 import org.multibit.hd.ui.views.components.ThemeAwareTreeCellRenderer;
+import org.multibit.hd.ui.views.components.TreeNodes;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
 
@@ -92,19 +95,15 @@ public class SidebarView {
 
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
 
-        switch (node.toString()) {
-          case "Wallet":
-            ControllerEvents.fireShowDetailScreenEvent(Screen.MAIN_WALLET);
-            break;
-          case "Trezor 1":
-            ControllerEvents.fireShowDetailScreenEvent(Screen.MAIN_WALLET);
-            break;
-          case "Trezor 2":
-            ControllerEvents.fireShowDetailScreenEvent(Screen.MAIN_WALLET);
-            break;
-          case "Exit":
+        SidebarNodeInfo nodeInfo = (SidebarNodeInfo) node.getUserObject();
+
+        switch (nodeInfo.getDetailScreen()) {
+          // Add special cases
+          case EXIT:
             Panels.showLightBox(Wizards.newExitWizard().getWizardPanel());
             break;
+          default:
+            ControllerEvents.fireShowDetailScreenEvent(nodeInfo.getDetailScreen());
         }
 
       }
@@ -123,28 +122,28 @@ public class SidebarView {
   private DefaultMutableTreeNode createSidebarTreeNodes() {
 
     // TODO Convert this to proper tree model with actions
-    DefaultMutableTreeNode root = new DefaultMutableTreeNode("Wallet");
+    DefaultMutableTreeNode root = TreeNodes.newSidebarTreeNode("", DetailScreen.WALLET);
 
-    DefaultMutableTreeNode wallet = new DefaultMutableTreeNode("Wallet");
-    wallet.add(new DefaultMutableTreeNode("Contacts"));
-    wallet.add(new DefaultMutableTreeNode("Transactions"));
+    DefaultMutableTreeNode wallet = TreeNodes.newSidebarTreeNode("Wallet", DetailScreen.WALLET);
+    wallet.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, DetailScreen.CONTACTS));
+    wallet.add(TreeNodes.newSidebarTreeNode(MessageKey.TRANSACTIONS, DetailScreen.TRANSACTIONS));
     root.add(wallet);
 
-    DefaultMutableTreeNode trezor1 = new DefaultMutableTreeNode("Trezor 1");
-    trezor1.add(new DefaultMutableTreeNode("Contacts"));
-    trezor1.add(new DefaultMutableTreeNode("Transactions"));
+    DefaultMutableTreeNode trezor1 = TreeNodes.newSidebarTreeNode("Trezor 1", DetailScreen.WALLET);
+    trezor1.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, DetailScreen.CONTACTS));
+    trezor1.add(TreeNodes.newSidebarTreeNode(MessageKey.TRANSACTIONS, DetailScreen.TRANSACTIONS));
     root.add(trezor1);
 
-    DefaultMutableTreeNode trezor2 = new DefaultMutableTreeNode("Trezor 2");
-    trezor2.add(new DefaultMutableTreeNode("Contacts"));
-    trezor2.add(new DefaultMutableTreeNode("Transactions"));
+    DefaultMutableTreeNode trezor2 = TreeNodes.newSidebarTreeNode("Trezor 2", DetailScreen.WALLET);
+    trezor2.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, DetailScreen.CONTACTS));
+    trezor2.add(TreeNodes.newSidebarTreeNode(MessageKey.TRANSACTIONS, DetailScreen.TRANSACTIONS));
     root.add(trezor2);
 
-    root.add(new DefaultMutableTreeNode("Help"));
-    root.add(new DefaultMutableTreeNode("History"));
-    root.add(new DefaultMutableTreeNode("Preferences"));
-    root.add(new DefaultMutableTreeNode("Tools"));
-    root.add(new DefaultMutableTreeNode("Exit"));
+    root.add(TreeNodes.newSidebarTreeNode(MessageKey.HELP, DetailScreen.HELP));
+    root.add(TreeNodes.newSidebarTreeNode(MessageKey.HISTORY, DetailScreen.HISTORY));
+    root.add(TreeNodes.newSidebarTreeNode(MessageKey.PREFERENCES, DetailScreen.PREFERENCES));
+    root.add(TreeNodes.newSidebarTreeNode(MessageKey.TOOLS, DetailScreen.TOOLS));
+    root.add(TreeNodes.newSidebarTreeNode(MessageKey.EXIT, DetailScreen.EXIT));
 
     return root;
   }

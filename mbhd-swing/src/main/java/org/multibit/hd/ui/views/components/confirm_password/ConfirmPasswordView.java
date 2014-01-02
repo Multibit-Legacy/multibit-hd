@@ -2,10 +2,7 @@ package org.multibit.hd.ui.views.components.confirm_password;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.views.View;
-import org.multibit.hd.ui.views.components.Buttons;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.components.TextBoxes;
+import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
