@@ -29,6 +29,9 @@ import java.math.BigInteger;
 public class WalletId {
   private static final Logger log = LoggerFactory.getLogger(WalletId.class);
 
+  public static final int SEPARATOR_REPEAT_PERIOD = 4;
+  public static final String SEPARATOR = "-";
+
   private final byte[] walletId;
 
   /**
@@ -42,22 +45,23 @@ public class WalletId {
     Preconditions.checkNotNull(seed);
     Preconditions.checkState(seed.length == SeedPhraseGenerator.EXPECTED_SEED_LENGTH_IN_BYTES);
 
-    log.debug("seed ='" + Utils.bytesToHexString(seed) + "'");
+    //log.debug("seed ='" + Utils.bytesToHexString(seed) + "'");
 
     BigInteger seedBigInteger = new BigInteger(1, seed);
-    log.debug("seedBigInteger ='" + seedBigInteger.toString() + "'");
+    //log.debug("seedBigInteger ='" + seedBigInteger.toString() + "'");
 
 
     // Convert the seed to a wallet id using various trapdoor functions.
 
     // Scrypt - scrypt is run using the seedBigInteger as the 'password'.
-    // This returns a byte array (normally used as an AES256 key but here passed on to more trapdoor functions)
+    // This returns a byte array (normally used as an AES256 key but here passed on to more trapdoor functions).
+    // The scrypt parameters used are the default, with a salt of '1'.
     Protos.ScryptParameters.Builder scryptParametersBuilder  = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(new byte[] {(byte) 1}));
     Protos.ScryptParameters scryptParameters = scryptParametersBuilder.build();
     KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(scryptParameters);
     KeyParameter keyParameter = keyCrypterScrypt.deriveKey(seedBigInteger.toString());
     byte[] derivedKey = keyParameter.getKey();
-    log.debug("derivedKey ='" + Utils.bytesToHexString(derivedKey) +  "'");
+    //log.debug("derivedKey ='" + Utils.bytesToHexString(derivedKey) +  "'");
 
 
     // Ensure that the seed is within the Bitcoin EC group.
@@ -66,23 +70,42 @@ public class WalletId {
 
     BigInteger derivedKeyBigInteger = new BigInteger(1, derivedKey);
 
-    log.debug("derivedKeyBigInteger (before) ='" + derivedKeyBigInteger +  "'");
+    //log.debug("derivedKeyBigInteger (before) ='" + derivedKeyBigInteger +  "'");
     derivedKeyBigInteger = derivedKeyBigInteger.mod(sizeOfGroup);
-    log.debug("derivedKeyBigInteger (after) ='" + derivedKeyBigInteger +  "'");
+    //log.debug("derivedKeyBigInteger (after) ='" + derivedKeyBigInteger +  "'");
 
-    // EC curve generator function
+    // EC curve generator function used to convert a 'private key' to a 'public key'
     ECPoint point = ECKey.CURVE.getG().multiply(derivedKeyBigInteger);
-    // Note the pubkey is not compressed
+    // Note the public key is not compressed
     byte[] publicKey = point.getEncoded();
-    log.debug("publicKey ='" + Utils.bytesToHexString(publicKey) +  "'");
+    //log.debug("publicKey ='" + Utils.bytesToHexString(publicKey) +  "'");
 
-    // SHA256RIPE160
+    // SHA256RIPE160 to generate final walletId bytes
     walletId = Utils.sha256hash160(publicKey);
 
-    log.debug("walletId ='" + Utils.bytesToHexString(walletId) + "'");
+    //log.debug("walletId ='" + Utils.bytesToHexString(walletId) + "'");
   }
 
-  public byte[] getWalletIdBytes() {
+  /**
+   * @return the raw wallet id as a byte[]
+   */
+  public byte[] getBytes() {
     return walletId;
+  }
+
+  /**
+   * @return the wallet id as a formatted string
+   */
+  public String toFormattedString() {
+    StringBuffer buffer = new StringBuffer();
+
+    for (int i=0; i< walletId.length; i++) {
+      buffer.append(Utils.bytesToHexString(new byte[]{walletId[i]}));
+
+      if (((i + 1) % SEPARATOR_REPEAT_PERIOD == 0) && !(i == walletId.length - 1)) {
+        buffer.append(SEPARATOR);
+      }
+    }
+    return buffer.toString();
   }
 }
