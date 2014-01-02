@@ -32,6 +32,8 @@ public class WalletId {
   public static final int SEPARATOR_REPEAT_PERIOD = 4;
   public static final String SEPARATOR = "-";
 
+  private static final byte SALT_USED_IN_SCRYPT = (byte) 1;
+
   private final byte[] walletId;
 
   /**
@@ -53,10 +55,10 @@ public class WalletId {
 
     // Convert the seed to a wallet id using various trapdoor functions.
 
-    // Scrypt - scrypt is run using the seedBigInteger as the 'password'.
+    // Scrypt - scrypt is run using the seedBigInteger.toString() as the 'password'.
     // This returns a byte array (normally used as an AES256 key but here passed on to more trapdoor functions).
     // The scrypt parameters used are the default, with a salt of '1'.
-    Protos.ScryptParameters.Builder scryptParametersBuilder  = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(new byte[] {(byte) 1}));
+    Protos.ScryptParameters.Builder scryptParametersBuilder  = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(new byte[] {SALT_USED_IN_SCRYPT}));
     Protos.ScryptParameters scryptParameters = scryptParametersBuilder.build();
     KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(scryptParameters);
     KeyParameter keyParameter = keyCrypterScrypt.deriveKey(seedBigInteger.toString());
@@ -74,13 +76,13 @@ public class WalletId {
     derivedKeyBigInteger = derivedKeyBigInteger.mod(sizeOfGroup);
     //log.debug("derivedKeyBigInteger (after) ='" + derivedKeyBigInteger +  "'");
 
-    // EC curve generator function used to convert a 'private key' to a 'public key'
+    // EC curve generator function used to convert the key just derived (a 'private key') to a 'public key'
     ECPoint point = ECKey.CURVE.getG().multiply(derivedKeyBigInteger);
     // Note the public key is not compressed
     byte[] publicKey = point.getEncoded();
     //log.debug("publicKey ='" + Utils.bytesToHexString(publicKey) +  "'");
 
-    // SHA256RIPE160 to generate final walletId bytes
+    // SHA256RIPE160 to generate final walletId bytes from the 'public key'
     walletId = Utils.sha256hash160(publicKey);
 
     //log.debug("walletId ='" + Utils.bytesToHexString(walletId) + "'");
