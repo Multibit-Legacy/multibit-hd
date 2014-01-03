@@ -35,12 +35,12 @@ import java.util.List;
 public class WalletManager {
   private static final Logger log = LoggerFactory.getLogger(WalletManager.class);
 
-  public static final String WALLET_DIRECTORY_PREFIX = "multibithd";
+  public static final String WALLET_DIRECTORY_PREFIX = "mbhd";
 
   private static final String SEPARATOR = "-";
 
-  // The format of the wallet directories is "multibithd" + a wallet id.
-  // A walletid is 5 groups of 4 bytes in lowercase hex, with a "-' separator e.g. multibithd-11111111-22222222-33333333-44444444-55555555
+  // The format of the wallet directories is WALLET_DIRECTORY_PREFIX + a wallet id.
+  // A walletid is 5 groups of 4 bytes in lowercase hex, with a "-' separator e.g. mbhd-11111111-22222222-33333333-44444444-55555555
   public static final String REGEX_FOR_WALLET_DIRECTORY = "^" + WALLET_DIRECTORY_PREFIX + SEPARATOR + "[0-9a-f]{8}"
           + SEPARATOR + "[0-9a-f]{8}" + SEPARATOR + "[0-9a-f]{8}" + SEPARATOR + "[0-9a-f]{8}" + SEPARATOR + "[0-9a-f]{8}$";
 

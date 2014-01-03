@@ -42,11 +42,11 @@ public class WalletManagerTest {
 
   private final CharSequence WALLET_PASSWORD = "horatio nelson 123";
 
-  private final static String WALLET_DIRECTORY_1 = "multibithd-11111111-22222222-33333333-44444444-55555555";
-  private final static String WALLET_DIRECTORY_2 = "multibithd-66666666-77777777-88888888-99999999-aaaaaaaa";
-  private final static String INVALID_WALLET_DIRECTORY_1 = "not-multibithd-66666666-77777777-88888888-99999999-aaaaaaaa";
-  private final static String INVALID_WALLET_DIRECTORY_2 = "multibithd-66666666-77777777-88888888-99999999-gggggggg";
-  private final static String INVALID_WALLET_DIRECTORY_3 = "multibithd-1166666666-77777777-88888888-99999999-aaaaaaaa";
+  private final static String WALLET_DIRECTORY_1 = "mbhd-11111111-22222222-33333333-44444444-55555555";
+  private final static String WALLET_DIRECTORY_2 = "mbhd-66666666-77777777-88888888-99999999-aaaaaaaa";
+  private final static String INVALID_WALLET_DIRECTORY_1 = "not-mbhd-66666666-77777777-88888888-99999999-aaaaaaaa";
+  private final static String INVALID_WALLET_DIRECTORY_2 = "mbhd-66666666-77777777-88888888-99999999-gggggggg";
+  private final static String INVALID_WALLET_DIRECTORY_3 = "mbhd-1166666666-77777777-88888888-99999999-aaaaaaaa";
 
   private WalletManager walletManager;
 
@@ -173,7 +173,7 @@ public class WalletManagerTest {
     Wallet wallet1 = walletManager.createWallet(temporaryDirectory1.getAbsolutePath(), seed, "password");
 
     // Uncomment this next line if you want a wallet created in your MultiBitHDuser data directory.
-    // walletManager.createWallet( seed, "password");
+    walletManager.createWallet( seed, "password");
 
     assertThat(wallet1).isNotNull();
 
