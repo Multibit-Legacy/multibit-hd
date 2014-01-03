@@ -29,7 +29,7 @@ import java.util.List;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class WalletIdTest {
-  private static final String SEED_PHRASE_1 = "letter advice cage absurd amount doctor acoustic avoid letter advice cage above";
+  public static final String SEED_PHRASE_1 = "letter advice cage absurd amount doctor acoustic avoid letter advice cage above";
   private static final String WALLET_ID_1 = "23bb865e161bfefc3020c41866bf6f757fecdfcc";
   private static final String WALLET_ID_FORMATTED_1 = "23bb865e-161bfefc-3020c418-66bf6f75-7fecdfcc";
 
@@ -91,7 +91,7 @@ public class WalletIdTest {
      assertThat(WALLET_ID_FORMATTED_3.equals(walletId.toFormattedString())).isTrue();
    }
 
-   private List<String> split(String words) {
+   public static List<String> split(String words) {
        return new ArrayList<String>(Arrays.asList(words.split("\\s+")));
    }
 }

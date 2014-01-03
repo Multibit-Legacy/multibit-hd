@@ -24,14 +24,15 @@ import com.google.bitcoin.params.MainNetParams;
 import org.bitcoinj.wallet.Protos;
 import org.junit.Before;
 import org.junit.Test;
+import org.multibit.hd.core.api.WalletIdTest;
+import org.multibit.hd.core.api.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.services.CoreServices;
 
 import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -148,7 +149,7 @@ public class WalletManagerTest {
   }
 
   @Test
-  public void testGetWalletDirectory() throws Exception {
+  public void testWalletDirectory() throws Exception {
     File temporaryFile = File.createTempFile("something", ".txt");
     temporaryFile.deleteOnExit();
 
@@ -160,26 +161,48 @@ public class WalletManagerTest {
   }
 
   @Test
-  public void testCreateSimpleWallet() throws Exception {
-    // TODO should use a temporary directory for wallet creation
+  public void testCreateWallet() throws Exception {
+    // Create a random temporary directory
+    File temporaryDirectory1 = makeRandomTemporaryDirectory();
+
     WalletManager walletManager = new WalletManager();
 
-    Wallet wallet = walletManager.createSimpleWallet("testPassword");
+    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] seed = seedGenerator.convertToSeed(WalletIdTest.split(WalletIdTest.SEED_PHRASE_1));
 
-    assertThat(wallet).isNotNull();
+    Wallet wallet1 = walletManager.createWallet(temporaryDirectory1.getAbsolutePath(), seed, "password");
+
+    // Uncomment this next line if you want a wallet created in your MultiBitHDuser data directory.
+    // walletManager.createWallet( seed, "password");
+
+    assertThat(wallet1).isNotNull();
+
+    // There should be a single key
+    assertThat(wallet1.getKeychainSize() == 1).isTrue();
+
+
+    // Create another wallet - it should have the same wallet id and the private key should be the same
+    File temporaryDirectory2 = makeRandomTemporaryDirectory();
+
+    Wallet wallet2 = walletManager.createWallet(temporaryDirectory2.getAbsolutePath(), seed, "password");
+
+    assertThat(wallet2).isNotNull();
+
+    // There should be a single key
+    assertThat(wallet2.getKeychainSize() == 1).isTrue();
+
+    ECKey key1 = wallet1.getKeys().get(0);
+    ECKey key2 = wallet2.getKeys().get(0);
+
+    assertThat(Arrays.equals(key1.getPrivKeyBytes(), key2.getPrivKeyBytes())).isTrue();
+
+    // TODOcurrently not associating the walletId / wallet directory to the wallet
   }
 
   @Test
   public void testSearchWalletDirectories() throws Exception {
-    // Create a directory
-    File temporaryFile = File.createTempFile("nothing", "nothing");
-    temporaryFile.deleteOnExit();
-
-    File parentDirectory = temporaryFile.getParentFile();
-
-    File temporaryDirectory = new File(parentDirectory.getAbsolutePath() + File.separator + ("" + (new Random()).nextInt(1000000)));
-    temporaryDirectory.mkdir();
-    temporaryDirectory.deleteOnExit();
+    // Create a random temporary directory
+    File temporaryDirectory = makeRandomTemporaryDirectory();
 
     String walletPath1 = makeDirectory(temporaryDirectory, WALLET_DIRECTORY_1);
     String walletPath2 = makeDirectory(temporaryDirectory, WALLET_DIRECTORY_2);
@@ -189,7 +212,7 @@ public class WalletManagerTest {
 
     WalletManager walletManager = new WalletManager();
 
-    List<File> walletDirectories = walletManager.getWalletDirectories(temporaryDirectory);
+    List<File> walletDirectories = walletManager.findWalletDirectories(temporaryDirectory);
     assertThat(walletDirectories).isNotNull();
     assertThat(walletDirectories.size() == 2).isTrue();
     assertThat(walletDirectories.get(0).getAbsolutePath().equals(walletPath1)).isTrue();
@@ -199,9 +222,22 @@ public class WalletManagerTest {
 
   private String makeDirectory(File parentDirectory, String directoryName) {
     File directory = new File(parentDirectory.getAbsolutePath() + File.separator + directoryName);
-     directory.mkdir();
-     directory.deleteOnExit();
+    directory.mkdir();
+    directory.deleteOnExit();
     return directory.getAbsolutePath();
+  }
+
+  private File makeRandomTemporaryDirectory() throws IOException {
+    File temporaryFile = File.createTempFile("nothing", "nothing");
+    temporaryFile.deleteOnExit();
+
+    File parentDirectory = temporaryFile.getParentFile();
+
+    File temporaryDirectory = new File(parentDirectory.getAbsolutePath() + File.separator + ("" + (new Random()).nextInt(1000000)));
+    temporaryDirectory.mkdir();
+    temporaryDirectory.deleteOnExit();
+
+    return temporaryDirectory;
   }
 }
 
