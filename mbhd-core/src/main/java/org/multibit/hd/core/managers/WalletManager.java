@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  *  <p>Manager to provide the following to core users:<br>
@@ -30,7 +31,15 @@ import java.util.Collection;
 public class WalletManager {
   private static final Logger log = LoggerFactory.getLogger(WalletManager.class);
 
+  public static final String WALLET_DIRECTORY_PREFIX = "multibithd";
   public static final String SIMPLE_WALLET_ROOT_NAME = "simple";
+
+  private static final String SEPARATOR = "-";
+
+  // The format of the wallet directories is "multibithd" + a wallet id.
+  // A walletid is 5 groups of 4 bytes in lowercase hex, with a "-' separator e.g. multibithd-11111111-22222222-33333333-44444444-55555555
+  public static final String REGEX_FOR_WALLET_DIRECTORY = "^" + WALLET_DIRECTORY_PREFIX + SEPARATOR + "[0-9a-f]{8}"
+          + SEPARATOR + "[0-9a-f]{8}" + SEPARATOR + "[0-9a-f]{8}" + SEPARATOR + "[0-9a-f]{8}" + SEPARATOR + "[0-9a-f]{8}$";
 
   /**
    * The wallet version number for protobuf encrypted wallets - compatible with MultiBit
@@ -360,6 +369,37 @@ public class WalletManager {
     }
 
     return walletDirectory;
+  }
+
+  /**
+   * Work out what wallets are available in a directory (typically the user data directory).
+   * This is worked out by looking for directories with the name:
+   * 'multibithd' + a wallet id
+   *
+   * @param directoryToSearch The directory to search
+   * @return List<File> List of files of wallet directories
+   */
+  public List<File> getWalletDirectories(File directoryToSearch) {
+    Preconditions.checkNotNull(directoryToSearch);
+
+    File[] listOfFiles = directoryToSearch.listFiles();
+
+    List<File> walletDirectories = new ArrayList<File>();
+    // Look for filenames with format "multibithd"-"walletid" and are not empty.
+    if (listOfFiles != null) {
+      for (int i = 0; i < listOfFiles.length; i++) {
+        if (listOfFiles[i].isDirectory()) {
+          String filename = listOfFiles[i].getName();
+          if (filename.matches(REGEX_FOR_WALLET_DIRECTORY)) {
+            if (listOfFiles[i].length() > 0) {
+              walletDirectories.add(listOfFiles[i]);
+            }
+          }
+        }
+      }
+    }
+
+    return walletDirectories;
   }
 
   public Wallet getCurrentWallet() {

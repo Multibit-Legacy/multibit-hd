@@ -30,6 +30,8 @@ import java.io.File;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -38,6 +40,12 @@ public class WalletManagerTest {
   private static final String TEST_CREATE_ENCRYPTED_PROTOBUF_PREFIX = "testCreateEncryptedProtobuf";
 
   private final CharSequence WALLET_PASSWORD = "horatio nelson 123";
+
+  private final static String WALLET_DIRECTORY_1 = "multibithd-11111111-22222222-33333333-44444444-55555555";
+  private final static String WALLET_DIRECTORY_2 = "multibithd-66666666-77777777-88888888-99999999-aaaaaaaa";
+  private final static String INVALID_WALLET_DIRECTORY_1 = "not-multibithd-66666666-77777777-88888888-99999999-aaaaaaaa";
+  private final static String INVALID_WALLET_DIRECTORY_2 = "multibithd-66666666-77777777-88888888-99999999-gggggggg";
+  private final static String INVALID_WALLET_DIRECTORY_3 = "multibithd-1166666666-77777777-88888888-99999999-aaaaaaaa";
 
   private WalletManager walletManager;
 
@@ -159,6 +167,41 @@ public class WalletManagerTest {
     Wallet wallet = walletManager.createSimpleWallet("testPassword");
 
     assertThat(wallet).isNotNull();
+  }
+
+  @Test
+  public void testSearchWalletDirectories() throws Exception {
+    // Create a directory
+    File temporaryFile = File.createTempFile("nothing", "nothing");
+    temporaryFile.deleteOnExit();
+
+    File parentDirectory = temporaryFile.getParentFile();
+
+    File temporaryDirectory = new File(parentDirectory.getAbsolutePath() + File.separator + ("" + (new Random()).nextInt(1000000)));
+    temporaryDirectory.mkdir();
+    temporaryDirectory.deleteOnExit();
+
+    String walletPath1 = makeDirectory(temporaryDirectory, WALLET_DIRECTORY_1);
+    String walletPath2 = makeDirectory(temporaryDirectory, WALLET_DIRECTORY_2);
+    makeDirectory(temporaryDirectory, INVALID_WALLET_DIRECTORY_1);
+    makeDirectory(temporaryDirectory, INVALID_WALLET_DIRECTORY_2);
+    makeDirectory(temporaryDirectory, INVALID_WALLET_DIRECTORY_3);
+
+    WalletManager walletManager = new WalletManager();
+
+    List<File> walletDirectories = walletManager.getWalletDirectories(temporaryDirectory);
+    assertThat(walletDirectories).isNotNull();
+    assertThat(walletDirectories.size() == 2).isTrue();
+    assertThat(walletDirectories.get(0).getAbsolutePath().equals(walletPath1)).isTrue();
+    assertThat(walletDirectories.get(1).getAbsolutePath().equals(walletPath2)).isTrue();
+
+  }
+
+  private String makeDirectory(File parentDirectory, String directoryName) {
+    File directory = new File(parentDirectory.getAbsolutePath() + File.separator + directoryName);
+     directory.mkdir();
+     directory.deleteOnExit();
+    return directory.getAbsolutePath();
   }
 }
 
