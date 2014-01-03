@@ -5,8 +5,8 @@ import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.*;
-import org.multibit.hd.ui.views.components.seed_phrase_display.SeedPhraseDisplayModel;
-import org.multibit.hd.ui.views.components.seed_phrase_display.SeedPhraseDisplayView;
+import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseModel;
+import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ public class CreateWalletPanel extends JPanel {
 
   private final AbstractWizard wizard;
 
-  private final ModelAndView<SeedPhraseDisplayModel, SeedPhraseDisplayView> seedPhraseMaV;
+  private final ModelAndView<DisplaySeedPhraseModel, DisplaySeedPhraseView> seedPhraseMaV;
 
   /**
    * The "previous" action

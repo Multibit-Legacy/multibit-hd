@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.components.seed_phrase_display;
+package org.multibit.hd.ui.views.components.display_seed_phrase;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
@@ -21,13 +21,13 @@ import java.awt.event.ActionListener;
  * @since 0.0.1
  *  
  */
-public class SeedPhraseDisplayView implements View<SeedPhraseDisplayModel>, ActionListener {
+public class DisplaySeedPhraseView implements View<DisplaySeedPhraseModel>, ActionListener {
 
-  private SeedPhraseDisplayModel model;
+  private DisplaySeedPhraseModel model;
 
   private JTextArea seedPhrase;
 
-  public SeedPhraseDisplayView(SeedPhraseDisplayModel model) {
+  public DisplaySeedPhraseView(DisplaySeedPhraseModel model) {
     this.model = model;
   }
 
@@ -41,7 +41,7 @@ public class SeedPhraseDisplayView implements View<SeedPhraseDisplayModel>, Acti
     ));
 
     final JComboBox<String> seedSize = ComboBoxes.newSeedSizeComboBox(this);
-    seedPhrase = TextBoxes.newSeedPhrase();
+    seedPhrase = TextBoxes.newDisplaySeedPhrase();
 
     seedPhrase.setText(model.displaySeedPhrase());
 
@@ -119,7 +119,7 @@ public class SeedPhraseDisplayView implements View<SeedPhraseDisplayModel>, Acti
   }
 
   @Override
-  public void setModel(SeedPhraseDisplayModel model) {
+  public void setModel(DisplaySeedPhraseModel model) {
     this.model = model;
   }
 

@@ -1,8 +1,10 @@
-package org.multibit.hd.ui.views.components.confirm_password;
+package org.multibit.hd.ui.views.components.enter_seed_phrase;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.views.View;
-import org.multibit.hd.ui.views.components.*;
+import org.multibit.hd.ui.views.components.Buttons;
+import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.TextBoxes;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
@@ -12,17 +14,22 @@ import java.awt.event.ActionEvent;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Presentation of a password confirmation</li>
- * <li>Support for reveal operation</li>
+ * <li>User entry of a seed phrase </li>
+ * <li>Support for refresh and reveal operations</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class ConfirmPasswordView implements View<ConfirmPasswordModel> {
+public class EnterSeedPhraseView implements View<EnterSeedPhraseModel> {
 
-  private JPasswordField password1;
-  private JPasswordField password2;
+  private EnterSeedPhraseModel model;
+
+  private JTextArea seedPhrase;
+
+  public EnterSeedPhraseView(EnterSeedPhraseModel model) {
+    this.model = model;
+  }
 
   @Override
   public JPanel newPanel() {
@@ -30,24 +37,21 @@ public class ConfirmPasswordView implements View<ConfirmPasswordModel> {
     JPanel panel = Panels.newPanel(new MigLayout(
       "debug,insets 0", // Layout
       "[][][]", // Columns
-      "[]10[]10[]" // Rows
+      "[]" // Rows
     ));
 
-    password1 = TextBoxes.newPassword();
-    password2 = TextBoxes.newPassword();
+    seedPhrase = TextBoxes.newDisplaySeedPhrase();
+
+    seedPhrase.setText(model.displaySeedPhrase());
 
     // Configure the actions
     Action toggleDisplayAction = getToggleDisplayAction();
 
     // Add to the panel
-    panel.add(Labels.newEnterPassword());
-    panel.add(password1);
-    panel.add(Buttons.newShowButton(toggleDisplayAction), "spany 2,wrap");
-    panel.add(Labels.newConfirmPassword());
-    panel.add(password2,"wrap");
+    panel.add(seedPhrase, "shrink");
+    panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink");
 
     return panel;
-
 
   }
 
@@ -58,8 +62,7 @@ public class ConfirmPasswordView implements View<ConfirmPasswordModel> {
     // Show or hide the seed phrase
     return new AbstractAction() {
 
-      private boolean asClearText = false;
-      private char echoChar = TextBoxes.getPasswordEchoChar();
+      private boolean asClearText = model.asClearText();
 
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -82,17 +85,12 @@ public class ConfirmPasswordView implements View<ConfirmPasswordModel> {
             AwesomeDecorator.NORMAL_ICON_SIZE
           );
         }
+
         asClearText = !asClearText;
 
-        if (asClearText) {
-          // Reveal
-          password1.setEchoChar('\0');
-          password2.setEchoChar('\0');
-        } else {
-          // Use the platform choice
-          password1.setEchoChar(echoChar);
-          password2.setEchoChar(echoChar);
-        }
+        model.setAsClearText(asClearText);
+
+        seedPhrase.setText(model.displaySeedPhrase());
 
       }
 
@@ -100,8 +98,8 @@ public class ConfirmPasswordView implements View<ConfirmPasswordModel> {
   }
 
   @Override
-  public void setModel(ConfirmPasswordModel model) {
-    // Do nothing
+  public void setModel(EnterSeedPhraseModel model) {
+    this.model = model;
   }
 
 }

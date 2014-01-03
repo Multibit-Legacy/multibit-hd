@@ -17,6 +17,11 @@ import java.awt.*;
 public class TextBoxes {
 
   /**
+   * Maintain a reference to the platform password echo character
+   */
+  private static char passwordEchoChar=new JPasswordField().getEchoChar();
+
+  /**
    * Utilities have no public constructor
    */
   private TextBoxes() {
@@ -56,11 +61,27 @@ public class TextBoxes {
   }
 
   /**
-   * @return A new "seed phrase" text area
+   * @return A new "seed phrase" text area for display only (no copy/paste etc)
    */
-  public static JTextArea newSeedPhrase() {
+  public static JTextArea newDisplaySeedPhrase() {
 
-    // Allow for 256 characters
+    // Build off the enter seed phrase
+    JTextArea textArea = newEnterSeedPhrase();
+
+    // Prevent copy/paste operations
+    textArea.setTransferHandler(null);
+    textArea.setEditable(false);
+
+    return textArea;
+
+  }
+
+  /**
+   * @return A new "seed phrase" text area for entry
+   */
+  public static JTextArea newEnterSeedPhrase() {
+
+    // Allow for 200 characters (nice even display size)
     JTextArea textArea = new JTextArea(5, 40);
     textArea.setBackground(Themes.currentTheme.readOnlyBackground());
     textArea.setFont(new Font("Courier New", Font.PLAIN, 14));
@@ -68,10 +89,6 @@ public class TextBoxes {
     // Ensure line and word wrapping occur as required
     textArea.setLineWrap(true);
     textArea.setWrapStyleWord(true);
-
-    // Prevent copy/paste operations
-    textArea.setTransferHandler(null);
-    textArea.setEditable(false);
 
     return textArea;
 
@@ -86,5 +103,13 @@ public class TextBoxes {
     textField.setBackground(Themes.currentTheme.dataEntryBackground());
 
     return textField;
+  }
+
+  /**
+   * @return The platform echo character for password fields
+   */
+  public static char getPasswordEchoChar() {
+
+    return passwordEchoChar;
   }
 }

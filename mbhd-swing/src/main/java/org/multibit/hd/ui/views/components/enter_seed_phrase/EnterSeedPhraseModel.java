@@ -1,9 +1,8 @@
-package org.multibit.hd.ui.views.components.seed_phrase_display;
+package org.multibit.hd.ui.views.components.enter_seed_phrase;
 
 import com.google.common.base.Strings;
-import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
 import org.multibit.hd.ui.models.Model;
+import org.multibit.hd.ui.views.components.TextBoxes;
 
 import java.util.List;
 
@@ -16,39 +15,19 @@ import java.util.List;
  * @since 0.0.1
  *  
  */
-public class SeedPhraseDisplayModel implements Model {
+public class EnterSeedPhraseModel implements Model {
 
-  private final SeedPhraseGenerator generator;
   private List<String> seedPhrase;
-  private SeedPhraseSize currentSeedSize;
 
   // Start with the text displayed
   private boolean asClearText = true;
-
-  public SeedPhraseDisplayModel(SeedPhraseGenerator generator) {
-    this.generator = generator;
-
-    // Default to twelve word seed
-    currentSeedSize = SeedPhraseSize.TWELVE_WORDS;
-    newSeedPhrase(currentSeedSize);
-  }
-
-  /**
-   * <p>Generates a new seed phrase based on a new size</p>
-   *
-   * @param size The new size for subsequent seed phrases
-   */
-  public void newSeedPhrase(SeedPhraseSize size) {
-    currentSeedSize = size;
-    this.seedPhrase = generator.newSeedPhrase(size);
-  }
 
   /**
    * @return The seed phrase in either clear or obscured text
    */
   public String displaySeedPhrase() {
     if (asClearText) {
-      StringBuffer buffer = new StringBuffer();
+      StringBuilder buffer = new StringBuilder();
       int count = 0;
       for (String word : seedPhrase) {
         buffer.append(word);
@@ -59,7 +38,7 @@ public class SeedPhraseDisplayModel implements Model {
       }
       return buffer.toString();
     } else {
-      return Strings.repeat("*", 200);
+      return Strings.repeat(String.valueOf(TextBoxes.getPasswordEchoChar()), 200);
     }
   }
 
@@ -77,10 +56,4 @@ public class SeedPhraseDisplayModel implements Model {
     return asClearText;
   }
 
-  /**
-   * @return The current seed size
-   */
-  public SeedPhraseSize getCurrentSeedSize() {
-    return currentSeedSize;
-  }
 }

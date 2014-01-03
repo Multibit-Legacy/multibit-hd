@@ -4,8 +4,8 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordView;
-import org.multibit.hd.ui.views.components.seed_phrase_display.SeedPhraseDisplayModel;
-import org.multibit.hd.ui.views.components.seed_phrase_display.SeedPhraseDisplayView;
+import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseModel;
+import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseView;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
@@ -128,10 +128,10 @@ public class Components {
    *
    * @return A new "seed phrase" model and view
    */
-  public static ModelAndView<SeedPhraseDisplayModel, SeedPhraseDisplayView> newSeedPhraseMaV(final SeedPhraseGenerator generator) {
+  public static ModelAndView<DisplaySeedPhraseModel, DisplaySeedPhraseView> newSeedPhraseMaV(final SeedPhraseGenerator generator) {
 
-    SeedPhraseDisplayModel model = new SeedPhraseDisplayModel(generator);
-    SeedPhraseDisplayView view = new SeedPhraseDisplayView(model);
+    DisplaySeedPhraseModel model = new DisplaySeedPhraseModel(generator);
+    DisplaySeedPhraseView view = new DisplaySeedPhraseView(model);
 
     return new ModelAndView<>(model ,view);
 
