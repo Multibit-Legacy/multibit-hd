@@ -21,6 +21,8 @@ public class SeedPhraseDisplayModel implements Model {
   private final SeedPhraseGenerator generator;
   private List<String> seedPhrase;
   private SeedPhraseSize currentSeedSize;
+
+  // Start with the text displayed
   private boolean asClearText = true;
 
   public SeedPhraseDisplayModel(SeedPhraseGenerator generator) {

@@ -53,7 +53,7 @@ public class SeedPhraseDisplayView implements View<SeedPhraseDisplayModel>, Acti
     panel.add(Labels.newSeedSize(),"split 2");
     panel.add(seedSize,"wrap");
     panel.add(seedPhrase, "shrink");
-    panel.add(Buttons.newShowButton(toggleDisplayAction), "shrink");
+    panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink");
     panel.add(Buttons.newRefreshButton(refreshAction), "shrink");
 
     return panel;
@@ -75,8 +75,6 @@ public class SeedPhraseDisplayView implements View<SeedPhraseDisplayModel>, Acti
 
         JButton button = (JButton) e.getSource();
 
-        asClearText = !asClearText;
-
         if (asClearText) {
           AwesomeDecorator.applyIcon(
             AwesomeIcon.EYE,
@@ -93,6 +91,8 @@ public class SeedPhraseDisplayView implements View<SeedPhraseDisplayModel>, Acti
             AwesomeDecorator.NORMAL_ICON_SIZE
           );
         }
+
+        asClearText = !asClearText;
 
         model.setAsClearText(asClearText);
 
