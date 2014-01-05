@@ -123,6 +123,11 @@ public class DisplaySeedPhraseView implements View<DisplaySeedPhraseModel>, Acti
     this.model = model;
   }
 
+  @Override
+  public void updateModel() {
+    // Do nothing
+  }
+
   /**
    * <p>Handle the "change seed phrase size" action event</p>
    *

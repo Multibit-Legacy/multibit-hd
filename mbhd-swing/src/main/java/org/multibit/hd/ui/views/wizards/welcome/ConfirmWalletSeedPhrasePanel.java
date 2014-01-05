@@ -3,32 +3,33 @@ package org.multibit.hd.ui.views.wizards.welcome;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.ui.i18n.Languages;
-import org.multibit.hd.ui.views.components.Buttons;
-import org.multibit.hd.ui.views.components.PanelDecorator;
-import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.*;
+import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
+import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * <p>Wizard to provide the following to UI:</p>
  * <ul>
- * <li>Send bitcoin: Enter amount</li>
+ * <li>Confirm wallet seed phrase display</li>
  * </ul>
  *
  * @since 0.0.1
  *         
  */
 
-public class RestoreWalletPanel extends JPanel implements ActionListener {
+public class ConfirmWalletSeedPhrasePanel extends JPanel {
 
   private static final Logger log = LoggerFactory.getLogger(WelcomePanel.class);
 
   private final AbstractWizard wizard;
+
+  private final ModelAndView<EnterSeedPhraseModel, EnterSeedPhraseView> enterSeedPhraseMaV;
 
   /**
    * The "previous" action
@@ -53,11 +54,12 @@ public class RestoreWalletPanel extends JPanel implements ActionListener {
   /**
    * @param wizard The wizard managing the states
    */
-  public RestoreWalletPanel(AbstractWizard wizard) {
+  public ConfirmWalletSeedPhrasePanel(AbstractWizard wizard) {
 
     this.wizard = wizard;
+    this.enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV();
 
-    PanelDecorator.applyWizardTheme(this, wizardComponents(), MessageKey.RESTORE_WALLET_TITLE);
+    PanelDecorator.applyWizardTheme(this, wizardComponents(), MessageKey.CONFIRM_WALLET_SEED_PHRASE_TITLE);
 
     // Swap buttons to maintain reading order
     if (Languages.isLeftToRight()) {
@@ -66,7 +68,7 @@ public class RestoreWalletPanel extends JPanel implements ActionListener {
       } else {
         add(Buttons.newCancelButton(wizard.getCancelAction()), "span 2,push");
       }
-      add(Buttons.newPreviousButton(nextAction), "right,shrink");
+      add(Buttons.newPreviousButton(previousAction), "right,shrink");
       add(Buttons.newNextButton(nextAction), "right,shrink");
     } else {
       add(Buttons.newNextButton(nextAction), "left,push");
@@ -78,33 +80,20 @@ public class RestoreWalletPanel extends JPanel implements ActionListener {
       }
     }
 
+
   }
 
   private JPanel wizardComponents() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fill", // Layout constrains
-      "[][][]", // Column constraints
-      "[]" // Row constraints
+      "fill,ins 0", // Layout constrains
+      "[]", // Column constraints
+      "[]10[]" // Row constraints
     ));
 
-    panel.add(Panels.newWalletSelector(this), "wrap");
+    panel.add(enterSeedPhraseMaV.getView().newPanel(), "wrap");
 
     return panel;
   }
 
-  /**
-   * <p>Handle the "select wallet" action event</p>
-   *
-   * @param e The action event
-   */
-  @Override
-  public void actionPerformed(ActionEvent e) {
-
-    JRadioButton source = (JRadioButton) e.getSource();
-    String command = String.valueOf(source.getActionCommand());
-
-    wizard.show(command);
-
-  }
 }

@@ -45,6 +45,7 @@ public enum MessageKey {
   USE_HARDWARE_WALLET("Use hardware wallet"),
 
   // Titles
+  APPLICATION_TITLE("MultiBit HD"),
   SEND_BITCOIN_TITLE("sendBitcoinAction.text"),
   CONFIRM_SEND_TITLE("sendBitcoinConfirmView.title"),
   CONFIRM_SEND_MESSAGE("sendBitcoinConfirmView.message"),
@@ -52,7 +53,8 @@ public enum MessageKey {
   EXIT_TITLE("Exit application ?"),
   WELCOME_TITLE("Welcome !"),
   SELECT_WALLET_TITLE("Select wallet"),
-  CREATE_WALLET_TITLE("Create wallet"),
+  CREATE_WALLET_SEED_PHRASE_TITLE("Create wallet"),
+  CONFIRM_WALLET_SEED_PHRASE_TITLE("Confirm wallet"),
   CREATE_WALLET_PASSWORD_TITLE("Create wallet password"),
   RESTORE_WALLET_TITLE("Restore wallet"),
 

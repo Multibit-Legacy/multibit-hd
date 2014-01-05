@@ -6,6 +6,8 @@ import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordView;
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseModel;
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseView;
+import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
+import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseView;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
@@ -122,16 +124,30 @@ public class Components {
   }
 
   /**
-   * <p>A "seed phrase" model and view shows the words used in a BIP0039 seed</p>
+   * <p>A "seed phrase" model and view displays the words used in a BIP0039 seed (no edit/copy/paste etc)</p>
    *
    * @param generator The seed phrase generator
    *
    * @return A new "seed phrase" model and view
    */
-  public static ModelAndView<DisplaySeedPhraseModel, DisplaySeedPhraseView> newSeedPhraseMaV(final SeedPhraseGenerator generator) {
+  public static ModelAndView<DisplaySeedPhraseModel, DisplaySeedPhraseView> newDisplaySeedPhraseMaV(final SeedPhraseGenerator generator) {
 
     DisplaySeedPhraseModel model = new DisplaySeedPhraseModel(generator);
     DisplaySeedPhraseView view = new DisplaySeedPhraseView(model);
+
+    return new ModelAndView<>(model ,view);
+
+  }
+
+  /**
+   * <p>A "seed phrase" model and view handles user data entry of the words used in a BIP0039 seed</p>
+   *
+   * @return A new "seed phrase" model and view
+   */
+  public static ModelAndView<EnterSeedPhraseModel, EnterSeedPhraseView> newEnterSeedPhraseMaV() {
+
+    EnterSeedPhraseModel model = new EnterSeedPhraseModel();
+    EnterSeedPhraseView view = new EnterSeedPhraseView(model);
 
     return new ModelAndView<>(model ,view);
 

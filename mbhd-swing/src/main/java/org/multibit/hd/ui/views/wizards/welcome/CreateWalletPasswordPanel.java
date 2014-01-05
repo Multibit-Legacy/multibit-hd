@@ -17,7 +17,7 @@ import java.awt.event.ActionListener;
 /**
  * <p>Wizard to provide the following to UI:</p>
  * <ul>
- * <li>Send bitcoin: Enter amount</li>
+ * <li>Create and confirm a master password</li>
  * </ul>
  *
  * @since 0.0.1

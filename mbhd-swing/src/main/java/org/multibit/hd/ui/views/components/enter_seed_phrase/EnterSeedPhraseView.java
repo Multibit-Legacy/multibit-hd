@@ -40,8 +40,9 @@ public class EnterSeedPhraseView implements View<EnterSeedPhraseModel> {
       "[]" // Rows
     ));
 
-    seedPhrase = TextBoxes.newDisplaySeedPhrase();
+    seedPhrase = TextBoxes.newEnterSeedPhrase();
 
+    // Fill the text area with
     seedPhrase.setText(model.displaySeedPhrase());
 
     // Configure the actions
@@ -63,6 +64,7 @@ public class EnterSeedPhraseView implements View<EnterSeedPhraseModel> {
     return new AbstractAction() {
 
       private boolean asClearText = model.asClearText();
+      private char echoChar = TextBoxes.getPasswordEchoChar();
 
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -77,6 +79,9 @@ public class EnterSeedPhraseView implements View<EnterSeedPhraseModel> {
             AwesomeDecorator.NORMAL_ICON_SIZE
           );
 
+          // Ensure the model matches the clear contents
+          updateModel();
+
         } else {
           AwesomeDecorator.applyIcon(
             AwesomeIcon.EYE_SLASH,
@@ -84,6 +89,9 @@ public class EnterSeedPhraseView implements View<EnterSeedPhraseModel> {
             true,
             AwesomeDecorator.NORMAL_ICON_SIZE
           );
+
+          // Do not update the model with the hidden contents (they are meaningless)
+
         }
 
         asClearText = !asClearText;
@@ -91,6 +99,9 @@ public class EnterSeedPhraseView implements View<EnterSeedPhraseModel> {
         model.setAsClearText(asClearText);
 
         seedPhrase.setText(model.displaySeedPhrase());
+
+        // Only permit editing in the clear text mode
+        seedPhrase.setEnabled(asClearText);
 
       }
 
@@ -100,6 +111,11 @@ public class EnterSeedPhraseView implements View<EnterSeedPhraseModel> {
   @Override
   public void setModel(EnterSeedPhraseModel model) {
     this.model = model;
+  }
+
+  @Override
+  public void updateModel() {
+    model.setSeedPhrase(seedPhrase.getText());
   }
 
 }

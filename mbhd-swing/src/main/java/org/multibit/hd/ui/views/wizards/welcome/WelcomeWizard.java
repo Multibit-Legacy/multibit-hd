@@ -29,8 +29,9 @@ public class WelcomeWizard extends AbstractWizard {
 
     wizardPanel.add(new WelcomePanel(this), Panels.WELCOME_ACTION_NAME);
     wizardPanel.add(new SelectWalletPanel(this), Panels.SELECT_WALLET_ACTION_NAME);
-    wizardPanel.add(new CreateWalletPanel(this), Panels.CREATE_WALLET_ACTION_NAME);
-    wizardPanel.add(new RestoreWalletPanel(this), Panels.RESTORE_WALLET_ACTION_NAME);
+    wizardPanel.add(new CreateWalletSeedPhrasePanel(this), Panels.CREATE_WALLET_SEED_PHRASE_ACTION_NAME);
+    wizardPanel.add(new ConfirmWalletSeedPhrasePanel(this), Panels.CONFIRM_WALLET_SEED_PHRASE_ACTION_NAME);
+    wizardPanel.add(new RestoreWalletChoicesPanel(this), Panels.RESTORE_WALLET_ACTION_NAME);
     wizardPanel.add(new CreateWalletPasswordPanel(this), Panels.CREATE_WALLET_PASSWORD_ACTION_NAME);
 
   }

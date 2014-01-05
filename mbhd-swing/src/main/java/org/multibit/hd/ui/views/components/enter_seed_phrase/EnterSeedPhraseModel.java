@@ -1,6 +1,9 @@
 package org.multibit.hd.ui.views.components.enter_seed_phrase;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.multibit.hd.ui.models.Model;
 import org.multibit.hd.ui.views.components.TextBoxes;
 
@@ -17,7 +20,7 @@ import java.util.List;
  */
 public class EnterSeedPhraseModel implements Model {
 
-  private List<String> seedPhrase;
+  private List<String> seedPhrase = Lists.newArrayList();
 
   // Start with the text displayed
   private boolean asClearText = true;
@@ -27,19 +30,19 @@ public class EnterSeedPhraseModel implements Model {
    */
   public String displaySeedPhrase() {
     if (asClearText) {
-      StringBuilder buffer = new StringBuilder();
-      int count = 0;
-      for (String word : seedPhrase) {
-        buffer.append(word);
-        count++;
-        if (count != seedPhrase.size()) {
-          buffer.append(" ");
-        }
-      }
-      return buffer.toString();
+      return Joiner.on(" ").join(seedPhrase);
     } else {
-      return Strings.repeat(String.valueOf(TextBoxes.getPasswordEchoChar()), 200);
+      return Strings.repeat(String.valueOf(TextBoxes.getPasswordEchoChar()), TextBoxes.PASSWORD_AREA);
     }
+  }
+
+  /**
+   * @param text The text containing the seed phrase words
+   */
+  public void setSeedPhrase(String text) {
+
+    seedPhrase = Lists.newArrayList(Splitter.on(" ").split(text));
+
   }
 
   /**

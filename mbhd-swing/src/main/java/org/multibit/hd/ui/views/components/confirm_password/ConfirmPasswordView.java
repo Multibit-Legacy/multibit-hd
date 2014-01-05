@@ -104,4 +104,9 @@ public class ConfirmPasswordView implements View<ConfirmPasswordModel> {
     // Do nothing
   }
 
+  @Override
+  public void updateModel() {
+    // Do nothing
+  }
+
 }

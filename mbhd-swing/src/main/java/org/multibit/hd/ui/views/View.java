@@ -22,6 +22,11 @@ public interface View<M extends Model> {
   void setModel(M model);
 
   /**
+   * Update the model with the current view contents
+   */
+  void updateModel();
+
+  /**
    * @return A new panel containing the visual components based on the current locale
    */
   JPanel newPanel();

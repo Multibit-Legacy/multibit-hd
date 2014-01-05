@@ -24,7 +24,9 @@ import java.awt.event.ActionListener;
  */
 public class Panels {
 
-  public static final String CREATE_WALLET_ACTION_NAME = "Create";
+  // TODO Consider enum/class name approach with InputMap/ActionMap combination
+  public static final String CREATE_WALLET_SEED_PHRASE_ACTION_NAME = "Create";
+  public static final String CONFIRM_WALLET_SEED_PHRASE_ACTION_NAME = "Confirm";
   public static final String RESTORE_WALLET_ACTION_NAME = "Restore";
   public static final String HARDWARE_WALLET_ACTION_NAME = "Hardware";
   public static final String SELECT_WALLET_ACTION_NAME = "Select";

@@ -1,6 +1,8 @@
 package org.multibit.hd.ui.views.components.display_seed_phrase;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
 import org.multibit.hd.ui.models.Model;
@@ -20,7 +22,7 @@ import java.util.List;
 public class DisplaySeedPhraseModel implements Model {
 
   private final SeedPhraseGenerator generator;
-  private List<String> seedPhrase;
+  private List<String> seedPhrase= Lists.newArrayList();
   private SeedPhraseSize currentSeedSize;
 
   // Start with the text displayed
@@ -49,18 +51,9 @@ public class DisplaySeedPhraseModel implements Model {
    */
   public String displaySeedPhrase() {
     if (asClearText) {
-      StringBuilder buffer = new StringBuilder();
-      int count = 0;
-      for (String word : seedPhrase) {
-        buffer.append(word);
-        count++;
-        if (count != seedPhrase.size()) {
-          buffer.append(" ");
-        }
-      }
-      return buffer.toString();
+      return Joiner.on(" ").join(seedPhrase);
     } else {
-      return Strings.repeat(String.valueOf(TextBoxes.getPasswordEchoChar()), 200);
+      return Strings.repeat(String.valueOf(TextBoxes.getPasswordEchoChar()), TextBoxes.PASSWORD_AREA);
     }
   }
 

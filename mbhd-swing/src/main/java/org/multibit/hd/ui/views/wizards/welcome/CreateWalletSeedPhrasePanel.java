@@ -17,20 +17,20 @@ import java.awt.event.ActionEvent;
 /**
  * <p>Wizard to provide the following to UI:</p>
  * <ul>
- * <li>Send bitcoin: Show send progress</li>
+ * <li>Create wallet from seed phrase display</li>
  * </ul>
  *
  * @since 0.0.1
  *         
  */
 
-public class CreateWalletPanel extends JPanel {
+public class CreateWalletSeedPhrasePanel extends JPanel {
 
   private static final Logger log = LoggerFactory.getLogger(WelcomePanel.class);
 
   private final AbstractWizard wizard;
 
-  private final ModelAndView<DisplaySeedPhraseModel, DisplaySeedPhraseView> seedPhraseMaV;
+  private final ModelAndView<DisplaySeedPhraseModel, DisplaySeedPhraseView> displaySeedPhraseMaV;
 
   /**
    * The "previous" action
@@ -55,12 +55,12 @@ public class CreateWalletPanel extends JPanel {
   /**
    * @param wizard The wizard managing the states
    */
-  public CreateWalletPanel(AbstractWizard wizard) {
+  public CreateWalletSeedPhrasePanel(AbstractWizard wizard) {
 
     this.wizard = wizard;
-    this.seedPhraseMaV = Components.newSeedPhraseMaV(CoreServices.newSeedPhraseGenerator());
+    this.displaySeedPhraseMaV = Components.newDisplaySeedPhraseMaV(CoreServices.newSeedPhraseGenerator());
 
-    PanelDecorator.applyWizardTheme(this, wizardComponents(), MessageKey.CREATE_WALLET_TITLE);
+    PanelDecorator.applyWizardTheme(this, wizardComponents(), MessageKey.CREATE_WALLET_SEED_PHRASE_TITLE);
 
     // Swap buttons to maintain reading order
     if (Languages.isLeftToRight()) {
@@ -92,7 +92,7 @@ public class CreateWalletPanel extends JPanel {
       "[]10[]" // Row constraints
     ));
 
-    panel.add(seedPhraseMaV.getView().newPanel(), "wrap");
+    panel.add(displaySeedPhraseMaV.getView().newPanel(), "wrap");
     panel.add(Panels.newSeedPhraseWarning(), "wrap");
 
     return panel;

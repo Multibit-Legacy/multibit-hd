@@ -44,7 +44,7 @@ public class CoreServices {
     Configurations.currentConfiguration = Configurations.readConfiguration();
 
     // Configure logging
-    new LoggingFactory(Configurations.currentConfiguration.getLoggingConfiguration(), "MultiBit HD").configure();
+    new LoggingFactory(Configurations.currentConfiguration.getLoggingConfiguration(), "MBHD").configure();
 
 
   }

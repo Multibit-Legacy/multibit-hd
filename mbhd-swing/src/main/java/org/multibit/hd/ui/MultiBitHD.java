@@ -2,6 +2,7 @@ package org.multibit.hd.ui;
 
 import com.xeiam.xchange.currency.MoneyUtils;
 import com.xeiam.xchange.mtgox.v2.MtGoxExchange;
+import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.exceptions.WalletVersionException;
@@ -9,12 +10,14 @@ import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.ExchangeTickerService;
+import org.multibit.hd.core.utils.OSUtils;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.controllers.HeaderController;
 import org.multibit.hd.ui.controllers.MainController;
 import org.multibit.hd.ui.controllers.SidebarController;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.platform.GenericApplication;
 import org.multibit.hd.ui.views.*;
 import org.slf4j.Logger;
@@ -44,6 +47,10 @@ public class MultiBitHD {
 
     // Pre-load sound library
     Sounds.initialise();
+
+    if (OSUtils.isMac()) {
+      System.getProperties().setProperty("com.apple.mrj.application.apple.menu.about.name", Languages.safeText(MessageKey.APPLICATION_TITLE));
+    }
 
     ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(MtGoxExchange.class.getName());
     BitcoinNetworkService bitcoinNetworkService = CoreServices.newBitcoinNetworkService();

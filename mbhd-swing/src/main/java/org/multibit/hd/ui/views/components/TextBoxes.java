@@ -17,6 +17,11 @@ import java.awt.*;
 public class TextBoxes {
 
   /**
+   * The size of the password text area in characters
+   */
+  public static final int PASSWORD_AREA = 240;
+
+  /**
    * Maintain a reference to the platform password echo character
    */
   private static char passwordEchoChar=new JPasswordField().getEchoChar();
@@ -81,8 +86,9 @@ public class TextBoxes {
    */
   public static JTextArea newEnterSeedPhrase() {
 
-    // Allow for 200 characters (nice even display size)
-    JTextArea textArea = new JTextArea(5, 40);
+    // Keep this in line with the PASSWORD_AREA constant
+    JTextArea textArea = new JTextArea(6, 40);
+
     textArea.setBackground(Themes.currentTheme.readOnlyBackground());
     textArea.setFont(new Font("Courier New", Font.PLAIN, 14));
 

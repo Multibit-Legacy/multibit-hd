@@ -17,23 +17,18 @@ import java.awt.event.ActionListener;
 /**
  * <p>Wizard to provide the following to UI:</p>
  * <ul>
- * <li>Select how wallet is to be accessed (create/restore/hardware)</li>
+ * <li>Restore wallet choices</li>
  * </ul>
  *
  * @since 0.0.1
  *         
  */
 
-public class SelectWalletPanel extends JPanel implements ActionListener {
+public class RestoreWalletChoicesPanel extends JPanel implements ActionListener {
 
   private static final Logger log = LoggerFactory.getLogger(WelcomePanel.class);
 
   private final AbstractWizard wizard;
-
-  /**
-   * The current radio button selection
-   */
-  private String currentSelection = Panels.CREATE_WALLET_SEED_PHRASE_ACTION_NAME;
 
   /**
    * The "previous" action
@@ -41,7 +36,7 @@ public class SelectWalletPanel extends JPanel implements ActionListener {
   private Action previousAction = new AbstractAction() {
     @Override
     public void actionPerformed(ActionEvent e) {
-      wizard.show(Panels.WELCOME_ACTION_NAME);
+      wizard.previous();
     }
   };
 
@@ -51,19 +46,18 @@ public class SelectWalletPanel extends JPanel implements ActionListener {
   private Action nextAction = new AbstractAction() {
     @Override
     public void actionPerformed(ActionEvent e) {
-
-      wizard.show(currentSelection);
+      wizard.next();
     }
   };
 
   /**
    * @param wizard The wizard managing the states
    */
-  public SelectWalletPanel(AbstractWizard wizard) {
+  public RestoreWalletChoicesPanel(AbstractWizard wizard) {
 
     this.wizard = wizard;
 
-    PanelDecorator.applyWizardTheme(this, wizardComponents(), MessageKey.SELECT_WALLET_TITLE);
+    PanelDecorator.applyWizardTheme(this, wizardComponents(), MessageKey.RESTORE_WALLET_TITLE);
 
     // Swap buttons to maintain reading order
     if (Languages.isLeftToRight()) {
@@ -72,7 +66,7 @@ public class SelectWalletPanel extends JPanel implements ActionListener {
       } else {
         add(Buttons.newCancelButton(wizard.getCancelAction()), "span 2,push");
       }
-      add(Buttons.newPreviousButton(previousAction), "right,shrink");
+      add(Buttons.newPreviousButton(nextAction), "right,shrink");
       add(Buttons.newNextButton(nextAction), "right,shrink");
     } else {
       add(Buttons.newNextButton(nextAction), "left,push");
@@ -89,12 +83,12 @@ public class SelectWalletPanel extends JPanel implements ActionListener {
   private JPanel wizardComponents() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "debug,fill,ins 0", // Layout constrains
-      "[]", // Column constraints
+      "fill", // Layout constrains
+      "[][][]", // Column constraints
       "[]" // Row constraints
     ));
 
-    panel.add(Panels.newWalletSelector(this));
+    panel.add(Panels.newWalletSelector(this), "wrap");
 
     return panel;
   }
@@ -108,9 +102,9 @@ public class SelectWalletPanel extends JPanel implements ActionListener {
   public void actionPerformed(ActionEvent e) {
 
     JRadioButton source = (JRadioButton) e.getSource();
-    currentSelection = String.valueOf(source.getActionCommand());
+    String command = String.valueOf(source.getActionCommand());
 
-    log.debug("Selection changed to '{}'",currentSelection);
+    wizard.show(command);
 
   }
 }

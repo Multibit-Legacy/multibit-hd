@@ -71,7 +71,7 @@ public class ComponentTestBed {
 
     // Choose a panel to test
     WelcomeWizard wizard = Wizards.newExitingWelcomeWizard();
-    wizard.show(Panels.CREATE_WALLET_PASSWORD_ACTION_NAME);
+    wizard.show(Panels.CONFIRM_WALLET_SEED_PHRASE_ACTION_NAME);
     return wizard.getWizardPanel();
 
   }
