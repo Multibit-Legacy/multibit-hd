@@ -1,5 +1,7 @@
 package org.multibit.hd.ui.models;
 
+import org.multibit.hd.core.api.RAGStatus;
+
 /**
  * <p>Factory to provide the following to UI:</p>
  * <ul>
@@ -41,4 +43,7 @@ public class Models {
   }
 
 
+  public static AlertModel newAlertModel(String message, RAGStatus status) {
+    return null;
+  }
 }
