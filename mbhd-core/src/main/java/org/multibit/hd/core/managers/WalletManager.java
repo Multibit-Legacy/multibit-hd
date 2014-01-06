@@ -6,6 +6,7 @@ import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.bitcoin.store.WalletProtobufSerializer;
 import com.google.common.base.Preconditions;
+import org.multibit.hd.core.api.WalletId;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.exceptions.WalletSaveException;
@@ -13,10 +14,14 @@ import org.multibit.hd.core.exceptions.WalletVersionException;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spongycastle.asn1.sec.SECNamedCurves;
+import org.spongycastle.asn1.x9.X9ECParameters;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  *  <p>Manager to provide the following to core users:<br>
@@ -30,7 +35,14 @@ import java.util.Collection;
 public class WalletManager {
   private static final Logger log = LoggerFactory.getLogger(WalletManager.class);
 
-  public static final String SIMPLE_WALLET_ROOT_NAME = "simple";
+  public static final String WALLET_DIRECTORY_PREFIX = "mbhd";
+
+  private static final String SEPARATOR = "-";
+
+  // The format of the wallet directories is WALLET_DIRECTORY_PREFIX + a wallet id.
+  // A walletid is 5 groups of 4 bytes in lowercase hex, with a "-' separator e.g. mbhd-11111111-22222222-33333333-44444444-55555555
+  public static final String REGEX_FOR_WALLET_DIRECTORY = "^" + WALLET_DIRECTORY_PREFIX + SEPARATOR + "[0-9a-f]{8}"
+          + SEPARATOR + "[0-9a-f]{8}" + SEPARATOR + "[0-9a-f]{8}" + SEPARATOR + "[0-9a-f]{8}" + SEPARATOR + "[0-9a-f]{8}$";
 
   /**
    * The wallet version number for protobuf encrypted wallets - compatible with MultiBit
@@ -50,54 +62,86 @@ public class WalletManager {
 
 
   /**
-   * Create a simple wallet that contains only a single, random private key.
-   * This is stored in the MultiBitHD application data directory and is called "simple"
-   * <p/>
+   * Create a wallet that contains only a single, random private key.
+   * This is stored in the MultiBitHD application data directory
+   * The name of the wallet file is derived from the seed.
    * If the wallet file already exists it is loaded and returned (and the input password is not used)
    *
+   * @param seed the seed used to initialise the wallet
    * @param password to use to encrypt the wallet
    * @return Wallet
    * @throws IllegalStateException  if applicationDataDirectory is incorrect
    * @throws WalletLoadException    if there is already a simple wallet created but it could not be loaded
    * @throws WalletVersionException if there is already a simple wallet but the wallet version cannot be understood
    */
-  public Wallet createSimpleWallet(CharSequence password) throws WalletLoadException, WalletVersionException, IOException {
-    // Work out the file location of the simple wallet
+  public Wallet createWallet(byte[] seed, CharSequence password) throws WalletLoadException, WalletVersionException, IOException {
     String applicationDataDirectoryName = InstallationManager.createApplicationDataDirectory();
+    return createWallet(applicationDataDirectoryName, seed, password);
+  }
 
+
+    /**
+      * Create a simple wallet that contains only a single, random private key.
+      * This is stored in the specified directory.
+      * The name of the wallet file is derived from the seed.
+      * <p/>
+      * If the wallet file already exists it is loaded and returned (and the input password is not used)
+      *
+      * @param parentDirectoryName the name of the directory in which the wallet directory will be created (normally the application data directory)
+      * @param seed the seed used to initialise the wallet
+      * @param password to use to encrypt the wallet
+      * @return Wallet
+      * @throws IllegalStateException  if applicationDataDirectory is incorrect
+      * @throws WalletLoadException    if there is already a simple wallet created but it could not be loaded
+      * @throws WalletVersionException if there is already a simple wallet but the wallet version cannot be understood
+      */
+     public Wallet createWallet(String parentDirectoryName, byte[] seed, CharSequence password) throws WalletLoadException, WalletVersionException, IOException {
+
+    // Work out the file location of the simple wallet
     Wallet walletToReturn;
 
-    File simpleDirectory = WalletManager.getWalletDirectory(applicationDataDirectoryName, SIMPLE_WALLET_ROOT_NAME);
-    File simpleWalletFile = new File(simpleDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME);
-    if (simpleWalletFile.exists()) {
-      // There is already a simple wallet created - if so load it and return that
-      walletToReturn = loadFromFile(simpleWalletFile);
-      Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(SIMPLE_WALLET_ROOT_NAME);
+    // Create a wallet id from the seed to work out the name of the wallet
+    WalletId walletId = new WalletId(seed);
+    String walletRoot = WALLET_DIRECTORY_PREFIX + SEPARATOR + walletId.toFormattedString();
+
+    File walletDirectory = WalletManager.getWalletDirectory(parentDirectoryName, walletRoot);
+    File walletFile = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME);
+    if (walletFile.exists()) {
+      // There is already a wallet created with this root - if so load it and return that
+      walletToReturn = loadFromFile(walletFile);
+      Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(walletRoot);
     } else {
       // Create the containing directory if it does not exist
-      if (!simpleDirectory.exists()) {
-        if (!simpleDirectory.mkdir()) {
-          throw new IllegalStateException("The directory for the simple wallet '" + simpleDirectory.getAbsoluteFile() + "' could not be created");
+      if (!walletDirectory.exists()) {
+        if (!walletDirectory.mkdir()) {
+          throw new IllegalStateException("The directory for the wallet '" + walletDirectory.getAbsoluteFile() + "' could not be created");
         }
       }
-      // Create a simple wallet with a single private key, encrypted with the password
+      // Create a wallet with a single private key using the seed (modulo-ed), encrypted with the password
       KeyCrypter keyCrypter = new KeyCrypterScrypt();
 
       walletToReturn = new Wallet(BitcoinNetworkService.NETWORK_PARAMETERS, keyCrypter);
       walletToReturn.setVersion(ENCRYPTED_WALLET_VERSION);
 
-      ECKey newKey = new ECKey();
+      // Ensure that the seed is within the Bitcoin EC group.
+      X9ECParameters params = SECNamedCurves.getByName("secp256k1");
+      BigInteger sizeOfGroup = params.getN();
+
+      BigInteger seedBigInteger = new BigInteger(1, seed);
+      seedBigInteger = seedBigInteger.mod(sizeOfGroup);
+
+      ECKey newKey = new ECKey(seedBigInteger);
       newKey = newKey.encrypt(walletToReturn.getKeyCrypter(), walletToReturn.getKeyCrypter().deriveKey(password));
       walletToReturn.addKey(newKey);
 
       // Save it
-      saveWallet(walletToReturn, simpleWalletFile.getAbsolutePath());
-      Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(SIMPLE_WALLET_ROOT_NAME);
+      saveWallet(walletToReturn, walletFile.getAbsolutePath());
+      Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(walletRoot);
       setCurrentWallet(walletToReturn);
     }
 
     // See if there is a checkpoints file - if not then get the InstallationManager to copy one in
-    String checkpointsFilename = simpleDirectory.getAbsolutePath() + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX;
+    String checkpointsFilename = walletDirectory.getAbsolutePath() + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX;
     InstallationManager.copyCheckpointsTo(checkpointsFilename);
 
     return walletToReturn;
@@ -360,6 +404,37 @@ public class WalletManager {
     }
 
     return walletDirectory;
+  }
+
+  /**
+   * Work out what wallets are available in a directory (typically the user data directory).
+   * This is worked out by looking for directories with the name:
+   * 'multibithd' + a wallet id
+   *
+   * @param directoryToSearch The directory to search
+   * @return List<File> List of files of wallet directories
+   */
+  public List<File> findWalletDirectories(File directoryToSearch) {
+    Preconditions.checkNotNull(directoryToSearch);
+
+    File[] listOfFiles = directoryToSearch.listFiles();
+
+    List<File> walletDirectories = new ArrayList<File>();
+    // Look for filenames with format "multibithd"-"walletid" and are not empty.
+    if (listOfFiles != null) {
+      for (int i = 0; i < listOfFiles.length; i++) {
+        if (listOfFiles[i].isDirectory()) {
+          String filename = listOfFiles[i].getName();
+          if (filename.matches(REGEX_FOR_WALLET_DIRECTORY)) {
+            if (listOfFiles[i].length() > 0) {
+              walletDirectories.add(listOfFiles[i]);
+            }
+          }
+        }
+      }
+    }
+
+    return walletDirectories;
   }
 
   public Wallet getCurrentWallet() {
