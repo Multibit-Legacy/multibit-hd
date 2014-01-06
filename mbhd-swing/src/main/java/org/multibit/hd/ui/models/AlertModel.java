@@ -13,10 +13,10 @@ import org.multibit.hd.ui.i18n.Languages;
  * @since 0.0.1
  *         
  */
-public class AlertModel implements Model {
+public class AlertModel implements Model<String> {
 
   private final RAGStatus severity;
-  private final String localisedMessage;
+  private String localisedMessage;
 
   private int remaining = 0;
 
@@ -47,4 +47,15 @@ public class AlertModel implements Model {
     }
     return "";
   }
+
+  @Override
+  public String getValue() {
+    return localisedMessage;
+  }
+
+  @Override
+  public void setValue(String value) {
+    this.localisedMessage = value;
+  }
+
 }

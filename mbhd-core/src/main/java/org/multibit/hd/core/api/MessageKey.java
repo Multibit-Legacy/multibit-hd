@@ -42,6 +42,7 @@ public enum MessageKey {
   SETTINGS("showPreferencesPanel.title"),
   CREATE_WALLET("Create new wallet"),
   RESTORE_WALLET("Restore from seed or backup"),
+  SWITCH_WALLET("Switch to another wallet in the list"),
   USE_HARDWARE_WALLET("Use hardware wallet"),
 
   // Titles

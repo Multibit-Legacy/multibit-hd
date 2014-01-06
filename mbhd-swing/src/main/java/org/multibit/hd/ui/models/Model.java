@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.models;
 
 /**
- * <p>Signature interface to provide the following to UI:</p>
+ * <p>Interface to provide the following to UI:</p>
  * <ul>
  * <li>Identification of generic Model</li>
  * </ul>
@@ -9,5 +9,15 @@ package org.multibit.hd.ui.models;
  * @since 0.0.1
  *  
  */
-public interface Model {
+public interface Model<M> {
+
+  /**
+   * @return The value of the model (usually user data)
+   */
+  M getValue();
+
+  /**
+   * @param value The value of the model
+   */
+  void setValue(M value);
 }

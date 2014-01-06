@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards;
 
+import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.services.CoreServices;
@@ -19,10 +20,11 @@ import java.awt.event.ActionEvent;
  * <li>Provision of common methods to wizards</li>
  * </ul>
  *
+ * @param <M> the wizard model
+
  * @since 0.0.1
- *  
  */
-public abstract class AbstractWizard {
+public abstract class AbstractWizard<M extends WizardModel> {
 
   private static final Logger log = LoggerFactory.getLogger(AbstractWizard.class);
 
@@ -32,9 +34,18 @@ public abstract class AbstractWizard {
   private final WizardCardLayout cardLayout;
   private final JPanel wizardPanel;
 
+  private final M wizardModel;
+
   private boolean exiting = false;
 
-  protected AbstractWizard() {
+  /**
+   * @param wizardModel The overall wizard data model containing the aggregate information of all components in the wizard
+   */
+  protected AbstractWizard(M wizardModel) {
+
+    Preconditions.checkNotNull(wizardModel, "'model' must be present");
+
+    this.wizardModel = wizardModel;
 
     CoreServices.uiEventBus.register(this);
 
@@ -42,7 +53,7 @@ public abstract class AbstractWizard {
     wizardPanel = Panels.newPanel(cardLayout);
 
     // Use current local for initial creation
-    onLocaleChangedEvent(null);
+    onLocaleChangedEvent(new LocaleChangedEvent());
 
     wizardPanel.setMinimumSize(new Dimension(WIZARD_MIN_WIDTH, WIZARD_MIN_HEIGHT));
     wizardPanel.setPreferredSize(new Dimension(WIZARD_MIN_WIDTH, WIZARD_MIN_HEIGHT));
@@ -53,6 +64,8 @@ public abstract class AbstractWizard {
 
   @Subscribe
   public void onLocaleChangedEvent(LocaleChangedEvent event) {
+
+    Preconditions.checkNotNull(event, "'event' must be present");
 
     log.debug("Received 'locale changed' event");
 
@@ -160,5 +173,62 @@ public abstract class AbstractWizard {
 
   }
 
+  /**
+   * @return The wizard model
+   */
+  public M getWizardModel() {
+    return wizardModel;
+  }
+
+  /**
+   * @param wizardView The wizard view (providing a reference to its underlying panel model)
+   *
+   * @return The "next" action based on the model state
+   */
+  public <P> Action getNextAction(final AbstractWizardView<M, P> wizardView) {
+
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        // Ensure the panel updates its model (the button is outside of the panel itself)
+        wizardView.updatePanelModel();
+
+        // Aggregate the panel information into the wizard model
+        wizardModel.update(wizardView.getPanelModel());
+
+        // Move to the next state
+        wizardModel.next();
+
+        // Show the panel based on the state
+        show(wizardModel.getPanelName());
+      }
+    };
+  }
+
+  /**
+   * @param wizardView The wizard view (providing a reference to its underlying panel model)
+   *
+   * @return The "previous" action based on the model state
+   */
+  public <P> Action getPreviousAction(final AbstractWizardView<M, P> wizardView) {
+
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        // Ensure the panel updates its model (the button is outside of the panel itself)
+        wizardView.updatePanelModel();
+
+        // Aggregate the panel information into the wizard model
+
+        // Move to the previous state
+        wizardModel.previous();
+
+        // Show the panel based on the state
+        show(wizardModel.getPanelName());
+      }
+    };
+  }
 
 }

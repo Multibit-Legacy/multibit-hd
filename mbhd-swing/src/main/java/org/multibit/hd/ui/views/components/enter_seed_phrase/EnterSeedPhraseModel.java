@@ -18,7 +18,7 @@ import java.util.List;
  * @since 0.0.1
  *  
  */
-public class EnterSeedPhraseModel implements Model {
+public class EnterSeedPhraseModel implements Model<List<String>> {
 
   private List<String> seedPhrase = Lists.newArrayList();
 
@@ -29,20 +29,20 @@ public class EnterSeedPhraseModel implements Model {
    * @return The seed phrase in either clear or obscured text
    */
   public String displaySeedPhrase() {
+
     if (asClearText) {
       return Joiner.on(" ").join(seedPhrase);
     } else {
       return Strings.repeat(String.valueOf(TextBoxes.getPasswordEchoChar()), TextBoxes.PASSWORD_AREA);
     }
+
   }
 
   /**
    * @param text The text containing the seed phrase words
    */
   public void setSeedPhrase(String text) {
-
     seedPhrase = Lists.newArrayList(Splitter.on(" ").split(text));
-
   }
 
   /**
@@ -59,4 +59,13 @@ public class EnterSeedPhraseModel implements Model {
     return asClearText;
   }
 
+  @Override
+  public List<String> getValue() {
+    return seedPhrase;
+  }
+
+  @Override
+  public void setValue(List<String> value) {
+    this.seedPhrase = value;
+  }
 }

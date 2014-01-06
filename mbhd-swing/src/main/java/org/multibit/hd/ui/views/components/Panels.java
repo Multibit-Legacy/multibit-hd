@@ -24,15 +24,6 @@ import java.awt.event.ActionListener;
  */
 public class Panels {
 
-  // TODO Consider enum/class name approach with InputMap/ActionMap combination
-  public static final String CREATE_WALLET_SEED_PHRASE_ACTION_NAME = "Create";
-  public static final String CONFIRM_WALLET_SEED_PHRASE_ACTION_NAME = "Confirm";
-  public static final String RESTORE_WALLET_ACTION_NAME = "Restore";
-  public static final String HARDWARE_WALLET_ACTION_NAME = "Hardware";
-  public static final String SELECT_WALLET_ACTION_NAME = "Select";
-  public static final String WELCOME_ACTION_NAME = "Welcome";
-  public static final String CREATE_WALLET_PASSWORD_ACTION_NAME = "CreatePassword";
-
   /**
    * A global reference to the application frame
    */
@@ -175,36 +166,51 @@ public class Panels {
 
 
   /**
-   * <p>A "wallet selector" panel provides a means of choosing how a wallet is to be created</p>
+   * <p>A "wallet selector" panel provides a means of choosing how a wallet is to be created/accessed</p>
    *
    * @param listener The action listener
+   * @param createCommand The create command name
+   * @param restoreCommand The restore command name
+   * @param hardwareCommand The hardware command name
+   * @param switchCommand The switch command name
    *
    * @return A new "wallet selector" panel
    */
-  public static JPanel newWalletSelector(ActionListener listener) {
+  public static JPanel newWalletSelector(
+    ActionListener listener,
+    String createCommand,
+    String restoreCommand,
+    String hardwareCommand,
+    String switchCommand
+  ) {
 
     JPanel panel = Panels.newPanel();
 
     JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.CREATE_WALLET);
     radio1.setSelected(true);
-    radio1.setActionCommand(Components.CREATE_WALLET_ACTION_NAME);
+    radio1.setActionCommand(createCommand);
 
     JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.RESTORE_WALLET);
-    radio2.setActionCommand(Components.RESTORE_WALLET_ACTION_NAME);
+    radio2.setActionCommand(restoreCommand);
 
     JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.USE_HARDWARE_WALLET);
-    radio3.setActionCommand(Components.HARDWARE_WALLET_ACTION_NAME);
+    radio3.setActionCommand(hardwareCommand);
+
+    JRadioButton radio4 = RadioButtons.newRadioButton(listener, MessageKey.SWITCH_WALLET);
+    radio4.setActionCommand(switchCommand);
 
     // Wallet selection is mutually exclusive
     ButtonGroup group = new ButtonGroup();
     group.add(radio1);
     group.add(radio2);
     group.add(radio3);
+    group.add(radio4);
 
     // Add to the panel
     panel.add(radio1, "wrap");
     panel.add(radio2, "wrap");
     panel.add(radio3, "wrap");
+    panel.add(radio4, "wrap");
 
     return panel;
   }

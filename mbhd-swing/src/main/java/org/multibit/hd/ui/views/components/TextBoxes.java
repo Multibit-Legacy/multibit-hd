@@ -3,6 +3,8 @@ package org.multibit.hd.ui.views.components;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 /**
@@ -91,6 +93,10 @@ public class TextBoxes {
 
     textArea.setBackground(Themes.currentTheme.readOnlyBackground());
     textArea.setFont(new Font("Courier New", Font.PLAIN, 14));
+
+    // Ensure we provide a suitable inner margin to allow letters to be clear
+    Border margin = new EmptyBorder(2, 4, 2, 4);
+    textArea.setBorder(margin);
 
     // Ensure line and word wrapping occur as required
     textArea.setLineWrap(true);

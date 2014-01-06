@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
+import org.multibit.hd.ui.views.wizards.WizardModel;
 
 import javax.swing.*;
 
@@ -16,6 +17,11 @@ import javax.swing.*;
  *         
  */
 public class SendBitcoinWizard extends AbstractWizard {
+
+  public SendBitcoinWizard(WizardModel model) {
+    // TODO Create SendBitcoinModel/View
+    super(model);
+  }
 
   @Override
   protected void addWizardContent(JPanel wizardPanel) {

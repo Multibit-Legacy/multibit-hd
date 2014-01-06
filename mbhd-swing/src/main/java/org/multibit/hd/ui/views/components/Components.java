@@ -117,7 +117,7 @@ public class Components {
   public static ModelAndView<ConfirmPasswordModel, ConfirmPasswordView> newConfirmPassword() {
 
     ConfirmPasswordModel model = new ConfirmPasswordModel();
-    ConfirmPasswordView view = new ConfirmPasswordView();
+    ConfirmPasswordView view = new ConfirmPasswordView(model);
 
     return new ModelAndView<>(model ,view);
 

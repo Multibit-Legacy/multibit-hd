@@ -3,6 +3,8 @@ package org.multibit.hd.ui.views.wizards;
 import org.multibit.hd.ui.views.wizards.exit.ExitWizard;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinWizard;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizard;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 
 /**
  * <p>Factory to provide the following to UI:</p>
@@ -20,7 +22,8 @@ public class Wizards {
    */
   public static SendBitcoinWizard newSendBitcoinWizard() {
 
-    return new SendBitcoinWizard();
+    // TODO Implement this
+    return new SendBitcoinWizard(null);
 
   }
 
@@ -29,18 +32,8 @@ public class Wizards {
    */
   public static ExitWizard newExitWizard() {
 
-    return new ExitWizard();
-  }
-
-  /**
-   * @return A new "welcome" wizard for the initial set up
-   */
-  public static WelcomeWizard newExitingWelcomeWizard() {
-
-    WelcomeWizard wizard = new WelcomeWizard();
-    wizard.setExiting(true);
-
-    return wizard;
+    // TODO Implement this
+    return new ExitWizard(null);
   }
 
   /**
@@ -48,8 +41,19 @@ public class Wizards {
    */
   public static WelcomeWizard newClosingWelcomeWizard() {
 
-    WelcomeWizard wizard = new WelcomeWizard();
+    WelcomeWizard wizard = newExitingWelcomeWizard();
     wizard.setExiting(false);
+
+    return wizard;
+  }
+
+  /**
+   * @return A new "welcome" wizard for the initial set up
+   */
+  public static WelcomeWizard newExitingWelcomeWizard() {
+
+    WelcomeWizard wizard = new WelcomeWizard(new WelcomeWizardModel(WelcomeWizardState.WELCOME));
+    wizard.setExiting(true);
 
     return wizard;
   }

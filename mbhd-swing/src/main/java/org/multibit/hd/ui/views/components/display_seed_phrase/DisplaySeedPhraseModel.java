@@ -19,7 +19,7 @@ import java.util.List;
  * @since 0.0.1
  *  
  */
-public class DisplaySeedPhraseModel implements Model {
+public class DisplaySeedPhraseModel implements Model<List<String>> {
 
   private final SeedPhraseGenerator generator;
   private List<String> seedPhrase= Lists.newArrayList();
@@ -76,5 +76,15 @@ public class DisplaySeedPhraseModel implements Model {
    */
   public SeedPhraseSize getCurrentSeedSize() {
     return currentSeedSize;
+  }
+
+  @Override
+  public List<String> getValue() {
+    return seedPhrase;
+  }
+
+  @Override
+  public void setValue(List<String> value) {
+    this.seedPhrase = value;
   }
 }

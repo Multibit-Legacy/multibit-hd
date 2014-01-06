@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views;
 
+import com.google.common.base.Optional;
 import org.multibit.hd.ui.models.Model;
 
 import javax.swing.*;
@@ -9,6 +10,7 @@ import javax.swing.*;
  * <ul>
  * <li>Identification of generic View</li>
  * <li>Type safe setting of the associated Model</li>
+ * <li>Lifecycle methods for create/update/locale change/model data transfer</li>
  * </ul>
  *
  * @since 0.0.1
@@ -17,7 +19,12 @@ import javax.swing.*;
 public interface View<M extends Model> {
 
   /**
-   * @param model The model to set
+   * @return The model backing the view
+   */
+  Optional<M> getModel();
+
+  /**
+   * @param model The model backing the view
    */
   void setModel(M model);
 
@@ -27,7 +34,13 @@ public interface View<M extends Model> {
   void updateModel();
 
   /**
-   * @return A new panel containing the visual components based on the current locale
+   * @return A new panel containing the visual components based on the current locale (normally used at creation/locale change)
    */
   JPanel newPanel();
+
+  /**
+   * @return The current panel containing the visual components based on the current locale (normally used for model updates)
+   */
+  JPanel currentPanel();
+
 }

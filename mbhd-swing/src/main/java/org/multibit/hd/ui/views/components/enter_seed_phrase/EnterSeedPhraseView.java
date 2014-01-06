@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.components.enter_seed_phrase;
 
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.views.View;
+import org.multibit.hd.ui.views.AbstractView;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.TextBoxes;
@@ -21,39 +21,48 @@ import java.awt.event.ActionEvent;
  * @since 0.0.1
  *  
  */
-public class EnterSeedPhraseView implements View<EnterSeedPhraseModel> {
+public class EnterSeedPhraseView extends AbstractView<EnterSeedPhraseModel> {
 
-  private EnterSeedPhraseModel model;
+  // View components
+  private JTextArea seedPhraseTextArea;
 
-  private JTextArea seedPhrase;
-
+  /**
+   * @param model The model backing this view
+   */
   public EnterSeedPhraseView(EnterSeedPhraseModel model) {
-    this.model = model;
+    super(model);
   }
 
   @Override
   public JPanel newPanel() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
+    EnterSeedPhraseModel model = getModel().get();
+
+    panel = Panels.newPanel(new MigLayout(
       "debug,insets 0", // Layout
       "[][][]", // Columns
       "[]" // Rows
     ));
 
-    seedPhrase = TextBoxes.newEnterSeedPhrase();
+    seedPhraseTextArea = TextBoxes.newEnterSeedPhrase();
 
     // Fill the text area with
-    seedPhrase.setText(model.displaySeedPhrase());
+    seedPhraseTextArea.setText(model.displaySeedPhrase());
 
     // Configure the actions
     Action toggleDisplayAction = getToggleDisplayAction();
 
     // Add to the panel
-    panel.add(seedPhrase, "shrink");
+    panel.add(seedPhraseTextArea, "shrink");
     panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink");
 
     return panel;
 
+  }
+
+  @Override
+  public void updateModel() {
+    getModel().get().setSeedPhrase(seedPhraseTextArea.getText());
   }
 
   /**
@@ -63,11 +72,12 @@ public class EnterSeedPhraseView implements View<EnterSeedPhraseModel> {
     // Show or hide the seed phrase
     return new AbstractAction() {
 
-      private boolean asClearText = model.asClearText();
-      private char echoChar = TextBoxes.getPasswordEchoChar();
+      private boolean asClearText = getModel().get().asClearText();
 
       @Override
       public void actionPerformed(ActionEvent e) {
+
+        EnterSeedPhraseModel model = getModel().get();
 
         JButton button = (JButton) e.getSource();
 
@@ -98,24 +108,14 @@ public class EnterSeedPhraseView implements View<EnterSeedPhraseModel> {
 
         model.setAsClearText(asClearText);
 
-        seedPhrase.setText(model.displaySeedPhrase());
+        seedPhraseTextArea.setText(model.displaySeedPhrase());
 
         // Only permit editing in the clear text mode
-        seedPhrase.setEnabled(asClearText);
+        seedPhraseTextArea.setEnabled(asClearText);
 
       }
 
     };
-  }
-
-  @Override
-  public void setModel(EnterSeedPhraseModel model) {
-    this.model = model;
-  }
-
-  @Override
-  public void updateModel() {
-    model.setSeedPhrase(seedPhrase.getText());
   }
 
 }

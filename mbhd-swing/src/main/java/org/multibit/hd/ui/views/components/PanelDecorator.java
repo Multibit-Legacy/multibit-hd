@@ -2,7 +2,11 @@ package org.multibit.hd.ui.views.components;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
+import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.themes.Themes;
+import org.multibit.hd.ui.views.wizards.AbstractWizard;
+import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.WizardModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,15 +18,79 @@ import java.awt.*;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class PanelDecorator {
 
   /**
+   * <p>Add an exit/cancel, next button combination</p>
+   *
+   * @param view   The view containing the panel to decorate
+   * @param wizard The wizard providing the actions
+   * @param <M>    The wizard model type
+   * @param <P>    The wizard panel model type
+   */
+  public static <M extends WizardModel, P> void addExitCancelNext(AbstractWizardView<M, P> view, AbstractWizard<M> wizard) {
+
+    // Use the wizard panel
+    JPanel panel = view.getWizardPanel();
+
+    if (Languages.isLeftToRight()) {
+      if (wizard.isExiting()) {
+        panel.add(Buttons.newExitButton(wizard.getExitAction()), "span 2,push");
+      } else {
+        panel.add(Buttons.newCancelButton(wizard.getCancelAction()), "span 2,push");
+      }
+      panel.add(Buttons.newNextButton(wizard.getNextAction(view)), "right,shrink");
+    } else {
+      panel.add(Buttons.newNextButton(wizard.getNextAction(view)), "left,push");
+      if (wizard.isExiting()) {
+        panel.add(Buttons.newExitButton(wizard.getExitAction()), "span 2,shrink");
+      } else {
+        panel.add(Buttons.newCancelButton(wizard.getCancelAction()), "span 2,shrink");
+      }
+    }
+
+  }
+
+  /**
+   * <p>Add an exit/cancel, previous, next button combination</p>
+   *
+   * @param view   The view containing the panel to decorate
+   * @param wizard The wizard providing the actions
+   * @param <M>    The wizard model type
+   * @param <P>    The wizard panel model type
+   */
+  public static <M extends WizardModel, P> void addExitCancelPreviousNext(AbstractWizardView<M, P> view, AbstractWizard<M> wizard) {
+
+    // Use the current panel
+    JPanel panel = view.getWizardPanel();
+
+    if (Languages.isLeftToRight()) {
+      if (wizard.isExiting()) {
+        panel.add(Buttons.newExitButton(wizard.getExitAction()), "span 2,push");
+      } else {
+        panel.add(Buttons.newCancelButton(wizard.getCancelAction()), "span 2,push");
+      }
+      panel.add(Buttons.newPreviousButton(wizard.getPreviousAction(view)), "right,shrink");
+      panel.add(Buttons.newNextButton(wizard.getNextAction(view)), "right,shrink");
+    } else {
+      panel.add(Buttons.newNextButton(wizard.getNextAction(view)), "left,push");
+      panel.add(Buttons.newPreviousButton(wizard.getPreviousAction(view)), "left,push");
+      if (wizard.isExiting()) {
+        panel.add(Buttons.newExitButton(wizard.getExitAction()), "span 2,shrink");
+      } else {
+        panel.add(Buttons.newCancelButton(wizard.getCancelAction()), "span 2,shrink");
+      }
+    }
+
+  }
+
+  /**
    * <p>Create the standard "wizard" theme</p>
    *
-   * @param panel The panel to decorate (contains wizard components at the top and buttons at the bottom)
-   * @param wizardComponents  The wizard components arranged in a panel
+   * @param panel            The panel to decorate (contains wizard components at the top and buttons at the bottom)
+   * @param wizardComponents The wizard components arranged in a panel
    */
   public static void applyWizardTheme(JPanel panel, JPanel wizardComponents, MessageKey titleKey) {
 

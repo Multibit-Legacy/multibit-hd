@@ -11,7 +11,9 @@ import org.multibit.hd.ui.models.Model;
  * @since 0.0.1
  *  
  */
-public class ConfirmPasswordModel implements Model {
+public class ConfirmPasswordModel implements Model<String> {
+
+  char[] password=null;
 
   /**
    * @param password1 Password 1
@@ -31,6 +33,24 @@ public class ConfirmPasswordModel implements Model {
       result |= password1[i] ^ password2[i];
     }
 
-    return result == 0;
+    // Check for a match
+    if (result == 0) {
+
+      password = password1;
+      return true;
+    }
+
+    return false;
   }
+
+  @Override
+  public String getValue() {
+    return String.valueOf(password);
+  }
+
+  @Override
+  public void setValue(String value) {
+    this.password = value.toCharArray();
+  }
+
 }

@@ -7,8 +7,6 @@ import com.google.common.base.Preconditions;
 import com.google.protobuf.ByteString;
 import org.bitcoinj.wallet.Protos;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.spongycastle.asn1.sec.SECNamedCurves;
 import org.spongycastle.asn1.x9.X9ECParameters;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -27,7 +25,8 @@ import java.math.BigInteger;
  *  
  */
 public class WalletId {
-  private static final Logger log = LoggerFactory.getLogger(WalletId.class);
+
+  //private static final Logger log = LoggerFactory.getLogger(WalletId.class);
 
   public static final int SEPARATOR_REPEAT_PERIOD = 4;
   public static final String SEPARATOR = "-";
@@ -99,7 +98,8 @@ public class WalletId {
    * @return the wallet id as a formatted string
    */
   public String toFormattedString() {
-    StringBuffer buffer = new StringBuffer();
+
+    StringBuilder buffer = new StringBuilder();
 
     for (int i=0; i< walletId.length; i++) {
       buffer.append(Utils.bytesToHexString(new byte[]{walletId[i]}));

@@ -4,11 +4,11 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.i18n.Languages;
-import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
+import org.multibit.hd.ui.views.wizards.AbstractWizardView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,60 +18,37 @@ import java.awt.event.ActionListener;
 import java.util.Locale;
 
 /**
- * <p>Wizard to provide the following to UI:</p>
+ * <p>Wizard panel to provide the following to UI:</p>
  * <ul>
- * <li>Send bitcoin: Confirm send</li>
+ * <li>Welcome users to the application and allow them to select a language</li>
  * </ul>
  *
  * @since 0.0.1
  *         
  */
+public class WelcomeView extends AbstractWizardView<WelcomeWizardModel, String> implements ActionListener {
 
-public class WelcomePanel extends JPanel implements ActionListener {
+  private static final Logger log = LoggerFactory.getLogger(WelcomeView.class);
 
-  private static final Logger log = LoggerFactory.getLogger(WelcomePanel.class);
-
-  private final AbstractWizard wizard;
-
-  /**
-   * The "next" action
-   */
-  private Action nextAction = new AbstractAction() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      wizard.next();
-    }
-  };
+  // Model
+  private String localeCode = Languages.currentLocale().getLanguage();
 
   /**
    * @param wizard The wizard managing the states
    */
-  public WelcomePanel(AbstractWizard wizard) {
+  public WelcomeView(AbstractWizard<WelcomeWizardModel> wizard) {
 
-    this.wizard = wizard;
+    super(wizard.getWizardModel(), MessageKey.WELCOME_TITLE);
 
-    PanelDecorator.applyWizardTheme(this, wizardComponents(), MessageKey.WELCOME_TITLE);
-
-    // Swap buttons to maintain reading order
-    if (Languages.isLeftToRight()) {
-      if (wizard.isExiting()) {
-        add(Buttons.newExitButton(wizard.getExitAction()), "span 2,push");
-      } else {
-        add(Buttons.newCancelButton(wizard.getCancelAction()), "span 2,push");
-      }
-      add(Buttons.newNextButton(nextAction), "right,shrink");
-    } else {
-      add(Buttons.newNextButton(nextAction), "left,push");
-      if (wizard.isExiting()) {
-        add(Buttons.newExitButton(wizard.getExitAction()), "span 2,shrink");
-      } else {
-        add(Buttons.newCancelButton(wizard.getCancelAction()), "span 2,shrink");
-      }
-    }
+    PanelDecorator.addExitCancelNext(this, wizard);
 
   }
 
-  private JPanel wizardComponents() {
+  @Override
+  public JPanel newDataPanel() {
+
+    localeCode = Languages.currentLocale().getLanguage();
+    setPanelModel(localeCode);
 
     JPanel panel = Panels.newPanel(new MigLayout(
       "debug,fill,ins 0", // Layout constrains
@@ -85,6 +62,11 @@ public class WelcomePanel extends JPanel implements ActionListener {
     return panel;
   }
 
+  @Override
+  public void updatePanelModel() {
+    // Do nothing - model is updated via an action
+  }
+
   /**
    * <p>Handle the change locale action event</p>
    *
@@ -94,7 +76,7 @@ public class WelcomePanel extends JPanel implements ActionListener {
   public void actionPerformed(ActionEvent e) {
 
     JComboBox source = (JComboBox) e.getSource();
-    String localeCode = String.valueOf(source.getSelectedItem()).substring(0,2);
+    localeCode = String.valueOf(source.getSelectedItem()).substring(0,2);
 
     Locale locale = Languages.newLocaleFromCode(localeCode);
 

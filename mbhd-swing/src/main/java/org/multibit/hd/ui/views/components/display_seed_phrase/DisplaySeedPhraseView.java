@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.components.display_seed_phrase;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
-import org.multibit.hd.ui.views.View;
+import org.multibit.hd.ui.views.AbstractView;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -21,14 +21,16 @@ import java.awt.event.ActionListener;
  * @since 0.0.1
  *  
  */
-public class DisplaySeedPhraseView implements View<DisplaySeedPhraseModel>, ActionListener {
+public class DisplaySeedPhraseView extends AbstractView<DisplaySeedPhraseModel> implements ActionListener {
 
-  private DisplaySeedPhraseModel model;
-
+  // View components
   private JTextArea seedPhrase;
 
+  /**
+   * @param model The model backing this view
+   */
   public DisplaySeedPhraseView(DisplaySeedPhraseModel model) {
-    this.model = model;
+    super(model);
   }
 
   @Override
@@ -43,7 +45,7 @@ public class DisplaySeedPhraseView implements View<DisplaySeedPhraseModel>, Acti
     final JComboBox<String> seedSize = ComboBoxes.newSeedSizeComboBox(this);
     seedPhrase = TextBoxes.newDisplaySeedPhrase();
 
-    seedPhrase.setText(model.displaySeedPhrase());
+    seedPhrase.setText(getModel().get().displaySeedPhrase());
 
     // Configure the actions
     Action refreshAction = getRefreshAction();
@@ -58,6 +60,44 @@ public class DisplaySeedPhraseView implements View<DisplaySeedPhraseModel>, Acti
 
     return panel;
 
+  }
+
+  /**
+   * @return A new action for generating a new seed phrase
+   */
+  private Action getRefreshAction() {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        DisplaySeedPhraseModel model = getModel().get();
+
+        model.newSeedPhrase(model.getCurrentSeedSize());
+        seedPhrase.setText(model.displaySeedPhrase());
+
+      }
+    };
+  }
+
+  @Override
+  public void updateModel() {
+    // Do nothing - the model is driving the view
+  }
+
+  /**
+   * <p>Handle the "change seed phrase size" action event</p>
+   *
+   * @param e The action event
+   */
+  @Override
+  public void actionPerformed(ActionEvent e) {
+
+    JComboBox source = (JComboBox) e.getSource();
+
+    DisplaySeedPhraseModel model = getModel().get();
+
+    model.newSeedPhrase(SeedPhraseSize.fromOrdinal(source.getSelectedIndex()));
+    seedPhrase.setText(model.displaySeedPhrase());
 
   }
 
@@ -68,10 +108,12 @@ public class DisplaySeedPhraseView implements View<DisplaySeedPhraseModel>, Acti
     // Show or hide the seed phrase
     return new AbstractAction() {
 
-      private boolean asClearText = model.asClearText();
+      private boolean asClearText = getModel().get().asClearText();
 
       @Override
       public void actionPerformed(ActionEvent e) {
+
+        DisplaySeedPhraseModel model = getModel().get();
 
         JButton button = (JButton) e.getSource();
 
@@ -101,46 +143,6 @@ public class DisplaySeedPhraseView implements View<DisplaySeedPhraseModel>, Acti
       }
 
     };
-  }
-
-  /**
-   * @return A new action for generating a new seed phrase
-   */
-  private Action getRefreshAction() {
-    return new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-
-        model.newSeedPhrase(model.getCurrentSeedSize());
-        seedPhrase.setText(model.displaySeedPhrase());
-
-      }
-    };
-  }
-
-  @Override
-  public void setModel(DisplaySeedPhraseModel model) {
-    this.model = model;
-  }
-
-  @Override
-  public void updateModel() {
-    // Do nothing
-  }
-
-  /**
-   * <p>Handle the "change seed phrase size" action event</p>
-   *
-   * @param e The action event
-   */
-  @Override
-  public void actionPerformed(ActionEvent e) {
-
-    JComboBox source = (JComboBox) e.getSource();
-
-    model.newSeedPhrase(SeedPhraseSize.fromOrdinal(source.getSelectedIndex()));
-    seedPhrase.setText(model.displaySeedPhrase());
-
   }
 
 }
