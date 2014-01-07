@@ -7,6 +7,7 @@ import com.google.bitcoin.params.MainNetParams;
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.multibit.hd.core.api.BitcoinNetworkSummary;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.config.Configurations;
@@ -181,6 +182,8 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
     getExecutorService().submit(new Runnable() {
       @Override
       public void run() {
+
+        Preconditions.checkNotNull(peerGroup,"'peerGroup' must be present");
 
         log.debug("Downloading blockchain");
 

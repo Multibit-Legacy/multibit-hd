@@ -97,7 +97,7 @@ public class MainController {
     Preconditions.checkNotNull(summary.getMessageData(), "'errorData' must be present");
 
     final String localisedMessage;
-    if (summary.getMessageKey().isPresent()) {
+    if (summary.getMessageKey().isPresent() && summary.getMessageData().isPresent()) {
       localisedMessage = Languages.safeText(summary.getMessageKey().get(), summary.getMessageData().get());
     } else {
       localisedMessage = summary.getStatus().name();

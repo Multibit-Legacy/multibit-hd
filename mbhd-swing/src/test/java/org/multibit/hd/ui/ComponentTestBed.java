@@ -1,10 +1,12 @@
 package org.multibit.hd.ui;
 
 import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.events.controller.ChangeLocaleEvent;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
@@ -13,8 +15,11 @@ import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.Wizards;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Utility to provide the following to custom components:</p>
@@ -70,8 +75,40 @@ public class ComponentTestBed {
   public JPanel createTestPanel() {
 
     // Choose a panel to test
-    AbstractWizard wizard = Wizards.newSendBitcoinWizard();
+    AbstractWizard wizard = Wizards.newExitingWelcomeWizard();
     return wizard.getWizardPanel();
+
+  }
+
+  @Subscribe
+  public void onChangeLocaleEvent(ChangeLocaleEvent event) {
+
+    Locale locale = event.getLocale();
+
+    Locale.setDefault(locale);
+    frame.setLocale(locale);
+
+    // Ensure the resource bundle is reset
+    ResourceBundle.clearCache();
+
+    // Update the main configuration
+    Configurations.currentConfiguration.getI18NConfiguration().setLocale(locale);
+
+    // Ensure LTR and RTL language formats are in place
+    frame.applyComponentOrientation(ComponentOrientation.getOrientation(locale));
+
+    // Update the views
+    ViewEvents.fireLocaleChangedEvent();
+
+    // Allow time for the views to update
+    Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+
+    // Ensure the Swing thread can perform a complete refresh
+    SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+        frame.invalidate();
+      }
+    });
 
   }
 
