@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.wizards;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.services.CoreServices;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Map;
 
 /**
  * <p>Abstract base class to provide the following to UI:</p>
@@ -21,7 +23,7 @@ import java.awt.event.ActionEvent;
  * </ul>
  *
  * @param <M> the wizard model
-
+ *
  * @since 0.0.1
  */
 public abstract class AbstractWizard<M extends WizardModel> {
@@ -33,10 +35,10 @@ public abstract class AbstractWizard<M extends WizardModel> {
 
   private final WizardCardLayout cardLayout;
   private final JPanel wizardPanel;
-
   private final M wizardModel;
 
   private boolean exiting = false;
+  private Map<String, AbstractWizardView> wizardViewMap = Maps.newHashMap();
 
   /**
    * @param wizardModel The overall wizard data model containing the aggregate information of all components in the wizard
@@ -72,8 +74,22 @@ public abstract class AbstractWizard<M extends WizardModel> {
     // Clear out any existing components
     wizardPanel.removeAll();
 
+    // Clear out any existing views
+    wizardViewMap.clear();
+
     // Re-populate based on the new locale (could involve an LTR or RTL transition)
-    addWizardContent(wizardPanel);
+    populateWizardViewMap(wizardViewMap);
+
+    // Bind the views into the wizard panel, and share their panel names
+    for (Map.Entry<String, AbstractWizardView> entry : wizardViewMap.entrySet()) {
+
+      // Add it to the panel
+      wizardPanel.add(entry.getValue().getWizardPanel(), entry.getKey());
+
+      // Share the panel name
+      entry.getValue().setPanelName(entry.getKey());
+
+    }
 
     // Invalidate for new layout
     Panels.invalidate(wizardPanel);
@@ -81,10 +97,10 @@ public abstract class AbstractWizard<M extends WizardModel> {
   }
 
   /**
-   * <p>Add fresh content to the wizard panel</p>
-   * <p>The panel will be empty whenever this is called</p>
+   * <p>Add fresh content to the wizard view map</p>
+   * <p>The map will be empty whenever this is called</p>
    */
-  protected abstract void addWizardContent(JPanel wizardPanel);
+  protected abstract void populateWizardViewMap(Map<String, AbstractWizardView> wizardViewMap);
 
   /**
    * <p>Close the wizard</p>
@@ -171,6 +187,22 @@ public abstract class AbstractWizard<M extends WizardModel> {
       }
     };
 
+  }
+
+  /**
+   * @param wizardView The wizard view (providing a reference to its underlying panel model)
+   *
+   * @return The "finish" action based on the model state
+   */
+  public <P> Action getFinishAction(final AbstractWizardView<M, P> wizardView) {
+
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        Panels.hideLightBox();
+      }
+    };
   }
 
   /**

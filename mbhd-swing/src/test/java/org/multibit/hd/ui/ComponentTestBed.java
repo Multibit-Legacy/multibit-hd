@@ -9,8 +9,8 @@ import org.multibit.hd.ui.events.view.LocaleChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.Wizards;
-import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizard;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -70,7 +70,7 @@ public class ComponentTestBed {
   public JPanel createTestPanel() {
 
     // Choose a panel to test
-    WelcomeWizard wizard = Wizards.newExitingWelcomeWizard();
+    AbstractWizard wizard = Wizards.newSendBitcoinWizard();
     return wizard.getWizardPanel();
 
   }

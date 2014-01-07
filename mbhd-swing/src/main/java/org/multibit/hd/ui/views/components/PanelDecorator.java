@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
+import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.ui.i18n.Languages;
@@ -23,6 +24,68 @@ import java.awt.*;
 public class PanelDecorator {
 
   /**
+   * <p>Add a finish button</p>
+   *
+   * @param view   The view containing the panel to decorate
+   * @param wizard The wizard providing the actions
+   * @param <M>    The wizard model type
+   * @param <P>    The wizard panel model type
+   */
+  public static <M extends WizardModel, P> void addFinish(AbstractWizardView<M, P> view, AbstractWizard<M> wizard) {
+
+    Preconditions.checkNotNull(view,"'view' must be present");
+    Preconditions.checkNotNull(view,"'wizard' must be present");
+    Preconditions.checkNotNull(view.getWizardPanel(),"'wizardPanel' must be present");
+
+    // Use the wizard panel
+    JPanel panel = view.getWizardPanel();
+
+    if (Languages.isLeftToRight()) {
+      view.setFinishButton(Buttons.newFinishButton(wizard.getFinishAction(view)));
+      panel.add(view.getFinishButton(), "span 2,push");
+
+    } else {
+      view.setFinishButton(Buttons.newFinishButton(wizard.getFinishAction(view)));
+      panel.add(view.getFinishButton(), "span 2,shrink");
+    }
+
+  }
+
+  /**
+   * <p>Add an exit, cancel combination</p>
+   *
+   * @param view   The view containing the panel to decorate
+   * @param wizard The wizard providing the actions
+   * @param <M>    The wizard model type
+   * @param <P>    The wizard panel model type
+   */
+  public static <M extends WizardModel, P> void addExitCancel(AbstractWizardView<M, P> view, AbstractWizard<M> wizard) {
+
+    Preconditions.checkNotNull(view,"'view' must be present");
+    Preconditions.checkNotNull(view,"'wizard' must be present");
+    Preconditions.checkNotNull(view.getWizardPanel(),"'wizardPanel' must be present");
+
+    // Use the wizard panel
+    JPanel panel = view.getWizardPanel();
+
+    if (Languages.isLeftToRight()) {
+      view.setExitButton(Buttons.newExitButton(wizard.getExitAction()));
+      panel.add(view.getExitButton(), "span 2,push");
+
+      view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
+      panel.add(view.getCancelButton(), "span 2,push");
+
+    } else {
+      view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
+      panel.add(view.getCancelButton(), "span 2,shrink");
+
+      view.setExitButton(Buttons.newExitButton(wizard.getExitAction()));
+      panel.add(view.getExitButton(), "span 2,shrink");
+    }
+
+  }
+
+  /**
    * <p>Add an exit/cancel, next button combination</p>
    *
    * @param view   The view containing the panel to decorate
@@ -32,22 +95,35 @@ public class PanelDecorator {
    */
   public static <M extends WizardModel, P> void addExitCancelNext(AbstractWizardView<M, P> view, AbstractWizard<M> wizard) {
 
+    Preconditions.checkNotNull(view,"'view' must be present");
+    Preconditions.checkNotNull(view,"'wizard' must be present");
+    Preconditions.checkNotNull(view.getWizardPanel(),"'wizardPanel' must be present");
+
     // Use the wizard panel
     JPanel panel = view.getWizardPanel();
 
     if (Languages.isLeftToRight()) {
       if (wizard.isExiting()) {
-        panel.add(Buttons.newExitButton(wizard.getExitAction()), "span 2,push");
+        view.setExitButton(Buttons.newExitButton(wizard.getExitAction()));
+        panel.add(view.getExitButton(), "span 2,push");
       } else {
-        panel.add(Buttons.newCancelButton(wizard.getCancelAction()), "span 2,push");
+        view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
+        panel.add(view.getCancelButton(), "span 2,push");
       }
-      panel.add(Buttons.newNextButton(wizard.getNextAction(view)), "right,shrink");
+
+      view.setNextButton(Buttons.newNextButton(wizard.getNextAction(view)));
+      panel.add(view.getNextButton(), "right,shrink");
+
     } else {
-      panel.add(Buttons.newNextButton(wizard.getNextAction(view)), "left,push");
+      view.setNextButton(Buttons.newNextButton(wizard.getNextAction(view)));
+      panel.add(view.getNextButton(), "left,push");
+
       if (wizard.isExiting()) {
-        panel.add(Buttons.newExitButton(wizard.getExitAction()), "span 2,shrink");
+        view.setExitButton(Buttons.newExitButton(wizard.getExitAction()));
+        panel.add(view.getExitButton(), "span 2,shrink");
       } else {
-        panel.add(Buttons.newCancelButton(wizard.getCancelAction()), "span 2,shrink");
+        view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
+        panel.add(view.getCancelButton(), "span 2,shrink");
       }
     }
 
@@ -63,25 +139,124 @@ public class PanelDecorator {
    */
   public static <M extends WizardModel, P> void addExitCancelPreviousNext(AbstractWizardView<M, P> view, AbstractWizard<M> wizard) {
 
+    Preconditions.checkNotNull(view,"'view' must be present");
+    Preconditions.checkNotNull(view,"'wizard' must be present");
+    Preconditions.checkNotNull(view.getWizardPanel(),"'wizardPanel' must be present");
+
     // Use the current panel
     JPanel panel = view.getWizardPanel();
 
     if (Languages.isLeftToRight()) {
       if (wizard.isExiting()) {
-        panel.add(Buttons.newExitButton(wizard.getExitAction()), "span 2,push");
+        view.setExitButton(Buttons.newExitButton(wizard.getExitAction()));
+        panel.add(view.getExitButton(), "span 2,push");
       } else {
-        panel.add(Buttons.newCancelButton(wizard.getCancelAction()), "span 2,push");
+        view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
+        panel.add(view.getCancelButton(), "span 2,push");
       }
-      panel.add(Buttons.newPreviousButton(wizard.getPreviousAction(view)), "right,shrink");
-      panel.add(Buttons.newNextButton(wizard.getNextAction(view)), "right,shrink");
+
+      view.setPreviousButton(Buttons.newPreviousButton(wizard.getPreviousAction(view)));
+      panel.add(view.getPreviousButton(), "right,shrink");
+
+      view.setNextButton(Buttons.newNextButton(wizard.getNextAction(view)));
+      panel.add(view.getNextButton(), "right,shrink");
+
     } else {
-      panel.add(Buttons.newNextButton(wizard.getNextAction(view)), "left,push");
-      panel.add(Buttons.newPreviousButton(wizard.getPreviousAction(view)), "left,push");
+
+      view.setNextButton(Buttons.newNextButton(wizard.getNextAction(view)));
+      panel.add(view.getNextButton(), "left,push");
+
+      view.setPreviousButton(Buttons.newPreviousButton(wizard.getPreviousAction(view)));
+      panel.add(view.getPreviousButton(), "left,push");
+
       if (wizard.isExiting()) {
-        panel.add(Buttons.newExitButton(wizard.getExitAction()), "span 2,shrink");
+        view.setExitButton(Buttons.newExitButton(wizard.getExitAction()));
+        panel.add(view.getExitButton(), "span 2,shrink");
       } else {
-        panel.add(Buttons.newCancelButton(wizard.getCancelAction()), "span 2,shrink");
+        view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
+        panel.add(view.getCancelButton(), "span 2,shrink");
       }
+    }
+
+  }
+
+  /**
+   * <p>Add a cancel, previous, send(next) button combination</p>
+   *
+   * @param view   The view containing the panel to decorate
+   * @param wizard The wizard providing the actions
+   * @param <M>    The wizard model type
+   * @param <P>    The wizard panel model type
+   */
+  public static <M extends WizardModel, P> void addCancelPreviousSend(AbstractWizardView<M, P> view, AbstractWizard<M> wizard) {
+
+    Preconditions.checkNotNull(view,"'view' must be present");
+    Preconditions.checkNotNull(view,"'wizard' must be present");
+    Preconditions.checkNotNull(view.getWizardPanel(),"'wizardPanel' must be present");
+
+    // Use the current panel
+    JPanel panel = view.getWizardPanel();
+
+    if (Languages.isLeftToRight()) {
+      view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
+      panel.add(view.getCancelButton(), "span 2,push");
+
+      view.setPreviousButton(Buttons.newPreviousButton(wizard.getPreviousAction(view)));
+      panel.add(view.getPreviousButton(), "right,shrink");
+
+      view.setNextButton(Buttons.newSendButton(wizard.getNextAction(view)));
+      panel.add(view.getNextButton(), "right,shrink");
+
+    } else {
+
+      view.setNextButton(Buttons.newSendButton(wizard.getNextAction(view)));
+      panel.add(view.getNextButton(), "left,push");
+
+      view.setPreviousButton(Buttons.newPreviousButton(wizard.getPreviousAction(view)));
+      panel.add(view.getPreviousButton(), "left,push");
+
+      view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
+      panel.add(view.getCancelButton(), "span 2,shrink");
+    }
+
+  }
+
+  /**
+   * <p>Add a cancel, previous, next button combination</p>
+   *
+   * @param view   The view containing the panel to decorate
+   * @param wizard The wizard providing the actions
+   * @param <M>    The wizard model type
+   * @param <P>    The wizard panel model type
+   */
+  public static <M extends WizardModel, P> void addCancelPreviousNext(AbstractWizardView<M, P> view, AbstractWizard<M> wizard) {
+
+    Preconditions.checkNotNull(view,"'view' must be present");
+    Preconditions.checkNotNull(view,"'wizard' must be present");
+    Preconditions.checkNotNull(view.getWizardPanel(),"'wizardPanel' must be present");
+
+    // Use the wizard panel
+    JPanel panel = view.getWizardPanel();
+
+    if (Languages.isLeftToRight()) {
+      view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
+      panel.add(view.getCancelButton(), "span 2,push");
+
+      view.setPreviousButton(Buttons.newPreviousButton(wizard.getPreviousAction(view)));
+      panel.add(view.getPreviousButton(), "right,shrink");
+
+      view.setNextButton(Buttons.newNextButton(wizard.getNextAction(view)));
+      panel.add(view.getNextButton(), "right,shrink");
+
+    } else {
+      view.setNextButton(Buttons.newNextButton(wizard.getNextAction(view)));
+      panel.add(view.getNextButton(), "left,push");
+
+      view.setPreviousButton(Buttons.newPreviousButton(wizard.getPreviousAction(view)));
+      panel.add(view.getPreviousButton(), "left,push");
+
+      view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
+      panel.add(view.getCancelButton(), "span 2,shrink");
     }
 
   }
@@ -93,6 +268,10 @@ public class PanelDecorator {
    * @param wizardComponents The wizard components arranged in a panel
    */
   public static void applyWizardTheme(JPanel panel, JPanel wizardComponents, MessageKey titleKey) {
+
+    Preconditions.checkNotNull(panel,"'panel' must be present");
+    Preconditions.checkNotNull(wizardComponents,"'wizardComponents' must be present");
+    Preconditions.checkNotNull(titleKey,"'titleKey' must be present");
 
     // Standard wizard layout
     MigLayout layout = new MigLayout(
@@ -119,6 +298,8 @@ public class PanelDecorator {
    */
   public static void applyDangerTheme(JPanel panel) {
 
+    Preconditions.checkNotNull(panel,"'panel' must be present");
+
     Color background = Themes.currentTheme.dangerAlertBackground();
     Color border = Themes.currentTheme.dangerAlertBorder();
     Color text = Themes.currentTheme.dangerAlertText();
@@ -133,6 +314,8 @@ public class PanelDecorator {
    * @param panel The panel to decorate
    */
   public static void applyDangerFadedTheme(JPanel panel) {
+
+    Preconditions.checkNotNull(panel,"'panel' must be present");
 
     Color background = Themes.currentTheme.dangerAlertFadedBackground();
     Color border = Themes.currentTheme.dangerAlertBorder();
@@ -149,6 +332,8 @@ public class PanelDecorator {
    */
   public static void applyWarningTheme(JPanel panel) {
 
+    Preconditions.checkNotNull(panel,"'panel' must be present");
+
     Color background = Themes.currentTheme.warningAlertBackground();
     Color border = Themes.currentTheme.warningAlertBorder();
     Color text = Themes.currentTheme.warningAlertText();
@@ -163,6 +348,8 @@ public class PanelDecorator {
    * @param panel The panel to decorate
    */
   public static void applySuccessTheme(JPanel panel) {
+
+    Preconditions.checkNotNull(panel,"'panel' must be present");
 
     Color background = Themes.currentTheme.successAlertBackground();
     Color border = Themes.currentTheme.successAlertBorder();
@@ -181,6 +368,8 @@ public class PanelDecorator {
    * @param text       The text colour
    */
   private static void applyTheme(JPanel panel, Color background, Color border, Color text) {
+
+    Preconditions.checkNotNull(panel,"'panel' must be present");
 
     panel.setBackground(background);
     panel.setForeground(text);

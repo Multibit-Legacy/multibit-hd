@@ -1,9 +1,10 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.WizardModel;
+import org.multibit.hd.ui.views.wizards.AbstractWizardView;
 
-import javax.swing.*;
+import java.util.Map;
+
 
 /**
  * <p>Wizard to provide the following to UI for "Send Bitcoin":</p>
@@ -16,19 +17,19 @@ import javax.swing.*;
  * @since 0.0.1
  *         
  */
-public class SendBitcoinWizard extends AbstractWizard {
+public class SendBitcoinWizard extends AbstractWizard<SendBitcoinWizardModel> {
 
-  public SendBitcoinWizard(WizardModel model) {
+  public SendBitcoinWizard(SendBitcoinWizardModel model) {
     // TODO Create SendBitcoinModel/View
     super(model);
   }
 
   @Override
-  protected void addWizardContent(JPanel wizardPanel) {
+  protected void populateWizardViewMap(Map<String, AbstractWizardView> wizardViewMap) {
 
-    wizardPanel.add(new SendBitcoinEnterAmountPanel(this), "Enter amount");
-    wizardPanel.add(new SendBitcoinConfirmSendPanel(this), "Confirm");
-    wizardPanel.add(new SendBitcoinProgressPanel(this), "Progress");
+    wizardViewMap.put(SendBitcoinState.ENTER_AMOUNT.name(), new SendBitcoinConfirmView(this));
+    wizardViewMap.put(SendBitcoinState.CONFIRM_AMOUNT.name(), new SendBitcoinConfirmView(this));
+    wizardViewMap.put(SendBitcoinState.PROGRESS.name(), new SendBitcoinProgressView(this));
 
   }
 

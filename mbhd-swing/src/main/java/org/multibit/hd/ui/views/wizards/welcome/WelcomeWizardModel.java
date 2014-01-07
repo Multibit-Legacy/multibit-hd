@@ -2,7 +2,9 @@ package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.multibit.hd.ui.views.wizards.WizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +65,8 @@ public class WelcomeWizardModel implements WizardModel {
 
     // No state transitions occur in this method
 
+    // TODO Consider migrating state into dedicated objects
+
     switch (state) {
       case WELCOME:
         localeCode = (String) panelModel.get();
@@ -77,10 +81,16 @@ public class WelcomeWizardModel implements WizardModel {
       case CREATE_WALLET_SEED_PHRASE:
         actualSeedPhrase = (List<String>) panelModel.get();
         // TODO remove this
-        log.info("Actual seed phrase: '{}'",actualSeedPhrase);
+        log.info("Actual seed phrase:");
+        for (String word : actualSeedPhrase) {
+          System.out.println(word + " ");
+        }
         break;
       case CONFIRM_WALLET_SEED_PHRASE:
         userSeedPhrase = (List<String>) panelModel.get();
+        if (userSeedPhrase.equals(actualSeedPhrase)) {
+          ViewEvents.fireWizardEnableButton(CONFIRM_WALLET_SEED_PHRASE.name(), WizardButton.NEXT, true);
+        }
         break;
     }
 

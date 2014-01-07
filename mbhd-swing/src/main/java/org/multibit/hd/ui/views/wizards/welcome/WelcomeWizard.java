@@ -1,8 +1,9 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
+import org.multibit.hd.ui.views.wizards.AbstractWizardView;
 
-import javax.swing.*;
+import java.util.Map;
 
 import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
 
@@ -24,14 +25,14 @@ public class WelcomeWizard extends AbstractWizard<WelcomeWizardModel> {
   }
 
   @Override
-  protected void addWizardContent(JPanel wizardPanel) {
+  protected void populateWizardViewMap(Map<String, AbstractWizardView> wizardViewMap) {
 
-    wizardPanel.add(new WelcomeView(this).getWizardPanel(), WELCOME.name());
-    wizardPanel.add(new SelectWalletView(this).getWizardPanel(), SELECT_WALLET.name());
-    wizardPanel.add(new CreateWalletSeedPhraseView(this).getWizardPanel(), CREATE_WALLET_SEED_PHRASE.name());
-    wizardPanel.add(new ConfirmWalletSeedPhraseView(this).getWizardPanel(), CONFIRM_WALLET_SEED_PHRASE.name());
-    wizardPanel.add(new RestoreWalletChoicesView(this).getWizardPanel(), RESTORE_WALLET.name());
-    wizardPanel.add(new CreateWalletPasswordView(this).getWizardPanel(), CREATE_WALLET_PASSWORD.name());
+    wizardViewMap.put(WELCOME.name(), new WelcomeView(this));
+    wizardViewMap.put(SELECT_WALLET.name(), new SelectWalletView(this));
+    wizardViewMap.put(CREATE_WALLET_SEED_PHRASE.name(), new CreateWalletSeedPhraseView(this));
+    wizardViewMap.put(CONFIRM_WALLET_SEED_PHRASE.name(), new ConfirmWalletSeedPhraseView(this));
+    wizardViewMap.put(RESTORE_WALLET.name(), new RestoreWalletChoicesView(this));
+    wizardViewMap.put(CREATE_WALLET_PASSWORD.name(), new CreateWalletPasswordView(this));
 
   }
 

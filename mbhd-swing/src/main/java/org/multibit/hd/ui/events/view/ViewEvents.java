@@ -4,6 +4,7 @@ import org.joda.money.BigMoney;
 import org.multibit.hd.core.api.RAGStatus;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.models.AlertModel;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +17,7 @@ import org.slf4j.LoggerFactory;
  * low level event (such as a mouse click) will initiate it.</p>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class ViewEvents {
 
@@ -95,5 +96,18 @@ public class ViewEvents {
   public static void fireAlertRemovedEvent() {
     log.debug("Firing 'alert removed' event");
     CoreServices.uiEventBus.post(new AlertRemovedEvent());
+  }
+
+  /**
+   * <p>Broadcast a new "wizard enable button" event</p>
+   *
+   * @param panelName    The panel name to which this applies
+   * @param wizardButton The wizard button to which this applies
+   * @param enabled      True if the button should be enabled
+   */
+  public static void fireWizardEnableButton(String panelName, WizardButton wizardButton, boolean enabled) {
+    log.debug("Firing 'alert added' event");
+    CoreServices.uiEventBus.post(new WizardButtonEnabledEvent(panelName, wizardButton, enabled));
+
   }
 }

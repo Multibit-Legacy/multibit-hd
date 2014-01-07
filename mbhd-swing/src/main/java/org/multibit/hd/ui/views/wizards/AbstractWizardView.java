@@ -2,7 +2,10 @@ package org.multibit.hd.ui.views.wizards;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.api.MessageKey;
+import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.events.view.WizardButtonEnabledEvent;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 
@@ -28,6 +31,15 @@ public abstract class AbstractWizardView<W extends WizardModel, P> {
 
   private JPanel wizardPanel;
 
+  // Buttons
+  private JButton exitButton;
+  private JButton cancelButton;
+  private JButton nextButton;
+  private JButton previousButton;
+  private JButton finishButton;
+
+  private String panelName;
+
   /**
    * @param wizardModel The wizard model managing the states
    * @param title       The key to the main title of the wizard panel
@@ -39,10 +51,24 @@ public abstract class AbstractWizardView<W extends WizardModel, P> {
 
     this.wizardModel = wizardModel;
 
+    // All wizard views can receive events
+    CoreServices.uiEventBus.register(this);
+
     // All wizard panels are decorated with the same theme at creation
     wizardPanel = Panels.newPanel();
     PanelDecorator.applyWizardTheme(wizardPanel, newDataPanel(), title);
 
+  }
+
+  /**
+   * @return The panel name associated with this view
+   */
+  public String getPanelName() {
+    return panelName;
+  }
+
+  public void setPanelName(String panelName) {
+    this.panelName = panelName;
   }
 
   /**
@@ -67,6 +93,61 @@ public abstract class AbstractWizardView<W extends WizardModel, P> {
   }
 
   /**
+   * @return The "exit" button for this view
+   */
+  public JButton getExitButton() {
+    return exitButton;
+  }
+
+  public void setExitButton(JButton exitButton) {
+    this.exitButton = exitButton;
+  }
+
+  /**
+   * @return The "cancel" button for this view
+   */
+  public JButton getCancelButton() {
+    return cancelButton;
+  }
+
+  public void setCancelButton(JButton cancelButton) {
+    this.cancelButton = cancelButton;
+  }
+
+  /**
+   * @return The "next" button for this view
+   */
+  public JButton getNextButton() {
+    return nextButton;
+  }
+
+  public void setNextButton(JButton nextButton) {
+    this.nextButton = nextButton;
+  }
+
+  /**
+   * @return The "previous" button for this view
+   */
+  public JButton getPreviousButton() {
+    return previousButton;
+  }
+
+  public void setPreviousButton(JButton previousButton) {
+    this.previousButton = previousButton;
+  }
+
+  /**
+   * @return The "finish" button for this view
+   */
+  public JButton getFinishButton() {
+    return finishButton;
+  }
+
+  public void setFinishButton(JButton finishButton) {
+    this.finishButton = finishButton;
+  }
+
+  /**
    * @return The wizard panel (title, wizard components, buttons)
    */
   public JPanel getWizardPanel() {
@@ -83,4 +164,39 @@ public abstract class AbstractWizardView<W extends WizardModel, P> {
    */
   public abstract void updatePanelModel();
 
+  /**
+   * React to a "wizard button enable" event
+   *
+   * @param event The wizard button enable event
+   */
+  @Subscribe
+  public void onWizardButtonEnabled(WizardButtonEnabledEvent event) {
+
+    Preconditions.checkNotNull(event,"'event' must be present");
+
+    // Is the event applicable?
+    if (!event.getPanelName().equals(panelName)) {
+      return;
+    }
+
+    // Enable the button (model should only reference actual buttons)
+    switch (event.getWizardButton()) {
+      case CANCEL:
+        cancelButton.setEnabled(event.isEnabled());
+        break;
+      case EXIT:
+        exitButton.setEnabled(event.isEnabled());
+        break;
+      case NEXT:
+        nextButton.setEnabled(event.isEnabled());
+        break;
+      case PREVIOUS:
+        previousButton.setEnabled(event.isEnabled());
+        break;
+      case FINISH:
+        finishButton.setEnabled(event.isEnabled());
+        break;
+    }
+
+  }
 }

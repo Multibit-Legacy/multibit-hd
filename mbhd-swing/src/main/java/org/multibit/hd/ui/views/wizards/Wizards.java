@@ -1,7 +1,11 @@
 package org.multibit.hd.ui.views.wizards;
 
+import org.multibit.hd.ui.views.wizards.exit.ExitState;
 import org.multibit.hd.ui.views.wizards.exit.ExitWizard;
+import org.multibit.hd.ui.views.wizards.exit.ExitWizardModel;
+import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinWizard;
+import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinWizardModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizard;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
@@ -22,8 +26,7 @@ public class Wizards {
    */
   public static SendBitcoinWizard newSendBitcoinWizard() {
 
-    // TODO Implement this
-    return new SendBitcoinWizard(null);
+    return new SendBitcoinWizard(new SendBitcoinWizardModel(SendBitcoinState.ENTER_AMOUNT));
 
   }
 
@@ -33,7 +36,7 @@ public class Wizards {
   public static ExitWizard newExitWizard() {
 
     // TODO Implement this
-    return new ExitWizard(null);
+    return new ExitWizard(new ExitWizardModel(ExitState.CONFIRM_EXIT));
   }
 
   /**
