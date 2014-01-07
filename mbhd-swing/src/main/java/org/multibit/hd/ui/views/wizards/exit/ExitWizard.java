@@ -16,8 +16,8 @@ import java.util.Map;
  */
 public class ExitWizard extends AbstractWizard<ExitWizardModel> {
 
-  public ExitWizard(ExitWizardModel model) {
-    super(model);
+  public ExitWizard(ExitWizardModel model, boolean isExiting) {
+    super(model, isExiting);
   }
 
   @Override

@@ -37,17 +37,19 @@ public abstract class AbstractWizard<M extends WizardModel> {
   private final JPanel wizardPanel;
   private final M wizardModel;
 
-  private boolean exiting = false;
+  private final boolean exiting;
   private Map<String, AbstractWizardView> wizardViewMap = Maps.newHashMap();
 
   /**
    * @param wizardModel The overall wizard data model containing the aggregate information of all components in the wizard
+   * @param isExiting   True if the exit button should trigger an application shutdown
    */
-  protected AbstractWizard(M wizardModel) {
+  protected AbstractWizard(M wizardModel, boolean isExiting) {
 
     Preconditions.checkNotNull(wizardModel, "'model' must be present");
 
     this.wizardModel = wizardModel;
+    this.exiting = isExiting;
 
     CoreServices.uiEventBus.register(this);
 
@@ -145,13 +147,6 @@ public abstract class AbstractWizard<M extends WizardModel> {
    */
   public JPanel getWizardPanel() {
     return wizardPanel;
-  }
-
-  /**
-   * @param exiting True if the wizard should trigger an "exit" event rather than a "close"
-   */
-  public void setExiting(boolean exiting) {
-    this.exiting = exiting;
   }
 
   /**

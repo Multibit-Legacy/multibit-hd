@@ -19,9 +19,8 @@ import java.util.Map;
  */
 public class SendBitcoinWizard extends AbstractWizard<SendBitcoinWizardModel> {
 
-  public SendBitcoinWizard(SendBitcoinWizardModel model) {
-    // TODO Create SendBitcoinModel/View
-    super(model);
+  public SendBitcoinWizard(SendBitcoinWizardModel model, boolean isExiting) {
+    super(model, isExiting);
   }
 
   @Override

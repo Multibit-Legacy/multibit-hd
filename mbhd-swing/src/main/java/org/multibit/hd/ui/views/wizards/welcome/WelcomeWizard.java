@@ -20,8 +20,8 @@ import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
  */
 public class WelcomeWizard extends AbstractWizard<WelcomeWizardModel> {
 
-  public WelcomeWizard(WelcomeWizardModel model) {
-    super(model);
+  public WelcomeWizard(WelcomeWizardModel model, boolean isExiting) {
+    super(model, isExiting);
   }
 
   @Override

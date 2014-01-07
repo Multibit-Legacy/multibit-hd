@@ -22,32 +22,20 @@ import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 public class Wizards {
 
   /**
-   * @return A new "send bitcoin" wizard
-   */
-  public static SendBitcoinWizard newSendBitcoinWizard() {
-
-    return new SendBitcoinWizard(new SendBitcoinWizardModel(SendBitcoinState.ENTER_AMOUNT));
-
-  }
-
-  /**
    * @return A new "exit" wizard
    */
   public static ExitWizard newExitWizard() {
 
-    // TODO Implement this
-    return new ExitWizard(new ExitWizardModel(ExitState.CONFIRM_EXIT));
+    return new ExitWizard(new ExitWizardModel(ExitState.CONFIRM_EXIT), true);
   }
 
   /**
-   * @return A new "welcome" wizard for recovery set up
+   * @return A new "send bitcoin" wizard
    */
-  public static WelcomeWizard newClosingWelcomeWizard() {
+  public static SendBitcoinWizard newSendBitcoinWizard() {
 
-    WelcomeWizard wizard = newExitingWelcomeWizard();
-    wizard.setExiting(false);
+    return new SendBitcoinWizard(new SendBitcoinWizardModel(SendBitcoinState.ENTER_AMOUNT), false);
 
-    return wizard;
   }
 
   /**
@@ -55,10 +43,15 @@ public class Wizards {
    */
   public static WelcomeWizard newExitingWelcomeWizard() {
 
-    WelcomeWizard wizard = new WelcomeWizard(new WelcomeWizardModel(WelcomeWizardState.WELCOME));
-    wizard.setExiting(true);
+    return new WelcomeWizard(new WelcomeWizardModel(WelcomeWizardState.WELCOME), true);
+  }
 
-    return wizard;
+  /**
+   * @return A new "welcome" wizard for recovery set up
+   */
+  public static WelcomeWizard newClosingWelcomeWizard() {
+
+    return new WelcomeWizard(new WelcomeWizardModel(WelcomeWizardState.WELCOME), false);
   }
 
 }
