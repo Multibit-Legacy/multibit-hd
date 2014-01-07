@@ -3,13 +3,14 @@ package org.multibit.hd.core.services;
 import org.junit.Before;
 import org.multibit.hd.core.managers.InstallationManager;
 
+import java.io.File;
 import java.io.IOException;
 
 public class BitcoinNetworkServiceTest {
 
   private BitcoinNetworkService bitcoinNetworkService;
 
-  private String applicationDataDirectoryName = InstallationManager.createApplicationDataDirectory();
+  private File applicationDataDirectory = InstallationManager.createApplicationDataDirectory();
 
   @Before
   public void setUp() throws IOException {
@@ -17,7 +18,7 @@ public class BitcoinNetworkServiceTest {
 
     bitcoinNetworkService = CoreServices.newBitcoinNetworkService();
 
-    applicationDataDirectoryName = InstallationManager.createApplicationDataDirectory();
+    applicationDataDirectory = InstallationManager.createApplicationDataDirectory();
   }
 
 

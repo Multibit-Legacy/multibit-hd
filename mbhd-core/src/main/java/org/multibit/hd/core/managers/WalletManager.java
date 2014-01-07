@@ -5,6 +5,7 @@ import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.bitcoin.store.WalletProtobufSerializer;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.api.WalletId;
 import org.multibit.hd.core.config.Configurations;
@@ -30,9 +31,43 @@ import java.util.List;
  *  <li>load wallet</li>
  *  <li>store wallet</li>
  *  <li>backup wallet</li>
+ *  <li> tracks the current wallet and the list of wallet directories</li>
  *  </ul>
  */
-public class WalletManager {
+public enum WalletManager {
+  INSTANCE;
+
+  private static WalletProtobufSerializer walletProtobufSerializer;
+
+  static {
+    walletProtobufSerializer = new WalletProtobufSerializer();
+    // TODO was originally multibit protobuf serializer - ok ?
+  }
+
+  /**
+   * Initialise enum, load up the available wallets and find the current wallet
+   * @param applicationDataDirectory The directory in which to store and read wallets.
+   */
+  public void initialise(File applicationDataDirectory) {
+    this.applicationDataDirectory = applicationDataDirectory;
+
+    // Work out the list of available wallets in the application data directory
+    List<File> walletDirectories = findWalletDirectories(applicationDataDirectory);
+
+    // TODO enable user to switch wallets - currently using the first
+
+    // If a wallet directory is present try to load it.
+    // TODO catch wallet load exceptions and report
+    if (!walletDirectories.isEmpty()) {
+      currentWalletDirectory = Optional.of(walletDirectories.get(0));
+      String walletFilename = walletDirectories.get(0)+ File.separator + MBHD_WALLET_NAME;
+      currentWallet = Optional.of(loadFromFile(new File(walletFilename)));
+    } else {
+      currentWallet = Optional.absent();
+      currentWalletDirectory = Optional.absent();
+    }
+  }
+
   private static final Logger log = LoggerFactory.getLogger(WalletManager.class);
 
   public static final String WALLET_DIRECTORY_PREFIX = "mbhd";
@@ -51,15 +86,13 @@ public class WalletManager {
 
   public static final String MBHD_WALLET_NAME = "mbhd.wallet";
 
-  private WalletProtobufSerializer walletProtobufSerializer;
+  private File applicationDataDirectory;
 
-  private Wallet currentWallet;
+  private List<File> walletDirectories;
 
-  public WalletManager() {
-    walletProtobufSerializer = new WalletProtobufSerializer();
-    // TODO was originally multibit protobuf serializer - ok ?
-  }
+  private Optional<Wallet> currentWallet;
 
+  private Optional<File> currentWalletDirectory;
 
   /**
    * Create a wallet that contains only a single, random private key.
@@ -75,13 +108,13 @@ public class WalletManager {
    * @throws WalletVersionException if there is already a simple wallet but the wallet version cannot be understood
    */
   public Wallet createWallet(byte[] seed, CharSequence password) throws WalletLoadException, WalletVersionException, IOException {
-    String applicationDataDirectoryName = InstallationManager.createApplicationDataDirectory();
-    return createWallet(applicationDataDirectoryName, seed, password);
+    File applicationDataDirectory = InstallationManager.createApplicationDataDirectory();
+    return createWallet(applicationDataDirectory.getAbsolutePath(), seed, password);
   }
 
 
     /**
-      * Create a simple wallet that contains only a single, random private key.
+      * Create a wallet that contains only a single, random private key.
       * This is stored in the specified directory.
       * The name of the wallet file is derived from the seed.
       * <p/>
@@ -404,6 +437,17 @@ public class WalletManager {
   }
 
   /**
+    * Work out what wallets are available in a directory (typically the user data directory).
+    * This is worked out by looking for directories with the name:
+    * 'multibithd' + a wallet id
+    *
+    * @return List<File> List of files of wallet directories
+    */
+   public List<File> findWalletDirectories() {
+     return findWalletDirectories(applicationDataDirectory);
+   }
+
+  /**
    * Work out what wallets are available in a directory (typically the user data directory).
    * This is worked out by looking for directories with the name:
    * 'multibithd' + a wallet id
@@ -434,11 +478,15 @@ public class WalletManager {
     return walletDirectories;
   }
 
-  public Wallet getCurrentWallet() {
+  public Optional<Wallet> getCurrentWallet() {
     return currentWallet;
   }
 
-  public void setCurrentWallet(Wallet currentWallet) {
-    this.currentWallet = currentWallet;
+  private void setCurrentWallet(Wallet currentWallet) {
+    this.currentWallet = Optional.of(currentWallet);
+  }
+
+  public Optional<File> getCurrentWalletDirectory() {
+    return currentWalletDirectory;
   }
 }
