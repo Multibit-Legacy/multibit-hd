@@ -10,6 +10,8 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -46,8 +48,18 @@ public class EnterSeedPhraseView extends AbstractView<EnterSeedPhraseModel> {
 
     seedPhraseTextArea = TextBoxes.newEnterSeedPhrase();
 
-    // Fill the text area with
+    // Fill the text area with appropriate content
     seedPhraseTextArea.setText(model.displaySeedPhrase());
+
+    // Bind a key listener to allow instant update of UI to mismatched seed phrase
+    seedPhraseTextArea.addKeyListener(new KeyAdapter() {
+
+      @Override
+      public void keyReleased(KeyEvent e) {
+        updateModel();
+      }
+
+    });
 
     // Configure the actions
     Action toggleDisplayAction = getToggleDisplayAction();

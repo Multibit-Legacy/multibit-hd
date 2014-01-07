@@ -5,6 +5,7 @@ import org.multibit.hd.ui.views.themes.Themes;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.DefaultStyledDocument;
 import java.awt.*;
 
 /**
@@ -19,9 +20,14 @@ import java.awt.*;
 public class TextBoxes {
 
   /**
-   * The size of the password text area in characters
+   * The maximum length of the seed phrase
    */
-  public static final int PASSWORD_AREA = 240;
+  public static final int SEED_PHRASE_LENGTH = 240;
+
+  /**
+   * The maximum length of the password
+   */
+  public static final int PASSWORD_LENGTH = 40;
 
   /**
    * Maintain a reference to the platform password echo character
@@ -51,6 +57,13 @@ public class TextBoxes {
   public static JPasswordField newPassword() {
 
     JPasswordField passwordField = new JPasswordField(40);
+
+    // Limit the length of the underlying document
+    DefaultStyledDocument doc = new DefaultStyledDocument();
+    doc.setDocumentFilter(new DocumentMaxLengthFilter(SEED_PHRASE_LENGTH));
+    passwordField.setDocument(doc);
+
+    // Apply the theme
     passwordField.setBackground(Themes.currentTheme.dataEntryBackground());
 
     return passwordField;
@@ -61,7 +74,14 @@ public class TextBoxes {
    */
   public static JTextArea newNotes() {
 
-    JTextArea textArea = new JTextArea(5, 40);
+    JTextArea textArea = new JTextArea(6, 40);
+
+    // Limit the length of the underlying document
+    DefaultStyledDocument doc = new DefaultStyledDocument();
+    doc.setDocumentFilter(new DocumentMaxLengthFilter(SEED_PHRASE_LENGTH));
+    textArea.setDocument(doc);
+
+    // Apply the theme
     textArea.setBackground(Themes.currentTheme.dataEntryBackground());
 
     return textArea;
@@ -89,8 +109,14 @@ public class TextBoxes {
   public static JTextArea newEnterSeedPhrase() {
 
     // Keep this in line with the PASSWORD_AREA constant
-    JTextArea textArea = new JTextArea(6, 40);
+    JTextArea textArea = new JTextArea(6, PASSWORD_LENGTH);
 
+    // Limit the length of the underlying document
+    DefaultStyledDocument doc = new DefaultStyledDocument();
+    doc.setDocumentFilter(new DocumentMaxLengthFilter(SEED_PHRASE_LENGTH));
+    textArea.setDocument(doc);
+
+    // Apply the theme
     textArea.setBackground(Themes.currentTheme.readOnlyBackground());
     textArea.setFont(new Font("Courier New", Font.PLAIN, 14));
 

@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.events.view;
 
+import com.google.common.base.Optional;
 import org.joda.money.BigMoney;
 import org.multibit.hd.core.api.RAGStatus;
 import org.multibit.hd.core.services.CoreServices;
@@ -106,8 +107,18 @@ public class ViewEvents {
    * @param enabled      True if the button should be enabled
    */
   public static void fireWizardEnableButton(String panelName, WizardButton wizardButton, boolean enabled) {
-    log.debug("Firing 'alert added' event");
+    log.debug("Firing 'wizard enable button' event: {}", enabled);
     CoreServices.uiEventBus.post(new WizardButtonEnabledEvent(panelName, wizardButton, enabled));
 
+  }
+
+  /**
+   * <p>Broadcast a new "wizard panel model changed" event</p>
+   *
+   * @param panelModel The panel model
+   */
+  public static void fireWizardPanelModelChangedEvent(Optional panelModel) {
+    log.debug("Firing 'wizard panel model changed' event");
+    CoreServices.uiEventBus.post(new WizardPanelModelChangedEvent(panelModel));
   }
 }

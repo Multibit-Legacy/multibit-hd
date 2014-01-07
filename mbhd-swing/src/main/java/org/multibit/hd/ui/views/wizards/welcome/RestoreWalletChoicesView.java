@@ -49,8 +49,9 @@ public class RestoreWalletChoicesView extends AbstractWizardView<WelcomeWizardMo
   }
 
   @Override
-  public void updatePanelModel() {
-    // Do nothing - model is updated via an action
+  public boolean updatePanelModel() {
+    // Do nothing - panel model is updated via an action and wizard model is not applicable
+    return true;
   }
 
   /**

@@ -31,7 +31,7 @@ public class CreateWalletPasswordView extends AbstractWizardView<WelcomeWizardMo
 
     super(wizard.getWizardModel(), MessageKey.CREATE_WALLET_PASSWORD_TITLE);
 
-    PanelDecorator.addExitCancelPreviousNext(this, wizard);
+    PanelDecorator.addExitCancelNext(this, wizard);
 
   }
 
@@ -54,8 +54,9 @@ public class CreateWalletPasswordView extends AbstractWizardView<WelcomeWizardMo
   }
 
   @Override
-  public void updatePanelModel() {
+  public boolean updatePanelModel() {
     confirmPasswordMaV.getView().updateModel();
+    return false;
   }
 
 }

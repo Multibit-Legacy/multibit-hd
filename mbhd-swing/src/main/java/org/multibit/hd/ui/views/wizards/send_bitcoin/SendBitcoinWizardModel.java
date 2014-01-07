@@ -3,7 +3,8 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
 import com.google.common.base.Optional;
 import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
-import org.multibit.hd.ui.views.wizards.WizardModel;
+import org.multibit.hd.ui.events.view.WizardPanelModelChangedEvent;
+import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 
 import static org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState.*;
 
@@ -17,7 +18,7 @@ import static org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState.*;
  * @since 0.0.1
  *  
  */
-public class SendBitcoinWizardModel implements WizardModel {
+public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState> {
 
   /**
    * The current state
@@ -30,13 +31,16 @@ public class SendBitcoinWizardModel implements WizardModel {
   private BigMoney btcAmount = BigMoney.zero(CurrencyUnit.of("BTC"));
   private String password;
 
+  /**
+   * @param state The state object
+   */
   public SendBitcoinWizardModel(SendBitcoinState state) {
-    this.state = state;
+    super(state);
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  public <P> void update(Optional<P> panelModel) {
+  public void update(Optional panelModel) {
 
     // No state transitions occur in this method
 
@@ -86,6 +90,11 @@ public class SendBitcoinWizardModel implements WizardModel {
   @Override
   public String getPanelName() {
     return state.name();
+  }
+
+  @Override
+  public void onWizardPanelModelChangedEvent(WizardPanelModelChangedEvent event) {
+    // Do nothing
   }
 
   /**

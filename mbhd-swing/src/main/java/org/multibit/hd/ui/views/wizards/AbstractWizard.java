@@ -219,10 +219,12 @@ public abstract class AbstractWizard<M extends WizardModel> {
       public void actionPerformed(ActionEvent e) {
 
         // Ensure the panel updates its model (the button is outside of the panel itself)
-        wizardView.updatePanelModel();
+        if (!wizardView.updatePanelModel()) {
 
-        // Aggregate the panel information into the wizard model
-        wizardModel.update(wizardView.getPanelModel());
+          // Aggregate the panel information into the wizard model
+          wizardModel.update(wizardView.getPanelModel());
+
+        }
 
         // Move to the next state
         wizardModel.next();

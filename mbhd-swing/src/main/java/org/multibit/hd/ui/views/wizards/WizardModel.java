@@ -1,6 +1,8 @@
 package org.multibit.hd.ui.views.wizards;
 
 import com.google.common.base.Optional;
+import com.google.common.eventbus.Subscribe;
+import org.multibit.hd.ui.events.view.WizardPanelModelChangedEvent;
 
 /**
  * <p>Interface to provide the following to wizard model:</p>
@@ -32,7 +34,14 @@ public interface WizardModel {
    * Update the wizard model with the panel model based on the current state
    *
    * @param panelModel The panel model (can be absent)
-   * @param <P>        The panel model type
    */
-  <P> void update(Optional<P> panelModel);
+  void update(Optional panelModel);
+
+  /**
+   * Handle a "wizard panel model changed" event
+   *
+   * @param event The event
+   */
+  @Subscribe
+  void onWizardPanelModelChangedEvent(WizardPanelModelChangedEvent event);
 }

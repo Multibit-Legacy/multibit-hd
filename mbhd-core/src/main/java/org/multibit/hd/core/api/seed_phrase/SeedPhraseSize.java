@@ -46,14 +46,14 @@ public enum SeedPhraseSize {
   }
 
   /**
-    * @return The size of the entropy bytes that correspond to this phrase size.
-    * (4 bytes of entropy are encoded into 3 words)
-    */
-   public int getEntropyBytesSize() {
-     return 4 * size / 3;
-   }
+   * @return The size of the entropy bytes that correspond to this phrase size.
+   * (4 bytes of entropy are encoded into 3 words)
+   */
+  public int getEntropyBytesSize() {
+    return 4 * size / 3;
+  }
 
-   /**
+  /**
    * @param ordinal The ordinal (zero-based)
    *
    * @return A matching SeedPhraseSize
@@ -71,5 +71,21 @@ public enum SeedPhraseSize {
         throw new IllegalArgumentException("Unknown index: " + ordinal);
     }
 
+  }
+
+  /**
+   * @param size A size value
+   *
+   * @return True if the size matches one of the standard values (e.g. 12, 18, 24)
+   */
+  public static boolean isValid(int size) {
+
+    for (SeedPhraseSize entry : SeedPhraseSize.values()) {
+      if (entry.size == size) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }

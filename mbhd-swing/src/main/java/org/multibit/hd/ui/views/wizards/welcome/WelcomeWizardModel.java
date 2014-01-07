@@ -1,15 +1,19 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.Uninterruptibles;
+import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.multibit.hd.ui.views.wizards.WizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
 
@@ -26,14 +30,9 @@ import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
  * @since 0.0.1
  *  
  */
-public class WelcomeWizardModel implements WizardModel {
+public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> {
 
   private static final Logger log = LoggerFactory.getLogger(WelcomeWizardModel.class);
-
-  /**
-   * The current state
-   */
-  private WelcomeWizardState state = WELCOME;
 
   /**
    * The "select wallet" radio button choice (as a state)
@@ -55,13 +54,16 @@ public class WelcomeWizardModel implements WizardModel {
    */
   private List<String> userSeedPhrase = Lists.newArrayList();
 
+  /**
+   * @param state The state object
+   */
   public WelcomeWizardModel(WelcomeWizardState state) {
-    this.state = state;
+    super(state);
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  public <P> void update(Optional<P> panelModel) {
+  public void update(Optional panelModel) {
 
     // No state transitions occur in this method
 
@@ -84,13 +86,26 @@ public class WelcomeWizardModel implements WizardModel {
         for (String word : actualSeedPhrase) {
           System.out.print(word + " ");
         }
-        System.out.println();
+        System.out.println(", length="+actualSeedPhrase.size());
         break;
       case CONFIRM_WALLET_SEED_PHRASE:
+        // Require a decision event
         userSeedPhrase = (List<String>) panelModel.get();
-        if (userSeedPhrase.equals(actualSeedPhrase)) {
-          ViewEvents.fireWizardEnableButton(CONFIRM_WALLET_SEED_PHRASE.name(), WizardButton.NEXT, true);
+        // TODO remove this
+        System.out.println("Comparing:");
+        for (String word : actualSeedPhrase) {
+          System.out.print(word + " ");
         }
+        System.out.println(", with");
+        for (String word : userSeedPhrase) {
+          System.out.print(word + " ");
+        }
+        System.out.println(", actual length="+actualSeedPhrase.size());
+        Uninterruptibles.sleepUninterruptibly(10, TimeUnit.MILLISECONDS);
+        ViewEvents.fireWizardEnableButton(
+          CONFIRM_WALLET_SEED_PHRASE.name(),
+          WizardButton.NEXT,
+          userSeedPhrase.equals(actualSeedPhrase));
         break;
     }
 
@@ -108,17 +123,19 @@ public class WelcomeWizardModel implements WizardModel {
         break;
       case CREATE_WALLET_SEED_PHRASE:
         state = CONFIRM_WALLET_SEED_PHRASE;
+        Preconditions.checkState(SeedPhraseSize.isValid(actualSeedPhrase.size()),"'actualSeedPhrase' is not a valid length");
         ViewEvents.fireWizardEnableButton(CONFIRM_WALLET_SEED_PHRASE.name(), WizardButton.NEXT, false);
         break;
-      case RESTORE_WALLET:
-        state = CONFIRM_WALLET_SEED_PHRASE;
-        break;
-      case HARDWARE_WALLET:
-        state = CONFIRM_WALLET_SEED_PHRASE;
-        break;
       case CONFIRM_WALLET_SEED_PHRASE:
+        Preconditions.checkState(SeedPhraseSize.isValid(userSeedPhrase.size()),"'userSeedPhrase' is not a valid length");
         state = CREATE_WALLET_PASSWORD;
         break;
+      case RESTORE_WALLET:
+      state = CONFIRM_WALLET_SEED_PHRASE;
+      break;
+      case HARDWARE_WALLET:
+      state = CONFIRM_WALLET_SEED_PHRASE;
+      break;
     }
 
   }

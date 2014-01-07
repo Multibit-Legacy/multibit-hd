@@ -53,7 +53,7 @@ public class DisplaySeedPhraseModel implements Model<List<String>> {
     if (asClearText) {
       return Joiner.on(" ").join(seedPhrase);
     } else {
-      return Strings.repeat(String.valueOf(TextBoxes.getPasswordEchoChar()), TextBoxes.PASSWORD_AREA);
+      return Strings.repeat(String.valueOf(TextBoxes.getPasswordEchoChar()), TextBoxes.SEED_PHRASE_LENGTH);
     }
   }
 

@@ -54,8 +54,9 @@ public class SendBitcoinConfirmView extends AbstractWizardView<SendBitcoinWizard
   }
 
   @Override
-  public void updatePanelModel() {
-
+  public boolean updatePanelModel() {
+    // Do nothing - panel model is updated via an action and wizard model is not applicable
+    return true;
   }
 
 }

@@ -161,8 +161,10 @@ public abstract class AbstractWizardView<W extends WizardModel, P> {
 
   /**
    * Update the panel data model with the contents of the panel view components (if necessary)
+   *
+   * @return True if the panel update has triggered an update to the wizard model
    */
-  public abstract void updatePanelModel();
+  public abstract boolean updatePanelModel();
 
   /**
    * React to a "wizard button enable" event
@@ -172,7 +174,7 @@ public abstract class AbstractWizardView<W extends WizardModel, P> {
   @Subscribe
   public void onWizardButtonEnabled(WizardButtonEnabledEvent event) {
 
-    Preconditions.checkNotNull(event,"'event' must be present");
+    Preconditions.checkNotNull(event, "'event' must be present");
 
     // Is the event applicable?
     if (!event.getPanelName().equals(panelName)) {

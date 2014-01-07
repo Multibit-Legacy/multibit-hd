@@ -50,8 +50,9 @@ public class ExitView extends AbstractWizardView<ExitWizardModel, String> {
   }
 
   @Override
-  public void updatePanelModel() {
-    // Do nothing - all work is handled in the actions
+  public boolean updatePanelModel() {
+    // Do nothing - panel model is updated via an action and wizard model is not applicable
+    return true;
   }
 
 }
