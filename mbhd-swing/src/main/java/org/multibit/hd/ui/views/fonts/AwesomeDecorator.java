@@ -74,8 +74,8 @@ public class AwesomeDecorator {
     iconLabel.setFont(iconLabel.getFont().deriveFont((float) size));
     iconLabel.setForeground(label.getForeground());
 
-    Icon enabledIcon = new AwesomeSwingIcon(iconLabel, icon.getChar());
-    Icon disabledIcon = new AwesomeSwingIcon(iconLabel, icon.getChar(), true);
+    Icon enabledIcon = new AwesomeSwingIcon(iconLabel, icon.getChar(), true);
+    Icon disabledIcon = new AwesomeSwingIcon(iconLabel, icon.getChar(), false);
 
     label.setIcon(enabledIcon);
     label.setDisabledIcon(disabledIcon);
@@ -95,8 +95,8 @@ public class AwesomeDecorator {
    */
   public static void bindIcon(AwesomeIcon icon, JLabel label, boolean leading, int size) {
 
-    Icon enabledIcon = new AwesomeSwingIcon(label, icon.getChar());
-    Icon disabledIcon = new AwesomeSwingIcon(label, icon.getChar(), true);
+    Icon enabledIcon = new AwesomeSwingIcon(label, icon.getChar(), size, true);
+    Icon disabledIcon = new AwesomeSwingIcon(label, icon.getChar(), size, false);
 
     label.setIcon(enabledIcon);
     label.setDisabledIcon(disabledIcon);
@@ -121,8 +121,8 @@ public class AwesomeDecorator {
     iconButton.setFont(iconButton.getFont().deriveFont((float) size));
     iconButton.setForeground(button.getForeground());
 
-    Icon enabledIcon = new AwesomeSwingIcon(iconButton, icon.getChar());
-    Icon disabledIcon = new AwesomeSwingIcon(iconButton, icon.getChar(), true);
+    Icon enabledIcon = new AwesomeSwingIcon(iconButton, icon.getChar(), true);
+    Icon disabledIcon = new AwesomeSwingIcon(iconButton, icon.getChar(), false);
 
     button.setIcon(enabledIcon);
     button.setDisabledIcon(disabledIcon);
@@ -142,8 +142,8 @@ public class AwesomeDecorator {
    */
   public static void bindIcon(AwesomeIcon icon, JButton button, boolean leading, int size) {
 
-    Icon enabledIcon = new AwesomeSwingIcon(button, icon.getChar());
-    Icon disabledIcon = new AwesomeSwingIcon(button, icon.getChar(), true);
+    Icon enabledIcon = new AwesomeSwingIcon(button, icon.getChar(), size, true);
+    Icon disabledIcon = new AwesomeSwingIcon(button, icon.getChar(), size, false);
 
     button.setIcon(enabledIcon);
     button.setDisabledIcon(disabledIcon);
@@ -226,11 +226,8 @@ public class AwesomeDecorator {
    */
   public static AwesomeIcon select(AwesomeIcon ltrIcon, AwesomeIcon rtlIcon) {
 
-    if (ComponentOrientation.getOrientation(Languages.currentLocale()).isLeftToRight()) {
-      return ltrIcon;
-    }
+    return ComponentOrientation.getOrientation(Languages.currentLocale()).isLeftToRight() ? ltrIcon : rtlIcon;
 
-    return rtlIcon;
   }
 
 }

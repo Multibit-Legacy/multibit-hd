@@ -82,7 +82,7 @@ public class AwesomeSwingIcon implements Icon, PropertyChangeListener {
     setText(String.valueOf(text));
 
     if (!enabled) {
-      setForeground(component.getForeground().brighter());
+      setForeground(UIManager.getColor("textInactiveText"));
     }
 
     component.addPropertyChangeListener("font", this);

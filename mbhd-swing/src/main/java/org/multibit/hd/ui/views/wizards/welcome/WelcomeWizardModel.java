@@ -81,10 +81,10 @@ public class WelcomeWizardModel implements WizardModel {
       case CREATE_WALLET_SEED_PHRASE:
         actualSeedPhrase = (List<String>) panelModel.get();
         // TODO remove this
-        log.info("Actual seed phrase:");
         for (String word : actualSeedPhrase) {
-          System.out.println(word + " ");
+          System.out.print(word + " ");
         }
+        System.out.println();
         break;
       case CONFIRM_WALLET_SEED_PHRASE:
         userSeedPhrase = (List<String>) panelModel.get();
@@ -108,6 +108,7 @@ public class WelcomeWizardModel implements WizardModel {
         break;
       case CREATE_WALLET_SEED_PHRASE:
         state = CONFIRM_WALLET_SEED_PHRASE;
+        ViewEvents.fireWizardEnableButton(CONFIRM_WALLET_SEED_PHRASE.name(), WizardButton.NEXT, false);
         break;
       case RESTORE_WALLET:
         state = CONFIRM_WALLET_SEED_PHRASE;
