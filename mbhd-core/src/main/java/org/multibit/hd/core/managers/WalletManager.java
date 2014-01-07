@@ -371,10 +371,7 @@ public class WalletManager {
   public String getCurrentWalletFilename() {
     String currentWalletRoot = Configurations.currentConfiguration.getApplicationConfiguration().getCurrentWalletRoot();
 
-    String applicationDataDirectoryName = InstallationManager.createApplicationDataDirectory();
-
-    File walletRootFile = getWalletDirectory(applicationDataDirectoryName, currentWalletRoot);
-    String walletFilename = walletRootFile.getAbsolutePath() + File.separator + MBHD_WALLET_NAME;
+    String walletFilename = currentWalletRoot + File.separator + MBHD_WALLET_NAME;
 
     return walletFilename;
   }

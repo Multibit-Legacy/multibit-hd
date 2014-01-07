@@ -45,6 +45,8 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
 
   public static final MainNetParams NETWORK_PARAMETERS = MainNetParams.get();
 
+  public static final int MAXIMUM_NUMBER_OF_PEERS = 6;
+
   private WalletManager walletManager;
 
   private BlockStore blockStore;
@@ -209,6 +211,7 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
     peerGroup = new PeerGroup(NETWORK_PARAMETERS, blockChain);
     peerGroup.setFastCatchupTimeSecs(0); // genesis block
     peerGroup.setUserAgent(InstallationManager.MBHD_APP_NAME, Configurations.APP_VERSION);
+    peerGroup.setMaxConnections(MAXIMUM_NUMBER_OF_PEERS);
 
     peerGroup.addPeerDiscovery(new DnsDiscovery(NETWORK_PARAMETERS));
 

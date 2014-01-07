@@ -1,6 +1,5 @@
 package org.multibit.hd.ui;
 
-import com.google.bitcoin.core.Wallet;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.xeiam.xchange.currency.MoneyUtils;
 import com.xeiam.xchange.mtgox.v2.MtGoxExchange;
@@ -92,17 +91,13 @@ public class MultiBitHD {
       // Show the UI for the current locale
       ControllerEvents.fireChangeLocaleEvent(Configurations.currentConfiguration.getLocale());
 
-      // TODO show the new Wallet Wizard
-      // then start the blockchain sync with the new Wallet
+      // TODO show the new Wallet Wizard to create a wallet, set it into the configuration
+      // TODO then start the blockchain sync with the new Wallet
     } else {
-      // Load up the first wallet
-      String walletToLoad = walletDirectories.get(0).getAbsoluteFile() + File.separator + WalletManager.MBHD_WALLET_NAME;
-      log.debug("Loading wallet '" + walletToLoad + "'  . . .");
-      Wallet wallet = walletManager.loadFromFile(new File(walletToLoad));
-      log.debug("Loaded wallet '" + walletToLoad + "' successfully.");
+      // Set the wallet directory into the configuration (used when the bitcoinNetworkService starts)
+      Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(walletDirectories.get(0).getAbsoluteFile().getAbsolutePath());
 
       // TODO enable the user to switch between the existing wallets
-      // TODO actually do something with the wallet - at the moment it gets thrown away
 
       // Start the services (triggers events)
       exchangeTickerService.start();
@@ -111,7 +106,7 @@ public class MultiBitHD {
       Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
 
       // If the network starts ok start downloading blocks to catch up with the current blockchain
-      //bitcoinNetworkService.downloadBlockChain();
+      bitcoinNetworkService.downloadBlockChain();
 
       // Show the UI for the current locale
       ControllerEvents.fireChangeLocaleEvent(Configurations.currentConfiguration.getLocale());

@@ -172,7 +172,7 @@ public class WalletManagerTest {
 
     Wallet wallet1 = walletManager.createWallet(temporaryDirectory1.getAbsolutePath(), seed, "password");
 
-    // Uncomment this next line if you want a wallet created in your MultiBitHDuser data directory.
+    // Uncomment this next line if you want a wallet created in your MultiBitHD user data directory.
     walletManager.createWallet( seed, "password");
 
     assertThat(wallet1).isNotNull();
