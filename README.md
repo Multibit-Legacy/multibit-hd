@@ -35,6 +35,16 @@ pre-date 2009 making it much harder for dependency chain attacks to take place.
 
 Swing also allows us to smoothly integrate with the native platform which puts it ahead of JavaFX until at least Q4 2013.
 
+#### Why the Nimbus look and feel?
+
+In Java 7 the Nimbus look and feel became integrated with the JDK. It provides a modern 2D rendered UI that is the same across
+all platforms. It is highly customisable through simple themes and provides consistent painting behaviour across platforms. For
+example to paint a button red in Swing using the Mac-only Aqua theme requires complex custom ButtonUI code.
+
+Using Nimbus ensures that we don't have this or similar problems.
+
+[Technical details on the default colours](http://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/_nimbusDefaults.html#primary)
+
 ### Project status
 
 Alpha: Expect bugs and API changes. Not suitable for production, but early adopter developers should get on board.

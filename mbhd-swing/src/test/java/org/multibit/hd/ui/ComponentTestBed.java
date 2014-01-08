@@ -15,6 +15,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.Wizards;
 
 import javax.swing.*;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Locale;
@@ -53,7 +54,11 @@ public class ComponentTestBed {
    *
    * @param args Command line arguments
    */
-  public static void main(String[] args) {
+  public static void main(String[] args) throws UnsupportedLookAndFeelException {
+
+    // We guarantee the JDK version through the packager so we can use this direct
+    UIManager.setLookAndFeel(new NimbusLookAndFeel());
+
 
     ComponentTestBed testBed = new ComponentTestBed(args);
 

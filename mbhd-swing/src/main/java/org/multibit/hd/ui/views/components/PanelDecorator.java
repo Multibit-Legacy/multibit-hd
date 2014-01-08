@@ -14,13 +14,19 @@ import java.awt.*;
 /**
  * <p>Decorator to provide the following to panels:</p>
  * <ul>
- * <li>Application of various themed styles</li>
+ * <li>Application of various themed styles to panels</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
 public class PanelDecorator {
+
+  /**
+   * Utilities have a private constructor
+   */
+  private PanelDecorator() {
+  }
 
   /**
    * <p>Add a finish button</p>
@@ -209,7 +215,7 @@ public class PanelDecorator {
 
     // Standard wizard layout
     MigLayout layout = new MigLayout(
-      "debug,fill", // Layout constrains
+      "fill", // Layout constrains
       "[]", // Column constraints
       "[shrink]10[grow]10[shrink]" // Row constraints
     );

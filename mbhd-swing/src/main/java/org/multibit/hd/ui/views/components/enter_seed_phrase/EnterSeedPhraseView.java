@@ -41,7 +41,7 @@ public class EnterSeedPhraseView extends AbstractView<EnterSeedPhraseModel> {
     EnterSeedPhraseModel model = getModel().get();
 
     panel = Panels.newPanel(new MigLayout(
-      "debug,insets 0", // Layout
+      "insets 0", // Layout
       "[][][]", // Columns
       "[]" // Rows
     ));

@@ -37,7 +37,7 @@ public class DisplaySeedPhraseView extends AbstractView<DisplaySeedPhraseModel> 
   public JPanel newPanel() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "debug,insets 0", // Layout
+      "insets 0", // Layout
       "[][][]", // Columns
       "[][]" // Rows
     ));

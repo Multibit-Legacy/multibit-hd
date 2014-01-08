@@ -39,7 +39,7 @@ public class ConfirmPasswordView extends AbstractView<ConfirmPasswordModel> {
   public JPanel newPanel() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "debug,insets 0", // Layout
+      "insets 0", // Layout
       "[][][]", // Columns
       "[]10[]10[]" // Rows
     ));

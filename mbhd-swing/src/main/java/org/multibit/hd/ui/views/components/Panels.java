@@ -56,7 +56,7 @@ public class Panels {
   public static JPanel newPanel() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "debug,fill,insets 0", // Layout
+      "fill,insets 0", // Layout
       "[]", // Columns
       "[]" // Rows
     ));
@@ -224,7 +224,7 @@ public class Panels {
   public static JPanel newSeedPhraseWarning() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "debug,fill,insets 0", // Layout
+      "fill,insets 0", // Layout
       "[]", // Columns
       "[]" // Rows
     ));

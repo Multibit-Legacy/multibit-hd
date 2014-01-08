@@ -51,7 +51,7 @@ public class WelcomeView extends AbstractWizardView<WelcomeWizardModel, String> 
     setPanelModel(localeCode);
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "debug,fill,ins 0", // Layout constrains
+      "fill,ins 0", // Layout constrains
       "[][][]", // Column constraints
       "[]10[]" // Row constraints
     ));

@@ -7,10 +7,7 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
+import javax.swing.plaf.ColorUIResource;
 import java.awt.*;
 
 /**
@@ -40,16 +37,12 @@ public class Buttons {
 
     // Apply the current theme
     button.setForeground(Themes.currentTheme.text());
-    button.setOpaque(true);
+
+    // Ensure borders render smoothly
+    button.setOpaque(false);
 
     // Reinforce the idea of clicking
     button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-    // Create a flat appearance
-    Border line = new LineBorder(Themes.currentTheme.infoAlertBorder());
-    Border margin = new EmptyBorder(5, 15, 5, 15);
-    Border compound = new CompoundBorder(line, margin);
-    button.setBorder(compound);
 
     // Ensure we use the correct component orientation
     button.applyComponentOrientation(Languages.currentComponentOrientation());
@@ -69,6 +62,9 @@ public class Buttons {
     JButton button = newButton(action);
 
     button.setText(Languages.safeText(key, values));
+
+    // TODO Accessibility API - append _ACCESSIBILITY to .name() ?
+
 
     return button;
   }
@@ -182,7 +178,9 @@ public class Buttons {
 
     AwesomeDecorator.applyIcon(AwesomeIcon.SIGN_OUT, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
 
-    button.setBackground(Themes.currentTheme.dangerAlertBackground());
+    UIDefaults exitButtonTheme = new UIDefaults();
+    exitButtonTheme.put("Button.textForeground", new ColorUIResource(Themes.currentTheme.dangerAlertBackground()));
+    button.putClientProperty("Nimbus.Overrides", exitButtonTheme);
 
     return button;
 
