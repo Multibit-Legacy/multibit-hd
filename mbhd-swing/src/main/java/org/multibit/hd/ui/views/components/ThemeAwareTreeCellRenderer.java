@@ -27,17 +27,18 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
 
   @Override
   public Color getBackgroundNonSelectionColor() {
-    return (null);
+    return null;
   }
 
   @Override
   public Color getBackgroundSelectionColor() {
-    return Themes.currentTheme.sidebarPanelBackground();
+    //return Themes.currentTheme.sidebarPanelBackground();
+    return null;
   }
 
   @Override
   public Color getBackground() {
-    return (null);
+    return null;
   }
 
   @Override
@@ -55,6 +56,9 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
     // Theme
     ret.setBorder(border);
     ret.setForeground(Themes.currentTheme.text());
+
+    // Minimalist focus
+    setBorderSelectionColor(UIManager.getColor("nimbusFocus"));
 
     // Iconography
     if (leaf) {

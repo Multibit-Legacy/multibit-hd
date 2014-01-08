@@ -23,6 +23,8 @@ import org.multibit.hd.ui.views.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -42,7 +44,10 @@ public class MultiBitHD {
    *
    * @param args None specified
    */
-  public static void main(final String[] args) throws InterruptedException {
+  public static void main(final String[] args) throws InterruptedException, UnsupportedLookAndFeelException {
+
+    // We guarantee the JDK version through the packager so we can use this direct
+    UIManager.setLookAndFeel(new NimbusLookAndFeel());
 
     // Start the core services
     CoreServices.main(args);

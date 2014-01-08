@@ -32,21 +32,21 @@ public class NimbusDecorator {
   public static void applyThemeColor(Color color, JTabbedPane pane) {
 
     UIDefaults tabTheme = new UIDefaults();
-    tabTheme.put("TabbedPane:TabbedPaneTab[Enabled].backgroundPainter", new NamedTabbedPaneTabPainter(color,NamedTabbedPaneTabPainter.BACKGROUND_ENABLED));
-    tabTheme.put("TabbedPane:TabbedPaneTab[Disabled].backgroundPainter", new NamedTabbedPaneTabPainter(color,NamedTabbedPaneTabPainter.BACKGROUND_DISABLED));
-    tabTheme.put("TabbedPane:TabbedPaneTab[Enabled+MouseOver].backgroundPainter", new NamedTabbedPaneTabPainter(color,NamedTabbedPaneTabPainter.BACKGROUND_ENABLED_MOUSEOVER));
-    tabTheme.put("TabbedPane:TabbedPaneTab[Enabled+Pressed].backgroundPainter", new NamedTabbedPaneTabPainter(color,NamedTabbedPaneTabPainter.BACKGROUND_ENABLED_PRESSED));
-    tabTheme.put("TabbedPane:TabbedPaneTab[Selected].backgroundPainter", new NamedTabbedPaneTabPainter(color,NamedTabbedPaneTabPainter.BACKGROUND_SELECTED));
-    tabTheme.put("TabbedPane:TabbedPaneTab[Disabled+Selected].backgroundPainter", new NamedTabbedPaneTabPainter(color,NamedTabbedPaneTabPainter.BACKGROUND_SELECTED_DISABLED));
-    tabTheme.put("TabbedPane:TabbedPaneTab[Focused+Selected].backgroundPainter", new NamedTabbedPaneTabPainter(color,NamedTabbedPaneTabPainter.BACKGROUND_SELECTED_FOCUSED));
-    tabTheme.put("TabbedPane:TabbedPaneTab[MouseOver+Selected].backgroundPainter", new NamedTabbedPaneTabPainter(color,NamedTabbedPaneTabPainter.BACKGROUND_SELECTED_MOUSEOVER));
-    tabTheme.put("TabbedPane:TabbedPaneTab[Focused+MouseOver+Selected].backgroundPainter", new NamedTabbedPaneTabPainter(color,NamedTabbedPaneTabPainter.BACKGROUND_SELECTED_MOUSEOVER_FOCUSED));
-    tabTheme.put("TabbedPane:TabbedPaneTab[Pressed+Selected].backgroundPainter", new NamedTabbedPaneTabPainter(color,NamedTabbedPaneTabPainter.BACKGROUND_SELECTED_PRESSED));
-    tabTheme.put("TabbedPane:TabbedPaneTab[Focused+Pressed+Selected].backgroundPainter", new NamedTabbedPaneTabPainter(color,NamedTabbedPaneTabPainter.BACKGROUND_SELECTED_PRESSED_FOCUSED));
-    tabTheme.put("TabbedPane:TabbedPaneTabArea[Disabled].backgroundPainter", new NamedTabbedPaneTabAreaPainter(color,NamedTabbedPaneTabAreaPainter.BACKGROUND_DISABLED));
-    tabTheme.put("TabbedPane:TabbedPaneTabArea[Enabled+MouseOver].backgroundPainter", new NamedTabbedPaneTabAreaPainter(color,NamedTabbedPaneTabAreaPainter.BACKGROUND_ENABLED_MOUSEOVER));
-    tabTheme.put("TabbedPane:TabbedPaneTabArea[Enabled+Pressed].backgroundPainter", new NamedTabbedPaneTabAreaPainter(color,NamedTabbedPaneTabAreaPainter.BACKGROUND_ENABLED_PRESSED));
-    tabTheme.put("TabbedPane:TabbedPaneTabArea[Enabled].backgroundPainter", new NamedTabbedPaneTabAreaPainter(color,NamedTabbedPaneTabAreaPainter.BACKGROUND_ENABLED));
+    tabTheme.put("TabbedPane:TabbedPaneTab[Enabled].backgroundPainter", new NamedTabbedPaneTabPainter(color, NamedTabbedPaneTabPainter.BACKGROUND_ENABLED));
+    tabTheme.put("TabbedPane:TabbedPaneTab[Disabled].backgroundPainter", new NamedTabbedPaneTabPainter(color, NamedTabbedPaneTabPainter.BACKGROUND_DISABLED));
+    tabTheme.put("TabbedPane:TabbedPaneTab[Enabled+MouseOver].backgroundPainter", new NamedTabbedPaneTabPainter(color, NamedTabbedPaneTabPainter.BACKGROUND_ENABLED_MOUSEOVER));
+    tabTheme.put("TabbedPane:TabbedPaneTab[Enabled+Pressed].backgroundPainter", new NamedTabbedPaneTabPainter(color, NamedTabbedPaneTabPainter.BACKGROUND_ENABLED_PRESSED));
+    tabTheme.put("TabbedPane:TabbedPaneTab[Selected].backgroundPainter", new NamedTabbedPaneTabPainter(color, NamedTabbedPaneTabPainter.BACKGROUND_SELECTED));
+    tabTheme.put("TabbedPane:TabbedPaneTab[Disabled+Selected].backgroundPainter", new NamedTabbedPaneTabPainter(color, NamedTabbedPaneTabPainter.BACKGROUND_SELECTED_DISABLED));
+    tabTheme.put("TabbedPane:TabbedPaneTab[Focused+Selected].backgroundPainter", new NamedTabbedPaneTabPainter(color, NamedTabbedPaneTabPainter.BACKGROUND_SELECTED_FOCUSED));
+    tabTheme.put("TabbedPane:TabbedPaneTab[MouseOver+Selected].backgroundPainter", new NamedTabbedPaneTabPainter(color, NamedTabbedPaneTabPainter.BACKGROUND_SELECTED_MOUSEOVER));
+    tabTheme.put("TabbedPane:TabbedPaneTab[Focused+MouseOver+Selected].backgroundPainter", new NamedTabbedPaneTabPainter(color, NamedTabbedPaneTabPainter.BACKGROUND_SELECTED_MOUSEOVER_FOCUSED));
+    tabTheme.put("TabbedPane:TabbedPaneTab[Pressed+Selected].backgroundPainter", new NamedTabbedPaneTabPainter(color, NamedTabbedPaneTabPainter.BACKGROUND_SELECTED_PRESSED));
+    tabTheme.put("TabbedPane:TabbedPaneTab[Focused+Pressed+Selected].backgroundPainter", new NamedTabbedPaneTabPainter(color, NamedTabbedPaneTabPainter.BACKGROUND_SELECTED_PRESSED_FOCUSED));
+    tabTheme.put("TabbedPane:TabbedPaneTabArea[Disabled].backgroundPainter", new NamedTabbedPaneTabAreaPainter(color, NamedTabbedPaneTabAreaPainter.BACKGROUND_DISABLED));
+    tabTheme.put("TabbedPane:TabbedPaneTabArea[Enabled+MouseOver].backgroundPainter", new NamedTabbedPaneTabAreaPainter(color, NamedTabbedPaneTabAreaPainter.BACKGROUND_ENABLED_MOUSEOVER));
+    tabTheme.put("TabbedPane:TabbedPaneTabArea[Enabled+Pressed].backgroundPainter", new NamedTabbedPaneTabAreaPainter(color, NamedTabbedPaneTabAreaPainter.BACKGROUND_ENABLED_PRESSED));
+    tabTheme.put("TabbedPane:TabbedPaneTabArea[Enabled].backgroundPainter", new NamedTabbedPaneTabAreaPainter(color, NamedTabbedPaneTabAreaPainter.BACKGROUND_ENABLED));
 
     // Add the theme to the component
     pane.putClientProperty("Nimbus.Overrides.InheritDefaults", Boolean.TRUE);
@@ -76,4 +76,24 @@ public class NimbusDecorator {
 
   }
 
+  /**
+   * <p>Disables the background selection rendering in the Nimbus LAF</p>
+   *
+   * @param tree The JTree with the Nimbus LAF
+   */
+  public static void disableTreeViewSelection(JTree tree) {
+
+    // Create a null painter
+    Painter painter = new Painter() {
+      public void paint(Graphics2D g, Object o, int w, int h) {
+        // Do nothing
+      }
+    };
+
+    UIDefaults treeTheme = new UIDefaults();
+    treeTheme.put("Tree:TreeCell[Focused+Selected].backgroundPainter", painter);
+    treeTheme.put("Tree:TreeCell[Enabled+Selected].backgroundPainter", painter);
+    tree.putClientProperty("Nimbus.Overrides", treeTheme);
+
+  }
 }

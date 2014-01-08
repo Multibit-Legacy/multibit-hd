@@ -71,8 +71,6 @@ public abstract class AbstractWizard<M extends WizardModel> {
 
     Preconditions.checkNotNull(event, "'event' must be present");
 
-    log.debug("Received 'locale changed' event");
-
     // Clear out any existing components
     wizardPanel.removeAll();
 

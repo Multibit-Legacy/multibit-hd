@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.wizards.exit;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
-import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -42,9 +41,6 @@ public class ExitView extends AbstractWizardView<ExitWizardModel, String> {
       "[][][]", // Column constraints
       "[]10[]" // Row constraints
     ));
-
-    panel.add(Components.newContactSearch(),"wrap");
-    panel.add(Components.newBitcoinAmount(),"wrap");
 
     return panel;
   }

@@ -59,7 +59,6 @@ public class ComponentTestBed {
     // We guarantee the JDK version through the packager so we can use this direct
     UIManager.setLookAndFeel(new NimbusLookAndFeel());
 
-
     ComponentTestBed testBed = new ComponentTestBed(args);
 
     // See createTestPanel() to configure panel under test

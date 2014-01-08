@@ -9,6 +9,7 @@ import org.multibit.hd.ui.views.components.SidebarNodeInfo;
 import org.multibit.hd.ui.views.components.ThemeAwareTreeCellRenderer;
 import org.multibit.hd.ui.views.components.TreeNodes;
 import org.multibit.hd.ui.views.detail_views.DetailScreen;
+import org.multibit.hd.ui.views.themes.NimbusDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
 
@@ -68,12 +69,16 @@ public class SidebarView {
     sidebarTree.setShowsRootHandles(false);
     sidebarTree.setRootVisible(false);
 
+    // Remove tree view selection
+    NimbusDecorator.disableTreeViewSelection(sidebarTree);
+
     // Apply the theme
     sidebarTree.setBackground(Themes.currentTheme.sidebarPanelBackground());
     sidebarTree.setCellRenderer(new ThemeAwareTreeCellRenderer());
 
+
     sidebarTree.setVisibleRowCount(10);
-    sidebarTree.setToggleClickCount(1);
+    sidebarTree.setToggleClickCount(2);
 
     // Ensure we always have the soft wallet open
     TreePath walletPath = sidebarTree.getPathForRow(0);
@@ -86,7 +91,6 @@ public class SidebarView {
     sidebarTree.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
     sidebarTree.setFont(sidebarTree.getFont().deriveFont(16.0f));
-
 
     sidebarTree.addTreeSelectionListener(new TreeSelectionListener() {
 

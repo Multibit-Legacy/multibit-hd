@@ -71,7 +71,7 @@ public class PanelDecorator {
     panel.add(view.getExitButton(), "span 2,push");
 
     view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
-    panel.add(view.getCancelButton(), "span 2,push");
+    panel.add(view.getCancelButton(), "span 2,shrink");
 
   }
 
