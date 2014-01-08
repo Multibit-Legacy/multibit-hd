@@ -3,7 +3,6 @@ package org.multibit.hd.ui.views.wizards.welcome;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.Uninterruptibles;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
@@ -13,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
 
@@ -91,17 +89,6 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
       case CONFIRM_WALLET_SEED_PHRASE:
         // Require a decision event
         userSeedPhrase = (List<String>) panelModel.get();
-        // TODO remove this
-        System.out.println("Comparing:");
-        for (String word : actualSeedPhrase) {
-          System.out.print(word + " ");
-        }
-        System.out.println(", with");
-        for (String word : userSeedPhrase) {
-          System.out.print(word + " ");
-        }
-        System.out.println(", actual length="+actualSeedPhrase.size());
-        Uninterruptibles.sleepUninterruptibly(10, TimeUnit.MILLISECONDS);
         ViewEvents.fireWizardEnableButton(
           CONFIRM_WALLET_SEED_PHRASE.name(),
           WizardButton.NEXT,

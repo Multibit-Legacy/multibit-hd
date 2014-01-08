@@ -7,6 +7,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultStyledDocument;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 
 /**
  * <p>Utility to provide the following to UI:</p>
@@ -15,7 +16,7 @@ import java.awt.*;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class TextBoxes {
 
@@ -32,7 +33,7 @@ public class TextBoxes {
   /**
    * Maintain a reference to the platform password echo character
    */
-  private static char passwordEchoChar=new JPasswordField().getEchoChar();
+  private static char passwordEchoChar = new JPasswordField().getEchoChar();
 
   /**
    * Utilities have no public constructor
@@ -74,7 +75,7 @@ public class TextBoxes {
    */
   public static JTextArea newNotes() {
 
-    JTextArea textArea = new JTextArea(6, 40);
+    JTextArea textArea = new JTextArea(6, PASSWORD_LENGTH);
 
     // Limit the length of the underlying document
     DefaultStyledDocument doc = new DefaultStyledDocument();
@@ -110,6 +111,15 @@ public class TextBoxes {
 
     // Keep this in line with the PASSWORD_AREA constant
     JTextArea textArea = new JTextArea(6, PASSWORD_LENGTH);
+
+    // Ensure TAB transfers focus
+    AbstractAction transferFocus = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        ((Component) e.getSource()).transferFocus();
+      }
+    };
+    textArea.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "transferFocus");
+    textArea.getActionMap().put("transferFocus", transferFocus);
 
     // Limit the length of the underlying document
     DefaultStyledDocument doc = new DefaultStyledDocument();
