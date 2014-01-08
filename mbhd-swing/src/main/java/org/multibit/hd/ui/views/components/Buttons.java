@@ -4,10 +4,10 @@ import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.themes.NimbusDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
-import javax.swing.plaf.ColorUIResource;
 import java.awt.*;
 
 /**
@@ -178,9 +178,7 @@ public class Buttons {
 
     AwesomeDecorator.applyIcon(AwesomeIcon.SIGN_OUT, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
 
-    UIDefaults exitButtonTheme = new UIDefaults();
-    exitButtonTheme.put("Button.textForeground", new ColorUIResource(Themes.currentTheme.dangerAlertBackground()));
-    button.putClientProperty("Nimbus.Overrides", exitButtonTheme);
+    NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), button);
 
     return button;
 
@@ -245,13 +243,12 @@ public class Buttons {
    */
   public static JButton newSendButton(Action action) {
 
-    // TODO New Danger button
     JButton button = newButton(action, MessageKey.SEND);
     button.setAction(action);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD, button, false, AwesomeDecorator.NORMAL_ICON_SIZE);
 
-    button.setBackground(Themes.currentTheme.dangerAlertBackground());
+    NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), button);
 
     return button;
   }
@@ -263,13 +260,12 @@ public class Buttons {
    */
   public static JButton newReceiveButton(Action action) {
 
-    // TODO New Info button
     JButton button = newButton(action, MessageKey.RECEIVE);
     button.setAction(action);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
 
-    button.setBackground(Themes.currentTheme.infoAlertBackground());
+    NimbusDecorator.applyThemeColor(Themes.currentTheme.infoAlertBackground(), button);
 
     return button;
   }
