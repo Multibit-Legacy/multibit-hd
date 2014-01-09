@@ -47,7 +47,6 @@ public class PanelDecorator {
 
     view.setFinishButton(Buttons.newFinishButton(wizard.getFinishAction(view)));
     panel.add(view.getFinishButton(), "span 2,push");
-
   }
 
   /**
@@ -71,7 +70,7 @@ public class PanelDecorator {
     panel.add(view.getExitButton(), "span 2,push");
 
     view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
-    panel.add(view.getCancelButton(), "span 2,shrink");
+    panel.add(view.getCancelButton(), "shrink");
 
   }
 

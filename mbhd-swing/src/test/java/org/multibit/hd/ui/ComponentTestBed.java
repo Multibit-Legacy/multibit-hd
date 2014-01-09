@@ -79,7 +79,7 @@ public class ComponentTestBed {
   public JPanel createTestPanel() {
 
     // Choose a panel to test
-    AbstractWizard wizard = Wizards.newExitingWelcomeWizard();
+    AbstractWizard wizard = Wizards.newExitWizard();
     return wizard.getWizardPanel();
 
   }

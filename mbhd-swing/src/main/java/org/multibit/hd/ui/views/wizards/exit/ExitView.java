@@ -1,6 +1,5 @@
 package org.multibit.hd.ui.views.wizards.exit;
 
-import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
@@ -36,11 +35,7 @@ public class ExitView extends AbstractWizardView<ExitWizardModel, String> {
 
     setPanelModel("");
 
-    JPanel panel = Panels.newPanel(new MigLayout(
-      "fill", // Layout constrains
-      "[][][]", // Column constraints
-      "[]10[]" // Row constraints
-    ));
+    JPanel panel = Panels.newPanel();
 
     return panel;
   }
