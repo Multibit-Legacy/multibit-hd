@@ -9,9 +9,7 @@ import javax.swing.text.DocumentFilter;
  * <ul>
  * <li>Limiting input to a given maximum length</li>
  * </ul>
- * <pre>
- *   textArea.setD
- * </pre>
+
  * @since 0.0.1
  *  
  */

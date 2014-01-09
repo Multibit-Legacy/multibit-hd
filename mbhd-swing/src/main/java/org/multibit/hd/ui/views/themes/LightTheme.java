@@ -102,6 +102,16 @@ public class LightTheme implements Theme {
   }
 
   @Override
+  public Color successAlertFadedBackground() {
+
+    NamedButtonRegionPainter painter = new NamedButtonRegionPainter(colors[0][1], NamedButtonRegionPainter.BACKGROUND_DEFAULT);
+
+    // Any of 28, 30, 31, 32
+    return painter.color31;
+  }
+
+
+  @Override
   public Color successAlertBorder() {
     return colors[0][2];
   }

@@ -1,6 +1,8 @@
 package org.multibit.hd.ui.views.components.confirm_password;
 
+import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.ui.events.view.PasswordStatusChangedEvent;
 import org.multibit.hd.ui.views.AbstractView;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Labels;
@@ -11,6 +13,8 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -27,6 +31,7 @@ public class ConfirmPasswordView extends AbstractView<ConfirmPasswordModel> {
   // View components
   private JPasswordField password1;
   private JPasswordField password2;
+  private JPanel passwordStatusPanel;
 
   /**
    * @param model The model backing this view
@@ -38,24 +43,49 @@ public class ConfirmPasswordView extends AbstractView<ConfirmPasswordModel> {
   @Override
   public JPanel newPanel() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
-      "insets 0", // Layout
+    panel = Panels.newPanel(new MigLayout(
+      "insets 0,hidemode 1", // Layout
       "[][][]", // Columns
-      "[]10[]10[]" // Rows
+      "[]10[]10[]10[]" // Rows
     ));
 
+    // Keep track of the password fields
     password1 = TextBoxes.newPassword();
     password2 = TextBoxes.newPassword();
 
     // Configure the actions
     Action toggleDisplayAction = getToggleDisplayAction();
 
+    // Bind a key listener to allow instant update of UI to matched passwords
+    password1.addKeyListener(new KeyAdapter() {
+
+      @Override
+      public void keyReleased(KeyEvent e) {
+        getModel().get().setPassword1(password1.getPassword());
+        getModel().get().comparePasswords();
+      }
+
+    });
+    password2.addKeyListener(new KeyAdapter() {
+
+      @Override
+      public void keyReleased(KeyEvent e) {
+        getModel().get().setPassword2(password2.getPassword());
+        getModel().get().comparePasswords();
+      }
+
+    });
+
+    // Create a new password status panel
+    passwordStatusPanel = Panels.newPasswordStatusOK();
+
     // Add to the panel
     panel.add(Labels.newEnterPassword());
     panel.add(password1);
     panel.add(Buttons.newShowButton(toggleDisplayAction), "spany 2,wrap");
     panel.add(Labels.newConfirmPassword());
-    panel.add(password2,"wrap");
+    panel.add(password2, "wrap");
+    panel.add(passwordStatusPanel, "span 3,grow,push,wrap");
 
     return panel;
 
@@ -112,7 +142,13 @@ public class ConfirmPasswordView extends AbstractView<ConfirmPasswordModel> {
 
   @Override
   public void updateModel() {
-    // Do nothing
+  }
+
+  @Subscribe
+  public void onPasswordStatusChanged(PasswordStatusChangedEvent event) {
+
+    passwordStatusPanel.setVisible(event.isOK());
+
   }
 
 }

@@ -36,7 +36,7 @@ public class DisplaySeedPhraseView extends AbstractView<DisplaySeedPhraseModel> 
   @Override
   public JPanel newPanel() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
+    panel = Panels.newPanel(new MigLayout(
       "insets 0", // Layout
       "[][][]", // Columns
       "[][]" // Rows

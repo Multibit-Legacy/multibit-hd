@@ -299,6 +299,23 @@ public class PanelDecorator {
   }
 
   /**
+   * <p>Make the panel have the "success faded" theme</p>
+   *
+   * @param panel The panel to decorate
+   */
+  public static void applySuccessFadedTheme(JPanel panel) {
+
+    Preconditions.checkNotNull(panel, "'panel' must be present");
+
+    Color background = Themes.currentTheme.successAlertFadedBackground();
+    Color border = Themes.currentTheme.successAlertBorder();
+    Color text = Themes.currentTheme.successAlertText();
+
+    applyTheme(panel, background, border, text);
+
+  }
+
+  /**
    * <p>Apply panel colours</p>
    *
    * @param panel      The target panel

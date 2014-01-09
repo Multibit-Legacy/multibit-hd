@@ -13,6 +13,9 @@ import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
@@ -34,12 +37,16 @@ import java.util.concurrent.TimeUnit;
  */
 public class ComponentTestBed {
 
+  private static final Logger log = LoggerFactory.getLogger(ComponentTestBed.class);
+
   private JFrame frame = null;
 
   /**
    * @param args Any command line arguments for the CoreServices
    */
   public ComponentTestBed(String[] args) {
+
+    log.info("Starting CoreServices");
 
     // Start the core services
     CoreServices.main(args);
@@ -56,12 +63,16 @@ public class ComponentTestBed {
    */
   public static void main(String[] args) throws UnsupportedLookAndFeelException {
 
+    log.info("Starting component test bed");
+
     // We guarantee the JDK version through the packager so we can use this direct
     UIManager.setLookAndFeel(new NimbusLookAndFeel());
 
     ComponentTestBed testBed = new ComponentTestBed(args);
 
     // See createTestPanel() to configure panel under test
+
+    log.info("Showing component");
 
     testBed.show();
 
@@ -79,7 +90,8 @@ public class ComponentTestBed {
   public JPanel createTestPanel() {
 
     // Choose a panel to test
-    AbstractWizard wizard = Wizards.newExitWizard();
+    AbstractWizard wizard = Wizards.newExitingWelcomeWizard();
+    wizard.show(WelcomeWizardState.CREATE_WALLET_PASSWORD.name());
     return wizard.getWizardPanel();
 
   }
@@ -153,6 +165,8 @@ public class ComponentTestBed {
       }
     };
 
+    log.info("Adding test bed controls");
+
     // Create test bed controls
     JButton toggleLocaleButton = new JButton(toggleLocaleAction);
     toggleLocaleButton.setText(Languages.safeText(MessageKey.SELECT_LANGUAGE));
@@ -161,10 +175,13 @@ public class ComponentTestBed {
     JPanel contentPanel = Panels.newPanel();
     contentPanel.setOpaque(true);
 
+    log.info("Adding test panel");
     contentPanel.add(createTestPanel(), "wrap");
     contentPanel.add(toggleLocaleButton,"center");
 
     // Set up the frame to use the minimum size
+
+    log.info("Set up frame");
 
     if (frame == null) {
       frame = new JFrame("MultiBit HD Component Tester");
@@ -173,6 +190,9 @@ public class ComponentTestBed {
     frame.setContentPane(contentPanel);
     frame.pack();
     frame.setVisible(true);
+
+    log.info("Done");
+
   }
 
 }

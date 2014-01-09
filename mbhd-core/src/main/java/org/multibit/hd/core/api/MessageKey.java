@@ -70,6 +70,7 @@ public enum MessageKey {
   BROADCAST_STATUS_OK("Broadcast OK"),
   RELAY_STATUS_OK("Relayed OK"),
   CONFIRMATION_STATUS_OK("Confirmations 6+"),
+  PASSWORD_STATUS_OK("Password OK"),
 
   ALERT_REMAINING("alert.remaining"),
   EXCHANGE_FIAT_RATE("exchange.fiat-rate"),

@@ -3,8 +3,6 @@ package org.multibit.hd.ui.views.components;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultStyledDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -21,14 +19,14 @@ import java.awt.event.ActionEvent;
 public class TextBoxes {
 
   /**
-   * The maximum length of the seed phrase
-   */
-  public static final int SEED_PHRASE_LENGTH = 240;
-
-  /**
    * The maximum length of the password
    */
   public static final int PASSWORD_LENGTH = 40;
+
+  /**
+   * The maximum length of the seed phrase
+   */
+  public static final int SEED_PHRASE_LENGTH = 240;
 
   /**
    * Utilities have no public constructor
@@ -52,11 +50,11 @@ public class TextBoxes {
    */
   public static JPasswordField newPassword() {
 
-    JPasswordField passwordField = new JPasswordField(40);
+    JPasswordField passwordField = new JPasswordField(PASSWORD_LENGTH);
 
     // Limit the length of the underlying document
     DefaultStyledDocument doc = new DefaultStyledDocument();
-    doc.setDocumentFilter(new DocumentMaxLengthFilter(SEED_PHRASE_LENGTH));
+    doc.setDocumentFilter(new DocumentMaxLengthFilter(PASSWORD_LENGTH));
     passwordField.setDocument(doc);
 
     // Apply the theme
@@ -126,8 +124,7 @@ public class TextBoxes {
     textArea.setFont(new Font("Courier New", Font.PLAIN, 14));
 
     // Ensure we provide a suitable inner margin to allow letters to be clear
-    Border margin = new EmptyBorder(2, 4, 2, 4);
-    textArea.setBorder(margin);
+    textArea.setMargin(new Insets(2,4,2,4));
 
     // Ensure line and word wrapping occur as required
     textArea.setLineWrap(true);

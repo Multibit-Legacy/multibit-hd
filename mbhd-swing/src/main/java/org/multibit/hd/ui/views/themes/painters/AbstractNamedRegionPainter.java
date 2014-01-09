@@ -1,7 +1,5 @@
 package org.multibit.hd.ui.views.themes.painters;
 
-import org.multibit.hd.ui.views.themes.Themes;
-
 import javax.swing.plaf.nimbus.AbstractRegionPainter;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
@@ -66,13 +64,13 @@ public abstract class AbstractNamedRegionPainter extends AbstractRegionPainter {
    */
   public Color adjustColor(float hOffset, float sOffset, float bOffset, int aOffset) {
 
-    Color src = Themes.currentTheme.dangerAlertBackground();
-    float[] tmp = Color.RGBtoHSB(src.getRed(), src.getGreen(), src.getBlue(), null);
+
+    float[] tmp = Color.RGBtoHSB(namedButtonColor.getRed(), namedButtonColor.getGreen(), namedButtonColor.getBlue(), null);
     // apply offsets
     tmp[0] = clamp(tmp[0] + hOffset);
     tmp[1] = clamp(tmp[1] + sOffset);
     tmp[2] = clamp(tmp[2] + bOffset);
-    int alpha = clamp(src.getAlpha() + aOffset);
+    int alpha = clamp(namedButtonColor.getAlpha() + aOffset);
     int argbValue = (Color.HSBtoRGB(tmp[0], tmp[1], tmp[2]) & 0xFFFFFF) | (alpha << 24);
     return new Color(argbValue, true);
   }

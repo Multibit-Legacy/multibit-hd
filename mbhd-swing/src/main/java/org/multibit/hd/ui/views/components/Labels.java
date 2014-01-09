@@ -187,6 +187,18 @@ public class Labels {
   }
 
   /**
+   * @return A new "Password OK" label
+   */
+  public static JLabel newPasswordStatusOK() {
+
+    JLabel label = newLabel(MessageKey.PASSWORD_STATUS_OK);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true, 16);
+
+    return label;
+  }
+
+  /**
    * @return A new "You are about to send" message
    */
   public static JLabel newConfirmSendAmount() {

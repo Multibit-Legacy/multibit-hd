@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views;
 
 import com.google.common.base.Optional;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.models.Model;
 
 import javax.swing.*;
@@ -25,6 +26,9 @@ public abstract class AbstractView<M extends Model> implements View<M> {
    */
   public AbstractView(M model) {
     this.model = Optional.fromNullable(model);
+
+    // Ensure that any event handlers are automatically registered
+    CoreServices.uiEventBus.register(this);
   }
 
   @Override

@@ -64,7 +64,7 @@ public interface Theme {
   Color dangerAlertBackground();
 
   /**
-   * @return The background colour of a danger alert
+   * @return The background colour of a danger alert with fading (matches button theme)
    */
   Color dangerAlertFadedBackground();
 
@@ -97,6 +97,11 @@ public interface Theme {
    * @return The background colour of a success alert
    */
   Color successAlertBackground();
+
+  /**
+   * @return The background colour of a success alert with fading (matches button theme)
+   */
+  Color successAlertFadedBackground();
 
   /**
    * @return The border of a success alert

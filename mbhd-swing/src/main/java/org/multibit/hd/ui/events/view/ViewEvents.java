@@ -121,4 +121,15 @@ public class ViewEvents {
     log.debug("Firing 'wizard panel model changed' event");
     CoreServices.uiEventBus.post(new WizardPanelModelChangedEvent(panelModel));
   }
+
+  /**
+   * <p>Broadcast a new "password status changed" event</p>
+   *
+   * @param status True if the password is OK
+   */
+  public static void firePasswordStatusChangedEvent(boolean status) {
+    log.debug("Firing 'password status changed' event: {}", status);
+    CoreServices.uiEventBus.post(new PasswordStatusChangedEvent(status));
+
+  }
 }

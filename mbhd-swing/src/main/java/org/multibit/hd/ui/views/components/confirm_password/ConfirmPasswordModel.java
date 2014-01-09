@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components.confirm_password;
 
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
 
 /**
@@ -13,21 +14,24 @@ import org.multibit.hd.ui.models.Model;
  */
 public class ConfirmPasswordModel implements Model<String> {
 
-  char[] password=null;
+  private char[] password2;
+  private char[] password1;
 
   /**
-   * @param password1 Password 1
-   * @param password2 Password 2
-   *
-   * @return True if the passwords are equal (compared in time-constant manner)
+   * <p>Compares the passwords and fires a password status event</p>
    */
-  public boolean passwordsEqual(char[] password1, char[] password2) {
+  public void comparePasswords() {
 
+    if (password1 == null || password2 == null) {
+      ViewEvents.firePasswordStatusChangedEvent(false);
+      return;
+    }
     if (password1.length != password2.length) {
-      return false;
+      ViewEvents.firePasswordStatusChangedEvent(false);
+      return;
     }
 
-    // Time-constant comparison
+    // Time-constant comparison (overkill but useful exercise)
     int result = 0;
     for (int i = 0; i < password1.length; i++) {
       result |= password1[i] ^ password2[i];
@@ -35,22 +39,28 @@ public class ConfirmPasswordModel implements Model<String> {
 
     // Check for a match
     if (result == 0) {
-
-      password = password1;
-      return true;
+      ViewEvents.firePasswordStatusChangedEvent(true);
+      return;
     }
 
-    return false;
+    ViewEvents.firePasswordStatusChangedEvent(false);
   }
 
   @Override
   public String getValue() {
-    return String.valueOf(password);
+    return String.valueOf(password1);
   }
 
   @Override
   public void setValue(String value) {
-    this.password = value.toCharArray();
+    this.password1 = value.toCharArray();
   }
 
+  public void setPassword1(char[] password1) {
+    this.password1 = password1;
+  }
+
+  public void setPassword2(char[] password2) {
+    this.password2 = password2;
+  }
 }

@@ -20,7 +20,7 @@ import java.awt.event.ActionListener;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class Panels {
 
@@ -168,11 +168,11 @@ public class Panels {
   /**
    * <p>A "wallet selector" panel provides a means of choosing how a wallet is to be created/accessed</p>
    *
-   * @param listener The action listener
-   * @param createCommand The create command name
-   * @param restoreCommand The restore command name
+   * @param listener        The action listener
+   * @param createCommand   The create command name
+   * @param restoreCommand  The restore command name
    * @param hardwareCommand The hardware command name
-   * @param switchCommand The switch command name
+   * @param switchCommand   The switch command name
    *
    * @return A new "wallet selector" panel
    */
@@ -232,7 +232,31 @@ public class Panels {
     PanelDecorator.applyDangerFadedTheme(panel);
 
     // Add to the panel
-    panel.add(Labels.newSeedWarningNote(),"push");
+    panel.add(Labels.newSeedWarningNote(), "push");
+
+    return panel;
+  }
+
+  /**
+   * <p>A "password status OK" panel shows the user that they have entered their password(s) correctly</p>
+   *
+   * @return A new "password status OK" panel (not visible by default)
+   */
+  public static JPanel newPasswordStatusOK() {
+
+    JPanel panel = Panels.newPanel(new MigLayout(
+      "fillx,insets 0", // Layout
+      "[grow]", // Columns
+      "[]" // Rows
+    ));
+
+    PanelDecorator.applySuccessFadedTheme(panel);
+
+    // Add to the panel
+    panel.add(Labels.newPasswordStatusOK(), "push");
+
+    // Typical use case requires this to be invisible
+    panel.setVisible(false);
 
     return panel;
   }
