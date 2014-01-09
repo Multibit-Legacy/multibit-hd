@@ -20,15 +20,9 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class Components {
-
-  public static final String CREATE_WALLET_ACTION_NAME = "Create";
-  public static final String RESTORE_WALLET_ACTION_NAME = "Restore";
-  public static final String HARDWARE_WALLET_ACTION_NAME = "Hardware";
-  public static final String SELECT_WALLET_ACTION_NAME = "Select";
-  public static final String WELCOME_ACTION_NAME = "Welcome";
 
   /**
    * <p>A wallet detail panel provides a summary of the information contained within the wallet</p>
@@ -112,14 +106,16 @@ public class Components {
   /**
    * <p>A "confirm password" model and view handles a password with confirmation and reveal</p>
    *
+   * @param panelName The panel name to identify "verification status" and "next" buttons
+   *
    * @return A new "confirm password" model and view
    */
-  public static ModelAndView<ConfirmPasswordModel, ConfirmPasswordView> newConfirmPassword() {
+  public static ModelAndView<ConfirmPasswordModel, ConfirmPasswordView> newConfirmPassword(String panelName) {
 
-    ConfirmPasswordModel model = new ConfirmPasswordModel();
+    ConfirmPasswordModel model = new ConfirmPasswordModel(panelName);
     ConfirmPasswordView view = new ConfirmPasswordView(model);
 
-    return new ModelAndView<>(model ,view);
+    return new ModelAndView<>(model, view);
 
   }
 
@@ -135,21 +131,23 @@ public class Components {
     DisplaySeedPhraseModel model = new DisplaySeedPhraseModel(generator);
     DisplaySeedPhraseView view = new DisplaySeedPhraseView(model);
 
-    return new ModelAndView<>(model ,view);
+    return new ModelAndView<>(model, view);
 
   }
 
   /**
    * <p>A "seed phrase" model and view handles user data entry of the words used in a BIP0039 seed</p>
    *
+   * @param panelName The panel name to identify "verification status" and "next" buttons
+   *
    * @return A new "seed phrase" model and view
    */
-  public static ModelAndView<EnterSeedPhraseModel, EnterSeedPhraseView> newEnterSeedPhraseMaV() {
+  public static ModelAndView<EnterSeedPhraseModel, EnterSeedPhraseView> newEnterSeedPhraseMaV(String panelName) {
 
-    EnterSeedPhraseModel model = new EnterSeedPhraseModel();
+    EnterSeedPhraseModel model = new EnterSeedPhraseModel(panelName);
     EnterSeedPhraseView view = new EnterSeedPhraseView(model);
 
-    return new ModelAndView<>(model ,view);
+    return new ModelAndView<>(model, view);
 
   }
 

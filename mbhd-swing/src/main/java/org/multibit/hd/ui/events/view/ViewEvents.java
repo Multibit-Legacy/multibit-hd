@@ -123,13 +123,14 @@ public class ViewEvents {
   }
 
   /**
-   * <p>Broadcast a new "password status changed" event</p>
+   * <p>Broadcast a new "verification status changed" event</p>
    *
-   * @param status True if the password is OK
+   * @param panelName The panel name to which this applies
+   * @param status    True if the verification is OK
    */
-  public static void firePasswordStatusChangedEvent(boolean status) {
-    log.debug("Firing 'password status changed' event: {}", status);
-    CoreServices.uiEventBus.post(new PasswordStatusChangedEvent(status));
+  public static void fireVerificationStatusChangedEvent(String panelName, boolean status) {
+    log.debug("Firing 'verification status changed' event: {}", status);
+    CoreServices.uiEventBus.post(new VerificationStatusChangedEvent(panelName, status));
 
   }
 }

@@ -42,15 +42,16 @@ public class ConfirmWalletSeedPhraseView extends AbstractWizardView<WelcomeWizar
   @Override
   public JPanel newDataPanel() {
 
-    enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV();
+    enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV(WelcomeWizardState.CONFIRM_WALLET_SEED_PHRASE.name());
     setPanelModel(enterSeedPhraseMaV.getModel().getValue());
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fill,ins 0", // Layout constrains
+      "fill,insets 0", // Layout constrains
       "[]", // Column constraints
       "[]10[]" // Row constraints
     ));
 
+    panel.add(Panels.newConfirmSeedPhrase(), "wrap");
     panel.add(enterSeedPhraseMaV.getView().newPanel(), "wrap");
 
     return panel;

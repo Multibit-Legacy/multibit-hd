@@ -13,7 +13,6 @@ import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.Wizards;
-import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,7 +90,6 @@ public class ComponentTestBed {
 
     // Choose a panel to test
     AbstractWizard wizard = Wizards.newExitingWelcomeWizard();
-    wizard.show(WelcomeWizardState.CREATE_WALLET_PASSWORD.name());
     return wizard.getWizardPanel();
 
   }

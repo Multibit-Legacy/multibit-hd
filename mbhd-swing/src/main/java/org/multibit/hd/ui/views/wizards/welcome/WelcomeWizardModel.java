@@ -3,7 +3,9 @@ package org.multibit.hd.ui.views.wizards.welcome;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
+import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
@@ -53,6 +55,11 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   private List<String> userSeedPhrase = Lists.newArrayList();
 
   /**
+   * The password for the wallet from the user
+   */
+  private String userPassword;
+
+  /**
    * @param state The state object
    */
   public WelcomeWizardModel(WelcomeWizardState state) {
@@ -84,15 +91,19 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
         for (String word : actualSeedPhrase) {
           System.out.print(word + " ");
         }
-        System.out.println(", length="+actualSeedPhrase.size());
+        System.out.println(", length=" + actualSeedPhrase.size());
         break;
       case CONFIRM_WALLET_SEED_PHRASE:
-        // Require a decision event
+        // Get the user input
         userSeedPhrase = (List<String>) panelModel.get();
-        ViewEvents.fireWizardEnableButton(
-          CONFIRM_WALLET_SEED_PHRASE.name(),
-          WizardButton.NEXT,
-          userSeedPhrase.equals(actualSeedPhrase));
+        boolean result = userSeedPhrase.equals(actualSeedPhrase);
+        // Fire the decision events (requires knowledge of the previous panel data)
+        ViewEvents.fireWizardEnableButton(CONFIRM_WALLET_SEED_PHRASE.name(), WizardButton.NEXT, result);
+        ViewEvents.fireVerificationStatusChangedEvent(CONFIRM_WALLET_SEED_PHRASE.name(), userSeedPhrase.equals(actualSeedPhrase));
+        break;
+      case CREATE_WALLET_PASSWORD:
+        // Get the user input
+        userPassword = (String) panelModel.get();
         break;
     }
 
@@ -110,19 +121,23 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
         break;
       case CREATE_WALLET_SEED_PHRASE:
         state = CONFIRM_WALLET_SEED_PHRASE;
-        Preconditions.checkState(SeedPhraseSize.isValid(actualSeedPhrase.size()),"'actualSeedPhrase' is not a valid length");
+        Preconditions.checkState(SeedPhraseSize.isValid(actualSeedPhrase.size()), "'actualSeedPhrase' is not a valid length");
         ViewEvents.fireWizardEnableButton(CONFIRM_WALLET_SEED_PHRASE.name(), WizardButton.NEXT, false);
         break;
       case CONFIRM_WALLET_SEED_PHRASE:
-        Preconditions.checkState(SeedPhraseSize.isValid(userSeedPhrase.size()),"'userSeedPhrase' is not a valid length");
+        Preconditions.checkState(SeedPhraseSize.isValid(userSeedPhrase.size()), "'userSeedPhrase' is not a valid length");
         state = CREATE_WALLET_PASSWORD;
+        ViewEvents.fireWizardEnableButton(CREATE_WALLET_PASSWORD.name(), WizardButton.NEXT, false);
         break;
       case RESTORE_WALLET:
-      state = CONFIRM_WALLET_SEED_PHRASE;
-      break;
+        state = CONFIRM_WALLET_SEED_PHRASE;
+        break;
       case HARDWARE_WALLET:
-      state = CONFIRM_WALLET_SEED_PHRASE;
-      break;
+        state = CONFIRM_WALLET_SEED_PHRASE;
+        break;
+      case CREATE_WALLET_PASSWORD:
+        state = SELECT_BACKUP_DIRECTORY;
+        break;
     }
 
   }
@@ -152,6 +167,13 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   @Override
   public String getPanelName() {
     return state.name();
+  }
+
+  @Subscribe
+  public void onPasswordStatusChangedEvent(VerificationStatusChangedEvent event) {
+
+    ViewEvents.fireWizardEnableButton(CONFIRM_WALLET_SEED_PHRASE.name(), WizardButton.NEXT, event.isOK());
+
   }
 
   /**

@@ -1,6 +1,8 @@
 package org.multibit.hd.ui.views.components.enter_seed_phrase;
 
+import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.views.AbstractView;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
@@ -27,6 +29,7 @@ public class EnterSeedPhraseView extends AbstractView<EnterSeedPhraseModel> {
 
   // View components
   private JTextArea seedPhraseTextArea;
+  private JPanel verificationStatusPanel;
 
   /**
    * @param model The model backing this view
@@ -43,7 +46,7 @@ public class EnterSeedPhraseView extends AbstractView<EnterSeedPhraseModel> {
     panel = Panels.newPanel(new MigLayout(
       "insets 0", // Layout
       "[][][]", // Columns
-      "[]" // Rows
+      "[]10[]" // Rows
     ));
 
     seedPhraseTextArea = TextBoxes.newEnterSeedPhrase();
@@ -61,12 +64,16 @@ public class EnterSeedPhraseView extends AbstractView<EnterSeedPhraseModel> {
 
     });
 
+    // Create a new verification status panel
+    verificationStatusPanel = Panels.newVerificationStatusOK();
+
     // Configure the actions
     Action toggleDisplayAction = getToggleDisplayAction();
 
     // Add to the panel
-    panel.add(seedPhraseTextArea, "shrink");
-    panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink");
+    panel.add(seedPhraseTextArea, "span 2");
+    panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink,wrap");
+    panel.add(verificationStatusPanel, "span 3,push,wrap");
 
     return panel;
 
@@ -128,6 +135,16 @@ public class EnterSeedPhraseView extends AbstractView<EnterSeedPhraseModel> {
       }
 
     };
+  }
+
+  @Subscribe
+  public void onVerificationStatusChanged(VerificationStatusChangedEvent event) {
+
+    if (event.getPanelName().equals(getModel().get().getPanelName())) {
+
+      verificationStatusPanel.setVisible(event.isOK());
+
+    }
   }
 
 }

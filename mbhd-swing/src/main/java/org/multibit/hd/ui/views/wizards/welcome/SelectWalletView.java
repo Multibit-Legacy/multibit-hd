@@ -46,7 +46,7 @@ public class SelectWalletView extends AbstractWizardView<WelcomeWizardModel, Wel
     setPanelModel(currentSelection);
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fill,ins 0", // Layout constrains
+      "fill,insets 0", // Layout constrains
       "[]", // Column constraints
       "[]" // Row constraints
     ));

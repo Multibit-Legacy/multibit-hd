@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.components.confirm_password;
 
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.events.view.PasswordStatusChangedEvent;
+import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.views.AbstractView;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Labels;
@@ -31,20 +31,21 @@ public class ConfirmPasswordView extends AbstractView<ConfirmPasswordModel> {
   // View components
   private JPasswordField password1;
   private JPasswordField password2;
-  private JPanel passwordStatusPanel;
+  private JPanel verificationStatusPanel;
 
   /**
    * @param model The model backing this view
    */
   public ConfirmPasswordView(ConfirmPasswordModel model) {
     super(model);
+
   }
 
   @Override
   public JPanel newPanel() {
 
     panel = Panels.newPanel(new MigLayout(
-      "insets 0,hidemode 1", // Layout
+      "insets 0", // Layout
       "[][][]", // Columns
       "[]10[]10[]10[]" // Rows
     ));
@@ -76,8 +77,8 @@ public class ConfirmPasswordView extends AbstractView<ConfirmPasswordModel> {
 
     });
 
-    // Create a new password status panel
-    passwordStatusPanel = Panels.newPasswordStatusOK();
+    // Create a new verification status panel
+    verificationStatusPanel = Panels.newVerificationStatusOK();
 
     // Add to the panel
     panel.add(Labels.newEnterPassword());
@@ -85,7 +86,7 @@ public class ConfirmPasswordView extends AbstractView<ConfirmPasswordModel> {
     panel.add(Buttons.newShowButton(toggleDisplayAction), "spany 2,wrap");
     panel.add(Labels.newConfirmPassword());
     panel.add(password2, "wrap");
-    panel.add(passwordStatusPanel, "span 3,grow,push,wrap");
+    panel.add(verificationStatusPanel, "span 3,grow,push,wrap");
 
     return panel;
 
@@ -145,10 +146,13 @@ public class ConfirmPasswordView extends AbstractView<ConfirmPasswordModel> {
   }
 
   @Subscribe
-  public void onPasswordStatusChanged(PasswordStatusChangedEvent event) {
+  public void onVerificationStatusChanged(VerificationStatusChangedEvent event) {
 
-    passwordStatusPanel.setVisible(event.isOK());
+    if (event.getPanelName().equals(getModel().get().getPanelName())) {
 
+      verificationStatusPanel.setVisible(event.isOK());
+
+    }
   }
 
 }

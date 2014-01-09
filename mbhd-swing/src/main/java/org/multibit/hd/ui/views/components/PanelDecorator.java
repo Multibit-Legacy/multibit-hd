@@ -29,24 +29,32 @@ public class PanelDecorator {
   }
 
   /**
-   * <p>Add a finish button</p>
+   * <p>Create the standard "wizard" theme</p>
    *
-   * @param view   The view containing the panel to decorate
-   * @param wizard The wizard providing the actions
-   * @param <M>    The wizard model type
-   * @param <P>    The wizard panel model type
+   * @param wizardPanel The wizard panel to decorate (arranged as [title][dataPanel][buttons])
+   * @param dataPanel   The data panel sandwiched into the wizard
    */
-  public static <M extends WizardModel, P> void addFinish(AbstractWizardView<M, P> view, AbstractWizard<M> wizard) {
+  public static void applyWizardTheme(JPanel wizardPanel, JPanel dataPanel, MessageKey titleKey) {
 
-    Preconditions.checkNotNull(view, "'view' must be present");
-    Preconditions.checkNotNull(view, "'wizard' must be present");
-    Preconditions.checkNotNull(view.getWizardPanel(), "'wizardPanel' must be present");
+    Preconditions.checkNotNull(wizardPanel, "'wizardPanel' must be present");
+    Preconditions.checkNotNull(dataPanel, "'dataPanel' must be present");
+    Preconditions.checkNotNull(titleKey, "'titleKey' must be present");
 
-    // Use the wizard panel
-    JPanel panel = view.getWizardPanel();
+    // Standard wizard layout
+    MigLayout layout = new MigLayout(
+      "debug,fillx,insets 5", // Layout constrains
+      "[][][][]", // Column constraints
+      "[shrink]10[grow]10[]" // Row constraints
+    );
+    wizardPanel.setLayout(layout);
 
-    view.setFinishButton(Buttons.newFinishButton(wizard.getFinishAction(view)));
-    panel.add(view.getFinishButton(), "span 2,push");
+    // Apply the theme
+    wizardPanel.setBackground(Themes.currentTheme.detailPanelBackground());
+
+    // Add the wizard components
+    wizardPanel.add(Labels.newTitleLabel(titleKey), "span 4,shrink,wrap,aligny top");
+    wizardPanel.add(dataPanel, "span 4,grow,wrap");
+
   }
 
   /**
@@ -64,13 +72,9 @@ public class PanelDecorator {
     Preconditions.checkNotNull(view.getWizardPanel(), "'wizardPanel' must be present");
 
     // Use the wizard panel
-    JPanel panel = view.getWizardPanel();
+    JPanel wizardPanel = view.getWizardPanel();
 
-    view.setExitButton(Buttons.newExitButton(wizard.getExitAction()));
-    panel.add(view.getExitButton(), "span 2,push");
-
-    view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
-    panel.add(view.getCancelButton(), "shrink");
+    addExitCancel(view, wizard, wizardPanel);
 
   }
 
@@ -89,22 +93,10 @@ public class PanelDecorator {
     Preconditions.checkNotNull(view.getWizardPanel(), "'wizardPanel' must be present");
 
     // Use the wizard panel
-    JPanel panel = view.getWizardPanel();
+    JPanel wizardPanel = view.getWizardPanel();
 
-    if (wizard.isExiting()) {
-
-      view.setExitButton(Buttons.newExitButton(wizard.getExitAction()));
-      panel.add(view.getExitButton(), "span 2,push");
-
-    } else {
-
-      view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
-      panel.add(view.getCancelButton(), "span 2,push");
-
-    }
-
-    view.setNextButton(Buttons.newNextButton(wizard.getNextAction(view)));
-    panel.add(view.getNextButton(), "right,shrink");
+    addExitCancel(view, wizard, wizardPanel);
+    addNext(view, wizard, wizardPanel);
 
   }
 
@@ -123,24 +115,11 @@ public class PanelDecorator {
     Preconditions.checkNotNull(view.getWizardPanel(), "'wizardPanel' must be present");
 
     // Use the current panel
-    JPanel panel = view.getWizardPanel();
+    JPanel wizardPanel = view.getWizardPanel();
 
-    if (wizard.isExiting()) {
-
-      view.setExitButton(Buttons.newExitButton(wizard.getExitAction()));
-      panel.add(view.getExitButton(), "span 2,push");
-
-    } else {
-
-      view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
-      panel.add(view.getCancelButton(), "span 2,push");
-    }
-
-    view.setPreviousButton(Buttons.newPreviousButton(wizard.getPreviousAction(view)));
-    panel.add(view.getPreviousButton(), "right,shrink");
-
-    view.setNextButton(Buttons.newNextButton(wizard.getNextAction(view)));
-    panel.add(view.getNextButton(), "right,shrink");
+    addExitCancel(view, wizard, wizardPanel);
+    addPrevious(view, wizard, wizardPanel);
+    addNext(view, wizard, wizardPanel);
 
   }
 
@@ -159,16 +138,14 @@ public class PanelDecorator {
     Preconditions.checkNotNull(view.getWizardPanel(), "'wizardPanel' must be present");
 
     // Use the current panel
-    JPanel panel = view.getWizardPanel();
+    JPanel wizardPanel = view.getWizardPanel();
 
-    view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
-    panel.add(view.getCancelButton(), "span 2,push");
+    addCancel(view, wizard, wizardPanel);
+    addPrevious(view, wizard, wizardPanel);
 
-    view.setPreviousButton(Buttons.newPreviousButton(wizard.getPreviousAction(view)));
-    panel.add(view.getPreviousButton(), "right,shrink");
-
+    // Replace next with send
     view.setNextButton(Buttons.newSendButton(wizard.getNextAction(view)));
-    panel.add(view.getNextButton(), "right,shrink");
+    wizardPanel.add(view.getNextButton(), "cell 3 2");
 
   }
 
@@ -187,47 +164,33 @@ public class PanelDecorator {
     Preconditions.checkNotNull(view.getWizardPanel(), "'wizardPanel' must be present");
 
     // Use the wizard panel
-    JPanel panel = view.getWizardPanel();
+    JPanel wizardPanel = view.getWizardPanel();
 
-    view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
-    panel.add(view.getCancelButton(), "span 2,push");
-
-    view.setPreviousButton(Buttons.newPreviousButton(wizard.getPreviousAction(view)));
-    panel.add(view.getPreviousButton(), "right,shrink");
-
-    view.setNextButton(Buttons.newNextButton(wizard.getNextAction(view)));
-    panel.add(view.getNextButton(), "right,shrink");
+    addCancel(view, wizard, wizardPanel);
+    addPrevious(view, wizard, wizardPanel);
+    addNext(view, wizard, wizardPanel);
 
   }
 
   /**
-   * <p>Create the standard "wizard" theme</p>
+   * <p>Add a finish button with no cancel or previous/next options</p>
    *
-   * @param panel            The panel to decorate (contains wizard components at the top and buttons at the bottom)
-   * @param wizardComponents The wizard components arranged in a panel
+   * @param view   The view containing the panel to decorate
+   * @param wizard The wizard providing the actions
+   * @param <M>    The wizard model type
+   * @param <P>    The wizard panel model type
    */
-  public static void applyWizardTheme(JPanel panel, JPanel wizardComponents, MessageKey titleKey) {
+  public static <M extends WizardModel, P> void addFinish(AbstractWizardView<M, P> view, AbstractWizard<M> wizard) {
 
-    Preconditions.checkNotNull(panel, "'panel' must be present");
-    Preconditions.checkNotNull(wizardComponents, "'wizardComponents' must be present");
-    Preconditions.checkNotNull(titleKey, "'titleKey' must be present");
+    Preconditions.checkNotNull(view, "'view' must be present");
+    Preconditions.checkNotNull(view, "'wizard' must be present");
+    Preconditions.checkNotNull(view.getWizardPanel(), "'wizardPanel' must be present");
 
-    // Standard wizard layout
-    MigLayout layout = new MigLayout(
-      "fill", // Layout constrains
-      "[][][][]", // Column constraints
-      "[shrink]10[grow]10[shrink]" // Row constraints
-    );
+    // Use the wizard panel
+    JPanel wizardPanel = view.getWizardPanel();
 
-    panel.setLayout(layout);
-
-    // Apply the theme
-    panel.setBackground(Themes.currentTheme.detailPanelBackground());
-
-    // Add the wizard components
-    panel.add(Labels.newTitleLabel(titleKey), "span 4,shrink,wrap,aligny top");
-    panel.add(wizardComponents, "span 4,grow,wrap");
-
+    view.setFinishButton(Buttons.newFinishButton(wizard.getFinishAction(view)));
+    wizardPanel.add(view.getFinishButton(), "cell 3 2");
   }
 
   /**
@@ -340,4 +303,83 @@ public class PanelDecorator {
     }
 
   }
+
+  /**
+   * <p>Add a "next" button into the standard cell</p>
+   *
+   * @param view        The view containing the panel to decorate
+   * @param wizard      The wizard providing the actions
+   * @param wizardPanel The wizard panel providing the layout
+   * @param <M>         The wizard model type
+   * @param <P>         The wizard panel model type
+   */
+  private static <M extends WizardModel, P> void addNext(AbstractWizardView<M, P> view, AbstractWizard<M> wizard, JPanel wizardPanel) {
+    view.setNextButton(Buttons.newNextButton(wizard.getNextAction(view)));
+    wizardPanel.add(view.getNextButton(), "cell 3 2");
+  }
+
+  /**
+   * <p>Add a "previous" button into the standard cell</p>
+   *
+   * @param view        The view containing the panel to decorate
+   * @param wizard      The wizard providing the actions
+   * @param wizardPanel The wizard panel providing the layout
+   * @param <M>         The wizard model type
+   * @param <P>         The wizard panel model type
+   */
+  private static <M extends WizardModel, P> void addPrevious(AbstractWizardView<M, P> view, AbstractWizard<M> wizard, JPanel wizardPanel) {
+    view.setPreviousButton(Buttons.newPreviousButton(wizard.getPreviousAction(view)));
+    wizardPanel.add(view.getPreviousButton(), "cell 2 2");
+  }
+
+  /**
+   * <p>Add an "exit/cancel" button into the standard cell</p>
+   *
+   * @param view        The view containing the panel to decorate
+   * @param wizard      The wizard providing the actions
+   * @param wizardPanel The wizard panel providing the layout
+   * @param <M>         The wizard model type
+   * @param <P>         The wizard panel model type
+   */
+  private static <M extends WizardModel, P> void addExitCancel(AbstractWizardView<M, P> view, AbstractWizard<M> wizard, JPanel wizardPanel) {
+
+    if (wizard.isExiting()) {
+
+      view.setExitButton(Buttons.newExitButton(wizard.getExitAction()));
+      wizardPanel.add(view.getExitButton(), "cell 0 2,push");
+
+    } else {
+
+      view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
+      wizardPanel.add(view.getCancelButton(), "cell 0 2,push");
+
+    }
+
+  }
+
+  /**
+   * <p>Add an "cancel" button into an appropriate cell (will detect exiting wizard)</p>
+   *
+   * @param view        The view containing the panel to decorate
+   * @param wizard      The wizard providing the actions
+   * @param wizardPanel The wizard panel providing the layout
+   * @param <M>         The wizard model type
+   * @param <P>         The wizard panel model type
+   */
+  private static <M extends WizardModel, P> void addCancel(AbstractWizardView<M, P> view, AbstractWizard<M> wizard, JPanel wizardPanel) {
+
+    if (wizard.isExiting()) {
+
+      view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
+      wizardPanel.add(view.getCancelButton(), "cell 3 2");
+
+    } else {
+
+      view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
+      wizardPanel.add(view.getCancelButton(), "cell 0 2,push");
+
+    }
+
+  }
+
 }

@@ -10,7 +10,6 @@ import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
 import org.multibit.hd.ui.views.components.TextBoxes;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 
 import java.util.List;
 
@@ -29,6 +28,15 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
 
   // Start with the text displayed
   private boolean asClearText = true;
+
+  private final String panelName;
+
+  /**
+   * @param panelName The panel name to identify the "verification status" and "next" buttons
+   */
+  public EnterSeedPhraseModel(String panelName) {
+    this.panelName = panelName;
+  }
 
   /**
    * @return The seed phrase in either clear or obscured text
@@ -54,7 +62,8 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
       ViewEvents.fireWizardPanelModelChangedEvent(Optional.of(seedPhrase));
     } else {
       // Ensure the "next" button is kept disabled
-      ViewEvents.fireWizardEnableButton(WelcomeWizardState.CONFIRM_WALLET_SEED_PHRASE.name(), WizardButton.NEXT, false);
+      ViewEvents.fireWizardEnableButton(panelName, WizardButton.NEXT, false);
+      ViewEvents.fireVerificationStatusChangedEvent(panelName, false);
     }
   }
 
@@ -70,6 +79,13 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
    */
   public boolean asClearText() {
     return asClearText;
+  }
+
+  /**
+   * @return The panel name that this component is associated with
+   */
+  public String getPanelName() {
+    return panelName;
   }
 
   @Override

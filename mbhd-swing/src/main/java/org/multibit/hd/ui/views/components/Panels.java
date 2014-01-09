@@ -221,6 +221,25 @@ public class Panels {
    *
    * @return A new "seed phrase warning" panel
    */
+  public static JPanel newConfirmSeedPhrase() {
+
+    JPanel panel = Panels.newPanel(new MigLayout(
+      "fillx,insets 0", // Layout
+      "[grow]", // Columns
+      "[]" // Rows
+    ));
+
+    // Add to the panel
+    panel.add(Labels.newConfirmSeedPhraseNote(), "push");
+
+    return panel;
+  }
+
+  /**
+   * <p>A "seed phrase warning" panel displays the instructions to write down the seed phrase on a piece of paper</p>
+   *
+   * @return A new "seed phrase warning" panel
+   */
   public static JPanel newSeedPhraseWarning() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
@@ -238,11 +257,11 @@ public class Panels {
   }
 
   /**
-   * <p>A "password status OK" panel shows the user that they have entered their password(s) correctly</p>
+   * <p>A "verification status OK" panel shows the user that they have entered their data correctly</p>
    *
-   * @return A new "password status OK" panel (not visible by default)
+   * @return A new "verification status OK" panel (not visible by default)
    */
-  public static JPanel newPasswordStatusOK() {
+  public static JPanel newVerificationStatusOK() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       "fillx,insets 0", // Layout
@@ -250,10 +269,8 @@ public class Panels {
       "[]" // Rows
     ));
 
-    PanelDecorator.applySuccessFadedTheme(panel);
-
     // Add to the panel
-    panel.add(Labels.newPasswordStatusOK(), "push");
+    panel.add(Labels.newVerificationStatusOK(), "align center");
 
     // Typical use case requires this to be invisible
     panel.setVisible(false);

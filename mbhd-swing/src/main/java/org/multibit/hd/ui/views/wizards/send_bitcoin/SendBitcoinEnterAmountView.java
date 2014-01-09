@@ -41,7 +41,7 @@ public class SendBitcoinEnterAmountView extends AbstractWizardView<SendBitcoinWi
     setPanelModel(model);
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fill", // Layout constrains
+      "fill,insets 0", // Layout constrains
       "[][][]", // Column constraints
       "[]10[]" // Row constraints
     ));

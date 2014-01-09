@@ -54,8 +54,10 @@ public abstract class AbstractWizardView<W extends WizardModel, P> {
     // All wizard views can receive events
     CoreServices.uiEventBus.register(this);
 
-    // All wizard panels are decorated with the same theme at creation
-    wizardPanel = Panels.newPanel();
+    // All wizard panels are decorated with the same theme and layout at creation
+    // so just need a vanilla panel to begin with
+    wizardPanel =  Panels.newPanel();
+
     PanelDecorator.applyWizardTheme(wizardPanel, newDataPanel(), title);
 
   }

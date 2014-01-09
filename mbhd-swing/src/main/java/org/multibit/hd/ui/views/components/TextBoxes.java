@@ -52,6 +52,9 @@ public class TextBoxes {
 
     JPasswordField passwordField = new JPasswordField(PASSWORD_LENGTH);
 
+    // Provide a consistent echo character across all components
+    passwordField.setEchoChar(getPasswordEchoChar());
+
     // Limit the length of the underlying document
     DefaultStyledDocument doc = new DefaultStyledDocument();
     doc.setDocumentFilter(new DocumentMaxLengthFilter(PASSWORD_LENGTH));

@@ -38,7 +38,7 @@ public class RestoreWalletChoicesView extends AbstractWizardView<WelcomeWizardMo
   public JPanel newDataPanel() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fill", // Layout constrains
+      "fill,insets 0", // Layout constrains
       "[][][]", // Column constraints
       "[]" // Row constraints
     ));

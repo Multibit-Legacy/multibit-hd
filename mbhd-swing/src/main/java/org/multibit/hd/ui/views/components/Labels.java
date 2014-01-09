@@ -187,11 +187,11 @@ public class Labels {
   }
 
   /**
-   * @return A new "Password OK" label
+   * @return A new "Verification OK" label
    */
-  public static JLabel newPasswordStatusOK() {
+  public static JLabel newVerificationStatusOK() {
 
-    JLabel label = newLabel(MessageKey.PASSWORD_STATUS_OK);
+    JLabel label = newLabel(MessageKey.VERIFICATION_STATUS_OK);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true, 16);
 
@@ -227,7 +227,11 @@ public class Labels {
    */
   public static JLabel newWalletPasswordNote() {
 
-    return newNoteLabel(new MessageKey[]{MessageKey.WALLET_PASSWORD_NOTE}, new Object[][]{});
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.WALLET_PASSWORD_NOTE_1,
+      MessageKey.WALLET_PASSWORD_NOTE_2,
+      MessageKey.WALLET_PASSWORD_NOTE_3
+    }, new Object[][]{});
 
   }
 
@@ -241,6 +245,19 @@ public class Labels {
       MessageKey.SEED_WARNING_NOTE_2,
       MessageKey.SEED_WARNING_NOTE_3,
       MessageKey.SEED_WARNING_NOTE_4,
+    }, new Object[][]{});
+  }
+
+  /**
+   * @return A new "confirm seed phrase" note
+   */
+  public static JLabel newConfirmSeedPhraseNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.CONFIRM_SEED_PHRASE_NOTE_1,
+      MessageKey.CONFIRM_SEED_PHRASE_NOTE_2,
+      MessageKey.CONFIRM_SEED_PHRASE_NOTE_3,
+      MessageKey.CONFIRM_SEED_PHRASE_NOTE_4
     }, new Object[][]{});
   }
 }

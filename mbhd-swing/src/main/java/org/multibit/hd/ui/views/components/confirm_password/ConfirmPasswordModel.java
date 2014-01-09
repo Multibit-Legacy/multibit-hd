@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components.confirm_password;
 
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 
 /**
  * <p>Model to provide the following to view:</p>
@@ -17,33 +18,50 @@ public class ConfirmPasswordModel implements Model<String> {
   private char[] password2;
   private char[] password1;
 
+  private final String panelName;
+
+  /**
+   * @param panelName The panel name to identify the "verification status" and "next" buttons
+   */
+  public ConfirmPasswordModel(String panelName) {
+    this.panelName = panelName;
+  }
+
   /**
    * <p>Compares the passwords and fires a password status event</p>
    */
   public void comparePasswords() {
 
+    final boolean passwordsEqual;
+
     if (password1 == null || password2 == null) {
-      ViewEvents.firePasswordStatusChangedEvent(false);
-      return;
-    }
-    if (password1.length != password2.length) {
-      ViewEvents.firePasswordStatusChangedEvent(false);
-      return;
+      passwordsEqual = false;
+    } else if (password1.length == 0 || password2.length == 0) {
+      passwordsEqual = false;
+    } else if (password1.length != password2.length) {
+      passwordsEqual = false;
+    } else {
+
+      // Time-constant comparison (overkill but useful exercise)
+      int result = 0;
+      for (int i = 0; i < password1.length; i++) {
+        result |= password1[i] ^ password2[i];
+      }
+
+      // Check for a match
+      passwordsEqual = (result == 0);
     }
 
-    // Time-constant comparison (overkill but useful exercise)
-    int result = 0;
-    for (int i = 0; i < password1.length; i++) {
-      result |= password1[i] ^ password2[i];
-    }
+    // Fire the UI events for "verification status" message and "next" button
+    ViewEvents.fireVerificationStatusChangedEvent(panelName, passwordsEqual);
+    ViewEvents.fireWizardEnableButton(panelName, WizardButton.NEXT, passwordsEqual);
+  }
 
-    // Check for a match
-    if (result == 0) {
-      ViewEvents.firePasswordStatusChangedEvent(true);
-      return;
-    }
-
-    ViewEvents.firePasswordStatusChangedEvent(false);
+  /**
+   * @return The panel name that this component is associated with
+   */
+  public String getPanelName() {
+    return panelName;
   }
 
   @Override
