@@ -27,7 +27,7 @@ import java.math.BigInteger;
  * <li>Initialisation of bitcoin network connection</li>
  * <li>Ability to send bitcoin</li>
  * </ul>
- *
+ * <p/>
  * <p>Emits the following events:</p>
  * <ul>
  * <li><code>BitcoinNetworkChangeEvent</code></li>
@@ -38,21 +38,14 @@ import java.math.BigInteger;
  */
 public class BitcoinNetworkService extends AbstractService implements ManagedService {
 
-  private static final Logger log = LoggerFactory.getLogger(BitcoinNetworkService.class);
-
   public static final MainNetParams NETWORK_PARAMETERS = MainNetParams.get();
-
   public static final int MAXIMUM_NUMBER_OF_PEERS = 6;
-
+  private static final Logger log = LoggerFactory.getLogger(BitcoinNetworkService.class);
   private WalletManager walletManager;
-
   private BlockStore blockStore;
   private PeerGroup peerGroup;  // May need to add listener as in MultiBitPeerGroup
-
   private BlockChain blockChain;
-
   private MultiBitCheckpointManager checkpointManager;
-
   private MultiBitPeerEventListener peerEventListener;
 
   @Override
@@ -62,30 +55,8 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
 
     requireSingleThreadExecutor();
 
-    //String currentWalletFilename;
-    //File currentWalletDirectory;
-    //try {
-      //String applicationDataDirectoryName = InstallationManager.createApplicationDataDirectory();
-      //log.debug("The current applicationDataDirectoryName is '{}'.", applicationDataDirectoryName);
-
-      // Get the wallet manager.
-      walletManager = WalletManager.INSTANCE;
-
-      // Get the current wallet, if it is set.
-      //currentWalletFilename = walletManager.getCurrentWalletFilename();
-      //log.debug("The current wallet filename is '{}'.", currentWalletFilename);
-
-      // Load the wallet
-      //walletManager.loadFromFile(new File(currentWalletFilename));
-
-      //currentWalletDirectory = (new File(currentWalletFilename)).getParentFile();
-
-//    } catch (IllegalStateException | IllegalArgumentException | WalletLoadException | WalletVersionException e) {
-//      CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary
-//        .newNetworkStartupFailed(MessageKey.NETWORK_CONFIGURATION_ERROR,
-//          Optional.<Object[]>absent()));
-//      return;
-//    }
+    // Get the wallet manager.
+    walletManager = WalletManager.INSTANCE;
 
     try {
       String filenameRoot = WalletManager.INSTANCE.getCurrentWalletDirectory().get().getAbsolutePath();
@@ -116,10 +87,10 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
     } catch (Exception e) {
       log.error(e.getClass().getName() + " " + e.getMessage());
       CoreEvents.fireBitcoinNetworkChangedEvent(
-        BitcoinNetworkSummary.newNetworkStartupFailed(
-          MessageKey.START_NETWORK_CONNECTION_ERROR,
-          Optional.<Object[]>absent()
-        ));
+              BitcoinNetworkSummary.newNetworkStartupFailed(
+                      MessageKey.START_NETWORK_CONNECTION_ERROR,
+                      Optional.<Object[]>absent()
+              ));
     }
   }
 
@@ -152,7 +123,7 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
 
   /**
    * <p>Send bitcoin</p>
-   *
+   * <p/>
    * <p>In the future will also need:</p>
    * <ul>
    * <li>the wallet to send from - when Trezor comes onstream</li>
@@ -192,9 +163,9 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
 
         // Issue a "network ready" event
         CoreEvents.fireBitcoinNetworkChangedEvent(
-          BitcoinNetworkSummary.newNetworkReady(
-            peerEventListener.getNumberOfConnectedPeers()
-          ));
+                BitcoinNetworkSummary.newNetworkReady(
+                        peerEventListener.getNumberOfConnectedPeers()
+                ));
 
       }
     });
@@ -218,5 +189,4 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
       peerGroup.addWallet(walletManager.getCurrentWallet().get());
     }
   }
-
 }
