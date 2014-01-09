@@ -46,7 +46,7 @@ public class CoreEvents {
    */
   public static void fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary bitcoinNetworkSummary) {
 
-    log.debug("Firing 'Bitcoin network changed' event");
+    log.debug("Firing 'Bitcoin network changed' event : " + bitcoinNetworkSummary.getPercent() + "%.");
     CoreServices.uiEventBus.post(new BitcoinNetworkChangedEvent(bitcoinNetworkSummary));
 
   }

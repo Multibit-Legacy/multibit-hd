@@ -7,6 +7,7 @@ import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.bitcoin.store.WalletProtobufSerializer;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import org.multibit.hd.core.api.WalletId;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.exceptions.WalletLoadException;
@@ -20,7 +21,6 @@ import org.spongycastle.asn1.x9.X9ECParameters;
 
 import java.io.*;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -31,7 +31,7 @@ import java.util.List;
  *  <li>load wallet</li>
  *  <li>store wallet</li>
  *  <li>backup wallet</li>
- *  <li> tracks the current wallet and the list of wallet directories</li>
+ * <li> tracks the current wallet and the list of wallet directories</li>
  *  </ul>
  */
 public enum WalletManager {
@@ -46,13 +46,14 @@ public enum WalletManager {
 
   /**
    * Initialise enum, load up the available wallets and find the current wallet
+   *
    * @param applicationDataDirectory The directory in which to store and read wallets.
    */
   public void initialise(File applicationDataDirectory) {
     this.applicationDataDirectory = applicationDataDirectory;
 
     // Work out the list of available wallets in the application data directory
-    List<File> walletDirectories = findWalletDirectories(applicationDataDirectory);
+    walletDirectories = findWalletDirectories(applicationDataDirectory);
 
     // TODO enable user to switch wallets - currently using the first
 
@@ -60,7 +61,7 @@ public enum WalletManager {
     // TODO catch wallet load exceptions and report
     if (!walletDirectories.isEmpty()) {
       currentWalletDirectory = Optional.of(walletDirectories.get(0));
-      String walletFilename = walletDirectories.get(0)+ File.separator + MBHD_WALLET_NAME;
+      String walletFilename = walletDirectories.get(0) + File.separator + MBHD_WALLET_NAME;
       currentWallet = Optional.of(loadFromFile(new File(walletFilename)));
     } else {
       currentWallet = Optional.absent();
@@ -82,7 +83,7 @@ public enum WalletManager {
   /**
    * The wallet version number for protobuf encrypted wallets - compatible with MultiBit
    */
-  public static final int ENCRYPTED_WALLET_VERSION = 3;
+  public static final int ENCRYPTED_WALLET_VERSION = 3; // TODO - need a new version when the wallet format is modified
 
   public static final String MBHD_WALLET_NAME = "mbhd.wallet";
 
@@ -100,7 +101,7 @@ public enum WalletManager {
    * The name of the wallet file is derived from the seed.
    * If the wallet file already exists it is loaded and returned (and the input password is not used)
    *
-   * @param seed the seed used to initialise the wallet
+   * @param seed     the seed used to initialise the wallet
    * @param password to use to encrypt the wallet
    * @return Wallet
    * @throws IllegalStateException  if applicationDataDirectory is incorrect
@@ -113,29 +114,27 @@ public enum WalletManager {
   }
 
 
-    /**
-      * Create a wallet that contains only a single, random private key.
-      * This is stored in the specified directory.
-      * The name of the wallet file is derived from the seed.
-      * <p/>
-      * If the wallet file already exists it is loaded and returned (and the input password is not used)
-      *
-      * @param parentDirectoryName the name of the directory in which the wallet directory will be created (normally the application data directory)
-      * @param seed the seed used to initialise the wallet
-      * @param password to use to encrypt the wallet
-      * @return Wallet
-      * @throws IllegalStateException  if applicationDataDirectory is incorrect
-      * @throws WalletLoadException    if there is already a simple wallet created but it could not be loaded
-      * @throws WalletVersionException if there is already a simple wallet but the wallet version cannot be understood
-      */
-     public Wallet createWallet(String parentDirectoryName, byte[] seed, CharSequence password) throws WalletLoadException, WalletVersionException, IOException {
-
-    // Work out the file location of the simple wallet
+  /**
+   * Create a wallet that contains only a single, random private key.
+   * This is stored in the specified directory.
+   * The name of the wallet file is derived from the seed.
+   * <p/>
+   * If the wallet file already exists it is loaded and returned (and the input password is not used)
+   *
+   * @param parentDirectoryName the name of the directory in which the wallet directory will be created (normally the application data directory)
+   * @param seed                the seed used to initialise the wallet
+   * @param password            to use to encrypt the wallet
+   * @return Wallet
+   * @throws IllegalStateException  if applicationDataDirectory is incorrect
+   * @throws WalletLoadException    if there is already a simple wallet created but it could not be loaded
+   * @throws WalletVersionException if there is already a simple wallet but the wallet version cannot be understood
+   */
+  public Wallet createWallet(String parentDirectoryName, byte[] seed, CharSequence password) throws WalletLoadException, WalletVersionException, IOException {
     Wallet walletToReturn;
 
-    // Create a wallet id from the seed to work out the name of the wallet
+    // Create a wallet id from the seed to work out the wallet root directory
     WalletId walletId = new WalletId(seed);
-    String walletRoot = WALLET_DIRECTORY_PREFIX + SEPARATOR + walletId.toFormattedString();
+    String walletRoot = createWalletRoot(walletId);
 
     File walletDirectory = WalletManager.getWalletDirectory(parentDirectoryName, walletRoot);
     File walletFile = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME);
@@ -143,6 +142,8 @@ public enum WalletManager {
       // There is already a wallet created with this root - if so load it and return that
       walletToReturn = loadFromFile(walletFile);
       Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(walletRoot);
+      setCurrentWallet(walletToReturn);
+      setCurrentWalletDirectory(walletDirectory);
     } else {
       // Create the containing directory if it does not exist
       if (!walletDirectory.exists()) {
@@ -171,6 +172,7 @@ public enum WalletManager {
       saveWallet(walletToReturn, walletFile.getAbsolutePath());
       Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(walletRoot);
       setCurrentWallet(walletToReturn);
+      setCurrentWalletDirectory(walletDirectory);
     }
 
     // See if there is a checkpoints file - if not then get the InstallationManager to copy one in
@@ -183,7 +185,7 @@ public enum WalletManager {
   /**
    * Load up a Wallet from a specified wallet file.
    *
-   * @param walletFile
+   * @param walletFile The wallet to load
    * @return Wallet - the loaded wallet
    * @throws IllegalArgumentException if wallet file is null
    * @throws WalletLoadException
@@ -202,118 +204,33 @@ public enum WalletManager {
                 + "'. Serialized wallets are no longer supported.");
       }
 
-      // If the wallet file is missing or empty but the backup file exists
-      // load that instead. This indicates that the write was interrupted
-      // (e.g. power loss).
-      boolean useBackupWallets = (!walletFile.exists() || walletFile.length() == 0);
-      boolean walletWasLoadedSuccessfully = false;
-      Collection<String> errorMessages = new ArrayList<String>();
+      // TODO- backup wallets
+
+      Collection<String> errorMessages = Lists.newArrayList();
 
       Wallet wallet = null;
 
-      // Try the main wallet first unless it is obviously broken.
-      if (!useBackupWallets) {
-        FileInputStream fileInputStream = new FileInputStream(walletFile);
-        InputStream stream = null;
+      InputStream stream = null;
 
-        try {
-          stream = new BufferedInputStream(fileInputStream);
-          wallet = Wallet.loadFromFileStream(stream);
-          walletWasLoadedSuccessfully = true;
-        } catch (WalletVersionException wve) {
-          // We want this exception to propagate out.
-          throw wve;
-        } catch (Exception e) {
-          e.printStackTrace();
-          String description = e.getClass().getCanonicalName() + " " + e.getMessage();
-          log.error(description);
-          errorMessages.add(description);
-        } finally {
-          if (stream != null) {
-            stream.close();
-          }
-          fileInputStream.close();
+      try (FileInputStream fileInputStream = new FileInputStream(walletFile)) {
+        stream = new BufferedInputStream(fileInputStream);
+        wallet = Wallet.loadFromFileStream(stream);
+      } catch (WalletVersionException wve) {
+        // We want this exception to propagate out.
+        throw wve;
+      } catch (Exception e) {
+        e.printStackTrace();
+        String description = e.getClass().getCanonicalName() + " " + e.getMessage();
+        log.error(description);
+        errorMessages.add(description);
+      } finally {
+        if (stream != null) {
+          stream.close();
         }
       }
 
-//          if (!walletWasLoadedSuccessfully) {
-//              // If the main wallet was not loaded successfully, work out the best backup
-//              // wallets to try and load them.
-//              useBackupWallets = true;
-//
-//              Collection<String> backupWalletsToTry = BackupManager.INSTANCE.calculateBestWalletBackups(walletFile, walletInfo);
-//
-//              Iterator<String> iterator = backupWalletsToTry.iterator();
-//              while (!walletWasLoadedSuccessfully && iterator.hasNext()) {
-//                 String walletToTry = iterator.next();
-//
-//                 FileInputStream fileInputStream = new FileInputStream(new File(walletToTry));
-//                 InputStream stream = null;
-//
-//                 try {
-//                     stream = new BufferedInputStream(fileInputStream);
-//                     wallet = Wallet.loadFromFileStream(stream);
-//                     walletWasLoadedSuccessfully = true;
-//
-//                     // TODO Mention to user that backup is being used.
-//                 } catch (Exception e) {
-//                     e.printStackTrace();
-//                     String description = e.getClass().getCanonicalName() + " " + e.getMessage();
-//                     log.error(description);
-//                     errorMessages.add(description);
-//                 } finally {
-//                     if (stream != null) {
-//                         stream.close();
-//                     }
-//                     fileInputStream.close();
-//                 }
-//             }
-//         }
-
-
-//      if (walletWasLoadedSuccessfully) {
-      // Ensure that the directories for the backups of the
-      // rolling backups and regular backups exist.
-      //BackupManager.INSTANCE.createBackupDirectories(walletFile);
-
-
-      // If the backup files were used save them immediately and don't
-      // delete any rolling backups.
-//             if (useBackupWallets) {
-//                 // Wipe the wallet backup property so that the rolling
-//                 // backup file will not be overwritten
-//                 walletInfo.put(BitcoinModel.WALLET_BACKUP_FILE, "");
-//
-//                 // Save the wallet immediately just to be on the safe side.
-//                 savePerWalletModelData(perWalletModelData, true);
-//             }
-//
-//             synchronized (walletInfo) {
-//                 rememberFileSizesAndLastModified(new File(walletFilenameToUseInModel), walletInfo);
-//                 perWalletModelData.setDirty(false);
-//             }
-//      } else {
-//        // No wallet was loaded successfully.
-//        // Wipe the rolling backup property to ensure that file wont be deleted.
-//             if (walletInfo != null) {
-//                 walletInfo.put(BitcoinModel.WALLET_BACKUP_FILE, "");
-//             }
-//
-//        // Report failure to user.
-//             String messageText = bitcoinController.getLocaliser().getString("fileHandler.unableToLoadWalletOrBackups", new String[] {walletFilenameToUseInModel});
-//             if (!errorMessages.isEmpty()) {
-//                 StringBuilder errorMessagesAsString = new StringBuilder();
-//                 for (String errorText : errorMessages) {
-//                     if (errorMessagesAsString.length()>0) {
-//                         errorMessagesAsString.append("\n");
-//                     }
-//                     errorMessagesAsString.append(errorText);
-//                 }
-//                 messageText = messageText + "\n" + bitcoinController.getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", new String[]{errorMessagesAsString.toString()});
-//             }
-//             MessageManager.INSTANCE.addMessage(new Message(messageText));
-//      }
       setCurrentWallet(wallet);
+      setCurrentWalletDirectory(walletFile.getParentFile());
       return wallet;
     } catch (WalletVersionException wve) {
       // We want this to propagate out.
@@ -369,7 +286,7 @@ public enum WalletManager {
   }
 
   /**
-   * @param walletFile
+   * @param walletFile the wallet to test serialisation for
    * @return true if the wallet file specified is serialised (this format is no longer supported)
    */
   private boolean isWalletSerialised(File walletFile) {
@@ -397,16 +314,13 @@ public enum WalletManager {
   }
 
   /**
-   * Returns the filename of the current wallet.
+   * Create the name of the directory in which the wallet is stored
    *
-   * @throws IllegalStateException if no wallet is currently defined or if the application data directory is undefined
+   * @param walletId The wallet id to use
+   * @return directoryName in which the wallet is stored.
    */
-  public String getCurrentWalletFilename() {
-    String currentWalletRoot = Configurations.currentConfiguration.getApplicationConfiguration().getCurrentWalletRoot();
-
-    String walletFilename = currentWalletRoot + File.separator + MBHD_WALLET_NAME;
-
-    return walletFilename;
+  public String createWalletRoot(WalletId walletId) {
+    return WALLET_DIRECTORY_PREFIX + SEPARATOR + walletId.toFormattedString();
   }
 
   /**
@@ -437,15 +351,15 @@ public enum WalletManager {
   }
 
   /**
-    * Work out what wallets are available in a directory (typically the user data directory).
-    * This is worked out by looking for directories with the name:
-    * 'multibithd' + a wallet id
-    *
-    * @return List<File> List of files of wallet directories
-    */
-   public List<File> findWalletDirectories() {
-     return findWalletDirectories(applicationDataDirectory);
-   }
+   * Work out what wallets are available in a directory (typically the user data directory).
+   * This is worked out by looking for directories with the name:
+   * 'multibithd' + a wallet id
+   *
+   * @return List<File> List of files of wallet directories
+   */
+  public List<File> findWalletDirectories() {
+    return findWalletDirectories(applicationDataDirectory);
+  }
 
   /**
    * Work out what wallets are available in a directory (typically the user data directory).
@@ -460,7 +374,7 @@ public enum WalletManager {
 
     File[] listOfFiles = directoryToSearch.listFiles();
 
-    List<File> walletDirectories = new ArrayList<File>();
+    List<File> walletDirectories = Lists.newArrayList();
     // Look for filenames with format "multibithd"-"walletid" and are not empty.
     if (listOfFiles != null) {
       for (int i = 0; i < listOfFiles.length; i++) {
@@ -482,11 +396,15 @@ public enum WalletManager {
     return currentWallet;
   }
 
-  private void setCurrentWallet(Wallet currentWallet) {
+  public void setCurrentWallet(Wallet currentWallet) {
     this.currentWallet = Optional.of(currentWallet);
   }
 
   public Optional<File> getCurrentWalletDirectory() {
     return currentWalletDirectory;
+  }
+
+  public void setCurrentWalletDirectory(File walletDirectory) {
+    currentWalletDirectory = Optional.of(walletDirectory);
   }
 }

@@ -195,8 +195,6 @@ public class WalletManagerTest {
     ECKey key2 = wallet2.getKeys().get(0);
 
     assertThat(Arrays.equals(key1.getPrivKeyBytes(), key2.getPrivKeyBytes())).isTrue();
-
-    // TODOcurrently not associating the walletId / wallet directory to the wallet
   }
 
   @Test
@@ -227,7 +225,7 @@ public class WalletManagerTest {
     return directory.getAbsolutePath();
   }
 
-  private File makeRandomTemporaryDirectory() throws IOException {
+  public static File makeRandomTemporaryDirectory() throws IOException {
     File temporaryFile = File.createTempFile("nothing", "nothing");
     temporaryFile.deleteOnExit();
 

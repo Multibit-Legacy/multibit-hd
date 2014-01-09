@@ -20,6 +20,7 @@ import org.multibit.hd.core.network.MultiBitPeerEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.math.BigInteger;
 
 /**
@@ -60,9 +61,9 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
     walletManager = WalletManager.INSTANCE;
 
     try {
-      String filenameRoot = WalletManager.INSTANCE.getCurrentWalletDirectory().get().getAbsolutePath();
-      String blockchainFilename = filenameRoot + InstallationManager.SPV_BLOCKCHAIN_SUFFIX;
-      String checkpointsFilename = filenameRoot + InstallationManager.CHECKPOINTS_SUFFIX;
+      String walletRoot = WalletManager.INSTANCE.getCurrentWalletDirectory().get().getAbsolutePath();
+      String blockchainFilename = walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.SPV_BLOCKCHAIN_SUFFIX;
+      String checkpointsFilename = walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX;
 
       // Load or create the blockStore..
       log.debug("Loading/ creating blockstore ...");
@@ -71,6 +72,9 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
 
       log.debug("Creating blockchain ...");
       blockChain = new BlockChain(NETWORK_PARAMETERS, blockStore);
+      if (walletManager.getCurrentWallet().isPresent()) {
+        blockChain.addWallet(walletManager.getCurrentWallet().get());
+      }
       log.debug("Created blockchain '{}' with height '{}'", blockChain, blockChain.getBestChainHeight());
 
       log.debug("Creating peergroup ...");
@@ -97,21 +101,29 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
 
   @Override
   public void stopAndWait() {
-
     if (peerGroup != null) {
       log.debug("Stopping peerGroup service...");
       peerGroup.removeEventListener(peerEventListener);
+
+      if (walletManager.getCurrentWallet().isPresent()) {
+          peerGroup.removeWallet(walletManager.getCurrentWallet().get());
+        }
 
       peerGroup.stopAndWait();
       log.debug("Service peerGroup stopped");
     }
 
-    // Shutdown any executor running a download.
+    // Shutdown any executor running a download
     if (getExecutorService() != null) {
       getExecutorService().shutdown();
     }
 
-    // Close the blockstore.
+    // Remove the wallet from the blockChain
+    if (walletManager.getCurrentWallet().isPresent()) {
+      blockChain.removeWallet(walletManager.getCurrentWallet().get());
+    }
+
+    // Close the blockstore
     if (blockStore != null) {
       try {
         blockStore.close();
@@ -119,7 +131,6 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
         log.error("Blockstore not closed successfully, error was '" + e.getClass().getName() + " " + e.getMessage() + "'");
       }
     }
-
   }
 
   /**
@@ -146,12 +157,11 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
    * <p>Download the block chain</p>
    */
   public void downloadBlockChain() {
+ //   getExecutorService().submit(new Runnable() {
+ //     @Override
+ //     public void run() {
 
-    getExecutorService().submit(new Runnable() {
-      @Override
-      public void run() {
-
-        Preconditions.checkNotNull(peerGroup,"'peerGroup' must be present");
+        Preconditions.checkNotNull(peerGroup, "'peerGroup' must be present");
 
         log.debug("Downloading blockchain");
 
@@ -171,8 +181,8 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
                 ));
 
       }
-    });
-  }
+//    });
+//  }
 
   /**
    * <p>Create a new peer group</p>
