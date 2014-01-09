@@ -102,7 +102,7 @@ public class TextBubbleBorder extends AbstractBorder {
 
     int bottomPad = pointerSize + strokePad;
 
-    insets = new Insets(0, 4, bottomPad, 4);
+    insets = new Insets(10, 6, bottomPad, 6);
 
   }
 

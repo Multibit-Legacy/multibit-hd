@@ -224,15 +224,15 @@ public class Panels {
   public static JPanel newSeedPhraseWarning() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fill,insets 0", // Layout
-      "[]", // Columns
+      "fillx,insets 0", // Layout
+      "[grow]", // Columns
       "[]" // Rows
     ));
 
     PanelDecorator.applyDangerFadedTheme(panel);
 
     // Add to the panel
-    panel.add(Labels.newSeedWarningNote(),"shrink");
+    panel.add(Labels.newSeedWarningNote(),"push");
 
     return panel;
   }

@@ -216,7 +216,7 @@ public class PanelDecorator {
     // Standard wizard layout
     MigLayout layout = new MigLayout(
       "fill", // Layout constrains
-      "[]", // Column constraints
+      "[][][][]", // Column constraints
       "[shrink]10[grow]10[shrink]" // Row constraints
     );
 

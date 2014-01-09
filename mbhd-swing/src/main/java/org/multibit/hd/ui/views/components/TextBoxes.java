@@ -31,11 +31,6 @@ public class TextBoxes {
   public static final int PASSWORD_LENGTH = 40;
 
   /**
-   * Maintain a reference to the platform password echo character
-   */
-  private static char passwordEchoChar = new JPasswordField().getEchoChar();
-
-  /**
    * Utilities have no public constructor
    */
   private TextBoxes() {
@@ -154,10 +149,10 @@ public class TextBoxes {
   }
 
   /**
-   * @return The platform echo character for password fields
+   * @return The themed echo character for password fields
    */
   public static char getPasswordEchoChar() {
 
-    return passwordEchoChar;
+    return '\u2022';
   }
 }

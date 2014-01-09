@@ -1,5 +1,7 @@
 package org.multibit.hd.ui.views.themes;
 
+import org.multibit.hd.ui.views.themes.painters.NamedButtonRegionPainter;
+
 import java.awt.*;
 
 /**
@@ -146,7 +148,11 @@ public class LightTheme implements Theme {
 
   @Override
   public Color dangerAlertFadedBackground() {
-    return colors[3][1].brighter();
+
+    NamedButtonRegionPainter painter = new NamedButtonRegionPainter(colors[3][1], NamedButtonRegionPainter.BACKGROUND_DEFAULT);
+
+    // Any of 28, 30, 31, 32
+    return painter.color31;
   }
 
   @Override

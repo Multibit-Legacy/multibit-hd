@@ -17,7 +17,7 @@ import java.awt.event.MouseAdapter;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class Labels {
 
@@ -39,6 +39,64 @@ public class Labels {
    */
   public static JLabel newLabel(MessageKey key, Object... values) {
     return new JLabel(Languages.safeText(key, values));
+  }
+
+  /**
+   * @param key The message key
+   *
+   * @return A new label with appropriate font and theme
+   */
+  public static JLabel newTitleLabel(MessageKey key) {
+
+    JLabel label = newLabel(key);
+
+    // Font
+    Font font = label.getFont().deriveFont(BALANCE_LARGE_FONT_SIZE);
+    label.setFont(font);
+
+    // Theme
+    label.setForeground(Themes.currentTheme.text());
+
+    return label;
+
+  }
+
+  /**
+   * <p>Create a new label with appropriate font/theme for a note. Interpret the contents of the text as Markdown for HTML translation.</p>
+   *
+   * @param keys   The message keys for each line referencing simple HTML (standard wrapping/breaking elements like {@literal <html></html>} and {@literal <br/>} will be provided)
+   * @param values The substitution values for each line if applicable
+   *
+   * @return A new label with HTML formatting to correctly render the line break and contents
+   */
+  public static JLabel newNoteLabel(MessageKey[] keys, Object[][] values) {
+
+    String[] safeHtml = new String[keys.length];
+    for (int i = 0; i < keys.length; i++) {
+      if (values.length > 0) {
+        // Substitution is required
+        safeHtml[i] = Languages.safeText(keys[i], values[i]);
+      } else {
+        // Key only
+        safeHtml[i] = Languages.safeText(keys[i]);
+      }
+    }
+
+    // Wrap in HTML to ensure line breaks are respected
+    StringBuilder sb = new StringBuilder("<html>");
+    for (String line : safeHtml) {
+      sb.append(line);
+      sb.append("<br/><br/>");
+    }
+    sb.append("</html>");
+
+    JLabel label = new JLabel(sb.toString());
+
+    // Theme
+    label.setForeground(Themes.currentTheme.text());
+
+    return label;
+
   }
 
   /**
@@ -117,14 +175,15 @@ public class Labels {
    */
   public static JLabel newEnterPassword() {
 
-    return new JLabel(Languages.safeText(MessageKey.ENTER_PASSWORD));
+    return newLabel(MessageKey.ENTER_PASSWORD);
   }
+
   /**
    * @return A new "Confirm password" label
    */
   public static JLabel newConfirmPassword() {
 
-    return new JLabel(Languages.safeText(MessageKey.CONFIRM_PASSWORD));
+    return newLabel(MessageKey.CONFIRM_PASSWORD);
   }
 
   /**
@@ -132,18 +191,32 @@ public class Labels {
    */
   public static JLabel newConfirmSendAmount() {
 
-    return new JLabel(Languages.safeText(MessageKey.CONFIRM_SEND_MESSAGE));
-  }
-  /**
-   * @return A new "Welcome" note
-   */
-  public static JLabel newWelcomeNote() {
-
-    return new JLabel(Languages.safeText(MessageKey.WELCOME_NOTE));
+    return newLabel(MessageKey.CONFIRM_SEND_MESSAGE);
   }
 
   public static JLabel newSeedSize() {
-    return new JLabel(Languages.safeText(MessageKey.SEED_SIZE));
+    return newLabel(MessageKey.SEED_SIZE);
+  }
+
+  /**
+   * @return A new "welcome" note
+   */
+  public static JLabel newWelcomeNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.WELCOME_NOTE_1,
+      MessageKey.WELCOME_NOTE_2,
+      MessageKey.WELCOME_NOTE_3
+    }, new Object[][]{});
+  }
+
+  /**
+   * @return A new "wallet password" note
+   */
+  public static JLabel newWalletPasswordNote() {
+
+    return newNoteLabel(new MessageKey[]{MessageKey.WALLET_PASSWORD_NOTE}, new Object[][]{});
+
   }
 
   /**
@@ -151,37 +224,11 @@ public class Labels {
    */
   public static JLabel newSeedWarningNote() {
 
-    // Wrap in HTML to allow for line breaks
-    return new JLabel("<html>"+
-      Languages.safeText(MessageKey.SEED_WARNING_NOTE) +
-      "</html>");
-
-  }
-
-  public static JLabel newWalletPasswordNote() {
-    // Wrap in HTML to allow for line breaks
-    return new JLabel("<html>"+
-      Languages.safeText(MessageKey.WALLET_PASSWORD_NOTE) +
-      "</html>");
-  }
-
-  /**
-   * @param key The message key
-   *
-   * @return A new label with appropriate font and theme
-   */
-  public static JLabel newTitleLabel(MessageKey key) {
-
-    JLabel label = new JLabel(Languages.safeText(key));
-
-    // Font
-    Font font = label.getFont().deriveFont(BALANCE_LARGE_FONT_SIZE);
-    label.setFont(font);
-
-    // Theme
-    label.setForeground(Themes.currentTheme.text());
-
-    return label;
-
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.SEED_WARNING_NOTE_1,
+      MessageKey.SEED_WARNING_NOTE_2,
+      MessageKey.SEED_WARNING_NOTE_3,
+      MessageKey.SEED_WARNING_NOTE_4,
+    }, new Object[][]{});
   }
 }

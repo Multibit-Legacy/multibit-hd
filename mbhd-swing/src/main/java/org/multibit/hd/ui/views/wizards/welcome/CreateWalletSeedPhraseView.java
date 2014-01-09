@@ -52,7 +52,7 @@ public class CreateWalletSeedPhraseView extends AbstractWizardView<WelcomeWizard
     ));
 
     panel.add(displaySeedPhraseMaV.getView().newPanel(), "wrap");
-    panel.add(Panels.newSeedPhraseWarning(), "wrap");
+    panel.add(Panels.newSeedPhraseWarning(), "grow,push,wrap");
 
     return panel;
   }

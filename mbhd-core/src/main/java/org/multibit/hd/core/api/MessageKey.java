@@ -76,9 +76,14 @@ public enum MessageKey {
   SELECT_LANGUAGE("showPreferencesPanel.languageTitle"),
   SEED_SIZE("Words in seed"),
 
-  // Notes
-  WELCOME_NOTE("MultiBit HD provides secure access to the Bitcoin network. Click next to get started."),
-  SEED_WARNING_NOTE("You must write down the words shown above on a piece of paper. You will never see them again and they protect all your bitcoins."),
+  // Notes (HTML format for multi-line formatting)
+  WELCOME_NOTE_1("MultiBit HD provides secure access to the Bitcoin network."),
+  WELCOME_NOTE_2("This setup process has the minimum steps required to secure your bitcoins."),
+  WELCOME_NOTE_3("If this is your first time using MultiBit HD you should choose \"Create new wallet\" on the next page."),
+  SEED_WARNING_NOTE_1("You must write down the words shown above on a piece of paper and <strong>keep it safe</strong>."),
+  SEED_WARNING_NOTE_2("You will never see these words again and they protect all your bitcoins."),
+  SEED_WARNING_NOTE_3("Do not copy/paste."),
+  SEED_WARNING_NOTE_4("Do not take a screen shot."),
   WALLET_PASSWORD_NOTE("This password will be needed whenever you send bitcoins. You can always recover it using your seed phrase."),
 
   // End of enum
