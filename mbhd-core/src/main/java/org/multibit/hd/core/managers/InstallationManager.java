@@ -41,12 +41,12 @@ public class InstallationManager {
    * <p>Get the directory for the user's application data, creating if not present</p>
    * <p>Checks a few OS-dependent locations first</p>
    */
-  public static String createApplicationDataDirectory() {
+  public static File createApplicationDataDirectory() {
 
     // Check the current working directory for the configuration file
     File multibitPropertiesFile = new File(MBHD_CONFIGURATION_FILE);
     if (multibitPropertiesFile.exists()) {
-      return ".";
+      return new File(".");
     }
 
     final String applicationDataDirectory;
@@ -80,7 +80,7 @@ public class InstallationManager {
     }
     Preconditions.checkState(directory.isDirectory(), "Incorrectly identified the application data directory of '" + applicationDataDirectory + " as a file");
 
-    return applicationDataDirectory;
+    return directory;
   }
 
   /**

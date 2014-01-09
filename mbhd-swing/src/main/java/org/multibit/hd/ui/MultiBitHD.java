@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import java.io.File;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -80,43 +79,28 @@ public class MultiBitHD {
     HeaderController headerController = new HeaderController();
     SidebarController sidebarController = new SidebarController();
 
-    // See if there are any existing wallets stored in the application data directory
-    String applicationDataDirectoryName = InstallationManager.createApplicationDataDirectory();
+    // Initialise the wallet manager, which will load the current wallet if available
+    File applicationDataDirectory = InstallationManager.createApplicationDataDirectory();
 
-    WalletManager walletManager = new WalletManager();
-    List<File> walletDirectories = walletManager.findWalletDirectories(new File(applicationDataDirectoryName));
+    WalletManager.INSTANCE.initialise(applicationDataDirectory);
 
-    if (walletDirectories.isEmpty()) {
-      // Start the services (triggers events)
-      exchangeTickerService.start();
-      bitcoinNetworkService.start();
-
-      Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
-
-      // Show the UI for the current locale
-      ControllerEvents.fireChangeLocaleEvent(Configurations.currentConfiguration.getLocale());
-
-      // TODO show the new Wallet Wizard to create a wallet, set it into the configuration
-      // TODO then start the blockchain sync with the new Wallet
-    } else {
-      // Set the wallet directory into the configuration (used when the bitcoinNetworkService starts)
-      Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(walletDirectories.get(0).getAbsoluteFile().getAbsolutePath());
-
-      // TODO enable the user to switch between the existing wallets
-
-      // Start the services (triggers events)
-      exchangeTickerService.start();
-      bitcoinNetworkService.start();
-
-      Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
-
-      // If the network starts ok start downloading blocks to catch up with the current blockchain
-      bitcoinNetworkService.downloadBlockChain();
-
-      // Show the UI for the current locale
-      ControllerEvents.fireChangeLocaleEvent(Configurations.currentConfiguration.getLocale());
+    if (!WalletManager.INSTANCE.getCurrentWallet().isPresent()) {
+      // TODO show the new Wallet Wizard to create a wallet, set it into the configuration/ WalletManager
     }
 
+    // TODO enable the user to switch between the existing wallets
+
+    // Start the services (triggers events)
+    exchangeTickerService.start();
+    bitcoinNetworkService.start();
+
+    Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
+
+    // If the network starts ok start downloading blocks to catch up with the current blockchain
+    bitcoinNetworkService.downloadBlockChain();
+
+    // Show the UI for the current locale
+    ControllerEvents.fireChangeLocaleEvent(Configurations.currentConfiguration.getLocale());
 
     // Provide a starting balance
     // TODO Get this from CoreServices

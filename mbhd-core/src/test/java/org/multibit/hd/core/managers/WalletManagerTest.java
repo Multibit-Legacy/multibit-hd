@@ -54,7 +54,7 @@ public class WalletManagerTest {
   public void setUp() throws Exception {
     // Start the core services
     CoreServices.main(null);
-    walletManager = new WalletManager();
+    walletManager = WalletManager.INSTANCE;
   }
 
   @Test
@@ -165,7 +165,7 @@ public class WalletManagerTest {
     // Create a random temporary directory
     File temporaryDirectory1 = makeRandomTemporaryDirectory();
 
-    WalletManager walletManager = new WalletManager();
+    WalletManager walletManager = WalletManager.INSTANCE;
 
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(WalletIdTest.split(WalletIdTest.SEED_PHRASE_1));
@@ -210,7 +210,7 @@ public class WalletManagerTest {
     makeDirectory(temporaryDirectory, INVALID_WALLET_DIRECTORY_2);
     makeDirectory(temporaryDirectory, INVALID_WALLET_DIRECTORY_3);
 
-    WalletManager walletManager = new WalletManager();
+    WalletManager walletManager = WalletManager.INSTANCE;
 
     List<File> walletDirectories = walletManager.findWalletDirectories(temporaryDirectory);
     assertThat(walletDirectories).isNotNull();

@@ -12,8 +12,6 @@ import org.multibit.hd.core.api.BitcoinNetworkSummary;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
-import org.multibit.hd.core.exceptions.WalletLoadException;
-import org.multibit.hd.core.exceptions.WalletVersionException;
 import org.multibit.hd.core.managers.BlockStoreManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.MultiBitCheckpointManager;
@@ -22,7 +20,6 @@ import org.multibit.hd.core.network.MultiBitPeerEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.math.BigInteger;
 
 /**
@@ -66,33 +63,33 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
 
     requireSingleThreadExecutor();
 
-    String currentWalletFilename;
-    File currentWalletDirectory;
-    try {
-      String applicationDataDirectoryName = InstallationManager.createApplicationDataDirectory();
-      log.debug("The current applicationDataDirectoryName is '{}'.", applicationDataDirectoryName);
+    //String currentWalletFilename;
+    //File currentWalletDirectory;
+    //try {
+      //String applicationDataDirectoryName = InstallationManager.createApplicationDataDirectory();
+      //log.debug("The current applicationDataDirectoryName is '{}'.", applicationDataDirectoryName);
 
-      // Create a wallet manager.
-      walletManager = new WalletManager();
+      // Get the wallet manager.
+      walletManager = WalletManager.INSTANCE;
 
       // Get the current wallet, if it is set.
-      currentWalletFilename = walletManager.getCurrentWalletFilename();
-      log.debug("The current wallet filename is '{}'.", currentWalletFilename);
+      //currentWalletFilename = walletManager.getCurrentWalletFilename();
+      //log.debug("The current wallet filename is '{}'.", currentWalletFilename);
 
       // Load the wallet
-      walletManager.loadFromFile(new File(currentWalletFilename));
+      //walletManager.loadFromFile(new File(currentWalletFilename));
 
-      currentWalletDirectory = (new File(currentWalletFilename)).getParentFile();
+      //currentWalletDirectory = (new File(currentWalletFilename)).getParentFile();
 
-    } catch (IllegalStateException | IllegalArgumentException | WalletLoadException | WalletVersionException e) {
-      CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary
-        .newNetworkStartupFailed(MessageKey.NETWORK_CONFIGURATION_ERROR,
-          Optional.<Object[]>absent()));
-      return;
-    }
+//    } catch (IllegalStateException | IllegalArgumentException | WalletLoadException | WalletVersionException e) {
+//      CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary
+//        .newNetworkStartupFailed(MessageKey.NETWORK_CONFIGURATION_ERROR,
+//          Optional.<Object[]>absent()));
+//      return;
+//    }
 
     try {
-      String filenameRoot = currentWalletDirectory.getCanonicalPath() + File.separator + InstallationManager.MBHD_PREFIX;
+      String filenameRoot = WalletManager.INSTANCE.getCurrentWalletDirectory().get().getAbsolutePath();
       String blockchainFilename = filenameRoot + InstallationManager.SPV_BLOCKCHAIN_SUFFIX;
       String checkpointsFilename = filenameRoot + InstallationManager.CHECKPOINTS_SUFFIX;
 
@@ -210,7 +207,6 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
    * <p>Create a new peer group</p>
    */
   private void createNewPeerGroup() {
-
     peerGroup = new PeerGroup(NETWORK_PARAMETERS, blockChain);
     peerGroup.setFastCatchupTimeSecs(0); // genesis block
     peerGroup.setUserAgent(InstallationManager.MBHD_APP_NAME, Configurations.APP_VERSION);
@@ -221,8 +217,9 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
     peerEventListener = new MultiBitPeerEventListener();
     peerGroup.addEventListener(peerEventListener);
 
-    peerGroup.addWallet(walletManager.getCurrentWallet());
-
+    if (walletManager.getCurrentWallet().isPresent()) {
+      peerGroup.addWallet(walletManager.getCurrentWallet().get());
+    }
   }
 
 }
