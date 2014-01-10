@@ -3,6 +3,7 @@ package org.multibit.hd.core.services;
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.Wallet;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.junit.Before;
@@ -12,6 +13,7 @@ import org.multibit.hd.core.api.WalletIdTest;
 import org.multibit.hd.core.api.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.managers.WalletManagerTest;
@@ -35,11 +37,15 @@ public class BitcoinNetworkServiceFunctionalTest {
   private static final BigInteger SEND_AMOUNT = BigInteger.valueOf(100000); // 0.001 BTC
   private static final BigInteger FEE_PER_KB = BigInteger.valueOf(10000); // 0.0001 BTC / KB
 
+  private static final int MAX_TIMEOUT = 120000; // ms
+  private static final int WAIT_INTERVAL = 100; // ms
+
   private Properties seedProperties;
 
   private BitcoinNetworkService bitcoinNetworkService;
 
   private BitcoinSentEvent bitcoinSentEvent;
+  private int percentComplete;
 
   private WalletManager walletManager;
 
@@ -63,34 +69,34 @@ public class BitcoinNetworkServiceFunctionalTest {
     assertThat(seedProperties.getProperty(WALLET_SEED_1).length() > 0).isTrue();
     assertThat(seedProperties.getProperty(WALLET_SEED_2).length() > 0).isTrue();
 
-    // You also need to fund one (or both)of the wallets so that there is some bitcoin to send from one to the other.
+    // You also need to fund one (or both) of the wallets so that there is some bitcoin to send from one to the other.
   }
 
 
   // This test is a simpler version of the testSendBetweenTwoRealWallets one
   // As they take a while to run if you are running the send test you don't really need to run this one
-//  @Test
-//  public void testSyncSingleWallet() throws Exception {
-//    // Create a random temporary directory and use it for wallet storage
-//    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
-//    walletManager.initialise(temporaryDirectory);
-//
-//    // Create a wallet from the WALLET_SEED_1
-//    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-//    byte[] seed = seedGenerator.convertToSeed(WalletIdTest.split(seedProperties.getProperty(WALLET_SEED_1)));
-//
-//    Wallet wallet1 = createWallet(temporaryDirectory, seed, WALLET_PASSWORD);
-//
-//    synchronizeWallet();
-//
-//    log.debug("Wallet 1 (after sync) = \n" + wallet1.toString());
-//
-//    BigInteger walletBalance1 = wallet1.getBalance(Wallet.BalanceType.ESTIMATED);
-//
-//    // If this test fails please fund the test wallet with bitcoin as it is needed for the sending test !
-//    // (The wallet is logged to the console so you can see the address you need to fund).
-//    assertThat(walletBalance1.compareTo(BigInteger.ZERO) > 0).isTrue();
-//  }
+  @Test
+  public void testSyncSingleWallet() throws Exception {
+    // Create a random temporary directory and use it for wallet storage
+    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
+    walletManager.initialise(temporaryDirectory);
+
+    // Create a wallet from the WALLET_SEED_1
+    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] seed = seedGenerator.convertToSeed(WalletIdTest.split(seedProperties.getProperty(WALLET_SEED_1)));
+
+    WalletData walletData = createWallet(temporaryDirectory, seed);
+
+    synchronizeWallet();
+
+    log.debug("WalletData (after sync) = \n" + walletData.toString());
+
+    BigInteger walletBalance = walletData.getWallet().getBalance(Wallet.BalanceType.ESTIMATED);
+
+    // If this test fails please fund the test wallet with bitcoin as it is needed for the sending test !
+    // (The wallet is logged to the console so you can see the address you need to fund).
+    assertThat(walletBalance.compareTo(BigInteger.ZERO) > 0).isTrue();
+  }
 
   @Test
   public void testSendBetweenTwoRealWallets() throws Exception {
@@ -103,7 +109,6 @@ public class BitcoinNetworkServiceFunctionalTest {
     byte[] seed1 = seedGenerator.convertToSeed(WalletIdTest.split(seedProperties.getProperty(WALLET_SEED_1)));
     WalletData walletData1 = createWallet(temporaryDirectory, seed1);
     String walletRoot1 = walletManager.createWalletRoot(walletData1.getWalletId());
-
 
     byte[] seed2 = seedGenerator.convertToSeed(WalletIdTest.split(seedProperties.getProperty(WALLET_SEED_2)));
     WalletData walletData2 = createWallet(temporaryDirectory, seed2);
@@ -183,9 +188,19 @@ public class BitcoinNetworkServiceFunctionalTest {
   }
 
   @Subscribe
-  public void listenToBitcoinSentEvent(BitcoinSentEvent bitcoinSentEvent) {
+  public void listenForBitcoinSentEvent(BitcoinSentEvent bitcoinSentEvent) {
     log.debug(bitcoinSentEvent.toString());
     this.bitcoinSentEvent = bitcoinSentEvent;
+  }
+
+  @Subscribe
+  public void listenForBitcoinNetworkChangedEvent(BitcoinNetworkChangedEvent bitcoinNetworkChangedEvent) {
+    log.debug(bitcoinNetworkChangedEvent.toString());
+
+    // Remember the percentage complete for a download
+    if (bitcoinNetworkChangedEvent.getSummary().getPercent() > 0) {
+      percentComplete = bitcoinNetworkChangedEvent.getSummary().getPercent();
+    }
   }
 
   private WalletData createWallet(File walletDirectory, byte[] seed) throws IOException {
@@ -202,12 +217,25 @@ public class BitcoinNetworkServiceFunctionalTest {
   private void synchronizeWallet() {
     bitcoinNetworkService = CoreServices.newBitcoinNetworkService();
 
+    // Clear percentage complete
+    percentComplete = 0;
+
     bitcoinNetworkService.start();
     bitcoinNetworkService.downloadBlockChain();
 
-    // Wait until blockchain is downloaded
-    // TODO monitor progress rather than absolute time
-    //Uninterruptibles.sleepUninterruptibly(90, TimeUnit.SECONDS);
+    int timeout = 0;
+    while (timeout < MAX_TIMEOUT && (percentComplete < 100)) {
+      // Download still not complete
+      Uninterruptibles.sleepUninterruptibly(WAIT_INTERVAL, TimeUnit.MILLISECONDS);
+      timeout += WAIT_INTERVAL;
+
+      if (timeout % 1000 == 0) {
+        log.debug("Percent complete = '" + percentComplete + "'");
+      }
+    }
+    if (percentComplete < 100) {
+      throw new IllegalStateException("Download did not complete.");
+    }
 
     bitcoinNetworkService.stopAndWait();
   }

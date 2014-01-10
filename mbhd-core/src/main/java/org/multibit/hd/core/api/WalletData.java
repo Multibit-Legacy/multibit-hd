@@ -33,4 +33,12 @@ public class WalletData {
     this.walletId = walletId;
     this.wallet = wallet;
   }
+
+  @Override
+  public String toString() {
+    return "WalletData{" +
+            "walletId=" + walletId +
+            ", wallet=" + wallet +
+            '}';
+  }
 }

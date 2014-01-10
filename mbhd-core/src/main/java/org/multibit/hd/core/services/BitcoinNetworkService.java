@@ -159,7 +159,7 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
   public void send(String destinationAddress, BigInteger amount, String changeAddress, BigInteger feePerKB, CharSequence password) {
     // Ping the peers to check the bitcoin network connection
     if (!pingPeers()) {
-     // Declare the send a failure
+      // Declare the send a failure
       CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress, false, "TODO", new String[]{""}));
       return;
     }
@@ -175,22 +175,16 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
       sendRequest.feePerKb = feePerKB;
       sendRequest.changeAddress = new Address(MAINNET, changeAddress);
 
-      //sendRequest.tx.getConfidence().addEventListener(perWalletModelData.getWallet().getTxConfidenceListener());
-
-
-      // The transaction is already added to the wallet (in SendBitcoinConfirmAction) so here we just need
-      // to sign it, commit it and broadcast it.
+      // Complete it (works out fee and signs
       wallet.completeTx(sendRequest);
+
+      // Commit to the wallet
       wallet.commitTx(sendRequest.tx);
 
-      // The tx has been committed to the pending pool by this point (via sendCoinsOffline -> commitTx), so it has
-      // a txConfidenceListener registered. Once the tx is broadcast the peers will update the memory pool with the
-      // count of seen peers, the memory pool will update the transaction confidence object, that will invoke the
-      // txConfidenceListener which will in turn invoke the wallets event listener onTransactionConfidenceChanged
-      // method.
+      // Broadcast
       peerGroup.broadcastTransaction(sendRequest.tx);
 
-      log.debug("Sending transaction '" + Utils.bytesToHexString(sendRequest.tx.bitcoinSerialize()) + "'");
+      log.debug("Just broadcast transaction '" + Utils.bytesToHexString(sendRequest.tx.bitcoinSerialize()) + "'");
 
       // Declare the send a success
       CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress, true, "", new String[]{""}));
@@ -199,41 +193,39 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
 
       // Declare the send a failure
       CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress, false, "TODO", new String[]{""}));
-     }
+    }
 
-    log.debug("Sent coins has completed");
+    log.debug("Send coins has completed");
   }
 
   /**
    * <p>Download the block chain</p>
    */
   public void downloadBlockChain() {
-    //   getExecutorService().submit(new Runnable() {
-    //     @Override
-    //     public void run() {
+    getExecutorService().submit(new Runnable() {
+      @Override
+      public void run() {
+        Preconditions.checkNotNull(peerGroup, "'peerGroup' must be present");
+        log.debug("Downloading blockchain");
 
-    Preconditions.checkNotNull(peerGroup, "'peerGroup' must be present");
+        // Issue a "network change" event
+        CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadStarted());
 
-    log.debug("Downloading blockchain");
+        // Method will block until download completes
+        peerGroup.downloadBlockChain();
 
-    // Issue a "network change" event
-    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadStarted());
+        // Indicate 100% progress
+        CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(100));
 
-    // Method will block until download completes
-    peerGroup.downloadBlockChain();
+        // Issue a "network ready" event
+        CoreEvents.fireBitcoinNetworkChangedEvent(
+                BitcoinNetworkSummary.newNetworkReady(
+                        peerEventListener.getNumberOfConnectedPeers()
+                ));
 
-    // Indicate 100% progress
-    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(100));
-
-    // Issue a "network ready" event
-    CoreEvents.fireBitcoinNetworkChangedEvent(
-            BitcoinNetworkSummary.newNetworkReady(
-                    peerEventListener.getNumberOfConnectedPeers()
-            ));
-
+      }
+    });
   }
-//    });
-//  }
 
   /**
    * <p>Create a new peer group</p>
