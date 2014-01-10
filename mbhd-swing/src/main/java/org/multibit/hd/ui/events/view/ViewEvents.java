@@ -100,13 +100,13 @@ public class ViewEvents {
   }
 
   /**
-   * <p>Broadcast a new "wizard enable button" event</p>
+   * <p>Broadcast a new "wizard button enabled" event</p>
    *
    * @param panelName    The panel name to which this applies
    * @param wizardButton The wizard button to which this applies
    * @param enabled      True if the button should be enabled
    */
-  public static void fireWizardEnableButton(String panelName, WizardButton wizardButton, boolean enabled) {
+  public static void fireWizardButtonEnabledEvent(String panelName, WizardButton wizardButton, boolean enabled) {
     log.debug("Firing 'wizard enable button' event: {}", enabled);
     CoreServices.uiEventBus.post(new WizardButtonEnabledEvent(panelName, wizardButton, enabled));
 
@@ -123,6 +123,16 @@ public class ViewEvents {
   }
 
   /**
+   * <p>Broadcast a new "wizard model changed" event - normally consumed by "finishing" panels</p>
+   *
+   * @param panelName The panel name to restrict the update to a particular panel
+   */
+  public static void fireWizardModelChangedEvent(String panelName) {
+    log.debug("Firing 'wizard model changed' event");
+    CoreServices.uiEventBus.post(new WizardModelChangedEvent(panelName));
+  }
+
+  /**
    * <p>Broadcast a new "verification status changed" event</p>
    *
    * @param panelName The panel name to which this applies
@@ -131,6 +141,5 @@ public class ViewEvents {
   public static void fireVerificationStatusChangedEvent(String panelName, boolean status) {
     log.debug("Firing 'verification status changed' event: {}", status);
     CoreServices.uiEventBus.post(new VerificationStatusChangedEvent(panelName, status));
-
   }
 }

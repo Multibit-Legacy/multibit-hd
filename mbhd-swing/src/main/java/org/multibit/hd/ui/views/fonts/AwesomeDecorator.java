@@ -85,7 +85,7 @@ public class AwesomeDecorator {
   }
 
   /**
-   * <p>Apply an icon to a label. Both icon states (enabled/disabled) will be added.</p>
+   * <p>Bind an icon to a label. Both icon states (enabled/disabled) will be added.</p>
    * <p>The icon will use the font and color from the label and will reflect any subsequent updates.</p>
    *
    * @param icon    The icon reference

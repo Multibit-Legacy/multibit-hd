@@ -42,7 +42,7 @@ public class PanelDecorator {
 
     // Standard wizard layout
     MigLayout layout = new MigLayout(
-      "debug,fillx,insets 5", // Layout constrains
+      "fillx,insets 5", // Layout constrains
       "[][][][]", // Column constraints
       "[shrink]10[grow]10[]" // Row constraints
     );
@@ -76,6 +76,55 @@ public class PanelDecorator {
 
     addExit(view, wizard, wizardPanel);
     addCancel(view, wizard, wizardPanel);
+
+  }
+
+  /**
+   * <p>Add a finish only button</p>
+   *
+   * @param view   The view containing the panel to decorate
+   * @param wizard The wizard providing the actions
+   * @param <M>    The wizard model type
+   * @param <P>    The wizard panel model type
+   */
+  public static <M extends WizardModel, P> void addFinish(AbstractWizardView<M, P> view, AbstractWizard<M> wizard) {
+
+    Preconditions.checkNotNull(view, "'view' must be present");
+    Preconditions.checkNotNull(view, "'wizard' must be present");
+
+    // Use the wizard panel
+    JPanel wizardPanel = view.getWizardPanel();
+
+    // Add an invisible button to push the finish
+    JButton empty = Buttons.newExitButton(null);
+    empty.setVisible(false);
+
+    wizardPanel.add(empty,"cell 0 2,push");
+
+    addFinish(view, wizard, wizardPanel);
+
+  }
+
+  /**
+   * <p>Add an exit/cancel, previous, finish combination</p>
+   *
+   * @param view   The view containing the panel to decorate
+   * @param wizard The wizard providing the actions
+   * @param <M>    The wizard model type
+   * @param <P>    The wizard panel model type
+   */
+  public static <M extends WizardModel, P> void addExitCancelPreviousFinish(AbstractWizardView<M, P> view, AbstractWizard<M> wizard) {
+
+    Preconditions.checkNotNull(view, "'view' must be present");
+    Preconditions.checkNotNull(view, "'wizard' must be present");
+    Preconditions.checkNotNull(view.getWizardPanel(), "'wizardPanel' must be present");
+
+    // Use the wizard panel
+    JPanel wizardPanel = view.getWizardPanel();
+
+    addExitCancel(view, wizard, wizardPanel);
+    addPrevious(view, wizard, wizardPanel);
+    addFinish(view, wizard, wizardPanel);
 
   }
 
@@ -171,31 +220,6 @@ public class PanelDecorator {
     addPrevious(view, wizard, wizardPanel);
     addNext(view, wizard, wizardPanel);
 
-  }
-
-  /**
-   * <p>Add a finish button with no cancel or previous/next options</p>
-   *
-   * @param view   The view containing the panel to decorate
-   * @param wizard The wizard providing the actions
-   * @param <M>    The wizard model type
-   * @param <P>    The wizard panel model type
-   */
-  public static <M extends WizardModel, P> void addFinish(AbstractWizardView<M, P> view, AbstractWizard<M> wizard) {
-
-    Preconditions.checkNotNull(view, "'view' must be present");
-    Preconditions.checkNotNull(view, "'wizard' must be present");
-    Preconditions.checkNotNull(view.getWizardPanel(), "'wizardPanel' must be present");
-
-    // Use the wizard panel
-    JPanel wizardPanel = view.getWizardPanel();
-
-    JButton empty = Buttons.newExitButton(null);
-    empty.setVisible(false);
-    wizardPanel.add(empty, "cell 0 2,push");
-
-    view.setFinishButton(Buttons.newFinishButton(wizard.getFinishAction(view)));
-    wizardPanel.add(view.getFinishButton(), "cell 3 2");
   }
 
   /**
@@ -403,4 +427,22 @@ public class PanelDecorator {
 
   }
 
+  /**
+   * <p>Add a "finish" button into an appropriate cell</p>
+   *
+   * @param view        The view containing the panel to decorate
+   * @param wizard      The wizard providing the actions
+   * @param wizardPanel The wizard panel providing the layout
+   * @param <M>         The wizard model type
+   * @param <P>         The wizard panel model type
+   */
+  private static <M extends WizardModel, P> void addFinish(AbstractWizardView<M, P> view, AbstractWizard<M> wizard, JPanel wizardPanel) {
+
+    Preconditions.checkNotNull(view, "'view' must be present");
+    Preconditions.checkNotNull(view, "'wizard' must be present");
+    Preconditions.checkNotNull(view.getWizardPanel(), "'wizardPanel' must be present");
+
+    view.setFinishButton(Buttons.newFinishButton(wizard.getFinishAction(view)));
+    wizardPanel.add(view.getFinishButton(), "cell 3 2");
+  }
 }

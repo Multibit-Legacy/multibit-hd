@@ -113,9 +113,9 @@ public class Labels {
     JLabel label = Labels.newLabel(key, values);
 
     if (status) {
-      AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+      AwesomeDecorator.bindIcon(AwesomeIcon.CHECK, label, true, AwesomeDecorator.NORMAL_ICON_SIZE);
     } else {
-      AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, label, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+      AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, label, true, AwesomeDecorator.NORMAL_ICON_SIZE);
     }
 
     return label;

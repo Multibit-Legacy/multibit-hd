@@ -26,7 +26,7 @@ import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.SELECT
  * @since 0.0.1
  *  
  */
-public class SelectBackupLocationView extends AbstractWizardView<WelcomeWizardModel, String> {
+public class SelectBackupLocationView extends AbstractWizardView<WelcomeWizardModel, SelectFileModel> {
 
   private ModelAndView<SelectFileModel, SelectFileView> selectFileMaV;
 
@@ -45,7 +45,7 @@ public class SelectBackupLocationView extends AbstractWizardView<WelcomeWizardMo
   public JPanel newDataPanel() {
 
     selectFileMaV = Components.newSelectFileMaV(WelcomeWizardState.SELECT_BACKUP_LOCATION.name());
-    setPanelModel(selectFileMaV.getModel().getValue());
+    setPanelModel(selectFileMaV.getModel());
 
     JPanel panel = Panels.newPanel(new MigLayout(
       "fill,insets 0", // Layout constrains
@@ -61,7 +61,7 @@ public class SelectBackupLocationView extends AbstractWizardView<WelcomeWizardMo
 
   @Override
   public void fireViewEvents() {
-    ViewEvents.fireWizardEnableButton(SELECT_BACKUP_LOCATION.name(), WizardButton.NEXT, false);
+    ViewEvents.fireWizardButtonEnabledEvent(SELECT_BACKUP_LOCATION.name(), WizardButton.NEXT, false);
   }
 
   @Override

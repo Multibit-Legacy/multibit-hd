@@ -62,7 +62,7 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
       ViewEvents.fireWizardPanelModelChangedEvent(Optional.of(seedPhrase));
     } else {
       // Ensure the "next" button is kept disabled
-      ViewEvents.fireWizardEnableButton(panelName, WizardButton.NEXT, false);
+      ViewEvents.fireWizardButtonEnabledEvent(panelName, WizardButton.NEXT, false);
       ViewEvents.fireVerificationStatusChangedEvent(panelName, false);
     }
   }

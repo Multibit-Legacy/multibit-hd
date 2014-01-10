@@ -1,15 +1,23 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
+import com.google.common.base.Preconditions;
+import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
+import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.events.view.WizardModelChangedEvent;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
+import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
+import java.io.File;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -25,6 +33,11 @@ public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardMode
   // Model
   private String model;
 
+  // View
+  private JLabel seedPhraseCreatedStatus;
+  private JLabel walletPasswordCreatedStatus;
+  private JLabel backupLocationStatus;
+
   /**
    * @param wizard The wizard managing the states
    */
@@ -32,7 +45,7 @@ public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardMode
 
     super(wizard.getWizardModel(), MessageKey.CREATE_WALLET_REPORT_TITLE);
 
-    PanelDecorator.addFinish(this, wizard);
+    PanelDecorator.addExitCancelPreviousFinish(this, wizard);
 
   }
 
@@ -51,16 +64,21 @@ public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardMode
     // Apply the theme
     panel.setBackground(Themes.currentTheme.detailPanelBackground());
 
-    panel.add(Labels.newSeedPhraseCreatedStatus(true), "wrap");
-    panel.add(Labels.newWalletPasswordCreatedStatus(true), "wrap");
-    panel.add(Labels.newBackupLocationStatus(true), "wrap");
+    // Initialise to failure
+    seedPhraseCreatedStatus = Labels.newSeedPhraseCreatedStatus(false);
+    walletPasswordCreatedStatus = Labels.newWalletPasswordCreatedStatus(false);
+    backupLocationStatus = Labels.newBackupLocationStatus(false);
+
+    panel.add(seedPhraseCreatedStatus, "wrap");
+    panel.add(walletPasswordCreatedStatus, "wrap");
+    panel.add(backupLocationStatus, "wrap");
 
     return panel;
   }
 
   @Override
   public void fireViewEvents() {
-    // Do nothing
+    ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, false);
   }
 
   @Override
@@ -68,5 +86,44 @@ public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardMode
     // Do nothing - panel model is updated via an action and wizard model is not applicable
     return true;
   }
+
+  /**
+   * @param event The "wizard model changed" event
+   */
+  @Subscribe
+  public void onWizardModelChangedEvent(WizardModelChangedEvent event) {
+
+    // Check if this event applies to this panel
+    if (!event.getPanelName().equals(getPanelName())) {
+      return;
+    }
+
+    WelcomeWizardModel model = getWizardModel();
+
+    String backupLocation = model.getBackupLocation();
+
+    Preconditions.checkNotNull(backupLocation, "'backupLocation' must be present");
+
+    File backupLocationFile = new File(backupLocation);
+
+    // Determine if the backup location is valid
+    boolean result = backupLocationFile.exists()
+      && backupLocationFile.isDirectory()
+      && backupLocationFile.canRead()
+      && backupLocationFile.canWrite();
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, seedPhraseCreatedStatus, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, walletPasswordCreatedStatus, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+
+    if (result) {
+      AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, backupLocationStatus, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    } else {
+      AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, backupLocationStatus, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    }
+
+    ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, result);
+
+  }
+
 
 }

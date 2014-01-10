@@ -37,7 +37,7 @@ public class SelectFileModel implements Model<String> {
     this.selectedFile = value;
 
     // Ensure the "next" button is kept disabled
-    ViewEvents.fireWizardEnableButton(panelName, WizardButton.NEXT, !Strings.isNullOrEmpty(selectedFile));
+    ViewEvents.fireWizardButtonEnabledEvent(panelName, WizardButton.NEXT, !Strings.isNullOrEmpty(selectedFile));
 
   }
 }

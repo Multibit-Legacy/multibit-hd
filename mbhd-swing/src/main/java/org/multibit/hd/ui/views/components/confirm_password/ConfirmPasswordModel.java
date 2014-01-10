@@ -54,7 +54,7 @@ public class ConfirmPasswordModel implements Model<String> {
 
     // Fire the UI events for "verification status" message and "next" button
     ViewEvents.fireVerificationStatusChangedEvent(panelName, passwordsEqual);
-    ViewEvents.fireWizardEnableButton(panelName, WizardButton.NEXT, passwordsEqual);
+    ViewEvents.fireWizardButtonEnabledEvent(panelName, WizardButton.NEXT, passwordsEqual);
   }
 
   /**

@@ -10,6 +10,7 @@ import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
+import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.slf4j.Logger;
@@ -106,7 +107,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
       {
         boolean result = userSeedPhrase.equals(actualSeedPhrase);
         // Fire the decision events (requires knowledge of the previous panel data)
-        ViewEvents.fireWizardEnableButton(CONFIRM_WALLET_SEED_PHRASE.name(), WizardButton.NEXT, result);
+        ViewEvents.fireWizardButtonEnabledEvent(CONFIRM_WALLET_SEED_PHRASE.name(), WizardButton.NEXT, result);
         ViewEvents.fireVerificationStatusChangedEvent(CONFIRM_WALLET_SEED_PHRASE.name(), userSeedPhrase.equals(actualSeedPhrase));
       }
       break;
@@ -114,8 +115,8 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
         userPassword = ((ConfirmPasswordModel) panelModel.get()).getValue();
         break;
       case SELECT_BACKUP_LOCATION:
-        backupLocation = (String) panelModel.get();
-        ViewEvents.fireWizardEnableButton(SELECT_BACKUP_LOCATION.name(), WizardButton.NEXT, !Strings.isNullOrEmpty(backupLocation));
+        backupLocation = ((SelectFileModel) panelModel.get()).getValue();
+        ViewEvents.fireWizardButtonEnabledEvent(SELECT_BACKUP_LOCATION.name(), WizardButton.NEXT, !Strings.isNullOrEmpty(backupLocation));
       break;
     }
 
@@ -150,6 +151,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
         break;
       case SELECT_BACKUP_LOCATION:
         state = CREATE_WALLET_REPORT;
+        ViewEvents.fireWizardModelChangedEvent(CREATE_WALLET_REPORT.name());
         break;
     }
 
@@ -168,6 +170,12 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
       case CREATE_WALLET_SEED_PHRASE:
         state = SELECT_WALLET;
         break;
+      case SELECT_BACKUP_LOCATION:
+        state = CREATE_WALLET_PASSWORD;
+        break;
+      case CREATE_WALLET_REPORT:
+        state = SELECT_BACKUP_LOCATION;
+        break;
       case RESTORE_WALLET:
         state = SELECT_WALLET;
         break;
@@ -185,7 +193,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   @Subscribe
   public void onPasswordStatusChangedEvent(VerificationStatusChangedEvent event) {
 
-    ViewEvents.fireWizardEnableButton(CONFIRM_WALLET_SEED_PHRASE.name(), WizardButton.NEXT, event.isOK());
+    ViewEvents.fireWizardButtonEnabledEvent(CONFIRM_WALLET_SEED_PHRASE.name(), WizardButton.NEXT, event.isOK());
 
   }
 
@@ -215,5 +223,19 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
    */
   public List<String> getUserSeedPhrase() {
     return userSeedPhrase;
+  }
+
+  /**
+   * @return The user entered password
+   */
+  public String getUserPassword() {
+    return userPassword;
+  }
+
+  /**
+   * @return The user entered backup location
+   */
+  public String getBackupLocation() {
+    return backupLocation;
   }
 }
