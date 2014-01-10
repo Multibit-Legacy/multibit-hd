@@ -3,12 +3,11 @@ package org.multibit.hd.core.services;
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.Wallet;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.core.api.WalletId;
+import org.multibit.hd.core.api.WalletData;
 import org.multibit.hd.core.api.WalletIdTest;
 import org.multibit.hd.core.api.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
@@ -102,38 +101,35 @@ public class BitcoinNetworkServiceFunctionalTest {
     // Create two wallets from the two seeds
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed1 = seedGenerator.convertToSeed(WalletIdTest.split(seedProperties.getProperty(WALLET_SEED_1)));
-    Wallet wallet1 = createWallet(temporaryDirectory, seed1, WALLET_PASSWORD);
-    WalletId walletId1 = new WalletId(seed1);
-    String walletRoot1 = walletManager.createWalletRoot(walletId1);
+    WalletData walletData1 = createWallet(temporaryDirectory, seed1);
+    String walletRoot1 = walletManager.createWalletRoot(walletData1.getWalletId());
 
 
     byte[] seed2 = seedGenerator.convertToSeed(WalletIdTest.split(seedProperties.getProperty(WALLET_SEED_2)));
-    Wallet wallet2 = createWallet(temporaryDirectory, seed2, WALLET_PASSWORD);
-    WalletId walletId2 = new WalletId(seed2);
-    String walletRoot2 = walletManager.createWalletRoot(walletId2);
+    WalletData walletData2 = createWallet(temporaryDirectory, seed2);
+    String walletRoot2 = walletManager.createWalletRoot(walletData2.getWalletId());
 
     // Remember the addresses in the wallets, which will be used for the send
-    ECKey key1 = wallet1.getKeys().get(0);
+    ECKey key1 = walletData1.getWallet().getKeys().get(0);
     Address address1 = key1.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
 
-    ECKey key2 = wallet2.getKeys().get(0);
+    ECKey key2 = walletData2.getWallet().getKeys().get(0);
     Address address2 = key2.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
 
     // Synchronize the current wallet, which will be wallet2 as that was created last
     synchronizeWallet();
 
-    BigInteger walletBalance2 = wallet2.getBalance();
+    BigInteger walletBalance2 = walletData2.getWallet().getBalance();
 
     // Set the current wallet to be wallet1 and synchronize that
     Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(walletRoot1);
-    walletManager.setCurrentWallet(wallet1);
-    walletManager.setCurrentWalletDirectory(WalletManager.getWalletDirectory(temporaryDirectory.getAbsolutePath(), walletRoot1));
+    walletManager.setCurrentWalletData(walletData1);
     synchronizeWallet();
 
-    BigInteger walletBalance1 = wallet1.getBalance();
+    BigInteger walletBalance1 = walletData1.getWallet().getBalance();
 
-    log.debug("Wallet 1 = \n" + wallet1.toString());
-    log.debug("Wallet 2 = \n" + wallet2.toString());
+    log.debug("Wallet data 1 = \n" + walletData1.toString());
+    log.debug("Wallet data 2 = \n" + walletData2.toString());
 
 
     // TODO Check any previous sends (probably sent by this test) have confirmed ok
@@ -141,27 +137,25 @@ public class BitcoinNetworkServiceFunctionalTest {
     // Create a send from the wallet with the larger balance to the one with the smaller balance
     boolean sendFromWallet1 = walletBalance1.compareTo(walletBalance2) > 0;
 
-    Wallet sourceWallet;
+    WalletData sourceWalletData;
     String walletRoot;
     Address sourceAddress;
     Address destinationAddress;
     if (sendFromWallet1) {
-      sourceWallet = wallet1;
+      sourceWalletData = walletData1;
       walletRoot = walletRoot1;
       sourceAddress = address1;
       destinationAddress = address2;
     } else {
-      sourceWallet = wallet2;
+      sourceWalletData = walletData2;
       walletRoot = walletRoot2;
       sourceAddress = address2;
       destinationAddress = address1;
     }
 
-    // Ensure MBHD has the correct current wallet (which will be used for the send
+    // Ensure MBHD has the correct current wallet (which will be used for the send)
     Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(walletRoot);
-    walletManager.setCurrentWallet(sourceWallet);
-    walletManager.setCurrentWalletDirectory(WalletManager.getWalletDirectory(temporaryDirectory.getAbsolutePath(), walletRoot));
-
+    walletManager.setCurrentWalletData(sourceWalletData);
 
     // Do the send
     bitcoinNetworkService = CoreServices.newBitcoinNetworkService();
@@ -194,14 +188,15 @@ public class BitcoinNetworkServiceFunctionalTest {
     this.bitcoinSentEvent = bitcoinSentEvent;
   }
 
-  private Wallet createWallet(File walletDirectory, byte[] seed, String password) throws IOException {
-    Wallet wallet = walletManager.createWallet(walletDirectory.getAbsolutePath(), seed, WALLET_PASSWORD);
-    assertThat(wallet).isNotNull();
+  private WalletData createWallet(File walletDirectory, byte[] seed) throws IOException {
+    WalletData walletData = walletManager.createWallet(walletDirectory.getAbsolutePath(), seed, WALLET_PASSWORD);
+    assertThat(walletData).isNotNull();
+    assertThat(walletData.getWallet()).isNotNull();
 
     // There should be a single key
-    assertThat(wallet.getKeychainSize() == 1).isTrue();
+    assertThat(walletData.getWallet().getKeychainSize() == 1).isTrue();
 
-    return wallet;
+    return walletData;
   }
 
   private void synchronizeWallet() {
@@ -235,5 +230,4 @@ public class BitcoinNetworkServiceFunctionalTest {
 
     return seedProperties;
   }
-
 }

@@ -79,8 +79,8 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
 
       log.debug("Creating blockchain ...");
       blockChain = new BlockChain(NETWORK_PARAMETERS, blockStore);
-      if (walletManager.getCurrentWallet().isPresent()) {
-        blockChain.addWallet(walletManager.getCurrentWallet().get());
+      if (walletManager.getCurrentWalletData().isPresent()) {
+        blockChain.addWallet(walletManager.getCurrentWalletData().get().getWallet());
       }
       log.debug("Created blockchain '{}' with height '{}'", blockChain, blockChain.getBestChainHeight());
 
@@ -112,8 +112,8 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
       log.debug("Stopping peerGroup service...");
       peerGroup.removeEventListener(peerEventListener);
 
-      if (walletManager.getCurrentWallet().isPresent()) {
-        peerGroup.removeWallet(walletManager.getCurrentWallet().get());
+      if (walletManager.getCurrentWalletData().isPresent()) {
+        peerGroup.removeWallet(walletManager.getCurrentWalletData().get().getWallet());
       }
 
       peerGroup.stopAndWait();
@@ -126,8 +126,8 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
     }
 
     // Remove the wallet from the blockChain
-    if (walletManager.getCurrentWallet().isPresent()) {
-      blockChain.removeWallet(walletManager.getCurrentWallet().get());
+    if (walletManager.getCurrentWalletData().isPresent()) {
+      blockChain.removeWallet(walletManager.getCurrentWalletData().get().getWallet());
     }
 
     // Close the blockstore
@@ -165,7 +165,7 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
     }
     log.debug("Just about to send coins");
     // TODO check a wallet is set
-    Wallet wallet = walletManager.getCurrentWallet().get();
+    Wallet wallet = walletManager.getCurrentWalletData().get().getWallet();
     KeyParameter aesKey = wallet.getKeyCrypter().deriveKey(password);
 
     try {
@@ -249,8 +249,8 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
     peerEventListener = new MultiBitPeerEventListener();
     peerGroup.addEventListener(peerEventListener);
 
-    if (walletManager.getCurrentWallet().isPresent()) {
-      peerGroup.addWallet(walletManager.getCurrentWallet().get());
+    if (walletManager.getCurrentWalletData().isPresent()) {
+      peerGroup.addWallet(walletManager.getCurrentWalletData().get().getWallet());
     }
   }
 

@@ -7,12 +7,15 @@ import com.google.common.base.Preconditions;
 import com.google.protobuf.ByteString;
 import org.bitcoinj.wallet.Protos;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.managers.WalletManager;
 import org.spongycastle.asn1.sec.SECNamedCurves;
 import org.spongycastle.asn1.x9.X9ECParameters;
 import org.spongycastle.crypto.params.KeyParameter;
 import org.spongycastle.math.ec.ECPoint;
 
+import java.io.File;
 import java.math.BigInteger;
+import java.util.Arrays;
 
 /**
  *  <p>Data object to provide the following to wallet seed related classes<br>
@@ -88,6 +91,32 @@ public class WalletId {
   }
 
   /**
+   * Create a WalletId from a wallet filename - the filename is parsed into a walletId byte array
+   * @return WalletId
+   */
+  public static WalletId parseWalletFilename(String walletFilename) {
+    File walletFile = new File(walletFilename);
+
+    // Get the parent directory, in which the wallet id is embedded
+    File walletRoot = walletFile.getParentFile();
+    String walletRootName = walletRoot.getName();
+
+    // Remove the prefix mbhd
+    String prefix = WalletManager.WALLET_DIRECTORY_PREFIX + WalletManager.SEPARATOR;
+    if (walletRootName.startsWith(prefix)) {
+      walletRootName = walletRootName.replace(prefix, "");
+
+      // remove any embedded hyphens
+      walletRootName = walletRootName.replaceAll("-","");
+
+      return new WalletId(Utils.parseAsHexOrBase58(walletRootName));
+
+    } else {
+      throw new IllegalStateException("Cannot parse '" + walletFilename + "' into a WalletId. Does not start with '" + prefix + "'");
+    }
+  }
+
+  /**
    * @return the raw wallet id as a byte[]
    */
   public byte[] getBytes() {
@@ -110,4 +139,23 @@ public class WalletId {
     }
     return buffer.toString();
   }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    WalletId walletId1 = (WalletId) o;
+
+    if (!Arrays.equals(walletId, walletId1.walletId)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return Arrays.hashCode(walletId);
+  }
+
 }

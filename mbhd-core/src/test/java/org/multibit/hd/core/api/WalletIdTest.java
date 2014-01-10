@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.multibit.hd.core.api.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -56,6 +57,9 @@ public class WalletIdTest {
     assertThat(walletId.getBytes()).isNotNull();
     assertThat(WALLET_ID_1.equals(Utils.bytesToHexString(walletId.getBytes()))).isTrue();
     assertThat(WALLET_ID_FORMATTED_1.equals(walletId.toFormattedString())).isTrue();
+
+    WalletId walletIdPhoenix = WalletId.parseWalletFilename(File.separator + "herp" + File.separator + "derp" + File.separator + walletId.toFormattedString());
+    assertThat(walletId.equals(walletIdPhoenix)).isTrue();
 
     // Generate the wallet Id again - it should get the same result.
     WalletId walletId2 = new WalletId(seed);

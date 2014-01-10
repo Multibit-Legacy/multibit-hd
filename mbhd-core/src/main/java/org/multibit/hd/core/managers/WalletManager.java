@@ -8,6 +8,7 @@ import com.google.bitcoin.store.WalletProtobufSerializer;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import org.multibit.hd.core.api.WalletData;
 import org.multibit.hd.core.api.WalletId;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.exceptions.WalletLoadException;
@@ -44,36 +45,11 @@ public enum WalletManager {
     // TODO was originally multibit protobuf serializer - ok ?
   }
 
-  /**
-   * Initialise enum, load up the available wallets and find the current wallet
-   *
-   * @param applicationDataDirectory The directory in which to store and read wallets.
-   */
-  public void initialise(File applicationDataDirectory) {
-    this.applicationDataDirectory = applicationDataDirectory;
-
-    // Work out the list of available wallets in the application data directory
-    walletDirectories = findWalletDirectories(applicationDataDirectory);
-
-    // TODO enable user to switch wallets - currently using the first
-
-    // If a wallet directory is present try to load it.
-    // TODO catch wallet load exceptions and report
-    if (!walletDirectories.isEmpty()) {
-      currentWalletDirectory = Optional.of(walletDirectories.get(0));
-      String walletFilename = walletDirectories.get(0) + File.separator + MBHD_WALLET_NAME;
-      currentWallet = Optional.of(loadFromFile(new File(walletFilename)));
-    } else {
-      currentWallet = Optional.absent();
-      currentWalletDirectory = Optional.absent();
-    }
-  }
-
   private static final Logger log = LoggerFactory.getLogger(WalletManager.class);
 
   public static final String WALLET_DIRECTORY_PREFIX = "mbhd";
 
-  private static final String SEPARATOR = "-";
+  public static final String SEPARATOR = "-";
 
   // The format of the wallet directories is WALLET_DIRECTORY_PREFIX + a wallet id.
   // A walletid is 5 groups of 4 bytes in lowercase hex, with a "-' separator e.g. mbhd-11111111-22222222-33333333-44444444-55555555
@@ -91,9 +67,31 @@ public enum WalletManager {
 
   private List<File> walletDirectories;
 
-  private Optional<Wallet> currentWallet;
+  private Optional<WalletData> currentWalletData;
 
-  private Optional<File> currentWalletDirectory;
+  /**
+   * Initialise enum, load up the available wallets and find the current wallet
+   *
+   * @param applicationDataDirectory The directory in which to store and read wallets.
+   */
+  public void initialise(File applicationDataDirectory) {
+    this.applicationDataDirectory = applicationDataDirectory;
+
+    // Work out the list of available wallets in the application data directory
+    walletDirectories = findWalletDirectories(applicationDataDirectory);
+
+    // TODO enable user to switch wallets - currently using the first
+
+    // If a wallet directory is present try to load it.
+    // TODO catch wallet load exceptions and report
+    if (!walletDirectories.isEmpty()) {
+      String walletFilename = walletDirectories.get(0) + File.separator + MBHD_WALLET_NAME;
+      WalletData walletData = loadFromFile(new File(walletFilename));
+      currentWalletData = Optional.of(walletData);
+    } else {
+      currentWalletData = Optional.absent();
+    }
+  }
 
   /**
    * Create a wallet that contains only a single, random private key.
@@ -103,12 +101,12 @@ public enum WalletManager {
    *
    * @param seed     the seed used to initialise the wallet
    * @param password to use to encrypt the wallet
-   * @return Wallet
+   * @return WalletData containing the wallet object and the walletId (used in storage etc)
    * @throws IllegalStateException  if applicationDataDirectory is incorrect
    * @throws WalletLoadException    if there is already a simple wallet created but it could not be loaded
    * @throws WalletVersionException if there is already a simple wallet but the wallet version cannot be understood
    */
-  public Wallet createWallet(byte[] seed, CharSequence password) throws WalletLoadException, WalletVersionException, IOException {
+  public WalletData createWallet(byte[] seed, CharSequence password) throws WalletLoadException, WalletVersionException, IOException {
     File applicationDataDirectory = InstallationManager.createApplicationDataDirectory();
     return createWallet(applicationDataDirectory.getAbsolutePath(), seed, password);
   }
@@ -124,13 +122,13 @@ public enum WalletManager {
    * @param parentDirectoryName the name of the directory in which the wallet directory will be created (normally the application data directory)
    * @param seed                the seed used to initialise the wallet
    * @param password            to use to encrypt the wallet
-   * @return Wallet
+   * @return WalletData containing the wallet object and the walletId (used in storage etc)
    * @throws IllegalStateException  if applicationDataDirectory is incorrect
    * @throws WalletLoadException    if there is already a simple wallet created but it could not be loaded
    * @throws WalletVersionException if there is already a simple wallet but the wallet version cannot be understood
    */
-  public Wallet createWallet(String parentDirectoryName, byte[] seed, CharSequence password) throws WalletLoadException, WalletVersionException, IOException {
-    Wallet walletToReturn;
+  public WalletData createWallet(String parentDirectoryName, byte[] seed, CharSequence password) throws WalletLoadException, WalletVersionException, IOException {
+    WalletData walletDataToReturn;
 
     // Create a wallet id from the seed to work out the wallet root directory
     WalletId walletId = new WalletId(seed);
@@ -140,10 +138,9 @@ public enum WalletManager {
     File walletFile = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME);
     if (walletFile.exists()) {
       // There is already a wallet created with this root - if so load it and return that
-      walletToReturn = loadFromFile(walletFile);
+      walletDataToReturn = loadFromFile(walletFile);
       Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(walletRoot);
-      setCurrentWallet(walletToReturn);
-      setCurrentWalletDirectory(walletDirectory);
+      setCurrentWalletData(walletDataToReturn);
     } else {
       // Create the containing directory if it does not exist
       if (!walletDirectory.exists()) {
@@ -154,7 +151,7 @@ public enum WalletManager {
       // Create a wallet with a single private key using the seed (modulo-ed), encrypted with the password
       KeyCrypter keyCrypter = new KeyCrypterScrypt();
 
-      walletToReturn = new Wallet(BitcoinNetworkService.NETWORK_PARAMETERS, keyCrypter);
+      Wallet walletToReturn = new Wallet(BitcoinNetworkService.NETWORK_PARAMETERS, keyCrypter);
       walletToReturn.setVersion(ENCRYPTED_WALLET_VERSION);
 
       // Ensure that the seed is within the Bitcoin EC group.
@@ -171,36 +168,38 @@ public enum WalletManager {
       // Save it
       saveWallet(walletToReturn, walletFile.getAbsolutePath());
       Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(walletRoot);
-      setCurrentWallet(walletToReturn);
-      setCurrentWalletDirectory(walletDirectory);
+      walletDataToReturn = new WalletData(walletId, walletToReturn);
+      setCurrentWalletData(walletDataToReturn);
     }
 
     // See if there is a checkpoints file - if not then get the InstallationManager to copy one in
     String checkpointsFilename = walletDirectory.getAbsolutePath() + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX;
     InstallationManager.copyCheckpointsTo(checkpointsFilename);
 
-    return walletToReturn;
+    return walletDataToReturn;
   }
 
   /**
    * Load up a Wallet from a specified wallet file.
    *
-   * @param walletFile The wallet to load
+   * @param walletFile The file containing the wallet to load
    * @return Wallet - the loaded wallet
    * @throws IllegalArgumentException if wallet file is null
    * @throws WalletLoadException
    * @throws WalletVersionException
    */
-  public Wallet loadFromFile(File walletFile) throws WalletLoadException, WalletVersionException {
+  public WalletData loadFromFile(File walletFile) throws WalletLoadException, WalletVersionException {
     Preconditions.checkNotNull(walletFile);
 
-    String walletFilenameToUseInModel = walletFile.getAbsolutePath();
+    String walletFilename = walletFile.getAbsolutePath();
+
+    WalletId walletId = WalletId.parseWalletFilename(walletFilename);
 
     try {
 
       if (isWalletSerialised(walletFile)) {
         // Serialised wallets are no longer supported.
-        throw new WalletLoadException("Could not load wallet '" + walletFilenameToUseInModel
+        throw new WalletLoadException("Could not load wallet '" + walletFilename
                 + "'. Serialized wallets are no longer supported.");
       }
 
@@ -229,9 +228,9 @@ public enum WalletManager {
         }
       }
 
-      setCurrentWallet(wallet);
-      setCurrentWalletDirectory(walletFile.getParentFile());
-      return wallet;
+      WalletData walletData = new WalletData(walletId, wallet);
+      setCurrentWalletData(walletData);
+      return walletData;
     } catch (WalletVersionException wve) {
       // We want this to propagate out.
       throw wve;
@@ -392,19 +391,20 @@ public enum WalletManager {
     return walletDirectories;
   }
 
-  public Optional<Wallet> getCurrentWallet() {
-    return currentWallet;
+  public Optional<WalletData> getCurrentWalletData() {
+    return currentWalletData;
   }
 
-  public void setCurrentWallet(Wallet currentWallet) {
-    this.currentWallet = Optional.of(currentWallet);
+  public void setCurrentWalletData(WalletData currentWalletData) {
+    this.currentWalletData = Optional.of(currentWalletData);
   }
 
   public Optional<File> getCurrentWalletDirectory() {
-    return currentWalletDirectory;
-  }
-
-  public void setCurrentWalletDirectory(File walletDirectory) {
-    currentWalletDirectory = Optional.of(walletDirectory);
+    if (applicationDataDirectory != null && currentWalletData.isPresent()) {
+      String walletFilename = applicationDataDirectory + File.separator + WALLET_DIRECTORY_PREFIX + SEPARATOR + currentWalletData.get().getWalletId().toFormattedString();
+      return Optional.of(new File(walletFilename));
+    } else {
+      return Optional.absent();
+    }
   }
 }
