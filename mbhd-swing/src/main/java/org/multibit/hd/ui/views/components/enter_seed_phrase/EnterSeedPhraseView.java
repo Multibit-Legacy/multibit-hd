@@ -65,7 +65,7 @@ public class EnterSeedPhraseView extends AbstractView<EnterSeedPhraseModel> {
     });
 
     // Create a new verification status panel
-    verificationStatusPanel = Panels.newVerificationStatusOK();
+    verificationStatusPanel = Panels.newVerificationStatus();
 
     // Configure the actions
     Action toggleDisplayAction = getToggleDisplayAction();

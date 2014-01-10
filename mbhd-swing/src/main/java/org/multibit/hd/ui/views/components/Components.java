@@ -156,11 +156,13 @@ public class Components {
   /**
    * <p>A "select file" model and view handles user data entry of a file or path</p>
    *
+   * @param panelName The panel name to identify "next" button
+   *
    * @return A new "select file" model and view
    */
-  public static ModelAndView<SelectFileModel, SelectFileView> newSelectFileMaV() {
+  public static ModelAndView<SelectFileModel, SelectFileView> newSelectFileMaV(String panelName) {
 
-    SelectFileModel model = new SelectFileModel();
+    SelectFileModel model = new SelectFileModel(panelName);
     SelectFileView view = new SelectFileView(model);
 
     return new ModelAndView<>(model, view);

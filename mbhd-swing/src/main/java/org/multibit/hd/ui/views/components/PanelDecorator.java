@@ -74,7 +74,8 @@ public class PanelDecorator {
     // Use the wizard panel
     JPanel wizardPanel = view.getWizardPanel();
 
-    addExitCancel(view, wizard, wizardPanel);
+    addExit(view, wizard, wizardPanel);
+    addCancel(view, wizard, wizardPanel);
 
   }
 
@@ -188,6 +189,10 @@ public class PanelDecorator {
 
     // Use the wizard panel
     JPanel wizardPanel = view.getWizardPanel();
+
+    JButton empty = Buttons.newExitButton(null);
+    empty.setVisible(false);
+    wizardPanel.add(empty, "cell 0 2,push");
 
     view.setFinishButton(Buttons.newFinishButton(wizard.getFinishAction(view)));
     wizardPanel.add(view.getFinishButton(), "cell 3 2");
@@ -354,6 +359,22 @@ public class PanelDecorator {
       wizardPanel.add(view.getCancelButton(), "cell 0 2,push");
 
     }
+
+  }
+
+  /**
+   * <p>Add "exit" button into the standard cell</p>
+   *
+   * @param view        The view containing the panel to decorate
+   * @param wizard      The wizard providing the actions
+   * @param wizardPanel The wizard panel providing the layout
+   * @param <M>         The wizard model type
+   * @param <P>         The wizard panel model type
+   */
+  private static <M extends WizardModel, P> void addExit(AbstractWizardView<M, P> view, AbstractWizard<M> wizard, JPanel wizardPanel) {
+
+      view.setExitButton(Buttons.newExitButton(wizard.getExitAction()));
+      wizardPanel.add(view.getExitButton(), "cell 0 2,push");
 
   }
 

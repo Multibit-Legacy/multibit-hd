@@ -100,6 +100,59 @@ public class Labels {
   }
 
   /**
+   * <p>A "status" label sets a label with a check or cross icon</p>
+   *
+   * @param key    The message key
+   * @param values The substitution values
+   * @param status True if a check icon is required, false for a cross
+   *
+   * @return A new label
+   */
+  public static JLabel newStatusLabel(MessageKey key, Object[] values, boolean status) {
+
+    JLabel label = Labels.newLabel(key, values);
+
+    if (status) {
+      AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    } else {
+      AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, label, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    }
+
+    return label;
+  }
+
+  /**
+   * @return A new "verification" status label
+   */
+  public static JLabel newVerificationStatus(boolean status) {
+
+    JLabel label = newStatusLabel(MessageKey.VERIFICATION_STATUS, null, status);
+
+    return label;
+  }
+
+  /**
+   * @return A new "seed phrase created" status label
+   */
+  public static JLabel newSeedPhraseCreatedStatus(boolean status) {
+    return newStatusLabel(MessageKey.SEED_PHRASE_CREATED_STATUS, null, status);
+  }
+
+  /**
+   * @return A new "wallet password created" status label
+   */
+  public static JLabel newWalletPasswordCreatedStatus(boolean status) {
+    return newStatusLabel(MessageKey.WALLET_PASSWORD_CREATED_STATUS, null, status);
+  }
+
+  /**
+   * @return A new "backup location" status label
+   */
+  public static JLabel newBackupLocationStatus(boolean status) {
+    return newStatusLabel(MessageKey.BACKUP_LOCATION_STATUS, null, status);
+  }
+
+  /**
    * @return A new "Select language" label
    */
   public static JLabel newSelectLanguageLabel() {
@@ -184,18 +237,6 @@ public class Labels {
   public static JLabel newConfirmPassword() {
 
     return newLabel(MessageKey.CONFIRM_PASSWORD);
-  }
-
-  /**
-   * @return A new "Verification OK" label
-   */
-  public static JLabel newVerificationStatusOK() {
-
-    JLabel label = newLabel(MessageKey.VERIFICATION_STATUS_OK);
-
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true, 16);
-
-    return label;
   }
 
   /**

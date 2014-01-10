@@ -78,7 +78,7 @@ public class ConfirmPasswordView extends AbstractView<ConfirmPasswordModel> {
     });
 
     // Create a new verification status panel
-    verificationStatusPanel = Panels.newVerificationStatusOK();
+    verificationStatusPanel = Panels.newVerificationStatus();
 
     // Add to the panel
     panel.add(Labels.newEnterPassword());

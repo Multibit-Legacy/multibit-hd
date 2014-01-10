@@ -44,7 +44,7 @@ public class SelectBackupLocationView extends AbstractWizardView<WelcomeWizardMo
   @Override
   public JPanel newDataPanel() {
 
-    selectFileMaV = Components.newSelectFileMaV();
+    selectFileMaV = Components.newSelectFileMaV(WelcomeWizardState.SELECT_BACKUP_LOCATION.name());
     setPanelModel(selectFileMaV.getModel().getValue());
 
     JPanel panel = Panels.newPanel(new MigLayout(

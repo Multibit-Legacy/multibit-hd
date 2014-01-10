@@ -34,6 +34,7 @@ public class WelcomeWizard extends AbstractWizard<WelcomeWizardModel> {
     wizardViewMap.put(RESTORE_WALLET.name(), new RestoreWalletChoicesView(this));
     wizardViewMap.put(CREATE_WALLET_PASSWORD.name(), new CreateWalletPasswordView(this));
     wizardViewMap.put(SELECT_BACKUP_LOCATION.name(), new SelectBackupLocationView(this));
+    wizardViewMap.put(CREATE_WALLET_REPORT.name(), new CreateWalletReportView(this));
 
   }
 

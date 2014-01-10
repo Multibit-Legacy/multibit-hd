@@ -20,7 +20,7 @@ public enum WelcomeWizardState {
   SELECT_WALLET,
   CREATE_WALLET_PASSWORD,
   SELECT_BACKUP_LOCATION,
-  FINISH,
+  CREATE_WALLET_REPORT,
 
   // End of enum
   ;

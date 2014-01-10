@@ -93,15 +93,14 @@ public class Panels {
 
   /**
    * <p>A "broadcast status" panel provides a means of observing broadcast activity</p>
-   *
+
    * @return A new wallet password panel
    */
   public static JPanel newBroadcastStatus() {
 
     JPanel panel = Panels.newPanel();
 
-    JLabel label = Labels.newLabel(MessageKey.BROADCAST_STATUS_OK);
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    JLabel label = Labels.newStatusLabel(MessageKey.BROADCAST_STATUS, null, true);
 
     panel.add(label);
 
@@ -117,8 +116,7 @@ public class Panels {
 
     JPanel panel = Panels.newPanel();
 
-    JLabel label = Labels.newLabel(MessageKey.RELAY_STATUS_OK);
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    JLabel label = Labels.newStatusLabel(MessageKey.RELAY_STATUS, null, true);
 
     panel.add(label);
 
@@ -130,17 +128,39 @@ public class Panels {
    *
    * @return A new wallet password panel
    */
-  public static JPanel newConfirmationCount() {
+  public static JPanel newConfirmationCountStatus(String count, boolean status) {
 
     JPanel panel = Panels.newPanel();
 
-    JLabel label = Labels.newLabel(MessageKey.CONFIRMATION_STATUS_OK);
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, label, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    JLabel label = Labels.newLabel(MessageKey.CONFIRMATION_STATUS, new Object[]{count}, status);
 
     panel.add(label);
 
     return panel;
   }
+
+  /**
+   * <p>A "verification status" panel shows the user that they have entered their data correctly</p>
+   *
+   * @return A new "verification status" panel (not visible by default)
+   */
+  public static JPanel newVerificationStatus() {
+
+    JPanel panel = Panels.newPanel(new MigLayout(
+      "fillx,insets 0", // Layout
+      "[grow]", // Columns
+      "[]" // Rows
+    ));
+
+    // Add to the panel
+    panel.add(Labels.newVerificationStatus(true), "align center");
+
+    // Typical use case requires this to be invisible
+    panel.setVisible(false);
+
+    return panel;
+  }
+
 
   /**
    * <p>A "language selector" panel provides a means of changing the display language</p>
@@ -215,7 +235,6 @@ public class Panels {
     return panel;
   }
 
-
   /**
    * <p>A "seed phrase warning" panel displays the instructions to write down the seed phrase on a piece of paper</p>
    *
@@ -271,28 +290,6 @@ public class Panels {
 
     // Add to the panel
     panel.add(Labels.newSelectBackupDirectoryNote(), "push");
-
-    return panel;
-  }
-
-  /**
-   * <p>A "verification status OK" panel shows the user that they have entered their data correctly</p>
-   *
-   * @return A new "verification status OK" panel (not visible by default)
-   */
-  public static JPanel newVerificationStatusOK() {
-
-    JPanel panel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0", // Layout
-      "[grow]", // Columns
-      "[]" // Rows
-    ));
-
-    // Add to the panel
-    panel.add(Labels.newVerificationStatusOK(), "align center");
-
-    // Typical use case requires this to be invisible
-    panel.setVisible(false);
 
     return panel;
   }

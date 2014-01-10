@@ -49,7 +49,6 @@ public enum MessageKey {
   APPLICATION_TITLE("MultiBit HD"),
   SEND_BITCOIN_TITLE("sendBitcoinAction.text"),
   CONFIRM_SEND_TITLE("sendBitcoinConfirmView.title"),
-  CONFIRM_SEND_MESSAGE("sendBitcoinConfirmView.message"),
   SEND_PROGRESS_TITLE("Send Progress"),
   EXIT_TITLE("Exit application ?"),
   WELCOME_TITLE("Welcome !"),
@@ -58,9 +57,11 @@ public enum MessageKey {
   CONFIRM_WALLET_SEED_PHRASE_TITLE("Confirm wallet"),
   CREATE_WALLET_PASSWORD_TITLE("Create wallet password"),
   SELECT_BACKUP_LOCATION_TITLE("Select backup location"),
+  CREATE_WALLET_REPORT_TITLE("Create Wallet Report"),
   RESTORE_WALLET_TITLE("Restore wallet"),
 
   // Labels
+  CONFIRM_SEND_MESSAGE("sendBitcoinConfirmView.message"),
   ENTER_PASSWORD("Enter password"),
   CONFIRM_PASSWORD("Confirm password"),
 
@@ -68,10 +69,15 @@ public enum MessageKey {
   SHOW_WELCOME_WIZARD("Welcome wizard"),
 
   // Statuses
-  BROADCAST_STATUS_OK("Broadcast OK"),
-  RELAY_STATUS_OK("Relayed OK"),
-  CONFIRMATION_STATUS_OK("Confirmations 6+"),
-  VERIFICATION_STATUS_OK("Verification OK"),
+  BROADCAST_STATUS("Broadcast"),
+  RELAY_STATUS("Relayed"),
+  CONFIRMATION_STATUS("Confirmation count {0}"),
+  VERIFICATION_STATUS("Verified"),
+
+  SEED_PHRASE_CREATED_STATUS("Seed phrase created"),
+  WALLET_PASSWORD_CREATED_STATUS("Wallet password created"),
+  BACKUP_LOCATION_STATUS("Backup location created"),
+
 
   ALERT_REMAINING("alert.remaining"),
   EXCHANGE_FIAT_RATE("exchange.fiat-rate"),

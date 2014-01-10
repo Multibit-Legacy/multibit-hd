@@ -8,6 +8,8 @@ import org.multibit.hd.ui.views.components.TextBoxes;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.File;
 
 /**
@@ -25,7 +27,6 @@ public class SelectFileView extends AbstractView<SelectFileModel> {
   // View components
   private JTextField selectedFileTextField;
   private JFileChooser fileChooser = new JFileChooser();
-
 
   /**
    * @param model The model backing this view
@@ -49,6 +50,16 @@ public class SelectFileView extends AbstractView<SelectFileModel> {
 
     // Fill the text area with appropriate content
     selectedFileTextField.setText(model.getValue());
+
+    // Bind a key listener to allow instant update of UI to entered data
+    selectedFileTextField.addKeyListener(new KeyAdapter() {
+
+      @Override
+      public void keyReleased(KeyEvent e) {
+        updateModel();
+      }
+
+    });
 
     // Configure the actions
     Action openSelectFileAction = getOpenSelectFileAction();

@@ -1,7 +1,8 @@
-package org.multibit.hd.ui.views.wizards.send_bitcoin;
+package org.multibit.hd.ui.views.wizards.welcome;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
+import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -13,13 +14,13 @@ import javax.swing.*;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Send bitcoin: Show send progress</li>
+ * <li>Show result of attempting to create a wallet</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class SendBitcoinProgressView extends AbstractWizardView<SendBitcoinWizardModel, String> {
+public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardModel, String> {
 
   // Model
   private String model;
@@ -27,9 +28,9 @@ public class SendBitcoinProgressView extends AbstractWizardView<SendBitcoinWizar
   /**
    * @param wizard The wizard managing the states
    */
-  public SendBitcoinProgressView(AbstractWizard<SendBitcoinWizardModel> wizard) {
+  public CreateWalletReportView(AbstractWizard<WelcomeWizardModel> wizard) {
 
-    super(wizard.getWizardModel(), MessageKey.SEND_PROGRESS_TITLE);
+    super(wizard.getWizardModel(), MessageKey.CREATE_WALLET_REPORT_TITLE);
 
     PanelDecorator.addFinish(this, wizard);
 
@@ -50,9 +51,9 @@ public class SendBitcoinProgressView extends AbstractWizardView<SendBitcoinWizar
     // Apply the theme
     panel.setBackground(Themes.currentTheme.detailPanelBackground());
 
-    panel.add(Panels.newBroadcastStatus(), "wrap");
-    panel.add(Panels.newRelayStatus(), "wrap");
-    panel.add(Panels.newConfirmationCountStatus("6+", true), "wrap");
+    panel.add(Labels.newSeedPhraseCreatedStatus(true), "wrap");
+    panel.add(Labels.newWalletPasswordCreatedStatus(true), "wrap");
+    panel.add(Labels.newBackupLocationStatus(true), "wrap");
 
     return panel;
   }

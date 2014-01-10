@@ -2,12 +2,14 @@ package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.slf4j.Logger;
@@ -62,7 +64,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   /**
    * The backup directory
    */
-  private String backupDirectory;
+  private String backupLocation;
 
   /**
    * @param state The state object
@@ -101,17 +103,20 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
       case CONFIRM_WALLET_SEED_PHRASE:
         // Get the user input
         userSeedPhrase = (List<String>) panelModel.get();
+      {
         boolean result = userSeedPhrase.equals(actualSeedPhrase);
         // Fire the decision events (requires knowledge of the previous panel data)
         ViewEvents.fireWizardEnableButton(CONFIRM_WALLET_SEED_PHRASE.name(), WizardButton.NEXT, result);
         ViewEvents.fireVerificationStatusChangedEvent(CONFIRM_WALLET_SEED_PHRASE.name(), userSeedPhrase.equals(actualSeedPhrase));
-        break;
+      }
+      break;
       case CREATE_WALLET_PASSWORD:
-        userPassword = (String) panelModel.get();
+        userPassword = ((ConfirmPasswordModel) panelModel.get()).getValue();
         break;
       case SELECT_BACKUP_LOCATION:
-        backupDirectory = (String) panelModel.get();
-        break;
+        backupLocation = (String) panelModel.get();
+        ViewEvents.fireWizardEnableButton(SELECT_BACKUP_LOCATION.name(), WizardButton.NEXT, !Strings.isNullOrEmpty(backupLocation));
+      break;
     }
 
   }
@@ -144,7 +149,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
         state = SELECT_BACKUP_LOCATION;
         break;
       case SELECT_BACKUP_LOCATION:
-        state = FINISH;
+        state = CREATE_WALLET_REPORT;
         break;
     }
 
