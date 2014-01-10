@@ -40,13 +40,27 @@ public class CoreEvents {
   }
 
   /**
+   * <p>Broadcast BitcoinSentEvent</p>
+   *
+   * @param bitcoinSentEvent containing send information
+   */
+  public static void fireBitcoinSentEvent(BitcoinSentEvent bitcoinSentEvent) {
+
+    log.debug("Firing 'bitcoin sent event' event");
+    CoreServices.uiEventBus.post(bitcoinSentEvent);
+
+  }
+  /**
    * <p>Broadcast a new "Bitcoin network changed" event</p>
    *
    * @param bitcoinNetworkSummary The Bitcoin network summary
    */
   public static void fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary bitcoinNetworkSummary) {
-
-    log.debug("Firing 'Bitcoin network changed' event : " + bitcoinNetworkSummary.getPercent() + "%.");
+    String message = "Firing 'Bitcoin network changed' event";
+    if (bitcoinNetworkSummary.getPercent() > 0) {
+      message = message + " : " + bitcoinNetworkSummary.getPercent() + "%.";
+    }
+    log.debug(message);
     CoreServices.uiEventBus.post(new BitcoinNetworkChangedEvent(bitcoinNetworkSummary));
 
   }
