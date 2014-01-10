@@ -63,6 +63,11 @@ public class SelectWalletView extends AbstractWizardView<WelcomeWizardModel, Wel
   }
 
   @Override
+  public void fireViewEvents() {
+    // Do nothing
+  }
+
+  @Override
   public boolean updatePanelModel() {
 
     setPanelModel(currentSelection);

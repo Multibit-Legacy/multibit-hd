@@ -2,13 +2,17 @@ package org.multibit.hd.ui.views.wizards.welcome;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
+
+import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.CREATE_WALLET_PASSWORD;
 
 /**
  * <p>Wizard to provide the following to UI:</p>
@@ -51,6 +55,11 @@ public class CreateWalletPasswordView extends AbstractWizardView<WelcomeWizardMo
     panel.add(confirmPasswordMaV.getView().newPanel(),"wrap");
 
     return panel;
+  }
+
+  @Override
+  public void fireViewEvents() {
+    ViewEvents.fireWizardEnableButton(CREATE_WALLET_PASSWORD.name(), WizardButton.NEXT, false);
   }
 
   @Override

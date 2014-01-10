@@ -31,7 +31,6 @@ public class RestoreWalletChoicesView extends AbstractWizardView<WelcomeWizardMo
     super(wizard.getWizardModel(), MessageKey.RESTORE_WALLET_TITLE);
 
     PanelDecorator.addExitCancelPreviousNext(this, wizard);
-
   }
 
   @Override
@@ -46,6 +45,11 @@ public class RestoreWalletChoicesView extends AbstractWizardView<WelcomeWizardMo
     // TODO fill this in
 
     return panel;
+  }
+
+  @Override
+  public void fireViewEvents() {
+    // Do nothing
   }
 
   @Override

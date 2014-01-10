@@ -56,7 +56,7 @@ public abstract class AbstractWizard<M extends WizardModel> {
     cardLayout = new WizardCardLayout(0, 0);
     wizardPanel = Panels.newPanel(cardLayout);
 
-    // Use current local for initial creation
+    // Use current locale for initial creation
     onLocaleChangedEvent(new LocaleChangedEvent());
 
     wizardPanel.setMinimumSize(new Dimension(WIZARD_MIN_WIDTH, WIZARD_MIN_HEIGHT));
@@ -88,6 +88,14 @@ public abstract class AbstractWizard<M extends WizardModel> {
 
       // Share the panel name
       entry.getValue().setPanelName(entry.getKey());
+
+    }
+
+    // Once all the views are initialised allow events to occur
+    for (Map.Entry<String, AbstractWizardView> entry : wizardViewMap.entrySet()) {
+
+      // Ensure the panel is in the correct starting state
+      entry.getValue().fireViewEvents();
 
     }
 

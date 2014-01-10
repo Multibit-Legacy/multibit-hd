@@ -41,17 +41,17 @@ public class Wizards {
   /**
    * @return A new "welcome" wizard for the initial set up
    */
-  public static WelcomeWizard newExitingWelcomeWizard() {
+  public static WelcomeWizard newExitingWelcomeWizard(WelcomeWizardState initialState) {
 
-    return new WelcomeWizard(new WelcomeWizardModel(WelcomeWizardState.WELCOME), true);
+    return new WelcomeWizard(new WelcomeWizardModel(initialState), true);
   }
 
   /**
    * @return A new "welcome" wizard for recovery set up
    */
-  public static WelcomeWizard newClosingWelcomeWizard() {
+  public static WelcomeWizard newClosingWelcomeWizard(WelcomeWizardState initialState) {
 
-    return new WelcomeWizard(new WelcomeWizardModel(WelcomeWizardState.WELCOME), false);
+    return new WelcomeWizard(new WelcomeWizardModel(initialState), false);
   }
 
 }

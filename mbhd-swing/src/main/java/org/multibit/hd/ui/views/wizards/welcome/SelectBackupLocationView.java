@@ -7,37 +7,35 @@ import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
-import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseView;
+import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
+import org.multibit.hd.ui.views.components.select_file.SelectFileView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
-import java.util.List;
 
-import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.CONFIRM_WALLET_SEED_PHRASE;
+import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.SELECT_BACKUP_LOCATION;
 
 /**
  * <p>Wizard to provide the following to UI:</p>
  * <ul>
- * <li>Confirm wallet seed phrase display</li>
+ * <li>Select the backup location</li>
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
+public class SelectBackupLocationView extends AbstractWizardView<WelcomeWizardModel, String> {
 
-public class ConfirmWalletSeedPhraseView extends AbstractWizardView<WelcomeWizardModel, List<String>> {
-
-  private ModelAndView<EnterSeedPhraseModel, EnterSeedPhraseView> enterSeedPhraseMaV;
+  private ModelAndView<SelectFileModel, SelectFileView> selectFileMaV;
 
   /**
    * @param wizard The wizard managing the states
    */
-  public ConfirmWalletSeedPhraseView(AbstractWizard<WelcomeWizardModel> wizard) {
+  public SelectBackupLocationView(AbstractWizard<WelcomeWizardModel> wizard) {
 
-    super(wizard.getWizardModel(), MessageKey.CONFIRM_WALLET_SEED_PHRASE_TITLE);
+    super(wizard.getWizardModel(), MessageKey.SELECT_BACKUP_LOCATION_TITLE);
 
     PanelDecorator.addExitCancelNext(this, wizard);
 
@@ -46,8 +44,8 @@ public class ConfirmWalletSeedPhraseView extends AbstractWizardView<WelcomeWizar
   @Override
   public JPanel newDataPanel() {
 
-    enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV(WelcomeWizardState.CONFIRM_WALLET_SEED_PHRASE.name());
-    setPanelModel(enterSeedPhraseMaV.getModel().getValue());
+    selectFileMaV = Components.newSelectFileMaV();
+    setPanelModel(selectFileMaV.getModel().getValue());
 
     JPanel panel = Panels.newPanel(new MigLayout(
       "fill,insets 0", // Layout constrains
@@ -55,21 +53,21 @@ public class ConfirmWalletSeedPhraseView extends AbstractWizardView<WelcomeWizar
       "[]10[]" // Row constraints
     ));
 
-    panel.add(Panels.newConfirmSeedPhrase(), "wrap");
-    panel.add(enterSeedPhraseMaV.getView().newPanel(), "wrap");
+    panel.add(Panels.newSelectBackupDirectory(), "wrap");
+    panel.add(selectFileMaV.getView().newPanel(), "wrap");
 
     return panel;
   }
 
   @Override
   public void fireViewEvents() {
-    ViewEvents.fireWizardEnableButton(CONFIRM_WALLET_SEED_PHRASE.name(), WizardButton.NEXT, false);
+    ViewEvents.fireWizardEnableButton(SELECT_BACKUP_LOCATION.name(), WizardButton.NEXT, false);
   }
 
   @Override
   public boolean updatePanelModel() {
-    enterSeedPhraseMaV.getView().updateModel();
-    return true;
+    selectFileMaV.getView().updateModel();
+    return false;
   }
 
 }

@@ -5,6 +5,7 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -39,7 +40,8 @@ public class ToolsDetailView {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        Panels.showLightBox(Wizards.newClosingWelcomeWizard().getWizardPanel());
+        // TODO Consider most appropriate initial state
+        Panels.showLightBox(Wizards.newClosingWelcomeWizard(WelcomeWizardState.WELCOME).getWizardPanel());
       }
     };
 

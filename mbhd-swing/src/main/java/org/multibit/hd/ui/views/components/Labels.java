@@ -260,4 +260,18 @@ public class Labels {
       MessageKey.CONFIRM_SEED_PHRASE_NOTE_4
     }, new Object[][]{});
   }
+
+  /**
+   * @return A new "select backup directory" note
+   */
+  public static JLabel newSelectBackupDirectoryNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.SELECT_BACKUP_LOCATION_NOTE_1,
+      MessageKey.SELECT_BACKUP_LOCATION_NOTE_2,
+      MessageKey.SELECT_BACKUP_LOCATION_NOTE_3,
+      MessageKey.SELECT_BACKUP_LOCATION_NOTE_4
+    }, new Object[][]{});
+
+  }
 }

@@ -57,6 +57,7 @@ public enum MessageKey {
   CREATE_WALLET_SEED_PHRASE_TITLE("Create wallet"),
   CONFIRM_WALLET_SEED_PHRASE_TITLE("Confirm wallet"),
   CREATE_WALLET_PASSWORD_TITLE("Create wallet password"),
+  SELECT_BACKUP_LOCATION_TITLE("Select backup location"),
   RESTORE_WALLET_TITLE("Restore wallet"),
 
   // Labels
@@ -81,17 +82,25 @@ public enum MessageKey {
   WELCOME_NOTE_1("MultiBit HD provides secure access to the Bitcoin network."),
   WELCOME_NOTE_2("This setup process has the minimum steps required to secure your bitcoins."),
   WELCOME_NOTE_3("If this is your first time using MultiBit HD you should choose \"Create new wallet\" on the next page."),
+
   SEED_WARNING_NOTE_1("Write down the words below exactly as shown on a <strong>piece of paper</strong> and <strong>keep it safe</strong>."),
-  SEED_WARNING_NOTE_2("These words protect all your bitcoins. You will never see them again."),
+  SEED_WARNING_NOTE_2("These words <strong>protect all your bitcoins</strong>. You will never see them again."),
   SEED_WARNING_NOTE_3("Do not copy/paste."),
   SEED_WARNING_NOTE_4("Do not take a screen shot."),
+
   CONFIRM_SEED_PHRASE_NOTE_1("Enter your seed phrase words below <strong>exactly as they were given</strong>."),
   CONFIRM_SEED_PHRASE_NOTE_2("Include the spaces between words."),
   CONFIRM_SEED_PHRASE_NOTE_3("If you do not have the seed phrase words you must exit and start again."),
   CONFIRM_SEED_PHRASE_NOTE_4("A message will appear when you have confirmed the seed phrase."),
+
   WALLET_PASSWORD_NOTE_1("This password will be needed whenever you send bitcoins."),
   WALLET_PASSWORD_NOTE_2("You can change it whenever you like from the Tools screen."),
   WALLET_PASSWORD_NOTE_3("You can always recover it using your seed phrase."),
+
+  SELECT_BACKUP_LOCATION_NOTE_1("Wallet backups <strong>protect your transactions and contacts</strong> if your computer is damaged or stolen."),
+  SELECT_BACKUP_LOCATION_NOTE_2("Use the folder button to choose a safe location for your automatic encrypted wallet backups."),
+  SELECT_BACKUP_LOCATION_NOTE_3("Good choices for backup locations include cloud backup services and secured network drives."),
+  SELECT_BACKUP_LOCATION_NOTE_4("Cloud backup services include Spider Oak, Dropbox, Carbonite and many others."),
 
   // End of enum
   CONTACTS("Contacts"), TRANSACTIONS("Transactions"), HISTORY("History"), PREFERENCES("Preferences"), TOOLS("Tools");

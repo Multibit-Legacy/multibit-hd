@@ -257,6 +257,25 @@ public class Panels {
   }
 
   /**
+   * <p>A "select backup directory" panel displays the instructions to choose an appropriate backup directory</p>
+   *
+   * @return A new "select backup directory" panel
+   */
+  public static JPanel newSelectBackupDirectory() {
+
+    JPanel panel = Panels.newPanel(new MigLayout(
+      "fillx,insets 0", // Layout
+      "[grow]", // Columns
+      "[]" // Rows
+    ));
+
+    // Add to the panel
+    panel.add(Labels.newSelectBackupDirectoryNote(), "push");
+
+    return panel;
+  }
+
+  /**
    * <p>A "verification status OK" panel shows the user that they have entered their data correctly</p>
    *
    * @return A new "verification status OK" panel (not visible by default)

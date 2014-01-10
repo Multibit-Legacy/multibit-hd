@@ -17,7 +17,7 @@ import java.awt.*;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class Buttons {
 
@@ -34,9 +34,6 @@ public class Buttons {
 
     // The action resets all text
     JButton button = new JButton(action);
-
-    // Apply the current theme
-    button.setForeground(Themes.currentTheme.text());
 
     // Ensure borders render smoothly
     button.setOpaque(false);
@@ -198,6 +195,7 @@ public class Buttons {
 
     AwesomeDecorator.applyIcon(icon, button, false, AwesomeDecorator.NORMAL_ICON_SIZE);
 
+
     return button;
 
   }
@@ -319,6 +317,20 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "Welcome" wizard button with icon
+   */
+  public static JButton newSelectFileButton(Action action) {
+
+    JButton button = newButton(action);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.FOLDER_OPEN, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "Send Bitcoin" wizard button with icon
    */
   public static JButton newSendBitcoinWizardButton(Action action) {
@@ -345,6 +357,11 @@ public class Buttons {
 
   }
 
+  /**
+   * @param action The click action
+   *
+   * @return A new "Welcome" wizard button with icon
+   */
   public static JButton newShowWelcomeWizardButton(Action action) {
 
     JButton button = newLargeButton(action, MessageKey.SHOW_WELCOME_WIZARD);

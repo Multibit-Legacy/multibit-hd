@@ -8,6 +8,8 @@ import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhrase
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseView;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseView;
+import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
+import org.multibit.hd.ui.views.components.select_file.SelectFileView;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
@@ -146,6 +148,20 @@ public class Components {
 
     EnterSeedPhraseModel model = new EnterSeedPhraseModel(panelName);
     EnterSeedPhraseView view = new EnterSeedPhraseView(model);
+
+    return new ModelAndView<>(model, view);
+
+  }
+
+  /**
+   * <p>A "select file" model and view handles user data entry of a file or path</p>
+   *
+   * @return A new "select file" model and view
+   */
+  public static ModelAndView<SelectFileModel, SelectFileView> newSelectFileMaV() {
+
+    SelectFileModel model = new SelectFileModel();
+    SelectFileView view = new SelectFileView(model);
 
     return new ModelAndView<>(model, view);
 

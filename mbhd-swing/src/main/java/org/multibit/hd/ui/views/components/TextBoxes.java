@@ -35,11 +35,23 @@ public class TextBoxes {
   }
 
   /**
+   * TODO Convert this to a MaV
    * @return A new "Recipient" auto-completer
    */
   public static JTextField newRecipient() {
 
     JTextField textField = new JTextField(40);
+    textField.setBackground(Themes.currentTheme.dataEntryBackground());
+
+    return textField;
+  }
+
+  /**
+   * @return A new "Select file" text field
+   */
+  public static JTextField newSelectFile() {
+
+    JTextField textField = new JTextField(60);
     textField.setBackground(Themes.currentTheme.dataEntryBackground());
 
     return textField;

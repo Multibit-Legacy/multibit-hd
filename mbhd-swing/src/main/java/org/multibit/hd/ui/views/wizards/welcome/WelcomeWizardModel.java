@@ -60,6 +60,11 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   private String userPassword;
 
   /**
+   * The backup directory
+   */
+  private String backupDirectory;
+
+  /**
    * @param state The state object
    */
   public WelcomeWizardModel(WelcomeWizardState state) {
@@ -102,8 +107,10 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
         ViewEvents.fireVerificationStatusChangedEvent(CONFIRM_WALLET_SEED_PHRASE.name(), userSeedPhrase.equals(actualSeedPhrase));
         break;
       case CREATE_WALLET_PASSWORD:
-        // Get the user input
         userPassword = (String) panelModel.get();
+        break;
+      case SELECT_BACKUP_LOCATION:
+        backupDirectory = (String) panelModel.get();
         break;
     }
 
@@ -122,12 +129,10 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
       case CREATE_WALLET_SEED_PHRASE:
         state = CONFIRM_WALLET_SEED_PHRASE;
         Preconditions.checkState(SeedPhraseSize.isValid(actualSeedPhrase.size()), "'actualSeedPhrase' is not a valid length");
-        ViewEvents.fireWizardEnableButton(CONFIRM_WALLET_SEED_PHRASE.name(), WizardButton.NEXT, false);
         break;
       case CONFIRM_WALLET_SEED_PHRASE:
         Preconditions.checkState(SeedPhraseSize.isValid(userSeedPhrase.size()), "'userSeedPhrase' is not a valid length");
         state = CREATE_WALLET_PASSWORD;
-        ViewEvents.fireWizardEnableButton(CREATE_WALLET_PASSWORD.name(), WizardButton.NEXT, false);
         break;
       case RESTORE_WALLET:
         state = CONFIRM_WALLET_SEED_PHRASE;
@@ -136,7 +141,10 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
         state = CONFIRM_WALLET_SEED_PHRASE;
         break;
       case CREATE_WALLET_PASSWORD:
-        state = SELECT_BACKUP_DIRECTORY;
+        state = SELECT_BACKUP_LOCATION;
+        break;
+      case SELECT_BACKUP_LOCATION:
+        state = FINISH;
         break;
     }
 

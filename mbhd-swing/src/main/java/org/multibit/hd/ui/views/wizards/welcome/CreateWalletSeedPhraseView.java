@@ -58,6 +58,11 @@ public class CreateWalletSeedPhraseView extends AbstractWizardView<WelcomeWizard
   }
 
   @Override
+  public void fireViewEvents() {
+    // Do nothing
+  }
+
+  @Override
   public boolean updatePanelModel() {
     displaySeedPhraseMaV.getView().updateModel();
     return false;

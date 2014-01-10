@@ -12,7 +12,7 @@ import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
  * <ol>
  * <li>Welcome and choose language</li>
  * <li>Create or restore a wallet</li>
- * <li>Create a wallet password</li>
+ * <li>Create a wallet with seed phrase and backup location</li>
  * </ol>
  *
  * @since 0.0.1
@@ -33,6 +33,7 @@ public class WelcomeWizard extends AbstractWizard<WelcomeWizardModel> {
     wizardViewMap.put(CONFIRM_WALLET_SEED_PHRASE.name(), new ConfirmWalletSeedPhraseView(this));
     wizardViewMap.put(RESTORE_WALLET.name(), new RestoreWalletChoicesView(this));
     wizardViewMap.put(CREATE_WALLET_PASSWORD.name(), new CreateWalletPasswordView(this));
+    wizardViewMap.put(SELECT_BACKUP_LOCATION.name(), new SelectBackupLocationView(this));
 
   }
 
