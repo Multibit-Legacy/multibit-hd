@@ -163,8 +163,14 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
       CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress, false, "TODO", new String[]{""}));
       return;
     }
+
+    if (!walletManager.getCurrentWalletData().isPresent()) {
+      // Declare the send a failure - no wallet
+      CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress, false, "TODO", new String[]{""}));
+      return;
+    }
+
     log.debug("Just about to send coins");
-    // TODO check a wallet is set
     Wallet wallet = walletManager.getCurrentWalletData().get().getWallet();
     KeyParameter aesKey = wallet.getKeyCrypter().deriveKey(password);
 
@@ -189,7 +195,7 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
       // Declare the send a success
       CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress, true, "", new String[]{""}));
     } catch (InsufficientMoneyException | VerificationException | AddressFormatException e1) {
-      e1.printStackTrace();
+      log.error(e1.getClass().getName() + " " + e1.getMessage());
 
       // Declare the send a failure
       CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress, false, "TODO", new String[]{""}));
@@ -260,7 +266,6 @@ public class BitcoinNetworkService extends AbstractService implements ManagedSer
         log.debug("Ping: {}", peer.getAddress().toString());
 
         try {
-
           ListenableFuture<Long> result = peer.ping();
           result.get(4, TimeUnit.SECONDS);
           atLeastOnePingWorked = true;

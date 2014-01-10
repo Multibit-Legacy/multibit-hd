@@ -1,11 +1,9 @@
 package org.multibit.hd.core.services;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.core.*;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.api.WalletData;
@@ -23,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.math.BigInteger;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -37,7 +36,7 @@ public class BitcoinNetworkServiceFunctionalTest {
   private static final BigInteger SEND_AMOUNT = BigInteger.valueOf(100000); // 0.001 BTC
   private static final BigInteger FEE_PER_KB = BigInteger.valueOf(10000); // 0.0001 BTC / KB
 
-  private static final int MAX_TIMEOUT = 120000; // ms
+  private static final int MAX_TIMEOUT = 180000; // ms
   private static final int WAIT_INTERVAL = 100; // ms
 
   private Properties seedProperties;
@@ -54,7 +53,6 @@ public class BitcoinNetworkServiceFunctionalTest {
   @Before
   public void setUp() throws IOException {
     CoreServices.main(null);
-
     CoreServices.uiEventBus.register(this);
 
     walletManager = WalletManager.INSTANCE;
@@ -75,6 +73,7 @@ public class BitcoinNetworkServiceFunctionalTest {
 
   // This test is a simpler version of the testSendBetweenTwoRealWallets one
   // As they take a while to run if you are running the send test you don't really need to run this one
+  // so could comment it out
   @Test
   public void testSyncSingleWallet() throws Exception {
     // Create a random temporary directory and use it for wallet storage
@@ -84,7 +83,6 @@ public class BitcoinNetworkServiceFunctionalTest {
     // Create a wallet from the WALLET_SEED_1
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(WalletIdTest.split(seedProperties.getProperty(WALLET_SEED_1)));
-
     WalletData walletData = createWallet(temporaryDirectory, seed);
 
     synchronizeWallet();
@@ -137,7 +135,9 @@ public class BitcoinNetworkServiceFunctionalTest {
     log.debug("Wallet data 2 = \n" + walletData2.toString());
 
 
-    // TODO Check any previous sends (probably sent by this test) have confirmed ok
+    // Check older transactions (probably from earlier runs of this test) have confirmed
+    assertThat(transactionsAreOK(walletData1)).isTrue();
+    assertThat(transactionsAreOK(walletData2)).isTrue();
 
     // Create a send from the wallet with the larger balance to the one with the smaller balance
     boolean sendFromWallet1 = walletBalance1.compareTo(walletBalance2) > 0;
@@ -162,7 +162,7 @@ public class BitcoinNetworkServiceFunctionalTest {
     Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(walletRoot);
     walletManager.setCurrentWalletData(sourceWalletData);
 
-    // Do the send
+    // Start up the bitcoin network connection
     bitcoinNetworkService = CoreServices.newBitcoinNetworkService();
     bitcoinNetworkService.start();
 
@@ -177,7 +177,8 @@ public class BitcoinNetworkServiceFunctionalTest {
       bitcoinNetworkService.send(destinationAddress.toString(), SEND_AMOUNT, sourceAddress.toString(), FEE_PER_KB, WALLET_PASSWORD);
 
       // the listenToBitcoinSentEvent method receives the bitcoinSentEvent once the send has completed
-      Uninterruptibles.sleepUninterruptibly(4000, TimeUnit.MILLISECONDS);
+      // wait for a while for the send to actually be transmitted
+      Uninterruptibles.sleepUninterruptibly(10000, TimeUnit.MILLISECONDS);
 
       // Check for success
       assertThat(bitcoinSentEvent).isNotNull();
@@ -241,6 +242,33 @@ public class BitcoinNetworkServiceFunctionalTest {
   }
 
   /**
+   * Check that transactions have been confirmed in a reasonable time.
+   *
+   * @param walletData the walletdata whose transactions you want to check
+   * @return true is transactions have confirmed as expected, false otherwise
+   */
+  private boolean transactionsAreOK(WalletData walletData) {
+    boolean transactionsAreOK = true;
+
+    if (walletData.getWallet() != null) {
+      Set<Transaction> transactions = walletData.getWallet().getTransactions(true);
+      for (Transaction transaction :transactions) {
+        // If the transactions is 'reasonably old' we expect it to have confirmed
+        DateTime now = new org.joda.time.DateTime();
+
+        if (now.minusHours(4).toDate().after(transaction.getUpdateTime())) {
+          // If the transaction is over 4 hours old it should have confirmed
+          if (transaction.getConfidence().getDepthInBlocks() == 0) {
+            transactionsAreOK = false;
+            break;
+          }
+        }
+      }
+    }
+    return transactionsAreOK;
+  }
+
+  /**
    * Load the wallet seeds, which are stored in a properties file called seed.properties
    * The keys are specified by the WALLET_SEED_1 and WALLET_SEED_2 constants
    *
@@ -248,9 +276,7 @@ public class BitcoinNetworkServiceFunctionalTest {
    */
   public static Properties loadWalletSeeds() throws FileNotFoundException, IOException {
     Properties seedProperties = new Properties();
-    Class thisClass = BitcoinNetworkServiceFunctionalTest.class;
-
-    InputStream inputStream = thisClass.getResourceAsStream("seed.properties");
+    InputStream inputStream = BitcoinNetworkServiceFunctionalTest.class.getResourceAsStream("seed.properties");
 
     InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF8");
     seedProperties.load(inputStreamReader);
