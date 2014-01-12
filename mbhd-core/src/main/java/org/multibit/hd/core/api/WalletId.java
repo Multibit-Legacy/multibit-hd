@@ -39,6 +39,18 @@ public class WalletId {
   private final byte[] walletId;
 
   /**
+   * Create a wallet id from a formatted wallet id
+   *
+   * @param formattedWalletId The formatted wallet id you want to use e.g. 66666666-77777777-88888888-99999999-aaaaaaaa
+   */
+  private WalletId(String formattedWalletId) {
+     // remove any embedded hyphens
+    formattedWalletId = formattedWalletId.replaceAll("-","");
+
+    walletId = Utils.parseAsHexOrBase58(formattedWalletId);
+  }
+
+  /**
    * Create a wallet id from the given seed.
    * This produces a wallet id from the seed using various trapdoor functions.
    * The seed is typically generated from the SeedPhraseGenerator#convertToSeed method.
@@ -92,6 +104,7 @@ public class WalletId {
 
   /**
    * Create a WalletId from a wallet filename - the filename is parsed into a walletId byte array
+   * The wallet filename should be the whole fire name e.g /herp/derp/mbhd-23bb865e-161bfefc-3020c418-66bf6f75-7fecdfcc/mbhd.wallet
    * @return WalletId
    */
   public static WalletId parseWalletFilename(String walletFilename) {
@@ -106,10 +119,7 @@ public class WalletId {
     if (walletRootName.startsWith(prefix)) {
       walletRootName = walletRootName.replace(prefix, "");
 
-      // remove any embedded hyphens
-      walletRootName = walletRootName.replaceAll("-","");
-
-      return new WalletId(Utils.parseAsHexOrBase58(walletRootName));
+      return new WalletId(walletRootName);
 
     } else {
       throw new IllegalStateException("Cannot parse '" + walletFilename + "' into a WalletId. Does not start with '" + prefix + "'");
@@ -138,6 +148,11 @@ public class WalletId {
       }
     }
     return buffer.toString();
+  }
+
+  @Override
+  public String toString() {
+    return toFormattedString();
   }
 
 

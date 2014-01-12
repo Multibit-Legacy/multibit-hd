@@ -1,7 +1,7 @@
 package org.multibit.hd.core.managers;
 
 /**
- * Copyright 2012 multibit.org
+ * Copyright 2014 multibit.org
  *
  * Licensed under the MIT license (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.bitcoinj.wallet.Protos;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.api.WalletData;
+import org.multibit.hd.core.api.WalletId;
 import org.multibit.hd.core.api.WalletIdTest;
 import org.multibit.hd.core.api.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
@@ -60,11 +61,18 @@ public class WalletManagerTest {
 
   @Test
   public void testCreateProtobufEncryptedWallet() throws Exception {
-    // Create an encrypted wallet.
-    File temporaryWallet = File.createTempFile(TEST_CREATE_ENCRYPTED_PROTOBUF_PREFIX, ".wallet");
-    temporaryWallet.deleteOnExit();
+    // Create a random temporary directory to store the wallets
+    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
+    walletManager.initialise(temporaryDirectory);
 
-    String newWalletFilename = temporaryWallet.getAbsolutePath();
+    // Create a wallet directory from a seed
+    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] seed1 = seedGenerator.convertToSeed(WalletIdTest.split(WalletIdTest.SEED_PHRASE_1));
+    WalletId walletId = new WalletId(seed1);
+
+    String walletRootDirectoryPath = temporaryDirectory.getAbsolutePath() + File.separator + WalletManager.WALLET_DIRECTORY_PREFIX + WalletManager.SEPARATOR + walletId.toFormattedString();
+    (new File(walletRootDirectoryPath)).mkdir();
+    String newWalletFilename = walletRootDirectoryPath + File.separator + WalletManager.MBHD_WALLET_NAME;
 
     KeyCrypterScrypt initialKeyCrypter = new KeyCrypterScrypt();
     System.out.println("testCreateProtobufEncryptedWallet - InitialKeyCrypter = " + initialKeyCrypter);

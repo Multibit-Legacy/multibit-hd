@@ -58,7 +58,8 @@ public class WalletIdTest {
     assertThat(WALLET_ID_1.equals(Utils.bytesToHexString(walletId.getBytes()))).isTrue();
     assertThat(WALLET_ID_FORMATTED_1.equals(walletId.toFormattedString())).isTrue();
 
-    WalletId walletIdPhoenix = WalletId.parseWalletFilename(File.separator + "herp" + File.separator + "derp" + File.separator + walletId.toFormattedString());
+    WalletId walletIdPhoenix = WalletId.parseWalletFilename(File.separator + "herp" + File.separator + "derp" +
+            File.separator + "mbhd-" + walletId.toFormattedString() + File.separator + "mbhd.wallet");
     assertThat(walletId.equals(walletIdPhoenix)).isTrue();
 
     // Generate the wallet Id again - it should get the same result.
