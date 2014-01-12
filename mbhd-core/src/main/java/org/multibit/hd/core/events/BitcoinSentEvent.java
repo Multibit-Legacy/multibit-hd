@@ -15,7 +15,7 @@ public class BitcoinSentEvent {
 
   private final BigInteger feePaid;
 
-  private final String sendAddress;
+  private final String destinationAddress;
 
   private final String changeAddress;
 
@@ -23,10 +23,10 @@ public class BitcoinSentEvent {
 
   private final String sendFailureReasonKey;
 
-  public BitcoinSentEvent(BigInteger amount, BigInteger feePaid, String sendAddress, String changeAddress, boolean sendWasSuccessful, String sendFailureReasonKey, String[] sendFailureReasonData) {
+  public BitcoinSentEvent(BigInteger amount, BigInteger feePaid, String destinationAddress, String changeAddress, boolean sendWasSuccessful, String sendFailureReasonKey, String[] sendFailureReasonData) {
     this.amount = amount;
     this.feePaid = feePaid;
-    this.sendAddress = sendAddress;
+    this.destinationAddress = destinationAddress;
     this.changeAddress = changeAddress;
     this.sendWasSuccessful = sendWasSuccessful;
     this.sendFailureReasonKey = sendFailureReasonKey;
@@ -43,8 +43,8 @@ public class BitcoinSentEvent {
     return feePaid;
   }
 
-  public String getSendAddress() {
-    return sendAddress;
+  public String getDestinationAddress() {
+    return destinationAddress;
   }
 
   public boolean isSendWasSuccessful() {
@@ -64,7 +64,7 @@ public class BitcoinSentEvent {
     return "BitcoinSentEvent{" +
             "amount=" + amount +
             ", feePaid=" + feePaid +
-            ", sendAddress='" + sendAddress + '\'' +
+            ", destinationAddress='" + destinationAddress + '\'' +
             ", changeAddress='" + changeAddress + '\'' +
             ", sendWasSuccessful=" + sendWasSuccessful +
             ", sendFailureReasonKey='" + sendFailureReasonKey + '\'' +

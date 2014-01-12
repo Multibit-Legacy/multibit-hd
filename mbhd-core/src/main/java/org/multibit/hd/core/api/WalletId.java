@@ -7,12 +7,15 @@ import com.google.common.base.Preconditions;
 import com.google.protobuf.ByteString;
 import org.bitcoinj.wallet.Protos;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.managers.WalletManager;
 import org.spongycastle.asn1.sec.SECNamedCurves;
 import org.spongycastle.asn1.x9.X9ECParameters;
 import org.spongycastle.crypto.params.KeyParameter;
 import org.spongycastle.math.ec.ECPoint;
 
+import java.io.File;
 import java.math.BigInteger;
+import java.util.Arrays;
 
 /**
  *  <p>Data object to provide the following to wallet seed related classes<br>
@@ -34,6 +37,18 @@ public class WalletId {
   private static final byte SALT_USED_IN_SCRYPT = (byte) 1;
 
   private final byte[] walletId;
+
+  /**
+   * Create a wallet id from a formatted wallet id
+   *
+   * @param formattedWalletId The formatted wallet id you want to use e.g. 66666666-77777777-88888888-99999999-aaaaaaaa
+   */
+  private WalletId(String formattedWalletId) {
+     // remove any embedded hyphens
+    formattedWalletId = formattedWalletId.replaceAll("-","");
+
+    walletId = Utils.parseAsHexOrBase58(formattedWalletId);
+  }
 
   /**
    * Create a wallet id from the given seed.
@@ -88,6 +103,30 @@ public class WalletId {
   }
 
   /**
+   * Create a WalletId from a wallet filename - the filename is parsed into a walletId byte array
+   * The wallet filename should be the whole fire name e.g /herp/derp/mbhd-23bb865e-161bfefc-3020c418-66bf6f75-7fecdfcc/mbhd.wallet
+   * @return WalletId
+   */
+  public static WalletId parseWalletFilename(String walletFilename) {
+    File walletFile = new File(walletFilename);
+
+    // Get the parent directory, in which the wallet id is embedded
+    File walletRoot = walletFile.getParentFile();
+    String walletRootName = walletRoot.getName();
+
+    // Remove the prefix mbhd
+    String prefix = WalletManager.WALLET_DIRECTORY_PREFIX + WalletManager.SEPARATOR;
+    if (walletRootName.startsWith(prefix)) {
+      walletRootName = walletRootName.replace(prefix, "");
+
+      return new WalletId(walletRootName);
+
+    } else {
+      throw new IllegalStateException("Cannot parse '" + walletFilename + "' into a WalletId. Does not start with '" + prefix + "'");
+    }
+  }
+
+  /**
    * @return the raw wallet id as a byte[]
    */
   public byte[] getBytes() {
@@ -110,4 +149,28 @@ public class WalletId {
     }
     return buffer.toString();
   }
+
+  @Override
+  public String toString() {
+    return toFormattedString();
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    WalletId walletId1 = (WalletId) o;
+
+    if (!Arrays.equals(walletId, walletId1.walletId)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return Arrays.hashCode(walletId);
+  }
+
 }
