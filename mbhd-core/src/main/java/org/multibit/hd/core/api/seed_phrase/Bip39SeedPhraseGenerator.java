@@ -6,6 +6,8 @@ import org.multibit.hd.core.exceptions.SeedPhraseException;
 
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -31,6 +33,10 @@ public class Bip39SeedPhraseGenerator implements SeedPhraseGenerator {
     } catch (IOException ioe) {
       throw new SeedPhraseException("Could not initialise Bip39SeedPhraseGenerator", ioe);
     }
+  }
+
+  public static List<String> split(String words) {
+      return new ArrayList<String>(Arrays.asList(words.split("\\s+")));
   }
 
   @Override

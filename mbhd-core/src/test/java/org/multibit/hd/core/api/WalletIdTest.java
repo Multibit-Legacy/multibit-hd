@@ -23,9 +23,7 @@ import org.multibit.hd.core.api.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -49,7 +47,7 @@ public class WalletIdTest {
   @Test
   public void testCreateWalletId1() throws Exception {
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-    byte[] seed = seedGenerator.convertToSeed(split(SEED_PHRASE_1));
+    byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(SEED_PHRASE_1));
 
     WalletId walletId = new WalletId(seed);
 
@@ -73,7 +71,7 @@ public class WalletIdTest {
   @Test
   public void testCreateWalletId2() throws Exception {
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-    byte[] seed = seedGenerator.convertToSeed(split(SEED_PHRASE_2));
+    byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(SEED_PHRASE_2));
 
     WalletId walletId = new WalletId(seed);
 
@@ -86,7 +84,7 @@ public class WalletIdTest {
   @Test
    public void testCreateWalletId3() throws Exception {
      SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-     byte[] seed = seedGenerator.convertToSeed(split(SEED_PHRASE_3));
+     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(SEED_PHRASE_3));
 
      WalletId walletId = new WalletId(seed);
 
@@ -96,8 +94,5 @@ public class WalletIdTest {
      assertThat(WALLET_ID_FORMATTED_3.equals(walletId.toFormattedString())).isTrue();
    }
 
-   public static List<String> split(String words) {
-       return new ArrayList<String>(Arrays.asList(words.split("\\s+")));
-   }
 }
 

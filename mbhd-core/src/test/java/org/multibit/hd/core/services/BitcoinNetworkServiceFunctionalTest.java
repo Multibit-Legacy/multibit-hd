@@ -7,7 +7,6 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.api.WalletData;
-import org.multibit.hd.core.api.WalletIdTest;
 import org.multibit.hd.core.api.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
@@ -82,7 +81,7 @@ public class BitcoinNetworkServiceFunctionalTest {
 
     // Create a wallet from the WALLET_SEED_1
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-    byte[] seed = seedGenerator.convertToSeed(WalletIdTest.split(seedProperties.getProperty(WALLET_SEED_1)));
+    byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_1)));
     WalletData walletData = createWallet(temporaryDirectory, seed);
 
     synchronizeWallet();
@@ -104,11 +103,11 @@ public class BitcoinNetworkServiceFunctionalTest {
 
     // Create two wallets from the two seeds
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-    byte[] seed1 = seedGenerator.convertToSeed(WalletIdTest.split(seedProperties.getProperty(WALLET_SEED_1)));
+    byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_1)));
     WalletData walletData1 = createWallet(temporaryDirectory, seed1);
     String walletRoot1 = walletManager.createWalletRoot(walletData1.getWalletId());
 
-    byte[] seed2 = seedGenerator.convertToSeed(WalletIdTest.split(seedProperties.getProperty(WALLET_SEED_2)));
+    byte[] seed2 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_2)));
     WalletData walletData2 = createWallet(temporaryDirectory, seed2);
     String walletRoot2 = walletManager.createWalletRoot(walletData2.getWalletId());
 

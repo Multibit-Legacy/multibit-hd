@@ -4,6 +4,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
+import org.multibit.hd.core.api.WalletData;
+import org.multibit.hd.core.api.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardModelChangedEvent;
 import org.multibit.hd.ui.views.components.Labels;
@@ -18,6 +22,8 @@ import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -100,6 +106,9 @@ public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardMode
 
     WelcomeWizardModel model = getWizardModel();
 
+    // TODO Check all required data is valid
+    List<String> seedPhrase = model.getActualSeedPhrase();
+    String password = model.getUserPassword();
     String backupLocation = model.getBackupLocation();
 
     Preconditions.checkNotNull(backupLocation, "'backupLocation' must be present");
@@ -123,7 +132,25 @@ public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardMode
 
     ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, result);
 
+    // Actually create the wallet
+    try {
+      WalletData createdWalletData = createWallet(seedPhrase, password);
+
+      // TODO fire an event so that the UI can update ??
+    } catch (IOException ioe) {
+      ioe.printStackTrace();
+      // TODO tell the user the wallet create failed
+    }
   }
+
+  private WalletData createWallet(List<String> seedPhrase, String password) throws IOException {
+  WalletManager walletManager = WalletManager.INSTANCE;
+
+   SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+   byte[] seed = seedGenerator.convertToSeed(seedPhrase);
+
+   return walletManager.createWallet(seed, "password");
+}
 
 
 }
