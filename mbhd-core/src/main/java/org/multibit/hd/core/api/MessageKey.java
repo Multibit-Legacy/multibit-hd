@@ -77,6 +77,7 @@ public enum MessageKey {
   SEED_PHRASE_CREATED_STATUS("Seed phrase created"),
   WALLET_PASSWORD_CREATED_STATUS("Wallet password created"),
   BACKUP_LOCATION_STATUS("Backup location created"),
+  WALLET_CREATED_STATUS("Wallet created"),
 
 
   ALERT_REMAINING("alert.remaining"),
@@ -84,10 +85,16 @@ public enum MessageKey {
   SELECT_LANGUAGE("showPreferencesPanel.languageTitle"),
   SEED_SIZE("Words in seed"),
 
-  // Notes (HTML format for multi-line formatting)
-  WELCOME_NOTE_1("MultiBit HD provides secure access to the Bitcoin network."),
-  WELCOME_NOTE_2("This setup process has the minimum steps required to secure your bitcoins."),
-  WELCOME_NOTE_3("If this is your first time using MultiBit HD you should choose \"Create new wallet\" on the next page."),
+  // Notes (can contain HTML)
+  WELCOME_NOTE_1("MultiBit HD provides access to the Bitcoin network."),
+  WELCOME_NOTE_2("Bitcoin is a digital currency and <strong>requires a secure environment</strong>."),
+  WELCOME_NOTE_3("This setup process will guide through each step to help keep your bitcoins safe."),
+  WELCOME_NOTE_4("If this is your first time using MultiBit HD you should choose \"Create new wallet\" on the next page."),
+
+  SELECT_BACKUP_LOCATION_NOTE_1("Wallet backups <strong>protect your transactions and contacts</strong> if your computer is damaged or stolen."),
+  SELECT_BACKUP_LOCATION_NOTE_2("They are created automatically and are encrypted."),
+  SELECT_BACKUP_LOCATION_NOTE_3("Cloud backup services include Spider Oak, Dropbox and Carbonite."),
+  SELECT_BACKUP_LOCATION_NOTE_4("Use the folder button to specify your cloud backup folder."),
 
   SEED_WARNING_NOTE_1("Write down the words below exactly as shown on a <strong>piece of paper</strong> and <strong>keep it safe</strong>."),
   SEED_WARNING_NOTE_2("These words <strong>protect all your bitcoins</strong>. You will never see them again."),
@@ -103,10 +110,6 @@ public enum MessageKey {
   WALLET_PASSWORD_NOTE_2("You can change it whenever you like from the Tools screen."),
   WALLET_PASSWORD_NOTE_3("You can always recover it using your seed phrase."),
 
-  SELECT_BACKUP_LOCATION_NOTE_1("Wallet backups <strong>protect your transactions and contacts</strong> if your computer is damaged or stolen."),
-  SELECT_BACKUP_LOCATION_NOTE_2("Use the folder button to choose a safe location for your automatic encrypted wallet backups."),
-  SELECT_BACKUP_LOCATION_NOTE_3("Good choices for backup locations include cloud backup services and secured network drives."),
-  SELECT_BACKUP_LOCATION_NOTE_4("Cloud backup services include Spider Oak, Dropbox, Carbonite and many others."),
 
   // End of enum
   CONTACTS("Contacts"), TRANSACTIONS("Transactions"), HISTORY("History"), PREFERENCES("Preferences"), TOOLS("Tools");

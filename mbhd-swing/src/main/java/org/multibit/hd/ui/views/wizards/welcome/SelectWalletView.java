@@ -42,7 +42,7 @@ public class SelectWalletView extends AbstractWizardView<WelcomeWizardModel, Wel
   @Override
   public JPanel newDataPanel() {
 
-    currentSelection = CREATE_WALLET_SEED_PHRASE;
+    currentSelection = SELECT_BACKUP_LOCATION;
     setPanelModel(currentSelection);
 
     JPanel panel = Panels.newPanel(new MigLayout(
@@ -53,7 +53,7 @@ public class SelectWalletView extends AbstractWizardView<WelcomeWizardModel, Wel
 
     panel.add(Panels.newWalletSelector(
       this,
-      CREATE_WALLET_SEED_PHRASE.name(),
+      SELECT_BACKUP_LOCATION.name(),
       RESTORE_WALLET.name(),
       HARDWARE_WALLET.name(),
       SWITCH_WALLET.name()

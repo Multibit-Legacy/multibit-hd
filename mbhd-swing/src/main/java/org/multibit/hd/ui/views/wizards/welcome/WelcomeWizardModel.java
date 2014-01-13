@@ -5,7 +5,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
+import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
@@ -68,10 +70,18 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   private String backupLocation;
 
   /**
+   * The seed phrase generator
+   */
+  private final SeedPhraseGenerator seedPhraseGenerator;
+
+  /**
    * @param state The state object
    */
   public WelcomeWizardModel(WelcomeWizardState state) {
     super(state);
+
+    this.seedPhraseGenerator = CoreServices.newSeedPhraseGenerator();
+
   }
 
   @SuppressWarnings("unchecked")
@@ -117,7 +127,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
       case SELECT_BACKUP_LOCATION:
         backupLocation = ((SelectFileModel) panelModel.get()).getValue();
         ViewEvents.fireWizardButtonEnabledEvent(SELECT_BACKUP_LOCATION.name(), WizardButton.NEXT, !Strings.isNullOrEmpty(backupLocation));
-      break;
+        break;
     }
 
   }
@@ -132,6 +142,9 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
       case SELECT_WALLET:
         state = selectWalletChoice;
         break;
+      case SELECT_BACKUP_LOCATION:
+        state = CREATE_WALLET_SEED_PHRASE;
+        break;
       case CREATE_WALLET_SEED_PHRASE:
         state = CONFIRM_WALLET_SEED_PHRASE;
         Preconditions.checkState(SeedPhraseSize.isValid(actualSeedPhrase.size()), "'actualSeedPhrase' is not a valid length");
@@ -140,19 +153,16 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
         Preconditions.checkState(SeedPhraseSize.isValid(userSeedPhrase.size()), "'userSeedPhrase' is not a valid length");
         state = CREATE_WALLET_PASSWORD;
         break;
-      case RESTORE_WALLET:
-        state = CONFIRM_WALLET_SEED_PHRASE;
-        break;
-      case HARDWARE_WALLET:
-        state = CONFIRM_WALLET_SEED_PHRASE;
-        break;
       case CREATE_WALLET_PASSWORD:
-        state = SELECT_BACKUP_LOCATION;
-        break;
-      case SELECT_BACKUP_LOCATION:
         state = CREATE_WALLET_REPORT;
         ViewEvents.fireWizardModelChangedEvent(CREATE_WALLET_REPORT.name());
         break;
+      case RESTORE_WALLET:
+      state = CONFIRM_WALLET_SEED_PHRASE;
+      break;
+      case HARDWARE_WALLET:
+      state = CONFIRM_WALLET_SEED_PHRASE;
+      break;
     }
 
   }
@@ -167,14 +177,14 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
       case SELECT_WALLET:
         state = WELCOME;
         break;
-      case CREATE_WALLET_SEED_PHRASE:
+      case SELECT_BACKUP_LOCATION:
         state = SELECT_WALLET;
         break;
-      case SELECT_BACKUP_LOCATION:
-        state = CREATE_WALLET_PASSWORD;
+      case CREATE_WALLET_SEED_PHRASE:
+        state = SELECT_BACKUP_LOCATION;
         break;
       case CREATE_WALLET_REPORT:
-        state = SELECT_BACKUP_LOCATION;
+        state = CONFIRM_WALLET_SEED_PHRASE;
         break;
       case RESTORE_WALLET:
         state = SELECT_WALLET;
@@ -238,4 +248,12 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   public String getBackupLocation() {
     return backupLocation;
   }
+
+  /**
+   * @return The seed phrase generator
+   */
+  public SeedPhraseGenerator getSeedPhraseGenerator() {
+    return seedPhraseGenerator;
+  }
+
 }

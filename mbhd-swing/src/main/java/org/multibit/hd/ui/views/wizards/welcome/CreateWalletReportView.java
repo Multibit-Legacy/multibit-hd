@@ -4,9 +4,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
-import org.multibit.hd.core.api.WalletData;
-import org.multibit.hd.core.api.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardModelChangedEvent;
@@ -36,13 +35,11 @@ import java.util.List;
  */
 public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardModel, String> {
 
-  // Model
-  private String model;
-
   // View
-  private JLabel seedPhraseCreatedStatus;
-  private JLabel walletPasswordCreatedStatus;
-  private JLabel backupLocationStatus;
+  private JLabel seedPhraseCreatedStatusLabel;
+  private JLabel walletPasswordCreatedStatusLabel;
+  private JLabel backupLocationStatusLabel;
+  private JLabel walletCreatedStatusLabel;
 
   /**
    * @param wizard The wizard managing the states
@@ -58,26 +55,28 @@ public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardMode
   @Override
   public JPanel newDataPanel() {
 
-    model = "TODO replace with a proper model";
+    String model = "TODO replace with a proper model";
     setPanelModel(model);
 
     JPanel panel = Panels.newPanel(new MigLayout(
       "fill,insets 0", // Layout constrains
       "[][][]", // Column constraints
-      "[]10[]10[]" // Row constraints
+      "[]10[]10[]10[]" // Row constraints
     ));
 
     // Apply the theme
     panel.setBackground(Themes.currentTheme.detailPanelBackground());
 
     // Initialise to failure
-    seedPhraseCreatedStatus = Labels.newSeedPhraseCreatedStatus(false);
-    walletPasswordCreatedStatus = Labels.newWalletPasswordCreatedStatus(false);
-    backupLocationStatus = Labels.newBackupLocationStatus(false);
+    seedPhraseCreatedStatusLabel = Labels.newSeedPhraseCreatedStatus(false);
+    walletPasswordCreatedStatusLabel = Labels.newWalletPasswordCreatedStatus(false);
+    walletCreatedStatusLabel = Labels.newWalletCreatedStatus(false);
+    backupLocationStatusLabel = Labels.newBackupLocationStatus(false);
 
-    panel.add(seedPhraseCreatedStatus, "wrap");
-    panel.add(walletPasswordCreatedStatus, "wrap");
-    panel.add(backupLocationStatus, "wrap");
+    panel.add(seedPhraseCreatedStatusLabel, "wrap");
+    panel.add(walletPasswordCreatedStatusLabel, "wrap");
+    panel.add(backupLocationStatusLabel, "wrap");
+    panel.add(walletCreatedStatusLabel, "wrap");
 
     return panel;
   }
@@ -110,47 +109,52 @@ public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardMode
     List<String> seedPhrase = model.getActualSeedPhrase();
     String password = model.getUserPassword();
     String backupLocation = model.getBackupLocation();
+    SeedPhraseGenerator seedPhraseGenerator = getWizardModel().getSeedPhraseGenerator();
 
     Preconditions.checkNotNull(backupLocation, "'backupLocation' must be present");
 
+    // Actually create the wallet
+    boolean walletCreatedStatus = false;
+    try {
+      // Attempt to create the wallet (the manager will track the ID etc)
+      WalletManager walletManager = WalletManager.INSTANCE;
+      byte[] seed = seedPhraseGenerator.convertToSeed(seedPhrase);
+      walletManager.createWallet(seed, password);
+
+      // Must be OK to be here
+      walletCreatedStatus = true;
+    } catch (IOException ioe) {
+      ExceptionHandler.handleThrowable(ioe);
+    }
+
     File backupLocationFile = new File(backupLocation);
 
+    // Seed phrase and password are always OK
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, seedPhraseCreatedStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, walletPasswordCreatedStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+
     // Determine if the backup location is valid
-    boolean result = backupLocationFile.exists()
+    boolean backupLocationStatus = backupLocationFile.exists()
       && backupLocationFile.isDirectory()
       && backupLocationFile.canRead()
       && backupLocationFile.canWrite();
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, seedPhraseCreatedStatus, true, AwesomeDecorator.NORMAL_ICON_SIZE);
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, walletPasswordCreatedStatus, true, AwesomeDecorator.NORMAL_ICON_SIZE);
-
-    if (result) {
-      AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, backupLocationStatus, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    if (backupLocationStatus) {
+      AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, backupLocationStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
     } else {
-      AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, backupLocationStatus, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+      AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, backupLocationStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
     }
 
-    ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, result);
-
-    // Actually create the wallet
-    try {
-      WalletData createdWalletData = createWallet(seedPhrase, password);
-
-      // TODO fire an event so that the UI can update ??
-    } catch (IOException ioe) {
-      ioe.printStackTrace();
-      // TODO tell the user the wallet create failed
+    // Determine if the create wallet status is valid
+    if (walletCreatedStatus) {
+      AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, walletCreatedStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    } else {
+      AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, walletCreatedStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
     }
+
+    ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, backupLocationStatus);
+
   }
-
-  private WalletData createWallet(List<String> seedPhrase, String password) throws IOException {
-  WalletManager walletManager = WalletManager.INSTANCE;
-
-   SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-   byte[] seed = seedGenerator.convertToSeed(seedPhrase);
-
-   return walletManager.createWallet(seed, "password");
-}
 
 
 }

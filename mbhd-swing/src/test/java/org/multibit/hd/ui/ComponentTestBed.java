@@ -90,8 +90,8 @@ public class ComponentTestBed {
   public JPanel createTestPanel() {
 
     // Choose a panel to test
-    AbstractWizard wizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.CREATE_WALLET_PASSWORD);
-    wizard.show(WelcomeWizardState.CREATE_WALLET_PASSWORD.name());
+    AbstractWizard wizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME);
+    wizard.show(WelcomeWizardState.WELCOME.name());
     return wizard.getWizardPanel();
 
   }

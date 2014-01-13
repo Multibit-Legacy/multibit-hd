@@ -146,6 +146,13 @@ public class Labels {
   }
 
   /**
+   * @return A new "wallet created" status label
+   */
+  public static JLabel newWalletCreatedStatus(boolean status) {
+    return newStatusLabel(MessageKey.WALLET_CREATED_STATUS, null, status);
+  }
+
+  /**
    * @return A new "backup location" status label
    */
   public static JLabel newBackupLocationStatus(boolean status) {
@@ -259,7 +266,8 @@ public class Labels {
     return newNoteLabel(new MessageKey[]{
       MessageKey.WELCOME_NOTE_1,
       MessageKey.WELCOME_NOTE_2,
-      MessageKey.WELCOME_NOTE_3
+      MessageKey.WELCOME_NOTE_3,
+      MessageKey.WELCOME_NOTE_4
     }, new Object[][]{});
   }
 

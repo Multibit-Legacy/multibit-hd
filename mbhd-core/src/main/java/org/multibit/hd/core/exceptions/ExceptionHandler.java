@@ -7,13 +7,10 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * <p>[Pattern] to provide the following to {@link Object}:</p>
+ * <p>Exception handler to provide the following to application:</p>
  * <ul>
- * <li></li>
+ * <li>Displays a critical failure dialog to the user and handles process of bug reporting</li>
  * </ul>
- * <p>Example:</p>
- * <pre>
- * </pre>
  *
  * @since 0.0.1
  *         
