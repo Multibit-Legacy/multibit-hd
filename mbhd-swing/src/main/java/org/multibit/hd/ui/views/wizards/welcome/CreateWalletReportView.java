@@ -48,7 +48,7 @@ public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardMode
 
     super(wizard.getWizardModel(), MessageKey.CREATE_WALLET_REPORT_TITLE);
 
-    PanelDecorator.addExitCancelPreviousFinish(this, wizard);
+    PanelDecorator.addFinish(this, wizard);
 
   }
 
