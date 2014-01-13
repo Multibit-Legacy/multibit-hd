@@ -399,9 +399,10 @@ public enum WalletManager {
     this.currentWalletData = Optional.of(currentWalletData);
   }
 
-  public Optional<File> getCurrentWalletDirectory() {
+  public Optional<File> getCurrentWalletFilename() {
     if (applicationDataDirectory != null && currentWalletData.isPresent()) {
-      String walletFilename = applicationDataDirectory + File.separator + WALLET_DIRECTORY_PREFIX + SEPARATOR + currentWalletData.get().getWalletId().toFormattedString();
+      String walletFilename = applicationDataDirectory + File.separator + WALLET_DIRECTORY_PREFIX + SEPARATOR +
+              currentWalletData.get().getWalletId().toFormattedString() + File.separator + MBHD_WALLET_NAME;
       return Optional.of(new File(walletFilename));
     } else {
       return Optional.absent();
