@@ -73,9 +73,9 @@ public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardMode
     walletCreatedStatusLabel = Labels.newWalletCreatedStatus(false);
     backupLocationStatusLabel = Labels.newBackupLocationStatus(false);
 
+    panel.add(backupLocationStatusLabel, "wrap");
     panel.add(seedPhraseCreatedStatusLabel, "wrap");
     panel.add(walletPasswordCreatedStatusLabel, "wrap");
-    panel.add(backupLocationStatusLabel, "wrap");
     panel.add(walletCreatedStatusLabel, "wrap");
 
     return panel;
