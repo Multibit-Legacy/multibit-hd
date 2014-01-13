@@ -83,12 +83,17 @@ public class Labels {
     }
 
     // Wrap in HTML to ensure line breaks are respected
-    StringBuilder sb = new StringBuilder("<html>");
+    final StringBuilder sb;
+    if (Languages.isLeftToRight()) {
+      sb = new StringBuilder("<html><div align=left>");
+    } else {
+      sb = new StringBuilder("<html><div align=right>");
+    }
     for (String line : safeHtml) {
       sb.append(line);
       sb.append("<br/><br/>");
     }
-    sb.append("</html>");
+    sb.append("</div></html>");
 
     JLabel label = new JLabel(sb.toString());
 

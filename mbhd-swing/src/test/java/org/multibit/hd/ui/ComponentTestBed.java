@@ -40,6 +40,7 @@ public class ComponentTestBed {
   private static final Logger log = LoggerFactory.getLogger(ComponentTestBed.class);
 
   private JFrame frame = null;
+  private JPanel contentPanel = null;
 
   /**
    * @param args Any command line arguments for the CoreServices
@@ -171,23 +172,26 @@ public class ComponentTestBed {
     JButton toggleLocaleButton = new JButton(toggleLocaleAction);
     toggleLocaleButton.setText(Languages.safeText(MessageKey.SELECT_LANGUAGE));
 
-    // Set up the wrapping panel
-    JPanel contentPanel = Panels.newPanel();
-    contentPanel.setOpaque(true);
-
-    log.info("Adding test panel");
-    contentPanel.add(createTestPanel(), "wrap");
-    contentPanel.add(toggleLocaleButton,"center");
-
     // Set up the frame to use the minimum size
 
     log.info("Set up frame");
 
     if (frame == null) {
       frame = new JFrame("MultiBit HD Component Tester");
+    } else {
+      frame.remove(contentPanel);
     }
+
+    // Set up the wrapping panel
+    contentPanel = Panels.newPanel();
+    contentPanel.setOpaque(true);
+
+    log.info("Adding test panel");
+    contentPanel.add(createTestPanel(), "wrap");
+    contentPanel.add(toggleLocaleButton,"center");
+
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-    frame.setContentPane(contentPanel);
+    frame.add(contentPanel);
     frame.pack();
     frame.setVisible(true);
 
