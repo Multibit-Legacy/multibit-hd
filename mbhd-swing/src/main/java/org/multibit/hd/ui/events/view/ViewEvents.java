@@ -107,7 +107,7 @@ public class ViewEvents {
    * @param enabled      True if the button should be enabled
    */
   public static void fireWizardButtonEnabledEvent(String panelName, WizardButton wizardButton, boolean enabled) {
-    log.debug("Firing 'wizard enable button' event: {}", enabled);
+    log.debug("Firing 'wizard button enabled {}' event: {}", panelName, enabled);
     CoreServices.uiEventBus.post(new WizardButtonEnabledEvent(panelName, wizardButton, enabled));
 
   }
