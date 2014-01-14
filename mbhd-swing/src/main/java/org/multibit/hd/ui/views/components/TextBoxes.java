@@ -35,18 +35,6 @@ public class TextBoxes {
   }
 
   /**
-   * TODO Convert this to a MaV
-   * @return A new "Recipient" auto-completer
-   */
-  public static JTextField newRecipient() {
-
-    JTextField textField = new JTextField(40);
-    textField.setBackground(Themes.currentTheme.dataEntryBackground());
-
-    return textField;
-  }
-
-  /**
    * @return A new "Select file" text field
    */
   public static JTextField newSelectFile() {
@@ -136,7 +124,7 @@ public class TextBoxes {
 
     // Apply the theme
     textArea.setBackground(Themes.currentTheme.readOnlyBackground());
-    textArea.setFont(new Font("Courier New", Font.PLAIN, 14));
+    textArea.setFont(new Font("Courier New", Font.PLAIN, 13));
 
     // Ensure we provide a suitable inner margin to allow letters to be clear
     textArea.setMargin(new Insets(2,4,2,4));
@@ -164,7 +152,6 @@ public class TextBoxes {
    * @return The themed echo character for password fields
    */
   public static char getPasswordEchoChar() {
-
     return '\u2022';
   }
 }

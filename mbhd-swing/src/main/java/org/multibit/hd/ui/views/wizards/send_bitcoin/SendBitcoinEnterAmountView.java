@@ -7,6 +7,8 @@ import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardView;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -41,12 +43,19 @@ public class SendBitcoinEnterAmountView extends AbstractWizardView<SendBitcoinWi
     setPanelModel(model);
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fill,insets 0", // Layout constrains
-      "[][][]", // Column constraints
+      "debug,fillx,insets 0", // Layout constrains
+      "[]", // Column constraints
       "[]10[]" // Row constraints
     ));
 
-    panel.add(Components.newContactSearch(),"wrap");
+    ActionListener listener = new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        System.out.println("Done");
+      }
+    };
+
+    panel.add(Components.newRecipient(listener),"wrap");
     panel.add(Components.newBitcoinAmount(),"wrap");
 
     return panel;

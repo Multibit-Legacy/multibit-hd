@@ -1,6 +1,11 @@
 package org.multibit.hd.ui.views.components;
 
+import org.multibit.hd.core.api.Contact;
 import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteDecorator;
+import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilter;
+import org.multibit.hd.ui.views.components.select_contact.ContactComboBoxEditor;
+import org.multibit.hd.ui.views.components.select_contact.ContactListCellRenderer;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
@@ -42,7 +47,7 @@ public class ComboBoxes {
   }
 
   /**
-   * @param listener The action listener
+   * @param listener The action listener to alert when the selectin is made
    *
    * @return A new "language" combo box
    */
@@ -52,6 +57,38 @@ public class ComboBoxes {
     JComboBox<String> comboBox = newComboBox(Languages.getLanguageNames(true));
     comboBox.setSelectedIndex(Languages.getIndexFromLocale(Languages.currentLocale()));
     comboBox.setEditable(false);
+
+    // Add the listener at the end to avoid false events
+    comboBox.addActionListener(listener);
+
+    return comboBox;
+
+  }
+
+  /**
+   * @param listener The action listener to alert when the selection is made
+   *
+   * @return A new "recipient" combo box
+   */
+  @SuppressWarnings("unchecked")
+  public static JComboBox<Contact> newRecipientComboBox(ActionListener listener, AutoCompleteFilter<Contact> filter) {
+
+    JComboBox<Contact> comboBox = new JComboBox<>(filter.create());
+
+    // Use a contact editor to force use of the name field
+    comboBox.setEditor(new ContactComboBoxEditor());
+
+    // Use a contact list cell renderer to ensure thumbnails are maintained
+    ListCellRenderer<Contact> renderer = new ContactListCellRenderer();
+    comboBox.setRenderer(renderer);
+
+    // Ensure we start with nothing selected
+    comboBox.setSelectedIndex(-1);
+
+    // Ensure we use the correct component orientation
+    comboBox.applyComponentOrientation(Languages.currentComponentOrientation());
+
+    AutoCompleteDecorator.apply(comboBox, filter);
 
     // Add the listener at the end to avoid false events
     comboBox.addActionListener(listener);

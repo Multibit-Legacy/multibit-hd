@@ -1,7 +1,10 @@
 package org.multibit.hd.ui.views.components;
 
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.api.Contact;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilter;
+import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilters;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordView;
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseModel;
@@ -10,10 +13,9 @@ import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseMode
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseView;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.components.select_file.SelectFileView;
-import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
-import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
 import javax.swing.*;
+import java.awt.event.ActionListener;
 
 /**
  * <p>Factory to provide the following to UI:</p>
@@ -53,25 +55,30 @@ public class Components {
   }
 
   /**
-   * <p>A contact search panel provides a means of finding a contact through their name or a Bitcoin address</p>
+   * <p>A "recipient" panel provides a means of finding a recipient either by their contact name or a direct Bitcoin address</p>
    *
-   * @return A new recipient panel
+   * @return A new "recipient" panel
    */
-  public static JPanel newContactSearch() {
+  public static JPanel newRecipient(ActionListener listener) {
 
-    JPanel panel = Panels.newPanel();
-    panel.add(new JLabel("Recipient"));
-    panel.add(TextBoxes.newRecipient());
+    AutoCompleteFilter<Contact> filter = AutoCompleteFilters.newContactFilter();
 
-    JLabel recipientIcon = new JLabel();
-    AwesomeDecorator.applyIcon(AwesomeIcon.USER, recipientIcon, false, AwesomeDecorator.LARGE_ICON_SIZE);
-    panel.add(recipientIcon);
+    JPanel panel = Panels.newPanel(new MigLayout(
+      "debug,fillx,insets 0", // Layout
+      "[][][]", // Columns
+      "[]" // Rows
+    ));
+
+    panel.add(Labels.newRecipient());
+    // Specify minimum width for consistent appearance across contact names and locales
+    panel.add(ComboBoxes.newRecipientComboBox(listener, filter),"growx,w min:350:,push");
+    panel.add(Labels.newImageLabel(""),"shrink,wrap");
 
     return panel;
   }
 
   /**
-   * <p>A Bitcoin amount panel provides a means of entering either a Bitcoin or fiat amount and seeing an immediate rate conversion</p>
+   * <p>A "Bitcoin amount" panel provides a means of entering either a Bitcoin or fiat amount and seeing an immediate rate conversion</p>
    *
    * @return A new Bitcoin amount panel
    */
@@ -91,15 +98,15 @@ public class Components {
   }
 
   /**
-   * <p>A notes panel provides a means of entering some text data</p>
+   * <p>An "enter notes" panel provides a means of entering some text data</p>
    *
    * @return A new notes panel
    */
-  public static JPanel newNotes() {
+  public static JPanel newEnterNotes() {
 
     JPanel panel = Panels.newPanel();
 
-    panel.add(new JLabel("Notes"));
+    panel.add(Labels.newNotes());
     panel.add(TextBoxes.newNotes());
 
     return panel;

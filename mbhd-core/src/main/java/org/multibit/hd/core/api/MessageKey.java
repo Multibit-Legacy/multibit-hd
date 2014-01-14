@@ -30,6 +30,9 @@ public enum MessageKey {
   NEXT("next"),
   PREVIOUS("previous"),
 
+  // Field labels
+  RECIPIENT("Recipient"),
+  NOTES("Notes"),
 
   // Panels
 

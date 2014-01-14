@@ -72,7 +72,7 @@ public enum AwesomeIcon {
   OUTDENT('\uf03b'),
   INDENT('\uf03c'),
   VIDEO_CAMERA('\uf03d'),
-  PICTURE_ALT('\uf03d'),
+  PICTURE_ALT('\uf03e'),
   PENCIL('\uf040'),
   MAP_MARKER('\uf041'),
   ADJUST('\uf042'),

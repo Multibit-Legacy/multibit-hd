@@ -26,9 +26,9 @@ public class SendBitcoinWizard extends AbstractWizard<SendBitcoinWizardModel> {
   @Override
   protected void populateWizardViewMap(Map<String, AbstractWizardView> wizardViewMap) {
 
-    wizardViewMap.put(SendBitcoinState.ENTER_AMOUNT.name(), new SendBitcoinConfirmView(this));
+    wizardViewMap.put(SendBitcoinState.ENTER_AMOUNT.name(), new SendBitcoinEnterAmountView(this));
     wizardViewMap.put(SendBitcoinState.CONFIRM_AMOUNT.name(), new SendBitcoinConfirmView(this));
-    wizardViewMap.put(SendBitcoinState.PROGRESS.name(), new SendBitcoinProgressView(this));
+    wizardViewMap.put(SendBitcoinState.SEND_BITCOIN_REPORT.name(), new SendBitcoinReportView(this));
 
   }
 

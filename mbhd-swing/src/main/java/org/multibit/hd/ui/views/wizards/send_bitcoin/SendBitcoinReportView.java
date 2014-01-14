@@ -13,13 +13,13 @@ import javax.swing.*;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Send bitcoin: Show send progress</li>
+ * <li>Show send Bitcoin progress report</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class SendBitcoinProgressView extends AbstractWizardView<SendBitcoinWizardModel, String> {
+public class SendBitcoinReportView extends AbstractWizardView<SendBitcoinWizardModel, String> {
 
   // Model
   private String model;
@@ -27,7 +27,7 @@ public class SendBitcoinProgressView extends AbstractWizardView<SendBitcoinWizar
   /**
    * @param wizard The wizard managing the states
    */
-  public SendBitcoinProgressView(AbstractWizard<SendBitcoinWizardModel> wizard) {
+  public SendBitcoinReportView(AbstractWizard<SendBitcoinWizardModel> wizard) {
 
     super(wizard.getWizardModel(), MessageKey.SEND_PROGRESS_TITLE);
 

@@ -6,9 +6,13 @@ import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * <p>Utility to provide the following to UI:</p>
@@ -127,13 +131,31 @@ public class Labels {
   }
 
   /**
+   * @param walletPath The path to the image resource within the current wallet
+   *
+   * @return A new label with the image or a placeholder if not present
+   */
+  public static JLabel newImageLabel(String walletPath) {
+    final BufferedImage image;
+    try {
+      image = ImageIO.read(new File(walletPath));
+      return new JLabel(new ImageIcon(image));
+    } catch (IOException e) {
+      // Fall back to a default image
+    }
+
+    JLabel label = new JLabel();
+    AwesomeDecorator.applyIcon(AwesomeIcon.USER, label, true, AwesomeDecorator.LARGE_ICON_SIZE);
+    return label;
+
+  }
+
+  /**
    * @return A new "verification" status label
    */
   public static JLabel newVerificationStatus(boolean status) {
 
-    JLabel label = newStatusLabel(MessageKey.VERIFICATION_STATUS, null, status);
-
-    return label;
+    return newStatusLabel(MessageKey.VERIFICATION_STATUS, null, status);
   }
 
   /**
@@ -259,8 +281,25 @@ public class Labels {
     return newLabel(MessageKey.CONFIRM_SEND_MESSAGE);
   }
 
+  /**
+   * @return A new "recipient" message
+   */
+  public static JLabel newRecipient() {
+    return newLabel(MessageKey.RECIPIENT);
+  }
+
+  /**
+   * @return A new "seed size" message
+   */
   public static JLabel newSeedSize() {
     return newLabel(MessageKey.SEED_SIZE);
+  }
+
+  /**
+   * @return A new "notes" message
+   */
+  public static JLabel newNotes() {
+    return newLabel(MessageKey.NOTES);
   }
 
   /**

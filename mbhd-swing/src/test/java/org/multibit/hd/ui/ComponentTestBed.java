@@ -13,7 +13,6 @@ import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.Wizards;
-import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class ComponentTestBed {
 
@@ -83,7 +82,9 @@ public class ComponentTestBed {
    * <p>Creates the panel under test</p>
    * <h3>Examples</h3>
    * <pre>
-   *   return Wizards.newWelcomeWizard().getWizardPanel();
+   * AbstractWizard wizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME);
+   * wizard.show(WelcomeWizardState.WELCOME.name());
+   * return wizard.getWizardPanel();
    * </pre>
    *
    * @return The panel under test
@@ -91,8 +92,7 @@ public class ComponentTestBed {
   public JPanel createTestPanel() {
 
     // Choose a panel to test
-    AbstractWizard wizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME);
-    wizard.show(WelcomeWizardState.WELCOME.name());
+    AbstractWizard wizard = Wizards.newSendBitcoinWizard();
     return wizard.getWizardPanel();
 
   }
@@ -188,7 +188,7 @@ public class ComponentTestBed {
 
     log.info("Adding test panel");
     contentPanel.add(createTestPanel(), "wrap");
-    contentPanel.add(toggleLocaleButton,"center");
+    contentPanel.add(toggleLocaleButton, "center");
 
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     frame.add(contentPanel);

@@ -53,7 +53,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
       case CONFIRM_AMOUNT:
         password = (String) panelModel.get();
         break;
-      case PROGRESS:
+      case SEND_BITCOIN_REPORT:
         break;
     }
 
@@ -67,7 +67,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
         state = CONFIRM_AMOUNT;
         break;
       case CONFIRM_AMOUNT:
-        state = PROGRESS;
+        state = SEND_BITCOIN_REPORT;
         break;
     }
 
