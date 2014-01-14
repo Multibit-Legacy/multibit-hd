@@ -337,7 +337,7 @@ public class Buttons {
 
     JButton button = newLargeButton(action, MessageKey.SEND);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD, button, true, AwesomeDecorator.LARGE_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD, button, true, JLabel.BOTTOM, AwesomeDecorator.LARGE_ICON_SIZE);
 
     return button;
   }
@@ -351,7 +351,7 @@ public class Buttons {
 
     JButton button = newLargeButton(action, MessageKey.RECEIVE);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, true, AwesomeDecorator.LARGE_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, true, JLabel.BOTTOM, AwesomeDecorator.LARGE_ICON_SIZE);
 
     return button;
 
@@ -366,7 +366,7 @@ public class Buttons {
 
     JButton button = newLargeButton(action, MessageKey.SHOW_WELCOME_WIZARD);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.WRENCH, button, true, AwesomeDecorator.LARGE_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.WRENCH, button, true, JLabel.BOTTOM, AwesomeDecorator.LARGE_ICON_SIZE);
 
     return button;
   }

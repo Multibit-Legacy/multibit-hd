@@ -193,8 +193,9 @@ public class WalletManagerTest {
 
     assertThat(Arrays.equals(key1.getPrivKeyBytes(), key2.getPrivKeyBytes())).isTrue();
 
-    assertThat(walletManager.getCurrentWalletDirectory().equals(
-            new File(temporaryDirectory2.getAbsolutePath() + File.separator + "mbhd-" + walletData2.getWalletId().toFormattedString())));
+    assertThat(walletManager.getCurrentWalletFilename().equals(
+            new File(temporaryDirectory2.getAbsolutePath() + File.separator + "mbhd-" + walletData2.getWalletId().toFormattedString()
+                    + File.separator + WalletManager.MBHD_WALLET_NAME)));
   }
 
   @Test
