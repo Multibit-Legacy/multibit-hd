@@ -1,6 +1,8 @@
 package org.multibit.hd.ui.views.components;
 
 import org.multibit.hd.core.api.MessageKey;
+import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.ui.i18n.BitcoinSymbol;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -258,6 +260,56 @@ public class Labels {
   }
 
   /**
+   * @return A new "Enter amount" label
+   */
+  public static JLabel newEnterAmount() {
+    return newLabel(MessageKey.ENTER_AMOUNT);
+  }
+
+  /**
+   * @return A new "Bitcoin currency symbol" based on the current configuration
+   */
+  public static JLabel newBitcoinCurrencySymbol() {
+
+    BitcoinSymbol symbol = BitcoinSymbol.valueOf(
+      Configurations
+        .currentConfiguration
+        .getBitcoinConfiguration()
+        .getBitcoinSymbol()
+    );
+
+    JLabel label = new JLabel();
+    if (BitcoinSymbol.ICON.equals(symbol)) {
+      AwesomeDecorator.applyIcon(
+        AwesomeIcon.BITCOIN,
+        label,
+        true,
+        AwesomeDecorator.NORMAL_ICON_SIZE
+      );
+    } else {
+      label.setText(symbol.getSymbol());
+    }
+
+    return label;
+
+  }
+
+  /**
+   * @return A new "local currency symbol" based on the current configuration
+   */
+  public static JLabel newLocalCurrencySymbol() {
+    // TODO Link this to the I18N preferences
+    return new JLabel("$");
+  }
+
+  /**
+   * @return A new "approximately" symbol
+   */
+  public static JLabel newApproximately() {
+    return newLabel(MessageKey.APPROXIMATELY);
+  }
+
+  /**
    * @return A new "Enter password" label
    */
   public static JLabel newEnterPassword() {
@@ -271,6 +323,19 @@ public class Labels {
   public static JLabel newConfirmPassword() {
 
     return newLabel(MessageKey.CONFIRM_PASSWORD);
+  }
+
+  /**
+   * @return The current exchange name from the configuration
+   */
+  public static JLabel newCurrentExchangeName() {
+
+    String exchangeName = Configurations
+      .currentConfiguration
+      .getBitcoinConfiguration()
+      .getExchangeName();
+
+    return newLabel(MessageKey.EXCHANGE_RATE_PROVIDER, exchangeName);
   }
 
   /**

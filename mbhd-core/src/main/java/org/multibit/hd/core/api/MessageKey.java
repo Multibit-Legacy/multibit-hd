@@ -33,6 +33,13 @@ public enum MessageKey {
   // Field labels
   RECIPIENT("Recipient"),
   NOTES("Notes"),
+  ENTER_PASSWORD("Enter password"),
+  CONFIRM_PASSWORD("Confirm password"),
+  ENTER_AMOUNT("Enter amount"),
+
+  // Placeholders
+  APPROXIMATELY("placeholder.approximately"),
+  PARANTHESES("placeholder.parantheses"),
 
   // Panels
 
@@ -65,8 +72,7 @@ public enum MessageKey {
 
   // Labels
   CONFIRM_SEND_MESSAGE("sendBitcoinConfirmView.message"),
-  ENTER_PASSWORD("Enter password"),
-  CONFIRM_PASSWORD("Confirm password"),
+  EXCHANGE_RATE_PROVIDER("exchange.rate-provider"),
 
   // Tool buttons
   SHOW_WELCOME_WIZARD("Welcome wizard"),

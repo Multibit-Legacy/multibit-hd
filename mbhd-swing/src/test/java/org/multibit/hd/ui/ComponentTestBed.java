@@ -2,6 +2,7 @@ package org.multibit.hd.ui;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
+import com.xeiam.xchange.mtgox.v2.MtGoxExchange;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.ShutdownEvent;
@@ -13,7 +14,6 @@ import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.Wizards;
-import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +55,10 @@ public class ComponentTestBed {
     // Register for events
     CoreServices.uiEventBus.register(this);
 
+    // Standard support services
+    CoreServices.newExchangeService(MtGoxExchange.class.getName()).start();
+    CoreServices.newBitcoinNetworkService().start();
+
   }
 
   /**
@@ -93,9 +97,7 @@ public class ComponentTestBed {
   public JPanel createTestPanel() {
 
     // Choose a panel to test
-//    AbstractWizard wizard = Wizards.newSendBitcoinWizard();
-    AbstractWizard wizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.CREATE_WALLET_SEED_PHRASE);
-    wizard.show(WelcomeWizardState.CREATE_WALLET_SEED_PHRASE.name());
+    AbstractWizard wizard = Wizards.newSendBitcoinWizard();
     return wizard.getWizardPanel();
 
   }

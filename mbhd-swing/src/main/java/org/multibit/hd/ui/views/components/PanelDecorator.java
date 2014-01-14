@@ -445,4 +445,5 @@ public class PanelDecorator {
     view.setFinishButton(Buttons.newFinishButton(wizard.getFinishAction(view)));
     wizardPanel.add(view.getFinishButton(), "cell 3 2");
   }
+
 }

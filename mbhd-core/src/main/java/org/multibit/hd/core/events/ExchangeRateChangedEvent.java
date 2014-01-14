@@ -17,7 +17,7 @@ public class ExchangeRateChangedEvent {
   private final String exchangeName;
 
   /**
-   * @param rate         The amount in the local currency (e.g. USD)
+   * @param rate         The amount in the local currency (e.g. 1000 means 1000 USD = 1 bitcoin)
    * @param exchangeName The exchange name
    */
   public ExchangeRateChangedEvent(BigDecimal rate, String exchangeName) {
@@ -26,7 +26,7 @@ public class ExchangeRateChangedEvent {
   }
 
   /**
-   * @return The rate in the local currency (e.g. USD)
+   * @return The rate in the local currency (e.g. 1000 means 1000 USD = 1 bitcoin)
    */
   public BigDecimal getRate() {
     return rate;
@@ -41,8 +41,8 @@ public class ExchangeRateChangedEvent {
 
   @Override
   public String toString() {
-    return "BalanceChangeEvent{" +
-      "bitcoinAmount=" + rate +
+    return "ExchangeRateChangedEvent{" +
+      "rate=" + rate +
       ", exchangeName='" + exchangeName + '\'' +
       '}';
   }

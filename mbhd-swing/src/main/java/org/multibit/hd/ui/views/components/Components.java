@@ -9,6 +9,8 @@ import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordView;
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseModel;
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseView;
+import org.multibit.hd.ui.views.components.enter_amount.EnterAmountModel;
+import org.multibit.hd.ui.views.components.enter_amount.EnterAmountView;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseView;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
@@ -64,7 +66,7 @@ public class Components {
     AutoCompleteFilter<Contact> filter = AutoCompleteFilters.newContactFilter();
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "debug,fillx,insets 0", // Layout
+      "fillx,insets 0", // Layout
       "[][][]", // Columns
       "[]" // Rows
     ));
@@ -82,19 +84,13 @@ public class Components {
    *
    * @return A new Bitcoin amount panel
    */
-  public static JPanel newBitcoinAmount() {
+  public static ModelAndView<EnterAmountModel, EnterAmountView> newEnterAmount(String panelName) {
 
-    JPanel panel = Panels.newPanel();
+    EnterAmountModel model = new EnterAmountModel(panelName);
+    EnterAmountView view = new EnterAmountView(model);
 
-    panel.add(new JLabel("Amount"));
-    panel.add(new JLabel("BTC"));
-    panel.add(TextBoxes.newCurrency("0.00"));
-    panel.add(new JLabel("="));
-    panel.add(new JLabel("$"));
-    panel.add(TextBoxes.newCurrency("0.00"));
-    panel.add(new JLabel("(MtGox)"));
+    return new ModelAndView<>(model, view);
 
-    return panel;
   }
 
   /**

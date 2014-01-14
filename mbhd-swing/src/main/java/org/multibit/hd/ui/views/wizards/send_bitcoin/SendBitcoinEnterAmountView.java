@@ -2,13 +2,23 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
-import org.multibit.hd.ui.views.components.*;
+import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.views.components.Components;
+import org.multibit.hd.ui.views.components.ModelAndView;
+import org.multibit.hd.ui.views.components.PanelDecorator;
+import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.enter_amount.EnterAmountModel;
+import org.multibit.hd.ui.views.components.enter_amount.EnterAmountView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
+
+import static org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState.ENTER_AMOUNT;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -20,10 +30,9 @@ import java.awt.event.ActionListener;
  *         
  */
 
-public class SendBitcoinEnterAmountView extends AbstractWizardView<SendBitcoinWizardModel, String> {
+public class SendBitcoinEnterAmountView extends AbstractWizardView<SendBitcoinWizardModel, BigDecimal> {
 
-  // Model
-  private String model;
+  private ModelAndView<EnterAmountModel, EnterAmountView> enterAmountMaV;
 
   /**
    * @param wizard The wizard managing the states
@@ -32,18 +41,18 @@ public class SendBitcoinEnterAmountView extends AbstractWizardView<SendBitcoinWi
 
     super(wizard.getWizardModel(), MessageKey.SEND_BITCOIN_TITLE);
 
-    PanelDecorator.addCancelPreviousNext(this, wizard);
+    PanelDecorator.addExitCancelNext(this, wizard);
 
   }
 
   @Override
   public JPanel newDataPanel() {
 
-    model = "TODO replace with a proper model";
-    setPanelModel(model);
+    enterAmountMaV = Components.newEnterAmount(ENTER_AMOUNT.name());
+    setPanelModel(enterAmountMaV.getModel().getValue());
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "debug,fillx,insets 0", // Layout constrains
+      "fillx,insets 0", // Layout constrains
       "[]", // Column constraints
       "[]10[]" // Row constraints
     ));
@@ -56,20 +65,20 @@ public class SendBitcoinEnterAmountView extends AbstractWizardView<SendBitcoinWi
     };
 
     panel.add(Components.newRecipient(listener),"wrap");
-    panel.add(Components.newBitcoinAmount(),"wrap");
+    panel.add(enterAmountMaV.getView().newPanel(),"wrap");
 
     return panel;
   }
 
   @Override
   public void fireViewEvents() {
-    // Do nothing
+    ViewEvents.fireWizardButtonEnabledEvent(ENTER_AMOUNT.name(), WizardButton.NEXT, false);
   }
 
   @Override
   public boolean updatePanelModel() {
-    // Do nothing - panel model is updated via an action and wizard model is not applicable
-    return true;
+    enterAmountMaV.getView().updateModel();
+    return false;
   }
 
 }

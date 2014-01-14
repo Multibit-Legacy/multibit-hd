@@ -46,6 +46,19 @@ public class TextBoxes {
   }
 
   /**
+   * TODO replace with a formatted text field with mask derived from locale and configuration
+   *
+   * @return A new text field for currency data entry
+   */
+  public static JTextField newCurrencyAmount() {
+
+    JTextField textField = new JTextField(20);
+    textField.setBackground(Themes.currentTheme.dataEntryBackground());
+
+    return textField;
+  }
+
+  /**
    * @return A new "Password" text field
    */
   public static JPasswordField newPassword() {
@@ -110,7 +123,7 @@ public class TextBoxes {
     doc.setDocumentFilter(new DocumentMaxLengthFilter(SEED_PHRASE_LENGTH));
 
     // Keep this in line with the PASSWORD_AREA constant
-    JTextArea textArea = new JTextArea(doc, "",6,PASSWORD_LENGTH);
+    JTextArea textArea = new JTextArea(doc, "", 6, PASSWORD_LENGTH);
 
     // Ensure TAB transfers focus
     AbstractAction transferFocus = new AbstractAction() {
@@ -127,7 +140,7 @@ public class TextBoxes {
     textArea.setFont(new Font("Courier New", Font.PLAIN, 14));
 
     // Ensure we provide a suitable inner margin to allow letters to be clear
-    textArea.setMargin(new Insets(2,4,2,4));
+    textArea.setMargin(new Insets(2, 4, 2, 4));
 
     // Ensure line and word wrapping occur as required
     textArea.setLineWrap(true);

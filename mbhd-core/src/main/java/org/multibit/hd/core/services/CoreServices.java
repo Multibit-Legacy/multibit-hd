@@ -59,6 +59,12 @@ public class CoreServices {
     // Use the factory to get the exchange API using default settings
     final Exchange exchange = ExchangeFactory.INSTANCE.createExchange(exchangeClassName);
 
+    // Update the configuration with the current exchange name
+    Configurations
+      .currentConfiguration
+      .getBitcoinConfiguration()
+      .setExchangeName(exchange.getExchangeSpecification().getExchangeName());
+
     return new ExchangeTickerService(exchange.getExchangeSpecification().getExchangeName(), exchange.getPollingMarketDataService());
 
   }
