@@ -45,8 +45,8 @@ public class EnterSeedPhraseView extends AbstractView<EnterSeedPhraseModel> {
 
     panel = Panels.newPanel(new MigLayout(
       "insets 0", // Layout
-      "[][][]", // Columns
-      "[]10[]" // Rows
+      "[][]", // Columns
+      "[][]" // Rows
     ));
 
     seedPhraseTextArea = TextBoxes.newEnterSeedPhrase();
@@ -71,9 +71,9 @@ public class EnterSeedPhraseView extends AbstractView<EnterSeedPhraseModel> {
     Action toggleDisplayAction = getToggleDisplayAction();
 
     // Add to the panel
-    panel.add(seedPhraseTextArea, "span 2");
+    panel.add(seedPhraseTextArea,"grow,push");
     panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink,wrap");
-    panel.add(verificationStatusPanel, "span 3,push,wrap");
+    panel.add(verificationStatusPanel, "span 2,push,wrap");
 
     return panel;
 

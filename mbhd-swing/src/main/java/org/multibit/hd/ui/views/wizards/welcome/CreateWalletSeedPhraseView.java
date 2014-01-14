@@ -50,7 +50,7 @@ public class CreateWalletSeedPhraseView extends AbstractWizardView<WelcomeWizard
     JPanel panel = Panels.newPanel(new MigLayout(
       "fill,insets 0", // Layout constrains
       "[]", // Column constraints
-      "[]10[]" // Row constraints
+      "[][]" // Row constraints
     ));
 
     panel.add(Panels.newSeedPhraseWarning(), "grow,push,wrap");

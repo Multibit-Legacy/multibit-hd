@@ -50,9 +50,9 @@ public class ConfirmWalletSeedPhraseView extends AbstractWizardView<WelcomeWizar
     setPanelModel(enterSeedPhraseMaV.getModel().getValue());
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fill,insets 0", // Layout constrains
+      "fill,insets 0,hidemode 1", // Layout constraints
       "[]", // Column constraints
-      "[]10[]" // Row constraints
+      "[][]" // Row constraints
     ));
 
     panel.add(Panels.newConfirmSeedPhrase(), "wrap");

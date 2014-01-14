@@ -105,8 +105,12 @@ public class TextBoxes {
    */
   public static JTextArea newEnterSeedPhrase() {
 
+    // Limit the length of the underlying document
+    DefaultStyledDocument doc = new DefaultStyledDocument();
+    doc.setDocumentFilter(new DocumentMaxLengthFilter(SEED_PHRASE_LENGTH));
+
     // Keep this in line with the PASSWORD_AREA constant
-    JTextArea textArea = new JTextArea(6, PASSWORD_LENGTH);
+    JTextArea textArea = new JTextArea(doc, "",6,PASSWORD_LENGTH);
 
     // Ensure TAB transfers focus
     AbstractAction transferFocus = new AbstractAction() {
@@ -117,14 +121,10 @@ public class TextBoxes {
     textArea.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "transferFocus");
     textArea.getActionMap().put("transferFocus", transferFocus);
 
-    // Limit the length of the underlying document
-    DefaultStyledDocument doc = new DefaultStyledDocument();
-    doc.setDocumentFilter(new DocumentMaxLengthFilter(SEED_PHRASE_LENGTH));
-    textArea.setDocument(doc);
 
     // Apply the theme
     textArea.setBackground(Themes.currentTheme.readOnlyBackground());
-    textArea.setFont(new Font("Courier New", Font.PLAIN, 13));
+    textArea.setFont(new Font("Courier New", Font.PLAIN, 14));
 
     // Ensure we provide a suitable inner margin to allow letters to be clear
     textArea.setMargin(new Insets(2,4,2,4));
