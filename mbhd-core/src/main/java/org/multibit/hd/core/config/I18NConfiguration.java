@@ -1,7 +1,7 @@
 package org.multibit.hd.core.config;
 
-import com.google.common.base.Optional;
-
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 /**
@@ -11,39 +11,51 @@ import java.util.Locale;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 @SuppressWarnings("UnusedDeclaration")
 public class I18NConfiguration {
 
-  private Optional<Character> decimalSeparator = Optional.absent();
+  private Character decimalSeparator;
 
-  private Optional<Character> groupingSeparator = Optional.absent();
+  private Character groupingSeparator;
 
-  private Locale locale = Locale.UK;
+  private int decimalPlaces;
+
+  private Locale locale = Locale.getDefault();
 
   private boolean currencySymbolLeading = true;
+
+  public I18NConfiguration() {
+
+    // Get the decimal and grouping separators for the current locale
+    DecimalFormat decimalFormat= (DecimalFormat) DecimalFormat.getInstance();
+    DecimalFormatSymbols symbols=decimalFormat.getDecimalFormatSymbols();
+    decimalSeparator=symbols.getDecimalSeparator();
+    groupingSeparator=symbols.getGroupingSeparator();
+
+  }
 
   /**
    * @return The decimal separator
    */
-  public Optional<Character> getDecimalSeparator() {
+  public Character getDecimalSeparator() {
     return decimalSeparator;
   }
 
   public void setDecimalSeparator(Character separator) {
-    this.decimalSeparator = Optional.fromNullable(separator);
+    this.decimalSeparator = separator;
   }
 
   /**
    * @return The grouping separator
    */
-  public Optional<Character> getGroupingSeparator() {
+  public Character getGroupingSeparator() {
     return groupingSeparator;
   }
 
   public void setGroupingSeparator(Character groupingSeparator) {
-    this.groupingSeparator = Optional.fromNullable(groupingSeparator);
+    this.groupingSeparator = groupingSeparator;
   }
 
   /**
@@ -69,6 +81,17 @@ public class I18NConfiguration {
   }
 
   /**
+   * @return The number of decimal places to show
+   */
+  public int getDecimalPlaces() {
+    return decimalPlaces;
+  }
+
+  public void setDecimalPlaces(int decimalPlaces) {
+    this.decimalPlaces = decimalPlaces;
+  }
+
+  /**
    * @return A deep copy of this object
    */
   public I18NConfiguration deepCopy() {
@@ -77,8 +100,9 @@ public class I18NConfiguration {
 
     i18n.setCurrencySymbolLeading(isCurrencySymbolLeading());
     i18n.setLocale(getLocale());
-    i18n.setDecimalSeparator(getDecimalSeparator().orNull());
-    i18n.setGroupingSeparator(getGroupingSeparator().orNull());
+    i18n.setDecimalSeparator(getDecimalSeparator());
+    i18n.setGroupingSeparator(getGroupingSeparator());
+    i18n.setDecimalPlaces(getDecimalPlaces());
 
     return i18n;
 

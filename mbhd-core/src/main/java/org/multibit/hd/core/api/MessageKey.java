@@ -82,6 +82,8 @@ public enum MessageKey {
   RELAY_STATUS("Relayed"),
   CONFIRMATION_STATUS("Confirmation count {0}"),
   VERIFICATION_STATUS("Verified"),
+  EXCHANGE_RATE_STATUS_OK("Exchange rate OK"),
+  EXCHANGE_RATE_STATUS_WARN("Exchange rate is out of date"),
 
   SEED_PHRASE_CREATED_STATUS("Seed phrase created"),
   WALLET_PASSWORD_CREATED_STATUS("Wallet password created"),

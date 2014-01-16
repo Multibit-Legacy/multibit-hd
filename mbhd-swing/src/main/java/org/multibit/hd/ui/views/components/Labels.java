@@ -117,7 +117,7 @@ public class Labels {
    * @param values The substitution values
    * @param status True if a check icon is required, false for a cross
    *
-   * @return A new label
+   * @return A new label with icon binding to allow the AwesomeDecorator to update it
    */
   public static JLabel newStatusLabel(MessageKey key, Object[] values, boolean status) {
 
@@ -153,6 +153,8 @@ public class Labels {
   }
 
   /**
+   * @param status True if the status is "good"
+   *
    * @return A new "verification" status label
    */
   public static JLabel newVerificationStatus(boolean status) {
@@ -161,6 +163,8 @@ public class Labels {
   }
 
   /**
+   * @param status True if the status is "good"
+   *
    * @return A new "seed phrase created" status label
    */
   public static JLabel newSeedPhraseCreatedStatus(boolean status) {
@@ -168,6 +172,8 @@ public class Labels {
   }
 
   /**
+   * @param status True if the status is "good"
+   *
    * @return A new "wallet password created" status label
    */
   public static JLabel newWalletPasswordCreatedStatus(boolean status) {
@@ -175,6 +181,8 @@ public class Labels {
   }
 
   /**
+   * @param status True if the status is "good"
+   *
    * @return A new "wallet created" status label
    */
   public static JLabel newWalletCreatedStatus(boolean status) {
@@ -182,10 +190,25 @@ public class Labels {
   }
 
   /**
+   * @param status True if the status is "good"
+   *
    * @return A new "backup location" status label
    */
   public static JLabel newBackupLocationStatus(boolean status) {
     return newStatusLabel(MessageKey.BACKUP_LOCATION_STATUS, null, status);
+  }
+
+  /**
+   * @param status True if the status is "good"
+   *
+   * @return A new "exchange rate status" message
+   */
+  public static JLabel newExchangeRateStatus(boolean status) {
+    if (status) {
+      return newStatusLabel(MessageKey.EXCHANGE_RATE_STATUS_OK, null, true);
+    } else {
+      return newStatusLabel(MessageKey.EXCHANGE_RATE_STATUS_WARN, null, false);
+    }
   }
 
   /**
@@ -299,14 +322,25 @@ public class Labels {
    */
   public static JLabel newLocalCurrencySymbol() {
     // TODO Link this to the I18N preferences
-    return new JLabel("$");
+    JLabel label = new JLabel("$");
+
+    Font font = label.getFont().deriveFont(Font.BOLD, (float) AwesomeDecorator.NORMAL_ICON_SIZE);
+    label.setFont(font);
+
+    return label;
   }
 
   /**
    * @return A new "approximately" symbol
    */
   public static JLabel newApproximately() {
-    return newLabel(MessageKey.APPROXIMATELY);
+
+    JLabel label = newLabel(MessageKey.APPROXIMATELY);
+
+    Font font = label.getFont().deriveFont(Font.BOLD, (float) AwesomeDecorator.NORMAL_ICON_SIZE);
+    label.setFont(font);
+
+    return label;
   }
 
   /**

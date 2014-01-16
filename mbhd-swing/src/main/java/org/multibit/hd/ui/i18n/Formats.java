@@ -143,12 +143,8 @@ public class Formats {
 
     DecimalFormatSymbols dfs = new DecimalFormatSymbols(currentLocale);
 
-    if (configuration.getDecimalSeparator().isPresent()) {
-      dfs.setDecimalSeparator(configuration.getDecimalSeparator().get());
-    }
-    if (configuration.getGroupingSeparator().isPresent()) {
-      dfs.setGroupingSeparator(configuration.getGroupingSeparator().get());
-    }
+    dfs.setDecimalSeparator(configuration.getDecimalSeparator());
+    dfs.setGroupingSeparator(configuration.getGroupingSeparator());
 
     return dfs;
 

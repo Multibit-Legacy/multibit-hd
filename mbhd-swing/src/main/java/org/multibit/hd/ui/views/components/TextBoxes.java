@@ -1,5 +1,7 @@
 package org.multibit.hd.ui.views.components;
 
+import org.multibit.hd.ui.views.components.text_fields.FormattedDecimalField;
+import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
@@ -46,14 +48,35 @@ public class TextBoxes {
   }
 
   /**
-   * TODO replace with a formatted text field with mask derived from locale and configuration
+   * @param maximum The largest value than can be accepted (typically the wallet Bitcoin balance) - no financial calculations are performed on this value
    *
-   * @return A new text field for currency data entry
+   * @return A new text field for Bitcoin amount entry
    */
-  public static JTextField newCurrencyAmount() {
+  public static FormattedDecimalField newBitcoinAmount(double maximum) {
 
-    JTextField textField = new JTextField(20);
-    textField.setBackground(Themes.currentTheme.dataEntryBackground());
+    FormattedDecimalField textField = new FormattedDecimalField(0, maximum, 8);
+
+    Font font = textField.getFont().deriveFont((float) AwesomeDecorator.NORMAL_ICON_SIZE);
+
+    textField.setFont(font);
+    textField.setColumns(15);
+
+    return textField;
+  }
+
+  /**
+   * @param maximum The largest value than can be accepted (typically the wallet local balance) - no financial calculations are performed on this value
+   *
+   * @return A new text field for currency amount entry
+   */
+  public static FormattedDecimalField newCurrencyAmount(double maximum) {
+
+    FormattedDecimalField textField = new FormattedDecimalField(0, maximum, 2);
+
+    Font font = textField.getFont().deriveFont((float) AwesomeDecorator.NORMAL_ICON_SIZE);
+
+    textField.setFont(font);
+    textField.setColumns(15);
 
     return textField;
   }
@@ -148,17 +171,6 @@ public class TextBoxes {
 
     return textArea;
 
-  }
-
-  /**
-   * @return A new "Amount" text field for currency entry
-   */
-  public static JTextField newCurrency(String amount) {
-
-    JTextField textField = new JTextField(amount, 20);
-    textField.setBackground(Themes.currentTheme.dataEntryBackground());
-
-    return textField;
   }
 
   /**

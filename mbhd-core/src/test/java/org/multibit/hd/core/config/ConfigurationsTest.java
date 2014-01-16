@@ -38,8 +38,8 @@ public class ConfigurationsTest {
 
     // Internationalisation
     assertThat(configuration.getLocale().getLanguage()).isEqualTo("en_gb");
-    assertThat(configuration.getI18NConfiguration().getDecimalSeparator().get()).isEqualTo('.');
-    assertThat(configuration.getI18NConfiguration().getGroupingSeparator().get()).isEqualTo(',');
+    assertThat(configuration.getI18NConfiguration().getDecimalSeparator()).isEqualTo('.');
+    assertThat(configuration.getI18NConfiguration().getGroupingSeparator()).isEqualTo(',');
     assertThat(configuration.getI18NConfiguration().isCurrencySymbolLeading()).isTrue();
 
     // Logging

@@ -16,7 +16,7 @@
 package org.multibit.hd.core.utils;
 
 /**
- * <p>Utilities to provide the following to {@link org.multibit.hd.ui.platform.GenericApplicationFactory}:</p>
+ * <p>Utilities to provide the following to application:</p>
  * <ul>
  * <li>Detection of operating system</li>
  * </ul>

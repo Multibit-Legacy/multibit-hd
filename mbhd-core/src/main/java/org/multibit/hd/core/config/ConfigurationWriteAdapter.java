@@ -57,8 +57,8 @@ public class ConfigurationWriteAdapter {
     I18NConfiguration i18n = configuration.getI18NConfiguration();
 
     properties.put(I18N_LOCALE, i18n.getLocale().toString());
-    properties.put(I18N_DECIMAL_SEPARATOR, i18n.getDecimalSeparator().or('.'));
-    properties.put(I18N_GROUPING_SEPARATOR, i18n.getGroupingSeparator().or(','));
+    properties.put(I18N_DECIMAL_SEPARATOR, i18n.getDecimalSeparator());
+    properties.put(I18N_GROUPING_SEPARATOR, i18n.getGroupingSeparator());
     properties.put(I18N_IS_CURRENCY_PREFIXED, String.valueOf(i18n.isCurrencySymbolLeading()));
   }
 

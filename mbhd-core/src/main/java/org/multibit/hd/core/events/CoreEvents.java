@@ -1,5 +1,6 @@
 package org.multibit.hd.core.events;
 
+import org.joda.time.DateTime;
 import org.multibit.hd.core.api.BitcoinNetworkSummary;
 import org.multibit.hd.core.services.CoreServices;
 import org.slf4j.Logger;
@@ -31,11 +32,12 @@ public class CoreEvents {
    *
    * @param rate         The rate in the local currency (e.g. USD)
    * @param exchangeName The exchange name (e.g. "Bitstamp")
+   * @param expires      The expiry timestamp of this rate
    */
-  public static void fireExchangeRateChangedEvent(BigDecimal rate, String exchangeName) {
+  public static void fireExchangeRateChangedEvent(BigDecimal rate, String exchangeName, DateTime expires) {
 
     log.debug("Firing 'exchange rate changed' event");
-    CoreServices.uiEventBus.post(new ExchangeRateChangedEvent(rate, exchangeName));
+    CoreServices.uiEventBus.post(new ExchangeRateChangedEvent(rate, exchangeName, expires));
 
   }
 

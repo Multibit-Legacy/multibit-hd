@@ -6,6 +6,7 @@ import com.xeiam.xchange.service.polling.PollingMarketDataService;
 import org.joda.money.BigMoney;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.exceptions.CoreException;
+import org.multibit.hd.core.utils.Dates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeUnit;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class ExchangeTickerService extends AbstractService implements ManagedService {
 
@@ -65,13 +66,19 @@ public class ExchangeTickerService extends AbstractService implements ManagedSer
       private BigMoney previous;
 
       public void run() {
-        // Get the latest ticker data showing BTC to GBP
+        // Get the latest ticker data showing BTC to USD
         Ticker ticker;
         try {
           ticker = pollingMarketDataService.getTicker(Currencies.BTC, Currencies.USD);
 
           if (previous == null || !ticker.getLast().isEqual(previous)) {
-            CoreEvents.fireExchangeRateChangedEvent(ticker.getLast().getAmount(), exchangeName);
+
+            CoreEvents.fireExchangeRateChangedEvent(
+              ticker.getLast().getAmount(),
+              exchangeName,
+              // Exchange rate will expire just after the next update (with small overlap)
+              Dates.nowUtc().plusSeconds(TICKER_REFRESH_SECONDS + 5)
+            );
 
             log.debug("Updated {} ticker: {}", exchangeName, ticker.getLast());
           }

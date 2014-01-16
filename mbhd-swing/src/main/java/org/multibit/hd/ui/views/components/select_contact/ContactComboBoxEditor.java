@@ -1,10 +1,9 @@
 package org.multibit.hd.ui.views.components.select_contact;
 
 import org.multibit.hd.core.api.Contact;
+import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.plaf.UIResource;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
@@ -27,8 +26,9 @@ public class ContactComboBoxEditor implements ComboBoxEditor {
 
   public ContactComboBoxEditor() {
 
-    editor = new BorderlessTextField("", 9);
-    editor.setBorder(null);
+    // Use a modified text field with a workaround
+    editor = new ComboBoxTextField("", 0);
+    editor.setBackground(Themes.currentTheme.dataEntryBackground());
 
   }
 
@@ -86,8 +86,9 @@ public class ContactComboBoxEditor implements ComboBoxEditor {
     editor.removeActionListener(l);
   }
 
-  static class BorderlessTextField extends JTextField {
-    public BorderlessTextField(String value, int n) {
+  static class ComboBoxTextField extends JTextField {
+
+    public ComboBoxTextField(String value, int n) {
       super(value, n);
     }
 
@@ -97,12 +98,6 @@ public class ContactComboBoxEditor implements ComboBoxEditor {
         return;
       }
       super.setText(s);
-    }
-
-    public void setBorder(Border b) {
-      if (!(b instanceof UIResource)) {
-        super.setBorder(b);
-      }
     }
   }
 

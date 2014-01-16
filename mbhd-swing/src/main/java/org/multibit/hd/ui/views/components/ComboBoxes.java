@@ -6,6 +6,7 @@ import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteDecorator;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilter;
 import org.multibit.hd.ui.views.components.select_contact.ContactComboBoxEditor;
 import org.multibit.hd.ui.views.components.select_contact.ContactListCellRenderer;
+import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
@@ -74,6 +75,7 @@ public class ComboBoxes {
   public static JComboBox<Contact> newRecipientComboBox(ActionListener listener, AutoCompleteFilter<Contact> filter) {
 
     JComboBox<Contact> comboBox = new JComboBox<>(filter.create());
+    comboBox.setBackground(Themes.currentTheme.dataEntryBackground());
 
     // Use a contact editor to force use of the name field
     comboBox.setEditor(new ContactComboBoxEditor());
