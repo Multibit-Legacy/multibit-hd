@@ -52,6 +52,7 @@ public class SendBitcoinEnterAmountView extends AbstractWizardView<SendBitcoinWi
     enterRecipientMaV = Components.newEnterRecipient(ENTER_AMOUNT.name());
     enterAmountMaV = Components.newEnterAmount(ENTER_AMOUNT.name());
 
+    // Configure the panel model
     setPanelModel(new SendBitcoinEnterAmountPanelModel(
       enterRecipientMaV.getModel(),
       enterAmountMaV.getModel()

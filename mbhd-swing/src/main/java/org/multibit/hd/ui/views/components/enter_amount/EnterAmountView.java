@@ -40,7 +40,6 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
   private FormattedDecimalField localAmountText;
 
   private JLabel exchangeRateStatusLabel = new JLabel("");
-  private JLabel exchangeNameLabel = new JLabel("");
   private JLabel approximatelyLabel = new JLabel("");
   private JLabel localCurrencySymbolLabel = new JLabel("");
 
@@ -64,7 +63,7 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
     panel = Panels.newPanel(new MigLayout(
       "fillx,insets 0", // Layout
       "[][][][][][]", // Columns
-      "[][][][]" // Rows
+      "[][][]" // Rows
     ));
 
     // Keep track of the amount fields
@@ -73,7 +72,6 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
 
     approximatelyLabel = Labels.newApproximately();
     localCurrencySymbolLabel = Labels.newLocalCurrencySymbol();
-    exchangeNameLabel = Labels.newCurrentExchangeName();
 
     // Bind a key listener to allow instant update of UI to amount changes
     bitcoinAmountText.addKeyListener(new KeyAdapter() {
@@ -100,8 +98,6 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
       .getI18NConfiguration()
       .isCurrencySymbolLeading();
 
-    isCurrencySymbolLeading = false;
-
     // Add to the panel
     panel.add(Labels.newEnterAmount(), "span 4,grow,push,wrap");
 
@@ -120,7 +116,6 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
     }
 
     panel.add(exchangeRateStatusLabel, "span 4,push,wrap");
-    panel.add(exchangeNameLabel, "span 4,push,wrap");
 
     setLocalAmountVisibility();
 
@@ -140,12 +135,16 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
 
     setLocalAmountVisibility();
 
-    // Rate has changed so trigger an update based on focus
+    // Rate has changed so trigger an update if focus is on either amount boxes
     if (bitcoinAmountText.hasFocus()) {
+      // User is entering Bitcoin amount so will expect the local to update
       updateLocalAmount();
-    } else {
+    }
+    if (localAmountText.hasFocus()) {
+      // User is entered local amount so will expect the Bitcoin amount to update
       updateBitcoinAmount();
     }
+
 
   }
 
@@ -158,9 +157,6 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
     if (latestExchangeRateChangedEvent.isPresent()) {
 
       setLocalCurrencyComponentVisibility(true);
-
-      // Set the exchange rate provider
-      exchangeNameLabel.setText(Labels.newCurrentExchangeName().getText());
 
       // Rate may be valid
       setExchangeRateStatus(latestExchangeRateChangedEvent.get().isValid());
@@ -186,7 +182,6 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
     this.approximatelyLabel.setVisible(visible);
     this.localCurrencySymbolLabel.setVisible(visible);
     this.localAmountText.setVisible(visible);
-    this.exchangeNameLabel.setVisible(visible);
 
   }
 
@@ -235,14 +230,21 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
         bitcoinAmountText.setValue(bitcoinAmount.doubleValue());
 
         // Update the model
-        getModel().get().setValue(bitcoinAmount);
+        getModel().get().setBitcoinAmount(bitcoinAmount);
+        getModel().get().setLocalAmount(localAmount);
 
       } else {
         bitcoinAmountText.setText("");
 
         // Update the model
-        getModel().get().setValue(BigDecimal.ZERO);
+        getModel().get().setBitcoinAmount(BigDecimal.ZERO);
+        getModel().get().setLocalAmount(BigDecimal.ZERO);
       }
+
+    } else {
+
+      // No exchange rate so no local amount
+      getModel().get().setLocalAmount(BigDecimal.ZERO);
 
     }
 
@@ -268,26 +270,32 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
         localAmountText.setValue(localAmount.doubleValue());
 
         // Update the model
-        getModel().get().setValue(bitcoinAmount);
+        getModel().get().setBitcoinAmount(bitcoinAmount);
+        getModel().get().setLocalAmount(localAmount);
+
       } else {
         localAmountText.setText("");
 
         // Update the model
         getModel().get().setValue(BigDecimal.ZERO);
+        getModel().get().setLocalAmount(BigDecimal.ZERO);
       }
     } else {
 
+      // No exchange rate so no local amount
       if (value.isPresent()) {
 
         BigDecimal bitcoinAmount = new BigDecimal(value.get()).setScale(12, RoundingMode.HALF_EVEN);
 
         // Update the model
-        getModel().get().setValue(bitcoinAmount);
+        getModel().get().setBitcoinAmount(bitcoinAmount);
+        getModel().get().setLocalAmount(BigDecimal.ZERO);
 
       } else {
 
         // Update the model
         getModel().get().setValue(BigDecimal.ZERO);
+        getModel().get().setLocalAmount(BigDecimal.ZERO);
       }
     }
 

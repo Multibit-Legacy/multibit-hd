@@ -172,7 +172,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
    */
   private boolean isConfirmNextEnabled() {
 
-    // TODO Tie this into CoreServices
+    // TODO Tie this into CoreServices for real password checking
     return !Strings.isNullOrEmpty(confirmPanelModel.getPassword());
   }
 
