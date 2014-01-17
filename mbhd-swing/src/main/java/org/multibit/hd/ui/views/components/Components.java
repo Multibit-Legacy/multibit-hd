@@ -11,13 +11,14 @@ import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhrase
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseView;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountModel;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountView;
+import org.multibit.hd.ui.views.components.enter_recipient.EnterRecipientModel;
+import org.multibit.hd.ui.views.components.enter_recipient.EnterRecipientView;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseView;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.components.select_file.SelectFileView;
 
 import javax.swing.*;
-import java.awt.event.ActionListener;
 
 /**
  * <p>Factory to provide the following to UI:</p>
@@ -61,22 +62,13 @@ public class Components {
    *
    * @return A new "recipient" panel
    */
-  public static JPanel newRecipient(ActionListener listener) {
+  public static ModelAndView<EnterRecipientModel, EnterRecipientView> newEnterRecipient(String panelName) {
 
-    AutoCompleteFilter<Contact> filter = AutoCompleteFilters.newContactFilter();
+    EnterRecipientModel model = new EnterRecipientModel(panelName);
+    EnterRecipientView view = new EnterRecipientView(model);
 
-    JPanel panel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0", // Layout
-      "[][][]", // Columns
-      "[]" // Rows
-    ));
+    return new ModelAndView<>(model, view);
 
-    panel.add(Labels.newRecipient());
-    // Specify minimum width for consistent appearance across contact names and locales
-    panel.add(ComboBoxes.newRecipientComboBox(listener, filter),"growx,w min:350:,push");
-    panel.add(Labels.newImageLabel(""),"shrink,wrap");
-
-    return panel;
   }
 
   /**

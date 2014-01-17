@@ -466,4 +466,17 @@ public class Labels {
     }, new Object[][]{});
 
   }
+
+  /**
+   * @return A new "confirm send" note
+   */
+  public static JLabel newConfirmSendNote(
+
+  ) {
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.SEND_AMOUNT_NOTE_1,
+      MessageKey.SEND_AMOUNT_NOTE_2,
+      MessageKey.CONFIRM_SEND_NOTE_3,
+    }, new Object[][]{});
+  }
 }

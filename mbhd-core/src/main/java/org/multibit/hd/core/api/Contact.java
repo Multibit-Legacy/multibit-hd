@@ -5,7 +5,7 @@ import com.google.common.base.Optional;
 import java.util.UUID;
 
 /**
- * <p>Value object to provide the following to Contact API:</p>
+ * <p>DTO to provide the following to Contact API:</p>
  * <ul>
  * <li>Contact details</li>
  * </ul>
@@ -64,6 +64,23 @@ public class Contact {
 
   public void setImagePath(Optional<String> imagePath) {
     this.imagePath = imagePath;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Contact contact = (Contact) o;
+
+    if (id != null ? !id.equals(contact.id) : contact.id != null) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return id != null ? id.hashCode() : 0;
   }
 
   @Override

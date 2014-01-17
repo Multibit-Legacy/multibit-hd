@@ -67,12 +67,10 @@ public class ComboBoxes {
   }
 
   /**
-   * @param listener The action listener to alert when the selection is made
-   *
    * @return A new "recipient" combo box
    */
   @SuppressWarnings("unchecked")
-  public static JComboBox<Contact> newRecipientComboBox(ActionListener listener, AutoCompleteFilter<Contact> filter) {
+  public static JComboBox<Contact> newRecipientComboBox(AutoCompleteFilter<Contact> filter) {
 
     JComboBox<Contact> comboBox = new JComboBox<>(filter.create());
     comboBox.setBackground(Themes.currentTheme.dataEntryBackground());
@@ -91,9 +89,6 @@ public class ComboBoxes {
     comboBox.applyComponentOrientation(Languages.currentComponentOrientation());
 
     AutoCompleteDecorator.apply(comboBox, filter);
-
-    // Add the listener at the end to avoid false events
-    comboBox.addActionListener(listener);
 
     return comboBox;
 

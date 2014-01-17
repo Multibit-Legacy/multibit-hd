@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Numbers;
@@ -93,20 +94,37 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
 
     });
 
+    // Arrange label placement according to configuration
+    boolean isCurrencySymbolLeading = Configurations
+      .currentConfiguration
+      .getI18NConfiguration()
+      .isCurrencySymbolLeading();
+
+    isCurrencySymbolLeading = false;
+
     // Add to the panel
     panel.add(Labels.newEnterAmount(), "span 4,grow,push,wrap");
-    panel.add(Labels.newBitcoinCurrencySymbol());
-    panel.add(bitcoinAmountText);
-    panel.add(approximatelyLabel, "pushy,baseline");
-    panel.add(localCurrencySymbolLabel, "pushy,baseline");
-    panel.add(localAmountText, "wrap");
+
+    if (isCurrencySymbolLeading) {
+      panel.add(Labels.newBitcoinCurrencySymbol());
+      panel.add(bitcoinAmountText);
+      panel.add(approximatelyLabel, "pushy,baseline");
+      panel.add(localCurrencySymbolLabel, "pushy,baseline");
+      panel.add(localAmountText, "wrap");
+    } else {
+      panel.add(bitcoinAmountText);
+      panel.add(Labels.newBitcoinCurrencySymbol());
+      panel.add(approximatelyLabel, "pushy,baseline");
+      panel.add(localAmountText);
+      panel.add(localCurrencySymbolLabel, "pushy,baseline,wrap");
+    }
+
     panel.add(exchangeRateStatusLabel, "span 4,push,wrap");
     panel.add(exchangeNameLabel, "span 4,push,wrap");
 
     setLocalAmountVisibility();
 
     return panel;
-
 
   }
 

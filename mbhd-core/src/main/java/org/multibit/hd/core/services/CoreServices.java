@@ -25,7 +25,7 @@ public class CoreServices {
   public static final EventBus uiEventBus = new EventBus();
 
   /**
-   * Send or register events to the user interface subscribers
+   * Keep track of selected application events (e.g. exchange rate changes etc)
    */
   public static final ApplicationEventService applicationEventService;
 
@@ -33,6 +33,11 @@ public class CoreServices {
     applicationEventService = new ApplicationEventService();
     uiEventBus.register(applicationEventService);
   }
+
+  /**
+   * Provide access to the Contacts API
+   */
+  public static final ContactService contactService = new ContactService();
 
   /**
    * Utilities have a private constructor
@@ -101,4 +106,14 @@ public class CoreServices {
     return applicationEventService;
 
   }
+
+  /**
+   * @return The application event service singleton
+   */
+  public static ContactService getContactService() {
+
+    return contactService;
+
+  }
+
 }

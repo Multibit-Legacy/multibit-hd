@@ -5,7 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 
 /**
- * <p>Utility to provide the following to application:</p>
+ * <p>Service to provide the following to application:</p>
  * <ul>
  * <li>Tracking selected application events</li>
  * </ul>

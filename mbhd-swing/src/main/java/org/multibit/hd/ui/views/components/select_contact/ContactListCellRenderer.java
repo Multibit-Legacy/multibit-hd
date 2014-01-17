@@ -10,7 +10,7 @@ import java.awt.*;
 /**
  * <p>List cell renderer to provide the following to combo boxes:</p>
  * <ul>
- * <li>Rendering of a contact</li>
+ * <li>Rendering of a contact thumbnail</li>
  * </ul>
  *
  * @since 0.0.1

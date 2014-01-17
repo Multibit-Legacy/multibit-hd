@@ -54,6 +54,7 @@ public class TextBoxes {
    */
   public static FormattedDecimalField newBitcoinAmount(double maximum) {
 
+
     FormattedDecimalField textField = new FormattedDecimalField(0, maximum, 8);
 
     Font font = textField.getFont().deriveFont((float) AwesomeDecorator.NORMAL_ICON_SIZE);
@@ -105,7 +106,7 @@ public class TextBoxes {
   /**
    * @return A new "Notes" text area
    */
-  public static JTextArea newNotes() {
+  public static JTextArea newEnterNotes() {
 
     JTextArea textArea = new JTextArea(6, PASSWORD_LENGTH);
 
@@ -113,6 +114,15 @@ public class TextBoxes {
     DefaultStyledDocument doc = new DefaultStyledDocument();
     doc.setDocumentFilter(new DocumentMaxLengthFilter(SEED_PHRASE_LENGTH));
     textArea.setDocument(doc);
+
+    // Ensure TAB transfers focus
+    AbstractAction transferFocus = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        ((Component) e.getSource()).transferFocus();
+      }
+    };
+    textArea.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "transferFocus");
+    textArea.getActionMap().put("transferFocus", transferFocus);
 
     // Apply the theme
     textArea.setBackground(Themes.currentTheme.dataEntryBackground());
@@ -156,7 +166,6 @@ public class TextBoxes {
     };
     textArea.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "transferFocus");
     textArea.getActionMap().put("transferFocus", transferFocus);
-
 
     // Apply the theme
     textArea.setBackground(Themes.currentTheme.readOnlyBackground());

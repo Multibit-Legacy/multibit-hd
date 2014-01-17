@@ -8,13 +8,11 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 
 /**
- * <p>[Pattern] to provide the following to {@link Object}:</p>
+ * <p>ComboBox editor to provide the following to combo boxes:</p>
  * <ul>
- * <li></li>
+ * <li>Conversion between a string and a Contact</li>
  * </ul>
- * <p>Example:</p>
- * <pre>
- * </pre>
+ * <p>Uses "name" of Contact as the string lookup</p>
  *
  * @since 0.0.1
  *  

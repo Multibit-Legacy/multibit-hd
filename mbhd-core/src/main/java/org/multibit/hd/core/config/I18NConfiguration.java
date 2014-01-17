@@ -20,11 +20,11 @@ public class I18NConfiguration {
 
   private Character groupingSeparator;
 
-  private int decimalPlaces;
-
   private Locale locale = Locale.getDefault();
 
   private boolean currencySymbolLeading = true;
+
+  private int localDecimalPlaces=2;
 
   public I18NConfiguration() {
 
@@ -81,14 +81,14 @@ public class I18NConfiguration {
   }
 
   /**
-   * @return The number of decimal places to show
+   * @return The number of decimal places to show for the local currency
    */
-  public int getDecimalPlaces() {
-    return decimalPlaces;
+  public int getLocalDecimalPlaces() {
+    return localDecimalPlaces;
   }
 
-  public void setDecimalPlaces(int decimalPlaces) {
-    this.decimalPlaces = decimalPlaces;
+  public void setLocalDecimalPlaces(int localDecimalPlaces) {
+    this.localDecimalPlaces = localDecimalPlaces;
   }
 
   /**
@@ -102,7 +102,7 @@ public class I18NConfiguration {
     i18n.setLocale(getLocale());
     i18n.setDecimalSeparator(getDecimalSeparator());
     i18n.setGroupingSeparator(getGroupingSeparator());
-    i18n.setDecimalPlaces(getDecimalPlaces());
+    i18n.setLocalDecimalPlaces(getLocalDecimalPlaces());
 
     return i18n;
 

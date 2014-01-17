@@ -1,9 +1,8 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import com.google.common.base.Optional;
-import com.xeiam.xchange.currency.MoneyUtils;
-import org.joda.money.BigMoney;
-import org.joda.money.CurrencyUnit;
+import com.google.common.base.Strings;
+import org.multibit.hd.core.api.Recipient;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
@@ -30,10 +29,14 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   private SendBitcoinState state = ENTER_AMOUNT;
 
   /**
-   * The Bitcoin amount
+   * The "enter amount" panel model
    */
-  private BigMoney bitcoinAmount = BigMoney.zero(CurrencyUnit.of("BTC"));
-  private String password;
+  private SendBitcoinEnterAmountPanelModel enterAmountPanelModel;
+
+  /**
+   * The "confirm" panel model
+   */
+  private SendBitcoinConfirmPanelModel confirmPanelModel;
 
   /**
    * @param state The state object
@@ -52,15 +55,26 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
     switch (state) {
       case ENTER_AMOUNT:
-        bitcoinAmount = MoneyUtils.parseMoney("BTC", (BigDecimal) panelModel.get());
-        if (bitcoinAmount.isZero()) {
-          ViewEvents.fireWizardButtonEnabledEvent(SendBitcoinState.ENTER_AMOUNT.name(), WizardButton.NEXT, false);
-        } else {
-          ViewEvents.fireWizardButtonEnabledEvent(SendBitcoinState.ENTER_AMOUNT.name(), WizardButton.NEXT, true);
-        }
+
+        enterAmountPanelModel = (SendBitcoinEnterAmountPanelModel) panelModel.get();
+
+        // Determine any events
+        ViewEvents.fireWizardButtonEnabledEvent(
+          SendBitcoinState.ENTER_AMOUNT.name(),
+          WizardButton.NEXT,
+          isEnterAmountNextEnabled()
+        );
         break;
       case CONFIRM_AMOUNT:
-        password = (String) panelModel.get();
+
+        confirmPanelModel = (SendBitcoinConfirmPanelModel) panelModel.get();
+
+        // Determine any events
+        ViewEvents.fireWizardButtonEnabledEvent(
+          SendBitcoinState.CONFIRM_AMOUNT.name(),
+          WizardButton.NEXT,
+          isConfirmNextEnabled()
+        );
         break;
       case SEND_BITCOIN_REPORT:
         break;
@@ -102,17 +116,64 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   }
 
   /**
-   * @return The Bitcoin amount to send
+   * @return The recipient the user identified
    */
-  public BigMoney getBitcoinAmount() {
-    return bitcoinAmount;
+  public Recipient getRecipient() {
+    return enterAmountPanelModel
+      .getEnterRecipientModel()
+      .getRecipient();
+  }
+
+  /**
+   * @return The Bitcoin amount
+   */
+  public BigDecimal getBitcoinAmount() {
+    return enterAmountPanelModel
+      .getEnterAmountModel()
+      .getBitcoinAmount();
   }
 
   /**
    * @return The password the user entered
    */
   public String getPassword() {
-    return password;
+    return confirmPanelModel
+      .getPassword();
+  }
+
+  /**
+   * @return The notes the user entered
+   */
+  public String getNotes() {
+    return confirmPanelModel
+      .getNotes();
+  }
+
+  /**
+   * @return True if the "enter amount" panel next button should be enabled
+   */
+  private boolean isEnterAmountNextEnabled() {
+
+    boolean bitcoinAmountOK = !enterAmountPanelModel
+      .getEnterAmountModel()
+      .getBitcoinAmount()
+      .equals(BigDecimal.ZERO);
+
+    boolean recipientOK = enterAmountPanelModel
+      .getEnterRecipientModel()
+      .getRecipient() != null;
+
+    return bitcoinAmountOK && recipientOK;
+
+  }
+
+  /**
+   * @return True if the "confirm" panel next button should be enabled
+   */
+  private boolean isConfirmNextEnabled() {
+
+    // TODO Tie this into CoreServices
+    return !Strings.isNullOrEmpty(confirmPanelModel.getPassword());
   }
 
 }

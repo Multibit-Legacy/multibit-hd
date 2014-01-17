@@ -1,11 +1,10 @@
 package org.multibit.hd.ui.views.components.auto_complete;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import org.multibit.hd.core.api.Contact;
-import org.multibit.hd.core.contacts.Contacts;
+import org.multibit.hd.core.services.CoreServices;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * <p>Factory to provide the following to views:</p>
@@ -25,43 +24,30 @@ public class AutoCompleteFilters {
   }
 
   /**
-   * @return A simple theme-aware detail panel with the given layout
+   * @return An auto-complete filter linked to the Contact API
    */
   public static AutoCompleteFilter<Contact> newContactFilter() {
 
     return new AutoCompleteFilter<Contact>() {
 
-      final Contact[] contacts = new Contact[]{
-        Contacts.newDefault("alice"),
-        Contacts.newDefault("alicia"),
-        Contacts.newDefault("bob"),
-        Contacts.newDefault("bobby"),
-        Contacts.newDefault("charles"),
-        Contacts.newDefault("mallory"),
-        Contacts.newDefault("trent")
-      };
-
       @Override
       public Contact[] create() {
-        return contacts;
+
+        Set<Contact> contacts = CoreServices.getContactService().allContacts(1, 10);
+
+        return contacts.toArray(new Contact[contacts.size()]);
       }
 
       @Override
       public Contact[] update(String fragment) {
 
-        List<Contact> filteredContactList = Lists.newArrayList();
-
         if (Strings.isNullOrEmpty(fragment)) {
           return new Contact[] {};
         }
 
-        for (Contact contact : contacts) {
-          if (contact.getName().startsWith(fragment)) {
-            filteredContactList.add(contact);
-          }
-        }
+        Set<Contact> contacts = CoreServices.getContactService().filterContactsByName(1, 10, fragment);
 
-        return filteredContactList.toArray(new Contact[filteredContactList.size()]);
+        return contacts.toArray(new Contact[contacts.size()]);
       }
     };
 

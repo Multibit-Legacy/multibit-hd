@@ -46,8 +46,9 @@ public class SendBitcoinConfirmView extends AbstractWizardView<SendBitcoinWizard
     ));
 
     panel.add(Labels.newConfirmSendAmount(),"span 2,wrap");
+    //panel.add(Labels.newConfirmSendNote(getWizardModel().getTransactionModel()),"span 2,wrap");
     panel.add(Labels.newNotes());
-    panel.add(TextBoxes.newNotes(),"wrap");
+    panel.add(TextBoxes.newEnterNotes(),"wrap");
     panel.add(Labels.newEnterPassword());
     panel.add(TextBoxes.newPassword(),"wrap");
 

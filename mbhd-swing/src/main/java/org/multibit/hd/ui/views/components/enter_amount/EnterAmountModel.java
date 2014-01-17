@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.components.enter_amount;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
 
@@ -17,7 +18,8 @@ import java.math.BigDecimal;
  */
 public class EnterAmountModel implements Model<BigDecimal> {
 
-  private BigDecimal bitcoinAmount;
+  private Optional<BigDecimal> bitcoinAmount=Optional.absent();
+  private Optional<BigDecimal> localAmount=Optional.absent();
 
   private final String panelName;
 
@@ -38,36 +40,44 @@ public class EnterAmountModel implements Model<BigDecimal> {
 
   @Override
   public BigDecimal getValue() {
-    return bitcoinAmount;
+    return getBitcoinAmount();
   }
 
   @Override
   public void setValue(BigDecimal value) {
-    this.bitcoinAmount = value;
-    // Have a possible match so alert the wizard model
-    ViewEvents.fireWizardPanelModelChangedEvent(panelName, Optional.of(bitcoinAmount));
+    setBitcoinAmount(value);
   }
 
   /**
-   * @param bitcoinAmount The bitcoin amount
-   * @param exchangeRate  The exchange rate in the local currency (e.g. 1000 USD = 1 bitcoin)
-   *
-   * @return The local amount
+   * @return The Bitcoin amount (zero if not present)
    */
-  public BigDecimal calculateLocalAmount(BigDecimal bitcoinAmount, BigDecimal exchangeRate) {
+  public BigDecimal getBitcoinAmount() {
+    return bitcoinAmount.or(BigDecimal.ZERO);
+  }
 
-    return bitcoinAmount.multiply(exchangeRate);
+  public void setBitcoinAmount(BigDecimal value) {
+
+    Preconditions.checkNotNull(value, "'value' should be present");
+
+    bitcoinAmount = Optional.of(value);
+
+    // The panel model has changed so alert the wizard
+    ViewEvents.fireWizardPanelModelChangedEvent(panelName, bitcoinAmount);
+
   }
 
   /**
-   * @param localAmount  The local amount
-   * @param exchangeRate The exchange rate in the local currency (e.g. 1000 USD = 1 bitcoin)
-   *
-   * @return The bitcoin amount
+   * @return The local amount (zero if not present)
    */
-  public BigDecimal calculateBitcoinAmount(BigDecimal localAmount, BigDecimal exchangeRate) {
-
-    return localAmount.divide(exchangeRate);
+  public BigDecimal getLocalAmount() {
+    return localAmount.or(BigDecimal.ZERO);
   }
 
+  public void setLocalAmount(BigDecimal value) {
+
+    Preconditions.checkNotNull(value, "'value' should be present");
+
+    localAmount = Optional.of(value);
+
+  }
 }
