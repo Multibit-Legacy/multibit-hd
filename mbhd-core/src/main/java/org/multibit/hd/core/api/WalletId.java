@@ -36,6 +36,9 @@ public class WalletId {
 
   private static final byte SALT_USED_IN_SCRYPT = (byte) 1;
 
+  private static final int NUMBER_OF_BYTES_IN_WALLET_ID = 20;
+  public static final int LENGTH_OF_FORMATTED_WALLETID = 2 * NUMBER_OF_BYTES_IN_WALLET_ID + (NUMBER_OF_BYTES_IN_WALLET_ID / SEPARATOR_REPEAT_PERIOD) - 1;
+
   private final byte[] walletId;
 
   /**
@@ -43,7 +46,9 @@ public class WalletId {
    *
    * @param formattedWalletId The formatted wallet id you want to use e.g. 66666666-77777777-88888888-99999999-aaaaaaaa
    */
-  private WalletId(String formattedWalletId) {
+  public WalletId(String formattedWalletId) {
+    Preconditions.checkState(formattedWalletId.length() == LENGTH_OF_FORMATTED_WALLETID);
+
      // remove any embedded hyphens
     formattedWalletId = formattedWalletId.replaceAll("-","");
 

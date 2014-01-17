@@ -31,7 +31,6 @@ import java.util.List;
  *  <li>create wallet</li>
  *  <li>load wallet</li>
  *  <li>store wallet</li>
- *  <li>backup wallet</li>
  * <li> tracks the current wallet and the list of wallet directories</li>
  *  </ul>
  */
@@ -124,8 +123,8 @@ public enum WalletManager {
    * @param password            to use to encrypt the wallet
    * @return WalletData containing the wallet object and the walletId (used in storage etc)
    * @throws IllegalStateException  if applicationDataDirectory is incorrect
-   * @throws WalletLoadException    if there is already a simple wallet created but it could not be loaded
-   * @throws WalletVersionException if there is already a simple wallet but the wallet version cannot be understood
+   * @throws WalletLoadException    if there is already a wallet created but it could not be loaded
+   * @throws WalletVersionException if there is already a wallet but the wallet version cannot be understood
    */
   public WalletData createWallet(String parentDirectoryName, byte[] seed, CharSequence password) throws WalletLoadException, WalletVersionException, IOException {
     WalletData walletDataToReturn;
@@ -167,7 +166,9 @@ public enum WalletManager {
 
       // Save it
       saveWallet(walletToReturn, walletFile.getAbsolutePath());
-      Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(walletRoot);
+      if (Configurations.currentConfiguration != null) {
+        Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(walletRoot);
+      }
       walletDataToReturn = new WalletData(walletId, walletToReturn);
       setCurrentWalletData(walletDataToReturn);
     }
@@ -318,7 +319,7 @@ public enum WalletManager {
    * @param walletId The wallet id to use
    * @return directoryName in which the wallet is stored.
    */
-  public String createWalletRoot(WalletId walletId) {
+  public static String createWalletRoot(WalletId walletId) {
     return WALLET_DIRECTORY_PREFIX + SEPARATOR + walletId.toFormattedString();
   }
 
