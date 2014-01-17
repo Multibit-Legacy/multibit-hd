@@ -94,21 +94,6 @@ public class Components {
   }
 
   /**
-   * <p>An "enter notes" panel provides a means of entering some text data</p>
-   *
-   * @return A new notes panel
-   */
-  public static JPanel newEnterNotes() {
-
-    JPanel panel = Panels.newPanel();
-
-    panel.add(Labels.newNotes());
-    panel.add(TextBoxes.newNotes());
-
-    return panel;
-  }
-
-  /**
    * <p>A "confirm password" model and view handles a password with confirmation and reveal</p>
    *
    * @param panelName The panel name to identify "verification status" and "next" buttons

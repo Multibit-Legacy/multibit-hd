@@ -57,10 +57,20 @@ public abstract class AbstractWizardModel<S> implements WizardModel {
     // Do nothing
   }
 
+  /**
+   * <p>Provides default behaviour of updating the wizard model from the panel model if the panel name matches the current state</p>
+   *
+   * @param event The event
+   */
   @Override
   public void onWizardPanelModelChangedEvent(WizardPanelModelChangedEvent event) {
 
-    // Default behaviour is to update
-    update(event.getPanelModel());
+    if (state.toString().equals(event.getPanelName())) {
+
+      // Default behaviour is to update
+      update(event.getPanelModel());
+
+    }
+
   }
 }

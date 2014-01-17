@@ -41,12 +41,13 @@ public class SendBitcoinConfirmView extends AbstractWizardView<SendBitcoinWizard
 
     JPanel panel = Panels.newPanel(new MigLayout(
       "fill,insets 0", // Layout constrains
-      "[][][]", // Column constraints
-      "[]10[]" // Row constraints
+      "[][]", // Column constraints
+      "[]10[]10[]" // Row constraints
     ));
 
-    panel.add(Labels.newConfirmSendAmount(),"wrap");
-    panel.add(Components.newEnterNotes(),"wrap");
+    panel.add(Labels.newConfirmSendAmount(),"span 2,wrap");
+    panel.add(Labels.newNotes());
+    panel.add(TextBoxes.newNotes(),"wrap");
     panel.add(Labels.newEnterPassword());
     panel.add(TextBoxes.newPassword(),"wrap");
 

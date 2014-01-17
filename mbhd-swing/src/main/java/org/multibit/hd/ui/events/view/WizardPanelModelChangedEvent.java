@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.events.view;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 
 /**
  * <p>Event to provide the following to View Event API:</p>
@@ -13,10 +14,23 @@ import com.google.common.base.Optional;
  */
 public class WizardPanelModelChangedEvent implements ViewEvent {
 
+  private final String panelName;
   private final Optional panelModel;
 
-  public WizardPanelModelChangedEvent(Optional panelModel) {
+  public WizardPanelModelChangedEvent(String panelName, Optional panelModel) {
+
+    Preconditions.checkNotNull(panelName, "'panelName' must be present");
+    Preconditions.checkNotNull(panelModel, "'panelModel' must be present");
+
+    this.panelName = panelName;
     this.panelModel = panelModel;
+  }
+
+  /**
+   * @return The panel name (to target updates to specific panels)
+   */
+  public String getPanelName() {
+    return panelName;
   }
 
   /**
@@ -26,3 +40,5 @@ public class WizardPanelModelChangedEvent implements ViewEvent {
     return panelModel;
   }
 }
+
+

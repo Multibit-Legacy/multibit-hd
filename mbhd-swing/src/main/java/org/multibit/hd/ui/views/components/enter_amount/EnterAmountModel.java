@@ -45,7 +45,7 @@ public class EnterAmountModel implements Model<BigDecimal> {
   public void setValue(BigDecimal value) {
     this.bitcoinAmount = value;
     // Have a possible match so alert the wizard model
-    ViewEvents.fireWizardPanelModelChangedEvent(Optional.of(bitcoinAmount));
+    ViewEvents.fireWizardPanelModelChangedEvent(panelName, Optional.of(bitcoinAmount));
   }
 
   /**
