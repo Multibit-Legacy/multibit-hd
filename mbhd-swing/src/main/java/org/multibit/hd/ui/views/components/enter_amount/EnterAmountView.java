@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Numbers;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.AbstractView;
@@ -42,13 +43,17 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
   private JLabel approximatelyLabel = new JLabel("");
   private JLabel localCurrencySymbolLabel = new JLabel("");
 
-  private Optional<ExchangeRateChangedEvent> latestExchangeEvent = Optional.absent();
+  private Optional<ExchangeRateChangedEvent> latestExchangeRateChangedEvent = Optional.absent();
 
   /**
    * @param model The model backing this view
    */
   public EnterAmountView(EnterAmountModel model) {
     super(model);
+
+    latestExchangeRateChangedEvent = CoreServices
+      .getApplicationEventService()
+      .getLatestExchangeRateChangedEvent();
 
   }
 
@@ -73,7 +78,10 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
     bitcoinAmountText.addKeyListener(new KeyAdapter() {
       @Override
       public void keyReleased(KeyEvent e) {
+
         updateLocalAmount();
+
+
       }
     });
 
@@ -104,12 +112,13 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
 
   @Override
   public void updateModel() {
+    // Do nothing - the model is updated during key press
   }
 
   @Subscribe
   public void onExchangeRateChanged(ExchangeRateChangedEvent event) {
 
-    this.latestExchangeEvent = Optional.fromNullable(event);
+    this.latestExchangeRateChangedEvent = Optional.fromNullable(event);
 
     setLocalAmountVisibility();
 
@@ -128,7 +137,7 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
    */
   private void setLocalAmountVisibility() {
 
-    if (latestExchangeEvent.isPresent()) {
+    if (latestExchangeRateChangedEvent.isPresent()) {
 
       setLocalCurrencyComponentVisibility(true);
 
@@ -136,7 +145,7 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
       exchangeNameLabel.setText(Labels.newCurrentExchangeName().getText());
 
       // Rate may be valid
-      setExchangeRateStatus(latestExchangeEvent.get().isValid());
+      setExchangeRateStatus(latestExchangeRateChangedEvent.get().isValid());
 
     } else {
 
@@ -195,20 +204,28 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
    */
   private void updateBitcoinAmount() {
 
-    if (latestExchangeEvent.isPresent()) {
+    String text = localAmountText.getText();
+    Optional<Double> value = Numbers.parseDouble(text);
 
-      String text = localAmountText.getText();
-      Optional<Double> value = Numbers.parseDouble(text);
+    if (latestExchangeRateChangedEvent.isPresent()) {
 
       if (value.isPresent()) {
         BigDecimal localAmount = new BigDecimal(value.get()).setScale(8, RoundingMode.HALF_EVEN);
         BigDecimal bitcoinAmount = localAmount
-          .divide(latestExchangeEvent.get().getRate(), 12, RoundingMode.HALF_EVEN);
+          .divide(latestExchangeRateChangedEvent.get().getRate(), 12, RoundingMode.HALF_EVEN);
         // Use double for display
         bitcoinAmountText.setValue(bitcoinAmount.doubleValue());
+
+        // Update the model
+        getModel().get().setValue(bitcoinAmount);
+
       } else {
         bitcoinAmountText.setText("");
+
+        // Update the model
+        getModel().get().setValue(BigDecimal.ZERO);
       }
+
     }
 
     setLocalAmountVisibility();
@@ -219,23 +236,45 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
    */
   private void updateLocalAmount() {
 
-    if (latestExchangeEvent.isPresent()) {
-      String text = bitcoinAmountText.getText();
-      Optional<Double> value = Numbers.parseDouble(text);
+    String text = bitcoinAmountText.getText();
+    Optional<Double> value = Numbers.parseDouble(text);
+
+    if (latestExchangeRateChangedEvent.isPresent()) {
 
       if (value.isPresent()) {
         BigDecimal bitcoinAmount = new BigDecimal(value.get()).setScale(12, RoundingMode.HALF_EVEN);
         BigDecimal localAmount = bitcoinAmount
-          .multiply(latestExchangeEvent.get().getRate())
+          .multiply(latestExchangeRateChangedEvent.get().getRate())
           .setScale(8, RoundingMode.HALF_EVEN);
         // Use double for display
         localAmountText.setValue(localAmount.doubleValue());
+
+        // Update the model
+        getModel().get().setValue(bitcoinAmount);
       } else {
         localAmountText.setText("");
+
+        // Update the model
+        getModel().get().setValue(BigDecimal.ZERO);
+      }
+    } else {
+
+      if (value.isPresent()) {
+
+        BigDecimal bitcoinAmount = new BigDecimal(value.get()).setScale(12, RoundingMode.HALF_EVEN);
+
+        // Update the model
+        getModel().get().setValue(bitcoinAmount);
+
+      } else {
+
+        // Update the model
+        getModel().get().setValue(BigDecimal.ZERO);
       }
     }
 
     setLocalAmountVisibility();
+
   }
 
 }

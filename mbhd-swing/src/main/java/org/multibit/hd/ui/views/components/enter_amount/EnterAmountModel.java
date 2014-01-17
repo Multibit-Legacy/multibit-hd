@@ -1,5 +1,7 @@
 package org.multibit.hd.ui.views.components.enter_amount;
 
+import com.google.common.base.Optional;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
 
 import java.math.BigDecimal;
@@ -42,6 +44,8 @@ public class EnterAmountModel implements Model<BigDecimal> {
   @Override
   public void setValue(BigDecimal value) {
     this.bitcoinAmount = value;
+    // Have a possible match so alert the wizard model
+    ViewEvents.fireWizardPanelModelChangedEvent(Optional.of(bitcoinAmount));
   }
 
   /**
@@ -56,8 +60,8 @@ public class EnterAmountModel implements Model<BigDecimal> {
   }
 
   /**
-   * @param localAmount The local amount
-   * @param exchangeRate  The exchange rate in the local currency (e.g. 1000 USD = 1 bitcoin)
+   * @param localAmount  The local amount
+   * @param exchangeRate The exchange rate in the local currency (e.g. 1000 USD = 1 bitcoin)
    *
    * @return The bitcoin amount
    */

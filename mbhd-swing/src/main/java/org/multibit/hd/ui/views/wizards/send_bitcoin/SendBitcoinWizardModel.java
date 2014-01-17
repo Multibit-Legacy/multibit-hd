@@ -1,10 +1,14 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import com.google.common.base.Optional;
+import com.xeiam.xchange.currency.MoneyUtils;
 import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
-import org.multibit.hd.ui.events.view.WizardPanelModelChangedEvent;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
+import org.multibit.hd.ui.views.wizards.WizardButton;
+
+import java.math.BigDecimal;
 
 import static org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState.*;
 
@@ -28,7 +32,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   /**
    * The Bitcoin amount
    */
-  private BigMoney btcAmount = BigMoney.zero(CurrencyUnit.of("BTC"));
+  private BigMoney bitcoinAmount = BigMoney.zero(CurrencyUnit.of("BTC"));
   private String password;
 
   /**
@@ -48,7 +52,12 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
     switch (state) {
       case ENTER_AMOUNT:
-        btcAmount = (BigMoney) panelModel.get();
+        bitcoinAmount = MoneyUtils.parseMoney("BTC", (BigDecimal) panelModel.get());
+        if (bitcoinAmount.isZero()) {
+          ViewEvents.fireWizardButtonEnabledEvent(SendBitcoinState.ENTER_AMOUNT.name(), WizardButton.NEXT, false);
+        } else {
+          ViewEvents.fireWizardButtonEnabledEvent(SendBitcoinState.ENTER_AMOUNT.name(), WizardButton.NEXT, true);
+        }
         break;
       case CONFIRM_AMOUNT:
         password = (String) panelModel.get();
@@ -92,16 +101,11 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     return state.name();
   }
 
-  @Override
-  public void onWizardPanelModelChangedEvent(WizardPanelModelChangedEvent event) {
-    // Do nothing
-  }
-
   /**
    * @return The Bitcoin amount to send
    */
-  public BigMoney getBtcAmount() {
-    return btcAmount;
+  public BigMoney getBitcoinAmount() {
+    return bitcoinAmount;
   }
 
   /**
@@ -110,4 +114,5 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   public String getPassword() {
     return password;
   }
+
 }

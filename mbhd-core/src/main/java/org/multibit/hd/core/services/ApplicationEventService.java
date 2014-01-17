@@ -16,7 +16,7 @@ import org.multibit.hd.core.events.ExchangeRateChangedEvent;
  */
 public class ApplicationEventService {
 
-  private static Optional<ExchangeRateChangedEvent> latestExchangeRateChangedEvent = Optional.absent();
+  private Optional<ExchangeRateChangedEvent> latestExchangeRateChangedEvent = Optional.absent();
 
   /**
    * Reduced visibility constructor to prevent accidental instance creation outside of CoreServices
@@ -27,7 +27,7 @@ public class ApplicationEventService {
   /**
    * @return The latest "exchange rate changed" event
    */
-  public static Optional<ExchangeRateChangedEvent> getLatestExchangeRateChangedEvent() {
+  public Optional<ExchangeRateChangedEvent> getLatestExchangeRateChangedEvent() {
     return latestExchangeRateChangedEvent;
   }
 

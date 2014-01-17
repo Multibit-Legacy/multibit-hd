@@ -78,6 +78,9 @@ public class SendBitcoinEnterAmountView extends AbstractWizardView<SendBitcoinWi
   @Override
   public boolean updatePanelModel() {
     enterAmountMaV.getView().updateModel();
+
+    setPanelModel(enterAmountMaV.getModel().getValue());
+
     return false;
   }
 
