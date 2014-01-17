@@ -22,6 +22,12 @@ import java.util.Locale;
 public class Dates {
 
   /**
+   * Utilities have private constructor
+   */
+  private Dates() {
+  }
+
+  /**
    * Produces "Sat, 01 Jan 2000 23:59:59 GMT"
    */
   private static final DateTimeFormatter rfc1123 = DateTimeFormat

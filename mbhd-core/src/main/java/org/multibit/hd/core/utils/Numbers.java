@@ -20,6 +20,12 @@ import java.util.Locale;
 public class Numbers {
 
   /**
+   * Utilities have private constructor
+   */
+  private Numbers() {
+  }
+
+  /**
    * <p>Locale aware method of validating numbers</p>
    *
    * @param text The text representing a number (null or empty is not a number)

@@ -25,6 +25,16 @@ public class CoreServices {
   public static final EventBus uiEventBus = new EventBus();
 
   /**
+   * Send or register events to the user interface subscribers
+   */
+  public static final ApplicationEventService applicationEventService;
+
+  static {
+    applicationEventService = new ApplicationEventService();
+    uiEventBus.register(applicationEventService);
+  }
+
+  /**
    * Utilities have a private constructor
    */
   private CoreServices() {
@@ -83,4 +93,12 @@ public class CoreServices {
     return new Bip39SeedPhraseGenerator();
   }
 
+  /**
+   * @return The application event service singleton
+   */
+  public static ApplicationEventService getApplicationEventService() {
+
+    return applicationEventService;
+
+  }
 }

@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
  * @since 0.0.1
  *  
  */
-public class ExchangeTickerService extends AbstractService implements ManagedService {
+public class ExchangeTickerService extends AbstractService {
 
   private static final Logger log = LoggerFactory.getLogger(ExchangeTickerService.class);
 
