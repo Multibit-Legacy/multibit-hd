@@ -319,7 +319,7 @@ public enum WalletManager {
    * @param walletId The wallet id to use
    * @return directoryName in which the wallet is stored.
    */
-  public String createWalletRoot(WalletId walletId) {
+  public static String createWalletRoot(WalletId walletId) {
     return WALLET_DIRECTORY_PREFIX + SEPARATOR + walletId.toFormattedString();
   }
 

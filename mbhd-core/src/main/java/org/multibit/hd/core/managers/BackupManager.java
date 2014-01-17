@@ -1,16 +1,19 @@
 package org.multibit.hd.core.managers;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import org.multibit.hd.core.api.WalletData;
 import org.multibit.hd.core.api.WalletId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.security.SecureRandom;
-import java.text.DateFormat;
+import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 
 /**
@@ -18,71 +21,316 @@ import java.util.List;
  */
 public enum BackupManager {
   INSTANCE;
-
-  private static final Logger log = LoggerFactory.getLogger(BackupManager.class);
-
-  transient private static SecureRandom secureRandom = new SecureRandom();
-
   public static final String BACKUP_SUFFIX_FORMAT = "yyyyMMddHHmmss";
-  private static final String SEPARATOR = "-";
-  private DateFormat dateFormat;
-  private Date dateForBackupName = null;
-
-
+  public static final String BACKUP_ZIP_FILE_EXTENSION = ".zip";
+  public static final String BACKUP_ZIP_FILE_EXTENSION_REGEX = "\\.zip";
+  public static final String LOCAL_BACKUP_DIRECTORY_NAME = "zip-backups";
   public static final int MAXIMUM_NUMBER_OF_BACKUPS = 60; // Chosen so that you will have about weekly backups for a year, fortnightly over two years.
   public static final int NUMBER_OF_FIRST_WALLETS_TO_ALWAYS_KEEP = 2;
   public static final int NUMBER_OF_LAST_WALLETS_TO_ALWAYS_KEEP = 8; // Must be at least 1.
-
-
-  public static final String REGEX_FOR_WALLET_SUFFIX = ".*\\.wallet$";
-  public static final String REGEX_FOR_TIMESTAMP_AND_KEY_SUFFIX = ".*-\\d{" + BACKUP_SUFFIX_FORMAT.length() + "}\\.key$";
-  public static final String REGEX_FOR_TIMESTAMP_AND_WALLET_SUFFIX = ".*-\\d{" + BACKUP_SUFFIX_FORMAT.length() + "}\\.wallet$";
-  public static final String REGEX_FOR_TIMESTAMP_AND_INFO_SUFFIX = ".*-\\d{" + BACKUP_SUFFIX_FORMAT.length() + "}\\.info$";
-
-
-  public static final byte FILE_ENCRYPTED_VERSION_NUMBER = (byte) 0x00;
-
-  public static final byte[] ENCRYPTED_FILE_FORMAT_MAGIC_BYTES = new byte[]{(byte) 0x6D, (byte) 0x65, (byte) 0x6E, (byte) 0x64, (byte) 0x6F, (byte) 0x7A, (byte) 0x61}; // mendoza in ASCII
-
-
-  private File backupDirectory;
+  private static final Logger log = LoggerFactory.getLogger(BackupManager.class);
+  // Where wallets are stored
+  private File applicationDataDirectory;
+  // Where the cloud backups are stored (this is typically specified by the user and is a SpiderOak etc sync directory)
+  private File cloudBackupDirectory;
+  private SimpleDateFormat dateFormat;
 
   /**
-   * Initialise the backup manager to use the specified backupDirectory.
+   * Initialise the backup manager to use the specified cloudBackupDirectory.
    * All backups will be written and read from this directory
    */
-  public void initialise(File backupDirectory) {
-    this.backupDirectory = backupDirectory;
+  public void initialise(File applicationDataDirectory, File cloudBackupDirectory) {
+    this.applicationDataDirectory = applicationDataDirectory;
+    this.cloudBackupDirectory = cloudBackupDirectory;
   }
 
   /**
-   *  Get all the backups available for the wallet id specified.
-   *  Wallet backups are called mbhd-[formatted wallet id]-timestamp and the specified wallet id is used to subset all backups
+   * Get all the backups available in the cloud backup directory for the wallet id specified.
+   * Wallet backups are called mbhd-[formatted wallet id]-timestamp and the specified wallet id is used to subset all backups
    */
   // TODO would also be nice to return the dates of the backups (from the timestamp) or return them sorted by age
   // then the latest backup can be used easily
-  public List<File> getBackups(WalletId walletId) {
-    // TODO get list of files in backup directory
-    // TODO Subset to match the specified wallet id
-    return Lists.newArrayList();
+  public List<File> getCloudBackups(WalletId walletId) {
+
+    Preconditions.checkNotNull(cloudBackupDirectory);
+    List<File> walletBackups = Lists.newArrayList();
+
+    if (!cloudBackupDirectory.exists()) {
+      // No directory - no backups
+      return walletBackups;
+    }
+
+    File[] listOfFiles = cloudBackupDirectory.listFiles();
+
+    // Look for filenames with format "mbhd"-[formatted wallet id ] -YYYYMMDDHHMMSS.zip"
+    String backupRegex = WalletManager.WALLET_DIRECTORY_PREFIX + WalletManager.SEPARATOR + walletId.toFormattedString() +
+            WalletManager.SEPARATOR + "\\d{" + BACKUP_SUFFIX_FORMAT.length() + "}" + BACKUP_ZIP_FILE_EXTENSION_REGEX;
+    if (listOfFiles != null) {
+      for (int i = 0; i < listOfFiles.length; i++) {
+        if (listOfFiles[i].isFile()) {
+          if (listOfFiles[i].getName().matches(backupRegex)) {
+            if (listOfFiles[i].length() > 0) {
+              walletBackups.add(listOfFiles[i]);
+            }
+          }
+        }
+      }
+    }
+
+    return walletBackups;
+  }
+
+  /**
+   * Get all the backups available in the local backup directory for the wallet id specified.
+   * Wallet backups are called mbhd-[formatted wallet id]-timestamp and the specified wallet id is used to subset all backups
+   */
+  // TODO would also be nice to return the dates of the backups (from the timestamp) or return them sorted by age
+  // then the latest backup can be used easily
+  public List<File> getLocalBackups(WalletId walletId) {
+
+    List<File> walletBackups = Lists.newArrayList();
+
+    // Find the wallet root directory for this wallet id
+    File walletRootDirectory = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), WalletManager.createWalletRoot(walletId));
+
+    if (!walletRootDirectory.exists()) {
+      // No directory - no backups
+      return walletBackups;
+    }
+
+    // Find the zip-backups directory containing the local backups
+    File zipBackupsDirectory = new File(walletRootDirectory.getAbsoluteFile() + File.separator + LOCAL_BACKUP_DIRECTORY_NAME);
+    if (!zipBackupsDirectory.exists()) {
+      // No directory - no backups
+      return walletBackups;
+    }
+
+    File[] listOfFiles = zipBackupsDirectory.listFiles();
+
+    // Look for filenames with format "mbhd"-[formatted wallet id ] -YYYYMMDDHHMMSS.zip"
+    String backupRegex = WalletManager.WALLET_DIRECTORY_PREFIX + WalletManager.SEPARATOR + walletId.toFormattedString() +
+            WalletManager.SEPARATOR + "\\d{" + BACKUP_SUFFIX_FORMAT.length() + "}" + BACKUP_ZIP_FILE_EXTENSION_REGEX;
+    if (listOfFiles != null) {
+      for (int i = 0; i < listOfFiles.length; i++) {
+        if (listOfFiles[i].isFile()) {
+          if (listOfFiles[i].getName().matches(backupRegex)) {
+            if (listOfFiles[i].length() > 0) {
+              walletBackups.add(listOfFiles[i]);
+            }
+          }
+        }
+      }
+    }
+
+    return walletBackups;
   }
 
   /**
    * Create a backup of the specified wallet id.
    * The wallet manager is interrogated to find the physical directory where the wallet is stored.
-   * The whole directory is then copied and zipped into a timestamped backup file which is then written to the backup directory
-   * @return The created backup as a file
+   * The whole directory is then copied and zipped into a timestamped backup file which is then written to the local and cloud backup directories
+   *
+   * @return The created local backup as a file
    */
-  public File createBackup(WalletId walletId) {
-    return null;
+  public File createBackup(WalletId walletId) throws IOException {
+    Preconditions.checkNotNull(applicationDataDirectory);
+    Preconditions.checkNotNull(walletId);
+
+    // Find the wallet root directory for this wallet id
+    File walletRootDirectory = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), WalletManager.createWalletRoot(walletId));
+
+    if (!walletRootDirectory.exists()) {
+      throw new IOException("Directory " + walletRootDirectory + " does not exist. Cannot backup.");
+    }
+
+    File localBackupsDirectory = new File(walletRootDirectory.getAbsoluteFile() + File.separator + LOCAL_BACKUP_DIRECTORY_NAME);
+
+    if (!localBackupsDirectory.exists()) {
+      localBackupsDirectory.mkdir();
+    }
+
+    // Work out the filename for the backup
+    if (dateFormat == null) {
+      dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
+    }
+
+    String localBackupFilename = localBackupsDirectory.getAbsolutePath() + File.separator + WalletManager.WALLET_DIRECTORY_PREFIX + WalletManager.SEPARATOR + walletId.toFormattedString() +
+            WalletManager.SEPARATOR + dateFormat.format(new Date()) + BACKUP_ZIP_FILE_EXTENSION;
+
+    try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(localBackupFilename))) {
+      zipDirectory(walletRootDirectory.getAbsolutePath(), zos);
+    }
+
+    String cloudBackupFilename = cloudBackupDirectory.getAbsolutePath() + File.separator + WalletManager.WALLET_DIRECTORY_PREFIX + WalletManager.SEPARATOR + walletId.toFormattedString() +
+            WalletManager.SEPARATOR + dateFormat.format(new Date()) + BACKUP_ZIP_FILE_EXTENSION;
+
+    try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(cloudBackupFilename))) {
+      zipDirectory(walletRootDirectory.getAbsolutePath(), zos);
+    }
+    return new File(localBackupFilename);
   }
 
   /**
-   * Load a backup file, creating a wallet and wallet id (wrapped in a wallet data)
+   * Copy the files in the specified dir2zip to the ZipOutputStream
+   * The zip-backups are not stored in the backup (as they are backups themselves)
+   *
+   * @param dir2zip The directory holding the files to zip
+   * @param zos     the ZipOutputStream to copy files into
+   * @throws IOException
    */
-  public WalletData loadBackup(File backupFileToLoad) {
-    return null;
+  public void zipDirectory(String dir2zip, ZipOutputStream zos) throws IOException {
+    // Create a new File object based on the directory we have to zip File
+    File zipDir = new File(dir2zip);
+    // Get a listing of the directory content
+    String[] dirList = zipDir.list();
+    byte[] readBuffer = new byte[2156];
+    int bytesIn = 0;
+    // Loop through dirList, and zip the files
+    for (int i = 0; i < dirList.length; i++) {
+      File f = new File(zipDir, dirList[i]);
+      // Do not include the zip-backups files
+      boolean ignoreFile = dirList[i].contains(LOCAL_BACKUP_DIRECTORY_NAME);
+      if (f.isDirectory() && !ignoreFile) {
+        // If the File object is a directory, call this
+        // function again to add its content recursively
+        String filePath = f.getPath();
+        zipDirectory(filePath, zos);
+        // loop again
+        continue;
+      }
+
+      // Not a directory
+      if (!ignoreFile) {
+        FileInputStream fis = new FileInputStream(f);
+        // Create a new zip entry - note that only the filename is used - not the whole path
+        ZipEntry anEntry = new ZipEntry(f.getName());
+        // Place the zip entry in the ZipOutputStream object
+        zos.putNextEntry(anEntry);
+        // Now write the content of the file to the ZipOutputStream
+        while ((bytesIn = fis.read(readBuffer)) != -1) {
+          zos.write(readBuffer, 0, bytesIn);
+        }
+        //Close the Stream
+        fis.close();
+      }
+    }
   }
+
+  /**
+   * Load a backup file, copying all the backup files to the appropriate wallet root directory
+   */
+
+  public WalletId loadBackup(File backupFileToLoad) throws IOException {
+    // Work out the walletId of the backup file being loaded
+    String backupFilename = backupFileToLoad.getName();
+
+    // Remove "mbhd-" prefix
+    String walletRoot = backupFilename.replace(WalletManager.WALLET_DIRECTORY_PREFIX + WalletManager.SEPARATOR, "");
+
+    // Remove  ".zip" suffix
+    walletRoot = walletRoot.replace(BACKUP_ZIP_FILE_EXTENSION, "");
+
+    // Remove the timestamp
+    if (walletRoot.length() > WalletId.LENGTH_OF_FORMATTED_WALLETID) {
+      walletRoot = walletRoot.substring(0, WalletId.LENGTH_OF_FORMATTED_WALLETID);
+    }
+    WalletId walletId = new WalletId(walletRoot);
+
+    // Make a backup of all the current file in the wallet root directory if it exists (except zip-backups)
+    File walletRootDirectory = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), WalletManager.createWalletRoot(walletId));
+
+    if (walletRootDirectory.exists()) {
+      createBackup(walletId);
+    }
+
+    // Unzip the backup into the wallet root directory
+    unzip(backupFileToLoad.getAbsolutePath(), walletRootDirectory.getAbsolutePath());
+
+    return walletId;
+  }
+
+  /**
+   * This method
+   * --Reads an input stream
+   * --Writes the value to the output stream
+   * --Uses 1KB buffer.
+   */
+  private void writeFile(InputStream in, OutputStream out)
+          throws IOException {
+    byte[] buffer = new byte[1024];
+    int len;
+
+    while ((len = in.read(buffer)) >= 0)
+      out.write(buffer, 0, len);
+
+    in.close();
+    out.close();
+  }
+
+  private void unzip(String zipFileName, String directoryToExtractTo) throws IOException {
+    Enumeration entriesEnum;
+    ZipFile zipFile = null;
+    try {
+      zipFile = new ZipFile(zipFileName);
+
+      entriesEnum = zipFile.entries();
+
+      File directory = new File(directoryToExtractTo);
+
+      /**
+       * Check if the directory to extract to exists
+       */
+      if (!directory.exists()) {
+        /**
+         * If not, create a new one.
+         */
+        if (new File(directoryToExtractTo).mkdir()) {
+          log.debug("Created extraction directory '" + directoryToExtractTo + "'");
+        } else {
+          throw new IOException("Could not create extraction directory '" + directoryToExtractTo + "'");
+        }
+      }
+
+      while (entriesEnum.hasMoreElements()) {
+
+        ZipEntry entry = (ZipEntry) entriesEnum.nextElement();
+
+        if (entry.isDirectory()) {
+          // TODO need to save rolling backups when they get put in
+          /**
+           * Currently not unzipping the directory structure.
+           * All the files will be unzipped in a Directory
+           *
+           **/
+        } else {
+
+          log.debug("Extracting file: " + entry.getName());
+          /**
+           * The following logic will just extract the file name
+           * and discard the directory
+           */
+          String name = entry.getName();
+          int index = entry.getName().lastIndexOf(File.separator);
+          if (index > 0 && index != name.length()) {
+            name = entry.getName().substring(index + 1);
+          }
+
+          writeFile(zipFile.getInputStream(entry),
+                  new BufferedOutputStream(new FileOutputStream(
+                          directoryToExtractTo + name)));
+        }
+      }
+
+    } finally {
+
+      if (zipFile != null) {
+        zipFile.close();
+      }
+    }
+
+  }
+}
+
 
 //  /**
 //   * Backup the perWalletModelData to the <wallet>-data/wallet-backup (encrypted) or wallet-unenc-backup (unencrypted) directories.
@@ -722,5 +970,5 @@ public enum BackupManager {
 //      log.debug("Result of create of directory + '" + directoryName + "' was " + createSuccess);
 //    }
 //  }
-}
+
 
