@@ -15,14 +15,17 @@
  */
 package org.multibit.hd.core.utils;
 
+import java.lang.management.ManagementFactory;
+
 /**
  * <p>Utilities to provide the following to application:</p>
  * <ul>
  * <li>Detection of operating system</li>
+ * <li>Detection of debugger</li>
  * </ul>
  *
- * @since 0.2.0
- *         
+ * @since 0.0.1
+ *  
  */
 public final class OSUtils {
 
@@ -32,10 +35,16 @@ public final class OSUtils {
   private OSUtils() {
   }
 
+  /**
+   * @return The current platform name from "os.name" with "unknown" as a default
+   */
   public static String getOsName() {
     return System.getProperty("os.name", "unknown");
   }
 
+  /**
+   * @return The current platform name from "os.name" with "generic" as a default
+   */
   public static String platform() {
     String osName = System.getProperty("os.name", "generic").toLowerCase();
     if (osName.startsWith("windows")) {
@@ -49,14 +58,23 @@ public final class OSUtils {
     } else return "generic";
   }
 
+  /**
+   * @return True if Windows is detected
+   */
   public static boolean isWindows() {
     return (getOsName().toLowerCase().contains("windows"));
   }
 
+  /**
+   * @return True if Linux is detected
+   */
   public static boolean isLinux() {
     return getOsName().toLowerCase().contains("linux");
   }
 
+  /**
+   * @return True if Sun or Linux is detected
+   */
   public static boolean isUnix() {
     final String os = getOsName().toLowerCase();
 
@@ -72,14 +90,29 @@ public final class OSUtils {
     return false;
   }
 
+  /**
+   * @return True if OSX is detected
+   */
   public static boolean isMac() {
     final String os = getOsName().toLowerCase();
     return os.startsWith("mac") || os.startsWith("darwin");
   }
 
+  /**
+   * @return True if the Solaris OS is detected
+   */
   public static boolean isSolaris() {
     final String os = getOsName().toLowerCase();
     return os.contains("sunos");
+  }
+
+  /**
+   * @return True if the Java Debug Wire Protocol is enabled
+   */
+  public static boolean isDebuggerAttached() {
+
+    return ManagementFactory.getRuntimeMXBean().
+      getInputArguments().toString().indexOf("-agentlib:jdwp") > 0;
   }
 
 }

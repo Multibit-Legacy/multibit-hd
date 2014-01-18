@@ -1,6 +1,5 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
-import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -84,7 +83,7 @@ public class SendBitcoinEnterAmountView extends AbstractWizardView<SendBitcoinWi
     enterRecipientMaV.getView().updateModel();
 
     // The panel model has changed so alert the wizard
-    ViewEvents.fireWizardPanelModelChangedEvent(getPanelName(), Optional.of(this));
+    ViewEvents.fireWizardPanelModelChangedEvent(getPanelName(), getPanelModel());
 
     return false;
   }

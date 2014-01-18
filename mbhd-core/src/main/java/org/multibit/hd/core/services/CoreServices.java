@@ -7,6 +7,9 @@ import org.multibit.hd.core.api.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.logging.LoggingFactory;
+import org.multibit.hd.core.utils.OSUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Factory to provide the following to application API:</p>
@@ -18,6 +21,8 @@ import org.multibit.hd.core.logging.LoggingFactory;
  *  
  */
 public class CoreServices {
+
+  private static final Logger log = LoggerFactory.getLogger(CoreServices.class);
 
   /**
    * Send or register events to the user interface subscribers
@@ -61,6 +66,12 @@ public class CoreServices {
     // Configure logging
     new LoggingFactory(Configurations.currentConfiguration.getLoggingConfiguration(), "MBHD").configure();
 
+    if (OSUtils.isDebuggerAttached()) {
+      // TODO Inform the user of the problem
+      log.error("************************************************************************");
+      log.error("* A debugger is attached. This is a security risk in normal operation. *");
+      log.error("************************************************************************");
+    }
 
   }
 
