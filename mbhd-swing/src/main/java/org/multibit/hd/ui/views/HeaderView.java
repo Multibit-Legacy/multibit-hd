@@ -255,6 +255,7 @@ public class HeaderView {
     exchangeLabel.setText(
       Languages.safeText(
         MessageKey.EXCHANGE_FIAT_RATE,
+        "~ $",
         localBalance,
         latestBalanceChangedEvent.get().getRateProvider()
       ));

@@ -40,7 +40,7 @@ public class SendBitcoinConfirmView extends AbstractWizardView<SendBitcoinWizard
     setPanelModel(model);
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fill,insets 0", // Layout constrains
+      "debug,fill,insets 0", // Layout constrains
       "[][]", // Column constraints
       "[]10[]10[]" // Row constraints
     ));
