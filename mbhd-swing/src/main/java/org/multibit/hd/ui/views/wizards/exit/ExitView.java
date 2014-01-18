@@ -24,7 +24,7 @@ public class ExitView extends AbstractWizardView<ExitWizardModel, String> {
    */
   public ExitView(AbstractWizard<ExitWizardModel> wizard) {
 
-    super(wizard.getWizardModel(), MessageKey.EXIT_TITLE);
+    super(wizard.getWizardModel(), null, MessageKey.EXIT_TITLE);
 
     PanelDecorator.addExitCancel(this, wizard);
 

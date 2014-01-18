@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components.enter_recipient;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.Contact;
+import org.multibit.hd.core.api.Recipient;
 import org.multibit.hd.ui.views.AbstractView;
 import org.multibit.hd.ui.views.components.ComboBoxes;
 import org.multibit.hd.ui.views.components.Labels;
@@ -10,6 +11,8 @@ import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilter;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilters;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -40,8 +43,14 @@ public class EnterRecipientView extends AbstractView<EnterRecipientModel> {
 
     AutoCompleteFilter<Contact> filter = AutoCompleteFilters.newContactFilter();
     recipientComboBox = ComboBoxes.newRecipientComboBox(filter);
+    recipientComboBox.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        updateModel();
+      }
+    });
 
-      JPanel panel = Panels.newPanel(new MigLayout(
+    JPanel panel = Panels.newPanel(new MigLayout(
       "fillx,insets 0", // Layout
       "[][][]", // Columns
       "[]" // Rows
@@ -49,8 +58,8 @@ public class EnterRecipientView extends AbstractView<EnterRecipientModel> {
 
     panel.add(Labels.newRecipient());
     // Specify minimum width for consistent appearance across contact names and locales
-    panel.add(recipientComboBox,"growx,w min:350:,push");
-    panel.add(Labels.newImageLabel(""),"shrink,wrap");
+    panel.add(recipientComboBox, "growx,w min:350:,push");
+    panel.add(Labels.newImageLabel(""), "shrink,wrap");
 
     return panel;
 
@@ -58,11 +67,11 @@ public class EnterRecipientView extends AbstractView<EnterRecipientModel> {
 
   @Override
   public void updateModel() {
-    /*
-    getModel().get()
-      .getRecipient()
-      .setContact(recipientComboBox.getModel().getSelectedItem());
-      */
+
+    // TODO Add in support for real address/contact
+    Recipient recipient = new Recipient("1abc123");
+
+    getModel().get().setValue(recipient);
   }
 
 }

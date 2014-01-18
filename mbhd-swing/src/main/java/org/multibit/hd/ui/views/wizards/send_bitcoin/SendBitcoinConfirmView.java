@@ -25,9 +25,9 @@ public class SendBitcoinConfirmView extends AbstractWizardView<SendBitcoinWizard
   /**
    * @param wizard The wizard managing the states
    */
-  public SendBitcoinConfirmView(AbstractWizard<SendBitcoinWizardModel> wizard) {
+  public SendBitcoinConfirmView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), MessageKey.CONFIRM_SEND_TITLE);
+    super(wizard.getWizardModel(), panelName, MessageKey.CONFIRM_SEND_TITLE);
 
     PanelDecorator.addCancelPreviousSend(this, wizard);
 

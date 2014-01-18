@@ -33,7 +33,7 @@ public interface WizardModel {
   /**
    * Update the wizard model with the panel model based on the current state
    *
-   * @param panelModel The panel model (can be absent)
+   * @param panelModel The panel model (can be absent when no user data is present)
    */
   void update(Optional panelModel);
 

@@ -11,7 +11,7 @@ import java.util.Map;
  * <ol>
  * <li>Enter amount</li>
  * <li>Confirm details</li>
- * <li>Watch progress</li>
+ * <li>Report progress</li>
  * </ol>
  *
  * @since 0.0.1
@@ -26,9 +26,15 @@ public class SendBitcoinWizard extends AbstractWizard<SendBitcoinWizardModel> {
   @Override
   protected void populateWizardViewMap(Map<String, AbstractWizardView> wizardViewMap) {
 
-    wizardViewMap.put(SendBitcoinState.ENTER_AMOUNT.name(), new SendBitcoinEnterAmountView(this));
-    wizardViewMap.put(SendBitcoinState.CONFIRM_AMOUNT.name(), new SendBitcoinConfirmView(this));
-    wizardViewMap.put(SendBitcoinState.SEND_BITCOIN_REPORT.name(), new SendBitcoinReportView(this));
+    wizardViewMap.put(
+      SendBitcoinState.ENTER_AMOUNT.name(),
+      new SendBitcoinEnterAmountView(this, SendBitcoinState.ENTER_AMOUNT.name()));
+    wizardViewMap.put(
+      SendBitcoinState.CONFIRM_AMOUNT.name(),
+      new SendBitcoinConfirmView(this, SendBitcoinState.CONFIRM_AMOUNT.name()));
+    wizardViewMap.put(
+      SendBitcoinState.SEND_BITCOIN_REPORT.name(),
+      new SendBitcoinReportView(this, SendBitcoinState.SEND_BITCOIN_REPORT.name()));
 
   }
 

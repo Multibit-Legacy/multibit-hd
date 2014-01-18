@@ -27,9 +27,9 @@ public class SendBitcoinReportView extends AbstractWizardView<SendBitcoinWizardM
   /**
    * @param wizard The wizard managing the states
    */
-  public SendBitcoinReportView(AbstractWizard<SendBitcoinWizardModel> wizard) {
+  public SendBitcoinReportView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), MessageKey.SEND_PROGRESS_TITLE);
+    super(wizard.getWizardModel(), panelName, MessageKey.SEND_PROGRESS_TITLE);
 
     PanelDecorator.addFinish(this, wizard);
 

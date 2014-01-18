@@ -277,7 +277,7 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
         localAmountText.setText("");
 
         // Update the model
-        getModel().get().setValue(BigDecimal.ZERO);
+        getModel().get().setBitcoinAmount(BigDecimal.ZERO);
         getModel().get().setLocalAmount(BigDecimal.ZERO);
       }
     } else {
@@ -294,7 +294,7 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
       } else {
 
         // Update the model
-        getModel().get().setValue(BigDecimal.ZERO);
+        getModel().get().setBitcoinAmount(BigDecimal.ZERO);
         getModel().get().setLocalAmount(BigDecimal.ZERO);
       }
     }

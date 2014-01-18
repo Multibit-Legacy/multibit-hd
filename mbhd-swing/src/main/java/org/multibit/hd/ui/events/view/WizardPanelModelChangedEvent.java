@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
  * <ul>
  * <li>Indicates a wizard panel model has changed</li>
  * </ul>
+ * <p>A wizard model will typically update in response to this event</p>
  *
  * @since 0.0.1
  *  

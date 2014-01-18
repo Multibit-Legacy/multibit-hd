@@ -35,10 +35,11 @@ public class WelcomeView extends AbstractWizardView<WelcomeWizardModel, String> 
 
   /**
    * @param wizard The wizard managing the states
+   * @param panelName   The panel name to filter events from components
    */
-  public WelcomeView(AbstractWizard<WelcomeWizardModel> wizard) {
+  public WelcomeView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), MessageKey.WELCOME_TITLE);
+    super(wizard.getWizardModel(), panelName, MessageKey.WELCOME_TITLE);
 
     PanelDecorator.addExitCancelNext(this, wizard);
 

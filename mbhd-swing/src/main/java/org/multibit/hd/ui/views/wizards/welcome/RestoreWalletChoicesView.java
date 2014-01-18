@@ -25,10 +25,11 @@ public class RestoreWalletChoicesView extends AbstractWizardView<WelcomeWizardMo
 
   /**
    * @param wizard The wizard managing the states
+   * @param panelName   The panel name to filter events from components
    */
-  public RestoreWalletChoicesView(AbstractWizard<WelcomeWizardModel> wizard) {
+  public RestoreWalletChoicesView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), MessageKey.RESTORE_WALLET_TITLE);
+    super(wizard.getWizardModel(), panelName, MessageKey.RESTORE_WALLET_TITLE);
 
     PanelDecorator.addExitCancelPreviousNext(this, wizard);
   }

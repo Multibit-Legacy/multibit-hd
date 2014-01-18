@@ -38,25 +38,27 @@ public abstract class AbstractWizardView<W extends WizardModel, P> {
   private JButton previousButton;
   private JButton finishButton;
 
-  private String panelName;
+  private final String panelName;
 
   /**
    * @param wizardModel The wizard model managing the states
+   * @param panelName   The panel name to filter events from components
    * @param title       The key to the main title of the wizard panel
    */
-  public AbstractWizardView(W wizardModel, MessageKey title) {
+  public AbstractWizardView(W wizardModel, String panelName, MessageKey title) {
 
     Preconditions.checkNotNull(wizardModel, "'wizardModel' must be present");
     Preconditions.checkNotNull(title, "'title' must be present");
 
     this.wizardModel = wizardModel;
+    this.panelName = panelName;
 
     // All wizard views can receive events
     CoreServices.uiEventBus.register(this);
 
     // All wizard panels are decorated with the same theme and layout at creation
     // so just need a vanilla panel to begin with
-    wizardPanel =  Panels.newPanel();
+    wizardPanel = Panels.newPanel();
 
     PanelDecorator.applyWizardTheme(wizardPanel, newDataPanel(), title);
 
@@ -67,10 +69,6 @@ public abstract class AbstractWizardView<W extends WizardModel, P> {
    */
   public String getPanelName() {
     return panelName;
-  }
-
-  public void setPanelName(String panelName) {
-    this.panelName = panelName;
   }
 
   /**
@@ -168,6 +166,8 @@ public abstract class AbstractWizardView<W extends WizardModel, P> {
 
   /**
    * Update the panel data model with the contents of the panel view components (if necessary)
+   *
+   * Called when the Next and Previous buttons are clicked and in response to a ComponentModelChangedEvent
    *
    * @return True if the panel update has triggered an update to the wizard model
    */

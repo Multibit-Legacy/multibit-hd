@@ -86,9 +86,6 @@ public abstract class AbstractWizard<M extends WizardModel> {
       // Add it to the panel
       wizardPanel.add(entry.getValue().getWizardPanel(), entry.getKey());
 
-      // Share the panel name
-      entry.getValue().setPanelName(entry.getKey());
-
     }
 
     // Once all the views are initialised allow events to occur

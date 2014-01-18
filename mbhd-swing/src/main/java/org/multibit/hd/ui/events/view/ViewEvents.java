@@ -113,6 +113,17 @@ public class ViewEvents {
   }
 
   /**
+   * <p>Broadcast a new "wizard component model changed" event</p>
+   *
+   * @param panelName  The panel name to which this applies
+   * @param componentModel The component model
+   */
+  public static void fireWizardComponentModelChangedEvent(String panelName, Optional componentModel) {
+    log.debug("Firing 'wizard component model changed' event");
+    CoreServices.uiEventBus.post(new WizardComponentModelChangedEvent(panelName, componentModel));
+  }
+
+  /**
    * <p>Broadcast a new "wizard panel model changed" event</p>
    *
    * @param panelName  The panel name to which this applies

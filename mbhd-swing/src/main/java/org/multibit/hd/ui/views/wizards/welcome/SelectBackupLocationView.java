@@ -32,10 +32,11 @@ public class SelectBackupLocationView extends AbstractWizardView<WelcomeWizardMo
 
   /**
    * @param wizard The wizard managing the states
+   * @param panelName   The panel name to filter events from components
    */
-  public SelectBackupLocationView(AbstractWizard<WelcomeWizardModel> wizard) {
+  public SelectBackupLocationView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), MessageKey.SELECT_BACKUP_LOCATION_TITLE);
+    super(wizard.getWizardModel(), panelName, MessageKey.SELECT_BACKUP_LOCATION_TITLE);
 
     PanelDecorator.addExitCancelNext(this, wizard);
 

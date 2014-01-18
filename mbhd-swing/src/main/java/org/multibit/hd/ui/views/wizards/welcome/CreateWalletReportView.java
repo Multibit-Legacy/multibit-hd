@@ -43,10 +43,11 @@ public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardMode
 
   /**
    * @param wizard The wizard managing the states
+   * @param panelName   The panel name to filter events from components
    */
-  public CreateWalletReportView(AbstractWizard<WelcomeWizardModel> wizard) {
+  public CreateWalletReportView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), MessageKey.CREATE_WALLET_REPORT_TITLE);
+    super(wizard.getWizardModel(), panelName, MessageKey.CREATE_WALLET_REPORT_TITLE);
 
     PanelDecorator.addFinish(this, wizard);
 

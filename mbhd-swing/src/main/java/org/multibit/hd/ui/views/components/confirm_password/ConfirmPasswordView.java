@@ -143,6 +143,7 @@ public class ConfirmPasswordView extends AbstractView<ConfirmPasswordModel> {
 
   @Override
   public void updateModel() {
+    // Do nothing the model is updated from key release events
   }
 
   @Subscribe

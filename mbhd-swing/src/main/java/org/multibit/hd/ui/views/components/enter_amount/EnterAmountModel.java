@@ -16,7 +16,7 @@ import java.math.BigDecimal;
  * @since 0.0.1
  *  
  */
-public class EnterAmountModel implements Model<BigDecimal> {
+public class EnterAmountModel implements Model<EnterAmountModel> {
 
   private Optional<BigDecimal> bitcoinAmount=Optional.absent();
   private Optional<BigDecimal> localAmount=Optional.absent();
@@ -39,13 +39,13 @@ public class EnterAmountModel implements Model<BigDecimal> {
   }
 
   @Override
-  public BigDecimal getValue() {
-    return getBitcoinAmount();
+  public EnterAmountModel getValue() {
+    return this;
   }
 
   @Override
-  public void setValue(BigDecimal value) {
-    setBitcoinAmount(value);
+  public void setValue(EnterAmountModel value) {
+    // Do nothing
   }
 
   /**
@@ -61,8 +61,8 @@ public class EnterAmountModel implements Model<BigDecimal> {
 
     bitcoinAmount = Optional.of(value);
 
-    // The panel model has changed so alert the wizard
-    ViewEvents.fireWizardPanelModelChangedEvent(panelName, bitcoinAmount);
+    // Fire a component model updated event
+    ViewEvents.fireWizardComponentModelChangedEvent(panelName, Optional.of(this));
 
   }
 
@@ -78,6 +78,9 @@ public class EnterAmountModel implements Model<BigDecimal> {
     Preconditions.checkNotNull(value, "'value' should be present");
 
     localAmount = Optional.of(value);
+
+    // Fire a component model updated event
+    ViewEvents.fireWizardComponentModelChangedEvent(panelName, Optional.of(this));
 
   }
 }

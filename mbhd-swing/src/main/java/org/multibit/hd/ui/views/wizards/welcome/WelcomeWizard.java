@@ -27,14 +27,30 @@ public class WelcomeWizard extends AbstractWizard<WelcomeWizardModel> {
   @Override
   protected void populateWizardViewMap(Map<String, AbstractWizardView> wizardViewMap) {
 
-    wizardViewMap.put(WELCOME.name(), new WelcomeView(this));
-    wizardViewMap.put(SELECT_WALLET.name(), new SelectWalletView(this));
-    wizardViewMap.put(CREATE_WALLET_SEED_PHRASE.name(), new CreateWalletSeedPhraseView(this));
-    wizardViewMap.put(CONFIRM_WALLET_SEED_PHRASE.name(), new ConfirmWalletSeedPhraseView(this));
-    wizardViewMap.put(RESTORE_WALLET.name(), new RestoreWalletChoicesView(this));
-    wizardViewMap.put(CREATE_WALLET_PASSWORD.name(), new CreateWalletPasswordView(this));
-    wizardViewMap.put(SELECT_BACKUP_LOCATION.name(), new SelectBackupLocationView(this));
-    wizardViewMap.put(CREATE_WALLET_REPORT.name(), new CreateWalletReportView(this));
+    wizardViewMap.put(
+      WELCOME.name(),
+      new WelcomeView(this, WELCOME.name()));
+    wizardViewMap.put(
+      SELECT_WALLET.name(),
+      new SelectWalletView(this, SELECT_WALLET.name()));
+    wizardViewMap.put(
+      CREATE_WALLET_SEED_PHRASE.name(),
+      new CreateWalletSeedPhraseView(this, CREATE_WALLET_SEED_PHRASE.name()));
+    wizardViewMap.put(
+      CONFIRM_WALLET_SEED_PHRASE.name(),
+      new ConfirmWalletSeedPhraseView(this, CONFIRM_WALLET_SEED_PHRASE.name()));
+    wizardViewMap.put(
+      RESTORE_WALLET.name(),
+      new RestoreWalletChoicesView(this, RESTORE_WALLET.name()));
+    wizardViewMap.put(
+      CREATE_WALLET_PASSWORD.name(),
+      new CreateWalletPasswordView(this, CREATE_WALLET_PASSWORD.name()));
+    wizardViewMap.put(
+      SELECT_BACKUP_LOCATION.name(),
+      new SelectBackupLocationView(this, SELECT_BACKUP_LOCATION.name()));
+    wizardViewMap.put(
+      CREATE_WALLET_REPORT.name(),
+      new CreateWalletReportView(this, CREATE_WALLET_REPORT.name()));
 
   }
 

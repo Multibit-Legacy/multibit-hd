@@ -30,10 +30,11 @@ public class CreateWalletSeedPhraseView extends AbstractWizardView<WelcomeWizard
 
   /**
    * @param wizard The wizard managing the states
+   * @param panelName   The panel name to filter events from components
    */
-  public CreateWalletSeedPhraseView(AbstractWizard<WelcomeWizardModel> wizard) {
+  public CreateWalletSeedPhraseView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), MessageKey.CREATE_WALLET_SEED_PHRASE_TITLE);
+    super(wizard.getWizardModel(), panelName, MessageKey.CREATE_WALLET_SEED_PHRASE_TITLE);
 
     PanelDecorator.addExitCancelPreviousNext(this, wizard);
 

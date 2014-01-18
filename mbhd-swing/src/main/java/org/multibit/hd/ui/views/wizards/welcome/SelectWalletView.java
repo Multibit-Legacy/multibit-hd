@@ -30,10 +30,11 @@ public class SelectWalletView extends AbstractWizardView<WelcomeWizardModel, Wel
 
   /**
    * @param wizard The wizard managing the states
+   * @param panelName   The panel name to filter events from components
    */
-  public SelectWalletView(AbstractWizard<WelcomeWizardModel> wizard) {
+  public SelectWalletView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), MessageKey.SELECT_WALLET_TITLE);
+    super(wizard.getWizardModel(), panelName, MessageKey.SELECT_WALLET_TITLE);
 
     PanelDecorator.addExitCancelPreviousNext(this, wizard);
 

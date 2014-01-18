@@ -30,10 +30,11 @@ public class CreateWalletPasswordView extends AbstractWizardView<WelcomeWizardMo
 
   /**
    * @param wizard The wizard managing the states
+   * @param panelName   The panel name to filter events from components
    */
-  public CreateWalletPasswordView(AbstractWizard<WelcomeWizardModel> wizard) {
+  public CreateWalletPasswordView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), MessageKey.CREATE_WALLET_PASSWORD_TITLE);
+    super(wizard.getWizardModel(), panelName, MessageKey.CREATE_WALLET_PASSWORD_TITLE);
 
     PanelDecorator.addExitCancelNext(this, wizard);
 
