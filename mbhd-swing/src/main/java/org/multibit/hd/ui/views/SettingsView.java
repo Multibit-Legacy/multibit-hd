@@ -45,7 +45,7 @@ public class SettingsView {
   public JPanel initComponents() {
 
     MigLayout settingsLayout = new MigLayout(
-      "fill", // Layout constrains
+      "fill", // Layout constraints
       "[]", // Column constraints
       "[grow]10[shrink]" // Row constraints
     );

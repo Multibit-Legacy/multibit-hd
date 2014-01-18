@@ -99,7 +99,7 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
       .isCurrencySymbolLeading();
 
     // Add to the panel
-    panel.add(Labels.newEnterAmount(), "span 4,grow,push,wrap");
+    panel.add(Labels.newAmount(), "span 4,grow,push,wrap");
 
     if (isCurrencySymbolLeading) {
       panel.add(Labels.newBitcoinCurrencySymbol());

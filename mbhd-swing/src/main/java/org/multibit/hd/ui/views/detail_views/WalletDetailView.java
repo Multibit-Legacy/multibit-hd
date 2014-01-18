@@ -35,7 +35,7 @@ public class WalletDetailView {
     CoreServices.uiEventBus.register(this);
 
     MigLayout layout = new MigLayout(
-      "fill", // Layout constrains
+      "fill", // Layout constraints
       "[]10[]", // Column constraints
       "[]50[]" // Row constraints
     );

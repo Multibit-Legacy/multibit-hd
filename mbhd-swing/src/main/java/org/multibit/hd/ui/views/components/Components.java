@@ -1,12 +1,11 @@
 package org.multibit.hd.ui.views.components;
 
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.api.Contact;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilter;
-import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilters;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordView;
+import org.multibit.hd.ui.views.components.display_amount.DisplayAmountModel;
+import org.multibit.hd.ui.views.components.display_amount.DisplayAmountView;
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseModel;
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseView;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountModel;
@@ -144,6 +143,20 @@ public class Components {
 
     SelectFileModel model = new SelectFileModel(panelName);
     SelectFileView view = new SelectFileView(model);
+
+    return new ModelAndView<>(model, view);
+
+  }
+
+  /**
+   * <p>A "select file" model and view handles user data entry of a file or path</p>
+   *
+   * @return A new "display amount" model and view
+   */
+  public static ModelAndView<DisplayAmountModel, DisplayAmountView> newDisplayAmountMaV() {
+
+    DisplayAmountModel model = new DisplayAmountModel();
+    DisplayAmountView view = new DisplayAmountView(model);
 
     return new ModelAndView<>(model, view);
 

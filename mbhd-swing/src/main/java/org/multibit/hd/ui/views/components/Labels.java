@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.components;
 
 import org.multibit.hd.core.api.MessageKey;
+import org.multibit.hd.core.api.Recipient;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.ui.i18n.BitcoinSymbol;
 import org.multibit.hd.ui.i18n.Languages;
@@ -28,8 +29,10 @@ import java.io.IOException;
  */
 public class Labels {
 
-  public static final float BALANCE_LARGE_FONT_SIZE = 42.0f;
-  public static final float BALANCE_NORMAL_FONT_SIZE = 28.0f;
+  public static final float BALANCE_HEADER_LARGE_FONT_SIZE = 42.0f;
+  public static final float BALANCE_HEADER_NORMAL_FONT_SIZE = 28.0f;
+  public static final float BALANCE_DISPLAY_LARGE_FONT_SIZE = 28.0f;
+  public static final float BALANCE_DISPLAY_NORMAL_FONT_SIZE = 18.0f;
   public static final float PANEL_CLOSE_FONT_SIZE = 28.0f;
 
   /**
@@ -58,7 +61,7 @@ public class Labels {
     JLabel label = newLabel(key);
 
     // Font
-    Font font = label.getFont().deriveFont(BALANCE_LARGE_FONT_SIZE);
+    Font font = label.getFont().deriveFont(BALANCE_HEADER_LARGE_FONT_SIZE);
     label.setFont(font);
 
     // Theme
@@ -237,9 +240,11 @@ public class Labels {
    * <li>[3]: Localised exchange rate display</li>
    * </ul>
    *
+   * @param headerSize True if the balance labels should be extra large for the header view
+   *
    * @return A new collection of labels that together form a balance display
    */
-  public static JLabel[] newBalanceLabels() {
+  public static JLabel[] newBalanceLabels(boolean headerSize) {
 
     JLabel primaryBalanceLabel = new JLabel("0.00");
     JLabel secondaryBalanceLabel = new JLabel("");
@@ -247,13 +252,20 @@ public class Labels {
     JLabel exchangeLabel = new JLabel("");
 
     // Font
-    Font balanceFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_LARGE_FONT_SIZE);
-    Font decimalFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_NORMAL_FONT_SIZE);
+    final Font largeFont;
+    final Font normalFont;
+    if (headerSize) {
+      largeFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_HEADER_LARGE_FONT_SIZE);
+      normalFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_HEADER_NORMAL_FONT_SIZE);
+    } else {
+      largeFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_DISPLAY_LARGE_FONT_SIZE);
+      normalFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_DISPLAY_NORMAL_FONT_SIZE);
+    }
 
-    primaryBalanceLabel.setFont(balanceFont);
-    secondaryBalanceLabel.setFont(decimalFont);
-    trailingSymbolLabel.setFont(balanceFont);
-    exchangeLabel.setFont(decimalFont);
+    primaryBalanceLabel.setFont(largeFont);
+    secondaryBalanceLabel.setFont(normalFont);
+    trailingSymbolLabel.setFont(largeFont);
+    exchangeLabel.setFont(normalFont);
 
     // Theme
     primaryBalanceLabel.setForeground(Themes.currentTheme.text());
@@ -272,10 +284,10 @@ public class Labels {
   }
 
   /**
-   * @return A new "Enter amount" label
+   * @return A new "Amount" label
    */
-  public static JLabel newEnterAmount() {
-    return newLabel(MessageKey.ENTER_AMOUNT);
+  public static JLabel newAmount() {
+    return newLabel(MessageKey.AMOUNT);
   }
 
   /**
@@ -377,6 +389,15 @@ public class Labels {
   }
 
   /**
+   * @return A new "recipient summary" label
+   */
+  public static JLabel newRecipientSummary(Recipient recipient) {
+
+    return newLabel(MessageKey.RECIPIENT_SUMMARY, recipient.getSummary());
+
+  }
+
+  /**
    * @return A new "seed size" message
    */
   public static JLabel newSeedSize() {
@@ -454,18 +475,5 @@ public class Labels {
       MessageKey.SELECT_BACKUP_LOCATION_NOTE_4
     }, new Object[][]{});
 
-  }
-
-  /**
-   * @return A new "confirm send" note
-   */
-  public static JLabel newConfirmSendNote(
-
-  ) {
-    return newNoteLabel(new MessageKey[]{
-      MessageKey.SEND_AMOUNT_NOTE_1,
-      MessageKey.SEND_AMOUNT_NOTE_2,
-      MessageKey.CONFIRM_SEND_NOTE_3,
-    }, new Object[][]{});
   }
 }

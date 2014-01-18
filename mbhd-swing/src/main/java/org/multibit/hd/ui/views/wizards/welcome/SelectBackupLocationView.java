@@ -49,7 +49,7 @@ public class SelectBackupLocationView extends AbstractWizardView<WelcomeWizardMo
     setPanelModel(selectFileMaV.getModel());
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fill,insets 0", // Layout constrains
+      "fill,insets 0", // Layout constraints
       "[]", // Column constraints
       "[]10[]" // Row constraints
     ));

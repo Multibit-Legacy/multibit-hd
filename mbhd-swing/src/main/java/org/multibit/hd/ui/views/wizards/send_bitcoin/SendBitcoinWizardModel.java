@@ -88,6 +88,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     switch (state) {
       case ENTER_AMOUNT:
         state = CONFIRM_AMOUNT;
+        // Determine any events
+        ViewEvents.fireWizardModelChangedEvent(SendBitcoinState.CONFIRM_AMOUNT.name());
         break;
       case CONFIRM_AMOUNT:
         state = SEND_BITCOIN_REPORT;
@@ -131,6 +133,15 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     return enterAmountPanelModel
       .getEnterAmountModel()
       .getBitcoinAmount();
+  }
+
+  /**
+   * @return The local amount
+   */
+  public BigDecimal getLocalAmount() {
+    return enterAmountPanelModel
+      .getEnterAmountModel()
+      .getLocalAmount();
   }
 
   /**

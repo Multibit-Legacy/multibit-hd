@@ -35,7 +35,7 @@ public enum MessageKey {
   NOTES("Notes"),
   ENTER_PASSWORD("Enter password"),
   CONFIRM_PASSWORD("Confirm password"),
-  ENTER_AMOUNT("Enter amount"),
+  AMOUNT("Amount"),
 
   // Placeholders
   APPROXIMATELY("placeholder.approximately"),
@@ -121,9 +121,8 @@ public enum MessageKey {
   WALLET_PASSWORD_NOTE_2("You can change it whenever you like from the Tools screen."),
   WALLET_PASSWORD_NOTE_3("You can always recover it using your seed phrase."),
 
-  SEND_AMOUNT_NOTE_1("confirm-send.note.1"),
-  SEND_AMOUNT_NOTE_2("Enter your seed phrase words below <strong>exactly as they were given</strong>."),
-  CONFIRM_SEND_NOTE_3("Enter your seed phrase words below <strong>exactly as they were given</strong>."),
+  RECIPIENT_SUMMARY("recipient-summary"),
+  AMOUNT_SUMMARY("amount-summary"),
 
   // End of enum
   CONTACTS("Contacts"), TRANSACTIONS("Transactions"), HISTORY("History"), PREFERENCES("Preferences"), TOOLS("Tools");

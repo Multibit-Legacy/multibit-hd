@@ -135,7 +135,7 @@ public class ViewEvents {
   }
 
   /**
-   * <p>Broadcast a new "wizard model changed" event - normally consumed by "finishing" panels</p>
+   * <p>Broadcast a new "wizard model changed" event - normally consumed by "finishing" or "display" panels</p>
    *
    * @param panelName The panel name to restrict the update to a particular panel
    */

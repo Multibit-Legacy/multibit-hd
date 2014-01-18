@@ -33,7 +33,7 @@ public class SettingsLanguageView implements ActionListener {
   public JPanel initComponents() {
 
     MigLayout layout = new MigLayout(
-      "fillx", // Layout constrains
+      "fillx", // Layout constraints
       "[right]rel[grow,fill]", // Column constraints
       "[]10[]" // Row constraints
     );

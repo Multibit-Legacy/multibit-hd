@@ -85,7 +85,7 @@ public class HeaderView {
     balancePanel.setBackground(Themes.currentTheme.headerPanelBackground());
 
     // Create the balance labels
-    JLabel[] balanceLabels = Labels.newBalanceLabels();
+    JLabel[] balanceLabels = Labels.newBalanceLabels(true);
     primaryBalanceLabel = balanceLabels[0];
     secondaryBalanceLabel = balanceLabels[1];
     trailingSymbolLabel = balanceLabels[2];
@@ -275,9 +275,9 @@ public class HeaderView {
 
       // Icon leads primary balance but decorator will automatically swap which is undesired
       if (Languages.isLeftToRight()) {
-        AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, primaryBalanceLabel, true, (int) Labels.BALANCE_LARGE_FONT_SIZE);
+        AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, primaryBalanceLabel, true, (int) Labels.BALANCE_HEADER_LARGE_FONT_SIZE);
       } else {
-        AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, primaryBalanceLabel, false, (int) Labels.BALANCE_LARGE_FONT_SIZE);
+        AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, primaryBalanceLabel, false, (int) Labels.BALANCE_HEADER_LARGE_FONT_SIZE);
       }
       AwesomeDecorator.removeIcon(trailingSymbolLabel);
       trailingSymbolLabel.setText("");
@@ -303,7 +303,7 @@ public class HeaderView {
     if (BitcoinSymbol.ICON.equals(symbol)) {
 
       // Icon trails secondary balance
-      AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, trailingSymbolLabel, true, (int) Labels.BALANCE_LARGE_FONT_SIZE);
+      AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, trailingSymbolLabel, true, (int) Labels.BALANCE_HEADER_LARGE_FONT_SIZE);
       AwesomeDecorator.removeIcon(primaryBalanceLabel);
       trailingSymbolLabel.setText("");
 

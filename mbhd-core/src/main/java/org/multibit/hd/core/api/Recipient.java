@@ -49,4 +49,16 @@ public class Recipient {
       ", contact=" + contact.orNull() +
       '}';
   }
+
+  /**
+   * @return The Bitcoin address or the contact name if present
+   */
+  public String getSummary() {
+
+    if (contact.isPresent()) {
+      return contact.get().getName();
+    }
+
+    return bitcoinAddress;
+  }
 }

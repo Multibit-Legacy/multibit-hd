@@ -49,7 +49,7 @@ public class CreateWalletSeedPhraseView extends AbstractWizardView<WelcomeWizard
     setPanelModel(displaySeedPhraseMaV.getModel().getValue());
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fill,insets 0", // Layout constrains
+      "fill,insets 0", // Layout constraints
       "[]", // Column constraints
       "[][]" // Row constraints
     ));

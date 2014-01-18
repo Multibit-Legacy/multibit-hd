@@ -41,12 +41,21 @@ public abstract class AbstractView<M extends Model> implements View<M> {
     this.model = Optional.fromNullable(model);
   }
 
+  /**
+   * Update the backing model with the data from the view components
+   */
   @Override
   public abstract void updateModel();
 
+  /**
+   * @return A new panel suitable for inclusion in the user area of a wizard layout
+   */
   @Override
   public abstract JPanel newPanel();
 
+  /**
+   * @return The current panel
+   */
   @Override
   public JPanel currentPanel() {
     return panel;

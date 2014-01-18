@@ -36,7 +36,7 @@ public class DetailView {
     CoreServices.uiEventBus.register(this);
 
     MigLayout layout = new MigLayout(
-      "fill", // Layout constrains
+      "fill", // Layout constraints
       "[]", // Column constraints
       "[grow]10[shrink]" // Row constraints
     );
