@@ -4,7 +4,6 @@ import org.multibit.hd.core.api.Contact;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionListener;
 
 /**
@@ -30,7 +29,7 @@ public class ContactComboBoxEditor implements ComboBoxEditor {
 
   }
 
-  public Component getEditorComponent() {
+  public JTextField getEditorComponent() {
     return editor;
   }
 

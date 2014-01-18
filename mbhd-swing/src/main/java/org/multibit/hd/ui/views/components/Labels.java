@@ -4,6 +4,7 @@ import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.ui.i18n.BitcoinSymbol;
 import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.utils.HtmlUtils;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -77,31 +78,19 @@ public class Labels {
    */
   public static JLabel newNoteLabel(MessageKey[] keys, Object[][] values) {
 
-    String[] safeHtml = new String[keys.length];
+    String[] lines = new String[keys.length];
     for (int i = 0; i < keys.length; i++) {
       if (values.length > 0) {
         // Substitution is required
-        safeHtml[i] = Languages.safeText(keys[i], values[i]);
+        lines[i] = Languages.safeText(keys[i], values[i]);
       } else {
         // Key only
-        safeHtml[i] = Languages.safeText(keys[i]);
+        lines[i] = Languages.safeText(keys[i]);
       }
     }
 
-    // Wrap in HTML to ensure line breaks are respected
-    final StringBuilder sb;
-    if (Languages.isLeftToRight()) {
-      sb = new StringBuilder("<html><div align=left>");
-    } else {
-      sb = new StringBuilder("<html><div align=right>");
-    }
-    for (String line : safeHtml) {
-      sb.append(line);
-      sb.append("<br/><br/>");
-    }
-    sb.append("</div></html>");
-
-    JLabel label = new JLabel(sb.toString());
+    // Wrap in HTML to ensure LTR/RTL and line breaks are respected
+    JLabel label = new JLabel(HtmlUtils.localiseWithLineBreaks(lines));
 
     // Theme
     label.setForeground(Themes.currentTheme.text());

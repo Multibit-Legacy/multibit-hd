@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.components.select_contact;
 
 import org.multibit.hd.core.api.Contact;
+import org.multibit.hd.ui.utils.HtmlUtils;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
@@ -18,7 +19,11 @@ import java.awt.*;
  */
 public class ContactListCellRenderer extends JLabel implements ListCellRenderer<Contact> {
 
-  public ContactListCellRenderer() {
+  private final JTextField textField;
+
+  public ContactListCellRenderer(JTextField textField) {
+
+    this.textField = textField;
 
     setOpaque(true);
     setVerticalAlignment(CENTER);
@@ -49,10 +54,15 @@ public class ContactListCellRenderer extends JLabel implements ListCellRenderer<
       true,
       AwesomeDecorator.NORMAL_ICON_SIZE
     );
-    setText(value.getName());
+
+    String fragment = textField.getText();
+    String sourceText = value.getName();
+
+    setText(HtmlUtils.applyBoldFragments(fragment, sourceText));
 
     setFont(list.getFont());
 
     return this;
   }
+
 }

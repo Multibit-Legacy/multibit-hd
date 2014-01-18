@@ -79,7 +79,7 @@ public class ComboBoxes {
     comboBox.setEditor(new ContactComboBoxEditor());
 
     // Use a contact list cell renderer to ensure thumbnails are maintained
-    ListCellRenderer<Contact> renderer = new ContactListCellRenderer();
+    ListCellRenderer<Contact> renderer = new ContactListCellRenderer((JTextField) comboBox.getEditor().getEditorComponent());
     comboBox.setRenderer(renderer);
 
     // Ensure we start with nothing selected
