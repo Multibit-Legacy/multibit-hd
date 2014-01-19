@@ -50,14 +50,14 @@ public class BackupManagerTest extends TestCase {
   @Test
   public void testBackupWallet() throws IOException {
     // Create a random temporary directory in which to store the wallet directory
-    File temporaryWalletRootDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
+    File temporaryWalletParentDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
 
     WalletManager walletManager = WalletManager.INSTANCE;
 
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
 
-    WalletData walletData = walletManager.createWallet(temporaryWalletRootDirectory.getAbsolutePath(), seed, "password");
+    WalletData walletData = walletManager.createWallet(temporaryWalletParentDirectory.getAbsolutePath(), seed, "password");
 
     // Create a random temporary directory in which to story the cloudBackups
     File temporaryBackupDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
@@ -65,7 +65,7 @@ public class BackupManagerTest extends TestCase {
     BackupManager backupManager = BackupManager.INSTANCE;
 
     // Initialise the backupManager to point at the temporaryBackupDirectory
-    backupManager.initialise(temporaryWalletRootDirectory, temporaryBackupDirectory);
+    backupManager.initialise(temporaryWalletParentDirectory, temporaryBackupDirectory);
 
     // Check there are initially no backup wallets for the wallet id of the created walelt
     List<File> localBackups = BackupManager.INSTANCE.getLocalBackups(walletData.getWalletId());
@@ -95,7 +95,11 @@ public class BackupManagerTest extends TestCase {
 
     assertEquals("Recreated local backup wallet id not the same as original", walletData.getWalletId(), recreatedWalletId);
 
-    // TODO compare the backup wallet and original wallet are identical
+    String walletFilename = WalletManager.getWalletDirectory(temporaryWalletParentDirectory.getAbsolutePath(), WalletManager.createWalletRoot(recreatedWalletId)) + File.separator + WalletManager.MBHD_WALLET_NAME;
+    WalletData recreatedWalletData = walletManager.loadFromFile(new File(walletFilename));
+
+    // Check there is the same key in the original wallet as in the recreated one
+    assertEquals("Wallet was not roundtripped correctly", walletData.getWallet().getKeys().get(0).toStringWithPrivate(), recreatedWalletData.getWallet().getKeys().get(0).toStringWithPrivate());
   }
 }
 
