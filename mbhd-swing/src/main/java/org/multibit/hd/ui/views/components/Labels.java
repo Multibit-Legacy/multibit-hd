@@ -38,8 +38,8 @@ public class Labels {
   public static final float BALANCE_TRANSACTION_LARGE_FONT_SIZE = 18.0f;
   public static final float BALANCE_TRANSACTION_NORMAL_FONT_SIZE = 14.0f;
 
-  public static final float BALANCE_FEE_LARGE_FONT_SIZE = 12.0f;
-  public static final float BALANCE_FEE_NORMAL_FONT_SIZE = 10.0f;
+  public static final float BALANCE_FEE_LARGE_FONT_SIZE = 14.0f;
+  public static final float BALANCE_FEE_NORMAL_FONT_SIZE = 12.0f;
 
   public static final float PANEL_CLOSE_FONT_SIZE = 28.0f;
 

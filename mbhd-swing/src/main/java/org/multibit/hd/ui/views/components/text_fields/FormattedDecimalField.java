@@ -2,10 +2,13 @@ package org.multibit.hd.ui.views.components.text_fields;
 
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.ui.i18n.BitcoinSymbol;
+import org.multibit.hd.ui.views.components.DocumentMaxLengthFilter;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import javax.swing.text.DefaultFormatterFactory;
+import javax.swing.text.DocumentFilter;
 import javax.swing.text.NumberFormatter;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -38,7 +41,7 @@ public class FormattedDecimalField extends JFormattedTextField {
     Preconditions.checkNotNull(max, "'max' must be present");
     Preconditions.checkState(min < max, "'min' must be less than 'max'");
 
-    Preconditions.checkState(decimalPlaces > 0 && decimalPlaces < 15, "'decimalPlaces' must be in range (0,15)");
+    Preconditions.checkState(decimalPlaces >= 0 && decimalPlaces < 15, "'decimalPlaces' must be in range [0,15)");
 
     setInputVerifier(new ThemedDecimalInputVerifier(min, max));
 
@@ -53,9 +56,13 @@ public class FormattedDecimalField extends JFormattedTextField {
     int decimalEditIndex = editPattern.indexOf('.');
 
     // Adjust patterns to accommodate the required decimal places
-    displayPattern = displayPattern.substring(0, decimalDisplayIndex + decimalPlaces + 1);
-    editPattern = editPattern.substring(0, decimalEditIndex + decimalPlaces + 1);
-
+    if (decimalPlaces > 0) {
+      displayPattern = displayPattern.substring(0, decimalDisplayIndex + decimalPlaces + 1);
+      editPattern = editPattern.substring(0, decimalEditIndex + decimalPlaces + 1);
+    } else {
+      displayPattern = displayPattern.substring(0, decimalDisplayIndex);
+      editPattern = editPattern.substring(0, decimalEditIndex);
+    }
     // Adjust edit/display formats to the current configuration
     char groupingSeparator = Configurations.currentConfiguration.getI18NConfiguration().getGroupingSeparator();
     char decimalSeparator = Configurations.currentConfiguration.getI18NConfiguration().getDecimalSeparator();
@@ -91,7 +98,11 @@ public class FormattedDecimalField extends JFormattedTextField {
    * @return A number formatter that is locale-aware and configured for doubles
    */
   private NumberFormatter getNumberFormatter(final DecimalFormat decimalFormat) {
+
+    // Create the number formatter with local-sensitive adjustments
     NumberFormatter displayFormatter = new NumberFormatter(decimalFormat) {
+
+      DocumentFilter documentFilter = new DocumentMaxLengthFilter(BitcoinSymbol.maxRepresentationLength());
 
       @Override
       public Object stringToValue(String text) throws ParseException {
@@ -99,6 +110,12 @@ public class FormattedDecimalField extends JFormattedTextField {
         text = text.replace(' ', '\u00a0');
         return super.stringToValue(text);
       }
+
+      @Override
+      protected DocumentFilter getDocumentFilter() {
+        return documentFilter;
+      }
+
     };
     displayFormatter.setValueClass(Double.class);
     return displayFormatter;

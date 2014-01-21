@@ -9,32 +9,32 @@ import org.joda.money.BigMoney;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class BalanceChangedEvent implements ViewEvent {
 
-  private final BigMoney btcBalance;
+  private final BigMoney rawBitcoinBalance;
   private final BigMoney localBalance;
   private final String rateProvider;
 
   /**
-   * @param btcbalance   The current balance in BTC
-   * @param localBalance The current balance in local currency
-   * @param rateProvider The exchange rate provider (e.g. "Bitstamp")
+   * @param rawBitcoinBalance The current balance in BTC without symbolic multiplier
+   * @param localBalance      The current balance in local currency
+   * @param rateProvider      The exchange rate provider (e.g. "Bitstamp")
    */
-  public BalanceChangedEvent(BigMoney btcbalance, BigMoney localBalance, String rateProvider) {
+  public BalanceChangedEvent(BigMoney rawBitcoinBalance, BigMoney localBalance, String rateProvider) {
 
-    this.btcBalance = btcbalance;
+    this.rawBitcoinBalance = rawBitcoinBalance;
     this.localBalance = localBalance;
     this.rateProvider = rateProvider;
 
   }
 
   /**
-   * @return The Bitcoin balance
+   * @return The Bitcoin balance without symbolic multiplier
    */
-  public BigMoney getBtcBalance() {
-    return btcBalance;
+  public BigMoney getRawBitcoinBalance() {
+    return rawBitcoinBalance;
   }
 
   /**

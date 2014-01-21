@@ -31,6 +31,8 @@ public class Formats {
    */
   public static String[] formatRawBitcoinAmountAsSymbolic(BigDecimal amount) {
 
+    System.out.println("Formatting: "+amount.toPlainString());
+
     Preconditions.checkNotNull(amount, "'amount' must be present");
 
     I18NConfiguration configuration = Configurations.currentConfiguration.getI18NConfiguration();
@@ -72,13 +74,13 @@ public class Formats {
   }
 
   /**
-   * <p>Provide a simple representation for the local currency balance display.</p>
+   * <p>Provide a simple representation for a local currency amount.</p>
    *
    * @param amount The amount as a plain number (no multipliers)
    *
    * @return The local currency representation with no symbolic decoration
    */
-  public static String formatLocalBalance(BigDecimal amount) {
+  public static String formatLocalAmount(BigDecimal amount) {
 
     I18NConfiguration configuration = Configurations.currentConfiguration.getI18NConfiguration();
 
@@ -107,6 +109,7 @@ public class Formats {
 
     format.setMaximumFractionDigits(BitcoinSymbol.current().decimalPlaces());
     format.setMinimumFractionDigits(BitcoinSymbol.current().decimalPlaces());
+
     format.setDecimalSeparatorAlwaysShown(false);
 
     return format;
@@ -122,9 +125,11 @@ public class Formats {
     DecimalFormat format = new DecimalFormat();
 
     format.setDecimalFormatSymbols(dfs);
+
     format.setMinimumIntegerDigits(1);
-    format.setMaximumFractionDigits(2);
-    format.setMinimumFractionDigits(2);
+    format.setMaximumFractionDigits(Configurations.currentConfiguration.getI18NConfiguration().getLocalDecimalPlaces());
+    format.setMinimumFractionDigits(Configurations.currentConfiguration.getI18NConfiguration().getLocalDecimalPlaces());
+
     format.setDecimalSeparatorAlwaysShown(true);
 
     return format;

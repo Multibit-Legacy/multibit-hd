@@ -92,7 +92,7 @@ public class DisplayAmountView extends AbstractView<DisplayAmountModel> {
     I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration();
 
     // Display using the symbolic amount
-    String[] bitcoinDisplay = Formats.formatRawBitcoinAmountAsSymbolic(getModel().get().getSymbolicBitcoinAmount());
+    String[] bitcoinDisplay = Formats.formatRawBitcoinAmountAsSymbolic(getModel().get().getRawBitcoinAmount());
 
     BitcoinSymbol symbol = BitcoinSymbol.of(bitcoinConfiguration.getBitcoinSymbol());
 
@@ -106,7 +106,7 @@ public class DisplayAmountView extends AbstractView<DisplayAmountModel> {
     secondaryBalanceLabel.setText(bitcoinDisplay[1]);
 
     if (getModel().get().isLocalAmountVisible()) {
-      String localDisplay = Formats.formatLocalBalance(getModel().get().getLocalAmount());
+      String localDisplay = Formats.formatLocalAmount(getModel().get().getLocalAmount());
       exchangeLabel.setText(
         Languages.safeText(
           MessageKey.EXCHANGE_FIAT_RATE,

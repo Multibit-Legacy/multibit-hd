@@ -124,4 +124,20 @@ public enum BitcoinSymbol {
   public static BitcoinSymbol current() {
     return BitcoinSymbol.of(Configurations.currentConfiguration.getBitcoinConfiguration().getBitcoinSymbol());
   }
+
+  /**
+   * @return The Bitcoin maximum value with symbolic multiplier applied (useful for amount entry)
+   */
+  public static BigDecimal maxSymbolicAmount() {
+    return new BigDecimal("20999999.99999999").multiply(current().multiplier());
+  }
+
+  /**
+   * @return The maximum number of characters required to represent a decimal Bitcoin amount without grouping characters (input would be invalid)
+   *
+   */
+  public static int maxRepresentationLength() {
+    // 21 million to 8 dp
+    return "21000000.00000000".length();
+  }
 }

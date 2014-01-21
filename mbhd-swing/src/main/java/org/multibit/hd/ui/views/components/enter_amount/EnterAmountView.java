@@ -68,14 +68,15 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
     ));
 
     // Keep track of the amount fields
-    bitcoinAmountText = TextBoxes.newBitcoinAmount(20_999_999.12345678);
-    localAmountText = TextBoxes.newCurrencyAmount(20_999_999_123.45678);
+    bitcoinAmountText = TextBoxes.newBitcoinAmount(BitcoinSymbol.maxSymbolicAmount().doubleValue());
+    localAmountText = TextBoxes.newCurrencyAmount(999_999_999_999_999.9999);
 
     approximatelyLabel = Labels.newApproximately();
     localCurrencySymbolLabel = Labels.newLocalCurrencySymbol();
 
     // Bind a key listener to allow instant update of UI to amount changes
     bitcoinAmountText.addKeyListener(new KeyAdapter() {
+
       @Override
       public void keyReleased(KeyEvent e) {
 

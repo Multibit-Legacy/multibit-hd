@@ -241,8 +241,8 @@ public class HeaderView {
     BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
     I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration();
 
-    String[] balance = Formats.formatRawBitcoinAmountAsSymbolic(latestBalanceChangedEvent.get().getBtcBalance().getAmount());
-    String localBalance = Formats.formatLocalBalance(latestBalanceChangedEvent.get().getLocalBalance().getAmount());
+    String[] balance = Formats.formatRawBitcoinAmountAsSymbolic(latestBalanceChangedEvent.get().getRawBitcoinBalance().getAmount());
+    String localBalance = Formats.formatLocalAmount(latestBalanceChangedEvent.get().getLocalBalance().getAmount());
 
     BitcoinSymbol symbol = BitcoinSymbol.of(bitcoinConfiguration.getBitcoinSymbol());
 
