@@ -57,7 +57,7 @@ public class DisplayAmountView extends AbstractView<DisplayAmountModel> {
     ));
 
     // Create the balance labels (normal size)
-    JLabel[] balanceLabels = Labels.newBalanceLabels(false);
+    JLabel[] balanceLabels = Labels.newBalanceLabels(getModel().get().getStyle());
     primaryBalanceLabel = balanceLabels[0];
     secondaryBalanceLabel = balanceLabels[1];
     trailingSymbolLabel = balanceLabels[2];
@@ -92,7 +92,6 @@ public class DisplayAmountView extends AbstractView<DisplayAmountModel> {
     I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration();
 
     String[] bitcoinDisplay = Formats.formatBitcoinBalance(getModel().get().getBitcoinAmount());
-    String localDisplay = Formats.formatLocalBalance(getModel().get().getLocalAmount());
 
     BitcoinSymbol symbol = BitcoinSymbol.valueOf(bitcoinConfiguration.getBitcoinSymbol());
 
@@ -105,13 +104,18 @@ public class DisplayAmountView extends AbstractView<DisplayAmountModel> {
     primaryBalanceLabel.setText(bitcoinDisplay[0]);
     secondaryBalanceLabel.setText(bitcoinDisplay[1]);
 
-    exchangeLabel.setText(
-      Languages.safeText(
-        MessageKey.EXCHANGE_FIAT_RATE,
-        "~ $",
-        localDisplay
-      ));
-
+    if (getModel().get().isLocalAmountVisible()) {
+      String localDisplay = Formats.formatLocalBalance(getModel().get().getLocalAmount());
+      exchangeLabel.setText(
+        Languages.safeText(
+          MessageKey.EXCHANGE_FIAT_RATE,
+          "~ $",
+          localDisplay
+        ));
+      exchangeLabel.setVisible(true);
+    } else {
+      exchangeLabel.setVisible(false);
+    }
   }
 
 
@@ -128,9 +132,9 @@ public class DisplayAmountView extends AbstractView<DisplayAmountModel> {
 
       // Icon leads primary balance but decorator will automatically swap which is undesired
       if (Languages.isLeftToRight()) {
-        AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, primaryBalanceLabel, true, (int) Labels.BALANCE_HEADER_NORMAL_FONT_SIZE);
+        AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, primaryBalanceLabel, true, getLargeFontSize());
       } else {
-        AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, primaryBalanceLabel, false, (int) Labels.BALANCE_HEADER_NORMAL_FONT_SIZE);
+        AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, primaryBalanceLabel, false, getLargeFontSize());
       }
       AwesomeDecorator.removeIcon(trailingSymbolLabel);
       trailingSymbolLabel.setText("");
@@ -156,7 +160,7 @@ public class DisplayAmountView extends AbstractView<DisplayAmountModel> {
     if (BitcoinSymbol.ICON.equals(symbol)) {
 
       // Icon trails secondary balance
-      AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, trailingSymbolLabel, true, (int) Labels.BALANCE_HEADER_NORMAL_FONT_SIZE);
+      AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, trailingSymbolLabel, true, getNormalFontSize());
       AwesomeDecorator.removeIcon(primaryBalanceLabel);
       trailingSymbolLabel.setText("");
 
@@ -168,6 +172,54 @@ public class DisplayAmountView extends AbstractView<DisplayAmountModel> {
       AwesomeDecorator.removeIcon(trailingSymbolLabel);
 
     }
+
+  }
+
+  /**
+   * @return The size of the normal font for the given style
+   */
+  private int getNormalFontSize() {
+
+    final int size;
+    switch (getModel().get().getStyle()) {
+      case HEADER:
+        size = (int) Labels.BALANCE_HEADER_NORMAL_FONT_SIZE;
+        break;
+      case TRANSACTION_DETAIL_AMOUNT:
+        size = (int) Labels.BALANCE_TRANSACTION_NORMAL_FONT_SIZE;
+        break;
+      case FEE_AMOUNT:
+        size = (int) Labels.BALANCE_FEE_NORMAL_FONT_SIZE;
+        break;
+      default:
+        throw new IllegalStateException("Style: " + getModel().get().getStyle().name() + " is unknown");
+    }
+
+    return size;
+
+  }
+
+  /**
+   * @return The size of the large font for the given style
+   */
+  private int getLargeFontSize() {
+
+    final int size;
+    switch (getModel().get().getStyle()) {
+      case HEADER:
+        size = (int) Labels.BALANCE_HEADER_LARGE_FONT_SIZE;
+        break;
+      case TRANSACTION_DETAIL_AMOUNT:
+        size = (int) Labels.BALANCE_TRANSACTION_LARGE_FONT_SIZE;
+        break;
+      case FEE_AMOUNT:
+        size = (int) Labels.BALANCE_FEE_LARGE_FONT_SIZE;
+        break;
+      default:
+        throw new IllegalStateException("Style: " + getModel().get().getStyle().name() + " is unknown");
+    }
+
+    return size;
 
   }
 }

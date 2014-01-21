@@ -20,6 +20,7 @@ import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -35,7 +36,7 @@ import java.awt.event.MouseEvent;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class HeaderView {
 
@@ -85,7 +86,7 @@ public class HeaderView {
     balancePanel.setBackground(Themes.currentTheme.headerPanelBackground());
 
     // Create the balance labels
-    JLabel[] balanceLabels = Labels.newBalanceLabels(true);
+    JLabel[] balanceLabels = Labels.newBalanceLabels(DisplayAmountStyle.HEADER);
     primaryBalanceLabel = balanceLabels[0];
     secondaryBalanceLabel = balanceLabels[1];
     trailingSymbolLabel = balanceLabels[2];
@@ -232,6 +233,8 @@ public class HeaderView {
 
   /**
    * <p>Reflect the current balance on the UI</p>
+   *
+   * TODO Consider replacing this with the DisplayAmount component
    */
   private void handleBalanceChange() {
 
@@ -264,6 +267,7 @@ public class HeaderView {
 
   /**
    * <p>Place currency symbol before the number</p>
+   * TODO Consider replacing this with the DisplayAmount component
    *
    * @param symbol The symbol to use
    */
@@ -295,6 +299,7 @@ public class HeaderView {
 
   /**
    * <p>Place currency symbol after the number</p>
+   * TODO Consider replacing this with the DisplayAmount component
    *
    * @param symbol The symbol to use
    */

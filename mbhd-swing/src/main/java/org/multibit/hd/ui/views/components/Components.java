@@ -5,6 +5,7 @@ import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordView;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountModel;
+import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountView;
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseModel;
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseView;
@@ -149,13 +150,15 @@ public class Components {
   }
 
   /**
-   * <p>A "select file" model and view handles user data entry of a file or path</p>
+   * <p>A "display amount" model and view handles presentation of a Bitcoin and local currency amount</p>
+   *
+   * @param style The display amount style
    *
    * @return A new "display amount" model and view
    */
-  public static ModelAndView<DisplayAmountModel, DisplayAmountView> newDisplayAmountMaV() {
+  public static ModelAndView<DisplayAmountModel, DisplayAmountView> newDisplayAmountMaV(DisplayAmountStyle style) {
 
-    DisplayAmountModel model = new DisplayAmountModel();
+    DisplayAmountModel model = new DisplayAmountModel(style);
     DisplayAmountView view = new DisplayAmountView(model);
 
     return new ModelAndView<>(model, view);

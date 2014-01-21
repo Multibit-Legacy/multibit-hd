@@ -39,6 +39,16 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   private SendBitcoinConfirmPanelModel confirmPanelModel;
 
   /**
+   * Default transaction fee
+   */
+  private BigDecimal transactionFee = new BigDecimal("0.0001");
+
+  /**
+   * Default developer fee
+   */
+  private BigDecimal developerFee = new BigDecimal("0.00005");
+
+  /**
    * @param state The state object
    */
   public SendBitcoinWizardModel(SendBitcoinState state) {
@@ -187,4 +197,17 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     return !Strings.isNullOrEmpty(confirmPanelModel.getPassword());
   }
 
+  /**
+   * @return The transaction fee (a.k.a "miner's fee")
+   */
+  public BigDecimal getTransactionFee() {
+    return transactionFee;
+  }
+
+  /**
+   * @return The developer fee
+   */
+  public BigDecimal getDeveloperFee() {
+    return developerFee;
+  }
 }

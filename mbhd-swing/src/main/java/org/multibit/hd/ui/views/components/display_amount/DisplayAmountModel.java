@@ -15,8 +15,18 @@ import java.math.BigDecimal;
  */
 public class DisplayAmountModel implements Model<DisplayAmountModel> {
 
-  private BigDecimal bitcoinAmount;
-  private BigDecimal localAmount;
+  private BigDecimal bitcoinAmount = BigDecimal.ZERO;
+  private BigDecimal localAmount = BigDecimal.ZERO;
+  private boolean localAmountVisible = true;
+
+  private final DisplayAmountStyle style;
+
+  /**
+   * @param style The display amount style
+   */
+  public DisplayAmountModel(DisplayAmountStyle style) {
+    this.style = style;
+  }
 
   @Override
   public DisplayAmountModel getValue() {
@@ -26,6 +36,13 @@ public class DisplayAmountModel implements Model<DisplayAmountModel> {
   @Override
   public void setValue(DisplayAmountModel value) {
     // Do nothing
+  }
+
+  /**
+   * @return The display amount style
+   */
+  public DisplayAmountStyle getStyle() {
+    return style;
   }
 
   /**
@@ -48,5 +65,16 @@ public class DisplayAmountModel implements Model<DisplayAmountModel> {
 
   public void setLocalAmount(BigDecimal localAmount) {
     this.localAmount = localAmount;
+  }
+
+  /**
+   * @return True if the local amount should be visible
+   */
+  public boolean isLocalAmountVisible() {
+    return localAmountVisible;
+  }
+
+  public void setLocalAmountVisible(boolean localAmountVisible) {
+    this.localAmountVisible = localAmountVisible;
   }
 }

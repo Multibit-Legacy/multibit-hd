@@ -36,6 +36,8 @@ public enum MessageKey {
   ENTER_PASSWORD("Enter password"),
   CONFIRM_PASSWORD("Confirm password"),
   AMOUNT("Amount"),
+  TRANSACTION_FEE("Transaction fee"),
+  MULTIBIT_FEE("MultiBit fee"),
 
   // Placeholders
   APPROXIMATELY("placeholder.approximately"),

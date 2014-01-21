@@ -1,11 +1,13 @@
 package org.multibit.hd.ui.views.components;
 
+import com.google.common.base.Preconditions;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.api.Recipient;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.ui.i18n.BitcoinSymbol;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.utils.HtmlUtils;
+import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -17,6 +19,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 
 /**
  * <p>Utility to provide the following to UI:</p>
@@ -31,8 +34,13 @@ public class Labels {
 
   public static final float BALANCE_HEADER_LARGE_FONT_SIZE = 42.0f;
   public static final float BALANCE_HEADER_NORMAL_FONT_SIZE = 28.0f;
-  public static final float BALANCE_DISPLAY_LARGE_FONT_SIZE = 28.0f;
-  public static final float BALANCE_DISPLAY_NORMAL_FONT_SIZE = 18.0f;
+
+  public static final float BALANCE_TRANSACTION_LARGE_FONT_SIZE = 28.0f;
+  public static final float BALANCE_TRANSACTION_NORMAL_FONT_SIZE = 18.0f;
+
+  public static final float BALANCE_FEE_LARGE_FONT_SIZE = 18.0f;
+  public static final float BALANCE_FEE_NORMAL_FONT_SIZE = 14.0f;
+
   public static final float PANEL_CLOSE_FONT_SIZE = 28.0f;
 
   /**
@@ -240,11 +248,13 @@ public class Labels {
    * <li>[3]: Localised exchange rate display</li>
    * </ul>
    *
-   * @param headerSize True if the balance labels should be extra large for the header view
+   * @param style The display style to use depending on the context
    *
    * @return A new collection of labels that together form a balance display
    */
-  public static JLabel[] newBalanceLabels(boolean headerSize) {
+  public static JLabel[] newBalanceLabels(DisplayAmountStyle style) {
+
+    Preconditions.checkNotNull(style, "'style' must be present");
 
     JLabel primaryBalanceLabel = new JLabel("0.00");
     JLabel secondaryBalanceLabel = new JLabel("");
@@ -254,12 +264,22 @@ public class Labels {
     // Font
     final Font largeFont;
     final Font normalFont;
-    if (headerSize) {
-      largeFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_HEADER_LARGE_FONT_SIZE);
-      normalFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_HEADER_NORMAL_FONT_SIZE);
-    } else {
-      largeFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_DISPLAY_LARGE_FONT_SIZE);
-      normalFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_DISPLAY_NORMAL_FONT_SIZE);
+
+    switch (style) {
+      case HEADER:
+        largeFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_HEADER_LARGE_FONT_SIZE);
+        normalFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_HEADER_NORMAL_FONT_SIZE);
+        break;
+      case TRANSACTION_DETAIL_AMOUNT:
+        largeFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_TRANSACTION_LARGE_FONT_SIZE);
+        normalFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_TRANSACTION_NORMAL_FONT_SIZE);
+        break;
+      case FEE_AMOUNT:
+        largeFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_FEE_NORMAL_FONT_SIZE);
+        normalFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_FEE_NORMAL_FONT_SIZE);
+        break;
+      default:
+        throw new IllegalStateException("Unknown style:" + style.name());
     }
 
     primaryBalanceLabel.setFont(largeFont);
@@ -300,6 +320,7 @@ public class Labels {
         .currentConfiguration
         .getBitcoinConfiguration()
         .getBitcoinSymbol()
+        .toUpperCase()
     );
 
     JLabel label = new JLabel();
@@ -396,6 +417,25 @@ public class Labels {
     return newLabel(MessageKey.RECIPIENT_SUMMARY, recipient.getSummary());
 
   }
+
+  /**
+   * @param transactionFee The transaction fee to represent
+   *
+   * @return A new "transaction fee" message
+   */
+  public static JLabel newTransactionFee(BigDecimal transactionFee) {
+    return newLabel(MessageKey.TRANSACTION_FEE);
+  }
+
+  /**
+   * @param developerFee The developer fee to represent
+   *
+   * @return A new "developer fee" message
+   */
+  public static JLabel newDeveloperFee(BigDecimal developerFee) {
+    return newLabel(MessageKey.MULTIBIT_FEE);
+  }
+
 
   /**
    * @return A new "seed size" message

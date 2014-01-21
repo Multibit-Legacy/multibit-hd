@@ -20,8 +20,9 @@ import java.io.InputStream;
  */
 public class AwesomeDecorator {
 
-  public static final int NORMAL_ICON_SIZE = 20;
   public static final int LARGE_ICON_SIZE = 70;
+  public static final int NORMAL_ICON_SIZE = 20;
+  public static final int SMALL_ICON_SIZE = 14;
 
   public static Font AWESOME_FONT;
 

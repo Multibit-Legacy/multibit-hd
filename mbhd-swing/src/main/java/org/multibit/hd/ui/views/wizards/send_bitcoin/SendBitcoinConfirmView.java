@@ -7,6 +7,7 @@ import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardModelChangedEvent;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountModel;
+import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardView;
@@ -28,7 +29,11 @@ public class SendBitcoinConfirmView extends AbstractWizardView<SendBitcoinWizard
   // View components
   private JTextArea notesTextArea;
   private JPasswordField passwordField;
-  private ModelAndView<DisplayAmountModel, DisplayAmountView> displayAmountMaV;
+
+  private ModelAndView<DisplayAmountModel, DisplayAmountView> transactionDisplayAmountMaV;
+  private ModelAndView<DisplayAmountModel, DisplayAmountView> transactionFeeDisplayAmountMaV;
+  private ModelAndView<DisplayAmountModel, DisplayAmountView> developerFeeDisplayAmountMaV;
+
   private JLabel recipientSummaryLabel;
 
   /**
@@ -46,9 +51,14 @@ public class SendBitcoinConfirmView extends AbstractWizardView<SendBitcoinWizard
   @Override
   public JPanel newDataPanel() {
 
-    displayAmountMaV = Components.newDisplayAmountMaV();
+    transactionDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT);
+    transactionFeeDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.FEE_AMOUNT);
+    developerFeeDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.FEE_AMOUNT);
 
+    // Blank labels populated from wizard model later
     recipientSummaryLabel = new JLabel("");
+
+    // User entered text
     notesTextArea = TextBoxes.newEnterNotes();
     passwordField = TextBoxes.newPassword();
 
@@ -57,14 +67,18 @@ public class SendBitcoinConfirmView extends AbstractWizardView<SendBitcoinWizard
     JPanel panel = Panels.newPanel(new MigLayout(
       "fillx,insets 0", // Layout constraints
       "[][]", // Column constraints
-      "[]10[]10[]10[]10[]" // Row constraints
+      "[]10[]10[][][]10[][]" // Row constraints
     ));
 
     panel.add(Labels.newConfirmSendAmount(), "span 2,push,wrap");
     panel.add(Labels.newRecipient());
-    panel.add(recipientSummaryLabel, "span 2,wrap");
-    panel.add(Labels.newAmount());
-    panel.add(displayAmountMaV.getView().newPanel(), "span 2,wrap");
+    panel.add(recipientSummaryLabel, "wrap");
+    panel.add(Labels.newAmount(),"baseline");
+    panel.add(transactionDisplayAmountMaV.getView().newPanel(), "wrap");
+    panel.add(Labels.newTransactionFee(getWizardModel().getTransactionFee()),"top");
+    panel.add(transactionFeeDisplayAmountMaV.getView().newPanel(), "wrap");
+    panel.add(Labels.newDeveloperFee(getWizardModel().getDeveloperFee()),"top");
+    panel.add(developerFeeDisplayAmountMaV.getView().newPanel(), "wrap");
     panel.add(Labels.newNotes());
     panel.add(notesTextArea, "growx,push,wrap");
     panel.add(Labels.newEnterPassword());
@@ -89,13 +103,22 @@ public class SendBitcoinConfirmView extends AbstractWizardView<SendBitcoinWizard
   public void onWizardModelChangedEvent(WizardModelChangedEvent event) {
 
     // Update the model and view for the amount
-    displayAmountMaV.getModel().setBitcoinAmount(getWizardModel().getBitcoinAmount());
-    displayAmountMaV.getModel().setLocalAmount(getWizardModel().getLocalAmount());
-    displayAmountMaV.getView().updateView();
+    transactionDisplayAmountMaV.getModel().setBitcoinAmount(getWizardModel().getBitcoinAmount());
+    transactionDisplayAmountMaV.getModel().setLocalAmount(getWizardModel().getLocalAmount());
+    transactionDisplayAmountMaV.getView().updateView();
+
+    // Update the model and view for the transaction fee
+    transactionFeeDisplayAmountMaV.getModel().setBitcoinAmount(getWizardModel().getTransactionFee());
+    transactionFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
+    transactionFeeDisplayAmountMaV.getView().updateView();
+
+    // Update the model and view for the developer fee
+    developerFeeDisplayAmountMaV.getModel().setBitcoinAmount(getWizardModel().getDeveloperFee());
+    developerFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
+    developerFeeDisplayAmountMaV.getView().updateView();
 
     // Update the model and view for the recipient
     recipientSummaryLabel.setText(getWizardModel().getRecipient().getSummary());
-
 
   }
 }
