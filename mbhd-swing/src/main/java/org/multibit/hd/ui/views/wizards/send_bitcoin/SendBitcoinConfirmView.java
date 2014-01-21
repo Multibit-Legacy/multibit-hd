@@ -14,6 +14,8 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -61,6 +63,15 @@ public class SendBitcoinConfirmView extends AbstractWizardView<SendBitcoinWizard
     // User entered text
     notesTextArea = TextBoxes.newEnterNotes();
     passwordField = TextBoxes.newPassword();
+
+    passwordField.addKeyListener(new KeyAdapter() {
+
+      @Override
+      public void keyReleased(KeyEvent e) {
+        getPanelModel().get().setPassword(String.copyValueOf(passwordField.getPassword()));
+      }
+
+    });
 
     setPanelModel(new SendBitcoinConfirmPanelModel(getPanelName()));
 

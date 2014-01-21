@@ -31,8 +31,6 @@ public class Formats {
    */
   public static String[] formatRawBitcoinAmountAsSymbolic(BigDecimal amount) {
 
-    System.out.println("Formatting: "+amount.toPlainString());
-
     Preconditions.checkNotNull(amount, "'amount' must be present");
 
     I18NConfiguration configuration = Configurations.currentConfiguration.getI18NConfiguration();
@@ -44,8 +42,6 @@ public class Formats {
 
     // Apply formatting to the symbolic amount
     String formattedAmount = format.format(amount.multiply(BitcoinSymbol.current().multiplier()));
-
-    System.out.println(formattedAmount);
 
     // The Satoshi symbol does not have decimals
     if (BitcoinSymbol.SATOSHI.equals(BitcoinSymbol.current())) {

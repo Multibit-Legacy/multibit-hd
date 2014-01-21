@@ -1,8 +1,10 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.wizards.AbstractPanelModel;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 
 /**
  * <p>Panel model to provide the following to "send bitcoin" wizard:</p>
@@ -41,7 +43,15 @@ public class SendBitcoinConfirmPanelModel  extends AbstractPanelModel  {
   }
 
   public void setPassword(String password) {
+
     this.password = password;
+
+    ViewEvents.fireWizardButtonEnabledEvent(
+      SendBitcoinState.CONFIRM_AMOUNT.name(),
+      WizardButton.NEXT,
+      !Strings.isNullOrEmpty(password)
+    );
+
   }
 
   @Override
