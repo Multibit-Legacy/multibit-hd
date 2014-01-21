@@ -24,15 +24,16 @@ public class I18NConfiguration {
 
   private boolean currencySymbolLeading = true;
 
-  private int localDecimalPlaces=2;
+  // Use 4 as the default as it is common in forex representations
+  private int localDecimalPlaces = 4;
 
   public I18NConfiguration() {
 
     // Get the decimal and grouping separators for the current locale
-    DecimalFormat decimalFormat= (DecimalFormat) DecimalFormat.getInstance();
-    DecimalFormatSymbols symbols=decimalFormat.getDecimalFormatSymbols();
-    decimalSeparator=symbols.getDecimalSeparator();
-    groupingSeparator=symbols.getGroupingSeparator();
+    DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getInstance();
+    DecimalFormatSymbols symbols = decimalFormat.getDecimalFormatSymbols();
+    decimalSeparator = symbols.getDecimalSeparator();
+    groupingSeparator = symbols.getGroupingSeparator();
 
   }
 

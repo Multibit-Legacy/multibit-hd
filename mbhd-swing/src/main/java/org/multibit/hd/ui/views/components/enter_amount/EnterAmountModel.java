@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.components.enter_amount;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.i18n.BitcoinSymbol;
 import org.multibit.hd.ui.models.Model;
 
 import java.math.BigDecimal;
@@ -18,7 +19,7 @@ import java.math.BigDecimal;
  */
 public class EnterAmountModel implements Model<EnterAmountModel> {
 
-  private Optional<BigDecimal> bitcoinAmount=Optional.absent();
+  private Optional<BigDecimal> rawBitcoinAmount =Optional.absent();
   private Optional<BigDecimal> localAmount=Optional.absent();
 
   private final String panelName;
@@ -49,17 +50,24 @@ public class EnterAmountModel implements Model<EnterAmountModel> {
   }
 
   /**
-   * @return The Bitcoin amount (zero if not present)
+   * @return The Bitcoin amount (zero if not present) with symbol multiplier
    */
-  public BigDecimal getBitcoinAmount() {
-    return bitcoinAmount.or(BigDecimal.ZERO);
+  public BigDecimal getSymbolicBitcoinAmount() {
+    return getRawBitcoinAmount().multiply(BitcoinSymbol.current().multiplier());
   }
 
-  public void setBitcoinAmount(BigDecimal value) {
+  /**
+   * @return The Bitcoin amount (zero if not present) without symbol multiplier
+   */
+  public BigDecimal getRawBitcoinAmount() {
+    return rawBitcoinAmount.or(BigDecimal.ZERO);
+  }
+
+  public void setRawBitcoinAmount(BigDecimal value) {
 
     Preconditions.checkNotNull(value, "'value' should be present");
 
-    bitcoinAmount = Optional.of(value);
+    rawBitcoinAmount = Optional.of(value);
 
     // Fire a component model updated event
     ViewEvents.fireWizardComponentModelChangedEvent(panelName, Optional.of(this));

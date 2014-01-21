@@ -52,6 +52,8 @@ public class ComponentTestBed {
     // Start the core services
     CoreServices.main(args);
 
+    Configurations.currentConfiguration.getBitcoinConfiguration().setBitcoinSymbol("mBTC");
+
     // Register for events
     CoreServices.uiEventBus.register(this);
 

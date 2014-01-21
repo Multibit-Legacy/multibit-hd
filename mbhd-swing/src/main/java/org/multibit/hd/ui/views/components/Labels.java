@@ -35,11 +35,11 @@ public class Labels {
   public static final float BALANCE_HEADER_LARGE_FONT_SIZE = 42.0f;
   public static final float BALANCE_HEADER_NORMAL_FONT_SIZE = 28.0f;
 
-  public static final float BALANCE_TRANSACTION_LARGE_FONT_SIZE = 28.0f;
-  public static final float BALANCE_TRANSACTION_NORMAL_FONT_SIZE = 18.0f;
+  public static final float BALANCE_TRANSACTION_LARGE_FONT_SIZE = 18.0f;
+  public static final float BALANCE_TRANSACTION_NORMAL_FONT_SIZE = 14.0f;
 
-  public static final float BALANCE_FEE_LARGE_FONT_SIZE = 18.0f;
-  public static final float BALANCE_FEE_NORMAL_FONT_SIZE = 14.0f;
+  public static final float BALANCE_FEE_LARGE_FONT_SIZE = 12.0f;
+  public static final float BALANCE_FEE_NORMAL_FONT_SIZE = 10.0f;
 
   public static final float PANEL_CLOSE_FONT_SIZE = 28.0f;
 
@@ -267,22 +267,23 @@ public class Labels {
 
     switch (style) {
       case HEADER:
-        largeFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_HEADER_LARGE_FONT_SIZE);
-        normalFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_HEADER_NORMAL_FONT_SIZE);
+        largeFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, BALANCE_HEADER_LARGE_FONT_SIZE);
+        normalFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, BALANCE_HEADER_NORMAL_FONT_SIZE);
         break;
       case TRANSACTION_DETAIL_AMOUNT:
-        largeFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_TRANSACTION_LARGE_FONT_SIZE);
-        normalFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_TRANSACTION_NORMAL_FONT_SIZE);
+        largeFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, BALANCE_TRANSACTION_LARGE_FONT_SIZE);
+        normalFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, BALANCE_TRANSACTION_NORMAL_FONT_SIZE);
         break;
       case FEE_AMOUNT:
-        largeFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_FEE_NORMAL_FONT_SIZE);
-        normalFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_FEE_NORMAL_FONT_SIZE);
+        largeFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, BALANCE_FEE_NORMAL_FONT_SIZE);
+        normalFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, BALANCE_FEE_NORMAL_FONT_SIZE);
         break;
       default:
         throw new IllegalStateException("Unknown style:" + style.name());
     }
 
     primaryBalanceLabel.setFont(largeFont);
+    primaryBalanceLabel.setForeground(Color.RED);
     secondaryBalanceLabel.setFont(normalFont);
     trailingSymbolLabel.setFont(largeFont);
     exchangeLabel.setFont(normalFont);
@@ -315,12 +316,11 @@ public class Labels {
    */
   public static JLabel newBitcoinCurrencySymbol() {
 
-    BitcoinSymbol symbol = BitcoinSymbol.valueOf(
+    BitcoinSymbol symbol = BitcoinSymbol.of(
       Configurations
         .currentConfiguration
         .getBitcoinConfiguration()
         .getBitcoinSymbol()
-        .toUpperCase()
     );
 
     JLabel label = new JLabel();

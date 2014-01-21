@@ -137,12 +137,12 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   }
 
   /**
-   * @return The Bitcoin amount
+   * @return The Bitcoin amount without symbolic multiplier
    */
-  public BigDecimal getBitcoinAmount() {
+  public BigDecimal getRawBitcoinAmount() {
     return enterAmountPanelModel
       .getEnterAmountModel()
-      .getBitcoinAmount();
+      .getRawBitcoinAmount();
   }
 
   /**
@@ -177,7 +177,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
     boolean bitcoinAmountOK = !enterAmountPanelModel
       .getEnterAmountModel()
-      .getBitcoinAmount()
+      .getRawBitcoinAmount()
       .equals(BigDecimal.ZERO);
 
     boolean recipientOK = enterAmountPanelModel
@@ -193,21 +193,20 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
    */
   private boolean isConfirmNextEnabled() {
 
-    // TODO Tie this into CoreServices for real password checking
     return !Strings.isNullOrEmpty(confirmPanelModel.getPassword());
   }
 
   /**
-   * @return The transaction fee (a.k.a "miner's fee")
+   * @return The transaction fee (a.k.a "miner's fee") without symbolic multiplier
    */
-  public BigDecimal getTransactionFee() {
+  public BigDecimal getRawTransactionFee() {
     return transactionFee;
   }
 
   /**
-   * @return The developer fee
+   * @return The developer fee without symbolic multiplier
    */
-  public BigDecimal getDeveloperFee() {
+  public BigDecimal getRawDeveloperFee() {
     return developerFee;
   }
 }

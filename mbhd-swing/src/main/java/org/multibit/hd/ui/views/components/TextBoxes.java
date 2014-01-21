@@ -1,5 +1,7 @@
 package org.multibit.hd.ui.views.components;
 
+import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.ui.i18n.BitcoinSymbol;
 import org.multibit.hd.ui.views.components.text_fields.FormattedDecimalField;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -54,8 +56,10 @@ public class TextBoxes {
    */
   public static FormattedDecimalField newBitcoinAmount(double maximum) {
 
+    // Use the Bitcoin symbol multiplier to determine the decimal places
+    int decimalPlaces = BitcoinSymbol.current().decimalPlaces();
 
-    FormattedDecimalField textField = new FormattedDecimalField(0, maximum, 8);
+    FormattedDecimalField textField = new FormattedDecimalField(0, maximum, decimalPlaces);
 
     Font font = textField.getFont().deriveFont((float) AwesomeDecorator.NORMAL_ICON_SIZE);
 
@@ -72,7 +76,13 @@ public class TextBoxes {
    */
   public static FormattedDecimalField newCurrencyAmount(double maximum) {
 
-    FormattedDecimalField textField = new FormattedDecimalField(0, maximum, 2);
+    // Use the current configuration to provide the decimal places
+    int decimalPlaces = Configurations
+      .currentConfiguration
+      .getI18NConfiguration()
+      .getLocalDecimalPlaces();
+
+    FormattedDecimalField textField = new FormattedDecimalField(0, maximum, decimalPlaces);
 
     Font font = textField.getFont().deriveFont((float) AwesomeDecorator.NORMAL_ICON_SIZE);
 

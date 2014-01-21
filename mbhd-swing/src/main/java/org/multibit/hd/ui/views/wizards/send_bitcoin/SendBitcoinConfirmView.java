@@ -75,9 +75,9 @@ public class SendBitcoinConfirmView extends AbstractWizardView<SendBitcoinWizard
     panel.add(recipientSummaryLabel, "wrap");
     panel.add(Labels.newAmount(),"baseline");
     panel.add(transactionDisplayAmountMaV.getView().newPanel(), "wrap");
-    panel.add(Labels.newTransactionFee(getWizardModel().getTransactionFee()),"top");
+    panel.add(Labels.newTransactionFee(getWizardModel().getRawTransactionFee()),"top");
     panel.add(transactionFeeDisplayAmountMaV.getView().newPanel(), "wrap");
-    panel.add(Labels.newDeveloperFee(getWizardModel().getDeveloperFee()),"top");
+    panel.add(Labels.newDeveloperFee(getWizardModel().getRawDeveloperFee()),"top");
     panel.add(developerFeeDisplayAmountMaV.getView().newPanel(), "wrap");
     panel.add(Labels.newNotes());
     panel.add(notesTextArea, "growx,push,wrap");
@@ -103,17 +103,17 @@ public class SendBitcoinConfirmView extends AbstractWizardView<SendBitcoinWizard
   public void onWizardModelChangedEvent(WizardModelChangedEvent event) {
 
     // Update the model and view for the amount
-    transactionDisplayAmountMaV.getModel().setBitcoinAmount(getWizardModel().getBitcoinAmount());
+    transactionDisplayAmountMaV.getModel().setRawBitcoinAmount(getWizardModel().getRawBitcoinAmount());
     transactionDisplayAmountMaV.getModel().setLocalAmount(getWizardModel().getLocalAmount());
     transactionDisplayAmountMaV.getView().updateView();
 
     // Update the model and view for the transaction fee
-    transactionFeeDisplayAmountMaV.getModel().setBitcoinAmount(getWizardModel().getTransactionFee());
+    transactionFeeDisplayAmountMaV.getModel().setRawBitcoinAmount(getWizardModel().getRawTransactionFee());
     transactionFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
     transactionFeeDisplayAmountMaV.getView().updateView();
 
     // Update the model and view for the developer fee
-    developerFeeDisplayAmountMaV.getModel().setBitcoinAmount(getWizardModel().getDeveloperFee());
+    developerFeeDisplayAmountMaV.getModel().setRawBitcoinAmount(getWizardModel().getRawDeveloperFee());
     developerFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
     developerFeeDisplayAmountMaV.getView().updateView();
 

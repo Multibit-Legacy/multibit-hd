@@ -87,6 +87,9 @@ public class ConfigurationReadAdapter {
     if (Configurations.I18N_IS_CURRENCY_PREFIXED.equalsIgnoreCase(key)) {
       configuration.getI18NConfiguration().setCurrencySymbolLeading(Boolean.valueOf(value));
     }
+    if (Configurations.I18N_LOCAL_DECIMAL_PLACES.equalsIgnoreCase(key)) {
+      configuration.getI18NConfiguration().setLocalDecimalPlaces(Integer.valueOf(value));
+    }
 
   }
 

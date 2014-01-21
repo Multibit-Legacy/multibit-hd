@@ -1,11 +1,8 @@
 package org.multibit.hd.ui.i18n;
 
 import com.google.common.base.Preconditions;
-import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.I18NConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -19,39 +16,37 @@ import java.util.Locale;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class Formats {
-
-  private static final Logger log = LoggerFactory.getLogger(Formats.class);
 
   /**
    * <p>Provide a split representation for the Bitcoin balance display.</p>
    * <p>For example, 12345.6789 becomes "12,345.67", "89" </p>
+   * <p>The amount will be adjusted by the symbolic multiplier from the current confiuration</p>
    *
-   * @param amount The amount as a plain number (no multipliers)
+   * @param amount The Bitcoin amount without a symbolic multiplier
    *
    * @return The left [0] and right [0] components suitable for presentation as a balance with no symbolic decoration
    */
-  public static String[] formatBitcoinBalance(BigDecimal amount) {
+  public static String[] formatRawBitcoinAmountAsSymbolic(BigDecimal amount) {
 
     Preconditions.checkNotNull(amount, "'amount' must be present");
-    Preconditions.checkState(amount.toPlainString().contains("."), "'amount' must have decimal representation");
 
     I18NConfiguration configuration = Configurations.currentConfiguration.getI18NConfiguration();
-    BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
-    BitcoinSymbol symbol = BitcoinSymbol.valueOf(bitcoinConfiguration.getBitcoinSymbol());
-
-    BigDecimal symbolicAmount = amount.multiply(symbol.multiplier());
 
     Locale currentLocale = configuration.getLocale();
 
     DecimalFormatSymbols dfs = configureDecimalFormatSymbols(configuration, currentLocale);
     DecimalFormat format = configureBitcoinDecimalFormat(dfs);
 
-    String formattedAmount = format.format(symbolicAmount);
+    // Apply formatting to the symbolic amount
+    String formattedAmount = format.format(amount.multiply(BitcoinSymbol.current().multiplier()));
 
-    if (BitcoinSymbol.SATOSHI.equals(symbol)) {
+    System.out.println(formattedAmount);
+
+    // The Satoshi symbol does not have decimals
+    if (BitcoinSymbol.SATOSHI.equals(BitcoinSymbol.current())) {
 
       return new String[]{
         formattedAmount,
@@ -65,7 +60,7 @@ public class Formats {
     int decimalIndex = formattedAmount.lastIndexOf(dfs.getDecimalSeparator());
 
     if (decimalIndex == -1) {
-      formattedAmount += dfs.getDecimalSeparator()+"00";
+      formattedAmount += dfs.getDecimalSeparator() + "00";
       decimalIndex = formattedAmount.lastIndexOf(dfs.getDecimalSeparator());
     }
 
@@ -106,10 +101,12 @@ public class Formats {
     DecimalFormat format = new DecimalFormat();
 
     format.setDecimalFormatSymbols(dfs);
+
     format.setMaximumIntegerDigits(16);
     format.setMinimumIntegerDigits(1);
-    format.setMaximumFractionDigits(8);
-    format.setMinimumFractionDigits(0);
+
+    format.setMaximumFractionDigits(BitcoinSymbol.current().decimalPlaces());
+    format.setMinimumFractionDigits(BitcoinSymbol.current().decimalPlaces());
     format.setDecimalSeparatorAlwaysShown(false);
 
     return format;

@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components.display_amount;
 
+import org.multibit.hd.ui.i18n.BitcoinSymbol;
 import org.multibit.hd.ui.models.Model;
 
 import java.math.BigDecimal;
@@ -15,11 +16,13 @@ import java.math.BigDecimal;
  */
 public class DisplayAmountModel implements Model<DisplayAmountModel> {
 
-  private BigDecimal bitcoinAmount = BigDecimal.ZERO;
-  private BigDecimal localAmount = BigDecimal.ZERO;
-  private boolean localAmountVisible = true;
-
   private final DisplayAmountStyle style;
+
+  // Values depend on earlier wizard panel
+  private BigDecimal rawBitcoinAmount = BigDecimal.ZERO;
+  private BigDecimal localAmount = BigDecimal.ZERO;
+
+  private boolean localAmountVisible = true;
 
   /**
    * @param style The display amount style
@@ -46,14 +49,21 @@ public class DisplayAmountModel implements Model<DisplayAmountModel> {
   }
 
   /**
-   * @return The Bitcoin amount
+   * @return The Bitcoin amount with symbol multiplier
    */
-  public BigDecimal getBitcoinAmount() {
-    return bitcoinAmount;
+  public BigDecimal getSymbolicBitcoinAmount() {
+    return getRawBitcoinAmount().multiply(BitcoinSymbol.current().multiplier());
   }
 
-  public void setBitcoinAmount(BigDecimal bitcoinAmount) {
-    this.bitcoinAmount = bitcoinAmount;
+  /**
+   * @return The Bitcoin amount without symbol multiplier
+   */
+  public BigDecimal getRawBitcoinAmount() {
+    return rawBitcoinAmount;
+  }
+
+  public void setRawBitcoinAmount(BigDecimal rawBitcoinAmount) {
+    this.rawBitcoinAmount = rawBitcoinAmount;
   }
 
   /**
