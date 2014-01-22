@@ -32,6 +32,7 @@ public enum MessageKey {
 
   // Field labels
   RECIPIENT("Recipient"),
+  TRANSACTION_LABEL("receiveBitcoinPanel.labelLabel"),
   NOTES("Notes"),
   ENTER_PASSWORD("Enter password"),
   CONFIRM_PASSWORD("Confirm password"),

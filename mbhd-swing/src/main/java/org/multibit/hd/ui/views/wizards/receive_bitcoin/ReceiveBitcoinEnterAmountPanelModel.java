@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.receive_bitcoin;
 
 import com.google.common.base.Optional;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.views.components.display_address.DisplayBitcoinAddressModel;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountModel;
 import org.multibit.hd.ui.views.wizards.AbstractPanelModel;
 
@@ -17,17 +18,21 @@ import org.multibit.hd.ui.views.wizards.AbstractPanelModel;
 public class ReceiveBitcoinEnterAmountPanelModel extends AbstractPanelModel {
 
   private final EnterAmountModel enterAmountModel;
+  private final DisplayBitcoinAddressModel displayBitcoinAddressModel;
 
   /**
-   * @param panelName           The panel name
-   * @param enterAmountModel    The "enter amount" component model
+   * @param panelName                  The panel name
+   * @param enterAmountModel           The "enter amount" component model
+   * @param displayBitcoinAddressModel The "display Bitcoin address" component model
    */
   public ReceiveBitcoinEnterAmountPanelModel(
     String panelName,
-    EnterAmountModel enterAmountModel
+    EnterAmountModel enterAmountModel,
+    DisplayBitcoinAddressModel displayBitcoinAddressModel
   ) {
     super(panelName);
     this.enterAmountModel = enterAmountModel;
+    this.displayBitcoinAddressModel = displayBitcoinAddressModel;
   }
 
   /**
@@ -35,6 +40,13 @@ public class ReceiveBitcoinEnterAmountPanelModel extends AbstractPanelModel {
    */
   public EnterAmountModel getEnterAmountModel() {
     return enterAmountModel;
+  }
+
+  /**
+   * @return The display model
+   */
+  public DisplayBitcoinAddressModel getDisplayBitcoinAddressModel() {
+    return displayBitcoinAddressModel;
   }
 
   @Override

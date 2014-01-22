@@ -4,6 +4,8 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordView;
+import org.multibit.hd.ui.views.components.display_address.DisplayBitcoinAddressModel;
+import org.multibit.hd.ui.views.components.display_address.DisplayBitcoinAddressView;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountModel;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountView;
@@ -114,6 +116,26 @@ public class Components {
 
     EnterPasswordModel model = new EnterPasswordModel(panelName);
     EnterPasswordView view = new EnterPasswordView(model);
+
+    return new ModelAndView<>(model, view);
+
+  }
+
+  /**
+   * <p>A "display Bitcoin address" model and view displays a Bitcoin address with the following features:</p>
+   * <ul>
+   *   <li>Non-editable text field showing the address</li>
+   *   <li>Button to copy the address to the Clipboard</li>
+   * </ul>
+   *
+   * @param bitcoinAddress The Bitcoin address
+   *
+   * @return A new "display Bitcoin address" model and view
+   */
+  public static ModelAndView<DisplayBitcoinAddressModel, DisplayBitcoinAddressView> newDisplayBitcoinAddressMaV(final String bitcoinAddress) {
+
+    DisplayBitcoinAddressModel model = new DisplayBitcoinAddressModel(bitcoinAddress);
+    DisplayBitcoinAddressView view = new DisplayBitcoinAddressView(model);
 
     return new ModelAndView<>(model, view);
 

@@ -39,12 +39,39 @@ public class TextBoxes {
   }
 
   /**
+   * @return A new "enter label" text field
+   */
+  public static JTextField newEnterLabel() {
+
+    JTextField textField = new JTextField(60);
+    textField.setBackground(Themes.currentTheme.dataEntryBackground());
+
+    return textField;
+  }
+
+  /**
    * @return A new "Select file" text field
    */
   public static JTextField newSelectFile() {
 
     JTextField textField = new JTextField(60);
     textField.setBackground(Themes.currentTheme.dataEntryBackground());
+
+    return textField;
+  }
+
+  /**
+   * @param bitcoinAddress The Bitcoin address to display
+   *
+   * @return A new "display Bitcoin address" text field
+   */
+  public static JTextField newDisplayBitcoinAddress(String bitcoinAddress) {
+
+    JTextField textField = new JTextField(40);
+    textField.setText(bitcoinAddress);
+
+    // Users should not be able to change the address
+    textField.setEditable(false);
 
     return textField;
   }

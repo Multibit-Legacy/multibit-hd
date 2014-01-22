@@ -3,10 +3,9 @@ package org.multibit.hd.ui.views.wizards.receive_bitcoin;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.views.components.Components;
-import org.multibit.hd.ui.views.components.ModelAndView;
-import org.multibit.hd.ui.views.components.PanelDecorator;
-import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.*;
+import org.multibit.hd.ui.views.components.display_address.DisplayBitcoinAddressModel;
+import org.multibit.hd.ui.views.components.display_address.DisplayBitcoinAddressView;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountModel;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -29,7 +28,9 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
 
   // Panel specific components
   private ModelAndView<EnterAmountModel, EnterAmountView> enterAmountMaV;
-  private JTextArea notes;
+  private ModelAndView<DisplayBitcoinAddressModel, DisplayBitcoinAddressView> displayBitcoinAddressMaV;
+
+  private JTextField label;
 
   /**
    * @param wizard The wizard managing the states
@@ -46,20 +47,28 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
   public JPanel newDataPanel() {
 
     enterAmountMaV = Components.newEnterAmountMaV(getPanelName());
+    displayBitcoinAddressMaV = Components.newDisplayBitcoinAddressMaV("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
+
+    label = TextBoxes.newEnterLabel();
 
     // Configure the panel model
     setPanelModel(new ReceiveBitcoinEnterAmountPanelModel(
       getPanelName(),
-      enterAmountMaV.getModel()
+      enterAmountMaV.getModel(),
+      displayBitcoinAddressMaV.getModel()
     ));
 
     JPanel panel = Panels.newPanel(new MigLayout(
       "fillx,insets 0", // Layout constraints
-      "[]", // Column constraints
+      "[][]", // Column constraints
       "[]10[]" // Row constraints
     ));
 
-    panel.add(enterAmountMaV.getView().newPanel(),"wrap");
+    panel.add(enterAmountMaV.getView().newPanel(),"span 2,wrap");
+    panel.add(Labels.newRecipient());
+    panel.add(displayBitcoinAddressMaV.getView().newPanel(),"growx,push,wrap");
+    panel.add(Labels.newNotes());
+    panel.add(label,"grow,wrap");
 
     return panel;
   }
