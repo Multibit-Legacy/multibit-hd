@@ -76,7 +76,43 @@ public enum BitcoinSymbol {
   }
 
   /**
-   * @return The Unicode value of the symbol if applicable (Font Awesome requires a
+   * @param bitcoinSymbol A text representation of an enum constant (case-insensitive)
+   *
+   * @return The matching enum value
+   */
+  public static BitcoinSymbol of(String bitcoinSymbol) {
+    return BitcoinSymbol.valueOf(bitcoinSymbol.toUpperCase());
+  }
+
+  /**
+   * @return The current Bitcoin symbol
+   */
+  public static BitcoinSymbol current() {
+    return BitcoinSymbol.of(Configurations.currentConfiguration.getBitcoinConfiguration().getBitcoinSymbol());
+  }
+
+  /**
+   * @return The Bitcoin maximum value with symbolic multiplier applied (useful for amount entry)
+   */
+  public static BigDecimal maxSymbolicAmount() {
+    return new BigDecimal("21000000.00000000").multiply(current().multiplier());
+  }
+
+  /**
+   * @return The next Bitcoin symbol in the enum wrapping as required
+   */
+  public BitcoinSymbol next() {
+
+    int ordinal = this.ordinal();
+
+    ordinal = (ordinal + 1) % BitcoinSymbol.values().length;
+
+    return BitcoinSymbol.class.getEnumConstants()[ordinal];
+
+  }
+
+  /**
+   * @return The textual symbol to display to the user (e.g. "mBTC", "XBT" etc)
    */
   public String getSymbol() {
     return symbol;
@@ -97,47 +133,14 @@ public enum BitcoinSymbol {
   }
 
   /**
-   * @return The next Bitcoin symbol in the enum wrapping as required
+   * @return The max input length for data entry without grouping symbols
    */
-  public BitcoinSymbol next() {
-
-    int ordinal = this.ordinal();
-
-    ordinal = (ordinal + 1) % BitcoinSymbol.values().length;
-
-    return BitcoinSymbol.class.getEnumConstants()[ordinal];
-
+  public int maxRepresentationLength() {
+    if (this.equals(SATOSHI)) {
+      return "210000000000000000000".length();
+    } else {
+      return "2100000000000.00000000".length();
+    }
   }
 
-  /**
-   * @param bitcoinSymbol A text representation of an enum constant (case-insensitive)
-   *
-   * @return The matching enum value
-   */
-  public static BitcoinSymbol of(String bitcoinSymbol) {
-    return BitcoinSymbol.valueOf(bitcoinSymbol.toUpperCase());
-  }
-
-  /**
-   * @return The current Bitcoin symbol
-   */
-  public static BitcoinSymbol current() {
-    return BitcoinSymbol.of(Configurations.currentConfiguration.getBitcoinConfiguration().getBitcoinSymbol());
-  }
-
-  /**
-   * @return The Bitcoin maximum value with symbolic multiplier applied (useful for amount entry)
-   */
-  public static BigDecimal maxSymbolicAmount() {
-    return new BigDecimal("20999999.99999999").multiply(current().multiplier());
-  }
-
-  /**
-   * @return The maximum number of characters required to represent a decimal Bitcoin amount without grouping characters (input would be invalid)
-   *
-   */
-  public static int maxRepresentationLength() {
-    // 21 million to 8 dp
-    return "21000000.00000000".length();
-  }
 }

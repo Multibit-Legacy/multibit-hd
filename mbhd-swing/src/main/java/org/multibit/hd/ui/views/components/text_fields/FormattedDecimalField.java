@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.components.text_fields;
 
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.ui.i18n.BitcoinSymbol;
 import org.multibit.hd.ui.views.components.DocumentMaxLengthFilter;
 import org.multibit.hd.ui.views.themes.Themes;
 
@@ -32,8 +31,9 @@ public class FormattedDecimalField extends JFormattedTextField {
    * @param min           The minimum value
    * @param max           The maximum value
    * @param decimalPlaces The number of decimal places to show (padding as required)
+   * @param maxEditLength The maximum edit length
    */
-  public FormattedDecimalField(double min, double max, int decimalPlaces) {
+  public FormattedDecimalField(double min, double max, int decimalPlaces, int maxEditLength) {
 
     super();
 
@@ -81,8 +81,8 @@ public class FormattedDecimalField extends JFormattedTextField {
     NumberFormatter defaultFormatter = new NumberFormatter();
     defaultFormatter.setValueClass(Double.class);
 
-    NumberFormatter displayFormatter = getNumberFormatter(displayDecimalFormat);
-    NumberFormatter editFormatter = getNumberFormatter(editDecimalFormat);
+    NumberFormatter displayFormatter = getNumberFormatter(displayDecimalFormat, maxEditLength);
+    NumberFormatter editFormatter = getNumberFormatter(editDecimalFormat, maxEditLength);
 
     setFormatterFactory(new DefaultFormatterFactory(
       defaultFormatter,
@@ -97,12 +97,13 @@ public class FormattedDecimalField extends JFormattedTextField {
    *
    * @return A number formatter that is locale-aware and configured for doubles
    */
-  private NumberFormatter getNumberFormatter(final DecimalFormat decimalFormat) {
+  private NumberFormatter getNumberFormatter(final DecimalFormat decimalFormat, final int maxEditLength) {
 
     // Create the number formatter with local-sensitive adjustments
     NumberFormatter displayFormatter = new NumberFormatter(decimalFormat) {
 
-      DocumentFilter documentFilter = new DocumentMaxLengthFilter(BitcoinSymbol.maxRepresentationLength());
+      // The max input length for the given symbol
+      DocumentFilter documentFilter = new DocumentMaxLengthFilter(maxEditLength);
 
       @Override
       public Object stringToValue(String text) throws ParseException {

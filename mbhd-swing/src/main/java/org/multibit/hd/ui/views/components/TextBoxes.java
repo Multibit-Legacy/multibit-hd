@@ -59,7 +59,10 @@ public class TextBoxes {
     // Use the Bitcoin symbol multiplier to determine the decimal places
     int decimalPlaces = BitcoinSymbol.current().decimalPlaces();
 
-    FormattedDecimalField textField = new FormattedDecimalField(0, maximum, decimalPlaces);
+    // The max edit length varies depending on the Bitcoin symbol (e.g. Satoshis have no decimal)
+    int maxEditLength = BitcoinSymbol.current().maxRepresentationLength();
+
+    FormattedDecimalField textField = new FormattedDecimalField(0, maximum, decimalPlaces, maxEditLength);
 
     Font font = textField.getFont().deriveFont((float) AwesomeDecorator.NORMAL_ICON_SIZE);
 
@@ -82,7 +85,10 @@ public class TextBoxes {
       .getI18NConfiguration()
       .getLocalDecimalPlaces();
 
-    FormattedDecimalField textField = new FormattedDecimalField(0, maximum, decimalPlaces);
+    // Allow an extra 6 digits for local currency
+    int maxEditLength = BitcoinSymbol.current().maxRepresentationLength() + 6;
+
+    FormattedDecimalField textField = new FormattedDecimalField(0, maximum, decimalPlaces, maxEditLength);
 
     Font font = textField.getFont().deriveFont((float) AwesomeDecorator.NORMAL_ICON_SIZE);
 
