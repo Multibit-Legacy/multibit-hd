@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.exit;
+package org.multibit.hd.ui.views.wizards.receive_bitcoin;
 
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardView;
@@ -12,18 +12,18 @@ import java.util.Map;
  * </ol>
  *
  * @since 0.0.1
- *  
+ *         
  */
-public class ExitWizard extends AbstractWizard<ExitWizardModel> {
+public class ReceiveBitcoinWizard extends AbstractWizard<ReceiveBitcoinWizardModel> {
 
-  public ExitWizard(ExitWizardModel model, boolean isExiting) {
+  public ReceiveBitcoinWizard(ReceiveBitcoinWizardModel model, boolean isExiting) {
     super(model, isExiting);
   }
 
   @Override
   protected void populateWizardViewMap(Map<String, AbstractWizardView> wizardViewMap) {
 
-    wizardViewMap.put(ExitState.CONFIRM_EXIT.name(), new ExitView(this, ExitState.CONFIRM_EXIT.name()));
+    wizardViewMap.put(ReceiveBitcoinState.ENTER_AMOUNT.name(), new ReceiveBitcoinEnterAmountView(this, ReceiveBitcoinState.ENTER_AMOUNT.name()));
 
   }
 

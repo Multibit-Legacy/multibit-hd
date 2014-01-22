@@ -3,6 +3,9 @@ package org.multibit.hd.ui.views.wizards;
 import org.multibit.hd.ui.views.wizards.exit.ExitState;
 import org.multibit.hd.ui.views.wizards.exit.ExitWizard;
 import org.multibit.hd.ui.views.wizards.exit.ExitWizardModel;
+import org.multibit.hd.ui.views.wizards.receive_bitcoin.ReceiveBitcoinState;
+import org.multibit.hd.ui.views.wizards.receive_bitcoin.ReceiveBitcoinWizard;
+import org.multibit.hd.ui.views.wizards.receive_bitcoin.ReceiveBitcoinWizardModel;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinWizard;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinWizardModel;
@@ -35,6 +38,15 @@ public class Wizards {
   public static SendBitcoinWizard newSendBitcoinWizard() {
 
     return new SendBitcoinWizard(new SendBitcoinWizardModel(SendBitcoinState.ENTER_AMOUNT), false);
+
+  }
+
+  /**
+   * @return A new "receive bitcoin" wizard
+   */
+  public static ReceiveBitcoinWizard newReceiveBitcoinWizard() {
+
+    return new ReceiveBitcoinWizard(new ReceiveBitcoinWizardModel(ReceiveBitcoinState.ENTER_AMOUNT), false);
 
   }
 

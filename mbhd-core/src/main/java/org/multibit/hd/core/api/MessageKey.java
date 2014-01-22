@@ -60,6 +60,7 @@ public enum MessageKey {
   // Titles
   APPLICATION_TITLE("MultiBit HD"),
   SEND_BITCOIN_TITLE("sendBitcoinAction.text"),
+  RECEIVE_BITCOIN_TITLE("receiveBitcoinAction.text"),
   CONFIRM_SEND_TITLE("sendBitcoinConfirmView.title"),
   SEND_PROGRESS_TITLE("Send Progress"),
   EXIT_TITLE("Exit application ?"),

@@ -15,16 +15,17 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class ExitView extends AbstractWizardView<ExitWizardModel, String> {
 
   /**
-   * @param wizard The wizard managing the states
+   * @param wizard    The wizard managing the states
+   * @param panelName The panel name to allow event filtering
    */
-  public ExitView(AbstractWizard<ExitWizardModel> wizard) {
+  public ExitView(AbstractWizard<ExitWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), null, MessageKey.EXIT_TITLE);
+    super(wizard.getWizardModel(), panelName, MessageKey.EXIT_TITLE);
 
     PanelDecorator.addExitCancel(this, wizard);
 
@@ -35,9 +36,7 @@ public class ExitView extends AbstractWizardView<ExitWizardModel, String> {
 
     setPanelModel("");
 
-    JPanel panel = Panels.newPanel();
-
-    return panel;
+    return Panels.newPanel();
   }
 
   @Override

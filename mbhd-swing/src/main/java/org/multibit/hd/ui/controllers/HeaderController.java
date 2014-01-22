@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.controllers;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import com.xeiam.xchange.currency.MoneyUtils;
@@ -103,9 +104,14 @@ public class HeaderController {
    */
   private void updateRemaining() {
 
+    Preconditions.checkNotNull(alertModels,"'alertModels' must be present");
+
     // Update the "remaining" based on the position in the list
     for (int i = 0; i < alertModels.size(); i++) {
       AlertModel alertModel = alertModels.get(i);
+
+      Preconditions.checkNotNull(alertModel,"'alertModel' must be present");
+
       alertModel.setRemaining(alertModels.size()-1);
     }
 

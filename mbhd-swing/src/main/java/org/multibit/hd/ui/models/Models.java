@@ -9,7 +9,7 @@ import org.multibit.hd.core.api.RAGStatus;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class Models {
 
@@ -21,6 +21,7 @@ public class Models {
 
   /**
    * @param value The value to set
+   *
    * @return A model wrapping the value
    */
   public static <M> Model<M> newModel(M value) {
@@ -42,8 +43,13 @@ public class Models {
 
   }
 
-
+  /**
+   * @param message The message
+   * @param status  The RAG status
+   *
+   * @return A new alert model
+   */
   public static AlertModel newAlertModel(String message, RAGStatus status) {
-    return null;
+    return new AlertModel(message, status);
   }
 }

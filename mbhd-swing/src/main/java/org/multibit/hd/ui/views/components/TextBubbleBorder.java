@@ -102,7 +102,8 @@ public class TextBubbleBorder extends AbstractBorder {
 
     int bottomPad = pointerSize + strokePad;
 
-    insets = new Insets(10, 6, bottomPad, 6);
+    // Require top:0 offset to avoid misalignment for single line panels
+    insets = new Insets(0, 6, bottomPad, 6);
 
   }
 

@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.events.controller;
 
+import com.google.common.base.Preconditions;
 import org.multibit.hd.ui.models.AlertModel;
 
 /**
@@ -19,6 +20,8 @@ public class AddAlertEvent implements ControllerEvent {
    * @param alertModel The alert model
    */
   public AddAlertEvent(AlertModel alertModel) {
+
+    Preconditions.checkNotNull(alertModel,"'alertModel' must be present");
 
     this.alertModel = alertModel;
   }

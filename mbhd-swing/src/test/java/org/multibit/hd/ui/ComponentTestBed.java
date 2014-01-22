@@ -99,7 +99,7 @@ public class ComponentTestBed {
   public JPanel createTestPanel() {
 
     // Choose a panel to test
-    AbstractWizard wizard = Wizards.newSendBitcoinWizard();
+    AbstractWizard wizard = Wizards.newReceiveBitcoinWizard();
     return wizard.getWizardPanel();
 
   }

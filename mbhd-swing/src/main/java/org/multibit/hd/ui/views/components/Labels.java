@@ -267,8 +267,8 @@ public class Labels {
 
     switch (style) {
       case HEADER:
-        largeFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, BALANCE_HEADER_LARGE_FONT_SIZE);
-        normalFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, BALANCE_HEADER_NORMAL_FONT_SIZE);
+        largeFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_HEADER_LARGE_FONT_SIZE);
+        normalFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_HEADER_NORMAL_FONT_SIZE);
         break;
       case TRANSACTION_DETAIL_AMOUNT:
         largeFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, BALANCE_TRANSACTION_LARGE_FONT_SIZE);

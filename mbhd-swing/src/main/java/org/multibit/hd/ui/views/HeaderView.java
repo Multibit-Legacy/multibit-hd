@@ -93,7 +93,7 @@ public class HeaderView {
     exchangeLabel = balanceLabels[3];
 
     contentPanel.add(balancePanel, "grow,wrap");
-    contentPanel.add(alertPanel, "grow,push");
+    contentPanel.add(alertPanel, "grow,aligny top,push");
 
     onLocaleChangedEvent(null);
   }
