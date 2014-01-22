@@ -1,10 +1,9 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.wizards.AbstractPanelModel;
-import org.multibit.hd.ui.views.wizards.WizardButton;
 
 /**
  * <p>Panel model to provide the following to "send bitcoin" wizard:</p>
@@ -15,13 +14,16 @@ import org.multibit.hd.ui.views.wizards.WizardButton;
  * @since 0.0.1
  *  
  */
-public class SendBitcoinConfirmPanelModel  extends AbstractPanelModel  {
+public class SendBitcoinConfirmPanelModel extends AbstractPanelModel {
 
   private String notes;
-  private String password;
+  private final EnterPasswordModel passwordModel;
 
-  protected SendBitcoinConfirmPanelModel(String panelName) {
+  public SendBitcoinConfirmPanelModel(String panelName, EnterPasswordModel passwordModel) {
     super(panelName);
+
+    this.passwordModel = passwordModel;
+
   }
 
   /**
@@ -36,22 +38,10 @@ public class SendBitcoinConfirmPanelModel  extends AbstractPanelModel  {
   }
 
   /**
-   * @return The password the user entered to authorise the transaction
+   * @return The "enter password" model
    */
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword(String password) {
-
-    this.password = password;
-
-    ViewEvents.fireWizardButtonEnabledEvent(
-      SendBitcoinState.CONFIRM_AMOUNT.name(),
-      WizardButton.NEXT,
-      !Strings.isNullOrEmpty(password)
-    );
-
+  public EnterPasswordModel getPasswordModel() {
+    return passwordModel;
   }
 
   @Override

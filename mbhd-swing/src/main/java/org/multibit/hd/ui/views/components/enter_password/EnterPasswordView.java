@@ -1,11 +1,8 @@
-package org.multibit.hd.ui.views.components.confirm_password;
+package org.multibit.hd.ui.views.components.enter_password;
 
-import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.views.AbstractView;
 import org.multibit.hd.ui.views.components.Buttons;
-import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.TextBoxes;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
@@ -19,24 +16,22 @@ import java.awt.event.KeyEvent;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Presentation of a password confirmation</li>
+ * <li>Presentation of password entry</li>
  * <li>Support for reveal operation</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class ConfirmPasswordView extends AbstractView<ConfirmPasswordModel> {
+public class EnterPasswordView extends AbstractView<EnterPasswordModel> {
 
   // View components
-  private JPasswordField password1;
-  private JPasswordField password2;
-  private JPanel verificationStatusPanel;
+  private JPasswordField password;
 
   /**
    * @param model The model backing this view
    */
-  public ConfirmPasswordView(ConfirmPasswordModel model) {
+  public EnterPasswordView(EnterPasswordModel model) {
     super(model);
 
   }
@@ -46,50 +41,31 @@ public class ConfirmPasswordView extends AbstractView<ConfirmPasswordModel> {
 
     panel = Panels.newPanel(new MigLayout(
       "insets 0", // Layout
-      "[][][]", // Columns
-      "[]10[]10[]10[]" // Rows
+      "[][]", // Columns
+      "[]" // Rows
     ));
 
     // Keep track of the password fields
-    password1 = TextBoxes.newPassword();
-    password2 = TextBoxes.newPassword();
+    password = TextBoxes.newPassword();
 
     // Configure the actions
     Action toggleDisplayAction = getToggleDisplayAction();
 
     // Bind a key listener to allow instant update of UI to matched passwords
-    password1.addKeyListener(new KeyAdapter() {
+    password.addKeyListener(new KeyAdapter() {
 
       @Override
       public void keyReleased(KeyEvent e) {
-        getModel().get().setPassword1(password1.getPassword());
-        getModel().get().comparePasswords();
+        getModel().get().setPassword(password.getPassword());
       }
 
     });
-    password2.addKeyListener(new KeyAdapter() {
-
-      @Override
-      public void keyReleased(KeyEvent e) {
-        getModel().get().setPassword2(password2.getPassword());
-        getModel().get().comparePasswords();
-      }
-
-    });
-
-    // Create a new verification status panel
-    verificationStatusPanel = Panels.newVerificationStatus();
 
     // Add to the panel
-    panel.add(Labels.newEnterPassword());
-    panel.add(password1);
-    panel.add(Buttons.newShowButton(toggleDisplayAction), "spany 2,wrap");
-    panel.add(Labels.newConfirmPassword());
-    panel.add(password2, "wrap");
-    panel.add(verificationStatusPanel, "span 3,grow,push,wrap");
+    panel.add(password,"grow,push");
+    panel.add(Buttons.newShowButton(toggleDisplayAction));
 
     return panel;
-
 
   }
 
@@ -128,12 +104,10 @@ public class ConfirmPasswordView extends AbstractView<ConfirmPasswordModel> {
 
         if (asClearText) {
           // Reveal
-          password1.setEchoChar('\0');
-          password2.setEchoChar('\0');
+          password.setEchoChar('\0');
         } else {
           // Use the platform choice
-          password1.setEchoChar(echoChar);
-          password2.setEchoChar(echoChar);
+          password.setEchoChar(echoChar);
         }
 
       }
@@ -143,16 +117,7 @@ public class ConfirmPasswordView extends AbstractView<ConfirmPasswordModel> {
 
   @Override
   public void updateModel() {
-  }
-
-  @Subscribe
-  public void onVerificationStatusChanged(VerificationStatusChangedEvent event) {
-
-    if (event.getPanelName().equals(getModel().get().getPanelName())) {
-
-      verificationStatusPanel.setVisible(event.isOK());
-
-    }
+    // Do nothing the model is updated from key release events
   }
 
 }

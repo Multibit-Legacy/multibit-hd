@@ -11,8 +11,6 @@ import org.multibit.hd.ui.events.view.WizardComponentModelChangedEvent;
  * <li>Access to standard implementations of required methods</li>
  * </ul>
  *
- * @param <S> The state object type
- *
  * @since 0.0.1
  *  
  */

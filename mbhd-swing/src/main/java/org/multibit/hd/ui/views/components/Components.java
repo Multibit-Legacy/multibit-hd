@@ -11,6 +11,8 @@ import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhrase
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseView;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountModel;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountView;
+import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
+import org.multibit.hd.ui.views.components.enter_password.EnterPasswordView;
 import org.multibit.hd.ui.views.components.enter_recipient.EnterRecipientModel;
 import org.multibit.hd.ui.views.components.enter_recipient.EnterRecipientView;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
@@ -62,7 +64,7 @@ public class Components {
    *
    * @return A new "recipient" panel
    */
-  public static ModelAndView<EnterRecipientModel, EnterRecipientView> newEnterRecipient(String panelName) {
+  public static ModelAndView<EnterRecipientModel, EnterRecipientView> newEnterRecipientMaV(String panelName) {
 
     EnterRecipientModel model = new EnterRecipientModel(panelName);
     EnterRecipientView view = new EnterRecipientView(model);
@@ -76,7 +78,7 @@ public class Components {
    *
    * @return A new Bitcoin amount panel
    */
-  public static ModelAndView<EnterAmountModel, EnterAmountView> newEnterAmount(String panelName) {
+  public static ModelAndView<EnterAmountModel, EnterAmountView> newEnterAmountMaV(String panelName) {
 
     EnterAmountModel model = new EnterAmountModel(panelName);
     EnterAmountView view = new EnterAmountView(model);
@@ -92,10 +94,26 @@ public class Components {
    *
    * @return A new "confirm password" model and view
    */
-  public static ModelAndView<ConfirmPasswordModel, ConfirmPasswordView> newConfirmPassword(String panelName) {
+  public static ModelAndView<ConfirmPasswordModel, ConfirmPasswordView> newConfirmPasswordMaV(String panelName) {
 
     ConfirmPasswordModel model = new ConfirmPasswordModel(panelName);
     ConfirmPasswordView view = new ConfirmPasswordView(model);
+
+    return new ModelAndView<>(model, view);
+
+  }
+
+  /**
+   * <p>An "enter password" model and view handles password entry with reveal</p>
+   *
+   * @param panelName The panel name to identify "next" buttons
+   *
+   * @return A new "enter password" model and view
+   */
+  public static ModelAndView<EnterPasswordModel, EnterPasswordView> newEnterPasswordMaV(String panelName) {
+
+    EnterPasswordModel model = new EnterPasswordModel(panelName);
+    EnterPasswordView view = new EnterPasswordView(model);
 
     return new ModelAndView<>(model, view);
 

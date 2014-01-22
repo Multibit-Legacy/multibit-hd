@@ -9,13 +9,13 @@ import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountModel;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountView;
+import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
+import org.multibit.hd.ui.views.components.enter_password.EnterPasswordView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -30,11 +30,11 @@ public class SendBitcoinConfirmView extends AbstractWizardView<SendBitcoinWizard
 
   // View components
   private JTextArea notesTextArea;
-  private JPasswordField passwordField;
 
   private ModelAndView<DisplayAmountModel, DisplayAmountView> transactionDisplayAmountMaV;
   private ModelAndView<DisplayAmountModel, DisplayAmountView> transactionFeeDisplayAmountMaV;
   private ModelAndView<DisplayAmountModel, DisplayAmountView> developerFeeDisplayAmountMaV;
+  private ModelAndView<EnterPasswordModel, EnterPasswordView> enterPasswordMaV;
 
   private JLabel recipientSummaryLabel;
 
@@ -56,24 +56,19 @@ public class SendBitcoinConfirmView extends AbstractWizardView<SendBitcoinWizard
     transactionDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT);
     transactionFeeDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.FEE_AMOUNT);
     developerFeeDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.FEE_AMOUNT);
+    enterPasswordMaV = Components.newEnterPasswordMaV(getPanelName());
+
+    // Configure the panel model
+    setPanelModel(new SendBitcoinConfirmPanelModel(
+      getPanelName(),
+      enterPasswordMaV.getModel()
+    ));
 
     // Blank labels populated from wizard model later
     recipientSummaryLabel = new JLabel("");
 
     // User entered text
     notesTextArea = TextBoxes.newEnterNotes();
-    passwordField = TextBoxes.newPassword();
-
-    passwordField.addKeyListener(new KeyAdapter() {
-
-      @Override
-      public void keyReleased(KeyEvent e) {
-        getPanelModel().get().setPassword(String.copyValueOf(passwordField.getPassword()));
-      }
-
-    });
-
-    setPanelModel(new SendBitcoinConfirmPanelModel(getPanelName()));
 
     JPanel panel = Panels.newPanel(new MigLayout(
       "fillx,insets 0", // Layout constraints
@@ -93,7 +88,7 @@ public class SendBitcoinConfirmView extends AbstractWizardView<SendBitcoinWizard
     panel.add(Labels.newNotes());
     panel.add(notesTextArea, "growx,push,wrap");
     panel.add(Labels.newEnterPassword());
-    panel.add(passwordField, "growx,push,wrap");
+    panel.add(enterPasswordMaV.getView().newPanel(),"wrap");
 
     return panel;
   }

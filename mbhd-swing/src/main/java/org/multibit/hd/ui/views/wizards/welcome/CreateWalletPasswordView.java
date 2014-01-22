@@ -43,7 +43,7 @@ public class CreateWalletPasswordView extends AbstractWizardView<WelcomeWizardMo
   @Override
   public JPanel newDataPanel() {
 
-    confirmPasswordMaV = Components.newConfirmPassword(WelcomeWizardState.CREATE_WALLET_PASSWORD.name());
+    confirmPasswordMaV = Components.newConfirmPasswordMaV(WelcomeWizardState.CREATE_WALLET_PASSWORD.name());
     setPanelModel(confirmPasswordMaV.getModel());
 
     JPanel panel = Panels.newPanel(new MigLayout(

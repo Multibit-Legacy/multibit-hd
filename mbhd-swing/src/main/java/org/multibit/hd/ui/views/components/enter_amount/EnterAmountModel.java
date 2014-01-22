@@ -19,8 +19,8 @@ import java.math.BigDecimal;
  */
 public class EnterAmountModel implements Model<EnterAmountModel> {
 
-  private Optional<BigDecimal> rawBitcoinAmount =Optional.absent();
-  private Optional<BigDecimal> localAmount=Optional.absent();
+  private Optional<BigDecimal> rawBitcoinAmount = Optional.absent();
+  private Optional<BigDecimal> localAmount = Optional.absent();
 
   private final String panelName;
 
@@ -63,6 +63,9 @@ public class EnterAmountModel implements Model<EnterAmountModel> {
     return rawBitcoinAmount.or(BigDecimal.ZERO);
   }
 
+  /**
+   * @param value The Bitcoin amount (fires a "component model changed" event)
+   */
   public void setRawBitcoinAmount(BigDecimal value) {
 
     Preconditions.checkNotNull(value, "'value' should be present");
@@ -81,6 +84,9 @@ public class EnterAmountModel implements Model<EnterAmountModel> {
     return localAmount.or(BigDecimal.ZERO);
   }
 
+  /**
+   * @param value The local amount (fires a "component model changed" event)
+   */
   public void setLocalAmount(BigDecimal value) {
 
     Preconditions.checkNotNull(value, "'value' should be present");

@@ -24,11 +24,6 @@ import static org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState.*;
 public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState> {
 
   /**
-   * The current state
-   */
-  private SendBitcoinState state = ENTER_AMOUNT;
-
-  /**
    * The "enter amount" panel model
    */
   private SendBitcoinEnterAmountPanelModel enterAmountPanelModel;
@@ -158,8 +153,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
    * @return The password the user entered
    */
   public String getPassword() {
-    return confirmPanelModel
-      .getPassword();
+    return confirmPanelModel.getPasswordModel().getValue();
   }
 
   /**
@@ -193,7 +187,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
    */
   private boolean isConfirmNextEnabled() {
 
-    return !Strings.isNullOrEmpty(confirmPanelModel.getPassword());
+    return !Strings.isNullOrEmpty(getPassword());
   }
 
   /**

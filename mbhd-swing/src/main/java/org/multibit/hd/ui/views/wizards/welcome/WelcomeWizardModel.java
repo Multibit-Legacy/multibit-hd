@@ -11,7 +11,7 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
-import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
+import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
@@ -122,7 +122,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
       }
       break;
       case CREATE_WALLET_PASSWORD:
-        userPassword = ((ConfirmPasswordModel) panelModel.get()).getValue();
+        userPassword = ((EnterPasswordModel) panelModel.get()).getValue();
         break;
       case SELECT_BACKUP_LOCATION:
         backupLocation = ((SelectFileModel) panelModel.get()).getValue();
