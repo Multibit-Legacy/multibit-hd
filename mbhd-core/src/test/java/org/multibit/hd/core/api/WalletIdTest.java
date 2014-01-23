@@ -29,16 +29,16 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 public class WalletIdTest {
   public static final String SEED_PHRASE_1 = "letter advice cage absurd amount doctor acoustic avoid letter advice cage above";
-  private static final String WALLET_ID_1 = "23bb865e161bfefc3020c41866bf6f757fecdfcc";
-  private static final String WALLET_ID_FORMATTED_1 = "23bb865e-161bfefc-3020c418-66bf6f75-7fecdfcc";
+  private static final String WALLET_ID_1 = "19131cc83cdfefdb2331af110d5c44c5b8f39103";
+  private static final String WALLET_ID_FORMATTED_1 = "19131cc8-3cdfefdb-2331af11-0d5c44c5-b8f39103";
 
   private static final String SEED_PHRASE_2 = "require want tube elegant juice cool cup noble town poem plate harsh";
-  private static final String WALLET_ID_2 = "a1e7c31c0a4138ff3a520082f7f746542d674fa6";
-  private static final String WALLET_ID_FORMATTED_2 = "a1e7c31c-0a4138ff-3a520082-f7f74654-2d674fa6";
+  private static final String WALLET_ID_2 = "3d39a00a9e3e33c5e97c298019eaa9d4cbe04f91";
+  private static final String WALLET_ID_FORMATTED_2 = "3d39a00a-9e3e33c5-e97c2980-19eaa9d4-cbe04f91";
 
   private static final String SEED_PHRASE_3 = "morning truly witness grass pill typical blur then notable session exact coyote word noodle dentist hurry ability dignity";
-  private static final String WALLET_ID_3= "7e9c3887743e9920b5a7afde142ef5cdc3fe7e3d";
-  private static final String WALLET_ID_FORMATTED_3 = "7e9c3887-743e9920-b5a7afde-142ef5cd-c3fe7e3d";
+  private static final String WALLET_ID_3= "59ca26f67f8ba291b23751de3fd5f0d15a8f5f99";
+  private static final String WALLET_ID_FORMATTED_3 = "59ca26f6-7f8ba291-b23751de-3fd5f0d1-5a8f5f99";
 
   @Before
   public void setUp() throws Exception {
@@ -53,7 +53,8 @@ public class WalletIdTest {
 
     assertThat(walletId).isNotNull();
     assertThat(walletId.getBytes()).isNotNull();
-    assertThat(WALLET_ID_1.equals(Utils.bytesToHexString(walletId.getBytes()))).isTrue();
+    String walletIdString = Utils.bytesToHexString(walletId.getBytes());
+    assertThat(WALLET_ID_1.equals(walletIdString)).isTrue();
     assertThat(WALLET_ID_FORMATTED_1.equals(walletId.toFormattedString())).isTrue();
 
     WalletId walletIdPhoenix = WalletId.parseWalletFilename(File.separator + "herp" + File.separator + "derp" +
@@ -77,7 +78,8 @@ public class WalletIdTest {
 
     assertThat(walletId).isNotNull();
     assertThat(walletId.getBytes()).isNotNull();
-    assertThat(WALLET_ID_2.equals(Utils.bytesToHexString(walletId.getBytes()))).isTrue();
+    String walletIdString = Utils.bytesToHexString(walletId.getBytes());
+    assertThat(WALLET_ID_2.equals(walletIdString)).isTrue();
     assertThat(WALLET_ID_FORMATTED_2.equals(walletId.toFormattedString())).isTrue();
   }
 
@@ -90,7 +92,9 @@ public class WalletIdTest {
 
      assertThat(walletId).isNotNull();
      assertThat(walletId.getBytes()).isNotNull();
-     assertThat(WALLET_ID_3.equals(Utils.bytesToHexString(walletId.getBytes()))).isTrue();
+     String walletIdString = Utils.bytesToHexString(walletId.getBytes());
+     assertThat(WALLET_ID_3.equals(walletIdString)).isTrue();
+
      assertThat(WALLET_ID_FORMATTED_3.equals(walletId.toFormattedString())).isTrue();
    }
 
