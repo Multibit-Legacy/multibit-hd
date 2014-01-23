@@ -92,7 +92,7 @@ public abstract class AbstractWizard<M extends WizardModel> {
     for (Map.Entry<String, AbstractWizardView> entry : wizardViewMap.entrySet()) {
 
       // Ensure the panel is in the correct starting state
-      entry.getValue().fireViewEvents();
+      entry.getValue().fireInitialStateViewEvents();
 
     }
 

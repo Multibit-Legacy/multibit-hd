@@ -58,7 +58,7 @@ public class SendBitcoinReportView extends AbstractWizardView<SendBitcoinWizardM
   }
 
   @Override
-  public void fireViewEvents() {
+  public void fireInitialStateViewEvents() {
     // Do nothing
   }
 

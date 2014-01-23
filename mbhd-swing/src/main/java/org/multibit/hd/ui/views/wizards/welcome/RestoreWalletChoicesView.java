@@ -49,7 +49,7 @@ public class RestoreWalletChoicesView extends AbstractWizardView<WelcomeWizardMo
   }
 
   @Override
-  public void fireViewEvents() {
+  public void fireInitialStateViewEvents() {
     // Do nothing
   }
 

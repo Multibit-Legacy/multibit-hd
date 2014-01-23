@@ -64,7 +64,7 @@ public class WelcomeView extends AbstractWizardView<WelcomeWizardModel, String> 
   }
 
   @Override
-  public void fireViewEvents() {
+  public void fireInitialStateViewEvents() {
     // Do nothing
   }
 

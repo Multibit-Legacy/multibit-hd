@@ -59,7 +59,7 @@ public class CreateWalletPasswordView extends AbstractWizardView<WelcomeWizardMo
   }
 
   @Override
-  public void fireViewEvents() {
+  public void fireInitialStateViewEvents() {
     ViewEvents.fireWizardButtonEnabledEvent(CREATE_WALLET_PASSWORD.name(), WizardButton.NEXT, false);
   }
 

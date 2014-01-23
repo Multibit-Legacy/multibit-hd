@@ -160,9 +160,9 @@ public abstract class AbstractWizardView<W extends WizardModel, P> {
   public abstract JPanel newDataPanel();
 
   /**
-   * Update the view with any required view events (all initialisation will have completed)
+   * Update the view with any required view events to create a clean initial state (all initialisation will have completed)
    */
-  public abstract void fireViewEvents();
+  public abstract void fireInitialStateViewEvents();
 
   /**
    * Update the panel data model with the contents of the panel view components (if necessary)

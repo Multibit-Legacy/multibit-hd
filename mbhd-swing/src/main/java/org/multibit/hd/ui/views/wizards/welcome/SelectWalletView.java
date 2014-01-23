@@ -64,7 +64,7 @@ public class SelectWalletView extends AbstractWizardView<WelcomeWizardModel, Wel
   }
 
   @Override
-  public void fireViewEvents() {
+  public void fireInitialStateViewEvents() {
     // Do nothing
   }
 

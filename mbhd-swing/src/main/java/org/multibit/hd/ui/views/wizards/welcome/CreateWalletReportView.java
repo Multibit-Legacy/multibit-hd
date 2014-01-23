@@ -83,7 +83,7 @@ public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardMode
   }
 
   @Override
-  public void fireViewEvents() {
+  public void fireInitialStateViewEvents() {
     ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, false);
   }
 

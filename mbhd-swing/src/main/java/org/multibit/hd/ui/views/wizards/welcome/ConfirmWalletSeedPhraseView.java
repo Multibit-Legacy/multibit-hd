@@ -63,7 +63,7 @@ public class ConfirmWalletSeedPhraseView extends AbstractWizardView<WelcomeWizar
   }
 
   @Override
-  public void fireViewEvents() {
+  public void fireInitialStateViewEvents() {
     ViewEvents.fireWizardButtonEnabledEvent(CONFIRM_WALLET_SEED_PHRASE.name(), WizardButton.NEXT, false);
   }
 

@@ -61,7 +61,7 @@ public class SelectBackupLocationView extends AbstractWizardView<WelcomeWizardMo
   }
 
   @Override
-  public void fireViewEvents() {
+  public void fireInitialStateViewEvents() {
     ViewEvents.fireWizardButtonEnabledEvent(SELECT_BACKUP_LOCATION.name(), WizardButton.NEXT, false);
   }
 

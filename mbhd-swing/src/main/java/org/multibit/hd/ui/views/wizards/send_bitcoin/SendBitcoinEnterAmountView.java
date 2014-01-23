@@ -70,7 +70,7 @@ public class SendBitcoinEnterAmountView extends AbstractWizardView<SendBitcoinWi
   }
 
   @Override
-  public void fireViewEvents() {
+  public void fireInitialStateViewEvents() {
 
     // Disable the next button
     ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, false);

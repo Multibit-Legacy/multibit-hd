@@ -40,7 +40,7 @@ public class ExitView extends AbstractWizardView<ExitWizardModel, String> {
   }
 
   @Override
-  public void fireViewEvents() {
+  public void fireInitialStateViewEvents() {
     // Do nothing
   }
 

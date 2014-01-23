@@ -94,7 +94,7 @@ public class SendBitcoinConfirmView extends AbstractWizardView<SendBitcoinWizard
   }
 
   @Override
-  public void fireViewEvents() {
+  public void fireInitialStateViewEvents() {
     // Disable the next (send) button
     ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, false);
   }

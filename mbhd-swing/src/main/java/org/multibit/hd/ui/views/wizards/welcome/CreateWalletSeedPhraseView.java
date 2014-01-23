@@ -61,7 +61,7 @@ public class CreateWalletSeedPhraseView extends AbstractWizardView<WelcomeWizard
   }
 
   @Override
-  public void fireViewEvents() {
+  public void fireInitialStateViewEvents() {
     // Do nothing
   }
 

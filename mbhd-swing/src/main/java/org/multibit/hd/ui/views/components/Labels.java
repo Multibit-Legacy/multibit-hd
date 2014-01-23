@@ -467,7 +467,7 @@ public class Labels {
    * @return A new "transaction label" message for use with receiving addresses
    */
   public static JLabel newTransactionLabel() {
-    return newLabel(MessageKey.NOTES);
+    return newLabel(MessageKey.TRANSACTION_LABEL);
   }
 
   /**
