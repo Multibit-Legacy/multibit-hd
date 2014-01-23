@@ -20,7 +20,7 @@
 
     <!-- Library versions -->
     <slf4j.version>1.7.2</slf4j.version>
-    <bitcoinj.version>0.10</bitcoinj.version>
+    <bitcoinj.version>0.11-SNAPSHOT</bitcoinj.version>
     <xchange.version>1.7.0</xchange.version>
     <jackson.version>2.2.2</jackson.version>
 
@@ -66,12 +66,20 @@
   </issueManagement>
 
   <repositories>
+    <!-- Bitcoinj releases -->
     <repository>
       <id>bitcoinj-releases</id>
       <name>Bitcoinj Releases</name>
       <url>http://distribution.bitcoinj.googlecode.com/git/releases</url>
       <releases/>
     </repository>
+    <!-- ZXing releases -->
+    <repository>
+      <id>mvn-adamgent</id>
+      <url>http://mvn-adamgent.googlecode.com/svn/maven/release</url>
+      <name>Adam Gent Maven Repository</name>
+    </repository>
+
   </repositories>
 
   <distributionManagement>
@@ -218,7 +226,7 @@
       <dependency>
         <groupId>com.google</groupId>
         <artifactId>bitcoinj</artifactId>
-        <version>0.10</version>
+        <version>${bitcoinj.version}</version>
       </dependency>
       <dependency>
         <groupId>com.madgag</groupId>
@@ -301,7 +309,7 @@
     <dependency>
       <groupId>com.google</groupId>
       <artifactId>bitcoinj</artifactId>
-        <version>0.11-SNAPSHOT</version>
+      <version>${bitcoinj.version}</version>
     </dependency>
 
     <!-- Joda time for timestamps -->
