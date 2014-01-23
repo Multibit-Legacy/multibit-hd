@@ -14,22 +14,25 @@ import java.awt.event.MouseListener;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class LightBoxPanel extends JPanel {
 
   private final JPanel panel;
+  private final Integer layer;
 
   /**
    * @param panel The panel containing the light box components (e.g. a wizard)
+   * @param layer The layer which to place the panel (JLayeredPane.POPUP_LAYER is normal, DRAG_LAYER for popovers)
    */
-  public LightBoxPanel(JPanel panel) {
+  public LightBoxPanel(JPanel panel, Integer layer) {
 
     Preconditions.checkNotNull(panel, "'panel' must be present");
     Preconditions.checkState(panel.getWidth() > 0, "'width' must be greater than zero");
     Preconditions.checkState(panel.getHeight() > 0, "'height' must be greater than zero");
 
     this.panel = panel;
+    this.layer = layer;
 
     // Ensure we set the opacity (platform dependent)
     setOpaque(false);
@@ -40,14 +43,20 @@ public class LightBoxPanel extends JPanel {
     // Prevent mouse events reaching through the darkened border
     addMouseListener(new ModalMouseListener());
 
+    // TODO Prevent focus events reaching through the darkened border
+
     // Add this panel to the frame's layered panel as the palette layer (directly above the default)
-    Panels.frame.getLayeredPane().add(this, JLayeredPane.PALETTE_LAYER);
+    if (JLayeredPane.MODAL_LAYER.equals(layer)) {
+      Panels.frame.getLayeredPane().add(this, JLayeredPane.PALETTE_LAYER);
+    } else {
+      Panels.frame.getLayeredPane().add(this, JLayeredPane.POPUP_LAYER);
+    }
 
     // Provide a starting position
     calculatePosition();
 
     // Add the light box panel to the frame as the popup layer (over everything except a drag/drop layer)
-    Panels.frame.getLayeredPane().add(panel, JLayeredPane.POPUP_LAYER);
+    Panels.frame.getLayeredPane().add(panel, layer);
 
   }
 
@@ -147,4 +156,5 @@ public class LightBoxPanel extends JPanel {
       // Do nothing
     }
   }
+
 }

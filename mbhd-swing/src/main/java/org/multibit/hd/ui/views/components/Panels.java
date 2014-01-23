@@ -30,6 +30,7 @@ public class Panels {
   public static JFrame frame;
 
   private static Optional<LightBoxPanel> lightBoxPanel = Optional.absent();
+  private static Optional<LightBoxPanel> lightBoxPopoverPanel = Optional.absent();
 
   /**
    * @param layout The layout manager for the panel (typically MigLayout)
@@ -74,7 +75,7 @@ public class Panels {
 
     Preconditions.checkState(!lightBoxPanel.isPresent(), "Light box should never be called twice");
 
-    lightBoxPanel = Optional.of(new LightBoxPanel(panel));
+    lightBoxPanel = Optional.of(new LightBoxPanel(panel, JLayeredPane.MODAL_LAYER));
 
   }
 
@@ -88,6 +89,33 @@ public class Panels {
     }
 
     lightBoxPanel = Optional.absent();
+
+  }
+
+  /**
+   * <p>Show a light box pop over</p>
+   *
+   * @param panel The panel to act as the focus of the popover
+   */
+  public synchronized static void showLightBoxPopover(JPanel panel) {
+
+//    Preconditions.checkState(lightBoxPanel.isPresent(), "LightBoxPopover should not be called unless a light box is showing");
+    Preconditions.checkState(!lightBoxPopoverPanel.isPresent(), "LightBoxPopover should never be called twice");
+
+    lightBoxPopoverPanel = Optional.of(new LightBoxPanel(panel, JLayeredPane.DRAG_LAYER));
+
+  }
+
+  /**
+   * <p>Hides the currently showing light box popover panel</p>
+   */
+  public synchronized static void hideLightBoxPopover() {
+
+    if (lightBoxPopoverPanel.isPresent()) {
+      lightBoxPopoverPanel.get().close();
+    }
+
+    lightBoxPopoverPanel = Optional.absent();
 
   }
 

@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.api.Recipient;
@@ -133,11 +134,29 @@ public class Labels {
   }
 
   /**
+   * @param image The optional image
+   *
+   * @return A new label with the image or a placeholder if not present
+   */
+  public static JLabel newImageLabel(Optional<BufferedImage> image) {
+
+    if (image.isPresent()) {
+      return new JLabel(new ImageIcon(image.get()));
+    }
+
+    // Fall back to a default image
+    JLabel label = new JLabel();
+    AwesomeDecorator.applyIcon(AwesomeIcon.USER, label, true, AwesomeDecorator.LARGE_ICON_SIZE);
+    return label;
+
+  }
+
+  /**
    * @param walletPath The path to the image resource within the current wallet
    *
    * @return A new label with the image or a placeholder if not present
    */
-  public static JLabel newImageLabel(String walletPath) {
+  public static JLabel newWalletImageLabel(String walletPath) {
     final BufferedImage image;
     try {
       image = ImageIO.read(new File(walletPath));

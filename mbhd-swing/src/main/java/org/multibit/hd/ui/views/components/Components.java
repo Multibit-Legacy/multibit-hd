@@ -9,6 +9,8 @@ import org.multibit.hd.ui.views.components.display_address.DisplayBitcoinAddress
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountModel;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountView;
+import org.multibit.hd.ui.views.components.display_qrcode.DisplayQRCodeModel;
+import org.multibit.hd.ui.views.components.display_qrcode.DisplayQRCodeView;
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseModel;
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseView;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountModel;
@@ -122,10 +124,32 @@ public class Components {
   }
 
   /**
+   * <p>A "display QR" model and view displays a QR code with the following features:</p>
+   * <ul>
+   * <li>Image field showing a QR code</li>
+   * <li>Button to copy the QR code image to the Clipboard</li>
+   * <li>Button to close the light box popover</li>
+   * <li></li>
+   * </ul>
+   *
+   * @param content The text to present in the QR code
+   *
+   * @return A new "display Bitcoin address" model and view
+   */
+  public static ModelAndView<DisplayQRCodeModel, DisplayQRCodeView> newDisplayQRCodeMaV(final String content) {
+
+    DisplayQRCodeModel model = new DisplayQRCodeModel(content);
+    DisplayQRCodeView view = new DisplayQRCodeView(model);
+
+    return new ModelAndView<>(model, view);
+
+  }
+
+  /**
    * <p>A "display Bitcoin address" model and view displays a Bitcoin address with the following features:</p>
    * <ul>
-   *   <li>Non-editable text field showing the address</li>
-   *   <li>Button to copy the address to the Clipboard</li>
+   * <li>Non-editable text field showing the address</li>
+   * <li>Button to copy the address to the Clipboard</li>
    * </ul>
    *
    * @param bitcoinAddress The Bitcoin address

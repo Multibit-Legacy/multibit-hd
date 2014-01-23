@@ -59,7 +59,7 @@ public class EnterRecipientView extends AbstractView<EnterRecipientModel> {
     panel.add(Labels.newRecipient());
     // Specify minimum width for consistent appearance across contact names and locales
     panel.add(recipientComboBox, "growx,w min:350:,push");
-    panel.add(Labels.newImageLabel(""), "shrink,wrap");
+    panel.add(Labels.newWalletImageLabel(""), "shrink,wrap");
 
     return panel;
 

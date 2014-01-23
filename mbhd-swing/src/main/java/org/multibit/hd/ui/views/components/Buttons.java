@@ -317,6 +317,21 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "QR code" button with icon
+   */
+  public static JButton newQRCodeButton(Action action) {
+
+    JButton button = newButton(action);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.QRCODE, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+
+    return button;
+
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "copy" button with icon
    */
   public static JButton newCopyButton(Action action) {
@@ -324,6 +339,21 @@ public class Buttons {
     JButton button = newButton(action);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.COPY, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+
+    return button;
+
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "close" button with icon
+   */
+  public static JButton newPanelCloseButton(Action action) {
+
+    JButton button = newButton(action);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
 
     return button;
 

@@ -1,15 +1,13 @@
 package org.multibit.hd.ui.views.components.display_address;
 
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.ui.utils.ClipboardUtils;
 import org.multibit.hd.ui.views.AbstractView;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.TextBoxes;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 
 /**
@@ -48,15 +46,17 @@ public class DisplayBitcoinAddressView extends AbstractView<DisplayBitcoinAddres
     Action copyClipboardAction = getCopyClipboardAction();
 
     // Add to the panel
-    panel.add(bitcoinAddress,"grow,push");
+    panel.add(bitcoinAddress, "grow,push");
     panel.add(Buttons.newCopyButton(copyClipboardAction));
+
+    panel.setSize(100,100);
 
     return panel;
 
   }
 
   /**
-   * @return A new action for toggling the display of the seed phrase
+   * @return A new action for copying the model to the clipboard
    */
   private Action getCopyClipboardAction() {
 
@@ -65,10 +65,7 @@ public class DisplayBitcoinAddressView extends AbstractView<DisplayBitcoinAddres
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        // Copy the address to the clipboard
-        StringSelection stringSelection = new StringSelection(getModel().get().getValue());
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard ();
-        clipboard.setContents(stringSelection, null);
+        ClipboardUtils.copyStringToClipboard(getModel().get().getValue());
 
       }
 
