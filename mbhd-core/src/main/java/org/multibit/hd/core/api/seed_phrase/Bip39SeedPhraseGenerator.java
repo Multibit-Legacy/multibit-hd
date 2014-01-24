@@ -36,7 +36,7 @@ public class Bip39SeedPhraseGenerator implements SeedPhraseGenerator {
   }
 
   public static List<String> split(String words) {
-      return new ArrayList<String>(Arrays.asList(words.split("\\s+")));
+      return new ArrayList<>(Arrays.asList(words.split("\\s+")));
   }
 
   @Override

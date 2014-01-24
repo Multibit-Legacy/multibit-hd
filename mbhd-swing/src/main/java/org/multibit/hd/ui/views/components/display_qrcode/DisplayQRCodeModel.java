@@ -5,7 +5,7 @@ import org.multibit.hd.ui.models.Model;
 /**
  * <p>Model to provide the following to view:</p>
  * <ul>
- * <li>Store the Bitcoin address</li>
+ * <li>Store the QR code content</li>
  * </ul>
  *
  * @since 0.0.1
@@ -13,23 +13,16 @@ import org.multibit.hd.ui.models.Model;
  */
 public class DisplayQRCodeModel implements Model<String> {
 
-  private final String bitcoinAddress;
-
-  /**
-   * @param bitcoinAddress The Bitcoin address to display
-   */
-  public DisplayQRCodeModel(String bitcoinAddress) {
-    this.bitcoinAddress = bitcoinAddress;
-  }
+  private String content;
 
   @Override
   public String getValue() {
-    return bitcoinAddress;
+    return content;
   }
 
   @Override
   public void setValue(String value) {
-    // Do nothing
+    this.content = value;
   }
 
 }

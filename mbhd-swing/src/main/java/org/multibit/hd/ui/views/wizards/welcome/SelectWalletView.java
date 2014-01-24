@@ -41,7 +41,7 @@ public class SelectWalletView extends AbstractWizardView<WelcomeWizardModel, Wel
   }
 
   @Override
-  public JPanel newDataPanel() {
+  public JPanel newWizardViewPanel() {
 
     currentSelection = SELECT_BACKUP_LOCATION;
     setPanelModel(currentSelection);
@@ -64,12 +64,7 @@ public class SelectWalletView extends AbstractWizardView<WelcomeWizardModel, Wel
   }
 
   @Override
-  public void fireViewEvents() {
-    // Do nothing
-  }
-
-  @Override
-  public boolean updatePanelModel() {
+  public boolean updateFromComponentModels() {
 
     setPanelModel(currentSelection);
     return false;

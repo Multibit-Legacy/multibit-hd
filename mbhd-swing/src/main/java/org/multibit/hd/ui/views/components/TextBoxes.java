@@ -23,6 +23,11 @@ import java.awt.event.ActionEvent;
 public class TextBoxes {
 
   /**
+   * The maximum length of a receive address label
+   */
+  public static final int RECEIVE_ADDRESS_LABEL_LENGTH = 60;
+
+  /**
    * The maximum length of the password
    */
   public static final int PASSWORD_LENGTH = 40;
@@ -43,7 +48,13 @@ public class TextBoxes {
    */
   public static JTextField newEnterLabel() {
 
-    JTextField textField = new JTextField(60);
+    JTextField textField = new JTextField(RECEIVE_ADDRESS_LABEL_LENGTH);
+
+    // Limit the length of the underlying document
+    DefaultStyledDocument doc = new DefaultStyledDocument();
+    doc.setDocumentFilter(new DocumentMaxLengthFilter(RECEIVE_ADDRESS_LABEL_LENGTH));
+    textField.setDocument(doc);
+
     textField.setBackground(Themes.currentTheme.dataEntryBackground());
 
     return textField;

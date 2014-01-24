@@ -16,14 +16,14 @@ import org.multibit.hd.ui.events.view.WizardPanelModelChangedEvent;
 public interface WizardModel {
 
   /**
-   * Called when the "next" button is clicked
+   * Show the next view (usually in response to a "next" button click)
    */
-  void next();
+  void showNext();
 
   /**
-   * Called when the "previous" button is clicked
+   * Show the previous view (usually in response to a "previous" button click)
    */
-  void previous();
+  void showPrevious();
 
   /**
    * @return The name of the panel to show (decouples from a specific wizard's internal state enum)
@@ -35,7 +35,7 @@ public interface WizardModel {
    *
    * @param panelModel The panel model (can be absent when no user data is present)
    */
-  void update(Optional panelModel);
+  void updateFromPanelModel(Optional panelModel);
 
   /**
    * Handle a "wizard panel model changed" event

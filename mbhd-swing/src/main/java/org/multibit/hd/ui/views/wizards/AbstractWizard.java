@@ -8,8 +8,6 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.layouts.WizardCardLayout;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,8 +25,6 @@ import java.util.Map;
  * @since 0.0.1
  */
 public abstract class AbstractWizard<M extends WizardModel> {
-
-  private static final Logger log = LoggerFactory.getLogger(AbstractWizard.class);
 
   private static final int WIZARD_MIN_WIDTH = 600;
   private static final int WIZARD_MIN_HEIGHT = 400;
@@ -92,7 +88,7 @@ public abstract class AbstractWizard<M extends WizardModel> {
     for (Map.Entry<String, AbstractWizardView> entry : wizardViewMap.entrySet()) {
 
       // Ensure the panel is in the correct starting state
-      entry.getValue().fireViewEvents();
+      entry.getValue().fireInitialStateViewEvents();
 
     }
 
@@ -222,15 +218,15 @@ public abstract class AbstractWizard<M extends WizardModel> {
       public void actionPerformed(ActionEvent e) {
 
         // Ensure the panel updates its model (the button is outside of the panel itself)
-        if (!wizardView.updatePanelModel()) {
+        if (!wizardView.updateFromComponentModels()) {
 
           // Aggregate the panel information into the wizard model
-          wizardModel.update(wizardView.getPanelModel());
+          wizardModel.updateFromPanelModel(wizardView.getPanelModel());
 
         }
 
         // Move to the next state
-        wizardModel.next();
+        wizardModel.showNext();
 
         // Show the panel based on the state
         show(wizardModel.getPanelName());
@@ -250,12 +246,12 @@ public abstract class AbstractWizard<M extends WizardModel> {
       public void actionPerformed(ActionEvent e) {
 
         // Ensure the panel updates its model (the button is outside of the panel itself)
-        wizardView.updatePanelModel();
+        wizardView.updateFromComponentModels();
 
         // Aggregate the panel information into the wizard model
 
         // Move to the previous state
-        wizardModel.previous();
+        wizardModel.showPrevious();
 
         // Show the panel based on the state
         show(wizardModel.getPanelName());

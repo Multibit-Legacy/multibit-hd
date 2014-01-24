@@ -3,7 +3,6 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
-import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardModelChangedEvent;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountModel;
@@ -13,7 +12,6 @@ import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardView;
-import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
 
@@ -51,16 +49,16 @@ public class SendBitcoinConfirmView extends AbstractWizardView<SendBitcoinWizard
   }
 
   @Override
-  public JPanel newDataPanel() {
+  public JPanel newWizardViewPanel() {
 
     transactionDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT);
     transactionFeeDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.FEE_AMOUNT);
     developerFeeDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.FEE_AMOUNT);
-    enterPasswordMaV = Components.newEnterPasswordMaV(getPanelName());
+    enterPasswordMaV = Components.newEnterPasswordMaV(getWizardViewPanelName());
 
     // Configure the panel model
     setPanelModel(new SendBitcoinConfirmPanelModel(
-      getPanelName(),
+      getWizardViewPanelName(),
       enterPasswordMaV.getModel()
     ));
 
@@ -94,13 +92,7 @@ public class SendBitcoinConfirmView extends AbstractWizardView<SendBitcoinWizard
   }
 
   @Override
-  public void fireViewEvents() {
-    // Disable the next (send) button
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, false);
-  }
-
-  @Override
-  public boolean updatePanelModel() {
+  public boolean updateFromComponentModels() {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
     return true;
   }
