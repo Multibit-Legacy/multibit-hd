@@ -36,7 +36,7 @@ public class SendBitcoinReportView extends AbstractWizardView<SendBitcoinWizardM
   }
 
   @Override
-  public JPanel newDataPanel() {
+  public JPanel newWizardViewPanel() {
 
     model = "TODO replace with a proper model";
     setPanelModel(model);
@@ -58,12 +58,7 @@ public class SendBitcoinReportView extends AbstractWizardView<SendBitcoinWizardM
   }
 
   @Override
-  public void fireViewEvents() {
-    // Do nothing
-  }
-
-  @Override
-  public boolean updatePanelModel() {
+  public boolean updateFromComponentModels() {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
     return true;
   }

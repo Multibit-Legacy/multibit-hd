@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components.display_qrcode;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.utils.OSUtils;
 import org.multibit.hd.ui.utils.ClipboardUtils;
 import org.multibit.hd.ui.utils.QRCodes;
 import org.multibit.hd.ui.views.AbstractView;
@@ -27,6 +28,7 @@ public class DisplayQRCodeView extends AbstractView<DisplayQRCodeModel> {
 
   private Optional<BufferedImage> qrCodeImage;
 
+
   /**
    * @param model The model backing this view
    */
@@ -44,14 +46,19 @@ public class DisplayQRCodeView extends AbstractView<DisplayQRCodeModel> {
       "[][]" // Rows
     ));
 
-    qrCodeImage = QRCodes.generateQRCode("Hello!", 2);
+    qrCodeImage = QRCodes.generateQRCode(getModel().get().getValue(), 2);
 
     // Add to the panel
+    // Bug in JDK 1.7 on Mac prevents clipboard image copy
+    // Possibly fixed in JDK 1.8
+    if (!OSUtils.isMac()) {
+      panel.add(Buttons.newCopyButton(getCopyClipboardAction()), "align left,push");
+    }
+    panel.add(Buttons.newPanelCloseButton(getClosePopoverAction()), "align right,shrink,wrap");
     panel.add(Labels.newImageLabel(qrCodeImage), "span 2,grow,push,wrap");
-    panel.add(Buttons.newCopyButton(getCopyClipboardAction()));
-    panel.add(Buttons.newPanelCloseButton(getClosePopoverAction()), "wrap");
 
-    panel.setSize(200, 200);
+    // Panel needs to be this size to allow for largest Bitcoin URI
+    panel.setSize(350, 350);
 
     return panel;
 

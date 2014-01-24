@@ -49,8 +49,6 @@ public class DisplayBitcoinAddressView extends AbstractView<DisplayBitcoinAddres
     panel.add(bitcoinAddress, "grow,push");
     panel.add(Buttons.newCopyButton(copyClipboardAction));
 
-    panel.setSize(100,100);
-
     return panel;
 
   }

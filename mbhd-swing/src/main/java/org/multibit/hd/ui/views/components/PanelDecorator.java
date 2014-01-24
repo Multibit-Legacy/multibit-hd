@@ -106,6 +106,28 @@ public class PanelDecorator {
   }
 
   /**
+   * <p>Add a cancel, finish combination</p>
+   *
+   * @param view   The view containing the panel to decorate
+   * @param wizard The wizard providing the actions
+   * @param <M>    The wizard model type
+   * @param <P>    The wizard panel model type
+   */
+  public static <M extends WizardModel, P> void addCancelFinish(AbstractWizardView<M, P> view, AbstractWizard<M> wizard) {
+
+    Preconditions.checkNotNull(view, "'view' must be present");
+    Preconditions.checkNotNull(view, "'wizard' must be present");
+    Preconditions.checkNotNull(view.getWizardPanel(), "'wizardPanel' must be present");
+
+    // Use the wizard panel
+    JPanel wizardPanel = view.getWizardPanel();
+
+    addCancel(view, wizard, wizardPanel);
+    addFinish(view, wizard, wizardPanel);
+
+  }
+
+  /**
    * <p>Add an exit/cancel, previous, finish combination</p>
    *
    * @param view   The view containing the panel to decorate

@@ -75,6 +75,9 @@ public class QRCodes {
   /**
    * <p>Create a ByteMatrix representing the contents for use as the input matrix</p>
    *
+   * @param contents The text to be encoded into the QR code (e.g. a canonical Bitcoin URI)
+   * @param code     The QR code
+   *
    * @return A QR Code as a ByteMatrix 2D array of greyscale values
    */
   private static ByteMatrix encode(String contents, QRCode code) throws WriterException {

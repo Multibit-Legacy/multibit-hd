@@ -1,5 +1,7 @@
 package org.multibit.hd.ui.views.wizards.receive_bitcoin;
 
+import com.google.bitcoin.core.Utils;
+import com.google.bitcoin.uri.BitcoinURI;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -13,9 +15,11 @@ import org.multibit.hd.ui.views.components.enter_amount.EnterAmountView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.math.BigInteger;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -45,23 +49,27 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
 
     super(wizard.getWizardModel(), panelName, MessageKey.RECEIVE_BITCOIN_TITLE);
 
-    PanelDecorator.addExitCancelNext(this, wizard);
+    PanelDecorator.addCancelFinish(this, wizard);
 
   }
 
   @Override
-  public JPanel newDataPanel() {
+  public JPanel newWizardViewPanel() {
 
-    enterAmountMaV = Components.newEnterAmountMaV(getPanelName());
+    enterAmountMaV = Components.newEnterAmountMaV(getWizardViewPanelName());
+
+    // TODO Link this to the recipient address service
     displayBitcoinAddressMaV = Components.newDisplayBitcoinAddressMaV("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
-    displayQRCodeMaV = Components.newDisplayQRCodeMaV("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
+
+    // Create the QR code display
+    displayQRCodeMaV = Components.newDisplayQRCodeMaV();
 
     label = TextBoxes.newEnterLabel();
-    showQRCode = Buttons.newQRCodeButton(getToggleQRCodeAction());
+    showQRCode = Buttons.newQRCodeButton(getShowQRCodePopoverAction());
 
     // Configure the panel model
     setPanelModel(new ReceiveBitcoinEnterAmountPanelModel(
-      getPanelName(),
+      getWizardViewPanelName(),
       enterAmountMaV.getModel(),
       displayBitcoinAddressMaV.getModel()
     ));
@@ -76,16 +84,24 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
     panel.add(Labels.newRecipient());
     panel.add(displayBitcoinAddressMaV.getView().newPanel(),"growx,push");
     panel.add(showQRCode,"wrap");
-    panel.add(Labels.newNotes());
-    panel.add(label,"span 2,grow,wrap");
+    panel.add(Labels.newTransactionLabel());
+    panel.add(label,"span 2,wrap");
 
     return panel;
   }
 
+  @Override
+  public void fireInitialStateViewEvents() {
+
+    // Disable the finish button
+    ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, false);
+
+  }
+
   /**
-   * @return A new action for toggling the display of the QR code
+   * @return A new action for showing the QR code popover
    */
-  private Action getToggleQRCodeAction() {
+  private Action getShowQRCodePopoverAction() {
 
     // Show or hide the QR code
     return new AbstractAction() {
@@ -93,8 +109,23 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
       @Override
       public void actionPerformed(ActionEvent e) {
 
+        ReceiveBitcoinEnterAmountPanelModel model = getPanelModel().get();
+
+        String bitcoinAddress = model.getDisplayBitcoinAddressModel().getValue();
+        BigInteger amount = Utils.toNanoCoins(model.getEnterAmountModel().getRawBitcoinAmount().toPlainString());
+
+        // Form a Bitcoin URI from the contents
+        String bitcoinUri = BitcoinURI.convertToBitcoinURI(
+          bitcoinAddress,
+          amount,
+          label.getText(),
+          null
+        );
+
+        displayQRCodeMaV.getModel().setValue(bitcoinUri);
+
         // Show the QR code as a popover
-        Panels.showLightBoxPopover(displayBitcoinAddressMaV.getView().newPanel());
+        Panels.showLightBoxPopover(displayQRCodeMaV.getView().newPanel());
 
       }
 
@@ -102,19 +133,12 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
   }
 
   @Override
-  public void fireViewEvents() {
-
-    // Disable the next button
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, false);
-  }
-
-  @Override
-  public boolean updatePanelModel() {
+  public boolean updateFromComponentModels() {
 
     enterAmountMaV.getView().updateModel();
 
     // The panel model has changed so alert the wizard
-    ViewEvents.fireWizardPanelModelChangedEvent(getPanelName(), getPanelModel());
+    ViewEvents.fireWizardPanelModelChangedEvent(getWizardViewPanelName(), getPanelModel());
 
     return false;
   }

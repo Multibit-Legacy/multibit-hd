@@ -1,8 +1,11 @@
 package org.multibit.hd.ui.utils;
 
+import com.google.common.base.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.*;
 import java.awt.datatransfer.*;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 /**
@@ -16,6 +19,8 @@ import java.io.IOException;
  */
 public class ClipboardUtils {
 
+  private static final Logger log = LoggerFactory.getLogger(ClipboardUtils.class);
+
   /**
    * Utilities have private constructors
    */
@@ -25,17 +30,48 @@ public class ClipboardUtils {
   /**
    * @param image The image to copy
    */
-  public static void copyImageToClipboard(BufferedImage image) {
+  public static void copyImageToClipboard(Image image) {
 
-    TransferableImage trans = new TransferableImage(image);
+    final TransferableImage transferableImage = new TransferableImage(image);
+
     Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-    clipboard.setContents(trans, new ClipboardOwner() {
+
+    try {
+
+      clipboard.setContents(transferableImage, newClipboardOwner());
+
+      log.debug("Copied image to clipboard");
+
+    } catch (IllegalStateException e) {
+      log.warn("Could not access system clipboard");
+    }
+
+  }
+
+  /**
+   * @return The image from the clipboard if present
+   */
+  public static Optional<Image> copyImageFromClipboard() {
+
+    Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
+
+    if (transferable != null && transferable.isDataFlavorSupported(DataFlavor.imageFlavor)) {
+      try {
+        return Optional.of((Image) transferable.getTransferData(DataFlavor.imageFlavor));
+      } catch (UnsupportedFlavorException | IOException e) {
+        log.warn("Failed to retrieve clipboard image", e);
+      }
+    }
+    return Optional.absent();
+  }
+
+  private static ClipboardOwner newClipboardOwner() {
+    return new ClipboardOwner() {
       @Override
       public void lostOwnership(Clipboard clipboard, Transferable contents) {
-        // Do nothing
+        log.warn("Lost ownership of the system clipboard");
       }
-    });
-
+    };
   }
 
   /**
@@ -46,57 +82,17 @@ public class ClipboardUtils {
     // Copy the string to the clipboard
     StringSelection stringSelection = new StringSelection(value);
     Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-    clipboard.setContents(stringSelection, null);
+
+    try {
+
+      clipboard.setContents(stringSelection, newClipboardOwner());
+
+      log.debug("Copied string to clipboard");
+
+    } catch (IllegalStateException e) {
+      log.warn("Could not access system clipboard");
+    }
 
   }
 
-
-  /**
-   * Utility class to handle the transfer of an image via the Clipboard
-   */
-  private static class TransferableImage implements Transferable {
-
-    Image image;
-
-    /**
-     * @param image The image
-     */
-    public TransferableImage(Image image) {
-      this.image = image;
-    }
-
-    @Override
-    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
-
-      if (flavor.equals(DataFlavor.imageFlavor) && image != null) {
-        return image;
-      } else {
-        throw new UnsupportedFlavorException(flavor);
-      }
-
-    }
-
-    @Override
-    public DataFlavor[] getTransferDataFlavors() {
-
-      DataFlavor[] flavors = new DataFlavor[1];
-      flavors[0] = DataFlavor.imageFlavor;
-      return flavors;
-
-    }
-
-    @Override
-    public boolean isDataFlavorSupported(DataFlavor dataFlavor) {
-
-      DataFlavor[] dataFlavors = getTransferDataFlavors();
-
-      for (DataFlavor flavor : dataFlavors) {
-        if (dataFlavor.equals(flavor)) {
-          return true;
-        }
-      }
-
-      return false;
-    }
-  }
 }

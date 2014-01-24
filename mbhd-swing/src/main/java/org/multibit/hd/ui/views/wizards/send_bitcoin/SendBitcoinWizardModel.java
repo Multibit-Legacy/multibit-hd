@@ -52,7 +52,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
   @SuppressWarnings("unchecked")
   @Override
-  public void update(Optional panelModel) {
+  public void updateFromPanelModel(Optional panelModel) {
 
     // No state transitions occur in this method
 
@@ -88,7 +88,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   }
 
   @Override
-  public void next() {
+  public void showNext() {
 
     switch (state) {
       case ENTER_AMOUNT:
@@ -106,7 +106,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   }
 
   @Override
-  public void previous() {
+  public void showPrevious() {
 
     switch (state) {
       case ENTER_AMOUNT:

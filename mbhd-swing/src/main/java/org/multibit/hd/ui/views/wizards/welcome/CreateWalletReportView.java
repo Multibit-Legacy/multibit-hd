@@ -54,7 +54,7 @@ public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardMode
   }
 
   @Override
-  public JPanel newDataPanel() {
+  public JPanel newWizardViewPanel() {
 
     String model = "TODO replace with a proper model";
     setPanelModel(model);
@@ -83,12 +83,15 @@ public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardMode
   }
 
   @Override
-  public void fireViewEvents() {
+  public void fireInitialStateViewEvents() {
+
+    // Disable the finish button
     ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, false);
+
   }
 
   @Override
-  public boolean updatePanelModel() {
+  public boolean updateFromComponentModels() {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
     return true;
   }
@@ -100,7 +103,7 @@ public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardMode
   public void onWizardModelChangedEvent(WizardModelChangedEvent event) {
 
     // Check if this event applies to this panel
-    if (!event.getPanelName().equals(getPanelName())) {
+    if (!event.getPanelName().equals(getWizardViewPanelName())) {
       return;
     }
 

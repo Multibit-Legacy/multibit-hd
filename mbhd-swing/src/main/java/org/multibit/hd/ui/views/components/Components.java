@@ -132,13 +132,11 @@ public class Components {
    * <li></li>
    * </ul>
    *
-   * @param content The text to present in the QR code
-   *
    * @return A new "display Bitcoin address" model and view
    */
-  public static ModelAndView<DisplayQRCodeModel, DisplayQRCodeView> newDisplayQRCodeMaV(final String content) {
+  public static ModelAndView<DisplayQRCodeModel, DisplayQRCodeView> newDisplayQRCodeMaV() {
 
-    DisplayQRCodeModel model = new DisplayQRCodeModel(content);
+    DisplayQRCodeModel model = new DisplayQRCodeModel();
     DisplayQRCodeView view = new DisplayQRCodeView(model);
 
     return new ModelAndView<>(model, view);

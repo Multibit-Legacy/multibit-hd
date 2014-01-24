@@ -41,7 +41,7 @@ public class CreateWalletPasswordView extends AbstractWizardView<WelcomeWizardMo
   }
 
   @Override
-  public JPanel newDataPanel() {
+  public JPanel newWizardViewPanel() {
 
     confirmPasswordMaV = Components.newConfirmPasswordMaV(WelcomeWizardState.CREATE_WALLET_PASSWORD.name());
     setPanelModel(confirmPasswordMaV.getModel());
@@ -59,12 +59,12 @@ public class CreateWalletPasswordView extends AbstractWizardView<WelcomeWizardMo
   }
 
   @Override
-  public void fireViewEvents() {
+  public void fireInitialStateViewEvents() {
     ViewEvents.fireWizardButtonEnabledEvent(CREATE_WALLET_PASSWORD.name(), WizardButton.NEXT, false);
   }
 
   @Override
-  public boolean updatePanelModel() {
+  public boolean updateFromComponentModels() {
     confirmPasswordMaV.getView().updateModel();
     return false;
   }
