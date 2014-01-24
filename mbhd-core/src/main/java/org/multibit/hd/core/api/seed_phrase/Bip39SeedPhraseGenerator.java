@@ -1,9 +1,7 @@
 package org.multibit.hd.core.api.seed_phrase;
 
-import com.google.bitcoin.crypto.MnemonicChecksumException;
 import com.google.bitcoin.crypto.MnemonicCode;
-import com.google.bitcoin.crypto.MnemonicLengthException;
-import com.google.bitcoin.crypto.MnemonicWordException;
+import com.google.bitcoin.crypto.MnemonicException;
 import org.multibit.hd.core.exceptions.SeedPhraseException;
 
 import java.io.IOException;
@@ -52,7 +50,7 @@ public class Bip39SeedPhraseGenerator implements SeedPhraseGenerator {
       byte[] entropy = new byte[size.getEntropyBytesSize()];
       secureRandom.nextBytes(entropy);
       return mnemonicCode.toMnemonic(entropy);
-    } catch (MnemonicLengthException mle) {
+    } catch (MnemonicException.MnemonicLengthException mle) {
       throw new SeedPhraseException("Wrong length of entropy bytes", mle);
     }
   }
@@ -64,7 +62,7 @@ public class Bip39SeedPhraseGenerator implements SeedPhraseGenerator {
 
       // Convert to seed byte array using an empty password
       return MnemonicCode.toSeed(seedPhrase, "");
-    } catch (MnemonicLengthException | MnemonicChecksumException | MnemonicWordException e) {
+    } catch (MnemonicException e) {
       throw new SeedPhraseException("The seed phrase is not valid", e);
     }
   }

@@ -29,16 +29,16 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 public class WalletIdTest {
   public static final String SEED_PHRASE_1 = "letter advice cage absurd amount doctor acoustic avoid letter advice cage above";
-  private static final String WALLET_ID_1 = "19131cc83cdfefdb2331af110d5c44c5b8f39103";
-  private static final String WALLET_ID_FORMATTED_1 = "19131cc8-3cdfefdb-2331af11-0d5c44c5-b8f39103";
+  private static final String WALLET_ID_1 = "5c81964a030c3b659dc56fe63dbe27aef3370750";
+  private static final String WALLET_ID_FORMATTED_1 = "5c81964a-030c3b65-9dc56fe6-3dbe27ae-f3370750";
 
   private static final String SEED_PHRASE_2 = "require want tube elegant juice cool cup noble town poem plate harsh";
-  private static final String WALLET_ID_2 = "3d39a00a9e3e33c5e97c298019eaa9d4cbe04f91";
-  private static final String WALLET_ID_FORMATTED_2 = "3d39a00a-9e3e33c5-e97c2980-19eaa9d4-cbe04f91";
+  private static final String WALLET_ID_2 = "a0bf136f8ce97d0358b4b29a87f6662cf14e594f";
+  private static final String WALLET_ID_FORMATTED_2 = "a0bf136f-8ce97d03-58b4b29a-87f6662c-f14e594f";
 
   private static final String SEED_PHRASE_3 = "morning truly witness grass pill typical blur then notable session exact coyote word noodle dentist hurry ability dignity";
-  private static final String WALLET_ID_3= "59ca26f67f8ba291b23751de3fd5f0d15a8f5f99";
-  private static final String WALLET_ID_FORMATTED_3 = "59ca26f6-7f8ba291-b23751de-3fd5f0d1-5a8f5f99";
+  private static final String WALLET_ID_3= "621a029836c3d152ae62134fb8ff7618900c5f9a";
+  private static final String WALLET_ID_FORMATTED_3 = "621a0298-36c3d152-ae62134f-b8ff7618-900c5f9a";
 
   @Before
   public void setUp() throws Exception {
