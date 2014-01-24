@@ -101,11 +101,6 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
   @Override
   public boolean updateFromComponentModels() {
 
-
-
-    // The panel model has changed so alert the wizard
-    ViewEvents.fireWizardPanelModelChangedEvent(getWizardViewPanelName(), getPanelModel());
-
     return false;
   }
 
@@ -123,7 +118,7 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
         ReceiveBitcoinEnterAmountPanelModel model = getPanelModel().get();
 
         String bitcoinAddress = model.getDisplayBitcoinAddressModel().getValue();
-        BigInteger amount = Utils.toNanoCoins(model.getEnterAmountModel().getRawBitcoinAmount().toPlainString());
+        BigInteger amount = Utils.toNanoCoins(model.getEnterAmountModel().getPlainBitcoinAmount().toPlainString());
 
         // Form a Bitcoin URI from the contents
         String bitcoinUri = BitcoinURI.convertToBitcoinURI(

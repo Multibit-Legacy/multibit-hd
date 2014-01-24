@@ -19,7 +19,7 @@ public class DisplayAmountModel implements Model<DisplayAmountModel> {
   private final DisplayAmountStyle style;
 
   // Values depend on earlier wizard panel
-  private BigDecimal rawBitcoinAmount = BigDecimal.ZERO;
+  private BigDecimal plainBitcoinAmount = BigDecimal.ZERO;
   private BigDecimal localAmount = BigDecimal.ZERO;
 
   private boolean localAmountVisible = true;
@@ -52,18 +52,18 @@ public class DisplayAmountModel implements Model<DisplayAmountModel> {
    * @return The Bitcoin amount with symbol multiplier
    */
   public BigDecimal getSymbolicBitcoinAmount() {
-    return getRawBitcoinAmount().multiply(BitcoinSymbol.current().multiplier());
+    return getPlainBitcoinAmount().multiply(BitcoinSymbol.current().multiplier());
   }
 
   /**
    * @return The Bitcoin amount without symbol multiplier
    */
-  public BigDecimal getRawBitcoinAmount() {
-    return rawBitcoinAmount;
+  public BigDecimal getPlainBitcoinAmount() {
+    return plainBitcoinAmount;
   }
 
-  public void setRawBitcoinAmount(BigDecimal rawBitcoinAmount) {
-    this.rawBitcoinAmount = rawBitcoinAmount;
+  public void setPlainBitcoinAmount(BigDecimal plainBitcoinAmount) {
+    this.plainBitcoinAmount = plainBitcoinAmount;
   }
 
   /**

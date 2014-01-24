@@ -123,7 +123,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   public BigDecimal getRawBitcoinAmount() {
     return enterAmountPanelModel
       .getEnterAmountModel()
-      .getRawBitcoinAmount();
+      .getPlainBitcoinAmount();
   }
 
   /**
@@ -153,14 +153,14 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   /**
    * @return The transaction fee (a.k.a "miner's fee") without symbolic multiplier
    */
-  public BigDecimal getRawTransactionFee() {
+  public BigDecimal getPlainTransactionFee() {
     return transactionFee;
   }
 
   /**
    * @return The developer fee without symbolic multiplier
    */
-  public BigDecimal getRawDeveloperFee() {
+  public BigDecimal getPlainDeveloperFee() {
     return developerFee;
   }
 }
