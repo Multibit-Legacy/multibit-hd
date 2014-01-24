@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.wizards.receive_bitcoin;
 
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import java.util.Map;
 
@@ -21,9 +21,9 @@ public class ReceiveBitcoinWizard extends AbstractWizard<ReceiveBitcoinWizardMod
   }
 
   @Override
-  protected void populateWizardViewMap(Map<String, AbstractWizardView> wizardViewMap) {
+  protected void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap) {
 
-    wizardViewMap.put(ReceiveBitcoinState.ENTER_AMOUNT.name(), new ReceiveBitcoinEnterAmountView(this, ReceiveBitcoinState.ENTER_AMOUNT.name()));
+    wizardViewMap.put(ReceiveBitcoinState.ENTER_AMOUNT.name(), new ReceiveBitcoinEnterAmountPanelView(this, ReceiveBitcoinState.ENTER_AMOUNT.name()));
 
   }
 

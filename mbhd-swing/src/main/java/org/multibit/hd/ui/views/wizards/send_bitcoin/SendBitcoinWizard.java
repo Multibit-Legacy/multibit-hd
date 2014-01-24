@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import java.util.Map;
 
@@ -24,17 +24,17 @@ public class SendBitcoinWizard extends AbstractWizard<SendBitcoinWizardModel> {
   }
 
   @Override
-  protected void populateWizardViewMap(Map<String, AbstractWizardView> wizardViewMap) {
+  protected void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap) {
 
     wizardViewMap.put(
       SendBitcoinState.ENTER_AMOUNT.name(),
-      new SendBitcoinEnterAmountView(this, SendBitcoinState.ENTER_AMOUNT.name()));
+      new SendBitcoinEnterAmountPanelView(this, SendBitcoinState.ENTER_AMOUNT.name()));
     wizardViewMap.put(
       SendBitcoinState.CONFIRM_AMOUNT.name(),
-      new SendBitcoinConfirmView(this, SendBitcoinState.CONFIRM_AMOUNT.name()));
+      new SendBitcoinConfirmPanelView(this, SendBitcoinState.CONFIRM_AMOUNT.name()));
     wizardViewMap.put(
       SendBitcoinState.SEND_BITCOIN_REPORT.name(),
-      new SendBitcoinReportView(this, SendBitcoinState.SEND_BITCOIN_REPORT.name()));
+      new SendBitcoinReportPanelView(this, SendBitcoinState.SEND_BITCOIN_REPORT.name()));
 
   }
 

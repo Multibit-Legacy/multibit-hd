@@ -6,7 +6,7 @@ import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import javax.swing.*;
 
@@ -19,7 +19,7 @@ import javax.swing.*;
  * @since 0.0.1
  *  
  */
-public class SendBitcoinReportView extends AbstractWizardView<SendBitcoinWizardModel, String> {
+public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitcoinWizardModel, String> {
 
   // Model
   private String model;
@@ -27,7 +27,7 @@ public class SendBitcoinReportView extends AbstractWizardView<SendBitcoinWizardM
   /**
    * @param wizard The wizard managing the states
    */
-  public SendBitcoinReportView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
+  public SendBitcoinReportPanelView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
 
     super(wizard.getWizardModel(), panelName, MessageKey.SEND_PROGRESS_TITLE);
 

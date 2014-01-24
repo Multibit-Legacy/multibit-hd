@@ -10,7 +10,7 @@ import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseModel;
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import javax.swing.*;
 import java.util.List;
@@ -24,7 +24,7 @@ import java.util.List;
  * @since 0.0.1
  *         
  */
-public class CreateWalletSeedPhraseView extends AbstractWizardView<WelcomeWizardModel, List<String>> {
+public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<WelcomeWizardModel, List<String>> {
 
   private ModelAndView<DisplaySeedPhraseModel, DisplaySeedPhraseView> displaySeedPhraseMaV;
 
@@ -32,7 +32,7 @@ public class CreateWalletSeedPhraseView extends AbstractWizardView<WelcomeWizard
    * @param wizard The wizard managing the states
    * @param panelName   The panel name to filter events from components
    */
-  public CreateWalletSeedPhraseView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public CreateWalletSeedPhrasePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard.getWizardModel(), panelName, MessageKey.CREATE_WALLET_SEED_PHRASE_TITLE);
 

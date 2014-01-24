@@ -15,7 +15,7 @@ import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
@@ -32,7 +32,7 @@ import java.util.List;
  * @since 0.0.1
  *  
  */
-public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardModel, String> {
+public class CreateWalletReportPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> {
 
   // View
   private JLabel seedPhraseCreatedStatusLabel;
@@ -44,7 +44,7 @@ public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardMode
    * @param wizard The wizard managing the states
    * @param panelName   The panel name to filter events from components
    */
-  public CreateWalletReportView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public CreateWalletReportPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard.getWizardModel(), panelName, MessageKey.CREATE_WALLET_REPORT_TITLE);
 
@@ -99,7 +99,7 @@ public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardMode
   public void onWizardModelChangedEvent(WizardModelChangedEvent event) {
 
     // Check if this event applies to this panel
-    if (!event.getPanelName().equals(getWizardViewPanelName())) {
+    if (!event.getPanelName().equals(getPanelName())) {
       return;
     }
 

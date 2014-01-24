@@ -9,7 +9,7 @@ import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.components.select_file.SelectFileView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import javax.swing.*;
 
@@ -22,7 +22,7 @@ import javax.swing.*;
  * @since 0.0.1
  *  
  */
-public class SelectBackupLocationView extends AbstractWizardView<WelcomeWizardModel, SelectFileModel> {
+public class SelectBackupLocationPanelView extends AbstractWizardPanelView<WelcomeWizardModel, SelectFileModel> {
 
   private ModelAndView<SelectFileModel, SelectFileView> selectFileMaV;
 
@@ -30,7 +30,7 @@ public class SelectBackupLocationView extends AbstractWizardView<WelcomeWizardMo
    * @param wizard The wizard managing the states
    * @param panelName   The panel name to filter events from components
    */
-  public SelectBackupLocationView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public SelectBackupLocationPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard.getWizardModel(), panelName, MessageKey.SELECT_BACKUP_LOCATION_TITLE);
 

@@ -13,7 +13,7 @@ import org.multibit.hd.ui.views.components.display_qrcode.DisplayQRCodeView;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountModel;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 
@@ -31,7 +31,7 @@ import java.math.BigInteger;
  *         
  */
 
-public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBitcoinWizardModel, ReceiveBitcoinEnterAmountPanelModel> {
+public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<ReceiveBitcoinWizardModel, ReceiveBitcoinEnterAmountPanelModel> {
 
   // Panel specific components
   private ModelAndView<EnterAmountModel, EnterAmountView> enterAmountMaV;
@@ -45,7 +45,7 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
   /**
    * @param wizard The wizard managing the states
    */
-  public ReceiveBitcoinEnterAmountView(AbstractWizard<ReceiveBitcoinWizardModel> wizard, String panelName) {
+  public ReceiveBitcoinEnterAmountPanelView(AbstractWizard<ReceiveBitcoinWizardModel> wizard, String panelName) {
 
     super(wizard.getWizardModel(), panelName, MessageKey.RECEIVE_BITCOIN_TITLE);
 
@@ -56,7 +56,7 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
   @Override
   public JPanel newWizardViewPanel() {
 
-    enterAmountMaV = Components.newEnterAmountMaV(getWizardViewPanelName());
+    enterAmountMaV = Components.newEnterAmountMaV(getPanelName());
 
     // TODO Link this to the recipient address service
     displayBitcoinAddressMaV = Components.newDisplayBitcoinAddressMaV("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
@@ -69,7 +69,7 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
 
     // Configure the panel model
     setPanelModel(new ReceiveBitcoinEnterAmountPanelModel(
-      getWizardViewPanelName(),
+      getPanelName(),
       enterAmountMaV.getModel(),
       displayBitcoinAddressMaV.getModel()
     ));
@@ -100,6 +100,9 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
 
   @Override
   public boolean updateFromComponentModels() {
+
+
+
 
     return false;
   }

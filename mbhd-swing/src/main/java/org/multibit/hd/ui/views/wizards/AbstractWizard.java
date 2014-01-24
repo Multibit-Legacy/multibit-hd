@@ -34,7 +34,7 @@ public abstract class AbstractWizard<M extends WizardModel> {
   private final M wizardModel;
 
   private final boolean exiting;
-  private Map<String, AbstractWizardView> wizardViewMap = Maps.newHashMap();
+  private Map<String, AbstractWizardPanelView> wizardViewMap = Maps.newHashMap();
 
   /**
    * @param wizardModel The overall wizard data model containing the aggregate information of all components in the wizard
@@ -77,7 +77,7 @@ public abstract class AbstractWizard<M extends WizardModel> {
     populateWizardViewMap(wizardViewMap);
 
     // Bind the views into the wizard panel, and share their panel names
-    for (Map.Entry<String, AbstractWizardView> entry : wizardViewMap.entrySet()) {
+    for (Map.Entry<String, AbstractWizardPanelView> entry : wizardViewMap.entrySet()) {
 
       // Add it to the panel
       wizardPanel.add(entry.getValue().getWizardPanel(), entry.getKey());
@@ -85,7 +85,7 @@ public abstract class AbstractWizard<M extends WizardModel> {
     }
 
     // Once all the views are initialised allow events to occur
-    for (Map.Entry<String, AbstractWizardView> entry : wizardViewMap.entrySet()) {
+    for (Map.Entry<String, AbstractWizardPanelView> entry : wizardViewMap.entrySet()) {
 
       // Ensure the panel is in the correct starting state
       entry.getValue().fireInitialStateViewEvents();
@@ -101,7 +101,7 @@ public abstract class AbstractWizard<M extends WizardModel> {
    * <p>Add fresh content to the wizard view map</p>
    * <p>The map will be empty whenever this is called</p>
    */
-  protected abstract void populateWizardViewMap(Map<String, AbstractWizardView> wizardViewMap);
+  protected abstract void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap);
 
   /**
    * <p>Close the wizard</p>
@@ -188,7 +188,7 @@ public abstract class AbstractWizard<M extends WizardModel> {
    *
    * @return The "finish" action based on the model state
    */
-  public <P> Action getFinishAction(final AbstractWizardView<M, P> wizardView) {
+  public <P> Action getFinishAction(final AbstractWizardPanelView<M, P> wizardView) {
 
     return new AbstractAction() {
       @Override
@@ -211,7 +211,7 @@ public abstract class AbstractWizard<M extends WizardModel> {
    *
    * @return The "next" action based on the model state
    */
-  public <P> Action getNextAction(final AbstractWizardView<M, P> wizardView) {
+  public <P> Action getNextAction(final AbstractWizardPanelView<M, P> wizardView) {
 
     return new AbstractAction() {
       @Override
@@ -239,7 +239,7 @@ public abstract class AbstractWizard<M extends WizardModel> {
    *
    * @return The "previous" action based on the model state
    */
-  public <P> Action getPreviousAction(final AbstractWizardView<M, P> wizardView) {
+  public <P> Action getPreviousAction(final AbstractWizardPanelView<M, P> wizardView) {
 
     return new AbstractAction() {
       @Override

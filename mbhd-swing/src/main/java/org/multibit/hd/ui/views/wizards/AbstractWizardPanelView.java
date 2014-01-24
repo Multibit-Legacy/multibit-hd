@@ -16,10 +16,13 @@ import javax.swing.*;
 import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.CONFIRM_WALLET_SEED_PHRASE;
 
 /**
- * <p>Wizard panel to provide the following to UI:</p>
+ * <p>Abstract base class providing the following to wizard panel views:</p>
  * <ul>
- * <li>Welcome users to the application and allow them to select a language</li>
+ * <li>Standard methods common to wizard panel views</li>
  * </ul>
+ * <p>A wizard panel view contains the title, components and buttons. It relies on
+ * its implementers to provide the panel containing the specific components for the
+ * user interaction.</p>
  *
  * @param <W> the wizard model
  * @param <P> the panel model
@@ -27,7 +30,7 @@ import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.CONFIR
  * @since 0.0.1
  *  
  */
-public abstract class AbstractWizardView<W extends WizardModel, P> {
+public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
 
   private final W wizardModel;
 
@@ -49,7 +52,7 @@ public abstract class AbstractWizardView<W extends WizardModel, P> {
    * @param panelName   The panel name to filter events from components
    * @param title       The key to the main title of the wizard panel
    */
-  public AbstractWizardView(W wizardModel, String panelName, MessageKey title) {
+  public AbstractWizardPanelView(W wizardModel, String panelName, MessageKey title) {
 
     Preconditions.checkNotNull(wizardModel, "'wizardModel' must be present");
     Preconditions.checkNotNull(title, "'title' must be present");
@@ -76,7 +79,7 @@ public abstract class AbstractWizardView<W extends WizardModel, P> {
   }
 
   /**
-   * @return The panel model
+   * @return The panel model specific to this view
    */
   public Optional<P> getPanelModel() {
     return panelModel;
@@ -85,7 +88,7 @@ public abstract class AbstractWizardView<W extends WizardModel, P> {
   /**
    * @return The panel name associated with this view
    */
-  public String getWizardViewPanelName() {
+  public String getPanelName() {
     return panelName;
   }
 

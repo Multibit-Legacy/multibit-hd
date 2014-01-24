@@ -12,7 +12,7 @@ import org.multibit.hd.ui.views.components.display_amount.DisplayAmountView;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
@@ -26,7 +26,7 @@ import javax.swing.*;
  * @since 0.0.1
  *  
  */
-public class SendBitcoinConfirmView extends AbstractWizardView<SendBitcoinWizardModel, SendBitcoinConfirmPanelModel> {
+public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBitcoinWizardModel, SendBitcoinConfirmPanelModel> {
 
   // View components
   private JTextArea notesTextArea;
@@ -42,7 +42,7 @@ public class SendBitcoinConfirmView extends AbstractWizardView<SendBitcoinWizard
    * @param wizard    The wizard managing the states
    * @param panelName The panel name for filtering component events
    */
-  public SendBitcoinConfirmView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
+  public SendBitcoinConfirmPanelView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
 
     super(wizard.getWizardModel(), panelName, MessageKey.CONFIRM_SEND_TITLE);
 
@@ -56,11 +56,11 @@ public class SendBitcoinConfirmView extends AbstractWizardView<SendBitcoinWizard
     transactionDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT);
     transactionFeeDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.FEE_AMOUNT);
     developerFeeDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.FEE_AMOUNT);
-    enterPasswordMaV = Components.newEnterPasswordMaV(getWizardViewPanelName());
+    enterPasswordMaV = Components.newEnterPasswordMaV(getPanelName());
 
     // Configure the panel model
     setPanelModel(new SendBitcoinConfirmPanelModel(
-      getWizardViewPanelName(),
+      getPanelName(),
       enterPasswordMaV.getModel()
     ));
 

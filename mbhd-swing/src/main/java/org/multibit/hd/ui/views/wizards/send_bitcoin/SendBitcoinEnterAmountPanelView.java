@@ -13,7 +13,7 @@ import org.multibit.hd.ui.views.components.enter_amount.EnterAmountView;
 import org.multibit.hd.ui.views.components.enter_recipient.EnterRecipientModel;
 import org.multibit.hd.ui.views.components.enter_recipient.EnterRecipientView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
@@ -29,7 +29,7 @@ import java.math.BigDecimal;
  *  
  */
 
-public class SendBitcoinEnterAmountView extends AbstractWizardView<SendBitcoinWizardModel, SendBitcoinEnterAmountPanelModel> {
+public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<SendBitcoinWizardModel, SendBitcoinEnterAmountPanelModel> {
 
   // Panel specific components
   private ModelAndView<EnterRecipientModel, EnterRecipientView> enterRecipientMaV;
@@ -38,7 +38,7 @@ public class SendBitcoinEnterAmountView extends AbstractWizardView<SendBitcoinWi
   /**
    * @param wizard The wizard managing the states
    */
-  public SendBitcoinEnterAmountView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
+  public SendBitcoinEnterAmountPanelView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
 
     super(wizard.getWizardModel(), panelName, MessageKey.SEND_BITCOIN_TITLE);
 
@@ -49,12 +49,12 @@ public class SendBitcoinEnterAmountView extends AbstractWizardView<SendBitcoinWi
   @Override
   public JPanel newWizardViewPanel() {
 
-    enterRecipientMaV = Components.newEnterRecipientMaV(getWizardViewPanelName());
-    enterAmountMaV = Components.newEnterAmountMaV(getWizardViewPanelName());
+    enterRecipientMaV = Components.newEnterRecipientMaV(getPanelName());
+    enterAmountMaV = Components.newEnterAmountMaV(getPanelName());
 
     // Configure the panel model
     setPanelModel(new SendBitcoinEnterAmountPanelModel(
-      getWizardViewPanelName(),
+      getPanelName(),
       enterRecipientMaV.getModel(),
       enterAmountMaV.getModel()
     ));
@@ -78,7 +78,7 @@ public class SendBitcoinEnterAmountView extends AbstractWizardView<SendBitcoinWi
     enterRecipientMaV.getView().updateModelFromView();
 
     // The panel model has changed so alert the wizard
-    ViewEvents.fireWizardPanelModelChangedEvent(getWizardViewPanelName(), getPanelModel());
+    ViewEvents.fireWizardPanelModelChangedEvent(getPanelName(), getPanelModel());
 
     // Determine any events
     ViewEvents.fireWizardButtonEnabledEvent(

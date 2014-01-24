@@ -5,70 +5,53 @@ import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
-
 /**
  * <p>Wizard to provide the following to UI:</p>
  * <ul>
- * <li>Select how wallet is to be accessed (create/restore/hardware/switch)</li>
+ * <li>Restore wallet choices</li>
  * </ul>
  *
  * @since 0.0.1
  *         
  */
 
-public class SelectWalletView extends AbstractWizardView<WelcomeWizardModel, WelcomeWizardState> implements ActionListener {
-
-  // Model
-  private WelcomeWizardState currentSelection;
+public class RestoreWalletChoicesPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> implements ActionListener {
 
   /**
    * @param wizard The wizard managing the states
    * @param panelName   The panel name to filter events from components
    */
-  public SelectWalletView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public RestoreWalletChoicesPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), panelName, MessageKey.SELECT_WALLET_TITLE);
+    super(wizard.getWizardModel(), panelName, MessageKey.RESTORE_WALLET_TITLE);
 
     PanelDecorator.addExitCancelPreviousNext(this, wizard);
-
   }
 
   @Override
   public JPanel newWizardViewPanel() {
 
-    currentSelection = SELECT_BACKUP_LOCATION;
-    setPanelModel(currentSelection);
-
     JPanel panel = Panels.newPanel(new MigLayout(
       "fill,insets 0", // Layout constraints
-      "[]", // Column constraints
+      "[][][]", // Column constraints
       "[]" // Row constraints
     ));
 
-    panel.add(Panels.newWalletSelector(
-      this,
-      SELECT_BACKUP_LOCATION.name(),
-      RESTORE_WALLET.name(),
-      HARDWARE_WALLET.name(),
-      SWITCH_WALLET.name()
-    ), "wrap");
+    // TODO fill this in
 
     return panel;
   }
 
   @Override
   public boolean updateFromComponentModels() {
-
-    setPanelModel(currentSelection);
-    return false;
-
+    // Do nothing - panel model is updated via an action and wizard model is not applicable
+    return true;
   }
 
   /**
@@ -79,9 +62,7 @@ public class SelectWalletView extends AbstractWizardView<WelcomeWizardModel, Wel
   @Override
   public void actionPerformed(ActionEvent e) {
 
-    JRadioButton source = (JRadioButton) e.getSource();
-
-    currentSelection = WelcomeWizardState.valueOf(source.getActionCommand());
+    // Do nothing
 
   }
 }

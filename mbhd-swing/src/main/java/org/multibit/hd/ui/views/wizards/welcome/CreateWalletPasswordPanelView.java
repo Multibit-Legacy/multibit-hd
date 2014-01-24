@@ -7,7 +7,7 @@ import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
@@ -24,7 +24,7 @@ import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.CREATE
  *         
  */
 
-public class CreateWalletPasswordView extends AbstractWizardView<WelcomeWizardModel, ConfirmPasswordModel>  {
+public class CreateWalletPasswordPanelView extends AbstractWizardPanelView<WelcomeWizardModel, ConfirmPasswordModel> {
 
   private ModelAndView<ConfirmPasswordModel, ConfirmPasswordView> confirmPasswordMaV;
 
@@ -32,7 +32,7 @@ public class CreateWalletPasswordView extends AbstractWizardView<WelcomeWizardMo
    * @param wizard The wizard managing the states
    * @param panelName   The panel name to filter events from components
    */
-  public CreateWalletPasswordView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public CreateWalletPasswordPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard.getWizardModel(), panelName, MessageKey.CREATE_WALLET_PASSWORD_TITLE);
 

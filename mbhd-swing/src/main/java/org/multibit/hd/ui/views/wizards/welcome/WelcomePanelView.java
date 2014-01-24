@@ -8,7 +8,7 @@ import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,9 +26,9 @@ import java.util.Locale;
  * @since 0.0.1
  *         
  */
-public class WelcomeView extends AbstractWizardView<WelcomeWizardModel, String> implements ActionListener {
+public class WelcomePanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> implements ActionListener {
 
-  private static final Logger log = LoggerFactory.getLogger(WelcomeView.class);
+  private static final Logger log = LoggerFactory.getLogger(WelcomePanelView.class);
 
   // Model
   private String localeCode = Languages.currentLocale().getLanguage();
@@ -37,7 +37,7 @@ public class WelcomeView extends AbstractWizardView<WelcomeWizardModel, String> 
    * @param wizard The wizard managing the states
    * @param panelName   The panel name to filter events from components
    */
-  public WelcomeView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public WelcomePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard.getWizardModel(), panelName, MessageKey.WELCOME_TITLE);
 

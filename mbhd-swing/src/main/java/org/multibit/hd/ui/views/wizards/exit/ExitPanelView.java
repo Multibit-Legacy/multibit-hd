@@ -4,7 +4,7 @@ import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import javax.swing.*;
 
@@ -17,13 +17,13 @@ import javax.swing.*;
  * @since 0.0.1
  *  
  */
-public class ExitView extends AbstractWizardView<ExitWizardModel, String> {
+public class ExitPanelView extends AbstractWizardPanelView<ExitWizardModel, String> {
 
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to allow event filtering
    */
-  public ExitView(AbstractWizard<ExitWizardModel> wizard, String panelName) {
+  public ExitPanelView(AbstractWizard<ExitWizardModel> wizard, String panelName) {
 
     super(wizard.getWizardModel(), panelName, MessageKey.EXIT_TITLE);
 
