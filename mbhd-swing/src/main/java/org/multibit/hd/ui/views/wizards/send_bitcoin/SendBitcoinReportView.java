@@ -1,12 +1,17 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
+import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
+import org.multibit.hd.core.events.BitcoinSentEvent;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 
@@ -24,6 +29,9 @@ public class SendBitcoinReportView extends AbstractWizardView<SendBitcoinWizardM
   // Model
   private String model;
 
+  private static final Logger log = LoggerFactory.getLogger(SendBitcoinReportView.class);
+
+
   /**
    * @param wizard The wizard managing the states
    */
@@ -32,6 +40,8 @@ public class SendBitcoinReportView extends AbstractWizardView<SendBitcoinWizardM
     super(wizard.getWizardModel(), panelName, MessageKey.SEND_PROGRESS_TITLE);
 
     PanelDecorator.addFinish(this, wizard);
+
+    CoreServices.uiEventBus.register(this);
 
   }
 
@@ -61,6 +71,11 @@ public class SendBitcoinReportView extends AbstractWizardView<SendBitcoinWizardM
   public boolean updateFromComponentModels() {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
     return true;
+  }
+
+  @Subscribe
+  public void subscribeToBitcoinSentEvents(BitcoinSentEvent bitcoinSentEvent) {
+    log.debug("Received the BitcoinSentEvent: " + bitcoinSentEvent.toString());
   }
 
 }

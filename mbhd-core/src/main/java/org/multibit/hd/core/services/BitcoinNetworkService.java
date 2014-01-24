@@ -46,6 +46,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class BitcoinNetworkService extends AbstractService {
 
+  public static final BigInteger DEFAULT_FEE_PER_KB =  Transaction.REFERENCE_DEFAULT_MIN_TX_FEE; // Currently 10,000 satoshi
   public static final MainNetParams NETWORK_PARAMETERS = MainNetParams.get();
   public static final int MAXIMUM_NUMBER_OF_PEERS = 6;
   private static final Logger log = LoggerFactory.getLogger(BitcoinNetworkService.class);
@@ -250,6 +251,21 @@ public class BitcoinNetworkService extends AbstractService {
     if (walletManager.getCurrentWalletData().isPresent()) {
       peerGroup.addWallet(walletManager.getCurrentWalletData().get().getWallet());
     }
+  }
+
+  /**
+   * Get the next available change address
+   * TODO- this should be worked out deterministically but just use the first address on the current wallet for now
+   * @return changeAddress The next change address as a string
+   */
+  public String getNextChangeAddress() {
+    Preconditions.checkState(walletManager.getCurrentWalletData().isPresent());
+    Preconditions.checkNotNull(walletManager.getCurrentWalletData().get().getWallet());
+    Preconditions.checkState(walletManager.getCurrentWalletData().get().getWallet().getKeychainSize() > 0);
+
+    Wallet wallet = walletManager.getCurrentWalletData().get().getWallet();
+    ECKey firstKey = wallet.getKeys().get(0);
+    return firstKey.toAddress(MAINNET).toString();
   }
 
   /**

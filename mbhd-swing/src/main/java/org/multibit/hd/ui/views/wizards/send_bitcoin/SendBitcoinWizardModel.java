@@ -1,13 +1,19 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.multibit.hd.core.api.Recipient;
+import org.multibit.hd.core.services.BitcoinNetworkService;
+import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import static org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState.*;
 
@@ -22,6 +28,8 @@ import static org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState.*;
  *  
  */
 public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState> {
+
+  private static final Logger log = LoggerFactory.getLogger(SendBitcoinWizardModel.class);
 
   /**
    * The "enter amount" panel model
@@ -97,8 +105,36 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
         ViewEvents.fireWizardModelChangedEvent(SendBitcoinState.CONFIRM_AMOUNT.name());
         break;
       case CONFIRM_AMOUNT:
-        // Bitcoin send is confirmed - actually send the bitcoin
-        System.out.println("SendingBitcoinWizardModel#next: Sending bitcoin ...");
+        // The user has confirmed the send details and pressed the next button
+
+        // TODO - check the password is correct
+
+        // TODO - the transaction construction should be done BEFORE the confirm Bitcoin screen as the transaction fee should be shown
+        //        this needs the separation of the completeTx and signing as the password is not known at tx completion time
+
+        // TODO - the developer fee needs calculating and showing - should be provided by WalletManager
+        // TODO - only allow a send once the blockchain is fully synchronised
+
+        // Actually send the bitcoin
+        Preconditions.checkNotNull(enterAmountPanelModel);
+        Preconditions.checkNotNull(confirmPanelModel);
+
+        BitcoinNetworkService bitcoinNetworkService = MultiBitHD.getBitcoinNetworkService();
+
+        String changeAddress = bitcoinNetworkService.getNextChangeAddress();
+
+        BigDecimal amountBTC= enterAmountPanelModel.getEnterAmountModel().getRawBitcoinAmount();
+        // Convert to satoshi
+        // TODO - it's a bad idea to have different amount formats in different parts of the code
+        BigInteger amountBTCBigInteger = amountBTC.multiply(BigDecimal.valueOf(100000000)).toBigInteger();
+        String bitcoinAddress = enterAmountPanelModel.getEnterRecipientModel().getRecipient().getBitcoinAddress();
+        String password = confirmPanelModel.getPasswordModel().getValue();
+        log.debug("Just about to send bitcoin : amount = '" + amountBTCBigInteger
+                + "', address = '" + bitcoinAddress + "', changeAddress = '" +changeAddress + "', password = '" + password + "'.");
+        bitcoinNetworkService.send(bitcoinAddress, amountBTCBigInteger, changeAddress, BitcoinNetworkService.DEFAULT_FEE_PER_KB, password);
+
+        // The send throws BitcoinSendEvents to which you subscribe to to work out success and failure.
+
         state = SEND_BITCOIN_REPORT;
         break;
     }

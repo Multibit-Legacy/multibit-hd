@@ -38,6 +38,8 @@ public class MultiBitHD {
   // TODO Implement this
   private static GenericApplication genericApplication = null;
 
+  private static BitcoinNetworkService bitcoinNetworkService;
+
   /**
    * <p>Main entry point to the application</p>
    *
@@ -59,7 +61,7 @@ public class MultiBitHD {
     }
 
     ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(MtGoxExchange.class.getName());
-    BitcoinNetworkService bitcoinNetworkService = CoreServices.newBitcoinNetworkService();
+    bitcoinNetworkService= CoreServices.newBitcoinNetworkService();
 
     // Create views
     HeaderView headerView = new HeaderView();
@@ -117,5 +119,9 @@ public class MultiBitHD {
 
     log.info("Configuring native event handling");
 
+  }
+
+  public static BitcoinNetworkService getBitcoinNetworkService() {
+    return bitcoinNetworkService;
   }
 }
