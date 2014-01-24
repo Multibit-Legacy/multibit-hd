@@ -151,6 +151,29 @@ public class Languages {
   }
 
   /**
+    * @param key    The key (must be present in the bundle)
+    * @param values An optional collection of value substitutions for {@link MessageFormat}
+    *
+    * @return The localised text with any substitutions made
+    */
+   public static String safeText(String key, Object... values) {
+
+     ResourceBundle rb = currentResourceBundle();
+
+     final String message;
+
+     if (!rb.containsKey(key)) {
+       // If no key is present then use it direct
+       message = "Key '" + key + "' is not localised!";
+     } else {
+       // Must have the key to be here
+       message = rb.getString(key);
+     }
+
+     return MessageFormat.format(message, values);
+   }
+
+  /**
    * <p>Internal access only - external consumers should use safeText()</p>
    *
    * @return The resource bundle based on the current locale

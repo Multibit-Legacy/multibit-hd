@@ -161,13 +161,15 @@ public class BitcoinNetworkService extends AbstractService {
     // Ping the peers to check the bitcoin network connection
     if (!pingPeers()) {
       // Declare the send a failure
-      CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress, false, "TODO", new String[]{""}));
+      CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
+              false, "multiBitService.errorText", new String[]{"All pings failed"}));
       return;
     }
 
     if (!walletManager.getCurrentWalletData().isPresent()) {
       // Declare the send a failure - no wallet
-      CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress, false, "TODO", new String[]{""}));
+      CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
+              false, "multiBitSubmitAction.thereIsNoActiveWallet", new String[]{""}));
       return;
     }
 
@@ -194,12 +196,15 @@ public class BitcoinNetworkService extends AbstractService {
       log.debug("Just broadcast transaction '" + Utils.bytesToHexString(sendRequest.tx.bitcoinSerialize()) + "'");
 
       // Declare the send a success
-      CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress, true, "", new String[]{""}));
+      CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
+              true, "sendBitcoinNowAction.bitcoinSentOk", new String[]{""}));
     } catch (InsufficientMoneyException | VerificationException | AddressFormatException e1) {
-      log.error(e1.getClass().getName() + " " + e1.getMessage());
+      String message = e1.getClass().getName() + ": " + e1.getMessage();
+      log.error(message);
 
       // Declare the send a failure
-      CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress, false, "TODO", new String[]{""}));
+      CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
+              false, "deleteWalletConfirmDialog.walletDeleteError2", new String[]{message}));
     }
 
     log.debug("Send coins has completed");

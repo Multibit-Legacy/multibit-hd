@@ -115,25 +115,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
         // TODO - the developer fee needs calculating and showing - should be provided by WalletManager
         // TODO - only allow a send once the blockchain is fully synchronised
 
-        // Actually send the bitcoin
-        Preconditions.checkNotNull(enterAmountPanelModel);
-        Preconditions.checkNotNull(confirmPanelModel);
-
-        BitcoinNetworkService bitcoinNetworkService = MultiBitHD.getBitcoinNetworkService();
-
-        String changeAddress = bitcoinNetworkService.getNextChangeAddress();
-
-        BigDecimal amountBTC= enterAmountPanelModel.getEnterAmountModel().getRawBitcoinAmount();
-        // Convert to satoshi
-        // TODO - it's a bad idea to have different amount formats in different parts of the code
-        BigInteger amountBTCBigInteger = amountBTC.multiply(BigDecimal.valueOf(100000000)).toBigInteger();
-        String bitcoinAddress = enterAmountPanelModel.getEnterRecipientModel().getRecipient().getBitcoinAddress();
-        String password = confirmPanelModel.getPasswordModel().getValue();
-        log.debug("Just about to send bitcoin : amount = '" + amountBTCBigInteger
-                + "', address = '" + bitcoinAddress + "', changeAddress = '" +changeAddress + "', password = '" + password + "'.");
-        bitcoinNetworkService.send(bitcoinAddress, amountBTCBigInteger, changeAddress, BitcoinNetworkService.DEFAULT_FEE_PER_KB, password);
-
-        // The send throws BitcoinSendEvents to which you subscribe to to work out success and failure.
+        sendBitcoin();
 
         state = SEND_BITCOIN_REPORT;
         break;
@@ -152,6 +134,29 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
         state = ENTER_AMOUNT;
         break;
     }
+
+  }
+
+  private void sendBitcoin() {
+    // Actually send the bitcoin
+    Preconditions.checkNotNull(enterAmountPanelModel);
+    Preconditions.checkNotNull(confirmPanelModel);
+
+    BitcoinNetworkService bitcoinNetworkService = MultiBitHD.getBitcoinNetworkService();
+
+    String changeAddress = bitcoinNetworkService.getNextChangeAddress();
+
+    BigDecimal amountBTC = enterAmountPanelModel.getEnterAmountModel().getRawBitcoinAmount();
+    // Convert to satoshi
+    // TODO - it's a bad idea to have different amount formats in different parts of the code
+    BigInteger amountBTCBigInteger = amountBTC.multiply(BigDecimal.valueOf(100000000)).toBigInteger();
+    String bitcoinAddress = enterAmountPanelModel.getEnterRecipientModel().getRecipient().getBitcoinAddress();
+    String password = confirmPanelModel.getPasswordModel().getValue();
+    log.debug("Just about to send bitcoin : amount = '" + amountBTCBigInteger
+            + "', address = '" + bitcoinAddress + "', changeAddress = '" + changeAddress + "', password = '" + password + "'.");
+    bitcoinNetworkService.send(bitcoinAddress, amountBTCBigInteger, changeAddress, BitcoinNetworkService.DEFAULT_FEE_PER_KB, password);
+
+    // The send throws BitcoinSentEvents to which you subscribe to to work out success and failure.
 
   }
 

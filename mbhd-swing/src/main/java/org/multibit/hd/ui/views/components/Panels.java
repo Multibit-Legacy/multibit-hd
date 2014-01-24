@@ -122,7 +122,7 @@ public class Panels {
   /**
    * <p>A "broadcast status" panel provides a means of observing broadcast activity</p>
 
-   * @return A new wallet password panel
+   * @return A new broadcast status panel
    */
   public static JPanel newBroadcastStatus() {
 
@@ -138,7 +138,7 @@ public class Panels {
   /**
    * <p>A "relay status" panel provides a means of observing relay activity</p>
    *
-   * @return A new wallet password panel
+   * @return A new relay status panel
    */
   public static JPanel newRelayStatus() {
 
@@ -154,7 +154,7 @@ public class Panels {
   /**
    * <p>A "confirmation count" panel provides a means of observing confirmations</p>
    *
-   * @return A new wallet password panel
+   * @return A new confirmation count status panel
    */
   public static JPanel newConfirmationCountStatus(String count, boolean status) {
 

@@ -5,6 +5,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -31,6 +32,9 @@ public class SendBitcoinReportView extends AbstractWizardView<SendBitcoinWizardM
 
   private static final Logger log = LoggerFactory.getLogger(SendBitcoinReportView.class);
 
+
+  private static JLabel resultText1 = new JLabel();
+  private static JLabel resultText2 = new JLabel();
 
   /**
    * @param wizard The wizard managing the states
@@ -63,6 +67,12 @@ public class SendBitcoinReportView extends AbstractWizardView<SendBitcoinWizardM
     panel.add(Panels.newBroadcastStatus(), "wrap");
     panel.add(Panels.newRelayStatus(), "wrap");
     panel.add(Panels.newConfirmationCountStatus("6+", true), "wrap");
+    panel.add(resultText1, "wrap");
+    panel.add(resultText2, "wrap");
+
+    // When first displayed bitcoins are in the process of being sent
+    resultText1.setText(Languages.safeText("sendBitcoinNowAction.sendingBitcoin"));
+    resultText2.setText("");
 
     return panel;
   }
@@ -76,6 +86,15 @@ public class SendBitcoinReportView extends AbstractWizardView<SendBitcoinWizardM
   @Subscribe
   public void subscribeToBitcoinSentEvents(BitcoinSentEvent bitcoinSentEvent) {
     log.debug("Received the BitcoinSentEvent: " + bitcoinSentEvent.toString());
+    // TODO the localisation needs standardising between MessageKey and just using the key string
+    if (bitcoinSentEvent.isSendWasSuccessful()) {
+      resultText1.setText(Languages.safeText("sendBitcoinNowAction.bitcoinSentOk"));
+      resultText2.setText("");
+    } else {
+      resultText1.setText(Languages.safeText("sendBitcoinNowAction.bitcoinSendFailed"));
+      resultText2.setText(Languages.safeText(bitcoinSentEvent.getSendFailureReasonKey(), bitcoinSentEvent.getSendFailureReasonData()));
+    }
+
   }
 
 }
