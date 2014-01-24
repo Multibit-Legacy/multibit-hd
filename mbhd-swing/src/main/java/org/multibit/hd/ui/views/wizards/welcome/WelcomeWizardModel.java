@@ -86,7 +86,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
 
   @SuppressWarnings("unchecked")
   @Override
-  public void update(Optional panelModel) {
+  public void updateFromPanelModel(Optional panelModel) {
 
     // No state transitions occur in this method
 
@@ -133,7 +133,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   }
 
   @Override
-  public void next() {
+  public void showNext() {
 
     switch (state) {
       case WELCOME:
@@ -168,7 +168,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   }
 
   @Override
-  public void previous() {
+  public void showPrevious() {
 
     switch (state) {
       case WELCOME:

@@ -13,7 +13,6 @@ import org.multibit.hd.ui.views.components.enter_recipient.EnterRecipientModel;
 import org.multibit.hd.ui.views.components.enter_recipient.EnterRecipientView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardView;
-import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
 
@@ -45,14 +44,14 @@ public class SendBitcoinEnterAmountView extends AbstractWizardView<SendBitcoinWi
   }
 
   @Override
-  public JPanel newDataPanel() {
+  public JPanel newWizardViewPanel() {
 
-    enterRecipientMaV = Components.newEnterRecipientMaV(getPanelName());
-    enterAmountMaV = Components.newEnterAmountMaV(getPanelName());
+    enterRecipientMaV = Components.newEnterRecipientMaV(getWizardViewPanelName());
+    enterAmountMaV = Components.newEnterAmountMaV(getWizardViewPanelName());
 
     // Configure the panel model
     setPanelModel(new SendBitcoinEnterAmountPanelModel(
-      getPanelName(),
+      getWizardViewPanelName(),
       enterRecipientMaV.getModel(),
       enterAmountMaV.getModel()
     ));
@@ -70,20 +69,13 @@ public class SendBitcoinEnterAmountView extends AbstractWizardView<SendBitcoinWi
   }
 
   @Override
-  public void fireInitialStateViewEvents() {
-
-    // Disable the next button
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, false);
-  }
-
-  @Override
-  public boolean updatePanelModel() {
+  public boolean updateFromComponentModels() {
 
     enterAmountMaV.getView().updateModel();
     enterRecipientMaV.getView().updateModel();
 
     // The panel model has changed so alert the wizard
-    ViewEvents.fireWizardPanelModelChangedEvent(getPanelName(), getPanelModel());
+    ViewEvents.fireWizardPanelModelChangedEvent(getWizardViewPanelName(), getPanelModel());
 
     return false;
   }

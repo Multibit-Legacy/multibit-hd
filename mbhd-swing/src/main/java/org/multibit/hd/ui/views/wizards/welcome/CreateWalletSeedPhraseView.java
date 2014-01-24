@@ -41,7 +41,7 @@ public class CreateWalletSeedPhraseView extends AbstractWizardView<WelcomeWizard
   }
 
   @Override
-  public JPanel newDataPanel() {
+  public JPanel newWizardViewPanel() {
 
     SeedPhraseGenerator seedPhraseGenerator = getWizardModel().getSeedPhraseGenerator();
 
@@ -66,7 +66,7 @@ public class CreateWalletSeedPhraseView extends AbstractWizardView<WelcomeWizard
   }
 
   @Override
-  public boolean updatePanelModel() {
+  public boolean updateFromComponentModels() {
     displaySeedPhraseMaV.getView().updateModel();
     return false;
   }

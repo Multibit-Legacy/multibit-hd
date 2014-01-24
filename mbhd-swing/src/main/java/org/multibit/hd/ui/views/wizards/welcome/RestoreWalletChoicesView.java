@@ -35,7 +35,7 @@ public class RestoreWalletChoicesView extends AbstractWizardView<WelcomeWizardMo
   }
 
   @Override
-  public JPanel newDataPanel() {
+  public JPanel newWizardViewPanel() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       "fill,insets 0", // Layout constraints
@@ -49,12 +49,7 @@ public class RestoreWalletChoicesView extends AbstractWizardView<WelcomeWizardMo
   }
 
   @Override
-  public void fireInitialStateViewEvents() {
-    // Do nothing
-  }
-
-  @Override
-  public boolean updatePanelModel() {
+  public boolean updateFromComponentModels() {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
     return true;
   }

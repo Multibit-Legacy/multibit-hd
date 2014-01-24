@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.wizards.welcome;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
-import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.PanelDecorator;
@@ -11,11 +10,8 @@ import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.components.select_file.SelectFileView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardView;
-import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
-
-import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.SELECT_BACKUP_LOCATION;
 
 /**
  * <p>Wizard to provide the following to UI:</p>
@@ -43,7 +39,7 @@ public class SelectBackupLocationView extends AbstractWizardView<WelcomeWizardMo
   }
 
   @Override
-  public JPanel newDataPanel() {
+  public JPanel newWizardViewPanel() {
 
     selectFileMaV = Components.newSelectFileMaV(WelcomeWizardState.SELECT_BACKUP_LOCATION.name());
     setPanelModel(selectFileMaV.getModel());
@@ -61,12 +57,7 @@ public class SelectBackupLocationView extends AbstractWizardView<WelcomeWizardMo
   }
 
   @Override
-  public void fireInitialStateViewEvents() {
-    ViewEvents.fireWizardButtonEnabledEvent(SELECT_BACKUP_LOCATION.name(), WizardButton.NEXT, false);
-  }
-
-  @Override
-  public boolean updatePanelModel() {
+  public boolean updateFromComponentModels() {
     selectFileMaV.getView().updateModel();
     return false;
   }

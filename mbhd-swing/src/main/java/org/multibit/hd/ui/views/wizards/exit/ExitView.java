@@ -32,7 +32,7 @@ public class ExitView extends AbstractWizardView<ExitWizardModel, String> {
   }
 
   @Override
-  public JPanel newDataPanel() {
+  public JPanel newWizardViewPanel() {
 
     setPanelModel("");
 
@@ -40,12 +40,7 @@ public class ExitView extends AbstractWizardView<ExitWizardModel, String> {
   }
 
   @Override
-  public void fireInitialStateViewEvents() {
-    // Do nothing
-  }
-
-  @Override
-  public boolean updatePanelModel() {
+  public boolean updateFromComponentModels() {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
     return true;
   }

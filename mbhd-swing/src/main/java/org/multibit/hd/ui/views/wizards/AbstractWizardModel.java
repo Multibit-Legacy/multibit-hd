@@ -35,12 +35,12 @@ public abstract class AbstractWizardModel<S> implements WizardModel {
   }
 
   @Override
-  public void next() {
+  public void showNext() {
     // Do nothing
   }
 
   @Override
-  public void previous() {
+  public void showPrevious() {
     // Do nothing
   }
 
@@ -53,7 +53,7 @@ public abstract class AbstractWizardModel<S> implements WizardModel {
   }
 
   @Override
-  public void update(Optional panelModel) {
+  public void updateFromPanelModel(Optional panelModel) {
     // Do nothing
   }
 
@@ -68,7 +68,7 @@ public abstract class AbstractWizardModel<S> implements WizardModel {
     if (state.toString().equals(event.getPanelName())) {
 
       // Default behaviour is to update
-      update(event.getPanelModel());
+      updateFromPanelModel(event.getPanelModel());
 
     }
 

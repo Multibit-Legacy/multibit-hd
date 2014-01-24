@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.wizards.welcome;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
-import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.PanelDecorator;
@@ -11,12 +10,9 @@ import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseMode
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardView;
-import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
 import java.util.List;
-
-import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.CONFIRM_WALLET_SEED_PHRASE;
 
 /**
  * <p>Wizard to provide the following to UI:</p>
@@ -45,7 +41,7 @@ public class ConfirmWalletSeedPhraseView extends AbstractWizardView<WelcomeWizar
   }
 
   @Override
-  public JPanel newDataPanel() {
+  public JPanel newWizardViewPanel() {
 
     enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV(WelcomeWizardState.CONFIRM_WALLET_SEED_PHRASE.name());
     setPanelModel(enterSeedPhraseMaV.getModel().getValue());
@@ -63,12 +59,7 @@ public class ConfirmWalletSeedPhraseView extends AbstractWizardView<WelcomeWizar
   }
 
   @Override
-  public void fireInitialStateViewEvents() {
-    ViewEvents.fireWizardButtonEnabledEvent(CONFIRM_WALLET_SEED_PHRASE.name(), WizardButton.NEXT, false);
-  }
-
-  @Override
-  public boolean updatePanelModel() {
+  public boolean updateFromComponentModels() {
     enterSeedPhraseMaV.getView().updateModel();
     return true;
   }

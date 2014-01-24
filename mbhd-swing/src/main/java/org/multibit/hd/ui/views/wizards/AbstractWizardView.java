@@ -5,11 +5,14 @@ import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardButtonEnabledEvent;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 
 import javax.swing.*;
+
+import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.CONFIRM_WALLET_SEED_PHRASE;
 
 /**
  * <p>Wizard panel to provide the following to UI:</p>
@@ -60,15 +63,8 @@ public abstract class AbstractWizardView<W extends WizardModel, P> {
     // so just need a vanilla panel to begin with
     wizardPanel = Panels.newPanel();
 
-    PanelDecorator.applyWizardTheme(wizardPanel, newDataPanel(), title);
+    PanelDecorator.applyWizardTheme(wizardPanel, newWizardViewPanel(), title);
 
-  }
-
-  /**
-   * @return The panel name associated with this view
-   */
-  public String getPanelName() {
-    return panelName;
   }
 
   /**
@@ -86,10 +82,48 @@ public abstract class AbstractWizardView<W extends WizardModel, P> {
   }
 
   /**
+   * @return The panel name associated with this view
+   */
+  public String getWizardViewPanelName() {
+    return panelName;
+  }
+
+  /**
+   * @return The wizard panel (title, wizard components, buttons)
+   */
+  public JPanel getWizardPanel() {
+    return wizardPanel;
+  }
+
+  /**
+   * @return A new panel containing the data components specific to this wizard view (e.g. language selector or seed phrase display)
+   */
+  public abstract JPanel newWizardViewPanel();
+
+  /**
+   * Update the panel data model with the contents of the panel view component models (if necessary)
+   *
+   * Called when the Next and Previous buttons are clicked and in response to a ComponentModelChangedEvent
+   *
+   * @return True if the panel update has triggered an update to the wizard model
+   */
+  public abstract boolean updateFromComponentModels();
+
+  /**
    * @param panelModel The panel model
    */
   public void setPanelModel(P panelModel) {
     this.panelModel = Optional.fromNullable(panelModel);
+  }
+
+  /**
+   * Update the view with any required view events to create a clean initial state (all initialisation will have completed)
+   */
+  public void fireInitialStateViewEvents() {
+
+    // Default is to disable the Next button
+    ViewEvents.fireWizardButtonEnabledEvent(CONFIRM_WALLET_SEED_PHRASE.name(), WizardButton.NEXT, false);
+
   }
 
   /**
@@ -146,32 +180,6 @@ public abstract class AbstractWizardView<W extends WizardModel, P> {
   public void setFinishButton(JButton finishButton) {
     this.finishButton = finishButton;
   }
-
-  /**
-   * @return The wizard panel (title, wizard components, buttons)
-   */
-  public JPanel getWizardPanel() {
-    return wizardPanel;
-  }
-
-  /**
-   * @return A new panel containing the data components specific to this wizard view (e.g. language selector or seed phrase display)
-   */
-  public abstract JPanel newDataPanel();
-
-  /**
-   * Update the view with any required view events to create a clean initial state (all initialisation will have completed)
-   */
-  public abstract void fireInitialStateViewEvents();
-
-  /**
-   * Update the panel data model with the contents of the panel view components (if necessary)
-   *
-   * Called when the Next and Previous buttons are clicked and in response to a ComponentModelChangedEvent
-   *
-   * @return True if the panel update has triggered an update to the wizard model
-   */
-  public abstract boolean updatePanelModel();
 
   /**
    * React to a "wizard button enable" event

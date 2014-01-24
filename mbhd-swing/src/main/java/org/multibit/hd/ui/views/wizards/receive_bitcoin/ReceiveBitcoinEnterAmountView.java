@@ -15,6 +15,7 @@ import org.multibit.hd.ui.views.components.enter_amount.EnterAmountView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -48,14 +49,14 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
 
     super(wizard.getWizardModel(), panelName, MessageKey.RECEIVE_BITCOIN_TITLE);
 
-    PanelDecorator.addExitCancelNext(this, wizard);
+    PanelDecorator.addCancelFinish(this, wizard);
 
   }
 
   @Override
-  public JPanel newDataPanel() {
+  public JPanel newWizardViewPanel() {
 
-    enterAmountMaV = Components.newEnterAmountMaV(getPanelName());
+    enterAmountMaV = Components.newEnterAmountMaV(getWizardViewPanelName());
 
     // TODO Link this to the recipient address service
     displayBitcoinAddressMaV = Components.newDisplayBitcoinAddressMaV("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
@@ -68,7 +69,7 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
 
     // Configure the panel model
     setPanelModel(new ReceiveBitcoinEnterAmountPanelModel(
-      getPanelName(),
+      getWizardViewPanelName(),
       enterAmountMaV.getModel(),
       displayBitcoinAddressMaV.getModel()
     ));
@@ -87,6 +88,14 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
     panel.add(label,"span 2,wrap");
 
     return panel;
+  }
+
+  @Override
+  public void fireInitialStateViewEvents() {
+
+    // Disable the finish button
+    ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, false);
+
   }
 
   /**
@@ -124,19 +133,12 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
   }
 
   @Override
-  public void fireInitialStateViewEvents() {
-
-    // Disable the next button
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, false);
-  }
-
-  @Override
-  public boolean updatePanelModel() {
+  public boolean updateFromComponentModels() {
 
     enterAmountMaV.getView().updateModel();
 
     // The panel model has changed so alert the wizard
-    ViewEvents.fireWizardPanelModelChangedEvent(getPanelName(), getPanelModel());
+    ViewEvents.fireWizardPanelModelChangedEvent(getWizardViewPanelName(), getPanelModel());
 
     return false;
   }
