@@ -66,9 +66,10 @@ public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<Wel
   }
 
   @Override
-  public boolean updateFromComponentModels() {
-    displaySeedPhraseMaV.getView().updateModelFromView();
-    return false;
+  public void updateFromComponentModels() {
+
+    // Do nothing
+
   }
 
 }

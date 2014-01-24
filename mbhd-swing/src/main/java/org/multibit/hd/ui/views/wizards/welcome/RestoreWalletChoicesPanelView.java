@@ -49,9 +49,8 @@ public class RestoreWalletChoicesPanelView extends AbstractWizardPanelView<Welco
   }
 
   @Override
-  public boolean updateFromComponentModels() {
+  public void updateFromComponentModels() {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
-    return true;
   }
 
   /**

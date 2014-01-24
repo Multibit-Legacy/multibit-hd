@@ -72,13 +72,10 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
   }
 
   @Override
-  public boolean updateFromComponentModels() {
-
-    enterAmountMaV.getView().updateModelFromView();
-    enterRecipientMaV.getView().updateModelFromView();
+  public void updateFromComponentModels() {
 
     // The panel model has changed so alert the wizard
-    ViewEvents.fireWizardPanelModelChangedEvent(getPanelName(), getPanelModel());
+    //getWizardModel().get
 
     // Determine any events
     ViewEvents.fireWizardButtonEnabledEvent(
@@ -87,8 +84,6 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
       isNextEnabled()
     );
 
-
-    return false;
   }
 
   /**

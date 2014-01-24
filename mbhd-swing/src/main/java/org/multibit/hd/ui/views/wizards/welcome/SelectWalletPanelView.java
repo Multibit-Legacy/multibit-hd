@@ -64,10 +64,9 @@ public class SelectWalletPanelView extends AbstractWizardPanelView<WelcomeWizard
   }
 
   @Override
-  public boolean updateFromComponentModels() {
+  public void updateFromComponentModels() {
 
     setPanelModel(currentSelection);
-    return false;
 
   }
 

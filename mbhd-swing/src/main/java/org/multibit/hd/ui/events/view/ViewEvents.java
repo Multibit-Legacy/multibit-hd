@@ -124,17 +124,6 @@ public class ViewEvents {
   }
 
   /**
-   * <p>Broadcast a new "wizard panel model changed" event</p>
-   *
-   * @param panelName  The panel name to which this applies
-   * @param panelModel The panel model
-   */
-  public static void fireWizardPanelModelChangedEvent(String panelName, Optional panelModel) {
-    log.debug("Firing 'wizard panel model changed' event");
-    CoreServices.uiEventBus.post(new WizardPanelModelChangedEvent(panelName, panelModel));
-  }
-
-  /**
    * <p>Broadcast a new "wizard model changed" event - normally consumed by "finishing" or "display" panels</p>
    *
    * @param panelName The panel name to restrict the update to a particular panel

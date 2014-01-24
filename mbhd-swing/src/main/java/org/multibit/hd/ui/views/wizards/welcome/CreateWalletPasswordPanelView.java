@@ -64,9 +64,10 @@ public class CreateWalletPasswordPanelView extends AbstractWizardPanelView<Welco
   }
 
   @Override
-  public boolean updateFromComponentModels() {
-    confirmPasswordMaV.getView().updateModelFromView();
-    return false;
+  public void updateFromComponentModels() {
+
+    // Do nothing
+
   }
 
 }

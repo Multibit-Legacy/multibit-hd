@@ -90,9 +90,8 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
   }
 
   @Override
-  public boolean updateFromComponentModels() {
+  public void updateFromComponentModels() {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
-    return true;
   }
 
   @Override

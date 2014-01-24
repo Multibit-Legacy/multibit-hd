@@ -99,12 +99,10 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
   }
 
   @Override
-  public boolean updateFromComponentModels() {
+  public void updateFromComponentModels() {
 
+    // Do nothing
 
-
-
-    return false;
   }
 
   /**

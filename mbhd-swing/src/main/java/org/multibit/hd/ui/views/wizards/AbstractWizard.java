@@ -207,23 +207,18 @@ public abstract class AbstractWizard<M extends WizardModel> {
   }
 
   /**
-   * @param wizardView The wizard view (providing a reference to its underlying panel model)
+   * @param wizardPanelView The wizard panel view (providing a reference to its underlying panel model)
    *
    * @return The "next" action based on the model state
    */
-  public <P> Action getNextAction(final AbstractWizardPanelView<M, P> wizardView) {
+  public <P> Action getNextAction(final AbstractWizardPanelView<M, P> wizardPanelView) {
 
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
 
         // Ensure the panel updates its model (the button is outside of the panel itself)
-        if (!wizardView.updateFromComponentModels()) {
-
-          // Aggregate the panel information into the wizard model
-          wizardModel.updateFromPanelModel(wizardView.getPanelModel());
-
-        }
+        wizardPanelView.updateFromComponentModels();
 
         // Move to the next state
         wizardModel.showNext();

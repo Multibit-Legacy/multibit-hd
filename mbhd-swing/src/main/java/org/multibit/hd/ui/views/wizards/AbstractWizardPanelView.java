@@ -111,11 +111,13 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
   /**
    * <p>Called when the Next and Previous buttons are clicked and in response to a ComponentModelChangedEvent</p>
    *
-   * <p>Implementers must update the panel data model in response to the contents of the panel view component models (if necessary)</p>
-   *
-   * @return True if the panel update has triggered an update to the wizard model
+   * <p>Implementers must:</p>
+   * <ol>
+   * <li>update the panel model to reflect the component models (unless there is a direct reference)</li>
+   * <li>update the wizard model if the panel model data is valid</li>
+   * </ol>
    */
-  public abstract boolean updateFromComponentModels();
+  public abstract void updateFromComponentModels();
 
   /**
    * @param panelModel The panel model

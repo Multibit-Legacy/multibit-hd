@@ -50,21 +50,18 @@ public abstract class AbstractPanelModel implements PanelModel {
     if (panelName.equals(event.getPanelName())) {
 
       // Default behaviour is to update
-      update(event.getComponentModel());
+      updateFromComponentModel(event.getComponentModel());
 
     }
 
   }
 
   /**
-   * <p>Update the panel model with the contents of the component model</p>
+   * <p>Called when a component model has changed and the panel model should be made aware</p>
    *
-   * <p>After updating this will normally fire "wizard panel model changed" event:</p>
-   * <pre>
-   *   ViewEvents.fireWizardPanelModelChangedEvent(panelName, Optional.of(this));
-   * </pre>
+   * <p>Implementers must update the panel model with the contents of the component model (if no direct reference is available)</p>
    *
    * @param componentModel The component model triggering the update
    */
-  protected abstract void update(Optional componentModel);
+  protected abstract void updateFromComponentModel(Optional componentModel);
 }

@@ -94,9 +94,9 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
   }
 
   @Override
-  public boolean updateFromComponentModels() {
+  public void updateFromComponentModels() {
 
-    // Do nothing - panel model is updated via an action and wizard model is not applicable
+    // No need to update since we expose the component models
 
     // Determine any events
     ViewEvents.fireWizardButtonEnabledEvent(
@@ -105,7 +105,6 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
       isNextEnabled()
     );
 
-    return true;
   }
 
   /**

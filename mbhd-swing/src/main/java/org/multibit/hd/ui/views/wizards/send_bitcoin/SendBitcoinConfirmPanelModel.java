@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import com.google.common.base.Optional;
-import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.wizards.AbstractPanelModel;
 
@@ -45,12 +44,9 @@ public class SendBitcoinConfirmPanelModel extends AbstractPanelModel {
   }
 
   @Override
-  protected void update(Optional componentModel) {
+  protected void updateFromComponentModel(Optional componentModel) {
 
-    // No need to update since we have the references
-
-    // Inform the wizard model that a change has occurred
-    ViewEvents.fireWizardPanelModelChangedEvent(panelName, Optional.of(this));
+    // No need to update since we expose the component models
 
   }
 

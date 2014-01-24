@@ -115,10 +115,6 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
         // Get the user input
         userSeedPhrase = (List<String>) panelModel.get();
       {
-        boolean result = userSeedPhrase.equals(actualSeedPhrase);
-        // Fire the decision events (requires knowledge of the previous panel data)
-        ViewEvents.fireWizardButtonEnabledEvent(CONFIRM_WALLET_SEED_PHRASE.name(), WizardButton.NEXT, result);
-        ViewEvents.fireVerificationStatusChangedEvent(CONFIRM_WALLET_SEED_PHRASE.name(), userSeedPhrase.equals(actualSeedPhrase));
       }
       break;
       case CREATE_WALLET_PASSWORD:

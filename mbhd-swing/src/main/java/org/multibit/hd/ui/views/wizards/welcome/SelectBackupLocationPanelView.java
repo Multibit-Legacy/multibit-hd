@@ -57,9 +57,10 @@ public class SelectBackupLocationPanelView extends AbstractWizardPanelView<Welco
   }
 
   @Override
-  public boolean updateFromComponentModels() {
-    selectFileMaV.getView().updateModelFromView();
-    return false;
+  public void updateFromComponentModels() {
+
+    // Do nothing
+
   }
 
 }
