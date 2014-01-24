@@ -7,6 +7,7 @@ import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardButtonEnabledEvent;
+import org.multibit.hd.ui.events.view.WizardModelChangedEvent;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 
@@ -96,14 +97,16 @@ public abstract class AbstractWizardView<W extends WizardModel, P> {
   }
 
   /**
+   * <p>Implementers must create a new panel</p>
+   *
    * @return A new panel containing the data components specific to this wizard view (e.g. language selector or seed phrase display)
    */
   public abstract JPanel newWizardViewPanel();
 
   /**
-   * Update the panel data model with the contents of the panel view component models (if necessary)
+   * <p>Implementers must update the panel data model with the contents of the panel view component models (if necessary)</p>
    *
-   * Called when the Next and Previous buttons are clicked and in response to a ComponentModelChangedEvent
+   * <p>Called when the Next and Previous buttons are clicked and in response to a ComponentModelChangedEvent</p>
    *
    * @return True if the panel update has triggered an update to the wizard model
    */
@@ -117,7 +120,9 @@ public abstract class AbstractWizardView<W extends WizardModel, P> {
   }
 
   /**
-   * Update the view with any required view events to create a clean initial state (all initialisation will have completed)
+   * <p>Update the view with any required view events to create a clean initial state (all initialisation will have completed)</p>
+   *
+   * <p>Default implementation is to disable the "next" button</p>
    */
   public void fireInitialStateViewEvents() {
 
@@ -182,7 +187,7 @@ public abstract class AbstractWizardView<W extends WizardModel, P> {
   }
 
   /**
-   * React to a "wizard button enable" event
+   * <p>React to a "wizard button enable" event</p>
    *
    * @param event The wizard button enable event
    */
@@ -217,4 +222,17 @@ public abstract class AbstractWizardView<W extends WizardModel, P> {
     }
 
   }
+
+  /**
+   * <p>Updates the panel components with fresh wizard model contents (such as when a previous panel affects this one)</p>
+   *
+   * @param event The "wizard model changed" event
+   */
+  @Subscribe
+  public void onWizardModelChangedEvent(WizardModelChangedEvent event) {
+
+    // Do nothing
+
+  }
+
 }

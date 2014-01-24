@@ -1,11 +1,9 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import org.multibit.hd.core.api.Recipient;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
-import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import java.math.BigDecimal;
 
@@ -63,23 +61,11 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
         enterAmountPanelModel = (SendBitcoinEnterAmountPanelModel) panelModel.get();
 
-        // Determine any events
-        ViewEvents.fireWizardButtonEnabledEvent(
-          SendBitcoinState.ENTER_AMOUNT.name(),
-          WizardButton.NEXT,
-          isEnterAmountNextEnabled()
-        );
         break;
       case CONFIRM_AMOUNT:
 
         confirmPanelModel = (SendBitcoinConfirmPanelModel) panelModel.get();
 
-        // Determine any events
-        ViewEvents.fireWizardButtonEnabledEvent(
-          SendBitcoinState.CONFIRM_AMOUNT.name(),
-          WizardButton.NEXT,
-          isConfirmNextEnabled()
-        );
         break;
       case SEND_BITCOIN_REPORT:
         break;
@@ -162,32 +148,6 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   public String getNotes() {
     return confirmPanelModel
       .getNotes();
-  }
-
-  /**
-   * @return True if the "enter amount" panel next button should be enabled
-   */
-  private boolean isEnterAmountNextEnabled() {
-
-    boolean bitcoinAmountOK = !enterAmountPanelModel
-      .getEnterAmountModel()
-      .getRawBitcoinAmount()
-      .equals(BigDecimal.ZERO);
-
-    boolean recipientOK = enterAmountPanelModel
-      .getEnterRecipientModel()
-      .getRecipient() != null;
-
-    return bitcoinAmountOK && recipientOK;
-
-  }
-
-  /**
-   * @return True if the "confirm" panel next button should be enabled
-   */
-  private boolean isConfirmNextEnabled() {
-
-    return !Strings.isNullOrEmpty(getPassword());
   }
 
   /**

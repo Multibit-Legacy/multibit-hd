@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
+import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -13,8 +14,10 @@ import org.multibit.hd.ui.views.components.enter_recipient.EnterRecipientModel;
 import org.multibit.hd.ui.views.components.enter_recipient.EnterRecipientView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
+import java.math.BigDecimal;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -23,7 +26,7 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 
 public class SendBitcoinEnterAmountView extends AbstractWizardView<SendBitcoinWizardModel, SendBitcoinEnterAmountPanelModel> {
@@ -62,8 +65,8 @@ public class SendBitcoinEnterAmountView extends AbstractWizardView<SendBitcoinWi
       "[]10[]" // Row constraints
     ));
 
-    panel.add(enterRecipientMaV.getView().newPanel(),"wrap");
-    panel.add(enterAmountMaV.getView().newPanel(),"wrap");
+    panel.add(enterRecipientMaV.getView().newPanel(), "wrap");
+    panel.add(enterAmountMaV.getView().newPanel(), "wrap");
 
     return panel;
   }
@@ -77,7 +80,36 @@ public class SendBitcoinEnterAmountView extends AbstractWizardView<SendBitcoinWi
     // The panel model has changed so alert the wizard
     ViewEvents.fireWizardPanelModelChangedEvent(getWizardViewPanelName(), getPanelModel());
 
+    // Determine any events
+    ViewEvents.fireWizardButtonEnabledEvent(
+      SendBitcoinState.ENTER_AMOUNT.name(),
+      WizardButton.NEXT,
+      isNextEnabled()
+    );
+
+
     return false;
   }
 
+  /**
+   * @return True if the "next" button should be enabled
+   */
+  private boolean isNextEnabled() {
+
+    boolean bitcoinAmountOK = !getPanelModel().get()
+      .getEnterAmountModel()
+      .getRawBitcoinAmount()
+      .equals(BigDecimal.ZERO);
+
+    boolean recipientOK = Strings.isNullOrEmpty(getPanelModel().get()
+      .getEnterRecipientModel()
+      .getRecipient()
+      .getSummary());
+
+    return bitcoinAmountOK && recipientOK;
+
+  }
+
+
 }
+

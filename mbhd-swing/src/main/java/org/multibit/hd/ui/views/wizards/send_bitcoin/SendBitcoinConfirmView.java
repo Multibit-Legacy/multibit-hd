@@ -1,8 +1,9 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
-import com.google.common.eventbus.Subscribe;
+import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardModelChangedEvent;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountModel;
@@ -12,6 +13,7 @@ import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
 
@@ -77,27 +79,44 @@ public class SendBitcoinConfirmView extends AbstractWizardView<SendBitcoinWizard
     panel.add(Labels.newConfirmSendAmount(), "span 2,push,wrap");
     panel.add(Labels.newRecipient());
     panel.add(recipientSummaryLabel, "wrap");
-    panel.add(Labels.newAmount(),"baseline");
+    panel.add(Labels.newAmount(), "baseline");
     panel.add(transactionDisplayAmountMaV.getView().newPanel(), "wrap");
-    panel.add(Labels.newTransactionFee(getWizardModel().getRawTransactionFee()),"top");
+    panel.add(Labels.newTransactionFee(getWizardModel().getRawTransactionFee()), "top");
     panel.add(transactionFeeDisplayAmountMaV.getView().newPanel(), "wrap");
-    panel.add(Labels.newDeveloperFee(getWizardModel().getRawDeveloperFee()),"top");
+    panel.add(Labels.newDeveloperFee(getWizardModel().getRawDeveloperFee()), "top");
     panel.add(developerFeeDisplayAmountMaV.getView().newPanel(), "wrap");
     panel.add(Labels.newNotes());
     panel.add(notesTextArea, "growx,push,wrap");
     panel.add(Labels.newEnterPassword());
-    panel.add(enterPasswordMaV.getView().newPanel(),"wrap");
+    panel.add(enterPasswordMaV.getView().newPanel(), "wrap");
 
     return panel;
   }
 
   @Override
   public boolean updateFromComponentModels() {
+
     // Do nothing - panel model is updated via an action and wizard model is not applicable
+
+    // Determine any events
+    ViewEvents.fireWizardButtonEnabledEvent(
+      SendBitcoinState.CONFIRM_AMOUNT.name(),
+      WizardButton.NEXT,
+      isNextEnabled()
+    );
+
     return true;
   }
 
-  @Subscribe
+  /**
+   * @return True if the "next" button should be enabled
+   */
+  private boolean isNextEnabled() {
+
+    return !Strings.isNullOrEmpty(getPanelModel().get().getPasswordModel().getValue());
+  }
+
+  @Override
   public void onWizardModelChangedEvent(WizardModelChangedEvent event) {
 
     // Update the model and view for the amount

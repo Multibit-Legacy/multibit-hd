@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Preconditions;
-import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
@@ -96,10 +95,7 @@ public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardMode
     return true;
   }
 
-  /**
-   * @param event The "wizard model changed" event
-   */
-  @Subscribe
+  @Override
   public void onWizardModelChangedEvent(WizardModelChangedEvent event) {
 
     // Check if this event applies to this panel
