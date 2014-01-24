@@ -85,16 +85,13 @@ public class EnterAmountModel implements Model<EnterAmountModel> {
   }
 
   /**
-   * @param value The local amount (fires a "component model changed" event)
+   * @param value The local amount - no component event since the Bitcoin value drives this component
    */
   public void setLocalAmount(BigDecimal value) {
 
     Preconditions.checkNotNull(value, "'value' should be present");
 
     localAmount = Optional.of(value);
-
-    // Fire a component model updated event
-    ViewEvents.fireWizardComponentModelChangedEvent(panelName, Optional.of(this));
 
   }
 }

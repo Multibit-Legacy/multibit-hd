@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.receive_bitcoin;
 
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.uri.BitcoinURI;
+import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -15,10 +16,10 @@ import org.multibit.hd.ui.views.components.enter_amount.EnterAmountView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
@@ -28,7 +29,7 @@ import java.math.BigInteger;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 
 public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<ReceiveBitcoinWizardModel, ReceiveBitcoinEnterAmountPanelModel> {
@@ -88,12 +89,12 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
       "[]10[]" // Row constraints
     ));
 
-    panel.add(enterAmountMaV.getView().newComponentPanel(),"span 3,wrap");
+    panel.add(enterAmountMaV.getView().newComponentPanel(), "span 3,wrap");
     panel.add(Labels.newRecipient());
-    panel.add(displayBitcoinAddressMaV.getView().newComponentPanel(),"growx,push");
-    panel.add(showQRCode,"wrap");
+    panel.add(displayBitcoinAddressMaV.getView().newComponentPanel(), "growx,push");
+    panel.add(showQRCode, "wrap");
     panel.add(Labels.newTransactionLabel());
-    panel.add(label,"span 2,wrap");
+    panel.add(label, "span 2,wrap");
 
     return panel;
   }
@@ -102,14 +103,31 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
   public void fireInitialStateViewEvents() {
 
     // Disable the finish button
-    ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, false);
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, false);
 
   }
 
   @Override
-  public void updateFromComponentModels() {
+  public void updateFromComponentModels(Optional componentModel) {
 
-    // Do nothing
+    // No need to update since we expose the component models
+
+    // Determine any events
+    ViewEvents.fireWizardButtonEnabledEvent(
+      getPanelName(),
+      WizardButton.NEXT,
+      isNextEnabled()
+    );
+
+
+  }
+
+  /**
+   * @return True if the "next" button should be enabled
+   */
+  private boolean isNextEnabled() {
+
+    return !getWizardModel().getBitcoinAmount().equals(BigDecimal.ZERO);
 
   }
 

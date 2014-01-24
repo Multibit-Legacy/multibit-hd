@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
@@ -81,14 +82,13 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
   }
 
   @Override
-  public void updateFromComponentModels() {
+  public void updateFromComponentModels(Optional componentModel) {
 
-    // The panel model has changed so alert the wizard
-    //getWizardModel().get
+    // No need to update the wizard it has the references
 
     // Determine any events
     ViewEvents.fireWizardButtonEnabledEvent(
-      SendBitcoinState.ENTER_AMOUNT.name(),
+      getPanelName(),
       WizardButton.NEXT,
       isNextEnabled()
     );
@@ -105,7 +105,7 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
       .getPlainBitcoinAmount()
       .equals(BigDecimal.ZERO);
 
-    boolean recipientOK = Strings.isNullOrEmpty(getPanelModel().get()
+    boolean recipientOK = !Strings.isNullOrEmpty(getPanelModel().get()
       .getEnterRecipientModel()
       .getRecipient()
       .getSummary());

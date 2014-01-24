@@ -1,8 +1,10 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
+import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.PanelDecorator;
@@ -11,6 +13,7 @@ import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhrase
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
 import java.util.List;
@@ -69,13 +72,17 @@ public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<Wel
 
   @Override
   public void fireInitialStateViewEvents() {
-    // Do nothing
+
+    // Enable the "next" button
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
+
   }
 
   @Override
-  public void updateFromComponentModels() {
+  public void updateFromComponentModels(Optional componentModel) {
 
-    // Do nothing
+    // Update the wizard model with the latest seed phrase
+    getWizardModel().setActualSeedPhrase(displaySeedPhraseMaV.getModel().getValue());
 
     // TODO remove this
     for (String word : getWizardModel().getActualSeedPhrase()) {

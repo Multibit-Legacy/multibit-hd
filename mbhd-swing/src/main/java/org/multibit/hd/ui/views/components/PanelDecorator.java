@@ -103,6 +103,8 @@ public class PanelDecorator {
 
     addFinish(view, wizard, wizardPanel);
 
+    view.getFinishButton().requestFocusInWindow();
+
   }
 
   /**

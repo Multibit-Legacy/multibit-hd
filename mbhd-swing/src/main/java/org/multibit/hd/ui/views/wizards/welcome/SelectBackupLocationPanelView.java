@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
@@ -15,8 +16,6 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
-
-import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.SELECT_BACKUP_LOCATION;
 
 /**
  * <p>Wizard to provide the following to UI:</p>
@@ -69,13 +68,13 @@ public class SelectBackupLocationPanelView extends AbstractWizardPanelView<Welco
   }
 
   @Override
-  public void updateFromComponentModels() {
+  public void updateFromComponentModels(Optional componentModel) {
 
     // Do nothing we have a direct reference
 
     // Enable the "next" button if the backup location is not empty
     ViewEvents.fireWizardButtonEnabledEvent(
-      SELECT_BACKUP_LOCATION.name(),
+      getPanelName(),
       WizardButton.NEXT,
       !Strings.isNullOrEmpty(selectFileMaV.getModel().getValue())
     );

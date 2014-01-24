@@ -1,6 +1,5 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
-import com.google.common.base.Optional;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.wizards.AbstractPanelModel;
 
@@ -41,13 +40,6 @@ public class SendBitcoinConfirmPanelModel extends AbstractPanelModel {
    */
   public EnterPasswordModel getPasswordModel() {
     return passwordModel;
-  }
-
-  @Override
-  protected void updateFromComponentModel(Optional componentModel) {
-
-    // No need to update since we expose the component models
-
   }
 
 }

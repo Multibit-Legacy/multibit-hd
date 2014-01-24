@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
@@ -207,7 +208,7 @@ public abstract class AbstractWizard<M extends WizardModel> {
       public void actionPerformed(ActionEvent e) {
 
         // Ensure the panel updates its model (the button is outside of the panel itself)
-        wizardPanelView.updateFromComponentModels();
+        wizardPanelView.updateFromComponentModels(Optional.absent());
 
         // Move to the next state
         wizardModel.showNext();
@@ -230,7 +231,7 @@ public abstract class AbstractWizard<M extends WizardModel> {
       public void actionPerformed(ActionEvent e) {
 
         // Ensure the panel updates its model (the button is outside of the panel itself)
-        wizardView.updateFromComponentModels();
+        wizardView.updateFromComponentModels(Optional.absent());
 
         // Aggregate the panel information into the wizard model
 

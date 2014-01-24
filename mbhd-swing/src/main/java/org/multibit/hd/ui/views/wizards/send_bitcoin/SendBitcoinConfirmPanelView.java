@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
@@ -102,28 +103,6 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
   }
 
   @Override
-  public void updateFromComponentModels() {
-
-    // No need to update since we expose the component models
-
-    // Determine any events
-    ViewEvents.fireWizardButtonEnabledEvent(
-      SendBitcoinState.CONFIRM_AMOUNT.name(),
-      WizardButton.NEXT,
-      isNextEnabled()
-    );
-
-  }
-
-  /**
-   * @return True if the "next" button should be enabled
-   */
-  private boolean isNextEnabled() {
-
-    return !Strings.isNullOrEmpty(getPanelModel().get().getPasswordModel().getValue());
-  }
-
-  @Override
   public boolean beforeShow() {
 
     // Update the model and view for the amount
@@ -145,5 +124,27 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     recipientSummaryLabel.setText(getWizardModel().getRecipient().getSummary());
 
     return true;
+  }
+
+  @Override
+  public void updateFromComponentModels(Optional componentModel) {
+
+    // No need to update since we expose the component models
+
+    // Determine any events
+    ViewEvents.fireWizardButtonEnabledEvent(
+      getPanelName(),
+      WizardButton.NEXT,
+      isNextEnabled()
+    );
+
+  }
+
+  /**
+   * @return True if the "next" button should be enabled
+   */
+  private boolean isNextEnabled() {
+
+    return !Strings.isNullOrEmpty(getPanelModel().get().getPasswordModel().getValue());
   }
 }

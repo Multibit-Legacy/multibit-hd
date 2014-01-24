@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
@@ -91,12 +92,12 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
   public void fireInitialStateViewEvents() {
 
     // Disable the finish button
-    ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, false);
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, false);
 
   }
 
   @Override
-  public void updateFromComponentModels() {
+  public void updateFromComponentModels(Optional componentModel) {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
   }
 

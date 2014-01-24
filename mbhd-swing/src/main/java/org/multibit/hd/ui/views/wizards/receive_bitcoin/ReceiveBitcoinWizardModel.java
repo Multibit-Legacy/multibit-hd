@@ -33,14 +33,10 @@ public class ReceiveBitcoinWizardModel extends AbstractWizardModel<ReceiveBitcoi
   }
 
   /**
-   * @return The plain
+   * @return The plain Bitcoin amount with no symbol multipliers
    */
   public BigDecimal getBitcoinAmount() {
-    return bitcoinAmount;
-  }
-
-  public void setBitcoinAmount(BigDecimal bitcoinAmount) {
-    this.bitcoinAmount = bitcoinAmount;
+    return enterAmountModel.getPlainBitcoinAmount();
   }
 
   public Optional<String> getRecipientAddress() {

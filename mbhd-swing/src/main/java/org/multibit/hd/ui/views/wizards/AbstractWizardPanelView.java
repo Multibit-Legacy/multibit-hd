@@ -7,12 +7,11 @@ import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardButtonEnabledEvent;
+import org.multibit.hd.ui.events.view.WizardComponentModelChangedEvent;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 
 import javax.swing.*;
-
-import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.CONFIRM_WALLET_SEED_PHRASE;
 
 /**
  * <p>Abstract base class providing the following to wizard panel views:</p>
@@ -38,11 +37,11 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
   private JPanel wizardPanel;
 
   // Buttons
-  private JButton exitButton;
-  private JButton cancelButton;
-  private JButton nextButton;
-  private JButton previousButton;
-  private JButton finishButton;
+  private Optional<JButton> exitButton = Optional.absent();
+  private Optional<JButton> cancelButton = Optional.absent();
+  private Optional<JButton> nextButton = Optional.absent();
+  private Optional<JButton> previousButton = Optional.absent();
+  private Optional<JButton> finishButton = Optional.absent();
 
   private final String panelName;
 
@@ -123,17 +122,6 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
   public abstract JPanel newWizardViewPanel();
 
   /**
-   * <p>Called when the Next and Previous buttons are clicked and in response to a ComponentModelChangedEvent</p>
-   *
-   * <p>Implementers must:</p>
-   * <ol>
-   * <li>update the panel model to reflect the component models (unless there is a direct reference)</li>
-   * <li>update the wizard model if the panel model data is valid</li>
-   * </ol>
-   */
-  public abstract void updateFromComponentModels();
-
-  /**
    * @param panelModel The panel model
    */
   public void setPanelModel(P panelModel) {
@@ -148,7 +136,7 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
   public void fireInitialStateViewEvents() {
 
     // Default is to disable the Next button
-    ViewEvents.fireWizardButtonEnabledEvent(CONFIRM_WALLET_SEED_PHRASE.name(), WizardButton.NEXT, false);
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, false);
 
   }
 
@@ -156,59 +144,61 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
    * @return The "exit" button for this view
    */
   public JButton getExitButton() {
-    return exitButton;
+    return exitButton.get();
   }
 
   public void setExitButton(JButton exitButton) {
-    this.exitButton = exitButton;
+    this.exitButton = Optional.fromNullable(exitButton);
   }
 
   /**
    * @return The "cancel" button for this view
    */
   public JButton getCancelButton() {
-    return cancelButton;
+    return cancelButton.get();
   }
 
   public void setCancelButton(JButton cancelButton) {
-    this.cancelButton = cancelButton;
+    this.cancelButton = Optional.fromNullable(cancelButton);
   }
 
   /**
    * @return The "next" button for this view
    */
   public JButton getNextButton() {
-    return nextButton;
+    return nextButton.get();
   }
 
   public void setNextButton(JButton nextButton) {
-    this.nextButton = nextButton;
+    this.nextButton = Optional.fromNullable(nextButton);
   }
 
   /**
    * @return The "previous" button for this view
    */
   public JButton getPreviousButton() {
-    return previousButton;
+    return previousButton.get();
   }
 
   public void setPreviousButton(JButton previousButton) {
-    this.previousButton = previousButton;
+    this.previousButton = Optional.fromNullable(previousButton);
   }
 
   /**
    * @return The "finish" button for this view
    */
   public JButton getFinishButton() {
-    return finishButton;
+    return finishButton.get();
   }
 
   public void setFinishButton(JButton finishButton) {
-    this.finishButton = finishButton;
+    this.finishButton = Optional.fromNullable(finishButton);
   }
 
   /**
    * <p>Called before this wizard panel is about to be shown</p>
+   *
+   * <p>Typically this is where a panel view would reference the wizard model to obtain earlier values for display</p>
    *
    * @return True if the panel can be shown, false if the show operation should be aborted
    */
@@ -217,6 +207,20 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
     return true;
 
   }
+
+  /**
+   * <p>Called when a wizard state transition occurs (e.g. "next" button click) and in response to a {@link WizardComponentModelChangedEvent}</p>
+   *
+   * <p>Implementers must:</p>
+   * <ol>
+   * <li>Update their panel model to reflect the component models (unless there is a direct reference)</li>
+   * <li>Update the wizard model if the panel model data is valid</li>
+   * </ol>
+   *
+   * @param componentModel The component model (
+   */
+  public abstract void updateFromComponentModels(Optional componentModel);
+
 
   /**
    * <p>React to a "wizard button enable" event</p>
@@ -234,24 +238,52 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
       return;
     }
 
-    // Enable the button (model should only reference actual buttons)
+    // Enable the button if present
     switch (event.getWizardButton()) {
       case CANCEL:
-        cancelButton.setEnabled(event.isEnabled());
+        if (cancelButton.isPresent()) {
+          cancelButton.get().setEnabled(event.isEnabled());
+        }
         break;
       case EXIT:
-        exitButton.setEnabled(event.isEnabled());
+        if (exitButton.isPresent()) {
+          exitButton.get().setEnabled(event.isEnabled());
+        }
         break;
       case NEXT:
-        nextButton.setEnabled(event.isEnabled());
+        if (nextButton.isPresent()) {
+          nextButton.get().setEnabled(event.isEnabled());
+        }
         break;
       case PREVIOUS:
-        previousButton.setEnabled(event.isEnabled());
+        if (previousButton.isPresent()) {
+          previousButton.get().setEnabled(event.isEnabled());
+        }
         break;
       case FINISH:
-        finishButton.setEnabled(event.isEnabled());
+        if (finishButton.isPresent()) {
+          finishButton.get().setEnabled(event.isEnabled());
+        }
         break;
     }
 
   }
+
+  /**
+   * <p>React to a "component model changed" event</p>
+   *
+   * @param event The wizard button enable event
+   */
+  @Subscribe
+  public void onWizardComponentModelChangedEvent(WizardComponentModelChangedEvent event) {
+
+    if (panelName.equals(event.getPanelName())) {
+
+      // Default behaviour is to update
+      updateFromComponentModels(event.getComponentModel());
+
+    }
+
+  }
+
 }

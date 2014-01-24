@@ -1,11 +1,14 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
+import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -47,7 +50,7 @@ public class SelectWalletPanelView extends AbstractWizardPanelView<WelcomeWizard
     setPanelModel(currentSelection);
 
     // Bind this to the wizard model
-    getWizardModel().setCurrentSelection(currentSelection);
+    getWizardModel().setSelectWalletChoice(currentSelection);
   }
 
   @Override
@@ -71,9 +74,18 @@ public class SelectWalletPanelView extends AbstractWizardPanelView<WelcomeWizard
   }
 
   @Override
-  public void updateFromComponentModels() {
+  public void fireInitialStateViewEvents() {
+
+    // Enable the "next" button
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
+
+  }
+
+  @Override
+  public void updateFromComponentModels(Optional componentModel) {
 
     setPanelModel(currentSelection);
+
 
   }
 

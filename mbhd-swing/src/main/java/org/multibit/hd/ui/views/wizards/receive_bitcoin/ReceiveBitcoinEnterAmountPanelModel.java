@@ -1,6 +1,5 @@
 package org.multibit.hd.ui.views.wizards.receive_bitcoin;
 
-import com.google.common.base.Optional;
 import org.multibit.hd.ui.views.components.display_address.DisplayBitcoinAddressModel;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountModel;
 import org.multibit.hd.ui.views.wizards.AbstractPanelModel;
@@ -48,10 +47,4 @@ public class ReceiveBitcoinEnterAmountPanelModel extends AbstractPanelModel {
     return displayBitcoinAddressModel;
   }
 
-  @Override
-  protected void updateFromComponentModel(Optional componentModel) {
-
-    // No need to update since we expose the component models
-
-  }
 }

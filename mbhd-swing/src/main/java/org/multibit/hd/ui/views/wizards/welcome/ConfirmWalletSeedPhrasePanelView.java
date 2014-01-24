@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
+import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -70,7 +71,7 @@ public class ConfirmWalletSeedPhrasePanelView extends AbstractWizardPanelView<We
   }
 
   @Override
-  public void updateFromComponentModels() {
+  public void updateFromComponentModels(Optional componentModel) {
 
     List<String> actualSeedPhrase = getWizardModel().getActualSeedPhrase();
     List<String> userSeedPhrase = enterSeedPhraseMaV.getModel().getValue();

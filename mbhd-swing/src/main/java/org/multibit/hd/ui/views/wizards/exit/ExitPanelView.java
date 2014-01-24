@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.exit;
 
+import com.google.common.base.Optional;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
@@ -46,7 +47,7 @@ public class ExitPanelView extends AbstractWizardPanelView<ExitWizardModel, Stri
   }
 
   @Override
-  public void updateFromComponentModels() {
+  public void updateFromComponentModels(Optional componentModel) {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
   }
 
