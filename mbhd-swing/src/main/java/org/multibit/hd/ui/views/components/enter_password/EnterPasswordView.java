@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.components.enter_password;
 
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.views.AbstractView;
+import org.multibit.hd.ui.views.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.TextBoxes;
@@ -23,7 +23,7 @@ import java.awt.event.KeyEvent;
  * @since 0.0.1
  *  
  */
-public class EnterPasswordView extends AbstractView<EnterPasswordModel> {
+public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel> {
 
   // View components
   private JPasswordField password;
@@ -37,7 +37,7 @@ public class EnterPasswordView extends AbstractView<EnterPasswordModel> {
   }
 
   @Override
-  public JPanel newPanel() {
+  public JPanel newComponentPanel() {
 
     panel = Panels.newPanel(new MigLayout(
       "insets 0", // Layout
@@ -116,7 +116,7 @@ public class EnterPasswordView extends AbstractView<EnterPasswordModel> {
   }
 
   @Override
-  public void updateModel() {
+  public void updateModelFromView() {
     // Do nothing the model is updated from key release events
   }
 

@@ -3,7 +3,7 @@ package org.multibit.hd.ui.views.components.enter_recipient;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.Contact;
 import org.multibit.hd.core.api.Recipient;
-import org.multibit.hd.ui.views.AbstractView;
+import org.multibit.hd.ui.views.AbstractComponentView;
 import org.multibit.hd.ui.views.components.ComboBoxes;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
@@ -25,7 +25,7 @@ import java.awt.event.ActionListener;
  * @since 0.0.1
  *  
  */
-public class EnterRecipientView extends AbstractView<EnterRecipientModel> {
+public class EnterRecipientView extends AbstractComponentView<EnterRecipientModel> {
 
   // View components
   private JComboBox<Contact> recipientComboBox;
@@ -39,14 +39,14 @@ public class EnterRecipientView extends AbstractView<EnterRecipientModel> {
   }
 
   @Override
-  public JPanel newPanel() {
+  public JPanel newComponentPanel() {
 
     AutoCompleteFilter<Contact> filter = AutoCompleteFilters.newContactFilter();
     recipientComboBox = ComboBoxes.newRecipientComboBox(filter);
     recipientComboBox.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        updateModel();
+        updateModelFromView();
       }
     });
 
@@ -66,7 +66,7 @@ public class EnterRecipientView extends AbstractView<EnterRecipientModel> {
   }
 
   @Override
-  public void updateModel() {
+  public void updateModelFromView() {
 
     // TODO Add in support for real address/contact
     Recipient recipient = new Recipient("1abc123");

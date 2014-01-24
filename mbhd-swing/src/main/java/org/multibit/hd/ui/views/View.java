@@ -31,16 +31,16 @@ public interface View<M extends Model> {
   /**
    * Update the model with the current view contents
    */
-  void updateModel();
+  void updateModelFromView();
 
   /**
    * @return A new panel containing the visual components based on the current locale (normally used at creation/locale change)
    */
-  JPanel newPanel();
+  JPanel newComponentPanel();
 
   /**
    * @return The current panel containing the visual components based on the current locale (normally used for model updates)
    */
-  JPanel currentPanel();
+  JPanel currentComponentPanel();
 
 }

@@ -97,6 +97,8 @@ public abstract class AbstractWizardView<W extends WizardModel, P> {
   }
 
   /**
+   * <p>Called when the wizard is first created to initialise the panel and subsequently on a locale change event.</p>
+   *
    * <p>Implementers must create a new panel</p>
    *
    * @return A new panel containing the data components specific to this wizard view (e.g. language selector or seed phrase display)
@@ -104,9 +106,9 @@ public abstract class AbstractWizardView<W extends WizardModel, P> {
   public abstract JPanel newWizardViewPanel();
 
   /**
-   * <p>Implementers must update the panel data model with the contents of the panel view component models (if necessary)</p>
-   *
    * <p>Called when the Next and Previous buttons are clicked and in response to a ComponentModelChangedEvent</p>
+   *
+   * <p>Implementers must update the panel data model in response to the contents of the panel view component models (if necessary)</p>
    *
    * @return True if the panel update has triggered an update to the wizard model
    */

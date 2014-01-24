@@ -80,9 +80,9 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
       "[]10[]" // Row constraints
     ));
 
-    panel.add(enterAmountMaV.getView().newPanel(),"span 3,wrap");
+    panel.add(enterAmountMaV.getView().newComponentPanel(),"span 3,wrap");
     panel.add(Labels.newRecipient());
-    panel.add(displayBitcoinAddressMaV.getView().newPanel(),"growx,push");
+    panel.add(displayBitcoinAddressMaV.getView().newComponentPanel(),"growx,push");
     panel.add(showQRCode,"wrap");
     panel.add(Labels.newTransactionLabel());
     panel.add(label,"span 2,wrap");
@@ -96,6 +96,17 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
     // Disable the finish button
     ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, false);
 
+  }
+
+  @Override
+  public boolean updateFromComponentModels() {
+
+
+
+    // The panel model has changed so alert the wizard
+    ViewEvents.fireWizardPanelModelChangedEvent(getWizardViewPanelName(), getPanelModel());
+
+    return false;
   }
 
   /**
@@ -125,22 +136,11 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
         displayQRCodeMaV.getModel().setValue(bitcoinUri);
 
         // Show the QR code as a popover
-        Panels.showLightBoxPopover(displayQRCodeMaV.getView().newPanel());
+        Panels.showLightBoxPopover(displayQRCodeMaV.getView().newComponentPanel());
 
       }
 
     };
-  }
-
-  @Override
-  public boolean updateFromComponentModels() {
-
-    enterAmountMaV.getView().updateModel();
-
-    // The panel model has changed so alert the wizard
-    ViewEvents.fireWizardPanelModelChangedEvent(getWizardViewPanelName(), getPanelModel());
-
-    return false;
   }
 
 }

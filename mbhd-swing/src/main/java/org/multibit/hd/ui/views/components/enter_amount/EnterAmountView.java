@@ -10,7 +10,7 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Numbers;
 import org.multibit.hd.ui.i18n.BitcoinSymbol;
 import org.multibit.hd.ui.i18n.Languages;
-import org.multibit.hd.ui.views.AbstractView;
+import org.multibit.hd.ui.views.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.TextBoxes;
@@ -34,7 +34,7 @@ import java.math.RoundingMode;
  * @since 0.0.1
  *  
  */
-public class EnterAmountView extends AbstractView<EnterAmountModel> {
+public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
   // View components
   private FormattedDecimalField bitcoinAmountText;
@@ -59,7 +59,7 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
   }
 
   @Override
-  public JPanel newPanel() {
+  public JPanel newComponentPanel() {
 
     panel = Panels.newPanel(new MigLayout(
       "fillx,insets 0", // Layout
@@ -126,7 +126,7 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
   }
 
   @Override
-  public void updateModel() {
+  public void updateModelFromView() {
     // Do nothing - the model is updated during key press
   }
 

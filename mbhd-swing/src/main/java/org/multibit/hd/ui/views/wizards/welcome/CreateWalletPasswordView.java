@@ -53,7 +53,7 @@ public class CreateWalletPasswordView extends AbstractWizardView<WelcomeWizardMo
     ));
 
     panel.add(Labels.newWalletPasswordNote(),"wrap");
-    panel.add(confirmPasswordMaV.getView().newPanel(),"wrap");
+    panel.add(confirmPasswordMaV.getView().newComponentPanel(),"wrap");
 
     return panel;
   }
@@ -65,7 +65,7 @@ public class CreateWalletPasswordView extends AbstractWizardView<WelcomeWizardMo
 
   @Override
   public boolean updateFromComponentModels() {
-    confirmPasswordMaV.getView().updateModel();
+    confirmPasswordMaV.getView().updateModelFromView();
     return false;
   }
 

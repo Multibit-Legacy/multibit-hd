@@ -8,7 +8,7 @@ import org.multibit.hd.core.config.I18NConfiguration;
 import org.multibit.hd.ui.i18n.BitcoinSymbol;
 import org.multibit.hd.ui.i18n.Formats;
 import org.multibit.hd.ui.i18n.Languages;
-import org.multibit.hd.ui.views.AbstractView;
+import org.multibit.hd.ui.views.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
@@ -26,7 +26,7 @@ import javax.swing.*;
  * @since 0.0.1
  *  
  */
-public class DisplayAmountView extends AbstractView<DisplayAmountModel> {
+public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel> {
 
   // View components
   private JLabel primaryBalanceLabel;
@@ -42,12 +42,12 @@ public class DisplayAmountView extends AbstractView<DisplayAmountModel> {
   }
 
   @Override
-  public void updateModel() {
+  public void updateModelFromView() {
 
   }
 
   @Override
-  public JPanel newPanel() {
+  public JPanel newComponentPanel() {
 
     // Create the balance panel - forcing a LTR layout to ensure correct placement of labels
     panel = Panels.newPanel(new MigLayout(

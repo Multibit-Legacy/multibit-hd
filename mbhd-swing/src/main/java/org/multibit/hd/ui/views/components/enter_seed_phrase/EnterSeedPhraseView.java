@@ -3,7 +3,7 @@ package org.multibit.hd.ui.views.components.enter_seed_phrase;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
-import org.multibit.hd.ui.views.AbstractView;
+import org.multibit.hd.ui.views.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.TextBoxes;
@@ -25,7 +25,7 @@ import java.awt.event.KeyEvent;
  * @since 0.0.1
  *  
  */
-public class EnterSeedPhraseView extends AbstractView<EnterSeedPhraseModel> {
+public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseModel> {
 
   // View components
   private JTextArea seedPhraseTextArea;
@@ -39,7 +39,7 @@ public class EnterSeedPhraseView extends AbstractView<EnterSeedPhraseModel> {
   }
 
   @Override
-  public JPanel newPanel() {
+  public JPanel newComponentPanel() {
 
     EnterSeedPhraseModel model = getModel().get();
 
@@ -59,7 +59,7 @@ public class EnterSeedPhraseView extends AbstractView<EnterSeedPhraseModel> {
 
       @Override
       public void keyReleased(KeyEvent e) {
-        updateModel();
+        updateModelFromView();
       }
 
     });
@@ -80,7 +80,7 @@ public class EnterSeedPhraseView extends AbstractView<EnterSeedPhraseModel> {
   }
 
   @Override
-  public void updateModel() {
+  public void updateModelFromView() {
     getModel().get().setSeedPhrase(seedPhraseTextArea.getText());
   }
 
@@ -109,7 +109,7 @@ public class EnterSeedPhraseView extends AbstractView<EnterSeedPhraseModel> {
           );
 
           // Ensure the model matches the clear contents
-          updateModel();
+          updateModelFromView();
 
         } else {
           AwesomeDecorator.applyIcon(

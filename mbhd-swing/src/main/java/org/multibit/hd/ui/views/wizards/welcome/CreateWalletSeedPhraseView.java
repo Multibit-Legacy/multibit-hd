@@ -55,7 +55,7 @@ public class CreateWalletSeedPhraseView extends AbstractWizardView<WelcomeWizard
     ));
 
     panel.add(Panels.newSeedPhraseWarning(), "grow,push,wrap");
-    panel.add(displaySeedPhraseMaV.getView().newPanel(), "wrap");
+    panel.add(displaySeedPhraseMaV.getView().newComponentPanel(), "wrap");
 
     return panel;
   }
@@ -67,7 +67,7 @@ public class CreateWalletSeedPhraseView extends AbstractWizardView<WelcomeWizard
 
   @Override
   public boolean updateFromComponentModels() {
-    displaySeedPhraseMaV.getView().updateModel();
+    displaySeedPhraseMaV.getView().updateModelFromView();
     return false;
   }
 

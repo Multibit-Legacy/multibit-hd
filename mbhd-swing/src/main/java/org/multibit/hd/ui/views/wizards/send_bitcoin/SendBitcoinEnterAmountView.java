@@ -65,8 +65,8 @@ public class SendBitcoinEnterAmountView extends AbstractWizardView<SendBitcoinWi
       "[]10[]" // Row constraints
     ));
 
-    panel.add(enterRecipientMaV.getView().newPanel(), "wrap");
-    panel.add(enterAmountMaV.getView().newPanel(), "wrap");
+    panel.add(enterRecipientMaV.getView().newComponentPanel(), "wrap");
+    panel.add(enterAmountMaV.getView().newComponentPanel(), "wrap");
 
     return panel;
   }
@@ -74,8 +74,8 @@ public class SendBitcoinEnterAmountView extends AbstractWizardView<SendBitcoinWi
   @Override
   public boolean updateFromComponentModels() {
 
-    enterAmountMaV.getView().updateModel();
-    enterRecipientMaV.getView().updateModel();
+    enterAmountMaV.getView().updateModelFromView();
+    enterRecipientMaV.getView().updateModelFromView();
 
     // The panel model has changed so alert the wizard
     ViewEvents.fireWizardPanelModelChangedEvent(getWizardViewPanelName(), getPanelModel());

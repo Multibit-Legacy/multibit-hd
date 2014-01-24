@@ -80,15 +80,15 @@ public class SendBitcoinConfirmView extends AbstractWizardView<SendBitcoinWizard
     panel.add(Labels.newRecipient());
     panel.add(recipientSummaryLabel, "wrap");
     panel.add(Labels.newAmount(), "baseline");
-    panel.add(transactionDisplayAmountMaV.getView().newPanel(), "wrap");
+    panel.add(transactionDisplayAmountMaV.getView().newComponentPanel(), "wrap");
     panel.add(Labels.newTransactionFee(getWizardModel().getRawTransactionFee()), "top");
-    panel.add(transactionFeeDisplayAmountMaV.getView().newPanel(), "wrap");
+    panel.add(transactionFeeDisplayAmountMaV.getView().newComponentPanel(), "wrap");
     panel.add(Labels.newDeveloperFee(getWizardModel().getRawDeveloperFee()), "top");
-    panel.add(developerFeeDisplayAmountMaV.getView().newPanel(), "wrap");
+    panel.add(developerFeeDisplayAmountMaV.getView().newComponentPanel(), "wrap");
     panel.add(Labels.newNotes());
     panel.add(notesTextArea, "growx,push,wrap");
     panel.add(Labels.newEnterPassword());
-    panel.add(enterPasswordMaV.getView().newPanel(), "wrap");
+    panel.add(enterPasswordMaV.getView().newComponentPanel(), "wrap");
 
     return panel;
   }

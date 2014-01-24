@@ -51,14 +51,14 @@ public class SelectBackupLocationView extends AbstractWizardView<WelcomeWizardMo
     ));
 
     panel.add(Panels.newSelectBackupDirectory(), "wrap");
-    panel.add(selectFileMaV.getView().newPanel(), "wrap");
+    panel.add(selectFileMaV.getView().newComponentPanel(), "wrap");
 
     return panel;
   }
 
   @Override
   public boolean updateFromComponentModels() {
-    selectFileMaV.getView().updateModel();
+    selectFileMaV.getView().updateModelFromView();
     return false;
   }
 

@@ -53,14 +53,14 @@ public class ConfirmWalletSeedPhraseView extends AbstractWizardView<WelcomeWizar
     ));
 
     panel.add(Panels.newConfirmSeedPhrase(), "wrap");
-    panel.add(enterSeedPhraseMaV.getView().newPanel(), "wrap");
+    panel.add(enterSeedPhraseMaV.getView().newComponentPanel(), "wrap");
 
     return panel;
   }
 
   @Override
   public boolean updateFromComponentModels() {
-    enterSeedPhraseMaV.getView().updateModel();
+    enterSeedPhraseMaV.getView().updateModelFromView();
     return true;
   }
 

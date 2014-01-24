@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.components.select_file;
 
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.views.AbstractView;
+import org.multibit.hd.ui.views.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.TextBoxes;
@@ -22,7 +22,7 @@ import java.io.File;
  * @since 0.0.1
  *  
  */
-public class SelectFileView extends AbstractView<SelectFileModel> {
+public class SelectFileView extends AbstractComponentView<SelectFileModel> {
 
   // View components
   private JTextField selectedFileTextField;
@@ -36,7 +36,7 @@ public class SelectFileView extends AbstractView<SelectFileModel> {
   }
 
   @Override
-  public JPanel newPanel() {
+  public JPanel newComponentPanel() {
 
     SelectFileModel model = getModel().get();
 
@@ -56,7 +56,7 @@ public class SelectFileView extends AbstractView<SelectFileModel> {
 
       @Override
       public void keyReleased(KeyEvent e) {
-        updateModel();
+        updateModelFromView();
       }
 
     });
@@ -73,7 +73,7 @@ public class SelectFileView extends AbstractView<SelectFileModel> {
   }
 
   @Override
-  public void updateModel() {
+  public void updateModelFromView() {
     getModel().get().setValue(selectedFileTextField.getText());
   }
 
@@ -92,7 +92,7 @@ public class SelectFileView extends AbstractView<SelectFileModel> {
         // Only require a directory
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-        int result = fileChooser.showOpenDialog(currentPanel());
+        int result = fileChooser.showOpenDialog(currentComponentPanel());
 
         if (result == JFileChooser.APPROVE_OPTION) {
           File file = fileChooser.getSelectedFile();

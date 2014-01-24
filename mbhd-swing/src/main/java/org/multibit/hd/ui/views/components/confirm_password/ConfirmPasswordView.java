@@ -3,7 +3,7 @@ package org.multibit.hd.ui.views.components.confirm_password;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
-import org.multibit.hd.ui.views.AbstractView;
+import org.multibit.hd.ui.views.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
@@ -26,7 +26,7 @@ import java.awt.event.KeyEvent;
  * @since 0.0.1
  *  
  */
-public class ConfirmPasswordView extends AbstractView<ConfirmPasswordModel> {
+public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordModel> {
 
   // View components
   private JPasswordField password1;
@@ -42,7 +42,7 @@ public class ConfirmPasswordView extends AbstractView<ConfirmPasswordModel> {
   }
 
   @Override
-  public JPanel newPanel() {
+  public JPanel newComponentPanel() {
 
     panel = Panels.newPanel(new MigLayout(
       "insets 0", // Layout
@@ -142,7 +142,7 @@ public class ConfirmPasswordView extends AbstractView<ConfirmPasswordModel> {
   }
 
   @Override
-  public void updateModel() {
+  public void updateModelFromView() {
   }
 
   @Subscribe
