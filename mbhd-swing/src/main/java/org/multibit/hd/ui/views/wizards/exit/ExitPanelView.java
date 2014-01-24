@@ -32,9 +32,15 @@ public class ExitPanelView extends AbstractWizardPanelView<ExitWizardModel, Stri
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void newPanelModel() {
 
     setPanelModel("");
+
+    // No wizard model
+  }
+
+  @Override
+  public JPanel newWizardViewPanel() {
 
     return Panels.newPanel();
   }

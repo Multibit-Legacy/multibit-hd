@@ -41,10 +41,17 @@ public class CreateWalletPasswordPanelView extends AbstractWizardPanelView<Welco
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void newPanelModel() {
 
     confirmPasswordMaV = Components.newConfirmPasswordMaV(WelcomeWizardState.CREATE_WALLET_PASSWORD.name());
     setPanelModel(confirmPasswordMaV.getModel());
+
+    getWizardModel().setConfirmPasswordModel(confirmPasswordMaV.getModel());
+
+  }
+
+  @Override
+  public JPanel newWizardViewPanel() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       "fill,insets 0", // Layout constraints

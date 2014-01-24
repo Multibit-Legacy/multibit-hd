@@ -35,6 +35,11 @@ public class RestoreWalletChoicesPanelView extends AbstractWizardPanelView<Welco
   }
 
   @Override
+  public void newPanelModel() {
+    // No panel model required
+  }
+
+  @Override
   public JPanel newWizardViewPanel() {
 
     JPanel panel = Panels.newPanel(new MigLayout(

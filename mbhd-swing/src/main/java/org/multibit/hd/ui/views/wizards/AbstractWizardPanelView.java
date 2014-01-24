@@ -7,7 +7,6 @@ import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardButtonEnabledEvent;
-import org.multibit.hd.ui.events.view.WizardModelChangedEvent;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 
@@ -67,6 +66,10 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
     // so just need a vanilla panel to begin with
     wizardPanel = Panels.newPanel();
 
+    // All wizard panels require a backing model
+    newPanelModel();
+
+    // Create a new wizard panel and apply the wizard theme
     PanelDecorator.applyWizardTheme(wizardPanel, newWizardViewPanel(), title);
 
   }
@@ -100,7 +103,18 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
   }
 
   /**
+   * <p>Called when the wizard is first created to initialise the panel model and subsequently on a locale change event.</p>
+   *
+   * <p>This is called before {@link AbstractWizardPanelView#newWizardViewPanel()}</p>
+   *
+   * <p>Implementers must create a new panel model and bind it to the overall wizard</p>
+   */
+  public abstract void newPanelModel();
+
+  /**
    * <p>Called when the wizard is first created to initialise the panel and subsequently on a locale change event.</p>
+   *
+   * <p>This is called after {@link AbstractWizardPanelView#newPanelModel()}</p>
    *
    * <p>Implementers must create a new panel</p>
    *
@@ -194,6 +208,17 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
   }
 
   /**
+   * <p>Called before this wizard panel is about to be shown</p>
+   *
+   * @return True if the panel can be shown, false if the show operation should be aborted
+   */
+  public boolean beforeShow() {
+
+    return true;
+
+  }
+
+  /**
    * <p>React to a "wizard button enable" event</p>
    *
    * @param event The wizard button enable event
@@ -229,17 +254,4 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
     }
 
   }
-
-  /**
-   * <p>Updates the panel components with fresh wizard model contents (such as when a previous panel affects this one)</p>
-   *
-   * @param event The "wizard model changed" event
-   */
-  @Subscribe
-  public void onWizardModelChangedEvent(WizardModelChangedEvent event) {
-
-    // Do nothing
-
-  }
-
 }

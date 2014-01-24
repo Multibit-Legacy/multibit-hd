@@ -22,15 +22,15 @@ import java.util.List;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<WelcomeWizardModel, List<String>> {
 
   private ModelAndView<DisplaySeedPhraseModel, DisplaySeedPhraseView> displaySeedPhraseMaV;
 
   /**
-   * @param wizard The wizard managing the states
-   * @param panelName   The panel name to filter events from components
+   * @param wizard    The wizard managing the states
+   * @param panelName The panel name to filter events from components
    */
   public CreateWalletSeedPhrasePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
@@ -41,12 +41,19 @@ public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<Wel
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void newPanelModel() {
 
     SeedPhraseGenerator seedPhraseGenerator = getWizardModel().getSeedPhraseGenerator();
 
     displaySeedPhraseMaV = Components.newDisplaySeedPhraseMaV(seedPhraseGenerator);
     setPanelModel(displaySeedPhraseMaV.getModel().getValue());
+
+    getWizardModel().setActualSeedPhrase(displaySeedPhraseMaV.getModel().getValue());
+
+  }
+
+  @Override
+  public JPanel newWizardViewPanel() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       "fill,insets 0", // Layout constraints
@@ -69,6 +76,12 @@ public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<Wel
   public void updateFromComponentModels() {
 
     // Do nothing
+
+    // TODO remove this
+    for (String word : getWizardModel().getActualSeedPhrase()) {
+      System.out.print(word + " ");
+    }
+    System.out.println(", length=" + getWizardModel().getActualSeedPhrase().size());
 
   }
 

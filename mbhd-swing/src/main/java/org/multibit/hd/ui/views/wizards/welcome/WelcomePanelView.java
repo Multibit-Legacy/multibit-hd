@@ -46,10 +46,18 @@ public class WelcomePanelView extends AbstractWizardPanelView<WelcomeWizardModel
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void newPanelModel() {
 
     localeCode = Languages.currentLocale().getLanguage();
     setPanelModel(localeCode);
+
+    // Bind it to the wizard model
+    getWizardModel().setLocaleCode(localeCode);
+
+  }
+
+  @Override
+  public JPanel newWizardViewPanel() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       "fill,insets 0", // Layout constraints
@@ -62,6 +70,7 @@ public class WelcomePanelView extends AbstractWizardPanelView<WelcomeWizardModel
 
     return panel;
   }
+
 
   @Override
   public void updateFromComponentModels() {

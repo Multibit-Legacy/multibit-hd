@@ -1,9 +1,7 @@
 package org.multibit.hd.ui.views.wizards;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.events.view.WizardPanelModelChangedEvent;
 
 /**
  * <p>Abstract base class wizard models:</p>
@@ -52,25 +50,4 @@ public abstract class AbstractWizardModel<S> implements WizardModel {
 
   }
 
-  @Override
-  public void updateFromPanelModel(Optional panelModel) {
-    // Do nothing
-  }
-
-  /**
-   * <p>Provides default behaviour of updating the wizard model from the panel model if the panel name matches the current state</p>
-   *
-   * @param event The event
-   */
-  @Override
-  public void onWizardPanelModelChangedEvent(WizardPanelModelChangedEvent event) {
-
-    if (state.toString().equals(event.getPanelName())) {
-
-      // Default behaviour is to update
-      updateFromPanelModel(event.getPanelModel());
-
-    }
-
-  }
 }

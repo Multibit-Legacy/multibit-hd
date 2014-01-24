@@ -20,7 +20,7 @@ import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 
 public class SelectWalletPanelView extends AbstractWizardPanelView<WelcomeWizardModel, WelcomeWizardState> implements ActionListener {
@@ -29,8 +29,8 @@ public class SelectWalletPanelView extends AbstractWizardPanelView<WelcomeWizard
   private WelcomeWizardState currentSelection;
 
   /**
-   * @param wizard The wizard managing the states
-   * @param panelName   The panel name to filter events from components
+   * @param wizard    The wizard managing the states
+   * @param panelName The panel name to filter events from components
    */
   public SelectWalletPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
@@ -41,10 +41,17 @@ public class SelectWalletPanelView extends AbstractWizardPanelView<WelcomeWizard
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void newPanelModel() {
 
     currentSelection = SELECT_BACKUP_LOCATION;
     setPanelModel(currentSelection);
+
+    // Bind this to the wizard model
+    getWizardModel().setCurrentSelection(currentSelection);
+  }
+
+  @Override
+  public JPanel newWizardViewPanel() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       "fill,insets 0", // Layout constraints

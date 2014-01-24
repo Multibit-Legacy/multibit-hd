@@ -54,7 +54,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void newPanelModel() {
 
     enterAmountMaV = Components.newEnterAmountMaV(getPanelName());
 
@@ -73,6 +73,14 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
       enterAmountMaV.getModel(),
       displayBitcoinAddressMaV.getModel()
     ));
+
+    getWizardModel().setEnterAmountModel(enterAmountMaV.getModel());
+    getWizardModel().setTransactionLabel(label.getText());
+
+  }
+
+  @Override
+  public JPanel newWizardViewPanel() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       "fillx,insets 0", // Layout constraints

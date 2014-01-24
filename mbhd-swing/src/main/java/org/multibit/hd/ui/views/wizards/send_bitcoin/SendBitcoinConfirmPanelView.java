@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.events.view.WizardModelChangedEvent;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountModel;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
@@ -51,7 +50,7 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void newPanelModel() {
 
     transactionDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT);
     transactionFeeDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.FEE_AMOUNT);
@@ -59,10 +58,19 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     enterPasswordMaV = Components.newEnterPasswordMaV(getPanelName());
 
     // Configure the panel model
-    setPanelModel(new SendBitcoinConfirmPanelModel(
+    SendBitcoinConfirmPanelModel panelModel = new SendBitcoinConfirmPanelModel(
       getPanelName(),
       enterPasswordMaV.getModel()
-    ));
+    );
+    setPanelModel(panelModel);
+
+    // Bind it to the wizard model
+    getWizardModel().setConfirmPanelModel(panelModel);
+
+  }
+
+  @Override
+  public JPanel newWizardViewPanel() {
 
     // Blank labels populated from wizard model later
     recipientSummaryLabel = new JLabel("");
@@ -116,10 +124,10 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
   }
 
   @Override
-  public void onWizardModelChangedEvent(WizardModelChangedEvent event) {
+  public boolean beforeShow() {
 
     // Update the model and view for the amount
-    transactionDisplayAmountMaV.getModel().setPlainBitcoinAmount(getWizardModel().getRawBitcoinAmount());
+    transactionDisplayAmountMaV.getModel().setPlainBitcoinAmount(getWizardModel().getPlainBitcoinAmount());
     transactionDisplayAmountMaV.getModel().setLocalAmount(getWizardModel().getLocalAmount());
     transactionDisplayAmountMaV.getView().updateView();
 
@@ -136,5 +144,6 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     // Update the model and view for the recipient
     recipientSummaryLabel.setText(getWizardModel().getRecipient().getSummary());
 
+    return true;
   }
 }

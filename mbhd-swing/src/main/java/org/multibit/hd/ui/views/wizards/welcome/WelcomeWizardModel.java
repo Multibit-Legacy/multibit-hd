@@ -1,8 +1,6 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
@@ -11,7 +9,8 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
-import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
+import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
+import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
@@ -75,56 +74,20 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   private final SeedPhraseGenerator seedPhraseGenerator;
 
   /**
+   * The confirm password model
+   */
+  private ConfirmPasswordModel confirmPasswordModel;
+  private SelectFileModel selectFileModel;
+  private WelcomeWizardState currentSelection;
+  private EnterSeedPhraseModel enterSeedPhraseModel;
+
+  /**
    * @param state The state object
    */
   public WelcomeWizardModel(WelcomeWizardState state) {
     super(state);
 
     this.seedPhraseGenerator = CoreServices.newSeedPhraseGenerator();
-
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override
-  public void updateFromPanelModel(Optional panelModel) {
-
-    // No state transitions occur in this method
-
-    // TODO Consider migrating state into dedicated objects
-
-    switch (state) {
-      case WELCOME:
-        localeCode = (String) panelModel.get();
-        break;
-      case SELECT_WALLET:
-        selectWalletChoice = (WelcomeWizardState) panelModel.get();
-        break;
-      case RESTORE_WALLET:
-        break;
-      case HARDWARE_WALLET:
-        break;
-      case CREATE_WALLET_SEED_PHRASE:
-        actualSeedPhrase = (List<String>) panelModel.get();
-        // TODO remove this
-        for (String word : actualSeedPhrase) {
-          System.out.print(word + " ");
-        }
-        System.out.println(", length=" + actualSeedPhrase.size());
-        break;
-      case CONFIRM_WALLET_SEED_PHRASE:
-        // Get the user input
-        userSeedPhrase = (List<String>) panelModel.get();
-      {
-      }
-      break;
-      case CREATE_WALLET_PASSWORD:
-        userPassword = ((EnterPasswordModel) panelModel.get()).getValue();
-        break;
-      case SELECT_BACKUP_LOCATION:
-        backupLocation = ((SelectFileModel) panelModel.get()).getValue();
-        ViewEvents.fireWizardButtonEnabledEvent(SELECT_BACKUP_LOCATION.name(), WizardButton.NEXT, !Strings.isNullOrEmpty(backupLocation));
-        break;
-    }
 
   }
 
@@ -151,14 +114,13 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
         break;
       case CREATE_WALLET_PASSWORD:
         state = CREATE_WALLET_REPORT;
-        ViewEvents.fireWizardModelChangedEvent(CREATE_WALLET_REPORT.name());
         break;
       case RESTORE_WALLET:
-      state = CONFIRM_WALLET_SEED_PHRASE;
-      break;
+        state = CONFIRM_WALLET_SEED_PHRASE;
+        break;
       case HARDWARE_WALLET:
-      state = CONFIRM_WALLET_SEED_PHRASE;
-      break;
+        state = CONFIRM_WALLET_SEED_PHRASE;
+        break;
     }
 
   }
@@ -211,6 +173,15 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   }
 
   /**
+   * <p>Reduced visibility for panel models</p>
+   *
+   * @param localeCode The locale code
+   */
+  public void setLocaleCode(String localeCode) {
+    this.localeCode = localeCode;
+  }
+
+  /**
    * @return The "select wallet" radio button choice
    */
   public WelcomeWizardState getSelectWalletChoice() {
@@ -224,11 +195,8 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
     return actualSeedPhrase;
   }
 
-  /**
-   * @return The user entered seed phrase
-   */
-  public List<String> getUserSeedPhrase() {
-    return userSeedPhrase;
+  public void setActualSeedPhrase(List<String> actualSeedPhrase) {
+    this.actualSeedPhrase = actualSeedPhrase;
   }
 
   /**
@@ -252,4 +220,39 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
     return seedPhraseGenerator;
   }
 
+  /**
+   * <p>Reduced visibility for panel models</p>
+   *
+   * @param confirmPasswordModel The "confirm password" model
+   */
+  void setConfirmPasswordModel(ConfirmPasswordModel confirmPasswordModel) {
+    this.confirmPasswordModel = confirmPasswordModel;
+  }
+
+  /**
+   * <p>Reduced visibility for panel models</p>
+   *
+   * @param selectFileModel The "select file" model
+   */
+  void setSelectFileModel(SelectFileModel selectFileModel) {
+    this.selectFileModel = selectFileModel;
+  }
+
+  /**
+   * <p>Reduced visibility for panel models</p>
+   *
+   * @param currentSelection The current selection from the radio buttons
+   */
+  void setCurrentSelection(WelcomeWizardState currentSelection) {
+    this.currentSelection = currentSelection;
+  }
+
+  /**
+   * <p>Reduced visibility for panel models</p>
+   *
+   * @param enterSeedPhraseModel The "enter seed phrase" model
+   */
+  void setEnterSeedPhraseModel(EnterSeedPhraseModel enterSeedPhraseModel) {
+    this.enterSeedPhraseModel = enterSeedPhraseModel;
+  }
 }

@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.wizards.receive_bitcoin;
 
 import com.google.common.base.Optional;
+import org.multibit.hd.ui.views.components.enter_amount.EnterAmountModel;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 
 import java.math.BigDecimal;
@@ -21,6 +22,9 @@ public class ReceiveBitcoinWizardModel extends AbstractWizardModel<ReceiveBitcoi
   private Optional<String> recipientAddress = Optional.absent();
   private Optional<String> transactionLabel = Optional.absent();
 
+  private EnterAmountModel enterAmountModel;
+  private String label;
+
   /**
    * @param state The state object
    */
@@ -29,7 +33,6 @@ public class ReceiveBitcoinWizardModel extends AbstractWizardModel<ReceiveBitcoi
   }
 
   /**
-   *
    * @return The plain
    */
   public BigDecimal getBitcoinAmount() {
@@ -54,5 +57,14 @@ public class ReceiveBitcoinWizardModel extends AbstractWizardModel<ReceiveBitcoi
 
   public void setTransactionLabel(String transactionLabel) {
     this.transactionLabel = Optional.of(transactionLabel);
+  }
+
+  /**
+   * <p>Reduced visibility for panel models</p>
+   *
+   * @param enterAmountModel The "enter amount" model
+   */
+  void setEnterAmountModel(EnterAmountModel enterAmountModel) {
+    this.enterAmountModel = enterAmountModel;
   }
 }

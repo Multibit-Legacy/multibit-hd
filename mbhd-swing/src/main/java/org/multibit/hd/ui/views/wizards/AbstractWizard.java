@@ -113,31 +113,20 @@ public abstract class AbstractWizard<M extends WizardModel> {
   }
 
   /**
-   * <p>Show the previous panel</p>
-   */
-  public void previous() {
-
-    if (cardLayout.hasPrevious()) {
-      cardLayout.previous(wizardPanel);
-    }
-  }
-
-  /**
-   * <p>Show the next panel</p>
-   */
-  public void next() {
-
-    if (cardLayout.hasNext()) {
-      cardLayout.next(wizardPanel);
-    }
-  }
-
-  /**
    * <p>Show the named panel</p>
    */
   public void show(String name) {
 
-    cardLayout.show(wizardPanel, name);
+    Preconditions.checkState(wizardViewMap.containsKey(name), "'" + name + "' is not a valid panel name");
+
+    final AbstractWizardPanelView wizardPanelView = wizardViewMap.get(name);
+
+    // Provide warning that the panel is about to be shown
+    if (wizardPanelView.beforeShow()) {
+
+      // No abort so show
+      cardLayout.show(wizardPanel, name);
+    }
 
   }
 

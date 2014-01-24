@@ -7,7 +7,6 @@ import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.events.view.WizardModelChangedEvent;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
@@ -53,10 +52,17 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void newPanelModel() {
 
     String model = "TODO replace with a proper model";
     setPanelModel(model);
+
+    // No need to bind this to the wizard model
+
+  }
+
+  @Override
+  public JPanel newWizardViewPanel() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       "fill,insets 0", // Layout constraints
@@ -95,12 +101,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
   }
 
   @Override
-  public void onWizardModelChangedEvent(WizardModelChangedEvent event) {
-
-    // Check if this event applies to this panel
-    if (!event.getPanelName().equals(getPanelName())) {
-      return;
-    }
+  public boolean beforeShow() {
 
     WelcomeWizardModel model = getWizardModel();
 
@@ -153,7 +154,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
 
     ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, backupLocationStatus);
 
+    return true;
   }
-
 
 }
