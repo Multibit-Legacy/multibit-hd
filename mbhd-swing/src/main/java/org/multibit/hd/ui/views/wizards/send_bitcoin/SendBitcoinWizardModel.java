@@ -97,6 +97,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
         ViewEvents.fireWizardModelChangedEvent(SendBitcoinState.CONFIRM_AMOUNT.name());
         break;
       case CONFIRM_AMOUNT:
+        // Bitcoin send is confirmed - actually send the bitcoin
+        System.out.println("SendingBitcoinWizardModel#next: Sending bitcoin ...");
         state = SEND_BITCOIN_REPORT;
         break;
     }
