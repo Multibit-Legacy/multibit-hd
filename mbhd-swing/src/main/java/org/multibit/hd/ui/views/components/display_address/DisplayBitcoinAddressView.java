@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.components.display_address;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.utils.ClipboardUtils;
-import org.multibit.hd.ui.views.AbstractView;
+import org.multibit.hd.ui.views.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.TextBoxes;
@@ -20,7 +20,7 @@ import java.awt.event.ActionEvent;
  * @since 0.0.1
  *  
  */
-public class DisplayBitcoinAddressView extends AbstractView<DisplayBitcoinAddressModel> {
+public class DisplayBitcoinAddressView extends AbstractComponentView<DisplayBitcoinAddressModel> {
 
   /**
    * @param model The model backing this view
@@ -31,7 +31,7 @@ public class DisplayBitcoinAddressView extends AbstractView<DisplayBitcoinAddres
   }
 
   @Override
-  public JPanel newPanel() {
+  public JPanel newComponentPanel() {
 
     panel = Panels.newPanel(new MigLayout(
       "insets 0", // Layout
@@ -71,7 +71,7 @@ public class DisplayBitcoinAddressView extends AbstractView<DisplayBitcoinAddres
   }
 
   @Override
-  public void updateModel() {
+  public void updateModelFromView() {
     // Do nothing the model is updated from key release events
   }
 

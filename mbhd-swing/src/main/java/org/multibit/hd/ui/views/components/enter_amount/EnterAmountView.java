@@ -10,7 +10,7 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Numbers;
 import org.multibit.hd.ui.i18n.BitcoinSymbol;
 import org.multibit.hd.ui.i18n.Languages;
-import org.multibit.hd.ui.views.AbstractView;
+import org.multibit.hd.ui.views.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.TextBoxes;
@@ -34,7 +34,7 @@ import java.math.RoundingMode;
  * @since 0.0.1
  *  
  */
-public class EnterAmountView extends AbstractView<EnterAmountModel> {
+public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
   // View components
   private FormattedDecimalField bitcoinAmountText;
@@ -59,7 +59,7 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
   }
 
   @Override
-  public JPanel newPanel() {
+  public JPanel newComponentPanel() {
 
     panel = Panels.newPanel(new MigLayout(
       "fillx,insets 0", // Layout
@@ -126,7 +126,7 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
   }
 
   @Override
-  public void updateModel() {
+  public void updateModelFromView() {
     // Do nothing - the model is updated during key press
   }
 
@@ -231,8 +231,8 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
         BigDecimal bitcoinAmount = localAmount
           .divide(latestExchangeRateChangedEvent.get().getRate(), 12, RoundingMode.HALF_EVEN);
 
-        // Update the model with the raw value
-        getModel().get().setRawBitcoinAmount(bitcoinAmount);
+        // Update the model with the plain value
+        getModel().get().setPlainBitcoinAmount(bitcoinAmount);
         getModel().get().setLocalAmount(localAmount);
 
         // Use the symbolic amount for display formatting
@@ -242,7 +242,7 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
         bitcoinAmountText.setText("");
 
         // Update the model
-        getModel().get().setRawBitcoinAmount(BigDecimal.ZERO);
+        getModel().get().setPlainBitcoinAmount(BigDecimal.ZERO);
         getModel().get().setLocalAmount(BigDecimal.ZERO);
       }
 
@@ -271,14 +271,14 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
 
           // Apply Bitcoin symbol multiplier
         BigDecimal symbolMultiplier = BitcoinSymbol.current().multiplier();
-        BigDecimal rawBitcoinAmount = symbolicBitcoinAmount.divide(symbolMultiplier, 12, RoundingMode.HALF_EVEN);
+        BigDecimal plainBitcoinAmount = symbolicBitcoinAmount.divide(symbolMultiplier, 12, RoundingMode.HALF_EVEN);
 
-        BigDecimal localAmount = rawBitcoinAmount
+        BigDecimal localAmount = plainBitcoinAmount
           .multiply(latestExchangeRateChangedEvent.get().getRate())
           .setScale(8, RoundingMode.HALF_EVEN);
 
-        // Update the model with the raw value
-        getModel().get().setRawBitcoinAmount(rawBitcoinAmount);
+        // Update the model with the plain value
+        getModel().get().setPlainBitcoinAmount(plainBitcoinAmount);
         getModel().get().setLocalAmount(localAmount);
 
         // Use double for display formatting
@@ -288,7 +288,7 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
         localAmountText.setText("");
 
         // Update the model
-        getModel().get().setRawBitcoinAmount(BigDecimal.ZERO);
+        getModel().get().setPlainBitcoinAmount(BigDecimal.ZERO);
         getModel().get().setLocalAmount(BigDecimal.ZERO);
       }
     } else {
@@ -300,16 +300,16 @@ public class EnterAmountView extends AbstractView<EnterAmountModel> {
 
         // Apply Bitcoin symbol multiplier
         BigDecimal symbolMultiplier = BitcoinSymbol.current().multiplier();
-        BigDecimal rawBitcoinAmount = symbolicBitcoinAmount.divide(symbolMultiplier, 12, RoundingMode.HALF_EVEN);
+        BigDecimal plainBitcoinAmount = symbolicBitcoinAmount.divide(symbolMultiplier, 12, RoundingMode.HALF_EVEN);
 
         // Update the model
-        getModel().get().setRawBitcoinAmount(rawBitcoinAmount);
+        getModel().get().setPlainBitcoinAmount(plainBitcoinAmount);
         getModel().get().setLocalAmount(BigDecimal.ZERO);
 
       } else {
 
         // Update the model
-        getModel().get().setRawBitcoinAmount(BigDecimal.ZERO);
+        getModel().get().setPlainBitcoinAmount(BigDecimal.ZERO);
         getModel().get().setLocalAmount(BigDecimal.ZERO);
       }
     }

@@ -1,14 +1,17 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
+import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,9 +29,9 @@ import java.util.Locale;
  * @since 0.0.1
  *         
  */
-public class WelcomeView extends AbstractWizardView<WelcomeWizardModel, String> implements ActionListener {
+public class WelcomePanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> implements ActionListener {
 
-  private static final Logger log = LoggerFactory.getLogger(WelcomeView.class);
+  private static final Logger log = LoggerFactory.getLogger(WelcomePanelView.class);
 
   // Model
   private String localeCode = Languages.currentLocale().getLanguage();
@@ -37,7 +40,7 @@ public class WelcomeView extends AbstractWizardView<WelcomeWizardModel, String> 
    * @param wizard The wizard managing the states
    * @param panelName   The panel name to filter events from components
    */
-  public WelcomeView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public WelcomePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard.getWizardModel(), panelName, MessageKey.WELCOME_TITLE);
 
@@ -46,10 +49,18 @@ public class WelcomeView extends AbstractWizardView<WelcomeWizardModel, String> 
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void newPanelModel() {
 
     localeCode = Languages.currentLocale().getLanguage();
     setPanelModel(localeCode);
+
+    // Bind it to the wizard model
+    getWizardModel().setLocaleCode(localeCode);
+
+  }
+
+  @Override
+  public JPanel newWizardViewPanel() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       "fill,insets 0", // Layout constraints
@@ -64,9 +75,18 @@ public class WelcomeView extends AbstractWizardView<WelcomeWizardModel, String> 
   }
 
   @Override
-  public boolean updateFromComponentModels() {
+  public void fireInitialStateViewEvents() {
+
+    // Enable the "next" button
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
+
+  }
+
+  @Override
+  public void updateFromComponentModels(Optional componentModel) {
+
     // Do nothing - panel model is updated via an action and wizard model is not applicable
-    return true;
+
   }
 
   /**

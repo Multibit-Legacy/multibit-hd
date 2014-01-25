@@ -19,7 +19,7 @@ import java.math.BigDecimal;
  */
 public class EnterAmountModel implements Model<EnterAmountModel> {
 
-  private Optional<BigDecimal> rawBitcoinAmount = Optional.absent();
+  private Optional<BigDecimal> plainBitcoinAmount = Optional.absent();
   private Optional<BigDecimal> localAmount = Optional.absent();
 
   private final String panelName;
@@ -53,24 +53,24 @@ public class EnterAmountModel implements Model<EnterAmountModel> {
    * @return The Bitcoin amount (zero if not present) with symbol multiplier
    */
   public BigDecimal getSymbolicBitcoinAmount() {
-    return getRawBitcoinAmount().multiply(BitcoinSymbol.current().multiplier());
+    return getPlainBitcoinAmount().multiply(BitcoinSymbol.current().multiplier());
   }
 
   /**
    * @return The Bitcoin amount (zero if not present) without symbol multiplier
    */
-  public BigDecimal getRawBitcoinAmount() {
-    return rawBitcoinAmount.or(BigDecimal.ZERO);
+  public BigDecimal getPlainBitcoinAmount() {
+    return plainBitcoinAmount.or(BigDecimal.ZERO);
   }
 
   /**
    * @param value The Bitcoin amount (fires a "component model changed" event)
    */
-  public void setRawBitcoinAmount(BigDecimal value) {
+  public void setPlainBitcoinAmount(BigDecimal value) {
 
     Preconditions.checkNotNull(value, "'value' should be present");
 
-    rawBitcoinAmount = Optional.of(value);
+    plainBitcoinAmount = Optional.of(value);
 
     // Fire a component model updated event
     ViewEvents.fireWizardComponentModelChangedEvent(panelName, Optional.of(this));
@@ -85,16 +85,13 @@ public class EnterAmountModel implements Model<EnterAmountModel> {
   }
 
   /**
-   * @param value The local amount (fires a "component model changed" event)
+   * @param value The local amount - no component event since the Bitcoin value drives this component
    */
   public void setLocalAmount(BigDecimal value) {
 
     Preconditions.checkNotNull(value, "'value' should be present");
 
     localAmount = Optional.of(value);
-
-    // Fire a component model updated event
-    ViewEvents.fireWizardComponentModelChangedEvent(panelName, Optional.of(this));
 
   }
 }

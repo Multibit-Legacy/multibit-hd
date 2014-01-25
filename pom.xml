@@ -76,8 +76,9 @@
     <!-- ZXing releases -->
     <repository>
       <id>mvn-adamgent</id>
-      <url>http://mvn-adamgent.googlecode.com/svn/maven/release</url>
       <name>Adam Gent Maven Repository</name>
+      <url>http://mvn-adamgent.googlecode.com/svn/maven/release</url>
+      <releases/>
     </repository>
 
   </repositories>

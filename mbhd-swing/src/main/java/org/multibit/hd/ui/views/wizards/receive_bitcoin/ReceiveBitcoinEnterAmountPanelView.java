@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.receive_bitcoin;
 
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.uri.BitcoinURI;
+import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -13,12 +14,12 @@ import org.multibit.hd.ui.views.components.display_qrcode.DisplayQRCodeView;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountModel;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
@@ -28,10 +29,10 @@ import java.math.BigInteger;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 
-public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBitcoinWizardModel, ReceiveBitcoinEnterAmountPanelModel> {
+public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<ReceiveBitcoinWizardModel, ReceiveBitcoinEnterAmountPanelModel> {
 
   // Panel specific components
   private ModelAndView<EnterAmountModel, EnterAmountView> enterAmountMaV;
@@ -45,7 +46,7 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
   /**
    * @param wizard The wizard managing the states
    */
-  public ReceiveBitcoinEnterAmountView(AbstractWizard<ReceiveBitcoinWizardModel> wizard, String panelName) {
+  public ReceiveBitcoinEnterAmountPanelView(AbstractWizard<ReceiveBitcoinWizardModel> wizard, String panelName) {
 
     super(wizard.getWizardModel(), panelName, MessageKey.RECEIVE_BITCOIN_TITLE);
 
@@ -54,9 +55,9 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void newPanelModel() {
 
-    enterAmountMaV = Components.newEnterAmountMaV(getWizardViewPanelName());
+    enterAmountMaV = Components.newEnterAmountMaV(getPanelName());
 
     // TODO Link this to the recipient address service
     displayBitcoinAddressMaV = Components.newDisplayBitcoinAddressMaV("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
@@ -69,10 +70,18 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
 
     // Configure the panel model
     setPanelModel(new ReceiveBitcoinEnterAmountPanelModel(
-      getWizardViewPanelName(),
+      getPanelName(),
       enterAmountMaV.getModel(),
       displayBitcoinAddressMaV.getModel()
     ));
+
+    getWizardModel().setEnterAmountModel(enterAmountMaV.getModel());
+    getWizardModel().setTransactionLabel(label.getText());
+
+  }
+
+  @Override
+  public JPanel newWizardViewPanel() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       "fillx,insets 0", // Layout constraints
@@ -80,12 +89,12 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
       "[]10[]" // Row constraints
     ));
 
-    panel.add(enterAmountMaV.getView().newPanel(),"span 3,wrap");
+    panel.add(enterAmountMaV.getView().newComponentPanel(), "span 3,wrap");
     panel.add(Labels.newRecipient());
-    panel.add(displayBitcoinAddressMaV.getView().newPanel(),"growx,push");
-    panel.add(showQRCode,"wrap");
+    panel.add(displayBitcoinAddressMaV.getView().newComponentPanel(), "growx,push");
+    panel.add(showQRCode, "wrap");
     panel.add(Labels.newTransactionLabel());
-    panel.add(label,"span 2,wrap");
+    panel.add(label, "span 2,wrap");
 
     return panel;
   }
@@ -94,7 +103,31 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
   public void fireInitialStateViewEvents() {
 
     // Disable the finish button
-    ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, false);
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, false);
+
+  }
+
+  @Override
+  public void updateFromComponentModels(Optional componentModel) {
+
+    // No need to update since we expose the component models
+
+    // Determine any events
+    ViewEvents.fireWizardButtonEnabledEvent(
+      getPanelName(),
+      WizardButton.NEXT,
+      isNextEnabled()
+    );
+
+
+  }
+
+  /**
+   * @return True if the "next" button should be enabled
+   */
+  private boolean isNextEnabled() {
+
+    return !getWizardModel().getBitcoinAmount().equals(BigDecimal.ZERO);
 
   }
 
@@ -112,7 +145,7 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
         ReceiveBitcoinEnterAmountPanelModel model = getPanelModel().get();
 
         String bitcoinAddress = model.getDisplayBitcoinAddressModel().getValue();
-        BigInteger amount = Utils.toNanoCoins(model.getEnterAmountModel().getRawBitcoinAmount().toPlainString());
+        BigInteger amount = Utils.toNanoCoins(model.getEnterAmountModel().getPlainBitcoinAmount().toPlainString());
 
         // Form a Bitcoin URI from the contents
         String bitcoinUri = BitcoinURI.convertToBitcoinURI(
@@ -125,22 +158,11 @@ public class ReceiveBitcoinEnterAmountView extends AbstractWizardView<ReceiveBit
         displayQRCodeMaV.getModel().setValue(bitcoinUri);
 
         // Show the QR code as a popover
-        Panels.showLightBoxPopover(displayQRCodeMaV.getView().newPanel());
+        Panels.showLightBoxPopover(displayQRCodeMaV.getView().newComponentPanel());
 
       }
 
     };
-  }
-
-  @Override
-  public boolean updateFromComponentModels() {
-
-    enterAmountMaV.getView().updateModel();
-
-    // The panel model has changed so alert the wizard
-    ViewEvents.fireWizardPanelModelChangedEvent(getWizardViewPanelName(), getPanelModel());
-
-    return false;
   }
 
 }

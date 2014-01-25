@@ -1,8 +1,10 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
+import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.PanelDecorator;
@@ -10,7 +12,8 @@ import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseModel;
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
 import java.util.List;
@@ -22,17 +25,17 @@ import java.util.List;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
-public class CreateWalletSeedPhraseView extends AbstractWizardView<WelcomeWizardModel, List<String>> {
+public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<WelcomeWizardModel, List<String>> {
 
   private ModelAndView<DisplaySeedPhraseModel, DisplaySeedPhraseView> displaySeedPhraseMaV;
 
   /**
-   * @param wizard The wizard managing the states
-   * @param panelName   The panel name to filter events from components
+   * @param wizard    The wizard managing the states
+   * @param panelName The panel name to filter events from components
    */
-  public CreateWalletSeedPhraseView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public CreateWalletSeedPhrasePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard.getWizardModel(), panelName, MessageKey.CREATE_WALLET_SEED_PHRASE_TITLE);
 
@@ -41,12 +44,19 @@ public class CreateWalletSeedPhraseView extends AbstractWizardView<WelcomeWizard
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void newPanelModel() {
 
     SeedPhraseGenerator seedPhraseGenerator = getWizardModel().getSeedPhraseGenerator();
 
     displaySeedPhraseMaV = Components.newDisplaySeedPhraseMaV(seedPhraseGenerator);
     setPanelModel(displaySeedPhraseMaV.getModel().getValue());
+
+    getWizardModel().setActualSeedPhrase(displaySeedPhraseMaV.getModel().getValue());
+
+  }
+
+  @Override
+  public JPanel newWizardViewPanel() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       "fill,insets 0", // Layout constraints
@@ -55,20 +65,31 @@ public class CreateWalletSeedPhraseView extends AbstractWizardView<WelcomeWizard
     ));
 
     panel.add(Panels.newSeedPhraseWarning(), "grow,push,wrap");
-    panel.add(displaySeedPhraseMaV.getView().newPanel(), "wrap");
+    panel.add(displaySeedPhraseMaV.getView().newComponentPanel(), "wrap");
 
     return panel;
   }
 
   @Override
   public void fireInitialStateViewEvents() {
-    // Do nothing
+
+    // Enable the "next" button
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
+
   }
 
   @Override
-  public boolean updateFromComponentModels() {
-    displaySeedPhraseMaV.getView().updateModel();
-    return false;
+  public void updateFromComponentModels(Optional componentModel) {
+
+    // Update the wizard model with the latest seed phrase
+    getWizardModel().setActualSeedPhrase(displaySeedPhraseMaV.getModel().getValue());
+
+    // TODO remove this
+    for (String word : getWizardModel().getActualSeedPhrase()) {
+      System.out.print(word + " ");
+    }
+    System.out.println(", length=" + getWizardModel().getActualSeedPhrase().size());
+
   }
 
 }

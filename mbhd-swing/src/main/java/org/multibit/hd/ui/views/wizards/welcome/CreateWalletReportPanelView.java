@@ -1,14 +1,13 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.events.view.WizardModelChangedEvent;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
@@ -16,7 +15,7 @@ import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
@@ -33,7 +32,7 @@ import java.util.List;
  * @since 0.0.1
  *  
  */
-public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardModel, String> {
+public class CreateWalletReportPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> {
 
   // View
   private JLabel seedPhraseCreatedStatusLabel;
@@ -45,7 +44,7 @@ public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardMode
    * @param wizard The wizard managing the states
    * @param panelName   The panel name to filter events from components
    */
-  public CreateWalletReportView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public CreateWalletReportPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard.getWizardModel(), panelName, MessageKey.CREATE_WALLET_REPORT_TITLE);
 
@@ -54,10 +53,17 @@ public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardMode
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void newPanelModel() {
 
     String model = "TODO replace with a proper model";
     setPanelModel(model);
+
+    // No need to bind this to the wizard model
+
+  }
+
+  @Override
+  public JPanel newWizardViewPanel() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       "fill,insets 0", // Layout constraints
@@ -86,26 +92,17 @@ public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardMode
   public void fireInitialStateViewEvents() {
 
     // Disable the finish button
-    ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, false);
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, false);
 
   }
 
   @Override
-  public boolean updateFromComponentModels() {
+  public void updateFromComponentModels(Optional componentModel) {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
-    return true;
   }
 
-  /**
-   * @param event The "wizard model changed" event
-   */
-  @Subscribe
-  public void onWizardModelChangedEvent(WizardModelChangedEvent event) {
-
-    // Check if this event applies to this panel
-    if (!event.getPanelName().equals(getWizardViewPanelName())) {
-      return;
-    }
+  @Override
+  public boolean beforeShow() {
 
     WelcomeWizardModel model = getWizardModel();
 
@@ -158,7 +155,7 @@ public class CreateWalletReportView extends AbstractWizardView<WelcomeWizardMode
 
     ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, backupLocationStatus);
 
+    return true;
   }
-
 
 }

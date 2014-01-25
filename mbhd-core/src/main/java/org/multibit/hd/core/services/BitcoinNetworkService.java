@@ -42,7 +42,7 @@ import java.util.concurrent.TimeoutException;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class BitcoinNetworkService extends AbstractService {
 
@@ -100,10 +100,10 @@ public class BitcoinNetworkService extends AbstractService {
     } catch (Exception e) {
       log.error(e.getClass().getName() + " " + e.getMessage());
       CoreEvents.fireBitcoinNetworkChangedEvent(
-              BitcoinNetworkSummary.newNetworkStartupFailed(
-                      MessageKey.START_NETWORK_CONNECTION_ERROR,
-                      Optional.<Object[]>absent()
-              ));
+        BitcoinNetworkSummary.newNetworkStartupFailed(
+          MessageKey.START_NETWORK_CONNECTION_ERROR,
+          Optional.<Object[]>absent()
+        ));
     }
   }
 
@@ -231,9 +231,9 @@ public class BitcoinNetworkService extends AbstractService {
 
         // Issue a "network ready" event
         CoreEvents.fireBitcoinNetworkChangedEvent(
-                BitcoinNetworkSummary.newNetworkReady(
-                        peerEventListener.getNumberOfConnectedPeers()
-                ));
+          BitcoinNetworkSummary.newNetworkReady(
+            peerEventListener.getNumberOfConnectedPeers()
+          ));
 
       }
     });

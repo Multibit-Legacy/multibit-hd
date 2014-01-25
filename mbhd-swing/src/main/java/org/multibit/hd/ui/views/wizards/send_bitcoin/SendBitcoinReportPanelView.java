@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import com.google.common.eventbus.Subscribe;
+import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.events.BitcoinSentEvent;
@@ -10,9 +11,9 @@ import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import javax.swing.*;
 
@@ -25,12 +26,12 @@ import javax.swing.*;
  * @since 0.0.1
  *  
  */
-public class SendBitcoinReportView extends AbstractWizardView<SendBitcoinWizardModel, String> {
+public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitcoinWizardModel, String> {
 
   // Model
   private String model;
 
-  private static final Logger log = LoggerFactory.getLogger(SendBitcoinReportView.class);
+  private static final Logger log = LoggerFactory.getLogger(SendBitcoinReportPanelView.class);
 
 
   private static JLabel resultText1 = new JLabel();
@@ -39,7 +40,7 @@ public class SendBitcoinReportView extends AbstractWizardView<SendBitcoinWizardM
   /**
    * @param wizard The wizard managing the states
    */
-  public SendBitcoinReportView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
+  public SendBitcoinReportPanelView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
 
     super(wizard.getWizardModel(), panelName, MessageKey.SEND_PROGRESS_TITLE);
 
@@ -50,10 +51,15 @@ public class SendBitcoinReportView extends AbstractWizardView<SendBitcoinWizardM
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void newPanelModel() {
 
     model = "TODO replace with a proper model";
     setPanelModel(model);
+
+  }
+
+  @Override
+  public JPanel newWizardViewPanel() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       "fill,insets 0", // Layout constraints
@@ -78,9 +84,8 @@ public class SendBitcoinReportView extends AbstractWizardView<SendBitcoinWizardM
   }
 
   @Override
-  public boolean updateFromComponentModels() {
+  public void updateFromComponentModels(Optional componentModel) {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
-    return true;
   }
 
   @Subscribe

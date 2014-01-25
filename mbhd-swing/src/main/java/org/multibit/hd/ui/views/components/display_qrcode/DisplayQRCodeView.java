@@ -5,7 +5,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.utils.OSUtils;
 import org.multibit.hd.ui.utils.ClipboardUtils;
 import org.multibit.hd.ui.utils.QRCodes;
-import org.multibit.hd.ui.views.AbstractView;
+import org.multibit.hd.ui.views.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
@@ -24,7 +24,7 @@ import java.awt.image.BufferedImage;
  * @since 0.0.1
  *  
  */
-public class DisplayQRCodeView extends AbstractView<DisplayQRCodeModel> {
+public class DisplayQRCodeView extends AbstractComponentView<DisplayQRCodeModel> {
 
   private Optional<BufferedImage> qrCodeImage;
 
@@ -38,7 +38,7 @@ public class DisplayQRCodeView extends AbstractView<DisplayQRCodeModel> {
   }
 
   @Override
-  public JPanel newPanel() {
+  public JPanel newComponentPanel() {
 
     panel = Panels.newPanel(new MigLayout(
       "insets 0", // Layout
@@ -101,7 +101,7 @@ public class DisplayQRCodeView extends AbstractView<DisplayQRCodeModel> {
 
 
   @Override
-  public void updateModel() {
+  public void updateModelFromView() {
     // Do nothing the model is updated from key release events
   }
 

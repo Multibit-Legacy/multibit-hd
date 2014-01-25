@@ -1,14 +1,10 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import org.multibit.hd.core.api.Recipient;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.ui.MultiBitHD;
-import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
-import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,51 +54,12 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     super(state);
   }
 
-  @SuppressWarnings("unchecked")
-  @Override
-  public void updateFromPanelModel(Optional panelModel) {
-
-    // No state transitions occur in this method
-
-    // TODO Consider migrating state into dedicated objects
-
-    switch (state) {
-      case ENTER_AMOUNT:
-
-        enterAmountPanelModel = (SendBitcoinEnterAmountPanelModel) panelModel.get();
-
-        // Determine any events
-        ViewEvents.fireWizardButtonEnabledEvent(
-          SendBitcoinState.ENTER_AMOUNT.name(),
-          WizardButton.NEXT,
-          isEnterAmountNextEnabled()
-        );
-        break;
-      case CONFIRM_AMOUNT:
-
-        confirmPanelModel = (SendBitcoinConfirmPanelModel) panelModel.get();
-
-        // Determine any events
-        ViewEvents.fireWizardButtonEnabledEvent(
-          SendBitcoinState.CONFIRM_AMOUNT.name(),
-          WizardButton.NEXT,
-          isConfirmNextEnabled()
-        );
-        break;
-      case SEND_BITCOIN_REPORT:
-        break;
-    }
-
-  }
-
   @Override
   public void showNext() {
 
     switch (state) {
       case ENTER_AMOUNT:
         state = CONFIRM_AMOUNT;
-        // Determine any events
-        ViewEvents.fireWizardModelChangedEvent(SendBitcoinState.CONFIRM_AMOUNT.name());
         break;
       case CONFIRM_AMOUNT:
         // The user has confirmed the send details and pressed the next button
@@ -146,7 +103,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
     String changeAddress = bitcoinNetworkService.getNextChangeAddress();
 
-    BigDecimal amountBTC = enterAmountPanelModel.getEnterAmountModel().getRawBitcoinAmount();
+    BigDecimal amountBTC = enterAmountPanelModel.getEnterAmountModel().getPlainBitcoinAmount();
     // Convert to satoshi
     // TODO - it's a bad idea to have different amount formats in different parts of the code
     BigInteger amountBTCBigInteger = amountBTC.multiply(BigDecimal.valueOf(100000000)).toBigInteger();
@@ -177,10 +134,10 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   /**
    * @return The Bitcoin amount without symbolic multiplier
    */
-  public BigDecimal getRawBitcoinAmount() {
+  public BigDecimal getPlainBitcoinAmount() {
     return enterAmountPanelModel
       .getEnterAmountModel()
-      .getRawBitcoinAmount();
+      .getPlainBitcoinAmount();
   }
 
   /**
@@ -208,42 +165,34 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   }
 
   /**
-   * @return True if the "enter amount" panel next button should be enabled
+   * <p>Reduced visibility for panel models only</p>
+   *
+   * @param enterAmountPanelModel The "enter amount" panel model
    */
-  private boolean isEnterAmountNextEnabled() {
-
-    boolean bitcoinAmountOK = !enterAmountPanelModel
-      .getEnterAmountModel()
-      .getRawBitcoinAmount()
-      .equals(BigDecimal.ZERO);
-
-    boolean recipientOK = enterAmountPanelModel
-      .getEnterRecipientModel()
-      .getRecipient() != null;
-
-    return bitcoinAmountOK && recipientOK;
-
+  void setEnterAmountPanelModel(SendBitcoinEnterAmountPanelModel enterAmountPanelModel) {
+    this.enterAmountPanelModel = enterAmountPanelModel;
   }
 
   /**
-   * @return True if the "confirm" panel next button should be enabled
+   * <p>Reduced visibility for panel models only</p>
+   *
+   * @param confirmPanelModel The "confirm" panel model
    */
-  private boolean isConfirmNextEnabled() {
-
-    return !Strings.isNullOrEmpty(getPassword());
+  void setConfirmPanelModel(SendBitcoinConfirmPanelModel confirmPanelModel) {
+    this.confirmPanelModel = confirmPanelModel;
   }
 
   /**
    * @return The transaction fee (a.k.a "miner's fee") without symbolic multiplier
    */
-  public BigDecimal getRawTransactionFee() {
+  public BigDecimal getPlainTransactionFee() {
     return transactionFee;
   }
 
   /**
    * @return The developer fee without symbolic multiplier
    */
-  public BigDecimal getRawDeveloperFee() {
+  public BigDecimal getPlainDeveloperFee() {
     return developerFee;
   }
 }

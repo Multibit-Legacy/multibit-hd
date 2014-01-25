@@ -58,9 +58,11 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
 
     seedPhrase = Lists.newArrayList(Splitter.on(" ").trimResults().split(text));
     if (SeedPhraseSize.isValid(seedPhrase.size())) {
-      // Have a possible match so alert the wizard model
-      ViewEvents.fireWizardPanelModelChangedEvent(panelName, Optional.of(seedPhrase));
+
+      // Have a possible match so alert the panel model
+      ViewEvents.fireWizardComponentModelChangedEvent(panelName, Optional.of(seedPhrase));
     } else {
+
       // Ensure the "next" button is kept disabled
       ViewEvents.fireWizardButtonEnabledEvent(panelName, WizardButton.NEXT, false);
       ViewEvents.fireVerificationStatusChangedEvent(panelName, false);

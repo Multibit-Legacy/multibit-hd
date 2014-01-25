@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.wizards.exit;
 
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import java.util.Map;
 
@@ -21,9 +21,9 @@ public class ExitWizard extends AbstractWizard<ExitWizardModel> {
   }
 
   @Override
-  protected void populateWizardViewMap(Map<String, AbstractWizardView> wizardViewMap) {
+  protected void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap) {
 
-    wizardViewMap.put(ExitState.CONFIRM_EXIT.name(), new ExitView(this, ExitState.CONFIRM_EXIT.name()));
+    wizardViewMap.put(ExitState.CONFIRM_EXIT.name(), new ExitPanelView(this, ExitState.CONFIRM_EXIT.name()));
 
   }
 

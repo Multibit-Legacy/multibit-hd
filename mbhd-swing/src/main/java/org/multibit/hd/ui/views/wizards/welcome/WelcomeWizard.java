@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import java.util.Map;
 
@@ -25,32 +25,32 @@ public class WelcomeWizard extends AbstractWizard<WelcomeWizardModel> {
   }
 
   @Override
-  protected void populateWizardViewMap(Map<String, AbstractWizardView> wizardViewMap) {
+  protected void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap) {
 
     wizardViewMap.put(
       WELCOME.name(),
-      new WelcomeView(this, WELCOME.name()));
+      new WelcomePanelView(this, WELCOME.name()));
     wizardViewMap.put(
       SELECT_WALLET.name(),
-      new SelectWalletView(this, SELECT_WALLET.name()));
+      new SelectWalletPanelView(this, SELECT_WALLET.name()));
     wizardViewMap.put(
       CREATE_WALLET_SEED_PHRASE.name(),
-      new CreateWalletSeedPhraseView(this, CREATE_WALLET_SEED_PHRASE.name()));
+      new CreateWalletSeedPhrasePanelView(this, CREATE_WALLET_SEED_PHRASE.name()));
     wizardViewMap.put(
       CONFIRM_WALLET_SEED_PHRASE.name(),
-      new ConfirmWalletSeedPhraseView(this, CONFIRM_WALLET_SEED_PHRASE.name()));
+      new ConfirmWalletSeedPhrasePanelView(this, CONFIRM_WALLET_SEED_PHRASE.name()));
     wizardViewMap.put(
       RESTORE_WALLET.name(),
-      new RestoreWalletChoicesView(this, RESTORE_WALLET.name()));
+      new RestoreWalletChoicesPanelView(this, RESTORE_WALLET.name()));
     wizardViewMap.put(
       CREATE_WALLET_PASSWORD.name(),
-      new CreateWalletPasswordView(this, CREATE_WALLET_PASSWORD.name()));
+      new CreateWalletPasswordPanelView(this, CREATE_WALLET_PASSWORD.name()));
     wizardViewMap.put(
       SELECT_BACKUP_LOCATION.name(),
-      new SelectBackupLocationView(this, SELECT_BACKUP_LOCATION.name()));
+      new SelectBackupLocationPanelView(this, SELECT_BACKUP_LOCATION.name()));
     wizardViewMap.put(
       CREATE_WALLET_REPORT.name(),
-      new CreateWalletReportView(this, CREATE_WALLET_REPORT.name()));
+      new CreateWalletReportPanelView(this, CREATE_WALLET_REPORT.name()));
 
   }
 

@@ -1,11 +1,12 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
+import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardView;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -21,17 +22,22 @@ import java.awt.event.ActionListener;
  *         
  */
 
-public class RestoreWalletChoicesView extends AbstractWizardView<WelcomeWizardModel, String> implements ActionListener {
+public class RestoreWalletChoicesPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> implements ActionListener {
 
   /**
    * @param wizard The wizard managing the states
    * @param panelName   The panel name to filter events from components
    */
-  public RestoreWalletChoicesView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public RestoreWalletChoicesPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard.getWizardModel(), panelName, MessageKey.RESTORE_WALLET_TITLE);
 
     PanelDecorator.addExitCancelPreviousNext(this, wizard);
+  }
+
+  @Override
+  public void newPanelModel() {
+    // No panel model required
   }
 
   @Override
@@ -49,9 +55,8 @@ public class RestoreWalletChoicesView extends AbstractWizardView<WelcomeWizardMo
   }
 
   @Override
-  public boolean updateFromComponentModels() {
+  public void updateFromComponentModels(Optional componentModel) {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
-    return true;
   }
 
   /**

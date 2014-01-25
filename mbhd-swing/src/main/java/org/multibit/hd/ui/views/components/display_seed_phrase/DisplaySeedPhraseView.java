@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.components.display_seed_phrase;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
-import org.multibit.hd.ui.views.AbstractView;
+import org.multibit.hd.ui.views.AbstractComponentView;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -21,7 +21,7 @@ import java.awt.event.ActionListener;
  * @since 0.0.1
  *  
  */
-public class DisplaySeedPhraseView extends AbstractView<DisplaySeedPhraseModel> implements ActionListener {
+public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhraseModel> implements ActionListener {
 
   // View components
   private JTextArea seedPhrase;
@@ -34,7 +34,7 @@ public class DisplaySeedPhraseView extends AbstractView<DisplaySeedPhraseModel> 
   }
 
   @Override
-  public JPanel newPanel() {
+  public JPanel newComponentPanel() {
 
     panel = Panels.newPanel(new MigLayout(
       "insets 0", // Layout
@@ -80,7 +80,7 @@ public class DisplaySeedPhraseView extends AbstractView<DisplaySeedPhraseModel> 
   }
 
   @Override
-  public void updateModel() {
+  public void updateModelFromView() {
     // Do nothing - the model is driving the view
   }
 

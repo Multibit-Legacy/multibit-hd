@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
@@ -34,7 +35,7 @@ public abstract class AbstractWizard<M extends WizardModel> {
   private final M wizardModel;
 
   private final boolean exiting;
-  private Map<String, AbstractWizardView> wizardViewMap = Maps.newHashMap();
+  private Map<String, AbstractWizardPanelView> wizardViewMap = Maps.newHashMap();
 
   /**
    * @param wizardModel The overall wizard data model containing the aggregate information of all components in the wizard
@@ -77,7 +78,7 @@ public abstract class AbstractWizard<M extends WizardModel> {
     populateWizardViewMap(wizardViewMap);
 
     // Bind the views into the wizard panel, and share their panel names
-    for (Map.Entry<String, AbstractWizardView> entry : wizardViewMap.entrySet()) {
+    for (Map.Entry<String, AbstractWizardPanelView> entry : wizardViewMap.entrySet()) {
 
       // Add it to the panel
       wizardPanel.add(entry.getValue().getWizardPanel(), entry.getKey());
@@ -85,7 +86,7 @@ public abstract class AbstractWizard<M extends WizardModel> {
     }
 
     // Once all the views are initialised allow events to occur
-    for (Map.Entry<String, AbstractWizardView> entry : wizardViewMap.entrySet()) {
+    for (Map.Entry<String, AbstractWizardPanelView> entry : wizardViewMap.entrySet()) {
 
       // Ensure the panel is in the correct starting state
       entry.getValue().fireInitialStateViewEvents();
@@ -101,7 +102,7 @@ public abstract class AbstractWizard<M extends WizardModel> {
    * <p>Add fresh content to the wizard view map</p>
    * <p>The map will be empty whenever this is called</p>
    */
-  protected abstract void populateWizardViewMap(Map<String, AbstractWizardView> wizardViewMap);
+  protected abstract void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap);
 
   /**
    * <p>Close the wizard</p>
@@ -113,31 +114,20 @@ public abstract class AbstractWizard<M extends WizardModel> {
   }
 
   /**
-   * <p>Show the previous panel</p>
-   */
-  public void previous() {
-
-    if (cardLayout.hasPrevious()) {
-      cardLayout.previous(wizardPanel);
-    }
-  }
-
-  /**
-   * <p>Show the next panel</p>
-   */
-  public void next() {
-
-    if (cardLayout.hasNext()) {
-      cardLayout.next(wizardPanel);
-    }
-  }
-
-  /**
    * <p>Show the named panel</p>
    */
   public void show(String name) {
 
-    cardLayout.show(wizardPanel, name);
+    Preconditions.checkState(wizardViewMap.containsKey(name), "'" + name + "' is not a valid panel name");
+
+    final AbstractWizardPanelView wizardPanelView = wizardViewMap.get(name);
+
+    // Provide warning that the panel is about to be shown
+    if (wizardPanelView.beforeShow()) {
+
+      // No abort so show
+      cardLayout.show(wizardPanel, name);
+    }
 
   }
 
@@ -188,7 +178,7 @@ public abstract class AbstractWizard<M extends WizardModel> {
    *
    * @return The "finish" action based on the model state
    */
-  public <P> Action getFinishAction(final AbstractWizardView<M, P> wizardView) {
+  public <P> Action getFinishAction(final AbstractWizardPanelView<M, P> wizardView) {
 
     return new AbstractAction() {
       @Override
@@ -207,23 +197,18 @@ public abstract class AbstractWizard<M extends WizardModel> {
   }
 
   /**
-   * @param wizardView The wizard view (providing a reference to its underlying panel model)
+   * @param wizardPanelView The wizard panel view (providing a reference to its underlying panel model)
    *
    * @return The "next" action based on the model state
    */
-  public <P> Action getNextAction(final AbstractWizardView<M, P> wizardView) {
+  public <P> Action getNextAction(final AbstractWizardPanelView<M, P> wizardPanelView) {
 
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
 
         // Ensure the panel updates its model (the button is outside of the panel itself)
-        if (!wizardView.updateFromComponentModels()) {
-
-          // Aggregate the panel information into the wizard model
-          wizardModel.updateFromPanelModel(wizardView.getPanelModel());
-
-        }
+        wizardPanelView.updateFromComponentModels(Optional.absent());
 
         // Move to the next state
         wizardModel.showNext();
@@ -239,14 +224,14 @@ public abstract class AbstractWizard<M extends WizardModel> {
    *
    * @return The "previous" action based on the model state
    */
-  public <P> Action getPreviousAction(final AbstractWizardView<M, P> wizardView) {
+  public <P> Action getPreviousAction(final AbstractWizardPanelView<M, P> wizardView) {
 
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
 
         // Ensure the panel updates its model (the button is outside of the panel itself)
-        wizardView.updateFromComponentModels();
+        wizardView.updateFromComponentModels(Optional.absent());
 
         // Aggregate the panel information into the wizard model
 
