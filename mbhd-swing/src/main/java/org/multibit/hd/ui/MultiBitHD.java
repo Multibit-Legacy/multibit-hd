@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import java.io.File;
+import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -61,7 +62,7 @@ public class MultiBitHD {
     }
 
     ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(MtGoxExchange.class.getName());
-    bitcoinNetworkService= CoreServices.newBitcoinNetworkService();
+    bitcoinNetworkService = CoreServices.newBitcoinNetworkService();
 
     // Create views
     HeaderView headerView = new HeaderView();
@@ -70,10 +71,10 @@ public class MultiBitHD {
     FooterView footerView = new FooterView();
 
     MainView mainView = new MainView(
-            headerView.getContentPanel(),
-            sidebarView.getContentPanel(),
-            detailView.getContentPanel(),
-            footerView.getContentPanel()
+      headerView.getContentPanel(),
+      sidebarView.getContentPanel(),
+      detailView.getContentPanel(),
+      footerView.getContentPanel()
     );
 
     // Create controllers
@@ -107,9 +108,9 @@ public class MultiBitHD {
     // Provide a starting balance
     // TODO Get this from CoreServices
     ViewEvents.fireBalanceChangedEvent(
-            MoneyUtils.fromSatoshi(0),
-            MoneyUtils.fromSatoshi(0),
-            "Unknown"
+      BigInteger.ZERO,
+      MoneyUtils.fromSatoshi(0),
+      "Unknown"
     );
   }
 

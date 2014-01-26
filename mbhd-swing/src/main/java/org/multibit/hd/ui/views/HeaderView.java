@@ -13,7 +13,7 @@ import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
 import org.multibit.hd.ui.events.view.AlertAddedEvent;
 import org.multibit.hd.ui.events.view.BalanceChangedEvent;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;
-import org.multibit.hd.ui.i18n.BitcoinSymbol;
+import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.ui.i18n.Formats;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.models.AlertModel;
@@ -241,8 +241,8 @@ public class HeaderView {
     BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
     I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration();
 
-    String[] balance = Formats.formatSatoshisAsSymbolic(latestBalanceChangedEvent.get().getSatoshis().getAmount());
-    String localBalance = Formats.formatLocalAmount(latestBalanceChangedEvent.get().getLocalBalance().getAmount());
+    String[] balance = Formats.formatSatoshisAsSymbolic(latestBalanceChangedEvent.get().getSatoshis());
+    String localBalance = Formats.formatLocalAmount(latestBalanceChangedEvent.get().getLocalBalance());
 
     BitcoinSymbol symbol = BitcoinSymbol.of(bitcoinConfiguration.getBitcoinSymbol());
 

@@ -2,11 +2,13 @@ package org.multibit.hd.ui.views.components.enter_amount;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import org.joda.money.BigMoney;
+import org.joda.money.CurrencyUnit;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.i18n.BitcoinSymbol;
 import org.multibit.hd.ui.models.Model;
 
-import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * <p>Model to provide the following to view:</p>
@@ -19,8 +21,8 @@ import java.math.BigDecimal;
  */
 public class EnterAmountModel implements Model<EnterAmountModel> {
 
-  private Optional<BigDecimal> satoshis = Optional.absent();
-  private Optional<BigDecimal> localAmount = Optional.absent();
+  private Optional<BigInteger> satoshis = Optional.absent();
+  private Optional<BigMoney> localAmount = Optional.absent();
 
   private final String panelName;
 
@@ -50,23 +52,16 @@ public class EnterAmountModel implements Model<EnterAmountModel> {
   }
 
   /**
-   * @return The Bitcoin amount (zero if not present) with symbol multiplier
+   * @return The Bitcoin amount (zero if not present) in satoshis
    */
-  public BigDecimal getSymbolicBitcoinAmount() {
-    return getSatoshis().multiply(BitcoinSymbol.current().multiplier());
-  }
-
-  /**
-   * @return The Bitcoin amount (zero if not present) without symbol multiplier
-   */
-  public BigDecimal getSatoshis() {
-    return satoshis.or(BigDecimal.ZERO);
+  public BigInteger getSatoshis() {
+    return satoshis.or(BigInteger.ZERO);
   }
 
   /**
    * @param value The Bitcoin amount (fires a "component model changed" event)
    */
-  public void setSatoshis(BigDecimal value) {
+  public void setSatoshis(BigInteger value) {
 
     Preconditions.checkNotNull(value, "'value' should be present");
 
@@ -80,14 +75,15 @@ public class EnterAmountModel implements Model<EnterAmountModel> {
   /**
    * @return The local amount (zero if not present)
    */
-  public BigDecimal getLocalAmount() {
-    return localAmount.or(BigDecimal.ZERO);
+  public BigMoney getLocalAmount() {
+    CurrencyUnit currencyUnit = Configurations.currentConfiguration.getI18NConfiguration().getLocalCurrencyUnit();
+    return localAmount.or(BigMoney.zero(currencyUnit));
   }
 
   /**
    * @param value The local amount - no component event since the Bitcoin value drives this component
    */
-  public void setLocalAmount(BigDecimal value) {
+  public void setLocalAmount(BigMoney value) {
 
     Preconditions.checkNotNull(value, "'value' should be present");
 

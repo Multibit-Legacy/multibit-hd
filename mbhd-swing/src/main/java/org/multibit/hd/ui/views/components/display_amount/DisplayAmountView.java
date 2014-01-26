@@ -5,7 +5,7 @@ import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.I18NConfiguration;
-import org.multibit.hd.ui.i18n.BitcoinSymbol;
+import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.ui.i18n.Formats;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.AbstractComponentView;

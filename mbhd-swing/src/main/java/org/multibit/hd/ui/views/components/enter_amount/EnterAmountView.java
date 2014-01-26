@@ -2,13 +2,17 @@ package org.multibit.hd.ui.views.components.enter_amount;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
+import com.xeiam.xchange.currency.MoneyUtils;
 import net.miginfocom.swing.MigLayout;
+import org.joda.money.BigMoney;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.utils.BitcoinSymbol;
+import org.multibit.hd.core.utils.Currencies;
 import org.multibit.hd.core.utils.Numbers;
-import org.multibit.hd.ui.i18n.BitcoinSymbol;
+import org.multibit.hd.core.utils.Satoshis;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Labels;
@@ -22,7 +26,7 @@ import javax.swing.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.math.BigInteger;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -225,31 +229,33 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     if (latestExchangeRateChangedEvent.isPresent()) {
 
       if (value.isPresent()) {
-        BigDecimal localAmount = new BigDecimal(value.get()).setScale(8, RoundingMode.HALF_EVEN);
+        BigMoney localAmount = MoneyUtils.parseMoney(Currencies.currentCode(),value.get());
+
+        BigMoney exchangeRate = latestExchangeRateChangedEvent.get().getRate();
 
         // Apply the exchange rate
-        BigDecimal bitcoinAmount = localAmount
-          .divide(latestExchangeRateChangedEvent.get().getRate(), 12, RoundingMode.HALF_EVEN);
+        BigInteger satoshis = Satoshis.fromLocalAmount(localAmount, exchangeRate);
 
         // Update the model with the plain value
-        getModel().get().setSatoshis(bitcoinAmount);
+        getModel().get().setSatoshis(satoshis);
         getModel().get().setLocalAmount(localAmount);
 
         // Use the symbolic amount for display formatting
-        bitcoinAmountText.setValue(getModel().get().getSymbolicBitcoinAmount().doubleValue());
+        BigDecimal symbolicAmount = Satoshis.toSymbolicAmount(satoshis);
+        bitcoinAmountText.setValue(symbolicAmount.doubleValue());
 
       } else {
         bitcoinAmountText.setText("");
 
         // Update the model
-        getModel().get().setSatoshis(BigDecimal.ZERO);
-        getModel().get().setLocalAmount(BigDecimal.ZERO);
+        getModel().get().setSatoshis(BigInteger.ZERO);
+        getModel().get().setLocalAmount(Currencies.ZERO);
       }
 
     } else {
 
       // No exchange rate so no local amount
-      getModel().get().setLocalAmount(BigDecimal.ZERO);
+      getModel().get().setLocalAmount(Currencies.ZERO);
 
     }
 
@@ -267,50 +273,44 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     if (latestExchangeRateChangedEvent.isPresent()) {
 
       if (value.isPresent()) {
-        BigDecimal symbolicBitcoinAmount = new BigDecimal(value.get()).setScale(12, RoundingMode.HALF_EVEN);
 
-          // Apply Bitcoin symbol multiplier
-        BigDecimal symbolMultiplier = BitcoinSymbol.current().multiplier();
-        BigDecimal plainBitcoinAmount = symbolicBitcoinAmount.divide(symbolMultiplier, 12, RoundingMode.HALF_EVEN);
+        // Convert to satoshis
+        BigInteger satoshis = Satoshis.fromSymbolicAmount(new BigDecimal(value.get()));
 
-        BigDecimal localAmount = plainBitcoinAmount
-          .multiply(latestExchangeRateChangedEvent.get().getRate())
-          .setScale(8, RoundingMode.HALF_EVEN);
+        // Apply the exchange rate
+        BigMoney localAmount = Satoshis.toLocalAmount(satoshis, latestExchangeRateChangedEvent.get().getRate());
 
-        // Update the model with the plain value
-        getModel().get().setSatoshis(plainBitcoinAmount);
+        // Update the model
+        getModel().get().setSatoshis(satoshis);
         getModel().get().setLocalAmount(localAmount);
 
         // Use double for display formatting
-        localAmountText.setValue(localAmount.doubleValue());
+        localAmountText.setValue(localAmount.getAmount().doubleValue());
 
       } else {
         localAmountText.setText("");
 
         // Update the model
-        getModel().get().setSatoshis(BigDecimal.ZERO);
-        getModel().get().setLocalAmount(BigDecimal.ZERO);
+        getModel().get().setSatoshis(BigInteger.ZERO);
+        getModel().get().setLocalAmount(Currencies.ZERO);
       }
     } else {
 
       // No exchange rate so no local amount
       if (value.isPresent()) {
 
-        BigDecimal symbolicBitcoinAmount = new BigDecimal(value.get()).setScale(12, RoundingMode.HALF_EVEN);
-
-        // Apply Bitcoin symbol multiplier
-        BigDecimal symbolMultiplier = BitcoinSymbol.current().multiplier();
-        BigDecimal plainBitcoinAmount = symbolicBitcoinAmount.divide(symbolMultiplier, 12, RoundingMode.HALF_EVEN);
+        // Convert to satoshis
+        BigInteger satoshis = Satoshis.fromSymbolicAmount(new BigDecimal(value.get()));
 
         // Update the model
-        getModel().get().setSatoshis(plainBitcoinAmount);
-        getModel().get().setLocalAmount(BigDecimal.ZERO);
+        getModel().get().setSatoshis(satoshis);
+        getModel().get().setLocalAmount(Currencies.ZERO);
 
       } else {
 
         // Update the model
-        getModel().get().setSatoshis(BigDecimal.ZERO);
-        getModel().get().setLocalAmount(BigDecimal.ZERO);
+        getModel().get().setSatoshis(BigInteger.ZERO);
+        getModel().get().setLocalAmount(Currencies.ZERO);
       }
     }
 

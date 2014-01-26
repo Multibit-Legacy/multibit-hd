@@ -1,6 +1,5 @@
 package org.multibit.hd.ui.views.wizards.receive_bitcoin;
 
-import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
@@ -127,7 +126,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
    */
   private boolean isNextEnabled() {
 
-    return !getWizardModel().getBitcoinAmount().equals(BigDecimal.ZERO);
+    return !getWizardModel().getSatoshis().equals(BigDecimal.ZERO);
 
   }
 
@@ -145,7 +144,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
         ReceiveBitcoinEnterAmountPanelModel model = getPanelModel().get();
 
         String bitcoinAddress = model.getDisplayBitcoinAddressModel().getValue();
-        BigInteger satoshis = Utils.toNanoCoins(model.getEnterAmountModel().getSatoshis().toPlainString());
+        BigInteger satoshis = model.getEnterAmountModel().getSatoshis();
 
         // Form a Bitcoin URI from the contents
         String bitcoinUri = BitcoinURI.convertToBitcoinURI(

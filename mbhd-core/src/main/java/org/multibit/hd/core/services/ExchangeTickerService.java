@@ -73,8 +73,10 @@ public class ExchangeTickerService extends AbstractService {
 
           if (previous == null || !ticker.getLast().isEqual(previous)) {
 
+            BigMoney rate = ticker.getLast();
+
             CoreEvents.fireExchangeRateChangedEvent(
-              ticker.getLast().getAmount(),
+              rate,
               exchangeName,
               // Exchange rate will expire just after the next update (with small overlap)
               Dates.nowUtc().plusSeconds(TICKER_REFRESH_SECONDS + 5)

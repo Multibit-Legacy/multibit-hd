@@ -2,6 +2,8 @@ package org.multibit.hd.ui.events.view;
 
 import org.joda.money.BigMoney;
 
+import java.math.BigInteger;
+
 /**
  * <p>Event to provide the following to View Event API:</p>
  * <ul>
@@ -13,16 +15,16 @@ import org.joda.money.BigMoney;
  */
 public class BalanceChangedEvent implements ViewEvent {
 
-  private final BigMoney satoshis;
+  private final BigInteger satoshis;
   private final BigMoney localBalance;
   private final String rateProvider;
 
   /**
-   * @param satoshis The current balance in BTC without symbolic multiplier
-   * @param localBalance        The current balance in local currency
-   * @param rateProvider        The exchange rate provider (e.g. "Bitstamp")
+   * @param satoshis     The current balance in satoshis
+   * @param localBalance The current balance in local currency
+   * @param rateProvider The exchange rate provider (e.g. "Bitstamp")
    */
-  public BalanceChangedEvent(BigMoney satoshis, BigMoney localBalance, String rateProvider) {
+  public BalanceChangedEvent(BigInteger satoshis, BigMoney localBalance, String rateProvider) {
 
     this.satoshis = satoshis;
     this.localBalance = localBalance;
@@ -31,9 +33,9 @@ public class BalanceChangedEvent implements ViewEvent {
   }
 
   /**
-   * @return The Bitcoin balance without symbolic multiplier
+   * @return The Bitcoin balance in satoshis
    */
-  public BigMoney getSatoshis() {
+  public BigInteger getSatoshis() {
     return satoshis;
   }
 
