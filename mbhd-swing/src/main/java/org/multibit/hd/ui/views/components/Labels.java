@@ -143,17 +143,21 @@ public class Labels {
       label = new JLabel();
     }
 
+    decorateStatusLabel(label, status);
+
+    return label;
+  }
+
+  public static void decorateStatusLabel(JLabel statusLabel, Optional<Boolean> status) {
     if (status.isPresent()) {
       if (status.get()) {
-        AwesomeDecorator.bindIcon(AwesomeIcon.CHECK, label, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+        AwesomeDecorator.bindIcon(AwesomeIcon.CHECK, statusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
       } else {
-        AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, label, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+        AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, statusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
       }
     } else {
       // No icon on the label
     }
-
-    return label;
   }
 
   /**

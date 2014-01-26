@@ -51,8 +51,8 @@ public class SendBitcoinReportPanelModel extends AbstractPanelModel {
   ) {
     super(panelName);
 
-    // At construction time the model thinks it is sending some bitcoin.
-    // subscribe methods then transition the state to reflect progress of the send
+    // At construction time the model is completely blank.
+    // Subscribe methods then transition the state to reflect progress of the send
     transactionCreatedSuccessfully = Optional.absent();
     transactionCreatedSummaryMessageKey = Optional.absent();
     transactionCreatedDetailMessageKey = Optional.absent();

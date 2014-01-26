@@ -162,14 +162,14 @@ public class BitcoinNetworkService extends AbstractService {
     if (!pingPeers()) {
       // Declare the send a failure
       CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
-              false, "multiBitService.errorText", new String[]{"All pings failed"}));
+              false, "could_not_connect_to_bitcoin_network", new String[]{"All pings failed"}));
       return;
     }
 
     if (!walletManager.getCurrentWalletData().isPresent()) {
       // Declare the send a failure - no wallet
       CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
-              false, "multiBitSubmitAction.thereIsNoActiveWallet", new String[]{""}));
+              false, "no_active_wallet", new String[]{""}));
       return;
     }
 
@@ -197,14 +197,14 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Declare the send a success
       CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
-              true, "sendBitcoinNowAction.bitcoinSentOk", new String[]{""}));
+              true, "bitcoin_sent_ok", new String[]{""}));
     } catch (InsufficientMoneyException | VerificationException | AddressFormatException e1) {
       String message = e1.getClass().getName() + ": " + e1.getMessage();
       log.error(message);
 
       // Declare the send a failure
       CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
-              false, "deleteWalletConfirmDialog.walletDeleteError2", new String[]{message}));
+              false, "the_error_was", new String[]{message}));
     }
 
     log.debug("Send coins has completed");
