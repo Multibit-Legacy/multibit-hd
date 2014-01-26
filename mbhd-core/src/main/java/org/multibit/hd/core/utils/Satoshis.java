@@ -53,7 +53,8 @@ public class Satoshis {
 
     Preconditions.checkNotNull(localAmount, "'localAmount' must be present");
     Preconditions.checkNotNull(exchangeRate, "'exchangeRate' must be present");
-    Preconditions.checkState(localAmount.getCurrencyUnit().equals(exchangeRate.getCurrencyUnit()), "'localAmount' has a different currency unit to 'exchangeRate'");
+
+    Preconditions.checkState(localAmount.getCurrencyUnit().equals(exchangeRate.getCurrencyUnit()), "'localAmount' has a different currency unit to 'exchangeRate': "+localAmount.getCurrencyUnit().getCode() + " vs " + exchangeRate.getCurrencyUnit().getCode());
 
     BigMoney bitcoinAmount = localAmount.dividedBy(exchangeRate.getAmount(), RoundingMode.HALF_EVEN);
 

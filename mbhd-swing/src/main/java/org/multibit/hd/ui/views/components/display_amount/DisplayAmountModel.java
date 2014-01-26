@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.components.display_amount;
 
 import org.joda.money.BigMoney;
-import org.multibit.hd.core.utils.Currencies;
+import org.multibit.hd.core.utils.CurrencyUtils;
 import org.multibit.hd.ui.models.Model;
 
 import java.math.BigInteger;
@@ -21,7 +21,7 @@ public class DisplayAmountModel implements Model<DisplayAmountModel> {
 
   // Values depend on earlier wizard panel
   private BigInteger satoshis = BigInteger.ZERO;
-  private BigMoney localAmount = Currencies.ZERO;
+  private BigMoney localAmount = CurrencyUtils.ZERO;
 
   private boolean localAmountVisible = true;
 

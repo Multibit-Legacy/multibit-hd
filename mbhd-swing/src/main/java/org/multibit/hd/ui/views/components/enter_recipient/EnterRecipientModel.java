@@ -16,7 +16,7 @@ import org.multibit.hd.ui.models.Model;
  */
 public class EnterRecipientModel implements Model<Recipient> {
 
-  private Recipient recipient;
+  private Optional<Recipient> recipient = Optional.absent();
   private final String panelName;
 
   /**
@@ -35,12 +35,12 @@ public class EnterRecipientModel implements Model<Recipient> {
 
   @Override
   public Recipient getValue() {
-    return recipient;
+    return recipient.get();
   }
 
   @Override
   public void setValue(Recipient value) {
-    this.recipient = value;
+    this.recipient = Optional.of(value);
 
     // Fire a component model updated event
     ViewEvents.fireWizardComponentModelChangedEvent(panelName, Optional.of(this));
@@ -49,7 +49,7 @@ public class EnterRecipientModel implements Model<Recipient> {
   /**
    * @return The recipient
    */
-  public Recipient getRecipient() {
+  public Optional<Recipient> getRecipient() {
     return recipient;
   }
 }

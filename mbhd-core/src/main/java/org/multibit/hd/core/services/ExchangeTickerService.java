@@ -4,6 +4,8 @@ import com.xeiam.xchange.currency.Currencies;
 import com.xeiam.xchange.dto.marketdata.Ticker;
 import com.xeiam.xchange.service.polling.PollingMarketDataService;
 import org.joda.money.BigMoney;
+import org.joda.money.CurrencyUnit;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.exceptions.CoreException;
 import org.multibit.hd.core.utils.Dates;
@@ -56,7 +58,9 @@ public class ExchangeTickerService extends AbstractService {
 
   @Override
   public void start() {
+
     log.debug("Starting service");
+
     // Use the provided executor service management
     requireSingleThreadScheduledExecutor();
 
@@ -65,11 +69,13 @@ public class ExchangeTickerService extends AbstractService {
 
       private BigMoney previous;
 
+      private CurrencyUnit currencyUnit = Configurations.currentConfiguration.getI18NConfiguration().getLocalCurrencyUnit();
+
       public void run() {
         // Get the latest ticker data showing BTC to USD
         Ticker ticker;
         try {
-          ticker = pollingMarketDataService.getTicker(Currencies.BTC, Currencies.USD);
+          ticker = pollingMarketDataService.getTicker(Currencies.BTC, currencyUnit.getCurrencyCode());
 
           if (previous == null || !ticker.getLast().isEqual(previous)) {
 

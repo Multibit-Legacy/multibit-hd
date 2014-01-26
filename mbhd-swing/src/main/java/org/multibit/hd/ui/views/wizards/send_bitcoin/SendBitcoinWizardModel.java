@@ -107,7 +107,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
     BigInteger satoshis = enterAmountPanelModel.getEnterAmountModel().getSatoshis();
     // Convert to satoshi
-    String bitcoinAddress = enterAmountPanelModel.getEnterRecipientModel().getRecipient().getBitcoinAddress();
+    String bitcoinAddress = enterAmountPanelModel.getEnterRecipientModel().getRecipient().get().getBitcoinAddress();
     String password = confirmPanelModel.getPasswordModel().getValue();
 
     log.debug("Just about to send bitcoin : amount = '{}', address = '{}', changeAddress = '{}', password = '{}'.",
@@ -134,7 +134,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   public Recipient getRecipient() {
     return enterAmountPanelModel
       .getEnterRecipientModel()
-      .getRecipient();
+      .getRecipient().get();
   }
 
   /**

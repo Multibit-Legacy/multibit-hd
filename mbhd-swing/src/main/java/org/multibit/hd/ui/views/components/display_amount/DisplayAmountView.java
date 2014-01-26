@@ -6,6 +6,7 @@ import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.I18NConfiguration;
 import org.multibit.hd.core.utils.BitcoinSymbol;
+import org.multibit.hd.core.utils.CurrencyUtils;
 import org.multibit.hd.ui.i18n.Formats;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.AbstractComponentView;
@@ -105,12 +106,14 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
     primaryBalanceLabel.setText(bitcoinDisplay[0]);
     secondaryBalanceLabel.setText(bitcoinDisplay[1]);
 
+    String localSymbol = CurrencyUtils.currentSymbol();
+
     if (getModel().get().isLocalAmountVisible()) {
       String localDisplay = Formats.formatLocalAmount(getModel().get().getLocalAmount());
       exchangeLabel.setText(
         Languages.safeText(
           MessageKey.EXCHANGE_FIAT_RATE,
-          "~ $",
+          "~ "+localSymbol,
           localDisplay
         ));
       exchangeLabel.setVisible(true);

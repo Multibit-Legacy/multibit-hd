@@ -10,7 +10,7 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.BitcoinSymbol;
-import org.multibit.hd.core.utils.Currencies;
+import org.multibit.hd.core.utils.CurrencyUtils;
 import org.multibit.hd.core.utils.Numbers;
 import org.multibit.hd.core.utils.Satoshis;
 import org.multibit.hd.ui.i18n.Languages;
@@ -229,7 +229,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     if (latestExchangeRateChangedEvent.isPresent()) {
 
       if (value.isPresent()) {
-        BigMoney localAmount = MoneyUtils.parseMoney(Currencies.currentCode(),value.get());
+        BigMoney localAmount = MoneyUtils.parseMoney(CurrencyUtils.currentCode(),value.get());
 
         BigMoney exchangeRate = latestExchangeRateChangedEvent.get().getRate();
 
@@ -249,13 +249,13 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
         // Update the model
         getModel().get().setSatoshis(BigInteger.ZERO);
-        getModel().get().setLocalAmount(Currencies.ZERO);
+        getModel().get().setLocalAmount(CurrencyUtils.ZERO);
       }
 
     } else {
 
       // No exchange rate so no local amount
-      getModel().get().setLocalAmount(Currencies.ZERO);
+      getModel().get().setLocalAmount(CurrencyUtils.ZERO);
 
     }
 
@@ -292,7 +292,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
         // Update the model
         getModel().get().setSatoshis(BigInteger.ZERO);
-        getModel().get().setLocalAmount(Currencies.ZERO);
+        getModel().get().setLocalAmount(CurrencyUtils.ZERO);
       }
     } else {
 
@@ -304,13 +304,13 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
         // Update the model
         getModel().get().setSatoshis(satoshis);
-        getModel().get().setLocalAmount(Currencies.ZERO);
+        getModel().get().setLocalAmount(CurrencyUtils.ZERO);
 
       } else {
 
         // Update the model
         getModel().get().setSatoshis(BigInteger.ZERO);
-        getModel().get().setLocalAmount(Currencies.ZERO);
+        getModel().get().setLocalAmount(CurrencyUtils.ZERO);
       }
     }
 

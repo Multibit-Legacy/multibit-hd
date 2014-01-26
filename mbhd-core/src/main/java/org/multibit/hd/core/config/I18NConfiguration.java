@@ -1,7 +1,6 @@
 package org.multibit.hd.core.config;
 
 import org.joda.money.CurrencyUnit;
-import org.joda.money.IllegalCurrencyException;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -40,11 +39,7 @@ public class I18NConfiguration {
     decimalSeparator = symbols.getDecimalSeparator();
     groupingSeparator = symbols.getGroupingSeparator();
 
-    try {
-      localCurrencyUnit = CurrencyUnit.getInstance(locale);
-    } catch (IllegalCurrencyException e) {
-
-    }
+    localCurrencyUnit = CurrencyUnit.getInstance(locale);
 
   }
 

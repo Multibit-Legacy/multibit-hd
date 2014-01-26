@@ -6,6 +6,7 @@ import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.api.Recipient;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.utils.BitcoinSymbol;
+import org.multibit.hd.core.utils.CurrencyUtils;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.utils.HtmlUtils;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
@@ -362,8 +363,8 @@ public class Labels {
    * @return A new "local currency symbol" based on the current configuration
    */
   public static JLabel newLocalCurrencySymbol() {
-    // TODO Link this to the I18N preferences
-    JLabel label = new JLabel("$");
+
+    JLabel label = new JLabel(CurrencyUtils.currentSymbol());
 
     Font font = label.getFont().deriveFont(Font.BOLD, (float) AwesomeDecorator.NORMAL_ICON_SIZE);
     label.setFont(font);
