@@ -21,6 +21,7 @@ import org.multibit.hd.ui.views.components.TextBoxes;
 import org.multibit.hd.ui.views.components.text_fields.FormattedDecimalField;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import java.awt.event.KeyAdapter;
@@ -229,20 +230,31 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     if (latestExchangeRateChangedEvent.isPresent()) {
 
       if (value.isPresent()) {
-        BigMoney localAmount = MoneyUtils.parseMoney(CurrencyUtils.currentCode(),value.get());
+        BigMoney localAmount = MoneyUtils.parseMoney(CurrencyUtils.currentCode(), value.get());
 
         BigMoney exchangeRate = latestExchangeRateChangedEvent.get().getRate();
 
-        // Apply the exchange rate
-        BigInteger satoshis = Satoshis.fromLocalAmount(localAmount, exchangeRate);
+        try {
+          // Apply the exchange rate
+          BigInteger satoshis = Satoshis.fromLocalAmount(localAmount, exchangeRate);
 
-        // Update the model with the plain value
-        getModel().get().setSatoshis(satoshis);
-        getModel().get().setLocalAmount(localAmount);
+          // Update the model with the plain value
+          getModel().get().setSatoshis(satoshis);
+          getModel().get().setLocalAmount(localAmount);
 
-        // Use the symbolic amount for display formatting
-        BigDecimal symbolicAmount = Satoshis.toSymbolicAmount(satoshis);
-        bitcoinAmountText.setValue(symbolicAmount.doubleValue());
+          // Use the symbolic amount for display formatting
+          BigDecimal symbolicAmount = Satoshis.toSymbolicAmount(satoshis);
+          bitcoinAmountText.setValue(symbolicAmount.doubleValue());
+
+          // Give feedback to the user
+          localAmountText.setBackground(Themes.currentTheme.dataEntryBackground());
+
+        } catch (ArithmeticException e) {
+
+          // Give feedback to the user
+          localAmountText.setBackground(Themes.currentTheme.dangerAlertBackground());
+
+        }
 
       } else {
         bitcoinAmountText.setText("");
@@ -274,18 +286,28 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
       if (value.isPresent()) {
 
-        // Convert to satoshis
-        BigInteger satoshis = Satoshis.fromSymbolicAmount(new BigDecimal(value.get()));
+        try {
+          // Convert to satoshis
+          BigInteger satoshis = Satoshis.fromSymbolicAmount(new BigDecimal(value.get()));
 
-        // Apply the exchange rate
-        BigMoney localAmount = Satoshis.toLocalAmount(satoshis, latestExchangeRateChangedEvent.get().getRate());
+          // Apply the exchange rate
+          BigMoney localAmount = Satoshis.toLocalAmount(satoshis, latestExchangeRateChangedEvent.get().getRate());
 
-        // Update the model
-        getModel().get().setSatoshis(satoshis);
-        getModel().get().setLocalAmount(localAmount);
+          // Update the model
+          getModel().get().setSatoshis(satoshis);
+          getModel().get().setLocalAmount(localAmount);
 
-        // Use double for display formatting
-        localAmountText.setValue(localAmount.getAmount().doubleValue());
+          // Use double for display formatting
+          localAmountText.setValue(localAmount.getAmount().doubleValue());
+
+          // Give feedback to the user
+          bitcoinAmountText.setBackground(Themes.currentTheme.dataEntryBackground());
+
+        } catch (ArithmeticException e) {
+
+          // Give feedback to the user
+          bitcoinAmountText.setBackground(Themes.currentTheme.dangerAlertBackground());
+        }
 
       } else {
         localAmountText.setText("");
@@ -299,12 +321,23 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
       // No exchange rate so no local amount
       if (value.isPresent()) {
 
-        // Convert to satoshis
-        BigInteger satoshis = Satoshis.fromSymbolicAmount(new BigDecimal(value.get()));
+        try {
+          // Convert to satoshis
+          BigInteger satoshis = Satoshis.fromSymbolicAmount(new BigDecimal(value.get()));
 
-        // Update the model
-        getModel().get().setSatoshis(satoshis);
-        getModel().get().setLocalAmount(CurrencyUtils.ZERO);
+          // Update the model
+          getModel().get().setSatoshis(satoshis);
+          getModel().get().setLocalAmount(CurrencyUtils.ZERO);
+
+          // Give feedback to the user
+          localAmountText.setBackground(Themes.currentTheme.dataEntryBackground());
+
+        } catch (ArithmeticException e) {
+
+          // Give feedback to the user
+          localAmountText.setBackground(Themes.currentTheme.dangerAlertBackground());
+
+        }
 
       } else {
 

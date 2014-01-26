@@ -56,9 +56,9 @@ public class Satoshis {
 
     Preconditions.checkState(localAmount.getCurrencyUnit().equals(exchangeRate.getCurrencyUnit()), "'localAmount' has a different currency unit to 'exchangeRate': "+localAmount.getCurrencyUnit().getCode() + " vs " + exchangeRate.getCurrencyUnit().getCode());
 
-    BigMoney bitcoinAmount = localAmount.dividedBy(exchangeRate.getAmount(), RoundingMode.HALF_EVEN);
+    BigDecimal bitcoinAmount = localAmount.getAmount().setScale(8).divide(exchangeRate.getAmount(), 8, RoundingMode.HALF_EVEN);
 
-    return Utils.toNanoCoins(bitcoinAmount.getAmount().toPlainString());
+    return Utils.toNanoCoins(bitcoinAmount.toPlainString());
 
   }
 
