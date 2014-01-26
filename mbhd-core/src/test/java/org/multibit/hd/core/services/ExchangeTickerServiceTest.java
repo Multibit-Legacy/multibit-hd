@@ -9,6 +9,7 @@ import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
 import org.junit.Before;
 import org.junit.Test;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 
 import java.io.IOException;
@@ -28,6 +29,9 @@ public class ExchangeTickerServiceTest {
 
   @Before
   public void setUp() throws IOException {
+
+    Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
+    Configurations.currentConfiguration.getI18NConfiguration().setLocalCurrencyUnit(CurrencyUnit.USD);
 
     Ticker ticker = Ticker.TickerBuilder
       .newInstance()
