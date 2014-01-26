@@ -92,7 +92,7 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
     I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration();
 
     // Display using the symbolic amount
-    String[] bitcoinDisplay = Formats.formatPlainBitcoinAmountAsSymbolic(getModel().get().getPlainBitcoinAmount());
+    String[] bitcoinDisplay = Formats.formatSatoshisAsSymbolic(getModel().get().getSatoshis());
 
     BitcoinSymbol symbol = BitcoinSymbol.of(bitcoinConfiguration.getBitcoinSymbol());
 

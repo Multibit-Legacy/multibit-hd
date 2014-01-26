@@ -102,7 +102,7 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
 
     boolean bitcoinAmountOK = !getPanelModel().get()
       .getEnterAmountModel()
-      .getPlainBitcoinAmount()
+      .getSatoshis()
       .equals(BigDecimal.ZERO);
 
     boolean recipientOK = !Strings.isNullOrEmpty(getPanelModel().get()

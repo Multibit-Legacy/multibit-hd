@@ -103,7 +103,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
     String changeAddress = bitcoinNetworkService.getNextChangeAddress();
 
-    BigDecimal amountBTC = enterAmountPanelModel.getEnterAmountModel().getPlainBitcoinAmount();
+    BigDecimal amountBTC = enterAmountPanelModel.getEnterAmountModel().getSatoshis();
     // Convert to satoshi
     // TODO - it's a bad idea to have different amount formats in different parts of the code
     BigInteger amountBTCBigInteger = amountBTC.multiply(BigDecimal.valueOf(100000000)).toBigInteger();
@@ -134,10 +134,10 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   /**
    * @return The Bitcoin amount without symbolic multiplier
    */
-  public BigDecimal getPlainBitcoinAmount() {
+  public BigDecimal getSatoshis() {
     return enterAmountPanelModel
       .getEnterAmountModel()
-      .getPlainBitcoinAmount();
+      .getSatoshis();
   }
 
   /**
@@ -183,16 +183,16 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   }
 
   /**
-   * @return The transaction fee (a.k.a "miner's fee") without symbolic multiplier
+   * @return The transaction fee (a.k.a "miner's fee") in satoshis
    */
-  public BigDecimal getPlainTransactionFee() {
+  public BigDecimal getTransactionFee() {
     return transactionFee;
   }
 
   /**
-   * @return The developer fee without symbolic multiplier
+   * @return The developer fee in satoshis
    */
-  public BigDecimal getPlainDeveloperFee() {
+  public BigDecimal getDeveloperFee() {
     return developerFee;
   }
 }

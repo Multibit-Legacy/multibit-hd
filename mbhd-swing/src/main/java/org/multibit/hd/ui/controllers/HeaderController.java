@@ -44,7 +44,7 @@ public class HeaderController {
   public void onBalanceChanged(ExchangeRateChangedEvent event) {
 
     // Build the exchange string
-    // TODO Link to a real balance
+    // TODO Link to a real balance and remove BigDecimal
     BigMoney btcBalance = MoneyUtils.parseMoney("BTC", new BigDecimal("20999999.12345678"));
     BigMoney localBalance = btcBalance.multipliedBy(event.getRate());
 

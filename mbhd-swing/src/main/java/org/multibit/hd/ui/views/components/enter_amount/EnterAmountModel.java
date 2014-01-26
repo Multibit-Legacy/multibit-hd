@@ -19,7 +19,7 @@ import java.math.BigDecimal;
  */
 public class EnterAmountModel implements Model<EnterAmountModel> {
 
-  private Optional<BigDecimal> plainBitcoinAmount = Optional.absent();
+  private Optional<BigDecimal> satoshis = Optional.absent();
   private Optional<BigDecimal> localAmount = Optional.absent();
 
   private final String panelName;
@@ -53,24 +53,24 @@ public class EnterAmountModel implements Model<EnterAmountModel> {
    * @return The Bitcoin amount (zero if not present) with symbol multiplier
    */
   public BigDecimal getSymbolicBitcoinAmount() {
-    return getPlainBitcoinAmount().multiply(BitcoinSymbol.current().multiplier());
+    return getSatoshis().multiply(BitcoinSymbol.current().multiplier());
   }
 
   /**
    * @return The Bitcoin amount (zero if not present) without symbol multiplier
    */
-  public BigDecimal getPlainBitcoinAmount() {
-    return plainBitcoinAmount.or(BigDecimal.ZERO);
+  public BigDecimal getSatoshis() {
+    return satoshis.or(BigDecimal.ZERO);
   }
 
   /**
    * @param value The Bitcoin amount (fires a "component model changed" event)
    */
-  public void setPlainBitcoinAmount(BigDecimal value) {
+  public void setSatoshis(BigDecimal value) {
 
     Preconditions.checkNotNull(value, "'value' should be present");
 
-    plainBitcoinAmount = Optional.of(value);
+    satoshis = Optional.of(value);
 
     // Fire a component model updated event
     ViewEvents.fireWizardComponentModelChangedEvent(panelName, Optional.of(this));

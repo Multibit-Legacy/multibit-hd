@@ -145,12 +145,12 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
         ReceiveBitcoinEnterAmountPanelModel model = getPanelModel().get();
 
         String bitcoinAddress = model.getDisplayBitcoinAddressModel().getValue();
-        BigInteger amount = Utils.toNanoCoins(model.getEnterAmountModel().getPlainBitcoinAmount().toPlainString());
+        BigInteger satoshis = Utils.toNanoCoins(model.getEnterAmountModel().getSatoshis().toPlainString());
 
         // Form a Bitcoin URI from the contents
         String bitcoinUri = BitcoinURI.convertToBitcoinURI(
           bitcoinAddress,
-          amount,
+          satoshis,
           label.getText(),
           null
         );

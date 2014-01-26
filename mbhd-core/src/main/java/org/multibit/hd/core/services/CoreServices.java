@@ -119,7 +119,7 @@ public class CoreServices {
   }
 
   /**
-   * @return The application event service singleton
+   * @return The contact service singleton
    */
   public static ContactService getContactService() {
 

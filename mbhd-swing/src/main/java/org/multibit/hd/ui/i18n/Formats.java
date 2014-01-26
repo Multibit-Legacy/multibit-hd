@@ -29,7 +29,7 @@ public class Formats {
    *
    * @return The left [0] and right [0] components suitable for presentation as a balance with no symbolic decoration
    */
-  public static String[] formatPlainBitcoinAmountAsSymbolic(BigDecimal amount) {
+  public static String[] formatSatoshisAsSymbolic(BigDecimal amount) {
 
     Preconditions.checkNotNull(amount, "'amount' must be present");
 

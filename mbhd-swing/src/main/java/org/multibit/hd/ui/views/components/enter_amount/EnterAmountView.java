@@ -232,7 +232,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
           .divide(latestExchangeRateChangedEvent.get().getRate(), 12, RoundingMode.HALF_EVEN);
 
         // Update the model with the plain value
-        getModel().get().setPlainBitcoinAmount(bitcoinAmount);
+        getModel().get().setSatoshis(bitcoinAmount);
         getModel().get().setLocalAmount(localAmount);
 
         // Use the symbolic amount for display formatting
@@ -242,7 +242,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
         bitcoinAmountText.setText("");
 
         // Update the model
-        getModel().get().setPlainBitcoinAmount(BigDecimal.ZERO);
+        getModel().get().setSatoshis(BigDecimal.ZERO);
         getModel().get().setLocalAmount(BigDecimal.ZERO);
       }
 
@@ -278,7 +278,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
           .setScale(8, RoundingMode.HALF_EVEN);
 
         // Update the model with the plain value
-        getModel().get().setPlainBitcoinAmount(plainBitcoinAmount);
+        getModel().get().setSatoshis(plainBitcoinAmount);
         getModel().get().setLocalAmount(localAmount);
 
         // Use double for display formatting
@@ -288,7 +288,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
         localAmountText.setText("");
 
         // Update the model
-        getModel().get().setPlainBitcoinAmount(BigDecimal.ZERO);
+        getModel().get().setSatoshis(BigDecimal.ZERO);
         getModel().get().setLocalAmount(BigDecimal.ZERO);
       }
     } else {
@@ -303,13 +303,13 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
         BigDecimal plainBitcoinAmount = symbolicBitcoinAmount.divide(symbolMultiplier, 12, RoundingMode.HALF_EVEN);
 
         // Update the model
-        getModel().get().setPlainBitcoinAmount(plainBitcoinAmount);
+        getModel().get().setSatoshis(plainBitcoinAmount);
         getModel().get().setLocalAmount(BigDecimal.ZERO);
 
       } else {
 
         // Update the model
-        getModel().get().setPlainBitcoinAmount(BigDecimal.ZERO);
+        getModel().get().setSatoshis(BigDecimal.ZERO);
         getModel().get().setLocalAmount(BigDecimal.ZERO);
       }
     }
