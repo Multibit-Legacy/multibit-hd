@@ -7,6 +7,7 @@ import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -26,13 +27,13 @@ import javax.swing.*;
  * @since 0.0.1
  *  
  */
-public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitcoinWizardModel, String> {
-
-  // Model
-  private String model;
+public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitcoinWizardModel, SendBitcoinReportPanelModel> {
 
   private static final Logger log = LoggerFactory.getLogger(SendBitcoinReportPanelView.class);
 
+  private JLabel transactionConstructionStatus;
+  private JLabel transactionBroadcastStatus;
+  private JLabel transactionConfirmationStatus;
 
   private static JLabel resultText1 = new JLabel();
   private static JLabel resultText2 = new JLabel();
@@ -53,8 +54,14 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   @Override
   public void newPanelModel() {
 
-    model = "TODO replace with a proper model";
-    setPanelModel(model);
+    // Configure the panel model
+    SendBitcoinReportPanelModel panelModel = new SendBitcoinReportPanelModel(
+      getPanelName()
+    );
+    setPanelModel(panelModel);
+
+    // Bind it to the wizard model
+    getWizardModel().setReportPanelModel(panelModel);
 
   }
 
@@ -70,9 +77,13 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     // Apply the theme
     panel.setBackground(Themes.currentTheme.detailPanelBackground());
 
-    panel.add(Panels.newBroadcastStatus(), "wrap");
-    panel.add(Panels.newRelayStatus(), "wrap");
-    panel.add(Panels.newConfirmationCountStatus("6+", true), "wrap");
+    transactionConstructionStatus = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
+    transactionBroadcastStatus = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
+    transactionConfirmationStatus = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
+
+    panel.add(transactionConstructionStatus, "wrap");
+    panel.add(transactionBroadcastStatus, "wrap");
+    panel.add(transactionConfirmationStatus, "wrap");
     panel.add(resultText1, "wrap");
     panel.add(resultText2, "wrap");
 
@@ -89,7 +100,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   }
 
   @Subscribe
-  public void subscribeToBitcoinSentEvents(BitcoinSentEvent bitcoinSentEvent) {
+  public void onBitcoinSentEvent(BitcoinSentEvent bitcoinSentEvent) {
     log.debug("Received the BitcoinSentEvent: " + bitcoinSentEvent.toString());
     // TODO the localisation needs standardising between MessageKey and just using the key string
     if (bitcoinSentEvent.isSendWasSuccessful()) {
@@ -97,7 +108,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
       resultText2.setText("");
     } else {
       resultText1.setText(Languages.safeText("sendBitcoinNowAction.bitcoinSendFailed"));
-      resultText2.setText(Languages.safeText(bitcoinSentEvent.getSendFailureReasonKey(), bitcoinSentEvent.getSendFailureReasonData()));
+      resultText2.setText(Languages.safeText(bitcoinSentEvent.getSendFailureReasonKey(), (Object[])bitcoinSentEvent.getSendFailureReasonData()));
     }
 
   }

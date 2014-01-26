@@ -38,6 +38,11 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   private SendBitcoinConfirmPanelModel confirmPanelModel;
 
   /**
+   * The "report" panel model
+   */
+  private SendBitcoinReportPanelModel reportPanelModel;
+
+  /**
    * Default transaction fee
    */
   private BigDecimal transactionFee = new BigDecimal("0.0001");
@@ -180,6 +185,15 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
    */
   void setConfirmPanelModel(SendBitcoinConfirmPanelModel confirmPanelModel) {
     this.confirmPanelModel = confirmPanelModel;
+  }
+
+  /**
+   * <p>Reduced visibility for panel models only</p>
+   *
+   * @param reportPanelModel The "confirm" panel model
+   */
+  void setReportPanelModel(SendBitcoinReportPanelModel reportPanelModel) {
+    this.reportPanelModel = reportPanelModel;
   }
 
   /**
