@@ -47,7 +47,7 @@ public class CoreEvents {
    */
   public static void fireTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
 
-    log.debug("Firing 'transactionCreation event' event");
+    log.debug("Firing 'transactionCreation' event");
     CoreServices.uiEventBus.post(transactionCreationEvent);
   }
 
@@ -58,11 +58,20 @@ public class CoreEvents {
    */
   public static void fireBitcoinSentEvent(BitcoinSentEvent bitcoinSentEvent) {
 
-    log.debug("Firing 'bitcoin sent event' event");
+    log.debug("Firing 'bitcoin sent' event");
     CoreServices.uiEventBus.post(bitcoinSentEvent);
   }
 
   /**
+    * <p>Broadcast TransactionSeenEvent</p>
+    *
+    * @param transactionSeenEvent containing transaction information
+    */
+   public static void fireTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
+     CoreServices.uiEventBus.post(transactionSeenEvent);
+   }
+
+   /**
    * <p>Broadcast a new "Bitcoin network changed" event</p>
    *
    * @param bitcoinNetworkSummary The Bitcoin network summary
@@ -74,7 +83,6 @@ public class CoreEvents {
     }
     log.debug(message);
     CoreServices.uiEventBus.post(new BitcoinNetworkChangedEvent(bitcoinNetworkSummary));
-
   }
 
   /**

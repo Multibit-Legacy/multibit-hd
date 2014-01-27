@@ -15,6 +15,10 @@ import org.multibit.hd.ui.views.wizards.AbstractPanelModel;
  */
 public class SendBitcoinReportPanelModel extends AbstractPanelModel {
 
+  // The id of the transaction that this model is describing.
+  // May be null
+  private String transactionId;
+
   // Was the transaction created and stored in the wallet successfully ?
 
   // Absent = undecided, true = created ok, false = failure
@@ -52,6 +56,8 @@ public class SendBitcoinReportPanelModel extends AbstractPanelModel {
     super(panelName);
 
     // At construction time the model is completely blank.
+    transactionId = null;
+
     // Subscribe methods then transition the state to reflect progress of the send
     transactionCreatedSuccessfully = Optional.absent();
     transactionCreatedSummaryMessageKey = Optional.absent();
@@ -146,5 +152,13 @@ public class SendBitcoinReportPanelModel extends AbstractPanelModel {
 
   public void setNumberOfConfirmations(int numberOfConfirmations) {
     this.numberOfConfirmations = numberOfConfirmations;
+  }
+
+  public String getTransactionId() {
+    return transactionId;
+  }
+
+  public void setTransactionId(String transactionId) {
+    this.transactionId = transactionId;
   }
 }

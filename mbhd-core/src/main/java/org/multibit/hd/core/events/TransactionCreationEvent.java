@@ -23,10 +23,13 @@ public class TransactionCreationEvent {
 
   private final boolean transactionCreationWasSuccessful;
 
+  private final String transactionId;
+
   private final String transactionCreationFailureReasonKey;
 
-  public TransactionCreationEvent(BigInteger amount, BigInteger feePaid, String destinationAddress, String changeAddress, boolean transactionCreationWasSuccessful,
+  public TransactionCreationEvent(String transactionId, BigInteger amount, BigInteger feePaid, String destinationAddress, String changeAddress, boolean transactionCreationWasSuccessful,
                                   String transactionCreationFailureReasonKey, String[] transactionCreationFailureReasonData) {
+    this.transactionId = transactionId;
     this.amount = amount;
     this.feePaid = feePaid;
     this.destinationAddress = destinationAddress;
@@ -62,6 +65,10 @@ public class TransactionCreationEvent {
     return transactionCreationFailureReasonData;
   }
 
+  public String getTransactionId() {
+    return transactionId;
+  }
+  
   @Override
   public String toString() {
     return "TransactionCreationEvent{" +

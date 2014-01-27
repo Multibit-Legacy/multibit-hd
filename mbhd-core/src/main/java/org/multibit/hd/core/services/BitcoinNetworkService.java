@@ -161,7 +161,7 @@ public class BitcoinNetworkService extends AbstractService {
   public void send(String destinationAddress, BigInteger amount, String changeAddress, BigInteger feePerKB, CharSequence password) {
     if (!walletManager.getCurrentWalletData().isPresent()) {
       // Declare the transaction creation a failure - no wallet
-      CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
+      CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(null, amount, BigInteger.ZERO, destinationAddress, changeAddress,
               false, "no_active_wallet", new String[]{""}));
       return;
     }
@@ -185,14 +185,18 @@ public class BitcoinNetworkService extends AbstractService {
       // Commit to the wallet
       wallet.commitTx(sendRequest.tx);
       transactionCreatedOk = true;
-      CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
+      CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(sendRequest.tx.getHashAsString(), amount, BigInteger.ZERO, destinationAddress, changeAddress,
               true, null, null));
     } catch (InsufficientMoneyException | VerificationException | AddressFormatException e1) {
       String message = e1.getMessage();
       log.error(message);
 
       // Declare the transaction creation a failure
-      CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
+      String transactionId = null;
+      if (sendRequest.tx != null) {
+        transactionId = sendRequest.tx.getHashAsString();
+      }
+      CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(transactionId, amount, BigInteger.ZERO, destinationAddress, changeAddress,
               false, "the_error_was", new String[]{message}));
     }
 

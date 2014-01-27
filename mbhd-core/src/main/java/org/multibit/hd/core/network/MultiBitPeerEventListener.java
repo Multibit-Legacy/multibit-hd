@@ -1,8 +1,12 @@
 package org.multibit.hd.core.network;
 
 import com.google.bitcoin.core.*;
+import com.google.common.base.Optional;
 import org.multibit.hd.core.api.BitcoinNetworkSummary;
+import org.multibit.hd.core.api.WalletData;
 import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.events.TransactionSeenEvent;
+import org.multibit.hd.core.managers.WalletManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,12 +14,10 @@ import java.util.List;
 
 public class MultiBitPeerEventListener implements PeerEventListener {
 
+  private static final Logger log = LoggerFactory.getLogger(MultiBitPeerEventListener.class);
   private int startingBlock = -1;
   private int downloadPercent = 0;
-
   private int numberOfConnectedPeers;
-
-  private static final Logger log = LoggerFactory.getLogger(MultiBitPeerEventListener.class);
 
   public MultiBitPeerEventListener() {
     numberOfConnectedPeers = 0;
@@ -79,6 +81,37 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
   @Override
   public void onTransaction(Peer peer, Transaction transaction) {
+    // Loop through all the wallets, seeing if the transaction is relevant and adding them as pending if so.
+    if (transaction != null) {
+      // TODO - want to iterate over all open wallets
+      Optional<WalletData> currentWalletData = WalletManager.INSTANCE.getCurrentWalletData();
+      if (currentWalletData.isPresent()) {
+        if (currentWalletData.get() != null) {
+          Wallet currentWallet = currentWalletData.get().getWallet();
+          if (currentWallet != null) {
+            try {
+              if (currentWallet.isTransactionRelevant(transaction)) {
+                if (!(transaction.isTimeLocked() && transaction.getConfidence().getSource() != TransactionConfidence.Source.SELF)) {
+                  if (currentWallet.getTransaction(transaction.getHash()) == null) {
+                    log.debug("MultiBitHD adding a new pending transaction for the wallet '"
+                            + currentWalletData.get().getWalletId() + "'\n" + transaction.toString());
+                    // The perWalletModelData is marked as dirty.
+                    // TODO - mark wallet as dirty ?
+                    currentWallet.receivePending(transaction, null);
+
+                    // Emit an event so that GUI elements can update as required
+                    CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(transaction));
+                  }
+                }
+              }
+            } catch (ScriptException se) {
+              // Cannot understand this transaction - carry on
+            }
+          }
+        }
+      }
+
+    }
   }
 
   @Override
