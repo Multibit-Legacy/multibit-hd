@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.joda.time.DateTime;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.components.Components;
@@ -74,13 +75,16 @@ public class ConfirmWalletSeedPhrasePanelView extends AbstractWizardPanelView<We
   public void updateFromComponentModels(Optional componentModel) {
 
     List<String> actualSeedPhrase = getWizardModel().getActualSeedPhrase();
-    List<String> userSeedPhrase = enterSeedPhraseMaV.getModel().getValue();
+    DateTime actualSeedTimestamp = getWizardModel().getActualSeedTimestamp();
 
-    boolean result = actualSeedPhrase.equals(userSeedPhrase);
+    List<String> userSeedPhrase = enterSeedPhraseMaV.getModel().getSeedPhrase();
+    DateTime userSeedTimestamp = enterSeedPhraseMaV.getModel().getSeedTimestamp();
+
+    boolean result = actualSeedPhrase.equals(userSeedPhrase) && actualSeedTimestamp.equals(userSeedTimestamp);
 
     // Fire the decision events (requires knowledge of the previous panel data)
     ViewEvents.fireWizardButtonEnabledEvent(CONFIRM_WALLET_SEED_PHRASE.name(), WizardButton.NEXT, result);
-    ViewEvents.fireVerificationStatusChangedEvent(CONFIRM_WALLET_SEED_PHRASE.name(), userSeedPhrase.equals(actualSeedPhrase));
+    ViewEvents.fireVerificationStatusChangedEvent(CONFIRM_WALLET_SEED_PHRASE.name(), result);
 
   }
 }

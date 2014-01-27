@@ -112,12 +112,12 @@ public enum MessageKey {
   SELECT_BACKUP_LOCATION_NOTE_3("Cloud backup services include Spider Oak, Dropbox and Carbonite."),
   SELECT_BACKUP_LOCATION_NOTE_4("Use the folder button to specify your cloud backup folder."),
 
-  SEED_WARNING_NOTE_1("Write down the words below exactly as shown on a <strong>piece of paper</strong> and <strong>keep it safe</strong>."),
+  SEED_WARNING_NOTE_1("Write down the date and words below exactly as shown on a <strong>piece of paper</strong> and <strong>keep it safe</strong>."),
   SEED_WARNING_NOTE_2("These words <strong>protect all your bitcoins</strong>. You will never see them again."),
   SEED_WARNING_NOTE_3("Do not copy/paste."),
   SEED_WARNING_NOTE_4("Do not take a screen shot."),
 
-  CONFIRM_SEED_PHRASE_NOTE_1("Enter your seed phrase words below <strong>exactly as they were given</strong>."),
+  CONFIRM_SEED_PHRASE_NOTE_1("Enter the date and words below <strong>exactly as they were given</strong>."),
   CONFIRM_SEED_PHRASE_NOTE_2("Include the spaces between words."),
   CONFIRM_SEED_PHRASE_NOTE_3("If you do not have the seed phrase words you must exit and start again."),
   CONFIRM_SEED_PHRASE_NOTE_4("A message will appear when you have confirmed the seed phrase."),

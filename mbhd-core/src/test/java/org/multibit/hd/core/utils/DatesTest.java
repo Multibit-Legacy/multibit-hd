@@ -2,6 +2,7 @@ package org.multibit.hd.core.utils;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
+import org.joda.time.DateTimeZone;
 import org.junit.Test;
 
 import java.util.Locale;
@@ -9,6 +10,14 @@ import java.util.Locale;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class DatesTest {
+
+  @Test
+  public void testMidnightUtc() {
+
+    DateTimeUtils.setCurrentMillisFixed(new DateTime(2000, 1, 2, 3, 4, 5, 6).getMillis());
+
+    assertThat(Dates.formatISO8601(Dates.midnightUtc())).isEqualTo("2000-01-02T00:00:00Z");
+  }
 
   @Test
   public void testFormatDelivery_DefaultLocale() {
@@ -59,9 +68,40 @@ public class DatesTest {
   }
 
   @Test
-  public void testISO8601_DefaultLocale() {
+  public void testParseISO8601_DefaultLocale() {
 
     DateTime instant = Dates.parseISO8601("2000-01-01T12:00:00Z");
+
     assertThat(Dates.formatISO8601(instant)).isEqualTo("2000-01-01T12:00:00Z");
+  }
+
+  @Test
+  public void testParseSmtpUtc_DefaultLocale() {
+
+    DateTime instant = Dates.parseSmtpUtc("01 Jan 2000").withZone(DateTimeZone.UTC);
+    assertThat(Dates.formatISO8601(instant)).isEqualTo("2000-01-01T00:00:00Z");
+
+    instant = Dates.parseSmtpUtc("1 jan 2000").withZone(DateTimeZone.UTC);
+    assertThat(Dates.formatISO8601(instant)).isEqualTo("2000-01-01T00:00:00Z");
+
+    instant = Dates.parseSmtpUtc("1 january 2000").withZone(DateTimeZone.UTC);
+    assertThat(Dates.formatISO8601(instant)).isEqualTo("2000-01-01T00:00:00Z");
+
+  }
+
+  @Test
+  public void testParseSmtpUtc_FrenchLocale() {
+
+    DateTime instant = Dates.parseSmtpUtc("01 janv. 2000", Locale.FRANCE).withZone(DateTimeZone.UTC);
+    assertThat(Dates.formatISO8601(instant)).isEqualTo("2000-01-01T00:00:00Z");
+
+  }
+
+  @Test
+  public void testParseSmtpUtc_ThaiLocale() {
+
+    DateTime instant = Dates.parseSmtpUtc("01 ม.ค. 2000", new Locale("th", "TH", "TH")).withZone(DateTimeZone.UTC);
+    assertThat(Dates.formatISO8601(instant)).isEqualTo("2000-01-01T00:00:00Z");
+
   }
 }

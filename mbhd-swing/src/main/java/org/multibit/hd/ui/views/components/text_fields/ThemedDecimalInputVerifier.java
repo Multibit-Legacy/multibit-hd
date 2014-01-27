@@ -24,7 +24,7 @@ public class ThemedDecimalInputVerifier extends InputVerifier {
   private final Double minValue;
   private final Double maxValue;
 
-  private final Color invalidColor = Themes.currentTheme.dangerAlertBackground();
+  private final Color invalidColor = Themes.currentTheme.invalidDataEntryBackground();
   private final Color validColor = Themes.currentTheme.dataEntryBackground();
 
   public ThemedDecimalInputVerifier() {

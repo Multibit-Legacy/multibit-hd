@@ -51,7 +51,8 @@ public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<Wel
     displaySeedPhraseMaV = Components.newDisplaySeedPhraseMaV(seedPhraseGenerator);
     setPanelModel(displaySeedPhraseMaV.getModel().getValue());
 
-    getWizardModel().setActualSeedPhrase(displaySeedPhraseMaV.getModel().getValue());
+    getWizardModel().setActualSeedPhrase(displaySeedPhraseMaV.getModel().getSeedPhrase());
+    getWizardModel().setActualSeedTimestamp(displaySeedPhraseMaV.getModel().getSeedTimestamp());
 
   }
 
@@ -81,8 +82,9 @@ public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<Wel
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 
-    // Update the wizard model with the latest seed phrase
-    getWizardModel().setActualSeedPhrase(displaySeedPhraseMaV.getModel().getValue());
+    // Update the wizard model with the latest seed information
+    getWizardModel().setActualSeedPhrase(displaySeedPhraseMaV.getModel().getSeedPhrase());
+    getWizardModel().setActualSeedTimestamp(displaySeedPhraseMaV.getModel().getSeedTimestamp());
 
     // TODO remove this
     for (String word : getWizardModel().getActualSeedPhrase()) {

@@ -25,6 +25,7 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
 
   // View components
   private JTextArea seedPhrase;
+  private JTextField seedTimestamp;
 
   /**
    * @param model The model backing this view
@@ -38,27 +39,30 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
 
     panel = Panels.newPanel(new MigLayout(
       "insets 0", // Layout
-      "[][][]", // Columns
+      "[][][][][][]", // Columns
       "[][]" // Rows
     ));
 
+    // Populate components
     final JComboBox<String> seedSize = ComboBoxes.newSeedSizeComboBox(this);
     seedPhrase = TextBoxes.newDisplaySeedPhrase();
-
     seedPhrase.setText(getModel().get().displaySeedPhrase());
+    seedTimestamp = TextBoxes.newDisplaySeedTimestamp(getModel().get().getSeedTimestamp());
 
     // Configure the actions
     Action refreshAction = getRefreshAction();
     Action toggleDisplayAction = getToggleDisplayAction();
 
     // Add to the panel
-    panel.add(Labels.newSeedSize(),"split 2");
-    panel.add(seedSize,"wrap");
-    panel.add(seedPhrase, "shrink");
+    panel.add(Labels.newTimestamp());
+    panel.add(seedTimestamp, "grow");
+    panel.add(Labels.newSeedSize(),"span 2,grow");
+    panel.add(seedSize, "shrink,wrap");
+    panel.add(seedPhrase, "span 2,shrink");
     panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink");
     panel.add(Buttons.newRefreshButton(refreshAction), "shrink,wrap");
-    panel.add(Labels.newTimestamp(),"split 2");
 
+    seedSize.requestFocusInWindow();
 
     return panel;
 

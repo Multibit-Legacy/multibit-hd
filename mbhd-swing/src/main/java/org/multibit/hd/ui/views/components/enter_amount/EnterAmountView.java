@@ -252,7 +252,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
         } catch (ArithmeticException e) {
 
           // Give feedback to the user
-          localAmountText.setBackground(Themes.currentTheme.dangerAlertBackground());
+          localAmountText.setBackground(Themes.currentTheme.invalidDataEntryBackground());
 
         }
 
@@ -306,7 +306,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
         } catch (ArithmeticException e) {
 
           // Give feedback to the user
-          bitcoinAmountText.setBackground(Themes.currentTheme.dangerAlertBackground());
+          bitcoinAmountText.setBackground(Themes.currentTheme.invalidDataEntryBackground());
         }
 
       } else {
@@ -335,7 +335,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
         } catch (ArithmeticException e) {
 
           // Give feedback to the user
-          localAmountText.setBackground(Themes.currentTheme.dangerAlertBackground());
+          localAmountText.setBackground(Themes.currentTheme.invalidDataEntryBackground());
 
         }
 

@@ -30,10 +30,15 @@ public class Dates {
   /**
    * Produces "Sat, 01 Jan 2000 23:59:59 GMT"
    */
-  private static final DateTimeFormatter rfc1123 = DateTimeFormat
+  private static final DateTimeFormatter httpDateFormatter = DateTimeFormat
     .forPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'")
     .withLocale(Locale.US) // For common language
     .withZone(DateTimeZone.UTC); // For GMT
+
+  /**
+   * Produces "01 Jan 2000" for simplified unambiguous user date as defined in RFC1123 (SMTP)
+   */
+  private static final DateTimeFormatter smtpDateFormatter = DateTimeFormat.forPattern("dd MMM yyyy");
 
   /**
    * Produces Saturday, January 01 (no year component since this is for nearby dates)
@@ -41,20 +46,22 @@ public class Dates {
   private static final DateTimeFormatter deliveryDateFormatter = DateTimeFormat.forPattern("EEEE, MMMM dd");
 
   /**
-   * Produces 01 Jan 2000 for unambiguous user date as defined in RFC1123 (SMTP)
+   * Parses ISO8601 in UTC without milliseconds (e.g. "yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
    */
-  private static final DateTimeFormatter smtpDateFormatter = DateTimeFormat.forPattern("dd MMM yyyy");
+  private static final DateTimeFormatter utcIso8601 = ISODateTimeFormat.dateTimeNoMillis().withZoneUTC();
 
   /**
-   * Parses ISO8601 without milliseconds (e.g. "yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
+   * @return The current midnight in UTC
    */
-  private static final DateTimeFormatter utcIso8601 = ISODateTimeFormat.dateTimeNoMillis().withZone(DateTimeZone.UTC);
+  public static DateTime midnightUtc() {
+    return DateTime.now(DateTimeZone.UTC).toDateMidnight().toDateTime();
+  }
 
   /**
    * @return The current instant in UTC
    */
   public static DateTime nowUtc() {
-    return new DateTime().withZone(DateTimeZone.UTC);
+    return DateTime.now(DateTimeZone.UTC);
   }
 
   /**
@@ -118,7 +125,7 @@ public class Dates {
   /**
    * @param when The instant
    *
-   * @return The instant formatted as "dd MMM yyyy" (01 Jan 2000)
+   * @return The instant formatted for SMTP as defined in RFC 1123 e.g. "dd MMM yyyy" (01 Jan 2000)
    */
   public static String formatSmtpDate(ReadableInstant when) {
     return smtpDateFormatter.print(when);
@@ -128,7 +135,7 @@ public class Dates {
    * @param when   The instant
    * @param locale The required locale
    *
-   * @return The instant formatted as "dd MMM yyyy" (01 Jan 2000)
+   * @return The instant formatted for SMTP as defined in RFC 1123 e.g. "dd MMM yyyy" (01 Jan 2000)
    */
   public static String formatSmtpDate(ReadableInstant when, Locale locale) {
     return smtpDateFormatter.withLocale(locale).print(when);
@@ -137,10 +144,10 @@ public class Dates {
   /**
    * @param when The instant
    *
-   * @return The instant formatted as RFC 1123 e.g. "Sat, 01 Jan 2000 23:59:59 GMT"
+   * @return The instant formatted for HTTP as defined in RFC 1123 e.g. "Sat, 01 Jan 2000 23:59:59 GMT"
    */
   public static String formatHttpDateHeader(ReadableInstant when) {
-    return rfc1123.print(when);
+    return httpDateFormatter.print(when);
   }
 
   /**
@@ -163,7 +170,7 @@ public class Dates {
   }
 
   /**
-   * @param text The text representing a date and time in ISO8601 format
+   * @param text The text representing a date and time in ISO8601 format (e.g. "2000-01-02T03:04:05Z")
    *
    * @return The DateTime
    *
@@ -171,6 +178,29 @@ public class Dates {
    */
   public static DateTime parseISO8601(String text) {
     return utcIso8601.parseDateTime(text);
+  }
+
+  /**
+   * @param text The text representing a date and time in SMTP format (e.g. "01 Jan 2000")
+   *
+   * @return The DateTime in the UTC timezone for the default locale
+   *
+   * @throws IllegalArgumentException If the text cannot be parsed
+   */
+  public static DateTime parseSmtpUtc(String text) {
+    return smtpDateFormatter.withZoneUTC().parseDateTime(text);
+  }
+
+  /**
+   * @param text The text representing a date and time in SMTP format (e.g. "01 Jan 2000")
+   * @param locale The specific local to use
+   *
+   * @return The DateTime in the UTC timezone for the given locale
+   *
+   * @throws IllegalArgumentException If the text cannot be parsed
+   */
+  public static DateTime parseSmtpUtc(String text, Locale locale) {
+    return smtpDateFormatter.withLocale(locale).parseDateTime(text);
   }
 
 }
