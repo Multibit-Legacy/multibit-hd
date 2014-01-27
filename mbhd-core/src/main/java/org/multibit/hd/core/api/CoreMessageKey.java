@@ -20,8 +20,10 @@ public enum CoreMessageKey {
 
   // Core messages
   START_NETWORK_CONNECTION_ERROR("core_start_network_connection_error"),
+  WALLET_DIRECTORY_ERROR("core_wallet_directory_error"),
+  NETWORK_CONFIGURATION_ERROR("core_network_configuration_error"),
   CHAIN_DOWNLOAD("core_chain_download"),
-  PEER_COUNT("core_peer_count")
+  PEER_COUNT("core_peer_count"),
 
   // End of enum
   ;

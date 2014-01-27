@@ -565,6 +565,19 @@ public class Labels {
   }
 
   /**
+   * @return A new "restore seed phrase" note
+   */
+  public static JLabel newRestoreSeedPhraseNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.CONFIRM_SEED_PHRASE_NOTE_1,
+      MessageKey.CONFIRM_SEED_PHRASE_NOTE_2,
+      MessageKey.CONFIRM_SEED_PHRASE_NOTE_3,
+      MessageKey.CONFIRM_SEED_PHRASE_NOTE_4
+    }, new Object[][]{});
+  }
+
+  /**
    * @return A new "select backup directory" note
    */
   public static JLabel newSelectBackupDirectoryNote() {

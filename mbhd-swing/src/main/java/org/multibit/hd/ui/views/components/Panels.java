@@ -264,9 +264,9 @@ public class Panels {
   }
 
   /**
-   * <p>A "seed phrase warning" panel displays the instructions to write down the seed phrase on a piece of paper</p>
+   * <p>A "confirm seed phrase" panel displays the instructions to enter the seed phrase from a piece of paper</p>
    *
-   * @return A new "seed phrase warning" panel
+   * @return A new "confirm seed phrase" panel
    */
   public static JPanel newConfirmSeedPhrase() {
 
@@ -299,6 +299,25 @@ public class Panels {
 
     // Add to the panel
     panel.add(Labels.newSeedWarningNote(), "push");
+
+    return panel;
+  }
+
+  /**
+   * <p>A "seed phrase warning" panel displays the instructions to write down the seed phrase on a piece of paper</p>
+   *
+   * @return A new "seed phrase warning" panel
+   */
+  public static JPanel newRestoreSeedPhrase() {
+
+    JPanel panel = Panels.newPanel(new MigLayout(
+      "fillx,insets 0", // Layout
+      "[grow]", // Columns
+      "[]" // Rows
+    ));
+
+    // Add to the panel
+    panel.add(Labels.newConfirmSeedPhraseNote(), "push");
 
     return panel;
   }

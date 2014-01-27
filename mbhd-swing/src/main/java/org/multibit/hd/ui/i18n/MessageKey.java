@@ -117,21 +117,31 @@ public enum MessageKey {
   WELCOME_NOTE_2("welcome_note_2"),
   WELCOME_NOTE_3("welcome_note_3"),
   WELCOME_NOTE_4("welcome_note_4"),
+
   SELECT_BACKUP_LOCATION_NOTE_1("select_backup_location_note_1"),
   SELECT_BACKUP_LOCATION_NOTE_2("select_backup_location_note_2"),
   SELECT_BACKUP_LOCATION_NOTE_3("select_backup_location_note_3"),
   SELECT_BACKUP_LOCATION_NOTE_4("select_backup_location_note_4"),
+
   SEED_WARNING_NOTE_1("seed_warning_note_1"),
   SEED_WARNING_NOTE_2("seed_warning_note_2"),
   SEED_WARNING_NOTE_3("seed_warning_note_3"),
   SEED_WARNING_NOTE_4("seed_warning_note_4"),
+
   CONFIRM_SEED_PHRASE_NOTE_1("confirm_seed_phrase_note_1"),
   CONFIRM_SEED_PHRASE_NOTE_2("confirm_seed_phrase_note_2"),
   CONFIRM_SEED_PHRASE_NOTE_3("confirm_seed_phrase_note_3"),
   CONFIRM_SEED_PHRASE_NOTE_4("confirm_seed_phrase_note_4"),
+
   WALLET_PASSWORD_NOTE_1("wallet_password_note_1"),
   WALLET_PASSWORD_NOTE_2("wallet_password_note_2"),
   WALLET_PASSWORD_NOTE_3("wallet_password_note_3"),
+
+  RESTORE_SEED_PHRASE_NOTE_1("restore_seed_phrase_note_1"),
+  RESTORE_SEED_PHRASE_NOTE_2("restore_seed_phrase_note_2"),
+  RESTORE_SEED_PHRASE_NOTE_3("restore_seed_phrase_note_3"),
+  RESTORE_SEED_PHRASE_NOTE_4("restore_seed_phrase_note_4"),
+
   RECIPIENT_SUMMARY("recipient_summary"),
   AMOUNT_SUMMARY("amount_summary"),
 

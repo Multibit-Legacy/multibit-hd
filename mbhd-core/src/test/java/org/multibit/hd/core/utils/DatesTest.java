@@ -104,4 +104,58 @@ public class DatesTest {
     assertThat(Dates.formatISO8601(instant)).isEqualTo("2000-01-01T00:00:00Z");
 
   }
+
+  @Test
+  public void testNewSeedTimestamp() {
+
+    DateTimeUtils.setCurrentMillisFixed(new DateTime(2014, 1, 27, 0, 0, 0, 0).getMillis());
+
+    assertThat(Dates.newSeedTimestamp()).isEqualTo("1850/2");
+  }
+
+  @Test
+  public void testParseSeedTimestamp() {
+
+    DateTime expected = new DateTime(2014, 1, 27, 0, 0, 0, 0, DateTimeZone.UTC);
+
+    assertThat(Dates.parseSeedTimestamp("1850/2")).isEqualTo(expected);
+
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testParseSeedTimestamp_Checksum() {
+
+    DateTime expected = new DateTime(2014, 1, 27, 0, 0, 0, 0, DateTimeZone.UTC);
+
+    assertThat(Dates.parseSeedTimestamp("1850/1")).isEqualTo(expected);
+
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testParseSeedTimestamp_Length() {
+
+    DateTime expected = new DateTime(2014, 1, 27, 0, 0, 0, 0, DateTimeZone.UTC);
+
+    assertThat(Dates.parseSeedTimestamp("180/2")).isEqualTo(expected);
+
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testParseSeedTimestamp_Format1() {
+
+    DateTime expected = new DateTime(2014, 1, 27, 0, 0, 0, 0, DateTimeZone.UTC);
+
+    assertThat(Dates.parseSeedTimestamp("1850-2")).isEqualTo(expected);
+
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testParseSeedTimestamp_Format2() {
+
+    DateTime expected = new DateTime(2014, 1, 27, 0, 0, 0, 0, DateTimeZone.UTC);
+
+    assertThat(Dates.parseSeedTimestamp("1850/")).isEqualTo(expected);
+
+  }
+
 }

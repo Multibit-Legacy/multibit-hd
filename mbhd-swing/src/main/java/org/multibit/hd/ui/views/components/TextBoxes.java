@@ -1,9 +1,7 @@
 package org.multibit.hd.ui.views.components;
 
-import org.joda.time.DateTime;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.utils.BitcoinSymbol;
-import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.views.components.text_fields.FormattedDecimalField;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -77,17 +75,14 @@ public class TextBoxes {
   }
 
   /**
-   * @param timestamp The timestamp to display in localised form
+   * @param seedTimestamp The seed timestamp to display (e.g. "1850/2")
    *
    * @return A new "display seed timestamp" text field
    */
-  public static JTextField newDisplaySeedTimestamp(DateTime timestamp) {
-
-    // Use SMTP format since it is unambiguous and user readable
-    String localisedTimestamp = Dates.formatSmtpDate(timestamp);
+  public static JTextField newDisplaySeedTimestamp(String seedTimestamp) {
 
     JTextField textField = new JTextField(20);
-    textField.setText(localisedTimestamp);
+    textField.setText(seedTimestamp);
 
     // Users should not be able to change the timestamp
     textField.setEditable(false);
