@@ -12,153 +12,146 @@ package org.multibit.hd.ui.i18n;
 public enum MessageKey {
 
   // Verbs
-  APPLY("apply"),
-  UNDO("undo"),
-  CANCEL("cancel"),
-  EXIT("exit"),
-  SEND("send"),
-  RECEIVE("receive"),
-  REFRESH("refresh"),
-  FINISH("finish"),
-  CLOSE("close"),
-  SHOW("show"),
-  HIDE("hide"),
+  APPLY,
+  UNDO,
+  CANCEL,
+  EXIT,
+  SEND,
+  RECEIVE,
+  REFRESH,
+  FINISH,
+  CLOSE,
+  SHOW,
+  HIDE,
 
   // Nouns
-  YES("yes"),
-  NO("no"),
-  NEXT("next"),
-  PREVIOUS("previous"),
+  YES,
+  NO,
+  NEXT,
+  PREVIOUS,
 
   // Field labels
-  RECIPIENT("Recipient"),
-  TRANSACTION_LABEL("transaction_label"),
-  NOTES("Notes"),
-  ENTER_PASSWORD("Enter password"),
-  CONFIRM_PASSWORD("Confirm password"),
-  AMOUNT("Amount"),
-  TRANSACTION_FEE("Transaction fee"),
-  DEVELOPER_FEE("MultiBit fee"),
+  RECIPIENT,
+  TRANSACTION_LABEL,
+  NOTES,
+  ENTER_PASSWORD,
+  CONFIRM_PASSWORD,
+  AMOUNT,
+  TRANSACTION_FEE,
+  DEVELOPER_FEE,
 
   // Sidebar
-  CONTACTS("Contacts"),
-  TRANSACTIONS("Transactions"),
-  HISTORY("History"),
-  PREFERENCES("Preferences"),
-  TOOLS("Tools"),
+  CONTACTS,
+  TRANSACTIONS,
+  HISTORY,
+  PREFERENCES,
+  TOOLS,
 
   // Placeholders
-  APPROXIMATELY("approximately"),
-  PARANTHESES("parantheses"),
+  APPROXIMATELY,
+  PARANTHESES,
 
   // Panels
 
-  NETWORK_CONFIGURATION_ERROR("network_configuration_error"),
-  DISPLAY_LANGUAGE("display_language"),
-  HELP("help"),
-  SETTINGS("settings"),
-  CREATE_WALLET("Create new wallet"),
-  RESTORE_WALLET("Restore from seed or backup"),
-  SWITCH_WALLET("Switch to another wallet in the list"),
-  USE_HARDWARE_WALLET("Use hardware wallet"),
+  NETWORK_CONFIGURATION_ERROR,
+  DISPLAY_LANGUAGE,
+  HELP,
+  SETTINGS,
+  CREATE_WALLET,
+  RESTORE_WALLET,
+  SWITCH_WALLET,
+  USE_HARDWARE_WALLET,
 
   // Titles
-  APPLICATION_TITLE("MultiBit HD"),
-  SEND_BITCOIN_TITLE("sendBitcoinAction.text"),
-  RECEIVE_BITCOIN_TITLE("receiveBitcoinAction.text"),
-  CONFIRM_SEND_TITLE("sendBitcoinConfirmView.title"),
-  SEND_PROGRESS_TITLE("Send Progress"),
-  EXIT_TITLE("Exit application ?"),
-  WELCOME_TITLE("Welcome !"),
-  SELECT_WALLET_TITLE("Select wallet"),
-  CREATE_WALLET_SEED_PHRASE_TITLE("Create wallet"),
-  CONFIRM_WALLET_SEED_PHRASE_TITLE("Confirm wallet"),
-  CREATE_WALLET_PASSWORD_TITLE("Create wallet password"),
-  SELECT_BACKUP_LOCATION_TITLE("Select backup location"),
-  CREATE_WALLET_REPORT_TITLE("Create Wallet Report"),
-  RESTORE_WALLET_TITLE("Restore wallet"),
+  APPLICATION_TITLE,
+  SEND_BITCOIN_TITLE,
+  RECEIVE_BITCOIN_TITLE,
+  CONFIRM_SEND_TITLE,
+  SEND_PROGRESS_TITLE,
+  EXIT_TITLE,
+  WELCOME_TITLE,
+  SELECT_WALLET_TITLE,
+  CREATE_WALLET_SEED_PHRASE_TITLE,
+  CONFIRM_WALLET_SEED_PHRASE_TITLE,
+  CREATE_WALLET_PASSWORD_TITLE,
+  SELECT_BACKUP_LOCATION_TITLE,
+  CREATE_WALLET_REPORT_TITLE,
+  RESTORE_WALLET_TITLE,
 
   // Labels
-  CONFIRM_SEND_MESSAGE("confirm_send_message"),
-  EXCHANGE_RATE_PROVIDER("exchange_rate_provider"),
+  CONFIRM_SEND_MESSAGE,
+  EXCHANGE_RATE_PROVIDER,
 
   // Tool buttons
-  SHOW_WELCOME_WIZARD("Welcome wizard"),
+  SHOW_WELCOME_WIZARD,
 
   // Statuses
-  BROADCAST_STATUS("Broadcast"),
-  RELAY_STATUS("Relayed"),
-  CONFIRMATION_STATUS("Confirmation count {0}"),
-  VERIFICATION_STATUS("Verified"),
-  EXCHANGE_RATE_STATUS_OK("Exchange rate OK"),
-  EXCHANGE_RATE_STATUS_WARN("Exchange rate is out of date"),
+  BROADCAST_STATUS,
+  RELAY_STATUS,
+  CONFIRMATION_STATUS,
+  VERIFICATION_STATUS,
+  EXCHANGE_RATE_STATUS_OK,
+  EXCHANGE_RATE_STATUS_WARN,
 
-  SEED_PHRASE_CREATED_STATUS("Seed phrase created"),
-  WALLET_PASSWORD_CREATED_STATUS("Wallet password created"),
-  BACKUP_LOCATION_STATUS("Backup location created"),
-  WALLET_CREATED_STATUS("Wallet created"),
+  SEED_PHRASE_CREATED_STATUS,
+  WALLET_PASSWORD_CREATED_STATUS,
+  BACKUP_LOCATION_STATUS,
+  WALLET_CREATED_STATUS,
 
 
-  ALERT_REMAINING("alert_remaining"),
-  EXCHANGE_FIAT_RATE("exchange_fiat_rate"),
-  SELECT_LANGUAGE("select_language"),
-  SEED_SIZE("Words in seed"),
-  TIMESTAMP("Timestamp"),
+  ALERT_REMAINING,
+  EXCHANGE_FIAT_RATE,
+  SELECT_LANGUAGE,
+  SEED_SIZE,
+  TIMESTAMP,
 
   // Notes (can contain HTML)
-  WELCOME_NOTE_1("MultiBit HD provides access to the Bitcoin network."),
-  WELCOME_NOTE_2("Bitcoin is a digital currency and <strong>requires a secure environment</strong>."),
-  WELCOME_NOTE_3("This setup process will guide through each step to help keep your bitcoins safe."),
-  WELCOME_NOTE_4("If this is your first time using MultiBit HD you should choose \"Create new wallet\" on the next page."),
+  WELCOME_NOTE_1,
+  WELCOME_NOTE_2,
+  WELCOME_NOTE_3,
+  WELCOME_NOTE_4,
 
-  SELECT_BACKUP_LOCATION_NOTE_1("Wallet backups <strong>protect your transactions and contacts</strong> if your computer is damaged or stolen."),
-  SELECT_BACKUP_LOCATION_NOTE_2("They are created automatically and are encrypted."),
-  SELECT_BACKUP_LOCATION_NOTE_3("Cloud backup services include Spider Oak, Dropbox and Carbonite."),
-  SELECT_BACKUP_LOCATION_NOTE_4("Use the folder button to specify your cloud backup folder."),
+  SELECT_BACKUP_LOCATION_NOTE_1,
+  SELECT_BACKUP_LOCATION_NOTE_2,
+  SELECT_BACKUP_LOCATION_NOTE_3,
+  SELECT_BACKUP_LOCATION_NOTE_4,
 
-  SEED_WARNING_NOTE_1("Write down the date and words below exactly as shown on a <strong>piece of paper</strong> and <strong>keep it safe</strong>."),
-  SEED_WARNING_NOTE_2("These words <strong>protect all your bitcoins</strong>. You will never see them again."),
-  SEED_WARNING_NOTE_3("Do not copy/paste."),
-  SEED_WARNING_NOTE_4("Do not take a screen shot."),
+  SEED_WARNING_NOTE_1,
+  SEED_WARNING_NOTE_2,
+  SEED_WARNING_NOTE_3,
+  SEED_WARNING_NOTE_4,
 
-  CONFIRM_SEED_PHRASE_NOTE_1("Enter the date and words below <strong>exactly as they were given</strong>."),
-  CONFIRM_SEED_PHRASE_NOTE_2("Include the spaces between words."),
-  CONFIRM_SEED_PHRASE_NOTE_3("If you do not have the seed phrase words you must exit and start again."),
-  CONFIRM_SEED_PHRASE_NOTE_4("A message will appear when you have confirmed the seed phrase."),
+  CONFIRM_SEED_PHRASE_NOTE_1,
+  CONFIRM_SEED_PHRASE_NOTE_2,
+  CONFIRM_SEED_PHRASE_NOTE_3,
+  CONFIRM_SEED_PHRASE_NOTE_4,
 
-  WALLET_PASSWORD_NOTE_1("This password will be needed whenever you send bitcoins."),
-  WALLET_PASSWORD_NOTE_2("You can change it whenever you like from the Tools screen."),
-  WALLET_PASSWORD_NOTE_3("You can always recover it using your seed phrase."),
+  WALLET_PASSWORD_NOTE_1,
+  WALLET_PASSWORD_NOTE_2,
+  WALLET_PASSWORD_NOTE_3,
 
-  RECIPIENT_SUMMARY("recipient_summary"),
-  AMOUNT_SUMMARY("amount_summary"),
+  RECIPIENT_SUMMARY,
+  AMOUNT_SUMMARY,
 
   // Sending bitcoin
-  TRANSACTION_CREATED_OK("transaction_created_ok"),
-  TRANSACTION_CREATION_FAILED("transaction_creation_failed"),
-  SENDING_BITCOIN("sending_bitcoin"),
-  BITCOIN_SENT_OK("bitcoin_sent_ok"),
-  BITCOIN_SEND_FAILED("bitcoin_send_failed"),
+  TRANSACTION_CREATED_OK,
+  TRANSACTION_CREATION_FAILED,
+  SENDING_BITCOIN,
+  BITCOIN_SENT_OK,
+  BITCOIN_SEND_FAILED,
 
   // Errors
-  THE_ERROR_WAS("the_error_was"),
-  COULD_NOT_CONNECT_TO_BITCOIN_NETWORK("could_not_connect_to_bitcoin_network"),
-  NO_ACTIVE_WALLET("no_active_wallet"),
+  THE_ERROR_WAS,
+  COULD_NOT_CONNECT_TO_BITCOIN_NETWORK,
+  NO_ACTIVE_WALLET,
 
   // End of enum
   ;
-
-  private final String key;
-
-
-  private MessageKey(String key) {
-    this.key = key;
-  }
 
   /**
    * @return The key for use with the resource bundles
    */
   public String getKey() {
-    return key;
+      return name().toLowerCase();
   }
 }
