@@ -2,6 +2,7 @@ package org.multibit.hd.core.utils;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
+import org.joda.time.DateTimeZone;
 import org.junit.Test;
 
 import java.util.Locale;
@@ -9,34 +10,98 @@ import java.util.Locale;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class DatesTest {
+
   @Test
-  public void testFriendlyFormatDefaultLocale() {
+  public void testMidnightUtc() {
 
-    DateTimeUtils.setCurrentMillisFixed(new DateTime(2000, 1, 1, 0, 0, 0, 0).getMillis());
+    DateTimeUtils.setCurrentMillisFixed(new DateTime(2000, 1, 2, 3, 4, 5, 6).getMillis());
 
-    assertThat(Dates.formatFriendlyDate(Dates.nowUtc())).isEqualTo("Saturday, January 01");
+    assertThat(Dates.formatISO8601(Dates.midnightUtc())).isEqualTo("2000-01-02T00:00:00Z");
   }
 
   @Test
-  public void testFriendlyFormatFrenchLocale() {
+  public void testFormatDelivery_DefaultLocale() {
 
     DateTimeUtils.setCurrentMillisFixed(new DateTime(2000, 1, 1, 0, 0, 0, 0).getMillis());
 
-    assertThat(Dates.formatFriendlyDate(Dates.nowUtc(), Locale.FRANCE)).isEqualTo("samedi, janvier 01");
+    assertThat(Dates.formatDeliveryDate(Dates.nowUtc())).isEqualTo("Saturday, January 01");
   }
 
   @Test
-  public void testFriendlyFormatThaiLocale() {
+  public void testFormatDelivery_FrenchLocale() {
 
     DateTimeUtils.setCurrentMillisFixed(new DateTime(2000, 1, 1, 0, 0, 0, 0).getMillis());
 
-    assertThat(Dates.formatFriendlyDate(Dates.nowUtc(), new Locale("th", "TH", "TH"))).isEqualTo("วันเสาร์, มกราคม 01");
+    assertThat(Dates.formatDeliveryDate(Dates.nowUtc(), Locale.FRANCE)).isEqualTo("samedi, janvier 01");
   }
 
   @Test
-  public void testISO8601DefaultLocale() {
+  public void testFormatDelivery_ThaiLocale() {
+
+    DateTimeUtils.setCurrentMillisFixed(new DateTime(2000, 1, 1, 0, 0, 0, 0).getMillis());
+
+    assertThat(Dates.formatDeliveryDate(Dates.nowUtc(), new Locale("th", "TH", "TH"))).isEqualTo("วันเสาร์, มกราคม 01");
+  }
+
+  @Test
+  public void testFormatSmtp_DefaultLocale() {
+
+    DateTimeUtils.setCurrentMillisFixed(new DateTime(2000, 1, 1, 0, 0, 0, 0).getMillis());
+
+    assertThat(Dates.formatSmtpDate(Dates.nowUtc())).isEqualTo("01 Jan 2000");
+  }
+
+  @Test
+  public void testFormatSmtp_FrenchLocale() {
+
+    DateTimeUtils.setCurrentMillisFixed(new DateTime(2000, 1, 1, 0, 0, 0, 0).getMillis());
+
+    assertThat(Dates.formatSmtpDate(Dates.nowUtc(), Locale.FRANCE)).isEqualTo("01 janv. 2000");
+  }
+
+  @Test
+  public void testFormatSmtp_ThaiLocale() {
+
+    DateTimeUtils.setCurrentMillisFixed(new DateTime(2000, 1, 1, 0, 0, 0, 0).getMillis());
+
+    assertThat(Dates.formatSmtpDate(Dates.nowUtc(), new Locale("th", "TH", "TH"))).isEqualTo("01 ม.ค. 2000");
+  }
+
+  @Test
+  public void testParseISO8601_DefaultLocale() {
 
     DateTime instant = Dates.parseISO8601("2000-01-01T12:00:00Z");
+
     assertThat(Dates.formatISO8601(instant)).isEqualTo("2000-01-01T12:00:00Z");
+  }
+
+  @Test
+  public void testParseSmtpUtc_DefaultLocale() {
+
+    DateTime instant = Dates.parseSmtpUtc("01 Jan 2000").withZone(DateTimeZone.UTC);
+    assertThat(Dates.formatISO8601(instant)).isEqualTo("2000-01-01T00:00:00Z");
+
+    instant = Dates.parseSmtpUtc("1 jan 2000").withZone(DateTimeZone.UTC);
+    assertThat(Dates.formatISO8601(instant)).isEqualTo("2000-01-01T00:00:00Z");
+
+    instant = Dates.parseSmtpUtc("1 january 2000").withZone(DateTimeZone.UTC);
+    assertThat(Dates.formatISO8601(instant)).isEqualTo("2000-01-01T00:00:00Z");
+
+  }
+
+  @Test
+  public void testParseSmtpUtc_FrenchLocale() {
+
+    DateTime instant = Dates.parseSmtpUtc("01 janv. 2000", Locale.FRANCE).withZone(DateTimeZone.UTC);
+    assertThat(Dates.formatISO8601(instant)).isEqualTo("2000-01-01T00:00:00Z");
+
+  }
+
+  @Test
+  public void testParseSmtpUtc_ThaiLocale() {
+
+    DateTime instant = Dates.parseSmtpUtc("01 ม.ค. 2000", new Locale("th", "TH", "TH")).withZone(DateTimeZone.UTC);
+    assertThat(Dates.formatISO8601(instant)).isEqualTo("2000-01-01T00:00:00Z");
+
   }
 }

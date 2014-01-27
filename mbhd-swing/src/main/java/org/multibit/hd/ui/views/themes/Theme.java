@@ -9,7 +9,7 @@ import java.awt.*;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public interface Theme {
 
@@ -37,6 +37,11 @@ public interface Theme {
    * @return The background colour for data handling elements (like text areas, tree views etc)
    */
   Color dataEntryBackground();
+
+  /**
+   * @return The background colour for data handling elements (like text areas, tree views etc) with invalid data
+   */
+  Color invalidDataEntryBackground();
 
   /**
    * @return The normal font colour for the theme

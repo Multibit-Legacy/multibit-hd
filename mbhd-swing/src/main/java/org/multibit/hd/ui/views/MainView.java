@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views;
 
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.api.MessageKey;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;

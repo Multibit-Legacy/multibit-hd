@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.api.MessageKey;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.components.Components;
@@ -51,7 +51,8 @@ public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<Wel
     displaySeedPhraseMaV = Components.newDisplaySeedPhraseMaV(seedPhraseGenerator);
     setPanelModel(displaySeedPhraseMaV.getModel().getValue());
 
-    getWizardModel().setActualSeedPhrase(displaySeedPhraseMaV.getModel().getValue());
+    getWizardModel().setActualSeedPhrase(displaySeedPhraseMaV.getModel().getSeedPhrase());
+    getWizardModel().setActualSeedTimestamp(displaySeedPhraseMaV.getModel().getSeedTimestamp());
 
   }
 
@@ -81,8 +82,9 @@ public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<Wel
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 
-    // Update the wizard model with the latest seed phrase
-    getWizardModel().setActualSeedPhrase(displaySeedPhraseMaV.getModel().getValue());
+    // Update the wizard model with the latest seed information
+    getWizardModel().setActualSeedPhrase(displaySeedPhraseMaV.getModel().getSeedPhrase());
+    getWizardModel().setActualSeedTimestamp(displaySeedPhraseMaV.getModel().getSeedTimestamp());
 
     // TODO remove this
     for (String word : getWizardModel().getActualSeedPhrase()) {

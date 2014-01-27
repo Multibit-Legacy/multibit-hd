@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.components.display_amount;
 
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.api.MessageKey;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.I18NConfiguration;

@@ -5,7 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import com.xeiam.xchange.currency.MoneyUtils;
 import net.miginfocom.swing.MigLayout;
 import org.joda.money.BigMoney;
-import org.multibit.hd.core.api.MessageKey;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.services.CoreServices;
@@ -252,7 +252,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
         } catch (ArithmeticException e) {
 
           // Give feedback to the user
-          localAmountText.setBackground(Themes.currentTheme.dangerAlertBackground());
+          localAmountText.setBackground(Themes.currentTheme.invalidDataEntryBackground());
 
         }
 
@@ -306,7 +306,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
         } catch (ArithmeticException e) {
 
           // Give feedback to the user
-          bitcoinAmountText.setBackground(Themes.currentTheme.dangerAlertBackground());
+          bitcoinAmountText.setBackground(Themes.currentTheme.invalidDataEntryBackground());
         }
 
       } else {
@@ -335,7 +335,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
         } catch (ArithmeticException e) {
 
           // Give feedback to the user
-          localAmountText.setBackground(Themes.currentTheme.dangerAlertBackground());
+          localAmountText.setBackground(Themes.currentTheme.invalidDataEntryBackground());
 
         }
 

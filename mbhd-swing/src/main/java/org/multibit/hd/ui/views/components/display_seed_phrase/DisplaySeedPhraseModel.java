@@ -3,8 +3,10 @@ package org.multibit.hd.ui.views.components.display_seed_phrase;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import org.joda.time.DateTime;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
+import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.models.Model;
 import org.multibit.hd.ui.views.components.TextBoxes;
 
@@ -27,6 +29,7 @@ public class DisplaySeedPhraseModel implements Model<List<String>> {
 
   // Start with the text displayed
   private boolean asClearText = true;
+  private final DateTime seedTimestamp = Dates.nowUtc().toDateMidnight().toDateTime();
 
   public DisplaySeedPhraseModel(SeedPhraseGenerator generator) {
     this.generator = generator;
@@ -78,9 +81,24 @@ public class DisplaySeedPhraseModel implements Model<List<String>> {
     return currentSeedSize;
   }
 
+  /**
+   *
+   * @return The generated seed phrase
+   */
+  public List<String> getSeedPhrase() {
+    return seedPhrase;
+  }
+
+  /**
+   * @return The computed seed timestamp with time set to midnight
+   */
+  public DateTime getSeedTimestamp() {
+    return seedTimestamp.toDateMidnight().toDateTime();
+  }
+
   @Override
   public List<String> getValue() {
-    return seedPhrase;
+    return getSeedPhrase();
   }
 
   @Override

@@ -2,9 +2,12 @@ package org.multibit.hd.ui.views.components.enter_seed_phrase;
 
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.joda.time.DateTime;
+import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.views.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Buttons;
+import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.TextBoxes;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
@@ -29,6 +32,8 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
 
   // View components
   private JTextArea seedPhraseTextArea;
+  private JTextField seedTimestampText;
+
   private JPanel verificationStatusPanel;
 
   /**
@@ -45,17 +50,29 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
 
     panel = Panels.newPanel(new MigLayout(
       "insets 0", // Layout
-      "[][]", // Columns
+      "[][][]", // Columns
       "[][]" // Rows
     ));
 
+    // Create view components
     seedPhraseTextArea = TextBoxes.newEnterSeedPhrase();
+    seedTimestampText = TextBoxes.newEnterSeedTimestamp();
 
     // Fill the text area with appropriate content
     seedPhraseTextArea.setText(model.displaySeedPhrase());
 
     // Bind a key listener to allow instant update of UI to mismatched seed phrase
     seedPhraseTextArea.addKeyListener(new KeyAdapter() {
+
+      @Override
+      public void keyReleased(KeyEvent e) {
+        updateModelFromView();
+      }
+
+    });
+
+    // Bind a key listener to allow instant update of UI to invalid date
+    seedTimestampText.addKeyListener(new KeyAdapter() {
 
       @Override
       public void keyReleased(KeyEvent e) {
@@ -71,9 +88,11 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
     Action toggleDisplayAction = getToggleDisplayAction();
 
     // Add to the panel
-    panel.add(seedPhraseTextArea,"grow,push");
+    panel.add(Labels.newTimestamp());
+    panel.add(seedTimestampText, "grow,push,wrap");
+    panel.add(seedPhraseTextArea, "span 2,grow,push");
     panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink,wrap");
-    panel.add(verificationStatusPanel, "span 2,push,wrap");
+    panel.add(verificationStatusPanel, "span 3,push,wrap");
 
     return panel;
 
@@ -81,7 +100,27 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
 
   @Override
   public void updateModelFromView() {
+
     getModel().get().setSeedPhrase(seedPhraseTextArea.getText());
+
+    try {
+
+      // Only bother with parsing when the length is appropriate
+      if (seedTimestampText.getText().length() > 8) {
+
+        // Use the current locale
+        DateTime seedTimestamp = Dates.parseSmtpUtc(seedTimestampText.getText());
+
+        getModel().get().setSeedTimestamp(seedTimestamp);
+
+      }
+
+    } catch (IllegalArgumentException e) {
+
+      // Ignore the input - don't give feedback because it is confusing at the start of data entry
+
+    }
+
   }
 
   /**

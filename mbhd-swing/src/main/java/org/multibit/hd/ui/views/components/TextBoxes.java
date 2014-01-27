@@ -1,7 +1,9 @@
 package org.multibit.hd.ui.views.components;
 
+import org.joda.time.DateTime;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.utils.BitcoinSymbol;
+import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.views.components.text_fields.FormattedDecimalField;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -55,6 +57,7 @@ public class TextBoxes {
     doc.setDocumentFilter(new DocumentMaxLengthFilter(RECEIVE_ADDRESS_LABEL_LENGTH));
     textField.setDocument(doc);
 
+    // Set the theme
     textField.setBackground(Themes.currentTheme.dataEntryBackground());
 
     return textField;
@@ -66,6 +69,43 @@ public class TextBoxes {
   public static JTextField newSelectFile() {
 
     JTextField textField = new JTextField(60);
+
+    // Set the theme
+    textField.setBackground(Themes.currentTheme.dataEntryBackground());
+
+    return textField;
+  }
+
+  /**
+   * @param timestamp The timestamp to display in localised form
+   *
+   * @return A new "display seed timestamp" text field
+   */
+  public static JTextField newDisplaySeedTimestamp(DateTime timestamp) {
+
+    // Use SMTP format since it is unambiguous and user readable
+    String localisedTimestamp = Dates.formatSmtpDate(timestamp);
+
+    JTextField textField = new JTextField(20);
+    textField.setText(localisedTimestamp);
+
+    // Users should not be able to change the timestamp
+    textField.setEditable(false);
+
+    // Set the theme
+    textField.setBackground(Themes.currentTheme.readOnlyBackground());
+
+    return textField;
+  }
+
+  /**
+   * @return A new "enter seed timestamp" text field
+   */
+  public static JTextField newEnterSeedTimestamp() {
+
+    JTextField textField = new JTextField(20);
+
+    // Set the theme
     textField.setBackground(Themes.currentTheme.dataEntryBackground());
 
     return textField;
@@ -83,6 +123,9 @@ public class TextBoxes {
 
     // Users should not be able to change the address
     textField.setEditable(false);
+
+    // Set the theme
+    textField.setBackground(Themes.currentTheme.readOnlyBackground());
 
     return textField;
   }
@@ -151,7 +194,7 @@ public class TextBoxes {
     doc.setDocumentFilter(new DocumentMaxLengthFilter(PASSWORD_LENGTH));
     passwordField.setDocument(doc);
 
-    // Apply the theme
+    // Set the theme
     passwordField.setBackground(Themes.currentTheme.dataEntryBackground());
 
     return passwordField;
@@ -178,7 +221,7 @@ public class TextBoxes {
     textArea.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "transferFocus");
     textArea.getActionMap().put("transferFocus", transferFocus);
 
-    // Apply the theme
+    // Set the theme
     textArea.setBackground(Themes.currentTheme.dataEntryBackground());
 
     return textArea;
@@ -195,6 +238,9 @@ public class TextBoxes {
     // Prevent copy/paste operations
     textArea.setTransferHandler(null);
     textArea.setEditable(false);
+
+    // Set the theme
+    textArea.setBackground(Themes.currentTheme.readOnlyBackground());
 
     return textArea;
 
@@ -221,16 +267,16 @@ public class TextBoxes {
     textArea.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "transferFocus");
     textArea.getActionMap().put("transferFocus", transferFocus);
 
-    // Apply the theme
-    textArea.setBackground(Themes.currentTheme.readOnlyBackground());
-    textArea.setFont(new Font("Courier New", Font.PLAIN, 14));
-
     // Ensure we provide a suitable inner margin to allow letters to be clear
     textArea.setMargin(new Insets(2, 4, 2, 4));
 
     // Ensure line and word wrapping occur as required
     textArea.setLineWrap(true);
     textArea.setWrapStyleWord(true);
+
+    // Set the theme
+    textArea.setBackground(Themes.currentTheme.dataEntryBackground());
+    textArea.setFont(new Font("Courier New", Font.PLAIN, 14));
 
     return textArea;
 

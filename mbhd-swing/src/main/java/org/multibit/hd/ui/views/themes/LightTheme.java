@@ -62,6 +62,11 @@ public class LightTheme implements Theme {
   }
 
   @Override
+  public Color invalidDataEntryBackground() {
+    return colors[3][1];
+  }
+
+  @Override
   public Color headerPanelBackground() {
     return new Color(0xe0e0e0);
   }
