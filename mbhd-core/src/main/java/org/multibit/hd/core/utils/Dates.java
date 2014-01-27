@@ -17,7 +17,7 @@ import java.util.Locale;
  * <p>All times use the UTC time zone unless otherwise specified</p>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class Dates {
 
@@ -36,9 +36,14 @@ public class Dates {
     .withZone(DateTimeZone.UTC); // For GMT
 
   /**
-   * Produces Sunday, January 01
+   * Produces Saturday, January 01 (no year component since this is for nearby dates)
    */
-  private static final DateTimeFormatter friendlyDateFormatter = DateTimeFormat.forPattern("EEEE, MMMM dd");
+  private static final DateTimeFormatter deliveryDateFormatter = DateTimeFormat.forPattern("EEEE, MMMM dd");
+
+  /**
+   * Produces 01 Jan 2000 for unambiguous user date as defined in RFC1123 (SMTP)
+   */
+  private static final DateTimeFormatter smtpDateFormatter = DateTimeFormat.forPattern("dd MMM yyyy");
 
   /**
    * Parses ISO8601 without milliseconds (e.g. "yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
@@ -96,8 +101,8 @@ public class Dates {
    *
    * @return The instant formatted as "ddd, MMM dd" (Saturday, January 01)
    */
-  public static String formatFriendlyDate(ReadableInstant when) {
-    return friendlyDateFormatter.print(when);
+  public static String formatDeliveryDate(ReadableInstant when) {
+    return deliveryDateFormatter.print(when);
   }
 
   /**
@@ -106,8 +111,27 @@ public class Dates {
    *
    * @return The instant formatted as "ddd, MMM dd" (Saturday, January 01)
    */
-  public static String formatFriendlyDate(ReadableInstant when, Locale locale) {
-    return friendlyDateFormatter.withLocale(locale).print(when);
+  public static String formatDeliveryDate(ReadableInstant when, Locale locale) {
+    return deliveryDateFormatter.withLocale(locale).print(when);
+  }
+
+  /**
+   * @param when The instant
+   *
+   * @return The instant formatted as "dd MMM yyyy" (01 Jan 2000)
+   */
+  public static String formatSmtpDate(ReadableInstant when) {
+    return smtpDateFormatter.print(when);
+  }
+
+  /**
+   * @param when   The instant
+   * @param locale The required locale
+   *
+   * @return The instant formatted as "dd MMM yyyy" (01 Jan 2000)
+   */
+  public static String formatSmtpDate(ReadableInstant when, Locale locale) {
+    return smtpDateFormatter.withLocale(locale).print(when);
   }
 
   /**
@@ -129,7 +153,7 @@ public class Dates {
   }
 
   /**
-   * @param when The instant
+   * @param when   The instant
    * @param locale The required locale
    *
    * @return The instant formatted as ISO8601 e.g. "2000-01-02T03:04:05Z"

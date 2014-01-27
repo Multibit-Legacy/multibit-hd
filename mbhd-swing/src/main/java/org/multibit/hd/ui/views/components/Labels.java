@@ -465,6 +465,13 @@ public class Labels {
   }
 
   /**
+   * @return A new "timestamp" message
+   */
+  public static JLabel newTimestamp() {
+    return newLabel(MessageKey.TIMESTAMP);
+  }
+
+  /**
    * @return A new "transaction label" message for use with receiving addresses
    */
   public static JLabel newTransactionLabel() {

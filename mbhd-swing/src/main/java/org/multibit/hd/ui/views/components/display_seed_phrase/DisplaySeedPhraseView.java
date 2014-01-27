@@ -56,7 +56,9 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
     panel.add(seedSize,"wrap");
     panel.add(seedPhrase, "shrink");
     panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink");
-    panel.add(Buttons.newRefreshButton(refreshAction), "shrink");
+    panel.add(Buttons.newRefreshButton(refreshAction), "shrink,wrap");
+    panel.add(Labels.newTimestamp(),"split 2");
+
 
     return panel;
 

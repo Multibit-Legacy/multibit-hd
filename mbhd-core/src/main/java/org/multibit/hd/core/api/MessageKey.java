@@ -99,6 +99,7 @@ public enum MessageKey {
   EXCHANGE_FIAT_RATE("exchange.fiat-rate"),
   SELECT_LANGUAGE("showPreferencesPanel.languageTitle"),
   SEED_SIZE("Words in seed"),
+  TIMESTAMP("Timestamp"),
 
   // Notes (can contain HTML)
   WELCOME_NOTE_1("MultiBit HD provides access to the Bitcoin network."),
