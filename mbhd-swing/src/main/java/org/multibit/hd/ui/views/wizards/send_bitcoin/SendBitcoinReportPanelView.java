@@ -139,6 +139,8 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
     log.debug("Received the TransactionSeenEvent: " + transactionSeenEvent.toString());
 
+    // Is this an event about the transaction that was just sent ?
+    // If so, update the UI
     if (getPanelModel().get() != null) {
       String currentTransactionId = getPanelModel().get().getTransactionId();
       if (transactionSeenEvent.getTransactionId().equals(currentTransactionId)) {

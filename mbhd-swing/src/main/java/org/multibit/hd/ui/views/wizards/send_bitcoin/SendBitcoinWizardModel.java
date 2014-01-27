@@ -114,11 +114,10 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     String bitcoinAddress = enterAmountPanelModel.getEnterRecipientModel().getRecipient().get().getBitcoinAddress();
     String password = confirmPanelModel.getPasswordModel().getValue();
 
-    log.debug("Just about to send bitcoin : amount = '{}', address = '{}', changeAddress = '{}', password = '{}'.",
+    log.debug("Just about to send bitcoin : amount = '{}', address = '{}', changeAddress = '{}'.",
       satoshis,
       bitcoinAddress,
-      changeAddress,
-      password
+      changeAddress
     );
 
     bitcoinNetworkService.send(bitcoinAddress, satoshis, changeAddress, BitcoinNetworkService.DEFAULT_FEE_PER_KB, password);

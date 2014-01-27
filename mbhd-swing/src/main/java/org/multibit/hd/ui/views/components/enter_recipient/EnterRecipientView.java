@@ -69,7 +69,7 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
   public void updateModelFromView() {
 
     // TODO Add in support for real address/contact
-    Recipient recipient = new Recipient("1abc123");
+    Recipient recipient = new Recipient("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty"); // The MultiBit donation address
 
     getModel().get().setValue(recipient);
   }

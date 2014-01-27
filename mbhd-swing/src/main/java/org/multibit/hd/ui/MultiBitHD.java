@@ -87,7 +87,10 @@ public class MultiBitHD {
 
     WalletManager.INSTANCE.initialise(applicationDataDirectory);
 
-    if (!WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
+    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
+      // Diagnostic
+      log.debug("The current wallet is:\n" + WalletManager.INSTANCE.getCurrentWalletData().get().getWallet().toString());
+    } else {
       // TODO show the new Wallet Wizard to create a wallet, set it into the configuration/ WalletManager
     }
 
