@@ -64,9 +64,9 @@ public enum WalletManager {
 
   private File applicationDataDirectory;
 
-  private List<File> walletDirectories;
+  private List<File> walletDirectories = Lists.newArrayList();
 
-  private Optional<WalletData> currentWalletData;
+  private Optional<WalletData> currentWalletData=Optional.absent();
 
   /**
    * Initialise enum, load up the available wallets and find the current wallet
