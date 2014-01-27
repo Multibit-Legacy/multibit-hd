@@ -1,4 +1,4 @@
-package org.multibit.hd.core.api;
+package org.multibit.hd.ui.i18n;
 
 /**
  * <p>Enum to provide the following to application:</p>
@@ -53,9 +53,6 @@ public enum MessageKey {
 
   // Panels
 
-  PEER_COUNT("peer_count"),
-  CHAIN_DOWNLOAD("chain_download"),
-  START_NETWORK_CONNECTION_ERROR("start_network_connection_error"),
   NETWORK_CONFIGURATION_ERROR("network_configuration_error"),
   DISPLAY_LANGUAGE("display_language"),
   HELP("help"),

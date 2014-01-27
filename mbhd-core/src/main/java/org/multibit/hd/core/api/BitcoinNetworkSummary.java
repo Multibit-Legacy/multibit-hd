@@ -20,7 +20,7 @@ public class BitcoinNetworkSummary {
 
   private final RAGStatus severity;
 
-  private final Optional<MessageKey> messageKey;
+  private final Optional<CoreMessageKey> messageKey;
   private final Optional<Object[]> messageData;
 
 
@@ -31,7 +31,7 @@ public class BitcoinNetworkSummary {
     return new BitcoinNetworkSummary(
       BitcoinNetworkStatus.NOT_CONNECTED,
       RAGStatus.RED,
-      Optional.<MessageKey>absent(),
+      Optional.<CoreMessageKey>absent(),
       Optional.<Object[]>absent(),
       0,
       0
@@ -45,7 +45,7 @@ public class BitcoinNetworkSummary {
     return new BitcoinNetworkSummary(
       BitcoinNetworkStatus.DOWNLOADING_BLOCKCHAIN,
       RAGStatus.AMBER,
-      Optional.of(MessageKey.CHAIN_DOWNLOAD),
+      Optional.of(CoreMessageKey.CHAIN_DOWNLOAD),
       Optional.of(new Object[]{"0"}),
       0,
       0
@@ -61,7 +61,7 @@ public class BitcoinNetworkSummary {
     return new BitcoinNetworkSummary(
       BitcoinNetworkStatus.DOWNLOADING_BLOCKCHAIN,
       RAGStatus.AMBER,
-      Optional.of(MessageKey.CHAIN_DOWNLOAD),
+      Optional.of(CoreMessageKey.CHAIN_DOWNLOAD),
       Optional.of(new Object[]{percent}),
       0,
       percent
@@ -77,7 +77,7 @@ public class BitcoinNetworkSummary {
     return new BitcoinNetworkSummary(
       BitcoinNetworkStatus.SYNCHRONIZED,
       RAGStatus.GREEN,
-      Optional.of(MessageKey.PEER_COUNT),
+      Optional.of(CoreMessageKey.PEER_COUNT),
       Optional.of(new Object[]{peerCount}),
       peerCount,
       0
@@ -89,7 +89,7 @@ public class BitcoinNetworkSummary {
    *
    * @return A new "startup failed" summary
    */
-  public static BitcoinNetworkSummary newNetworkStartupFailed(MessageKey messageKey, Optional<Object[]> messageData) {
+  public static BitcoinNetworkSummary newNetworkStartupFailed(CoreMessageKey messageKey, Optional<Object[]> messageData) {
     return new BitcoinNetworkSummary(
       BitcoinNetworkStatus.NOT_CONNECTED,
       RAGStatus.RED,
@@ -110,7 +110,7 @@ public class BitcoinNetworkSummary {
   public BitcoinNetworkSummary(
     BitcoinNetworkStatus status,
     RAGStatus severity,
-    Optional<MessageKey> messageKey,
+    Optional<CoreMessageKey> messageKey,
     Optional<Object[]> messageData,
     int peerCount,
     int percent) {
@@ -157,7 +157,7 @@ public class BitcoinNetworkSummary {
     return messageData;
   }
 
-  public Optional<MessageKey> getMessageKey() {
+  public Optional<CoreMessageKey> getMessageKey() {
     return messageKey;
   }
 

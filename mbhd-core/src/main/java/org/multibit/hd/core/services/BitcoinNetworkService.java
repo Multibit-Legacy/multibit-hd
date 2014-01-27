@@ -9,7 +9,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.multibit.hd.core.api.BitcoinNetworkSummary;
-import org.multibit.hd.core.api.MessageKey;
+import org.multibit.hd.core.api.CoreMessageKey;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.events.CoreEvents;
@@ -102,7 +102,7 @@ public class BitcoinNetworkService extends AbstractService {
       log.error(e.getClass().getName() + " " + e.getMessage());
       CoreEvents.fireBitcoinNetworkChangedEvent(
               BitcoinNetworkSummary.newNetworkStartupFailed(
-                      MessageKey.START_NETWORK_CONNECTION_ERROR,
+                      CoreMessageKey.START_NETWORK_CONNECTION_ERROR,
                       Optional.<Object[]>absent()
               ));
     }

@@ -3,7 +3,7 @@ package org.multibit.hd.ui.views.wizards.welcome;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.api.MessageKey;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.managers.WalletManager;

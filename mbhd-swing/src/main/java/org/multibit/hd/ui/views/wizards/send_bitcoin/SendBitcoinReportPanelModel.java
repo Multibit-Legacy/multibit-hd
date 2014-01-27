@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import com.google.common.base.Optional;
-import org.multibit.hd.core.api.MessageKey;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.wizards.AbstractPanelModel;
 
 /**

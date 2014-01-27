@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
-import org.multibit.hd.core.api.MessageKey;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;

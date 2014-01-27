@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.components;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import org.multibit.hd.core.api.MessageKey;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.core.api.Recipient;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.utils.BitcoinSymbol;
