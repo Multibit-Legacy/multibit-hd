@@ -5,8 +5,6 @@ import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
@@ -31,7 +29,7 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
   /**
    * Initialise to earliest possible HD wallet seed to provide a default during restore operation
    */
-  private DateTime seedTimestamp = new DateTime(2014, 1, 1, 0, 0, 0, 0, DateTimeZone.UTC);
+  private String seedTimestamp = "1826/6";
 
   // Start with the text displayed
   private boolean asClearText = true;
@@ -59,17 +57,20 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
   }
 
   /**
-   * @return The seed creation timestamp
+   * @return The seed creation timestamp (e.g. "1850/2")
    */
-  public DateTime getSeedTimestamp() {
+  public String getSeedTimestamp() {
     return seedTimestamp;
   }
 
   /**
    * @param seedTimestamp The seed creation timestamp
    */
-  public void setSeedTimestamp(DateTime seedTimestamp) {
+  public void setSeedTimestamp(String seedTimestamp) {
+
     this.seedTimestamp = seedTimestamp;
+
+    //
 
     // Have a possible match so alert the panel model
     ViewEvents.fireWizardComponentModelChangedEvent(panelName, Optional.of(this));

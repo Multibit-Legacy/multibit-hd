@@ -3,14 +3,19 @@ package org.multibit.hd.ui.views.wizards.welcome;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.views.components.Components;
+import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
+import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 /**
  * <p>Wizard to provide the following to UI:</p>
@@ -22,7 +27,9 @@ import java.awt.event.ActionListener;
  *         
  */
 
-public class RestoreWalletChoicesPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> implements ActionListener {
+public class RestoreWalletChoicesPanelView extends AbstractWizardPanelView<WelcomeWizardModel, List<String>> implements ActionListener {
+
+  private ModelAndView<EnterSeedPhraseModel, EnterSeedPhraseView> enterSeedPhraseMaV;
 
   /**
    * @param wizard The wizard managing the states
@@ -37,19 +44,25 @@ public class RestoreWalletChoicesPanelView extends AbstractWizardPanelView<Welco
 
   @Override
   public void newPanelModel() {
-    // No panel model required
+
+    enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV(WelcomeWizardState.CONFIRM_WALLET_SEED_PHRASE.name());
+    setPanelModel(enterSeedPhraseMaV.getModel().getValue());
+
+    getWizardModel().setEnterSeedPhraseModel(enterSeedPhraseMaV.getModel());
+
   }
 
   @Override
   public JPanel newWizardViewPanel() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fill,insets 0", // Layout constraints
-      "[][][]", // Column constraints
-      "[]" // Row constraints
+      "fill,insets 0,hidemode 1", // Layout constraints
+      "[]", // Column constraints
+      "[][]" // Row constraints
     ));
 
-    // TODO fill this in
+    panel.add(Panels.newConfirmSeedPhrase(), "wrap");
+    panel.add(enterSeedPhraseMaV.getView().newComponentPanel(), "wrap");
 
     return panel;
   }

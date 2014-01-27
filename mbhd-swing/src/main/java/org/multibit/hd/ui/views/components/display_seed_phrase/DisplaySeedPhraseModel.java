@@ -3,7 +3,6 @@ package org.multibit.hd.ui.views.components.display_seed_phrase;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import org.joda.time.DateTime;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
 import org.multibit.hd.core.utils.Dates;
@@ -24,12 +23,12 @@ import java.util.List;
 public class DisplaySeedPhraseModel implements Model<List<String>> {
 
   private final SeedPhraseGenerator generator;
-  private List<String> seedPhrase= Lists.newArrayList();
+  private List<String> seedPhrase = Lists.newArrayList();
   private SeedPhraseSize currentSeedSize;
 
   // Start with the text displayed
   private boolean asClearText = true;
-  private final DateTime seedTimestamp = Dates.nowUtc().toDateMidnight().toDateTime();
+  private final String seedTimestamp = Dates.newSeedTimestamp();
 
   public DisplaySeedPhraseModel(SeedPhraseGenerator generator) {
     this.generator = generator;
@@ -82,7 +81,6 @@ public class DisplaySeedPhraseModel implements Model<List<String>> {
   }
 
   /**
-   *
    * @return The generated seed phrase
    */
   public List<String> getSeedPhrase() {
@@ -90,10 +88,10 @@ public class DisplaySeedPhraseModel implements Model<List<String>> {
   }
 
   /**
-   * @return The computed seed timestamp with time set to midnight
+   * @return The computed seed timestamp (e.g. "1850/2")
    */
-  public DateTime getSeedTimestamp() {
-    return seedTimestamp.toDateMidnight().toDateTime();
+  public String getSeedTimestamp() {
+    return seedTimestamp;
   }
 
   @Override

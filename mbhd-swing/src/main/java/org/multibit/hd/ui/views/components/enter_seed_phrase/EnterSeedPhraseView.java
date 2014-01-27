@@ -2,8 +2,6 @@ package org.multibit.hd.ui.views.components.enter_seed_phrase;
 
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
-import org.joda.time.DateTime;
-import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.views.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Buttons;
@@ -106,12 +104,9 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
     try {
 
       // Only bother with parsing when the length is appropriate
-      if (seedTimestampText.getText().length() > 8) {
+      if (seedTimestampText.getText().length() > 5) {
 
-        // Use the current locale
-        DateTime seedTimestamp = Dates.parseSmtpUtc(seedTimestampText.getText());
-
-        getModel().get().setSeedTimestamp(seedTimestamp);
+        getModel().get().setSeedTimestamp(seedTimestampText.getText());
 
       }
 

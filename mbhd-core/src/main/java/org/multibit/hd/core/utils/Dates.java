@@ -1,5 +1,6 @@
 package org.multibit.hd.core.utils;
 
+import com.google.common.base.Preconditions;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.ReadableInstant;
@@ -192,7 +193,7 @@ public class Dates {
   }
 
   /**
-   * @param text The text representing a date and time in SMTP format (e.g. "01 Jan 2000")
+   * @param text   The text representing a date and time in SMTP format (e.g. "01 Jan 2000")
    * @param locale The specific local to use
    *
    * @return The DateTime in the UTC timezone for the given locale
@@ -201,6 +202,56 @@ public class Dates {
    */
   public static DateTime parseSmtpUtc(String text, Locale locale) {
     return smtpDateFormatter.withLocale(locale).parseDateTime(text);
+  }
+
+  /**
+   * @return The fixed date of the Bitcoin Genesis block (2009-01-03T18:15:00Z)
+   */
+  public static DateTime bitcoinGenesis() {
+
+    return new DateTime(2009, 1, 3, 18, 15, 0, 0, DateTimeZone.UTC);
+
+  }
+
+  /**
+   * @return Create a new seed timestamp (e.g. "1850/2")
+   */
+  public static String newSeedTimestamp() {
+
+    long genesisMidnight = bitcoinGenesis().toDateMidnight().toDateTime().getMillis();
+    long nowMidnight = Dates.midnightUtc().getMillis();
+
+    long days = (nowMidnight - genesisMidnight) / 86_400_000;
+
+    long modulo11 = days % 11;
+
+    return String.format("%d/%d", days, modulo11);
+
+  }
+
+  /**
+   * @param text The text representing a date in seed timestamp format (e.g. "1850/2")
+   *
+   * @return The DateTime in the UTC timezone for the seed
+   *
+   * @throws IllegalArgumentException If the text cannot be parsed
+   */
+  public static DateTime parseSeedTimestamp(String text) {
+
+    int separatorIndex = text.indexOf("/");
+    Preconditions.checkArgument(separatorIndex > 3, "'text' does not contain '/' in the correct location");
+
+    try {
+      int days = Integer.valueOf(text.substring(0, separatorIndex));
+      int checksum = Integer.valueOf(text.substring(separatorIndex+1));
+
+      Preconditions.checkArgument(days % 11 == checksum, "'text' has incorrect checksum. Days=" + days + " checksum=" + checksum);
+
+      return bitcoinGenesis().plusDays(days).toDateMidnight().toDateTime();
+
+    } catch (NumberFormatException e) {
+      throw new IllegalArgumentException("'text' does not parse into 2 integers");
+    }
   }
 
 }

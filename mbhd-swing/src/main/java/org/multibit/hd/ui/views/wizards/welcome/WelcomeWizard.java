@@ -30,24 +30,31 @@ public class WelcomeWizard extends AbstractWizard<WelcomeWizardModel> {
     wizardViewMap.put(
       WELCOME.name(),
       new WelcomePanelView(this, WELCOME.name()));
+
     wizardViewMap.put(
       SELECT_WALLET.name(),
       new SelectWalletPanelView(this, SELECT_WALLET.name()));
+
     wizardViewMap.put(
       CREATE_WALLET_SEED_PHRASE.name(),
       new CreateWalletSeedPhrasePanelView(this, CREATE_WALLET_SEED_PHRASE.name()));
+
     wizardViewMap.put(
       CONFIRM_WALLET_SEED_PHRASE.name(),
       new ConfirmWalletSeedPhrasePanelView(this, CONFIRM_WALLET_SEED_PHRASE.name()));
+
     wizardViewMap.put(
       RESTORE_WALLET.name(),
       new RestoreWalletChoicesPanelView(this, RESTORE_WALLET.name()));
+
     wizardViewMap.put(
       CREATE_WALLET_PASSWORD.name(),
       new CreateWalletPasswordPanelView(this, CREATE_WALLET_PASSWORD.name()));
+
     wizardViewMap.put(
       SELECT_BACKUP_LOCATION.name(),
       new SelectBackupLocationPanelView(this, SELECT_BACKUP_LOCATION.name()));
+
     wizardViewMap.put(
       CREATE_WALLET_REPORT.name(),
       new CreateWalletReportPanelView(this, CREATE_WALLET_REPORT.name()));
