@@ -39,6 +39,11 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   private SendBitcoinConfirmPanelModel confirmPanelModel;
 
   /**
+   * The "report" panel model
+   */
+  private SendBitcoinReportPanelModel reportPanelModel;
+
+  /**
    * Default transaction fee
    */
   private BigInteger transactionFee = Satoshis.fromPlainAmount("0.0001");
@@ -106,7 +111,6 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     String changeAddress = bitcoinNetworkService.getNextChangeAddress();
 
     BigInteger satoshis = enterAmountPanelModel.getEnterAmountModel().getSatoshis();
-    // Convert to satoshi
     String bitcoinAddress = enterAmountPanelModel.getEnterRecipientModel().getRecipient().get().getBitcoinAddress();
     String password = confirmPanelModel.getPasswordModel().getValue();
 
@@ -119,7 +123,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
     bitcoinNetworkService.send(bitcoinAddress, satoshis, changeAddress, BitcoinNetworkService.DEFAULT_FEE_PER_KB, password);
 
-    // The send throws BitcoinSentEvents to which you subscribe to to work out success and failure.
+    // The send throws TransactionCreationEvents and BitcoinSentEvents to which you subscribe to to work out success and failure.
 
   }
 
@@ -186,6 +190,15 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
    */
   void setConfirmPanelModel(SendBitcoinConfirmPanelModel confirmPanelModel) {
     this.confirmPanelModel = confirmPanelModel;
+  }
+
+  /**
+   * <p>Reduced visibility for panel models only</p>
+   *
+   * @param reportPanelModel The "confirm" panel model
+   */
+  void setReportPanelModel(SendBitcoinReportPanelModel reportPanelModel) {
+    this.reportPanelModel = reportPanelModel;
   }
 
   /**

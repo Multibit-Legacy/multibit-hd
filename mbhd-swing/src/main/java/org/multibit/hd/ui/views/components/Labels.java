@@ -122,16 +122,43 @@ public class Labels {
    * @return A new label with icon binding to allow the AwesomeDecorator to update it
    */
   public static JLabel newStatusLabel(MessageKey key, Object[] values, boolean status) {
+    return newStatusLabel(Optional.of(key), values, Optional.of(status));
+  }
 
-    JLabel label = Labels.newLabel(key, values);
+  /**
+    * <p>A "status" label sets a label with no icon, a check or cross icon</p>
+    *
+    * @param key    The message key - if not present then empty text is put on the label
+    * @param values The substitution values
+    * @param status True if a check icon is required, false for a cross
+    *
+    * @return A new label with icon binding to allow the AwesomeDecorator to update it
+    */
+  public static JLabel newStatusLabel(Optional<MessageKey> key, Object[] values, Optional<Boolean> status) {
 
-    if (status) {
-      AwesomeDecorator.bindIcon(AwesomeIcon.CHECK, label, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    JLabel label;
+
+    if (key.isPresent()) {
+      label = Labels.newLabel(key.get(), values);
     } else {
-      AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, label, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+      label = new JLabel();
     }
 
+    decorateStatusLabel(label, status);
+
     return label;
+  }
+
+  public static void decorateStatusLabel(JLabel statusLabel, Optional<Boolean> status) {
+    if (status.isPresent()) {
+      if (status.get()) {
+        AwesomeDecorator.bindIcon(AwesomeIcon.CHECK, statusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+      } else {
+        AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, statusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+      }
+    } else {
+      // No icon on the label
+    }
   }
 
   /**

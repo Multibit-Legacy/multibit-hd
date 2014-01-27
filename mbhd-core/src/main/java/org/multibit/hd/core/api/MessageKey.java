@@ -129,6 +129,18 @@ public enum MessageKey {
   RECIPIENT_SUMMARY("recipient-summary"),
   AMOUNT_SUMMARY("amount-summary"),
 
+  // Sending bitcoin
+  TRANSACTION_CREATED_OK("transaction_created_ok"),
+  TRANSACTION_CREATION_FAILED("transaction_creation_failed"),
+  SENDING_BITCOIN("sending_bitcoin"),
+  BITCOIN_SENT_OK("bitcoin_sent_ok"),
+  BITCOIN_SEND_FAILED("bitcoin_send_failed"),
+
+  // Errors
+  THE_ERROR_WAS("the_error_was"),
+  COULD_NOT_CONNECT_TO_BITCOIN_NETWORK("could_not_connect_to_bitcoin_network"),
+  NO_ACTIVE_WALLET("no_active_wallet"),
+
   // End of enum
   CONTACTS("Contacts"), TRANSACTIONS("Transactions"), HISTORY("History"), PREFERENCES("Preferences"), TOOLS("Tools");
 

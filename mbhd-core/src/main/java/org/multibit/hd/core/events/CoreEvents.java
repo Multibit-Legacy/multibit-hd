@@ -41,6 +41,17 @@ public class CoreEvents {
   }
 
   /**
+   * <p>Broadcast TransactionCreationEvent</p>
+   *
+   * @param transactionCreationEvent containing transaction creation information
+   */
+  public static void fireTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
+
+    log.debug("Firing 'transactionCreation event' event");
+    CoreServices.uiEventBus.post(transactionCreationEvent);
+  }
+
+  /**
    * <p>Broadcast BitcoinSentEvent</p>
    *
    * @param bitcoinSentEvent containing send information
@@ -49,8 +60,8 @@ public class CoreEvents {
 
     log.debug("Firing 'bitcoin sent event' event");
     CoreServices.uiEventBus.post(bitcoinSentEvent);
-
   }
+
   /**
    * <p>Broadcast a new "Bitcoin network changed" event</p>
    *
