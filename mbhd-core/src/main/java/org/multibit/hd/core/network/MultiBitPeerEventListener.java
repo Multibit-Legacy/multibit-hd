@@ -29,11 +29,8 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     // Keep track of the download progress
     updateDownloadPercent(blocksLeft);
 
-    if (blocksLeft > 0) {
-      // Keep the progress updated
-      CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(downloadPercent));
-    }
-
+    // Keep the progress updated
+    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(downloadPercent));
   }
 
   @Override
