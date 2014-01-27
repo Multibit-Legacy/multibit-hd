@@ -7,7 +7,7 @@ package org.multibit.hd.core.api;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public enum MessageKey {
 
@@ -32,7 +32,7 @@ public enum MessageKey {
 
   // Field labels
   RECIPIENT("Recipient"),
-  TRANSACTION_LABEL("receiveBitcoinPanel.labelLabel"),
+  TRANSACTION_LABEL("transaction_label"),
   NOTES("Notes"),
   ENTER_PASSWORD("Enter password"),
   CONFIRM_PASSWORD("Confirm password"),
@@ -40,19 +40,26 @@ public enum MessageKey {
   TRANSACTION_FEE("Transaction fee"),
   DEVELOPER_FEE("MultiBit fee"),
 
+  // Sidebar
+  CONTACTS("Contacts"),
+  TRANSACTIONS("Transactions"),
+  HISTORY("History"),
+  PREFERENCES("Preferences"),
+  TOOLS("Tools"),
+
   // Placeholders
-  APPROXIMATELY("placeholder.approximately"),
-  PARANTHESES("placeholder.parantheses"),
+  APPROXIMATELY("approximately"),
+  PARANTHESES("parantheses"),
 
   // Panels
 
-  PEER_COUNT("status.peerCount"),
-  CHAIN_DOWNLOAD("status.chainDownload"),
-  START_NETWORK_CONNECTION_ERROR("bitcoin-network.start-network-connection-error"),
-  NETWORK_CONFIGURATION_ERROR("bitcoin-network.configuration-error"),
-  DISPLAY_LANGUAGE("showPreferencesPanel.useSpecific"),
-  HELP("multiBitFrame.helpMenuText"),
-  SETTINGS("showPreferencesPanel.title"),
+  PEER_COUNT("peer_count"),
+  CHAIN_DOWNLOAD("chain_download"),
+  START_NETWORK_CONNECTION_ERROR("start_network_connection_error"),
+  NETWORK_CONFIGURATION_ERROR("network_configuration_error"),
+  DISPLAY_LANGUAGE("display_language"),
+  HELP("help"),
+  SETTINGS("settings"),
   CREATE_WALLET("Create new wallet"),
   RESTORE_WALLET("Restore from seed or backup"),
   SWITCH_WALLET("Switch to another wallet in the list"),
@@ -75,8 +82,8 @@ public enum MessageKey {
   RESTORE_WALLET_TITLE("Restore wallet"),
 
   // Labels
-  CONFIRM_SEND_MESSAGE("sendBitcoinConfirmView.message"),
-  EXCHANGE_RATE_PROVIDER("exchange.rate-provider"),
+  CONFIRM_SEND_MESSAGE("confirm_send_message"),
+  EXCHANGE_RATE_PROVIDER("exchange_rate_provider"),
 
   // Tool buttons
   SHOW_WELCOME_WIZARD("Welcome wizard"),
@@ -95,9 +102,9 @@ public enum MessageKey {
   WALLET_CREATED_STATUS("Wallet created"),
 
 
-  ALERT_REMAINING("alert.remaining"),
-  EXCHANGE_FIAT_RATE("exchange.fiat-rate"),
-  SELECT_LANGUAGE("showPreferencesPanel.languageTitle"),
+  ALERT_REMAINING("alert_remaining"),
+  EXCHANGE_FIAT_RATE("exchange_fiat_rate"),
+  SELECT_LANGUAGE("select_language"),
   SEED_SIZE("Words in seed"),
   TIMESTAMP("Timestamp"),
 
@@ -126,8 +133,8 @@ public enum MessageKey {
   WALLET_PASSWORD_NOTE_2("You can change it whenever you like from the Tools screen."),
   WALLET_PASSWORD_NOTE_3("You can always recover it using your seed phrase."),
 
-  RECIPIENT_SUMMARY("recipient-summary"),
-  AMOUNT_SUMMARY("amount-summary"),
+  RECIPIENT_SUMMARY("recipient_summary"),
+  AMOUNT_SUMMARY("amount_summary"),
 
   // Sending bitcoin
   TRANSACTION_CREATED_OK("transaction_created_ok"),
@@ -142,7 +149,7 @@ public enum MessageKey {
   NO_ACTIVE_WALLET("no_active_wallet"),
 
   // End of enum
-  CONTACTS("Contacts"), TRANSACTIONS("Transactions"), HISTORY("History"), PREFERENCES("Preferences"), TOOLS("Tools");
+  ;
 
   private final String key;
 
