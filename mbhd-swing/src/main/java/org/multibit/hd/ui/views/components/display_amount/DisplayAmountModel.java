@@ -1,9 +1,10 @@
 package org.multibit.hd.ui.views.components.display_amount;
 
-import org.multibit.hd.ui.i18n.BitcoinSymbol;
+import org.joda.money.BigMoney;
+import org.multibit.hd.core.utils.CurrencyUtils;
 import org.multibit.hd.ui.models.Model;
 
-import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * <p>Model to provide the following to view:</p>
@@ -19,8 +20,8 @@ public class DisplayAmountModel implements Model<DisplayAmountModel> {
   private final DisplayAmountStyle style;
 
   // Values depend on earlier wizard panel
-  private BigDecimal plainBitcoinAmount = BigDecimal.ZERO;
-  private BigDecimal localAmount = BigDecimal.ZERO;
+  private BigInteger satoshis = BigInteger.ZERO;
+  private BigMoney localAmount = CurrencyUtils.ZERO;
 
   private boolean localAmountVisible = true;
 
@@ -49,31 +50,24 @@ public class DisplayAmountModel implements Model<DisplayAmountModel> {
   }
 
   /**
-   * @return The Bitcoin amount with symbol multiplier
+   * @return The Bitcoin amount in satoshis
    */
-  public BigDecimal getSymbolicBitcoinAmount() {
-    return getPlainBitcoinAmount().multiply(BitcoinSymbol.current().multiplier());
+  public BigInteger getSatoshis() {
+    return satoshis;
   }
 
-  /**
-   * @return The Bitcoin amount without symbol multiplier
-   */
-  public BigDecimal getPlainBitcoinAmount() {
-    return plainBitcoinAmount;
-  }
-
-  public void setPlainBitcoinAmount(BigDecimal plainBitcoinAmount) {
-    this.plainBitcoinAmount = plainBitcoinAmount;
+  public void setSatoshis(BigInteger satoshis) {
+    this.satoshis = satoshis;
   }
 
   /**
    * @return The local amount
    */
-  public BigDecimal getLocalAmount() {
+  public BigMoney getLocalAmount() {
     return localAmount;
   }
 
-  public void setLocalAmount(BigDecimal localAmount) {
+  public void setLocalAmount(BigMoney localAmount) {
     this.localAmount = localAmount;
   }
 

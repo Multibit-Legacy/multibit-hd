@@ -44,7 +44,7 @@ public class HtmlUtilsTest {
   @Test
   public void testLocaliseWithLineBreaks_RTL() throws Exception {
 
-    Locale.setDefault(new Locale("ar"));
+    Locale.setDefault(new Locale("ar","SA"));
 
     // New Configuration relies on default locale
     Configurations.currentConfiguration = new Configuration();

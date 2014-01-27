@@ -1,10 +1,13 @@
 package org.multibit.hd.ui.i18n;
 
 import com.google.common.base.Preconditions;
+import org.joda.money.BigMoney;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.I18NConfiguration;
+import org.multibit.hd.core.utils.BitcoinSymbol;
+import org.multibit.hd.core.utils.Satoshis;
 
-import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
@@ -25,23 +28,23 @@ public class Formats {
    * <p>For example, 12345.6789 becomes "12,345.67", "89" </p>
    * <p>The amount will be adjusted by the symbolic multiplier from the current confiuration</p>
    *
-   * @param amount The Bitcoin amount without a symbolic multiplier
+   * @param satoshis The amount in satoshis
    *
    * @return The left [0] and right [0] components suitable for presentation as a balance with no symbolic decoration
    */
-  public static String[] formatPlainBitcoinAmountAsSymbolic(BigDecimal amount) {
+  public static String[] formatSatoshisAsSymbolic(BigInteger satoshis) {
 
-    Preconditions.checkNotNull(amount, "'amount' must be present");
+    Preconditions.checkNotNull(satoshis, "'satoshis' must be present");
 
     I18NConfiguration configuration = Configurations.currentConfiguration.getI18NConfiguration();
 
     Locale currentLocale = configuration.getLocale();
 
     DecimalFormatSymbols dfs = configureDecimalFormatSymbols(configuration, currentLocale);
-    DecimalFormat format = configureBitcoinDecimalFormat(dfs);
+    DecimalFormat localFormat = configureBitcoinDecimalFormat(dfs);
 
     // Apply formatting to the symbolic amount
-    String formattedAmount = format.format(amount.multiply(BitcoinSymbol.current().multiplier()));
+    String formattedAmount = localFormat.format(Satoshis.toSymbolicAmount(satoshis));
 
     // The Satoshi symbol does not have decimals
     if (BitcoinSymbol.SATOSHI.equals(BitcoinSymbol.current())) {
@@ -76,16 +79,16 @@ public class Formats {
    *
    * @return The local currency representation with no symbolic decoration
    */
-  public static String formatLocalAmount(BigDecimal amount) {
+  public static String formatLocalAmount(BigMoney amount) {
 
     I18NConfiguration configuration = Configurations.currentConfiguration.getI18NConfiguration();
 
     Locale currentLocale = configuration.getLocale();
 
     DecimalFormatSymbols dfs = configureDecimalFormatSymbols(configuration, currentLocale);
-    DecimalFormat format = configureLocalDecimalFormat(dfs);
+    DecimalFormat localFormat = configureLocalDecimalFormat(dfs);
 
-    return format.format(amount);
+    return localFormat.format(amount.getAmount());
 
   }
 

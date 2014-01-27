@@ -46,6 +46,7 @@ public class Configurations {
   public static final String I18N_GROUPING_SEPARATOR = "i18n.grouping-separator";
   public static final String I18N_IS_CURRENCY_PREFIXED = "i18n.is-prefixed";
   public static final String I18N_LOCAL_DECIMAL_PLACES = "i18n.local-decimal-places";
+  public static final String I18N_LOCAL_CURRENCY_UNIT = "i18n.local-currency-unit";
 
   // Logging
   public static final String LOGGING = "logging";
@@ -90,6 +91,7 @@ public class Configurations {
     properties.put(I18N_GROUPING_SEPARATOR, ",");
     properties.put(I18N_IS_CURRENCY_PREFIXED, "true");
     properties.put(I18N_LOCAL_DECIMAL_PLACES, "4");
+    properties.put(I18N_LOCAL_CURRENCY_UNIT, "GBP");
 
     // Logging
     properties.put(LOGGING_LEVEL, "warn");

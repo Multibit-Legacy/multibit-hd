@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.components;
 
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.ui.i18n.BitcoinSymbol;
+import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.ui.views.components.text_fields.FormattedDecimalField;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.themes.Themes;

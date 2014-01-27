@@ -13,6 +13,7 @@ import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.events.TransactionCreationEvent;
 import org.multibit.hd.core.managers.BlockStoreManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.MultiBitCheckpointManager;
@@ -46,7 +47,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class BitcoinNetworkService extends AbstractService {
 
-  public static final BigInteger DEFAULT_FEE_PER_KB =  Transaction.REFERENCE_DEFAULT_MIN_TX_FEE; // Currently 10,000 satoshi
+  public static final BigInteger DEFAULT_FEE_PER_KB = Transaction.REFERENCE_DEFAULT_MIN_TX_FEE; // Currently 10,000 satoshi
   public static final MainNetParams NETWORK_PARAMETERS = MainNetParams.get();
   public static final int MAXIMUM_NUMBER_OF_PEERS = 6;
   private static final Logger log = LoggerFactory.getLogger(BitcoinNetworkService.class);
@@ -100,10 +101,10 @@ public class BitcoinNetworkService extends AbstractService {
     } catch (Exception e) {
       log.error(e.getClass().getName() + " " + e.getMessage());
       CoreEvents.fireBitcoinNetworkChangedEvent(
-        BitcoinNetworkSummary.newNetworkStartupFailed(
-          MessageKey.START_NETWORK_CONNECTION_ERROR,
-          Optional.<Object[]>absent()
-        ));
+              BitcoinNetworkSummary.newNetworkStartupFailed(
+                      MessageKey.START_NETWORK_CONNECTION_ERROR,
+                      Optional.<Object[]>absent()
+              ));
     }
   }
 
@@ -149,7 +150,7 @@ public class BitcoinNetworkService extends AbstractService {
    * <li>the wallet to send from - when Trezor comes onstream</li>
    * <li>a CoinSelector - when HD subnodes are supported</li>
    * </ul>
-   * <p>The result of the operation is sent to the CoreEventBus as a BitcoinSentEvent</p>
+   * <p>The result of the operation is sent to the CoreEventBus as a TransactionCreationEvent and, if the tx is created ok, a BitcoinSentEvent</p>
    *
    * @param destinationAddress The destination address to send to
    * @param amount             The amount to send (in satoshis)
@@ -158,56 +159,75 @@ public class BitcoinNetworkService extends AbstractService {
    * @param password           The wallet password
    */
   public void send(String destinationAddress, BigInteger amount, String changeAddress, BigInteger feePerKB, CharSequence password) {
-    // Ping the peers to check the bitcoin network connection
-    if (!pingPeers()) {
-      // Declare the send a failure
-      CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
-              false, "could_not_connect_to_bitcoin_network", new String[]{"All pings failed"}));
-      return;
-    }
-
     if (!walletManager.getCurrentWalletData().isPresent()) {
-      // Declare the send a failure - no wallet
-      CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
+      // Declare the transaction creation a failure - no wallet
+      CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
               false, "no_active_wallet", new String[]{""}));
       return;
     }
 
-    log.debug("Just about to send coins");
+    log.debug("Just about to create send transaction");
     Wallet wallet = walletManager.getCurrentWalletData().get().getWallet();
     KeyParameter aesKey = wallet.getKeyCrypter().deriveKey(password);
 
+    Wallet.SendRequest sendRequest = null;
+    boolean transactionCreatedOk = false;
     try {
-      Wallet.SendRequest sendRequest = Wallet.SendRequest.to(new Address(MAINNET, destinationAddress), amount);
+      sendRequest = Wallet.SendRequest.to(new Address(MAINNET, destinationAddress), amount);
       sendRequest.aesKey = aesKey;
       sendRequest.fee = BigInteger.ZERO;
       sendRequest.feePerKb = feePerKB;
       sendRequest.changeAddress = new Address(MAINNET, changeAddress);
 
-      // Complete it (works out fee and signs
+      // Complete it (works out fee and signs tx)
       wallet.completeTx(sendRequest);
 
       // Commit to the wallet
       wallet.commitTx(sendRequest.tx);
-
-      // Broadcast
-      peerGroup.broadcastTransaction(sendRequest.tx);
-
-      log.debug("Just broadcast transaction '" + Utils.bytesToHexString(sendRequest.tx.bitcoinSerialize()) + "'");
-
-      // Declare the send a success
-      CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
-              true, "bitcoin_sent_ok", new String[]{""}));
+      transactionCreatedOk = true;
+      CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
+              true, null, null));
     } catch (InsufficientMoneyException | VerificationException | AddressFormatException e1) {
-      String message = e1.getClass().getName() + ": " + e1.getMessage();
+      String message = e1.getMessage();
       log.error(message);
 
-      // Declare the send a failure
-      CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
+      // Declare the transaction creation a failure
+      CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
               false, "the_error_was", new String[]{message}));
     }
 
-    log.debug("Send coins has completed");
+    log.debug("Just about to broadcast transaction");
+    if (transactionCreatedOk) {
+      try {
+        // Ping the peers to check the bitcoin network connection
+        if (!pingPeers()) {
+          // Declare the send a failure
+          CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
+                  false, "could_not_connect_to_bitcoin_network", new String[]{"All pings failed"}));
+          return;
+        }
+
+        // Broadcast
+        peerGroup.broadcastTransaction(sendRequest.tx);
+
+        log.debug("Just broadcast transaction '" + Utils.bytesToHexString(sendRequest.tx.bitcoinSerialize()) + "'");
+
+        // Declare the send a success
+        CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
+                true, "bitcoin_sent_ok", null));
+      } catch (VerificationException e1) {
+        String message = e1.getMessage();
+        log.error(message);
+
+        // Declare the send a failure
+        CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
+                false, "the_error_was", new String[]{message}));
+      }
+
+      log.debug("Send coins has completed");
+    } else {
+      log.debug("Not attempting to send the transaction as it was not constructed correctly.");
+    }
   }
 
   /**
@@ -231,9 +251,9 @@ public class BitcoinNetworkService extends AbstractService {
 
         // Issue a "network ready" event
         CoreEvents.fireBitcoinNetworkChangedEvent(
-          BitcoinNetworkSummary.newNetworkReady(
-            peerEventListener.getNumberOfConnectedPeers()
-          ));
+                BitcoinNetworkSummary.newNetworkReady(
+                        peerEventListener.getNumberOfConnectedPeers()
+                ));
 
       }
     });
@@ -261,6 +281,7 @@ public class BitcoinNetworkService extends AbstractService {
   /**
    * Get the next available change address
    * TODO- this should be worked out deterministically but just use the first address on the current wallet for now
+   *
    * @return changeAddress The next change address as a string
    */
   public String getNextChangeAddress() {

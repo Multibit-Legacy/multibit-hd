@@ -2,6 +2,7 @@ package org.multibit.hd.core.config;
 
 import ch.qos.logback.classic.Level;
 import com.google.common.base.Preconditions;
+import org.joda.money.CurrencyUnit;
 
 import java.util.Locale;
 import java.util.Map;
@@ -89,6 +90,9 @@ public class ConfigurationReadAdapter {
     }
     if (Configurations.I18N_LOCAL_DECIMAL_PLACES.equalsIgnoreCase(key)) {
       configuration.getI18NConfiguration().setLocalDecimalPlaces(Integer.valueOf(value));
+    }
+    if (Configurations.I18N_LOCAL_CURRENCY_UNIT.equalsIgnoreCase(key)) {
+      configuration.getI18NConfiguration().setLocalCurrencyUnit(CurrencyUnit.of(value));
     }
 
   }

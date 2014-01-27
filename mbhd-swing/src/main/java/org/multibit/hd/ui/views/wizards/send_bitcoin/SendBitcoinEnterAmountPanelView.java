@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -18,7 +17,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
-import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -102,13 +101,14 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
 
     boolean bitcoinAmountOK = !getPanelModel().get()
       .getEnterAmountModel()
-      .getPlainBitcoinAmount()
-      .equals(BigDecimal.ZERO);
+      .getSatoshis()
+      .equals(BigInteger.ZERO);
 
-    boolean recipientOK = !Strings.isNullOrEmpty(getPanelModel().get()
+
+    boolean recipientOK = getPanelModel().get()
       .getEnterRecipientModel()
       .getRecipient()
-      .getSummary());
+      .isPresent();
 
     return bitcoinAmountOK && recipientOK;
 

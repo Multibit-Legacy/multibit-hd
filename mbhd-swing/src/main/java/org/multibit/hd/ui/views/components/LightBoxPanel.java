@@ -6,6 +6,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * <p>Component to provide the following to UI:</p>
@@ -55,8 +58,12 @@ public class LightBoxPanel extends JPanel {
     // Provide a starting position
     calculatePosition();
 
-    // Add the light box panel to the frame as the popup layer (over everything except a drag/drop layer)
+    // Add the light box panel to the frame
     Panels.frame.getLayeredPane().add(panel, layer);
+
+    for(Component component : Panels.frame.getLayeredPane().getComponentsInLayer(JLayeredPane.DEFAULT_LAYER)) {
+      component.setEnabled(false);
+    }
 
   }
 
@@ -124,6 +131,23 @@ public class LightBoxPanel extends JPanel {
     // Create the darkened border rectangle (will appear beneath the panel layer)
     g.fillRect(0, 0, Panels.frame.getWidth(), Panels.frame.getHeight());
 
+  }
+
+  private Component[] getComponents(Component container) {
+    ArrayList<Component> list;
+
+    try {
+      list = new ArrayList<>(Arrays.asList(((Container) container).getComponents()));
+
+      for (int index = 0; index < list.size(); index++) {
+        Collections.addAll(list, getComponents(list.get(index)));
+      }
+
+    } catch (ClassCastException e) {
+      list = new ArrayList<>();
+    }
+
+    return list.toArray(new Component[list.size()]);
   }
 
   /**

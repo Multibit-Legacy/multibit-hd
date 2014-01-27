@@ -4,7 +4,7 @@ import com.google.common.base.Optional;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountModel;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 
-import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * <p>Model object to provide the following to "exit" wizard:</p>
@@ -18,12 +18,10 @@ import java.math.BigDecimal;
  */
 public class ReceiveBitcoinWizardModel extends AbstractWizardModel<ReceiveBitcoinState> {
 
-  private BigDecimal bitcoinAmount = BigDecimal.ZERO;
   private Optional<String> recipientAddress = Optional.absent();
   private Optional<String> transactionLabel = Optional.absent();
 
   private EnterAmountModel enterAmountModel;
-  private String label;
 
   /**
    * @param state The state object
@@ -33,10 +31,10 @@ public class ReceiveBitcoinWizardModel extends AbstractWizardModel<ReceiveBitcoi
   }
 
   /**
-   * @return The plain Bitcoin amount with no symbol multipliers
+   * @return The Bitcoin amount in satoshis
    */
-  public BigDecimal getBitcoinAmount() {
-    return enterAmountModel.getPlainBitcoinAmount();
+  public BigInteger getSatoshis() {
+    return enterAmountModel.getSatoshis();
   }
 
   public Optional<String> getRecipientAddress() {

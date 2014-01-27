@@ -8,12 +8,13 @@ import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.I18NConfiguration;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.utils.BitcoinSymbol;
+import org.multibit.hd.core.utils.CurrencyUtils;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
 import org.multibit.hd.ui.events.view.AlertAddedEvent;
 import org.multibit.hd.ui.events.view.BalanceChangedEvent;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;
-import org.multibit.hd.ui.i18n.BitcoinSymbol;
 import org.multibit.hd.ui.i18n.Formats;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.models.AlertModel;
@@ -241,8 +242,8 @@ public class HeaderView {
     BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
     I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration();
 
-    String[] balance = Formats.formatPlainBitcoinAmountAsSymbolic(latestBalanceChangedEvent.get().getPlainBitcoinBalance().getAmount());
-    String localBalance = Formats.formatLocalAmount(latestBalanceChangedEvent.get().getLocalBalance().getAmount());
+    String[] balance = Formats.formatSatoshisAsSymbolic(latestBalanceChangedEvent.get().getSatoshis());
+    String localBalance = Formats.formatLocalAmount(latestBalanceChangedEvent.get().getLocalBalance());
 
     BitcoinSymbol symbol = BitcoinSymbol.of(bitcoinConfiguration.getBitcoinSymbol());
 
@@ -255,10 +256,12 @@ public class HeaderView {
     primaryBalanceLabel.setText(balance[0]);
     secondaryBalanceLabel.setText(balance[1]);
 
+    String localCurrencySymbol = CurrencyUtils.currentSymbol();
+
     exchangeLabel.setText(
       Languages.safeText(
         MessageKey.EXCHANGE_FIAT_RATE,
-        "~ $",
+        "~ "+localCurrencySymbol,
         localBalance,
         latestBalanceChangedEvent.get().getRateProvider()
       ));

@@ -1,14 +1,15 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import com.google.common.base.Preconditions;
+import org.joda.money.BigMoney;
 import org.multibit.hd.core.api.Recipient;
 import org.multibit.hd.core.services.BitcoinNetworkService;
+import org.multibit.hd.core.utils.Satoshis;
 import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import static org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState.*;
@@ -45,12 +46,12 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   /**
    * Default transaction fee
    */
-  private BigDecimal transactionFee = new BigDecimal("0.0001");
+  private BigInteger transactionFee = Satoshis.fromPlainAmount("0.0001");
 
   /**
    * Default developer fee
    */
-  private BigDecimal developerFee = new BigDecimal("0.00005");
+  private BigInteger developerFee = Satoshis.fromPlainAmount("0.00005");
 
   /**
    * @param state The state object
@@ -100,6 +101,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   }
 
   private void sendBitcoin() {
+
     // Actually send the bitcoin
     Preconditions.checkNotNull(enterAmountPanelModel);
     Preconditions.checkNotNull(confirmPanelModel);
@@ -108,17 +110,20 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
     String changeAddress = bitcoinNetworkService.getNextChangeAddress();
 
-    BigDecimal amountBTC = enterAmountPanelModel.getEnterAmountModel().getPlainBitcoinAmount();
-    // Convert to satoshi
-    // TODO - it's a bad idea to have different amount formats in different parts of the code
-    BigInteger amountBTCBigInteger = amountBTC.multiply(BigDecimal.valueOf(100000000)).toBigInteger();
-    String bitcoinAddress = enterAmountPanelModel.getEnterRecipientModel().getRecipient().getBitcoinAddress();
+    BigInteger satoshis = enterAmountPanelModel.getEnterAmountModel().getSatoshis();
+    String bitcoinAddress = enterAmountPanelModel.getEnterRecipientModel().getRecipient().get().getBitcoinAddress();
     String password = confirmPanelModel.getPasswordModel().getValue();
-    log.debug("Just about to send bitcoin : amount = '" + amountBTCBigInteger
-            + "', address = '" + bitcoinAddress + "', changeAddress = '" + changeAddress + "', password = '" + password + "'.");
-    bitcoinNetworkService.send(bitcoinAddress, amountBTCBigInteger, changeAddress, BitcoinNetworkService.DEFAULT_FEE_PER_KB, password);
 
-    // The send throws BitcoinSentEvents to which you subscribe to to work out success and failure.
+    log.debug("Just about to send bitcoin : amount = '{}', address = '{}', changeAddress = '{}', password = '{}'.",
+      satoshis,
+      bitcoinAddress,
+      changeAddress,
+      password
+    );
+
+    bitcoinNetworkService.send(bitcoinAddress, satoshis, changeAddress, BitcoinNetworkService.DEFAULT_FEE_PER_KB, password);
+
+    // The send throws TransactionCreationEvents and BitcoinSentEvents to which you subscribe to to work out success and failure.
 
   }
 
@@ -133,22 +138,22 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   public Recipient getRecipient() {
     return enterAmountPanelModel
       .getEnterRecipientModel()
-      .getRecipient();
+      .getRecipient().get();
   }
 
   /**
    * @return The Bitcoin amount without symbolic multiplier
    */
-  public BigDecimal getPlainBitcoinAmount() {
+  public BigInteger getSatoshis() {
     return enterAmountPanelModel
       .getEnterAmountModel()
-      .getPlainBitcoinAmount();
+      .getSatoshis();
   }
 
   /**
    * @return The local amount
    */
-  public BigDecimal getLocalAmount() {
+  public BigMoney getLocalAmount() {
     return enterAmountPanelModel
       .getEnterAmountModel()
       .getLocalAmount();
@@ -197,16 +202,16 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   }
 
   /**
-   * @return The transaction fee (a.k.a "miner's fee") without symbolic multiplier
+   * @return The transaction fee (a.k.a "miner's fee") in satoshis
    */
-  public BigDecimal getPlainTransactionFee() {
+  public BigInteger getTransactionFee() {
     return transactionFee;
   }
 
   /**
-   * @return The developer fee without symbolic multiplier
+   * @return The developer fee in satoshis
    */
-  public BigDecimal getPlainDeveloperFee() {
+  public BigInteger getDeveloperFee() {
     return developerFee;
   }
 }

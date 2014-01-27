@@ -3,10 +3,10 @@ package org.multibit.hd.ui.controllers;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
-import com.xeiam.xchange.currency.MoneyUtils;
 import org.joda.money.BigMoney;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.utils.Satoshis;
 import org.multibit.hd.ui.events.controller.AddAlertEvent;
 import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -14,7 +14,7 @@ import org.multibit.hd.ui.models.AlertModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 
 /**
@@ -44,12 +44,12 @@ public class HeaderController {
   public void onBalanceChanged(ExchangeRateChangedEvent event) {
 
     // Build the exchange string
-    // TODO Link to a real balance
-    BigMoney btcBalance = MoneyUtils.parseMoney("BTC", new BigDecimal("20999999.12345678"));
-    BigMoney localBalance = btcBalance.multipliedBy(event.getRate());
+    // TODO Link to a real balance and remove BigDecimal
+    BigInteger satoshis = new BigInteger("2099999912345678");
+    BigMoney localBalance = Satoshis.toLocalAmount(satoshis, event.getRate());
 
     // Post the event
-    ViewEvents.fireBalanceChangedEvent(btcBalance, localBalance, event.getExchangeName());
+    ViewEvents.fireBalanceChangedEvent(satoshis, localBalance, event.getExchangeName());
 
   }
 

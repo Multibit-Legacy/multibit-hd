@@ -1,7 +1,6 @@
-package org.multibit.hd.ui.i18n;
+package org.multibit.hd.core.utils;
 
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
 import java.math.BigDecimal;
 
@@ -19,15 +18,15 @@ public enum BitcoinSymbol {
   /**
    * The Font Awesome icon (becoming a de facto standard)
    */
-  ICON(AwesomeIcon.BITCOIN.getChar().toString(), BigDecimal.ONE, 8),
+  ICON("\uf15a", BigDecimal.ONE, 8),
   /**
    * The Font Awesome icon with milli
    */
-  MICON(AwesomeIcon.BITCOIN.getChar().toString(), new BigDecimal(1_000), 5),
+  MICON("\uf15a", new BigDecimal(1_000), 5),
   /**
    * The Font Awesome icon with micro
    */
-  UICON(AwesomeIcon.BITCOIN.getChar().toString(), new BigDecimal(1_000_000), 2),
+  UICON("\uf15a", new BigDecimal(1_000_000), 2),
   /**
    * The current de facto standard but may be superseded (cannot be an ISO standard)
    */

@@ -1,9 +1,8 @@
 package org.multibit.hd.core.events;
 
+import org.joda.money.BigMoney;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.utils.Dates;
-
-import java.math.BigDecimal;
 
 /**
  * <p>Event to provide the following to application API:</p>
@@ -16,25 +15,25 @@ import java.math.BigDecimal;
  */
 public class ExchangeRateChangedEvent {
 
-  private final BigDecimal rate;
+  private final BigMoney rate;
   private final String exchangeName;
   private final DateTime expires;
 
   /**
-   * @param rate         The amount in the local currency (e.g. 1000 means 1000 USD = 1 bitcoin)
+   * @param rate         The rate with the local currency (e.g. "USD 1000" means 1000 USD = 1 bitcoin)
    * @param exchangeName The exchange name
    * @param expires      The expiry timestamp of this rate
    */
-  public ExchangeRateChangedEvent(BigDecimal rate, String exchangeName, DateTime expires) {
+  public ExchangeRateChangedEvent(BigMoney rate, String exchangeName, DateTime expires) {
     this.rate = rate;
     this.exchangeName = exchangeName;
     this.expires = expires;
   }
 
   /**
-   * @return The rate in the local currency (e.g. 1000 means 1000 USD = 1 bitcoin)
+   * @return The rate in the local currency (e.g. "USD 1000" means 1000 USD = 1 bitcoin)
    */
-  public BigDecimal getRate() {
+  public BigMoney getRate() {
     return rate;
   }
 

@@ -1,12 +1,11 @@
 package org.multibit.hd.core.events;
 
+import org.joda.money.BigMoney;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.api.BitcoinNetworkSummary;
 import org.multibit.hd.core.services.CoreServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.math.BigDecimal;
 
 /**
  * <p>Factory to provide the following to application API:</p>
@@ -30,15 +29,26 @@ public class CoreEvents {
   /**
    * <p>Broadcast a new "exchange rate changed" event</p>
    *
-   * @param rate         The rate in the local currency (e.g. USD)
+   * @param rate         The rate in the local currency (e.g. "USD 1000" means 1000 USD = 1 bitcoin)
    * @param exchangeName The exchange name (e.g. "Bitstamp")
    * @param expires      The expiry timestamp of this rate
    */
-  public static void fireExchangeRateChangedEvent(BigDecimal rate, String exchangeName, DateTime expires) {
+  public static void fireExchangeRateChangedEvent(BigMoney rate, String exchangeName, DateTime expires) {
 
     log.debug("Firing 'exchange rate changed' event");
     CoreServices.uiEventBus.post(new ExchangeRateChangedEvent(rate, exchangeName, expires));
 
+  }
+
+  /**
+   * <p>Broadcast TransactionCreationEvent</p>
+   *
+   * @param transactionCreationEvent containing transaction creation information
+   */
+  public static void fireTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
+
+    log.debug("Firing 'transactionCreation event' event");
+    CoreServices.uiEventBus.post(transactionCreationEvent);
   }
 
   /**
@@ -50,8 +60,8 @@ public class CoreEvents {
 
     log.debug("Firing 'bitcoin sent event' event");
     CoreServices.uiEventBus.post(bitcoinSentEvent);
-
   }
+
   /**
    * <p>Broadcast a new "Bitcoin network changed" event</p>
    *

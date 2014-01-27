@@ -1,10 +1,11 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
-import com.google.common.eventbus.Subscribe;
 import com.google.common.base.Optional;
+import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.events.BitcoinSentEvent;
+import org.multibit.hd.core.events.TransactionCreationEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.Labels;
@@ -12,9 +13,9 @@ import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import javax.swing.*;
 
@@ -31,7 +32,9 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
   private static final Logger log = LoggerFactory.getLogger(SendBitcoinReportPanelView.class);
 
-  private JLabel transactionConstructionStatus;
+  private JLabel transactionConstructionStatusSummary;
+  private JLabel transactionConstructionStatusDetail;
+
   private JLabel transactionBroadcastStatusSummary;
   private JLabel transactionBroadcastStatusDetail;
 
@@ -76,12 +79,15 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     // Apply the theme
     panel.setBackground(Themes.currentTheme.detailPanelBackground());
 
-    transactionConstructionStatus = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
+    transactionConstructionStatusSummary = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
+    transactionConstructionStatusDetail = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
+
     transactionBroadcastStatusSummary = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
     transactionBroadcastStatusDetail = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
     transactionConfirmationStatus = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
 
-    panel.add(transactionConstructionStatus, "wrap");
+    panel.add(transactionConstructionStatusSummary, "wrap");
+    panel.add(transactionConstructionStatusDetail, "wrap");
     panel.add(transactionBroadcastStatusSummary, "wrap");
     panel.add(transactionBroadcastStatusDetail, "wrap");
     panel.add(transactionConfirmationStatus, "wrap");
@@ -95,18 +101,34 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   }
 
   @Subscribe
-  public void onBitcoinSentEvent(BitcoinSentEvent bitcoinSentEvent) {
-    log.debug("Received the BitcoinSentEvent: " + bitcoinSentEvent.toString());
-    if (bitcoinSentEvent.isSendWasSuccessful()) {
-      transactionBroadcastStatusSummary.setText(Languages.safeText(MessageKey.BITCOIN_SENT_OK));
-      Labels.decorateStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.TRUE));
+  public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
+    log.debug("Received the TransactionCreationEvent: " + transactionCreationEvent.toString());
+    if (transactionCreationEvent.isTransactionCreationWasSuccessful()) {
+      transactionConstructionStatusSummary.setText(Languages.safeText(MessageKey.TRANSACTION_CREATED_OK));
+      transactionConstructionStatusDetail.setText("");
+      Labels.decorateStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.TRUE));
     } else {
-      String summaryMessage = Languages.safeText(MessageKey.BITCOIN_SEND_FAILED);
-      String detailMessage = Languages.safeText(bitcoinSentEvent.getSendFailureReasonKey(), (Object[])bitcoinSentEvent.getSendFailureReasonData()) ;
-      transactionBroadcastStatusSummary.setText(summaryMessage);
-      transactionBroadcastStatusDetail.setText(detailMessage);
-      Labels.decorateStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.FALSE));
+      String detailMessage = Languages.safeText(transactionCreationEvent.getTransactionCreationFailureReasonKey(),
+              (Object[])transactionCreationEvent.getTransactionCreationFailureReasonData()) ;
+      transactionConstructionStatusSummary.setText(Languages.safeText(MessageKey.TRANSACTION_CREATION_FAILED));
+      transactionConstructionStatusDetail.setText(detailMessage);
+      Labels.decorateStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.FALSE));
     }
+  }
+
+    @Subscribe
+    public void onBitcoinSentEvent(BitcoinSentEvent bitcoinSentEvent) {
+      log.debug("Received the BitcoinSentEvent: " + bitcoinSentEvent.toString());
+      if (bitcoinSentEvent.isSendWasSuccessful()) {
+        transactionBroadcastStatusSummary.setText(Languages.safeText(MessageKey.BITCOIN_SENT_OK));
+        Labels.decorateStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.TRUE));
+      } else {
+        String summaryMessage = Languages.safeText(MessageKey.BITCOIN_SEND_FAILED);
+        String detailMessage = Languages.safeText(bitcoinSentEvent.getSendFailureReasonKey(), (Object[])bitcoinSentEvent.getSendFailureReasonData()) ;
+        transactionBroadcastStatusSummary.setText(summaryMessage);
+        transactionBroadcastStatusDetail.setText(detailMessage);
+        Labels.decorateStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.FALSE));
+      }
 
   }
 

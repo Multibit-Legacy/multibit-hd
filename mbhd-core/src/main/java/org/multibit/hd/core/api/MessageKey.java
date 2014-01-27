@@ -38,7 +38,7 @@ public enum MessageKey {
   CONFIRM_PASSWORD("Confirm password"),
   AMOUNT("Amount"),
   TRANSACTION_FEE("Transaction fee"),
-  MULTIBIT_FEE("MultiBit fee"),
+  DEVELOPER_FEE("MultiBit fee"),
 
   // Placeholders
   APPROXIMATELY("placeholder.approximately"),
@@ -129,6 +129,8 @@ public enum MessageKey {
   AMOUNT_SUMMARY("amount-summary"),
 
   // Sending bitcoin
+  TRANSACTION_CREATED_OK("transaction_created_ok"),
+  TRANSACTION_CREATION_FAILED("transaction_creation_failed"),
   SENDING_BITCOIN("sending_bitcoin"),
   BITCOIN_SENT_OK("bitcoin_sent_ok"),
   BITCOIN_SEND_FAILED("bitcoin_send_failed"),

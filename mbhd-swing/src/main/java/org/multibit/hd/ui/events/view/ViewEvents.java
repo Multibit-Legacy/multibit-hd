@@ -9,6 +9,8 @@ import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigInteger;
+
 /**
  * <p>Factory to provide the following to application API:</p>
  * <ul>
@@ -40,19 +42,19 @@ public class ViewEvents {
   /**
    * <p>Broadcast a new "balance changed" event</p>
    *
-   * @param btcbalance   The current balance in BTC
+   * @param satoshis     The current balance in satoshis
    * @param localBalance The current balance in local currency
    * @param rateProvider The exchange rate provider (e.g. "Bitstamp")
    */
   public static void fireBalanceChangedEvent(
-    BigMoney btcbalance,
+    BigInteger satoshis,
     BigMoney localBalance,
     String rateProvider
   ) {
 
     log.debug("Firing 'balance changed' event");
     CoreServices.uiEventBus.post(new BalanceChangedEvent(
-      btcbalance,
+      satoshis,
       localBalance,
       rateProvider
     ));
@@ -115,7 +117,7 @@ public class ViewEvents {
   /**
    * <p>Broadcast a new "wizard component model changed" event</p>
    *
-   * @param panelName  The panel name to which this applies
+   * @param panelName      The panel name to which this applies
    * @param componentModel The component model
    */
   public static void fireWizardComponentModelChangedEvent(String panelName, Optional componentModel) {

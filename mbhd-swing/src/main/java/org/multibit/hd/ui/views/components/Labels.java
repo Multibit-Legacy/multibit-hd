@@ -5,7 +5,8 @@ import com.google.common.base.Preconditions;
 import org.multibit.hd.core.api.MessageKey;
 import org.multibit.hd.core.api.Recipient;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.ui.i18n.BitcoinSymbol;
+import org.multibit.hd.core.utils.BitcoinSymbol;
+import org.multibit.hd.core.utils.CurrencyUtils;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.utils.HtmlUtils;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
@@ -20,7 +21,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * <p>Utility to provide the following to UI:</p>
@@ -389,8 +390,8 @@ public class Labels {
    * @return A new "local currency symbol" based on the current configuration
    */
   public static JLabel newLocalCurrencySymbol() {
-    // TODO Link this to the I18N preferences
-    JLabel label = new JLabel("$");
+
+    JLabel label = new JLabel(CurrencyUtils.currentSymbol());
 
     Font font = label.getFont().deriveFont(Font.BOLD, (float) AwesomeDecorator.NORMAL_ICON_SIZE);
     label.setFont(font);
@@ -465,21 +466,21 @@ public class Labels {
   }
 
   /**
-   * @param transactionFee The transaction fee to represent
+   * @param transactionFee The transaction fee in satoshis
    *
    * @return A new "transaction fee" message
    */
-  public static JLabel newTransactionFee(BigDecimal transactionFee) {
+  public static JLabel newTransactionFee(BigInteger transactionFee) {
     return newLabel(MessageKey.TRANSACTION_FEE);
   }
 
   /**
-   * @param developerFee The developer fee to represent
+   * @param developerFee The developer fee in satoshis
    *
    * @return A new "developer fee" message
    */
-  public static JLabel newDeveloperFee(BigDecimal developerFee) {
-    return newLabel(MessageKey.MULTIBIT_FEE);
+  public static JLabel newDeveloperFee(BigInteger developerFee) {
+    return newLabel(MessageKey.DEVELOPER_FEE);
   }
 
 
