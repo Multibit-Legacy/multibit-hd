@@ -86,6 +86,8 @@ public class SelectWalletPanelView extends AbstractWizardPanelView<WelcomeWizard
 
     setPanelModel(currentSelection);
 
+    // Bind this to the wizard model
+    getWizardModel().setSelectWalletChoice(currentSelection);
 
   }
 
