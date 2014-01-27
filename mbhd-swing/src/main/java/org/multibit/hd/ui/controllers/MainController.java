@@ -85,7 +85,7 @@ public class MainController {
   @Subscribe
   public void onBitcoinNetworkChangeEvent(BitcoinNetworkChangedEvent event) {
 
-    log.debug("Received 'Bitcoin network changed' event");
+    //log.debug("Received 'Bitcoin network changed' event");
 
     Preconditions.checkNotNull(event, "'event' must be present");
     Preconditions.checkNotNull(event.getSummary(), "'summary' must be present");

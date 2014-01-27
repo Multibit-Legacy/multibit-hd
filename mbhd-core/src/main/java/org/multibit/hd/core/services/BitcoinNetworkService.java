@@ -163,7 +163,7 @@ public class BitcoinNetworkService extends AbstractService {
     if (!walletManager.getCurrentWalletData().isPresent()) {
       // Declare the transaction creation a failure - no wallet
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(null, amount, BigInteger.ZERO, destinationAddress, changeAddress,
-              false, "no_active_wallet", new String[]{""}));
+              false, "core_no_active_wallet", new String[]{""}));
       return;
     }
 
@@ -198,7 +198,7 @@ public class BitcoinNetworkService extends AbstractService {
         transactionId = sendRequest.tx.getHashAsString();
       }
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(transactionId, amount, BigInteger.ZERO, destinationAddress, changeAddress,
-              false, "the_error_was", new String[]{message}));
+              false, "core_the_error_was", new String[]{message}));
     }
 
     log.debug("Just about to broadcast transaction");
@@ -208,7 +208,7 @@ public class BitcoinNetworkService extends AbstractService {
         if (!pingPeers()) {
           // Declare the send a failure
           CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
-                  false, "could_not_connect_to_bitcoin_network", new String[]{"All pings failed"}));
+                  false, "core_could_not_connect_to_bitcoin_network", new String[]{"All pings failed"}));
           return;
         }
 
@@ -219,14 +219,14 @@ public class BitcoinNetworkService extends AbstractService {
 
         // Declare the send a success
         CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
-                true, "bitcoin_sent_ok", null));
+                true, "core_bitcoin_sent_ok", null));
       } catch (VerificationException e1) {
         String message = e1.getMessage();
         log.error(message);
 
         // Declare the send a failure
         CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
-                false, "the_error_was", new String[]{message}));
+                false, "core_the_error_was", new String[]{message}));
       }
 
       log.debug("Send coins has completed");

@@ -68,7 +68,7 @@ public class ViewEvents {
    * @param severity         The system status severity (normally in line with an alert)
    */
   public static void fireSystemStatusChangedEvent(String localisedMessage, RAGStatus severity) {
-    log.debug("Firing 'system status changed' event");
+    //log.debug("Firing 'system status changed' event");
     CoreServices.uiEventBus.post(new SystemStatusChangedEvent(localisedMessage, severity));
   }
 
@@ -79,7 +79,7 @@ public class ViewEvents {
    * @param percent          The amount to display in percent
    */
   public static void fireProgressChangedEvent(String localisedMessage, int percent) {
-    log.debug("Firing 'progress changed' event");
+    //log.debug("Firing 'progress changed' event");
     CoreServices.uiEventBus.post(new ProgressChangedEvent(localisedMessage, percent));
   }
 

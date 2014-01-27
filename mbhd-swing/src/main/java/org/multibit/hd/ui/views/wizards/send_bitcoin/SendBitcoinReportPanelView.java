@@ -3,12 +3,13 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.core.api.CoreMessageKey;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.events.TransactionCreationEvent;
 import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
@@ -105,16 +106,16 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
     log.debug("Received the TransactionCreationEvent: " + transactionCreationEvent.toString());
     if (transactionCreationEvent.isTransactionCreationWasSuccessful()) {
-      // We now have a transactionId so keep that in the panel model for filtering TransactionSeenEvents
+      // We now have a transactionId so keep that in the panel model for filtering TransactionSeenEvents later
       getPanelModel().get().setTransactionId(transactionCreationEvent.getTransactionId());
 
-      transactionConstructionStatusSummary.setText(Languages.safeText(MessageKey.TRANSACTION_CREATED_OK));
+      transactionConstructionStatusSummary.setText(Languages.safeText(CoreMessageKey.TRANSACTION_CREATED_OK));
       transactionConstructionStatusDetail.setText("");
       Labels.decorateStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.TRUE));
     } else {
       String detailMessage = Languages.safeText(transactionCreationEvent.getTransactionCreationFailureReasonKey(),
               (Object[]) transactionCreationEvent.getTransactionCreationFailureReasonData());
-      transactionConstructionStatusSummary.setText(Languages.safeText(MessageKey.TRANSACTION_CREATION_FAILED));
+      transactionConstructionStatusSummary.setText(Languages.safeText(CoreMessageKey.TRANSACTION_CREATION_FAILED));
       transactionConstructionStatusDetail.setText(detailMessage);
       Labels.decorateStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.FALSE));
     }
@@ -124,10 +125,10 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   public void onBitcoinSentEvent(BitcoinSentEvent bitcoinSentEvent) {
     log.debug("Received the BitcoinSentEvent: " + bitcoinSentEvent.toString());
     if (bitcoinSentEvent.isSendWasSuccessful()) {
-      transactionBroadcastStatusSummary.setText(Languages.safeText(MessageKey.BITCOIN_SENT_OK));
+      transactionBroadcastStatusSummary.setText(Languages.safeText(CoreMessageKey.BITCOIN_SENT_OK));
       Labels.decorateStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.TRUE));
     } else {
-      String summaryMessage = Languages.safeText(MessageKey.BITCOIN_SEND_FAILED);
+      String summaryMessage = Languages.safeText(CoreMessageKey.BITCOIN_SEND_FAILED);
       String detailMessage = Languages.safeText(bitcoinSentEvent.getSendFailureReasonKey(), (Object[]) bitcoinSentEvent.getSendFailureReasonData());
       transactionBroadcastStatusSummary.setText(summaryMessage);
       transactionBroadcastStatusDetail.setText(detailMessage);
