@@ -105,7 +105,9 @@ public class MultiBitHD {
     Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
 
     // If the network starts ok start downloading blocks to catch up with the current blockchain
-    bitcoinNetworkService.downloadBlockChain();
+    if (bitcoinNetworkService.isStartedOk()) {
+      bitcoinNetworkService.downloadBlockChain();
+    }
 
     // Show the UI for the current locale
     ControllerEvents.fireChangeLocaleEvent(Configurations.currentConfiguration.getLocale());

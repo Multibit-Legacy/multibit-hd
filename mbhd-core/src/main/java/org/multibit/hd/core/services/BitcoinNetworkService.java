@@ -61,6 +61,8 @@ public class BitcoinNetworkService extends AbstractService {
 
   private NetworkParameters MAINNET = NetworkParameters.fromID(NetworkParameters.ID_MAINNET);
 
+  private boolean startedOk = false;
+
   @Override
   public void start() {
     CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkNotInitialised());
@@ -71,6 +73,12 @@ public class BitcoinNetworkService extends AbstractService {
     walletManager = WalletManager.INSTANCE;
 
     try {
+
+      // check if there is a wallet - if there is no wallet the network will not start
+      if (!WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
+        log.debug("Not starting bitcoin network service as there is currently no wallet.");
+        return;
+      }
       String walletRoot = WalletManager.INSTANCE.getCurrentWalletFilename().get().getParentFile().getAbsolutePath();
       String blockchainFilename = walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.SPV_BLOCKCHAIN_SUFFIX;
       String checkpointsFilename = walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX;
@@ -99,6 +107,8 @@ public class BitcoinNetworkService extends AbstractService {
       checkpointManager = new MultiBitCheckpointManager(NETWORK_PARAMETERS, checkpointsFilename);
       log.debug("Created checkpointmanager");
 
+      startedOk = true;
+
     } catch (Exception e) {
       log.error(e.getClass().getName() + " " + e.getMessage());
       CoreEvents.fireBitcoinNetworkChangedEvent(
@@ -109,8 +119,13 @@ public class BitcoinNetworkService extends AbstractService {
     }
   }
 
+  public boolean isStartedOk() {
+    return startedOk;
+  }
+
   @Override
   public void stopAndWait() {
+    startedOk = false;
     if (peerGroup != null) {
       log.debug("Stopping peerGroup service...");
       peerGroup.removeEventListener(peerEventListener);
