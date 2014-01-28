@@ -3,8 +3,8 @@ package org.multibit.hd.ui.views.wizards.receive_bitcoin;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.display_address.DisplayBitcoinAddressModel;
 import org.multibit.hd.ui.views.components.display_address.DisplayBitcoinAddressView;
@@ -18,7 +18,6 @@ import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
@@ -49,7 +48,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
 
     super(wizard.getWizardModel(), panelName, MessageKey.RECEIVE_BITCOIN_TITLE);
 
-    PanelDecorator.addCancelFinish(this, wizard);
+    PanelDecorator.addFinish(this, wizard);
 
   }
 
@@ -101,8 +100,8 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
   @Override
   public void fireInitialStateViewEvents() {
 
-    // Disable the finish button
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, false);
+    // Finish button is always enabled
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
 
   }
 
@@ -111,22 +110,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
 
     // No need to update since we expose the component models
 
-    // Determine any events
-    ViewEvents.fireWizardButtonEnabledEvent(
-      getPanelName(),
-      WizardButton.NEXT,
-      isNextEnabled()
-    );
-
-
-  }
-
-  /**
-   * @return True if the "next" button should be enabled
-   */
-  private boolean isNextEnabled() {
-
-    return !getWizardModel().getSatoshis().equals(BigDecimal.ZERO);
+    // No view events to fire
 
   }
 
