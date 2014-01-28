@@ -22,8 +22,8 @@ import org.spongycastle.asn1.x9.X9ECParameters;
 
 import java.io.*;
 import java.math.BigInteger;
-import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  *  <p>Manager to provide the following to core users:<br>
@@ -36,6 +36,8 @@ import java.util.List;
  */
 public enum WalletManager {
   INSTANCE;
+
+  private static final int AUTOSAVE_DELAY = 15000; // millisecond
 
   private static WalletProtobufSerializer walletProtobufSerializer;
 
@@ -118,6 +120,8 @@ public enum WalletManager {
    * <p/>
    * If the wallet file already exists it is loaded and returned (and the input password is not used)
    *
+   * Autosave is hooked up so that the wallet is changed on modification
+   *
    * @param parentDirectoryName the name of the directory in which the wallet directory will be created (normally the application data directory)
    * @param seed                the seed used to initialise the wallet
    * @param password            to use to encrypt the wallet
@@ -154,17 +158,18 @@ public enum WalletManager {
       walletToReturn.setVersion(ENCRYPTED_WALLET_VERSION);
 
       // Ensure that the seed is within the Bitcoin EC group.
-      X9ECParameters params = SECNamedCurves.getByName("secp256k1");
-      BigInteger sizeOfGroup = params.getN();
-
-      BigInteger seedBigInteger = new BigInteger(1, seed);
-      seedBigInteger = seedBigInteger.mod(sizeOfGroup);
+      BigInteger seedBigInteger  = moduloSeedByECGroupSize(seed);
 
       ECKey newKey = new ECKey(seedBigInteger);
       newKey = newKey.encrypt(walletToReturn.getKeyCrypter(), walletToReturn.getKeyCrypter().deriveKey(password));
       walletToReturn.addKey(newKey);
 
-      // Save it
+      // Set up autosave on the wallet.
+      // This ensures the wallet is saved on modification
+      // The listener has a 'after save' callback which ensures rolling backups and local/ cloud backups are also saved where necessary
+      walletToReturn.autosaveToFile(walletFile, AUTOSAVE_DELAY, TimeUnit.MILLISECONDS, new WalletAutoSaveListener());
+
+      // Save it now to ensure it is on te disk
       saveWallet(walletToReturn, walletFile.getAbsolutePath());
       if (Configurations.currentConfiguration != null) {
         Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(walletRoot);
@@ -178,6 +183,19 @@ public enum WalletManager {
     InstallationManager.copyCheckpointsTo(checkpointsFilename);
 
     return walletDataToReturn;
+  }
+
+  /**
+   * Ensure that the seed is within the range of the bitcoin EC group
+   * @param seed
+   * @return the seed, guaranteed to be within the Bitcon EC group range
+   */
+  private BigInteger moduloSeedByECGroupSize(byte[] seed) {
+    X9ECParameters params = SECNamedCurves.getByName("secp256k1");
+      BigInteger sizeOfGroup = params.getN();
+
+      BigInteger seedBigInteger = new BigInteger(1, seed);
+      return seedBigInteger.mod(sizeOfGroup);
   }
 
   /**
@@ -197,7 +215,6 @@ public enum WalletManager {
     WalletId walletId = WalletId.parseWalletFilename(walletFilename);
 
     try {
-
       if (isWalletSerialised(walletFile)) {
         // Serialised wallets are no longer supported.
         throw new WalletLoadException("Could not load wallet '" + walletFilename
@@ -206,39 +223,33 @@ public enum WalletManager {
 
       // TODO- backup wallets
 
-      Collection<String> errorMessages = Lists.newArrayList();
+      Wallet wallet;
 
-      Wallet wallet = null;
-
-      InputStream stream = null;
-
-      try (FileInputStream fileInputStream = new FileInputStream(walletFile)) {
-        stream = new BufferedInputStream(fileInputStream);
+      try (FileInputStream fileInputStream = new FileInputStream(walletFile); InputStream  stream = new BufferedInputStream(fileInputStream);) {
         wallet = Wallet.loadFromFileStream(stream);
       } catch (WalletVersionException wve) {
         // We want this exception to propagate out.
         throw wve;
       } catch (Exception e) {
-        e.printStackTrace();
-        String description = e.getClass().getCanonicalName() + " " + e.getMessage();
-        log.error(description);
-        errorMessages.add(description);
-      } finally {
-        if (stream != null) {
-          stream.close();
-        }
+        log.error(e.getClass().getCanonicalName() + " " + e.getMessage());
+        throw new WalletLoadException(e.getMessage(), e);
       }
 
       WalletData walletData = new WalletData(walletId, wallet);
       setCurrentWalletData(walletData);
+
+      // Set up autosave on the wallet.
+      // This ensures the wallet is saved on modification
+      // The listener has a 'post save' callback which ensures rolling backups and local/ cloud backups are also saved where necessary
+      wallet.autosaveToFile(walletFile, AUTOSAVE_DELAY, TimeUnit.MILLISECONDS, new WalletAutoSaveListener());
+
       return walletData;
     } catch (WalletVersionException wve) {
-      // We want this to propagate out.
+      // We want this to propagate out as is
       throw wve;
     } catch (Exception e) {
-      e.printStackTrace();
       log.error(e.getClass().getCanonicalName() + " " + e.getMessage());
-      throw new WalletLoadException(e.getClass().getCanonicalName() + " " + e.getMessage(), e);
+      throw new WalletLoadException(e.getMessage(), e);
     }
   }
 
@@ -355,17 +366,6 @@ public enum WalletManager {
    * This is worked out by looking for directories with the name:
    * 'multibithd' + a wallet id
    *
-   * @return List<File> List of files of wallet directories
-   */
-  public List<File> findWalletDirectories() {
-    return findWalletDirectories(applicationDataDirectory);
-  }
-
-  /**
-   * Work out what wallets are available in a directory (typically the user data directory).
-   * This is worked out by looking for directories with the name:
-   * 'multibithd' + a wallet id
-   *
    * @param directoryToSearch The directory to search
    * @return List<File> List of files of wallet directories
    */
@@ -375,7 +375,7 @@ public enum WalletManager {
     File[] listOfFiles = directoryToSearch.listFiles();
 
     List<File> walletDirectories = Lists.newArrayList();
-    // Look for filenames with format "multibithd"-"walletid" and are not empty.
+    // Look for filenames with format "mbhd"-"walletid" and are not empty.
     if (listOfFiles != null) {
       for (int i = 0; i < listOfFiles.length; i++) {
         if (listOfFiles[i].isDirectory()) {

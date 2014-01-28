@@ -3,7 +3,7 @@ package org.multibit.hd.ui;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.xeiam.xchange.currency.MoneyUtils;
 import com.xeiam.xchange.mtgox.v2.MtGoxExchange;
-import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.core.api.WalletData;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -18,6 +18,7 @@ import org.multibit.hd.ui.controllers.SidebarController;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.platform.GenericApplication;
 import org.multibit.hd.ui.views.*;
 import org.slf4j.Logger;
@@ -89,7 +90,8 @@ public class MultiBitHD {
 
     if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
       // Diagnostic
-      log.debug("The current wallet is:\n" + WalletManager.INSTANCE.getCurrentWalletData().get().getWallet().toString());
+      WalletData walletData =  WalletManager.INSTANCE.getCurrentWalletData().get();
+      log.debug("The current wallet is:\nWallet id = '" + walletData.getWalletId().toString() + "\n" + walletData.getWallet().toString());
     } else {
       // TODO show the new Wallet Wizard to create a wallet, set it into the configuration/ WalletManager
     }

@@ -49,38 +49,46 @@ public class InstallationManager {
       return new File(".");
     }
 
-    final String applicationDataDirectory;
+    final String applicationDataDirectoryName;
 
     // Locations are OS-dependent
     if (OSUtils.isWindows()) {
 
       // Windows
-      applicationDataDirectory = System.getenv("APPDATA") + File.separator + MBHD_APP_NAME;
+      applicationDataDirectoryName = System.getenv("APPDATA") + File.separator + MBHD_APP_NAME;
 
     } else if (OSUtils.isMac()) {
 
       // OSX
       if ((new File("../../../../" + MBHD_CONFIGURATION_FILE)).exists()) {
-        applicationDataDirectory = new File("../../../..").getAbsolutePath();
+        applicationDataDirectoryName = new File("../../../..").getAbsolutePath();
       } else {
-        applicationDataDirectory = System.getProperty("user.home") + "/Library/Application Support/" + MBHD_APP_NAME;
+        applicationDataDirectoryName = System.getProperty("user.home") + "/Library/Application Support/" + MBHD_APP_NAME;
       }
     } else {
 
       // Other (probably a Unix variant)
-      applicationDataDirectory = System.getProperty("user.home") + "/" + MBHD_APP_NAME;
+      applicationDataDirectoryName = System.getProperty("user.home") + "/" + MBHD_APP_NAME;
     }
 
-    log.debug("Application data directory is '{}'", applicationDataDirectory);
+    log.debug("Application data directory is '{}'", applicationDataDirectoryName);
 
     // Create the application data directory if it does not exist
-    File directory = new File(applicationDataDirectory);
-    if (!directory.exists()) {
-      Preconditions.checkState(directory.mkdir(), "Could not create the application data directory of '" + applicationDataDirectory + "'");
-    }
-    Preconditions.checkState(directory.isDirectory(), "Incorrectly identified the application data directory of '" + applicationDataDirectory + " as a file");
+    File applicationDataDirectory = new File(applicationDataDirectoryName);
+    createDirectoryIfNecessary(applicationDataDirectory);
 
-    return directory;
+    // Create the zip-backuo and rolling-backup directories if they do not exist
+    createDirectoryIfNecessary(new File(applicationDataDirectoryName + File.separator + BackupManager.LOCAL_BACKUP_DIRECTORY_NAME));
+    createDirectoryIfNecessary(new File(applicationDataDirectoryName + File.separator + BackupManager.ROLLING_BACKUP_DIRECTORY_NAME));
+
+    return applicationDataDirectory;
+  }
+
+  public static void createDirectoryIfNecessary(File directoryToCreate) {
+    if (!directoryToCreate.exists()) {
+       Preconditions.checkState(directoryToCreate.mkdir(), "Could not create the directory of '" + directoryToCreate + "'");
+     }
+     Preconditions.checkState(directoryToCreate.isDirectory(), "Incorrectly identified the directory of '" + directoryToCreate + " as a file");
   }
 
   /**

@@ -78,7 +78,7 @@ public class BackupManagerTest extends TestCase {
 
     // Backup the wallet.
     // This zips the wallet root directory and adds a timestamp, then saves the file in both the local and cloud backup directories
-    File localBackupFile = BackupManager.INSTANCE.createBackup(walletData.getWalletId());
+    File localBackupFile = BackupManager.INSTANCE.createLocalAndCloudBackup(walletData.getWalletId());
 
     // Check that a backup copy has been saved in the local backup directory
     localBackups = BackupManager.INSTANCE.getLocalBackups(walletData.getWalletId());

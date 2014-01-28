@@ -25,7 +25,9 @@ public enum BackupManager {
   public static final String BACKUP_SUFFIX_FORMAT = "yyyyMMddHHmmss";
   public static final String BACKUP_ZIP_FILE_EXTENSION = ".zip";
   public static final String BACKUP_ZIP_FILE_EXTENSION_REGEX = "\\.zip";
-  public static final String LOCAL_BACKUP_DIRECTORY_NAME = "zip-backups";
+  public static final String LOCAL_BACKUP_DIRECTORY_NAME = "zip-backup";
+
+  public static final String ROLLING_BACKUP_DIRECTORY_NAME = "rolling-backup";
   public static final int MAXIMUM_NUMBER_OF_BACKUPS = 60; // Chosen so that you will have about weekly backups for a year, fortnightly over two years.
   public static final int NUMBER_OF_FIRST_WALLETS_TO_ALWAYS_KEEP = 2;
   public static final int NUMBER_OF_LAST_WALLETS_TO_ALWAYS_KEEP = 8; // Must be at least 1.
@@ -133,7 +135,7 @@ public enum BackupManager {
    *
    * @return The created local backup as a file
    */
-  public File createBackup(WalletId walletId) throws IOException {
+  public File createLocalAndCloudBackup(WalletId walletId) throws IOException {
     Preconditions.checkNotNull(applicationDataDirectory);
     Preconditions.checkNotNull(walletId);
 
@@ -198,7 +200,7 @@ public enum BackupManager {
     File walletRootDirectory = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), WalletManager.createWalletRoot(walletId));
 
     if (walletRootDirectory.exists()) {
-      createBackup(walletId);
+      createLocalAndCloudBackup(walletId);
     }
 
     // Unzip the backup into the wallet root directory - this overwrites files if already present (hence the backup just done)
@@ -208,7 +210,7 @@ public enum BackupManager {
   }
 
   /**
-   * This method
+   * Write a file. This method:
    * --Reads an input stream
    * --Writes the value to the output stream
    * --Uses 1KB buffer.
