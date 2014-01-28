@@ -167,7 +167,7 @@ public enum WalletManager {
       // Set up autosave on the wallet.
       // This ensures the wallet is saved on modification
       // The listener has a 'after save' callback which ensures rolling backups and local/ cloud backups are also saved where necessary
-      walletToReturn.autosaveToFile(walletFile, AUTOSAVE_DELAY, TimeUnit.MILLISECONDS, new WalletAutoSaveListener2());
+      walletToReturn.autosaveToFile(walletFile, AUTOSAVE_DELAY, TimeUnit.MILLISECONDS, new WalletAutoSaveListener());
 
       // Save it now to ensure it is on te disk
       saveWallet(walletToReturn, walletFile.getAbsolutePath());
@@ -241,7 +241,7 @@ public enum WalletManager {
       // Set up autosave on the wallet.
       // This ensures the wallet is saved on modification
       // The listener has a 'post save' callback which ensures rolling backups and local/ cloud backups are also saved where necessary
-      wallet.autosaveToFile(walletFile, AUTOSAVE_DELAY, TimeUnit.MILLISECONDS, new WalletAutoSaveListener2());
+      wallet.autosaveToFile(walletFile, AUTOSAVE_DELAY, TimeUnit.MILLISECONDS, new WalletAutoSaveListener());
 
       return walletData;
     } catch (WalletVersionException wve) {

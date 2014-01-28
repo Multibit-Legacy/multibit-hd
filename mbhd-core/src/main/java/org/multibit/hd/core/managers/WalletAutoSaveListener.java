@@ -14,7 +14,7 @@ import java.io.File;
  *  </p>
  *  
  */
-public class WalletAutoSaveListener2 implements WalletFiles.Listener {
+public class WalletAutoSaveListener implements WalletFiles.Listener {
   private static final Logger log = LoggerFactory.getLogger(WalletManager.class);
 
   @Override
