@@ -31,7 +31,7 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
   // View components
   private JPasswordField password1;
   private JPasswordField password2;
-  private JPanel verificationStatusPanel;
+  private JLabel verificationStatusLabel;
 
   /**
    * @param model The model backing this view
@@ -45,9 +45,9 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
   public JPanel newComponentPanel() {
 
     panel = Panels.newPanel(new MigLayout(
-      "insets 0", // Layout
+      "debug,insets 0", // Layout
       "[][][]", // Columns
-      "[]10[]10[]10[]" // Rows
+      "[][][]" // Rows
     ));
 
     // Keep track of the password fields
@@ -77,8 +77,9 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
 
     });
 
-    // Create a new verification status panel
-    verificationStatusPanel = Panels.newVerificationStatus();
+    // Create a new verification status panel (initially hidden)
+    verificationStatusLabel = Labels.newVerificationStatus(true);
+    verificationStatusLabel.setVisible(false);
 
     // Add to the panel
     panel.add(Labels.newEnterPassword());
@@ -86,10 +87,9 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
     panel.add(Buttons.newShowButton(toggleDisplayAction), "spany 2,wrap");
     panel.add(Labels.newConfirmPassword());
     panel.add(password2, "wrap");
-    panel.add(verificationStatusPanel, "span 3,grow,push,wrap");
+    panel.add(verificationStatusLabel, "span 3,grow,push");
 
     return panel;
-
 
   }
 
@@ -150,7 +150,7 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
 
     if (event.getPanelName().equals(getModel().get().getPanelName())) {
 
-      verificationStatusPanel.setVisible(event.isOK());
+      verificationStatusLabel.setVisible(event.isOK());
 
     }
   }

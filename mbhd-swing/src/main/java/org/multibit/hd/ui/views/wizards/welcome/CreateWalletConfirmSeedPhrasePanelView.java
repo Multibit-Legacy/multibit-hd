@@ -17,7 +17,7 @@ import org.multibit.hd.ui.views.wizards.WizardButton;
 import javax.swing.*;
 import java.util.List;
 
-import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.CONFIRM_WALLET_SEED_PHRASE;
+import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.CREATE_WALLET_CONFIRM_SEED_PHRASE;
 
 /**
  * <p>Wizard to provide the following to UI:</p>
@@ -29,7 +29,7 @@ import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.CONFIR
  *         
  */
 
-public class ConfirmWalletSeedPhrasePanelView extends AbstractWizardPanelView<WelcomeWizardModel, List<String>> {
+public class CreateWalletConfirmSeedPhrasePanelView extends AbstractWizardPanelView<WelcomeWizardModel, List<String>> {
 
   private ModelAndView<EnterSeedPhraseModel, EnterSeedPhraseView> enterSeedPhraseMaV;
 
@@ -37,7 +37,7 @@ public class ConfirmWalletSeedPhrasePanelView extends AbstractWizardPanelView<We
    * @param wizard The wizard managing the states
    * @param panelName   The panel name to filter events from components
    */
-  public ConfirmWalletSeedPhrasePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public CreateWalletConfirmSeedPhrasePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard.getWizardModel(), panelName, MessageKey.CONFIRM_WALLET_SEED_PHRASE_TITLE);
 
@@ -48,10 +48,10 @@ public class ConfirmWalletSeedPhrasePanelView extends AbstractWizardPanelView<We
   @Override
   public void newPanelModel() {
 
-    enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV(WelcomeWizardState.CONFIRM_WALLET_SEED_PHRASE.name());
+    enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV(getPanelName());
     setPanelModel(enterSeedPhraseMaV.getModel().getValue());
 
-    getWizardModel().setEnterSeedPhraseModel(enterSeedPhraseMaV.getModel());
+    getWizardModel().setCreateWalletEnterSeedPhraseModel(enterSeedPhraseMaV.getModel());
 
   }
 
@@ -73,7 +73,7 @@ public class ConfirmWalletSeedPhrasePanelView extends AbstractWizardPanelView<We
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 
-    List<String> actualSeedPhrase = getWizardModel().getActualSeedPhrase();
+    List<String> actualSeedPhrase = getWizardModel().getCreateWalletSeedPhrase();
     String actualSeedTimestamp = getWizardModel().getActualSeedTimestamp();
 
     List<String> userSeedPhrase = enterSeedPhraseMaV.getModel().getSeedPhrase();
@@ -82,8 +82,8 @@ public class ConfirmWalletSeedPhrasePanelView extends AbstractWizardPanelView<We
     boolean result = actualSeedPhrase.equals(userSeedPhrase) && actualSeedTimestamp.equals(userSeedTimestamp);
 
     // Fire the decision events (requires knowledge of the previous panel data)
-    ViewEvents.fireWizardButtonEnabledEvent(CONFIRM_WALLET_SEED_PHRASE.name(), WizardButton.NEXT, result);
-    ViewEvents.fireVerificationStatusChangedEvent(CONFIRM_WALLET_SEED_PHRASE.name(), result);
+    ViewEvents.fireWizardButtonEnabledEvent(CREATE_WALLET_CONFIRM_SEED_PHRASE.name(), WizardButton.NEXT, result);
+    ViewEvents.fireVerificationStatusChangedEvent(CREATE_WALLET_CONFIRM_SEED_PHRASE.name(), result);
 
   }
 }

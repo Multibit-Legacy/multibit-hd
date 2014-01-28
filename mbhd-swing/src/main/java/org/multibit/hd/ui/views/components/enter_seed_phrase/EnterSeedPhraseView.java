@@ -32,7 +32,7 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
   private JTextArea seedPhraseTextArea;
   private JTextField seedTimestampText;
 
-  private JPanel verificationStatusPanel;
+  private JLabel verificationStatusLabel;
 
   /**
    * @param model The model backing this view
@@ -79,8 +79,9 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
 
     });
 
-    // Create a new verification status panel
-    verificationStatusPanel = Panels.newVerificationStatus();
+    // Create a new verification status panel (initially invisible)
+    verificationStatusLabel = Labels.newVerificationStatus(true);
+    verificationStatusLabel.setVisible(false);
 
     // Configure the actions
     Action toggleDisplayAction = getToggleDisplayAction();
@@ -90,7 +91,7 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
     panel.add(seedTimestampText, "grow,push,wrap");
     panel.add(seedPhraseTextArea, "span 2,grow,push");
     panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink,wrap");
-    panel.add(verificationStatusPanel, "span 3,push,wrap");
+    panel.add(verificationStatusLabel, "span 3,push,wrap");
 
     return panel;
 
@@ -176,7 +177,7 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
 
     if (event.getPanelName().equals(getModel().get().getPanelName())) {
 
-      verificationStatusPanel.setVisible(event.isOK());
+      verificationStatusLabel.setVisible(event.isOK());
 
     }
   }

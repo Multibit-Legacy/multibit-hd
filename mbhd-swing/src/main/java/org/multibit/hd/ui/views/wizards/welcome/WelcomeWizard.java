@@ -28,36 +28,48 @@ public class WelcomeWizard extends AbstractWizard<WelcomeWizardModel> {
   protected void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap) {
 
     wizardViewMap.put(
-      WELCOME.name(),
-      new WelcomePanelView(this, WELCOME.name()));
+      WELCOME_SELECT_LANGUAGE.name(),
+      new WelcomePanelView(this, WELCOME_SELECT_LANGUAGE.name()));
 
     wizardViewMap.put(
-      SELECT_WALLET.name(),
-      new SelectWalletPanelView(this, SELECT_WALLET.name()));
+      WELCOME_SELECT_WALLET.name(),
+      new WelcomeSelectWalletPanelView(this, WELCOME_SELECT_WALLET.name()));
+
+    wizardViewMap.put(
+      CREATE_WALLET_SELECT_BACKUP_LOCATION.name(),
+      new CreateWalletSelectBackupLocationPanelView(this, CREATE_WALLET_SELECT_BACKUP_LOCATION.name()));
 
     wizardViewMap.put(
       CREATE_WALLET_SEED_PHRASE.name(),
       new CreateWalletSeedPhrasePanelView(this, CREATE_WALLET_SEED_PHRASE.name()));
 
     wizardViewMap.put(
-      CONFIRM_WALLET_SEED_PHRASE.name(),
-      new ConfirmWalletSeedPhrasePanelView(this, CONFIRM_WALLET_SEED_PHRASE.name()));
+      CREATE_WALLET_CONFIRM_SEED_PHRASE.name(),
+      new CreateWalletConfirmSeedPhrasePanelView(this, CREATE_WALLET_CONFIRM_SEED_PHRASE.name()));
 
     wizardViewMap.put(
-      RESTORE_WALLET.name(),
-      new RestoreWalletChoicesPanelView(this, RESTORE_WALLET.name()));
-
-    wizardViewMap.put(
-      CREATE_WALLET_PASSWORD.name(),
-      new CreateWalletPasswordPanelView(this, CREATE_WALLET_PASSWORD.name()));
-
-    wizardViewMap.put(
-      SELECT_BACKUP_LOCATION.name(),
-      new SelectBackupLocationPanelView(this, SELECT_BACKUP_LOCATION.name()));
+      CREATE_WALLET_CREATE_PASSWORD.name(),
+      new CreateWalletCreatePasswordPanelView(this, CREATE_WALLET_CREATE_PASSWORD.name()));
 
     wizardViewMap.put(
       CREATE_WALLET_REPORT.name(),
       new CreateWalletReportPanelView(this, CREATE_WALLET_REPORT.name()));
+
+    wizardViewMap.put(
+      RESTORE_WALLET_SELECT_METHOD.name(),
+      new RestoreWalletSelectMethodPanelView(this, RESTORE_WALLET_SELECT_METHOD.name()));
+
+    wizardViewMap.put(
+      RESTORE_WALLET_BACKUP.name(),
+      new RestoreWalletBackupPanelView(this, RESTORE_WALLET_BACKUP.name()));
+
+    wizardViewMap.put(
+      RESTORE_WALLET_SEED_PHRASE.name(),
+      new RestoreWalletSeedPhrasePanelView(this, RESTORE_WALLET_SEED_PHRASE.name()));
+
+    wizardViewMap.put(
+      RESTORE_WALLET_REPORT.name(),
+      new RestoreWalletSeedPhrasePanelView(this, RESTORE_WALLET_REPORT.name()));
 
   }
 

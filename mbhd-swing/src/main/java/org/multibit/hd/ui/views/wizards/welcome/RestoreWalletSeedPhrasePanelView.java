@@ -20,14 +20,14 @@ import java.util.List;
 /**
  * <p>Wizard to provide the following to UI:</p>
  * <ul>
- * <li>Restore wallet choices</li>
+ * <li>Restore wallet from seed phrase and timestamp</li>
  * </ul>
  *
  * @since 0.0.1
  *         
  */
 
-public class RestoreWalletChoicesPanelView extends AbstractWizardPanelView<WelcomeWizardModel, List<String>> implements ActionListener {
+public class RestoreWalletSeedPhrasePanelView extends AbstractWizardPanelView<WelcomeWizardModel, List<String>> implements ActionListener {
 
   private ModelAndView<EnterSeedPhraseModel, EnterSeedPhraseView> enterSeedPhraseMaV;
 
@@ -35,9 +35,9 @@ public class RestoreWalletChoicesPanelView extends AbstractWizardPanelView<Welco
    * @param wizard The wizard managing the states
    * @param panelName   The panel name to filter events from components
    */
-  public RestoreWalletChoicesPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public RestoreWalletSeedPhrasePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), panelName, MessageKey.RESTORE_WALLET_TITLE);
+    super(wizard.getWizardModel(), panelName, MessageKey.RESTORE_WALLET_SEED_PHRASE_TITLE);
 
     PanelDecorator.addExitCancelPreviousNext(this, wizard);
   }
@@ -45,10 +45,10 @@ public class RestoreWalletChoicesPanelView extends AbstractWizardPanelView<Welco
   @Override
   public void newPanelModel() {
 
-    enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV(WelcomeWizardState.CONFIRM_WALLET_SEED_PHRASE.name());
+    enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV(getPanelName());
     setPanelModel(enterSeedPhraseMaV.getModel().getValue());
 
-    getWizardModel().setEnterSeedPhraseModel(enterSeedPhraseMaV.getModel());
+    getWizardModel().setRestoreWalletEnterSeedPhraseModel(enterSeedPhraseMaV.getModel());
 
   }
 
@@ -61,7 +61,7 @@ public class RestoreWalletChoicesPanelView extends AbstractWizardPanelView<Welco
       "[][]" // Row constraints
     ));
 
-    panel.add(Panels.newConfirmSeedPhrase(), "wrap");
+    panel.add(Panels.newRestoreFromSeedPhrase(), "wrap");
     panel.add(enterSeedPhraseMaV.getView().newComponentPanel(), "wrap");
 
     return panel;

@@ -130,29 +130,6 @@ public class PanelDecorator {
   }
 
   /**
-   * <p>Add an exit/cancel, previous, finish combination</p>
-   *
-   * @param view   The view containing the panel to decorate
-   * @param wizard The wizard providing the actions
-   * @param <M>    The wizard model type
-   * @param <P>    The wizard panel model type
-   */
-  public static <M extends WizardModel, P> void addExitCancelPreviousFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
-
-    Preconditions.checkNotNull(view, "'view' must be present");
-    Preconditions.checkNotNull(view, "'wizard' must be present");
-    Preconditions.checkNotNull(view.getWizardPanel(), "'wizardPanel' must be present");
-
-    // Use the wizard panel
-    JPanel wizardPanel = view.getWizardPanel();
-
-    addExitCancel(view, wizard, wizardPanel);
-    addPrevious(view, wizard, wizardPanel);
-    addFinish(view, wizard, wizardPanel);
-
-  }
-
-  /**
    * <p>Add an exit/cancel, next button combination</p>
    *
    * @param view   The view containing the panel to decorate
@@ -194,6 +171,29 @@ public class PanelDecorator {
     addExitCancel(view, wizard, wizardPanel);
     addPrevious(view, wizard, wizardPanel);
     addNext(view, wizard, wizardPanel);
+
+  }
+
+  /**
+   * <p>Add an exit/cancel, previous, finish button combination</p>
+   *
+   * @param view   The view containing the panel to decorate
+   * @param wizard The wizard providing the actions
+   * @param <M>    The wizard model type
+   * @param <P>    The wizard panel model type
+   */
+  public static <M extends WizardModel, P> void addExitCancelPreviousFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
+
+    Preconditions.checkNotNull(view, "'view' must be present");
+    Preconditions.checkNotNull(view, "'wizard' must be present");
+    Preconditions.checkNotNull(view.getWizardPanel(), "'wizardPanel' must be present");
+
+    // Use the current panel
+    JPanel wizardPanel = view.getWizardPanel();
+
+    addExitCancel(view, wizard, wizardPanel);
+    addPrevious(view, wizard, wizardPanel);
+    addFinish(view, wizard, wizardPanel);
 
   }
 
@@ -469,5 +469,4 @@ public class PanelDecorator {
     view.setFinishButton(Buttons.newFinishButton(wizard.getFinishAction(view)));
     wizardPanel.add(view.getFinishButton(), "cell 3 2");
   }
-
 }

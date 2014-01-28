@@ -3,11 +3,11 @@ package org.multibit.hd.ui.views.wizards.welcome;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
@@ -26,13 +26,13 @@ import java.util.List;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Show result of attempting to create a wallet</li>
+ * <li>Show result of attempting to restore a wallet</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class CreateWalletReportPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> {
+public class RestoreWalletReportPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> {
 
   // View
   private JLabel seedPhraseCreatedStatusLabel;
@@ -44,11 +44,11 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
    * @param wizard The wizard managing the states
    * @param panelName   The panel name to filter events from components
    */
-  public CreateWalletReportPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public RestoreWalletReportPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), panelName, MessageKey.CREATE_WALLET_REPORT_TITLE);
+    super(wizard.getWizardModel(), panelName, MessageKey.RESTORE_WALLET_REPORT_TITLE);
 
-    PanelDecorator.addFinish(this, wizard);
+    PanelDecorator.addExitCancelPreviousFinish(this, wizard);
 
   }
 

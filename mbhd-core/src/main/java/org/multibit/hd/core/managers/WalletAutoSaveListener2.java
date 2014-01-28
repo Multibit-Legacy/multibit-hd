@@ -11,13 +11,10 @@ import java.io.File;
  *  <ul>
  *  <li>Saving of rolling wallet backups</li>
  *  </ul>
- *  Example:<br>
- *  <pre>
- *  </pre>
  *  </p>
  *  
  */
-public class WalletAutoSaveListener implements WalletFiles.Listener {
+public class WalletAutoSaveListener2 implements WalletFiles.Listener {
   private static final Logger log = LoggerFactory.getLogger(WalletManager.class);
 
   @Override

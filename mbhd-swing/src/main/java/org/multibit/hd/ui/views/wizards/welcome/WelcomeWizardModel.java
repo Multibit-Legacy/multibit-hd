@@ -9,6 +9,7 @@ import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
+import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
@@ -44,6 +45,11 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   private WelcomeWizardState selectWalletChoice = WelcomeWizardState.CREATE_WALLET_SEED_PHRASE;
 
   /**
+   * The "select restore" radio button choice (as a state)
+   */
+  private WelcomeWizardState selectRestoreMethod = WelcomeWizardState.RESTORE_WALLET_BACKUP;
+
+  /**
    * The seed phrase generator
    */
   private final SeedPhraseGenerator seedPhraseGenerator;
@@ -52,9 +58,13 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
    * The confirm password model
    */
   private ConfirmPasswordModel confirmPasswordModel;
-  private SelectFileModel selectFileModel;
-  private EnterSeedPhraseModel enterSeedPhraseModel;
-  private List<String> actualSeedPhrase;
+  private EnterPasswordModel restoreWalletPasswordModel;
+  private SelectFileModel backupLocationSelectFileModel;
+  private SelectFileModel restoreLocationSelectFileModel;
+  private EnterSeedPhraseModel createWalletEnterSeedPhraseModel;
+  private EnterSeedPhraseModel restoreWalletEnterSeedPhraseModel;
+  private List<String> createWalletSeedPhrase;
+  private List<String> restoreWalletSeedPhrase;
   private String actualSeedTimestamp;
 
   /**
@@ -71,32 +81,49 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   public void showNext() {
 
     switch (state) {
-      case WELCOME:
-        state = SELECT_WALLET;
+      case WELCOME_SELECT_LANGUAGE:
+        state = WELCOME_SELECT_WALLET;
         break;
-      case SELECT_WALLET:
+      case WELCOME_SELECT_WALLET:
         state = selectWalletChoice;
         break;
-      case SELECT_BACKUP_LOCATION:
+      case CREATE_WALLET_SELECT_BACKUP_LOCATION:
         state = CREATE_WALLET_SEED_PHRASE;
         break;
       case CREATE_WALLET_SEED_PHRASE:
-        state = CONFIRM_WALLET_SEED_PHRASE;
+        state = CREATE_WALLET_CONFIRM_SEED_PHRASE;
         // Fail safe to ensure that the generator hasn't gone screwy
-        Preconditions.checkState(SeedPhraseSize.isValid(getActualSeedPhrase().size()), "'actualSeedPhrase' is not a valid length");
+        Preconditions.checkState(SeedPhraseSize.isValid(getCreateWalletSeedPhrase().size()), "'actualSeedPhrase' is not a valid length");
         break;
-      case CONFIRM_WALLET_SEED_PHRASE:
-        state = CREATE_WALLET_PASSWORD;
+      case CREATE_WALLET_CONFIRM_SEED_PHRASE:
+        state = CREATE_WALLET_CREATE_PASSWORD;
         break;
-      case CREATE_WALLET_PASSWORD:
+      case CREATE_WALLET_CREATE_PASSWORD:
         state = CREATE_WALLET_REPORT;
         break;
-      case RESTORE_WALLET:
-        state = CONFIRM_WALLET_SEED_PHRASE;
+      case CREATE_WALLET_REPORT:
+        throw new IllegalStateException("'Next' is not permitted here");
+      case RESTORE_WALLET_SELECT_METHOD:
+        state = selectRestoreMethod;
         break;
-      case HARDWARE_WALLET:
-        state = CONFIRM_WALLET_SEED_PHRASE;
+      case RESTORE_WALLET_SEED_PHRASE:
+        state = RESTORE_WALLET_REPORT;
         break;
+      case RESTORE_WALLET_BACKUP:
+        state = RESTORE_WALLET_REPORT;
+        break;
+      case RESTORE_WALLET_REPORT:
+        throw new IllegalStateException("'Next' is not permitted here");
+      case SELECT_WALLET_HARDWARE:
+        // TODO Requires implementation
+        state = selectWalletChoice;
+        break;
+      case SELECT_WALLET_SWITCH:
+        // TODO Requires implementation
+        state = selectWalletChoice;
+        break;
+      default:
+        throw new IllegalStateException("Unknown state: " + state.name());
     }
 
   }
@@ -105,27 +132,36 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   public void showPrevious() {
 
     switch (state) {
-      case WELCOME:
-        state = WELCOME;
+      case WELCOME_SELECT_LANGUAGE:
+        state = WELCOME_SELECT_LANGUAGE;
         break;
-      case SELECT_WALLET:
-        state = WELCOME;
+      case WELCOME_SELECT_WALLET:
+        state = WELCOME_SELECT_LANGUAGE;
         break;
-      case SELECT_BACKUP_LOCATION:
-        state = SELECT_WALLET;
+      case CREATE_WALLET_SELECT_BACKUP_LOCATION:
+        state = WELCOME_SELECT_WALLET;
         break;
       case CREATE_WALLET_SEED_PHRASE:
-        state = SELECT_BACKUP_LOCATION;
+        state = CREATE_WALLET_SELECT_BACKUP_LOCATION;
         break;
       case CREATE_WALLET_REPORT:
-        state = CONFIRM_WALLET_SEED_PHRASE;
+        throw new IllegalStateException("'Previous' is not permitted here");
+      case RESTORE_WALLET_SELECT_METHOD:
+        state = WELCOME_SELECT_WALLET;
         break;
-      case RESTORE_WALLET:
-        state = SELECT_WALLET;
+      case RESTORE_WALLET_BACKUP:
+        state = RESTORE_WALLET_SELECT_METHOD;
         break;
-      case HARDWARE_WALLET:
-        state = SELECT_WALLET;
+      case RESTORE_WALLET_SEED_PHRASE:
+        state = RESTORE_WALLET_SELECT_METHOD;
         break;
+      case RESTORE_WALLET_REPORT:
+        state = selectRestoreMethod;
+      case SELECT_WALLET_HARDWARE:
+        state = WELCOME_SELECT_WALLET;
+        break;
+      default:
+        throw new IllegalStateException("Unknown state: " + state.name());
     }
   }
 
@@ -137,7 +173,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   @Subscribe
   public void onPasswordStatusChangedEvent(VerificationStatusChangedEvent event) {
 
-    ViewEvents.fireWizardButtonEnabledEvent(CONFIRM_WALLET_SEED_PHRASE.name(), WizardButton.NEXT, event.isOK());
+    ViewEvents.fireWizardButtonEnabledEvent(CREATE_WALLET_CONFIRM_SEED_PHRASE.name(), WizardButton.NEXT, event.isOK());
 
   }
 
@@ -165,10 +201,17 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   }
 
   /**
-   * @return The actual generated seed phrase
+   * @return The "create wallet" seed phrase (generated)
    */
-  public List<String> getActualSeedPhrase() {
-    return actualSeedPhrase;
+  public List<String> getCreateWalletSeedPhrase() {
+    return createWalletSeedPhrase;
+  }
+
+  /**
+   * @return The "restore wallet" seed phrase (user entered)
+   */
+  public List<String> getRestoreWalletSeedPhrase() {
+    return restoreWalletSeedPhrase;
   }
 
   /**
@@ -179,35 +222,31 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   }
 
   /**
-   * <p>Reduced visibility for panel models</p>
-   *
-   * @param actualSeedPhrase The actual seed phrase generated by the panel model
+   * @return The user entered password for the creation process
    */
-  void setActualSeedPhrase(List<String> actualSeedPhrase) {
-    this.actualSeedPhrase = actualSeedPhrase;
-  }
-
-  /**
-   * <p>Reduced visibility for panel models</p>
-   *
-   * @param actualSeedTimestamp The actual seed timestamp generated by the panel model
-   */
-  void setActualSeedTimestamp(String actualSeedTimestamp) {
-    this.actualSeedTimestamp = actualSeedTimestamp;
-  }
-
-  /**
-   * @return The user entered password
-   */
-  public String getUserPassword() {
+  public String getCreateWalletUserPassword() {
     return confirmPasswordModel.getValue();
+  }
+
+  /**
+   * @return The user entered password for the restore process
+   */
+  public String getRestoreWalletUserPassword() {
+    return restoreWalletPasswordModel.getValue();
   }
 
   /**
    * @return The user entered backup location
    */
   public String getBackupLocation() {
-    return selectFileModel.getValue();
+    return backupLocationSelectFileModel.getValue();
+  }
+
+  /**
+   * @return The user entered restore location
+   */
+  public String getRestoreLocation() {
+    return restoreLocationSelectFileModel.getValue();
   }
 
   /**
@@ -229,10 +268,19 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   /**
    * <p>Reduced visibility for panel models</p>
    *
-   * @param selectFileModel The "select file" model
+   * @param backupLocationSelectFileModel The "backup location" select file model
    */
-  void setSelectFileModel(SelectFileModel selectFileModel) {
-    this.selectFileModel = selectFileModel;
+  void setBackupLocationSelectFileModel(SelectFileModel backupLocationSelectFileModel) {
+    this.backupLocationSelectFileModel = backupLocationSelectFileModel;
+  }
+
+  /**
+   * <p>Reduced visibility for panel models</p>
+   *
+   * @param restoreLocationSelectFileModel The "restore location" select file model
+   */
+  void setRestoreLocationSelectFileModel(SelectFileModel restoreLocationSelectFileModel) {
+    this.restoreLocationSelectFileModel = restoreLocationSelectFileModel;
   }
 
   /**
@@ -247,11 +295,46 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   /**
    * <p>Reduced visibility for panel models</p>
    *
-   * @param enterSeedPhraseModel The "enter seed phrase" model
+   * @param selectRestoreMethod The restore method selection from the radio buttons
    */
-  void setEnterSeedPhraseModel(EnterSeedPhraseModel enterSeedPhraseModel) {
-    this.enterSeedPhraseModel = enterSeedPhraseModel;
+  void setSelectRestoreMethod(WelcomeWizardState selectRestoreMethod) {
+    this.selectRestoreMethod = selectRestoreMethod;
   }
 
+  /**
+   * <p>Reduced visibility for panel models</p>
+   *
+   * @param createWalletEnterSeedPhraseModel The "create wallet enter seed phrase" model
+   */
+  void setCreateWalletEnterSeedPhraseModel(EnterSeedPhraseModel createWalletEnterSeedPhraseModel) {
+    this.createWalletEnterSeedPhraseModel = createWalletEnterSeedPhraseModel;
+  }
+
+  /**
+   * <p>Reduced visibility for panel models</p>
+   *
+   * @param restoreWalletEnterSeedPhraseModel The "restore wallet enter seed phrase" model
+   */
+  void setRestoreWalletEnterSeedPhraseModel(EnterSeedPhraseModel restoreWalletEnterSeedPhraseModel) {
+    this.restoreWalletEnterSeedPhraseModel = restoreWalletEnterSeedPhraseModel;
+  }
+
+  /**
+   * <p>Reduced visibility for panel models</p>
+   *
+   * @param createWalletSeedPhrase The actual seed phrase generated by the panel model
+   */
+  void setCreateWalletSeedPhrase(List<String> createWalletSeedPhrase) {
+    this.createWalletSeedPhrase = createWalletSeedPhrase;
+  }
+
+  /**
+   * <p>Reduced visibility for panel models</p>
+   *
+   * @param actualSeedTimestamp The actual seed timestamp generated by the panel model
+   */
+  void setActualSeedTimestamp(String actualSeedTimestamp) {
+    this.actualSeedTimestamp = actualSeedTimestamp;
+  }
 
 }

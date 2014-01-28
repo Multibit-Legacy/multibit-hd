@@ -413,6 +413,22 @@ public class Labels {
   }
 
   /**
+   * @return A new "select file" label
+   */
+  public static JLabel newSelectFile() {
+
+    return newLabel(MessageKey.SELECT_FILE);
+  }
+
+  /**
+   * @return A new "select folder" label
+   */
+  public static JLabel newSelectFolder() {
+
+    return newLabel(MessageKey.SELECT_FOLDER);
+  }
+
+  /**
    * @return A new "Enter password" label
    */
   public static JLabel newEnterPassword() {
@@ -565,15 +581,41 @@ public class Labels {
   }
 
   /**
-   * @return A new "restore seed phrase" note
+   * @return A new "restore from seed phrase" note
    */
-  public static JLabel newRestoreSeedPhraseNote() {
+  public static JLabel newRestoreFromSeedPhraseNote() {
 
     return newNoteLabel(new MessageKey[]{
-      MessageKey.CONFIRM_SEED_PHRASE_NOTE_1,
-      MessageKey.CONFIRM_SEED_PHRASE_NOTE_2,
-      MessageKey.CONFIRM_SEED_PHRASE_NOTE_3,
-      MessageKey.CONFIRM_SEED_PHRASE_NOTE_4
+      MessageKey.RESTORE_SEED_PHRASE_NOTE_1,
+      MessageKey.RESTORE_SEED_PHRASE_NOTE_2,
+      MessageKey.RESTORE_SEED_PHRASE_NOTE_3,
+      MessageKey.RESTORE_SEED_PHRASE_NOTE_4
+    }, new Object[][]{});
+  }
+
+  /**
+   * @return A new "restore method" note
+   */
+  public static JLabel newRestoreSelectMethodNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.RESTORE_METHOD_NOTE_1,
+      MessageKey.RESTORE_METHOD_NOTE_2,
+      MessageKey.RESTORE_METHOD_NOTE_3,
+      MessageKey.RESTORE_METHOD_NOTE_4
+    }, new Object[][]{});
+  }
+
+  /**
+   * @return A new "restore from backup" note
+   */
+  public static JLabel newRestoreFromBackupNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.RESTORE_BACKUP_NOTE_1,
+      MessageKey.RESTORE_BACKUP_NOTE_2,
+      MessageKey.RESTORE_BACKUP_NOTE_3,
+      MessageKey.RESTORE_BACKUP_NOTE_4
     }, new Object[][]{});
   }
 
@@ -590,4 +632,5 @@ public class Labels {
     }, new Object[][]{});
 
   }
+
 }

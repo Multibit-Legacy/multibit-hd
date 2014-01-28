@@ -26,7 +26,7 @@ import javax.swing.*;
  * @since 0.0.1
  *  
  */
-public class SelectBackupLocationPanelView extends AbstractWizardPanelView<WelcomeWizardModel, SelectFileModel> {
+public class CreateWalletSelectBackupLocationPanelView extends AbstractWizardPanelView<WelcomeWizardModel, SelectFileModel> {
 
   private ModelAndView<SelectFileModel, SelectFileView> selectFileMaV;
 
@@ -34,7 +34,7 @@ public class SelectBackupLocationPanelView extends AbstractWizardPanelView<Welco
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public SelectBackupLocationPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public CreateWalletSelectBackupLocationPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard.getWizardModel(), panelName, MessageKey.SELECT_BACKUP_LOCATION_TITLE);
 
@@ -45,10 +45,10 @@ public class SelectBackupLocationPanelView extends AbstractWizardPanelView<Welco
   @Override
   public void newPanelModel() {
 
-    selectFileMaV = Components.newSelectFileMaV(WelcomeWizardState.SELECT_BACKUP_LOCATION.name());
+    selectFileMaV = Components.newSelectFileMaV(getPanelName());
     setPanelModel(selectFileMaV.getModel());
 
-    getWizardModel().setSelectFileModel(selectFileMaV.getModel());
+    getWizardModel().setBackupLocationSelectFileModel(selectFileMaV.getModel());
 
   }
 

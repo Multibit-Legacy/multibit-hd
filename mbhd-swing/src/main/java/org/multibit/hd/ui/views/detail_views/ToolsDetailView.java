@@ -41,7 +41,7 @@ public class ToolsDetailView {
       public void actionPerformed(ActionEvent e) {
 
         // TODO Consider most appropriate initial state
-        Panels.showLightBox(Wizards.newClosingWelcomeWizard(WelcomeWizardState.WELCOME).getWizardPanel());
+        Panels.showLightBox(Wizards.newClosingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardPanel());
       }
     };
 

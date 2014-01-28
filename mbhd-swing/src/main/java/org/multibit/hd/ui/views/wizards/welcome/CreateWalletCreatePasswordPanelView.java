@@ -21,7 +21,7 @@ import javax.swing.*;
  *         
  */
 
-public class CreateWalletPasswordPanelView extends AbstractWizardPanelView<WelcomeWizardModel, ConfirmPasswordModel> {
+public class CreateWalletCreatePasswordPanelView extends AbstractWizardPanelView<WelcomeWizardModel, ConfirmPasswordModel> {
 
   private ModelAndView<ConfirmPasswordModel, ConfirmPasswordView> confirmPasswordMaV;
 
@@ -29,7 +29,7 @@ public class CreateWalletPasswordPanelView extends AbstractWizardPanelView<Welco
    * @param wizard The wizard managing the states
    * @param panelName   The panel name to filter events from components
    */
-  public CreateWalletPasswordPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public CreateWalletCreatePasswordPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard.getWizardModel(), panelName, MessageKey.CREATE_WALLET_PASSWORD_TITLE);
 
@@ -40,7 +40,7 @@ public class CreateWalletPasswordPanelView extends AbstractWizardPanelView<Welco
   @Override
   public void newPanelModel() {
 
-    confirmPasswordMaV = Components.newConfirmPasswordMaV(WelcomeWizardState.CREATE_WALLET_PASSWORD.name());
+    confirmPasswordMaV = Components.newConfirmPasswordMaV(getPanelName());
     setPanelModel(confirmPasswordMaV.getModel());
 
     getWizardModel().setConfirmPasswordModel(confirmPasswordMaV.getModel());

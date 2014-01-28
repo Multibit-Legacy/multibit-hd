@@ -6,35 +6,50 @@ package org.multibit.hd.core.api;
  * <li>Message keys to use for internationalisation of output from the core module</li>
  * </ul>
  *
+ * <h3>Naming conventions</h3>
+ * <p>Message keys are placed in an enum for type safety.</p>
+ * <p>Message keys have their resource key so that IDEs can maintain a "where used" reference lookup.</p>
+ * <p>Message keys are never concatenated to form larger sentences. Instead use token replacements
+ * within a larger sentence structure.</p>
+ * <p>Resource keys are simply the message key enum name prefixed with "core_" in lower case.</p>
+ *
  * @since 0.0.1
  *  
  */
 public enum CoreMessageKey {
 
   // Core messages
-  START_NETWORK_CONNECTION_ERROR,
-  CHAIN_DOWNLOAD,
-  PEER_COUNT,
+  START_NETWORK_CONNECTION_ERROR("core_start_network_connection_error"),
+  CHAIN_DOWNLOAD("core_chain_download"),
+  PEER_COUNT("core_peer_count"),
 
    // Sending bitcoin
-  TRANSACTION_CREATED_OK,
-  TRANSACTION_CREATION_FAILED,
-  SENDING_BITCOIN,
-  BITCOIN_SENT_OK,
-  BITCOIN_SEND_FAILED,
+  TRANSACTION_CREATED_OK("core_transaction_created_ok"),
+  TRANSACTION_CREATION_FAILED("core_transaction_creation_failed"),
+  SENDING_BITCOIN("core_sending_bitcoin"),
+  BITCOIN_SENT_OK("core_bitcoin_sent_ok"),
+  BITCOIN_SEND_FAILED("core_bitcoin_send_failed"),
 
   // Errors
-  THE_ERROR_WAS,
-  COULD_NOT_CONNECT_TO_BITCOIN_NETWORK,
-  NO_ACTIVE_WALLET
-
+  THE_ERROR_WAS("core_the_error_was"),
+  COULD_NOT_CONNECT_TO_BITCOIN_NETWORK("core_could_not_connect_to_bitcoin_network"),
+  NO_ACTIVE_WALLET("core_no_active_wallet")
+  
+  // End of enum
   ;
+  
+  private final String key;
+
+  private CoreMessageKey(String key) {
+    this.key = key;
+  }
 
   /**
    * @return The key for use with the resource bundles
    */
+
   public String getKey() {
-    return "core_"+name().toLowerCase();
+    return key;
   }
 
 }

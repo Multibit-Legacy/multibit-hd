@@ -1,9 +1,8 @@
 package org.multibit.hd.ui.views.components.select_file;
 
-import com.google.common.base.Strings;
+import com.google.common.base.Optional;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
-import org.multibit.hd.ui.views.wizards.WizardButton;
 
 /**
  * <p>Model to provide the following to view:</p>
@@ -37,7 +36,7 @@ public class SelectFileModel implements Model<String> {
     this.selectedFile = value;
 
     // Ensure the "next" button is kept disabled
-    ViewEvents.fireWizardButtonEnabledEvent(panelName, WizardButton.NEXT, !Strings.isNullOrEmpty(selectedFile));
+    ViewEvents.fireWizardComponentModelChangedEvent(panelName, Optional.of(this));
 
   }
 }

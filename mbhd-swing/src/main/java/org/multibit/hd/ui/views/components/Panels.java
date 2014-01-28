@@ -3,8 +3,8 @@ package org.multibit.hd.ui.views.components;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -121,7 +121,7 @@ public class Panels {
 
   /**
    * <p>A "broadcast status" panel provides a means of observing broadcast activity</p>
-
+   *
    * @return A new broadcast status panel
    */
   public static JPanel newBroadcastStatus() {
@@ -264,6 +264,42 @@ public class Panels {
   }
 
   /**
+   * <p>A "restore wallet selector" panel provides a means of choosing how a wallet is to be restored</p>
+   *
+   * @param listener          The action listener
+   * @param backupCommand     The "from backup" command name
+   * @param seedPhraseCommand The "from seed phrase" command name
+   *
+   * @return A new "restore wallet" panel
+   */
+  public static JPanel newRestoreWalletSelector(
+    ActionListener listener,
+    String backupCommand,
+    String seedPhraseCommand
+  ) {
+
+    JPanel panel = Panels.newPanel();
+
+    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.RESTORE_FROM_BACKUP);
+    radio1.setSelected(true);
+    radio1.setActionCommand(backupCommand);
+
+    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.RESTORE_FROM_SEED_PHRASE);
+    radio2.setActionCommand(seedPhraseCommand);
+
+    // Wallet selection is mutually exclusive
+    ButtonGroup group = new ButtonGroup();
+    group.add(radio1);
+    group.add(radio2);
+
+    // Add to the panel
+    panel.add(radio1, "wrap");
+    panel.add(radio2, "wrap");
+
+    return panel;
+  }
+
+  /**
    * <p>A "confirm seed phrase" panel displays the instructions to enter the seed phrase from a piece of paper</p>
    *
    * @return A new "confirm seed phrase" panel
@@ -304,11 +340,11 @@ public class Panels {
   }
 
   /**
-   * <p>A "seed phrase warning" panel displays the instructions to write down the seed phrase on a piece of paper</p>
+   * <p>A "restore select method" panel displays the restore options</p>
    *
-   * @return A new "seed phrase warning" panel
+   * @return A new "restore select method" panel
    */
-  public static JPanel newRestoreSeedPhrase() {
+  public static JPanel newRestoreSelectMethod() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       "fillx,insets 0", // Layout
@@ -317,7 +353,45 @@ public class Panels {
     ));
 
     // Add to the panel
-    panel.add(Labels.newConfirmSeedPhraseNote(), "push");
+    panel.add(Labels.newRestoreSelectMethodNote(), "push");
+
+    return panel;
+  }
+
+  /**
+   * <p>A "restore from backup" panel displays the instructions to restore from a backup folder</p>
+   *
+   * @return A new "restore from backup" panel
+   */
+  public static JPanel newRestoreFromBackup() {
+
+    JPanel panel = Panels.newPanel(new MigLayout(
+      "fillx,insets 0", // Layout
+      "[grow]", // Columns
+      "[]" // Rows
+    ));
+
+    // Add to the panel
+    panel.add(Labels.newRestoreFromBackupNote(), "push");
+
+    return panel;
+  }
+
+  /**
+   * <p>A "restore from seed phrase" panel displays the instructions to restore from a seed phrase</p>
+   *
+   * @return A new "restore from seed phrase" panel
+   */
+  public static JPanel newRestoreFromSeedPhrase() {
+
+    JPanel panel = Panels.newPanel(new MigLayout(
+      "fillx,insets 0", // Layout
+      "[grow]", // Columns
+      "[]" // Rows
+    ));
+
+    // Add to the panel
+    panel.add(Labels.newRestoreFromSeedPhraseNote(), "push");
 
     return panel;
   }

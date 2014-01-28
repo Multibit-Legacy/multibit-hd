@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.components.enter_password;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
 
@@ -15,7 +16,7 @@ import org.multibit.hd.ui.models.Model;
  */
 public class EnterPasswordModel implements Model<String> {
 
-  private char[] password;
+  private Optional<char[]> password = Optional.absent();
 
   private final String panelName;
 
@@ -35,19 +36,27 @@ public class EnterPasswordModel implements Model<String> {
 
   @Override
   public String getValue() {
-    return String.valueOf(password);
+    if (password.isPresent()) {
+      return String.valueOf(password.get());
+    } else {
+      return "";
+    }
   }
 
   @Override
   public void setValue(String value) {
-    this.password = value.toCharArray();
+
+    Preconditions.checkNotNull(value, "'value' must be present");
+
+    setPassword(value.toCharArray());
   }
 
   /**
    * @param password The current value of the password and fire a component changed event
    */
   public void setPassword(char[] password) {
-    this.password = password;
+
+    this.password = Optional.of(password);
 
     // Alert the panel model that a component has changed
     ViewEvents.fireWizardComponentModelChangedEvent(panelName, Optional.of(this));
