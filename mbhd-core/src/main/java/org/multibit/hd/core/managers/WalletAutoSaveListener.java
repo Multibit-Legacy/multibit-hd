@@ -9,7 +9,7 @@ import java.io.File;
 /**
  *  <p>Listener to provide the following to WalletManager:<br>
  *  <ul>
- *  <li>Saving of rolling wallet backups</li>
+ *  <li>Saving of rolling wallet backups and zip backups</li>
  *  </ul>
  *  </p>
  *  
@@ -25,5 +25,7 @@ public class WalletAutoSaveListener implements WalletFiles.Listener {
   @Override
   public void onAfterAutoSave(File newlySavedFile) {
     log.debug("Have just saved wallet to newlySavedFile '" + newlySavedFile.getAbsolutePath() + "'");
+
+    // TODO - create rolling-backup and zip-backup as required
   }
 }

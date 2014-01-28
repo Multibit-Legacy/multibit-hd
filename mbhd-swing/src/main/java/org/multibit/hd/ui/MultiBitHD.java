@@ -1,5 +1,6 @@
 package org.multibit.hd.ui;
 
+import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.xeiam.xchange.currency.MoneyUtils;
 import com.xeiam.xchange.mtgox.v2.MtGoxExchange;
@@ -102,7 +103,7 @@ public class MultiBitHD {
     exchangeTickerService.start();
     bitcoinNetworkService.start();
 
-    Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
+    Uninterruptibles.sleepUninterruptibly(1000, TimeUnit.MILLISECONDS);
 
     // If the network starts ok start downloading blocks to catch up with the current blockchain
     if (bitcoinNetworkService.isStartedOk()) {
@@ -113,9 +114,18 @@ public class MultiBitHD {
     ControllerEvents.fireChangeLocaleEvent(Configurations.currentConfiguration.getLocale());
 
     // Provide a starting balance
-    // TODO Get this from CoreServices
+    // TODO Get this from CoreServices - bitcoinj wallet class should not appear in GUI code
+    BigInteger satoshis;
+    Optional<WalletData> currentWalletData = WalletManager.INSTANCE.getCurrentWalletData();
+    if (currentWalletData.isPresent()) {
+      // Use the real wallet data
+      satoshis = currentWalletData.get().getWallet().getBalance();
+    } else {
+      // Use some dummy data
+      satoshis = BigInteger.ZERO;
+    }
     ViewEvents.fireBalanceChangedEvent(
-      BigInteger.ZERO,
+      satoshis,
       MoneyUtils.fromSatoshi(0),
       "Unknown"
     );

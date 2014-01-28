@@ -11,6 +11,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.multibit.hd.core.api.BitcoinNetworkSummary;
 import org.multibit.hd.core.api.CoreMessageKey;
+import org.multibit.hd.core.api.WalletId;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.events.CoreEvents;
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
 import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -154,6 +156,19 @@ public class BitcoinNetworkService extends AbstractService {
         blockStore.close();
       } catch (BlockStoreException e) {
         log.error("Blockstore not closed successfully, error was '" + e.getClass().getName() + " " + e.getMessage() + "'");
+      }
+    }
+
+    // Save the current wallet immediately
+    if (walletManager.getCurrentWalletData().isPresent()) {
+      WalletId walletId = walletManager.getCurrentWalletData().get().getWalletId();
+      log.debug("Saving wallet with id '" + walletId + "'.");
+      try {
+        File currentWallet = WalletManager.INSTANCE.getCurrentWalletFilename().get();
+        walletManager.getCurrentWalletData().get().getWallet().saveToFile(currentWallet);
+        log.debug("Wallet save completed ok. Wallet size is " + currentWallet.length() + " bytes.");
+      } catch (IOException ioe) {
+        log.error("Could not write wallet with id '" + walletId + "' successfully. The error was '" + ioe.getMessage() + "'");
       }
     }
   }

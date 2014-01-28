@@ -83,7 +83,6 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
         state = SEND_BITCOIN_REPORT;
         break;
     }
-
   }
 
   @Override
