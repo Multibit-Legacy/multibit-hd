@@ -77,10 +77,6 @@ public class InstallationManager {
     File applicationDataDirectory = new File(applicationDataDirectoryName);
     createDirectoryIfNecessary(applicationDataDirectory);
 
-    // Create the zip-backuo and rolling-backup directories if they do not exist
-    createDirectoryIfNecessary(new File(applicationDataDirectoryName + File.separator + BackupManager.LOCAL_BACKUP_DIRECTORY_NAME));
-    createDirectoryIfNecessary(new File(applicationDataDirectoryName + File.separator + BackupManager.ROLLING_BACKUP_DIRECTORY_NAME));
-
     return applicationDataDirectory;
   }
 

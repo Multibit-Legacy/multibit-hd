@@ -1,10 +1,13 @@
 package org.multibit.hd.ui.controllers;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import org.joda.money.BigMoney;
+import org.multibit.hd.core.api.WalletData;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Satoshis;
 import org.multibit.hd.ui.events.controller.AddAlertEvent;
@@ -45,7 +48,16 @@ public class HeaderController {
 
     // Build the exchange string
     // TODO Link to a real balance and remove BigDecimal
-    BigInteger satoshis = new BigInteger("2099999912345678");
+    BigInteger satoshis;
+
+    Optional<WalletData> currentWalletData = WalletManager.INSTANCE.getCurrentWalletData();
+    if (currentWalletData.isPresent()) {
+      // Use the real wallet data
+      satoshis = currentWalletData.get().getWallet().getBalance();
+    } else {
+      // Use some fake data
+      satoshis = new BigInteger("2099999912345678");
+    }
     BigMoney localBalance = Satoshis.toLocalAmount(satoshis, event.getRate());
 
     // Post the event

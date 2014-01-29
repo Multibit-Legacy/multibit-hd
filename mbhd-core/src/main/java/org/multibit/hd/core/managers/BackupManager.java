@@ -2,15 +2,16 @@ package org.multibit.hd.core.managers;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import org.multibit.hd.core.api.WalletData;
 import org.multibit.hd.core.api.WalletId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -25,31 +26,62 @@ public enum BackupManager {
   public static final String BACKUP_SUFFIX_FORMAT = "yyyyMMddHHmmss";
   public static final String BACKUP_ZIP_FILE_EXTENSION = ".zip";
   public static final String BACKUP_ZIP_FILE_EXTENSION_REGEX = "\\.zip";
-  public static final String LOCAL_BACKUP_DIRECTORY_NAME = "zip-backup";
+  public static final String LOCAL_ZIP_BACKUP_DIRECTORY_NAME = "zip-backup";
 
   public static final String ROLLING_BACKUP_DIRECTORY_NAME = "rolling-backup";
-  public static final int MAXIMUM_NUMBER_OF_BACKUPS = 60; // Chosen so that you will have about weekly backups for a year, fortnightly over two years.
-  public static final int NUMBER_OF_FIRST_WALLETS_TO_ALWAYS_KEEP = 2;
-  public static final int NUMBER_OF_LAST_WALLETS_TO_ALWAYS_KEEP = 8; // Must be at least 1.
+  public static final int MAXIMUM_NUMBER_OF_ROLLING_BACKUPS = 8;
+
+  public static final int MAXIMUM_NUMBER_OF_ZIP_BACKUPS = 60; // Chosen so that you will have about weekly backups for a year, fortnightly over two years.
+  public static final int NUMBER_OF_FIRST_WALLET_ZIP_BACKUPS_TO_ALWAYS_KEEP = 2;
+  public static final int NUMBER_OF_LAST_WALLET_ZIP_BACKUPS_TO_ALWAYS_KEEP = 8; // Must be at least 1.
+
+  public static final String REGEX_FOR_TIMESTAMP_AND_WALLET_SUFFIX = ".*-\\d{" + BACKUP_SUFFIX_FORMAT.length() + "}\\.wallet$";
+
+
   private static final Logger log = LoggerFactory.getLogger(BackupManager.class);
+
   // Where wallets are stored
   private File applicationDataDirectory;
   // Where the cloud backups are stored (this is typically specified by the user and is a SpiderOak etc sync directory)
   private File cloudBackupDirectory;
   private SimpleDateFormat dateFormat;
 
+  // Nonsense bytes to fill up deleted files - these have no meaning.
+  private static byte[] NONSENSE_BYTES = new byte[]{(byte) 0xF0, (byte) 0xA6, (byte) 0x55, (byte) 0xAA, (byte) 0x33,
+          (byte) 0x77, (byte) 0x33, (byte) 0x37, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0xC2, (byte) 0xB3,
+          (byte) 0xA4, (byte) 0x9A, (byte) 0x30, (byte) 0x7F, (byte) 0xE5, (byte) 0x5A, (byte) 0x23, (byte) 0x47, (byte) 0x13,
+          (byte) 0x17, (byte) 0x15, (byte) 0x32, (byte) 0x5C, (byte) 0x77, (byte) 0xC9, (byte) 0x73, (byte) 0x04, (byte) 0x2D,
+          (byte) 0x40, (byte) 0x0F, (byte) 0xA5, (byte) 0xA6, (byte) 0x43, (byte) 0x77, (byte) 0x33, (byte) 0x3B, (byte) 0x62,
+          (byte) 0x34, (byte) 0xB6, (byte) 0x72, (byte) 0x32, (byte) 0xB3, (byte) 0xA4, (byte) 0x4B, (byte) 0x80, (byte) 0x7F,
+          (byte) 0xC5, (byte) 0x43, (byte) 0x23, (byte) 0x47, (byte) 0x13, (byte) 0xB7, (byte) 0xA5, (byte) 0x32, (byte) 0xDC,
+          (byte) 0x79, (byte) 0x19, (byte) 0xB1, (byte) 0x03, (byte) 0x9D};
+
+  private static int BULKING_UP_FACTOR = 16;
+  private static byte[] SECURE_DELETE_FILL_BYTES = new byte[NONSENSE_BYTES.length * BULKING_UP_FACTOR];
+
+  static {
+    // Make some SECURE_DELETE_FILL_BYTES bytes = x BULKING_UP_FACTOR the
+    // NONSENSE just to save write time.
+    for (int i = 0; i < BULKING_UP_FACTOR; i++) {
+      System.arraycopy(NONSENSE_BYTES, 0, SECURE_DELETE_FILL_BYTES, NONSENSE_BYTES.length * i, NONSENSE_BYTES.length);
+    }
+  }
+
   /**
    * Initialise the backup manager to use the specified cloudBackupDirectory.
-   * All backups will be written and read from this directory
+   * All the cloud backups will be written and read from this directory.
+   * Note that each wallet also have a local copy of the zip backups.
    */
   public void initialise(File applicationDataDirectory, File cloudBackupDirectory) {
+    Preconditions.checkNotNull(applicationDataDirectory);
+
     this.applicationDataDirectory = applicationDataDirectory;
     this.cloudBackupDirectory = cloudBackupDirectory;
   }
 
   /**
    * Get all the backups available in the cloud backup directory for the wallet id specified.
-   * Wallet backups are called mbhd-[formatted wallet id]-timestamp and the specified wallet id is used to subset all backups
+   * Wallet backups are called mbhd-[formatted wallet id]-timestamp.zip and the specified wallet id is used to subset all backups
    */
   // TODO would also be nice to return the dates of the backups (from the timestamp) or return them sorted by age
   // then the latest backup can be used easily
@@ -65,7 +97,7 @@ public enum BackupManager {
 
     File[] listOfFiles = cloudBackupDirectory.listFiles();
 
-    // Look for filenames with format "mbhd"-[formatted wallet id ] -YYYYMMDDHHMMSS.zip"
+    // Look for filenames with format "mbhd-" + [formatted wallet id ] + "-YYYYMMDDHHMMSS.zip"
     String backupRegex = WalletManager.WALLET_DIRECTORY_PREFIX + WalletManager.SEPARATOR + walletId.toFormattedString() +
             WalletManager.SEPARATOR + "\\d{" + BACKUP_SUFFIX_FORMAT.length() + "}" + BACKUP_ZIP_FILE_EXTENSION_REGEX;
     if (listOfFiles != null) {
@@ -84,12 +116,12 @@ public enum BackupManager {
   }
 
   /**
-   * Get all the backups available in the local backup directory for the wallet id specified.
-   * Wallet backups are called mbhd-[formatted wallet id]-timestamp and the specified wallet id is used to subset all backups
+   * Get all the backups available in the local zip backup directory for the wallet id specified.
+   * Wallet backups are called mbhd-[formatted wallet id]-timestamp.zip and the specified wallet id is used to subset all backups
    */
   // TODO would also be nice to return the dates of the backups (from the timestamp) or return them sorted by age
   // then the latest backup can be used easily
-  public List<File> getLocalBackups(WalletId walletId) {
+  public List<File> getLocalZipBackups(WalletId walletId) {
 
     List<File> walletBackups = Lists.newArrayList();
 
@@ -102,7 +134,7 @@ public enum BackupManager {
     }
 
     // Find the zip-backups directory containing the local backups
-    File zipBackupsDirectory = new File(walletRootDirectory.getAbsoluteFile() + File.separator + LOCAL_BACKUP_DIRECTORY_NAME);
+    File zipBackupsDirectory = new File(walletRootDirectory.getAbsoluteFile() + File.separator + LOCAL_ZIP_BACKUP_DIRECTORY_NAME);
     if (!zipBackupsDirectory.exists()) {
       // No directory - no backups
       return walletBackups;
@@ -129,9 +161,124 @@ public enum BackupManager {
   }
 
   /**
+   * Get all the available rolling backups
+   * These are ordered in the order of timestamp i.e  the oldest one is first, the newest one is last
+   *
+   * @param walletId the wallet id of the wallet to search for rolling backups for
+   * @return a list of filenames of the rolling backups, oldest first
+   */
+  public List<File> getRollingBackups(WalletId walletId) {
+    Preconditions.checkNotNull(walletId);
+
+    // Calculate the directory the rolling backups are stored in for this wallet id
+    String rollingBackupDirectoryName = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), WalletManager.createWalletRoot(walletId)) +
+            File.separator + ROLLING_BACKUP_DIRECTORY_NAME;
+    File rollingBackupDirectory = new File(rollingBackupDirectoryName);
+
+    // See if there are any wallet rolling backups.
+    if (dateFormat == null) {
+      dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
+    }
+
+    File[] listOfFiles = rollingBackupDirectory.listFiles();
+
+    Map<Long, File> mapOfTimeToFile = Maps.newTreeMap(); // Note that this is sorted by long
+
+    // Look for filenames with format "text"-YYYYMMDDHHMMSS.wallet<eol> and are not empty.
+    if (listOfFiles != null) {
+      for (int i = 0; i < listOfFiles.length; i++) {
+        if (listOfFiles[i].isFile()) {
+          if (listOfFiles[i].getName().matches(REGEX_FOR_TIMESTAMP_AND_WALLET_SUFFIX)) {
+            if (listOfFiles[i].length() > 0) {
+              // Work out timestamp
+              int start = (WalletManager.MBHD_WALLET_PREFIX + WalletManager.SEPARATOR).length();
+              int stop = start + BACKUP_SUFFIX_FORMAT.length();
+              String timeStampString = listOfFiles[i].getName().substring(start, stop);
+              try {
+                long timestamp = dateFormat.parse(timeStampString).getTime();
+                mapOfTimeToFile.put(timestamp, listOfFiles[i]);
+              } catch (ParseException pe) {
+                pe.printStackTrace();
+              }
+            }
+          }
+        }
+      }
+    }
+
+    List<File> walletBackups = Lists.newArrayList();
+
+    for (Long key : mapOfTimeToFile.keySet()) {
+      // Note that these are added in order of creation time, oldest first
+      // log.debug("Adding rolling backup '" + mapOfTimeToFile.get(key).getAbsoluteFile() + "' to rolling backup results");
+      walletBackups.add(mapOfTimeToFile.get(key));
+    }
+
+    return walletBackups;
+  }
+
+  /**
+   * Create a rolling backup of the wallet, specified by the walletId.
+   * <p/>
+   * This is a copy of the supplied wallet file, timestamped and copied to the rolling-backup directory
+   * There is a maximum number of rolling backups, removals are done using a first in - first out rule.
+   *
+   * @param walletData The wallet data with the wallet to backup
+   * @return the File of the created rolling wallet backup
+   * @throws java.io.IOException if the wallet backup could not be created
+   */
+  public File createRollingBackup(WalletData walletData) throws IOException {
+    log.debug("Creating rolling-backup called.");
+    Preconditions.checkNotNull(walletData);
+    Preconditions.checkNotNull(walletData.getWallet());
+    Preconditions.checkNotNull(walletData.getWalletId());
+
+    // Find the wallet root directory for this wallet id
+    File walletRootDirectory = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), WalletManager.createWalletRoot(walletData.getWalletId()));
+
+    if (!walletRootDirectory.exists()) {
+      throw new IOException("Directory " + walletRootDirectory + " does not exist. Cannot backup.");
+    }
+
+    // Create the name of the rolling backup - this is constructed as "mbhd-" + [timestamp] + ".wallet"
+    if (dateFormat == null) {
+      dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
+    }
+
+    InstallationManager.createDirectoryIfNecessary(new File(walletRootDirectory + File.separator + BackupManager.ROLLING_BACKUP_DIRECTORY_NAME));
+
+    String walletBackupFilename = walletRootDirectory + File.separator + BackupManager.ROLLING_BACKUP_DIRECTORY_NAME
+            + File.separator + WalletManager.MBHD_WALLET_PREFIX + WalletManager.SEPARATOR
+            + dateFormat.format(new Date()) + WalletManager.MBHD_WALLET_SUFFIX;
+
+    File walletBackupFile = new File(walletBackupFilename);
+    log.debug("Creating rolling-backup '" + walletBackupFilename + "'");
+    walletData.getWallet().saveToFile(walletBackupFile);
+    log.debug("Written rolling-backup '" + walletBackupFilename + "' successfully. Size : " + walletBackupFile.length() + " bytes");
+
+    // If there are more than the maximum number of rolling backups, secure delete the eldest
+    List<File> rollingBackups = getRollingBackups(walletData.getWalletId());
+
+    if (rollingBackups.size() > MAXIMUM_NUMBER_OF_ROLLING_BACKUPS) {
+      // Delete the eldest
+      secureDelete(rollingBackups.get(0));
+    }
+
+    // If there are even more than that trim off another one
+    if (rollingBackups.size() > MAXIMUM_NUMBER_OF_ROLLING_BACKUPS + 1) {
+      // Delete the second eldest
+      secureDelete(rollingBackups.get(1));
+    }
+
+
+    return walletBackupFile;
+  }
+
+  /**
    * Create a backup of the specified wallet id.
    * The wallet manager is interrogated to find the physical directory where the wallet is stored.
-   * The whole directory is then copied and zipped into a timestamped backup file which is then written to the local and cloud backup directories
+   * The whole directory (except the zip-backups)is then copied and zipped into a timestamped backup file
+   * This is then written to the local and cloud backup directories
    *
    * @return The created local backup as a file
    */
@@ -146,7 +293,7 @@ public enum BackupManager {
       throw new IOException("Directory " + walletRootDirectory + " does not exist. Cannot backup.");
     }
 
-    File localBackupsDirectory = new File(walletRootDirectory.getAbsoluteFile() + File.separator + LOCAL_BACKUP_DIRECTORY_NAME);
+    File localBackupsDirectory = new File(walletRootDirectory.getAbsoluteFile() + File.separator + LOCAL_ZIP_BACKUP_DIRECTORY_NAME);
 
     if (!localBackupsDirectory.exists()) {
       if (!localBackupsDirectory.mkdir()) {
@@ -228,6 +375,48 @@ public enum BackupManager {
   }
 
   /**
+   * Delete a file with an overwrite of all of the data.
+   * <p/>
+   * Set bit patterns are used rather than random numbers to avoid a
+   * futex_wait_queue_me error on Linux systems (related to /dev/random usage)
+   *
+   * @param file
+   * @throws IOException
+   */
+  public static void secureDelete(File file) throws IOException {
+    log.debug("Start of secureDelete");
+
+    RandomAccessFile raf = null;
+    if (file != null && file.exists()) {
+      try {
+        // Prep for file delete as this can be fiddly on windows.
+        // Make sure it is writable and any references to it are garbage
+        // collected and finalized.
+        file.setWritable(true);
+        System.gc();
+
+        long length = file.length();
+        raf = new RandomAccessFile(file, "rws");
+        raf.seek(0);
+        raf.getFilePointer();
+        int pos = 0;
+        while (pos < length) {
+          raf.write(SECURE_DELETE_FILL_BYTES);
+          pos += SECURE_DELETE_FILL_BYTES.length;
+        }
+      } finally {
+        if (raf != null) {
+          raf.close();
+          raf = null;
+        }
+      }
+      boolean deleteSuccess = file.delete();
+      log.debug("Result of delete of file '" + file.getAbsolutePath() + "' was " + deleteSuccess);
+    }
+    log.debug("End of secureDelete");
+  }
+
+  /**
    * Copy the files in the specified dir2zip to the ZipOutputStream
    * The zip-backups are not stored in the backup (as they are backups themselves)
    *
@@ -246,7 +435,7 @@ public enum BackupManager {
     for (int i = 0; i < dirList.length; i++) {
       File f = new File(zipDir, dirList[i]);
       // Do not include the zip-backups files
-      boolean ignoreFile = dirList[i].contains(LOCAL_BACKUP_DIRECTORY_NAME);
+      boolean ignoreFile = dirList[i].contains(LOCAL_ZIP_BACKUP_DIRECTORY_NAME);
       if (f.isDirectory() && !ignoreFile) {
         // If the File object is a directory, call this
         // function again to add its content recursively

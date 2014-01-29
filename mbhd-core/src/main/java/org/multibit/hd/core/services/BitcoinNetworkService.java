@@ -11,6 +11,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.multibit.hd.core.api.BitcoinNetworkSummary;
 import org.multibit.hd.core.api.CoreMessageKey;
+import org.multibit.hd.core.api.WalletId;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.events.CoreEvents;
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
 import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -61,6 +63,8 @@ public class BitcoinNetworkService extends AbstractService {
 
   private NetworkParameters MAINNET = NetworkParameters.fromID(NetworkParameters.ID_MAINNET);
 
+  private boolean startedOk = false;
+
   @Override
   public void start() {
     CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkNotInitialised());
@@ -71,6 +75,12 @@ public class BitcoinNetworkService extends AbstractService {
     walletManager = WalletManager.INSTANCE;
 
     try {
+
+      // check if there is a wallet - if there is no wallet the network will not start
+      if (!WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
+        log.debug("Not starting bitcoin network service as there is currently no wallet.");
+        return;
+      }
       String walletRoot = WalletManager.INSTANCE.getCurrentWalletFilename().get().getParentFile().getAbsolutePath();
       String blockchainFilename = walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.SPV_BLOCKCHAIN_SUFFIX;
       String checkpointsFilename = walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX;
@@ -99,6 +109,8 @@ public class BitcoinNetworkService extends AbstractService {
       checkpointManager = new MultiBitCheckpointManager(NETWORK_PARAMETERS, checkpointsFilename);
       log.debug("Created checkpointmanager");
 
+      startedOk = true;
+
     } catch (Exception e) {
       log.error(e.getClass().getName() + " " + e.getMessage());
       CoreEvents.fireBitcoinNetworkChangedEvent(
@@ -109,8 +121,13 @@ public class BitcoinNetworkService extends AbstractService {
     }
   }
 
+  public boolean isStartedOk() {
+    return startedOk;
+  }
+
   @Override
   public void stopAndWait() {
+    startedOk = false;
     if (peerGroup != null) {
       log.debug("Stopping peerGroup service...");
       peerGroup.removeEventListener(peerEventListener);
@@ -139,6 +156,19 @@ public class BitcoinNetworkService extends AbstractService {
         blockStore.close();
       } catch (BlockStoreException e) {
         log.error("Blockstore not closed successfully, error was '" + e.getClass().getName() + " " + e.getMessage() + "'");
+      }
+    }
+
+    // Save the current wallet immediately
+    if (walletManager.getCurrentWalletData().isPresent()) {
+      WalletId walletId = walletManager.getCurrentWalletData().get().getWalletId();
+      log.debug("Saving wallet with id '" + walletId + "'.");
+      try {
+        File currentWallet = WalletManager.INSTANCE.getCurrentWalletFilename().get();
+        walletManager.getCurrentWalletData().get().getWallet().saveToFile(currentWallet);
+        log.debug("Wallet save completed ok. Wallet size is " + currentWallet.length() + " bytes.");
+      } catch (IOException ioe) {
+        log.error("Could not write wallet with id '" + walletId + "' successfully. The error was '" + ioe.getMessage() + "'");
       }
     }
   }
