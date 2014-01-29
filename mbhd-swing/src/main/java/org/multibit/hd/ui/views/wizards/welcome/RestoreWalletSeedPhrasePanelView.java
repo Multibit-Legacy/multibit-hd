@@ -2,6 +2,8 @@ package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.ModelAndView;
@@ -11,10 +13,9 @@ import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseMode
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
 /**
@@ -27,7 +28,7 @@ import java.util.List;
  *         
  */
 
-public class RestoreWalletSeedPhrasePanelView extends AbstractWizardPanelView<WelcomeWizardModel, List<String>> implements ActionListener {
+public class RestoreWalletSeedPhrasePanelView extends AbstractWizardPanelView<WelcomeWizardModel, List<String>> {
 
   private ModelAndView<EnterSeedPhraseModel, EnterSeedPhraseView> enterSeedPhraseMaV;
 
@@ -70,17 +71,15 @@ public class RestoreWalletSeedPhrasePanelView extends AbstractWizardPanelView<We
   @Override
   public void updateFromComponentModels(Optional componentModel) {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
-  }
 
-  /**
-   * <p>Handle the "select wallet" action event</p>
-   *
-   * @param e The action event
-   */
-  @Override
-  public void actionPerformed(ActionEvent e) {
+    // Enable the "next" button if the seed phrase has a valid size
+    boolean seedPhraseSizeValid = SeedPhraseSize.isValid(enterSeedPhraseMaV.getModel().getValue().size());
 
-    // Do nothing
+    ViewEvents.fireWizardButtonEnabledEvent(
+      getPanelName(),
+      WizardButton.NEXT,
+      seedPhraseSizeValid
+    );
 
   }
 }

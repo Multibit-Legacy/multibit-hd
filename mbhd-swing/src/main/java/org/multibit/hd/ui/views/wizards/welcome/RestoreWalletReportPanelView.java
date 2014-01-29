@@ -37,8 +37,8 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
   private JLabel walletCreatedStatusLabel;
 
   /**
-   * @param wizard The wizard managing the states
-   * @param panelName   The panel name to filter events from components
+   * @param wizard    The wizard managing the states
+   * @param panelName The panel name to filter events from components
    */
   public RestoreWalletReportPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
@@ -103,32 +103,33 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     WelcomeWizardModel model = getWizardModel();
 
     // TODO Check all required data is valid
-    List<String> seedPhrase = model.getCreateWalletSeedPhrase();
-    String password = model.getRestoreWalletUserPassword();
-    String restoreLocation = model.getRestoreLocation();
+    List<String> seedPhrase = model.getRestoreWalletSeedPhrase();
+    if (WelcomeWizardState.RESTORE_WALLET_BACKUP.equals(getWizardModel().getSelectWalletChoice())) {
+      //
+      String restoreLocation = model.getRestoreLocation();
+      Preconditions.checkNotNull(restoreLocation, "'restoreLocation' must be present");
 
-    Preconditions.checkNotNull(restoreLocation, "'restoreLocation' must be present");
+      // Actually create the wallet
 
-    // Actually create the wallet
+      File restoreLocationFile = new File(restoreLocation);
 
-    File restoreLocationFile = new File(restoreLocation);
+      // TODO Implement this
+      AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, seedPhraseCreatedStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+      AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, walletPasswordCreatedStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
 
-    // TODO Implement this
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, seedPhraseCreatedStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, walletPasswordCreatedStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+      // Determine if the restore location is valid
+      boolean restoreLocationStatus = restoreLocationFile.exists()
+        && restoreLocationFile.isDirectory()
+        && restoreLocationFile.canRead();
 
-    // Determine if the restore location is valid
-    boolean restoreLocationStatus = restoreLocationFile.exists()
-      && restoreLocationFile.isDirectory()
-      && restoreLocationFile.canRead();
+      if (restoreLocationStatus) {
+        AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, restoreLocationStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+      } else {
+        AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, restoreLocationStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+      }
 
-    if (restoreLocationStatus) {
-      AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, restoreLocationStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
-    } else {
-      AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, restoreLocationStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+      // Determine if the create wallet status is valid
     }
-
-    // Determine if the create wallet status is valid
 
     // TODO Implement this
     boolean walletCreatedStatus = false;
@@ -138,7 +139,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, walletCreatedStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
     }
 
-    ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, restoreLocationStatus);
+    ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, true);
 
     return true;
   }
