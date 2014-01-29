@@ -68,7 +68,7 @@ public class BackupManagerTest extends TestCase {
     backupManager.initialise(temporaryWalletParentDirectory, temporaryBackupDirectory);
 
     // Check there are initially no backup wallets for the wallet id of the created walelt
-    List<File> localBackups = BackupManager.INSTANCE.getLocalBackups(walletData.getWalletId());
+    List<File> localBackups = BackupManager.INSTANCE.getLocalZipBackups(walletData.getWalletId());
     assertNotNull("Null localBackups list returned", localBackups);
     assertEquals("Wrong number of localBackups", 0, localBackups.size());
 
@@ -81,7 +81,7 @@ public class BackupManagerTest extends TestCase {
     File localBackupFile = BackupManager.INSTANCE.createLocalAndCloudBackup(walletData.getWalletId());
 
     // Check that a backup copy has been saved in the local backup directory
-    localBackups = BackupManager.INSTANCE.getLocalBackups(walletData.getWalletId());
+    localBackups = BackupManager.INSTANCE.getLocalZipBackups(walletData.getWalletId());
     assertNotNull("Null localBackups list returned", localBackups);
     assertEquals("Wrong number of localBackups", 1, localBackups.size());
 

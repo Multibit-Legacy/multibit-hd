@@ -1,10 +1,13 @@
 package org.multibit.hd.core.managers;
 
 import com.google.bitcoin.wallet.WalletFiles;
+import com.google.common.base.Optional;
+import org.multibit.hd.core.api.WalletData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  *  <p>Listener to provide the following to WalletManager:<br>
@@ -26,6 +29,16 @@ public class WalletAutoSaveListener implements WalletFiles.Listener {
   public void onAfterAutoSave(File newlySavedFile) {
     log.debug("Have just saved wallet to newlySavedFile '" + newlySavedFile.getAbsolutePath() + "'");
 
-    // TODO - create rolling-backup and zip-backup as required
+    Optional<WalletData> walletData = WalletManager.INSTANCE.getCurrentWalletData();
+    if (walletData.isPresent()) {
+      try {
+        BackupManager.INSTANCE.createRollingBackup(walletData.get());
+      } catch (IOException ioe) {
+        log.error("No rolling backup created. The error was '" + ioe.getMessage() + "'.");
+      }
+    } else {
+      log.error("No rolling backup created as there was no wallet data to backup.");
+    }
+    // TODO - create zip-backup as required
   }
 }

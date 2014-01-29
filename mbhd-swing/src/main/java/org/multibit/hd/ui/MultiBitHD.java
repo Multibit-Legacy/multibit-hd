@@ -6,6 +6,7 @@ import com.xeiam.xchange.currency.MoneyUtils;
 import com.xeiam.xchange.mtgox.v2.MtGoxExchange;
 import org.multibit.hd.core.api.WalletData;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.BitcoinNetworkService;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
@@ -88,6 +90,7 @@ public class MultiBitHD {
     File applicationDataDirectory = InstallationManager.createApplicationDataDirectory();
 
     WalletManager.INSTANCE.initialise(applicationDataDirectory);
+    BackupManager.INSTANCE.initialise(applicationDataDirectory, null);
 
     if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
       // Diagnostic
@@ -129,6 +132,15 @@ public class MultiBitHD {
       MoneyUtils.fromSatoshi(0),
       "Unknown"
     );
+
+    // TODO remove - this is test code just to illustrate the rolling backup creation
+    if (currentWalletData.isPresent()) {
+      try {
+        BackupManager.INSTANCE.createRollingBackup(currentWalletData.get());
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
   }
 
   private void registerEventListeners() {

@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 public enum WalletManager {
   INSTANCE;
 
-  private static final int AUTOSAVE_DELAY = 15000; // millisecond
+  private static final int AUTOSAVE_DELAY = 20000; // millisecond
 
   private static WalletProtobufSerializer walletProtobufSerializer;
 
@@ -62,13 +62,15 @@ public enum WalletManager {
    */
   public static final int ENCRYPTED_WALLET_VERSION = 3; // TODO - need a new version when the wallet format is modified
 
-  public static final String MBHD_WALLET_NAME = "mbhd.wallet";
+  public static final String MBHD_WALLET_PREFIX = "mbhd";
+  public static final String MBHD_WALLET_SUFFIX = ".wallet";
+  public static final String MBHD_WALLET_NAME = MBHD_WALLET_PREFIX + MBHD_WALLET_SUFFIX;
 
   private File applicationDataDirectory;
 
   private List<File> walletDirectories = Lists.newArrayList();
 
-  private Optional<WalletData> currentWalletData=Optional.absent();
+  private Optional<WalletData> currentWalletData = Optional.absent();
 
   /**
    * Initialise enum, load up the available wallets and find the current wallet
@@ -119,7 +121,7 @@ public enum WalletManager {
    * The name of the wallet file is derived from the seed.
    * <p/>
    * If the wallet file already exists it is loaded and returned (and the input password is not used)
-   *
+   * <p/>
    * Autosave is hooked up so that the wallet is changed on modification
    *
    * @param parentDirectoryName the name of the directory in which the wallet directory will be created (normally the application data directory)
@@ -158,7 +160,7 @@ public enum WalletManager {
       walletToReturn.setVersion(ENCRYPTED_WALLET_VERSION);
 
       // Ensure that the seed is within the Bitcoin EC group.
-      BigInteger seedBigInteger  = moduloSeedByECGroupSize(seed);
+      BigInteger seedBigInteger = moduloSeedByECGroupSize(seed);
 
       ECKey newKey = new ECKey(seedBigInteger);
       newKey = newKey.encrypt(walletToReturn.getKeyCrypter(), walletToReturn.getKeyCrypter().deriveKey(password));
@@ -183,7 +185,7 @@ public enum WalletManager {
     InstallationManager.copyCheckpointsTo(checkpointsFilename);
 
     // Create the zip-backuo and rolling-backup directories if they do not exist
-    InstallationManager.createDirectoryIfNecessary(new File(walletDirectory + File.separator + BackupManager.LOCAL_BACKUP_DIRECTORY_NAME));
+    InstallationManager.createDirectoryIfNecessary(new File(walletDirectory + File.separator + BackupManager.LOCAL_ZIP_BACKUP_DIRECTORY_NAME));
     InstallationManager.createDirectoryIfNecessary(new File(walletDirectory + File.separator + BackupManager.ROLLING_BACKUP_DIRECTORY_NAME));
 
     return walletDataToReturn;
@@ -191,15 +193,16 @@ public enum WalletManager {
 
   /**
    * Ensure that the seed is within the range of the bitcoin EC group
+   *
    * @param seed
    * @return the seed, guaranteed to be within the Bitcon EC group range
    */
   private BigInteger moduloSeedByECGroupSize(byte[] seed) {
     X9ECParameters params = SECNamedCurves.getByName("secp256k1");
-      BigInteger sizeOfGroup = params.getN();
+    BigInteger sizeOfGroup = params.getN();
 
-      BigInteger seedBigInteger = new BigInteger(1, seed);
-      return seedBigInteger.mod(sizeOfGroup);
+    BigInteger seedBigInteger = new BigInteger(1, seed);
+    return seedBigInteger.mod(sizeOfGroup);
   }
 
   /**
@@ -225,11 +228,9 @@ public enum WalletManager {
                 + "'. Serialized wallets are no longer supported.");
       }
 
-      // TODO- backup wallets
-
       Wallet wallet;
 
-      try (FileInputStream fileInputStream = new FileInputStream(walletFile); InputStream  stream = new BufferedInputStream(fileInputStream);) {
+      try (FileInputStream fileInputStream = new FileInputStream(walletFile); InputStream stream = new BufferedInputStream(fileInputStream);) {
         wallet = Wallet.loadFromFileStream(stream);
       } catch (WalletVersionException wve) {
         // We want this exception to propagate out.
@@ -259,6 +260,7 @@ public enum WalletManager {
 
   /**
    * Save the wallet
+   * TODO would be nice to remove this and just use the vanilla wallet .saveFile
    *
    * @param wallet         wallet to save
    * @param walletFilename location to save the wallet
