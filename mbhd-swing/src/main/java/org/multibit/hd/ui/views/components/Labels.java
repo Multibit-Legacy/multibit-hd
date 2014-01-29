@@ -588,8 +588,7 @@ public class Labels {
     return newNoteLabel(new MessageKey[]{
       MessageKey.RESTORE_SEED_PHRASE_NOTE_1,
       MessageKey.RESTORE_SEED_PHRASE_NOTE_2,
-      MessageKey.RESTORE_SEED_PHRASE_NOTE_3,
-      MessageKey.RESTORE_SEED_PHRASE_NOTE_4
+      MessageKey.RESTORE_SEED_PHRASE_NOTE_3
     }, new Object[][]{});
   }
 
@@ -614,8 +613,7 @@ public class Labels {
     return newNoteLabel(new MessageKey[]{
       MessageKey.RESTORE_BACKUP_NOTE_1,
       MessageKey.RESTORE_BACKUP_NOTE_2,
-      MessageKey.RESTORE_BACKUP_NOTE_3,
-      MessageKey.RESTORE_BACKUP_NOTE_4
+      MessageKey.RESTORE_BACKUP_NOTE_3
     }, new Object[][]{});
   }
 

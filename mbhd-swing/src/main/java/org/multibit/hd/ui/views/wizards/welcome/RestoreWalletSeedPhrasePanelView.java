@@ -45,7 +45,7 @@ public class RestoreWalletSeedPhrasePanelView extends AbstractWizardPanelView<We
   @Override
   public void newPanelModel() {
 
-    enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV(getPanelName());
+    enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV(getPanelName(),true);
     setPanelModel(enterSeedPhraseMaV.getModel().getValue());
 
     getWizardModel().setRestoreWalletEnterSeedPhraseModel(enterSeedPhraseMaV.getModel());

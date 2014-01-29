@@ -28,7 +28,7 @@ import java.util.Map;
 public abstract class AbstractWizard<M extends WizardModel> {
 
   private static final int WIZARD_MIN_WIDTH = 600;
-  private static final int WIZARD_MIN_HEIGHT = 400;
+  private static final int WIZARD_MIN_HEIGHT = 450;
 
   private final WizardCardLayout cardLayout;
   private final JPanel wizardPanel;

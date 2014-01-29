@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
-import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
+import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.wizards.AbstractPanelModel;
 
@@ -9,6 +9,7 @@ import org.multibit.hd.ui.views.wizards.AbstractPanelModel;
  * <ul>
  * <li>Storage of state for the "restore wallet from backup" panel</li>
  * </ul>
+ * <p>Restore from backup requires a backup location and the seed phrase for decryption.</p>
  *
  * @since 0.0.1
  *  
@@ -16,21 +17,21 @@ import org.multibit.hd.ui.views.wizards.AbstractPanelModel;
 public class RestoreWalletBackupPanelModel extends AbstractPanelModel {
 
   private final SelectFileModel selectFileModel;
-  private final EnterPasswordModel enterPasswordModel;
+  private final EnterSeedPhraseModel enterSeedPhraseModel;
 
   /**
-   * @param panelName          The panel name
-   * @param selectFileModel    The "select file" component model
-   * @param enterPasswordModel The "enter password" component model
+   * @param panelName            The panel name
+   * @param selectFileModel      The "select file" component model
+   * @param enterSeedPhraseModel The "enter seed phrase" component model
    */
   public RestoreWalletBackupPanelModel(
     String panelName,
     SelectFileModel selectFileModel,
-    EnterPasswordModel enterPasswordModel
+    EnterSeedPhraseModel enterSeedPhraseModel
   ) {
     super(panelName);
     this.selectFileModel = selectFileModel;
-    this.enterPasswordModel = enterPasswordModel;
+    this.enterSeedPhraseModel = enterSeedPhraseModel;
   }
 
   /**
@@ -41,10 +42,10 @@ public class RestoreWalletBackupPanelModel extends AbstractPanelModel {
   }
 
   /**
-   * @return The password model
+   * @return The seed phrase model
    */
-  public EnterPasswordModel getEnterPasswordModel() {
-    return enterPasswordModel;
+  public EnterSeedPhraseModel getEnterSeedPhraseModel() {
+    return enterSeedPhraseModel;
   }
 
 }

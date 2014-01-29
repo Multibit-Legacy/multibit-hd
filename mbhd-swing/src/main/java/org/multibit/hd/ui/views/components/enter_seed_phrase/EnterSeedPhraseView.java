@@ -34,11 +34,15 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
 
   private JLabel verificationStatusLabel;
 
+  private final boolean showTimestamp;
+
   /**
-   * @param model The model backing this view
+   * @param model         The model backing this view
+   * @param showTimestamp True if the timestamp field should be visible
    */
-  public EnterSeedPhraseView(EnterSeedPhraseModel model) {
+  public EnterSeedPhraseView(EnterSeedPhraseModel model, boolean showTimestamp) {
     super(model);
+    this.showTimestamp = showTimestamp;
   }
 
   @Override
@@ -55,6 +59,7 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
     // Create view components
     seedPhraseTextArea = TextBoxes.newEnterSeedPhrase();
     seedTimestampText = TextBoxes.newEnterSeedTimestamp();
+    seedTimestampText.setVisible(showTimestamp);
 
     // Fill the text area with appropriate content
     seedPhraseTextArea.setText(model.displaySeedPhrase());
@@ -87,9 +92,11 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
     Action toggleDisplayAction = getToggleDisplayAction();
 
     // Add to the panel
-    panel.add(Labels.newTimestamp());
-    panel.add(seedTimestampText, "grow,push,wrap");
-    panel.add(seedPhraseTextArea, "span 2,grow,push");
+    if (showTimestamp) {
+      panel.add(Labels.newTimestamp());
+      panel.add(seedTimestampText, "grow,wrap");
+    }
+    panel.add(seedPhraseTextArea, "span 2,growx,push");
     panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink,wrap");
     panel.add(verificationStatusLabel, "span 3,push,wrap");
 
@@ -102,19 +109,21 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
 
     getModel().get().setSeedPhrase(seedPhraseTextArea.getText());
 
-    try {
+    if (showTimestamp) {
+      try {
 
-      // Only bother with parsing when the length is appropriate
-      if (seedTimestampText.getText().length() > 5) {
+        // Only bother with parsing when the length is appropriate
+        if (seedTimestampText.getText().length() > 5) {
 
-        getModel().get().setSeedTimestamp(seedTimestampText.getText());
+          getModel().get().setSeedTimestamp(seedTimestampText.getText());
+
+        }
+
+      } catch (IllegalArgumentException e) {
+
+        // Ignore the input - don't give feedback because it is confusing at the start of data entry
 
       }
-
-    } catch (IllegalArgumentException e) {
-
-      // Ignore the input - don't give feedback because it is confusing at the start of data entry
-
     }
 
   }

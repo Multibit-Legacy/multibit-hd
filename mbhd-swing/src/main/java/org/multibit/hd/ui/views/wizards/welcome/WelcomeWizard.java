@@ -69,7 +69,7 @@ public class WelcomeWizard extends AbstractWizard<WelcomeWizardModel> {
 
     wizardViewMap.put(
       RESTORE_WALLET_REPORT.name(),
-      new RestoreWalletSeedPhrasePanelView(this, RESTORE_WALLET_REPORT.name()));
+      new RestoreWalletReportPanelView(this, RESTORE_WALLET_REPORT.name()));
 
   }
 

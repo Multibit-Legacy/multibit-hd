@@ -153,12 +153,10 @@ public enum MessageKey {
   RESTORE_BACKUP_NOTE_1("restore_backup_note_1"),
   RESTORE_BACKUP_NOTE_2("restore_backup_note_2"),
   RESTORE_BACKUP_NOTE_3("restore_backup_note_3"),
-  RESTORE_BACKUP_NOTE_4("restore_backup_note_4"),
 
   RESTORE_SEED_PHRASE_NOTE_1("restore_seed_phrase_note_1"),
   RESTORE_SEED_PHRASE_NOTE_2("restore_seed_phrase_note_2"),
   RESTORE_SEED_PHRASE_NOTE_3("restore_seed_phrase_note_3"),
-  RESTORE_SEED_PHRASE_NOTE_4("restore_seed_phrase_note_4"),
 
   RECIPIENT_SUMMARY("recipient_summary"),
   AMOUNT_SUMMARY("amount_summary"),

@@ -1,9 +1,6 @@
 package org.multibit.hd.ui.views.components.enter_seed_phrase;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
+import com.google.common.base.*;
 import com.google.common.collect.Lists;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -37,7 +34,7 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
   private final String panelName;
 
   /**
-   * @param panelName The panel name to identify the "verification status" and "next" buttons
+   * @param panelName     The panel name to identify the "verification status" and "next" buttons
    */
   public EnterSeedPhraseModel(String panelName) {
     this.panelName = panelName;
@@ -70,8 +67,6 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
 
     this.seedTimestamp = seedTimestamp;
 
-    //
-
     // Have a possible match so alert the panel model
     ViewEvents.fireWizardComponentModelChangedEvent(panelName, Optional.of(this));
 
@@ -81,6 +76,9 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
    * @return The computed seed phrase from the user
    */
   public List<String> getSeedPhrase() {
+    if (seedPhrase == null) {
+      seedPhrase = Lists.newArrayList();
+    }
     return seedPhrase;
   }
 
@@ -88,6 +86,8 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
    * @param text The text containing the seed phrase words
    */
   public void setSeedPhrase(String text) {
+
+    Preconditions.checkNotNull(text, "'text' must be present");
 
     seedPhrase = Lists.newArrayList(Splitter.on(" ").trimResults().split(text));
 

@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
@@ -59,12 +60,16 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
    */
   private ConfirmPasswordModel confirmPasswordModel;
   private EnterPasswordModel restoreWalletPasswordModel;
+
   private SelectFileModel backupLocationSelectFileModel;
   private SelectFileModel restoreLocationSelectFileModel;
+
   private EnterSeedPhraseModel createWalletEnterSeedPhraseModel;
   private EnterSeedPhraseModel restoreWalletEnterSeedPhraseModel;
-  private List<String> createWalletSeedPhrase;
-  private List<String> restoreWalletSeedPhrase;
+
+  private List<String> createWalletSeedPhrase= Lists.newArrayList();
+  private List<String> restoreWalletSeedPhrase=Lists.newArrayList();
+
   private String actualSeedTimestamp;
 
   /**

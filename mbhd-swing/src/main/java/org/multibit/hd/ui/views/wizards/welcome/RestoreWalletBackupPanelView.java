@@ -3,11 +3,12 @@ package org.multibit.hd.ui.views.wizards.welcome;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.*;
-import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
-import org.multibit.hd.ui.views.components.enter_password.EnterPasswordView;
+import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
+import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseView;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.components.select_file.SelectFileView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -28,7 +29,7 @@ import javax.swing.*;
 public class RestoreWalletBackupPanelView extends AbstractWizardPanelView<WelcomeWizardModel, RestoreWalletBackupPanelModel> {
 
   private ModelAndView<SelectFileModel, SelectFileView> selectFileMaV;
-  private ModelAndView<EnterPasswordModel, EnterPasswordView> passwordMaV;
+  private ModelAndView<EnterSeedPhraseModel, EnterSeedPhraseView> enterSeedPhraseMaV;
 
   /**
    * @param wizard    The wizard managing the states
@@ -47,12 +48,12 @@ public class RestoreWalletBackupPanelView extends AbstractWizardPanelView<Welcom
 
     // Component models
     selectFileMaV = Components.newSelectFileMaV(getPanelName());
-    passwordMaV = Components.newEnterPasswordMaV(getPanelName());
+    enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV(getPanelName(),false);
 
     RestoreWalletBackupPanelModel panelModel = new RestoreWalletBackupPanelModel(
       getPanelName(),
       selectFileMaV.getModel(),
-      passwordMaV.getModel()
+      enterSeedPhraseMaV.getModel()
     );
     setPanelModel(panelModel);
 
@@ -69,11 +70,10 @@ public class RestoreWalletBackupPanelView extends AbstractWizardPanelView<Welcom
       "[][][]" // Row constraints
     ));
 
-    panel.add(Panels.newRestoreFromBackup(), "span 2,wrap");
+    panel.add(Panels.newRestoreFromBackup(), "span 2,grow,wrap");
+    panel.add(enterSeedPhraseMaV.getView().newComponentPanel(), "span 2,wrap");
     panel.add(Labels.newSelectFolder());
     panel.add(selectFileMaV.getView().newComponentPanel(), "grow,wrap");
-    panel.add(Labels.newEnterPassword());
-    panel.add(passwordMaV.getView().newComponentPanel(), "grow,wrap");
 
     return panel;
   }
@@ -83,9 +83,12 @@ public class RestoreWalletBackupPanelView extends AbstractWizardPanelView<Welcom
 
     // Do nothing we have a direct reference
 
-    // Enable the "next" button if the backup location and password is not empty
-    boolean result = !Strings.isNullOrEmpty(selectFileMaV.getModel().getValue())
-      && !Strings.isNullOrEmpty(passwordMaV.getModel().getValue());
+    // Enable the "next" button if the backup location is present and the seed phrase has a valid size
+    boolean backupLocationPresent = !Strings.isNullOrEmpty(selectFileMaV.getModel().getValue());
+
+    boolean seedPhraseSizeValid = SeedPhraseSize.isValid(enterSeedPhraseMaV.getModel().getValue().size());
+
+    boolean result = backupLocationPresent && seedPhraseSizeValid;
 
     ViewEvents.fireWizardButtonEnabledEvent(
       getPanelName(),
