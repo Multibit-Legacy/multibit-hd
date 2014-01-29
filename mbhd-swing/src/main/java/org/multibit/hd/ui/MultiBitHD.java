@@ -137,6 +137,7 @@ public class MultiBitHD {
     if (currentWalletData.isPresent()) {
       try {
         BackupManager.INSTANCE.createRollingBackup(currentWalletData.get());
+        BackupManager.INSTANCE.createLocalAndCloudBackup(currentWalletData.get().getWalletId());
       } catch (IOException e) {
         e.printStackTrace();
       }

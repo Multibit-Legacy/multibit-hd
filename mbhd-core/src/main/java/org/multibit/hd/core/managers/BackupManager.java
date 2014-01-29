@@ -293,19 +293,23 @@ public enum BackupManager {
       throw new IOException("Directory " + walletRootDirectory + " does not exist. Cannot backup.");
     }
 
-    File localBackupsDirectory = new File(walletRootDirectory.getAbsoluteFile() + File.separator + LOCAL_ZIP_BACKUP_DIRECTORY_NAME);
-    InstallationManager.createDirectoryIfNecessary(localBackupsDirectory);
+    File localBackupDirectory = new File(walletRootDirectory.getAbsoluteFile() + File.separator + LOCAL_ZIP_BACKUP_DIRECTORY_NAME);
+    InstallationManager.createDirectoryIfNecessary(localBackupDirectory);
 
     String backupFilename = WalletManager.WALLET_DIRECTORY_PREFIX + WalletManager.SEPARATOR + walletId.toFormattedString() + WalletManager.SEPARATOR + getDateFormat().format(new Date()) + BACKUP_ZIP_FILE_EXTENSION;
-    String localBackupFilename = localBackupsDirectory.getAbsolutePath() + File.separator + backupFilename;
+    String localBackupFilename = localBackupDirectory.getAbsolutePath() + File.separator + backupFilename;
 
     try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(localBackupFilename))) {
       zipDirectory(walletRootDirectory.getAbsolutePath(), zos);
     }
 
-    String cloudBackupFilename = cloudBackupDirectory.getAbsolutePath() + File.separator + backupFilename;
-    try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(cloudBackupFilename))) {
-      zipDirectory(walletRootDirectory.getAbsolutePath(), zos);
+    if (cloudBackupDirectory != null && cloudBackupDirectory.exists()) {
+      String cloudBackupFilename = cloudBackupDirectory.getAbsolutePath() + File.separator + backupFilename;
+      try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(cloudBackupFilename))) {
+        zipDirectory(walletRootDirectory.getAbsolutePath(), zos);
+      }
+    } else {
+      log.debug("No cloud backup made for wallet '" + walletId + "' as no cloudBackupDirectory is set.");
     }
     return new File(localBackupFilename);
   }
@@ -346,6 +350,7 @@ public enum BackupManager {
 
   /**
    * Get the date formatter used to create timestamps
+   *
    * @return dateFormat for formatting dates to timestamps
    */
   private SimpleDateFormat getDateFormat() {

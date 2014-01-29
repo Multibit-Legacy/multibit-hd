@@ -33,12 +33,13 @@ public class WalletAutoSaveListener implements WalletFiles.Listener {
     if (walletData.isPresent()) {
       try {
         BackupManager.INSTANCE.createRollingBackup(walletData.get());
+
+        BackupManager.INSTANCE.createLocalAndCloudBackup(walletData.get().getWalletId());
       } catch (IOException ioe) {
-        log.error("No rolling backup created. The error was '" + ioe.getMessage() + "'.");
+        log.error("No backups created. The error was '" + ioe.getMessage() + "'.");
       }
     } else {
-      log.error("No rolling backup created as there was no wallet data to backup.");
+      log.error("No backups created as there was no wallet data to backup.");
     }
-    // TODO - create zip-backup as required
   }
 }
