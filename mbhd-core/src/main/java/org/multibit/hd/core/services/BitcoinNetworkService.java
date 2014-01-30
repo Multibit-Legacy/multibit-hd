@@ -11,15 +11,13 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.multibit.hd.core.api.BitcoinNetworkSummary;
 import org.multibit.hd.core.api.CoreMessageKey;
+import org.multibit.hd.core.api.WalletData;
 import org.multibit.hd.core.api.WalletId;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.TransactionCreationEvent;
-import org.multibit.hd.core.managers.BlockStoreManager;
-import org.multibit.hd.core.managers.InstallationManager;
-import org.multibit.hd.core.managers.MultiBitCheckpointManager;
-import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.managers.*;
 import org.multibit.hd.core.network.MultiBitPeerEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -161,14 +159,18 @@ public class BitcoinNetworkService extends AbstractService {
 
     // Save the current wallet immediately
     if (walletManager.getCurrentWalletData().isPresent()) {
-      WalletId walletId = walletManager.getCurrentWalletData().get().getWalletId();
+      WalletData walletData = walletManager.getCurrentWalletData().get();
+      WalletId walletId = walletData.getWalletId();
       log.debug("Saving wallet with id '" + walletId + "'.");
       try {
-        File currentWallet = WalletManager.INSTANCE.getCurrentWalletFilename().get();
-        walletManager.getCurrentWalletData().get().getWallet().saveToFile(currentWallet);
-        log.debug("Wallet save completed ok. Wallet size is " + currentWallet.length() + " bytes.");
+        File currentWalletFile = WalletManager.INSTANCE.getCurrentWalletFilename().get();
+        walletData.getWallet().saveToFile(currentWalletFile);
+        log.debug("Wallet save completed ok. Wallet size is " + currentWalletFile.length() + " bytes.");
+
+        BackupManager.INSTANCE.createRollingBackup(walletData);
+        BackupManager.INSTANCE.createLocalAndCloudBackup(walletId);
       } catch (IOException ioe) {
-        log.error("Could not write wallet with id '" + walletId + "' successfully. The error was '" + ioe.getMessage() + "'");
+        log.error("Could not write wallet and backkups for wallet with id '" + walletId + "' successfully. The error was '" + ioe.getMessage() + "'");
       }
     }
   }

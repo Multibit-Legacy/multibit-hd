@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import java.io.File;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
@@ -134,14 +133,14 @@ public class MultiBitHD {
     );
 
     // TODO remove - this is test code just to illustrate the backup creation
-    if (currentWalletData.isPresent()) {
-      try {
-        BackupManager.INSTANCE.createRollingBackup(currentWalletData.get());
-        BackupManager.INSTANCE.createLocalAndCloudBackup(currentWalletData.get().getWalletId());
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
+//    if (currentWalletData.isPresent()) {
+//      try {
+//        BackupManager.INSTANCE.createRollingBackup(currentWalletData.get());
+//        BackupManager.INSTANCE.createLocalAndCloudBackup(currentWalletData.get().getWalletId());
+//      } catch (IOException e) {
+//        e.printStackTrace();
+//      }
+//    }
   }
 
   private void registerEventListeners() {
