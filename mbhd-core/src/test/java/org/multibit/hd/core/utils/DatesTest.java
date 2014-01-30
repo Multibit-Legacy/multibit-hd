@@ -109,16 +109,19 @@ public class DatesTest {
   public void testNewSeedTimestamp() {
 
     DateTimeUtils.setCurrentMillisFixed(new DateTime(2014, 1, 27, 0, 0, 0, 0).getMillis());
+    assertThat(Dates.newSeedTimestamp()).isEqualTo("1850/07");
 
-    assertThat(Dates.newSeedTimestamp()).isEqualTo("1850/2");
+    DateTimeUtils.setCurrentMillisFixed(new DateTime(2014, 1, 17, 0, 0, 0, 0).getMillis());
+    assertThat(Dates.newSeedTimestamp()).isEqualTo("1840/94");
+
   }
 
   @Test
   public void testParseSeedTimestamp() {
 
-    DateTime expected = new DateTime(2014, 1, 27, 0, 0, 0, 0, DateTimeZone.UTC);
+    DateTime expected = new DateTime(2014, 1, 17, 0, 0, 0, 0, DateTimeZone.UTC);
 
-    assertThat(Dates.parseSeedTimestamp("1850/2")).isEqualTo(expected);
+    assertThat(Dates.parseSeedTimestamp("1840/94")).isEqualTo(expected);
 
   }
 
@@ -127,7 +130,7 @@ public class DatesTest {
 
     DateTime expected = new DateTime(2014, 1, 27, 0, 0, 0, 0, DateTimeZone.UTC);
 
-    assertThat(Dates.parseSeedTimestamp("1850/1")).isEqualTo(expected);
+    assertThat(Dates.parseSeedTimestamp("1850/01")).isEqualTo(expected);
 
   }
 
@@ -136,7 +139,7 @@ public class DatesTest {
 
     DateTime expected = new DateTime(2014, 1, 27, 0, 0, 0, 0, DateTimeZone.UTC);
 
-    assertThat(Dates.parseSeedTimestamp("180/2")).isEqualTo(expected);
+    assertThat(Dates.parseSeedTimestamp("180/12")).isEqualTo(expected);
 
   }
 
@@ -145,7 +148,7 @@ public class DatesTest {
 
     DateTime expected = new DateTime(2014, 1, 27, 0, 0, 0, 0, DateTimeZone.UTC);
 
-    assertThat(Dates.parseSeedTimestamp("1850-2")).isEqualTo(expected);
+    assertThat(Dates.parseSeedTimestamp("1850-20")).isEqualTo(expected);
 
   }
 

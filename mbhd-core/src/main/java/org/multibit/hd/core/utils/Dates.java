@@ -22,6 +22,8 @@ import java.util.Locale;
  */
 public class Dates {
 
+  public static final int CHECKSUM_MODULUS = 97;
+
   /**
    * Utilities have private constructor
    */
@@ -214,7 +216,7 @@ public class Dates {
   }
 
   /**
-   * @return Create a new seed timestamp (e.g. "1850/2")
+   * @return Create a new seed timestamp (e.g. "1850/07")
    */
   public static String newSeedTimestamp() {
 
@@ -223,14 +225,14 @@ public class Dates {
 
     long days = (nowMidnight - genesisMidnight) / 86_400_000;
 
-    long modulo11 = days % 11;
+    long modulo97 = days % 97;
 
-    return String.format("%d/%d", days, modulo11);
+    return String.format("%d/%02d", days, modulo97);
 
   }
 
   /**
-   * @param text The text representing a date in seed timestamp format (e.g. "1850/2")
+   * @param text The text representing a date in seed timestamp format (e.g. "1850/07")
    *
    * @return The DateTime in the UTC timezone for the seed
    *
@@ -243,13 +245,15 @@ public class Dates {
 
     try {
       int days = Integer.valueOf(text.substring(0, separatorIndex));
-      int checksum = Integer.valueOf(text.substring(separatorIndex+1));
+      int checksum = Integer.valueOf(text.substring(separatorIndex + 1));
 
-      Preconditions.checkArgument(days % 11 == checksum, "'text' has incorrect checksum. Days=" + days + " checksum=" + checksum);
+      Preconditions.checkArgument(days % CHECKSUM_MODULUS == checksum, "'text' has incorrect checksum. Days=" + days + " checksum=" + checksum);
 
       return bitcoinGenesis().plusDays(days).toDateMidnight().toDateTime();
 
     } catch (NumberFormatException e) {
+      throw new IllegalArgumentException("'text' does not parse into 2 integers");
+    } catch (StringIndexOutOfBoundsException e) {
       throw new IllegalArgumentException("'text' does not parse into 2 integers");
     }
   }
