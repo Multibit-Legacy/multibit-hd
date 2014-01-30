@@ -135,10 +135,11 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
     AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, walletPasswordCreatedStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
 
     // Determine if the backup location is valid
-    boolean backupLocationStatus = backupLocationFile.exists()
-      && backupLocationFile.isDirectory()
-      && backupLocationFile.canRead()
-      && backupLocationFile.canWrite();
+    boolean exists = backupLocationFile.exists();
+    boolean isDirectory =  backupLocationFile.isDirectory();
+    boolean canRead = backupLocationFile.canRead();
+    boolean canWrite = backupLocationFile.canWrite();
+    boolean backupLocationStatus = exists && isDirectory && canRead && canWrite;
 
     if (backupLocationStatus) {
       AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, backupLocationStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
@@ -153,7 +154,8 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, walletCreatedStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
     }
 
-    ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, backupLocationStatus);
+    // Enable the finish button on the report page
+    ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, true);
 
     return true;
   }
