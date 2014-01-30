@@ -64,6 +64,7 @@ public class WalletManagerTest {
     // Create a random temporary directory to store the wallets
     File temporaryDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
     walletManager.initialise(temporaryDirectory);
+    BackupManager.INSTANCE.initialise(temporaryDirectory, null);
 
     // Create a wallet directory from a seed
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
@@ -163,6 +164,7 @@ public class WalletManagerTest {
     File temporaryDirectory1 = makeRandomTemporaryDirectory();
 
     WalletManager walletManager = WalletManager.INSTANCE;
+    BackupManager.INSTANCE.initialise(temporaryDirectory1, null);
 
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
@@ -180,6 +182,7 @@ public class WalletManagerTest {
 
     // Create another wallet - it should have the same wallet id and the private key should be the same
     File temporaryDirectory2 = makeRandomTemporaryDirectory();
+    BackupManager.INSTANCE.initialise(temporaryDirectory2, null);
 
     WalletData walletData2 = walletManager.createWallet(temporaryDirectory2.getAbsolutePath(), seed, "password");
 

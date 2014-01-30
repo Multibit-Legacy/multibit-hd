@@ -239,6 +239,7 @@ public enum BackupManager {
     Preconditions.checkNotNull(walletData);
     Preconditions.checkNotNull(walletData.getWallet());
     Preconditions.checkNotNull(walletData.getWalletId());
+    Preconditions.checkNotNull(applicationDataDirectory); // Not initialised
 
     // Find the wallet root directory for this wallet id
     File walletRootDirectory = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), WalletManager.createWalletRoot(walletData.getWalletId()));
@@ -525,7 +526,7 @@ public enum BackupManager {
 
           writeFile(zipFile.getInputStream(entry),
                   new BufferedOutputStream(new FileOutputStream(
-                          directoryToExtractTo + name)));
+                          directoryToExtractTo + File.separator + name)));
         }
       }
 

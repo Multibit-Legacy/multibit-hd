@@ -184,9 +184,9 @@ public enum WalletManager {
     String checkpointsFilename = walletDirectory.getAbsolutePath() + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX;
     InstallationManager.copyCheckpointsTo(checkpointsFilename);
 
-    // Create the zip-backuo and rolling-backup directories if they do not exist
-    InstallationManager.createDirectoryIfNecessary(new File(walletDirectory + File.separator + BackupManager.LOCAL_ZIP_BACKUP_DIRECTORY_NAME));
-    InstallationManager.createDirectoryIfNecessary(new File(walletDirectory + File.separator + BackupManager.ROLLING_BACKUP_DIRECTORY_NAME));
+    // Create an initial rolling backup and zip backup
+    BackupManager.INSTANCE.createRollingBackup(currentWalletData.get());
+    BackupManager.INSTANCE.createLocalAndCloudBackup(currentWalletData.get().getWalletId());
 
     return walletDataToReturn;
   }

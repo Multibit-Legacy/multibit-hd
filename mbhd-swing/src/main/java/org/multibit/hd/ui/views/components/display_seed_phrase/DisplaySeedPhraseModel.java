@@ -81,10 +81,18 @@ public class DisplaySeedPhraseModel implements Model<List<String>> {
   }
 
   /**
-   * @return The generated seed phrase
+   * @return The generated seed phrase -
+   * this is lowercased in case the user enters it in mixed cae
    */
   public List<String> getSeedPhrase() {
-    return seedPhrase;
+
+    List<String> lowercaseSeedPhrase = Lists.newArrayList();
+    if (seedPhrase != null) {
+      for (String word : seedPhrase) {
+        lowercaseSeedPhrase.add(word.toLowerCase());
+      }
+    }
+    return lowercaseSeedPhrase;
   }
 
   /**

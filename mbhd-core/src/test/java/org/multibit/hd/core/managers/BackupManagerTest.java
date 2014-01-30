@@ -16,6 +16,7 @@ package org.multibit.hd.core.managers;
  * limitations under the License.
  */
 
+import com.google.common.util.concurrent.Uninterruptibles;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +29,7 @@ import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class BackupManagerTest extends TestCase {
   @Before
@@ -43,11 +45,6 @@ public class BackupManagerTest extends TestCase {
 
     WalletManager walletManager = WalletManager.INSTANCE;
 
-    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-    byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
-
-    WalletData walletData = walletManager.createWallet(temporaryWalletParentDirectory.getAbsolutePath(), seed, "password");
-
     // Create a random temporary directory in which to story the cloudBackups
     File temporaryBackupDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
 
@@ -56,14 +53,21 @@ public class BackupManagerTest extends TestCase {
     // Initialise the backupManager to point at the temporaryBackupDirectory
     backupManager.initialise(temporaryWalletParentDirectory, temporaryBackupDirectory);
 
-    // Check there are initially no backup wallets for the wallet id of the created walelt
+    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
+
+    WalletData walletData = walletManager.createWallet(temporaryWalletParentDirectory.getAbsolutePath(), seed, "password");
+
+    // Check there are initially a single wallet backup for the wallet id of the created wallet
     List<File> localBackups = BackupManager.INSTANCE.getLocalZipBackups(walletData.getWalletId());
     assertNotNull("Null localBackups list returned", localBackups);
-    assertEquals("Wrong number of localBackups", 0, localBackups.size());
+    assertEquals("Wrong number of localBackups", 1, localBackups.size());
 
     List<File> cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletData.getWalletId());
     assertNotNull("Null cloudBackups list returned", cloudBackups);
-    assertEquals("Wrong number of cloudBackups", 0, cloudBackups.size());
+    assertEquals("Wrong number of cloudBackups", 1, cloudBackups.size());
+
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     // Backup the wallet.
     // This zips the wallet root directory and adds a timestamp, then saves the file in both the local and cloud backup directories
@@ -72,12 +76,12 @@ public class BackupManagerTest extends TestCase {
     // Check that a backup copy has been saved in the local backup directory
     localBackups = BackupManager.INSTANCE.getLocalZipBackups(walletData.getWalletId());
     assertNotNull("Null localBackups list returned", localBackups);
-    assertEquals("Wrong number of localBackups", 1, localBackups.size());
+    assertEquals("Wrong number of localBackups", 2, localBackups.size());
 
     // Check that a backup copy has been saved in the cloud backup directory
     cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletData.getWalletId());
     assertNotNull("Null cloudBackups list returned", cloudBackups);
-    assertEquals("Wrong number of cloudBackups", 1, cloudBackups.size());
+    assertEquals("Wrong number of cloudBackups", 2, cloudBackups.size());
 
     // Load in the wallet backup and compare the wallets
     WalletId recreatedWalletId= BackupManager.INSTANCE.loadBackup(localBackupFile);
