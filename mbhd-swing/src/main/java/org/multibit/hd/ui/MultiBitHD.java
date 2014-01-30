@@ -133,7 +133,7 @@ public class MultiBitHD {
       "Unknown"
     );
 
-    // TODO remove - this is test code just to illustrate the rolling backup creation
+    // TODO remove - this is test code just to illustrate the backup creation
     if (currentWalletData.isPresent()) {
       try {
         BackupManager.INSTANCE.createRollingBackup(currentWalletData.get());

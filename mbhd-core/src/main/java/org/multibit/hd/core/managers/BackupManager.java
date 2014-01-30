@@ -31,7 +31,7 @@ public enum BackupManager {
   public static final String BACKUP_ZIP_FILE_EXTENSION_REGEX = "\\.zip";
 
   public static final String ROLLING_BACKUP_DIRECTORY_NAME = "rolling-backup";
-  public static final int MAXIMUM_NUMBER_OF_ROLLING_BACKUPS = 8;
+  public static final int MAXIMUM_NUMBER_OF_ROLLING_BACKUPS = 4;
   public static final String REGEX_FOR_TIMESTAMP_AND_WALLET_SUFFIX = ".*-\\d{" + BACKUP_SUFFIX_FORMAT.length() + "}\\.wallet$";
 
   public static final String LOCAL_ZIP_BACKUP_DIRECTORY_NAME = "zip-backup";
@@ -299,15 +299,11 @@ public enum BackupManager {
     String backupFilename = WalletManager.WALLET_DIRECTORY_PREFIX + WalletManager.SEPARATOR + walletId.toFormattedString() + WalletManager.SEPARATOR + getDateFormat().format(new Date()) + BACKUP_ZIP_FILE_EXTENSION;
     String localBackupFilename = localBackupDirectory.getAbsolutePath() + File.separator + backupFilename;
 
-    try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(localBackupFilename))) {
-      zipDirectory(walletRootDirectory.getAbsolutePath(), zos);
-    }
+    zipFolder(walletRootDirectory.getAbsolutePath(), localBackupFilename, true);
 
     if (cloudBackupDirectory != null && cloudBackupDirectory.exists()) {
       String cloudBackupFilename = cloudBackupDirectory.getAbsolutePath() + File.separator + backupFilename;
-      try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(cloudBackupFilename))) {
-        zipDirectory(walletRootDirectory.getAbsolutePath(), zos);
-      }
+      zipFolder(walletRootDirectory.getAbsolutePath(), cloudBackupFilename, false);
     } else {
       log.debug("No cloud backup made for wallet '" + walletId + "' as no cloudBackupDirectory is set.");
     }
@@ -318,7 +314,6 @@ public enum BackupManager {
   /**
    * Load a backup file, copying all the backup files to the appropriate wallet root directory
    */
-
   public WalletId loadBackup(File backupFileToLoad) throws IOException {
     // Work out the walletId of the backup file being loaded
     String backupFilename = backupFileToLoad.getName();
@@ -421,48 +416,76 @@ public enum BackupManager {
   }
 
   /**
-   * Copy the files in the specified dir2zip to the ZipOutputStream
+   * Copy the files in the specified srcFolder to the destZipFile
    * The zip-backups are not stored in the backup (as they are zip-backups themselves) but the rolling backups
    * are to increase backup coverage
    *
-   * @param dir2zip The directory holding the files to zip
-   * @param zos     the ZipOutputStream to copy files into
+   * @param srcFolder         The directory holding the files to zip
+   * @param destZipFile       The zip file to copy files into
+   * @param includeBlockStore if true then include the blockstore, if false then don't
    * @throws IOException
    */
-  private void zipDirectory(String dir2zip, ZipOutputStream zos) throws IOException {
-    // Create a new File object based on the directory we have to zip File
-    File zipDir = new File(dir2zip);
-    // Get a listing of the directory content
-    String[] dirList = zipDir.list();
-    byte[] readBuffer = new byte[2156];
-    int bytesIn = 0;
-    // Loop through dirList, and zip the files
-    for (int i = 0; i < dirList.length; i++) {
-      File f = new File(zipDir, dirList[i]);
-      // Do not include the zip-backups files
-      boolean ignoreFile = dirList[i].contains(LOCAL_ZIP_BACKUP_DIRECTORY_NAME);
-      if (f.isDirectory() && !ignoreFile) {
-        // If the File object is a directory, call this
-        // function again to add its content recursively
-        String filePath = f.getPath();
-        zipDirectory(filePath, zos);
-        // loop again
-        continue;
-      }
+  private void zipFolder(String srcFolder, String destZipFile, boolean includeBlockStore) throws IOException {
+    ZipOutputStream zip;
+    FileOutputStream fileWriter;
 
-      // Not a directory
-      if (!ignoreFile) {
-        FileInputStream fis = new FileInputStream(f);
-        // Create a new zip entry - note that only the filename is used - not the whole path
-        ZipEntry anEntry = new ZipEntry(f.getName());
-        // Place the zip entry in the ZipOutputStream object
-        zos.putNextEntry(anEntry);
-        // Now write the content of the file to the ZipOutputStream
-        while ((bytesIn = fis.read(readBuffer)) != -1) {
-          zos.write(readBuffer, 0, bytesIn);
+    fileWriter = new FileOutputStream(destZipFile);
+    zip = new ZipOutputStream(fileWriter);
+
+    try {
+      // Add the contents of the srcFolder to the zip - note the top folder (with the wallet id) is not added as it is coded in the name of the zip
+      if (new File(srcFolder).list() != null) {
+        for (String fileName : new File(srcFolder).list()) {
+          if (!includeBlockStore && fileName.endsWith(InstallationManager.MBHD_PREFIX + InstallationManager.SPV_BLOCKCHAIN_SUFFIX)) {
+            // Do not include the block store (to save space)
+            continue;
+          }
+          addFileToZip(srcFolder, fileName, zip, includeBlockStore);
         }
-        //Close the Stream
-        fis.close();
+      }
+    } finally {
+      zip.flush();
+      zip.close();
+    }
+  }
+
+  private void addFileToZip(String path, String srcFile, ZipOutputStream zip, Boolean includeBlockStore)
+          throws IOException {
+
+    File srcFileOnDisk = new File(path + File.separator + srcFile);
+    if (srcFileOnDisk.isDirectory()) {
+      addFolderToZip(path, srcFile, zip, includeBlockStore);
+    } else {
+      byte[] buf = new byte[1024];
+      int len;
+      FileInputStream in = new FileInputStream(srcFileOnDisk);
+      zip.putNextEntry(new ZipEntry(srcFile));
+
+      while ((len = in.read(buf)) > 0) {
+        zip.write(buf, 0, len);
+      }
+    }
+  }
+
+  private void addFolderToZip(String path, String srcFolder, ZipOutputStream zip, Boolean includeBlockStore)
+          throws IOException {
+    File folder = new File(srcFolder);
+    File folderOnDisk = new File(path + File.separator + srcFolder);
+
+    // Don't include the zip-backups folder in the backups
+    if (folder.getAbsolutePath().contains(LOCAL_ZIP_BACKUP_DIRECTORY_NAME)) {
+      return;
+    }
+
+    if (folderOnDisk.list() != null) {
+      for (String fileName : folderOnDisk.list()) {
+        if (!includeBlockStore && fileName.endsWith(InstallationManager.MBHD_PREFIX + InstallationManager.SPV_BLOCKCHAIN_SUFFIX)) {
+          // Do not include the block store (to save space)
+          continue;
+        }
+
+        log.debug("Adding file to zip :" + fileName);
+        addFileToZip(path, srcFolder + File.separator + fileName, zip, includeBlockStore);
       }
     }
   }
@@ -483,24 +506,22 @@ public enum BackupManager {
         ZipEntry entry = (ZipEntry) entriesEnum.nextElement();
 
         if (entry.isDirectory()) {
-          // TODO need to save rolling backups when they get put in
-          /**
-           * Currently not unzipping the directory structure.
-           * All the files will be unzipped in a Directory
-           *
-           **/
+          InstallationManager.createDirectoryIfNecessary(new File(directoryToExtractTo + File.separator + entry.getName()));
         } else {
 
           log.debug("Extracting file: " + entry.getName());
-          /**
-           * The following logic will just extract the file name
-           * and discard the directory
-           */
-          String name = entry.getName();
-          int index = entry.getName().lastIndexOf(File.separator);
-          if (index > 0 && index != name.length()) {
-            name = entry.getName().substring(index + 1);
+
+        /* This part is necessary because file entry can come before
+         * directory entry where is file located
+         * i.e.:
+         *   /foo/foo.txt
+         *   /foo/
+         */
+          String dir = dirpart(entry.getName());
+          if (dir != null) {
+            InstallationManager.createDirectoryIfNecessary(new File(directoryToExtractTo + File.separator + dir));
           }
+          String name = entry.getName();
 
           writeFile(zipFile.getInputStream(entry),
                   new BufferedOutputStream(new FileOutputStream(
@@ -514,7 +535,11 @@ public enum BackupManager {
         zipFile.close();
       }
     }
+  }
 
+  private static String dirpart(String name) {
+    int s = name.lastIndexOf(File.separatorChar);
+    return s == -1 ? null : name.substring(0, s);
   }
 }
 
