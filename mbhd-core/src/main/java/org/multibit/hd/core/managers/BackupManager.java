@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.multibit.hd.core.api.WalletData;
 import org.multibit.hd.core.api.WalletId;
+import org.multibit.hd.core.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,12 +13,8 @@ import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
 
 
 /**
@@ -48,27 +45,6 @@ public enum BackupManager {
   private File cloudBackupDirectory;
 
   private SimpleDateFormat dateFormat;
-
-  // Nonsense bytes to fill up deleted files - these have no meaning.
-  private static byte[] NONSENSE_BYTES = new byte[]{(byte) 0xF0, (byte) 0xA6, (byte) 0x55, (byte) 0xAA, (byte) 0x33,
-          (byte) 0x77, (byte) 0x33, (byte) 0x37, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0xC2, (byte) 0xB3,
-          (byte) 0xA4, (byte) 0x9A, (byte) 0x30, (byte) 0x7F, (byte) 0xE5, (byte) 0x5A, (byte) 0x23, (byte) 0x47, (byte) 0x13,
-          (byte) 0x17, (byte) 0x15, (byte) 0x32, (byte) 0x5C, (byte) 0x77, (byte) 0xC9, (byte) 0x73, (byte) 0x04, (byte) 0x2D,
-          (byte) 0x40, (byte) 0x0F, (byte) 0xA5, (byte) 0xA6, (byte) 0x43, (byte) 0x77, (byte) 0x33, (byte) 0x3B, (byte) 0x62,
-          (byte) 0x34, (byte) 0xB6, (byte) 0x72, (byte) 0x32, (byte) 0xB3, (byte) 0xA4, (byte) 0x4B, (byte) 0x80, (byte) 0x7F,
-          (byte) 0xC5, (byte) 0x43, (byte) 0x23, (byte) 0x47, (byte) 0x13, (byte) 0xB7, (byte) 0xA5, (byte) 0x32, (byte) 0xDC,
-          (byte) 0x79, (byte) 0x19, (byte) 0xB1, (byte) 0x03, (byte) 0x9D};
-
-  private static int BULKING_UP_FACTOR = 16;
-  private static byte[] SECURE_DELETE_FILL_BYTES = new byte[NONSENSE_BYTES.length * BULKING_UP_FACTOR];
-
-  static {
-    // Make some SECURE_DELETE_FILL_BYTES bytes = x BULKING_UP_FACTOR the
-    // NONSENSE just to save write time.
-    for (int i = 0; i < BULKING_UP_FACTOR; i++) {
-      System.arraycopy(NONSENSE_BYTES, 0, SECURE_DELETE_FILL_BYTES, NONSENSE_BYTES.length * i, NONSENSE_BYTES.length);
-    }
-  }
 
   /**
    * Initialise the backup manager to use the specified cloudBackupDirectory.
@@ -248,7 +224,7 @@ public enum BackupManager {
     }
 
     String rollingBackupDirectoryName = walletRootDirectory + File.separator + BackupManager.ROLLING_BACKUP_DIRECTORY_NAME;
-    InstallationManager.createDirectoryIfNecessary(new File(rollingBackupDirectoryName));
+    FileUtils.createDirectoryIfNecessary(new File(rollingBackupDirectoryName));
 
     String walletBackupFilename = rollingBackupDirectoryName + File.separator + WalletManager.MBHD_WALLET_PREFIX + WalletManager.SEPARATOR
             + getDateFormat().format(new Date()) + WalletManager.MBHD_WALLET_SUFFIX;
@@ -263,13 +239,13 @@ public enum BackupManager {
     // If there are more than the maximum number of rolling backups, secure delete the eldest
     if (rollingBackups.size() > MAXIMUM_NUMBER_OF_ROLLING_BACKUPS) {
       // Delete the eldest
-      secureDelete(rollingBackups.get(0));
+      FileUtils.secureDelete(rollingBackups.get(0));
     }
 
     // If there are even more than that trim off another one - over time this will gently reduce the number to the maximum
     if (rollingBackups.size() > MAXIMUM_NUMBER_OF_ROLLING_BACKUPS + 1) {
       // Delete the second eldest
-      secureDelete(rollingBackups.get(1));
+      FileUtils.secureDelete(rollingBackups.get(1));
     }
     return walletBackupFile;
   }
@@ -294,19 +270,19 @@ public enum BackupManager {
     }
 
     File localBackupDirectory = new File(walletRootDirectory.getAbsoluteFile() + File.separator + LOCAL_ZIP_BACKUP_DIRECTORY_NAME);
-    InstallationManager.createDirectoryIfNecessary(localBackupDirectory);
+    FileUtils.createDirectoryIfNecessary(localBackupDirectory);
 
     String backupFilename = WalletManager.WALLET_DIRECTORY_PREFIX + WalletManager.SEPARATOR + walletId.toFormattedString() + WalletManager.SEPARATOR + getDateFormat().format(new Date()) + BACKUP_ZIP_FILE_EXTENSION;
     String localBackupFilename = localBackupDirectory.getAbsolutePath() + File.separator + backupFilename;
 
     log.debug("Creating local zip-backup '" + localBackupFilename + "'");
-    zipFolder(walletRootDirectory.getAbsolutePath(), localBackupFilename, false);
+    FileUtils.zipFolder(walletRootDirectory.getAbsolutePath(), localBackupFilename, false);
     log.debug("Created local zip-backup successfully. Size = " + (new File(localBackupFilename)).length() + " bytes");
 
     if (cloudBackupDirectory != null && cloudBackupDirectory.exists()) {
       String cloudBackupFilename = cloudBackupDirectory.getAbsolutePath() + File.separator + backupFilename;
       log.debug("Creating cloud zip-backup '" + cloudBackupFilename + "'");
-      zipFolder(walletRootDirectory.getAbsolutePath(), cloudBackupFilename, false);
+      FileUtils.zipFolder(walletRootDirectory.getAbsolutePath(), cloudBackupFilename, false);
       log.debug("Created cloud zip-backup successfully. Size = " + (new File(cloudBackupFilename)).length() + " bytes");
     } else {
       log.debug("No cloud backup made for wallet '" + walletId + "' as no cloudBackupDirectory is set.");
@@ -342,7 +318,7 @@ public enum BackupManager {
     }
 
     // Unzip the backup into the wallet root directory - this overwrites files if already present (hence the backup just done)
-    unzip(backupFileToLoad.getAbsolutePath(), walletRootDirectory.getAbsolutePath());
+    FileUtils.unzip(backupFileToLoad.getAbsolutePath(), walletRootDirectory.getAbsolutePath());
 
     return walletId;
   }
@@ -359,190 +335,6 @@ public enum BackupManager {
     return dateFormat;
   }
 
-  /**
-   * Write a file. This method:
-   * --Reads an input stream
-   * --Writes the value to the output stream
-   * --Uses 1KB buffer.
-   */
-  private void writeFile(InputStream in, OutputStream out)
-          throws IOException {
-    byte[] buffer = new byte[1024];
-    int len;
-
-    while ((len = in.read(buffer)) >= 0)
-      out.write(buffer, 0, len);
-
-    in.close();
-    out.close();
-  }
-
-  /**
-   * Delete a file with an overwrite of all of the data.
-   * <p/>
-   * Set bit patterns are used rather than random numbers to avoid a
-   * futex_wait_queue_me error on Linux systems (related to /dev/random usage)
-   *
-   * @param file The file to secure delete
-   * @throws IOException if the operation fails for any reason
-   */
-  public static void secureDelete(File file) throws IOException {
-    log.debug("Start of secureDelete");
-
-    RandomAccessFile raf = null;
-    if (file != null && file.exists()) {
-      try {
-        // Prep for file delete as this can be fiddly on windows.
-        // Make sure it is writable and any references to it are garbage
-        // collected and finalized.
-        file.setWritable(true);
-        System.gc();
-
-        long length = file.length();
-        raf = new RandomAccessFile(file, "rws");
-        raf.seek(0);
-        raf.getFilePointer();
-        int pos = 0;
-        while (pos < length) {
-          raf.write(SECURE_DELETE_FILL_BYTES);
-          pos += SECURE_DELETE_FILL_BYTES.length;
-        }
-      } finally {
-        if (raf != null) {
-          raf.close();
-          raf = null;
-        }
-      }
-      boolean deleteSuccess = file.delete();
-      log.debug("Result of delete of file '" + file.getAbsolutePath() + "' was " + deleteSuccess);
-    }
-    log.debug("End of secureDelete");
-  }
-
-  /**
-   * Copy the files in the specified srcFolder to the destZipFile
-   * The zip-backups are not stored in the backup (as they are zip-backups themselves) but the rolling backups
-   * are to increase backup coverage
-   *
-   * @param srcFolder         The directory holding the files to zip
-   * @param destZipFile       The zip file to copy files into
-   * @param includeBlockStore if true then include the blockstore, if false then don't
-   * @throws IOException
-   */
-  private void zipFolder(String srcFolder, String destZipFile, boolean includeBlockStore) throws IOException {
-    ZipOutputStream zip;
-    FileOutputStream fileWriter;
-
-    fileWriter = new FileOutputStream(destZipFile);
-    zip = new ZipOutputStream(fileWriter);
-
-    try {
-      // Add the contents of the srcFolder to the zip - note the top folder (with the wallet id) is not added as it is coded in the name of the zip
-      if (new File(srcFolder).list() != null) {
-        for (String fileName : new File(srcFolder).list()) {
-          if (!includeBlockStore && fileName.endsWith(InstallationManager.MBHD_PREFIX + InstallationManager.SPV_BLOCKCHAIN_SUFFIX)) {
-            // Do not include the block store (to save space)
-            continue;
-          }
-          addFileToZip(srcFolder, fileName, zip, includeBlockStore);
-        }
-      }
-    } finally {
-      zip.flush();
-      zip.close();
-    }
-  }
-
-  private void addFileToZip(String path, String srcFile, ZipOutputStream zip, Boolean includeBlockStore)
-          throws IOException {
-
-    File srcFileOnDisk = new File(path + File.separator + srcFile);
-    if (srcFileOnDisk.isDirectory()) {
-      addFolderToZip(path, srcFile, zip, includeBlockStore);
-    } else {
-      byte[] buf = new byte[1024];
-      int len;
-      FileInputStream in = new FileInputStream(srcFileOnDisk);
-      zip.putNextEntry(new ZipEntry(srcFile));
-
-      while ((len = in.read(buf)) > 0) {
-        zip.write(buf, 0, len);
-      }
-    }
-  }
-
-  private void addFolderToZip(String path, String srcFolder, ZipOutputStream zip, Boolean includeBlockStore)
-          throws IOException {
-    File folder = new File(srcFolder);
-    File folderOnDisk = new File(path + File.separator + srcFolder);
-
-    // Don't include the zip-backups folder in the backups
-    if (folder.getAbsolutePath().contains(LOCAL_ZIP_BACKUP_DIRECTORY_NAME)) {
-      return;
-    }
-
-    if (folderOnDisk.list() != null) {
-      for (String fileName : folderOnDisk.list()) {
-        if (!includeBlockStore && fileName.endsWith(InstallationManager.MBHD_PREFIX + InstallationManager.SPV_BLOCKCHAIN_SUFFIX)) {
-          // Do not include the block store (to save space)
-          continue;
-        }
-        addFileToZip(path, srcFolder + File.separator + fileName, zip, includeBlockStore);
-      }
-    }
-  }
-
-  private void unzip(String zipFileName, String directoryToExtractTo) throws IOException {
-    Enumeration entriesEnum;
-    ZipFile zipFile = null;
-    try {
-      zipFile = new ZipFile(zipFileName);
-
-      entriesEnum = zipFile.entries();
-
-      File directory = new File(directoryToExtractTo);
-      InstallationManager.createDirectoryIfNecessary(directory);
-
-      while (entriesEnum.hasMoreElements()) {
-
-        ZipEntry entry = (ZipEntry) entriesEnum.nextElement();
-
-        if (entry.isDirectory()) {
-          InstallationManager.createDirectoryIfNecessary(new File(directoryToExtractTo + File.separator + entry.getName()));
-        } else {
-
-          log.debug("Extracting file: " + entry.getName());
-
-        /* This part is necessary because file entry can come before
-         * directory entry where is file located
-         * i.e.:
-         *   /foo/foo.txt
-         *   /foo/
-         */
-          String dir = dirpart(entry.getName());
-          if (dir != null) {
-            InstallationManager.createDirectoryIfNecessary(new File(directoryToExtractTo + File.separator + dir));
-          }
-          String name = entry.getName();
-
-          writeFile(zipFile.getInputStream(entry),
-                  new BufferedOutputStream(new FileOutputStream(
-                          directoryToExtractTo + File.separator + name)));
-        }
-      }
-
-    } finally {
-
-      if (zipFile != null) {
-        zipFile.close();
-      }
-    }
-  }
-
-  private static String dirpart(String name) {
-    int s = name.lastIndexOf(File.separatorChar);
-    return s == -1 ? null : name.substring(0, s);
-  }
 }
 
 //  /**
@@ -553,10 +345,6 @@ public enum BackupManager {
 //   * @param backupDirectoryName
 //   */
 //  void thinBackupDirectory(String walletFilename, String backupSuffixText) {
-//    if (dateFormat == null) {
-//      dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
-//    }
-//
 //    if (walletFilename == null || backupSuffixText == null) {
 //      return;
 //    }
@@ -620,14 +408,14 @@ public enum BackupManager {
 //        // Secure delete the chosen backup wallet and its info file if present.
 //        log.debug("To save space, secure deleting backup wallet '"
 //                + backupWallets.get(walletBackupToDeleteIndex).getAbsolutePath() + "'.");
-//        FileHandler.secureDelete(backupWallets.get(walletBackupToDeleteIndex));
+//        .secureDelete(backupWallets.get(walletBackupToDeleteIndex));
 //
 //        String walletInfoBackupFilename = backupWallets.get(walletBackupToDeleteIndex).getAbsolutePath()
 //                .replaceAll(BitcoinModel.WALLET_FILE_EXTENSION + "$", INFO_FILE_SUFFIX_STRING);
 //        File walletInfoBackup = new File(walletInfoBackupFilename);
 //        if (walletInfoBackup.exists()) {
 //          log.debug("To save space, secure deleting backup info file '" + walletInfoBackup.getAbsolutePath() + "'.");
-//          FileHandler.secureDelete(walletInfoBackup);
+//          secureDelete(walletInfoBackup);
 //        }
 //      } catch (IOException ioe) {
 //        log.error(ioe.getClass().getName() + " " + ioe.getMessage());
