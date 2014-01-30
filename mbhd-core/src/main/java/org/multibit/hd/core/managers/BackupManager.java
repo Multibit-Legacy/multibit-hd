@@ -235,7 +235,6 @@ public enum BackupManager {
    * @throws java.io.IOException if the wallet backup could not be created
    */
   public File createRollingBackup(WalletData walletData) throws IOException {
-    log.debug("Creating rolling-backup called.");
     Preconditions.checkNotNull(walletData);
     Preconditions.checkNotNull(walletData.getWallet());
     Preconditions.checkNotNull(walletData.getWalletId());
@@ -257,7 +256,7 @@ public enum BackupManager {
     File walletBackupFile = new File(walletBackupFilename);
     log.debug("Creating rolling-backup '" + walletBackupFilename + "'");
     walletData.getWallet().saveToFile(walletBackupFile);
-    log.debug("Written rolling-backup '" + walletBackupFilename + "' successfully. Size : " + walletBackupFile.length() + " bytes");
+    log.debug("Created rolling-backup successfully. Size = " + walletBackupFile.length() + " bytes");
 
     List<File> rollingBackups = getRollingBackups(walletData.getWalletId());
 
@@ -300,11 +299,15 @@ public enum BackupManager {
     String backupFilename = WalletManager.WALLET_DIRECTORY_PREFIX + WalletManager.SEPARATOR + walletId.toFormattedString() + WalletManager.SEPARATOR + getDateFormat().format(new Date()) + BACKUP_ZIP_FILE_EXTENSION;
     String localBackupFilename = localBackupDirectory.getAbsolutePath() + File.separator + backupFilename;
 
-    zipFolder(walletRootDirectory.getAbsolutePath(), localBackupFilename, true);
+    log.debug("Creating local zip-backup '" + localBackupFilename + "'");
+    zipFolder(walletRootDirectory.getAbsolutePath(), localBackupFilename, false);
+    log.debug("Created local zip-backup successfully. Size = " + (new File(localBackupFilename)).length() + " bytes");
 
     if (cloudBackupDirectory != null && cloudBackupDirectory.exists()) {
       String cloudBackupFilename = cloudBackupDirectory.getAbsolutePath() + File.separator + backupFilename;
+      log.debug("Creating cloud zip-backup '" + cloudBackupFilename + "'");
       zipFolder(walletRootDirectory.getAbsolutePath(), cloudBackupFilename, false);
+      log.debug("Created cloud zip-backup successfully. Size = " + (new File(cloudBackupFilename)).length() + " bytes");
     } else {
       log.debug("No cloud backup made for wallet '" + walletId + "' as no cloudBackupDirectory is set.");
     }
@@ -484,8 +487,6 @@ public enum BackupManager {
           // Do not include the block store (to save space)
           continue;
         }
-
-        log.debug("Adding file to zip :" + fileName);
         addFileToZip(path, srcFolder + File.separator + fileName, zip, includeBlockStore);
       }
     }
