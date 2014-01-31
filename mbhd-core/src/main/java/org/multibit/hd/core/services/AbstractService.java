@@ -69,6 +69,13 @@ public abstract class AbstractService implements ManagedService {
   }
 
   /**
+    * @return The executor service optional
+    */
+   protected Optional<ListeningExecutorService> getExecutorServiceOptional() {
+     return service;
+   }
+
+   /**
    * @return The executor service
    */
   protected ListeningScheduledExecutorService getScheduledExecutorService() {

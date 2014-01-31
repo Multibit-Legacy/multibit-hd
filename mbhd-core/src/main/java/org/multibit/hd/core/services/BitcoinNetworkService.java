@@ -9,6 +9,7 @@ import com.google.bitcoin.store.BlockStoreException;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;
+import org.joda.time.DateTime;
 import org.multibit.hd.core.api.BitcoinNetworkSummary;
 import org.multibit.hd.core.api.CoreMessageKey;
 import org.multibit.hd.core.api.WalletData;
@@ -52,11 +53,9 @@ public class BitcoinNetworkService extends AbstractService {
   public static final MainNetParams NETWORK_PARAMETERS = MainNetParams.get();
   public static final int MAXIMUM_NUMBER_OF_PEERS = 6;
   private static final Logger log = LoggerFactory.getLogger(BitcoinNetworkService.class);
-  private WalletManager walletManager;
   private BlockStore blockStore;
   private PeerGroup peerGroup;  // May need to add listener as in MultiBitPeerGroup
   private BlockChain blockChain;
-  private MultiBitCheckpointManager checkpointManager;
   private MultiBitPeerEventListener peerEventListener;
 
   private NetworkParameters MAINNET = NetworkParameters.fromID(NetworkParameters.ID_MAINNET);
@@ -67,14 +66,8 @@ public class BitcoinNetworkService extends AbstractService {
   public void start() {
     CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkNotInitialised());
 
-    requireSingleThreadExecutor();
-
-    // Get the wallet manager.
-    walletManager = WalletManager.INSTANCE;
-
     try {
-
-      // check if there is a wallet - if there is no wallet the network will not start
+      // check if there is a wallet - if there is no wallet the network will not start (there's nowhere to put the blockchain)
       if (!WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
         log.debug("Not starting bitcoin network service as there is currently no wallet.");
         return;
@@ -88,26 +81,7 @@ public class BitcoinNetworkService extends AbstractService {
       blockStore = BlockStoreManager.createBlockStore(blockchainFilename, checkpointsFilename, null, false);
       log.debug("Blockstore is '{}'", blockStore);
 
-      log.debug("Creating blockchain ...");
-      blockChain = new BlockChain(NETWORK_PARAMETERS, blockStore);
-      if (walletManager.getCurrentWalletData().isPresent()) {
-        blockChain.addWallet(walletManager.getCurrentWalletData().get().getWallet());
-      }
-      log.debug("Created blockchain '{}' with height '{}'", blockChain, blockChain.getBestChainHeight());
-
-      log.debug("Creating peergroup ...");
-      createNewPeerGroup();
-      log.debug("Created peergroup '{}'", peerGroup);
-
-      log.debug("Starting peergroup ...");
-      peerGroup.start();
-      log.debug("Started peergroup.");
-
-      log.debug("Creating checkpointmanager");
-      checkpointManager = new MultiBitCheckpointManager(NETWORK_PARAMETERS, checkpointsFilename);
-      log.debug("Created checkpointmanager");
-
-      startedOk = true;
+      restartNetwork(checkpointsFilename);
 
     } catch (Exception e) {
       log.error(e.getClass().getName() + " " + e.getMessage());
@@ -119,6 +93,33 @@ public class BitcoinNetworkService extends AbstractService {
     }
   }
 
+  /**
+   * Restart the network, using the current wallet (specifically the blockstore)
+   * @param checkpointsFilename the location of the checkpoints file to use
+   * @throws BlockStoreException
+   * @throws IOException
+   */
+  private void restartNetwork(String checkpointsFilename) throws BlockStoreException, IOException {
+    requireSingleThreadExecutor();
+
+    log.debug("Creating blockchain ...");
+    blockChain = new BlockChain(NETWORK_PARAMETERS, blockStore);
+    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
+      blockChain.addWallet(WalletManager.INSTANCE.getCurrentWalletData().get().getWallet());
+    }
+    log.debug("Created blockchain '{}' with height '{}'", blockChain, blockChain.getBestChainHeight());
+
+    log.debug("Creating peergroup ...");
+    createNewPeerGroup();
+    log.debug("Created peergroup '{}'", peerGroup);
+
+    log.debug("Starting peergroup ...");
+    peerGroup.start();
+    log.debug("Started peergroup.");
+
+    startedOk = true;
+  }
+
   public boolean isStartedOk() {
     return startedOk;
   }
@@ -126,40 +127,11 @@ public class BitcoinNetworkService extends AbstractService {
   @Override
   public void stopAndWait() {
     startedOk = false;
-    if (peerGroup != null) {
-      log.debug("Stopping peerGroup service...");
-      peerGroup.removeEventListener(peerEventListener);
-
-      if (walletManager.getCurrentWalletData().isPresent()) {
-        peerGroup.removeWallet(walletManager.getCurrentWalletData().get().getWallet());
-      }
-
-      peerGroup.stopAndWait();
-      log.debug("Service peerGroup stopped");
-    }
-
-    // Shutdown any executor running a download
-    if (getExecutorService() != null) {
-      getExecutorService().shutdown();
-    }
-
-    // Remove the wallet from the blockChain
-    if (walletManager.getCurrentWalletData().isPresent()) {
-      blockChain.removeWallet(walletManager.getCurrentWalletData().get().getWallet());
-    }
-
-    // Close the blockstore
-    if (blockStore != null) {
-      try {
-        blockStore.close();
-      } catch (BlockStoreException e) {
-        log.error("Blockstore not closed successfully, error was '" + e.getClass().getName() + " " + e.getMessage() + "'");
-      }
-    }
+    stopPeerGroupAndCloseBlockstore();
 
     // Save the current wallet immediately
-    if (walletManager.getCurrentWalletData().isPresent()) {
-      WalletData walletData = walletManager.getCurrentWalletData().get();
+    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
+      WalletData walletData = WalletManager.INSTANCE.getCurrentWalletData().get();
       WalletId walletId = walletData.getWalletId();
       log.debug("Saving wallet with id '" + walletId + "'.");
       try {
@@ -171,6 +143,39 @@ public class BitcoinNetworkService extends AbstractService {
         BackupManager.INSTANCE.createLocalAndCloudBackup(walletId);
       } catch (IOException ioe) {
         log.error("Could not write wallet and backkups for wallet with id '" + walletId + "' successfully. The error was '" + ioe.getMessage() + "'");
+      }
+    }
+  }
+
+  private void stopPeerGroupAndCloseBlockstore() {
+    if (peerGroup != null) {
+      log.debug("Stopping peerGroup service...");
+      peerGroup.removeEventListener(peerEventListener);
+
+      if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
+        peerGroup.removeWallet(WalletManager.INSTANCE.getCurrentWalletData().get().getWallet());
+      }
+
+      peerGroup.stopAndWait();
+      log.debug("Service peerGroup stopped");
+    }
+
+     // Shutdown any executor running a download
+    if (getExecutorServiceOptional().isPresent()) {
+      getExecutorService().shutdown();
+    }
+
+    // Remove the wallet from the blockChain
+    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent() && blockChain != null) {
+      blockChain.removeWallet(WalletManager.INSTANCE.getCurrentWalletData().get().getWallet());
+    }
+
+    // Close the blockstore
+    if (blockStore != null) {
+      try {
+        blockStore.close();
+      } catch (BlockStoreException e) {
+        log.error("Blockstore not closed successfully, error was '" + e.getClass().getName() + " " + e.getMessage() + "'");
       }
     }
   }
@@ -191,8 +196,10 @@ public class BitcoinNetworkService extends AbstractService {
    * @param feePerKB           The fee per Kb (in satoshis)
    * @param password           The wallet password
    */
+
+   // TODO should be in executor
   public void send(String destinationAddress, BigInteger amount, String changeAddress, BigInteger feePerKB, CharSequence password) {
-    if (!walletManager.getCurrentWalletData().isPresent()) {
+    if (!WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
       // Declare the transaction creation a failure - no wallet
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(null, amount, BigInteger.ZERO, destinationAddress, changeAddress,
               false, "core_no_active_wallet", new String[]{""}));
@@ -200,7 +207,7 @@ public class BitcoinNetworkService extends AbstractService {
     }
 
     log.debug("Just about to create send transaction");
-    Wallet wallet = walletManager.getCurrentWalletData().get().getWallet();
+    Wallet wallet = WalletManager.INSTANCE.getCurrentWalletData().get().getWallet();
     KeyParameter aesKey = wallet.getKeyCrypter().deriveKey(password);
 
     Wallet.SendRequest sendRequest = null;
@@ -297,6 +304,38 @@ public class BitcoinNetworkService extends AbstractService {
   }
 
   /**
+   * Sync the current wallet from the date specified.
+   * The blockstore is deleted and created anew, checkpointed and then the blockchain is downloaded.
+   */
+  // TODO once working should be in executor
+  public void replayWallet(DateTime dateToReplayFrom) throws IOException, BlockStoreException {
+    Preconditions.checkNotNull(dateToReplayFrom);
+    Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletData().isPresent());
+
+    log.info("Starting replay of wallet with id '" + WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()
+            + "' from date " + dateToReplayFrom);
+
+    // TODO the current best height should be remembered and used to generate percentage complete as then if the peer is replaced the percentage increases monotomically
+
+    // Stop the peer group if it is running
+    stopPeerGroupAndCloseBlockstore();
+
+    // Close the blockstore and recreate a new one, checkpointed to the replay date
+    String walletRoot = WalletManager.INSTANCE.getCurrentWalletFilename().get().getParentFile().getAbsolutePath();
+    String blockchainFilename = walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.SPV_BLOCKCHAIN_SUFFIX;
+    String checkpointsFilename = walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX;
+
+    log.debug("Recreating blockstore with checkpoint date of " + dateToReplayFrom + " ...");
+    blockStore = BlockStoreManager.createBlockStore(blockchainFilename, checkpointsFilename, dateToReplayFrom.toDate(), true);
+    log.debug("Blockstore is '{}'", blockStore);
+
+    restartNetwork(checkpointsFilename);
+
+    downloadBlockChain();
+    log.debug("Blockchain download started.");
+  }
+
+  /**
    * <p>Create a new peer group</p>
    */
   private void createNewPeerGroup() {
@@ -310,8 +349,8 @@ public class BitcoinNetworkService extends AbstractService {
     peerEventListener = new MultiBitPeerEventListener();
     peerGroup.addEventListener(peerEventListener);
 
-    if (walletManager.getCurrentWalletData().isPresent()) {
-      peerGroup.addWallet(walletManager.getCurrentWalletData().get().getWallet());
+    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
+      peerGroup.addWallet(WalletManager.INSTANCE.getCurrentWalletData().get().getWallet());
     }
   }
 
@@ -322,11 +361,11 @@ public class BitcoinNetworkService extends AbstractService {
    * @return changeAddress The next change address as a string
    */
   public String getNextChangeAddress() {
-    Preconditions.checkState(walletManager.getCurrentWalletData().isPresent());
-    Preconditions.checkNotNull(walletManager.getCurrentWalletData().get().getWallet());
-    Preconditions.checkState(walletManager.getCurrentWalletData().get().getWallet().getKeychainSize() > 0);
+    Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletData().isPresent());
+    Preconditions.checkNotNull(WalletManager.INSTANCE.getCurrentWalletData().get().getWallet());
+    Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletData().get().getWallet().getKeychainSize() > 0);
 
-    Wallet wallet = walletManager.getCurrentWalletData().get().getWallet();
+    Wallet wallet = WalletManager.INSTANCE.getCurrentWalletData().get().getWallet();
     ECKey firstKey = wallet.getKeys().get(0);
     return firstKey.toAddress(MAINNET).toString();
   }

@@ -241,7 +241,7 @@ public class Dates {
   public static DateTime parseSeedTimestamp(String text) {
 
     int separatorIndex = text.indexOf("/");
-    Preconditions.checkArgument(separatorIndex > 3, "'text' does not contain '/' in the correct location");
+    Preconditions.checkArgument(separatorIndex > 3, "'" + text + "' does not contain '/' in the correct location");
 
     try {
       int days = Integer.valueOf(text.substring(0, separatorIndex));
