@@ -1,7 +1,6 @@
 package org.multibit.hd.core.services;
 
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.core.*;
 import com.google.bitcoin.store.BlockStoreException;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
@@ -11,6 +10,7 @@ import org.junit.Test;
 import org.multibit.hd.core.api.WalletData;
 import org.multibit.hd.core.api.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.managers.BackupManager;
@@ -41,7 +41,7 @@ public class BitcoinNetworkServiceFunctionalTest {
   private static final BigInteger SEND_AMOUNT = BigInteger.valueOf(100000); // 0.001 BTC
   private static final BigInteger FEE_PER_KB = BigInteger.valueOf(10000); // 0.0001 BTC / KB
 
-  private static final int MAX_TIMEOUT = 180000; // ms
+  private static final int MAX_TIMEOUT = 600000; // ms
   private static final int WAIT_INTERVAL = 100; // ms
 
   private Properties seedProperties;
@@ -106,112 +106,112 @@ public class BitcoinNetworkServiceFunctionalTest {
     assertThat(walletBalance.compareTo(BigInteger.ZERO) > 0).isTrue();
   }
 
-//  @Test
-//  public void testSendBetweenTwoRealWallets() throws Exception {
-//    // Create a random temporary directory to store the wallets
-//    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
-//    walletManager.initialise(temporaryDirectory);
-//  BackupManager.INSTANCE.initialise(temporaryDirectory, null);
-//
-//    // Create two wallets from the two seeds
-//    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-//    byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_1_PROPERTY_NAME)));
-//    WalletData walletData1 = createWallet(temporaryDirectory, seed1);
-//    String walletRoot1 = walletManager.createWalletRoot(walletData1.getWalletId());
-//
-//    DateTime timestamp1 = Dates.parseSeedTimestamp(seedProperties.getProperty(WALLET_TIMESTAMP_1_PROPERTY_NAME));
-//
-//    byte[] seed2 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_2_PROPERTY_NAME)));
-//    WalletData walletData2 = createWallet(temporaryDirectory, seed2);
-//    String walletRoot2 = walletManager.createWalletRoot(walletData2.getWalletId());
-//
-//    DateTime timestamp2 = Dates.parseSeedTimestamp(seedProperties.getProperty(WALLET_TIMESTAMP_2_PROPERTY_NAME));
-//
-//    // Remember the addresses in the wallets, which will be used for the send
-//    ECKey key1 = walletData1.getWallet().getKeys().get(0);
-//    Address address1 = key1.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
-//
-//    ECKey key2 = walletData2.getWallet().getKeys().get(0);
-//    Address address2 = key2.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
-//
-//    // Synchronize the current wallet, which will be wallet2 as that was created last
-//    replayWallet(timestamp2);
-//
-//    BigInteger walletBalance2 = walletData2.getWallet().getBalance();
-//
-//    // Set the current wallet to be wallet1 and synchronize that
-//    Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(walletRoot1);
-//    walletManager.setCurrentWalletData(walletData1);
-//    replayWallet(timestamp1);
-//
-//    BigInteger walletBalance1 = walletData1.getWallet().getBalance();
-//
-//    log.debug("Wallet data 1 = \n" + walletData1.toString());
-//    log.debug("Wallet data 2 = \n" + walletData2.toString());
-//
-//
-//    // Check older transactions (probably from earlier runs of this test) have confirmed
-//    assertThat(transactionsAreOK(walletData1)).isTrue();
-//    assertThat(transactionsAreOK(walletData2)).isTrue();
-//
-//    // Create a send from the wallet with the larger balance to the one with the smaller balance
-//    boolean sendFromWallet1 = walletBalance1.compareTo(walletBalance2) > 0;
-//
-//    WalletData sourceWalletData;
-//    String walletRoot;
-//    Address sourceAddress;
-//    Address destinationAddress;
-//    if (sendFromWallet1) {
-//      sourceWalletData = walletData1;
-//      walletRoot = walletRoot1;
-//      sourceAddress = address1;
-//      destinationAddress = address2;
-//    } else {
-//      sourceWalletData = walletData2;
-//      walletRoot = walletRoot2;
-//      sourceAddress = address2;
-//      destinationAddress = address1;
-//    }
-//
-//    // Ensure MBHD has the correct current wallet (which will be used for the send)
-//    Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(walletRoot);
-//    walletManager.setCurrentWalletData(sourceWalletData);
-//
-//    // Start up the bitcoin network connection
-//    bitcoinNetworkService = CoreServices.newBitcoinNetworkService();
-//    bitcoinNetworkService.start();
-//
-//    // Wait a while for everything to start
-//    Uninterruptibles.sleepUninterruptibly(4000, TimeUnit.MILLISECONDS);
-//
-//    try {
-//      // Clear the bitcoinSentEvent member variable so we know it is a new one later
-//      bitcoinSentEvent = null;
-//
-//      // Send the bitcoins
-//      bitcoinNetworkService.send(destinationAddress.toString(), SEND_AMOUNT, sourceAddress.toString(), FEE_PER_KB, WALLET_PASSWORD);
-//
-//      // the listenToBitcoinSentEvent method receives the bitcoinSentEvent once the send has completed
-//      // wait for a while for the send to actually be transmitted
-//      Uninterruptibles.sleepUninterruptibly(10000, TimeUnit.MILLISECONDS);
-//
-//      // Check for success
-//      assertThat(bitcoinSentEvent).isNotNull();
-//      assertThat(bitcoinSentEvent.isSendWasSuccessful()).isTrue();
-//    } finally {
-//      bitcoinNetworkService.stopAndWait();
-//    }
-//  }
+  @Test
+  public void testSendBetweenTwoRealWallets() throws Exception {
+    // Create a random temporary directory to store the wallets
+    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
+    walletManager.initialise(temporaryDirectory);
+    BackupManager.INSTANCE.initialise(temporaryDirectory, null);
+
+    // Create two wallets from the two seeds
+    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_1_PROPERTY_NAME)));
+    WalletData walletData1 = createWallet(temporaryDirectory, seed1);
+    String walletRoot1 = walletManager.createWalletRoot(walletData1.getWalletId());
+
+    DateTime timestamp1 = Dates.parseSeedTimestamp(seedProperties.getProperty(WALLET_TIMESTAMP_1_PROPERTY_NAME));
+
+    byte[] seed2 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_2_PROPERTY_NAME)));
+    WalletData walletData2 = createWallet(temporaryDirectory, seed2);
+    String walletRoot2 = walletManager.createWalletRoot(walletData2.getWalletId());
+
+    DateTime timestamp2 = Dates.parseSeedTimestamp(seedProperties.getProperty(WALLET_TIMESTAMP_2_PROPERTY_NAME));
+
+    // Remember the addresses in the wallets, which will be used for the send
+    ECKey key1 = walletData1.getWallet().getKeys().get(0);
+    Address address1 = key1.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
+
+    ECKey key2 = walletData2.getWallet().getKeys().get(0);
+    Address address2 = key2.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
+
+    // Synchronize the current wallet, which will be wallet2 as that was created last
+    replayWallet(timestamp2);
+
+    BigInteger walletBalance2 = walletData2.getWallet().getBalance();
+
+    // Set the current wallet to be wallet1 and synchronize that
+    Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(walletRoot1);
+    walletManager.setCurrentWalletData(walletData1);
+    replayWallet(timestamp1);
+
+    BigInteger walletBalance1 = walletData1.getWallet().getBalance();
+
+    log.debug("Wallet data 1 = \n" + walletData1.toString());
+    log.debug("Wallet data 2 = \n" + walletData2.toString());
+
+
+    // Check older transactions (probably from earlier runs of this test) have confirmed
+    assertThat(transactionsAreOK(walletData1)).isTrue();
+    assertThat(transactionsAreOK(walletData2)).isTrue();
+
+    // Create a send from the wallet with the larger balance to the one with the smaller balance
+    boolean sendFromWallet1 = walletBalance1.compareTo(walletBalance2) > 0;
+
+    WalletData sourceWalletData;
+    String walletRoot;
+    Address sourceAddress;
+    Address destinationAddress;
+    if (sendFromWallet1) {
+      sourceWalletData = walletData1;
+      walletRoot = walletRoot1;
+      sourceAddress = address1;
+      destinationAddress = address2;
+    } else {
+      sourceWalletData = walletData2;
+      walletRoot = walletRoot2;
+      sourceAddress = address2;
+      destinationAddress = address1;
+    }
+
+    // Ensure MBHD has the correct current wallet (which will be used for the send)
+    Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(walletRoot);
+    walletManager.setCurrentWalletData(sourceWalletData);
+
+    // Start up the bitcoin network connection
+    bitcoinNetworkService = CoreServices.newBitcoinNetworkService();
+    bitcoinNetworkService.start();
+
+    // Wait a while for everything to start
+    Uninterruptibles.sleepUninterruptibly(4000, TimeUnit.MILLISECONDS);
+
+    try {
+      // Clear the bitcoinSentEvent member variable so we know it is a new one later
+      bitcoinSentEvent = null;
+
+      // Send the bitcoins
+      bitcoinNetworkService.send(destinationAddress.toString(), SEND_AMOUNT, sourceAddress.toString(), FEE_PER_KB, WALLET_PASSWORD);
+
+      // the onBitcoinSentEvent method receives the bitcoinSentEvent once the send has completed
+      // wait for a while for the send to actually be transmitted
+      Uninterruptibles.sleepUninterruptibly(10000, TimeUnit.MILLISECONDS);
+
+      // Check for success
+      assertThat(bitcoinSentEvent).isNotNull();
+      assertThat(bitcoinSentEvent.isSendWasSuccessful()).isTrue();
+    } finally {
+      bitcoinNetworkService.stopAndWait();
+    }
+  }
 
   @Subscribe
   public void onBitcoinSentEvent(BitcoinSentEvent bitcoinSentEvent) {
-    log.debug(bitcoinSentEvent.toString());
+    //log.debug(bitcoinSentEvent.toString());
     this.bitcoinSentEvent = bitcoinSentEvent;
   }
 
   @Subscribe
   public void onBitcoinNetworkChangedEvent(BitcoinNetworkChangedEvent bitcoinNetworkChangedEvent) {
-    log.debug(bitcoinNetworkChangedEvent.toString());
+    //log.debug(bitcoinNetworkChangedEvent.toString());
 
     // Remember the percentage complete for a download
     if (bitcoinNetworkChangedEvent.getSummary().getPercent() > 0) {
@@ -297,153 +297,4 @@ public class BitcoinNetworkServiceFunctionalTest {
 
     return seedProperties;
   }
-
-//      private BitcoinController controller;
-//      private Localiser localiser;
-//      private File multiBitDirectory;
-//
-//
-//      private SimpleDateFormat formatter;
-//
-//      private SimpleViewSystem simpleViewSystem;
-//
-//      @Before
-//      public void setUp() throws Exception {
-//          multiBitDirectory = createMultiBitRuntime();
-//
-//          // Set the application data directory to be the one we just created.
-//          ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
-//
-//          // Create MultiBit controller
-//          final CreateControllers.Controllers controllers = CreateControllers.createControllers(applicationDataDirectoryLocator);
-//          controller = controllers.bitcoinController;
-//
-//          log.debug("Creating Bitcoin service");
-//          // Create the MultiBitService that connects to the bitcoin network.
-//          MultiBitService multiBitService = new MultiBitService(controller);
-//          controller.setMultiBitService(multiBitService);
-//
-//          // Add the simple view system (no Swing).
-//          simpleViewSystem = new SimpleViewSystem();
-//          controllers.coreController.registerViewSystem(simpleViewSystem);
-//
-//          log.debug("Waiting for peer connection. . . ");
-//          while (!simpleViewSystem.isOnline()) {
-//              try {
-//                  Thread.sleep(1000);
-//              } catch (InterruptedException e) {
-//                  e.printStackTrace();
-//              }
-//          }
-//          log.debug("Now online.");
-//
-//      }
-//
-//      @Test
-//      public void testReplayManagerSyncSingleWallet() throws Exception {
-//          // Get the system property runFunctionalTest to see if the functional
-//          // tests need running.
-//          String runFunctionalTests = System.getProperty(Constants.RUN_FUNCTIONAL_TESTS_PARAMETER);
-//          if (Boolean.TRUE.toString().equalsIgnoreCase(runFunctionalTests)) {
-//              // Date format is UTC with century, T time separator and Z for UTC
-//              // timezone.
-//              formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
-//              formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-//
-//              // Initialise replay manager
-//              ReplayManager replayManager = ReplayManager.INSTANCE;
-//              assertNotNull(replayManager);
-//
-//              replayManager.initialise(controller, true);
-//
-//              String replayWalletPath = multiBitDirectory.getAbsolutePath() + File.separator + "replay.wallet";
-//
-//              // Create a new wallet.
-//              Wallet replayWallet = new Wallet(NetworkParameters.prodNet());
-//
-//              // Add in the replay key.
-//              DumpedPrivateKey replayDumpedPrivateKey = new DumpedPrivateKey(NetworkParameters.prodNet(), REPLAY1_PRIVATE_KEY);
-//              ECKey replayKey = replayDumpedPrivateKey.getKey();
-//              replayKey.setCreationTimeSeconds(formatter.parse(START_OF_REPLAY_PERIOD).getTime() / 1000);
-//              log.debug("replayPrivateKey getCreationTimeSeconds = " + replayKey.getCreationTimeSeconds());
-//
-//              replayWallet.addKey(replayKey);
-//              WalletData perWalletModelData = new WalletData();
-//              perWalletModelData.setWalletInfo(new WalletInfoData(replayWalletPath, replayWallet, MultiBitWalletVersion.PROTOBUF));
-//              perWalletModelData.setWallet(replayWallet);
-//              perWalletModelData.setWalletFilename(replayWalletPath);
-//              perWalletModelData.setWalletDescription("testReplayManagerSyncSingleWallet test");
-//              controller.getModel().getPerWalletModelDataList().add(perWalletModelData);
-//
-//              log.debug("Replay wallet before replay = \n" + replayWallet.toString());
-//
-//              assertEquals(BALANCE_AT_START, replayWallet.getBalance());
-//
-//              log.debug("Replaying blockchain");
-//              // Create a ReplayTask to replay the replay wallet from the
-//              // START_OF_REPLAY_PERIOD.
-//              List<WalletData> perWalletModelDataList = new ArrayList<WalletData>();
-//              perWalletModelDataList.add(perWalletModelData);
-//
-//              ReplayTask replayTask = new ReplayTask(perWalletModelDataList, formatter.parse(START_OF_REPLAY_PERIOD),
-//                      ReplayTask.UNKNOWN_START_HEIGHT);
-//              replayManager.offerReplayTask(replayTask);
-//
-//              // Run for a while.
-//              log.debug("Twiddling thumbs for 60 seconds ...");
-//              Thread.sleep(60000);
-//              log.debug("... 60 seconds later.");
-//
-//              // Check the wallet - there should be some transactions in there.
-//              if (replayWallet.getTransactions(true).size() > 0) {
-//                  // We are done.
-//              } else {
-//                  // Run for a while longer.
-//                  log.debug("Twiddling thumbs for another 60 seconds ...");
-//                  Thread.sleep(60000);
-//                  log.debug("... 60 seconds later.");
-//                  if (replayWallet.getTransactions(true).size() > 0) {
-//                      // We are done.
-//                  } else {
-//                      if (simpleViewSystem.getNumberOfBlocksDownloaded() > 0) {
-//                          // Well it tried but probably got a slow connection -
-//                          // give it a pass.
-//                      } else {
-//                          fail("No blocks were downloaded on replay");
-//                      }
-//                  }
-//              }
-//
-//              // Print out replay wallet after replay.
-//              log.debug("Replay wallet after replay = \n" + replayWallet);
-//          } else {
-//              log.debug("Not running functional test: ReplayManagerTest#testReplayManagerSyncSingleWallet. Add '-DrunFunctionalTests=true' to run");
-//          }
-//      }
-//
-//      /**
-//       * Create a working, portable runtime of MultiBit in a temporary directory.
-//       *
-//       * @return the temporary directory the multibit runtime has been created in
-//       */
-//      private File createMultiBitRuntime() throws IOException {
-//          File multiBitDirectory = FileHandler.createTempDirectory("multibit");
-//          String multiBitDirectoryPath = multiBitDirectory.getAbsolutePath();
-//
-//          System.out.println("Building MultiBit runtime in : " + multiBitDirectory.getAbsolutePath());
-//
-//          // Create an empty multibit.properties.
-//          File multibitProperties = new File(multiBitDirectoryPath + File.separator + "multibit.properties");
-//          multibitProperties.createNewFile();
-//          multibitProperties.deleteOnExit();
-//
-//          // Copy in the checkpoints and blockchain stored in git - this is in
-//          // source/main/resources/.
-//          File multibitBlockcheckpoints = new File(multiBitDirectoryPath + File.separator + "multibit.checkpoints");
-//          FileHandler.copyFile(new File("./src/main/resources/multibit.checkpoints"), multibitBlockcheckpoints);
-//          multibitBlockcheckpoints.deleteOnExit();
-//
-//          return multiBitDirectory;
-//      }
-
 }

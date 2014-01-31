@@ -26,7 +26,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
   @Override
   public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
 
-    log.debug("Number of blocks left = {}", blocksLeft);
+    //log.debug("Number of blocks left = {}", blocksLeft);
 
     // Keep track of the download progress
     updateDownloadPercent(blocksLeft);
