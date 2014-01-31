@@ -84,80 +84,62 @@ public enum BackupManager {
 
   /**
    * Get all the backups available in the cloud backup directory for the wallet id specified.
-   * Wallet backups are called mbhd-[formatted wallet id]-timestamp.zip and the specified wallet id is used to subset all backups
    */
-  // TODO would also be nice to return the dates of the backups (from the timestamp) or return them sorted by age
-  // then the latest backup can be used easily
   public List<File> getCloudBackups(WalletId walletId) {
-
-    List<File> walletBackups = Lists.newArrayList();
-
-    if (cloudBackupDirectory == null || !cloudBackupDirectory.exists()) {
-      // No directory - no backups
-      return walletBackups;
-    }
-
-    File[] listOfFiles = cloudBackupDirectory.listFiles();
-
-    // Look for filenames with format "mbhd-" + [formatted wallet id ] + "-YYYYMMDDHHMMSS.zip"
-    String backupRegex = WalletManager.WALLET_DIRECTORY_PREFIX + WalletManager.SEPARATOR + walletId.toFormattedString() +
-            WalletManager.SEPARATOR + "\\d{" + BACKUP_SUFFIX_FORMAT.length() + "}" + BACKUP_ZIP_FILE_EXTENSION_REGEX;
-    if (listOfFiles != null) {
-      for (int i = 0; i < listOfFiles.length; i++) {
-        if (listOfFiles[i].isFile()) {
-          if (listOfFiles[i].getName().matches(backupRegex)) {
-            if (listOfFiles[i].length() > 0) {
-              walletBackups.add(listOfFiles[i]);
-            }
-          }
-        }
-      }
-    }
-
-    return walletBackups;
+    return getWalletBackups(walletId, cloudBackupDirectory);
   }
 
   /**
-   * Get all the backups available in the local zip backup directory for the wallet id specified.
+    * Get all the backups available in the local zip backup directory for the wallet id specified.
+    */
+   public List<File> getLocalZipBackups(WalletId walletId) {
+     // Find the wallet root directory for this wallet id
+     File walletRootDirectory = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), WalletManager.createWalletRoot(walletId));
+
+     if (!walletRootDirectory.exists()) {
+       // No directory - no backups
+       return Lists.newArrayList();
+     }
+
+     // Find the zip-backups directory containing the local backups
+     File zipBackupsDirectory = new File(walletRootDirectory.getAbsoluteFile() + File.separator + LOCAL_ZIP_BACKUP_DIRECTORY_NAME);
+
+     return getWalletBackups(walletId, zipBackupsDirectory);
+   }
+
+  /**
+   * Find the wallet backups in a directory.
    * Wallet backups are called mbhd-[formatted wallet id]-timestamp.zip and the specified wallet id is used to subset all backups
+   * @param walletId The walletId to subset on
+   * @param directoryName The directory to look in
+   * @return The wallet backups available
    */
+  private List<File> getWalletBackups(WalletId walletId, File directoryName) {
   // TODO would also be nice to return the dates of the backups (from the timestamp) or return them sorted by age
   // TODO then the latest backup can be used easily
-  public List<File> getLocalZipBackups(WalletId walletId) {
-
     List<File> walletBackups = Lists.newArrayList();
 
-    // Find the wallet root directory for this wallet id
-    File walletRootDirectory = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), WalletManager.createWalletRoot(walletId));
+    if (directoryName == null || ! directoryName.exists()) {
+       // No directory - no backups
+       return walletBackups;
+     }
 
-    if (!walletRootDirectory.exists()) {
-      // No directory - no backups
-      return walletBackups;
-    }
+    File[] listOfFiles = directoryName.listFiles();
 
-    // Find the zip-backups directory containing the local backups
-    File zipBackupsDirectory = new File(walletRootDirectory.getAbsoluteFile() + File.separator + LOCAL_ZIP_BACKUP_DIRECTORY_NAME);
-    if (!zipBackupsDirectory.exists()) {
-      // No directory - no backups
-      return walletBackups;
-    }
-
-    File[] listOfFiles = zipBackupsDirectory.listFiles();
-
-    // Look for filenames with format "mbhd"-[formatted wallet id ] -YYYYMMDDHHMMSS.zip"
-    String backupRegex = WalletManager.WALLET_DIRECTORY_PREFIX + WalletManager.SEPARATOR + walletId.toFormattedString() +
-            WalletManager.SEPARATOR + "\\d{" + BACKUP_SUFFIX_FORMAT.length() + "}" + BACKUP_ZIP_FILE_EXTENSION_REGEX;
-    if (listOfFiles != null) {
-      for (int i = 0; i < listOfFiles.length; i++) {
-        if (listOfFiles[i].isFile()) {
-          if (listOfFiles[i].getName().matches(backupRegex)) {
-            if (listOfFiles[i].length() > 0) {
-              walletBackups.add(listOfFiles[i]);
-            }
-          }
-        }
-      }
-    }
+     // Look for filenames with format "mbhd-" + [formatted wallet id ] + "-YYYYMMDDHHMMSS.zip"
+     String backupRegex = WalletManager.WALLET_DIRECTORY_PREFIX + WalletManager.SEPARATOR + walletId.toFormattedString() +
+             WalletManager.SEPARATOR + "\\d{" + BACKUP_SUFFIX_FORMAT.length() + "}" + BACKUP_ZIP_FILE_EXTENSION_REGEX;
+     if (listOfFiles != null) {
+       for (int i = 0; i < listOfFiles.length; i++) {
+         if (listOfFiles[i].isFile()) {
+           if (listOfFiles[i].getName().matches(backupRegex)) {
+             if (listOfFiles[i].length() > 0) {
+               walletBackups.add(listOfFiles[i]);
+             }
+           }
+         }
+       }
+     }
 
     return walletBackups;
   }
