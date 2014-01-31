@@ -1,15 +1,13 @@
 package org.multibit.hd.core.managers;
 
 import com.google.common.base.Preconditions;
+import org.multibit.hd.core.utils.FileUtils;
 import org.multibit.hd.core.utils.OSUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 
 /**
  *  <p>Manager to provide the following to other core classes:<br>
@@ -75,16 +73,9 @@ public class InstallationManager {
 
     // Create the application data directory if it does not exist
     File applicationDataDirectory = new File(applicationDataDirectoryName);
-    createDirectoryIfNecessary(applicationDataDirectory);
+    FileUtils.createDirectoryIfNecessary(applicationDataDirectory);
 
     return applicationDataDirectory;
-  }
-
-  public static void createDirectoryIfNecessary(File directoryToCreate) {
-    if (!directoryToCreate.exists()) {
-       Preconditions.checkState(directoryToCreate.mkdir(), "Could not create the directory of '" + directoryToCreate + "'");
-     }
-     Preconditions.checkState(directoryToCreate.isDirectory(), "Incorrectly identified the directory of '" + directoryToCreate + " as a file");
   }
 
   /**
@@ -117,7 +108,7 @@ public class InstallationManager {
       if (sourceBlockcheckpoints.exists() && !destinationCheckpointsFilename.equals(sourceCheckpointsFilename)) {
         // It should exist since installer puts them in.
         log.info("Copying checkpoints from '" + sourceCheckpointsFilename + "' to '" + destinationCheckpointsFilename + "'");
-        copyFile(sourceBlockcheckpoints, destinationCheckpoints);
+        FileUtils.copyFile(sourceBlockcheckpoints, destinationCheckpoints);
 
         // Check all the data was copied.
         long sourceLength = sourceBlockcheckpoints.length();
@@ -132,43 +123,6 @@ public class InstallationManager {
           log.error(errorText);
           throw new IllegalStateException(errorText);
         }
-      }
-    }
-  }
-
-  public static void copyFile(File sourceFile, File destinationFile) throws IOException {
-    if (!destinationFile.exists()) {
-      destinationFile.createNewFile();
-    }
-    FileInputStream fileInputStream = null;
-    FileOutputStream fileOutputStream = null;
-    FileChannel source = null;
-    FileChannel destination = null;
-    try {
-      fileInputStream = new FileInputStream(sourceFile);
-      source = fileInputStream.getChannel();
-      fileOutputStream = new FileOutputStream(destinationFile);
-      destination = fileOutputStream.getChannel();
-      long transfered = 0;
-      long bytes = source.size();
-      while (transfered < bytes) {
-        transfered += destination.transferFrom(source, 0, source.size());
-        destination.position(transfered);
-      }
-    } finally {
-      if (source != null) {
-        source.close();
-        source = null;
-      } else if (fileInputStream != null) {
-        fileInputStream.close();
-        fileInputStream = null;
-      }
-      if (destination != null) {
-        destination.close();
-        destination = null;
-      } else if (fileOutputStream != null) {
-        fileOutputStream.flush();
-        fileOutputStream.close();
       }
     }
   }
