@@ -1,22 +1,33 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
+import com.google.bitcoin.store.BlockStoreException;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
+import org.joda.time.DateTime;
+import org.multibit.hd.core.api.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -29,6 +40,8 @@ import java.util.List;
  *  
  */
 public class RestoreWalletReportPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> {
+
+  private static final Logger log = LoggerFactory.getLogger(RestoreWalletReportPanelView.class);
 
   // View
   private JLabel seedPhraseCreatedStatusLabel;
@@ -62,9 +75,9 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
   public JPanel newWizardViewPanel() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fill,insets 0", // Layout constraints
-      "[][][]", // Column constraints
-      "[]10[]10[]10[]" // Row constraints
+            "fill,insets 0", // Layout constraints
+            "[][][]", // Column constraints
+            "[]10[]10[]10[]" // Row constraints
     ));
 
     // Apply the theme
@@ -100,12 +113,21 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
   @Override
   public boolean beforeShow() {
 
+    boolean walletCreatedStatus = false;
+
     WelcomeWizardModel model = getWizardModel();
 
+    log.debug("The select wallet choice is " + getWizardModel().getSelectWalletChoice());
+    log.debug("The restore method is " + getWizardModel().getSelectRestoreMethod());
+
     // TODO Check all required data is valid
+    // There are two sorts of restore wallet method:
+    // RESTORE_WALLET_SEED_PHRASE = restore from a seed phrase and timestamp
+    // RESTORE_WALLET_BACKUP = restore from a seed phrase and wallet backup
     List<String> seedPhrase = model.getRestoreWalletSeedPhrase();
-    if (WelcomeWizardState.RESTORE_WALLET_BACKUP.equals(getWizardModel().getSelectWalletChoice())) {
-      //
+
+    if (WelcomeWizardState.RESTORE_WALLET_BACKUP.equals(getWizardModel().getSelectRestoreMethod())) {
+      log.debug("Performing a restore from a seed phrase and a wallet backup.");
       String restoreLocation = model.getRestoreLocation();
       Preconditions.checkNotNull(restoreLocation, "'restoreLocation' must be present");
 
@@ -119,8 +141,8 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
       // Determine if the restore location is valid
       boolean restoreLocationStatus = restoreLocationFile.exists()
-        && restoreLocationFile.isDirectory()
-        && restoreLocationFile.canRead();
+              && restoreLocationFile.isDirectory()
+              && restoreLocationFile.canRead();
 
       if (restoreLocationStatus) {
         AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, restoreLocationStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
@@ -129,10 +151,19 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       }
 
       // Determine if the create wallet status is valid
+      // TODO create wallet and set walletCreatedStatus
+    } else if (WelcomeWizardState.RESTORE_WALLET_SEED_PHRASE.equals(getWizardModel().getSelectRestoreMethod())) {
+      log.debug("Performing a restore from a seed phrase and a timestamp.");
+      EnterSeedPhraseModel restoreEnterSeedPhraseModel = model.getRestoreWalletEnterSeedPhraseModel();
+      log.debug("Seed phrase = '" + restoreEnterSeedPhraseModel.getSeedPhrase() + "'");
+      log.debug("Timestamp = " + restoreEnterSeedPhraseModel.getSeedTimestamp());
+
+      // TODO also need a wallet password to encrypt the wallet with - using "password" for now
+      walletCreatedStatus = createWallet(restoreEnterSeedPhraseModel.getSeedPhrase(), restoreEnterSeedPhraseModel.getSeedTimestamp(), "password");
+    } else {
+      log.error("Cannot perform a restore - unknown method of restore = '" + getWizardModel().getSelectRestoreMethod() + "'.");
     }
 
-    // TODO Implement this
-    boolean walletCreatedStatus = false;
     if (walletCreatedStatus) {
       AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, walletCreatedStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
     } else {
@@ -142,6 +173,27 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, true);
 
     return true;
+  }
+
+  /**
+   * Create a wallet
+   */
+  private boolean createWallet(List<String> seedPhrase, String timestamp, CharSequence password) {
+    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] seed = seedGenerator.convertToSeed(seedPhrase);
+
+    try {
+      DateTime replayDate = Dates.parseSeedTimestamp(timestamp);
+      // TODO necessary to backup any existing wallet with the same seed before creation/ overwrite ?
+      WalletManager.INSTANCE.createWallet(seed, password);
+
+      CoreServices.newBitcoinNetworkService().replayWallet(replayDate);
+
+      return true;
+    } catch (IOException | BlockStoreException e) {
+      log.error("Failed to restore wallet. Error was '" + e.getMessage() + "'.");
+      return false;
+    }
   }
 
 }

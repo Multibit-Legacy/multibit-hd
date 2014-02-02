@@ -81,7 +81,7 @@ public class BitcoinNetworkService extends AbstractService {
       blockStore = BlockStoreManager.createBlockStore(blockchainFilename, checkpointsFilename, null, false);
       log.debug("Blockstore is '{}'", blockStore);
 
-      restartNetwork(checkpointsFilename);
+      restartNetwork();
 
     } catch (Exception e) {
       log.error(e.getClass().getName() + " " + e.getMessage());
@@ -95,11 +95,10 @@ public class BitcoinNetworkService extends AbstractService {
 
   /**
    * Restart the network, using the current wallet (specifically the blockstore)
-   * @param checkpointsFilename the location of the checkpoints file to use
    * @throws BlockStoreException
    * @throws IOException
    */
-  private void restartNetwork(String checkpointsFilename) throws BlockStoreException, IOException {
+  private void restartNetwork() throws BlockStoreException, IOException {
     requireSingleThreadExecutor();
 
     log.debug("Creating blockchain ...");
@@ -233,7 +232,7 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Declare the transaction creation a failure
       String transactionId = null;
-      if (sendRequest.tx != null) {
+      if (sendRequest != null && sendRequest.tx != null) {
         transactionId = sendRequest.tx.getHashAsString();
       }
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(transactionId, amount, BigInteger.ZERO, destinationAddress, changeAddress,
@@ -329,7 +328,7 @@ public class BitcoinNetworkService extends AbstractService {
     blockStore = BlockStoreManager.createBlockStore(blockchainFilename, checkpointsFilename, dateToReplayFrom.toDate(), true);
     log.debug("Blockstore is '{}'", blockStore);
 
-    restartNetwork(checkpointsFilename);
+    restartNetwork();
 
     downloadBlockChain();
     log.debug("Blockchain download started.");

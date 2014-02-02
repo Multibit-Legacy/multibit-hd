@@ -10,7 +10,6 @@ import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
-import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
@@ -59,7 +58,6 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
    * The confirm password model
    */
   private ConfirmPasswordModel confirmPasswordModel;
-  private EnterPasswordModel restoreWalletPasswordModel;
 
   private SelectFileModel backupLocationSelectFileModel;
   private SelectFileModel restoreLocationSelectFileModel;
@@ -219,6 +217,14 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
     return restoreWalletSeedPhrase;
   }
 
+  public EnterSeedPhraseModel getRestoreWalletEnterSeedPhraseModel() {
+    return restoreWalletEnterSeedPhraseModel;
+  }
+
+  public WelcomeWizardState getSelectRestoreMethod() {
+    return selectRestoreMethod;
+  }
+
   /**
    * @return The actual generated seed timestamp (e.g. "1850/2")
    */
@@ -231,13 +237,6 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
    */
   public String getCreateWalletUserPassword() {
     return confirmPasswordModel.getValue();
-  }
-
-  /**
-   * @return The user entered password for the restore process
-   */
-  public String getRestoreWalletUserPassword() {
-    return restoreWalletPasswordModel.getValue();
   }
 
   /**
