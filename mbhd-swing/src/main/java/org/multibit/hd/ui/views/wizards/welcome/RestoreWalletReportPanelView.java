@@ -5,8 +5,10 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
+import org.multibit.hd.core.api.WalletId;
 import org.multibit.hd.core.api.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
@@ -124,14 +126,11 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     // There are two sorts of restore wallet method:
     // RESTORE_WALLET_SEED_PHRASE = restore from a seed phrase and timestamp
     // RESTORE_WALLET_BACKUP = restore from a seed phrase and wallet backup
-    List<String> seedPhrase = model.getRestoreWalletSeedPhrase();
 
     if (WelcomeWizardState.RESTORE_WALLET_BACKUP.equals(getWizardModel().getSelectRestoreMethod())) {
       log.debug("Performing a restore from a seed phrase and a wallet backup.");
       String restoreLocation = model.getRestoreLocation();
       Preconditions.checkNotNull(restoreLocation, "'restoreLocation' must be present");
-
-      // Actually create the wallet
 
       File restoreLocationFile = new File(restoreLocation);
 
@@ -150,12 +149,14 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
         AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, restoreLocationStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
       }
 
+      EnterSeedPhraseModel restoreBackupSeedPhraseModel = model.getRestoreWalletBackupSeedPhraseModel();
+
       // Determine if the create wallet status is valid
-      // TODO create wallet and set walletCreatedStatus
+      walletCreatedStatus = createWallet(restoreBackupSeedPhraseModel.getSeedPhrase(), restoreLocationFile);
+
     } else if (WelcomeWizardState.RESTORE_WALLET_SEED_PHRASE.equals(getWizardModel().getSelectRestoreMethod())) {
       log.debug("Performing a restore from a seed phrase and a timestamp.");
       EnterSeedPhraseModel restoreEnterSeedPhraseModel = model.getRestoreWalletEnterSeedPhraseModel();
-      log.debug("Seed phrase = '" + restoreEnterSeedPhraseModel.getSeedPhrase() + "'");
       log.debug("Timestamp = " + restoreEnterSeedPhraseModel.getSeedTimestamp());
 
       // TODO also need a wallet password to encrypt the wallet with - using "password" for now
@@ -176,9 +177,11 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
   }
 
   /**
-   * Create a wallet
+   * Create a wallet from a seed phrase, timestamp and password
    */
   private boolean createWallet(List<String> seedPhrase, String timestamp, CharSequence password) {
+    if (!checkSeedPhrase(seedPhrase)) return false;
+
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(seedPhrase);
 
@@ -196,4 +199,42 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     }
   }
 
+  /**
+   * Create a wallet from a seed phrase and a backup location
+   */
+  private boolean createWallet(List<String> seedPhrase, File restoreLocationFile) {
+    if (!checkSeedPhrase(seedPhrase)) return false;
+
+    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] seed = seedGenerator.convertToSeed(seedPhrase);
+
+    WalletId walletId = new WalletId(seed);
+    List<File>backupfiles = BackupManager.INSTANCE.getWalletBackups(walletId, restoreLocationFile);
+
+    if (backupfiles.size() == 0) {
+      // No backups to load
+      return false;
+    } else {
+      // TODO user to specify which of the backups to load
+      // TODO for now just choose the first one
+      File backupToUse = backupfiles.get(0);
+      try {
+        BackupManager.INSTANCE.loadBackup(backupToUse);
+
+        // TODO Replay wallet from the data of the last block seen
+        return true;
+      } catch (IOException ioe) {
+        log.error("Failed to restore wallet. Error was '" + ioe.getMessage() + "'.");
+        return false;
+      }
+    }
+  }
+
+  private boolean checkSeedPhrase(List<String> seedPhrase) {
+    if (seedPhrase == null || seedPhrase.size() == 0) {
+      log.error("No seed phrase specified. Cannot restore wallet.");
+      return false;
+    }
+    return true;
+  }
 }

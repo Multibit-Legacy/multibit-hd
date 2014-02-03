@@ -64,6 +64,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
 
   private EnterSeedPhraseModel createWalletEnterSeedPhraseModel;
   private EnterSeedPhraseModel restoreWalletEnterSeedPhraseModel;
+  private EnterSeedPhraseModel restoreWalletBackupSeedPhraseModel;
 
   private List<String> createWalletSeedPhrase= Lists.newArrayList();
   private List<String> restoreWalletSeedPhrase=Lists.newArrayList();
@@ -217,8 +218,18 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
     return restoreWalletSeedPhrase;
   }
 
+  /**
+   * The seed phrase entered on the RestoreWalletSeedPhrasePanelView
+   */
   public EnterSeedPhraseModel getRestoreWalletEnterSeedPhraseModel() {
     return restoreWalletEnterSeedPhraseModel;
+  }
+
+  /**
+   * The seed phrase entered on the RestoreWalletBackupPanelView
+   */
+  public EnterSeedPhraseModel getRestoreWalletBackupSeedPhraseModel() {
+    return restoreWalletBackupSeedPhraseModel;
   }
 
   public WelcomeWizardState getSelectRestoreMethod() {
@@ -323,6 +334,14 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
     this.restoreWalletEnterSeedPhraseModel = restoreWalletEnterSeedPhraseModel;
   }
 
+  /**
+   * <p>Reduced visibility for panel models</p>
+   *
+   * @param restoreWalletBackupSeedPhraseModel The "restore wallet backup seed phrase" model
+   */
+  void setRestoreWalletBackupSeedPhraseModel(EnterSeedPhraseModel restoreWalletBackupSeedPhraseModel) {
+    this.restoreWalletBackupSeedPhraseModel = restoreWalletBackupSeedPhraseModel;
+  }
   /**
    * <p>Reduced visibility for panel models</p>
    *

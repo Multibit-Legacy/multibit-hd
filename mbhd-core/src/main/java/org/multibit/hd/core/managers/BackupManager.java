@@ -92,7 +92,7 @@ public enum BackupManager {
    * @param directoryName The directory to look in
    * @return The wallet backups available
    */
-  private List<File> getWalletBackups(WalletId walletId, File directoryName) {
+  public List<File> getWalletBackups(WalletId walletId, File directoryName) {
     // TODO would also be nice to return the dates of the backups (from the timestamp) or return them sorted by age
     // TODO then the latest backup can be used easily
     List<File> walletBackups = Lists.newArrayList();

@@ -58,7 +58,7 @@ public class RestoreWalletBackupPanelView extends AbstractWizardPanelView<Welcom
     setPanelModel(panelModel);
 
     getWizardModel().setRestoreLocationSelectFileModel(selectFileMaV.getModel());
-    getWizardModel().setRestoreWalletEnterSeedPhraseModel(enterSeedPhraseMaV.getModel());
+    getWizardModel().setRestoreWalletBackupSeedPhraseModel(enterSeedPhraseMaV.getModel());
 
   }
 
