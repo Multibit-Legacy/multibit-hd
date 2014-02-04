@@ -14,7 +14,7 @@ import org.multibit.hd.ui.views.wizards.AbstractPanelModel;
  * @since 0.0.1
  *  
  */
-public class RestoreWalletBackupPanelModel extends AbstractPanelModel {
+public class RestoreWalletSelectBackupLocationPanelModel extends AbstractPanelModel {
 
   private final SelectFileModel selectFileModel;
   private final EnterSeedPhraseModel enterSeedPhraseModel;
@@ -24,7 +24,7 @@ public class RestoreWalletBackupPanelModel extends AbstractPanelModel {
    * @param selectFileModel      The "select file" component model
    * @param enterSeedPhraseModel The "enter seed phrase" component model
    */
-  public RestoreWalletBackupPanelModel(
+  public RestoreWalletSelectBackupLocationPanelModel(
     String panelName,
     SelectFileModel selectFileModel,
     EnterSeedPhraseModel enterSeedPhraseModel

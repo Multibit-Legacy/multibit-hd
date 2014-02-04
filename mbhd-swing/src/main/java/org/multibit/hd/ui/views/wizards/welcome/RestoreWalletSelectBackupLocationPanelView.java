@@ -26,7 +26,7 @@ import javax.swing.*;
  * @since 0.0.1
  *  
  */
-public class RestoreWalletBackupPanelView extends AbstractWizardPanelView<WelcomeWizardModel, RestoreWalletBackupPanelModel> {
+public class RestoreWalletSelectBackupLocationPanelView extends AbstractWizardPanelView<WelcomeWizardModel, RestoreWalletSelectBackupLocationPanelModel> {
 
   private ModelAndView<SelectFileModel, SelectFileView> selectFileMaV;
   private ModelAndView<EnterSeedPhraseModel, EnterSeedPhraseView> enterSeedPhraseMaV;
@@ -35,7 +35,7 @@ public class RestoreWalletBackupPanelView extends AbstractWizardPanelView<Welcom
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public RestoreWalletBackupPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public RestoreWalletSelectBackupLocationPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard.getWizardModel(), panelName, MessageKey.RESTORE_WALLET_BACKUP_TITLE);
 
@@ -50,7 +50,7 @@ public class RestoreWalletBackupPanelView extends AbstractWizardPanelView<Welcom
     selectFileMaV = Components.newSelectFileMaV(getPanelName());
     enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV(getPanelName(),false);
 
-    RestoreWalletBackupPanelModel panelModel = new RestoreWalletBackupPanelModel(
+    RestoreWalletSelectBackupLocationPanelModel panelModel = new RestoreWalletSelectBackupLocationPanelModel(
       getPanelName(),
       selectFileMaV.getModel(),
       enterSeedPhraseMaV.getModel()

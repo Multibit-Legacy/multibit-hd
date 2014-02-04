@@ -47,7 +47,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   /**
    * The "select restore" radio button choice (as a state)
    */
-  private WelcomeWizardState selectRestoreMethod = WelcomeWizardState.RESTORE_WALLET_BACKUP;
+  private WelcomeWizardState selectRestoreMethod = WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP_LOCATION;
 
   /**
    * The seed phrase generator
@@ -66,8 +66,8 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   private EnterSeedPhraseModel restoreWalletEnterSeedPhraseModel;
   private EnterSeedPhraseModel restoreWalletBackupSeedPhraseModel;
 
-  private List<String> createWalletSeedPhrase= Lists.newArrayList();
-  private List<String> restoreWalletSeedPhrase=Lists.newArrayList();
+  private List<String> createWalletSeedPhrase = Lists.newArrayList();
+  private List<String> restoreWalletSeedPhrase = Lists.newArrayList();
 
   private String actualSeedTimestamp;
 
@@ -107,13 +107,10 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
         break;
       case CREATE_WALLET_REPORT:
         throw new IllegalStateException("'Next' is not permitted here");
-      case RESTORE_WALLET_SELECT_METHOD:
-        state = selectRestoreMethod;
-        break;
       case RESTORE_WALLET_SEED_PHRASE:
         state = RESTORE_WALLET_REPORT;
         break;
-      case RESTORE_WALLET_BACKUP:
+      case RESTORE_WALLET_SELECT_BACKUP_LOCATION:
         state = RESTORE_WALLET_REPORT;
         break;
       case RESTORE_WALLET_REPORT:
@@ -150,14 +147,14 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
         break;
       case CREATE_WALLET_REPORT:
         throw new IllegalStateException("'Previous' is not permitted here");
-      case RESTORE_WALLET_SELECT_METHOD:
+      case RESTORE_WALLET_SEED_PHRASE:
         state = WELCOME_SELECT_WALLET;
         break;
-      case RESTORE_WALLET_BACKUP:
-        state = RESTORE_WALLET_SELECT_METHOD;
+      case RESTORE_WALLET_SELECT_BACKUP_LOCATION:
+        state = RESTORE_WALLET_SEED_PHRASE;
         break;
-      case RESTORE_WALLET_SEED_PHRASE:
-        state = RESTORE_WALLET_SELECT_METHOD;
+      case RESTORE_WALLET_SELECT_BACKUP:
+        state = RESTORE_WALLET_SEED_PHRASE;
         break;
       case RESTORE_WALLET_REPORT:
         state = selectRestoreMethod;
@@ -342,6 +339,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   void setRestoreWalletBackupSeedPhraseModel(EnterSeedPhraseModel restoreWalletBackupSeedPhraseModel) {
     this.restoreWalletBackupSeedPhraseModel = restoreWalletBackupSeedPhraseModel;
   }
+
   /**
    * <p>Reduced visibility for panel models</p>
    *

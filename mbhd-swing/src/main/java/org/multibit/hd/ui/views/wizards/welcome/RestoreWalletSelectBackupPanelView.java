@@ -2,10 +2,10 @@ package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
@@ -29,9 +29,9 @@ import java.util.Locale;
  * @since 0.0.1
  *         
  */
-public class WelcomePanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> implements ActionListener {
+public class RestoreWalletSelectBackupPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> implements ActionListener {
 
-  private static final Logger log = LoggerFactory.getLogger(WelcomePanelView.class);
+  private static final Logger log = LoggerFactory.getLogger(RestoreWalletSelectBackupPanelView.class);
 
   // Model
   private String localeCode = Languages.currentLocale().getLanguage();
@@ -40,7 +40,7 @@ public class WelcomePanelView extends AbstractWizardPanelView<WelcomeWizardModel
    * @param wizard The wizard managing the states
    * @param panelName   The panel name to filter events from components
    */
-  public WelcomePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public RestoreWalletSelectBackupPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard.getWizardModel(), panelName, MessageKey.WELCOME_TITLE);
 

@@ -127,7 +127,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     // RESTORE_WALLET_SEED_PHRASE = restore from a seed phrase and timestamp
     // RESTORE_WALLET_BACKUP = restore from a seed phrase and wallet backup
 
-    if (WelcomeWizardState.RESTORE_WALLET_BACKUP.equals(getWizardModel().getSelectRestoreMethod())) {
+    if (WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP_LOCATION.equals(getWizardModel().getSelectRestoreMethod())) {
       log.debug("Performing a restore from a seed phrase and a wallet backup.");
       String restoreLocation = model.getRestoreLocation();
       Preconditions.checkNotNull(restoreLocation, "'restoreLocation' must be present");
