@@ -1,4 +1,6 @@
-Status: [![Build Status](https://travis-ci.org/bitcoin-solutions/multibit-hd.png?branch=master)](https://travis-ci.org/bitcoin-solutions/multibit-hd)
+Build status: [![Build Status](https://travis-ci.org/bitcoin-solutions/multibit-hd.png?branch=master)](https://travis-ci.org/bitcoin-solutions/multibit-hd)
+
+Project status: Alpha. Expect bugs and API changes. Not suitable for production, but early adopter developers should get on board.
 
 ### MultiBit HD
 
@@ -13,29 +15,33 @@ desktop clients. Support for external hardware wallets (such as the Trezor) is a
 * [Google Protocol Buffers](https://code.google.com/p/protobuf/) (protobuf) - For use with communicating with the Trezor device
 * Java 7 and Swing
 
-#### Why not Java 8?
+### Frequently asked questions (FAQ)
+
+Here are some common questions that developers ask when they first encounter MBHD.
+
+#### Why not Java 8 ?
 
 At the time MBHD was being written (Q4 2013) Java 8 was not in production release and the sheer size of the packaged download
 was coming in at 150Mb (18x MultiBit Classic and 3x the Java 7 packaged footprints). That footprint alone would be sufficient
 to dramatically increase the cost of serving the application.
 
-#### Why not JavaFX?
+#### Why not JavaFX ?
 
 JavaFX was only available as version 2.2 on Java 7 and the move to Java 8 was not going to happen. There were many significant
 features missing in JavaFX which would only be fixed in Java 8 (e.g. right to left languages, integration with native platform
 for Bitcoin URI protocol handling, reporting uncaught exceptions).
 
-This technology was not suitable for the very wide range of people using MultiBit.
+This technology was not suitable for the very wide range of people using MultiBit in all corners of the globe.
 
-#### Why Swing?
+#### Why Swing ?
 
 Although Swing is not pretty, there is a vast amount of support for it. The code is near bullet-proof for most use cases and it
 fully supports internationalization which is a key requirement for MultiBit. Also, many of the supporting libraries for Swing
-pre-date 2009 making it much harder for dependency chain attacks to take place.
+pre-date 2009 making it much harder for [dependency chain attacks](http://gary-rowe.com/agilestack/2013/07/03/preventing-dependency-chain-attacks-in-maven/) to take place.
 
-Swing also allows us to smoothly integrate with the native platform which puts it ahead of JavaFX until at least Q4 2013.
+Swing also allows us to smoothly integrate with the native platform which puts it ahead of JavaFX until at least Q4 2014.
 
-#### Why the Nimbus look and feel?
+#### Why the Nimbus look and feel ?
 
 In Java 7 the Nimbus look and feel became integrated with the JDK. It provides a modern 2D rendered UI that is the same across
 all platforms. It is highly customisable through simple themes and provides consistent painting behaviour across platforms. For
@@ -45,22 +51,27 @@ Using Nimbus ensures that we don't have this or similar problems.
 
 [Technical details on the default colours](http://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/_nimbusDefaults.html#primary)
 
-### Project status
+#### Is there a developer wiki ?
 
-Alpha: Expect bugs and API changes. Not suitable for production, but early adopter developers should get on board.
+Yes. [The wiki pages](https://github.com/bitcoin-solutions/multibit-hd/wiki/_pages) provide comprehensive instructions for
+developers that cover a variety of environments.
 
 ### Getting started
 
-Have a read of [the wiki pages](https://github.com/bitcoin-solutions/multibit-hd/wiki/_pages) which gives comprehensive instructions
-for a variety of environments.
+MBHD is a standard Maven build, but relies on some snapshot builds of libraries which won't be available in Maven Central.
 
-### IDE configuration notes
+In general you should check out the following from their respective source control repos and install them locally:
 
-You can set the application name for MacOS using a VM argument of
+ * [MultiBit HD Hardware](https://github.com/bitcoin-solutions/mbhd-hardware) - use "master" branch
+ * [Bitcoinj](https://code.google.com/p/bitcoinj/) - use "master" branch
+
+Use the standard Maven build and install process:
 
 ```
--Xdock:name="MultiBit HD"
+$ mvn clean install
 ```
+
+If you want to run the application within an IDE, you will need to run `MultiBitHD.main()` in the `mbhd-swing` module.
 
 ### Use cases documentation
 
