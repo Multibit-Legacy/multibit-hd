@@ -18,9 +18,12 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <!-- Library versions -->
-    <slf4j.version>1.7.2</slf4j.version>
+    <!-- Snapshot library versions (require local builds) -->
     <bitcoinj.version>0.11-SNAPSHOT</bitcoinj.version>
+    <mbhd-hardware.version>0.0.1-SNAPSHOT</mbhd-hardware.version>
+
+    <!-- Library versions with multiple modules -->
+    <slf4j.version>1.7.2</slf4j.version>
     <xchange.version>1.7.0</xchange.version>
     <jackson.version>2.2.2</jackson.version>
 
@@ -192,6 +195,18 @@
   <dependencyManagement>
     <dependencies>
 
+      <!-- MultiBit HD Hardware for hardware wallet support -->
+      <dependency>
+        <groupId>org.multibit.hd.hardware</groupId>
+        <artifactId>core</artifactId>
+        <version>${mbhd-hardware.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.multibit.hd.hardware</groupId>
+        <artifactId>trezor</artifactId>
+        <version>${mbhd-hardware.version}</version>
+      </dependency>
+
       <!-- Logging is through SLF4J and Logback -->
       <dependency>
         <groupId>org.slf4j</groupId>
@@ -279,6 +294,18 @@
 
   <!-- All modules will have these dependencies -->
   <dependencies>
+
+    <!-- MultiBit HD Hardware for hardware wallet support -->
+    <dependency>
+      <groupId>org.multibit.hd.hardware</groupId>
+      <artifactId>core</artifactId>
+      <version>${mbhd-hardware.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.multibit.hd.hardware</groupId>
+      <artifactId>trezor</artifactId>
+      <version>${mbhd-hardware.version}</version>
+    </dependency>
 
     <!-- All logging is through SLF4J and Logback -->
     <dependency>

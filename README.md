@@ -15,6 +15,23 @@ desktop clients. Support for external hardware wallets (such as the Trezor) is a
 * [Google Protocol Buffers](https://code.google.com/p/protobuf/) (protobuf) - For use with communicating with the Trezor device
 * Java 7 and Swing
 
+### Getting started
+
+MBHD is a standard Maven build, but relies on some snapshot builds of libraries which won't be available in Maven Central.
+
+In general you should check out the following from their respective source control repos and install them locally:
+
+ * [MultiBit HD Hardware](https://github.com/bitcoin-solutions/mbhd-hardware) - use "master" branch
+ * [Bitcoinj](https://code.google.com/p/bitcoinj/) - use "master" branch
+
+Use the standard Maven build and install process:
+
+```
+$ mvn clean install
+```
+
+If you want to run the application within an IDE, you will need to run `MultiBitHD.main()` in the `mbhd-swing` module.
+
 ### Frequently asked questions (FAQ)
 
 Here are some common questions that developers ask when they first encounter MBHD.
@@ -55,23 +72,6 @@ Using Nimbus ensures that we don't have this or similar problems.
 
 Yes. [The wiki pages](https://github.com/bitcoin-solutions/multibit-hd/wiki/_pages) provide comprehensive instructions for
 developers that cover a variety of environments.
-
-### Getting started
-
-MBHD is a standard Maven build, but relies on some snapshot builds of libraries which won't be available in Maven Central.
-
-In general you should check out the following from their respective source control repos and install them locally:
-
- * [MultiBit HD Hardware](https://github.com/bitcoin-solutions/mbhd-hardware) - use "master" branch
- * [Bitcoinj](https://code.google.com/p/bitcoinj/) - use "master" branch
-
-Use the standard Maven build and install process:
-
-```
-$ mvn clean install
-```
-
-If you want to run the application within an IDE, you will need to run `MultiBitHD.main()` in the `mbhd-swing` module.
 
 ### Use cases documentation
 
