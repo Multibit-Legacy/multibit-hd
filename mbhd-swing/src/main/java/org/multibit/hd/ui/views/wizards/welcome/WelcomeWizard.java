@@ -69,7 +69,7 @@ public class WelcomeWizard extends AbstractWizard<WelcomeWizardModel> {
 
     wizardViewMap.put(
       RESTORE_WALLET_TIMESTAMP.name(),
-      new RestoreWalletReportPanelView(this, RESTORE_WALLET_TIMESTAMP.name()));
+      new RestoreWalletTimestampPanelView(this, RESTORE_WALLET_TIMESTAMP.name()));
 
     wizardViewMap.put(
       RESTORE_WALLET_REPORT.name(),

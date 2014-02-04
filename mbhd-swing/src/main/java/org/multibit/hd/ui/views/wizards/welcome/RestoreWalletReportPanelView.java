@@ -120,14 +120,14 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     WelcomeWizardModel model = getWizardModel();
 
     log.debug("The select wallet choice is " + getWizardModel().getSelectWalletChoice());
-    log.debug("The restore method is " + getWizardModel().getSelectRestoreMethod());
+    log.debug("The restore method is " + getWizardModel().getRestoreMethod());
 
     // TODO Check all required data is valid
     // There are two sorts of restore wallet method:
     // RESTORE_WALLET_SEED_PHRASE = restore from a seed phrase and timestamp
     // RESTORE_WALLET_BACKUP = restore from a seed phrase and wallet backup
 
-    if (WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP_LOCATION.equals(getWizardModel().getSelectRestoreMethod())) {
+    if (WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP_LOCATION.equals(getWizardModel().getRestoreMethod())) {
       log.debug("Performing a restore from a seed phrase and a wallet backup.");
       String restoreLocation = model.getRestoreLocation();
       Preconditions.checkNotNull(restoreLocation, "'restoreLocation' must be present");
@@ -154,7 +154,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       // Determine if the create wallet status is valid
       walletCreatedStatus = createWallet(restoreBackupSeedPhraseModel.getSeedPhrase(), restoreLocationFile);
 
-    } else if (WelcomeWizardState.RESTORE_WALLET_SEED_PHRASE.equals(getWizardModel().getSelectRestoreMethod())) {
+    } else if (WelcomeWizardState.RESTORE_WALLET_SEED_PHRASE.equals(getWizardModel().getRestoreMethod())) {
       log.debug("Performing a restore from a seed phrase and a timestamp.");
       EnterSeedPhraseModel restoreEnterSeedPhraseModel = model.getRestoreWalletEnterSeedPhraseModel();
       log.debug("Timestamp = " + restoreEnterSeedPhraseModel.getSeedTimestamp());
@@ -162,7 +162,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       // TODO also need a wallet password to encrypt the wallet with - using "password" for now
       walletCreatedStatus = createWallet(restoreEnterSeedPhraseModel.getSeedPhrase(), restoreEnterSeedPhraseModel.getSeedTimestamp(), "password");
     } else {
-      log.error("Cannot perform a restore - unknown method of restore = '" + getWizardModel().getSelectRestoreMethod() + "'.");
+      log.error("Cannot perform a restore - unknown method of restore = '" + getWizardModel().getRestoreMethod() + "'.");
     }
 
     if (walletCreatedStatus) {

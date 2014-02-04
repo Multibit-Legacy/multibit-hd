@@ -45,9 +45,9 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   private WelcomeWizardState selectWalletChoice = WelcomeWizardState.CREATE_WALLET_SEED_PHRASE;
 
   /**
-   * The "select restore" radio button choice (as a state)
+   * The "restore method" indicates if a backup location or timestamp was selected
    */
-  private WelcomeWizardState selectRestoreMethod = WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP_LOCATION;
+  private WelcomeWizardState restoreMethod = WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP_LOCATION;
 
   /**
    * The seed phrase generator
@@ -108,9 +108,15 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
       case CREATE_WALLET_REPORT:
         throw new IllegalStateException("'Next' is not permitted here");
       case RESTORE_WALLET_SEED_PHRASE:
-        state = RESTORE_WALLET_REPORT;
+        state = RESTORE_WALLET_SELECT_BACKUP_LOCATION;
         break;
       case RESTORE_WALLET_SELECT_BACKUP_LOCATION:
+        state = restoreMethod;
+        break;
+      case RESTORE_WALLET_SELECT_BACKUP:
+        state = RESTORE_WALLET_REPORT;
+        break;
+      case RESTORE_WALLET_TIMESTAMP:
         state = RESTORE_WALLET_REPORT;
         break;
       case RESTORE_WALLET_REPORT:
@@ -154,10 +160,13 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
         state = RESTORE_WALLET_SEED_PHRASE;
         break;
       case RESTORE_WALLET_SELECT_BACKUP:
-        state = RESTORE_WALLET_SEED_PHRASE;
+        state = RESTORE_WALLET_SELECT_BACKUP_LOCATION;
+        break;
+      case RESTORE_WALLET_TIMESTAMP:
+        state = RESTORE_WALLET_SELECT_BACKUP_LOCATION;
         break;
       case RESTORE_WALLET_REPORT:
-        state = selectRestoreMethod;
+        state = restoreMethod;
       case SELECT_WALLET_HARDWARE:
         state = WELCOME_SELECT_WALLET;
         break;
@@ -229,8 +238,8 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
     return restoreWalletBackupSeedPhraseModel;
   }
 
-  public WelcomeWizardState getSelectRestoreMethod() {
-    return selectRestoreMethod;
+  public WelcomeWizardState getRestoreMethod() {
+    return restoreMethod;
   }
 
   /**
@@ -307,10 +316,10 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   /**
    * <p>Reduced visibility for panel models</p>
    *
-   * @param selectRestoreMethod The restore method selection from the radio buttons
+   * @param restoreMethod The restore method selection from the radio buttons
    */
-  void setSelectRestoreMethod(WelcomeWizardState selectRestoreMethod) {
-    this.selectRestoreMethod = selectRestoreMethod;
+  void setRestoreMethod(WelcomeWizardState restoreMethod) {
+    this.restoreMethod = restoreMethod;
   }
 
   /**

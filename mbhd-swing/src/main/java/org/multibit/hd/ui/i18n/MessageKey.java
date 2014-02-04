@@ -85,9 +85,10 @@ public enum MessageKey {
   CREATE_WALLET_PASSWORD_TITLE("create_wallet_password_title"),
   SELECT_BACKUP_LOCATION_TITLE("select_backup_location_title"),
   CREATE_WALLET_REPORT_TITLE("create_wallet_report_title"),
-  RESTORE_WALLET_METHOD_TITLE("restore_wallet_method_title"),
-  RESTORE_WALLET_BACKUP_TITLE  ("restore_wallet_backup_title"),
-  RESTORE_WALLET_SEED_PHRASE_TITLE  ("restore_wallet_seed_phrase_title"),
+  RESTORE_WALLET_SEED_PHRASE_TITLE("restore_wallet_seed_phrase_title"),
+  RESTORE_WALLET_BACKUP_LOCATION_TITLE("restore_wallet_backup_location_title"),
+  RESTORE_WALLET_BACKUP_TITLE("restore_wallet_backup_title"),
+  RESTORE_WALLET_TIMESTAMP_TITLE("restore_wallet_timestamp_title"),
   RESTORE_WALLET_REPORT_TITLE("restore_wallet_report_title"),
 
   // Labels

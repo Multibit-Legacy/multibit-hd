@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
@@ -17,19 +18,17 @@ import org.multibit.hd.ui.views.wizards.WizardButton;
 import javax.swing.*;
 import java.util.List;
 
-import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.CREATE_WALLET_CONFIRM_SEED_PHRASE;
-
 /**
  * <p>Wizard to provide the following to UI:</p>
  * <ul>
- * <li>Confirm wallet seed phrase display</li>
+ * <li>Restore wallet from seed phrase with optional timestamp</li>
  * </ul>
  *
  * @since 0.0.1
  *         
  */
 
-public class CreateWalletConfirmSeedPhrasePanelView extends AbstractWizardPanelView<WelcomeWizardModel, List<String>> {
+public class RestoreWalletTimestampPanelView extends AbstractWizardPanelView<WelcomeWizardModel, List<String>> {
 
   private ModelAndView<EnterSeedPhraseModel, EnterSeedPhraseView> enterSeedPhraseMaV;
 
@@ -37,21 +36,21 @@ public class CreateWalletConfirmSeedPhrasePanelView extends AbstractWizardPanelV
    * @param wizard The wizard managing the states
    * @param panelName   The panel name to filter events from components
    */
-  public CreateWalletConfirmSeedPhrasePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public RestoreWalletTimestampPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), panelName, MessageKey.CONFIRM_WALLET_SEED_PHRASE_TITLE);
+    super(wizard.getWizardModel(), panelName, MessageKey.RESTORE_WALLET_TIMESTAMP_TITLE);
 
-    PanelDecorator.addExitCancelNext(this, wizard);
-
+    PanelDecorator.addExitCancelPreviousNext(this, wizard);
   }
 
   @Override
   public void newPanelModel() {
 
-    enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV(getPanelName(), true, true);
+    // Do not ask for seed phrase (we already have it)
+    enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV(getPanelName(),true, false);
     setPanelModel(enterSeedPhraseMaV.getModel().getValue());
 
-    getWizardModel().setCreateWalletEnterSeedPhraseModel(enterSeedPhraseMaV.getModel());
+    getWizardModel().setRestoreWalletEnterSeedPhraseModel(enterSeedPhraseMaV.getModel());
 
   }
 
@@ -64,7 +63,7 @@ public class CreateWalletConfirmSeedPhrasePanelView extends AbstractWizardPanelV
       "[][]" // Row constraints
     ));
 
-    panel.add(Panels.newConfirmSeedPhrase(), "wrap");
+    panel.add(Panels.newRestoreFromSeedPhrase(), "wrap");
     panel.add(enterSeedPhraseMaV.getView().newComponentPanel(), "wrap");
 
     return panel;
@@ -72,18 +71,16 @@ public class CreateWalletConfirmSeedPhrasePanelView extends AbstractWizardPanelV
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {
+    // Do nothing - panel model is updated via an action and wizard model is not applicable
 
-    List<String> actualSeedPhrase = getWizardModel().getCreateWalletSeedPhrase();
-    String actualSeedTimestamp = getWizardModel().getActualSeedTimestamp();
+    // Enable the "next" button if the seed phrase has a valid size
+    boolean seedPhraseSizeValid = SeedPhraseSize.isValid(enterSeedPhraseMaV.getModel().getValue().size());
 
-    List<String> userSeedPhrase = enterSeedPhraseMaV.getModel().getSeedPhrase();
-    String userSeedTimestamp = enterSeedPhraseMaV.getModel().getSeedTimestamp();
-
-    boolean result = actualSeedPhrase.equals(userSeedPhrase) && actualSeedTimestamp.equals(userSeedTimestamp);
-
-    // Fire the decision events (requires knowledge of the previous panel data)
-    ViewEvents.fireWizardButtonEnabledEvent(CREATE_WALLET_CONFIRM_SEED_PHRASE.name(), WizardButton.NEXT, result);
-    ViewEvents.fireVerificationStatusChangedEvent(CREATE_WALLET_CONFIRM_SEED_PHRASE.name(), result);
+    ViewEvents.fireWizardButtonEnabledEvent(
+      getPanelName(),
+      WizardButton.NEXT,
+      seedPhraseSizeValid
+    );
 
   }
 }

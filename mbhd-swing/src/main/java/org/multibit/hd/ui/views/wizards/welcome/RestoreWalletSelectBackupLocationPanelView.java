@@ -48,7 +48,7 @@ public class RestoreWalletSelectBackupLocationPanelView extends AbstractWizardPa
 
     // Component models
     selectFileMaV = Components.newSelectFileMaV(getPanelName());
-    enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV(getPanelName(),false);
+    enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV(getPanelName(),false, true);
 
     RestoreWalletSelectBackupLocationPanelModel panelModel = new RestoreWalletSelectBackupLocationPanelModel(
       getPanelName(),
