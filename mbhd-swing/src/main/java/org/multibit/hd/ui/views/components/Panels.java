@@ -243,6 +243,8 @@ public class Panels {
 
     JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.USE_HARDWARE_WALLET);
     radio3.setActionCommand(hardwareCommand);
+    radio3.setEnabled(false);
+    radio3.setForeground(UIManager.getColor("RadioButton.disabledText"));
 
     JRadioButton radio4 = RadioButtons.newRadioButton(listener, MessageKey.SWITCH_WALLET);
     radio4.setActionCommand(switchCommand);
