@@ -19,7 +19,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <!-- Snapshot library versions (require local builds) -->
-    <bitcoinj.version>0.11-SNAPSHOT</bitcoinj.version>
+    <bitcoinj.version>0.12-SNAPSHOT</bitcoinj.version>
     <mbhd-hardware.version>0.0.1-SNAPSHOT</mbhd-hardware.version>
 
     <!-- Library versions with multiple modules -->
@@ -247,7 +247,7 @@
       <dependency>
         <groupId>com.madgag</groupId>
         <artifactId>scprov-jdk15on</artifactId>
-        <version>1.47.0.3</version>
+        <version>1.47.0.2</version>
       </dependency>
 
       <!-- Joda time for timestamps -->
