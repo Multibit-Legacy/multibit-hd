@@ -168,6 +168,10 @@ public enum MessageKey {
   RESTORE_SEED_PHRASE_NOTE_2("restore_seed_phrase_note_2"),
   RESTORE_SEED_PHRASE_NOTE_3("restore_seed_phrase_note_3"),
 
+  RESTORE_TIMESTAMP_NOTE_1("restore_timestamp_note_1"),
+  RESTORE_TIMESTAMP_NOTE_2("restore_timestamp_note_2"),
+  RESTORE_TIMESTAMP_NOTE_3("restore_timestamp_note_3"),
+
   RECIPIENT_SUMMARY("recipient_summary"),
   AMOUNT_SUMMARY("amount_summary"),
 

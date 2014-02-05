@@ -127,7 +127,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     // RESTORE_WALLET_SEED_PHRASE = restore from a seed phrase and timestamp
     // RESTORE_WALLET_BACKUP = restore from a seed phrase and wallet backup
 
-    if (WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP_LOCATION.equals(getWizardModel().getRestoreMethod())) {
+    if (WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP.equals(getWizardModel().getRestoreMethod())) {
       log.debug("Performing a restore from a seed phrase and a wallet backup.");
       String restoreLocation = model.getRestoreLocation();
       Preconditions.checkNotNull(restoreLocation, "'restoreLocation' must be present");
@@ -154,7 +154,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       // Determine if the create wallet status is valid
       walletCreatedStatus = createWallet(restoreBackupSeedPhraseModel.getSeedPhrase(), restoreLocationFile);
 
-    } else if (WelcomeWizardState.RESTORE_WALLET_SEED_PHRASE.equals(getWizardModel().getRestoreMethod())) {
+    } else if (WelcomeWizardState.RESTORE_WALLET_TIMESTAMP.equals(getWizardModel().getRestoreMethod())) {
       log.debug("Performing a restore from a seed phrase and a timestamp.");
       EnterSeedPhraseModel restoreEnterSeedPhraseModel = model.getRestoreWalletEnterSeedPhraseModel();
       log.debug("Timestamp = " + restoreEnterSeedPhraseModel.getSeedTimestamp());

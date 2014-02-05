@@ -13,6 +13,7 @@ import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
+import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
@@ -77,6 +78,8 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   // Backup summaries for restoring a wallet
   private List<BackupSummary> backupSummaries = Lists.newArrayList();
   private BackupSummary selectedBackupSummary;
+  private EnterSeedPhraseModel restoreWalletEnterTimestampModel;
+  private EnterPasswordModel restoreWalletEnterPasswordModel;
 
   /**
    * @param state The state object
@@ -184,6 +187,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
         break;
       case RESTORE_WALLET_REPORT:
         state = restoreMethod;
+        break;
       case SELECT_WALLET_HARDWARE:
         state = WELCOME_SELECT_WALLET;
         break;
@@ -275,7 +279,8 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
     summary3.setCreated(Dates.nowUtc());
     backupSummaries.add(summary3);
 
-    return !backupSummaries.isEmpty();
+    // Swap to succeed/fail
+    return backupSummaries.isEmpty();
   }
 
   /**
@@ -407,15 +412,6 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   /**
    * <p>Reduced visibility for panel models</p>
    *
-   * @param restoreMethod The restore method selection from the radio buttons
-   */
-  void setRestoreMethod(WelcomeWizardState restoreMethod) {
-    this.restoreMethod = restoreMethod;
-  }
-
-  /**
-   * <p>Reduced visibility for panel models</p>
-   *
    * @param createWalletEnterSeedPhraseModel The "create wallet enter seed phrase" model
    */
   void setCreateWalletEnterSeedPhraseModel(EnterSeedPhraseModel createWalletEnterSeedPhraseModel) {
@@ -476,5 +472,31 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
    */
   public List<BackupSummary> getBackupSummaries() {
     return backupSummaries;
+  }
+
+  /**
+   * <p>Reduced visibility for panel models</p>
+   *
+   * @param restoreWalletEnterTimestampModel The "enter seed phrase" model for the restore wallet panel
+   */
+  void setRestoreWalletEnterTimestampModel(EnterSeedPhraseModel restoreWalletEnterTimestampModel) {
+    this.restoreWalletEnterTimestampModel = restoreWalletEnterTimestampModel;
+  }
+
+  public EnterSeedPhraseModel getRestoreWalletEnterTimestampModel() {
+    return restoreWalletEnterTimestampModel;
+  }
+
+  /**
+   * <p>Reduced visibility for panel models</p>
+   *
+   * @param restoreWalletEnterPasswordModel The "enter password" model for the restore wallet panel
+   */
+  void setRestoreWalletEnterPasswordModel(EnterPasswordModel restoreWalletEnterPasswordModel) {
+    this.restoreWalletEnterPasswordModel = restoreWalletEnterPasswordModel;
+  }
+
+  public EnterPasswordModel getRestoreWalletEnterPasswordModel() {
+    return restoreWalletEnterPasswordModel;
   }
 }

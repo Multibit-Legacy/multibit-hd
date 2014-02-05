@@ -398,6 +398,25 @@ public class Panels {
   }
 
   /**
+   * <p>A "restore from timestamp" panel displays the instructions to restore from a seed phrase and timestamp</p>
+   *
+   * @return A new "restore from timestamp" panel
+   */
+  public static JPanel newRestoreFromTimestamp() {
+
+    JPanel panel = Panels.newPanel(new MigLayout(
+      "fillx,insets 0", // Layout
+      "[grow]", // Columns
+      "[]" // Rows
+    ));
+
+    // Add to the panel
+    panel.add(Labels.newRestoreFromTimestampNote(), "push");
+
+    return panel;
+  }
+
+  /**
    * <p>A "select backup directory" panel displays the instructions to choose an appropriate backup directory</p>
    *
    * @return A new "select backup directory" panel

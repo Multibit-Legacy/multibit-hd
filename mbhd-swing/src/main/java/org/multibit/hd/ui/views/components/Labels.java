@@ -601,6 +601,18 @@ public class Labels {
   }
 
   /**
+   * @return A new "restore from timestamp" note
+   */
+  public static JLabel newRestoreFromTimestampNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.RESTORE_TIMESTAMP_NOTE_1,
+      MessageKey.RESTORE_TIMESTAMP_NOTE_2,
+      MessageKey.RESTORE_TIMESTAMP_NOTE_3
+    }, new Object[][]{});
+  }
+
+  /**
    * @return A new "restore method" note
    */
   public static JLabel newRestoreSelectMethodNote() {

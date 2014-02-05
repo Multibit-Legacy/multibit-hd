@@ -184,17 +184,16 @@ public class Components {
   /**
    * <p>A "seed phrase" model and view handles user data entry of the words used in a BIP0039 seed</p>
    *
+   * @param panelName      The panel name to identify "verification status" and "next" buttons
+   * @param showTimestamp  True if the timestamp field should be visible
+   * @param showSeedPhrase True if the seed phrase field should be visible
    *
-   * @param panelName     The panel name to identify "verification status" and "next" buttons
-   * @param showTimestamp True if the timestamp field should be visible
-   *
-   * @param showSeedPhrase
    * @return A new "seed phrase" model and view
    */
   public static ModelAndView<EnterSeedPhraseModel, EnterSeedPhraseView> newEnterSeedPhraseMaV(String panelName, boolean showTimestamp, boolean showSeedPhrase) {
 
     EnterSeedPhraseModel model = new EnterSeedPhraseModel(panelName);
-    EnterSeedPhraseView view = new EnterSeedPhraseView(model, showTimestamp);
+    EnterSeedPhraseView view = new EnterSeedPhraseView(model, showTimestamp, showSeedPhrase);
 
     return new ModelAndView<>(model, view);
 
