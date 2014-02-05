@@ -87,7 +87,7 @@ public enum MessageKey {
   CREATE_WALLET_REPORT_TITLE("create_wallet_report_title"),
   RESTORE_WALLET_SEED_PHRASE_TITLE("restore_wallet_seed_phrase_title"),
   RESTORE_WALLET_BACKUP_LOCATION_TITLE("restore_wallet_backup_location_title"),
-  RESTORE_WALLET_BACKUP_TITLE("restore_wallet_backup_title"),
+  RESTORE_WALLET_SELECT_BACKUP_TITLE("restore_wallet_select_backup_title"),
   RESTORE_WALLET_TIMESTAMP_TITLE("restore_wallet_timestamp_title"),
   RESTORE_WALLET_REPORT_TITLE("restore_wallet_report_title"),
 
@@ -104,6 +104,7 @@ public enum MessageKey {
   SEED_PHRASE_CREATED_STATUS("seed_phrase_created_status"),
   WALLET_PASSWORD_CREATED_STATUS("wallet_password_created_status"),
   BACKUP_LOCATION_STATUS("backup_location_status"),
+  SELECT_BACKUP("select_backup"),
   WALLET_CREATED_STATUS("wallet_created_status"),
   ALERT_REMAINING("alert_remaining"),
   EXCHANGE_FIAT_RATE("exchange_fiat_rate"),
@@ -131,6 +132,14 @@ public enum MessageKey {
   SELECT_BACKUP_LOCATION_NOTE_2("select_backup_location_note_2"),
   SELECT_BACKUP_LOCATION_NOTE_3("select_backup_location_note_3"),
   SELECT_BACKUP_LOCATION_NOTE_4("select_backup_location_note_4"),
+
+  SELECT_RESTORE_LOCATION_NOTE_1("select_restore_location_note_1"),
+  SELECT_RESTORE_LOCATION_NOTE_2("select_restore_location_note_2"),
+  SELECT_RESTORE_LOCATION_NOTE_3("select_restore_location_note_3"),
+  SELECT_RESTORE_LOCATION_NOTE_4("select_restore_location_note_4"),
+
+  SELECT_BACKUP_NOTE_1("select_backup_note_1"),
+  SELECT_BACKUP_NOTE_2("select_backup_note_2"),
 
   SEED_WARNING_NOTE_1("seed_warning_note_1"),
   SEED_WARNING_NOTE_2("seed_warning_note_2"),

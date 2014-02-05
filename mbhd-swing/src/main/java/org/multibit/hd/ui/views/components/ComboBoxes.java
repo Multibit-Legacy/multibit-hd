@@ -1,9 +1,12 @@
 package org.multibit.hd.ui.views.components;
 
+import com.google.common.base.Preconditions;
+import org.multibit.hd.core.api.BackupSummary;
 import org.multibit.hd.core.api.Contact;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteDecorator;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilter;
+import org.multibit.hd.ui.views.components.select_backup_summary.BackupSummaryListCellRenderer;
 import org.multibit.hd.ui.views.components.select_contact.ContactComboBoxEditor;
 import org.multibit.hd.ui.views.components.select_contact.ContactListCellRenderer;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -11,6 +14,7 @@ import org.multibit.hd.ui.views.themes.Themes;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 /**
  * <p>Utility to provide the following to UI:</p>
@@ -19,7 +23,7 @@ import java.awt.event.ActionListener;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class ComboBoxes {
 
@@ -48,11 +52,27 @@ public class ComboBoxes {
   }
 
   /**
-   * @param listener The action listener to alert when the selectin is made
+   * @param listener The action listener to alert when the selection is made
+   *
+   * @return A new read only combo box
+   */
+  public static <T> JComboBox<T> newReadOnlyComboBox(ActionListener listener, T[] items) {
+
+    JComboBox<T> comboBox = newComboBox(items);
+    comboBox.setEditable(false);
+
+    // Add the listener at the end to avoid false events
+    comboBox.addActionListener(listener);
+
+    return comboBox;
+
+  }
+
+  /**
+   * @param listener The action listener to alert when the selection is made
    *
    * @return A new "language" combo box
    */
-  @SuppressWarnings("unchecked")
   public static JComboBox<String> newLanguagesComboBox(ActionListener listener) {
 
     JComboBox<String> comboBox = newComboBox(Languages.getLanguageNames(true));
@@ -67,9 +87,10 @@ public class ComboBoxes {
   }
 
   /**
-   * @return A new "recipient" combo box
+   * @param filter The contact auto-complete filter
+   *
+   * @return A new "recipient" combo box with auto-complete functionality
    */
-  @SuppressWarnings("unchecked")
   public static JComboBox<Contact> newRecipientComboBox(AutoCompleteFilter<Contact> filter) {
 
     JComboBox<Contact> comboBox = new JComboBox<>(filter.create());
@@ -95,11 +116,41 @@ public class ComboBoxes {
   }
 
   /**
+   * @param listener        The action listener
+   * @param backupSummaries The backup summary entries
+   *
+   * @return A new "recipient" combo box with auto-complete functionality
+   */
+  public static JComboBox<BackupSummary> newBackupSummaryComboBox(ActionListener listener, List<BackupSummary> backupSummaries) {
+
+    Preconditions.checkNotNull(listener,"'listener' must be present");
+    Preconditions.checkNotNull(listener,"'backupSummaries' must be present");
+
+    // Convert the backup summaries to an array
+    BackupSummary[] backupSummaryArray = new BackupSummary[backupSummaries.size()];
+
+    JComboBox<BackupSummary> comboBox = new JComboBox<>(backupSummaryArray);
+    comboBox.setBackground(Themes.currentTheme.dataEntryBackground());
+
+    // Use a backup summary list cell renderer to ensure the correct fields are displayed
+    ListCellRenderer<BackupSummary> renderer = new BackupSummaryListCellRenderer();
+    comboBox.setRenderer(renderer);
+
+    // Ensure we start with nothing selected
+    comboBox.setSelectedIndex(-1);
+
+    // Ensure we use the correct component orientation
+    comboBox.applyComponentOrientation(Languages.currentComponentOrientation());
+
+    return comboBox;
+
+  }
+
+  /**
    * @param listener The action listener
    *
    * @return A new "seed size" combo box
    */
-  @SuppressWarnings("unchecked")
   public static JComboBox<String> newSeedSizeComboBox(ActionListener listener) {
 
     JComboBox<String> comboBox = newComboBox(new String[]{

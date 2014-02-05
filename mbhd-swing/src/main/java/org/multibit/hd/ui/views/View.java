@@ -29,9 +29,14 @@ public interface View<M extends Model> {
   void setModel(M model);
 
   /**
-   * Update the model with the current view contents
+   * Update the model with the current view contents (data pull)
    */
   void updateModelFromView();
+
+  /**
+   * Update the view with the current model contents (data push)
+   */
+  void updateViewFromModel();
 
   /**
    * @return A new panel containing the visual components based on the current locale (normally used at creation/locale change)

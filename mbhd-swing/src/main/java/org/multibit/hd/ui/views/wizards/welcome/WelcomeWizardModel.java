@@ -3,9 +3,12 @@ package org.multibit.hd.ui.views.wizards.welcome;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
+import org.multibit.hd.core.api.BackupSummary;
+import org.multibit.hd.core.api.WalletId;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
@@ -71,6 +74,10 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
 
   private String actualSeedTimestamp;
 
+  // Backup summaries for restoring a wallet
+  private List<BackupSummary> backupSummaries = Lists.newArrayList();
+  private BackupSummary selectedBackupSummary;
+
   /**
    * @param state The state object
    */
@@ -108,9 +115,19 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
       case CREATE_WALLET_REPORT:
         throw new IllegalStateException("'Next' is not permitted here");
       case RESTORE_WALLET_SEED_PHRASE:
-        state = RESTORE_WALLET_SELECT_BACKUP_LOCATION;
+        if (isLocalZipBackupPresent()) {
+          restoreMethod = RESTORE_WALLET_SELECT_BACKUP_LOCATION;
+        } else {
+          restoreMethod = RESTORE_WALLET_SELECT_BACKUP;
+        }
+        state = restoreMethod;
         break;
       case RESTORE_WALLET_SELECT_BACKUP_LOCATION:
+        if (isCloudBackupPresent()) {
+          restoreMethod = RESTORE_WALLET_SELECT_BACKUP;
+        } else {
+          restoreMethod = RESTORE_WALLET_TIMESTAMP;
+        }
         state = restoreMethod;
         break;
       case RESTORE_WALLET_SELECT_BACKUP:
@@ -185,6 +202,80 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
 
     ViewEvents.fireWizardButtonEnabledEvent(CREATE_WALLET_CONFIRM_SEED_PHRASE.name(), WizardButton.NEXT, event.isOK());
 
+  }
+
+  /**
+   * @return True if backups are present in the local zip backup location
+   */
+  private boolean isLocalZipBackupPresent() {
+
+    // Ensure we start from a fresh list
+    backupSummaries.clear();
+
+    // TODO (JB) Implement the Zip backup search
+
+    BackupSummary summary1 = new BackupSummary(
+      new WalletId("66666666-77777777-88888888-99999999-aaaaaaaa"),
+      "Demo 1a"
+    );
+    summary1.setDescription("Description for 1a");
+    summary1.setCreated(Dates.nowUtc());
+    backupSummaries.add(summary1);
+
+    BackupSummary summary2 = new BackupSummary(
+      new WalletId("66666666-77777777-88888888-99999999-aaaaaaab"),
+      "Demo 1b"
+    );
+    summary2.setDescription("Description for 1b");
+    summary2.setCreated(Dates.nowUtc());
+    backupSummaries.add(summary2);
+
+    BackupSummary summary3 = new BackupSummary(
+      new WalletId("66666666-77777777-88888888-99999999-aaaaaaac"),
+      "Demo 1c"
+    );
+    summary3.setDescription("Description for 1c");
+    summary3.setCreated(Dates.nowUtc());
+    backupSummaries.add(summary3);
+
+    return !backupSummaries.isEmpty();
+  }
+
+  /**
+   * @return True if backups are present in the cloud backup location given by the user
+   */
+  private boolean isCloudBackupPresent() {
+
+    // Ensure we start from a fresh list
+    backupSummaries.clear();
+
+    // TODO (JB) Implement the Zip backup search
+
+    BackupSummary summary1 = new BackupSummary(
+      new WalletId("66666666-77777777-88888888-99999999-aaaaaaaa"),
+      "Demo 2a"
+    );
+    summary1.setDescription("Description for 2a");
+    summary1.setCreated(Dates.nowUtc());
+    backupSummaries.add(summary1);
+
+    BackupSummary summary2 = new BackupSummary(
+      new WalletId("66666666-77777777-88888888-99999999-aaaaaaab"),
+      "Demo 2b"
+    );
+    summary2.setDescription("Description for 2b");
+    summary2.setCreated(Dates.nowUtc());
+    backupSummaries.add(summary2);
+
+    BackupSummary summary3 = new BackupSummary(
+      new WalletId("66666666-77777777-88888888-99999999-aaaaaaac"),
+      "Demo 2c"
+    );
+    summary3.setDescription("Description for 2c");
+    summary3.setCreated(Dates.nowUtc());
+    backupSummaries.add(summary3);
+
+    return !backupSummaries.isEmpty();
   }
 
   /**
@@ -367,4 +458,23 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
     this.actualSeedTimestamp = actualSeedTimestamp;
   }
 
+  /**
+   * <p>Reduced visibility for panel models</p>
+   *
+   * @param selectedBackupSummary The selected backup summary
+   */
+  void setSelectedBackupSummary(BackupSummary selectedBackupSummary) {
+    this.selectedBackupSummary = selectedBackupSummary;
+  }
+
+  public BackupSummary getSelectedBackupSummary() {
+    return selectedBackupSummary;
+  }
+
+  /**
+   * @return The discovered backup summaries
+   */
+  public List<BackupSummary> getBackupSummaries() {
+    return backupSummaries;
+  }
 }

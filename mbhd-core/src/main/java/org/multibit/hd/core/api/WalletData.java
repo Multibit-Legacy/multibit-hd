@@ -37,8 +37,8 @@ public class WalletData {
   @Override
   public String toString() {
     return "WalletData{" +
-            "walletId=" + walletId +
-            ", wallet=" + wallet +
-            '}';
+      "walletId=" + walletId +
+      ", wallet=" + wallet +
+      '}';
   }
 }

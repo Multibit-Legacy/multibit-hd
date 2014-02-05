@@ -50,6 +50,17 @@ public abstract class AbstractComponentView<M extends Model> implements View<M> 
   public abstract void updateModelFromView();
 
   /**
+   * <p>Called when the model has changed and the view components need to update</p>
+   * <p>Default implementation is to do nothing since most components are pulling data</p>
+   */
+  @Override
+  public void updateViewFromModel() {
+
+    // Do nothing
+
+  }
+
+  /**
    * <p>Called when a new instance of the component is required</p>
    *
    * <p>Implementers must create a new panel taking the current locale into account</p>

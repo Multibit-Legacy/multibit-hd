@@ -21,6 +21,8 @@ import org.multibit.hd.ui.views.components.enter_recipient.EnterRecipientModel;
 import org.multibit.hd.ui.views.components.enter_recipient.EnterRecipientView;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseView;
+import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSummaryModel;
+import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSummaryView;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.components.select_file.SelectFileView;
 
@@ -209,6 +211,22 @@ public class Components {
 
     SelectFileModel model = new SelectFileModel(panelName);
     SelectFileView view = new SelectFileView(model);
+
+    return new ModelAndView<>(model, view);
+
+  }
+
+  /**
+   * <p>A "select backup summary" model and view handles user selection of a backup summary</p>
+   *
+   * @param panelName The panel name to identify "next" button
+   *
+   * @return A new "select backup summary" model and view
+   */
+  public static ModelAndView<SelectBackupSummaryModel, SelectBackupSummaryView> newSelectBackupSummaryMaV(String panelName) {
+
+    SelectBackupSummaryModel model = new SelectBackupSummaryModel(panelName);
+    SelectBackupSummaryView view = new SelectBackupSummaryView(model);
 
     return new ModelAndView<>(model, view);
 

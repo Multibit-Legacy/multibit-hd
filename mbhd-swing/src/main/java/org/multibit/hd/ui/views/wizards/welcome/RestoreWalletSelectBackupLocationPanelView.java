@@ -3,12 +3,9 @@ package org.multibit.hd.ui.views.wizards.welcome;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.*;
-import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
-import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseView;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.components.select_file.SelectFileView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -26,10 +23,9 @@ import javax.swing.*;
  * @since 0.0.1
  *  
  */
-public class RestoreWalletSelectBackupLocationPanelView extends AbstractWizardPanelView<WelcomeWizardModel, RestoreWalletSelectBackupLocationPanelModel> {
+public class RestoreWalletSelectBackupLocationPanelView extends AbstractWizardPanelView<WelcomeWizardModel, SelectFileModel> {
 
   private ModelAndView<SelectFileModel, SelectFileView> selectFileMaV;
-  private ModelAndView<EnterSeedPhraseModel, EnterSeedPhraseView> enterSeedPhraseMaV;
 
   /**
    * @param wizard    The wizard managing the states
@@ -37,7 +33,7 @@ public class RestoreWalletSelectBackupLocationPanelView extends AbstractWizardPa
    */
   public RestoreWalletSelectBackupLocationPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), panelName, MessageKey.RESTORE_WALLET_BACKUP_TITLE);
+    super(wizard.getWizardModel(), panelName, MessageKey.RESTORE_WALLET_SELECT_BACKUP_TITLE);
 
     PanelDecorator.addExitCancelPreviousNext(this, wizard);
 
@@ -46,19 +42,12 @@ public class RestoreWalletSelectBackupLocationPanelView extends AbstractWizardPa
   @Override
   public void newPanelModel() {
 
-    // Component models
+    // Component model
     selectFileMaV = Components.newSelectFileMaV(getPanelName());
-    enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV(getPanelName(),false, true);
 
-    RestoreWalletSelectBackupLocationPanelModel panelModel = new RestoreWalletSelectBackupLocationPanelModel(
-      getPanelName(),
-      selectFileMaV.getModel(),
-      enterSeedPhraseMaV.getModel()
-    );
-    setPanelModel(panelModel);
+    setPanelModel(selectFileMaV.getModel());
 
     getWizardModel().setRestoreLocationSelectFileModel(selectFileMaV.getModel());
-    getWizardModel().setRestoreWalletBackupSeedPhraseModel(enterSeedPhraseMaV.getModel());
 
   }
 
@@ -72,7 +61,6 @@ public class RestoreWalletSelectBackupLocationPanelView extends AbstractWizardPa
     ));
 
     panel.add(Panels.newRestoreFromBackup(), "span 2,grow,wrap");
-    panel.add(enterSeedPhraseMaV.getView().newComponentPanel(), "span 2,wrap");
     panel.add(Labels.newSelectFolder());
     panel.add(selectFileMaV.getView().newComponentPanel(), "grow,wrap");
 
@@ -87,14 +75,10 @@ public class RestoreWalletSelectBackupLocationPanelView extends AbstractWizardPa
     // Enable the "next" button if the backup location is present and the seed phrase has a valid size
     boolean backupLocationPresent = !Strings.isNullOrEmpty(selectFileMaV.getModel().getValue());
 
-    boolean seedPhraseSizeValid = SeedPhraseSize.isValid(enterSeedPhraseMaV.getModel().getValue().size());
-
-    boolean result = backupLocationPresent && seedPhraseSizeValid;
-
     ViewEvents.fireWizardButtonEnabledEvent(
       getPanelName(),
       WizardButton.NEXT,
-      result
+      backupLocationPresent
     );
 
   }

@@ -189,7 +189,6 @@ public class Panels {
     return panel;
   }
 
-
   /**
    * <p>A "language selector" panel provides a means of changing the display language</p>
    *
@@ -412,7 +411,7 @@ public class Panels {
     ));
 
     // Add to the panel
-    panel.add(Labels.newSelectBackupDirectoryNote(), "push");
+    panel.add(Labels.newSelectBackupLocationNote(), "push");
 
     return panel;
   }
