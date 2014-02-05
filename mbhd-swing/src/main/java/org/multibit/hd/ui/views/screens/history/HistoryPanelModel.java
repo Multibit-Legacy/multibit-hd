@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.screens.contacts;
+package org.multibit.hd.ui.views.screens.history;
 
 import org.multibit.hd.ui.views.screens.AbstractScreenModel;
 import org.multibit.hd.ui.views.screens.Screen;
@@ -6,15 +6,15 @@ import org.multibit.hd.ui.views.screens.Screen;
 /**
  * <p>View to provide the following to application:</p>
  * <ul>
- * <li>Provision of components and layout for the contacts screen</li>
+ * <li>Provision of components and layout for the history screen</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class ContactsPanelModel extends AbstractScreenModel {
+public class HistoryPanelModel extends AbstractScreenModel {
 
-  public ContactsPanelModel(Screen screen) {
+  public HistoryPanelModel(Screen screen) {
     super(screen);
   }
 

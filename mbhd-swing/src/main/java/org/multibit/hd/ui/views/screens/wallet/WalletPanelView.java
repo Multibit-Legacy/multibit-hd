@@ -2,9 +2,12 @@ package org.multibit.hd.ui.views.screens.wallet;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.screens.AbstractScreenView;
+import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.wizards.Wizards;
 
 import javax.swing.*;
@@ -19,11 +22,24 @@ import java.awt.event.ActionEvent;
  * @since 0.0.1
  *         
  */
-public class WalletPanelView {
+public class WalletPanelView extends AbstractScreenView<WalletPanelModel>  {
 
-  private final JPanel contentPanel;
+  /**
+   * @param panelModel The model backing this panel view
+   * @param screen     The screen to filter events from components
+   * @param title      The key to the main title of this panel view
+   */
+  public WalletPanelView(WalletPanelModel panelModel, Screen screen, MessageKey title) {
+    super(panelModel, screen, title);
+  }
 
-  public WalletPanelView() {
+  @Override
+  public void newScreenModel() {
+
+  }
+
+  @Override
+  public JPanel newScreenViewPanel() {
 
     CoreServices.uiEventBus.register(this);
 
@@ -32,7 +48,8 @@ public class WalletPanelView {
       "[]10[]", // Column constraints
       "[]50[]" // Row constraints
     );
-    contentPanel = Panels.newPanel(layout);
+
+    JPanel contentPanel = Panels.newPanel(layout);
 
     Action showSendBitcoinWizardAction = new AbstractAction() {
       @Override
@@ -54,13 +71,8 @@ public class WalletPanelView {
     contentPanel.add(Buttons.newReceiveBitcoinWizardButton(showReceiveBitcoinWizardAction),"w 240, h 200,align center,push,wrap");
     contentPanel.add(Components.newWalletDetailPanel(),"span 2,grow");
 
-  }
-
-  /**
-   * @return The content panel for this View
-   */
-  public JPanel getContentPanel() {
     return contentPanel;
+
   }
 
 }

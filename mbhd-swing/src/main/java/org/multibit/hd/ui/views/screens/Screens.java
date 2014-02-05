@@ -3,6 +3,20 @@ package org.multibit.hd.ui.views.screens;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.screens.contacts.ContactsPanelModel;
 import org.multibit.hd.ui.views.screens.contacts.ContactsPanelView;
+import org.multibit.hd.ui.views.screens.exit.ExitPanelModel;
+import org.multibit.hd.ui.views.screens.exit.ExitPanelView;
+import org.multibit.hd.ui.views.screens.help.HelpPanelModel;
+import org.multibit.hd.ui.views.screens.help.HelpPanelView;
+import org.multibit.hd.ui.views.screens.history.HistoryPanelModel;
+import org.multibit.hd.ui.views.screens.history.HistoryPanelView;
+import org.multibit.hd.ui.views.screens.settings.SettingsPanelModel;
+import org.multibit.hd.ui.views.screens.settings.SettingsPanelView;
+import org.multibit.hd.ui.views.screens.tools.ToolsPanelModel;
+import org.multibit.hd.ui.views.screens.tools.ToolsPanelView;
+import org.multibit.hd.ui.views.screens.transactions.TransactionsPanelModel;
+import org.multibit.hd.ui.views.screens.transactions.TransactionsPanelView;
+import org.multibit.hd.ui.views.screens.wallet.WalletPanelModel;
+import org.multibit.hd.ui.views.screens.wallet.WalletPanelView;
 
 /**
  * <p>Factory to provide the following to UI:</p>
@@ -45,31 +59,28 @@ public class Screens {
 
     switch (screen) {
       case WALLET:
-        view = new ContactsPanelView(new ContactsPanelModel(screen), screen, MessageKey.CONTACTS);
+        view = new WalletPanelView(new WalletPanelModel(screen), screen, MessageKey.CONTACTS);
         break;
       case CONTACTS:
         view = new ContactsPanelView(new ContactsPanelModel(screen), screen, MessageKey.CONTACTS);
         break;
       case TRANSACTIONS:
-        view = new ContactsPanelView(new ContactsPanelModel(screen), screen, MessageKey.CONTACTS);
+        view = new TransactionsPanelView(new TransactionsPanelModel(screen), screen, MessageKey.CONTACTS);
         break;
       case HELP:
-        view = new ContactsPanelView(new ContactsPanelModel(screen), screen, MessageKey.CONTACTS);
+        view = new HelpPanelView(new HelpPanelModel(screen), screen, MessageKey.CONTACTS);
         break;
       case HISTORY:
-        view = new ContactsPanelView(new ContactsPanelModel(screen), screen, MessageKey.CONTACTS);
+        view = new HistoryPanelView(new HistoryPanelModel(screen), screen, MessageKey.CONTACTS);
         break;
       case SETTINGS:
-        view = new ContactsPanelView(new ContactsPanelModel(screen), screen, MessageKey.CONTACTS);
+        view = new SettingsPanelView(new SettingsPanelModel(screen), screen, MessageKey.CONTACTS);
         break;
       case TOOLS:
-        view = new ContactsPanelView(new ContactsPanelModel(screen), screen, MessageKey.CONTACTS);
+        view = new ToolsPanelView(new ToolsPanelModel(screen), screen, MessageKey.CONTACTS);
         break;
       case EXIT:
-        view = new ContactsPanelView(new ContactsPanelModel(screen), screen, MessageKey.CONTACTS);
-        break;
-      case MAIN_ERROR:
-        view = new ContactsPanelView(new ContactsPanelModel(screen), screen, MessageKey.CONTACTS);
+        view = new ExitPanelView(new ExitPanelModel(screen), screen, MessageKey.CONTACTS);
         break;
       default:
         throw new IllegalStateException("Unknown screen:" + screen.name());

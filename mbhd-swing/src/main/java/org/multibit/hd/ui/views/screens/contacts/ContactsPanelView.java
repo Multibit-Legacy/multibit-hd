@@ -24,9 +24,9 @@ import java.awt.event.ActionEvent;
 public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> {
 
   /**
-   * @param panelModel The wizard model managing the states
+   * @param panelModel The model backing this panel view
    * @param screen     The screen to filter events from components
-   * @param title      The key to the main title of the wizard panel
+   * @param title      The key to the main title of this panel view
    */
   public ContactsPanelView(ContactsPanelModel panelModel, Screen screen, MessageKey title) {
     super(panelModel, screen, title);

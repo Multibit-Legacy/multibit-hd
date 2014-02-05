@@ -27,12 +27,6 @@ public enum Screen {
   TOOLS,
 
   /**
-   * TODO Consider if this should just be a wizard
-   * The error reporting screen
-   */
-  MAIN_ERROR,
-
-  /**
    * The wallet contacts screen
    */
   CONTACTS,

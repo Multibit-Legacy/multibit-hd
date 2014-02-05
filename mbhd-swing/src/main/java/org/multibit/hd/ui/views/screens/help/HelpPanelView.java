@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.screens.history;
+package org.multibit.hd.ui.views.screens.help;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
@@ -16,20 +16,20 @@ import java.awt.event.ActionEvent;
 /**
  * <p>View to provide the following to application:</p>
  * <ul>
- * <li>Provision of components and layout for the history detail display</li>
+ * <li>Provision of components and layout for the help detail display</li>
  * </ul>
  *
  * @since 0.0.1
  *         
  */
-public class HistoryPanelView extends AbstractScreenView<HistoryPanelModel>  {
+public class HelpPanelView extends AbstractScreenView<HelpPanelModel>  {
 
   /**
    * @param panelModel The model backing this panel view
    * @param screen     The screen to filter events from components
    * @param title      The key to the main title of this panel view
    */
-  public HistoryPanelView(HistoryPanelModel panelModel, Screen screen, MessageKey title) {
+  public HelpPanelView(HelpPanelModel panelModel, Screen screen, MessageKey title) {
     super(panelModel, screen, title);
   }
 
