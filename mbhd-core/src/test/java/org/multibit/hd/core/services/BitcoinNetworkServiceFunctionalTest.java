@@ -7,6 +7,7 @@ import com.google.common.util.concurrent.Uninterruptibles;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+import org.multibit.hd.core.api.TransactionData;
 import org.multibit.hd.core.api.WalletData;
 import org.multibit.hd.core.api.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
@@ -92,6 +93,8 @@ public class BitcoinNetworkServiceFunctionalTest {
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_1_PROPERTY_NAME)));
     WalletData walletData = createWallet(temporaryDirectory, seed);
 
+
+
     DateTime timestamp1 = Dates.parseSeedTimestamp(seedProperties.getProperty(WALLET_TIMESTAMP_1_PROPERTY_NAME));
 
     // Replay the single (first) wallet
@@ -104,6 +107,21 @@ public class BitcoinNetworkServiceFunctionalTest {
     // If this test fails please fund the test wallet with bitcoin as it is needed for the sending test !
     // (The wallet is logged to the console so you can see the address you need to fund).
     assertThat(walletBalance.compareTo(BigInteger.ZERO) > 0).isTrue();
+
+    // See if there are any transactions
+    WalletService walletService = CoreServices.newWalletService();
+
+    walletService.start();
+
+    // Get the current wallets transactions - there should be some
+    Set<TransactionData>transactions = walletService.getTransactions();
+
+    log.debug("The transactions in the wallet are:\n" + transactions);
+    assertThat(transactions.size() > 0).isTrue();
+
+    walletService.stopAndWait();
+
+
   }
 
   @Test

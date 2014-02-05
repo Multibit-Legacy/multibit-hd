@@ -103,6 +103,13 @@ public class CoreServices {
   }
 
   /**
+   * @return Create a new WalletService for wallet specific functionality
+   */
+  public static WalletService newWalletService() {
+    return new WalletService();
+  }
+
+  /**
    * @return Create a new seed phrase generator
    */
   public static SeedPhraseGenerator newSeedPhraseGenerator() {

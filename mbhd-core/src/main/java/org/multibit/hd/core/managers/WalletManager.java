@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  *  <li>create wallet</li>
  *  <li>load wallet</li>
  *  <li>store wallet</li>
- * <li> tracks the current wallet and the list of wallet directories</li>
+ *  <li>tracks the current wallet and the list of wallet directories</li>
  *  </ul>
  */
 public enum WalletManager {
