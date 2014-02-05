@@ -46,6 +46,7 @@ public class TransactionsPanelView extends AbstractScreenView<TransactionsPanelM
     );
 
     JPanel contentPanel = Panels.newPanel(layout);
+    contentPanel.add(new JLabel("Transactions"));
 
     return contentPanel;
 

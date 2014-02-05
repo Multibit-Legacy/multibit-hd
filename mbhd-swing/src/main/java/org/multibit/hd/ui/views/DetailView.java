@@ -4,7 +4,8 @@ import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.events.controller.ShowDetailScreenEvent;
+import org.multibit.hd.ui.events.controller.ControllerEvents;
+import org.multibit.hd.ui.events.controller.ShowScreenEvent;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
@@ -56,7 +57,7 @@ public class DetailView {
       screenViewMap.put(screen, view);
 
       // Add their panels to the overall card layout
-      screenHolder.add(view.getScreenPanel(), screen.name());
+      screenHolder.add(view.newScreenViewPanel(), screen.name());
 
     }
 
@@ -71,6 +72,8 @@ public class DetailView {
     // Add the screen holder to the overall content panel
     contentPanel.add(screenHolder, "grow,wrap");
 
+    ControllerEvents.fireShowDetailScreenEvent(Screen.WALLET);
+
   }
 
   /**
@@ -81,9 +84,9 @@ public class DetailView {
   }
 
   @Subscribe
-  public void onShowDetailScreen(ShowDetailScreenEvent event) {
+  public void onShowDetailScreen(ShowScreenEvent event) {
 
-    cardLayout.show(screenHolder, event.getDetailScreen().name());
+    cardLayout.show(screenHolder, event.getScreen().name());
 
   }
 

@@ -46,12 +46,15 @@ public class ExitPanelView extends AbstractScreenView<ExitPanelModel>  {
       "[]50[]" // Row constraints
     );
 
-    JPanel contentPanel = Panels.newPanel(layout);
-
-    Panels.showLightBox(Wizards.newExitWizard().getWizardPanel());
-
-    return contentPanel;
+    return Panels.newPanel(layout);
 
   }
 
+  @Override
+  public boolean beforeShow() {
+
+    Panels.showLightBox(Wizards.newExitWizard().getWizardPanel());
+    return true;
+
+  }
 }

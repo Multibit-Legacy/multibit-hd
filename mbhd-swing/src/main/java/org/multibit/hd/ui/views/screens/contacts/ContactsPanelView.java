@@ -2,8 +2,6 @@ package org.multibit.hd.ui.views.screens.contacts;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.i18n.MessageKey;
-import org.multibit.hd.ui.views.components.Buttons;
-import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
@@ -80,9 +78,7 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> {
       }
     };
 
-    //contentPanel.add(Components.newEnterRecipientMaV(searchContactsAction), "w 240,h 200,align center,push");
-    contentPanel.add(Buttons.newReceiveBitcoinWizardButton(newContactAction), "w 240, h 200,align center,push,wrap");
-    contentPanel.add(Components.newWalletDetailPanel(), "span 2,grow");
+    contentPanel.add(new JLabel("Contacts"));
 
     return contentPanel;
   }

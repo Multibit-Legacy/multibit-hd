@@ -2,7 +2,7 @@ package org.multibit.hd.ui.controllers;
 
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.events.controller.ShowDetailScreenEvent;
+import org.multibit.hd.ui.events.controller.ShowScreenEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,9 +28,9 @@ public class DetailController {
    * @param event The exchange rate change event
    */
   @Subscribe
-  public void onDetailScreenChanged(ShowDetailScreenEvent event) {
+  public void onDetailScreenChanged(ShowScreenEvent event) {
 
-    switch (event.getDetailScreen()) {
+    switch (event.getScreen()) {
       case SETTINGS:
 
         break;

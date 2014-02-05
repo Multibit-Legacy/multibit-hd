@@ -69,17 +69,10 @@ public abstract class AbstractScreenView<M extends ScreenModel> {
   }
 
   /**
-   * @return The detail view
+   * @return The screen
    */
   public Screen getScreen() {
     return screen;
-  }
-
-  /**
-   * @return The wizard panel (title, wizard components, buttons)
-   */
-  public JPanel getScreenPanel() {
-    return screenPanel;
   }
 
   /**

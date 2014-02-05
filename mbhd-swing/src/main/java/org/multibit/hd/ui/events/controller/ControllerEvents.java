@@ -46,7 +46,7 @@ public class ControllerEvents {
    */
   public static void fireShowDetailScreenEvent(Screen detailScreen) {
     log.debug("Firing 'show detail screen' event");
-    CoreServices.uiEventBus.post(new ShowDetailScreenEvent(detailScreen));
+    CoreServices.uiEventBus.post(new ShowScreenEvent(detailScreen));
   }
 
   /**

@@ -106,7 +106,7 @@ public class ComponentTestBed {
 
     // Choose a panel to test
     AbstractScreenView screen = Screens.newScreen(Screen.CONTACTS);
-    return screen.getScreenPanel();
+    return screen.newScreenViewPanel();
 
   }
 
