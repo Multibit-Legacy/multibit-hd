@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.detail_views.exit;
+package org.multibit.hd.ui.views.screens.exit;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
@@ -16,11 +16,11 @@ import javax.swing.*;
  * @since 0.0.1
  *         
  */
-public class ExitDetailView {
+public class ExitPanelView {
 
   private final JPanel contentPanel;
 
-  public ExitDetailView() {
+  public ExitPanelView() {
 
     CoreServices.uiEventBus.register(this);
 

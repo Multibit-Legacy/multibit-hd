@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
-import org.multibit.hd.ui.views.detail_views.DetailView;
+import org.multibit.hd.ui.views.screens.Screen;
 
 /**
  * <p>Value object to provide the following to sidebar tree nodes:</p>
@@ -15,13 +15,13 @@ import org.multibit.hd.ui.views.detail_views.DetailView;
 public class SidebarNodeInfo {
 
   private final String text;
-  private final DetailView detailScreen;
+  private final Screen detailScreen;
 
   /**
    * @param text         The text to display for custom nodes (e.g. wallet names)
    * @param detailScreen The detail screen to show if the node is selected
    */
-  public SidebarNodeInfo(String text, DetailView detailScreen) {
+  public SidebarNodeInfo(String text, Screen detailScreen) {
     this.text = text;
     this.detailScreen = detailScreen;
   }
@@ -30,7 +30,7 @@ public class SidebarNodeInfo {
     return text;
   }
 
-  public DetailView getDetailScreen() {
+  public Screen getDetailScreen() {
     return detailScreen;
   }
 }

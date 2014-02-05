@@ -64,7 +64,7 @@ public class PanelDecorator {
    * @param detailPanel The wizard panel to decorate (arranged as [title][dataPanel][buttons])
    * @param titleKey    The key to use for the title text
    */
-  public static void applyDetailTheme(JPanel detailPanel, MessageKey titleKey) {
+  public static void applyScreenTheme(JPanel detailPanel, MessageKey titleKey) {
 
     Preconditions.checkNotNull(detailPanel, "'detailPanel' must be present");
     Preconditions.checkNotNull(titleKey, "'titleKey' must be present");

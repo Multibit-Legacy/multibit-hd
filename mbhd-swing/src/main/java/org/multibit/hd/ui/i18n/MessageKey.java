@@ -133,11 +133,6 @@ public enum MessageKey {
   SELECT_BACKUP_LOCATION_NOTE_3("select_backup_location_note_3"),
   SELECT_BACKUP_LOCATION_NOTE_4("select_backup_location_note_4"),
 
-  SELECT_RESTORE_LOCATION_NOTE_1("select_restore_location_note_1"),
-  SELECT_RESTORE_LOCATION_NOTE_2("select_restore_location_note_2"),
-  SELECT_RESTORE_LOCATION_NOTE_3("select_restore_location_note_3"),
-  SELECT_RESTORE_LOCATION_NOTE_4("select_restore_location_note_4"),
-
   SELECT_BACKUP_NOTE_1("select_backup_note_1"),
   SELECT_BACKUP_NOTE_2("select_backup_note_2"),
 

@@ -76,7 +76,7 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
         case HISTORY:
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.ARCHIVE, Color.BLACK, 20));
           break;
-        case PREFERENCES:
+        case SETTINGS:
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.GEARS, Color.BLACK, 20));
           break;
         case TOOLS:

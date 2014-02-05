@@ -2,7 +2,7 @@ package org.multibit.hd.ui.events.view;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import org.multibit.hd.ui.views.detail_views.DetailView;
+import org.multibit.hd.ui.views.screens.Screen;
 
 /**
  * <p>Event to provide the following to View Event API:</p>
@@ -14,12 +14,12 @@ import org.multibit.hd.ui.views.detail_views.DetailView;
  * @since 0.0.1
  *  
  */
-public class DetailComponentModelChangedEvent implements ViewEvent {
+public class ScreenComponentModelChangedEvent implements ViewEvent {
 
-  private final DetailView detailView;
+  private final Screen detailView;
   private final Optional componentModel;
 
-  public DetailComponentModelChangedEvent(DetailView detailView, Optional componentModel) {
+  public ScreenComponentModelChangedEvent(Screen detailView, Optional componentModel) {
 
     Preconditions.checkNotNull(detailView, "'detailView' must be present");
     Preconditions.checkNotNull(componentModel, "'componentModel' must be present");
@@ -31,7 +31,7 @@ public class DetailComponentModelChangedEvent implements ViewEvent {
   /**
    * @return The detail view (to target updates to specific views)
    */
-  public DetailView getDetailView() {
+  public Screen getDetailView() {
     return detailView;
   }
 

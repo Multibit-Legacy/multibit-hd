@@ -3,7 +3,6 @@ package org.multibit.hd.ui;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.xeiam.xchange.mtgox.v2.MtGoxExchange;
-import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.services.CoreServices;
@@ -11,10 +10,11 @@ import org.multibit.hd.ui.events.controller.ChangeLocaleEvent;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.Wizards;
-import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
+import org.multibit.hd.ui.views.screens.AbstractScreenView;
+import org.multibit.hd.ui.views.screens.Screen;
+import org.multibit.hd.ui.views.screens.Screens;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,11 +88,16 @@ public class ComponentTestBed {
 
   /**
    * <p>Creates the panel under test</p>
-   * <h3>Examples</h3>
+   * <h3>Wizards</h3>
    * <pre>
    * AbstractWizard wizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME);
    * wizard.show(WelcomeWizardState.WELCOME.name());
    * return wizard.getWizardPanel();
+   * </pre>
+   * <h3>Detail views</h3>
+   * <pre>
+   * AbstractScreenView screen = Screens.newScreen(Screen.CONTACTS);
+   * return screen.getScreenPanel();
    * </pre>
    *
    * @return The panel under test
@@ -100,9 +105,8 @@ public class ComponentTestBed {
   public JPanel createTestPanel() {
 
     // Choose a panel to test
-    AbstractWizard wizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP_LOCATION);
-    wizard.show(WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP_LOCATION.name());
-    return wizard.getWizardPanel();
+    AbstractScreenView screen = Screens.newScreen(Screen.CONTACTS);
+    return screen.getScreenPanel();
 
   }
 

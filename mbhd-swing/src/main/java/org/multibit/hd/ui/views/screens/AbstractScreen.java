@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.detail_views;
+package org.multibit.hd.ui.views.screens;
 
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
@@ -19,7 +19,7 @@ import java.util.Map;
  *
  * @since 0.0.1
  */
-public abstract class AbstractDetail<M extends DetailModel> {
+public abstract class AbstractScreen<M extends ScreenModel> {
 
   private final JPanel detailPanel;
   private final M detailModel;
@@ -27,7 +27,7 @@ public abstract class AbstractDetail<M extends DetailModel> {
   /**
    * @param detailModel The detail data model containing the aggregate information of all components
    */
-  protected AbstractDetail(M detailModel) {
+  protected AbstractScreen(M detailModel) {
 
     Preconditions.checkNotNull(detailModel, "'model' must be present");
 
@@ -50,6 +50,7 @@ public abstract class AbstractDetail<M extends DetailModel> {
     // Clear out any existing components
     detailPanel.removeAll();
 
+
     // Invalidate for new layout
     Panels.invalidate(detailPanel);
 
@@ -59,7 +60,7 @@ public abstract class AbstractDetail<M extends DetailModel> {
    * <p>Add fresh content to the wizard view map</p>
    * <p>The map will be empty whenever this is called</p>
    */
-  protected abstract void populateWizardViewMap(Map<String, AbstractDetailView> wizardViewMap);
+  protected abstract void populateWizardViewMap(Map<String, AbstractScreenView> wizardViewMap);
 
   /**
    * <p>Close the wizard</p>

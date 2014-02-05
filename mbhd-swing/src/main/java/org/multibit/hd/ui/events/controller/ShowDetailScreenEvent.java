@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.events.controller;
 
-import org.multibit.hd.ui.views.detail_views.DetailView;
+import org.multibit.hd.ui.views.screens.Screen;
 
 /**
  * <p>Event to provide the following to the Controller Event API:</p>
@@ -13,9 +13,9 @@ import org.multibit.hd.ui.views.detail_views.DetailView;
  */
 public class ShowDetailScreenEvent {
 
-  private final DetailView detailScreen;
+  private final Screen detailScreen;
 
-  public ShowDetailScreenEvent(DetailView detailScreen) {
+  public ShowDetailScreenEvent(Screen detailScreen) {
 
     this.detailScreen = detailScreen;
 
@@ -24,7 +24,7 @@ public class ShowDetailScreenEvent {
   /**
    * @return The screen to show
    */
-  public DetailView getDetailScreen() {
+  public Screen getDetailScreen() {
     return detailScreen;
   }
 }

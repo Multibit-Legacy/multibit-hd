@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.detail_views.transactions;
+package org.multibit.hd.ui.views.screens.transactions;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
@@ -15,11 +15,11 @@ import javax.swing.*;
  * @since 0.0.1
  *         
  */
-public class TransactionsDetailView {
+public class TransactionsPanelView {
 
   private final JPanel contentPanel;
 
-  public TransactionsDetailView() {
+  public TransactionsPanelView() {
 
     CoreServices.uiEventBus.register(this);
 

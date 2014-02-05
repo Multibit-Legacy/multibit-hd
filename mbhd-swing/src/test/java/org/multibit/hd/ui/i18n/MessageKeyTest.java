@@ -4,6 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.config.Configurations;
 
+import static org.fest.assertions.api.Assertions.assertThat;
+
 public class MessageKeyTest {
 
   @Before
@@ -16,12 +18,9 @@ public class MessageKeyTest {
   @Test
   public void testCoverage_EN() throws Exception {
 
-    System.out.println("NOT RUNNING MESSAGEKEYTEST");
-    System.out.println("NOT RUNNING MESSAGEKEYTEST");
-    System.out.println("NOT RUNNING MESSAGEKEYTEST");
     for (MessageKey messageKey : MessageKey.values()) {
 
-//      assertThat(Languages.safeText(messageKey)).isNotEqualTo(messageKey.getKey());
+      assertThat(Languages.safeText(messageKey)).isNotEqualTo(messageKey.getKey());
 
     }
 

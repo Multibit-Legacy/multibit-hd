@@ -1,16 +1,19 @@
 package org.multibit.hd.ui.views;
 
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.controller.ShowDetailScreenEvent;
 import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.detail_views.tools.ToolsDetailView;
-import org.multibit.hd.ui.views.detail_views.wallet.WalletDetailView;
+import org.multibit.hd.ui.views.screens.AbstractScreenView;
+import org.multibit.hd.ui.views.screens.Screen;
+import org.multibit.hd.ui.views.screens.Screens;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Map;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -27,8 +30,9 @@ public class DetailView {
 
   private CardLayout cardLayout = new CardLayout();
 
-  private JPanel cardHolder = Panels.newPanel(cardLayout);
+  private JPanel screenHolder = Panels.newPanel(cardLayout);
 
+  private Map<Screen, AbstractScreenView> screenViewMap = Maps.newHashMap();
 
   public DetailView() {
 
@@ -44,10 +48,28 @@ public class DetailView {
     // Override the default theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
-    cardHolder.add(new WalletDetailView().getContentPanel(), org.multibit.hd.ui.views.detail_views.DetailView.WALLET.name());
-    cardHolder.add(new ToolsDetailView().getContentPanel(), org.multibit.hd.ui.views.detail_views.DetailView.TOOLS.name());
+    for (Screen screen: Screen.values()) {
 
-    contentPanel.add(cardHolder, "grow,wrap");
+      AbstractScreenView view = Screens.newScreen(screen);
+
+      // Keep track of the view instances in case of a locale change
+      screenViewMap.put(screen, view);
+
+      // Add their panels to the overall card layout
+      screenHolder.add(view.getScreenPanel(), screen.name());
+
+    }
+
+    // Once all the views are initialised allow events to occur
+    for (Map.Entry<Screen, AbstractScreenView> entry : screenViewMap.entrySet()) {
+
+      // Ensure the screen is in the correct starting state
+      entry.getValue().fireInitialStateViewEvents();
+
+    }
+
+    // Add the screen holder to the overall content panel
+    contentPanel.add(screenHolder, "grow,wrap");
 
   }
 
@@ -61,7 +83,7 @@ public class DetailView {
   @Subscribe
   public void onShowDetailScreen(ShowDetailScreenEvent event) {
 
-    cardLayout.show(cardHolder, event.getDetailScreen().name());
+    cardLayout.show(screenHolder, event.getDetailScreen().name());
 
   }
 

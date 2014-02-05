@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.detail_views.tools;
+package org.multibit.hd.ui.views.screens.tools;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
@@ -19,13 +19,13 @@ import java.awt.event.ActionEvent;
  * @since 0.0.1
  *         
  */
-public class ToolsDetailView {
+public class ToolsPanelView {
 
   private final JPanel contentPanel;
 
   private int count = 0;
 
-  public ToolsDetailView() {
+  public ToolsPanelView() {
 
     CoreServices.uiEventBus.register(this);
 

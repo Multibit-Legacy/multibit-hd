@@ -8,7 +8,7 @@ import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.SidebarNodeInfo;
 import org.multibit.hd.ui.views.components.ThemeAwareTreeCellRenderer;
 import org.multibit.hd.ui.views.components.TreeNodes;
-import org.multibit.hd.ui.views.detail_views.DetailView;
+import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.themes.NimbusDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
@@ -124,28 +124,28 @@ public class SidebarView {
 
   private DefaultMutableTreeNode createSidebarTreeNodes() {
 
-    DefaultMutableTreeNode root = TreeNodes.newSidebarTreeNode("", DetailView.WALLET);
+    DefaultMutableTreeNode root = TreeNodes.newSidebarTreeNode("", Screen.WALLET);
 
-    DefaultMutableTreeNode wallet = TreeNodes.newSidebarTreeNode("Wallet", DetailView.WALLET);
-    wallet.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, DetailView.CONTACTS));
-    wallet.add(TreeNodes.newSidebarTreeNode(MessageKey.TRANSACTIONS, DetailView.TRANSACTIONS));
+    DefaultMutableTreeNode wallet = TreeNodes.newSidebarTreeNode("Wallet", Screen.WALLET);
+    wallet.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, Screen.CONTACTS));
+    wallet.add(TreeNodes.newSidebarTreeNode(MessageKey.TRANSACTIONS, Screen.TRANSACTIONS));
     root.add(wallet);
 
-    DefaultMutableTreeNode trezor1 = TreeNodes.newSidebarTreeNode("Trezor 1", DetailView.WALLET);
-    trezor1.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, DetailView.CONTACTS));
-    trezor1.add(TreeNodes.newSidebarTreeNode(MessageKey.TRANSACTIONS, DetailView.TRANSACTIONS));
+    DefaultMutableTreeNode trezor1 = TreeNodes.newSidebarTreeNode("Trezor 1", Screen.WALLET);
+    trezor1.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, Screen.CONTACTS));
+    trezor1.add(TreeNodes.newSidebarTreeNode(MessageKey.TRANSACTIONS, Screen.TRANSACTIONS));
     root.add(trezor1);
 
-    DefaultMutableTreeNode trezor2 = TreeNodes.newSidebarTreeNode("Trezor 2", DetailView.WALLET);
-    trezor2.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, DetailView.CONTACTS));
-    trezor2.add(TreeNodes.newSidebarTreeNode(MessageKey.TRANSACTIONS, DetailView.TRANSACTIONS));
+    DefaultMutableTreeNode trezor2 = TreeNodes.newSidebarTreeNode("Trezor 2", Screen.WALLET);
+    trezor2.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, Screen.CONTACTS));
+    trezor2.add(TreeNodes.newSidebarTreeNode(MessageKey.TRANSACTIONS, Screen.TRANSACTIONS));
     root.add(trezor2);
 
-    root.add(TreeNodes.newSidebarTreeNode(MessageKey.HELP, DetailView.HELP));
-    root.add(TreeNodes.newSidebarTreeNode(MessageKey.HISTORY, DetailView.HISTORY));
-    root.add(TreeNodes.newSidebarTreeNode(MessageKey.PREFERENCES, DetailView.PREFERENCES));
-    root.add(TreeNodes.newSidebarTreeNode(MessageKey.TOOLS, DetailView.TOOLS));
-    root.add(TreeNodes.newSidebarTreeNode(MessageKey.EXIT, org.multibit.hd.ui.views.detail_views.DetailView.EXIT));
+    root.add(TreeNodes.newSidebarTreeNode(MessageKey.HELP, Screen.HELP));
+    root.add(TreeNodes.newSidebarTreeNode(MessageKey.HISTORY, Screen.HISTORY));
+    root.add(TreeNodes.newSidebarTreeNode(MessageKey.SETTINGS, Screen.SETTINGS));
+    root.add(TreeNodes.newSidebarTreeNode(MessageKey.TOOLS, Screen.TOOLS));
+    root.add(TreeNodes.newSidebarTreeNode(MessageKey.EXIT, Screen.EXIT));
 
     return root;
   }

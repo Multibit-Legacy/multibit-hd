@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.detail_views;
+package org.multibit.hd.ui.views.screens;
 
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.services.CoreServices;
@@ -12,14 +12,14 @@ import org.multibit.hd.core.services.CoreServices;
  * @since 0.0.1
  *  
  */
-public abstract class AbstractDetailModel implements DetailModel {
+public abstract class AbstractScreenModel implements ScreenModel {
 
   /**
    * The detail view
    */
-  protected final DetailView detailView;
+  protected final Screen detailView;
 
-  protected AbstractDetailModel(DetailView detailView) {
+  protected AbstractScreenModel(Screen detailView) {
 
     Preconditions.checkNotNull(detailView, "'detailView' must be present");
 
@@ -31,7 +31,7 @@ public abstract class AbstractDetailModel implements DetailModel {
   }
 
   @Override
-  public DetailView getDetailView() {
+  public Screen getScreen() {
 
     return detailView;
 

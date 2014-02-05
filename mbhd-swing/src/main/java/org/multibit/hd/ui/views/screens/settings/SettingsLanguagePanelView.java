@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.detail_views.settings;
+package org.multibit.hd.ui.views.screens.settings;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.views.components.ComboBoxes;
@@ -21,12 +21,12 @@ import java.awt.event.ActionListener;
  * @since 0.0.1
  *         
  */
-public class SettingsLanguageView implements ActionListener {
+public class SettingsLanguagePanelView implements ActionListener {
 
 
   private JComboBox<String> languageComboBox;
 
-  public SettingsLanguageView() {
+  public SettingsLanguagePanelView() {
 
   }
 

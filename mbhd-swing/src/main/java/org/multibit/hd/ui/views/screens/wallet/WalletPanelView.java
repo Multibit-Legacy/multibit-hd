@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.detail_views.wallet;
+package org.multibit.hd.ui.views.screens.wallet;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
@@ -19,13 +19,11 @@ import java.awt.event.ActionEvent;
  * @since 0.0.1
  *         
  */
-public class WalletDetailView {
+public class WalletPanelView {
 
   private final JPanel contentPanel;
 
-  private int count = 0;
-
-  public WalletDetailView() {
+  public WalletPanelView() {
 
     CoreServices.uiEventBus.register(this);
 

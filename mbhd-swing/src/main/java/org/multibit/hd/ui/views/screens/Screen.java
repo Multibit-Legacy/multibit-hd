@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.detail_views;
+package org.multibit.hd.ui.views.screens;
 
 /**
  * <p>Enum to provide the following to UI controllers:</p>
@@ -9,20 +9,20 @@ package org.multibit.hd.ui.views.detail_views;
  * @since 0.0.1
  *  
  */
-public enum DetailView {
+public enum Screen {
 
   /**
-   * The settings detail screen
+   * The settings screen
    */
   SETTINGS,
 
   /**
-   * The wallet detail screen
+   * The wallet screen
    */
   WALLET,
 
   /**
-   * The tools detail screen
+   * The tools screen
    */
   TOOLS,
 
@@ -33,27 +33,23 @@ public enum DetailView {
   MAIN_ERROR,
 
   /**
-   * The wallet contacts detail screen
+   * The wallet contacts screen
    */
   CONTACTS,
   /**
-   * The wallet transactions detail screen
+   * The wallet transactions screen
    */
   TRANSACTIONS,
   /**
-   * The help detail screen
+   * The help screen
    */
   HELP,
   /**
-   * The history detail screen
+   * The history screen
    */
   HISTORY,
   /**
-   * The preferences detail screen
-   */
-  PREFERENCES,
-  /**
-   * The exit detail screen
+   * The exit screen
    */
   EXIT
 

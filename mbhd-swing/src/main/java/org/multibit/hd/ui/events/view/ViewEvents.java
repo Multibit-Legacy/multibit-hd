@@ -5,7 +5,7 @@ import org.joda.money.BigMoney;
 import org.multibit.hd.core.api.RAGStatus;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.models.AlertModel;
-import org.multibit.hd.ui.views.detail_views.DetailView;
+import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,9 +132,9 @@ public class ViewEvents {
    * @param detailView      The detail view to which this applies
    * @param componentModel The component model
    */
-  public static void fireDetailComponentModelChangedEvent(DetailView detailView, Optional componentModel) {
+  public static void fireDetailComponentModelChangedEvent(Screen detailView, Optional componentModel) {
     log.debug("Firing 'detail view component model changed' event");
-    CoreServices.uiEventBus.post(new DetailComponentModelChangedEvent(detailView, componentModel));
+    CoreServices.uiEventBus.post(new ScreenComponentModelChangedEvent(detailView, componentModel));
   }
 
   /**

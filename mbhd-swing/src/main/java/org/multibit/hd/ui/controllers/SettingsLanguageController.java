@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.controllers;
 
-import org.multibit.hd.ui.views.detail_views.settings.SettingsLanguageView;
+import org.multibit.hd.ui.views.screens.settings.SettingsLanguagePanelView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +14,7 @@ public class SettingsLanguageController  {
 
   private static final Logger log = LoggerFactory.getLogger(SettingsLanguageController.class);
 
-  public SettingsLanguageController(SettingsLanguageView view) {
+  public SettingsLanguageController(SettingsLanguagePanelView view) {
 
 
   }
