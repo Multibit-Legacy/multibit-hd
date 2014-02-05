@@ -9,7 +9,7 @@ package org.multibit.hd.ui.views.wizards;
  * @since 0.0.1
  *  
  */
-public interface PanelModel {
+public interface WizardPanelModel {
 
   /**
    * @return The name of the panel to show (decouples from a specific wizard's internal state enum)

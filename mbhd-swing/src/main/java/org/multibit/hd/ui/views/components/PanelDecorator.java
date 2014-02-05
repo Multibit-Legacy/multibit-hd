@@ -33,6 +33,7 @@ public class PanelDecorator {
    *
    * @param wizardPanel The wizard panel to decorate (arranged as [title][dataPanel][buttons])
    * @param dataPanel   The data panel sandwiched into the wizard
+   * @param titleKey    The key to use for the title text
    */
   public static void applyWizardTheme(JPanel wizardPanel, JPanel dataPanel, MessageKey titleKey) {
 
@@ -54,6 +55,33 @@ public class PanelDecorator {
     // Add the wizard components
     wizardPanel.add(Labels.newTitleLabel(titleKey), "span 4,shrink,wrap,aligny top");
     wizardPanel.add(dataPanel, "span 4,grow,wrap");
+
+  }
+
+  /**
+   * <p>Create the standard "detail" theme</p>
+   *
+   * @param detailPanel The wizard panel to decorate (arranged as [title][dataPanel][buttons])
+   * @param titleKey    The key to use for the title text
+   */
+  public static void applyDetailTheme(JPanel detailPanel, MessageKey titleKey) {
+
+    Preconditions.checkNotNull(detailPanel, "'detailPanel' must be present");
+    Preconditions.checkNotNull(titleKey, "'titleKey' must be present");
+
+    // Standard wizard layout
+    MigLayout layout = new MigLayout(
+      "fillx,insets 5", // Layout constraints
+      "[][][][]", // Column constraints
+      "[shrink]10[grow]10[]" // Row constraints
+    );
+    detailPanel.setLayout(layout);
+
+    // Apply the theme
+    detailPanel.setBackground(Themes.currentTheme.detailPanelBackground());
+
+    // Add the wizard components
+    detailPanel.add(Labels.newTitleLabel(titleKey), "span 4,shrink,wrap,aligny top");
 
   }
 
@@ -99,7 +127,7 @@ public class PanelDecorator {
     JButton empty = Buttons.newExitButton(null);
     empty.setVisible(false);
 
-    wizardPanel.add(empty,"cell 0 2,push");
+    wizardPanel.add(empty, "cell 0 2,push");
 
     addFinish(view, wizard, wizardPanel);
 
@@ -421,8 +449,8 @@ public class PanelDecorator {
    */
   private static <M extends WizardModel, P> void addExit(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard, JPanel wizardPanel) {
 
-      view.setExitButton(Buttons.newExitButton(wizard.getExitAction()));
-      wizardPanel.add(view.getExitButton(), "cell 0 2,push");
+    view.setExitButton(Buttons.newExitButton(wizard.getExitAction()));
+    wizardPanel.add(view.getExitButton(), "cell 0 2,push");
 
   }
 

@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import com.google.common.base.Optional;
 import org.multibit.hd.ui.i18n.MessageKey;
-import org.multibit.hd.ui.views.wizards.AbstractPanelModel;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
 
 /**
  * <p>Panel model to provide the following to "send bitcoin report" wizard:</p>
@@ -13,7 +13,7 @@ import org.multibit.hd.ui.views.wizards.AbstractPanelModel;
  * @since 0.0.1
  *  
  */
-public class SendBitcoinReportPanelModel extends AbstractPanelModel {
+public class SendBitcoinReportPanelModel extends AbstractWizardPanelModel {
 
   // The id of the transaction that this model is describing.
   // May be null

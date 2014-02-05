@@ -2,7 +2,7 @@ package org.multibit.hd.ui.events.controller;
 
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.models.AlertModel;
-import org.multibit.hd.ui.views.detail_views.DetailScreen;
+import org.multibit.hd.ui.views.detail_views.DetailView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +44,7 @@ public class ControllerEvents {
    *
    * @param detailScreen The screen to show
    */
-  public static void fireShowDetailScreenEvent(DetailScreen detailScreen) {
+  public static void fireShowDetailScreenEvent(DetailView detailScreen) {
     log.debug("Firing 'show detail screen' event");
     CoreServices.uiEventBus.post(new ShowDetailScreenEvent(detailScreen));
   }

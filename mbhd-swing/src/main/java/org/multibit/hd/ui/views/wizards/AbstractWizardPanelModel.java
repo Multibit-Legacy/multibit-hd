@@ -12,14 +12,14 @@ import org.multibit.hd.core.services.CoreServices;
  * @since 0.0.1
  *  
  */
-public abstract class AbstractPanelModel implements PanelModel {
+public abstract class AbstractWizardPanelModel implements WizardPanelModel {
 
   /**
    * The panel name
    */
   protected String panelName;
 
-  protected AbstractPanelModel(String panelName) {
+  protected AbstractWizardPanelModel(String panelName) {
 
     Preconditions.checkNotNull(panelName, "'panelName' must be present");
 

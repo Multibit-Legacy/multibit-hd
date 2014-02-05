@@ -3,7 +3,7 @@ package org.multibit.hd.ui.views.components.confirm_password;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
-import org.multibit.hd.ui.views.AbstractComponentView;
+import org.multibit.hd.ui.views.components.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;

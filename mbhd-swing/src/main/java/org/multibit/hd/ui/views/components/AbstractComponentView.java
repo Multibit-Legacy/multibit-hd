@@ -1,8 +1,9 @@
-package org.multibit.hd.ui.views;
+package org.multibit.hd.ui.views.components;
 
 import com.google.common.base.Optional;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.models.Model;
+import org.multibit.hd.ui.views.View;
 
 import javax.swing.*;
 

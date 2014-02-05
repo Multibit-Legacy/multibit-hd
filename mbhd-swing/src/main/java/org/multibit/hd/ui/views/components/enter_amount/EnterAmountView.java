@@ -14,7 +14,7 @@ import org.multibit.hd.core.utils.CurrencyUtils;
 import org.multibit.hd.core.utils.Numbers;
 import org.multibit.hd.core.utils.Satoshis;
 import org.multibit.hd.ui.i18n.Languages;
-import org.multibit.hd.ui.views.AbstractComponentView;
+import org.multibit.hd.ui.views.components.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.TextBoxes;

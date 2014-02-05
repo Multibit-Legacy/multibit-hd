@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.wizards.receive_bitcoin;
 
 import org.multibit.hd.ui.views.components.display_address.DisplayBitcoinAddressModel;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountModel;
-import org.multibit.hd.ui.views.wizards.AbstractPanelModel;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
 
 /**
  * <p>Panel model to provide the following to "send bitcoin" wizard:</p>
@@ -13,7 +13,7 @@ import org.multibit.hd.ui.views.wizards.AbstractPanelModel;
  * @since 0.0.1
  *  
  */
-public class ReceiveBitcoinEnterAmountPanelModel extends AbstractPanelModel {
+public class ReceiveBitcoinEnterAmountPanelModel extends AbstractWizardPanelModel {
 
   private final EnterAmountModel enterAmountModel;
   private final DisplayBitcoinAddressModel displayBitcoinAddressModel;

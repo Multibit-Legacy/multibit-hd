@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.wizards.welcome;
 
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
-import org.multibit.hd.ui.views.wizards.AbstractPanelModel;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
 
 /**
  * <p>Panel model to provide the following to "send bitcoin" wizard:</p>
@@ -13,7 +13,7 @@ import org.multibit.hd.ui.views.wizards.AbstractPanelModel;
  * @since 0.0.1
  *  
  */
-public class RestoreWalletTimestampPanelModel extends AbstractPanelModel {
+public class RestoreWalletTimestampPanelModel extends AbstractWizardPanelModel {
 
   private final EnterSeedPhraseModel enterSeedPhraseModel;
   private final EnterPasswordModel enterPasswordModel;

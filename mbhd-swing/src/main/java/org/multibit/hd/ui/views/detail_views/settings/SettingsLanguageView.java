@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.detail_views;
+package org.multibit.hd.ui.views.detail_views.settings;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.views.components.ComboBoxes;

@@ -1,9 +1,8 @@
-package org.multibit.hd.ui.views.detail_views;
+package org.multibit.hd.ui.views.detail_views.transactions;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.wizards.Wizards;
 
 import javax.swing.*;
 
@@ -16,11 +15,11 @@ import javax.swing.*;
  * @since 0.0.1
  *         
  */
-public class ExitDetailView {
+public class TransactionsDetailView {
 
   private final JPanel contentPanel;
 
-  public ExitDetailView() {
+  public TransactionsDetailView() {
 
     CoreServices.uiEventBus.register(this);
 
@@ -31,8 +30,6 @@ public class ExitDetailView {
     );
 
     contentPanel = Panels.newPanel(layout);
-
-    Panels.showLightBox(Wizards.newExitWizard().getWizardPanel());
 
   }
 
