@@ -246,7 +246,7 @@
       </dependency>
       <dependency>
         <groupId>com.madgag</groupId>
-        <artifactId>scprov-jdk15on</artifactId>
+        <artifactId>sc-light-jdk15on</artifactId>
         <version>1.47.0.2</version>
       </dependency>
 

@@ -339,7 +339,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   }
 
   /**
-   * @return The actual generated seed timestamp (e.g. "1850/2")
+   * @return The actual generated seed timestamp (e.g. "1850/07")
    */
   public String getActualSeedTimestamp() {
     return actualSeedTimestamp;

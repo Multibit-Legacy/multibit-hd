@@ -157,10 +157,11 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     } else if (WelcomeWizardState.RESTORE_WALLET_TIMESTAMP.equals(getWizardModel().getRestoreMethod())) {
       log.debug("Performing a restore from a seed phrase and a timestamp.");
       EnterSeedPhraseModel restoreEnterSeedPhraseModel = model.getRestoreWalletEnterSeedPhraseModel();
-      log.debug("Timestamp = " + restoreEnterSeedPhraseModel.getSeedTimestamp());
+      EnterSeedPhraseModel restoreEnterTimestampModel = model.getRestoreWalletEnterTimestampModel();
+      log.debug("Timestamp = " + restoreEnterTimestampModel.getSeedTimestamp());
 
       // TODO also need a wallet password to encrypt the wallet with - using "password" for now
-      walletCreatedStatus = createWallet(restoreEnterSeedPhraseModel.getSeedPhrase(), restoreEnterSeedPhraseModel.getSeedTimestamp(), "password");
+      walletCreatedStatus = createWallet(restoreEnterSeedPhraseModel.getSeedPhrase(), restoreEnterTimestampModel.getSeedTimestamp(), "password");
     } else {
       log.error("Cannot perform a restore - unknown method of restore = '" + getWizardModel().getRestoreMethod() + "'.");
     }
