@@ -57,5 +57,10 @@ public class SelectBackupSummaryModel implements Model<BackupSummary> {
 
   public void setBackupSummaries(List<BackupSummary> backupSummaries) {
     this.backupSummaries = backupSummaries;
+
+    // Initialise the selected value to the first backupSummary
+    if (backupSummaries != null && !backupSummaries.isEmpty()) {
+      selectedBackup = backupSummaries.get(0);
+    }
   }
 }
