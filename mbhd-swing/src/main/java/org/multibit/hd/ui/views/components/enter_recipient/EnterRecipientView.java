@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.components.enter_recipient;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.Contact;
 import org.multibit.hd.core.api.Recipient;
+import org.multibit.hd.ui.gravatar.Gravatars;
 import org.multibit.hd.ui.views.components.AbstractComponentView;
 import org.multibit.hd.ui.views.components.ComboBoxes;
 import org.multibit.hd.ui.views.components.Labels;
@@ -56,10 +57,12 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
       "[]" // Rows
     ));
 
+    JLabel imageLabel = Labels.newImageLabel(Gravatars.retrieveGravatar("g.rowe@froot.co.uk"));
+
     panel.add(Labels.newRecipient());
     // Specify minimum width for consistent appearance across contact names and locales
     panel.add(recipientComboBox, "growx,w min:350:,push");
-    panel.add(Labels.newWalletImageLabel(""), "shrink,wrap");
+    panel.add(imageLabel, "shrink,wrap");
 
     return panel;
 
