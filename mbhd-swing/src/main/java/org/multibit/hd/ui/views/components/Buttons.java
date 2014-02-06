@@ -287,6 +287,23 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "Print" button with icon
+   */
+  public static JButton newPrintButton(Action action) {
+
+    JButton button = newButton(action);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.PRINT, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+
+    NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), button);
+
+    return button;
+
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "show" button with icon
    */
   public static JButton newShowButton(Action action) {

@@ -12,9 +12,9 @@ import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.screens.AbstractScreenView;
-import org.multibit.hd.ui.views.screens.Screen;
-import org.multibit.hd.ui.views.screens.Screens;
+import org.multibit.hd.ui.views.wizards.AbstractWizard;
+import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,8 +90,8 @@ public class ComponentTestBed {
    * <p>Creates the panel under test</p>
    * <h3>Wizards</h3>
    * <pre>
-   * AbstractWizard wizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME);
-   * wizard.show(WelcomeWizardState.WELCOME.name());
+   * AbstractWizard wizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE);
+   * wizard.show(WelcomeWizardState.WELCOME_SELECT_LANGUAGE.name());
    * return wizard.getWizardPanel();
    * </pre>
    * <h3>Detail views</h3>
@@ -105,9 +105,12 @@ public class ComponentTestBed {
   public JPanel createTestPanel() {
 
     // Choose a panel to test
-    AbstractScreenView screen = Screens.newScreen(Screen.CONTACTS);
-    return screen.newScreenViewPanel();
+//    AbstractScreenView screen = Screens.newScreen(Screen.CONTACTS);
+//    return screen.newScreenViewPanel();
 
+    AbstractWizard wizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.CREATE_WALLET_SEED_PHRASE);
+    wizard.show(WelcomeWizardState.CREATE_WALLET_SEED_PHRASE.name());
+    return wizard.getWizardPanel();
   }
 
   @Subscribe
