@@ -23,6 +23,9 @@ import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.platform.GenericApplication;
 import org.multibit.hd.ui.views.*;
+import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,21 +91,31 @@ public class MultiBitHD {
     // Initialise the wallet manager, which will load the current wallet if available
     File applicationDataDirectory = InstallationManager.createApplicationDataDirectory();
 
+    // Start up the exchange service
+    exchangeTickerService.start();
+
     WalletManager.INSTANCE.initialise(applicationDataDirectory);
-    BackupManager.INSTANCE.initialise(applicationDataDirectory, null);
+    BackupManager.INSTANCE.initialise(applicationDataDirectory, null); // TODO load up the cloud backup if available from properties and insert here
+
+    // Show the UI for the current locale
+    ControllerEvents.fireChangeLocaleEvent(Configurations.currentConfiguration.getLocale());
 
     if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
-      // Diagnostic
+      // There is a wallet present - warm start
       WalletData walletData =  WalletManager.INSTANCE.getCurrentWalletData().get();
       log.debug("The current wallet is:\nWallet id = '" + walletData.getWalletId().toString() + "\n" + walletData.getWallet().toString());
+
+      // TODO need to show warm start dialog (to get password) and unencrypt wallet and contacts
+
     } else {
-      // TODO show the new Wallet Wizard to create a wallet, set it into the configuration/ WalletManager
+      // Show the Welcome wizard
+      log.debug("There is no current wallet so showing the 'WelcomeWizard'");
+      Panels.showLightBox(Wizards.newClosingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardPanel());
     }
 
     // TODO enable the user to switch between the existing wallets
 
-    // Start the services (triggers events)
-    exchangeTickerService.start();
+    // Start the bitcoin network service
     bitcoinNetworkService.start();
 
     Uninterruptibles.sleepUninterruptibly(1000, TimeUnit.MILLISECONDS);
@@ -111,9 +124,6 @@ public class MultiBitHD {
     if (bitcoinNetworkService.isStartedOk()) {
       bitcoinNetworkService.downloadBlockChain();
     }
-
-    // Show the UI for the current locale
-    ControllerEvents.fireChangeLocaleEvent(Configurations.currentConfiguration.getLocale());
 
     // Provide a starting balance
     // TODO Get this from CoreServices - bitcoinj wallet class should not appear in GUI code
@@ -131,16 +141,6 @@ public class MultiBitHD {
       MoneyUtils.fromSatoshi(0),
       "Unknown"
     );
-
-    // TODO remove - this is test code just to illustrate the backup creation
-//    if (currentWalletData.isPresent()) {
-//      try {
-//        BackupManager.INSTANCE.createRollingBackup(currentWalletData.get());
-//        BackupManager.INSTANCE.createLocalAndCloudBackup(currentWalletData.get().getWalletId());
-//      } catch (IOException e) {
-//        e.printStackTrace();
-//      }
-//    }
   }
 
   private void registerEventListeners() {

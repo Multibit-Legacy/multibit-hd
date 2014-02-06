@@ -266,8 +266,6 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
     }
 
     // TODO parse out date from name and make name more friendly
-    // TODO ensure backupSummaries are ordered newest first for combo box
-
 
 //    BackupSummary summary1 = new BackupSummary(
 //      new WalletId("66666666-77777777-88888888-99999999-aaaaaaaa"),

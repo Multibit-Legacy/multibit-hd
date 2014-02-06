@@ -17,6 +17,7 @@ import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSummaryModel;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
@@ -130,10 +131,10 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       log.debug("Performing a restore from a seed phrase and a timestamp.");
       EnterSeedPhraseModel restoreEnterSeedPhraseModel = model.getRestoreWalletEnterSeedPhraseModel();
       EnterSeedPhraseModel restoreEnterTimestampModel = model.getRestoreWalletEnterTimestampModel();
+      EnterPasswordModel enterPasswordModel = model.getRestoreWalletEnterPasswordModel();
       log.debug("Timestamp = " + restoreEnterTimestampModel.getSeedTimestamp());
 
-      // TODO also need a wallet password to encrypt the wallet with - using "password" for now
-      walletCreatedStatus = createWallet(restoreEnterSeedPhraseModel.getSeedPhrase(), restoreEnterTimestampModel.getSeedTimestamp(), "password");
+      walletCreatedStatus = createWallet(restoreEnterSeedPhraseModel.getSeedPhrase(), restoreEnterTimestampModel.getSeedTimestamp(), enterPasswordModel.getValue());
     } else {
       log.error("Cannot perform a restore - unknown method of restore = '" + getWizardModel().getRestoreMethod() + "'.");
     }
