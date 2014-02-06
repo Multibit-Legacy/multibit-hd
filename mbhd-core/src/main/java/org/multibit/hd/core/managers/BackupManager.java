@@ -62,7 +62,7 @@ public enum BackupManager {
   /**
    * Get all the backups available in the cloud backup directory for the wallet id specified.
    */
-  public List<File> getCloudBackups(WalletId walletId) {
+  public List<File> getCloudBackups(WalletId walletId, File cloudBackupDirectory) {
     return getWalletBackups(walletId, cloudBackupDirectory);
   }
 

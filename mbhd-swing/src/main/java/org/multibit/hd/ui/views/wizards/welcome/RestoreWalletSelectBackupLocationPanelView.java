@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.MessageKey;
@@ -55,9 +54,9 @@ public class RestoreWalletSelectBackupLocationPanelView extends AbstractWizardPa
   public JPanel newWizardViewPanel() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0", // Layout constraints
-      "[][]", // Column constraints
-      "[][][]" // Row constraints
+            "fillx,insets 0", // Layout constraints
+            "[][]", // Column constraints
+            "[][][]" // Row constraints
     ));
 
     panel.add(Panels.newRestoreFromBackup(), "span 2,grow,wrap");
@@ -68,18 +67,18 @@ public class RestoreWalletSelectBackupLocationPanelView extends AbstractWizardPa
   }
 
   @Override
+  public void fireInitialStateViewEvents() {
+
+    // Enable the "next" button is enabled (so that the user can click next without a backup)
+
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
+
+  }
+
+  @Override
   public void updateFromComponentModels(Optional componentModel) {
 
     // Do nothing we have a direct reference
-
-    // Enable the "next" button if the backup location is present and the seed phrase has a valid size
-    boolean backupLocationPresent = !Strings.isNullOrEmpty(selectFileMaV.getModel().getValue());
-
-    ViewEvents.fireWizardButtonEnabledEvent(
-      getPanelName(),
-      WizardButton.NEXT,
-      backupLocationPresent
-    );
 
   }
 

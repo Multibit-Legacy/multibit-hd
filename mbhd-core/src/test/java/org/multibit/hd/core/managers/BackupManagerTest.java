@@ -63,7 +63,7 @@ public class BackupManagerTest extends TestCase {
     assertNotNull("Null localBackups list returned", localBackups);
     assertEquals("Wrong number of localBackups", 1, localBackups.size());
 
-    List<File> cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletData.getWalletId());
+    List<File> cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletData.getWalletId(), temporaryBackupDirectory);
     assertNotNull("Null cloudBackups list returned", cloudBackups);
     assertEquals("Wrong number of cloudBackups", 1, cloudBackups.size());
 
@@ -79,7 +79,7 @@ public class BackupManagerTest extends TestCase {
     assertEquals("Wrong number of localBackups", 2, localBackups.size());
 
     // Check that a backup copy has been saved in the cloud backup directory
-    cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletData.getWalletId());
+    cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletData.getWalletId(), temporaryBackupDirectory);
     assertNotNull("Null cloudBackups list returned", cloudBackups);
     assertEquals("Wrong number of cloudBackups", 2, cloudBackups.size());
 

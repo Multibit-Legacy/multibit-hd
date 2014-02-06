@@ -39,8 +39,11 @@ public class BackupSummaryListCellRenderer extends JLabel implements ListCellRen
       setForeground(list.getForeground());
     }
 
-    setText(value.getName());
-
+    if (value != null) {
+      setText(value.getName());
+    } else {
+      setText("");
+    }
     return this;
   }
 

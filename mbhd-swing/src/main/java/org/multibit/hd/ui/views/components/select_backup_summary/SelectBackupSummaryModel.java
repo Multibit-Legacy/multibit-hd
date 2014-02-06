@@ -5,13 +5,14 @@ import com.google.common.collect.Lists;
 import org.multibit.hd.core.api.BackupSummary;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import java.util.List;
 
 /**
  * <p>Model to provide the following to view:</p>
  * <ul>
- * <li>Show/hide the seed phrase (initially hidden)</li>
+ * <li>Select the backup summary to use</li>
  * </ul>
  *
  * @since 0.0.1
@@ -29,6 +30,9 @@ public class SelectBackupSummaryModel implements Model<BackupSummary> {
    */
   public SelectBackupSummaryModel(String panelName) {
     this.panelName = panelName;
+
+      // Ensure the "next" button is enabled (so that user can next without a backup
+    ViewEvents.fireWizardButtonEnabledEvent(panelName, WizardButton.NEXT, true);
   }
 
   @Override
@@ -40,9 +44,8 @@ public class SelectBackupSummaryModel implements Model<BackupSummary> {
   public void setValue(BackupSummary value) {
     this.selectedBackup = value;
 
-    // Ensure the "next" button is kept disabled
-    ViewEvents.fireWizardComponentModelChangedEvent(panelName, Optional.of(this));
 
+    ViewEvents.fireWizardComponentModelChangedEvent(panelName, Optional.of(this));
   }
 
   /**

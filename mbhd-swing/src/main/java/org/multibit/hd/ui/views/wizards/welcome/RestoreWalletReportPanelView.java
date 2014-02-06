@@ -102,8 +102,8 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
   @Override
   public void fireInitialStateViewEvents() {
 
-    // Disable the finish button
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, false);
+    // Enable the finish button
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
 
   }
 
@@ -149,10 +149,10 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
         AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, restoreLocationStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
       }
 
-      EnterSeedPhraseModel restoreBackupSeedPhraseModel = model.getRestoreWalletBackupSeedPhraseModel();
+      EnterSeedPhraseModel restoreWalletEnterSeedPhraseModel = model.getRestoreWalletEnterSeedPhraseModel();
 
       // Determine if the create wallet status is valid
-      walletCreatedStatus = createWallet(restoreBackupSeedPhraseModel.getSeedPhrase(), restoreLocationFile);
+      walletCreatedStatus = createWallet(restoreWalletEnterSeedPhraseModel.getSeedPhrase(), restoreLocationFile);
 
     } else if (WelcomeWizardState.RESTORE_WALLET_TIMESTAMP.equals(getWizardModel().getRestoreMethod())) {
       log.debug("Performing a restore from a seed phrase and a timestamp.");

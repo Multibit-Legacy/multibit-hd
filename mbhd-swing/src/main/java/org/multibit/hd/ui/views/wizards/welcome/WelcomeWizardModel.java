@@ -1,14 +1,18 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.api.BackupSummary;
+import org.multibit.hd.core.api.WalletData;
 import org.multibit.hd.core.api.WalletId;
+import org.multibit.hd.core.api.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
+import org.multibit.hd.core.managers.BackupManager;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
@@ -19,6 +23,7 @@ import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
+import java.io.File;
 import java.util.List;
 
 import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
@@ -118,7 +123,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
       case CREATE_WALLET_REPORT:
         throw new IllegalStateException("'Next' is not permitted here");
       case RESTORE_WALLET_SEED_PHRASE:
-        if (isLocalZipBackupPresent()) {
+        if (!isLocalZipBackupPresent()) {
           restoreMethod = RESTORE_WALLET_SELECT_BACKUP_LOCATION;
         } else {
           restoreMethod = RESTORE_WALLET_SELECT_BACKUP;
@@ -216,31 +221,26 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
     // Ensure we start from a fresh list
     backupSummaries.clear();
 
-    // TODO (JB) Implement the Zip backup search
+    // Get the local backups
+    Optional<WalletData> currentWalletData = WalletManager.INSTANCE.getCurrentWalletData();
+    if (currentWalletData.isPresent()) {
+      List<File> localBackups = BackupManager.INSTANCE.getLocalZipBackups(currentWalletData.get().getWalletId());
+      for (File file :localBackups) {
+        backupSummaries.add(new BackupSummary(currentWalletData.get().getWalletId(), file.getName()));
+      }
+    }
 
-    BackupSummary summary1 = new BackupSummary(
-      new WalletId("66666666-77777777-88888888-99999999-aaaaaaaa"),
-      "Demo 1a"
-    );
-    summary1.setDescription("Description for 1a");
-    summary1.setCreated(Dates.nowUtc());
-    backupSummaries.add(summary1);
+    // TODO parse out date from name and make name more friendly
+    // TODO ensure backupSummaries are ordered newest first for combo box
 
-    BackupSummary summary2 = new BackupSummary(
-      new WalletId("66666666-77777777-88888888-99999999-aaaaaaab"),
-      "Demo 1b"
-    );
-    summary2.setDescription("Description for 1b");
-    summary2.setCreated(Dates.nowUtc());
-    backupSummaries.add(summary2);
+//    BackupSummary summary1 = new BackupSummary(
+//      new WalletId("66666666-77777777-88888888-99999999-aaaaaaaa"),
+//      "Demo 1a"
+//    );
+//    summary1.setDescription("Description for 1a");
+//    summary1.setCreated(Dates.nowUtc());
+//    backupSummaries.add(summary1);
 
-    BackupSummary summary3 = new BackupSummary(
-      new WalletId("66666666-77777777-88888888-99999999-aaaaaaac"),
-      "Demo 1c"
-    );
-    summary3.setDescription("Description for 1c");
-    summary3.setCreated(Dates.nowUtc());
-    backupSummaries.add(summary3);
 
     return !backupSummaries.isEmpty();
   }
@@ -253,34 +253,31 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
     // Ensure we start from a fresh list
     backupSummaries.clear();
 
-    // TODO (JB) Implement the Zip backup search
+    // Get the cloud backups matching the entered seed
+    EnterSeedPhraseModel restoreWalletEnterSeedPhraseModel = getRestoreWalletEnterSeedPhraseModel();
 
-    BackupSummary summary1 = new BackupSummary(
-      new WalletId("66666666-77777777-88888888-99999999-aaaaaaaa"),
-      "Demo 2a"
-    );
-    summary1.setDescription("Description for 2a");
-    summary1.setCreated(Dates.nowUtc());
-    backupSummaries.add(summary1);
+    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] seed = seedGenerator.convertToSeed(restoreWalletEnterSeedPhraseModel.getSeedPhrase());
+    WalletId walletId = new WalletId(seed);
+    List<File> cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletId, new File(getRestoreLocation()));
+    for (File file :cloudBackups) {
+      backupSummaries.add(new BackupSummary(walletId, file.getName()));
+    }
 
-    BackupSummary summary2 = new BackupSummary(
-      new WalletId("66666666-77777777-88888888-99999999-aaaaaaab"),
-      "Demo 2b"
-    );
-    summary2.setDescription("Description for 2b");
-    summary2.setCreated(Dates.nowUtc());
-    backupSummaries.add(summary2);
+    // TODO parse out date from name and make name more friendly
+    // TODO ensure backupSummaries are ordered newest first for combo box
 
-    BackupSummary summary3 = new BackupSummary(
-      new WalletId("66666666-77777777-88888888-99999999-aaaaaaac"),
-      "Demo 2c"
-    );
-    summary3.setDescription("Description for 2c");
-    summary3.setCreated(Dates.nowUtc());
-    backupSummaries.add(summary3);
+
+//    BackupSummary summary1 = new BackupSummary(
+//      new WalletId("66666666-77777777-88888888-99999999-aaaaaaaa"),
+//      "Demo 2a"
+//    );
+//    summary1.setDescription("Description for 2a");
+//    summary1.setCreated(Dates.nowUtc());
+//    backupSummaries.add(summary1);
 
     // Swap to succeed/fail
-    return backupSummaries.isEmpty();
+    return !backupSummaries.isEmpty();
   }
 
   /**
