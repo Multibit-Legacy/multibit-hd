@@ -364,6 +364,21 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "paste" button with icon
+   */
+  public static JButton newPasteButton(Action action) {
+
+    JButton button = newButton(action);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.PASTE, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+
+    return button;
+
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "close" button with icon
    */
   public static JButton newPanelCloseButton(Action action) {

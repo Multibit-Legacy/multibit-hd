@@ -1,9 +1,9 @@
 package org.multibit.hd.ui.views.components.select_contact;
 
-import org.multibit.hd.core.api.Contact;
+import org.multibit.hd.core.api.Recipient;
 import org.multibit.hd.ui.utils.HtmlUtils;
-import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
-import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,11 +17,13 @@ import java.awt.*;
  * @since 0.0.1
  *  
  */
-public class ContactListCellRenderer extends JLabel implements ListCellRenderer<Contact> {
+public class RecipientListCellRenderer extends JLabel implements ListCellRenderer<Recipient> {
+
+  private static final Logger log = LoggerFactory.getLogger(RecipientListCellRenderer.class);
 
   private final JTextField textField;
 
-  public ContactListCellRenderer(JTextField textField) {
+  public RecipientListCellRenderer(JTextField textField) {
 
     this.textField = textField;
 
@@ -32,7 +34,7 @@ public class ContactListCellRenderer extends JLabel implements ListCellRenderer<
 
   public Component getListCellRendererComponent(
     JList list,
-    Contact value,
+    Recipient value,
     int index,
     boolean isSelected,
     boolean cellHasFocus
@@ -46,20 +48,20 @@ public class ContactListCellRenderer extends JLabel implements ListCellRenderer<
       setForeground(list.getForeground());
     }
 
-    // Apply the icon
-    // TODO Link into the microthumbnail images
-    AwesomeDecorator.applyIcon(
-      AwesomeIcon.USER,
-      this,
-      true,
-      AwesomeDecorator.NORMAL_ICON_SIZE
-    );
-
     String fragment = textField.getText();
-    String sourceText = value.getName();
+    log.debug("Recipient fragment: '{}'",fragment);
+    String sourceText;
+    if (value.getContact().isPresent()) {
+      sourceText = value.getContact().get().getName();
+    } else {
+      sourceText = value.getBitcoinAddress();
+    }
+    log.debug("Recipient source text: '{}'",sourceText);
 
+    // Embolden the matching fragments
     setText(HtmlUtils.applyBoldFragments(fragment, sourceText));
 
+    // Ensure we maintain the appearance
     setFont(list.getFont());
 
     return this;

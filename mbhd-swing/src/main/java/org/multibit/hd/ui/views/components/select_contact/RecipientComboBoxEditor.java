@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components.select_contact;
 
-import org.multibit.hd.core.api.Contact;
+import org.multibit.hd.core.api.Recipient;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
@@ -9,19 +9,20 @@ import java.awt.event.ActionListener;
 /**
  * <p>ComboBox editor to provide the following to combo boxes:</p>
  * <ul>
- * <li>Conversion between a string and a Contact</li>
+ * <li>Conversion between a string and a Recipient</li>
  * </ul>
- * <p>Uses "name" of Contact as the string lookup</p>
+ * <p>Uses "name" of Recipient.Contact as the string lookup</p>
+ * <p>Deliberately ignores the Bitcoin address component to avoid false near addresses</p>
  *
  * @since 0.0.1
  *  
  */
-public class ContactComboBoxEditor implements ComboBoxEditor {
+public class RecipientComboBoxEditor implements ComboBoxEditor {
 
   protected JTextField editor;
-  private Contact contact;
+  private Recipient recipient;
 
-  public ContactComboBoxEditor() {
+  public RecipientComboBoxEditor() {
 
     // Use a modified text field with a workaround
     editor = new ComboBoxTextField("", 0);
@@ -43,14 +44,22 @@ public class ContactComboBoxEditor implements ComboBoxEditor {
     String editorText;
 
     if (anObject instanceof String) {
+      // User is typing in the editor
       editorText = (String) anObject;
     } else {
-      Contact contact = (Contact) anObject;
+      // User has selected from the list
+      Recipient recipient = (Recipient) anObject;
 
-      if (contact != null) {
-        editorText = contact.getName();
-        this.contact = contact;
+      if (recipient != null) {
+        // Choose either the contact name or a Bitcoin address
+        if (recipient.getContact().isPresent()) {
+          editorText = recipient.getContact().get().getName();
+        } else {
+          editorText = recipient.getBitcoinAddress();
+        }
+        this.recipient = recipient;
       } else {
+        // No recipient so clear the editor
         editorText = "";
       }
     }
@@ -63,8 +72,8 @@ public class ContactComboBoxEditor implements ComboBoxEditor {
 
   public Object getItem() {
 
-    if (contact != null) {
-      return contact;
+    if (recipient != null) {
+      return recipient;
     } else {
       return editor.getText();
     }

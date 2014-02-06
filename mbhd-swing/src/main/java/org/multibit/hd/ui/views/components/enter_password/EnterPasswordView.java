@@ -69,6 +69,11 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
 
   }
 
+  @Override
+  public void updateModelFromView() {
+    // Do nothing the model is updated from key release events
+  }
+
   /**
    * @return A new action for toggling the display of the seed phrase
    */
@@ -113,11 +118,6 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
       }
 
     };
-  }
-
-  @Override
-  public void updateModelFromView() {
-    // Do nothing the model is updated from key release events
   }
 
 }

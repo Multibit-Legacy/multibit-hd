@@ -51,7 +51,7 @@ public class ClipboardUtils {
   /**
    * @return The image from the clipboard if present
    */
-  public static Optional<Image> copyImageFromClipboard() {
+  public static Optional<Image> pasteImageFromClipboard() {
 
     Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
 
@@ -63,15 +63,6 @@ public class ClipboardUtils {
       }
     }
     return Optional.absent();
-  }
-
-  private static ClipboardOwner newClipboardOwner() {
-    return new ClipboardOwner() {
-      @Override
-      public void lostOwnership(Clipboard clipboard, Transferable contents) {
-        log.warn("Lost ownership of the system clipboard");
-      }
-    };
   }
 
   /**
@@ -95,4 +86,30 @@ public class ClipboardUtils {
 
   }
 
+  /**
+   * @return A string from the clipboard if present
+   */
+  public static Optional<String> pasteStringFromClipboard() {
+
+    Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
+
+    if (transferable != null && transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+      try {
+        return Optional.of((String) transferable.getTransferData(DataFlavor.stringFlavor));
+      } catch (UnsupportedFlavorException | IOException e) {
+        log.warn("Failed to retrieve clipboard text", e);
+      }
+    }
+    return Optional.absent();
+
+  }
+
+  private static ClipboardOwner newClipboardOwner() {
+    return new ClipboardOwner() {
+      @Override
+      public void lostOwnership(Clipboard clipboard, Transferable contents) {
+        log.warn("Lost ownership of the system clipboard");
+      }
+    };
+  }
 }

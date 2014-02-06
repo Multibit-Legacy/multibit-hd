@@ -17,28 +17,32 @@ import java.util.UUID;
  */
 public class ContactService {
 
-  private final Set<Contact> contacts = Sets.newHashSet(
-    newContact("Alice Capital"),
-    newContact("Bob Capital"),
-    newContact("Charles Capital"),
-    newContact("Derek Capital"),
-    newContact("alice Lower"),
-    newContact("alicia Lower")
-  );
+  private final Set<Contact> contacts = Sets.newHashSet();
 
   /**
    * Reduced visibility constructor to prevent accidental instance creation outside of CoreServices
    */
   ContactService() {
+
+    // Load the contact data
+    loadContactData();
   }
 
   /**
+   * <p>Create a new contact and add it to the internal cache</p>
+   *
    * @param name A name (normally first name and last name)
    *
    * @return A new contact with a fresh ID
    */
   public Contact newContact(String name) {
-    return new Contact(UUID.randomUUID(), name);
+
+    Contact contact = new Contact(UUID.randomUUID(), name);
+
+    contacts.add(contact);
+
+    return contact;
+
   }
 
   /**
@@ -71,6 +75,33 @@ public class ContactService {
     }
 
     return filteredContacts;
+  }
+
+  /**
+   * <p>Populate the internal cache of Contacts</p>
+   */
+  private void loadContactData() {
+
+    // TODO Replace this data with a ContactManager derived from WalletManager
+
+    Contact contact1 = newContact("Alice Capital");
+    contact1.setEmail("alice.capital@example.org");
+
+    Contact contact2 = newContact("Bob Capital");
+    contact2.setEmail("bob.capital@example.org");
+
+    Contact contact3 = newContact("Charles Capital");
+    contact3.setEmail("charles.capital@example.org");
+
+    // No email for Derek
+    Contact contact4 = newContact("Derek Capital");
+
+    Contact contact5 = newContact("alice Lower");
+    contact5.setEmail("alice.lower@example.org");
+
+    Contact contact6 = newContact("alicia Lower");
+    contact6.setEmail("alicia.lower@example.org");
+
   }
 
 }

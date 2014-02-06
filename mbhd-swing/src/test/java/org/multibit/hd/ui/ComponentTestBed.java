@@ -14,7 +14,6 @@ import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.Wizards;
-import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,13 +87,18 @@ public class ComponentTestBed {
 
   /**
    * <p>Creates the panel under test</p>
-   * <h3>Wizards</h3>
+   * <h3>Welcome wizard</h3>
    * <pre>
    * AbstractWizard wizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE);
    * wizard.show(WelcomeWizardState.WELCOME_SELECT_LANGUAGE.name());
    * return wizard.getWizardPanel();
    * </pre>
-   * <h3>Detail views</h3>
+   * <h3>Send bitcoin wizard</h3>
+   * <pre>
+   * AbstractWizard wizard = Wizards.newSendBitcoinWizard();
+   * return wizard.getWizardPanel();
+   * </pre>
+   * <h3>Detail screen</h3>
    * <pre>
    * AbstractScreenView screen = Screens.newScreen(Screen.CONTACTS);
    * return screen.getScreenPanel();
@@ -108,8 +112,7 @@ public class ComponentTestBed {
 //    AbstractScreenView screen = Screens.newScreen(Screen.CONTACTS);
 //    return screen.newScreenViewPanel();
 
-    AbstractWizard wizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.CREATE_WALLET_SEED_PHRASE);
-    wizard.show(WelcomeWizardState.CREATE_WALLET_SEED_PHRASE.name());
+    AbstractWizard wizard = Wizards.newSendBitcoinWizard();
     return wizard.getWizardPanel();
   }
 

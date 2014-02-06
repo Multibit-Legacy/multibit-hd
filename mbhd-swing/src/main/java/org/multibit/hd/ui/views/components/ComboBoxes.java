@@ -2,13 +2,13 @@ package org.multibit.hd.ui.views.components;
 
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.api.BackupSummary;
-import org.multibit.hd.core.api.Contact;
+import org.multibit.hd.core.api.Recipient;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteDecorator;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilter;
 import org.multibit.hd.ui.views.components.select_backup_summary.BackupSummaryListCellRenderer;
-import org.multibit.hd.ui.views.components.select_contact.ContactComboBoxEditor;
-import org.multibit.hd.ui.views.components.select_contact.ContactListCellRenderer;
+import org.multibit.hd.ui.views.components.select_contact.RecipientComboBoxEditor;
+import org.multibit.hd.ui.views.components.select_contact.RecipientListCellRenderer;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
@@ -46,6 +46,9 @@ public class ComboBoxes {
 
     // Ensure we use the correct component orientation
     comboBox.applyComponentOrientation(Languages.currentComponentOrientation());
+
+    // Ensure that keyboard navigation does not trigger action events
+    comboBox.putClientProperty("JComboBox.isTableCellEditor", Boolean.TRUE);
 
     return comboBox;
 
@@ -87,20 +90,25 @@ public class ComboBoxes {
   }
 
   /**
-   * @param filter The contact auto-complete filter
+   * @param filter   The contact auto-complete filter
    *
    * @return A new "recipient" combo box with auto-complete functionality
    */
-  public static JComboBox<Contact> newRecipientComboBox(AutoCompleteFilter<Contact> filter) {
+  public static JComboBox<Recipient> newRecipientComboBox(AutoCompleteFilter<Recipient> filter) {
 
-    JComboBox<Contact> comboBox = new JComboBox<>(filter.create());
+    JComboBox<Recipient> comboBox = new JComboBox<>(filter.create());
+
+    // Apply the current theme
     comboBox.setBackground(Themes.currentTheme.dataEntryBackground());
 
     // Use a contact editor to force use of the name field
-    comboBox.setEditor(new ContactComboBoxEditor());
+    comboBox.setEditor(new RecipientComboBoxEditor());
+
+    // Ensure that keyboard navigation does not trigger action events
+    comboBox.putClientProperty("JComboBox.isTableCellEditor", Boolean.TRUE);
 
     // Use a contact list cell renderer to ensure thumbnails are maintained
-    ListCellRenderer<Contact> renderer = new ContactListCellRenderer((JTextField) comboBox.getEditor().getEditorComponent());
+    ListCellRenderer<Recipient> renderer = new RecipientListCellRenderer((JTextField) comboBox.getEditor().getEditorComponent());
     comboBox.setRenderer(renderer);
 
     // Ensure we start with nothing selected
@@ -123,14 +131,19 @@ public class ComboBoxes {
    */
   public static JComboBox<BackupSummary> newBackupSummaryComboBox(ActionListener listener, List<BackupSummary> backupSummaries) {
 
-    Preconditions.checkNotNull(listener,"'listener' must be present");
-    Preconditions.checkNotNull(listener,"'backupSummaries' must be present");
+    Preconditions.checkNotNull(listener, "'listener' must be present");
+    Preconditions.checkNotNull(listener, "'backupSummaries' must be present");
 
     // Convert the backup summaries to an array
     BackupSummary[] backupSummaryArray = new BackupSummary[backupSummaries.size()];
 
     JComboBox<BackupSummary> comboBox = new JComboBox<>(backupSummaryArray);
+
+    // Apply the current theme
     comboBox.setBackground(Themes.currentTheme.dataEntryBackground());
+
+    // Ensure that keyboard navigation does not trigger action events
+    comboBox.putClientProperty("JComboBox.isTableCellEditor", Boolean.TRUE);
 
     // Use a backup summary list cell renderer to ensure the correct fields are displayed
     ListCellRenderer<BackupSummary> renderer = new BackupSummaryListCellRenderer();

@@ -1,8 +1,10 @@
 package org.multibit.hd.ui.gravatar;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.hash.Hashing;
+import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.Charset;
 
 /**
  * <p>Utility to provide the following to application:</p>
@@ -28,9 +29,11 @@ public class Gravatars {
   private static final Logger log = LoggerFactory.getLogger(Gravatars.class);
 
   // Set the system defaults
-  private final static int SIZE = 50;
+  private final static int SIZE = AwesomeDecorator.LARGE_ICON_SIZE;
   private final static String RATING = Rating.GENERAL.getCode();
-  private final static String DEFAULT_IMAGE = DefaultImage.MYSTERY_MAN.getCode();
+  //private final static String DEFAULT_IMAGE = DefaultImage.MYSTERY_MAN.getCode();
+  // TODO Replace this with the mystery man when contact service is released
+  private final static String DEFAULT_IMAGE = DefaultImage.WAVATAR.getCode();
 
   // Fixed entries
   private final static String GRAVATAR_URL = "http://www.gravatar.com/avatar/";
@@ -54,7 +57,7 @@ public class Gravatars {
     // Require a hex MD5 hash of email address (lowercase) no whitespace
     String emailHash = Hashing
       .md5()
-      .hashString(emailAddress.toLowerCase().trim(), Charset.forName("UTF-8"))
+      .hashString(emailAddress.toLowerCase().trim(), Charsets.UTF_8)
       .toString();
 
     // Create the URL
