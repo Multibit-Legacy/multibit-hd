@@ -61,6 +61,9 @@ public abstract class AbstractWizard<M extends WizardModel> {
 
     wizardPanel.setSize(new Dimension(WIZARD_MIN_WIDTH, WIZARD_MIN_HEIGHT));
 
+    // Show the panel specified by the initial state
+    show(wizardModel.getPanelName());
+
   }
 
   @Subscribe
