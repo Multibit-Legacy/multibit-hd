@@ -4,6 +4,8 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.joda.time.DateTime;
 
+import java.io.File;
+
 /**
  * <p>DTO to provide the following to Backup API:</p>
  * <ul>
@@ -21,6 +23,9 @@ public class BackupSummary {
   private final WalletId walletId;
 
   private final String name;
+
+  private final File file;
+
   private Optional<String> description = Optional.absent();
 
   private DateTime created;
@@ -28,14 +33,17 @@ public class BackupSummary {
   /**
    * @param walletId The unique wallet identifier
    * @param name     The name given to the wallet
+   * @param file     The backup filename to load
    */
-  public BackupSummary(WalletId walletId, String name) {
+  public BackupSummary(WalletId walletId, String name, File file) {
 
     Preconditions.checkNotNull(walletId, "'walletId' must be present");
     Preconditions.checkNotNull(name, "'name' must be present");
+    Preconditions.checkNotNull(file, "'file' must be present");
 
     this.walletId = walletId;
     this.name = name;
+    this.file = file;
   }
 
   /**
@@ -50,6 +58,10 @@ public class BackupSummary {
    */
   public String getName() {
     return name;
+  }
+
+  public File getFile() {
+    return file;
   }
 
   /**

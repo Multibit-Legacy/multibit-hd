@@ -77,8 +77,12 @@ public class SelectBackupSummaryView extends AbstractComponentView<SelectBackupS
     selectedBackupComboBox.removeAllItems();
 
     List<BackupSummary> backupSummaries = getModel().get().getBackupSummaries();
-    for (BackupSummary backupSummary : backupSummaries) {
-      selectedBackupComboBox.addItem(backupSummary);
+
+    // TODO the sort order should be defined better or a comparator used
+    if (backupSummaries != null) {
+      for (int i = backupSummaries.size() - 1; i >= 0; i--) {
+        selectedBackupComboBox.addItem(backupSummaries.get(i));
+      }
     }
     selectedBackupComboBox.addActionListener(this);
 

@@ -19,6 +19,7 @@ import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
+import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSummaryModel;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
@@ -82,7 +83,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
 
   // Backup summaries for restoring a wallet
   private List<BackupSummary> backupSummaries = Lists.newArrayList();
-  private BackupSummary selectedBackupSummary;
+  private SelectBackupSummaryModel selectBackupSummaryModel;
   private EnterSeedPhraseModel restoreWalletEnterTimestampModel;
   private EnterPasswordModel restoreWalletEnterPasswordModel;
 
@@ -226,7 +227,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
     if (currentWalletData.isPresent()) {
       List<File> localBackups = BackupManager.INSTANCE.getLocalZipBackups(currentWalletData.get().getWalletId());
       for (File file :localBackups) {
-        backupSummaries.add(new BackupSummary(currentWalletData.get().getWalletId(), file.getName()));
+        backupSummaries.add(new BackupSummary(currentWalletData.get().getWalletId(), file.getName(), file));
       }
     }
 
@@ -261,7 +262,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
     WalletId walletId = new WalletId(seed);
     List<File> cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletId, new File(getRestoreLocation()));
     for (File file :cloudBackups) {
-      backupSummaries.add(new BackupSummary(walletId, file.getName()));
+      backupSummaries.add(new BackupSummary(walletId, file.getName(), file));
     }
 
     // TODO parse out date from name and make name more friendly
@@ -454,14 +455,14 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   /**
    * <p>Reduced visibility for panel models</p>
    *
-   * @param selectedBackupSummary The selected backup summary
+   * @param selectBackupSummaryModel The selected backup summary
    */
-  void setSelectedBackupSummary(BackupSummary selectedBackupSummary) {
-    this.selectedBackupSummary = selectedBackupSummary;
+  void setSelectBackupSummaryModel(SelectBackupSummaryModel selectBackupSummaryModel) {
+    this.selectBackupSummaryModel = selectBackupSummaryModel;
   }
 
-  public BackupSummary getSelectedBackupSummary() {
-    return selectedBackupSummary;
+  public SelectBackupSummaryModel getSelectBackupSummaryModel() {
+    return selectBackupSummaryModel;
   }
 
   /**

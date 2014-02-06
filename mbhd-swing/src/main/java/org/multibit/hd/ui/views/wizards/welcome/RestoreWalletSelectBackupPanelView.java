@@ -51,7 +51,7 @@ public class RestoreWalletSelectBackupPanelView extends AbstractWizardPanelView<
     setPanelModel(selectBackupMaV.getModel());
 
     // Bind it to the wizard model
-    getWizardModel().setSelectedBackupSummary(selectBackupMaV.getModel().getValue());
+    getWizardModel().setSelectBackupSummaryModel(selectBackupMaV.getModel());
 
   }
 
