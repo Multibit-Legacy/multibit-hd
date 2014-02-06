@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * <p>Utilities to provide the following to application:</p>
  * <ul>
- * <li>Transferring items out of the application via the Clipboard</li>
+ * <li>Printing information through the Java Printing API</li>
  * </ul>
  *
  * @since 0.0.1
