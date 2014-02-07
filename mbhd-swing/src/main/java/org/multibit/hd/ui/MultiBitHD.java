@@ -108,9 +108,9 @@ public class MultiBitHD {
       // TODO need to show warm start dialog (to get password) and unencrypt wallet and contacts
 
     } else {
-      // Show the Welcome wizard
+      // Show an exiting Welcome wizard
       log.debug("There is no current wallet so showing the 'WelcomeWizard'");
-      Panels.showLightBox(Wizards.newClosingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardPanel());
+      Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardPanel());
     }
 
     // TODO enable the user to switch between the existing wallets

@@ -86,12 +86,6 @@ public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<Wel
     getWizardModel().setCreateWalletSeedPhrase(displaySeedPhraseMaV.getModel().getSeedPhrase());
     getWizardModel().setActualSeedTimestamp(displaySeedPhraseMaV.getModel().getSeedTimestamp());
 
-    // TODO remove this
-    for (String word : getWizardModel().getCreateWalletSeedPhrase()) {
-      System.out.print(word + " ");
-    }
-    System.out.println(", length=" + getWizardModel().getCreateWalletSeedPhrase().size());
-
   }
 
 }
