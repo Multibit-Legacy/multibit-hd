@@ -89,7 +89,7 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
       Recipient recipient = (Recipient) selectedItem;
 
       // Avoid double events triggering calls
-      if (currentRecipient.isPresent() && currentRecipient.equals(recipient)) {
+      if (currentRecipient.isPresent() && currentRecipient.get().equals(recipient)) {
         return;
       }
       currentRecipient = Optional.of(recipient);

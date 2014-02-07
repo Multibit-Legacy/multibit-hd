@@ -138,6 +138,11 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
   @Subscribe
   public void onExchangeRateChanged(ExchangeRateChangedEvent event) {
 
+    if (panel == null) {
+      // Still initialising
+      return;
+    }
+
     this.latestExchangeRateChangedEvent = Optional.fromNullable(event);
 
     setLocalAmountVisibility();
