@@ -17,17 +17,23 @@ desktop clients. Support for external hardware wallets (such as the Trezor) is a
 
 ### Getting started
 
-MBHD is a standard Maven build, but relies on some snapshot builds of libraries which won't be available in Maven Central.
+MBHD is a standard Maven build, but currently relies on some snapshot builds of libraries which aren't available in Maven Central.
 
 In general you should check out the following from their respective source control repos and install them locally:
 
  * [MultiBit HD Hardware](https://github.com/bitcoin-solutions/mbhd-hardware) - use "master" branch
  * [Bitcoinj](https://code.google.com/p/bitcoinj/) - use "master" branch
 
-Use the standard Maven build and install process:
+Use the standard Maven build and install process for all projects:
 
 ```
 $ mvn clean install
+```
+
+With Bitcoinj you may need to build the protobuf files - in that case you will need to execute a modified Maven command:
+
+```
+$ mvn -DupdateProtobuf=true clean install
 ```
 
 If you want to run the application within an IDE, you will need to run `MultiBitHD.main()` in the `mbhd-swing` module.
