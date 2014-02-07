@@ -46,8 +46,8 @@ public class ContactService {
   }
 
   /**
-   * @param page            The page number
-   * @param contactsPerPage The number of contacts per page
+   * @param page            The page number (1-based)
+   * @param contactsPerPage The 1-based number of contacts per page
    *
    * @return A set of all Contacts for the given page
    */
@@ -56,7 +56,7 @@ public class ContactService {
   }
 
   /**
-   * @param page            The page number
+   * @param page            The page number (1-based)
    * @param contactsPerPage The number of contacts per page
    * @param query           The text fragment to match (case-insensitive, anywhere in the name)
    *

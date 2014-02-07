@@ -95,10 +95,7 @@ public class TextBubbleBorder extends AbstractBorder {
     this.stroke = new BasicStroke(thickness);
     this.strokePad = thickness / 2;
 
-    // Require anti-aliasing to ensure smooth edges
-    this.hints = new RenderingHints(
-      RenderingHints.KEY_ANTIALIASING,
-      RenderingHints.VALUE_ANTIALIAS_ON);
+    this.hints = new RenderingHints(ImageDecorator.smoothRenderingHints());
 
     int bottomPad = pointerSize + strokePad;
 
@@ -106,6 +103,7 @@ public class TextBubbleBorder extends AbstractBorder {
     insets = new Insets(0, 6, bottomPad, 6);
 
   }
+
 
   @Override
   public Insets getBorderInsets(Component c) {

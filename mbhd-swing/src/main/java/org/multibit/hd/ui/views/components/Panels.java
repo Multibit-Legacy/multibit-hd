@@ -436,6 +436,25 @@ public class Panels {
   }
 
   /**
+   * <p>A "select backup directory" panel displays the instructions to choose an appropriate backup directory</p>
+   *
+   * @return A new "select backup directory" panel
+   */
+  public static JPanel newContactDetail() {
+
+    JPanel panel = Panels.newPanel(new MigLayout(
+      "fillx,insets 0", // Layout
+      "[grow]", // Columns
+      "[]" // Rows
+    ));
+
+    // Add to the panel
+    panel.add(Labels.newSelectBackupLocationNote(), "push");
+
+    return panel;
+  }
+
+  /**
    * <p>Invalidate a panel so that Swing will later redraw it properly with layout changes (normally as a result of a locale change)</p>
    *
    * @param panel The panel to invalidate

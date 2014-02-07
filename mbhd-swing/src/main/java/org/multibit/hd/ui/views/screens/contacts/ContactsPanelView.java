@@ -1,8 +1,11 @@
 package org.multibit.hd.ui.views.screens.contacts;
 
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.services.ContactService;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.Tables;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.wizards.Wizards;
@@ -39,9 +42,9 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> {
   public JPanel newScreenViewPanel() {
 
     MigLayout layout = new MigLayout(
-      "fill", // Layout constraints
-      "[]10[]", // Column constraints
-      "[]50[]" // Row constraints
+      "fill,insets 0", // Layout constraints
+      "[][]", // Column constraints
+      "[][]" // Row constraints
     );
 
     JPanel contentPanel = Panels.newPanel(layout);
@@ -78,7 +81,15 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> {
       }
     };
 
-    contentPanel.add(new JLabel("Contacts"));
+    ContactService contactService = CoreServices.getContactService();
+
+    JTable table = Tables.newContactsTable(contactService.allContacts(1, 10));
+
+    // Create the scroll pane and add the table to it.
+    JScrollPane scrollPane = new JScrollPane(table);
+
+    contentPanel.add(new JLabel("Contacts"),"growx,push,wrap");
+    contentPanel.add(scrollPane,"grow,push");
 
     return contentPanel;
   }
