@@ -52,7 +52,7 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
     // Configure the actions
     Action toggleDisplayAction = getToggleDisplayAction();
     Action refreshAction = getRefreshAction();
-    Action printAction = getPrintAction();
+    //Action printAction = getPrintAction();
 
     // Add to the panel
     panel.add(Labels.newTimestamp());
@@ -62,7 +62,7 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
     panel.add(seedPhrase, "span 3,shrink");
     panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink");
     panel.add(Buttons.newRefreshButton(refreshAction), "shrink");
-    panel.add(Buttons.newPrintButton(printAction), "shrink,wrap");
+    //panel.add(Buttons.newPrintButton(printAction), "shrink,wrap");
 
     seedSize.requestFocusInWindow();
 

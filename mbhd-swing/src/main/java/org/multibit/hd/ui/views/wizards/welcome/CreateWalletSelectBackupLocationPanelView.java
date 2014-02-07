@@ -1,10 +1,9 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.PanelDecorator;
@@ -72,14 +71,11 @@ public class CreateWalletSelectBackupLocationPanelView extends AbstractWizardPan
 
     // Do nothing we have a direct reference
 
-    // Enable the "next" button if the backup location is not empty
-    ViewEvents.fireWizardButtonEnabledEvent(
-      getPanelName(),
-      WizardButton.NEXT,
-      !Strings.isNullOrEmpty(selectFileMaV.getModel().getValue())
-    );
-
-
   }
 
+  public void fireInitialStateViewEvents() {
+
+    // Enable the Next button - user can skip entering a cloud backup location
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
+  }
 }

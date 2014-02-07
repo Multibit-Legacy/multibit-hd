@@ -109,10 +109,14 @@ public class FooterView {
     // Show the downloading message until it finishes
     if (event.getPercent() < 100) {
       //messageLabel.setText(event.getLocalisedMessage());
+
+      // Make sure progress bar is enabled
       progressBar.setEnabled(true);
     } else {
       // Synchronized so clear the message
       //messageLabel.setText("");
+
+      // Disable the progress bar to lower it in the mix
       progressBar.setEnabled(false);
     }
 

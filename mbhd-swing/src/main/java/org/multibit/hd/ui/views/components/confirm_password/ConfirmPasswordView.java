@@ -45,7 +45,7 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
   public JPanel newComponentPanel() {
 
     panel = Panels.newPanel(new MigLayout(
-      "debug,insets 0", // Layout
+      "insets 0", // Layout
       "[][][]", // Columns
       "[][][]" // Rows
     ));
