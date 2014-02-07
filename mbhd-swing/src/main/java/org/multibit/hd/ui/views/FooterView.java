@@ -46,6 +46,7 @@ public class FooterView {
     progressBar.setMinimum(0);
     progressBar.setMaximum(100);
     progressBar.setForeground(Themes.currentTheme.infoAlertBackground());
+    progressBar.setEnabled(false);
 
     messageLabel = new JLabel();
 
@@ -107,10 +108,12 @@ public class FooterView {
 
     // Show the downloading message until it finishes
     if (event.getPercent() < 100) {
-      messageLabel.setText(event.getLocalisedMessage());
+      //messageLabel.setText(event.getLocalisedMessage());
+      progressBar.setEnabled(true);
     } else {
       // Synchronized so clear the message
-      messageLabel.setText("");
+      //messageLabel.setText("");
+      progressBar.setEnabled(false);
     }
 
     progressBar.setValue(event.getPercent());
