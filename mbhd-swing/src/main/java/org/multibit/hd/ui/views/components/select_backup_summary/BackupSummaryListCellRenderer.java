@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.components.select_backup_summary;
 
 import org.multibit.hd.core.api.BackupSummary;
+import org.multibit.hd.core.utils.Dates;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,7 +41,12 @@ public class BackupSummaryListCellRenderer extends JLabel implements ListCellRen
     }
 
     if (value != null) {
-      setText(value.getName());
+      // If the date is available use that, otherwise use the name
+      if (value.getCreated() != null) {
+        setText(Dates.formatHttpDateHeader(value.getCreated()));
+      } else {
+        setText(value.getName());
+      }
     } else {
       setText("");
     }

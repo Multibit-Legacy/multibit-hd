@@ -20,6 +20,7 @@ import com.google.common.util.concurrent.Uninterruptibles;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
+import org.multibit.hd.core.api.BackupSummary;
 import org.multibit.hd.core.api.WalletData;
 import org.multibit.hd.core.api.WalletId;
 import org.multibit.hd.core.api.WalletIdTest;
@@ -59,11 +60,11 @@ public class BackupManagerTest extends TestCase {
     WalletData walletData = walletManager.createWallet(temporaryWalletParentDirectory.getAbsolutePath(), seed, "password");
 
     // Check there are initially a single wallet backup for the wallet id of the created wallet
-    List<File> localBackups = BackupManager.INSTANCE.getLocalZipBackups(walletData.getWalletId());
+    List<BackupSummary> localBackups = BackupManager.INSTANCE.getLocalZipBackups(walletData.getWalletId());
     assertNotNull("Null localBackups list returned", localBackups);
     assertEquals("Wrong number of localBackups", 1, localBackups.size());
 
-    List<File> cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletData.getWalletId(), temporaryBackupDirectory);
+    List<BackupSummary> cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletData.getWalletId(), temporaryBackupDirectory);
     assertNotNull("Null cloudBackups list returned", cloudBackups);
     assertEquals("Wrong number of cloudBackups", 1, cloudBackups.size());
 

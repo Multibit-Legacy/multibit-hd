@@ -1,6 +1,5 @@
 package org.multibit.hd.core.api;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.joda.time.DateTime;
 
@@ -13,8 +12,6 @@ import java.io.File;
  * </ul>
  * <p>The backup summary allows the user to select wallet backups from a list.</p>
  *
- * TODO (JB) Consider if this should be merged into WalletData (does Wallet need to be shared into UI?)
- *
  * @since 0.0.1
  *  
  */
@@ -25,8 +22,6 @@ public class BackupSummary {
   private final String name;
 
   private final File file;
-
-  private Optional<String> description = Optional.absent();
 
   private DateTime created;
 
@@ -65,17 +60,6 @@ public class BackupSummary {
   }
 
   /**
-   * @return The optional description (shown to the user)
-   */
-  public Optional<String> getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = Optional.of(description);
-  }
-
-  /**
    * @return The date time the wallet was created
    */
   public DateTime getCreated() {
@@ -91,7 +75,6 @@ public class BackupSummary {
     return "BackupSummary{" +
       "walletId=" + walletId +
       ", name='" + name + '\'' +
-      ", description=" + description +
       ", created=" + created +
       '}';
   }

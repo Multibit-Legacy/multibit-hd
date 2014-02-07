@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.components.select_backup_summary;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.BackupSummary;
-import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.views.components.AbstractComponentView;
 import org.multibit.hd.ui.views.components.ComboBoxes;
 import org.multibit.hd.ui.views.components.Labels;
@@ -102,10 +101,6 @@ public class SelectBackupSummaryView extends AbstractComponentView<SelectBackupS
     if (selectedBackup != null) {
 
       getModel().get().setValue(selectedBackup);
-
-      // Update the UI with additional info
-      createdLabel.setText(Dates.formatSmtpDate(selectedBackup.getCreated()));
-      descriptionLabel.setText(selectedBackup.getDescription().or(""));
     }
   }
 

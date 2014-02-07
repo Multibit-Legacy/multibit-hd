@@ -3,6 +3,8 @@ package org.multibit.hd.core.managers;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.joda.time.DateTime;
+import org.multibit.hd.core.api.BackupSummary;
 import org.multibit.hd.core.api.WalletData;
 import org.multibit.hd.core.api.WalletId;
 import org.multibit.hd.core.utils.FileUtils;
@@ -62,14 +64,14 @@ public enum BackupManager {
   /**
    * Get all the backups available in the cloud backup directory for the wallet id specified.
    */
-  public List<File> getCloudBackups(WalletId walletId, File cloudBackupDirectory) {
+  public List<BackupSummary> getCloudBackups(WalletId walletId, File cloudBackupDirectory) {
     return getWalletBackups(walletId, cloudBackupDirectory);
   }
 
   /**
    * Get all the backups available in the local zip backup directory for the wallet id specified.
    */
-  public List<File> getLocalZipBackups(WalletId walletId) {
+  public List<BackupSummary> getLocalZipBackups(WalletId walletId) {
     // Find the wallet root directory for this wallet id
     File walletRootDirectory = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), WalletManager.createWalletRoot(walletId));
 
@@ -92,10 +94,10 @@ public enum BackupManager {
    * @param directoryName The directory to look in
    * @return The wallet backups available
    */
-  public List<File> getWalletBackups(WalletId walletId, File directoryName) {
-    // TODO would also be nice to return the dates of the backups (from the timestamp) or return them sorted by age
-    // TODO then the latest backup can be used easily
-    List<File> walletBackups = Lists.newArrayList();
+  public List<BackupSummary> getWalletBackups(WalletId walletId, File directoryName) {
+    // TODO would also be nice return them sorted by age
+
+    List<BackupSummary> walletBackups = Lists.newArrayList();
 
     if (directoryName == null || !directoryName.exists()) {
       // No directory - no backups
@@ -112,7 +114,18 @@ public enum BackupManager {
         if (listOfFiles[i].isFile()) {
           if (listOfFiles[i].getName().matches(backupRegex)) {
             if (listOfFiles[i].length() > 0) {
-              walletBackups.add(listOfFiles[i]);
+              BackupSummary backupSummary = new BackupSummary(walletId, listOfFiles[i].getName(), listOfFiles[i]);
+              // Work out timestamp
+              int start = (WalletManager.MBHD_WALLET_PREFIX + WalletManager.SEPARATOR + WalletManager.SEPARATOR).length() +  WalletId.LENGTH_OF_FORMATTED_WALLETID;
+              int stop = start + BACKUP_SUFFIX_FORMAT.length();
+              String timeStampString = FileUtils.filePart(listOfFiles[i].getName().substring(start, stop));
+              try {
+                DateTime timestamp = new DateTime( getDateFormat().parse(timeStampString));
+                backupSummary.setCreated(timestamp);
+              } catch (ParseException pe) {
+                pe.printStackTrace();
+              }
+              walletBackups.add(backupSummary);
             }
           }
         }

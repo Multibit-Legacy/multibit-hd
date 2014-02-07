@@ -100,6 +100,20 @@ public class FileUtils {
     return s == -1 ? null : name.substring(0, s);
   }
 
+  /**
+    * Work out the file part of a filename
+    *
+    * @param name of file
+    * @return file part of filename
+    */
+   public static String filePart(String name) {
+     int s = name.lastIndexOf(File.separatorChar);
+     if (s == -1) {
+       return name;
+     } else {
+       return name.substring(s + 1);
+     }
+   }
   public static void createDirectoryIfNecessary(File directoryToCreate) {
     if (!directoryToCreate.exists()) {
       Preconditions.checkState(directoryToCreate.mkdir(), "Could not create the directory of '" + directoryToCreate + "'");

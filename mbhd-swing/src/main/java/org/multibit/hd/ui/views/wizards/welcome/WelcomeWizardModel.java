@@ -225,23 +225,8 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
     // Get the local backups
     Optional<WalletData> currentWalletData = WalletManager.INSTANCE.getCurrentWalletData();
     if (currentWalletData.isPresent()) {
-      List<File> localBackups = BackupManager.INSTANCE.getLocalZipBackups(currentWalletData.get().getWalletId());
-      for (File file :localBackups) {
-        backupSummaries.add(new BackupSummary(currentWalletData.get().getWalletId(), file.getName(), file));
-      }
+      backupSummaries = BackupManager.INSTANCE.getLocalZipBackups(currentWalletData.get().getWalletId());
     }
-
-    // TODO parse out date from name and make name more friendly
-    // TODO ensure backupSummaries are ordered newest first for combo box
-
-//    BackupSummary summary1 = new BackupSummary(
-//      new WalletId("66666666-77777777-88888888-99999999-aaaaaaaa"),
-//      "Demo 1a"
-//    );
-//    summary1.setDescription("Description for 1a");
-//    summary1.setCreated(Dates.nowUtc());
-//    backupSummaries.add(summary1);
-
 
     return !backupSummaries.isEmpty();
   }
@@ -260,22 +245,8 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(restoreWalletEnterSeedPhraseModel.getSeedPhrase());
     WalletId walletId = new WalletId(seed);
-    List<File> cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletId, new File(getRestoreLocation()));
-    for (File file :cloudBackups) {
-      backupSummaries.add(new BackupSummary(walletId, file.getName(), file));
-    }
+    backupSummaries = BackupManager.INSTANCE.getCloudBackups(walletId, new File(getRestoreLocation()));
 
-    // TODO parse out date from name and make name more friendly
-
-//    BackupSummary summary1 = new BackupSummary(
-//      new WalletId("66666666-77777777-88888888-99999999-aaaaaaaa"),
-//      "Demo 2a"
-//    );
-//    summary1.setDescription("Description for 2a");
-//    summary1.setCreated(Dates.nowUtc());
-//    backupSummaries.add(summary1);
-
-    // Swap to succeed/fail
     return !backupSummaries.isEmpty();
   }
 
