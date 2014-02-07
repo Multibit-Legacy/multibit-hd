@@ -27,6 +27,7 @@ public class Contact {
   private Optional<String> extendedPublicKey = Optional.absent();
   private Optional<String> notes = Optional.absent();
   private List<String> tags = Lists.newArrayList();
+  private StarStyle starStyle = StarStyle.EMPTY;
 
   /**
    * @param id   The unique identifier
@@ -114,6 +115,18 @@ public class Contact {
   public void setTags(List<String> tags) {
     Preconditions.checkNotNull(tags, "'tags' must be present");
     this.tags = tags;
+  }
+
+  /**
+   *
+   * @return The star fill style to use (e.g. EMPTY etc)
+   */
+  public StarStyle getStarStyle() {
+    return starStyle;
+  }
+
+  public void setStarStyle(StarStyle starStyle) {
+    this.starStyle = starStyle;
   }
 
   @Override
