@@ -1,11 +1,15 @@
 package org.multibit.hd.core.services;
 
+import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.api.Contact;
+import org.multibit.hd.core.api.StarStyle;
 import org.multibit.hd.core.managers.WalletManagerTest;
 
 import java.io.File;
+import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
@@ -65,8 +69,32 @@ public class ContactServiceTest {
   public void testLoadAndStore() throws Exception {
     // Add a new contact to the contacts db and save it
     String newContactName = (UUID.randomUUID()).toString();
-    contactService.newContact(newContactName);
+    Contact newContact = contactService.newContact(newContactName);
 
+    newContact.setBitcoinAddress("bippy");
+    newContact.setEmail("boppy");
+    newContact.setExtendedPublicKey("soppy");
+    newContact.setImagePath("sippy");
+    newContact.setNotes("dippy");
+
+    List<String> tags = Lists.newArrayList();
+    tags.add("dappy");
+    tags.add("frippy");
+    tags.add("froppy");
+    newContact.setTags(tags);
+
+    Random random = new Random();
+    int which = random.nextInt(5);
+    StarStyle starStyle;
+    switch(which) {
+      case 0: starStyle = StarStyle.EMPTY; break;
+      case 1: starStyle = StarStyle.FILL_1; break;
+      case 2: starStyle = StarStyle.FILL_2; break;
+      case 3: starStyle = StarStyle.FILL_3; break;
+      case 4: starStyle = StarStyle.UNKNOWN; break;
+      default: starStyle = StarStyle.UNKNOWN; break;
+    }
+    newContact.setStarStyle(starStyle);
     int numberOfContacts = contactService.allContacts(1, 10).size();
 
     // Clear the contacts db and check it is empty
@@ -82,6 +110,17 @@ public class ContactServiceTest {
     assertThat(allContacts.size()).isEqualTo(numberOfContacts);
 
     Set<Contact> reloadedContacts = contactService.filterContactsByName(1, 10, newContactName);
-    assertThat(reloadedContacts.iterator().next().getName()).isEqualTo(newContactName);
+    Contact reloadedContact = reloadedContacts.iterator().next();
+
+    // Check everything roundtripped ok
+    assertThat(reloadedContact.getName()).isEqualTo(newContactName);
+    assertThat(reloadedContact.getBitcoinAddress()).isEqualTo(newContact.getBitcoinAddress());
+    assertThat(reloadedContact.getEmail()).isEqualTo(newContact.getEmail());
+    assertThat(reloadedContact.getExtendedPublicKey()).isEqualTo(newContact.getExtendedPublicKey());
+    assertThat(reloadedContact.getImagePath()).isEqualTo(newContact.getImagePath());
+    assertThat(reloadedContact.getId()).isEqualTo(newContact.getId());
+    assertThat(reloadedContact.getNotes()).isEqualTo(newContact.getNotes());
+    assertThat(reloadedContact.getStarStyle()).isEqualTo(newContact.getStarStyle());
+    assertThat(reloadedContact.getTags()).isEqualTo(newContact.getTags());
   }
 }
