@@ -3,6 +3,8 @@ package org.multibit.hd.ui.views.components.auto_complete;
 import com.google.common.base.Strings;
 import org.multibit.hd.core.api.Contact;
 import org.multibit.hd.core.api.Recipient;
+import org.multibit.hd.core.api.WalletId;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 
 import java.util.Set;
@@ -34,7 +36,7 @@ public class AutoCompleteFilters {
       @Override
       public Recipient[] create() {
 
-        Set<Contact> contacts = CoreServices.getContactService().allContacts(1, 10);
+        Set<Contact> contacts = CoreServices.getContactService(getCurrentWalletId()).allContacts(1, 10);
 
         return populateRecipients(contacts);
 
@@ -47,7 +49,7 @@ public class AutoCompleteFilters {
           return new Recipient[]{};
         }
 
-        Set<Contact> contacts = CoreServices.getContactService().filterContactsByName(1, 10, fragment);
+        Set<Contact> contacts = CoreServices.getContactService(getCurrentWalletId()).filterContactsByName(1, 10, fragment);
 
         return populateRecipients(contacts);
       }
@@ -70,6 +72,10 @@ public class AutoCompleteFilters {
         }
 
         return recipients;
+      }
+
+      private WalletId getCurrentWalletId() {
+        return WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId();
       }
     };
 
