@@ -1,7 +1,5 @@
-package org.multibit.hd.core.managers;
-
 /**
- * Copyright 2013 multibit.org
+ * Copyright 2014 multibit.org
  *
  * Licensed under the MIT license (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +13,7 @@ package org.multibit.hd.core.managers;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.multibit.hd.core.managers;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 import junit.framework.TestCase;
