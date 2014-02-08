@@ -33,7 +33,7 @@ public class Gravatars {
   private final static String RATING = Rating.GENERAL.getCode();
   //private final static String DEFAULT_IMAGE = DefaultImage.MYSTERY_MAN.getCode();
   // TODO Replace this with the mystery man when contact service is released
-  private final static String DEFAULT_IMAGE = DefaultImage.WAVATAR.getCode();
+  private final static String DEFAULT_IMAGE = DefaultImage.MONSTER.getCode();
 
   // Fixed entries
   private final static String GRAVATAR_URL = "http://www.gravatar.com/avatar/";

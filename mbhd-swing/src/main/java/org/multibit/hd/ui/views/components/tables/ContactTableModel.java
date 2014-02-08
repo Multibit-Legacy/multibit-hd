@@ -1,8 +1,10 @@
 package org.multibit.hd.ui.views.components.tables;
 
+import com.google.common.base.Joiner;
 import org.multibit.hd.core.api.Contact;
 import org.multibit.hd.ui.gravatar.Gravatars;
 import org.multibit.hd.ui.views.components.ImageDecorator;
+import org.multibit.hd.ui.views.components.Images;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -25,6 +27,7 @@ public class ContactTableModel extends AbstractTableModel {
     "Name",
     "Email",
     "Address",
+    "Tags",
     ""
   };
 
@@ -37,17 +40,20 @@ public class ContactTableModel extends AbstractTableModel {
     int row = 0;
     for (Contact contact : contacts) {
 
-      final ImageIcon imageIcon = new ImageIcon(
+      final ImageIcon imageIcon =  ImageDecorator.toImageIcon(
         ImageDecorator.applyRoundedCorners(
           Gravatars.retrieveGravatar(contact.getEmail().or("nobody@example.org")).get(), 20)
       );
 
+      final ImageIcon starIcon = Images.newStarIcon(contact.getStarStyle());
+
       Object[] rowData = new Object[]{
         false,
-        contact.getStarStyle().name(),
+        starIcon,
         contact.getName(),
         contact.getEmail().or(""),
         contact.getBitcoinAddress().or(""),
+        Joiner.on(" ").join(contact.getTags()),
         imageIcon
       };
 

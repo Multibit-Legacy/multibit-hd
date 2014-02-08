@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components;
 
 import com.google.common.collect.Maps;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
@@ -70,5 +71,49 @@ public class ImageDecorator {
     hints.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
     return hints;
+  }
+
+  /**
+   * @param icon The icon
+   *
+   * @return An image icon suitable for use in tables etc
+   */
+  public static ImageIcon toImageIcon(Icon icon) {
+
+    if (icon instanceof ImageIcon) {
+      return (ImageIcon) icon;
+    }
+
+    // Get the size
+    int w = icon.getIconWidth();
+    int h = icon.getIconHeight();
+
+    // Set up the graphics environment
+    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    GraphicsDevice gd = ge.getDefaultScreenDevice();
+    GraphicsConfiguration gc = gd.getDefaultConfiguration();
+
+    // Create the buffered image
+    BufferedImage image = gc.createCompatibleImage(w, h, Transparency.BITMASK);
+
+    Graphics2D g = image.createGraphics();
+
+    // Paint the icon on to it
+    icon.paintIcon(null, g, 0, 0);
+
+    g.dispose();
+
+    return toImageIcon(image);
+
+  }
+
+  /**
+   * @param image The buffered image
+   *
+   * @return An image icon suitable for use in tables etc
+   */
+  public static ImageIcon toImageIcon(BufferedImage image) {
+
+    return new ImageIcon(image);
   }
 }

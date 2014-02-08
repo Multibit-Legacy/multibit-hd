@@ -147,7 +147,7 @@ public class Labels {
     JLabel label;
 
     if (key.isPresent()) {
-      label = Labels.newLabel(key.get(), values);
+      label = newLabel(key.get(), values);
     } else {
       label = new JLabel();
     }
@@ -498,6 +498,18 @@ public class Labels {
     return newLabel(MessageKey.TRANSACTION_FEE);
   }
 
+  /**
+   * @return A new "circle" label
+   */
+  public static JLabel newCircle() {
+
+    JLabel label = newBlankLabel();
+
+    AwesomeDecorator.bindIcon(AwesomeIcon.CIRCLE, label, false, AwesomeDecorator.SMALL_ICON_SIZE);
+
+    return label;
+  }
+
 
   /**
    * @param developerFee The developer fee in satoshis
@@ -662,4 +674,5 @@ public class Labels {
     }, new Object[][]{});
 
   }
+
 }

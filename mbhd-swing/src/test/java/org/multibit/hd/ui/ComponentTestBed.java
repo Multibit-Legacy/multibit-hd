@@ -5,6 +5,9 @@ import com.google.common.util.concurrent.Uninterruptibles;
 import com.xeiam.xchange.mtgox.v2.MtGoxExchange;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.ShutdownEvent;
+import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.controller.ChangeLocaleEvent;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;
@@ -22,6 +25,7 @@ import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
@@ -53,7 +57,7 @@ public class ComponentTestBed {
     // Start the core services
     CoreServices.main(args);
 
-    Configurations.currentConfiguration.getBitcoinConfiguration().setBitcoinSymbol("satoshi");
+    Configurations.currentConfiguration.getBitcoinConfiguration().setBitcoinSymbol("icon");
 
     // Register for events
     CoreServices.uiEventBus.register(this);
@@ -61,6 +65,13 @@ public class ComponentTestBed {
     // Standard support services
     CoreServices.newExchangeService(MtGoxExchange.class.getName()).start();
     CoreServices.newBitcoinNetworkService().start();
+
+    // Initialise the wallet manager, which will load the current wallet if available
+    File applicationDataDirectory = InstallationManager.createApplicationDataDirectory();
+    WalletManager.INSTANCE.initialise(applicationDataDirectory);
+
+    ContactService contactService = CoreServices.getContactService(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId());
+    contactService.addDemoContacts();
 
   }
 

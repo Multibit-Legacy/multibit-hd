@@ -18,13 +18,12 @@ import static org.fest.assertions.api.Assertions.assertThat;
 public class ContactServiceTest {
 
   private ContactService contactService;
-  private File contactDbFile;
 
   @Before
   public void setUp() throws Exception {
 
     File temporaryDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
-    contactDbFile = new File(temporaryDirectory.getAbsolutePath() + File.separator + ContactService.CONTACTS_DATABASE_NAME);
+    File contactDbFile = new File(temporaryDirectory.getAbsolutePath() + File.separator + ContactService.CONTACTS_DATABASE_NAME);
 
     contactService = new ContactService(contactDbFile);
     contactService.addDemoContacts();
