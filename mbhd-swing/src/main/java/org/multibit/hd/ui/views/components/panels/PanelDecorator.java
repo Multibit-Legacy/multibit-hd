@@ -1,8 +1,10 @@
-package org.multibit.hd.ui.views.components;
+package org.multibit.hd.ui.views.components.panels;
 
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.views.components.Buttons;
+import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;

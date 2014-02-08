@@ -8,7 +8,7 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardButtonEnabledEvent;
 import org.multibit.hd.ui.events.view.WizardComponentModelChangedEvent;
-import org.multibit.hd.ui.views.components.PanelDecorator;
+import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 
 import javax.swing.*;
@@ -63,7 +63,7 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
 
     // All wizard panels are decorated with the same theme and layout at creation
     // so just need a vanilla panel to begin with
-    wizardPanel = Panels.newPanel();
+    wizardPanel = Panels.newRoundedPanel();
 
     // All wizard panels require a backing model
     newPanelModel();

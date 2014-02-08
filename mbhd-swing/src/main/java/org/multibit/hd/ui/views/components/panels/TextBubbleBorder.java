@@ -1,4 +1,6 @@
-package org.multibit.hd.ui.views.components;
+package org.multibit.hd.ui.views.components.panels;
+
+import org.multibit.hd.ui.views.components.ImageDecorator;
 
 import javax.swing.border.AbstractBorder;
 import java.awt.*;
@@ -103,7 +105,6 @@ public class TextBubbleBorder extends AbstractBorder {
     insets = new Insets(0, 6, bottomPad, 6);
 
   }
-
 
   @Override
   public Insets getBorderInsets(Component c) {

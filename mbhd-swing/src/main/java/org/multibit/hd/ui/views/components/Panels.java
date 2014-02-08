@@ -5,6 +5,9 @@ import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.views.components.panels.LightBoxPanel;
+import org.multibit.hd.ui.views.components.panels.PanelDecorator;
+import org.multibit.hd.ui.views.components.panels.RoundedPanel;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -57,6 +60,21 @@ public class Panels {
   public static JPanel newPanel() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
+      "fill,insets 0", // Layout
+      "[]", // Columns
+      "[]" // Rows
+    ));
+
+    return panel;
+
+  }
+
+  /**
+   * @return A simple theme-aware panel with rounded corners and a single cell MigLayout
+   */
+  public static JPanel newRoundedPanel() {
+
+    JPanel panel = new RoundedPanel(new MigLayout(
       "fill,insets 0", // Layout
       "[]", // Columns
       "[]" // Rows
@@ -189,6 +207,7 @@ public class Panels {
     return panel;
   }
 
+
   /**
    * <p>A "language selector" panel provides a means of changing the display language</p>
    *
@@ -210,7 +229,6 @@ public class Panels {
 
     return panel;
   }
-
 
   /**
    * <p>A "wallet selector" panel provides a means of choosing how a wallet is to be created/accessed</p>

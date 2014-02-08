@@ -1,14 +1,12 @@
-package org.multibit.hd.ui.views.components;
+package org.multibit.hd.ui.views.components.panels;
 
 import com.google.common.base.Preconditions;
+import org.multibit.hd.ui.views.components.Panels;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * <p>Component to provide the following to UI:</p>
@@ -21,21 +19,19 @@ import java.util.Collections;
  */
 public class LightBoxPanel extends JPanel {
 
-  private final JPanel panel;
-  private final Integer layer;
+  private final JPanel contentPanel;
 
   /**
-   * @param panel The panel containing the light box components (e.g. a wizard)
+   * @param contentPanel The panel containing the light box components (e.g. a wizard)
    * @param layer The layer which to place the panel (JLayeredPane.POPUP_LAYER is normal, DRAG_LAYER for popovers)
    */
-  public LightBoxPanel(JPanel panel, Integer layer) {
+  public LightBoxPanel(JPanel contentPanel, Integer layer) {
 
-    Preconditions.checkNotNull(panel, "'panel' must be present");
-    Preconditions.checkState(panel.getWidth() > 0, "'width' must be greater than zero");
-    Preconditions.checkState(panel.getHeight() > 0, "'height' must be greater than zero");
+    Preconditions.checkNotNull(contentPanel, "'panel' must be present");
+    Preconditions.checkState(contentPanel.getWidth() > 0, "'width' must be greater than zero");
+    Preconditions.checkState(contentPanel.getHeight() > 0, "'height' must be greater than zero");
 
-    this.panel = panel;
-    this.layer = layer;
+    this.contentPanel = contentPanel;
 
     // Ensure we set the opacity (platform dependent)
     setOpaque(false);
@@ -59,11 +55,7 @@ public class LightBoxPanel extends JPanel {
     calculatePosition();
 
     // Add the light box panel to the frame
-    Panels.frame.getLayeredPane().add(panel, layer);
-
-    for(Component component : Panels.frame.getLayeredPane().getComponentsInLayer(JLayeredPane.DEFAULT_LAYER)) {
-      component.setEnabled(false);
-    }
+    Panels.frame.getLayeredPane().add(contentPanel, layer);
 
   }
 
@@ -75,8 +67,8 @@ public class LightBoxPanel extends JPanel {
     int currentFrameWidth = Panels.frame.getWidth();
     int currentFrameHeight = Panels.frame.getHeight();
 
-    int minPanelWidth = (int) panel.getMinimumSize().getWidth();
-    int minPanelHeight = (int) panel.getMinimumSize().getHeight();
+    int minPanelWidth = (int) contentPanel.getMinimumSize().getWidth();
+    int minPanelHeight = (int) contentPanel.getMinimumSize().getHeight();
 
     // Use the panel's minimum size to prevent further resizing
     int frameWidth = currentFrameWidth < minPanelWidth ? minPanelWidth : currentFrameWidth;
@@ -89,14 +81,14 @@ public class LightBoxPanel extends JPanel {
     setSize(frameWidth * 2, frameHeight * 2);
 
     // Center the light box panel in the frame
-    int x = (frameWidth - panel.getWidth()) / 2;
-    int y = (frameHeight - panel.getHeight()) / 2;
+    int x = (frameWidth - contentPanel.getWidth()) / 2;
+    int y = (frameHeight - contentPanel.getHeight()) / 2;
 
     // Avoid any negative values if resizing gets cramped
     x = x < 0 ? 0 : x;
     y = y < 0 ? 0 : y;
 
-    panel.setLocation(x, y);
+    contentPanel.setLocation(x, y);
   }
 
   /**
@@ -106,7 +98,7 @@ public class LightBoxPanel extends JPanel {
 
     // Tidy up the layered pane
     Panels.frame.getLayeredPane().remove(1);
-    Panels.frame.getLayeredPane().remove(panel);
+    Panels.frame.getLayeredPane().remove(contentPanel);
 
     // Repaint
     Panels.frame.validate();
@@ -131,23 +123,6 @@ public class LightBoxPanel extends JPanel {
     // Create the darkened border rectangle (will appear beneath the panel layer)
     g.fillRect(0, 0, Panels.frame.getWidth(), Panels.frame.getHeight());
 
-  }
-
-  private Component[] getComponents(Component container) {
-    ArrayList<Component> list;
-
-    try {
-      list = new ArrayList<>(Arrays.asList(((Container) container).getComponents()));
-
-      for (int index = 0; index < list.size(); index++) {
-        Collections.addAll(list, getComponents(list.get(index)));
-      }
-
-    } catch (ClassCastException e) {
-      list = new ArrayList<>();
-    }
-
-    return list.toArray(new Component[list.size()]);
   }
 
   /**
