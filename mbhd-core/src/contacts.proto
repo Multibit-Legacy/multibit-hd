@@ -61,6 +61,6 @@ message Contact {
  * A collection of contacts
  */
 message Contacts {
-  repeated Contact id = 1;                  // the contacts, repeated
+  repeated Contact contact = 1;                  // the contacts, repeated
 }
 

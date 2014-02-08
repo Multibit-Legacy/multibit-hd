@@ -18,13 +18,14 @@
 
 package org.multibit.hd.core.store;
 
-import com.google.bitcoin.core.Sha256Hash;
 import com.google.bitcoin.core.Transaction;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.protobuf.ByteString;
 import com.google.protobuf.TextFormat;
 import org.multibit.contact.MBHDProtos;
 import org.multibit.hd.core.api.Contact;
+import org.multibit.hd.core.api.StarStyle;
 import org.multibit.hd.core.exceptions.ContactsLoadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Serialize and de-serialize contacts to a byte stream containing a
@@ -84,242 +87,72 @@ public class ContactsProtobufSerializer {
      */
     public MBHDProtos.Contacts contactsToProto(Set<Contact> contacts) {
       MBHDProtos.Contacts.Builder contactsBuilder = MBHDProtos.Contacts.newBuilder();
-//        walletBuilder.setNetworkIdentifier(wallet.getNetworkParameters().getId());
-//        if (wallet.getDescription() != null) {
-//            walletBuilder.setDescription(wallet.getDescription());
-//        }
-//
-//        for (WalletTransaction wtx : wallet.getWalletTransactions()) {
-//            Protos.Transaction txProto = makeTxProto(wtx);
-//            walletBuilder.addTransaction(txProto);
-//        }
-//
-//        for (ECKey key : wallet.getKeys()) {
-//            Protos.Key.Builder keyBuilder = Protos.Key.newBuilder().setCreationTimestamp(key.getCreationTimeSeconds() * 1000)
-//                                                         // .setLabel() TODO
-//                                                            .setType(Protos.Key.Type.ORIGINAL);
-//            if (key.getPrivKeyBytes() != null)
-//                keyBuilder.setPrivateKey(ByteString.copyFrom(key.getPrivKeyBytes()));
-//
-//            EncryptedPrivateKey encryptedPrivateKey = key.getEncryptedPrivateKey();
-//            if (encryptedPrivateKey != null) {
-//                // Key is encrypted.
-//                Protos.EncryptedPrivateKey.Builder encryptedKeyBuilder = Protos.EncryptedPrivateKey.newBuilder()
-//                    .setEncryptedPrivateKey(ByteString.copyFrom(encryptedPrivateKey.getEncryptedBytes()))
-//                    .setInitialisationVector(ByteString.copyFrom(encryptedPrivateKey.getInitialisationVector()));
-//
-//                if (key.getKeyCrypter() == null) {
-//                    throw new IllegalStateException("The encrypted key " + key.toString() + " has no KeyCrypter.");
-//                } else {
-//                    // If it is a Scrypt + AES encrypted key, set the persisted key type.
-//                    if (key.getKeyCrypter().getUnderstoodEncryptionType() == Protos.Wallet.EncryptionType.ENCRYPTED_SCRYPT_AES) {
-//                        keyBuilder.setType(Protos.Key.Type.ENCRYPTED_SCRYPT_AES);
-//                    } else {
-//                        throw new IllegalArgumentException("The key " + key.toString() + " is encrypted with a KeyCrypter of type " + key.getKeyCrypter().getUnderstoodEncryptionType() +
-//                                ". This WalletProtobufSerialiser does not understand that type of encryption.");
-//                    }
-//                }
-//                keyBuilder.setEncryptedPrivateKey(encryptedKeyBuilder);
-//            }
-//
-//            // We serialize the public key even if the private key is present for speed reasons: we don't want to do
-//            // lots of slow EC math to load the wallet, we prefer to store the redundant data instead. It matters more
-//            // on mobile platforms.
-//            keyBuilder.setPublicKey(ByteString.copyFrom(key.getPubKey()));
-//            walletBuilder.addKey(keyBuilder);
-//        }
-//
-//        for (Script script : wallet.getWatchedScripts()) {
-//            Protos.Script protoScript =
-//                    Protos.Script.newBuilder()
-//                            .setProgram(ByteString.copyFrom(script.getProgram()))
-//                            .setCreationTimestamp(script.getCreationTimeSeconds() * 1000)
-//                            .build();
-//
-//            walletBuilder.addWatchedScript(protoScript);
-//        }
-//
-//        // Populate the lastSeenBlockHash field.
-//        Sha256Hash lastSeenBlockHash = wallet.getLastBlockSeenHash();
-//        if (lastSeenBlockHash != null) {
-//            walletBuilder.setLastSeenBlockHash(hashToByteString(lastSeenBlockHash));
-//            walletBuilder.setLastSeenBlockHeight(wallet.getLastBlockSeenHeight());
-//        }
-//        if (wallet.getLastBlockSeenTimeSecs() > 0)
-//            walletBuilder.setLastSeenBlockTimeSecs(wallet.getLastBlockSeenTimeSecs());
-//
-//        // Populate the scrypt parameters.
-//        KeyCrypter keyCrypter = wallet.getKeyCrypter();
-//        if (keyCrypter == null) {
-//            // The wallet is unencrypted.
-//            walletBuilder.setEncryptionType(EncryptionType.UNENCRYPTED);
-//        } else {
-//            // The wallet is encrypted.
-//            walletBuilder.setEncryptionType(keyCrypter.getUnderstoodEncryptionType());
-//            if (keyCrypter instanceof KeyCrypterScrypt) {
-//                KeyCrypterScrypt keyCrypterScrypt = (KeyCrypterScrypt) keyCrypter;
-//                walletBuilder.setEncryptionParameters(keyCrypterScrypt.getScryptParameters());
-//            } else {
-//                // Some other form of encryption has been specified that we do not know how to persist.
-//                throw new RuntimeException("The wallet has encryption of type '" + keyCrypter.getUnderstoodEncryptionType() + "' but this WalletProtobufSerializer does not know how to persist this.");
-//            }
-//        }
-//
-//        if (wallet.getKeyRotationTime() != null) {
-//            long timeSecs = wallet.getKeyRotationTime().getTime() / 1000;
-//            walletBuilder.setKeyRotationTime(timeSecs);
-//        }
-//
-//        populateExtensions(wallet, walletBuilder);
-//
-//        // Populate the wallet version.
-//        walletBuilder.setVersion(wallet.getVersion());
 
-        return contactsBuilder.build();
+      Preconditions.checkNotNull(contacts, "Contacts must be specified");
+
+      for (Contact contact : contacts) {
+        MBHDProtos.Contact contactProto = makeContactProto(contact);
+       contactsBuilder.addContact(contactProto);
+      }
+
+      return contactsBuilder.build();
     }
 
-//    private static void populateExtensions(Wallet wallet, Protos.Wallet.Builder walletBuilder) {
-//        for (WalletExtension extension : wallet.getExtensions().values()) {
-//            Protos.Extension.Builder proto = Protos.Extension.newBuilder();
-//            proto.setId(extension.getWalletExtensionID());
-//            proto.setMandatory(extension.isWalletExtensionMandatory());
-//            proto.setData(ByteString.copyFrom(extension.serializeWalletExtension()));
-//            walletBuilder.addExtension(proto);
-//        }
-//    }
-//
-//    private static Protos.Transaction makeTxProto(WalletTransaction wtx) {
-//        Transaction tx = wtx.getTransaction();
-//        Protos.Transaction.Builder txBuilder = Protos.Transaction.newBuilder();
-//
-//        txBuilder.setPool(getProtoPool(wtx))
-//                 .setHash(hashToByteString(tx.getHash()))
-//                 .setVersion((int) tx.getVersion());
-//
-//        if (tx.getUpdateTime() != null) {
-//            txBuilder.setUpdatedAt(tx.getUpdateTime().getTime());
-//        }
-//
-//        if (tx.getLockTime() > 0) {
-//            txBuilder.setLockTime((int)tx.getLockTime());
-//        }
-//
-//        // Handle inputs.
-//        for (TransactionInput input : tx.getInputs()) {
-//            Protos.TransactionInput.Builder inputBuilder = Protos.TransactionInput.newBuilder()
-//                .setScriptBytes(ByteString.copyFrom(input.getScriptBytes()))
-//                .setTransactionOutPointHash(hashToByteString(input.getOutpoint().getHash()))
-//                .setTransactionOutPointIndex((int) input.getOutpoint().getIndex());
-//            if (input.hasSequence()) {
-//                inputBuilder.setSequence((int)input.getSequenceNumber());
-//            }
-//            txBuilder.addTransactionInput(inputBuilder);
-//        }
-//
-//        // Handle outputs.
-//        for (TransactionOutput output : tx.getOutputs()) {
-//            Protos.TransactionOutput.Builder outputBuilder = Protos.TransactionOutput.newBuilder()
-//                .setScriptBytes(ByteString.copyFrom(output.getScriptBytes()))
-//                .setValue(output.getValue().longValue());
-//            final TransactionInput spentBy = output.getSpentBy();
-//            if (spentBy != null) {
-//                Sha256Hash spendingHash = spentBy.getParentTransaction().getHash();
-//                int spentByTransactionIndex = spentBy.getParentTransaction().getInputs().indexOf(spentBy);
-//                outputBuilder.setSpentByTransactionHash(hashToByteString(spendingHash))
-//                             .setSpentByTransactionIndex(spentByTransactionIndex);
-//            }
-//            txBuilder.addTransactionOutput(outputBuilder);
-//        }
-//
-//        // Handle which blocks tx was seen in.
-//        final Map<Sha256Hash, Integer> appearsInHashes = tx.getAppearsInHashes();
-//        if (appearsInHashes != null) {
-//            for (Map.Entry<Sha256Hash, Integer> entry : appearsInHashes.entrySet()) {
-//                txBuilder.addBlockHash(hashToByteString(entry.getKey()));
-//                txBuilder.addBlockRelativityOffsets(entry.getValue());
-//            }
-//        }
-//
-//        if (tx.hasConfidence()) {
-//            TransactionConfidence confidence = tx.getConfidence();
-//            Protos.TransactionConfidence.Builder confidenceBuilder = Protos.TransactionConfidence.newBuilder();
-//            writeConfidence(txBuilder, confidence, confidenceBuilder);
-//        }
-//
-//        Protos.Transaction.Purpose purpose;
-//        switch (tx.getPurpose()) {
-//            case UNKNOWN: purpose = Protos.Transaction.Purpose.UNKNOWN; break;
-//            case USER_PAYMENT: purpose = Protos.Transaction.Purpose.USER_PAYMENT; break;
-//            case KEY_ROTATION: purpose = Protos.Transaction.Purpose.KEY_ROTATION; break;
-//            default:
-//                throw new RuntimeException("New tx purpose serialization not implemented.");
-//        }
-//        txBuilder.setPurpose(purpose);
-//
-//        return txBuilder.build();
-//    }
-//
-//    private static Protos.Transaction.Pool getProtoPool(WalletTransaction wtx) {
-//        switch (wtx.getPool()) {
-//            case UNSPENT: return Protos.Transaction.Pool.UNSPENT;
-//            case SPENT: return Protos.Transaction.Pool.SPENT;
-//            case DEAD: return Protos.Transaction.Pool.DEAD;
-//            case PENDING: return Protos.Transaction.Pool.PENDING;
-//            default:
-//                throw new RuntimeException("Unreachable");
-//        }
-//    }
+  private static MBHDProtos.Contact makeContactProto(Contact contact) {
+    MBHDProtos.Contact.Builder contactBuilder = MBHDProtos.Contact.newBuilder();
+    contactBuilder.setId(contact.getId().toString());
+    contactBuilder.setName(contact.getName());
+    contactBuilder.setBitcoinAddress(contact.getBitcoinAddress().or(""));
+    contactBuilder.setEmail(contact.getEmail().or(""));
+    contactBuilder.setImagePath(contact.getImagePath().or(""));
+    contactBuilder.setExtendedPublicKey(contact.getExtendedPublicKey().or(""));
+    contactBuilder.setNotes(contact.getNotes().or(""));
+    contactBuilder.setStarStyle(getStarStyleAsInt(contact.getStarStyle()));
 
-//    private static void writeConfidence(Protos.Transaction.Builder txBuilder,
-//                                        TransactionConfidence confidence,
-//                                        Protos.TransactionConfidence.Builder confidenceBuilder) {
-//        synchronized (confidence) {
-//            confidenceBuilder.setType(Protos.TransactionConfidence.Type.valueOf(confidence.getConfidenceType().getValue()));
-//            if (confidence.getConfidenceType() == ConfidenceType.BUILDING) {
-//                confidenceBuilder.setAppearedAtHeight(confidence.getAppearedAtChainHeight());
-//                confidenceBuilder.setDepth(confidence.getDepthInBlocks());
-//                if (confidence.getWorkDone() != null) {
-//                    confidenceBuilder.setWorkDone(confidence.getWorkDone().longValue());
-//                }
-//            }
-//            if (confidence.getConfidenceType() == ConfidenceType.DEAD) {
-//                // Copy in the overriding transaction, if available.
-//                // (A dead coinbase transaction has no overriding transaction).
-//                if (confidence.getOverridingTransaction() != null) {
-//                    Sha256Hash overridingHash = confidence.getOverridingTransaction().getHash();
-//                    confidenceBuilder.setOverridingTransaction(hashToByteString(overridingHash));
-//                }
-//            }
-//            TransactionConfidence.Source source = confidence.getSource();
-//            switch (source) {
-//                case SELF: confidenceBuilder.setSource(Protos.TransactionConfidence.Source.SOURCE_SELF); break;
-//                case NETWORK: confidenceBuilder.setSource(Protos.TransactionConfidence.Source.SOURCE_NETWORK); break;
-//                case UNKNOWN:
-//                    // Fall through.
-//                default:
-//                    confidenceBuilder.setSource(Protos.TransactionConfidence.Source.SOURCE_UNKNOWN); break;
-//            }
-//        }
-//
-//        for (ListIterator<PeerAddress> it = confidence.getBroadcastBy(); it.hasNext();) {
-//            PeerAddress address = it.next();
-//            Protos.PeerAddress proto = Protos.PeerAddress.newBuilder()
-//                    .setIpAddress(ByteString.copyFrom(address.getAddr().getAddress()))
-//                    .setPort(address.getPort())
-//                    .setServices(address.getServices().longValue())
-//                    .build();
-//            confidenceBuilder.addBroadcastBy(proto);
-//        }
-//        txBuilder.setConfidence(confidenceBuilder);
-//    }
-
-    public static ByteString hashToByteString(Sha256Hash hash) {
-        return ByteString.copyFrom(hash.getBytes());
+    // Construct tags
+    List<String> tags = contact.getTags();
+    if (tags != null) {
+      int tagIndex = 0;
+      for (String tag : tags) {
+        MBHDProtos.Tag tagProto = makeTagProto(tag);
+        contactBuilder.addTag(tagIndex, tagProto);
+        tagIndex++;
+      }
     }
 
-    public static Sha256Hash byteStringToHash(ByteString bs) {
-        return new Sha256Hash(bs.toByteArray());
+    return contactBuilder.build();
+  }
+
+  private static int getStarStyleAsInt(StarStyle starStyle) {
+    if (starStyle == null) {
+      return 0; // unknown
     }
+
+    switch(starStyle) {
+      case UNKNOWN: return 0;
+      case FILL_1: return 1;
+      case FILL_2: return 2;
+      case FILL_3: return 3;
+      case EMPTY: return 4;
+      default: return 0;
+    }
+  }
+  private static StarStyle getStarStyleFromInt(int starStyleAsInt) {
+     switch(starStyleAsInt) {
+       case 0: return StarStyle.UNKNOWN;
+       case 1: return StarStyle.FILL_1;
+       case 2: return StarStyle.FILL_2;
+       case 3: return StarStyle.FILL_3;
+       case 4: return StarStyle.EMPTY;
+       default: return StarStyle.UNKNOWN;
+     }
+   }
+
+  private static MBHDProtos.Tag makeTagProto(String tag) {
+    MBHDProtos.Tag.Builder tagBuilder = MBHDProtos.Tag.newBuilder();
+    tagBuilder.setTagValue(tag);
+    return tagBuilder.build();
+  }
 
     /**
      * <p>Parses a Contacts from the given stream, using the provided Contacts instance to load data into.
@@ -350,6 +183,44 @@ public class ContactsProtobufSerializer {
      * @throws ContactsLoadException thrown in various error conditions (see description).
      */
     private void readContacts(MBHDProtos.Contacts contactsProto, Set<Contact> contacts) throws ContactsLoadException {
+      Set<Contact> readContacts = Sets.newHashSet();
+
+      List<MBHDProtos.Contact>contactProtos = contactsProto.getContactList();
+
+      if (contactProtos != null) {
+        for (MBHDProtos.Contact contactProto : contactProtos) {
+          String idAsString = contactProto.getId();
+          UUID id = UUID.fromString(idAsString);
+
+          String name = contactProto.getName();
+
+          Contact contact = new Contact(id, name);
+
+          contact.setEmail(contactProto.getEmail());
+          contact.setBitcoinAddress(contactProto.getBitcoinAddress());
+          contact.setImagePath(contactProto.getImagePath());
+          contact.setExtendedPublicKey(contactProto.getExtendedPublicKey());
+          contact.setNotes(contactProto.getNotes());
+          contact.setStarStyle(getStarStyleFromInt(contactProto.getStarStyle()));
+
+          // Create tags
+          List<String> tags = Lists.newArrayList();
+          List<MBHDProtos.Tag> tagProtos = contactProto.getTagList();
+          if (tagProtos != null) {
+            for (MBHDProtos.Tag tagProto : tagProtos) {
+              tags.add(tagProto.getTagValue());
+            }
+          }
+          contact.setTags(tags);
+          readContacts.add(contact);
+        }
+      }
+
+      // Everything read ok - put the new contacts into the passed in contacts object
+      contacts.clear();
+      contacts.addAll(readContacts);
+
+
 //        // Read the scrypt parameters that specify how encryption and decryption is performed.
 //        if (walletProto.hasEncryptionParameters()) {
 //            Protos.ScryptParameters encryptionParameters = walletProto.getEncryptionParameters();

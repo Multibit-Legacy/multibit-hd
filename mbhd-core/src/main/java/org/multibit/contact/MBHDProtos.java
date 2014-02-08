@@ -1691,14 +1691,14 @@ public final class MBHDProtos {
   public interface ContactsOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // repeated .wallet.Contact id = 1;
+    // repeated .wallet.Contact contact = 1;
     java.util.List<org.multibit.contact.MBHDProtos.Contact> 
-        getIdList();
-    org.multibit.contact.MBHDProtos.Contact getId(int index);
-    int getIdCount();
+        getContactList();
+    org.multibit.contact.MBHDProtos.Contact getContact(int index);
+    int getContactCount();
     java.util.List<? extends org.multibit.contact.MBHDProtos.ContactOrBuilder> 
-        getIdOrBuilderList();
-    org.multibit.contact.MBHDProtos.ContactOrBuilder getIdOrBuilder(
+        getContactOrBuilderList();
+    org.multibit.contact.MBHDProtos.ContactOrBuilder getContactOrBuilder(
         int index);
   }
   public static final class Contacts extends
@@ -1729,37 +1729,37 @@ public final class MBHDProtos {
       return org.multibit.contact.MBHDProtos.internal_static_wallet_Contacts_fieldAccessorTable;
     }
     
-    // repeated .wallet.Contact id = 1;
-    public static final int ID_FIELD_NUMBER = 1;
-    private java.util.List<org.multibit.contact.MBHDProtos.Contact> id_;
-    public java.util.List<org.multibit.contact.MBHDProtos.Contact> getIdList() {
-      return id_;
+    // repeated .wallet.Contact contact = 1;
+    public static final int CONTACT_FIELD_NUMBER = 1;
+    private java.util.List<org.multibit.contact.MBHDProtos.Contact> contact_;
+    public java.util.List<org.multibit.contact.MBHDProtos.Contact> getContactList() {
+      return contact_;
     }
     public java.util.List<? extends org.multibit.contact.MBHDProtos.ContactOrBuilder> 
-        getIdOrBuilderList() {
-      return id_;
+        getContactOrBuilderList() {
+      return contact_;
     }
-    public int getIdCount() {
-      return id_.size();
+    public int getContactCount() {
+      return contact_.size();
     }
-    public org.multibit.contact.MBHDProtos.Contact getId(int index) {
-      return id_.get(index);
+    public org.multibit.contact.MBHDProtos.Contact getContact(int index) {
+      return contact_.get(index);
     }
-    public org.multibit.contact.MBHDProtos.ContactOrBuilder getIdOrBuilder(
+    public org.multibit.contact.MBHDProtos.ContactOrBuilder getContactOrBuilder(
         int index) {
-      return id_.get(index);
+      return contact_.get(index);
     }
     
     private void initFields() {
-      id_ = java.util.Collections.emptyList();
+      contact_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
       
-      for (int i = 0; i < getIdCount(); i++) {
-        if (!getId(i).isInitialized()) {
+      for (int i = 0; i < getContactCount(); i++) {
+        if (!getContact(i).isInitialized()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -1771,8 +1771,8 @@ public final class MBHDProtos {
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
-      for (int i = 0; i < id_.size(); i++) {
-        output.writeMessage(1, id_.get(i));
+      for (int i = 0; i < contact_.size(); i++) {
+        output.writeMessage(1, contact_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -1783,9 +1783,9 @@ public final class MBHDProtos {
       if (size != -1) return size;
     
       size = 0;
-      for (int i = 0; i < id_.size(); i++) {
+      for (int i = 0; i < contact_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, id_.get(i));
+          .computeMessageSize(1, contact_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1903,7 +1903,7 @@ public final class MBHDProtos {
       }
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-          getIdFieldBuilder();
+          getContactFieldBuilder();
         }
       }
       private static Builder create() {
@@ -1912,11 +1912,11 @@ public final class MBHDProtos {
       
       public Builder clear() {
         super.clear();
-        if (idBuilder_ == null) {
-          id_ = java.util.Collections.emptyList();
+        if (contactBuilder_ == null) {
+          contact_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x00000001);
         } else {
-          idBuilder_.clear();
+          contactBuilder_.clear();
         }
         return this;
       }
@@ -1955,14 +1955,14 @@ public final class MBHDProtos {
       public org.multibit.contact.MBHDProtos.Contacts buildPartial() {
         org.multibit.contact.MBHDProtos.Contacts result = new org.multibit.contact.MBHDProtos.Contacts(this);
         int from_bitField0_ = bitField0_;
-        if (idBuilder_ == null) {
+        if (contactBuilder_ == null) {
           if (((bitField0_ & 0x00000001) == 0x00000001)) {
-            id_ = java.util.Collections.unmodifiableList(id_);
+            contact_ = java.util.Collections.unmodifiableList(contact_);
             bitField0_ = (bitField0_ & ~0x00000001);
           }
-          result.id_ = id_;
+          result.contact_ = contact_;
         } else {
-          result.id_ = idBuilder_.build();
+          result.contact_ = contactBuilder_.build();
         }
         onBuilt();
         return result;
@@ -1979,29 +1979,29 @@ public final class MBHDProtos {
       
       public Builder mergeFrom(org.multibit.contact.MBHDProtos.Contacts other) {
         if (other == org.multibit.contact.MBHDProtos.Contacts.getDefaultInstance()) return this;
-        if (idBuilder_ == null) {
-          if (!other.id_.isEmpty()) {
-            if (id_.isEmpty()) {
-              id_ = other.id_;
+        if (contactBuilder_ == null) {
+          if (!other.contact_.isEmpty()) {
+            if (contact_.isEmpty()) {
+              contact_ = other.contact_;
               bitField0_ = (bitField0_ & ~0x00000001);
             } else {
-              ensureIdIsMutable();
-              id_.addAll(other.id_);
+              ensureContactIsMutable();
+              contact_.addAll(other.contact_);
             }
             onChanged();
           }
         } else {
-          if (!other.id_.isEmpty()) {
-            if (idBuilder_.isEmpty()) {
-              idBuilder_.dispose();
-              idBuilder_ = null;
-              id_ = other.id_;
+          if (!other.contact_.isEmpty()) {
+            if (contactBuilder_.isEmpty()) {
+              contactBuilder_.dispose();
+              contactBuilder_ = null;
+              contact_ = other.contact_;
               bitField0_ = (bitField0_ & ~0x00000001);
-              idBuilder_ = 
+              contactBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
-                   getIdFieldBuilder() : null;
+                   getContactFieldBuilder() : null;
             } else {
-              idBuilder_.addAllMessages(other.id_);
+              contactBuilder_.addAllMessages(other.contact_);
             }
           }
         }
@@ -2010,8 +2010,8 @@ public final class MBHDProtos {
       }
       
       public final boolean isInitialized() {
-        for (int i = 0; i < getIdCount(); i++) {
-          if (!getId(i).isInitialized()) {
+        for (int i = 0; i < getContactCount(); i++) {
+          if (!getContact(i).isInitialized()) {
             
             return false;
           }
@@ -2045,7 +2045,7 @@ public final class MBHDProtos {
             case 10: {
               org.multibit.contact.MBHDProtos.Contact.Builder subBuilder = org.multibit.contact.MBHDProtos.Contact.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
-              addId(subBuilder.buildPartial());
+              addContact(subBuilder.buildPartial());
               break;
             }
           }
@@ -2054,190 +2054,190 @@ public final class MBHDProtos {
       
       private int bitField0_;
       
-      // repeated .wallet.Contact id = 1;
-      private java.util.List<org.multibit.contact.MBHDProtos.Contact> id_ =
+      // repeated .wallet.Contact contact = 1;
+      private java.util.List<org.multibit.contact.MBHDProtos.Contact> contact_ =
         java.util.Collections.emptyList();
-      private void ensureIdIsMutable() {
+      private void ensureContactIsMutable() {
         if (!((bitField0_ & 0x00000001) == 0x00000001)) {
-          id_ = new java.util.ArrayList<org.multibit.contact.MBHDProtos.Contact>(id_);
+          contact_ = new java.util.ArrayList<org.multibit.contact.MBHDProtos.Contact>(contact_);
           bitField0_ |= 0x00000001;
          }
       }
       
       private com.google.protobuf.RepeatedFieldBuilder<
-          org.multibit.contact.MBHDProtos.Contact, org.multibit.contact.MBHDProtos.Contact.Builder, org.multibit.contact.MBHDProtos.ContactOrBuilder> idBuilder_;
+          org.multibit.contact.MBHDProtos.Contact, org.multibit.contact.MBHDProtos.Contact.Builder, org.multibit.contact.MBHDProtos.ContactOrBuilder> contactBuilder_;
       
-      public java.util.List<org.multibit.contact.MBHDProtos.Contact> getIdList() {
-        if (idBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(id_);
+      public java.util.List<org.multibit.contact.MBHDProtos.Contact> getContactList() {
+        if (contactBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(contact_);
         } else {
-          return idBuilder_.getMessageList();
+          return contactBuilder_.getMessageList();
         }
       }
-      public int getIdCount() {
-        if (idBuilder_ == null) {
-          return id_.size();
+      public int getContactCount() {
+        if (contactBuilder_ == null) {
+          return contact_.size();
         } else {
-          return idBuilder_.getCount();
+          return contactBuilder_.getCount();
         }
       }
-      public org.multibit.contact.MBHDProtos.Contact getId(int index) {
-        if (idBuilder_ == null) {
-          return id_.get(index);
+      public org.multibit.contact.MBHDProtos.Contact getContact(int index) {
+        if (contactBuilder_ == null) {
+          return contact_.get(index);
         } else {
-          return idBuilder_.getMessage(index);
+          return contactBuilder_.getMessage(index);
         }
       }
-      public Builder setId(
+      public Builder setContact(
           int index, org.multibit.contact.MBHDProtos.Contact value) {
-        if (idBuilder_ == null) {
+        if (contactBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          ensureIdIsMutable();
-          id_.set(index, value);
+          ensureContactIsMutable();
+          contact_.set(index, value);
           onChanged();
         } else {
-          idBuilder_.setMessage(index, value);
+          contactBuilder_.setMessage(index, value);
         }
         return this;
       }
-      public Builder setId(
+      public Builder setContact(
           int index, org.multibit.contact.MBHDProtos.Contact.Builder builderForValue) {
-        if (idBuilder_ == null) {
-          ensureIdIsMutable();
-          id_.set(index, builderForValue.build());
+        if (contactBuilder_ == null) {
+          ensureContactIsMutable();
+          contact_.set(index, builderForValue.build());
           onChanged();
         } else {
-          idBuilder_.setMessage(index, builderForValue.build());
+          contactBuilder_.setMessage(index, builderForValue.build());
         }
         return this;
       }
-      public Builder addId(org.multibit.contact.MBHDProtos.Contact value) {
-        if (idBuilder_ == null) {
+      public Builder addContact(org.multibit.contact.MBHDProtos.Contact value) {
+        if (contactBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          ensureIdIsMutable();
-          id_.add(value);
+          ensureContactIsMutable();
+          contact_.add(value);
           onChanged();
         } else {
-          idBuilder_.addMessage(value);
+          contactBuilder_.addMessage(value);
         }
         return this;
       }
-      public Builder addId(
+      public Builder addContact(
           int index, org.multibit.contact.MBHDProtos.Contact value) {
-        if (idBuilder_ == null) {
+        if (contactBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          ensureIdIsMutable();
-          id_.add(index, value);
+          ensureContactIsMutable();
+          contact_.add(index, value);
           onChanged();
         } else {
-          idBuilder_.addMessage(index, value);
+          contactBuilder_.addMessage(index, value);
         }
         return this;
       }
-      public Builder addId(
+      public Builder addContact(
           org.multibit.contact.MBHDProtos.Contact.Builder builderForValue) {
-        if (idBuilder_ == null) {
-          ensureIdIsMutable();
-          id_.add(builderForValue.build());
+        if (contactBuilder_ == null) {
+          ensureContactIsMutable();
+          contact_.add(builderForValue.build());
           onChanged();
         } else {
-          idBuilder_.addMessage(builderForValue.build());
+          contactBuilder_.addMessage(builderForValue.build());
         }
         return this;
       }
-      public Builder addId(
+      public Builder addContact(
           int index, org.multibit.contact.MBHDProtos.Contact.Builder builderForValue) {
-        if (idBuilder_ == null) {
-          ensureIdIsMutable();
-          id_.add(index, builderForValue.build());
+        if (contactBuilder_ == null) {
+          ensureContactIsMutable();
+          contact_.add(index, builderForValue.build());
           onChanged();
         } else {
-          idBuilder_.addMessage(index, builderForValue.build());
+          contactBuilder_.addMessage(index, builderForValue.build());
         }
         return this;
       }
-      public Builder addAllId(
+      public Builder addAllContact(
           java.lang.Iterable<? extends org.multibit.contact.MBHDProtos.Contact> values) {
-        if (idBuilder_ == null) {
-          ensureIdIsMutable();
-          super.addAll(values, id_);
+        if (contactBuilder_ == null) {
+          ensureContactIsMutable();
+          super.addAll(values, contact_);
           onChanged();
         } else {
-          idBuilder_.addAllMessages(values);
+          contactBuilder_.addAllMessages(values);
         }
         return this;
       }
-      public Builder clearId() {
-        if (idBuilder_ == null) {
-          id_ = java.util.Collections.emptyList();
+      public Builder clearContact() {
+        if (contactBuilder_ == null) {
+          contact_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x00000001);
           onChanged();
         } else {
-          idBuilder_.clear();
+          contactBuilder_.clear();
         }
         return this;
       }
-      public Builder removeId(int index) {
-        if (idBuilder_ == null) {
-          ensureIdIsMutable();
-          id_.remove(index);
+      public Builder removeContact(int index) {
+        if (contactBuilder_ == null) {
+          ensureContactIsMutable();
+          contact_.remove(index);
           onChanged();
         } else {
-          idBuilder_.remove(index);
+          contactBuilder_.remove(index);
         }
         return this;
       }
-      public org.multibit.contact.MBHDProtos.Contact.Builder getIdBuilder(
+      public org.multibit.contact.MBHDProtos.Contact.Builder getContactBuilder(
           int index) {
-        return getIdFieldBuilder().getBuilder(index);
+        return getContactFieldBuilder().getBuilder(index);
       }
-      public org.multibit.contact.MBHDProtos.ContactOrBuilder getIdOrBuilder(
+      public org.multibit.contact.MBHDProtos.ContactOrBuilder getContactOrBuilder(
           int index) {
-        if (idBuilder_ == null) {
-          return id_.get(index);  } else {
-          return idBuilder_.getMessageOrBuilder(index);
+        if (contactBuilder_ == null) {
+          return contact_.get(index);  } else {
+          return contactBuilder_.getMessageOrBuilder(index);
         }
       }
       public java.util.List<? extends org.multibit.contact.MBHDProtos.ContactOrBuilder> 
-           getIdOrBuilderList() {
-        if (idBuilder_ != null) {
-          return idBuilder_.getMessageOrBuilderList();
+           getContactOrBuilderList() {
+        if (contactBuilder_ != null) {
+          return contactBuilder_.getMessageOrBuilderList();
         } else {
-          return java.util.Collections.unmodifiableList(id_);
+          return java.util.Collections.unmodifiableList(contact_);
         }
       }
-      public org.multibit.contact.MBHDProtos.Contact.Builder addIdBuilder() {
-        return getIdFieldBuilder().addBuilder(
+      public org.multibit.contact.MBHDProtos.Contact.Builder addContactBuilder() {
+        return getContactFieldBuilder().addBuilder(
             org.multibit.contact.MBHDProtos.Contact.getDefaultInstance());
       }
-      public org.multibit.contact.MBHDProtos.Contact.Builder addIdBuilder(
+      public org.multibit.contact.MBHDProtos.Contact.Builder addContactBuilder(
           int index) {
-        return getIdFieldBuilder().addBuilder(
+        return getContactFieldBuilder().addBuilder(
             index, org.multibit.contact.MBHDProtos.Contact.getDefaultInstance());
       }
       public java.util.List<org.multibit.contact.MBHDProtos.Contact.Builder> 
-           getIdBuilderList() {
-        return getIdFieldBuilder().getBuilderList();
+           getContactBuilderList() {
+        return getContactFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilder<
           org.multibit.contact.MBHDProtos.Contact, org.multibit.contact.MBHDProtos.Contact.Builder, org.multibit.contact.MBHDProtos.ContactOrBuilder> 
-          getIdFieldBuilder() {
-        if (idBuilder_ == null) {
-          idBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+          getContactFieldBuilder() {
+        if (contactBuilder_ == null) {
+          contactBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               org.multibit.contact.MBHDProtos.Contact, org.multibit.contact.MBHDProtos.Contact.Builder, org.multibit.contact.MBHDProtos.ContactOrBuilder>(
-                  id_,
+                  contact_,
                   ((bitField0_ & 0x00000001) == 0x00000001),
                   getParentForChildren(),
                   isClean());
-          id_ = null;
+          contact_ = null;
         }
-        return idBuilder_;
+        return contactBuilder_;
       }
       
       // @@protoc_insertion_point(builder_scope:wallet.Contacts)
@@ -2280,9 +2280,9 @@ public final class MBHDProtos {
       "me\030\002 \002(\t\022\r\n\005email\030\003 \001(\t\022\022\n\nimage_path\030\004 " +
       "\001(\t\022\027\n\017bitcoin_address\030\005 \001(\t\022\033\n\023extended" +
       "_public_key\030\006 \001(\t\022\r\n\005notes\030\007 \001(\t\022\030\n\003tag\030" +
-      "\010 \003(\0132\013.wallet.Tag\022\022\n\nstar_style\030\t \001(\r\"\'" +
-      "\n\010Contacts\022\033\n\002id\030\001 \003(\0132\017.wallet.ContactB" +
-      "\"\n\024org.multibit.contactB\nMBHDProtos"
+      "\010 \003(\0132\013.wallet.Tag\022\022\n\nstar_style\030\t \001(\r\"," +
+      "\n\010Contacts\022 \n\007contact\030\001 \003(\0132\017.wallet.Con" +
+      "tactB\"\n\024org.multibit.contactB\nMBHDProtos"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -2310,7 +2310,7 @@ public final class MBHDProtos {
           internal_static_wallet_Contacts_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_wallet_Contacts_descriptor,
-              new java.lang.String[] { "Id", },
+              new java.lang.String[] { "Contact", },
               org.multibit.contact.MBHDProtos.Contacts.class,
               org.multibit.contact.MBHDProtos.Contacts.Builder.class);
           return null;
