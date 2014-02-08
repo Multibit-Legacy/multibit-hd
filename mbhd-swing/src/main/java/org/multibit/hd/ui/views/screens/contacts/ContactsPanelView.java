@@ -1,6 +1,8 @@
 package org.multibit.hd.ui.views.screens.contacts;
 
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.api.WalletId;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.i18n.MessageKey;
@@ -67,7 +69,7 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
 
     getSearchAction();
 
-    ContactService contactService = CoreServices.getContactService();
+    ContactService contactService = CoreServices.getContactService(getCurrentWalletId());
 
     contactsTable = Tables.newContactsTable(contactService.allContacts(1, 10));
 
@@ -85,6 +87,10 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
     contentPanel.add(scrollPane,"span 5,grow");
 
     return contentPanel;
+  }
+
+  private WalletId getCurrentWalletId() {
+    return WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId();
   }
 
   /**
