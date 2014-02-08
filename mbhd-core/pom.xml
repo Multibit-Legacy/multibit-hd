@@ -36,7 +36,7 @@
                                            <exec executable="protoc" failonerror="true">
                                                <arg value="--java_out=${project.basedir}/src/main/java"/>
                                                <arg value="-I${project.basedir}/src"/>
-                                               <arg line="${project.basedir}/src/contact.proto"/>
+                                               <arg line="${project.basedir}/src/contacts.proto"/>
                                            </exec>
                                        </tasks>
                                    </configuration>

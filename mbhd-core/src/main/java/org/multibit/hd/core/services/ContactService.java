@@ -3,11 +3,14 @@ package org.multibit.hd.core.services;
 import com.google.common.collect.Sets;
 import org.multibit.hd.core.api.Contact;
 import org.multibit.hd.core.api.WalletId;
+import org.multibit.hd.core.exceptions.ContactsLoadException;
+import org.multibit.hd.core.exceptions.ContactsSaveException;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.store.ContactsProtobufSerializer;
 import org.multibit.hd.core.utils.FileUtils;
 
-import java.io.File;
+import java.io.*;
 import java.util.Set;
 import java.util.UUID;
 
@@ -22,19 +25,21 @@ import java.util.UUID;
  */
 public class ContactService {
 
-  private final Set<Contact> contacts = Sets.newHashSet();
-
   public final static String CONTACTS_DIRECTORY_NAME = "contacts";
   public final static String CONTACTS_DATABASE_NAME = "contacts.db";
-
+  private final Set<Contact> contacts = Sets.newHashSet();
   /**
    * The location of the backing store for the contacts
    */
   private File backingStoreFile;
+  /**
+   * The serialiser for the backing store
+   */
+  private ContactsProtobufSerializer protobufSerializer;
 
   /**
    * Create a ContactService for a Wallet with the given walletId
-   *
+   * <p/>
    * Reduced visibility constructor to prevent accidental instance creation outside of CoreServices.
    */
   ContactService(WalletId walletId) {
@@ -46,22 +51,28 @@ public class ContactService {
     FileUtils.createDirectoryIfNecessary(contactsDirectory);
     this.backingStoreFile = new File(contactsDirectory.getAbsolutePath() + File.separator + CONTACTS_DATABASE_NAME);
 
-    // Load the contact data from the backing store
-    load();
+    initialise();
   }
 
 
   /**
    * Create a ContactService with the specified File as the backing store.
    * (This exists primarily for testing where you just run things in a temporary directory)
-   *
+   * <p/>
    * Reduced visibility constructor to prevent accidental instance creation outside of CoreServices.
    */
   ContactService(File backingStoreFile) {
     this.backingStoreFile = backingStoreFile;
+    initialise();
+  }
 
-    // Load the contact data from the backing store
-    load();
+  private void initialise() {
+    protobufSerializer = new ContactsProtobufSerializer();
+
+    // Load the contact data from the backing store if it exists
+    if (backingStoreFile.exists()) {
+      load();
+    }
   }
 
   /**
@@ -110,9 +121,8 @@ public class ContactService {
     return filteredContacts;
   }
 
-
   /**
-   * Clear the contact data
+   * <p>Clear the contact data</p>
    */
   public void clear() {
     contacts.clear();
@@ -121,15 +131,25 @@ public class ContactService {
   /**
    * <p>Populate the internal cache of Contacts from the backing store</p>
    */
-  public void load() {
-
+  public void load() throws ContactsLoadException{
+    try (FileInputStream fis = new FileInputStream(backingStoreFile)) {
+      Set<Contact> loadedContacts = protobufSerializer.readContacts(fis);
+      contacts.clear();
+      contacts.addAll(loadedContacts);
+    } catch (IOException e) {
+      throw new ContactsLoadException("Could not load contacts db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");
+    }
   }
 
   /**
    * <p>Save the contact data to the backing store</p>
    */
-  public void store() {
-
+  public void store() throws ContactsSaveException {
+    try (FileOutputStream fos = new FileOutputStream(backingStoreFile)) {
+      protobufSerializer.writeContacts(contacts, fos);
+    } catch (IOException e) {
+      throw new ContactsSaveException("Could not save contacts db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");
+    }
   }
 
   /**

@@ -97,7 +97,10 @@ public class ContactServiceTest {
     newContact.setStarStyle(starStyle);
     int numberOfContacts = contactService.allContacts(1, 10).size();
 
-    // Clear the contacts db and check it is empty
+    // Store the contacts to the backing store
+    contactService.store();
+
+    // Clear the cached contacts and check it is empty
     contactService.clear();
     Set<Contact> allContacts = contactService.allContacts(1, 10);
     assertThat(allContacts.size()).isEqualTo(0);
