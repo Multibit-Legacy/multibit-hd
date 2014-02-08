@@ -19,6 +19,8 @@ import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordView;
 import org.multibit.hd.ui.views.components.enter_recipient.EnterRecipientModel;
 import org.multibit.hd.ui.views.components.enter_recipient.EnterRecipientView;
+import org.multibit.hd.ui.views.components.enter_search.EnterSearchModel;
+import org.multibit.hd.ui.views.components.enter_search.EnterSearchView;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseView;
 import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSummaryModel;
@@ -210,6 +212,22 @@ public class Components {
 
     SelectFileModel model = new SelectFileModel(panelName);
     SelectFileView view = new SelectFileView(model);
+
+    return new ModelAndView<>(model, view);
+
+  }
+
+  /**
+   * <p>An "enter search" model and view handles user data entry of a search</p>
+   *
+   * @param panelName The panel name to filter events
+   *
+   * @return A new "enter search" model and view
+   */
+  public static ModelAndView<EnterSearchModel, EnterSearchView> newEnterSearchMaV(String panelName) {
+
+    EnterSearchModel model = new EnterSearchModel(panelName);
+    EnterSearchView view = new EnterSearchView(model);
 
     return new ModelAndView<>(model, view);
 

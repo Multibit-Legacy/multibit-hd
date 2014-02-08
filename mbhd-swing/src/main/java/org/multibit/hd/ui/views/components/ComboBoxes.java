@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import org.multibit.hd.core.api.BackupSummary;
 import org.multibit.hd.core.api.Recipient;
 import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteDecorator;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilter;
 import org.multibit.hd.ui.views.components.select_backup_summary.BackupSummaryListCellRenderer;
@@ -55,14 +56,32 @@ public class ComboBoxes {
   }
 
   /**
-   * @param listener The action listener to alert when the selection is made
-   *
-   * @return A new read only combo box
+   * @return A new read only combo box (no listeners attached)
    */
-  public static <T> JComboBox<T> newReadOnlyComboBox(ActionListener listener, T[] items) {
+  public static <T> JComboBox<T> newReadOnlyComboBox(T[] items) {
 
     JComboBox<T> comboBox = newComboBox(items);
     comboBox.setEditable(false);
+
+    return comboBox;
+
+  }
+
+  /**
+   * @param listener The action listener to alert when the selection is made
+   *
+   * @return A new "contact checkbox" combo box (all, none, starred, unstarred etc)
+   */
+  public static JComboBox<String> newContactsCheckboxComboBox(ActionListener listener) {
+
+    String[] items = new String[]{
+      Languages.safeText(MessageKey.ALL),
+      Languages.safeText(MessageKey.NONE),
+      Languages.safeText(MessageKey.STARRED),
+      Languages.safeText(MessageKey.UNSTARRED),
+    };
+
+    JComboBox<String> comboBox = newReadOnlyComboBox(items);
 
     // Add the listener at the end to avoid false events
     comboBox.addActionListener(listener);
@@ -90,7 +109,7 @@ public class ComboBoxes {
   }
 
   /**
-   * @param filter   The contact auto-complete filter
+   * @param filter The contact auto-complete filter
    *
    * @return A new "recipient" combo box with auto-complete functionality
    */

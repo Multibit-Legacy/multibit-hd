@@ -30,6 +30,9 @@ public enum MessageKey {
   CLOSE("close"),
   SHOW("show"),
   HIDE("hide"),
+  ADD("add"),
+  EDIT("edit"),
+  DELETE("delete"),
 
   // Nouns
 
@@ -37,6 +40,10 @@ public enum MessageKey {
   NO("no"),
   NEXT("next"),
   PREVIOUS("previous"),
+  ALL("all"),
+  NONE("none"),
+  STARRED("starred"),
+  UNSTARRED("unstarred"),
 
   // Field labels
 

@@ -76,7 +76,6 @@ public class SidebarView {
     sidebarTree.setBackground(Themes.currentTheme.sidebarPanelBackground());
     sidebarTree.setCellRenderer(new ThemeAwareTreeCellRenderer());
 
-
     sidebarTree.setVisibleRowCount(10);
     sidebarTree.setToggleClickCount(2);
 

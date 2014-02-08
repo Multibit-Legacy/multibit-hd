@@ -408,6 +408,62 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "add" button with icon
+   */
+  public static JButton newAddButton(Action action) {
+
+    JButton button = newButton(action, MessageKey.ADD);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.PLUS, button, false, AwesomeDecorator.NORMAL_ICON_SIZE);
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "edit" button with icon
+   */
+  public static JButton newEditButton(Action action) {
+
+    JButton button = newButton(action, MessageKey.EDIT);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.EDIT, button, false, AwesomeDecorator.NORMAL_ICON_SIZE);
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "delete" button with icon
+   */
+  public static JButton newDeleteButton(Action action) {
+
+    JButton button = newButton(action, MessageKey.DELETE);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.TRASH_ALT, button, false, AwesomeDecorator.NORMAL_ICON_SIZE);
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "search" button with icon
+   */
+  public static JButton newSearchButton(Action action) {
+
+    JButton button = newButton(action);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.SEARCH, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "send Bitcoin" wizard button with icon
    */
   public static JButton newSendBitcoinWizardButton(Action action) {
@@ -447,4 +503,6 @@ public class Buttons {
 
     return button;
   }
+
+
 }
