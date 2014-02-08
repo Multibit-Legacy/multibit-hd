@@ -1,5 +1,7 @@
 package org.multibit.hd.ui.views;
 
+import com.google.common.collect.Range;
+import com.google.common.collect.Ranges;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
@@ -8,6 +10,7 @@ import org.multibit.hd.ui.events.view.SystemStatusChangedEvent;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.themes.NimbusDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
@@ -53,7 +56,7 @@ public class FooterView {
     // Label text and icon are different colours so must be separated
     statusLabel = new JLabel("");
     statusIcon = new JLabel("");
-    AwesomeDecorator.bindIcon(AwesomeIcon.CIRCLE, statusIcon, false, 16);
+    AwesomeDecorator.bindIcon(AwesomeIcon.CIRCLE, statusIcon, false, AwesomeDecorator.SMALL_ICON_SIZE);
 
     // Start with no knowledge so assume the worst
     statusIcon.setForeground(Themes.currentTheme.dangerAlertBackground());
@@ -106,18 +109,17 @@ public class FooterView {
   @Subscribe
   public void onProgressChangedEvent(ProgressChangedEvent event) {
 
-    // Show the downloading message until it finishes
-    if (event.getPercent() < 100) {
-      //messageLabel.setText(event.getLocalisedMessage());
+    progressBar.setEnabled(true);
 
-      // Make sure progress bar is enabled
-      progressBar.setEnabled(true);
-    } else {
-      // Synchronized so clear the message
-      //messageLabel.setText("");
+    // Provide some ranges to allow different colouring
+    Range<Integer> amber = Ranges.closed(0, 99);
+    Range<Integer> green = Ranges.greaterThan(99);
 
-      // Disable the progress bar to lower it in the mix
-      progressBar.setEnabled(false);
+    if (amber.contains(event.getPercent())) {
+      NimbusDecorator.applyThemeColor(Themes.currentTheme.warningAlertBackground(), progressBar);
+    }
+    if (green.contains(event.getPercent())) {
+      NimbusDecorator.applyThemeColor(Themes.currentTheme.successAlertBackground(), progressBar);
     }
 
     progressBar.setValue(event.getPercent());

@@ -103,13 +103,14 @@ public class MainController {
       localisedMessage = summary.getStatus().name();
     }
 
+    // If downloading the blocking ensure we keep the progress bar up to date
     if (BitcoinNetworkStatus.DOWNLOADING_BLOCKCHAIN.equals(summary.getStatus())) {
 
       ViewEvents.fireProgressChangedEvent(localisedMessage, summary.getPercent());
 
     }
 
-    // Determine the nature of the event
+    // Ensure everyone is aware of the update
     ViewEvents.fireSystemStatusChangedEvent(localisedMessage, summary.getSeverity());
   }
 

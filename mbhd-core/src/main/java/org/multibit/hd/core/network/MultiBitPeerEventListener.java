@@ -31,8 +31,6 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     // Keep track of the download progress
     updateDownloadPercent(blocksLeft);
 
-    // Keep the progress updated
-    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(downloadPercent));
   }
 
   @Override
@@ -130,6 +128,10 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     }
 
     downloadPercent = (int) ((1 - ((double) blocksLeft / startingBlock)) * 100);
+
+    // Keep the progress updated
+    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(downloadPercent));
+
   }
 }
 

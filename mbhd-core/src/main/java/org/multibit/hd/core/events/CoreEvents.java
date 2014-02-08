@@ -81,7 +81,7 @@ public class CoreEvents {
     if (bitcoinNetworkSummary.getPercent() > 0) {
       message = message + " : " + bitcoinNetworkSummary.getPercent() + "%.";
     }
-    //log.debug(message);
+    log.debug(message);
     CoreServices.uiEventBus.post(new BitcoinNetworkChangedEvent(bitcoinNetworkSummary));
   }
 

@@ -80,7 +80,7 @@ public class ViewEvents {
    * @param percent          The amount to display in percent
    */
   public static void fireProgressChangedEvent(String localisedMessage, int percent) {
-    //log.debug("Firing 'progress changed' event");
+    log.debug("Firing 'progress changed' event: '{}'", percent);
     CoreServices.uiEventBus.post(new ProgressChangedEvent(localisedMessage, percent));
   }
 

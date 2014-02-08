@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.themes;
 
 import org.multibit.hd.ui.views.themes.painters.NamedButtonRegionPainter;
+import org.multibit.hd.ui.views.themes.painters.NamedProgressBarRegionPainter;
 import org.multibit.hd.ui.views.themes.painters.NamedTabbedPaneTabAreaPainter;
 import org.multibit.hd.ui.views.themes.painters.NamedTabbedPaneTabPainter;
 
@@ -57,7 +58,7 @@ public class NimbusDecorator {
   /**
    * <p>Applies a theme color to a Nimbus button</p>
    *
-   * @param button The tabbed pane to be decorated
+   * @param button The button to be decorated
    */
   public static void applyThemeColor(Color color, JButton button) {
 
@@ -73,6 +74,29 @@ public class NimbusDecorator {
     // Add the theme to the component
     button.putClientProperty("Nimbus.Overrides.InheritDefaults", Boolean.TRUE);
     button.putClientProperty("Nimbus.Overrides", buttonTheme);
+
+  }
+
+  /**
+   * <p>Applies a theme color to a Nimbus progress bar</p>
+   *
+   * @param bar The progress bar to be decorated
+   */
+  public static void applyThemeColor(Color color, JProgressBar bar) {
+
+    UIDefaults progressBarTheme = new UIDefaults();
+    progressBarTheme.put("ProgressBar[Disabled+Finished].foregroundPainter", new NamedProgressBarRegionPainter(color, NamedProgressBarRegionPainter.FOREGROUND_DISABLED_FINISHED));
+    progressBarTheme.put("ProgressBar[Disabled+Indeterminate].foregroundPainter", new NamedProgressBarRegionPainter(color, NamedProgressBarRegionPainter.FOREGROUND_DISABLED_INDETERMINATE));
+    progressBarTheme.put("ProgressBar[Disabled].backgroundPainter", new NamedProgressBarRegionPainter(color, NamedProgressBarRegionPainter.BACKGROUND_DISABLED));
+    progressBarTheme.put("ProgressBar[Disabled].foregroundPainter", new NamedProgressBarRegionPainter(color, NamedProgressBarRegionPainter.BACKGROUND_DISABLED));
+    progressBarTheme.put("ProgressBar[Enabled+Finished].foregroundPainter", new NamedProgressBarRegionPainter(color, NamedProgressBarRegionPainter.FOREGROUND_ENABLED_FINISHED));
+    progressBarTheme.put("ProgressBar[Enabled+Indeterminate].foregroundPainter", new NamedProgressBarRegionPainter(color, NamedProgressBarRegionPainter.FOREGROUND_ENABLED_INDETERMINATE));
+    progressBarTheme.put("ProgressBar[Enabled].backgroundPainter", new NamedProgressBarRegionPainter(color, NamedProgressBarRegionPainter.BACKGROUND_ENABLED));
+    progressBarTheme.put("ProgressBar[Enabled].foregroundPainter", new NamedProgressBarRegionPainter(color, NamedProgressBarRegionPainter.FOREGROUND_ENABLED));
+
+    // Add the theme to the component
+    bar.putClientProperty("Nimbus.Overrides.InheritDefaults", Boolean.TRUE);
+    bar.putClientProperty("Nimbus.Overrides", progressBarTheme);
 
   }
 

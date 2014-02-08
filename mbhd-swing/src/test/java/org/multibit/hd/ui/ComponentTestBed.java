@@ -3,21 +3,23 @@ package org.multibit.hd.ui;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.xeiam.xchange.mtgox.v2.MtGoxExchange;
+import org.multibit.hd.core.api.BitcoinNetworkSummary;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.controllers.MainController;
 import org.multibit.hd.ui.events.controller.ChangeLocaleEvent;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.views.FooterView;
 import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.screens.AbstractScreenView;
-import org.multibit.hd.ui.views.screens.Screen;
-import org.multibit.hd.ui.views.screens.Screens;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,6 +112,9 @@ public class ComponentTestBed {
    * AbstractWizard wizard = Wizards.newSendBitcoinWizard();
    * return wizard.getWizardPanel();
    * </pre>
+   * <h3>Footer</h3>
+   * <pre>
+   * </pre>
    * <h3>Detail screen</h3>
    * <pre>
    * AbstractScreenView screen = Screens.newScreen(Screen.CONTACTS);
@@ -121,8 +126,40 @@ public class ComponentTestBed {
   public JPanel createTestPanel() {
 
     // Choose a panel to test
-    AbstractScreenView screen = Screens.newScreen(Screen.CONTACTS);
-    return screen.newScreenViewPanel();
+//    AbstractScreenView screen = Screens.newScreen(Screen.CONTACTS);
+//    return screen.newScreenViewPanel();
+
+    MainController controller = new MainController();
+    FooterView footer = new FooterView();
+
+    SafeExecutors.newFixedThreadPool(1).execute(new Runnable() {
+
+      int i = 0;
+
+      @Override
+      public void run() {
+
+        while (i < 110) {
+
+          Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
+
+          if (i < 101) {
+
+            CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(i));
+          }
+
+          if (i > 99) {
+
+            CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkReady(i % 100));
+
+          }
+
+          i++;
+        }
+      }
+    });
+
+    return footer.getContentPanel();
 
   }
 

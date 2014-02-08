@@ -54,8 +54,48 @@ public class MultiBitHD {
    */
   public static void main(final String[] args) throws InterruptedException, UnsupportedLookAndFeelException {
 
-    // We guarantee the JDK version through the packager so we can use this direct
-    UIManager.setLookAndFeel(new NimbusLookAndFeel());
+    initialiseJVM();
+
+    initialiseCore(args);
+
+    initialiseUI();
+
+  }
+
+  /**
+   * @return The Bitcoin network service for the UI
+   */
+  public static BitcoinNetworkService getBitcoinNetworkService() {
+    return bitcoinNetworkService;
+  }
+
+  /**
+   * <p>Initialise the JVM. This occurs before anything else is called.</p>
+   */
+  private static void initialiseJVM() {
+
+    // Although we guarantee the JVM through the packager it is possible that
+    // a power user will use their own
+    try {
+      // We guarantee the JVM through the packager so we should try it first
+      UIManager.setLookAndFeel(new NimbusLookAndFeel());
+    } catch (UnsupportedLookAndFeelException e) {
+      try {
+        UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1) {
+        log.error("No look and feel available.", e1);
+        System.exit(-1);
+      }
+    }
+
+  }
+
+  /**
+   * <p>Initialise the core services before the UI fires up</p>
+   *
+   * @param args The command line arguments
+   */
+  private static void initialiseCore(String[] args) {
 
     // Start the core services
     CoreServices.main(args);
@@ -69,6 +109,21 @@ public class MultiBitHD {
 
     ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(MtGoxExchange.class.getName());
     bitcoinNetworkService = CoreServices.newBitcoinNetworkService();
+
+    // Initialise the wallet manager, which will load the current wallet if available
+    File applicationDataDirectory = InstallationManager.createApplicationDataDirectory();
+
+    // Start up the exchange service
+    exchangeTickerService.start();
+
+    WalletManager.INSTANCE.initialise(applicationDataDirectory);
+    BackupManager.INSTANCE.initialise(applicationDataDirectory, null); // TODO load up the cloud backup if available from properties and insert here
+  }
+
+  /**
+   * <p>Initialise the UI once all the core services are in place</p>
+   */
+  private static void initialiseUI() {
 
     // Create views
     HeaderView headerView = new HeaderView();
@@ -88,21 +143,12 @@ public class MultiBitHD {
     HeaderController headerController = new HeaderController();
     SidebarController sidebarController = new SidebarController();
 
-    // Initialise the wallet manager, which will load the current wallet if available
-    File applicationDataDirectory = InstallationManager.createApplicationDataDirectory();
-
-    // Start up the exchange service
-    exchangeTickerService.start();
-
-    WalletManager.INSTANCE.initialise(applicationDataDirectory);
-    BackupManager.INSTANCE.initialise(applicationDataDirectory, null); // TODO load up the cloud backup if available from properties and insert here
-
     // Show the UI for the current locale
     ControllerEvents.fireChangeLocaleEvent(Configurations.currentConfiguration.getLocale());
 
     if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
       // There is a wallet present - warm start
-      WalletData walletData =  WalletManager.INSTANCE.getCurrentWalletData().get();
+      WalletData walletData = WalletManager.INSTANCE.getCurrentWalletData().get();
       log.debug("The current wallet is:\nWallet id = '" + walletData.getWalletId().toString() + "\n" + walletData.getWallet().toString());
 
       // TODO need to show warm start dialog (to get password) and unencrypt wallet and contacts
@@ -118,7 +164,7 @@ public class MultiBitHD {
     // Start the bitcoin network service
     bitcoinNetworkService.start();
 
-    Uninterruptibles.sleepUninterruptibly(1000, TimeUnit.MILLISECONDS);
+    Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
 
     // If the network starts ok start downloading blocks to catch up with the current blockchain
     if (bitcoinNetworkService.isStartedOk()) {
@@ -143,15 +189,12 @@ public class MultiBitHD {
     );
   }
 
+  /**
+   * TODO Integrate the generic application structure for BitcoinURI support
+   */
   private void registerEventListeners() {
-
-    // TODO Get this working
 
     log.info("Configuring native event handling");
 
-  }
-
-  public static BitcoinNetworkService getBitcoinNetworkService() {
-    return bitcoinNetworkService;
   }
 }
