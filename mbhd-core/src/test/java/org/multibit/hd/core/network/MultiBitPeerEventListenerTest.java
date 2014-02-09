@@ -10,11 +10,13 @@ import org.multibit.hd.core.services.CoreServices;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class MultiBitPeerEventListenerTest {
+  boolean test = false;
 
   @Before
   public void setUp() {
 
     CoreServices.uiEventBus.register(this);
+    test =false;
 
   }
 
@@ -29,8 +31,11 @@ public class MultiBitPeerEventListenerTest {
 
     MultiBitPeerEventListener testObject = new MultiBitPeerEventListener();
 
+    test = false;
     // Set up the initial block count
     testObject.onChainDownloadStarted(null, 200);
+
+    test = true;
 
     // Simulate blocks left of 150/200 (expect 25% event to be emitted)
     testObject.onBlocksDownloaded(null, null, 150);
@@ -41,7 +46,9 @@ public class MultiBitPeerEventListenerTest {
   public void onBitcoinNetworkChangeEvent(BitcoinNetworkChangedEvent event) {
 
     // Progress 25%
-    assertThat(event.getSummary().getPercent()).isEqualTo(25);
+    if (test) {
+      assertThat(event.getSummary().getPercent()).isEqualTo(25);
+    }
   }
 
 }

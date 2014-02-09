@@ -138,7 +138,6 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     }
 
     downloadPercent = (int) ((1 - ((double) blocksLeft / startingBlock)) * 100);
-
   }
 }
 
