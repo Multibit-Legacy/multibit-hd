@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class CoreEvents {
 
@@ -35,7 +35,7 @@ public class CoreEvents {
    */
   public static void fireExchangeRateChangedEvent(BigMoney rate, String exchangeName, DateTime expires) {
 
-    log.debug("Firing 'exchange rate changed' event");
+    log.trace("Firing 'exchange rate changed' event");
     CoreServices.uiEventBus.post(new ExchangeRateChangedEvent(rate, exchangeName, expires));
 
   }
@@ -47,8 +47,9 @@ public class CoreEvents {
    */
   public static void fireTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
 
-    log.debug("Firing 'transactionCreation' event");
+    log.trace("Firing 'transactionCreation' event");
     CoreServices.uiEventBus.post(transactionCreationEvent);
+
   }
 
   /**
@@ -58,30 +59,34 @@ public class CoreEvents {
    */
   public static void fireBitcoinSentEvent(BitcoinSentEvent bitcoinSentEvent) {
 
-    log.debug("Firing 'bitcoin sent' event");
+    log.trace("Firing 'bitcoin sent' event");
     CoreServices.uiEventBus.post(bitcoinSentEvent);
   }
 
   /**
-    * <p>Broadcast TransactionSeenEvent</p>
-    *
-    * @param transactionSeenEvent containing transaction information
-    */
-   public static void fireTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
-     CoreServices.uiEventBus.post(transactionSeenEvent);
-   }
+   * <p>Broadcast TransactionSeenEvent</p>
+   *
+   * @param transactionSeenEvent containing transaction information
+   */
+  public static void fireTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
 
-   /**
+    CoreServices.uiEventBus.post(transactionSeenEvent);
+
+  }
+
+  /**
    * <p>Broadcast a new "Bitcoin network changed" event</p>
    *
    * @param bitcoinNetworkSummary The Bitcoin network summary
    */
   public static void fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary bitcoinNetworkSummary) {
-    String message = "Firing 'Bitcoin network changed' event";
+
     if (bitcoinNetworkSummary.getPercent() > 0) {
-      message = message + " : " + bitcoinNetworkSummary.getPercent() + "%.";
+      log.trace("Firing 'Bitcoin network changed' event: {}%", bitcoinNetworkSummary.getPercent());
+    } else {
+      log.trace("Firing 'Bitcoin network changed' event");
     }
-    log.debug(message);
+
     CoreServices.uiEventBus.post(new BitcoinNetworkChangedEvent(bitcoinNetworkSummary));
   }
 
@@ -90,7 +95,7 @@ public class CoreEvents {
    */
   public static void fireShutdownEvent() {
 
-    log.debug("Firing 'shutdown' event");
+    log.trace("Firing 'shutdown' event");
     CoreServices.uiEventBus.post(new ShutdownEvent());
 
   }
