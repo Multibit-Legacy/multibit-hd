@@ -93,6 +93,9 @@ public class Dates {
    * @return The instant formatted as "yyyyMMdd"
    */
   public static String formatBasicDate(ReadableInstant when) {
+    if (when == null) {
+      return "";
+    }
     return ISODateTimeFormat.basicDate().print(when);
   }
 
@@ -103,6 +106,9 @@ public class Dates {
    * @return The instant formatted as "yyyyMMdd"
    */
   public static String formatBasicDate(ReadableInstant when, Locale locale) {
+    if (when == null) {
+      return "";
+    }
     return ISODateTimeFormat.basicDate().withLocale(locale).print(when);
   }
 
@@ -112,6 +118,9 @@ public class Dates {
    * @return The instant formatted as "ddd, MMM dd" (Saturday, January 01)
    */
   public static String formatDeliveryDate(ReadableInstant when) {
+    if (when == null) {
+      return "";
+    }
     return deliveryDateFormatter.print(when);
   }
 
@@ -122,6 +131,9 @@ public class Dates {
    * @return The instant formatted as "ddd, MMM dd" (Saturday, January 01)
    */
   public static String formatDeliveryDate(ReadableInstant when, Locale locale) {
+    if (when == null) {
+      return "";
+    }
     return deliveryDateFormatter.withLocale(locale).print(when);
   }
 
@@ -131,6 +143,9 @@ public class Dates {
    * @return The instant formatted for SMTP as defined in RFC 1123 e.g. "dd MMM yyyy" (01 Jan 2000)
    */
   public static String formatSmtpDate(ReadableInstant when) {
+    if (when == null) {
+      return "";
+    }
     return smtpDateFormatter.print(when);
   }
 
@@ -141,6 +156,9 @@ public class Dates {
    * @return The instant formatted for SMTP as defined in RFC 1123 e.g. "dd MMM yyyy" (01 Jan 2000)
    */
   public static String formatSmtpDate(ReadableInstant when, Locale locale) {
+    if (when == null) {
+      return "";
+    }
     return smtpDateFormatter.withLocale(locale).print(when);
   }
 
@@ -150,6 +168,9 @@ public class Dates {
    * @return The instant formatted for HTTP as defined in RFC 1123 e.g. "Sat, 01 Jan 2000 23:59:59 GMT"
    */
   public static String formatHttpDateHeader(ReadableInstant when) {
+    if (when == null) {
+      return "";
+    }
     return httpDateFormatter.print(when);
   }
 
@@ -159,6 +180,9 @@ public class Dates {
    * @return The instant formatted as ISO8601 e.g. "2000-01-02T03:04:05Z"
    */
   public static String formatISO8601(ReadableInstant when) {
+    if (when == null) {
+      return "";
+    }
     return utcIso8601.print(when);
   }
 
@@ -169,6 +193,9 @@ public class Dates {
    * @return The instant formatted as ISO8601 e.g. "2000-01-02T03:04:05Z"
    */
   public static String formatISO8601(ReadableInstant when, Locale locale) {
+    if (when == null) {
+      return "";
+    }
     return utcIso8601.withLocale(locale).print(when);
   }
 
@@ -216,6 +243,9 @@ public class Dates {
   }
 
   /**
+   * <p>A seed timestamp is the number of days elapsed since Bitcoin genesis block with a modulo 97 checksum appended.
+   * This gives a short representation that avoids user error during input and works in all locales.</p>
+   *
    * @return Create a new seed timestamp (e.g. "1850/07")
    */
   public static String newSeedTimestamp() {
@@ -247,13 +277,11 @@ public class Dates {
       int days = Integer.valueOf(text.substring(0, separatorIndex));
       int checksum = Integer.valueOf(text.substring(separatorIndex + 1));
 
-      Preconditions.checkArgument(days % CHECKSUM_MODULUS == checksum, "'text' has incorrect checksum. Days=" + days + " checksum=" + checksum);
+      Preconditions.checkArgument(days % CHECKSUM_MODULUS == checksum, "'" + text + "' has incorrect checksum. Days=" + days + " checksum=" + checksum);
 
       return bitcoinGenesis().plusDays(days).toDateMidnight().toDateTime();
 
-    } catch (NumberFormatException e) {
-      throw new IllegalArgumentException("'text' does not parse into 2 integers");
-    } catch (StringIndexOutOfBoundsException e) {
+    } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
       throw new IllegalArgumentException("'text' does not parse into 2 integers");
     }
   }

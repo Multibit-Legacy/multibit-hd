@@ -7,7 +7,7 @@ import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.ModelAndView;
-import org.multibit.hd.ui.views.components.PanelDecorator;
+import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseModel;
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseView;
@@ -85,12 +85,6 @@ public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<Wel
     // Update the wizard model with the latest seed information
     getWizardModel().setCreateWalletSeedPhrase(displaySeedPhraseMaV.getModel().getSeedPhrase());
     getWizardModel().setActualSeedTimestamp(displaySeedPhraseMaV.getModel().getSeedTimestamp());
-
-    // TODO remove this
-    for (String word : getWizardModel().getCreateWalletSeedPhrase()) {
-      System.out.print(word + " ");
-    }
-    System.out.println(", length=" + getWizardModel().getCreateWalletSeedPhrase().size());
 
   }
 

@@ -1,6 +1,8 @@
 package org.multibit.hd.ui.views.components.auto_complete;
 
 import com.google.common.base.Preconditions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.KeyAdapter;
@@ -16,6 +18,8 @@ import java.awt.event.KeyEvent;
  *  
  */
 public class AutoCompleteDecorator {
+
+  private static final Logger log = LoggerFactory.getLogger(AutoCompleteDecorator.class);
 
   /**
    * Utilities have a private constructor
@@ -38,18 +42,32 @@ public class AutoCompleteDecorator {
     textField.addKeyListener(new KeyAdapter() {
       public void keyReleased(KeyEvent ke) {
 
+        // Prevent action keys (navigation etc) from triggering changes
+        if (ke.isActionKey() || ke.getKeyCode()==10) {
+          return;
+        }
+
         SwingUtilities.invokeLater(new Runnable() {
           public void run() {
 
             String enteredText = textField.getText();
 
+            // Use the entered text to update the available popup items
             T[] popupItems = filter.update(enteredText);
 
             if (popupItems.length == 0) {
+              // Nothing to show
               comboBox.hidePopup();
             } else {
+              // Popup contains items
+
+              // Update the model to reflect the new items (fires setItem() in editor)
               comboBox.setModel(new DefaultComboBoxModel<>(popupItems));
+
+              // Update the selected item with the text to allow edits
               comboBox.setSelectedItem(enteredText);
+
+              // Ensure that the popup is showing
               comboBox.showPopup();
 
             }

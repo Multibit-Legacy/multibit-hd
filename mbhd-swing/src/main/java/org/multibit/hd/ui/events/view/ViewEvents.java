@@ -5,6 +5,7 @@ import org.joda.money.BigMoney;
 import org.multibit.hd.core.api.RAGStatus;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.models.AlertModel;
+import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +53,7 @@ public class ViewEvents {
     String rateProvider
   ) {
 
-    log.debug("Firing 'balance changed' event");
+    log.trace("Firing 'balance changed' event");
     CoreServices.uiEventBus.post(new BalanceChangedEvent(
       satoshis,
       localBalance,
@@ -68,7 +69,7 @@ public class ViewEvents {
    * @param severity         The system status severity (normally in line with an alert)
    */
   public static void fireSystemStatusChangedEvent(String localisedMessage, RAGStatus severity) {
-    //log.debug("Firing 'system status changed' event");
+    log.trace("Firing 'system status changed' event");
     CoreServices.uiEventBus.post(new SystemStatusChangedEvent(localisedMessage, severity));
   }
 
@@ -79,7 +80,7 @@ public class ViewEvents {
    * @param percent          The amount to display in percent
    */
   public static void fireProgressChangedEvent(String localisedMessage, int percent) {
-    //log.debug("Firing 'progress changed' event");
+    log.trace("Firing 'progress changed' event: '{}'", percent);
     CoreServices.uiEventBus.post(new ProgressChangedEvent(localisedMessage, percent));
   }
 
@@ -89,7 +90,7 @@ public class ViewEvents {
    * @param alertModel The alert model for the new display
    */
   public static void fireAlertAddedEvent(AlertModel alertModel) {
-    log.debug("Firing 'alert added' event");
+    log.trace("Firing 'alert added' event");
     CoreServices.uiEventBus.post(new AlertAddedEvent(alertModel));
   }
 
@@ -97,7 +98,7 @@ public class ViewEvents {
    * <p>Broadcast a new "alert removed" event</p>
    */
   public static void fireAlertRemovedEvent() {
-    log.debug("Firing 'alert removed' event");
+    log.trace("Firing 'alert removed' event");
     CoreServices.uiEventBus.post(new AlertRemovedEvent());
   }
 
@@ -109,7 +110,7 @@ public class ViewEvents {
    * @param enabled      True if the button should be enabled
    */
   public static void fireWizardButtonEnabledEvent(String panelName, WizardButton wizardButton, boolean enabled) {
-    log.debug("Firing 'wizard button enabled {}' event: {}", panelName, enabled);
+    log.trace("Firing 'wizard button enabled {}' event: {}", panelName, enabled);
     CoreServices.uiEventBus.post(new WizardButtonEnabledEvent(panelName, wizardButton, enabled));
 
   }
@@ -121,8 +122,19 @@ public class ViewEvents {
    * @param componentModel The component model
    */
   public static void fireWizardComponentModelChangedEvent(String panelName, Optional componentModel) {
-    log.debug("Firing 'wizard component model changed' event");
+    log.trace("Firing 'wizard component model changed' event");
     CoreServices.uiEventBus.post(new WizardComponentModelChangedEvent(panelName, componentModel));
+  }
+
+  /**
+   * <p>Broadcast a new "detail view component model changed" event</p>
+   *
+   * @param detailView      The detail view to which this applies
+   * @param componentModel The component model
+   */
+  public static void fireDetailComponentModelChangedEvent(Screen detailView, Optional componentModel) {
+    log.trace("Firing 'detail view component model changed' event");
+    CoreServices.uiEventBus.post(new ScreenComponentModelChangedEvent(detailView, componentModel));
   }
 
   /**
@@ -132,7 +144,7 @@ public class ViewEvents {
    * @param status    True if the verification is OK
    */
   public static void fireVerificationStatusChangedEvent(String panelName, boolean status) {
-    log.debug("Firing 'verification status changed' event: {}", status);
+    log.trace("Firing 'verification status changed' event: {}", status);
     CoreServices.uiEventBus.post(new VerificationStatusChangedEvent(panelName, status));
   }
 }

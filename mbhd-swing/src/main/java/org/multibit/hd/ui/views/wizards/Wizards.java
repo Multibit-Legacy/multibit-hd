@@ -66,7 +66,7 @@ public class Wizards {
   /**
    * @return A new "receive bitcoin" wizard
    */
-  public static ReceiveBitcoinWizard newReceiveBitcoinWizard() {
+  public static ReceiveBitcoinWizard newRequestBitcoinWizard() {
 
     return new ReceiveBitcoinWizard(new ReceiveBitcoinWizardModel(ReceiveBitcoinState.ENTER_AMOUNT), false);
 

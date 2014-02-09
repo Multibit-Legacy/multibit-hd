@@ -4,7 +4,7 @@ import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.views.components.PanelDecorator;
+import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
@@ -65,7 +65,7 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
     panel.add(Panels.newWalletSelector(
       this,
       CREATE_WALLET_SELECT_BACKUP_LOCATION.name(),
-      RESTORE_WALLET_SELECT_METHOD.name(),
+      RESTORE_WALLET_SEED_PHRASE.name(),
       SELECT_WALLET_HARDWARE.name(),
       SELECT_WALLET_SWITCH.name()
     ), "wrap");

@@ -38,7 +38,7 @@ public class SafeThreadPoolExecutor extends ThreadPoolExecutor {
         if (future.isDone())
           future.get();
       } catch (CancellationException ce) {
-        t = ce;
+        // Do nothing - deliberately cancelled
       } catch (ExecutionException ee) {
         t = ee.getCause();
       } catch (InterruptedException ie) {

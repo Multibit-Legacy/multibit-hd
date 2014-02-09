@@ -29,7 +29,7 @@ public class WelcomeWizard extends AbstractWizard<WelcomeWizardModel> {
 
     wizardViewMap.put(
       WELCOME_SELECT_LANGUAGE.name(),
-      new WelcomePanelView(this, WELCOME_SELECT_LANGUAGE.name()));
+      new WelcomeSelectLanguagePanelView(this, WELCOME_SELECT_LANGUAGE.name()));
 
     wizardViewMap.put(
       WELCOME_SELECT_WALLET.name(),
@@ -56,16 +56,20 @@ public class WelcomeWizard extends AbstractWizard<WelcomeWizardModel> {
       new CreateWalletReportPanelView(this, CREATE_WALLET_REPORT.name()));
 
     wizardViewMap.put(
-      RESTORE_WALLET_SELECT_METHOD.name(),
-      new RestoreWalletSelectMethodPanelView(this, RESTORE_WALLET_SELECT_METHOD.name()));
-
-    wizardViewMap.put(
-      RESTORE_WALLET_BACKUP.name(),
-      new RestoreWalletBackupPanelView(this, RESTORE_WALLET_BACKUP.name()));
-
-    wizardViewMap.put(
       RESTORE_WALLET_SEED_PHRASE.name(),
       new RestoreWalletSeedPhrasePanelView(this, RESTORE_WALLET_SEED_PHRASE.name()));
+
+    wizardViewMap.put(
+      RESTORE_WALLET_SELECT_BACKUP_LOCATION.name(),
+      new RestoreWalletSelectBackupLocationPanelView(this, RESTORE_WALLET_SELECT_BACKUP_LOCATION.name()));
+
+    wizardViewMap.put(
+      RESTORE_WALLET_SELECT_BACKUP.name(),
+      new RestoreWalletSelectBackupPanelView(this, RESTORE_WALLET_SELECT_BACKUP.name()));
+
+    wizardViewMap.put(
+      RESTORE_WALLET_TIMESTAMP.name(),
+      new RestoreWalletTimestampPanelView(this, RESTORE_WALLET_TIMESTAMP.name()));
 
     wizardViewMap.put(
       RESTORE_WALLET_REPORT.name(),

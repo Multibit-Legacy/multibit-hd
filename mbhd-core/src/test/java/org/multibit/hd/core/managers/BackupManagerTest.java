@@ -1,7 +1,5 @@
-package org.multibit.hd.core.managers;
-
 /**
- * Copyright 2013 multibit.org
+ * Copyright 2014 multibit.org
  *
  * Licensed under the MIT license (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +13,13 @@ package org.multibit.hd.core.managers;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.multibit.hd.core.managers;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
+import org.multibit.hd.core.api.BackupSummary;
 import org.multibit.hd.core.api.WalletData;
 import org.multibit.hd.core.api.WalletId;
 import org.multibit.hd.core.api.WalletIdTest;
@@ -59,11 +59,11 @@ public class BackupManagerTest extends TestCase {
     WalletData walletData = walletManager.createWallet(temporaryWalletParentDirectory.getAbsolutePath(), seed, "password");
 
     // Check there are initially a single wallet backup for the wallet id of the created wallet
-    List<File> localBackups = BackupManager.INSTANCE.getLocalZipBackups(walletData.getWalletId());
+    List<BackupSummary> localBackups = BackupManager.INSTANCE.getLocalZipBackups(walletData.getWalletId());
     assertNotNull("Null localBackups list returned", localBackups);
     assertEquals("Wrong number of localBackups", 1, localBackups.size());
 
-    List<File> cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletData.getWalletId());
+    List<BackupSummary> cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletData.getWalletId(), temporaryBackupDirectory);
     assertNotNull("Null cloudBackups list returned", cloudBackups);
     assertEquals("Wrong number of cloudBackups", 1, cloudBackups.size());
 
@@ -79,7 +79,7 @@ public class BackupManagerTest extends TestCase {
     assertEquals("Wrong number of localBackups", 2, localBackups.size());
 
     // Check that a backup copy has been saved in the cloud backup directory
-    cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletData.getWalletId());
+    cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletData.getWalletId(), temporaryBackupDirectory);
     assertNotNull("Null cloudBackups list returned", cloudBackups);
     assertEquals("Wrong number of cloudBackups", 2, cloudBackups.size());
 

@@ -1,18 +1,18 @@
 package org.multibit.hd.ui.views.components.enter_recipient;
 
+import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.api.Contact;
 import org.multibit.hd.core.api.Recipient;
-import org.multibit.hd.ui.views.AbstractComponentView;
-import org.multibit.hd.ui.views.components.ComboBoxes;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.gravatar.Gravatars;
+import org.multibit.hd.ui.utils.ClipboardUtils;
+import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilter;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilters;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -28,7 +28,10 @@ import java.awt.event.ActionListener;
 public class EnterRecipientView extends AbstractComponentView<EnterRecipientModel> {
 
   // View components
-  private JComboBox<Contact> recipientComboBox;
+  private JComboBox<Recipient> recipientComboBox;
+  private JLabel imageLabel;
+  private JButton pasteButton;
+  private Optional<Recipient> currentRecipient=Optional.absent();
 
   /**
    * @param model The model backing this view
@@ -41,7 +44,9 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
   @Override
   public JPanel newComponentPanel() {
 
-    AutoCompleteFilter<Contact> filter = AutoCompleteFilters.newContactFilter();
+    AutoCompleteFilter<Recipient> filter = AutoCompleteFilters.newRecipientFilter();
+
+    // Bind a key listener to allow instant update of UI to matched passwords
     recipientComboBox = ComboBoxes.newRecipientComboBox(filter);
     recipientComboBox.addActionListener(new ActionListener() {
       @Override
@@ -50,16 +55,23 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
       }
     });
 
+    pasteButton = Buttons.newPasteButton(getPasteAction());
+
     JPanel panel = Panels.newPanel(new MigLayout(
       "fillx,insets 0", // Layout
-      "[][][]", // Columns
+      "[][][][]", // Columns
       "[]" // Rows
     ));
+
+    // Start with an invisible label
+    imageLabel = Labels.newImageLabel(Optional.<BufferedImage>absent());
+    imageLabel.setVisible(false);
 
     panel.add(Labels.newRecipient());
     // Specify minimum width for consistent appearance across contact names and locales
     panel.add(recipientComboBox, "growx,w min:350:,push");
-    panel.add(Labels.newWalletImageLabel(""), "shrink,wrap");
+    panel.add(pasteButton, "shrink");
+    panel.add(imageLabel, "shrink,wrap");
 
     return panel;
 
@@ -68,10 +80,64 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
   @Override
   public void updateModelFromView() {
 
-    // TODO Add in support for real address/contact
-    Recipient recipient = new Recipient("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty"); // The MultiBit donation address
+    Object selectedItem = recipientComboBox.getSelectedItem();
 
-    getModel().get().setValue(recipient);
+    boolean showGravatar = false;
+    if (selectedItem instanceof Recipient) {
+
+      // We have a select from the drop down
+      Recipient recipient = (Recipient) selectedItem;
+
+      // Avoid double events triggering calls
+      if (currentRecipient.isPresent() && currentRecipient.get().equals(recipient)) {
+        return;
+      }
+      currentRecipient = Optional.of(recipient);
+
+      getModel().get().setValue(recipient);
+
+      // Display a gravatar if we have a contact
+      if (recipient.getContact().isPresent()) {
+        if (recipient.getContact().get().getEmail().isPresent()) {
+
+          // We have an email address
+          String emailAddress = recipient.getContact().get().getEmail().get();
+
+          Optional<BufferedImage> image = Gravatars.retrieveGravatar(emailAddress);
+
+          if (image.isPresent()) {
+            imageLabel.setIcon(new ImageIcon(image.get()));
+            imageLabel.setVisible(true);
+            showGravatar = true;
+          }
+        }
+      }
+    }
+
+    // There is no gravatar to show
+    if (!showGravatar) {
+      imageLabel.setVisible(false);
+    }
+  }
+
+  /**
+   * @return A new action for pasting the recipient information
+   */
+  private Action getPasteAction() {
+    // Show or hide the seed phrase
+    return new AbstractAction() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        Optional<String> pastedText = ClipboardUtils.pasteStringFromClipboard();
+
+        if (pastedText.isPresent()) {
+          recipientComboBox.getEditor().setItem(pastedText.get());
+        }
+
+      }
+    };
   }
 
 }

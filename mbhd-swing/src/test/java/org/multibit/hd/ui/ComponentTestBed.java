@@ -3,18 +3,23 @@ package org.multibit.hd.ui;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.xeiam.xchange.mtgox.v2.MtGoxExchange;
-import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.core.api.BitcoinNetworkSummary;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
+import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.controllers.MainController;
 import org.multibit.hd.ui.events.controller.ChangeLocaleEvent;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.views.FooterView;
 import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.Wizards;
-import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +27,7 @@ import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
@@ -53,7 +59,7 @@ public class ComponentTestBed {
     // Start the core services
     CoreServices.main(args);
 
-    Configurations.currentConfiguration.getBitcoinConfiguration().setBitcoinSymbol("satoshi");
+    Configurations.currentConfiguration.getBitcoinConfiguration().setBitcoinSymbol("icon");
 
     // Register for events
     CoreServices.uiEventBus.register(this);
@@ -61,6 +67,13 @@ public class ComponentTestBed {
     // Standard support services
     CoreServices.newExchangeService(MtGoxExchange.class.getName()).start();
     CoreServices.newBitcoinNetworkService().start();
+
+    // Initialise the wallet manager, which will load the current wallet if available
+    File applicationDataDirectory = InstallationManager.createApplicationDataDirectory();
+    WalletManager.INSTANCE.initialise(applicationDataDirectory);
+
+    ContactService contactService = CoreServices.getContactService(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId());
+    contactService.addDemoContacts();
 
   }
 
@@ -88,11 +101,24 @@ public class ComponentTestBed {
 
   /**
    * <p>Creates the panel under test</p>
-   * <h3>Examples</h3>
+   * <h3>Welcome wizard</h3>
    * <pre>
-   * AbstractWizard wizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME);
-   * wizard.show(WelcomeWizardState.WELCOME.name());
+   * AbstractWizard wizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE);
+   * wizard.show(WelcomeWizardState.WELCOME_SELECT_LANGUAGE.name());
    * return wizard.getWizardPanel();
+   * </pre>
+   * <h3>Send bitcoin wizard</h3>
+   * <pre>
+   * AbstractWizard wizard = Wizards.newSendBitcoinWizard();
+   * return wizard.getWizardPanel();
+   * </pre>
+   * <h3>Footer</h3>
+   * <pre>
+   * </pre>
+   * <h3>Detail screen</h3>
+   * <pre>
+   * AbstractScreenView screen = Screens.newScreen(Screen.CONTACTS);
+   * return screen.getScreenPanel();
    * </pre>
    *
    * @return The panel under test
@@ -100,9 +126,37 @@ public class ComponentTestBed {
   public JPanel createTestPanel() {
 
     // Choose a panel to test
-    AbstractWizard wizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_WALLET);
-    wizard.show(WelcomeWizardState.WELCOME_SELECT_WALLET.name());
-    return wizard.getWizardPanel();
+//    AbstractScreenView screen = Screens.newScreen(Screen.CONTACTS);
+//    return screen.newScreenViewPanel();
+
+    MainController controller = new MainController();
+    FooterView footer = new FooterView();
+
+    SafeExecutors.newFixedThreadPool(1).execute(new Runnable() {
+
+      int i = 99;
+
+      @Override
+      public void run() {
+
+        while (i < 110) {
+
+          Uninterruptibles.sleepUninterruptibly(800, TimeUnit.MILLISECONDS);
+
+          CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(i));
+
+          if (i > 99) {
+
+            CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkReady(i % 100));
+
+          }
+
+          i++;
+        }
+      }
+    });
+
+    return footer.getContentPanel();
 
   }
 

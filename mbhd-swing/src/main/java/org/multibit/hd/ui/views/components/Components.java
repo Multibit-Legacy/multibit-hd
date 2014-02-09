@@ -19,8 +19,12 @@ import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordView;
 import org.multibit.hd.ui.views.components.enter_recipient.EnterRecipientModel;
 import org.multibit.hd.ui.views.components.enter_recipient.EnterRecipientView;
+import org.multibit.hd.ui.views.components.enter_search.EnterSearchModel;
+import org.multibit.hd.ui.views.components.enter_search.EnterSearchView;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseView;
+import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSummaryModel;
+import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSummaryView;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.components.select_file.SelectFileView;
 
@@ -182,15 +186,16 @@ public class Components {
   /**
    * <p>A "seed phrase" model and view handles user data entry of the words used in a BIP0039 seed</p>
    *
-   * @param panelName     The panel name to identify "verification status" and "next" buttons
-   * @param showTimestamp True if the timestamp field should be visible
+   * @param panelName      The panel name to identify "verification status" and "next" buttons
+   * @param showTimestamp  True if the timestamp field should be visible
+   * @param showSeedPhrase True if the seed phrase field should be visible
    *
    * @return A new "seed phrase" model and view
    */
-  public static ModelAndView<EnterSeedPhraseModel, EnterSeedPhraseView> newEnterSeedPhraseMaV(String panelName, boolean showTimestamp) {
+  public static ModelAndView<EnterSeedPhraseModel, EnterSeedPhraseView> newEnterSeedPhraseMaV(String panelName, boolean showTimestamp, boolean showSeedPhrase) {
 
     EnterSeedPhraseModel model = new EnterSeedPhraseModel(panelName);
-    EnterSeedPhraseView view = new EnterSeedPhraseView(model, showTimestamp);
+    EnterSeedPhraseView view = new EnterSeedPhraseView(model, showTimestamp, showSeedPhrase);
 
     return new ModelAndView<>(model, view);
 
@@ -207,6 +212,38 @@ public class Components {
 
     SelectFileModel model = new SelectFileModel(panelName);
     SelectFileView view = new SelectFileView(model);
+
+    return new ModelAndView<>(model, view);
+
+  }
+
+  /**
+   * <p>An "enter search" model and view handles user data entry of a search</p>
+   *
+   * @param panelName The panel name to filter events
+   *
+   * @return A new "enter search" model and view
+   */
+  public static ModelAndView<EnterSearchModel, EnterSearchView> newEnterSearchMaV(String panelName) {
+
+    EnterSearchModel model = new EnterSearchModel(panelName);
+    EnterSearchView view = new EnterSearchView(model);
+
+    return new ModelAndView<>(model, view);
+
+  }
+
+  /**
+   * <p>A "select backup summary" model and view handles user selection of a backup summary</p>
+   *
+   * @param panelName The panel name to identify "next" button
+   *
+   * @return A new "select backup summary" model and view
+   */
+  public static ModelAndView<SelectBackupSummaryModel, SelectBackupSummaryView> newSelectBackupSummaryMaV(String panelName) {
+
+    SelectBackupSummaryModel model = new SelectBackupSummaryModel(panelName);
+    SelectBackupSummaryView view = new SelectBackupSummaryView(model);
 
     return new ModelAndView<>(model, view);
 

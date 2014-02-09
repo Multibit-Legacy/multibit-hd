@@ -5,6 +5,9 @@ import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.views.components.panels.LightBoxPanel;
+import org.multibit.hd.ui.views.components.panels.PanelDecorator;
+import org.multibit.hd.ui.views.components.panels.RoundedPanel;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -57,6 +60,21 @@ public class Panels {
   public static JPanel newPanel() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
+      "fill,insets 0", // Layout
+      "[]", // Columns
+      "[]" // Rows
+    ));
+
+    return panel;
+
+  }
+
+  /**
+   * @return A simple theme-aware panel with rounded corners and a single cell MigLayout
+   */
+  public static JPanel newRoundedPanel() {
+
+    JPanel panel = new RoundedPanel(new MigLayout(
       "fill,insets 0", // Layout
       "[]", // Columns
       "[]" // Rows
@@ -212,7 +230,6 @@ public class Panels {
     return panel;
   }
 
-
   /**
    * <p>A "wallet selector" panel provides a means of choosing how a wallet is to be created/accessed</p>
    *
@@ -243,6 +260,8 @@ public class Panels {
 
     JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.USE_HARDWARE_WALLET);
     radio3.setActionCommand(hardwareCommand);
+    radio3.setEnabled(false);
+    radio3.setForeground(UIManager.getColor("RadioButton.disabledText"));
 
     JRadioButton radio4 = RadioButtons.newRadioButton(listener, MessageKey.SWITCH_WALLET);
     radio4.setActionCommand(switchCommand);
@@ -397,6 +416,25 @@ public class Panels {
   }
 
   /**
+   * <p>A "restore from timestamp" panel displays the instructions to restore from a seed phrase and timestamp</p>
+   *
+   * @return A new "restore from timestamp" panel
+   */
+  public static JPanel newRestoreFromTimestamp() {
+
+    JPanel panel = Panels.newPanel(new MigLayout(
+      "fillx,insets 0", // Layout
+      "[grow]", // Columns
+      "[]" // Rows
+    ));
+
+    // Add to the panel
+    panel.add(Labels.newRestoreFromTimestampNote(), "push");
+
+    return panel;
+  }
+
+  /**
    * <p>A "select backup directory" panel displays the instructions to choose an appropriate backup directory</p>
    *
    * @return A new "select backup directory" panel
@@ -410,7 +448,26 @@ public class Panels {
     ));
 
     // Add to the panel
-    panel.add(Labels.newSelectBackupDirectoryNote(), "push");
+    panel.add(Labels.newSelectBackupLocationNote(), "push");
+
+    return panel;
+  }
+
+  /**
+   * <p>A "select backup directory" panel displays the instructions to choose an appropriate backup directory</p>
+   *
+   * @return A new "select backup directory" panel
+   */
+  public static JPanel newContactDetail() {
+
+    JPanel panel = Panels.newPanel(new MigLayout(
+      "fillx,insets 0", // Layout
+      "[grow]", // Columns
+      "[]" // Rows
+    ));
+
+    // Add to the panel
+    panel.add(Labels.newSelectBackupLocationNote(), "push");
 
     return panel;
   }

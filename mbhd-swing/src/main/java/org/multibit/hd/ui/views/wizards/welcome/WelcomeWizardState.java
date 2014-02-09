@@ -40,17 +40,21 @@ public enum WelcomeWizardState {
    */
   CREATE_WALLET_REPORT,
   /**
-   * Restore wallet: Select restore method (from seed phrase or cloud)
-   */
-  RESTORE_WALLET_SELECT_METHOD,
-  /**
-   * Restore wallet: Restore from seed phrase and timestamp
+   * Restore wallet: Enter seed phrase to begin the process
    */
   RESTORE_WALLET_SEED_PHRASE,
   /**
-   * Restore wallet: Restore from encrypted backup
+   * Restore wallet: Select the backup location (if available)
    */
-  RESTORE_WALLET_BACKUP,
+  RESTORE_WALLET_SELECT_BACKUP_LOCATION,
+  /**
+   * Restore wallet: Select the backup (if multiple found)
+   */
+  RESTORE_WALLET_SELECT_BACKUP,
+  /**
+   * Restore wallet: Enter timestamp for seed restoration
+   */
+  RESTORE_WALLET_TIMESTAMP,
   /**
    * Restore wallet: Report on the restoration outcome
    */

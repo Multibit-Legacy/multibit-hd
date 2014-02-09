@@ -1,8 +1,11 @@
 package org.multibit.hd.ui.views.wizards.receive_bitcoin;
 
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.*;
@@ -12,6 +15,7 @@ import org.multibit.hd.ui.views.components.display_qrcode.DisplayQRCodeModel;
 import org.multibit.hd.ui.views.components.display_qrcode.DisplayQRCodeView;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountModel;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountView;
+import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
@@ -57,8 +61,9 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
 
     enterAmountMaV = Components.newEnterAmountMaV(getPanelName());
 
-    // TODO Link this to the recipient address service
-    displayBitcoinAddressMaV = Components.newDisplayBitcoinAddressMaV("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
+    // TODO Link this to the recipient address service OR get from WalletService
+    Address nextAddress = WalletManager.INSTANCE.getCurrentWalletData().get().getWallet().getKeys().get(0).toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
+    displayBitcoinAddressMaV = Components.newDisplayBitcoinAddressMaV(nextAddress.toString());
 
     // Create the QR code display
     displayQRCodeMaV = Components.newDisplayQRCodeMaV();

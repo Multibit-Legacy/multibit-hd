@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.components.display_seed_phrase;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
-import org.multibit.hd.ui.views.AbstractComponentView;
+import org.multibit.hd.ui.utils.PrintingUtils;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -39,7 +39,7 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
 
     panel = Panels.newPanel(new MigLayout(
       "insets 0", // Layout
-      "[][][][][][]", // Columns
+      "[][][][][][][]", // Columns
       "[][]" // Rows
     ));
 
@@ -50,39 +50,24 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
     seedTimestamp = TextBoxes.newDisplaySeedTimestamp(getModel().get().getSeedTimestamp());
 
     // Configure the actions
-    Action refreshAction = getRefreshAction();
     Action toggleDisplayAction = getToggleDisplayAction();
+    Action refreshAction = getRefreshAction();
+    //Action printAction = getPrintAction();
 
     // Add to the panel
     panel.add(Labels.newTimestamp());
-    panel.add(seedTimestamp, "grow");
-    panel.add(Labels.newSeedSize(),"span 2,grow");
+    panel.add(seedTimestamp, "span 2,grow");
+    panel.add(Labels.newSeedSize(), "span 2,grow");
     panel.add(seedSize, "shrink,wrap");
-    panel.add(seedPhrase, "span 2,shrink");
+    panel.add(seedPhrase, "span 3,shrink");
     panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink");
-    panel.add(Buttons.newRefreshButton(refreshAction), "shrink,wrap");
+    panel.add(Buttons.newRefreshButton(refreshAction), "shrink");
+    //panel.add(Buttons.newPrintButton(printAction), "shrink,wrap");
 
     seedSize.requestFocusInWindow();
 
     return panel;
 
-  }
-
-  /**
-   * @return A new action for generating a new seed phrase
-   */
-  private Action getRefreshAction() {
-    return new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-
-        DisplaySeedPhraseModel model = getModel().get();
-
-        model.newSeedPhrase(model.getCurrentSeedSize());
-        seedPhrase.setText(model.displaySeedPhrase());
-
-      }
-    };
   }
 
   @Override
@@ -151,4 +136,38 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
     };
   }
 
+  /**
+   * @return A new action for generating a new seed phrase
+   */
+  private Action getRefreshAction() {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        DisplaySeedPhraseModel model = getModel().get();
+
+        model.newSeedPhrase(model.getCurrentSeedSize());
+        seedPhrase.setText(model.displaySeedPhrase());
+
+      }
+    };
+  }
+
+  /**
+   * @return A new action for generating a new seed phrase
+   */
+  private Action getPrintAction() {
+
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        PrintingUtils.printSeedPhrase(
+          getModel().get().getSeedPhrase(),
+          getModel().get().getSeedTimestamp()
+        );
+
+      }
+    };
+  }
 }

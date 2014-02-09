@@ -2,12 +2,12 @@ package org.multibit.hd.ui.views.components;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.core.api.Recipient;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.core.utils.CurrencyUtils;
 import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.utils.HtmlUtils;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
@@ -51,6 +51,7 @@ public class Labels {
   private Labels() {
   }
 
+
   /**
    * @param key    The resource key for the i18n message text
    * @param values The data values for token replacement in the message text
@@ -59,6 +60,13 @@ public class Labels {
    */
   public static JLabel newLabel(MessageKey key, Object... values) {
     return new JLabel(Languages.safeText(key, values));
+  }
+
+  /**
+   * @return A new blank label with default styling
+   */
+  public static JLabel newBlankLabel() {
+    return new JLabel("");
   }
 
   /**
@@ -126,20 +134,20 @@ public class Labels {
   }
 
   /**
-    * <p>A "status" label sets a label with no icon, a check or cross icon</p>
-    *
-    * @param key    The message key - if not present then empty text is put on the label
-    * @param values The substitution values
-    * @param status True if a check icon is required, false for a cross
-    *
-    * @return A new label with icon binding to allow the AwesomeDecorator to update it
-    */
+   * <p>A "status" label sets a label with no icon, a check or cross icon</p>
+   *
+   * @param key    The message key - if not present then empty text is put on the label
+   * @param values The substitution values
+   * @param status True if a check icon is required, false for a cross
+   *
+   * @return A new label with icon binding to allow the AwesomeDecorator to update it
+   */
   public static JLabel newStatusLabel(Optional<MessageKey> key, Object[] values, Optional<Boolean> status) {
 
     JLabel label;
 
     if (key.isPresent()) {
-      label = Labels.newLabel(key.get(), values);
+      label = newLabel(key.get(), values);
     } else {
       label = new JLabel();
     }
@@ -491,6 +499,19 @@ public class Labels {
   }
 
   /**
+   * @return A new "circle" label
+   */
+  public static JLabel newCircle() {
+
+    JLabel label = newBlankLabel();
+
+    AwesomeDecorator.bindIcon(AwesomeIcon.CIRCLE, label, false, AwesomeDecorator.SMALL_ICON_SIZE);
+
+    return label;
+  }
+
+
+  /**
    * @param developerFee The developer fee in satoshis
    *
    * @return A new "developer fee" message
@@ -498,7 +519,6 @@ public class Labels {
   public static JLabel newDeveloperFee(BigInteger developerFee) {
     return newLabel(MessageKey.DEVELOPER_FEE);
   }
-
 
   /**
    * @return A new "seed size" message
@@ -593,6 +613,18 @@ public class Labels {
   }
 
   /**
+   * @return A new "restore from timestamp" note
+   */
+  public static JLabel newRestoreFromTimestampNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.RESTORE_TIMESTAMP_NOTE_1,
+      MessageKey.RESTORE_TIMESTAMP_NOTE_2,
+      MessageKey.RESTORE_TIMESTAMP_NOTE_3
+    }, new Object[][]{});
+  }
+
+  /**
    * @return A new "restore method" note
    */
   public static JLabel newRestoreSelectMethodNote() {
@@ -603,6 +635,20 @@ public class Labels {
       MessageKey.RESTORE_METHOD_NOTE_3,
       MessageKey.RESTORE_METHOD_NOTE_4
     }, new Object[][]{});
+  }
+
+  /**
+   * @return A new "select backup location" note (create wizard)
+   */
+  public static JLabel newSelectBackupLocationNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.SELECT_BACKUP_LOCATION_NOTE_1,
+      MessageKey.SELECT_BACKUP_LOCATION_NOTE_2,
+      MessageKey.SELECT_BACKUP_LOCATION_NOTE_3,
+      MessageKey.SELECT_BACKUP_LOCATION_NOTE_4,
+    }, new Object[][]{});
+
   }
 
   /**
@@ -618,15 +664,13 @@ public class Labels {
   }
 
   /**
-   * @return A new "select backup directory" note
+   * @return A new "select backup" note (restore wizard)
    */
-  public static JLabel newSelectBackupDirectoryNote() {
+  public static JLabel newSelectBackupNote() {
 
     return newNoteLabel(new MessageKey[]{
-      MessageKey.SELECT_BACKUP_LOCATION_NOTE_1,
-      MessageKey.SELECT_BACKUP_LOCATION_NOTE_2,
-      MessageKey.SELECT_BACKUP_LOCATION_NOTE_3,
-      MessageKey.SELECT_BACKUP_LOCATION_NOTE_4
+      MessageKey.SELECT_BACKUP_NOTE_1,
+      MessageKey.SELECT_BACKUP_NOTE_2
     }, new Object[][]{});
 
   }

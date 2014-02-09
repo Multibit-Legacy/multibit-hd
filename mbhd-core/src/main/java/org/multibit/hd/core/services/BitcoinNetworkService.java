@@ -64,6 +64,7 @@ public class BitcoinNetworkService extends AbstractService {
 
   @Override
   public void start() {
+
     CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkNotInitialised());
 
     try {

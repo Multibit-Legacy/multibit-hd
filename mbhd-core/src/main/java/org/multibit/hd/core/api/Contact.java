@@ -1,7 +1,10 @@
 package org.multibit.hd.core.api;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -18,11 +21,16 @@ public class Contact {
   private UUID id;
   private String name;
 
-  private Optional<String> email;
-  private Optional<String> imagePath;
+  private Optional<String> email = Optional.absent();
+  private Optional<String> imagePath = Optional.absent();
+  private Optional<String> bitcoinAddress = Optional.absent();
+  private Optional<String> extendedPublicKey = Optional.absent();
+  private Optional<String> notes = Optional.absent();
+  private List<String> tags = Lists.newArrayList();
+  private StarStyle starStyle = StarStyle.EMPTY;
 
   /**
-   * @param id        The unique identifier
+   * @param id   The unique identifier
    * @param name The first name
    */
   public Contact(UUID id, String name) {
@@ -44,6 +52,10 @@ public class Contact {
     return name;
   }
 
+  public void setName(String name) {
+    this.name = name;
+  }
+
   /**
    * @return The optional email
    */
@@ -51,8 +63,8 @@ public class Contact {
     return email;
   }
 
-  public void setEmail(Optional<String> email) {
-    this.email = email;
+  public void setEmail(String email) {
+    this.email = Optional.fromNullable(email);
   }
 
   /**
@@ -62,8 +74,59 @@ public class Contact {
     return imagePath;
   }
 
-  public void setImagePath(Optional<String> imagePath) {
-    this.imagePath = imagePath;
+  public void setImagePath(String imagePath) {
+    this.imagePath = Optional.fromNullable(imagePath);
+  }
+
+  /**
+   * @return The Bitcoin address
+   */
+  public Optional<String> getBitcoinAddress() {
+    return bitcoinAddress;
+  }
+
+  public void setBitcoinAddress(String bitcoinAddress) {
+    this.bitcoinAddress = Optional.fromNullable(bitcoinAddress);
+  }
+
+  /**
+   * @return The extended public key (HD address generator)
+   */
+  public Optional<String> getExtendedPublicKey() {
+    return extendedPublicKey;
+  }
+
+  public void setExtendedPublicKey(String extendedPublicKey) {
+    this.extendedPublicKey = Optional.fromNullable(extendedPublicKey);
+  }
+
+  public Optional<String> getNotes() {
+    return notes;
+  }
+
+  public void setNotes(String notes) {
+    this.notes = Optional.fromNullable(notes);
+  }
+
+  public List<String> getTags() {
+    return tags;
+  }
+
+  public void setTags(List<String> tags) {
+    Preconditions.checkNotNull(tags, "'tags' must be present");
+    this.tags = tags;
+  }
+
+  /**
+   *
+   * @return The star fill style to use (e.g. EMPTY etc)
+   */
+  public StarStyle getStarStyle() {
+    return starStyle;
+  }
+
+  public void setStarStyle(StarStyle starStyle) {
+    this.starStyle = starStyle;
   }
 
   @Override
@@ -90,6 +153,10 @@ public class Contact {
       ", name='" + name + '\'' +
       ", email=" + email +
       ", imagePath=" + imagePath +
+      ", bitcoinAddress=****" +
+      ", extendedPublicKey=****" +
+      ", notes=" + notes +
+      ", tags=" + tags +
       '}';
   }
 }

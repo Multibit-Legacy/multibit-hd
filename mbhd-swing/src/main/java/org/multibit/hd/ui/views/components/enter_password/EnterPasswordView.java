@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.components.enter_password;
 
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.views.AbstractComponentView;
+import org.multibit.hd.ui.views.components.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.TextBoxes;
@@ -69,6 +69,11 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
 
   }
 
+  @Override
+  public void updateModelFromView() {
+    // Do nothing the model is updated from key release events
+  }
+
   /**
    * @return A new action for toggling the display of the seed phrase
    */
@@ -113,11 +118,6 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
       }
 
     };
-  }
-
-  @Override
-  public void updateModelFromView() {
-    // Do nothing the model is updated from key release events
   }
 
 }

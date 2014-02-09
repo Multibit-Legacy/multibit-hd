@@ -3,7 +3,7 @@ package org.multibit.hd.ui.views.components.enter_seed_phrase;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
-import org.multibit.hd.ui.views.AbstractComponentView;
+import org.multibit.hd.ui.views.components.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
@@ -34,15 +34,18 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
 
   private JLabel verificationStatusLabel;
 
+  private final boolean showSeedPhrase;
   private final boolean showTimestamp;
 
   /**
-   * @param model         The model backing this view
-   * @param showTimestamp True if the timestamp field should be visible
+   * @param model          The model backing this view
+   * @param showTimestamp  True if the timestamp field should be visible
+   * @param showSeedPhrase True if the seed phrase field should be visible
    */
-  public EnterSeedPhraseView(EnterSeedPhraseModel model, boolean showTimestamp) {
+  public EnterSeedPhraseView(EnterSeedPhraseModel model, boolean showTimestamp, boolean showSeedPhrase) {
     super(model);
     this.showTimestamp = showTimestamp;
+    this.showSeedPhrase = showSeedPhrase;
   }
 
   @Override
@@ -58,6 +61,8 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
 
     // Create view components
     seedPhraseTextArea = TextBoxes.newEnterSeedPhrase();
+    seedPhraseTextArea.setVisible(showSeedPhrase);
+
     seedTimestampText = TextBoxes.newEnterSeedTimestamp();
     seedTimestampText.setVisible(showTimestamp);
 
@@ -94,10 +99,12 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
     // Add to the panel
     if (showTimestamp) {
       panel.add(Labels.newTimestamp());
-      panel.add(seedTimestampText, "grow,wrap");
+      panel.add(seedTimestampText, "growx,wrap");
     }
-    panel.add(seedPhraseTextArea, "span 2,growx,push");
-    panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink,wrap");
+    if (showSeedPhrase) {
+      panel.add(seedPhraseTextArea, "span 2,growx,push");
+      panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink,wrap");
+    }
     panel.add(verificationStatusLabel, "span 3,push,wrap");
 
     return panel;
@@ -107,7 +114,9 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
   @Override
   public void updateModelFromView() {
 
-    getModel().get().setSeedPhrase(seedPhraseTextArea.getText());
+    if (showSeedPhrase) {
+      getModel().get().setSeedPhrase(seedPhraseTextArea.getText());
+    }
 
     if (showTimestamp) {
       try {
@@ -132,6 +141,7 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
    * @return A new action for toggling the display of the seed phrase
    */
   private Action getToggleDisplayAction() {
+
     // Show or hide the seed phrase
     return new AbstractAction() {
 

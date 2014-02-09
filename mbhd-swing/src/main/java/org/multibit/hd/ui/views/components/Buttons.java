@@ -254,11 +254,11 @@ public class Buttons {
   /**
    * @param action The click action
    *
-   * @return A new "Receive" button with icon
+   * @return A new "Request" button with icon
    */
-  public static JButton newReceiveButton(Action action) {
+  public static JButton newRequestButton(Action action) {
 
-    JButton button = newButton(action, MessageKey.RECEIVE);
+    JButton button = newButton(action, MessageKey.REQUEST);
     button.setAction(action);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
@@ -279,6 +279,23 @@ public class Buttons {
     JButton button = newButton(action);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.UNDO, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+
+    return button;
+
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "Print" button with icon
+   */
+  public static JButton newPrintButton(Action action) {
+
+    JButton button = newButton(action);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.PRINT, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+
+    NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), button);
 
     return button;
 
@@ -347,6 +364,21 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "paste" button with icon
+   */
+  public static JButton newPasteButton(Action action) {
+
+    JButton button = newButton(action);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.PASTE, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+
+    return button;
+
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "close" button with icon
    */
   public static JButton newPanelCloseButton(Action action) {
@@ -376,6 +408,62 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "add" button with icon
+   */
+  public static JButton newAddButton(Action action) {
+
+    JButton button = newButton(action, MessageKey.ADD);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.PLUS, button, false, AwesomeDecorator.NORMAL_ICON_SIZE);
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "edit" button with icon
+   */
+  public static JButton newEditButton(Action action) {
+
+    JButton button = newButton(action, MessageKey.EDIT);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.EDIT, button, false, AwesomeDecorator.NORMAL_ICON_SIZE);
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "delete" button with icon
+   */
+  public static JButton newDeleteButton(Action action) {
+
+    JButton button = newButton(action, MessageKey.DELETE);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.TRASH_ALT, button, false, AwesomeDecorator.NORMAL_ICON_SIZE);
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "search" button with icon
+   */
+  public static JButton newSearchButton(Action action) {
+
+    JButton button = newButton(action);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.SEARCH, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "send Bitcoin" wizard button with icon
    */
   public static JButton newSendBitcoinWizardButton(Action action) {
@@ -390,11 +478,11 @@ public class Buttons {
   /**
    * @param action The click action
    *
-   * @return A new "Receive Bitcoin" wizard button with icon
+   * @return A new "Request Bitcoin" wizard button with icon
    */
-  public static JButton newReceiveBitcoinWizardButton(Action action) {
+  public static JButton newRequestBitcoinWizardButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.RECEIVE);
+    JButton button = newLargeButton(action, MessageKey.REQUEST);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, true, JLabel.BOTTOM, AwesomeDecorator.LARGE_ICON_SIZE);
 
@@ -415,4 +503,6 @@ public class Buttons {
 
     return button;
   }
+
+
 }

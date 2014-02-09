@@ -11,6 +11,7 @@ import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountView;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordView;
+import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;

@@ -2,22 +2,24 @@ package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.bitcoin.store.BlockStoreException;
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.api.WalletId;
 import org.multibit.hd.core.api.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.managers.BackupManager;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.PanelDecorator;
+import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
+import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSummaryModel;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -46,9 +48,6 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
   private static final Logger log = LoggerFactory.getLogger(RestoreWalletReportPanelView.class);
 
   // View
-  private JLabel seedPhraseCreatedStatusLabel;
-  private JLabel walletPasswordCreatedStatusLabel;
-  private JLabel restoreLocationStatusLabel;
   private JLabel walletCreatedStatusLabel;
 
   /**
@@ -59,7 +58,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
     super(wizard.getWizardModel(), panelName, MessageKey.RESTORE_WALLET_REPORT_TITLE);
 
-    PanelDecorator.addExitCancelPreviousFinish(this, wizard);
+    PanelDecorator.addFinish(this, wizard);
 
   }
 
@@ -86,14 +85,8 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     panel.setBackground(Themes.currentTheme.detailPanelBackground());
 
     // Initialise to failure
-    seedPhraseCreatedStatusLabel = Labels.newSeedPhraseCreatedStatus(false);
-    walletPasswordCreatedStatusLabel = Labels.newWalletPasswordCreatedStatus(false);
     walletCreatedStatusLabel = Labels.newWalletCreatedStatus(false);
-    restoreLocationStatusLabel = Labels.newBackupLocationStatus(false);
 
-    panel.add(restoreLocationStatusLabel, "wrap");
-    panel.add(seedPhraseCreatedStatusLabel, "wrap");
-    panel.add(walletPasswordCreatedStatusLabel, "wrap");
     panel.add(walletCreatedStatusLabel, "wrap");
 
     return panel;
@@ -102,8 +95,8 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
   @Override
   public void fireInitialStateViewEvents() {
 
-    // Disable the finish button
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, false);
+    // Enable the finish button
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
 
   }
 
@@ -120,49 +113,30 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     WelcomeWizardModel model = getWizardModel();
 
     log.debug("The select wallet choice is " + getWizardModel().getSelectWalletChoice());
-    log.debug("The restore method is " + getWizardModel().getSelectRestoreMethod());
+    log.debug("The restore method is " + getWizardModel().getRestoreMethod());
 
-    // TODO Check all required data is valid
     // There are two sorts of restore wallet method:
     // RESTORE_WALLET_SEED_PHRASE = restore from a seed phrase and timestamp
     // RESTORE_WALLET_BACKUP = restore from a seed phrase and wallet backup
 
-    if (WelcomeWizardState.RESTORE_WALLET_BACKUP.equals(getWizardModel().getSelectRestoreMethod())) {
+    if (WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP.equals(getWizardModel().getRestoreMethod())) {
       log.debug("Performing a restore from a seed phrase and a wallet backup.");
-      String restoreLocation = model.getRestoreLocation();
-      Preconditions.checkNotNull(restoreLocation, "'restoreLocation' must be present");
 
-      File restoreLocationFile = new File(restoreLocation);
-
-      // TODO Implement this
-      AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, seedPhraseCreatedStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
-      AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, walletPasswordCreatedStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
-
-      // Determine if the restore location is valid
-      boolean restoreLocationStatus = restoreLocationFile.exists()
-              && restoreLocationFile.isDirectory()
-              && restoreLocationFile.canRead();
-
-      if (restoreLocationStatus) {
-        AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, restoreLocationStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
-      } else {
-        AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, restoreLocationStatusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
-      }
-
-      EnterSeedPhraseModel restoreBackupSeedPhraseModel = model.getRestoreWalletBackupSeedPhraseModel();
+      EnterSeedPhraseModel restoreWalletEnterSeedPhraseModel = model.getRestoreWalletEnterSeedPhraseModel();
 
       // Determine if the create wallet status is valid
-      walletCreatedStatus = createWallet(restoreBackupSeedPhraseModel.getSeedPhrase(), restoreLocationFile);
+      walletCreatedStatus = createWallet(restoreWalletEnterSeedPhraseModel.getSeedPhrase());
 
-    } else if (WelcomeWizardState.RESTORE_WALLET_SEED_PHRASE.equals(getWizardModel().getSelectRestoreMethod())) {
+    } else if (WelcomeWizardState.RESTORE_WALLET_TIMESTAMP.equals(getWizardModel().getRestoreMethod())) {
       log.debug("Performing a restore from a seed phrase and a timestamp.");
       EnterSeedPhraseModel restoreEnterSeedPhraseModel = model.getRestoreWalletEnterSeedPhraseModel();
-      log.debug("Timestamp = " + restoreEnterSeedPhraseModel.getSeedTimestamp());
+      EnterSeedPhraseModel restoreEnterTimestampModel = model.getRestoreWalletEnterTimestampModel();
+      EnterPasswordModel enterPasswordModel = model.getRestoreWalletEnterPasswordModel();
+      log.debug("Timestamp = " + restoreEnterTimestampModel.getSeedTimestamp());
 
-      // TODO also need a wallet password to encrypt the wallet with - using "password" for now
-      walletCreatedStatus = createWallet(restoreEnterSeedPhraseModel.getSeedPhrase(), restoreEnterSeedPhraseModel.getSeedTimestamp(), "password");
+      walletCreatedStatus = createWallet(restoreEnterSeedPhraseModel.getSeedPhrase(), restoreEnterTimestampModel.getSeedTimestamp(), enterPasswordModel.getValue());
     } else {
-      log.error("Cannot perform a restore - unknown method of restore = '" + getWizardModel().getSelectRestoreMethod() + "'.");
+      log.error("Cannot perform a restore - unknown method of restore = '" + getWizardModel().getRestoreMethod() + "'.");
     }
 
     if (walletCreatedStatus) {
@@ -200,33 +174,38 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
   }
 
   /**
-   * Create a wallet from a seed phrase and a backup location
+   * Create a wallet from a seed phrase and a backup summary (chosen by the user)
    */
-  private boolean createWallet(List<String> seedPhrase, File restoreLocationFile) {
+  private boolean createWallet(List<String> seedPhrase) {
     if (!checkSeedPhrase(seedPhrase)) return false;
 
-    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-    byte[] seed = seedGenerator.convertToSeed(seedPhrase);
+    // Get the model that contains the selected wallet backup to use
+    SelectBackupSummaryModel selectedBackupSummaryModel = getWizardModel().getSelectBackupSummaryModel();
 
-    WalletId walletId = new WalletId(seed);
-    List<File>backupfiles = BackupManager.INSTANCE.getWalletBackups(walletId, restoreLocationFile);
-
-    if (backupfiles.size() == 0) {
-      // No backups to load
+    if (selectedBackupSummaryModel == null || selectedBackupSummaryModel.getValue() == null ||
+            selectedBackupSummaryModel.getValue().getFile() == null) {
+      log.debug("No wallet backup to load from the model");
       return false;
-    } else {
-      // TODO user to specify which of the backups to load
-      // TODO for now just choose the first one
-      File backupToUse = backupfiles.get(0);
-      try {
-        BackupManager.INSTANCE.loadBackup(backupToUse);
+    }
 
-        // TODO Replay wallet from the data of the last block seen
-        return true;
-      } catch (IOException ioe) {
-        log.error("Failed to restore wallet. Error was '" + ioe.getMessage() + "'.");
-        return false;
-      }
+    log.debug("Loading wallet backup '" + selectedBackupSummaryModel.getValue().getFile() + "'");
+    try {
+      WalletId loadedWalletId = BackupManager.INSTANCE.loadBackup(selectedBackupSummaryModel.getValue().getFile());
+
+      // Load the wallet into memory that has just been copied to the wallet directory
+      File walletRootDirectory = WalletManager.getWalletDirectory(InstallationManager.createApplicationDataDirectory().getAbsolutePath(), WalletManager.createWalletRoot(loadedWalletId));
+      String walletFilename = walletRootDirectory + File.separator + WalletManager.MBHD_WALLET_NAME;
+
+      // TODO need to shut down everything beforehand ???
+      WalletManager.INSTANCE.loadFromFile(new File(walletFilename));
+
+      // Synchronize wallet
+      CoreServices.newBitcoinNetworkService().start();
+
+      return true;
+    } catch (IOException ioe) {
+      log.error("Failed to restore wallet. Error was '" + ioe.getMessage() + "'.");
+      return false;
     }
   }
 

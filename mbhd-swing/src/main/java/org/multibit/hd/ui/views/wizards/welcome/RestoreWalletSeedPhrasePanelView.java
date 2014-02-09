@@ -7,7 +7,7 @@ import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.ModelAndView;
-import org.multibit.hd.ui.views.components.PanelDecorator;
+import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseView;
@@ -46,7 +46,8 @@ public class RestoreWalletSeedPhrasePanelView extends AbstractWizardPanelView<We
   @Override
   public void newPanelModel() {
 
-    enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV(getPanelName(),true);
+    // Do not ask for timestamp until necessary
+    enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV(getPanelName(),false, true);
     setPanelModel(enterSeedPhraseMaV.getModel().getValue());
 
     getWizardModel().setRestoreWalletEnterSeedPhraseModel(enterSeedPhraseMaV.getModel());

@@ -2,8 +2,8 @@ package org.multibit.hd.ui.controllers;
 
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.config.Configuration;
-import org.multibit.hd.ui.events.controller.ShowDetailScreenEvent;
-import org.multibit.hd.ui.views.detail_views.DetailScreen;
+import org.multibit.hd.ui.events.controller.ShowScreenEvent;
+import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.SettingsView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,7 @@ public class SettingsController {
 
   private final SettingsView view;
 
-  private final DetailScreen detailScreen = DetailScreen.SETTINGS;
+  private final Screen detailScreen = Screen.SETTINGS;
 
   public SettingsController(SettingsView view) {
 
@@ -40,7 +40,7 @@ public class SettingsController {
    * @param event The exchange rate change event
    */
   @Subscribe
-  public void onDetailScreenChangeEvent(ShowDetailScreenEvent event) {
+  public void onDetailScreenChangeEvent(ShowScreenEvent event) {
 
 
     // Post the event

@@ -3,6 +3,7 @@ package org.multibit.hd.core.services;
 import com.google.common.eventbus.EventBus;
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
+import org.multibit.hd.core.api.WalletId;
 import org.multibit.hd.core.api.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
@@ -38,11 +39,6 @@ public class CoreServices {
     applicationEventService = new ApplicationEventService();
     uiEventBus.register(applicationEventService);
   }
-
-  /**
-   * Provide access to the Contacts API
-   */
-  public static final ContactService contactService = new ContactService();
 
   /**
    * Utilities have a private constructor
@@ -126,11 +122,11 @@ public class CoreServices {
   }
 
   /**
-   * @return The contact service singleton
+   * @return The contact service for a wallet
    */
-  public static ContactService getContactService() {
+  public static ContactService getContactService(WalletId walletId) {
 
-    return contactService;
+    return new ContactService(walletId);
 
   }
 

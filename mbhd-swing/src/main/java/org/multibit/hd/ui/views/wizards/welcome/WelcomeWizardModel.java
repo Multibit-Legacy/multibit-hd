@@ -1,20 +1,30 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
+import org.multibit.hd.core.api.BackupSummary;
+import org.multibit.hd.core.api.WalletData;
+import org.multibit.hd.core.api.WalletId;
+import org.multibit.hd.core.api.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
+import org.multibit.hd.core.managers.BackupManager;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
+import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
+import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSummaryModel;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
+import java.io.File;
 import java.util.List;
 
 import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
@@ -45,9 +55,9 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   private WelcomeWizardState selectWalletChoice = WelcomeWizardState.CREATE_WALLET_SEED_PHRASE;
 
   /**
-   * The "select restore" radio button choice (as a state)
+   * The "restore method" indicates if a backup location or timestamp was selected
    */
-  private WelcomeWizardState selectRestoreMethod = WelcomeWizardState.RESTORE_WALLET_BACKUP;
+  private WelcomeWizardState restoreMethod = WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP_LOCATION;
 
   /**
    * The seed phrase generator
@@ -66,10 +76,16 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   private EnterSeedPhraseModel restoreWalletEnterSeedPhraseModel;
   private EnterSeedPhraseModel restoreWalletBackupSeedPhraseModel;
 
-  private List<String> createWalletSeedPhrase= Lists.newArrayList();
-  private List<String> restoreWalletSeedPhrase=Lists.newArrayList();
+  private List<String> createWalletSeedPhrase = Lists.newArrayList();
+  private List<String> restoreWalletSeedPhrase = Lists.newArrayList();
 
   private String actualSeedTimestamp;
+
+  // Backup summaries for restoring a wallet
+  private List<BackupSummary> backupSummaries = Lists.newArrayList();
+  private SelectBackupSummaryModel selectBackupSummaryModel;
+  private EnterSeedPhraseModel restoreWalletEnterTimestampModel;
+  private EnterPasswordModel restoreWalletEnterPasswordModel;
 
   /**
    * @param state The state object
@@ -107,13 +123,26 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
         break;
       case CREATE_WALLET_REPORT:
         throw new IllegalStateException("'Next' is not permitted here");
-      case RESTORE_WALLET_SELECT_METHOD:
-        state = selectRestoreMethod;
-        break;
       case RESTORE_WALLET_SEED_PHRASE:
+        if (!isLocalZipBackupPresent()) {
+          restoreMethod = RESTORE_WALLET_SELECT_BACKUP_LOCATION;
+        } else {
+          restoreMethod = RESTORE_WALLET_SELECT_BACKUP;
+        }
+        state = restoreMethod;
+        break;
+      case RESTORE_WALLET_SELECT_BACKUP_LOCATION:
+        if (isCloudBackupPresent()) {
+          restoreMethod = RESTORE_WALLET_SELECT_BACKUP;
+        } else {
+          restoreMethod = RESTORE_WALLET_TIMESTAMP;
+        }
+        state = restoreMethod;
+        break;
+      case RESTORE_WALLET_SELECT_BACKUP:
         state = RESTORE_WALLET_REPORT;
         break;
-      case RESTORE_WALLET_BACKUP:
+      case RESTORE_WALLET_TIMESTAMP:
         state = RESTORE_WALLET_REPORT;
         break;
       case RESTORE_WALLET_REPORT:
@@ -150,17 +179,21 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
         break;
       case CREATE_WALLET_REPORT:
         throw new IllegalStateException("'Previous' is not permitted here");
-      case RESTORE_WALLET_SELECT_METHOD:
+      case RESTORE_WALLET_SEED_PHRASE:
         state = WELCOME_SELECT_WALLET;
         break;
-      case RESTORE_WALLET_BACKUP:
-        state = RESTORE_WALLET_SELECT_METHOD;
+      case RESTORE_WALLET_SELECT_BACKUP_LOCATION:
+        state = RESTORE_WALLET_SEED_PHRASE;
         break;
-      case RESTORE_WALLET_SEED_PHRASE:
-        state = RESTORE_WALLET_SELECT_METHOD;
+      case RESTORE_WALLET_SELECT_BACKUP:
+        state = RESTORE_WALLET_SELECT_BACKUP_LOCATION;
+        break;
+      case RESTORE_WALLET_TIMESTAMP:
+        state = RESTORE_WALLET_SELECT_BACKUP_LOCATION;
         break;
       case RESTORE_WALLET_REPORT:
-        state = selectRestoreMethod;
+        state = restoreMethod;
+        break;
       case SELECT_WALLET_HARDWARE:
         state = WELCOME_SELECT_WALLET;
         break;
@@ -179,6 +212,42 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
 
     ViewEvents.fireWizardButtonEnabledEvent(CREATE_WALLET_CONFIRM_SEED_PHRASE.name(), WizardButton.NEXT, event.isOK());
 
+  }
+
+  /**
+   * @return True if backups are present in the local zip backup location
+   */
+  private boolean isLocalZipBackupPresent() {
+
+    // Ensure we start from a fresh list
+    backupSummaries.clear();
+
+    // Get the local backups
+    Optional<WalletData> currentWalletData = WalletManager.INSTANCE.getCurrentWalletData();
+    if (currentWalletData.isPresent()) {
+      backupSummaries = BackupManager.INSTANCE.getLocalZipBackups(currentWalletData.get().getWalletId());
+    }
+
+    return !backupSummaries.isEmpty();
+  }
+
+  /**
+   * @return True if backups are present in the cloud backup location given by the user
+   */
+  private boolean isCloudBackupPresent() {
+
+    // Ensure we start from a fresh list
+    backupSummaries.clear();
+
+    // Get the cloud backups matching the entered seed
+    EnterSeedPhraseModel restoreWalletEnterSeedPhraseModel = getRestoreWalletEnterSeedPhraseModel();
+
+    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] seed = seedGenerator.convertToSeed(restoreWalletEnterSeedPhraseModel.getSeedPhrase());
+    WalletId walletId = new WalletId(seed);
+    backupSummaries = BackupManager.INSTANCE.getCloudBackups(walletId, new File(getRestoreLocation()));
+
+    return !backupSummaries.isEmpty();
   }
 
   /**
@@ -232,12 +301,12 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
     return restoreWalletBackupSeedPhraseModel;
   }
 
-  public WelcomeWizardState getSelectRestoreMethod() {
-    return selectRestoreMethod;
+  public WelcomeWizardState getRestoreMethod() {
+    return restoreMethod;
   }
 
   /**
-   * @return The actual generated seed timestamp (e.g. "1850/2")
+   * @return The actual generated seed timestamp (e.g. "1850/07")
    */
   public String getActualSeedTimestamp() {
     return actualSeedTimestamp;
@@ -310,15 +379,6 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   /**
    * <p>Reduced visibility for panel models</p>
    *
-   * @param selectRestoreMethod The restore method selection from the radio buttons
-   */
-  void setSelectRestoreMethod(WelcomeWizardState selectRestoreMethod) {
-    this.selectRestoreMethod = selectRestoreMethod;
-  }
-
-  /**
-   * <p>Reduced visibility for panel models</p>
-   *
    * @param createWalletEnterSeedPhraseModel The "create wallet enter seed phrase" model
    */
   void setCreateWalletEnterSeedPhraseModel(EnterSeedPhraseModel createWalletEnterSeedPhraseModel) {
@@ -342,6 +402,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   void setRestoreWalletBackupSeedPhraseModel(EnterSeedPhraseModel restoreWalletBackupSeedPhraseModel) {
     this.restoreWalletBackupSeedPhraseModel = restoreWalletBackupSeedPhraseModel;
   }
+
   /**
    * <p>Reduced visibility for panel models</p>
    *
@@ -360,4 +421,49 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
     this.actualSeedTimestamp = actualSeedTimestamp;
   }
 
+  /**
+   * <p>Reduced visibility for panel models</p>
+   *
+   * @param selectBackupSummaryModel The selected backup summary
+   */
+  void setSelectBackupSummaryModel(SelectBackupSummaryModel selectBackupSummaryModel) {
+    this.selectBackupSummaryModel = selectBackupSummaryModel;
+  }
+
+  public SelectBackupSummaryModel getSelectBackupSummaryModel() {
+    return selectBackupSummaryModel;
+  }
+
+  /**
+   * @return The discovered backup summaries
+   */
+  public List<BackupSummary> getBackupSummaries() {
+    return backupSummaries;
+  }
+
+  /**
+   * <p>Reduced visibility for panel models</p>
+   *
+   * @param restoreWalletEnterTimestampModel The "enter seed phrase" model for the restore wallet panel
+   */
+  void setRestoreWalletEnterTimestampModel(EnterSeedPhraseModel restoreWalletEnterTimestampModel) {
+    this.restoreWalletEnterTimestampModel = restoreWalletEnterTimestampModel;
+  }
+
+  public EnterSeedPhraseModel getRestoreWalletEnterTimestampModel() {
+    return restoreWalletEnterTimestampModel;
+  }
+
+  /**
+   * <p>Reduced visibility for panel models</p>
+   *
+   * @param restoreWalletEnterPasswordModel The "enter password" model for the restore wallet panel
+   */
+  void setRestoreWalletEnterPasswordModel(EnterPasswordModel restoreWalletEnterPasswordModel) {
+    this.restoreWalletEnterPasswordModel = restoreWalletEnterPasswordModel;
+  }
+
+  public EnterPasswordModel getRestoreWalletEnterPasswordModel() {
+    return restoreWalletEnterPasswordModel;
+  }
 }

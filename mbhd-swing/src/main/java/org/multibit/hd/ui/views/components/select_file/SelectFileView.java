@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.components.select_file;
 
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.views.AbstractComponentView;
+import org.multibit.hd.ui.views.components.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.TextBoxes;

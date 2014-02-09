@@ -55,8 +55,8 @@ public class HeaderController {
       // Use the real wallet data
       satoshis = currentWalletData.get().getWallet().getBalance();
     } else {
-      // Use some fake data
-      satoshis = new BigInteger("2099999912345678");
+      // Unknown at this time
+      satoshis = BigInteger.ZERO;
     }
     BigMoney localBalance = Satoshis.toLocalAmount(satoshis, event.getRate());
 
