@@ -93,6 +93,10 @@ public class MultiBitPeerEventListener implements PeerEventListener {
   @Override
   public void onPeerDisconnected(Peer peer, int peerCount) {
     log.debug("(disconnect) Number of peers = " + peerCount);
+    if (peerCount == numberOfConnectedPeers) {
+      // Don't fire an event - not useful
+      return;
+    }
     numberOfConnectedPeers = peerCount;
 
     // Only show peers after synchronization to avoid confusion

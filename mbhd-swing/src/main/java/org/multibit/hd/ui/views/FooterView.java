@@ -172,7 +172,7 @@ public class FooterView {
         });
 
       }
-    }, 2, TimeUnit.SECONDS);
+    }, 4, TimeUnit.SECONDS);
   }
 
 }
