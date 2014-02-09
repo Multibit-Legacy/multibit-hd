@@ -1,9 +1,11 @@
 package org.multibit.hd.ui.views;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Range;
 import com.google.common.collect.Ranges;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ProgressChangedEvent;
 import org.multibit.hd.ui.events.view.SystemStatusChangedEvent;
@@ -14,6 +16,8 @@ import org.multibit.hd.ui.views.themes.NimbusDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -22,7 +26,7 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class FooterView {
 
@@ -31,6 +35,9 @@ public class FooterView {
   private final JLabel messageLabel;
   private final JLabel statusLabel;
   private final JLabel statusIcon;
+
+  // Hide the progress bar
+  private Optional<? extends ScheduledFuture<?>> hideProgressBarFuture = Optional.absent();
 
   public FooterView() {
 
@@ -96,7 +103,7 @@ public class FooterView {
         break;
       default:
         // Unknown status
-        throw new IllegalStateException("Unknown event severity "+event.getSeverity());
+        throw new IllegalStateException("Unknown event severity " + event.getSeverity());
     }
 
   }
@@ -112,18 +119,60 @@ public class FooterView {
     progressBar.setEnabled(true);
 
     // Provide some ranges to allow different colouring
+    Range<Integer> hidden = Ranges.lessThan(0);
     Range<Integer> amber = Ranges.closed(0, 99);
     Range<Integer> green = Ranges.greaterThan(99);
 
+    if (hidden.contains(event.getPercent())) {
+      progressBar.setVisible(false);
+    }
+
     if (amber.contains(event.getPercent())) {
       NimbusDecorator.applyThemeColor(Themes.currentTheme.warningAlertBackground(), progressBar);
+      progressBar.setValue(event.getPercent());
+      progressBar.setVisible(true);
     }
+
     if (green.contains(event.getPercent())) {
       NimbusDecorator.applyThemeColor(Themes.currentTheme.successAlertBackground(), progressBar);
+      progressBar.setValue(Math.min(100, event.getPercent()));
+      progressBar.setVisible(true);
+
+      // Check if we are already in the process of hiding the progress bar
+      if (hideProgressBarFuture.isPresent()) {
+
+        // Cancel the current progress bar hide
+        hideProgressBarFuture.get().cancel(true);
+      }
+
+      // Create a new one
+      hideProgressBarFuture = Optional.of(scheduleHideProgressBar());
+
     }
 
-    progressBar.setValue(event.getPercent());
+  }
 
+  /**
+   * @return A scheduled future for hiding the progress bar after a predetermined delay
+   */
+  private ScheduledFuture<?> scheduleHideProgressBar() {
+
+    return SafeExecutors.newScheduledThreadPool(1).schedule(new Runnable() {
+      @Override
+      public void run() {
+
+        // Ensure we execute the update on the Swing thread
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+
+            progressBar.setVisible(false);
+
+          }
+        });
+
+      }
+    }, 2, TimeUnit.SECONDS);
   }
 
 }

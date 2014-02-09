@@ -3,7 +3,6 @@ package org.multibit.hd.ui.controllers;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
-import org.multibit.hd.core.api.BitcoinNetworkStatus;
 import org.multibit.hd.core.api.BitcoinNetworkSummary;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
@@ -98,17 +97,15 @@ public class MainController {
 
     final String localisedMessage;
     if (summary.getMessageKey().isPresent() && summary.getMessageData().isPresent()) {
+      // There is a message key with data
       localisedMessage = Languages.safeText(summary.getMessageKey().get(), summary.getMessageData().get());
     } else {
+      // There is no message key so use the status only
       localisedMessage = summary.getStatus().name();
     }
 
-    // If downloading the blocking ensure we keep the progress bar up to date
-    if (BitcoinNetworkStatus.DOWNLOADING_BLOCKCHAIN.equals(summary.getStatus())) {
-
-      ViewEvents.fireProgressChangedEvent(localisedMessage, summary.getPercent());
-
-    }
+    // Use the percentage download to indicate the required response from the progress bar
+    ViewEvents.fireProgressChangedEvent(localisedMessage, summary.getPercent());
 
     // Ensure everyone is aware of the update
     ViewEvents.fireSystemStatusChangedEvent(localisedMessage, summary.getSeverity());

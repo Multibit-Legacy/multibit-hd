@@ -26,11 +26,13 @@ public class MultiBitPeerEventListener implements PeerEventListener {
   @Override
   public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
 
-    //log.debug("Number of blocks left = {}", blocksLeft);
+    log.trace("Number of blocks left = {}", blocksLeft);
 
     // Keep track of the download progress
     updateDownloadPercent(blocksLeft);
 
+    // Keep the progress updated
+    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(downloadPercent));
   }
 
   @Override
@@ -44,6 +46,8 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     // Keep track of the download progress
     updateDownloadPercent(blocksLeft);
 
+    // Keep the progress updated
+    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(downloadPercent));
   }
 
   @Override
@@ -51,7 +55,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
     numberOfConnectedPeers = peerCount;
 
-    // Don't interfere with blockchain download
+    // Only show peers after synchronization to avoid confusion
     if (downloadPercent == 100) {
       CoreEvents.fireBitcoinNetworkChangedEvent(
         BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers)
@@ -64,7 +68,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
     numberOfConnectedPeers = peerCount;
 
-    // Don't interfere with blockchain download
+    // Only show peers after synchronization to avoid confusion
     if (downloadPercent == 100) {
       CoreEvents.fireBitcoinNetworkChangedEvent(
         BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers)
@@ -79,6 +83,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
   @Override
   public void onTransaction(Peer peer, Transaction transaction) {
+
     // Loop through all the wallets, seeing if the transaction is relevant and adding them as pending if so.
     if (transaction != null) {
       // TODO - want to iterate over all open wallets
@@ -92,7 +97,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
                 if (!(transaction.isTimeLocked() && transaction.getConfidence().getSource() != TransactionConfidence.Source.SELF)) {
                   if (currentWallet.getTransaction(transaction.getHash()) == null) {
                     log.debug("MultiBitHD adding a new pending transaction for the wallet '"
-                            + currentWalletData.get().getWalletId() + "'\n" + transaction.toString());
+                      + currentWalletData.get().getWalletId() + "'\n" + transaction.toString());
                     // The perWalletModelData is marked as dirty.
                     // TODO - mark wallet as dirty ?
                     currentWallet.receivePending(transaction, null);
@@ -121,6 +126,11 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     return numberOfConnectedPeers;
   }
 
+  /**
+   * <p>Calculate an appropriate download percent</p>
+   *
+   * @param blocksLeft The number of blocks left to download
+   */
   private void updateDownloadPercent(int blocksLeft) {
 
     if (startingBlock == -1) {
@@ -128,9 +138,6 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     }
 
     downloadPercent = (int) ((1 - ((double) blocksLeft / startingBlock)) * 100);
-
-    // Keep the progress updated
-    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(downloadPercent));
 
   }
 }

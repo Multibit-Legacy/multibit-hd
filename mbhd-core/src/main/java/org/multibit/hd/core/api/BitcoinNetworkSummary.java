@@ -9,7 +9,7 @@ import com.google.common.base.Optional;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class BitcoinNetworkSummary {
 
@@ -25,6 +25,8 @@ public class BitcoinNetworkSummary {
 
 
   /**
+   * <p>The network has not initialised yet so hide the progress bar</p>
+   *
    * @return A new "not initialised" summary
    */
   public static BitcoinNetworkSummary newNetworkNotInitialised() {
@@ -34,11 +36,13 @@ public class BitcoinNetworkSummary {
       Optional.<CoreMessageKey>absent(),
       Optional.<Object[]>absent(),
       0,
-      0
+      -1
     );
   }
 
   /**
+   * <p>The network has connected but no synchronization has occurred so show the progress bar with 0%</p>
+   *
    * @return A new "downloading blockchain" summary
    */
   public static BitcoinNetworkSummary newChainDownloadStarted() {
@@ -53,6 +57,8 @@ public class BitcoinNetworkSummary {
   }
 
   /**
+   * <p>The network has begun to synchronize so show the progress bar</p>
+   *
    * @param percent The percentage of blocks downloaded
    *
    * @return A new "progress update" summary
@@ -69,6 +75,8 @@ public class BitcoinNetworkSummary {
   }
 
   /**
+   * <p>The network is only ready when 100% synchronization has been achieved</p>
+   *
    * @param peerCount The peer count
    *
    * @return A new "network ready with peer count" summary
@@ -80,11 +88,13 @@ public class BitcoinNetworkSummary {
       Optional.of(CoreMessageKey.PEER_COUNT),
       Optional.of(new Object[]{peerCount}),
       peerCount,
-      0
+      100
     );
   }
 
   /**
+   * <p>The network has failed to synchronize so hide the progress bar and report the failure</p>
+   *
    * @param messageKey The message key to allow localisation
    *
    * @return A new "startup failed" summary
@@ -96,16 +106,17 @@ public class BitcoinNetworkSummary {
       Optional.of(messageKey),
       messageData,
       0,
-      0
+      -1
     );
   }
 
   /**
-   * @param status    The network status (e.g. NOT_CONNECTED)
-   * @param severity  The severity (Red, Amber, Green)
+   * @param status      The network status (e.g. NOT_CONNECTED)
+   * @param severity    The severity (Red, Amber, Green)
    * @param messageKey  The error key to allow localisation
    * @param messageData The error data for insertion into the error message
-   * @param peerCount The current peer count
+   * @param peerCount   The current peer count
+   * @param percent     The percentage of blocks downloaded (-1 means hide, 0-99 "in progress", 100 "success")
    */
   public BitcoinNetworkSummary(
     BitcoinNetworkStatus status,

@@ -134,19 +134,16 @@ public class ComponentTestBed {
 
     SafeExecutors.newFixedThreadPool(1).execute(new Runnable() {
 
-      int i = 0;
+      int i = 99;
 
       @Override
       public void run() {
 
         while (i < 110) {
 
-          Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
+          Uninterruptibles.sleepUninterruptibly(800, TimeUnit.MILLISECONDS);
 
-          if (i < 101) {
-
-            CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(i));
-          }
+          CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(i));
 
           if (i > 99) {
 
