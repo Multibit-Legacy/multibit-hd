@@ -19,7 +19,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
   private int downloadPercent = 0;
   private int numberOfConnectedPeers = 0;
 
-  private boolean suppressPeerCountMessages = false;
+  private boolean suppressPeerCountMessages = true;
 
   public MultiBitPeerEventListener() {
   }

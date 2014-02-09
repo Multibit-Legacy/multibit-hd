@@ -104,7 +104,6 @@ public class MainController {
       localisedMessage = summary.getStatus().name();
     }
 
-    // Use the percentage download to indicate the required response from the progress bar
     ViewEvents.fireProgressChangedEvent(localisedMessage, summary.getPercent());
 
     // Ensure everyone is aware of the update

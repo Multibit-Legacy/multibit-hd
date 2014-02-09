@@ -283,21 +283,7 @@ public class BitcoinNetworkService extends AbstractService {
       public void run() {
         Preconditions.checkNotNull(peerGroup, "'peerGroup' must be present");
         log.debug("Downloading blockchain");
-
-        // Issue a "network change" event
-        CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadStarted());
-
-        // Method will block until download completes
         peerGroup.downloadBlockChain();
-
-        // Indicate 100% progress
-        CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(100));
-
-        // Issue a "network ready" event
-        CoreEvents.fireBitcoinNetworkChangedEvent(
-                BitcoinNetworkSummary.newNetworkReady(
-                        peerEventListener.getNumberOfConnectedPeers()
-                ));
 
       }
     });
