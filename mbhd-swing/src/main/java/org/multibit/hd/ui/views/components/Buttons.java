@@ -254,11 +254,11 @@ public class Buttons {
   /**
    * @param action The click action
    *
-   * @return A new "Receive" button with icon
+   * @return A new "Request" button with icon
    */
-  public static JButton newReceiveButton(Action action) {
+  public static JButton newRequestButton(Action action) {
 
-    JButton button = newButton(action, MessageKey.RECEIVE);
+    JButton button = newButton(action, MessageKey.REQUEST);
     button.setAction(action);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
@@ -478,11 +478,11 @@ public class Buttons {
   /**
    * @param action The click action
    *
-   * @return A new "Receive Bitcoin" wizard button with icon
+   * @return A new "Request Bitcoin" wizard button with icon
    */
-  public static JButton newReceiveBitcoinWizardButton(Action action) {
+  public static JButton newRequestBitcoinWizardButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.RECEIVE);
+    JButton button = newLargeButton(action, MessageKey.REQUEST);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, true, JLabel.BOTTOM, AwesomeDecorator.LARGE_ICON_SIZE);
 

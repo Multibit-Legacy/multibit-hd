@@ -59,16 +59,16 @@ public class WalletPanelView extends AbstractScreenView<WalletPanelModel>  {
       }
     };
 
-    Action showReceiveBitcoinWizardAction = new AbstractAction() {
+    Action showRequestBitcoinWizardAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        Panels.showLightBox(Wizards.newReceiveBitcoinWizard().getWizardPanel());
+        Panels.showLightBox(Wizards.newRequestBitcoinWizard().getWizardPanel());
       }
     };
 
     contentPanel.add(Buttons.newSendBitcoinWizardButton(showSendBitcoinWizardAction),"w 240,h 200,align center,push");
-    contentPanel.add(Buttons.newReceiveBitcoinWizardButton(showReceiveBitcoinWizardAction),"w 240, h 200,align center,push,wrap");
+    contentPanel.add(Buttons.newRequestBitcoinWizardButton(showRequestBitcoinWizardAction),"w 240, h 200,align center,push,wrap");
     contentPanel.add(Components.newWalletDetailPanel(),"span 2,grow");
 
     return contentPanel;

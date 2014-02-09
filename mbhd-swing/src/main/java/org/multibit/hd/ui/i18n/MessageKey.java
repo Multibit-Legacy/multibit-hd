@@ -24,7 +24,7 @@ public enum MessageKey {
   CANCEL("cancel"),
   EXIT("exit"),
   SEND("send"),
-  RECEIVE("receive"),
+  REQUEST("request"),
   REFRESH("refresh"),
   FINISH("finish"),
   CLOSE("close"),
