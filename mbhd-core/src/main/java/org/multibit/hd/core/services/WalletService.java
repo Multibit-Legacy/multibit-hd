@@ -30,6 +30,9 @@ public class WalletService extends AbstractService {
     this.requireSingleThreadExecutor();
   }
 
+  /**
+   * Get all the transactions in the current wallet
+   */
   public Set<TransactionData> getTransactions() {
     // See if there is a current wallet
     WalletManager walletManager = WalletManager.INSTANCE;

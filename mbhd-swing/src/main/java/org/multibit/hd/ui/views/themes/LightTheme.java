@@ -88,7 +88,7 @@ public class LightTheme implements Theme {
 
   @Override
   public Color fadedText() {
-    return new Color(0x606060);
+    return new Color(0x808080);
   }
 
   @Override

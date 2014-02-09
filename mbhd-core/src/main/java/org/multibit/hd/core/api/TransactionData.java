@@ -90,4 +90,28 @@ public class TransactionData {
     result = 31 * result + updateTime.hashCode();
     return result;
   }
+
+  public String getTransactionId() {
+    return transactionId;
+  }
+
+  public BigInteger getAmountBTC() {
+    return amountBTC;
+  }
+
+  public Optional<BigInteger> getFeeOnSendBTC() {
+    return feeOnSendBTC;
+  }
+
+  public int getDepth() {
+    return depth;
+  }
+
+  public TransactionConfidence.ConfidenceType getConfidenceType() {
+    return confidenceType;
+  }
+
+  public Date getUpdateTime() {
+    return updateTime;
+  }
 }

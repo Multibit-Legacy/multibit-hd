@@ -76,7 +76,7 @@ public class StripedTable extends JTable {
       int rowYToDraw = (firstNonExistentRowY - 1) + getRowHeight();
 
       // Continue the stripes from the area with table data
-      int actualRow = getRowCount() - 1;
+      int actualRow = 0;
 
       while (rowYToDraw < getHeight()) {
         if (actualRow % 2 == 0) {

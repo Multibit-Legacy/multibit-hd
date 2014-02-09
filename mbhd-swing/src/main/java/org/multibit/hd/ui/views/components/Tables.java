@@ -1,8 +1,10 @@
 package org.multibit.hd.ui.views.components;
 
 import org.multibit.hd.core.api.Contact;
+import org.multibit.hd.core.api.TransactionData;
 import org.multibit.hd.ui.views.components.tables.ContactTableModel;
 import org.multibit.hd.ui.views.components.tables.StripedTable;
+import org.multibit.hd.ui.views.components.tables.TransactionTableModel;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 
 import java.util.Set;
@@ -44,4 +46,23 @@ public class Tables {
     return table;
   }
 
+  /**
+    * @param transactions The transactions to show
+    * @return A new "transactions" striped table
+    */
+   public static StripedTable newTransactionsTable(Set<TransactionData> transactions) {
+
+     TransactionTableModel model = new TransactionTableModel(transactions);
+
+     StripedTable table = new StripedTable(model);
+
+     table.setFillsViewportHeight(true);
+     table.setShowHorizontalLines(true);
+     table.setShowVerticalLines(false);
+
+     table.setRowHeight(AwesomeDecorator.LARGE_ICON_SIZE+10);
+     table.setAutoCreateRowSorter(true);
+
+     return table;
+   }
 }
