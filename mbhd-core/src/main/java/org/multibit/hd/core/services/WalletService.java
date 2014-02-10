@@ -6,6 +6,7 @@ import com.google.bitcoin.core.Wallet;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
+import org.multibit.hd.core.api.RAGStatus;
 import org.multibit.hd.core.api.TransactionData;
 import org.multibit.hd.core.api.WalletData;
 import org.multibit.hd.core.managers.WalletManager;
@@ -81,10 +82,51 @@ public class WalletService extends AbstractService {
       }
     }
 
+    RAGStatus status = calculateStatus(transaction);
+
     // TODO- fee on send
 
-    TransactionData transactionData = new TransactionData(transactionId, updateTime, amountBTC, Optional.<BigInteger>absent(), confidenceType, depth);
+    TransactionData transactionData = new TransactionData(transactionId, updateTime, status, amountBTC, Optional.<BigInteger>absent(), confidenceType, depth);
 
     return transactionData;
+  }
+
+  /**
+   * Calculate the RAGstatus of the transaction:
+   * + RED   = tx is dead, double spend, failed to be transmitted to the network
+   * + AMBER = tx is unconfirmed
+   * + GREEN = tx is confirmed
+   *
+   *
+   * @param transaction
+   * @return status of the transaction
+   */
+  private RAGStatus calculateStatus(Transaction transaction) {
+    if (transaction.getConfidence() != null) {
+      TransactionConfidence.ConfidenceType confidenceType = transaction.getConfidence().getConfidenceType();
+
+      if (TransactionConfidence.ConfidenceType.BUILDING.equals(confidenceType)) {
+        // Confirmed
+        return RAGStatus.GREEN;
+      } else if (TransactionConfidence.ConfidenceType.PENDING.equals(confidenceType)) {
+        if (transaction.getConfidence().numBroadcastPeers() >= 2) {
+          // Seen by the network but not confirmed yet
+          return RAGStatus.AMBER;
+        } else {
+          // Not out in the network
+          return RAGStatus.RED;
+        }
+      } else if (TransactionConfidence.ConfidenceType.DEAD.equals(confidenceType)) {
+        // Dead
+        return RAGStatus.RED;
+      } else if (TransactionConfidence.ConfidenceType.UNKNOWN.equals(confidenceType)) {
+        // Unknown
+        return RAGStatus.AMBER;
+      }
+    } else {
+      // No transaction status - don't know
+      return RAGStatus.AMBER;
+    }
+    return RAGStatus.AMBER;
   }
 }
