@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views;
 
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.services.CoreServices;
@@ -56,11 +57,11 @@ public class MainView extends JFrame {
 
     setBackground(Themes.currentTheme.headerPanelBackground());
 
-    // TODO Configuration
-    setPreferredSize(new Dimension(1000, 700));
-
     // Hard coded
-    setMinimumSize(new Dimension(1000, 700));
+    setMinimumSize(new Dimension(MultiBitUI.UI_MIN_WIDTH, MultiBitUI.UI_MIN_HEIGHT));
+
+    // TODO Configuration based on last position
+    setPreferredSize(new Dimension(MultiBitUI.UI_MIN_WIDTH, MultiBitUI.UI_MIN_HEIGHT));
 
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 

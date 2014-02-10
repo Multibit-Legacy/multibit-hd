@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.screens.tools;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.models.AlertModel;
@@ -23,7 +24,7 @@ import java.awt.event.ActionEvent;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class ToolsPanelView extends AbstractScreenView<ToolsPanelModel> {
 
@@ -58,7 +59,7 @@ public class ToolsPanelView extends AbstractScreenView<ToolsPanelModel> {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        Panels.showLightBox(Wizards.newClosingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardPanel() );
+        Panels.showLightBox(Wizards.newClosingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardPanel());
       }
     };
 
@@ -70,8 +71,8 @@ public class ToolsPanelView extends AbstractScreenView<ToolsPanelModel> {
       }
     };
 
-    contentPanel.add(Buttons.newShowWelcomeWizardButton(showWelcomeWizardAction),"w 240,h 200,align center,push");
-    contentPanel.add(Buttons.newAddAlertButton(fireDemoAlertAction),"w 240,h 200,align center, push,wrap");
+    contentPanel.add(Buttons.newShowWelcomeWizardButton(showWelcomeWizardAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    contentPanel.add(Buttons.newAddAlertButton(fireDemoAlertAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push,wrap");
 
 
     return contentPanel;
