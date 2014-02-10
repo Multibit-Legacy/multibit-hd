@@ -2,8 +2,8 @@ package org.multibit.hd.core.network;
 
 import com.google.bitcoin.core.*;
 import com.google.common.base.Optional;
-import org.multibit.hd.core.api.BitcoinNetworkSummary;
-import org.multibit.hd.core.api.WalletData;
+import org.multibit.hd.core.dto.BitcoinNetworkSummary;
+import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.managers.WalletManager;
@@ -29,12 +29,9 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
     log.debug("Number of blocks left = {}", blocksLeft);
 
-    if (blocksLeft > 0) {
-      // Don't show any peer count messages until the download is complete
-      suppressPeerCountMessages = true;
-    } else {
-      suppressPeerCountMessages = false;
-    }
+    // Determine if peer count message should be suppressed
+    // (avoids UI confusion between synchronizing and peer count)
+    suppressPeerCountMessages = blocksLeft > 0;
 
     // Keep track of the download progress
     updateDownloadPercent(blocksLeft);
@@ -57,12 +54,9 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     // Reset the number of blocks at the start of the download
     numberOfBlocksAtStart = blocksLeft;
 
-    if (blocksLeft > 0) {
-      // Don't show any peer count messages until the download is complete
-      suppressPeerCountMessages = true;
-    } else {
-      suppressPeerCountMessages = false;
-    }
+    // Determine if peer count message should be suppressed
+    // (avoids UI confusion between synchronizing and peer count)
+    suppressPeerCountMessages = blocksLeft > 0;
 
     // Keep track of the download progress
     updateDownloadPercent(blocksLeft);

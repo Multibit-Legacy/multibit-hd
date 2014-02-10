@@ -2,8 +2,8 @@ package org.multibit.hd.ui.views.components;
 
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.utils.BitcoinSymbol;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.views.components.text_fields.FormattedDecimalField;
-import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
@@ -23,21 +23,6 @@ import java.awt.event.ActionEvent;
 public class TextBoxes {
 
   /**
-   * The maximum length of a receive address label
-   */
-  public static final int RECEIVE_ADDRESS_LABEL_LENGTH = 60;
-
-  /**
-   * The maximum length of the password
-   */
-  public static final int PASSWORD_LENGTH = 40;
-
-  /**
-   * The maximum length of the seed phrase
-   */
-  public static final int SEED_PHRASE_LENGTH = 240;
-
-  /**
    * Utilities have no public constructor
    */
   private TextBoxes() {
@@ -48,11 +33,11 @@ public class TextBoxes {
    */
   public static JTextField newEnterLabel() {
 
-    JTextField textField = new JTextField(RECEIVE_ADDRESS_LABEL_LENGTH);
+    JTextField textField = new JTextField(MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH);
 
     // Limit the length of the underlying document
     DefaultStyledDocument doc = new DefaultStyledDocument();
-    doc.setDocumentFilter(new DocumentMaxLengthFilter(RECEIVE_ADDRESS_LABEL_LENGTH));
+    doc.setDocumentFilter(new DocumentMaxLengthFilter(MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH));
     textField.setDocument(doc);
 
     // Set the theme
@@ -140,7 +125,7 @@ public class TextBoxes {
 
     FormattedDecimalField textField = new FormattedDecimalField(0, maximum, decimalPlaces, maxEditLength);
 
-    Font font = textField.getFont().deriveFont((float) AwesomeDecorator.NORMAL_ICON_SIZE);
+    Font font = textField.getFont().deriveFont((float) MultiBitUI.NORMAL_ICON_SIZE);
 
     textField.setFont(font);
     textField.setColumns(15);
@@ -166,7 +151,7 @@ public class TextBoxes {
 
     FormattedDecimalField textField = new FormattedDecimalField(0, maximum, decimalPlaces, maxEditLength);
 
-    Font font = textField.getFont().deriveFont((float) AwesomeDecorator.NORMAL_ICON_SIZE);
+    Font font = textField.getFont().deriveFont((float) MultiBitUI.NORMAL_ICON_SIZE);
 
     textField.setFont(font);
     textField.setColumns(15);
@@ -179,14 +164,14 @@ public class TextBoxes {
    */
   public static JPasswordField newPassword() {
 
-    JPasswordField passwordField = new JPasswordField(PASSWORD_LENGTH);
+    JPasswordField passwordField = new JPasswordField(MultiBitUI.PASSWORD_LENGTH);
 
     // Provide a consistent echo character across all components
     passwordField.setEchoChar(getPasswordEchoChar());
 
     // Limit the length of the underlying document
     DefaultStyledDocument doc = new DefaultStyledDocument();
-    doc.setDocumentFilter(new DocumentMaxLengthFilter(PASSWORD_LENGTH));
+    doc.setDocumentFilter(new DocumentMaxLengthFilter(MultiBitUI.PASSWORD_LENGTH));
     passwordField.setDocument(doc);
 
     // Set the theme
@@ -200,11 +185,11 @@ public class TextBoxes {
    */
   public static JTextArea newEnterNotes() {
 
-    JTextArea textArea = new JTextArea(6, PASSWORD_LENGTH);
+    JTextArea textArea = new JTextArea(6, MultiBitUI.PASSWORD_LENGTH);
 
     // Limit the length of the underlying document
     DefaultStyledDocument doc = new DefaultStyledDocument();
-    doc.setDocumentFilter(new DocumentMaxLengthFilter(SEED_PHRASE_LENGTH));
+    doc.setDocumentFilter(new DocumentMaxLengthFilter(MultiBitUI.SEED_PHRASE_LENGTH));
     textArea.setDocument(doc);
 
     // Ensure TAB transfers focus
@@ -248,10 +233,10 @@ public class TextBoxes {
 
     // Limit the length of the underlying document
     DefaultStyledDocument doc = new DefaultStyledDocument();
-    doc.setDocumentFilter(new DocumentMaxLengthFilter(SEED_PHRASE_LENGTH));
+    doc.setDocumentFilter(new DocumentMaxLengthFilter(MultiBitUI.SEED_PHRASE_LENGTH));
 
     // Keep this in line with the PASSWORD_AREA constant
-    JTextArea textArea = new JTextArea(doc, "", 6, PASSWORD_LENGTH);
+    JTextArea textArea = new JTextArea(doc, "", 6, MultiBitUI.PASSWORD_LENGTH);
 
     // Ensure TAB transfers focus
     AbstractAction transferFocus = new AbstractAction() {

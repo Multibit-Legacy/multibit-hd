@@ -1,6 +1,6 @@
 package org.multibit.hd.core.events;
 
-import org.multibit.hd.core.api.BitcoinNetworkSummary;
+import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 
 /**
  * <p>Event to provide the following to application API:</p>

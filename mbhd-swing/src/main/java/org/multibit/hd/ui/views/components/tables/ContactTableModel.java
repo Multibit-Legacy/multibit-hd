@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.components.tables;
 
 import com.google.common.base.Joiner;
-import org.multibit.hd.core.api.Contact;
+import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.ui.gravatar.Gravatars;
 import org.multibit.hd.ui.views.components.ImageDecorator;
 import org.multibit.hd.ui.views.components.Images;

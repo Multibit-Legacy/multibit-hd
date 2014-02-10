@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components.enter_seed_phrase;
 
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.views.components.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Buttons;
@@ -159,7 +160,7 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
             AwesomeIcon.EYE,
             button,
             true,
-            AwesomeDecorator.NORMAL_ICON_SIZE
+            MultiBitUI.NORMAL_ICON_SIZE
           );
 
           // Ensure the model matches the clear contents
@@ -170,7 +171,7 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
             AwesomeIcon.EYE_SLASH,
             button,
             true,
-            AwesomeDecorator.NORMAL_ICON_SIZE
+            MultiBitUI.NORMAL_ICON_SIZE
           );
 
           // Do not update the model with the hidden contents (they are meaningless)

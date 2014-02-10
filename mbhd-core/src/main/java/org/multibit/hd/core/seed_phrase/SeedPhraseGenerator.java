@@ -1,4 +1,4 @@
-package org.multibit.hd.core.api.seed_phrase;
+package org.multibit.hd.core.seed_phrase;
 
 import org.multibit.hd.core.exceptions.SeedPhraseException;
 

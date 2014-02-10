@@ -2,7 +2,7 @@ package org.multibit.hd.core.events;
 
 import org.joda.money.BigMoney;
 import org.joda.time.DateTime;
-import org.multibit.hd.core.api.BitcoinNetworkSummary;
+import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.services.CoreServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

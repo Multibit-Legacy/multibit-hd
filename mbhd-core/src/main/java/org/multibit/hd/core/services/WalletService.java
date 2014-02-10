@@ -6,8 +6,8 @@ import com.google.bitcoin.core.Wallet;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
-import org.multibit.hd.core.api.TransactionData;
-import org.multibit.hd.core.api.WalletData;
+import org.multibit.hd.core.dto.TransactionData;
+import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.managers.WalletManager;
 
 import java.math.BigInteger;

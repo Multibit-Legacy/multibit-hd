@@ -2,7 +2,7 @@ package org.multibit.hd.ui.events.view;
 
 import com.google.common.base.Optional;
 import org.joda.money.BigMoney;
-import org.multibit.hd.core.api.RAGStatus;
+import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.screens.Screen;

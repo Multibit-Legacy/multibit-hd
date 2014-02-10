@@ -1,4 +1,4 @@
-package org.multibit.hd.core.api;
+package org.multibit.hd.core.dto;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Utils;
@@ -6,7 +6,7 @@ import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.common.base.Preconditions;
 import com.google.protobuf.ByteString;
 import org.bitcoinj.wallet.Protos;
-import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.managers.WalletManager;
 import org.spongycastle.asn1.sec.SECNamedCurves;
 import org.spongycastle.asn1.x9.X9ECParameters;

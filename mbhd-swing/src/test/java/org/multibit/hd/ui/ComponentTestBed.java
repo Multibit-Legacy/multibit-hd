@@ -2,8 +2,10 @@ package org.multibit.hd.ui;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
+import com.xeiam.xchange.currency.MoneyUtils;
 import com.xeiam.xchange.mtgox.v2.MtGoxExchange;
-import org.multibit.hd.core.api.BitcoinNetworkSummary;
+import org.multibit.hd.core.dto.BitcoinNetworkSummary;
+import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
@@ -12,13 +14,18 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.audio.Sounds;
+import org.multibit.hd.ui.controllers.HeaderController;
 import org.multibit.hd.ui.controllers.MainController;
 import org.multibit.hd.ui.events.controller.ChangeLocaleEvent;
+import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.FooterView;
+import org.multibit.hd.ui.views.HeaderView;
 import org.multibit.hd.ui.views.components.Panels;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +35,7 @@ import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.math.BigInteger;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
@@ -114,6 +122,7 @@ public class ComponentTestBed {
    * </pre>
    * <h3>Footer</h3>
    * <pre>
+   *   return newFooterView();
    * </pre>
    * <h3>Detail screen</h3>
    * <pre>
@@ -129,34 +138,7 @@ public class ComponentTestBed {
 //    AbstractScreenView screen = Screens.newScreen(Screen.CONTACTS);
 //    return screen.newScreenViewPanel();
 
-    MainController controller = new MainController();
-    FooterView footer = new FooterView();
-
-    SafeExecutors.newFixedThreadPool(1).execute(new Runnable() {
-
-      int i = 99;
-
-      @Override
-      public void run() {
-
-        while (i < 110) {
-
-          Uninterruptibles.sleepUninterruptibly(800, TimeUnit.MILLISECONDS);
-
-          CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(i));
-
-          if (i > 99) {
-
-            CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkReady(i % 100));
-
-          }
-
-          i++;
-        }
-      }
-    });
-
-    return footer.getContentPanel();
+    return newHeaderView();
 
   }
 
@@ -260,6 +242,87 @@ public class ComponentTestBed {
 
     log.info("Done");
 
+  }
+
+  /**
+   * @return A new header view with simulated events
+   */
+  private JPanel newHeaderView() {
+
+    HeaderController controller = new HeaderController();
+    HeaderView view = new HeaderView();
+
+    SafeExecutors.newFixedThreadPool(1).execute(new Runnable() {
+
+      int i = 0;
+
+      @Override
+      public void run() {
+
+        while (i < 10) {
+
+          Uninterruptibles.sleepUninterruptibly(800, TimeUnit.MILLISECONDS);
+
+          ViewEvents.fireBalanceChangedEvent(BigInteger.valueOf(100_000_000_000L), MoneyUtils.parse("USD 999999999.00"),"Example");
+
+          if (i % 2 == 0) {
+
+            ControllerEvents.fireAddAlertEvent(new AlertModel("Something happened", RAGStatus.RED));
+
+          }
+          if (i % 3 == 0) {
+
+            ControllerEvents.fireAddAlertEvent(new AlertModel("Something happened", RAGStatus.AMBER));
+
+          }
+          if (i % 5 == 0) {
+
+            ControllerEvents.fireAddAlertEvent(new AlertModel("Something happened", RAGStatus.GREEN));
+            Sounds.playReceiveBitcoin();
+
+          }
+
+          i++;
+        }
+      }
+    });
+
+    return view.getContentPanel();
+  }
+
+  /**
+   * @return A new footer view with simulated events
+   */
+  private JPanel newFooterView() {
+
+    MainController controller = new MainController();
+    FooterView view = new FooterView();
+
+    SafeExecutors.newFixedThreadPool(1).execute(new Runnable() {
+
+      int i = 99;
+
+      @Override
+      public void run() {
+
+        while (i < 110) {
+
+          Uninterruptibles.sleepUninterruptibly(800, TimeUnit.MILLISECONDS);
+
+          CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(i));
+
+          if (i > 99) {
+
+            CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkReady(i % 100));
+
+          }
+
+          i++;
+        }
+      }
+    });
+
+    return view.getContentPanel();
   }
 
 }

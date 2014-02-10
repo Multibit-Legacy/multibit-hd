@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components.confirm_password;
 
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.views.components.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Buttons;
@@ -113,7 +114,7 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
             AwesomeIcon.EYE,
             button,
             true,
-            AwesomeDecorator.NORMAL_ICON_SIZE
+            MultiBitUI.NORMAL_ICON_SIZE
           );
 
         } else {
@@ -121,7 +122,7 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
             AwesomeIcon.EYE_SLASH,
             button,
             true,
-            AwesomeDecorator.NORMAL_ICON_SIZE
+            MultiBitUI.NORMAL_ICON_SIZE
           );
         }
         asClearText = !asClearText;

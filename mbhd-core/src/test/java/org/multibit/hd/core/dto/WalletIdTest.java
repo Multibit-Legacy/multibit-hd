@@ -1,4 +1,4 @@
-package org.multibit.hd.core.api;
+package org.multibit.hd.core.dto;
 
 /**
  * Copyright 2014 multibit.org
@@ -19,8 +19,8 @@ package org.multibit.hd.core.api;
 import com.google.bitcoin.core.Utils;
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.core.api.seed_phrase.Bip39SeedPhraseGenerator;
-import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.core.seed_phrase.SeedPhraseGenerator;
 
 import java.io.File;
 import java.util.Arrays;

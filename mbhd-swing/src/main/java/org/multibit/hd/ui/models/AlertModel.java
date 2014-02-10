@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.models;
 
 import org.multibit.hd.ui.i18n.MessageKey;
-import org.multibit.hd.core.api.RAGStatus;
+import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.ui.i18n.Languages;
 
 /**

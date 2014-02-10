@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.layouts.WizardCardLayout;
@@ -26,9 +27,6 @@ import java.util.Map;
  * @since 0.0.1
  */
 public abstract class AbstractWizard<M extends WizardModel> {
-
-  private static final int WIZARD_MIN_WIDTH = 600;
-  private static final int WIZARD_MIN_HEIGHT = 450;
 
   private final WizardCardLayout cardLayout;
   private final JPanel wizardPanel;
@@ -56,10 +54,10 @@ public abstract class AbstractWizard<M extends WizardModel> {
     // Use current locale for initial creation
     onLocaleChangedEvent(new LocaleChangedEvent());
 
-    wizardPanel.setMinimumSize(new Dimension(WIZARD_MIN_WIDTH, WIZARD_MIN_HEIGHT));
-    wizardPanel.setPreferredSize(new Dimension(WIZARD_MIN_WIDTH, WIZARD_MIN_HEIGHT));
+    wizardPanel.setMinimumSize(new Dimension(MultiBitUI.WIZARD_MIN_WIDTH, MultiBitUI.WIZARD_MIN_HEIGHT));
+    wizardPanel.setPreferredSize(new Dimension(MultiBitUI.WIZARD_MIN_WIDTH, MultiBitUI.WIZARD_MIN_HEIGHT));
 
-    wizardPanel.setSize(new Dimension(WIZARD_MIN_WIDTH, WIZARD_MIN_HEIGHT));
+    wizardPanel.setSize(new Dimension(MultiBitUI.WIZARD_MIN_WIDTH, MultiBitUI.WIZARD_MIN_HEIGHT));
 
     // Show the panel specified by the initial state
     show(wizardModel.getPanelName());

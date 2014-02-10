@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
@@ -92,7 +93,7 @@ public class Buttons {
     JButton button = newButton(action, MessageKey.YES);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -108,7 +109,7 @@ public class Buttons {
     JButton button = newButton(action, MessageKey.NO);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -125,7 +126,7 @@ public class Buttons {
     JButton button = newButton(action, MessageKey.APPLY);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.EDIT, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.EDIT, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -141,7 +142,7 @@ public class Buttons {
     JButton button = newButton(action, MessageKey.UNDO);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.UNDO, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.UNDO, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -157,7 +158,7 @@ public class Buttons {
     JButton button = newButton(action, MessageKey.CANCEL);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -173,7 +174,7 @@ public class Buttons {
     JButton button = newButton(action, MessageKey.EXIT);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.SIGN_OUT, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.SIGN_OUT, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), button);
 
@@ -193,7 +194,7 @@ public class Buttons {
 
     AwesomeIcon icon = AwesomeDecorator.select(AwesomeIcon.ANGLE_DOUBLE_RIGHT, AwesomeIcon.ANGLE_DOUBLE_LEFT);
 
-    AwesomeDecorator.applyIcon(icon, button, false, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(icon, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
 
     return button;
@@ -212,7 +213,7 @@ public class Buttons {
 
     AwesomeIcon icon = AwesomeDecorator.select(AwesomeIcon.ANGLE_DOUBLE_LEFT, AwesomeIcon.ANGLE_DOUBLE_RIGHT);
 
-    AwesomeDecorator.applyIcon(icon, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(icon, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -228,7 +229,7 @@ public class Buttons {
     JButton button = newButton(action, MessageKey.FINISH);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.FLAG_CHECKERED, button, false, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.FLAG_CHECKERED, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -244,7 +245,7 @@ public class Buttons {
     JButton button = newButton(action, MessageKey.SEND);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD, button, false, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
     NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), button);
 
@@ -261,7 +262,7 @@ public class Buttons {
     JButton button = newButton(action, MessageKey.REQUEST);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     NimbusDecorator.applyThemeColor(Themes.currentTheme.infoAlertBackground(), button);
 
@@ -278,7 +279,7 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.UNDO, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.UNDO, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -293,7 +294,7 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.PRINT, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.PRINT, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), button);
 
@@ -310,7 +311,7 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.EYE, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.EYE, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -325,7 +326,7 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.EYE_SLASH, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.EYE_SLASH, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -340,7 +341,7 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.QRCODE, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.QRCODE, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -355,7 +356,7 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.COPY, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.COPY, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -370,7 +371,7 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.PASTE, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.PASTE, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -385,7 +386,7 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -400,7 +401,7 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.FOLDER_OPEN, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.FOLDER_OPEN, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
   }
@@ -414,7 +415,7 @@ public class Buttons {
 
     JButton button = newButton(action, MessageKey.ADD);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.PLUS, button, false, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.PLUS, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
   }
@@ -428,7 +429,7 @@ public class Buttons {
 
     JButton button = newButton(action, MessageKey.EDIT);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.EDIT, button, false, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.EDIT, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
   }
@@ -442,7 +443,7 @@ public class Buttons {
 
     JButton button = newButton(action, MessageKey.DELETE);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.TRASH_ALT, button, false, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.TRASH_ALT, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
   }
@@ -456,7 +457,7 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.SEARCH, button, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.SEARCH, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
   }
@@ -470,7 +471,7 @@ public class Buttons {
 
     JButton button = newLargeButton(action, MessageKey.SEND);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD, button, true, JLabel.BOTTOM, AwesomeDecorator.LARGE_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD, button, true, JLabel.BOTTOM, MultiBitUI.LARGE_ICON_SIZE);
 
     return button;
   }
@@ -484,7 +485,7 @@ public class Buttons {
 
     JButton button = newLargeButton(action, MessageKey.REQUEST);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, true, JLabel.BOTTOM, AwesomeDecorator.LARGE_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, true, JLabel.BOTTOM, MultiBitUI.LARGE_ICON_SIZE);
 
     return button;
 
@@ -499,10 +500,35 @@ public class Buttons {
 
     JButton button = newLargeButton(action, MessageKey.SHOW_WELCOME_WIZARD);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.WRENCH, button, true, JLabel.BOTTOM, AwesomeDecorator.LARGE_ICON_SIZE);
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.WRENCH,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
 
     return button;
   }
 
+  /**
+   * @param action The click action
+   *
+   * @return A new "Alert" button with icon
+   */
+  public static JButton newAddAlertButton(Action action) {
+
+    JButton button = newLargeButton(action, MessageKey.SHOW_ALERT);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.EXCLAMATION_CIRCLE,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
+
+    return button;
+  }
 
 }

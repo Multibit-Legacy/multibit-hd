@@ -1,9 +1,9 @@
 package org.multibit.hd.core.services;
 
 import com.google.common.collect.Sets;
-import org.multibit.hd.core.api.Contact;
-import org.multibit.hd.core.api.StarStyle;
-import org.multibit.hd.core.api.WalletId;
+import org.multibit.hd.core.dto.Contact;
+import org.multibit.hd.core.dto.StarStyle;
+import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.exceptions.ContactsLoadException;
 import org.multibit.hd.core.exceptions.ContactsSaveException;
 import org.multibit.hd.core.managers.InstallationManager;

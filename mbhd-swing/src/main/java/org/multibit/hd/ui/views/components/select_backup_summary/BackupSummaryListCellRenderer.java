@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components.select_backup_summary;
 
-import org.multibit.hd.core.api.BackupSummary;
+import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.utils.Dates;
 
 import javax.swing.*;

@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.i18n;
 
 import com.google.common.base.Preconditions;
-import org.multibit.hd.core.api.CoreMessageKey;
+import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.ui.exceptions.UIException;
 import org.slf4j.Logger;

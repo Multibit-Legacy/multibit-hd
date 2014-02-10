@@ -2,7 +2,7 @@ package org.multibit.hd.ui.i18n;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.core.api.CoreMessageKey;
+import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.config.Configurations;
 
 import static org.fest.assertions.api.Assertions.assertThat;

@@ -1,8 +1,11 @@
 package org.multibit.hd.ui.views.screens.tools;
 
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
@@ -50,8 +53,6 @@ public class ToolsPanelView extends AbstractScreenView<ToolsPanelModel> {
     );
 
     JPanel contentPanel = Panels.newPanel(layout);
-    contentPanel.add(new JLabel("Tools"), "wrap");
-
 
     Action showWelcomeWizardAction = new AbstractAction() {
       @Override
@@ -61,7 +62,16 @@ public class ToolsPanelView extends AbstractScreenView<ToolsPanelModel> {
       }
     };
 
+    Action fireDemoAlertAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        ControllerEvents.fireAddAlertEvent(new AlertModel("Demonstrate alert", RAGStatus.GREEN));
+      }
+    };
+
     contentPanel.add(Buttons.newShowWelcomeWizardButton(showWelcomeWizardAction),"w 240,h 200,align center,push");
+    contentPanel.add(Buttons.newAddAlertButton(fireDemoAlertAction),"w 240,h 200,align center, push,wrap");
 
 
     return contentPanel;

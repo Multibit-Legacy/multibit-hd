@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.components;
 
-import org.multibit.hd.core.api.StarStyle;
+import org.multibit.hd.core.dto.StarStyle;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -42,28 +43,28 @@ public class Images {
         icon = AwesomeDecorator.createIcon(
           AwesomeIcon.STAR_ALT,
           Themes.currentTheme.text(),
-          AwesomeDecorator.SMALL_ICON_SIZE
+          MultiBitUI.SMALL_ICON_SIZE
         );
         break;
       case FILL_1:
         icon =AwesomeDecorator.createIcon(
           AwesomeIcon.STAR,
           Themes.currentTheme.warningAlertBackground(),
-          AwesomeDecorator.SMALL_ICON_SIZE
+          MultiBitUI.SMALL_ICON_SIZE
         );
         break;
       case FILL_2:
         icon = AwesomeDecorator.createIcon(
           AwesomeIcon.STAR,
           Themes.currentTheme.dangerAlertBackground(),
-          AwesomeDecorator.SMALL_ICON_SIZE
+          MultiBitUI.SMALL_ICON_SIZE
         );
         break;
       case FILL_3:
         icon = AwesomeDecorator.createIcon(
           AwesomeIcon.STAR,
           Themes.currentTheme.successAlertBackground(),
-          AwesomeDecorator.SMALL_ICON_SIZE
+          MultiBitUI.SMALL_ICON_SIZE
         );
         break;
       default:

@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.components.enter_recipient;
 
 import com.google.common.base.Optional;
-import org.multibit.hd.core.api.Recipient;
+import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
 

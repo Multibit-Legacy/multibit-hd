@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.components;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.panels.LightBoxPanel;
@@ -220,7 +221,7 @@ public class Panels {
     JPanel panel = Panels.newPanel();
 
     JLabel label = Labels.newLabel(MessageKey.SELECT_LANGUAGE);
-    AwesomeDecorator.applyIcon(AwesomeIcon.GLOBE, label, true, AwesomeDecorator.LARGE_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.GLOBE, label, true, MultiBitUI.LARGE_ICON_SIZE);
 
     JComboBox<String> languages = ComboBoxes.newLanguagesComboBox(listener);
 

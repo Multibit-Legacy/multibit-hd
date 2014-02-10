@@ -3,9 +3,10 @@ package org.multibit.hd.ui.views.components.display_seed_phrase;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
+import org.multibit.hd.core.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.seed_phrase.SeedPhraseSize;
 import org.multibit.hd.core.utils.Dates;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.models.Model;
 import org.multibit.hd.ui.views.components.TextBoxes;
 
@@ -55,7 +56,7 @@ public class DisplaySeedPhraseModel implements Model<List<String>> {
     if (asClearText) {
       return Joiner.on(" ").join(seedPhrase);
     } else {
-      return Strings.repeat(String.valueOf(TextBoxes.getPasswordEchoChar()), TextBoxes.SEED_PHRASE_LENGTH);
+      return Strings.repeat(String.valueOf(TextBoxes.getPasswordEchoChar()), MultiBitUI.SEED_PHRASE_LENGTH);
     }
   }
 

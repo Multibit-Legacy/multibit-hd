@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.screens.contacts;
 
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.api.WalletId;
+import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;

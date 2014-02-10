@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components.select_contact;
 
-import org.multibit.hd.core.api.Recipient;
+import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.ui.utils.HtmlUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package org.multibit.hd.core.api;
+package org.multibit.hd.core.dto;
 
 import com.google.bitcoin.core.TransactionConfidence;
 import com.google.common.base.Optional;

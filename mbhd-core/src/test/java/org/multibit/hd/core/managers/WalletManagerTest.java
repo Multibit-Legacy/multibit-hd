@@ -24,11 +24,11 @@ import com.google.bitcoin.params.MainNetParams;
 import org.bitcoinj.wallet.Protos;
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.core.api.WalletData;
-import org.multibit.hd.core.api.WalletId;
-import org.multibit.hd.core.api.WalletIdTest;
-import org.multibit.hd.core.api.seed_phrase.Bip39SeedPhraseGenerator;
-import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.dto.WalletIdTest;
+import org.multibit.hd.core.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.core.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.services.CoreServices;
 
 import java.io.File;
