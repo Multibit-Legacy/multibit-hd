@@ -1,9 +1,12 @@
 package org.multibit.hd.core.managers;
 
 import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.core.WalletEventListener;
 import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterScrypt;
+import com.google.bitcoin.script.Script;
 import com.google.bitcoin.store.WalletProtobufSerializer;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -11,6 +14,8 @@ import com.google.common.collect.Lists;
 import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.exceptions.WalletSaveException;
 import org.multibit.hd.core.exceptions.WalletVersionException;
@@ -34,8 +39,46 @@ import java.util.concurrent.TimeUnit;
  *  <li>tracks the current wallet and the list of wallet directories</li>
  *  </ul>
  */
-public enum WalletManager {
-  INSTANCE;
+public enum WalletManager implements WalletEventListener {
+  INSTANCE {
+    @Override
+    public void onCoinsReceived(Wallet wallet, Transaction tx, BigInteger prevBalance, BigInteger newBalance) {
+      // Emit an event so that GUI elements can update as required
+      CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(tx));
+    }
+
+    @Override
+    public void onCoinsSent(Wallet wallet, Transaction tx, BigInteger prevBalance, BigInteger newBalance) {
+      // Emit an event so that GUI elements can update as required
+      CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(tx));
+    }
+
+    @Override
+    public void onReorganize(Wallet wallet) {
+
+    }
+
+    @Override
+    public void onTransactionConfidenceChanged(Wallet wallet, Transaction tx) {
+      // Emit an event so that GUI elements can update as required
+      CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(tx));
+    }
+
+    @Override
+    public void onWalletChanged(Wallet wallet) {
+
+    }
+
+    @Override
+    public void onKeysAdded(Wallet wallet, List<ECKey> keys) {
+
+    }
+
+    @Override
+    public void onScriptsAdded(Wallet wallet, List<Script> scripts) {
+
+    }
+  };
 
   private static final int AUTOSAVE_DELAY = 20000; // millisecond
 
@@ -403,6 +446,13 @@ public enum WalletManager {
   }
 
   public void setCurrentWalletData(WalletData currentWalletData) {
+    if (currentWalletData.getWallet() != null) {
+      // Remove the previous WalletEventListener
+      currentWalletData.getWallet().removeEventListener(this);
+    }
+
+    // Add the wallet event listener
+    currentWalletData.getWallet().addEventListener(this);
     this.currentWalletData = Optional.of(currentWalletData);
   }
 
@@ -415,4 +465,6 @@ public enum WalletManager {
       return Optional.absent();
     }
   }
+
+
 }

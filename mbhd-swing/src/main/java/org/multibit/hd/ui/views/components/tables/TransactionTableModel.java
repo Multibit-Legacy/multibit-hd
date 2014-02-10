@@ -17,6 +17,7 @@ import java.util.Set;
 public class TransactionTableModel extends AbstractTableModel {
 
   private String[] columnNames = {
+          "Status",
           "Type",
           "Depth",
           "Date",
@@ -40,6 +41,7 @@ public class TransactionTableModel extends AbstractTableModel {
     for (TransactionData transaction : transactions) {
 
       Object[] rowData = new Object[]{
+              transaction.getStatus(),
               transaction.getConfidenceType(),
               transaction.getDepth(),
               transaction.getUpdateTime(),

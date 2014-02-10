@@ -14,25 +14,29 @@ import java.util.Date;
  *  </ul>
  *  
  */
+
 public class TransactionData {
 
-  private String transactionId;
+  private final RAGStatus status;
 
-  private BigInteger amountBTC;
+  private final String transactionId;
 
-  private Optional<BigInteger> feeOnSendBTC;
+  private final BigInteger amountBTC;
 
-  private int depth;
+  private final Optional<BigInteger> feeOnSendBTC;
 
-  private TransactionConfidence.ConfidenceType confidenceType;
+  private final int depth;
 
-  private Date updateTime;
+  private final TransactionConfidence.ConfidenceType confidenceType;
 
-  public TransactionData(String transactionId, Date updateTime,
+  private final Date updateTime;
+
+  public TransactionData(String transactionId, Date updateTime, RAGStatus status,
                          BigInteger amountBTC, Optional<BigInteger> feeOnSendBTC,
                          TransactionConfidence.ConfidenceType confidenceType, int depth) {
     this.transactionId = transactionId;
     this.updateTime = updateTime;
+    this.status = status;
     this.amountBTC = amountBTC;
     this.feeOnSendBTC = feeOnSendBTC;
     this.confidenceType = confidenceType;
@@ -40,9 +44,6 @@ public class TransactionData {
   }
 
   /*
-  Broadcast ok,
-  relayed ok,
-  Raw transaction,
   Manual notes,
   automatic notes,
   tags,
@@ -55,6 +56,7 @@ public class TransactionData {
   public String toString() {
     return "TransactionData{" +
             "transactionId='" + transactionId + '\'' +
+            "status=" + status +
             ", amountBTC=" + amountBTC +
             ", feeOnSendBTC=" + feeOnSendBTC +
             ", depth=" + depth +
@@ -71,6 +73,7 @@ public class TransactionData {
     TransactionData that = (TransactionData) o;
 
     if (depth != that.depth) return false;
+    if (status != that.status) return false;
     if (!amountBTC.equals(that.amountBTC)) return false;
     if (confidenceType != that.confidenceType) return false;
     if (!feeOnSendBTC.equals(that.feeOnSendBTC)) return false;
@@ -83,6 +86,7 @@ public class TransactionData {
   @Override
   public int hashCode() {
     int result = transactionId.hashCode();
+    result = 31 * result + status.hashCode();
     result = 31 * result + amountBTC.hashCode();
     result = 31 * result + feeOnSendBTC.hashCode();
     result = 31 * result + depth;
@@ -113,5 +117,9 @@ public class TransactionData {
 
   public Date getUpdateTime() {
     return updateTime;
+  }
+
+  public RAGStatus getStatus() {
+    return status;
   }
 }
