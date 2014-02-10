@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components.tables;
 
-import org.multibit.hd.core.api.TransactionData;
+import org.multibit.hd.core.dto.TransactionData;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.Set;

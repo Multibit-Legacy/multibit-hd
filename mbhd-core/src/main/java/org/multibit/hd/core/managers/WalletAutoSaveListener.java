@@ -2,7 +2,7 @@ package org.multibit.hd.core.managers;
 
 import com.google.bitcoin.wallet.WalletFiles;
 import com.google.common.base.Optional;
-import org.multibit.hd.core.api.WalletData;
+import org.multibit.hd.core.dto.WalletData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -101,7 +101,6 @@ public enum MessageKey {
   // Labels
   CONFIRM_SEND_MESSAGE("confirm_send_message"),
   EXCHANGE_RATE_PROVIDER("exchange_rate_provider"),
-  SHOW_WELCOME_WIZARD("show_welcome_wizard"),
   BROADCAST_STATUS("broadcast_status"),
   RELAY_STATUS("relay_status"),
   CONFIRMATION_STATUS("confirmation_status"),
@@ -118,6 +117,10 @@ public enum MessageKey {
   SELECT_LANGUAGE("select_language"),
   SEED_SIZE("seed_size"),
   TIMESTAMP("timestamp"),
+
+  // Tool buttons
+  SHOW_WELCOME_WIZARD("show_welcome_wizard"),
+  SHOW_ALERT("show_alert"),
 
   // Radio buttons
   CREATE_WALLET("create_wallet"),

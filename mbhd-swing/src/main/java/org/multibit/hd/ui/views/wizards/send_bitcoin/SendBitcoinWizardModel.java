@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import com.google.common.base.Preconditions;
 import org.joda.money.BigMoney;
-import org.multibit.hd.core.api.Recipient;
+import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.utils.Satoshis;
 import org.multibit.hd.ui.MultiBitHD;

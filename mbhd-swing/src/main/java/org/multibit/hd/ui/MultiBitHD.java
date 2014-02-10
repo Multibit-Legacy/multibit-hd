@@ -4,7 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.xeiam.xchange.currency.MoneyUtils;
 import com.xeiam.xchange.mtgox.v2.MtGoxExchange;
-import org.multibit.hd.core.api.WalletData;
+import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;

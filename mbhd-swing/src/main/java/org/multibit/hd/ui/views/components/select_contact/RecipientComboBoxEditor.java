@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components.select_contact;
 
-import org.multibit.hd.core.api.Recipient;
+import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;

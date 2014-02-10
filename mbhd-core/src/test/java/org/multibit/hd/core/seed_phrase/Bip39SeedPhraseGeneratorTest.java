@@ -1,4 +1,4 @@
-package org.multibit.hd.core.api.seed_phrase;
+package org.multibit.hd.core.seed_phrase;
 
 import com.google.bitcoin.core.Utils;
 import org.junit.After;

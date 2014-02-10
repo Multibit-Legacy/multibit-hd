@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.components.enter_recipient;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.api.Recipient;
+import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.ui.gravatar.Gravatars;
 import org.multibit.hd.ui.utils.ClipboardUtils;
 import org.multibit.hd.ui.views.components.*;

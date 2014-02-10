@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.fonts;
 
 import com.google.common.base.Preconditions;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.exceptions.UIException;
 import org.multibit.hd.ui.i18n.Languages;
 
@@ -20,10 +21,6 @@ import java.io.InputStream;
  */
 public class AwesomeDecorator {
 
-  public static final int LARGE_ICON_SIZE = 70;
-  public static final int NORMAL_ICON_SIZE = 20;
-  public static final int SMALL_ICON_SIZE = 14;
-
   public static Font AWESOME_FONT;
 
   static {
@@ -34,7 +31,7 @@ public class AwesomeDecorator {
 
       Preconditions.checkNotNull(AWESOME_FONT, "'awesome' font not loaded");
 
-      AWESOME_FONT = AWESOME_FONT.deriveFont(25.0f);
+      AWESOME_FONT = AWESOME_FONT.deriveFont(MultiBitUI.NORMAL_ICON_SIZE);
 
     } catch (FontFormatException | IOException e) {
       throw new UIException(e);

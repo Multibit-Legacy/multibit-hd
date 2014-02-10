@@ -7,6 +7,7 @@ import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ProgressChangedEvent;
 import org.multibit.hd.ui.events.view.SystemStatusChangedEvent;
 import org.multibit.hd.ui.views.components.Panels;
@@ -63,7 +64,7 @@ public class FooterView {
     // Label text and icon are different colours so must be separated
     statusLabel = new JLabel("");
     statusIcon = new JLabel("");
-    AwesomeDecorator.bindIcon(AwesomeIcon.CIRCLE, statusIcon, false, AwesomeDecorator.SMALL_ICON_SIZE);
+    AwesomeDecorator.bindIcon(AwesomeIcon.CIRCLE, statusIcon, false, MultiBitUI.SMALL_ICON_SIZE);
 
     // Start with no knowledge so assume the worst
     statusIcon.setForeground(Themes.currentTheme.dangerAlertBackground());

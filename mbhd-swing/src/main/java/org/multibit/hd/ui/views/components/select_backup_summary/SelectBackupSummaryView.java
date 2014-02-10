@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.components.select_backup_summary;
 
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.api.BackupSummary;
+import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.ui.views.components.AbstractComponentView;
 import org.multibit.hd.ui.views.components.ComboBoxes;
 import org.multibit.hd.ui.views.components.Labels;

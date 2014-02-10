@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.components.select_backup_summary;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import org.multibit.hd.core.api.BackupSummary;
+import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
 import org.multibit.hd.ui.views.wizards.WizardButton;

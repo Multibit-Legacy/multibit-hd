@@ -3,8 +3,8 @@ package org.multibit.hd.core.services;
 import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.core.api.Contact;
-import org.multibit.hd.core.api.StarStyle;
+import org.multibit.hd.core.dto.Contact;
+import org.multibit.hd.core.dto.StarStyle;
 import org.multibit.hd.core.managers.WalletManagerTest;
 
 import java.io.File;

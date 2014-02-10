@@ -1,8 +1,8 @@
 package org.multibit.hd.ui.views.components;
 
 import com.google.common.base.Preconditions;
-import org.multibit.hd.core.api.BackupSummary;
-import org.multibit.hd.core.api.Recipient;
+import org.multibit.hd.core.dto.BackupSummary;
+import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteDecorator;

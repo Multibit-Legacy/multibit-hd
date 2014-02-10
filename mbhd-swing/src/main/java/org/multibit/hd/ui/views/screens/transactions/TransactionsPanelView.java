@@ -5,6 +5,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.WalletService;
+import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.Tables;
@@ -85,5 +86,9 @@ public class TransactionsPanelView extends AbstractScreenView<TransactionsPanelM
     if (transactionsTable != null) {
       ((TransactionTableModel)transactionsTable.getModel()).setTransactions(walletService.getTransactions(), true);
     }
+
+    // Play a sound regardless of credit/debit for now
+    Sounds.playReceiveBitcoin();
+
   }
 }

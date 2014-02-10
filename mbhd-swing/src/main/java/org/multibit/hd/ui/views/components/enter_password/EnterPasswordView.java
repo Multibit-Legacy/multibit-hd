@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.components.enter_password;
 
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.views.components.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
@@ -94,7 +95,7 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
             AwesomeIcon.EYE,
             button,
             true,
-            AwesomeDecorator.NORMAL_ICON_SIZE
+            MultiBitUI.NORMAL_ICON_SIZE
           );
 
         } else {
@@ -102,7 +103,7 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
             AwesomeIcon.EYE_SLASH,
             button,
             true,
-            AwesomeDecorator.NORMAL_ICON_SIZE
+            MultiBitUI.NORMAL_ICON_SIZE
           );
         }
         asClearText = !asClearText;

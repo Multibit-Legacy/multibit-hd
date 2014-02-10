@@ -3,7 +3,7 @@ package org.multibit.hd.ui.controllers;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
-import org.multibit.hd.core.api.BitcoinNetworkSummary;
+import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.services.CoreServices;

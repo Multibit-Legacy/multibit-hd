@@ -37,6 +37,7 @@ public class SidebarView {
 
     CoreServices.uiEventBus.register(this);
 
+    // Insets for top, left
     MigLayout layout = new MigLayout(
       "filly, insets 6 10, ", // Layout
       "[]", // Columns

@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.components;
 
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordView;
 import org.multibit.hd.ui.views.components.display_address.DisplayBitcoinAddressModel;

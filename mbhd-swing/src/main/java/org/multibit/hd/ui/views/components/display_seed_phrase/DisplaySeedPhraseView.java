@@ -1,7 +1,8 @@
 package org.multibit.hd.ui.views.components.display_seed_phrase;
 
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
+import org.multibit.hd.core.seed_phrase.SeedPhraseSize;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.utils.PrintingUtils;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
@@ -113,7 +114,7 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
             AwesomeIcon.EYE,
             button,
             true,
-            AwesomeDecorator.NORMAL_ICON_SIZE
+            MultiBitUI.NORMAL_ICON_SIZE
           );
 
         } else {
@@ -121,7 +122,7 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
             AwesomeIcon.EYE_SLASH,
             button,
             true,
-            AwesomeDecorator.NORMAL_ICON_SIZE
+            MultiBitUI.NORMAL_ICON_SIZE
           );
         }
 

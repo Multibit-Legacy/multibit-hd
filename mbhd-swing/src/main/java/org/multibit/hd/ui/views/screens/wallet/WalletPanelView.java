@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.screens.wallet;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Components;
@@ -20,9 +21,9 @@ import java.awt.event.ActionEvent;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
-public class WalletPanelView extends AbstractScreenView<WalletPanelModel>  {
+public class WalletPanelView extends AbstractScreenView<WalletPanelModel> {
 
   /**
    * @param panelModel The model backing this panel view
@@ -44,7 +45,7 @@ public class WalletPanelView extends AbstractScreenView<WalletPanelModel>  {
     CoreServices.uiEventBus.register(this);
 
     MigLayout layout = new MigLayout(
-      "fill", // Layout constraints
+      "fill,insets 0", // Layout constraints
       "[]10[]", // Column constraints
       "[]50[]" // Row constraints
     );
@@ -67,9 +68,9 @@ public class WalletPanelView extends AbstractScreenView<WalletPanelModel>  {
       }
     };
 
-    contentPanel.add(Buttons.newSendBitcoinWizardButton(showSendBitcoinWizardAction),"w 240,h 200,align center,push");
-    contentPanel.add(Buttons.newRequestBitcoinWizardButton(showRequestBitcoinWizardAction),"w 240, h 200,align center,push,wrap");
-    contentPanel.add(Components.newWalletDetailPanel(),"span 2,grow");
+    contentPanel.add(Buttons.newSendBitcoinWizardButton(showSendBitcoinWizardAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    contentPanel.add(Buttons.newRequestBitcoinWizardButton(showRequestBitcoinWizardAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
+    contentPanel.add(Components.newWalletDetailPanel(), "span 2,grow");
 
     return contentPanel;
 

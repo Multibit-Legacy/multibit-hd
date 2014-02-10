@@ -1,4 +1,4 @@
-package org.multibit.hd.core.api;
+package org.multibit.hd.core.dto;
 
 /**
  * <p>Enum to provide the following to Core API:</p>

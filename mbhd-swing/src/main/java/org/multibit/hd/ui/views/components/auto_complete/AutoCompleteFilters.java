@@ -1,9 +1,9 @@
 package org.multibit.hd.ui.views.components.auto_complete;
 
 import com.google.common.base.Strings;
-import org.multibit.hd.core.api.Contact;
-import org.multibit.hd.core.api.Recipient;
-import org.multibit.hd.core.api.WalletId;
+import org.multibit.hd.core.dto.Contact;
+import org.multibit.hd.core.dto.Recipient;
+import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 

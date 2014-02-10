@@ -19,12 +19,12 @@ import com.google.common.util.concurrent.Uninterruptibles;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.core.api.BackupSummary;
-import org.multibit.hd.core.api.WalletData;
-import org.multibit.hd.core.api.WalletId;
-import org.multibit.hd.core.api.WalletIdTest;
-import org.multibit.hd.core.api.seed_phrase.Bip39SeedPhraseGenerator;
-import org.multibit.hd.core.api.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.dto.BackupSummary;
+import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.dto.WalletIdTest;
+import org.multibit.hd.core.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.core.seed_phrase.SeedPhraseGenerator;
 
 import java.io.File;
 import java.io.IOException;

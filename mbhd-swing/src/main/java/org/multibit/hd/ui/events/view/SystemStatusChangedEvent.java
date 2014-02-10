@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.events.view;
 
-import org.multibit.hd.core.api.RAGStatus;
+import org.multibit.hd.core.dto.RAGStatus;
 
 /**
  * <p>Event to provide the following to View Event API:</p>

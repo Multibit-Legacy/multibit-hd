@@ -1,11 +1,11 @@
 package org.multibit.hd.ui.views.components;
 
-import org.multibit.hd.core.api.Contact;
-import org.multibit.hd.core.api.TransactionData;
+import org.multibit.hd.core.dto.Contact;
+import org.multibit.hd.core.dto.TransactionData;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.views.components.tables.ContactTableModel;
 import org.multibit.hd.ui.views.components.tables.StripedTable;
 import org.multibit.hd.ui.views.components.tables.TransactionTableModel;
-import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 
 import java.util.Set;
 
@@ -40,7 +40,7 @@ public class Tables {
     table.setShowHorizontalLines(true);
     table.setShowVerticalLines(false);
 
-    table.setRowHeight(AwesomeDecorator.LARGE_ICON_SIZE+10);
+    table.setRowHeight(MultiBitUI.LARGE_ICON_SIZE+10);
     table.setAutoCreateRowSorter(true);
 
     return table;
@@ -60,7 +60,7 @@ public class Tables {
      table.setShowHorizontalLines(true);
      table.setShowVerticalLines(false);
 
-     table.setRowHeight(AwesomeDecorator.LARGE_ICON_SIZE+10);
+     table.setRowHeight(MultiBitUI.LARGE_ICON_SIZE+10);
      table.setAutoCreateRowSorter(true);
 
      return table;

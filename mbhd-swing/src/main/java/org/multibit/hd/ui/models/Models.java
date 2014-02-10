@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.models;
 
-import org.multibit.hd.core.api.RAGStatus;
+import org.multibit.hd.core.dto.RAGStatus;
 
 /**
  * <p>Factory to provide the following to UI:</p>

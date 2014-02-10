@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
@@ -60,21 +61,21 @@ public class HeaderView {
 
     // Create the content panel
     contentPanel = Panels.newPanel(new MigLayout(
-      "insets 15 8,hidemode 1,fillx", // Layout
+      "fillx,insets 10 10 0 10,hidemode 3", // Layout insets ensure border is tight to sidebar
       "[]", // Columns
-      "[]10[shrink]" // Rows
+      "[][shrink]" // Rows
     ));
 
     // Create the balance panel - forcing a LTR layout to ensure correct placement of labels
     balancePanel = Panels.newPanel(new MigLayout(
-      "fill,ltr", // Layout
+      "fill,insets 0,ltr", // Layout
       "[][][][][]", // Columns
       "[]10[shrink]" // Rows
     ));
 
     // Create the alert panel
     alertPanel = Panels.newPanel(new MigLayout(
-      "fillx,ins 5,hidemode 3",
+      "fillx,insets 5", // Layout insets define the padding for the alert
       "[grow][][]", // Columns
       "[]" // Rows
     ));
@@ -184,8 +185,8 @@ public class HeaderView {
 
     alertPanel.removeAll();
 
-    alertMessageLabel = new JLabel();
-    alertRemainingLabel = new JLabel();
+    alertMessageLabel = Labels.newBlankLabel();
+    alertRemainingLabel = Labels.newBlankLabel();
 
     JLabel closeLabel = Labels.newPanelCloseLabel(new MouseAdapter() {
       @Override
@@ -282,9 +283,9 @@ public class HeaderView {
 
       // Icon leads primary balance but decorator will automatically swap which is undesired
       if (Languages.isLeftToRight()) {
-        AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, primaryBalanceLabel, true, (int) Labels.BALANCE_HEADER_LARGE_FONT_SIZE);
+        AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, primaryBalanceLabel, true, (int) MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE);
       } else {
-        AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, primaryBalanceLabel, false, (int) Labels.BALANCE_HEADER_LARGE_FONT_SIZE);
+        AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, primaryBalanceLabel, false, (int) MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE);
       }
       AwesomeDecorator.removeIcon(trailingSymbolLabel);
       trailingSymbolLabel.setText("");
@@ -311,7 +312,7 @@ public class HeaderView {
     if (BitcoinSymbol.ICON.equals(symbol)) {
 
       // Icon trails secondary balance
-      AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, trailingSymbolLabel, true, (int) Labels.BALANCE_HEADER_LARGE_FONT_SIZE);
+      AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, trailingSymbolLabel, true, (int) MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE);
       AwesomeDecorator.removeIcon(primaryBalanceLabel);
       trailingSymbolLabel.setText("");
 

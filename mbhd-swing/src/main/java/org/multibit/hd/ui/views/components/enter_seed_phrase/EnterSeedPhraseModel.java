@@ -2,7 +2,8 @@ package org.multibit.hd.ui.views.components.enter_seed_phrase;
 
 import com.google.common.base.*;
 import com.google.common.collect.Lists;
-import org.multibit.hd.core.api.seed_phrase.SeedPhraseSize;
+import org.multibit.hd.core.seed_phrase.SeedPhraseSize;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
 import org.multibit.hd.ui.views.components.TextBoxes;
@@ -48,7 +49,7 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
     if (asClearText) {
       return Joiner.on(" ").join(seedPhrase);
     } else {
-      return Strings.repeat(String.valueOf(TextBoxes.getPasswordEchoChar()), TextBoxes.SEED_PHRASE_LENGTH);
+      return Strings.repeat(String.valueOf(TextBoxes.getPasswordEchoChar()), MultiBitUI.SEED_PHRASE_LENGTH);
     }
 
   }

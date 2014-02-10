@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.components.display_amount;
 
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
@@ -187,13 +188,13 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
     final int size;
     switch (getModel().get().getStyle()) {
       case HEADER:
-        size = (int) Labels.BALANCE_HEADER_NORMAL_FONT_SIZE;
+        size = (int) MultiBitUI.BALANCE_HEADER_NORMAL_FONT_SIZE;
         break;
       case TRANSACTION_DETAIL_AMOUNT:
-        size = (int) Labels.BALANCE_TRANSACTION_NORMAL_FONT_SIZE;
+        size = (int) MultiBitUI.BALANCE_TRANSACTION_NORMAL_FONT_SIZE;
         break;
       case FEE_AMOUNT:
-        size = (int) Labels.BALANCE_FEE_NORMAL_FONT_SIZE;
+        size = (int) MultiBitUI.BALANCE_FEE_NORMAL_FONT_SIZE;
         break;
       default:
         throw new IllegalStateException("Style: " + getModel().get().getStyle().name() + " is unknown");
@@ -211,13 +212,13 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
     final int size;
     switch (getModel().get().getStyle()) {
       case HEADER:
-        size = (int) Labels.BALANCE_HEADER_LARGE_FONT_SIZE;
+        size = (int) MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE;
         break;
       case TRANSACTION_DETAIL_AMOUNT:
-        size = (int) Labels.BALANCE_TRANSACTION_LARGE_FONT_SIZE;
+        size = (int) MultiBitUI.BALANCE_TRANSACTION_LARGE_FONT_SIZE;
         break;
       case FEE_AMOUNT:
-        size = (int) Labels.BALANCE_FEE_LARGE_FONT_SIZE;
+        size = (int) MultiBitUI.BALANCE_FEE_LARGE_FONT_SIZE;
         break;
       default:
         throw new IllegalStateException("Style: " + getModel().get().getStyle().name() + " is unknown");

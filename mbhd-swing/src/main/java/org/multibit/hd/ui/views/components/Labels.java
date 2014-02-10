@@ -2,10 +2,11 @@ package org.multibit.hd.ui.views.components;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import org.multibit.hd.core.api.Recipient;
+import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.core.utils.CurrencyUtils;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.utils.HtmlUtils;
@@ -33,17 +34,6 @@ import java.math.BigInteger;
  *  
  */
 public class Labels {
-
-  public static final float BALANCE_HEADER_LARGE_FONT_SIZE = 42.0f;
-  public static final float BALANCE_HEADER_NORMAL_FONT_SIZE = 28.0f;
-
-  public static final float BALANCE_TRANSACTION_LARGE_FONT_SIZE = 18.0f;
-  public static final float BALANCE_TRANSACTION_NORMAL_FONT_SIZE = 14.0f;
-
-  public static final float BALANCE_FEE_LARGE_FONT_SIZE = 14.0f;
-  public static final float BALANCE_FEE_NORMAL_FONT_SIZE = 12.0f;
-
-  public static final float PANEL_CLOSE_FONT_SIZE = 28.0f;
 
   /**
    * Utilities have no public constructor
@@ -79,7 +69,7 @@ public class Labels {
     JLabel label = newLabel(key);
 
     // Font
-    Font font = label.getFont().deriveFont(BALANCE_HEADER_LARGE_FONT_SIZE);
+    Font font = label.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE);
     label.setFont(font);
 
     // Theme
@@ -160,9 +150,9 @@ public class Labels {
   public static void decorateStatusLabel(JLabel statusLabel, Optional<Boolean> status) {
     if (status.isPresent()) {
       if (status.get()) {
-        AwesomeDecorator.bindIcon(AwesomeIcon.CHECK, statusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+        AwesomeDecorator.bindIcon(AwesomeIcon.CHECK, statusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
       } else {
-        AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, statusLabel, true, AwesomeDecorator.NORMAL_ICON_SIZE);
+        AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, statusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
       }
     } else {
       // No icon on the label
@@ -182,7 +172,7 @@ public class Labels {
 
     // Fall back to a default image
     JLabel label = new JLabel();
-    AwesomeDecorator.applyIcon(AwesomeIcon.USER, label, true, AwesomeDecorator.LARGE_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.USER, label, true, MultiBitUI.LARGE_ICON_SIZE);
     return label;
 
   }
@@ -202,7 +192,7 @@ public class Labels {
     }
 
     JLabel label = new JLabel();
-    AwesomeDecorator.applyIcon(AwesomeIcon.USER, label, true, AwesomeDecorator.LARGE_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.USER, label, true, MultiBitUI.LARGE_ICON_SIZE);
     return label;
 
   }
@@ -284,7 +274,7 @@ public class Labels {
     JLabel panelCloseLabel = new JLabel();
 
     // Font
-    Font panelCloseFont = panelCloseLabel.getFont().deriveFont(PANEL_CLOSE_FONT_SIZE);
+    Font panelCloseFont = panelCloseLabel.getFont().deriveFont(MultiBitUI.PANEL_CLOSE_FONT_SIZE);
     panelCloseLabel.setFont(panelCloseFont);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, panelCloseLabel, true, 16);
@@ -322,16 +312,16 @@ public class Labels {
 
     switch (style) {
       case HEADER:
-        largeFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_HEADER_LARGE_FONT_SIZE);
-        normalFont = primaryBalanceLabel.getFont().deriveFont(BALANCE_HEADER_NORMAL_FONT_SIZE);
+        largeFont = primaryBalanceLabel.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE);
+        normalFont = primaryBalanceLabel.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_NORMAL_FONT_SIZE);
         break;
       case TRANSACTION_DETAIL_AMOUNT:
-        largeFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, BALANCE_TRANSACTION_LARGE_FONT_SIZE);
-        normalFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, BALANCE_TRANSACTION_NORMAL_FONT_SIZE);
+        largeFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, MultiBitUI.BALANCE_TRANSACTION_LARGE_FONT_SIZE);
+        normalFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, MultiBitUI.BALANCE_TRANSACTION_NORMAL_FONT_SIZE);
         break;
       case FEE_AMOUNT:
-        largeFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, BALANCE_FEE_NORMAL_FONT_SIZE);
-        normalFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, BALANCE_FEE_NORMAL_FONT_SIZE);
+        largeFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, MultiBitUI.BALANCE_FEE_NORMAL_FONT_SIZE);
+        normalFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, MultiBitUI.BALANCE_FEE_NORMAL_FONT_SIZE);
         break;
       default:
         throw new IllegalStateException("Unknown style:" + style.name());
@@ -384,7 +374,7 @@ public class Labels {
         AwesomeIcon.BITCOIN,
         label,
         true,
-        AwesomeDecorator.NORMAL_ICON_SIZE
+        MultiBitUI.NORMAL_ICON_SIZE
       );
     } else {
       label.setText(symbol.getSymbol());
@@ -401,7 +391,7 @@ public class Labels {
 
     JLabel label = new JLabel(CurrencyUtils.currentSymbol());
 
-    Font font = label.getFont().deriveFont(Font.BOLD, (float) AwesomeDecorator.NORMAL_ICON_SIZE);
+    Font font = label.getFont().deriveFont(Font.BOLD, (float) MultiBitUI.NORMAL_ICON_SIZE);
     label.setFont(font);
 
     return label;
@@ -414,7 +404,7 @@ public class Labels {
 
     JLabel label = newLabel(MessageKey.APPROXIMATELY);
 
-    Font font = label.getFont().deriveFont(Font.BOLD, (float) AwesomeDecorator.NORMAL_ICON_SIZE);
+    Font font = label.getFont().deriveFont(Font.BOLD, (float) MultiBitUI.NORMAL_ICON_SIZE);
     label.setFont(font);
 
     return label;
@@ -505,7 +495,7 @@ public class Labels {
 
     JLabel label = newBlankLabel();
 
-    AwesomeDecorator.bindIcon(AwesomeIcon.CIRCLE, label, false, AwesomeDecorator.SMALL_ICON_SIZE);
+    AwesomeDecorator.bindIcon(AwesomeIcon.CIRCLE, label, false, MultiBitUI.SMALL_ICON_SIZE);
 
     return label;
   }

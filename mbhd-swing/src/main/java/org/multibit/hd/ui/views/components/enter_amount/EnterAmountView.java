@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import com.xeiam.xchange.currency.MoneyUtils;
 import net.miginfocom.swing.MigLayout;
 import org.joda.money.BigMoney;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
@@ -208,7 +209,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
         AwesomeIcon.CHECK,
         exchangeRateStatusLabel,
         true,
-        AwesomeDecorator.NORMAL_ICON_SIZE
+        MultiBitUI.NORMAL_ICON_SIZE
       );
       exchangeRateStatusLabel.setText(Languages.safeText(MessageKey.EXCHANGE_RATE_STATUS_OK));
     } else {
@@ -217,7 +218,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
         AwesomeIcon.TIMES,
         exchangeRateStatusLabel,
         true,
-        AwesomeDecorator.NORMAL_ICON_SIZE
+        MultiBitUI.NORMAL_ICON_SIZE
       );
       exchangeRateStatusLabel.setText(Languages.safeText(MessageKey.EXCHANGE_RATE_STATUS_WARN));
     }

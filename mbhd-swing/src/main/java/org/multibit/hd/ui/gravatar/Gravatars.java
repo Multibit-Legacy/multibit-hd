@@ -4,7 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.hash.Hashing;
-import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
+import org.multibit.hd.ui.MultiBitUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +29,7 @@ public class Gravatars {
   private static final Logger log = LoggerFactory.getLogger(Gravatars.class);
 
   // Set the system defaults
-  private final static int SIZE = AwesomeDecorator.LARGE_ICON_SIZE;
+  private final static int SIZE = MultiBitUI.LARGE_ICON_SIZE;
   private final static String RATING = Rating.GENERAL.getCode();
   //private final static String DEFAULT_IMAGE = DefaultImage.MYSTERY_MAN.getCode();
   // TODO Replace this with the mystery man when contact service is released
