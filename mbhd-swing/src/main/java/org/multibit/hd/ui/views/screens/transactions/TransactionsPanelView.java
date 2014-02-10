@@ -1,22 +1,25 @@
 package org.multibit.hd.ui.views.screens.transactions;
 
+import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.api.WalletId;
-import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.Tables;
+import org.multibit.hd.ui.views.components.tables.TransactionTableModel;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 
 /**
  * <p>View to provide the following to application:</p>
  * <ul>
- * <li>Provision of components and layout for the exit confirmation display</li>
+ * <li>Provision of components and layout for the transactions detail display</li>
  * </ul>
  *
  * @since 0.0.1
@@ -24,6 +27,9 @@ import javax.swing.*;
  */
 public class TransactionsPanelView extends AbstractScreenView<TransactionsPanelModel> {
 
+  private static final Logger log = LoggerFactory.getLogger(TransactionsPanelView.class);
+
+  private WalletService walletService;
   private JTable transactionsTable;
 
   /**
@@ -33,6 +39,11 @@ public class TransactionsPanelView extends AbstractScreenView<TransactionsPanelM
    */
   public TransactionsPanelView(TransactionsPanelModel panelModel, Screen screen, MessageKey title) {
     super(panelModel, screen, title);
+
+    // Register for transaction seen events so it can update.
+    CoreServices.uiEventBus.register(this);
+
+    walletService = CoreServices.newWalletService();
   }
 
   @Override
@@ -54,8 +65,6 @@ public class TransactionsPanelView extends AbstractScreenView<TransactionsPanelM
     // Create view components
     JPanel contentPanel = Panels.newPanel(layout);
 
-    WalletService walletService = CoreServices.newWalletService();
-
     transactionsTable = Tables.newTransactionsTable(walletService.getTransactions());
 
     // Create the scroll pane and add the table to it.
@@ -68,9 +77,13 @@ public class TransactionsPanelView extends AbstractScreenView<TransactionsPanelM
     return contentPanel;
   }
 
-  private WalletId getCurrentWalletId() {
-    return WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId();
+  @Subscribe
+  public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
+    log.debug("Received the TransactionSeenEvent: " + transactionSeenEvent.toString());
+
+    // TODO bundle up the transactionSeenEvent as there could be a few of them
+    if (transactionsTable != null) {
+      ((TransactionTableModel)transactionsTable.getModel()).setTransactions(walletService.getTransactions(), true);
+    }
   }
-
-
 }

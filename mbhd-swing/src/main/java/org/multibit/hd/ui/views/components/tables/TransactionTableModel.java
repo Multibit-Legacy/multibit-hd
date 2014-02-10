@@ -26,7 +26,14 @@ public class TransactionTableModel extends AbstractTableModel {
   private Object[][] data;
 
   public TransactionTableModel(Set<TransactionData> transactions) {
+    setTransactions(transactions, false);
+  }
 
+  /**
+   * Set the transactions into the table
+   * @param transactions
+   */
+  public void setTransactions(Set<TransactionData> transactions, boolean fireTableDataChanged) {
     data = new Object[transactions.size()][];
 
     int row = 0;
@@ -43,6 +50,9 @@ public class TransactionTableModel extends AbstractTableModel {
 
       row++;
 
+      if (fireTableDataChanged) {
+        this.fireTableDataChanged();
+      }
     }
   }
 
@@ -78,5 +88,4 @@ public class TransactionTableModel extends AbstractTableModel {
   public void setValueAt(Object value, int row, int col) {
     // No table updates allowed
   }
-
 }
