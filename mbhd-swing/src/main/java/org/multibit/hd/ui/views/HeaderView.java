@@ -61,9 +61,9 @@ public class HeaderView {
 
     // Create the content panel
     contentPanel = Panels.newPanel(new MigLayout(
-      "fillx,insets 10 6", // Layout
+      "fillx,insets 10 10 0 10,hidemode 3", // Layout insets ensure border is tight to sidebar
       "[]", // Columns
-      "[]10[shrink]" // Rows
+      "[][shrink]" // Rows
     ));
 
     // Create the balance panel - forcing a LTR layout to ensure correct placement of labels
@@ -74,9 +74,8 @@ public class HeaderView {
     ));
 
     // Create the alert panel
-    // Alerts are invisible and set to 0,0
     alertPanel = Panels.newPanel(new MigLayout(
-      "fillx,insets 5,hidemode 3",
+      "fillx,insets 5", // Layout insets define the padding for the alert
       "[grow][][]", // Columns
       "[]" // Rows
     ));
