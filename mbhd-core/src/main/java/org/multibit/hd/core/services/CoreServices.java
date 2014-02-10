@@ -1,16 +1,19 @@
 package org.multibit.hd.core.services;
 
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.logging.LoggingFactory;
 import org.multibit.hd.core.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.core.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.logging.LoggingFactory;
 import org.multibit.hd.core.utils.OSUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 /**
  * <p>Factory to provide the following to application API:</p>
@@ -39,6 +42,8 @@ public class CoreServices {
     applicationEventService = new ApplicationEventService();
     uiEventBus.register(applicationEventService);
   }
+
+  private static final Map<WalletId, ContactService> contactServiceMap = Maps.newHashMap();
 
   /**
    * Utilities have a private constructor
@@ -124,9 +129,15 @@ public class CoreServices {
   /**
    * @return The contact service for a wallet
    */
-  public static ContactService getContactService(WalletId walletId) {
+  public static ContactService getOrCreateContactService(WalletId walletId) {
 
-    return new ContactService(walletId);
+    // Check if the contact service has been created for this wallet ID
+    if (!contactServiceMap.containsKey(walletId)) {
+      contactServiceMap.put(walletId, new ContactService(walletId));
+    }
+
+    // Return the existing or new contact service
+    return contactServiceMap.get(walletId);
 
   }
 

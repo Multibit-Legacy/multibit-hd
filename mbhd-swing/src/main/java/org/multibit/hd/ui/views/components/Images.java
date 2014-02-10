@@ -38,7 +38,12 @@ public class Images {
 
     switch (style) {
       case UNKNOWN:
-        // Fall through to empty
+        icon = AwesomeDecorator.createIcon(
+          AwesomeIcon.BAN,
+          Themes.currentTheme.text(),
+          MultiBitUI.SMALL_ICON_SIZE
+        );
+        break;
       case EMPTY:
         icon = AwesomeDecorator.createIcon(
           AwesomeIcon.STAR_ALT,

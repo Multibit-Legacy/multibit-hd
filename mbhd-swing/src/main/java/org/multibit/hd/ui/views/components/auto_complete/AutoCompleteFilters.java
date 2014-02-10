@@ -7,7 +7,7 @@ import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * <p>Factory to provide the following to views:</p>
@@ -36,7 +36,7 @@ public class AutoCompleteFilters {
       @Override
       public Recipient[] create() {
 
-        Set<Contact> contacts = CoreServices.getContactService(getCurrentWalletId()).allContacts(1, 10);
+        List<Contact> contacts = CoreServices.getOrCreateContactService(getCurrentWalletId()).allContacts(1, 10);
 
         return populateRecipients(contacts);
 
@@ -49,7 +49,7 @@ public class AutoCompleteFilters {
           return new Recipient[]{};
         }
 
-        Set<Contact> contacts = CoreServices.getContactService(getCurrentWalletId()).filterContactsByName(1, 10, fragment);
+        List<Contact> contacts = CoreServices.getOrCreateContactService(getCurrentWalletId()).filterContactsByName(1, 10, fragment);
 
         return populateRecipients(contacts);
       }
@@ -59,7 +59,7 @@ public class AutoCompleteFilters {
        * @param contacts The contacts to add to the recipients
        * @return The recipients
        */
-      private Recipient[] populateRecipients(Set<Contact> contacts) {
+      private Recipient[] populateRecipients(List<Contact> contacts) {
 
         Recipient[] recipients = new Recipient[contacts.size()];
 

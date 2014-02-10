@@ -9,12 +9,15 @@ import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.enter_search.EnterSearchModel;
 import org.multibit.hd.ui.views.components.enter_search.EnterSearchView;
+import org.multibit.hd.ui.views.components.tables.ContactTableModel;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -33,7 +36,10 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
   private JButton addButton;
   private JButton editButton;
   private JButton deleteButton;
+
   private JTable contactsTable;
+  private ContactTableModel contactTableModel;
+
 
   /**
    * @param panelModel The model backing this panel view
@@ -53,9 +59,9 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
   public JPanel newScreenViewPanel() {
 
     MigLayout layout = new MigLayout(
-      "fillx,insets 0", // Layout constraints
+      "fill,insets 0", // Layout constraints
       "[][][][]push[]", // Column constraints
-      "[][][]" // Row constraints
+      "[shrink][shrink][grow]" // Row constraints
     );
 
     JPanel contentPanel = Panels.newPanel(layout);
@@ -69,22 +75,43 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
 
     getSearchAction();
 
-    ContactService contactService = CoreServices.getContactService(getCurrentWalletId());
+    ContactService contactService = CoreServices.getOrCreateContactService(getCurrentWalletId());
 
     contactsTable = Tables.newContactsTable(contactService.allContacts(1, 10));
+    contactTableModel = (ContactTableModel) contactsTable.getModel();
+
+    // Detect clicks on the table
+    contactsTable.addMouseListener(new MouseAdapter() {
+
+      public void mousePressed(MouseEvent e) {
+
+        if (e.getClickCount() > 0) {
+          JTable target = (JTable) e.getSource();
+          int row = target.getSelectedRow();
+          int column = target.getSelectedColumn();
+
+          if (column == ContactTableModel.STAR_COLUMN_INDEX) {
+            contactTableModel.nextStarStyle(row, column);
+          }
+
+        }
+      }
+
+    });
+
 
     // Create the scroll pane and add the table to it.
     JScrollPane scrollPane = new JScrollPane(contactsTable);
     scrollPane.setViewportBorder(null);
 
     // Add to the panel
-    contentPanel.add(enterSearchMaV.getView().newComponentPanel(),"span 5,growx,wrap");
-    contentPanel.add(checkSelectorComboBox,"shrink");
-    contentPanel.add(addButton,"shrink");
-    contentPanel.add(editButton,"shrink");
-    contentPanel.add(deleteButton,"shrink");
-    contentPanel.add(new JLabel(""),"grow,wrap");
-    contentPanel.add(scrollPane,"span 5,grow");
+    contentPanel.add(enterSearchMaV.getView().newComponentPanel(), "span 5,growx,push,wrap");
+    contentPanel.add(checkSelectorComboBox, "shrink");
+    contentPanel.add(addButton, "shrink");
+    contentPanel.add(editButton, "shrink");
+    contentPanel.add(deleteButton, "shrink");
+    contentPanel.add(new JLabel(""), "grow,push,wrap");
+    contentPanel.add(scrollPane, "span 5,grow,push");
 
     return contentPanel;
   }
@@ -149,7 +176,13 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
   @Override
   public void actionPerformed(ActionEvent e) {
 
-    // User has select from the checkboxes
+    // User has selected from the checkboxes so interpret the result
+    int checkSelectorIndex = checkSelectorComboBox.getSelectedIndex();
+
+    ContactTableModel model = (ContactTableModel) contactsTable.getModel();
+
+    model.updateSelectionCheckboxes(checkSelectorIndex);
 
   }
+
 }

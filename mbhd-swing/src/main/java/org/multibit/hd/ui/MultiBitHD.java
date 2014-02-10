@@ -118,6 +118,13 @@ public class MultiBitHD {
 
     WalletManager.INSTANCE.initialise(applicationDataDirectory);
     BackupManager.INSTANCE.initialise(applicationDataDirectory, null); // TODO load up the cloud backup if available from properties and insert here
+
+    // TODO Remove this when the Contact screen is ready
+    CoreServices
+      .getOrCreateContactService(
+        WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()
+      ).addDemoContacts();
+
   }
 
   /**

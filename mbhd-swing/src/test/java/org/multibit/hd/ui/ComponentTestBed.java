@@ -4,10 +4,11 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.xeiam.xchange.currency.MoneyUtils;
 import com.xeiam.xchange.mtgox.v2.MtGoxExchange;
-import org.multibit.hd.core.dto.BitcoinNetworkSummary;
-import org.multibit.hd.core.dto.RAGStatus;
+import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.BitcoinNetworkSummary;
+import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -27,6 +28,9 @@ import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.FooterView;
 import org.multibit.hd.ui.views.HeaderView;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.screens.AbstractScreenView;
+import org.multibit.hd.ui.views.screens.Screen;
+import org.multibit.hd.ui.views.screens.Screens;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,7 +84,7 @@ public class ComponentTestBed {
     File applicationDataDirectory = InstallationManager.createApplicationDataDirectory();
     WalletManager.INSTANCE.initialise(applicationDataDirectory);
 
-    ContactService contactService = CoreServices.getContactService(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId());
+    ContactService contactService = CoreServices.getOrCreateContactService(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId());
     contactService.addDemoContacts();
 
   }
@@ -122,6 +126,7 @@ public class ComponentTestBed {
    * </pre>
    * <h3>Footer</h3>
    * <pre>
+   *   return newHeaderView();
    *   return newFooterView();
    * </pre>
    * <h3>Detail screen</h3>
@@ -135,10 +140,8 @@ public class ComponentTestBed {
   public JPanel createTestPanel() {
 
     // Choose a panel to test
-//    AbstractScreenView screen = Screens.newScreen(Screen.CONTACTS);
-//    return screen.newScreenViewPanel();
-
-    return newHeaderView();
+    AbstractScreenView screen = Screens.newScreen(Screen.CONTACTS);
+    return screen.newScreenViewPanel();
 
   }
 
@@ -228,11 +231,15 @@ public class ComponentTestBed {
     }
 
     // Set up the wrapping panel
-    contentPanel = Panels.newPanel();
+    contentPanel = Panels.newPanel(new MigLayout(
+      "fill,insets 0", // Layout
+      "[]", // Columns
+      "[][]" // Rows
+    ));
     contentPanel.setOpaque(true);
 
     log.info("Adding test panel");
-    contentPanel.add(createTestPanel(), "wrap");
+    contentPanel.add(createTestPanel(), "grow,push,wrap");
     contentPanel.add(toggleLocaleButton, "center");
 
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

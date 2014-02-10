@@ -78,7 +78,7 @@ public interface MultiBitUI {
   /**
    * Small icon size (e.g. stars and status)
    */
-  int SMALL_ICON_SIZE = 14;
+  int SMALL_ICON_SIZE = 16;
 
   // Buttons
 

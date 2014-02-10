@@ -39,7 +39,7 @@ public class SidebarView {
 
     // Insets for top, left
     MigLayout layout = new MigLayout(
-      "filly, insets 6 10, ", // Layout
+      "fill, insets 6 10, ", // Layout
       "[]", // Columns
       "[]" // Rows
     );
@@ -48,7 +48,7 @@ public class SidebarView {
     // Apply the sidebar theme
     contentPanel.setBackground(Themes.currentTheme.sidebarPanelBackground());
 
-    contentPanel.add(createSidebarContent(), "push");
+    contentPanel.add(createSidebarContent(), "grow,push");
 
   }
 

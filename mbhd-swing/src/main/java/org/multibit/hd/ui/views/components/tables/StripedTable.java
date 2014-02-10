@@ -1,7 +1,5 @@
 package org.multibit.hd.ui.views.components.tables;
 
-import org.multibit.hd.ui.views.themes.Themes;
-
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -22,45 +20,23 @@ import java.awt.*;
  */
 public class StripedTable extends JTable {
 
-  private Color evenColor  = Themes.currentTheme.fadedText();
-  private Color oddColor = Themes.currentTheme.inverseFadedText();
+  private Color alternateColor = UIManager.getColor("Table.alternateRowColor");
 
   public StripedTable(AbstractTableModel model) {
     super(model);
   }
 
-  /**
-   * @return The color of the second stripe
-   */
-  public Color getEvenColor() {
-    return evenColor;
-  }
-
-  public void setEvenColor(Color evenColor) {
-    this.evenColor = evenColor;
-  }
-
-  /**
-   * @return The color of the first stripe
-   */
-  public Color getOddColor() {
-    return oddColor;
-  }
-
-  public void setOddColor(Color oddColor) {
-    this.oddColor = oddColor;
-  }
-
   @Override
   public void paintComponent(Graphics g) {
+
+    // Paint the table as normal using prepareRenderer()
     super.paintComponent(g);
 
-    // Stripe the rest of the viewport
-
+    // Paint more stripes based on the remainder of the viewport
     Graphics newGraphics = g.create();
 
     // Start with the odd color
-    newGraphics.setColor(oddColor);
+    newGraphics.setColor(alternateColor);
 
     // Get the rectangle for the last row
     Rectangle rectOfLastRow = getCellRect(getRowCount() - 1, 0, true);
@@ -76,18 +52,18 @@ public class StripedTable extends JTable {
       int rowYToDraw = (firstNonExistentRowY - 1) + getRowHeight();
 
       // Continue the stripes from the area with table data
-      int actualRow = 0;
+      int virtualRow = getRowCount() > 0 ? getRowCount() - 1 : 0;
 
       while (rowYToDraw < getHeight()) {
-        if (actualRow % 2 == 0) {
+        if (virtualRow % 2 == 0) {
           // Even row
-          newGraphics.setColor(evenColor);
+          newGraphics.setColor(alternateColor);
 
           // Draw the rectangle
           newGraphics.fillRect(0, rowYToDraw, getWidth(), getRowHeight());
 
           // Switch back to odd for the next one
-          newGraphics.setColor(oddColor);
+          newGraphics.setColor(getBackground());
         }
 
         if (showHorizontalLines) {
@@ -96,7 +72,8 @@ public class StripedTable extends JTable {
         }
 
         rowYToDraw += getRowHeight();
-        actualRow++;
+
+        virtualRow++;
       }
 
       if (showVerticalLines) {
@@ -115,16 +92,15 @@ public class StripedTable extends JTable {
       newGraphics.dispose();
 
     }
-
   }
 
   public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
 
     Component c = super.prepareRenderer(renderer, row, column);
 
-    if (!isRowSelected(row)) {
-      // Provide a different color depending on the row count
-      c.setBackground(row % 2 == 0 ? getBackground() : evenColor);
+    // Use custom rendering to overcome background color bug in Nimbus
+    if (rowSelectionAllowed && !isRowSelected(row)) {
+      c.setBackground(row % 2 == 0 ? getBackground() : alternateColor);
     }
 
     return c;
