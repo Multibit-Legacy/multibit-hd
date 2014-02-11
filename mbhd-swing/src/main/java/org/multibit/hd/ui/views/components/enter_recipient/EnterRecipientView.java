@@ -80,6 +80,12 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
   public void updateModelFromView() {
 
     Object selectedItem = recipientComboBox.getSelectedItem();
+    Object editedItem = recipientComboBox.getEditor().getItem();
+
+    // Use pastes in preference to selection
+    if (editedItem != null) {
+      selectedItem = editedItem;
+    }
 
     Optional<Recipient> currentRecipient = getModel().get().getRecipient();
 
@@ -143,6 +149,7 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
         Optional<String> pastedText = ClipboardUtils.pasteStringFromClipboard();
 
         if (pastedText.isPresent()) {
+
           recipientComboBox.getEditor().setItem(pastedText.get());
           updateModelFromView();
         }

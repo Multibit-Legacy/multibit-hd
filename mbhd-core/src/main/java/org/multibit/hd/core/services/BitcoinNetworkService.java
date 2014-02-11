@@ -230,7 +230,7 @@ public class BitcoinNetworkService extends AbstractService {
     try {
       destination = new Address(MAINNET, destinationAddress);
       change = new Address(MAINNET, changeAddress);
-    } catch (AddressFormatException e) {
+    } catch (NullPointerException | AddressFormatException e) {
       log.error(e.getMessage(), e);
 
       // Declare the transaction creation a failure
@@ -242,7 +242,7 @@ public class BitcoinNetworkService extends AbstractService {
         changeAddress,
         false,
         "core_the_error_was", // TODO Consider CoreMessageKey
-        new String[]{e.getMessage()}));
+        new String[]{e.getClass().getCanonicalName() + " " + e.getMessage()}));
 
       // Prevent fall-through to success
       return;
