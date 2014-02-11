@@ -71,6 +71,7 @@ public class Gravatars {
       return Optional.absent();
     }
 
+    // TODO load in background - currently borks UI appearing if no network
     try (InputStream stream = url.openStream()) {
       return Optional.of(ImageIO.read(stream));
     } catch (IOException e) {

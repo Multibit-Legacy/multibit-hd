@@ -13,6 +13,14 @@ import com.google.bitcoin.core.TransactionConfidence;
 public class TransactionSeenEvent {
   private final String transactionId;
 
+  public TransactionConfidence.ConfidenceType getConfidenceType() {
+    return confidenceType;
+  }
+
+  public int getDepthInBlocks() {
+    return depthInBlocks;
+  }
+
   private final TransactionConfidence.ConfidenceType confidenceType;
   private final int depthInBlocks;
 

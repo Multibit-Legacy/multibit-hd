@@ -124,7 +124,7 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
    * @return A new action for pasting the recipient information
    */
   private Action getPasteAction() {
-    // Show or hide the seed phrase
+    // Paste the recipient information
     return new AbstractAction() {
 
       @Override
@@ -134,6 +134,7 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
 
         if (pastedText.isPresent()) {
           recipientComboBox.getEditor().setItem(pastedText.get());
+          updateModelFromView();
         }
 
       }
