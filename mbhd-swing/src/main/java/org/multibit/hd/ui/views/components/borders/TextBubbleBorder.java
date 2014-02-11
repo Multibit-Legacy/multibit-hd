@@ -95,7 +95,8 @@ public class TextBubbleBorder extends AbstractBorder {
     this.color = color;
 
     this.stroke = new BasicStroke(thickness);
-    this.strokePad = thickness / 2;
+    //this.strokePad = thickness / 2;
+    this.strokePad = 0;
 
     this.hints = new RenderingHints(ImageDecorator.smoothRenderingHints());
 

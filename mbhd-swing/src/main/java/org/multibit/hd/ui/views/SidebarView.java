@@ -1,9 +1,9 @@
 package org.multibit.hd.ui.views;
 
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.SidebarNodeInfo;
 import org.multibit.hd.ui.views.components.ThemeAwareTreeCellRenderer;
@@ -114,9 +114,6 @@ public class SidebarView {
 
     sidebarPane.setViewportView(sidebarTree);
     sidebarPane.setBorder(null);
-
-    // TODO Integrate with configuration
-    sidebarPane.setPreferredSize(new Dimension(150, 1024));
 
     return sidebarPane;
   }

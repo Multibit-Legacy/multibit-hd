@@ -81,7 +81,7 @@ public class ComponentTestBed {
     CoreServices.newBitcoinNetworkService().start();
 
     // Initialise the wallet manager, which will load the current wallet if available
-    File applicationDataDirectory = InstallationManager.createApplicationDataDirectory();
+    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
     WalletManager.INSTANCE.initialise(applicationDataDirectory);
 
     ContactService contactService = CoreServices.getOrCreateContactService(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId());

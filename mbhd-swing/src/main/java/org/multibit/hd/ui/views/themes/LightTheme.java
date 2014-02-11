@@ -57,8 +57,18 @@ public class LightTheme implements Theme {
   }
 
   @Override
+  public Color readOnlyBorder() {
+    return colors[1][2];
+  }
+
+  @Override
   public Color dataEntryBackground() {
     return colors[2][4];
+  }
+
+  @Override
+  public Color dataEntryBorder() {
+    return colors[2][2];
   }
 
   @Override
