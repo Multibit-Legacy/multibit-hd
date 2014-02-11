@@ -3,10 +3,12 @@ package org.multibit.hd.ui.views.components;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.views.components.borders.RoundedBorder;
 import org.multibit.hd.ui.views.components.text_fields.FormattedDecimalField;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.text.DefaultStyledDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -29,11 +31,25 @@ public class TextBoxes {
   }
 
   /**
+   * @return A new text field with default theme
+   */
+  public static JTextField newTextField(int columns) {
+
+    JTextField textField = new JTextField(columns);
+
+    Border border = new RoundedBorder();
+
+    textField.setBorder(border);
+
+    return textField;
+  }
+
+  /**
    * @return A new "enter label" text field
    */
   public static JTextField newEnterLabel() {
 
-    JTextField textField = new JTextField(MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH);
+    JTextField textField = newTextField(MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH);
 
     // Limit the length of the underlying document
     DefaultStyledDocument doc = new DefaultStyledDocument();
@@ -51,7 +67,7 @@ public class TextBoxes {
    */
   public static JTextField newSelectFile() {
 
-    JTextField textField = new JTextField(60);
+    JTextField textField = newTextField(60);
 
     // Set the theme
     textField.setBackground(Themes.currentTheme.dataEntryBackground());
@@ -66,7 +82,7 @@ public class TextBoxes {
    */
   public static JTextField newDisplaySeedTimestamp(String seedTimestamp) {
 
-    JTextField textField = new JTextField(20);
+    JTextField textField = newTextField(20);
     textField.setText(seedTimestamp);
 
     // Users should not be able to change the timestamp
@@ -83,7 +99,7 @@ public class TextBoxes {
    */
   public static JTextField newEnterSeedTimestamp() {
 
-    JTextField textField = new JTextField(20);
+    JTextField textField = newTextField(20);
 
     // Set the theme
     textField.setBackground(Themes.currentTheme.dataEntryBackground());
@@ -98,7 +114,7 @@ public class TextBoxes {
    */
   public static JTextField newDisplayBitcoinAddress(String bitcoinAddress) {
 
-    JTextField textField = new JTextField(40);
+    JTextField textField = newTextField(40);
     textField.setText(bitcoinAddress);
 
     // Users should not be able to change the address

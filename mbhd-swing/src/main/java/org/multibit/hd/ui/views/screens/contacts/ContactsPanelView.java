@@ -59,7 +59,7 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
   public JPanel newScreenViewPanel() {
 
     MigLayout layout = new MigLayout(
-      "fill,insets 0", // Layout constraints
+      "fill,insets 10 5 0 0", // Layout constraints
       "[][][][]push[]", // Column constraints
       "[shrink][shrink][grow]" // Row constraints
     );

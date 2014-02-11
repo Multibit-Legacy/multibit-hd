@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.components.panels;
+package org.multibit.hd.ui.views.components.borders;
 
 import org.multibit.hd.ui.views.components.ImageDecorator;
 

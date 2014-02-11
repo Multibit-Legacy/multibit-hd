@@ -31,6 +31,13 @@ public interface MultiBitUI {
    */
   int WIZARD_MIN_HEIGHT = 450;
 
+  // Corners
+
+  /**
+   * The corner radius to use for rounded rectangles (e.g. panels, text fields etc)
+   */
+  int CORNER_RADIUS = 10;
+
   // Fonts
 
   /**
@@ -102,4 +109,5 @@ public interface MultiBitUI {
    * The maximum length of the seed phrase
    */
   int SEED_PHRASE_LENGTH = 240;
+
 }

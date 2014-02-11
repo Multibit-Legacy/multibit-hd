@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components.panels;
 
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.views.components.ImageDecorator;
 
 import javax.swing.*;
@@ -33,7 +34,7 @@ public class RoundedPanel extends JPanel {
 
     this.shadowColor = Color.BLACK;
     this.shadowAlpha = 127;
-    this.cornerRadius = 10;
+    this.cornerRadius = MultiBitUI.CORNER_RADIUS;
 
   }
 
@@ -72,23 +73,23 @@ public class RoundedPanel extends JPanel {
     );
 
     // Ensure we render with smooth outcome
-    Graphics2D graphics = (Graphics2D) g;
-    graphics.setRenderingHints(ImageDecorator.smoothRenderingHints());
+    Graphics2D g2 = (Graphics2D) g;
+    g2.setRenderingHints(ImageDecorator.smoothRenderingHints());
 
     // Fill in a solid block of the shadow background
-    graphics.setColor(shadowColorA);
-    graphics.fillRect(0, 0, width, height);
+    g2.setColor(shadowColorA);
+    g2.fillRect(0, 0, width, height);
 
     // Fill in a solid rounded block of the panel
-    graphics.setColor(getBackground());
-    graphics.fillRoundRect(0, 0, width, height, cornerRadius, cornerRadius);
+    g2.setColor(getBackground());
+    g2.fillRoundRect(0, 0, width, height, cornerRadius, cornerRadius);
 
     // Draw the panel foreground over the shadow with rounded corners to give a subtle border effect
-    Stroke original = graphics.getStroke();
-    graphics.setColor(getForeground());
-    graphics.setStroke(new BasicStroke(0));
-    graphics.drawRoundRect(0, 0, width, height, cornerRadius, cornerRadius);
-    graphics.setStroke(original);
+    Stroke original = g2.getStroke();
+    g2.setColor(getForeground());
+    g2.setStroke(new BasicStroke(0));
+    g2.drawRoundRect(0, 0, width, height, cornerRadius, cornerRadius);
+    g2.setStroke(original);
 
   }
 }

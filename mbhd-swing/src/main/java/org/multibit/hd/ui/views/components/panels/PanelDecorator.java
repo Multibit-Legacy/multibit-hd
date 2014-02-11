@@ -5,6 +5,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Labels;
+import org.multibit.hd.ui.views.components.borders.RoundedBorder;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
@@ -377,7 +378,7 @@ public class PanelDecorator {
     panel.setForeground(text);
 
     // Use a simple rounded border
-    panel.setBorder(new TextBubbleBorder(border));
+    panel.setBorder(new RoundedBorder(border));
 
     for (Component component : panel.getComponents()) {
       if (component instanceof JLabel) {
