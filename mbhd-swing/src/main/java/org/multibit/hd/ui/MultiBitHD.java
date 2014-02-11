@@ -111,7 +111,7 @@ public class MultiBitHD {
     bitcoinNetworkService = CoreServices.newBitcoinNetworkService();
 
     // Initialise the wallet manager, which will load the current wallet if available
-    File applicationDataDirectory = InstallationManager.createApplicationDataDirectory();
+    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     // Start up the exchange service
     exchangeTickerService.start();

@@ -153,7 +153,7 @@ public enum WalletManager implements WalletEventListener {
    * @throws WalletVersionException if there is already a simple wallet but the wallet version cannot be understood
    */
   public WalletData createWallet(byte[] seed, CharSequence password) throws WalletLoadException, WalletVersionException, IOException {
-    File applicationDataDirectory = InstallationManager.createApplicationDataDirectory();
+    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
     return createWallet(applicationDataDirectory.getAbsolutePath(), seed, password);
   }
 

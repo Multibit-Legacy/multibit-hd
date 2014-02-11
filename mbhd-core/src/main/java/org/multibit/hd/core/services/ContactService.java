@@ -56,7 +56,7 @@ public class ContactService {
   ContactService(WalletId walletId) {
 
     // Work out where to store the contacts for this wallet id.
-    File applicationDataDirectory = InstallationManager.createApplicationDataDirectory();
+    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
     String walletRoot = WalletManager.createWalletRoot(walletId);
     File walletDirectory = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), walletRoot);
     File contactsDirectory = new File(walletDirectory.getAbsolutePath() + File.separator + CONTACTS_DIRECTORY_NAME);

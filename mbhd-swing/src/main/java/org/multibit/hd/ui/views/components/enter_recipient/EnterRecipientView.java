@@ -31,7 +31,6 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
   private JComboBox<Recipient> recipientComboBox;
   private JLabel imageLabel;
   private JButton pasteButton;
-  private Optional<Recipient> currentRecipient=Optional.absent();
 
   /**
    * @param model The model backing this view
@@ -82,26 +81,30 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
 
     Object selectedItem = recipientComboBox.getSelectedItem();
 
+    Optional<Recipient> currentRecipient = getModel().get().getRecipient();
+
     boolean showGravatar = false;
     if (selectedItem instanceof Recipient) {
 
       // We have a select from the drop down
-      Recipient recipient = (Recipient) selectedItem;
+      Recipient selectedRecipient = (Recipient) selectedItem;
 
       // Avoid double events triggering calls
-      if (currentRecipient.isPresent() && currentRecipient.get().equals(recipient)) {
+      if (currentRecipient.isPresent() && currentRecipient.get().equals(selectedRecipient)) {
         return;
       }
-      currentRecipient = Optional.of(recipient);
 
-      getModel().get().setValue(recipient);
+      // Update the current with the selected
+      currentRecipient = Optional.of(selectedRecipient);
+
+      getModel().get().setValue(selectedRecipient);
 
       // Display a gravatar if we have a contact
-      if (recipient.getContact().isPresent()) {
-        if (recipient.getContact().get().getEmail().isPresent()) {
+      if (selectedRecipient.getContact().isPresent()) {
+        if (selectedRecipient.getContact().get().getEmail().isPresent()) {
 
           // We have an email address
-          String emailAddress = recipient.getContact().get().getEmail().get();
+          String emailAddress = selectedRecipient.getContact().get().getEmail().get();
 
           Optional<BufferedImage> image = Gravatars.retrieveGravatar(emailAddress);
 
@@ -112,12 +115,19 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
           }
         }
       }
+    } else {
+      // Create a recipient based on the text entry
+      currentRecipient = Optional.of(new Recipient((String) selectedItem));
     }
 
     // There is no gravatar to show
     if (!showGravatar) {
       imageLabel.setVisible(false);
     }
+
+    // Update the model
+    getModel().get().setValue(currentRecipient.get());
+
   }
 
   /**

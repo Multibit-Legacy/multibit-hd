@@ -31,6 +31,11 @@ public interface MultiBitUI {
    */
   int WIZARD_MIN_HEIGHT = 450;
 
+  /**
+   * The preferred width for the sidebar
+   */
+  int SIDEBAR_LHS_PREF_WIDTH = 150;
+
   // Corners
 
   /**

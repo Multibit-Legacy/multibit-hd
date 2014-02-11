@@ -15,7 +15,7 @@ import java.awt.geom.RoundRectangle2D;
  * <p>Adapted from <a href="http://stackoverflow.com/a/16909994/396747">this Stack Overflow answer</a></p>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class TextBubbleBorder extends AbstractBorder {
 
@@ -99,10 +99,12 @@ public class TextBubbleBorder extends AbstractBorder {
 
     this.hints = new RenderingHints(ImageDecorator.smoothRenderingHints());
 
-    int bottomPad = pointerSize + strokePad;
+    // Top and bottom padding must adjust to allow for single line panels (e.g. alerts)
+    // and also compromise for text fields and text areas. A good value is 6px.
+    int topPad = 6;
+    int bottomPad = Math.max(topPad, pointerSize + strokePad);
 
-    // Require top:0 offset to avoid misalignment for single line panels
-    insets = new Insets(0, 6, bottomPad, 6);
+    insets = new Insets(topPad, 8, bottomPad, 8);
 
   }
 
@@ -122,12 +124,12 @@ public class TextBubbleBorder extends AbstractBorder {
     // Work out the lowest inside line of the bubble
     int bottomLineY = height - thickness - pointerSize - 1;
 
-    // Draw the rounded bubble border
+    // Draw the rounded bubble border with a few tweaks for text fields and areas
     RoundRectangle2D.Double bubble = new RoundRectangle2D.Double(
-      strokePad,
-      strokePad,
-      width - thickness - strokePad,
-      bottomLineY,
+      strokePad + 2,
+      strokePad + 2,
+      width - thickness - strokePad - 3,
+      bottomLineY - 2,
       radii,
       radii);
 
