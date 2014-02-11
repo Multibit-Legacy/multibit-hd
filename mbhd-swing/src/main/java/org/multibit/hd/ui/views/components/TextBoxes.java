@@ -80,7 +80,7 @@ public class TextBoxes {
    */
   public static JTextField newEnterSearch() {
 
-    return newReadOnlyTextField(60);
+    return newTextField(60);
   }
 
   /**
@@ -274,9 +274,9 @@ public class TextBoxes {
     textArea.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "transferFocus");
     textArea.getActionMap().put("transferFocus", transferFocus);
 
-    // Ensure we provide a suitable inner margin to allow letters to be clear
-    textArea.setMargin(new Insets(2, 4, 2, 4));
-
+//    // Ensure we provide a suitable inner margin to allow letters to be clear
+//    textArea.setMargin(new Insets(6, 4, 6, 4));
+//
     // Ensure line and word wrapping occur as required
     textArea.setLineWrap(true);
     textArea.setWrapStyleWord(true);
