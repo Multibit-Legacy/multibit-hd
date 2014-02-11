@@ -19,11 +19,12 @@ package org.multibit.hd.core.dto;
 public enum CoreMessageKey {
 
   // Core messages
+  NOT_INITIALISED("core_not_initialised"),
   START_NETWORK_CONNECTION_ERROR("core_start_network_connection_error"),
   CHAIN_DOWNLOAD("core_chain_download"),
   PEER_COUNT("core_peer_count"),
 
-   // Sending bitcoin
+  // Sending bitcoin
   TRANSACTION_CREATED_OK("core_transaction_created_ok"),
   TRANSACTION_CREATION_FAILED("core_transaction_creation_failed"),
   SENDING_BITCOIN("core_sending_bitcoin"),
@@ -33,11 +34,11 @@ public enum CoreMessageKey {
   // Errors
   THE_ERROR_WAS("core_the_error_was"),
   COULD_NOT_CONNECT_TO_BITCOIN_NETWORK("core_could_not_connect_to_bitcoin_network"),
-  NO_ACTIVE_WALLET("core_no_active_wallet")
-  
+  NO_ACTIVE_WALLET("core_no_active_wallet"),
+
   // End of enum
   ;
-  
+
   private final String key;
 
   private CoreMessageKey(String key) {

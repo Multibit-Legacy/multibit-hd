@@ -3,8 +3,8 @@ package org.multibit.hd.ui.controllers;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
-import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.controller.ChangeLocaleEvent;
@@ -99,6 +99,9 @@ public class MainController {
     if (summary.getMessageKey().isPresent() && summary.getMessageData().isPresent()) {
       // There is a message key with data
       localisedMessage = Languages.safeText(summary.getMessageKey().get(), summary.getMessageData().get());
+    } else if (summary.getMessageKey().isPresent()) {
+      // There is a message key only
+      localisedMessage = Languages.safeText(summary.getMessageKey().get());
     } else {
       // There is no message key so use the status only
       localisedMessage = summary.getStatus().name();

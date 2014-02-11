@@ -10,15 +10,18 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.joda.time.DateTime;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.dto.WalletId;
-import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.TransactionCreationEvent;
-import org.multibit.hd.core.managers.*;
+import org.multibit.hd.core.managers.BackupManager;
+import org.multibit.hd.core.managers.BlockStoreManager;
+import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.network.MultiBitPeerEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,15 +90,16 @@ public class BitcoinNetworkService extends AbstractService {
     } catch (Exception e) {
       log.error(e.getClass().getName() + " " + e.getMessage());
       CoreEvents.fireBitcoinNetworkChangedEvent(
-              BitcoinNetworkSummary.newNetworkStartupFailed(
-                      CoreMessageKey.START_NETWORK_CONNECTION_ERROR,
-                      Optional.<Object[]>absent()
-              ));
+        BitcoinNetworkSummary.newNetworkStartupFailed(
+          CoreMessageKey.START_NETWORK_CONNECTION_ERROR,
+          Optional.of(new Object[]{})
+        ));
     }
   }
 
   /**
    * Restart the network, using the current wallet (specifically the blockstore)
+   *
    * @throws BlockStoreException
    * @throws IOException
    */
@@ -160,7 +164,7 @@ public class BitcoinNetworkService extends AbstractService {
       log.debug("Service peerGroup stopped");
     }
 
-     // Shutdown any executor running a download
+    // Shutdown any executor running a download
     if (getExecutorServiceOptional().isPresent()) {
       getExecutorService().shutdown();
     }
@@ -197,12 +201,22 @@ public class BitcoinNetworkService extends AbstractService {
    * @param password           The wallet password
    */
 
-   // TODO should be in executor
+  // TODO should be in executor
   public void send(String destinationAddress, BigInteger amount, String changeAddress, BigInteger feePerKB, CharSequence password) {
+
     if (!WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
       // Declare the transaction creation a failure - no wallet
-      CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(null, amount, BigInteger.ZERO, destinationAddress, changeAddress,
-              false, "core_no_active_wallet", new String[]{""}));
+      CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
+        null,
+        amount,
+        BigInteger.ZERO,
+        destinationAddress,
+        changeAddress,
+        false, "core_no_active_wallet",
+        new String[]{""}
+      ));
+
+      // Prevent fall-through to success
       return;
     }
 
@@ -210,80 +224,156 @@ public class BitcoinNetworkService extends AbstractService {
     Wallet wallet = WalletManager.INSTANCE.getCurrentWalletData().get().getWallet();
     KeyParameter aesKey = wallet.getKeyCrypter().deriveKey(password);
 
-    Wallet.SendRequest sendRequest = null;
-    boolean transactionCreatedOk = false;
+    // Verify the destination address
+    final Address destination;
+    final Address change;
     try {
-      sendRequest = Wallet.SendRequest.to(new Address(MAINNET, destinationAddress), amount);
-      sendRequest.aesKey = aesKey;
-      sendRequest.fee = BigInteger.ZERO;
-      sendRequest.feePerKb = feePerKB;
-      sendRequest.changeAddress = new Address(MAINNET, changeAddress);
+      destination = new Address(MAINNET, destinationAddress);
+      change = new Address(MAINNET, changeAddress);
+    } catch (AddressFormatException e) {
+      log.error(e.getMessage(), e);
+
+      // Declare the transaction creation a failure
+      CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
+        null,
+        amount,
+        BigInteger.ZERO,
+        destinationAddress,
+        changeAddress,
+        false,
+        "core_the_error_was", // TODO Consider CoreMessageKey
+        new String[]{e.getMessage()}));
+
+      // Prevent fall-through to success
+      return;
+    }
+
+    // Addresses must be OK to be here
+
+    // Build the send request
+    final Wallet.SendRequest sendRequest;
+    sendRequest = Wallet.SendRequest.to(destination, amount);
+    sendRequest.aesKey = aesKey;
+    sendRequest.fee = BigInteger.ZERO;
+    sendRequest.feePerKb = feePerKB;
+    sendRequest.changeAddress = change;
+
+    // Attempt to complete it
+
+    try {
 
       // Complete it (works out fee and signs tx)
       wallet.completeTx(sendRequest);
 
       // Commit to the wallet
       wallet.commitTx(sendRequest.tx);
-      transactionCreatedOk = true;
-      CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(sendRequest.tx.getHashAsString(), amount, BigInteger.ZERO, destinationAddress, changeAddress,
-              true, null, null));
-    } catch (KeyCrypterException | InsufficientMoneyException | VerificationException | AddressFormatException e1) {
-      String message = e1.getMessage();
-      log.error(message);
 
-      // Declare the transaction creation a failure
-      String transactionId = null;
-      if (sendRequest != null && sendRequest.tx != null) {
-        transactionId = sendRequest.tx.getHashAsString();
-      }
-      CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(transactionId, amount, BigInteger.ZERO, destinationAddress, changeAddress,
-              false, "core_the_error_was", new String[]{message}));
+      // Fire a successful transaction creation event
+      CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
+        sendRequest.tx.getHashAsString(),
+        amount,
+        BigInteger.ZERO,
+        destinationAddress,
+        changeAddress,
+        true,
+        null,
+        null
+      ));
+
+    } catch (KeyCrypterException | InsufficientMoneyException | VerificationException e) {
+
+      log.error(e.getMessage(), e);
+
+      String transactionId = sendRequest.tx != null ? sendRequest.tx.getHashAsString() : "?";
+
+      // Fire a failed transaction creation event
+      CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
+        transactionId,
+        amount,
+        BigInteger.ZERO,
+        destinationAddress,
+        changeAddress,
+        false,
+        "core_the_error_was", // TODO Consider CoreMessageKey
+        new String[]{e.getMessage()}));
+
+      // We cannot proceed to broadcast
+      return;
     }
 
     log.debug("Just about to broadcast transaction");
-    if (transactionCreatedOk) {
-      try {
-        // Ping the peers to check the bitcoin network connection
-        if (!pingPeers()) {
-          // Declare the send a failure
-          CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
-                  false, "core_could_not_connect_to_bitcoin_network", new String[]{"All pings failed"}));
-          return;
-        }
-
-        // Broadcast
-        peerGroup.broadcastTransaction(sendRequest.tx);
-
-        log.debug("Just broadcast transaction '" + Utils.bytesToHexString(sendRequest.tx.bitcoinSerialize()) + "'");
-
-        // Declare the send a success
-        CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
-                true, "core_bitcoin_sent_ok", null));
-      } catch (VerificationException e1) {
-        String message = e1.getMessage();
-        log.error(message);
-
+    try {
+      // Ping the peers to check the bitcoin network connection
+      if (!pingPeers()) {
         // Declare the send a failure
-        CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(amount, BigInteger.ZERO, destinationAddress, changeAddress,
-                false, "core_the_error_was", new String[]{message}));
+        CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(
+          amount,
+          BigInteger.ZERO,
+          destinationAddress,
+          changeAddress,
+          false,
+          "core_could_not_connect_to_bitcoin_network",
+          new String[]{"All pings failed"} // TODO Is this meaningful?
+        ));
+
+        // Prevent a fall-through to success
+        return;
       }
 
-      log.debug("Send coins has completed");
-    } else {
-      log.debug("Not attempting to send the transaction as it was not constructed correctly.");
+      // Broadcast
+      peerGroup.broadcastTransaction(sendRequest.tx);
+
+      log.debug("Just broadcast transaction '" + Utils.bytesToHexString(sendRequest.tx.bitcoinSerialize()) + "'");
+
+      // Declare the send a success
+      CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(
+        amount,
+        BigInteger.ZERO,
+        destinationAddress,
+        changeAddress,
+        true,
+        "core_bitcoin_sent_ok",
+        null
+      ));
+    } catch (VerificationException e) {
+      log.error(e.getMessage(), e);
+
+      // Declare the send a failure
+      CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(
+        amount,
+        BigInteger.ZERO,
+        destinationAddress,
+        changeAddress,
+        false,
+        "core_the_error_was",
+        new String[]{e.getMessage()}
+      ));
+
+      // Prevent a fall-through to success
+      return;
+
     }
+
+    log.debug("Send coins has completed");
   }
 
   /**
    * <p>Download the block chain</p>
    */
   public void downloadBlockChain() {
+
     getExecutorService().submit(new Runnable() {
       @Override
       public void run() {
+
         Preconditions.checkNotNull(peerGroup, "'peerGroup' must be present");
-        log.debug("Downloading blockchain");
+
+        log.debug("Downloading blockchain...");
+
+        // This method blocks until completed but fires events along the way
         peerGroup.downloadBlockChain();
+
+        log.debug("Blockchain downloaded");
 
       }
     });
@@ -295,11 +385,12 @@ public class BitcoinNetworkService extends AbstractService {
    */
   // TODO once working should be in executor
   public void replayWallet(DateTime dateToReplayFrom) throws IOException, BlockStoreException {
+
     Preconditions.checkNotNull(dateToReplayFrom);
     Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletData().isPresent());
 
     log.info("Starting replay of wallet with id '" + WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()
-            + "' from date " + dateToReplayFrom);
+      + "' from date " + dateToReplayFrom);
 
     // TODO the current best height should be remembered and used to generate percentage complete as then if the peer is replaced the percentage increases monotomically
 
@@ -325,6 +416,7 @@ public class BitcoinNetworkService extends AbstractService {
    * <p>Create a new peer group</p>
    */
   private void createNewPeerGroup() {
+
     peerGroup = new PeerGroup(NETWORK_PARAMETERS, blockChain);
     peerGroup.setFastCatchupTimeSecs(0); // genesis block
     peerGroup.setUserAgent(InstallationManager.MBHD_APP_NAME, Configurations.APP_VERSION);
@@ -347,6 +439,7 @@ public class BitcoinNetworkService extends AbstractService {
    * @return changeAddress The next change address as a string
    */
   public String getNextChangeAddress() {
+
     Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletData().isPresent());
     Preconditions.checkNotNull(WalletManager.INSTANCE.getCurrentWalletData().get().getWallet());
     Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletData().get().getWallet().getKeychainSize() > 0);
@@ -362,6 +455,7 @@ public class BitcoinNetworkService extends AbstractService {
    * @return true is one or more peers respond to the ping
    */
   public boolean pingPeers() {
+
     List<Peer> connectedPeers = peerGroup.getConnectedPeers();
     boolean atLeastOnePingWorked = false;
     if (connectedPeers != null) {
