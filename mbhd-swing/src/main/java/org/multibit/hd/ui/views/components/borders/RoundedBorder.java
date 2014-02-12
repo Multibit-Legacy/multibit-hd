@@ -40,7 +40,7 @@ public class RoundedBorder extends AbstractBorder {
    */
   public RoundedBorder(Color borderColor) {
 
-    this(borderColor, MultiBitUI.CORNER_RADIUS);
+    this(borderColor, MultiBitUI.COMPONENT_CORNER_RADIUS);
 
   }
 

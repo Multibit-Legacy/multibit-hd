@@ -27,10 +27,26 @@ public class Images {
 
 
   /**
-   *
+   * @return A new "user" image icon suitable for use in tables
+   */
+  public static ImageIcon newUserIcon() {
+
+    final Icon icon;
+
+    icon = AwesomeDecorator.createIcon(
+      AwesomeIcon.USER,
+      Themes.currentTheme.text(),
+      MultiBitUI.LARGE_ICON_SIZE
+    );
+
+    return ImageDecorator.toImageIcon(icon);
+
+  }
+
+  /**
    * @param style The star style
    *
-   * @return A new "star" image icon
+   * @return A new "star" image icon suitable for use in tables
    */
   public static ImageIcon newStarIcon(StarStyle style) {
 
@@ -52,7 +68,7 @@ public class Images {
         );
         break;
       case FILL_1:
-        icon =AwesomeDecorator.createIcon(
+        icon = AwesomeDecorator.createIcon(
           AwesomeIcon.STAR,
           Themes.currentTheme.warningAlertBackground(),
           MultiBitUI.SMALL_ICON_SIZE

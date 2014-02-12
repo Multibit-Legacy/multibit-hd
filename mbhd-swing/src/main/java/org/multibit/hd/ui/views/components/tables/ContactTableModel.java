@@ -1,15 +1,21 @@
 package org.multibit.hd.ui.views.components.tables;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.StarStyle;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.gravatar.Gravatars;
 import org.multibit.hd.ui.views.components.ImageDecorator;
 import org.multibit.hd.ui.views.components.Images;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import java.awt.image.BufferedImage;
 import java.util.List;
 
 /**
@@ -58,22 +64,38 @@ public class ContactTableModel extends AbstractTableModel {
     int row = 0;
     for (Contact contact : contacts) {
 
-      final ImageIcon gravatar = ImageDecorator.toImageIcon(
-        ImageDecorator.applyRoundedCorners(
-          Gravatars.retrieveGravatar(contact.getEmail().or("nobody@example.org")).get(), 20)
-      );
-
+      // Create the star icon
       final ImageIcon starIcon = Images.newStarIcon(contact.getStarStyle());
 
       // Build row manually to allow for flexible column index reporting
-      Object[] rowData = new Object[COLUMN_COUNT];
+      final Object[] rowData = new Object[COLUMN_COUNT];
       rowData[CHECKBOX_COLUMN_INDEX] = false;
       rowData[STAR_COLUMN_INDEX] = starIcon;
       rowData[NAME_COLUMN_INDEX] = contact.getName();
       rowData[EMAIL_COLUMN_INDEX] = contact.getEmail().or("");
       rowData[ADDRESS_COLUMN_INDEX] = contact.getBitcoinAddress().or("");
       rowData[TAG_COLUMN_INDEX] = Joiner.on(" ").join(contact.getTags());
-      rowData[GRAVATAR_COLUMN_INDEX] = gravatar;
+
+      // Ensure we download the Gravatar asynchronously
+      final ListenableFuture<Optional<BufferedImage>> imageFuture = Gravatars.retrieveGravatar(contact.getEmail().or("nobody@example.org"));
+      Futures.addCallback(imageFuture, new FutureCallback<Optional<BufferedImage>>() {
+
+        // we want this handler to run immediately after we push the big red button!
+        public void onSuccess(Optional<BufferedImage> image) {
+          if (image.isPresent()) {
+            final ImageIcon gravatar = ImageDecorator.toImageIcon(
+              ImageDecorator.applyRoundedCorners(image.get(), MultiBitUI.IMAGE_CORNER_RADIUS)
+            );
+            rowData[GRAVATAR_COLUMN_INDEX] = gravatar;
+          } else {
+            rowData[GRAVATAR_COLUMN_INDEX] = Images.newUserIcon();
+          }
+        }
+
+        public void onFailure(Throwable thrown) {
+          rowData[GRAVATAR_COLUMN_INDEX] = Images.newUserIcon();
+        }
+      });
 
       data[row] = rowData;
 

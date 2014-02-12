@@ -34,7 +34,7 @@ public class RoundedPanel extends JPanel {
 
     this.shadowColor = Color.BLACK;
     this.shadowAlpha = 127;
-    this.cornerRadius = MultiBitUI.CORNER_RADIUS;
+    this.cornerRadius = MultiBitUI.COMPONENT_CORNER_RADIUS;
 
   }
 

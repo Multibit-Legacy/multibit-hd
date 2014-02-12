@@ -41,7 +41,11 @@ public interface MultiBitUI {
   /**
    * The corner radius to use for rounded rectangles (e.g. panels, text fields etc)
    */
-  int CORNER_RADIUS = 10;
+  int COMPONENT_CORNER_RADIUS = 10;
+  /**
+   * The corner radius to use for images (e.g. gravatars etc)
+   */
+  int IMAGE_CORNER_RADIUS = 20;
 
   // Fonts
 

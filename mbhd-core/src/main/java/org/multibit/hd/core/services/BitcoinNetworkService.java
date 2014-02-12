@@ -30,6 +30,8 @@ import org.spongycastle.crypto.params.KeyParameter;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -71,7 +73,8 @@ public class BitcoinNetworkService extends AbstractService {
     CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkNotInitialised());
 
     try {
-      // check if there is a wallet - if there is no wallet the network will not start (there's nowhere to put the blockchain)
+
+      // Check if there is a wallet - if there is no wallet the network will not start (there's nowhere to put the blockchain)
       if (!WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
         log.debug("Not starting bitcoin network service as there is currently no wallet.");
         return;
@@ -104,7 +107,13 @@ public class BitcoinNetworkService extends AbstractService {
    * @throws IOException
    */
   private void restartNetwork() throws BlockStoreException, IOException {
+
     requireSingleThreadExecutor();
+
+    // Check if there is a network connection
+    if (!isNetworkPresent()) {
+      return;
+    }
 
     log.debug("Creating blockchain ...");
     blockChain = new BlockChain(NETWORK_PARAMETERS, blockStore);
@@ -475,5 +484,17 @@ public class BitcoinNetworkService extends AbstractService {
     }
 
     return atLeastOnePingWorked;
+  }
+
+  private boolean isNetworkPresent() {
+
+    final String dnsSeed = MainNetParams.get().getDnsSeeds()[0];
+
+    // Attempt to lookup the address
+    try {
+      return InetAddress.getAllByName(dnsSeed) != null;
+    } catch (UnknownHostException e) {
+      return false;
+    }
   }
 }

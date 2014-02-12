@@ -1,6 +1,9 @@
 package org.multibit.hd.ui.views.components.enter_recipient;
 
 import com.google.common.base.Optional;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.ui.gravatar.Gravatars;
@@ -89,7 +92,6 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
 
     Optional<Recipient> currentRecipient = getModel().get().getRecipient();
 
-    boolean showGravatar = false;
     if (selectedItem instanceof Recipient) {
 
       // We have a select from the drop down
@@ -112,22 +114,30 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
           // We have an email address
           String emailAddress = selectedRecipient.getContact().get().getEmail().get();
 
-          Optional<BufferedImage> image = Gravatars.retrieveGravatar(emailAddress);
+          final ListenableFuture<Optional<BufferedImage>> imageFuture = Gravatars.retrieveGravatar(emailAddress);
+          Futures.addCallback(imageFuture, new FutureCallback<Optional<BufferedImage>>() {
 
-          if (image.isPresent()) {
-            imageLabel.setIcon(new ImageIcon(image.get()));
-            imageLabel.setVisible(true);
-            showGravatar = true;
-          }
+            // we want this handler to run immediately after we push the big red button!
+            public void onSuccess(Optional<BufferedImage> image) {
+              if (image.isPresent()) {
+
+                imageLabel.setIcon(new ImageIcon(image.get()));
+                imageLabel.setVisible(true);
+              }
+            }
+
+            public void onFailure(Throwable thrown) {
+              imageLabel.setVisible(false);
+            }
+          });
+
+        } else {
+          imageLabel.setVisible(false);
         }
       }
     } else {
       // Create a recipient based on the text entry
       currentRecipient = Optional.of(new Recipient((String) selectedItem));
-    }
-
-    // There is no gravatar to show
-    if (!showGravatar) {
       imageLabel.setVisible(false);
     }
 
