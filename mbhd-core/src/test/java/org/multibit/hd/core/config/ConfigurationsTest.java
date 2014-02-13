@@ -34,7 +34,7 @@ public class ConfigurationsTest {
     Configuration configuration = Configurations.newDefaultConfiguration();
 
     // Bitcoin
-    assertThat(configuration.getBitcoinConfiguration().getBitcoinSymbol()).isEqualTo("ICON");
+    assertThat(configuration.getBitcoinConfiguration().getBitcoinSymbol()).isEqualTo("MBTC");
 
     // Internationalisation
     assertThat(configuration.getLocale().getLanguage()).isEqualTo("en_gb");
@@ -55,7 +55,7 @@ public class ConfigurationsTest {
     Properties properties = new ConfigurationWriteAdapter(configuration).adapt();
 
     // Bitcoin
-    assertThat(properties.get(BITCOIN_SYMBOL)).isEqualTo("ICON");
+    assertThat(properties.get(BITCOIN_SYMBOL)).isEqualTo("MBTC");
 
     // Internationalisation
     assertThat(properties.get(I18N_LOCALE).toString()).isEqualTo("en_gb");
