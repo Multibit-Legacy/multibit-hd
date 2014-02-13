@@ -22,11 +22,11 @@ public enum BitcoinSymbol {
   /**
    * The Font Awesome icon with milli
    */
-  MICON("\uf15a", new BigDecimal(1_000), 5),
+  MICON("m\uf15a", new BigDecimal(1_000), 5),
   /**
    * The Font Awesome icon with micro
    */
-  UICON("\uf15a", new BigDecimal(1_000_000), 2),
+  UICON("\u0085\uf15a", new BigDecimal(1_000_000), 2),
   /**
    * The current de facto standard but may be superseded (cannot be an ISO standard)
    */

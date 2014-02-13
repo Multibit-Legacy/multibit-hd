@@ -18,9 +18,9 @@ public class TransactionTableModel extends AbstractTableModel {
 
   private String[] columnNames = {
           "Status",
+          "Date",
           "Type",
           "Depth",
-          "Date",
           "Amount (BTC)"
   };
 
@@ -42,9 +42,9 @@ public class TransactionTableModel extends AbstractTableModel {
 
       Object[] rowData = new Object[]{
               transaction.getStatus(),
+              transaction.getUpdateTime(),
               transaction.getConfidenceType(),
               transaction.getDepth(),
-              transaction.getUpdateTime(),
               transaction.getAmountBTC()
       };
 
