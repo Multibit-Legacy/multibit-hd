@@ -23,11 +23,11 @@ public class TrailingJustifiedDateRenderer extends DefaultTableCellRenderer {
 
   JLabel label;
 
-  private static final int TABLE_BORDER = 3;
+  public static final int TABLE_BORDER = 3;
+
+  public static final String SPACER = "   "; // 3 spaces
 
   private int selectedRow;
-
-  private static final String SPACER = "   "; // 3 spaces
 
   public TrailingJustifiedDateRenderer() {
     label = new JLabel();
@@ -68,7 +68,6 @@ public class TrailingJustifiedDateRenderer extends DefaultTableCellRenderer {
         label.setBackground(StripedTable.alternateColor);
       } else {
         label.setBackground(StripedTable.rowColor);
-        label.setOpaque(true);
       }
     }
 

@@ -20,6 +20,7 @@ public class TransactionTableModel extends AbstractTableModel {
 
   public static final int STATUS_COLUMN_INDEX = 0;
   public static final int DATE_COLUMN_INDEX = 1;
+  public static final int AMOUNT_BTC_COLUMN_INDEX = 4;
 
   private static final Logger log = LoggerFactory.getLogger(TransactionTableModel.class);
 
@@ -58,10 +59,9 @@ public class TransactionTableModel extends AbstractTableModel {
       data[row] = rowData;
 
       row++;
-
-      if (fireTableDataChanged) {
-        this.fireTableDataChanged();
-      }
+    }
+    if (fireTableDataChanged) {
+      fireTableDataChanged();
     }
   }
 
@@ -82,7 +82,7 @@ public class TransactionTableModel extends AbstractTableModel {
       return data[row][col];
     } catch (NullPointerException npe) {
       log.error("NullPointerException reading row = " + row + ", column = " + col);
-      throw npe;
+      return "";
     }
   }
 
