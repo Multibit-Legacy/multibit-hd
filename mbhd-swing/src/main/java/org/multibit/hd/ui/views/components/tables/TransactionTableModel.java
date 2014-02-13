@@ -21,6 +21,8 @@ public class TransactionTableModel extends AbstractTableModel {
 
   public static final int STATUS_COLUMN_INDEX = 0;
   public static final int DATE_COLUMN_INDEX = 1;
+  public static final int TYPE_COLUMN_INDEX = 2;
+  public static final int DESCRIPTION_COLUMN_INDEX = 3;
   public static final int AMOUNT_BTC_COLUMN_INDEX = 4;
 
   private static final Logger log = LoggerFactory.getLogger(TransactionTableModel.class);
@@ -29,7 +31,7 @@ public class TransactionTableModel extends AbstractTableModel {
           "Status",
           "Date",
           "Type",
-          "Depth",
+          "Description",
           "Amount (" + BitcoinSymbol.current().getSymbol() + ")"
   };
 
@@ -41,6 +43,7 @@ public class TransactionTableModel extends AbstractTableModel {
 
   /**
    * Set the transactions into the table
+   *
    * @param transactions the transactions to show in the table
    */
   public void setTransactions(Set<TransactionData> transactions, boolean fireTableDataChanged) {
@@ -52,8 +55,8 @@ public class TransactionTableModel extends AbstractTableModel {
       Object[] rowData = new Object[]{
               transaction.getStatus(),
               transaction.getUpdateTime(),
-              transaction.getConfidenceType(),
-              transaction.getDepth(),
+              transaction.getType(),
+              transaction.getDescription(),
               transaction.getAmountBTC()
       };
 

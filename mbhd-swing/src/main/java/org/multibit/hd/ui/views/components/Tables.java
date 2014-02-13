@@ -77,7 +77,7 @@ public class Tables {
     table.setShowHorizontalLines(true);
     table.setShowVerticalLines(false);
 
-    table.setRowHeight(MultiBitUI.LARGE_ICON_SIZE + 10);
+    table.setRowHeight(40);
     table.setAutoCreateRowSorter(true);
     table.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
     table.setRowSelectionAllowed(true);
@@ -91,7 +91,10 @@ public class Tables {
     // Date column
     TableColumn dateTableColumn = table.getColumnModel().getColumn(TransactionTableModel.DATE_COLUMN_INDEX);
     dateTableColumn.setCellRenderer(Renderers.newTrailingJustifiedDateRenderer());
-    resizeColumn(table, TransactionTableModel.DATE_COLUMN_INDEX, 180, 240);
+    resizeColumn(table, TransactionTableModel.DATE_COLUMN_INDEX, 150, 200);
+
+    // Type column
+    resizeColumn(table, TransactionTableModel.TYPE_COLUMN_INDEX, 80, 100);
 
     // Amount BTC column
     TableColumn amountBTCTableColumn = table.getColumnModel().getColumn(TransactionTableModel.AMOUNT_BTC_COLUMN_INDEX);
