@@ -16,6 +16,9 @@ import java.util.Set;
  */
 public class TransactionTableModel extends AbstractTableModel {
 
+  public static final int STATUS_COLUMN_INDEX = 0;
+  public static final int DATE_COLUMN_INDEX = 1;
+
   private String[] columnNames = {
           "Status",
           "Date",
