@@ -83,7 +83,7 @@ public class Configurations {
     properties.put(APP_VERSION, "0.0.1");
 
     // Bitcoin
-    properties.put(BITCOIN_SYMBOL, "ICON");
+    properties.put(BITCOIN_SYMBOL, "MBTC");
 
     // Localisation
     properties.put(I18N_LOCALE, "en_gb");

@@ -27,6 +27,8 @@ public class Tables {
 
   private static TableRowSorter<TableModel> rowSorter;
 
+  private static int SPACER = 10;
+
   /**
    * Utilities have no public constructor
    */
@@ -48,15 +50,15 @@ public class Tables {
     table.setShowHorizontalLines(true);
     table.setShowVerticalLines(false);
 
-    table.setRowHeight(MultiBitUI.LARGE_ICON_SIZE + 10);
+    table.setRowHeight(MultiBitUI.LARGE_ICON_SIZE + SPACER);
     table.setAutoCreateRowSorter(true);
     table.setRowSelectionAllowed(false);
     table.setCellSelectionEnabled(false);
 
     // Set preferred widths
-    resizeColumn(table, ContactTableModel.STAR_COLUMN_INDEX, MultiBitUI.NORMAL_ICON_SIZE, MultiBitUI.NORMAL_ICON_SIZE);
-    resizeColumn(table, ContactTableModel.CHECKBOX_COLUMN_INDEX, MultiBitUI.NORMAL_ICON_SIZE, MultiBitUI.NORMAL_ICON_SIZE);
-    resizeColumn(table, ContactTableModel.GRAVATAR_COLUMN_INDEX, MultiBitUI.LARGE_ICON_SIZE, MultiBitUI.LARGE_ICON_SIZE);
+    resizeColumn(table, ContactTableModel.STAR_COLUMN_INDEX, MultiBitUI.NORMAL_ICON_SIZE + SPACER);
+    resizeColumn(table, ContactTableModel.CHECKBOX_COLUMN_INDEX, MultiBitUI.NORMAL_ICON_SIZE + SPACER);
+    resizeColumn(table, ContactTableModel.GRAVATAR_COLUMN_INDEX, MultiBitUI.LARGE_ICON_SIZE + SPACER);
 
     return table;
   }
@@ -77,6 +79,9 @@ public class Tables {
 
     table.setRowHeight(MultiBitUI.LARGE_ICON_SIZE + 10);
     table.setAutoCreateRowSorter(true);
+    table.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+    table.setRowSelectionAllowed(true);
+    table.setColumnSelectionAllowed(false);
 
     // Status column
     TableColumn statusTableColumn = table.getColumnModel().getColumn(TransactionTableModel.STATUS_COLUMN_INDEX);
@@ -148,16 +153,8 @@ public class Tables {
     label.setHorizontalAlignment(JLabel.CENTER);
   }
 
-  /**
-   * <p>Remove a column from the table view</p>
-   *
-   * @param table       The table
-   * @param columnIndex The column index
-   */
-  private static void removeColumn(StripedTable table, int columnIndex) {
-    String id = table.getColumnName(columnIndex);
-    TableColumn column = table.getColumn(id);
-    table.removeColumn(column);
+  private static void resizeColumn(StripedTable table, int columnIndex, int preferredWidth) {
+    resizeColumn(table, columnIndex, preferredWidth, preferredWidth);
   }
 
   /**

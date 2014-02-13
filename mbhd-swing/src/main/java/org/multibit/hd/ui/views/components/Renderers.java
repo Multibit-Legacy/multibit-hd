@@ -1,8 +1,8 @@
 package org.multibit.hd.ui.views.components;
 
+import org.multibit.hd.ui.views.components.renderers.AmountBTCRenderer;
 import org.multibit.hd.ui.views.components.renderers.RAGStatusRenderer;
 import org.multibit.hd.ui.views.components.renderers.TrailingJustifiedDateRenderer;
-import org.multibit.hd.ui.views.components.renderers.TrailingJustifiedNumericRenderer;
 
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -32,6 +32,6 @@ public class Renderers {
   }
 
   public static DefaultTableCellRenderer newTrailingJustifiedNumericRenderer() {
-    return new TrailingJustifiedNumericRenderer();
+    return new AmountBTCRenderer();
   }
 }

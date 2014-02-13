@@ -30,7 +30,7 @@ public class Formats {
    *
    * @param satoshis The amount in satoshis
    *
-   * @return The left [0] and right [0] components suitable for presentation as a balance with no symbolic decoration
+   * @return The left [0] and right [1] components suitable for presentation as a balance with no symbolic decoration
    */
   public static String[] formatSatoshisAsSymbolic(BigInteger satoshis) {
 
