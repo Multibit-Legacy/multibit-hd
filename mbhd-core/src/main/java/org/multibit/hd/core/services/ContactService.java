@@ -1,5 +1,6 @@
 package org.multibit.hd.core.services;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.multibit.hd.core.dto.Contact;
@@ -54,6 +55,8 @@ public class ContactService {
    * <p>Reduced visibility constructor to prevent accidental instance creation outside of CoreServices.</p>
    */
   ContactService(WalletId walletId) {
+
+    Preconditions.checkNotNull(walletId, "'walletId' must be present");
 
     // Work out where to store the contacts for this wallet id.
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();

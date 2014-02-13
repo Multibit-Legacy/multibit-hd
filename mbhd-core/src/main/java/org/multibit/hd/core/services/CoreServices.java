@@ -1,5 +1,6 @@
 package org.multibit.hd.core.services;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.xeiam.xchange.Exchange;
@@ -130,6 +131,8 @@ public class CoreServices {
    * @return The contact service for a wallet
    */
   public static ContactService getOrCreateContactService(WalletId walletId) {
+
+    Preconditions.checkNotNull(walletId, "'walletId' must be present");
 
     // Check if the contact service has been created for this wallet ID
     if (!contactServiceMap.containsKey(walletId)) {

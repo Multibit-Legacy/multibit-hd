@@ -4,8 +4,8 @@ import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.xeiam.xchange.currency.MoneyUtils;
 import com.xeiam.xchange.mtgox.v2.MtGoxExchange;
-import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -120,10 +120,12 @@ public class MultiBitHD {
     BackupManager.INSTANCE.initialise(applicationDataDirectory, null); // TODO load up the cloud backup if available from properties and insert here
 
     // TODO Remove this when the Contact screen is ready
-    CoreServices
-      .getOrCreateContactService(
-        WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()
-      ).addDemoContacts();
+    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
+      CoreServices
+        .getOrCreateContactService(
+          WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()
+        ).addDemoContacts();
+    }
 
   }
 

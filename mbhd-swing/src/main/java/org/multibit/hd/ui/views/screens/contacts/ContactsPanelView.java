@@ -116,8 +116,13 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
     return contentPanel;
   }
 
+  // TODO Move this into a wallet service
   private WalletId getCurrentWalletId() {
-    return WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId();
+    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
+      return WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId();
+    }
+
+    return new WalletId("66666666-77777777-88888888-99999999-aaaaaaaa");
   }
 
   /**

@@ -63,25 +63,26 @@ public class Components {
     JPanel panel = Panels.newPanel(layout);
 
     // TODO Add this to a wallet service
-    WalletData walletData = WalletManager.INSTANCE.getCurrentWalletData().get();
-    String applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath();
-    File walletFile = WalletManager.INSTANCE.getCurrentWalletFilename().get();
-    String walletDirectory = walletFile.getParentFile().getName();
+    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
+      WalletData walletData = WalletManager.INSTANCE.getCurrentWalletData().get();
+      String applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath();
+      File walletFile = WalletManager.INSTANCE.getCurrentWalletFilename().get();
+      String walletDirectory = walletFile.getParentFile().getName();
 
-    ContactService contactService = CoreServices.getOrCreateContactService(walletData.getWalletId());
-    int contactCount = contactService.allContacts(1,100).size();
+      ContactService contactService = CoreServices.getOrCreateContactService(walletData.getWalletId());
+      int contactCount = contactService.allContacts(1, 100).size();
 
-    // TODO Internationalize
-    panel.add(new JLabel("Summary"), "wrap");
-    panel.add(new JLabel("Application directory:"));
-    panel.add(new JLabel(applicationDirectory), "push,wrap");
-    panel.add(new JLabel("Wallet directory:"));
-    panel.add(new JLabel(walletDirectory), "push,wrap");
-    panel.add(new JLabel("Contacts:"));
-    panel.add(new JLabel(String.valueOf(contactCount)), "push,wrap");
-    panel.add(new JLabel("Transactions:"));
-    panel.add(new JLabel("165"), "push,wrap");
-
+      // TODO Internationalize
+      panel.add(new JLabel("Summary"), "wrap");
+      panel.add(new JLabel("Application directory:"));
+      panel.add(new JLabel(applicationDirectory), "push,wrap");
+      panel.add(new JLabel("Wallet directory:"));
+      panel.add(new JLabel(walletDirectory), "push,wrap");
+      panel.add(new JLabel("Contacts:"));
+      panel.add(new JLabel(String.valueOf(contactCount)), "push,wrap");
+      panel.add(new JLabel("Transactions:"));
+      panel.add(new JLabel("165"), "push,wrap");
+    }
     return panel;
   }
 

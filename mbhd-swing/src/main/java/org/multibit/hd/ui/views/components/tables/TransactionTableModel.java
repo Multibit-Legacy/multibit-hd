@@ -79,6 +79,9 @@ public class TransactionTableModel extends AbstractTableModel {
   }
 
   public Object getValueAt(int row, int col) {
+    if (data.length == 0) {
+      return "";
+    }
     try {
       return data[row][col];
     } catch (NullPointerException npe) {
