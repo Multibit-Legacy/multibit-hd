@@ -7,10 +7,12 @@ import org.multibit.hd.core.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.ModelAndView;
+import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseModel;
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseView;
+import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
@@ -59,7 +61,9 @@ public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<Wel
   @Override
   public JPanel newWizardViewPanel() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
+    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.GLOBE);
+
+    panel.setLayout(new MigLayout(
       "fill,insets 0", // Layout constraints
       "[]", // Column constraints
       "[][]" // Row constraints

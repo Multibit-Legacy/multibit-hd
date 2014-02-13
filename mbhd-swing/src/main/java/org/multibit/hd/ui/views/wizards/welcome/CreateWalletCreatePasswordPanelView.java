@@ -6,7 +6,9 @@ import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordView;
+import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
+import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
@@ -51,7 +53,9 @@ public class CreateWalletCreatePasswordPanelView extends AbstractWizardPanelView
   @Override
   public JPanel newWizardViewPanel() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
+    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.GLOBE);
+
+    panel.setLayout(new MigLayout(
       "fill,insets 0", // Layout constraints
       "[]", // Column constraints
       "[]10[]" // Row constraints

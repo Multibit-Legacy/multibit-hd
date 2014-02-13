@@ -5,9 +5,11 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.*;
+import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSummaryModel;
 import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSummaryView;
+import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
@@ -59,7 +61,9 @@ public class RestoreWalletSelectBackupPanelView extends AbstractWizardPanelView<
   @Override
   public JPanel newWizardViewPanel() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
+    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.GLOBE);
+
+    panel.setLayout(new MigLayout(
       "fill,insets 0", // Layout constraints
       "[][][]", // Column constraints
       "[]10[]" // Row constraints

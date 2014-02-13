@@ -58,22 +58,6 @@ public class ImageDecorator {
   }
 
   /**
-   * @return Rendering hints for anti-aliased and symmetrical output (smooth)
-   */
-  public static Map<RenderingHints.Key, ?> smoothRenderingHints() {
-
-    Map<RenderingHints.Key, Object> hints = Maps.newHashMap();
-
-    // Anti-aliasing to ensure smooth edges
-    hints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-    // Pure strokes to ensure symmetrical corners
-    hints.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-
-    return hints;
-  }
-
-  /**
    * @param icon The icon
    *
    * @return An image icon suitable for use in tables etc
@@ -97,6 +81,7 @@ public class ImageDecorator {
     BufferedImage image = gc.createCompatibleImage(w, h, Transparency.BITMASK);
 
     Graphics2D g = image.createGraphics();
+    g.setRenderingHints(ImageDecorator.smoothRenderingHints());
 
     // Paint the icon on to it
     icon.paintIcon(null, g, 0, 0);
@@ -105,6 +90,22 @@ public class ImageDecorator {
 
     return toImageIcon(image);
 
+  }
+
+  /**
+   * @return Rendering hints for anti-aliased and symmetrical output (smooth)
+   */
+  public static Map<RenderingHints.Key, ?> smoothRenderingHints() {
+
+    Map<RenderingHints.Key, Object> hints = Maps.newHashMap();
+
+    // Anti-aliasing to ensure smooth edges
+    hints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+    // Pure strokes to ensure symmetrical corners
+    hints.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+
+    return hints;
   }
 
   /**

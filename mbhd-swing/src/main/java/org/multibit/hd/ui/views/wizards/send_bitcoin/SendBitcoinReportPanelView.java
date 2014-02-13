@@ -11,8 +11,10 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
+import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
@@ -72,7 +74,9 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   @Override
   public JPanel newWizardViewPanel() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
+    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.CLOUD_UPLOAD);
+
+    panel.setLayout(new MigLayout(
             "fill,insets 0", // Layout constraints
             "[][][]", // Column constraints
             "[]10[]10[]" // Row constraints

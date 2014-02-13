@@ -28,9 +28,8 @@ import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.FooterView;
 import org.multibit.hd.ui.views.HeaderView;
 import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.screens.AbstractScreenView;
-import org.multibit.hd.ui.views.screens.Screen;
-import org.multibit.hd.ui.views.screens.Screens;
+import org.multibit.hd.ui.views.wizards.AbstractWizard;
+import org.multibit.hd.ui.views.wizards.Wizards;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +59,39 @@ public class ComponentTestBed {
 
   private JFrame frame = null;
   private JPanel contentPanel = null;
+
+  /**
+   * <p>Creates the panel under test</p>
+   * <h3>Welcome wizard</h3>
+   * <pre>
+   * AbstractWizard wizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE);
+   * wizard.show(WelcomeWizardState.WELCOME_SELECT_LANGUAGE.name());
+   * return wizard.getWizardPanel();
+   * </pre>
+   * <h3>Send bitcoin wizard</h3>
+   * <pre>
+   * AbstractWizard wizard = Wizards.newSendBitcoinWizard();
+   * return wizard.getWizardPanel();
+   * </pre>
+   * <h3>Footer</h3>
+   * <pre>
+   *   return newHeaderView();
+   *   return newFooterView();
+   * </pre>
+   * <h3>Detail screen</h3>
+   * <pre>
+   * AbstractScreenView screen = Screens.newScreen(Screen.CONTACTS);
+   * return screen.getScreenPanel();
+   * </pre>
+   *
+   * @return The panel under test
+   */
+  public JPanel createTestPanel() {
+
+    AbstractWizard wizard = Wizards.newSendBitcoinWizard();
+    return wizard.getWizardPanel();
+
+  }
 
   /**
    * @param args Any command line arguments for the CoreServices
@@ -108,40 +140,6 @@ public class ComponentTestBed {
     log.info("Showing component");
 
     testBed.show();
-
-  }
-
-  /**
-   * <p>Creates the panel under test</p>
-   * <h3>Welcome wizard</h3>
-   * <pre>
-   * AbstractWizard wizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE);
-   * wizard.show(WelcomeWizardState.WELCOME_SELECT_LANGUAGE.name());
-   * return wizard.getWizardPanel();
-   * </pre>
-   * <h3>Send bitcoin wizard</h3>
-   * <pre>
-   * AbstractWizard wizard = Wizards.newSendBitcoinWizard();
-   * return wizard.getWizardPanel();
-   * </pre>
-   * <h3>Footer</h3>
-   * <pre>
-   *   return newHeaderView();
-   *   return newFooterView();
-   * </pre>
-   * <h3>Detail screen</h3>
-   * <pre>
-   * AbstractScreenView screen = Screens.newScreen(Screen.CONTACTS);
-   * return screen.getScreenPanel();
-   * </pre>
-   *
-   * @return The panel under test
-   */
-  public JPanel createTestPanel() {
-
-    // Choose a panel to test
-    AbstractScreenView screen = Screens.newScreen(Screen.CONTACTS);
-    return screen.newScreenViewPanel();
 
   }
 

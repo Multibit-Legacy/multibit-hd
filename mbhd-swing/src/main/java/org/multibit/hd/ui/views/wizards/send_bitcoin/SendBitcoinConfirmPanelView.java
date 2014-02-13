@@ -11,7 +11,9 @@ import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountView;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordView;
+import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
+import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
@@ -80,7 +82,9 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     // User entered text
     notesTextArea = TextBoxes.newEnterNotes();
 
-    JPanel panel = Panels.newPanel(new MigLayout(
+    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.CLOUD_UPLOAD);
+
+    panel.setLayout(new MigLayout(
       "fillx,insets 0", // Layout constraints
       "[][]", // Column constraints
       "[]10[]10[][][]10[][]" // Row constraints

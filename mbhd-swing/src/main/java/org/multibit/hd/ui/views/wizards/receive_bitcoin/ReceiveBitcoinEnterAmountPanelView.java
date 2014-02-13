@@ -15,7 +15,9 @@ import org.multibit.hd.ui.views.components.display_qrcode.DisplayQRCodeModel;
 import org.multibit.hd.ui.views.components.display_qrcode.DisplayQRCodeView;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountModel;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountView;
+import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
+import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
@@ -86,7 +88,9 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
   @Override
   public JPanel newWizardViewPanel() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
+    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.CLOUD_DOWNLOAD);
+
+    panel.setLayout(new MigLayout(
       "fillx,insets 0", // Layout constraints
       "[][][]", // Column constraints
       "[]10[]" // Row constraints

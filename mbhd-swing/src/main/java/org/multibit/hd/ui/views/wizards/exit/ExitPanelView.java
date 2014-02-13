@@ -2,8 +2,9 @@ package org.multibit.hd.ui.views.wizards.exit;
 
 import com.google.common.base.Optional;
 import org.multibit.hd.ui.i18n.MessageKey;
-import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.panels.PanelDecorator;
+import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
@@ -43,7 +44,8 @@ public class ExitPanelView extends AbstractWizardPanelView<ExitWizardModel, Stri
   @Override
   public JPanel newWizardViewPanel() {
 
-    return Panels.newPanel();
+    return Panels.newDetailBackgroundPanel(AwesomeIcon.SIGN_OUT);
+
   }
 
   @Override

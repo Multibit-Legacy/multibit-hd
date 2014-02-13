@@ -84,6 +84,10 @@ public interface MultiBitUI {
   // Icons
 
   /**
+   * Huge icon size (e.g. detail panel background)
+   */
+  int HUGE_ICON_SIZE = 300;
+  /**
    * Large icon size (e.g. Gravatars)
    */
   int LARGE_ICON_SIZE = 60;
@@ -119,4 +123,10 @@ public interface MultiBitUI {
    */
   int SEED_PHRASE_LENGTH = 240;
 
+  // Alpha composite
+
+  /**
+   * The alpha composite to apply to the background image of a detail panel
+   */
+  float DETAIL_PANEL_BACKGROUND_ALPHA = 0.08f;
 }

@@ -6,6 +6,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.LightBoxPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.panels.RoundedPanel;
@@ -71,7 +72,7 @@ public class Panels {
   }
 
   /**
-   * @return A simple theme-aware panel with rounded corners and a single cell MigLayout
+   * @return A simple panel with rounded corners and a single cell MigLayout
    */
   public static JPanel newRoundedPanel() {
 
@@ -80,6 +81,34 @@ public class Panels {
       "[]", // Columns
       "[]" // Rows
     ));
+
+    return panel;
+
+  }
+
+  /**
+   * @param icon The Awesome icon to use as the basis of the image for consistent LaF
+   *
+   * @return A theme-aware panel with rounded corners and a single cell MigLayout
+   */
+  public static BackgroundPanel newDetailBackgroundPanel(AwesomeIcon icon) {
+
+    // Create an image from the AwesomeIcon
+    Image image = ImageDecorator.toImageIcon(AwesomeDecorator.createIcon(
+      icon,
+      Themes.currentTheme.fadedText(),
+      MultiBitUI.HUGE_ICON_SIZE
+    )).getImage();
+
+    BackgroundPanel panel = new BackgroundPanel(image, BackgroundPanel.ACTUAL);
+
+    panel.setLayout(new MigLayout(
+      "fill,insets 0", // Layout
+      "[]", // Columns
+      "[]" // Rows
+    ));
+    panel.setAlpha(MultiBitUI.DETAIL_PANEL_BACKGROUND_ALPHA);
+    panel.setPaint(Themes.currentTheme.detailPanelBackground());
 
     return panel;
 

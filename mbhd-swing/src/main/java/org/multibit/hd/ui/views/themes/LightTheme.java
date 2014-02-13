@@ -103,7 +103,7 @@ public class LightTheme implements Theme {
 
   @Override
   public Color inverseText() {
-    return new Color(0xffffff);
+    return new Color(0xfafafa);
   }
 
   @Override

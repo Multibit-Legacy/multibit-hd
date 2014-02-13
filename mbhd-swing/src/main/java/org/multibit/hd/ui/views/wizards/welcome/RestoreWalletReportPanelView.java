@@ -16,6 +16,7 @@ import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
+import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
@@ -76,7 +77,9 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
   @Override
   public JPanel newWizardViewPanel() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
+    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.GLOBE);
+
+    panel.setLayout(new MigLayout(
             "fill,insets 0", // Layout constraints
             "[][][]", // Column constraints
             "[]10[]10[]10[]" // Row constraints

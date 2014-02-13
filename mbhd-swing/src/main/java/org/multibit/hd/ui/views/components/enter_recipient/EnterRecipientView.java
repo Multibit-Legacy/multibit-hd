@@ -6,6 +6,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.Recipient;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.gravatar.Gravatars;
 import org.multibit.hd.ui.utils.ClipboardUtils;
 import org.multibit.hd.ui.views.components.*;
@@ -121,7 +122,10 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
             public void onSuccess(Optional<BufferedImage> image) {
               if (image.isPresent()) {
 
-                imageLabel.setIcon(new ImageIcon(image.get()));
+                // Apply the rounded corners
+                ImageIcon imageIcon = new ImageIcon(ImageDecorator.applyRoundedCorners(image.get(), MultiBitUI.IMAGE_CORNER_RADIUS));
+
+                imageLabel.setIcon(imageIcon);
                 imageLabel.setVisible(true);
               }
             }
