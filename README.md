@@ -21,8 +21,7 @@ MBHD is a standard Maven build, but currently relies on some snapshot builds of 
 
 In general you should check out the following from their respective source control repos and install them locally:
 
- * [MultiBit HD Hardware](https://github.com/bitcoin-solutions/mbhd-hardware) - use "master" branch
- * [Bitcoinj](https://code.google.com/p/bitcoinj/) - use "master" branch
+ * [Bitcoinj](https://code.google.com/p/bitcoinj/) - use HEAD of "master" branch
 
 Use the standard Maven build and install process for all projects:
 
