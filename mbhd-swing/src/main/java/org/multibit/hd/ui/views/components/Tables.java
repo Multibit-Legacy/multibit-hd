@@ -10,8 +10,9 @@ import org.multibit.hd.ui.views.components.tables.TransactionTableModel;
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import java.util.List;
-import java.util.Set;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
+import java.util.*;
 
 /**
  * <p>Utility to provide the following to UI:</p>
@@ -23,6 +24,8 @@ import java.util.Set;
  *  
  */
 public class Tables {
+
+  private static TableRowSorter<TableModel> rowSorter;
 
   /**
    * Utilities have no public constructor
@@ -80,6 +83,56 @@ public class Tables {
     statusTableColumn.setPreferredWidth(60); // TODO work out width from FontMetrics
     statusTableColumn.setMaxWidth(90); // TODO work out width from FontMetrics
     statusTableColumn.setCellRenderer(Renderers.newRAGStatusRenderer());
+
+    // Date column
+    TableColumn dateTableColumn = table.getColumnModel().getColumn(TransactionTableModel.DATE_COLUMN_INDEX);
+    dateTableColumn.setPreferredWidth(180); // TODO work out width from FontMetrics
+    dateTableColumn.setMaxWidth(240); // TODO work out width from FontMetrics
+    dateTableColumn.setCellRenderer(Renderers.newTrailingJustifiedDateRenderer());
+
+          // Row sorter.
+        rowSorter = new TableRowSorter<TableModel>(table.getModel());
+        table.setRowSorter(rowSorter);
+
+        // Sort by date descending.
+        List<TableRowSorter.SortKey> sortKeys = new ArrayList<TableRowSorter.SortKey>();
+        sortKeys.add(new TableRowSorter.SortKey(1, SortOrder.DESCENDING));
+        rowSorter.setSortKeys(sortKeys);
+        Comparator<Date> comparator = new Comparator<Date>() {
+            @Override
+            public int compare(Date o1, Date o2) {
+                if (o1 == null) {
+                    if (o2 == null) {
+                        return 0;
+                    } else {
+                        return 1;
+                    }
+                } else {
+                    if (o2 == null) {
+                        return -1;
+                    }
+                }
+                long n1 = o1.getTime();
+                long n2 = o2.getTime();
+                if (n1 == 0) {
+                    // Object 1 has missing date.
+                    return 1;
+                }
+                if (n2 == 0) {
+                    // Object 2 has missing date.
+                    return -1;
+                }
+                if (n1 < n2) {
+                    return -1;
+                } else if (n1 > n2) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        };
+        rowSorter.setComparator(1, comparator);
+
 
     justifyColumnHeaders(table);
     return table;

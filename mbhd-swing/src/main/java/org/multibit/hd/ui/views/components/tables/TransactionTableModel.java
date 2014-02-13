@@ -1,6 +1,8 @@
 package org.multibit.hd.ui.views.components.tables;
 
 import org.multibit.hd.core.dto.TransactionData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.Set;
@@ -19,6 +21,8 @@ public class TransactionTableModel extends AbstractTableModel {
   public static final int STATUS_COLUMN_INDEX = 0;
   public static final int DATE_COLUMN_INDEX = 1;
 
+  private static final Logger log = LoggerFactory.getLogger(TransactionTableModel.class);
+
   private String[] columnNames = {
           "Status",
           "Date",
@@ -35,7 +39,7 @@ public class TransactionTableModel extends AbstractTableModel {
 
   /**
    * Set the transactions into the table
-   * @param transactions
+   * @param transactions the transactions to show in the table
    */
   public void setTransactions(Set<TransactionData> transactions, boolean fireTableDataChanged) {
     data = new Object[transactions.size()][];
@@ -74,7 +78,12 @@ public class TransactionTableModel extends AbstractTableModel {
   }
 
   public Object getValueAt(int row, int col) {
-    return data[row][col];
+    try {
+      return data[row][col];
+    } catch (NullPointerException npe) {
+      log.error("NullPointerException reading row = " + row + ", column = " + col);
+      throw npe;
+    }
   }
 
   /**
