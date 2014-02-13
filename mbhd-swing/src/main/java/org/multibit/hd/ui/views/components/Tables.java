@@ -7,6 +7,8 @@ import org.multibit.hd.ui.views.components.tables.ContactTableModel;
 import org.multibit.hd.ui.views.components.tables.StripedTable;
 import org.multibit.hd.ui.views.components.tables.TransactionTableModel;
 
+import javax.swing.*;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.util.List;
 import java.util.Set;
@@ -31,7 +33,6 @@ public class Tables {
 
   /**
    * @param contacts The contacts to show
-   *
    * @return A new "contacts" striped table
    */
   public static StripedTable newContactsTable(List<Contact> contacts) {
@@ -59,7 +60,6 @@ public class Tables {
 
   /**
    * @param transactions The transactions to show
-   *
    * @return A new "transactions" striped table
    */
   public static StripedTable newTransactionsTable(Set<TransactionData> transactions) {
@@ -75,7 +75,20 @@ public class Tables {
     table.setRowHeight(MultiBitUI.LARGE_ICON_SIZE + 10);
     table.setAutoCreateRowSorter(true);
 
+    // Status column
+    TableColumn statusTableColumn = table.getColumnModel().getColumn(TransactionTableModel.STATUS_COLUMN_INDEX);
+    statusTableColumn.setPreferredWidth(60); // TODO work out width from FontMetrics
+    statusTableColumn.setMaxWidth(90); // TODO work out width from FontMetrics
+    statusTableColumn.setCellRenderer(Renderers.newRAGStatusRenderer());
+
+    justifyColumnHeaders(table);
     return table;
+  }
+
+  private static void justifyColumnHeaders(JTable table) {
+    TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
+    JLabel label = (JLabel) renderer;
+    label.setHorizontalAlignment(JLabel.CENTER);
   }
 
   /**
@@ -105,5 +118,6 @@ public class Tables {
     table.getColumn(id).setMaxWidth(preferredWidth);
 
   }
-
 }
+
+

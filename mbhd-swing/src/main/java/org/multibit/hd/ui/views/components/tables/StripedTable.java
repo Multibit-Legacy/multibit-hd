@@ -20,7 +20,8 @@ import java.awt.*;
  */
 public class StripedTable extends JTable {
 
-  private Color alternateColor = UIManager.getColor("Table.alternateRowColor");
+  public static Color alternateColor = UIManager.getColor("Table.alternateRowColor");
+  public static Color rowColor = Color.WHITE; // TODO centralise
 
   public StripedTable(AbstractTableModel model) {
     super(model);
@@ -100,7 +101,7 @@ public class StripedTable extends JTable {
 
     // Use custom rendering to overcome background color bug in Nimbus
     if (rowSelectionAllowed && !isRowSelected(row)) {
-      c.setBackground(row % 2 == 0 ? getBackground() : alternateColor);
+      c.setBackground(row % 2 == 0 ? rowColor : alternateColor);
     }
 
     return c;
