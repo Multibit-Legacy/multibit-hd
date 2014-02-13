@@ -34,9 +34,19 @@ public interface Theme {
   Color readOnlyBackground();
 
   /**
+   * @return The border colour for read only data display elements (like seed phrase display etc)
+   */
+  Color readOnlyBorder();
+
+  /**
    * @return The background colour for data handling elements (like text areas, tree views etc)
    */
   Color dataEntryBackground();
+
+  /**
+   * @return The border colour for data handling elements (like text areas, tree views etc)
+   */
+  Color dataEntryBorder();
 
   /**
    * @return The background colour for data handling elements (like text areas, tree views etc) with invalid data

@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.components;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.views.components.borders.TextBubbleBorder;
 import org.multibit.hd.ui.views.components.text_fields.FormattedDecimalField;
 import org.multibit.hd.ui.views.themes.Themes;
 
@@ -29,21 +30,57 @@ public class TextBoxes {
   }
 
   /**
+   * @return A new text field with default theme
+   */
+  public static JTextField newTextField(int columns) {
+
+    JTextField textField = new JTextField(columns);
+
+    // Set the theme
+    textField.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
+    textField.setBackground(Themes.currentTheme.dataEntryBackground());
+
+    return textField;
+  }
+
+  /**
+   * @return A new text field with default theme
+   */
+  public static JTextField newReadOnlyTextField(int columns) {
+
+    JTextField textField = new JTextField(columns);
+
+    // Users should not be able to change the data
+    textField.setEditable(false);
+
+    // Set the theme
+    textField.setBorder(new TextBubbleBorder(Themes.currentTheme.readOnlyBorder()));
+    textField.setBackground(Themes.currentTheme.readOnlyBackground());
+
+    return textField;
+  }
+
+  /**
    * @return A new "enter label" text field
    */
   public static JTextField newEnterLabel() {
 
-    JTextField textField = new JTextField(MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH);
+    JTextField textField = newTextField(MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH);
 
     // Limit the length of the underlying document
     DefaultStyledDocument doc = new DefaultStyledDocument();
     doc.setDocumentFilter(new DocumentMaxLengthFilter(MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH));
     textField.setDocument(doc);
 
-    // Set the theme
-    textField.setBackground(Themes.currentTheme.dataEntryBackground());
-
     return textField;
+  }
+
+  /**
+   * @return A new "enter search" text field
+   */
+  public static JTextField newEnterSearch() {
+
+    return newTextField(60);
   }
 
   /**
@@ -51,12 +88,7 @@ public class TextBoxes {
    */
   public static JTextField newSelectFile() {
 
-    JTextField textField = new JTextField(60);
-
-    // Set the theme
-    textField.setBackground(Themes.currentTheme.dataEntryBackground());
-
-    return textField;
+    return newTextField(60);
   }
 
   /**
@@ -66,14 +98,8 @@ public class TextBoxes {
    */
   public static JTextField newDisplaySeedTimestamp(String seedTimestamp) {
 
-    JTextField textField = new JTextField(20);
+    JTextField textField = newReadOnlyTextField(20);
     textField.setText(seedTimestamp);
-
-    // Users should not be able to change the timestamp
-    textField.setEditable(false);
-
-    // Set the theme
-    textField.setBackground(Themes.currentTheme.readOnlyBackground());
 
     return textField;
   }
@@ -83,12 +109,8 @@ public class TextBoxes {
    */
   public static JTextField newEnterSeedTimestamp() {
 
-    JTextField textField = new JTextField(20);
+    return newTextField(20);
 
-    // Set the theme
-    textField.setBackground(Themes.currentTheme.dataEntryBackground());
-
-    return textField;
   }
 
   /**
@@ -98,14 +120,8 @@ public class TextBoxes {
    */
   public static JTextField newDisplayBitcoinAddress(String bitcoinAddress) {
 
-    JTextField textField = new JTextField(40);
+    JTextField textField = newReadOnlyTextField(40);
     textField.setText(bitcoinAddress);
-
-    // Users should not be able to change the address
-    textField.setEditable(false);
-
-    // Set the theme
-    textField.setBackground(Themes.currentTheme.readOnlyBackground());
 
     return textField;
   }
@@ -129,6 +145,10 @@ public class TextBoxes {
 
     textField.setFont(font);
     textField.setColumns(15);
+
+    // Set the theme
+    textField.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
+    textField.setBackground(Themes.currentTheme.dataEntryBackground());
 
     return textField;
   }
@@ -156,6 +176,10 @@ public class TextBoxes {
     textField.setFont(font);
     textField.setColumns(15);
 
+    // Set the theme
+    textField.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
+    textField.setBackground(Themes.currentTheme.dataEntryBackground());
+
     return textField;
   }
 
@@ -175,6 +199,7 @@ public class TextBoxes {
     passwordField.setDocument(doc);
 
     // Set the theme
+    passwordField.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
     passwordField.setBackground(Themes.currentTheme.dataEntryBackground());
 
     return passwordField;
@@ -202,6 +227,7 @@ public class TextBoxes {
     textArea.getActionMap().put("transferFocus", transferFocus);
 
     // Set the theme
+    textArea.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
     textArea.setBackground(Themes.currentTheme.dataEntryBackground());
 
     return textArea;
@@ -220,6 +246,7 @@ public class TextBoxes {
     textArea.setEditable(false);
 
     // Set the theme
+    textArea.setBorder(new TextBubbleBorder(Themes.currentTheme.readOnlyBorder()));
     textArea.setBackground(Themes.currentTheme.readOnlyBackground());
 
     return textArea;
@@ -247,14 +274,15 @@ public class TextBoxes {
     textArea.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "transferFocus");
     textArea.getActionMap().put("transferFocus", transferFocus);
 
-    // Ensure we provide a suitable inner margin to allow letters to be clear
-    textArea.setMargin(new Insets(2, 4, 2, 4));
-
+//    // Ensure we provide a suitable inner margin to allow letters to be clear
+//    textArea.setMargin(new Insets(6, 4, 6, 4));
+//
     // Ensure line and word wrapping occur as required
     textArea.setLineWrap(true);
     textArea.setWrapStyleWord(true);
 
     // Set the theme
+    textArea.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
     textArea.setBackground(Themes.currentTheme.dataEntryBackground());
     textArea.setFont(new Font("Courier New", Font.PLAIN, 14));
 

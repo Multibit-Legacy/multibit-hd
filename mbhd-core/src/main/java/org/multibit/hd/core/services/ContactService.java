@@ -1,5 +1,6 @@
 package org.multibit.hd.core.services;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.StarStyle;
@@ -15,6 +16,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -54,7 +56,7 @@ public class ContactService {
   ContactService(WalletId walletId) {
 
     // Work out where to store the contacts for this wallet id.
-    File applicationDataDirectory = InstallationManager.createApplicationDataDirectory();
+    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
     String walletRoot = WalletManager.createWalletRoot(walletId);
     File walletDirectory = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), walletRoot);
     File contactsDirectory = new File(walletDirectory.getAbsolutePath() + File.separator + CONTACTS_DIRECTORY_NAME);
@@ -108,10 +110,10 @@ public class ContactService {
    * @param page            The page number (1-based)
    * @param contactsPerPage The 1-based number of contacts per page
    *
-   * @return A set of all Contacts for the given page
+   * @return A list of all Contacts for the given page
    */
-  public Set<Contact> allContacts(int page, int contactsPerPage) {
-    return contacts;
+  public List<Contact> allContacts(int page, int contactsPerPage) {
+    return Lists.newArrayList(contacts);
   }
 
   /**
@@ -121,11 +123,11 @@ public class ContactService {
    *
    * @return A filtered set of Contacts for the given page and query
    */
-  public Set<Contact> filterContactsByName(int page, int contactsPerPage, String query) {
+  public List<Contact> filterContactsByName(int page, int contactsPerPage, String query) {
 
     String lowerQuery = query.toLowerCase();
 
-    Set<Contact> filteredContacts = Sets.newHashSet();
+    List<Contact> filteredContacts = Lists.newArrayList();
 
     for (Contact contact : contacts) {
       if (contact.getName().toLowerCase().contains(lowerQuery)) {

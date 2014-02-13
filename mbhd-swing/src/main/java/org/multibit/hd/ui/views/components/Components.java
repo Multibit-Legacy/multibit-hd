@@ -1,7 +1,12 @@
 package org.multibit.hd.ui.views.components;
 
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.services.ContactService;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordView;
 import org.multibit.hd.ui.views.components.display_address.DisplayBitcoinAddressModel;
@@ -29,6 +34,7 @@ import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.components.select_file.SelectFileView;
 
 import javax.swing.*;
+import java.io.File;
 
 /**
  * <p>Factory to provide the following to UI:</p>
@@ -56,11 +62,23 @@ public class Components {
 
     JPanel panel = Panels.newPanel(layout);
 
+    // TODO Add this to a wallet service
+    WalletData walletData = WalletManager.INSTANCE.getCurrentWalletData().get();
+    String applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath();
+    File walletFile = WalletManager.INSTANCE.getCurrentWalletFilename().get();
+    String walletDirectory = walletFile.getParentFile().getName();
+
+    ContactService contactService = CoreServices.getOrCreateContactService(walletData.getWalletId());
+    int contactCount = contactService.allContacts(1,100).size();
+
+    // TODO Internationalize
     panel.add(new JLabel("Summary"), "wrap");
-    panel.add(new JLabel("Location:"));
-    panel.add(new JLabel("/Users/<someone>/Library/Application Support/MultiBitHD/mbhd-2412897490823174231947"), "push,wrap");
+    panel.add(new JLabel("Application directory:"));
+    panel.add(new JLabel(applicationDirectory), "push,wrap");
+    panel.add(new JLabel("Wallet directory:"));
+    panel.add(new JLabel(walletDirectory), "push,wrap");
     panel.add(new JLabel("Contacts:"));
-    panel.add(new JLabel("357"), "push,wrap");
+    panel.add(new JLabel(String.valueOf(contactCount)), "push,wrap");
     panel.add(new JLabel("Transactions:"));
     panel.add(new JLabel("165"), "push,wrap");
 

@@ -87,8 +87,10 @@ public class TransactionsPanelView extends AbstractScreenView<TransactionsPanelM
       ((TransactionTableModel)transactionsTable.getModel()).setTransactions(walletService.getTransactions(), true);
     }
 
-    // Play a sound regardless of credit/debit for now
-    Sounds.playReceiveBitcoin();
-
+    // Play a sound the first time a transaction is received
+    // TODO some more filtering required - just set to play when it confirms for the first time for now
+    if (transactionSeenEvent.getDepthInBlocks() == 1) {
+      Sounds.playReceiveBitcoin();
+    }
   }
 }

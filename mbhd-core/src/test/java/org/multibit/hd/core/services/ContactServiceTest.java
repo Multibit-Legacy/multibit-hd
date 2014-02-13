@@ -10,7 +10,6 @@ import org.multibit.hd.core.managers.WalletManagerTest;
 import java.io.File;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 import java.util.UUID;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -40,7 +39,7 @@ public class ContactServiceTest {
   @Test
   public void testAllContacts() throws Exception {
 
-    Set<Contact> allContacts = contactService.allContacts(1, 10);
+    List<Contact> allContacts = contactService.allContacts(1, 10);
 
     assertThat(allContacts.size()).isEqualTo(6);
 
@@ -50,7 +49,7 @@ public class ContactServiceTest {
    public void testClearContacts() throws Exception {
 
      contactService.clear();
-     Set<Contact> allContacts = contactService.allContacts(1, 10);
+     List<Contact> allContacts = contactService.allContacts(1, 10);
 
      assertThat(allContacts.size()).isEqualTo(0);
 
@@ -58,7 +57,7 @@ public class ContactServiceTest {
   @Test
   public void testFilterContactsByName() throws Exception {
 
-    Set<Contact> filteredContacts = contactService.filterContactsByName(1, 10, "Alice");
+    List<Contact> filteredContacts = contactService.filterContactsByName(1, 10, "Alice");
 
     assertThat(filteredContacts.size()).isEqualTo(2);
 
@@ -66,6 +65,7 @@ public class ContactServiceTest {
 
   @Test
   public void testLoadAndStore() throws Exception {
+
     // Add a new contact to the contacts db and save it
     String newContactName = (UUID.randomUUID()).toString();
     Contact newContact = contactService.newContact(newContactName);
@@ -101,7 +101,7 @@ public class ContactServiceTest {
 
     // Clear the cached contacts and check it is empty
     contactService.clear();
-    Set<Contact> allContacts = contactService.allContacts(1, 10);
+    List<Contact> allContacts = contactService.allContacts(1, 10);
     assertThat(allContacts.size()).isEqualTo(0);
 
     // Reload it - there should be the same number of contacts and the new contact should be available
@@ -111,7 +111,7 @@ public class ContactServiceTest {
 
     assertThat(allContacts.size()).isEqualTo(numberOfContacts);
 
-    Set<Contact> reloadedContacts = contactService.filterContactsByName(1, 10, newContactName);
+    List<Contact> reloadedContacts = contactService.filterContactsByName(1, 10, newContactName);
     Contact reloadedContact = reloadedContacts.iterator().next();
 
     // Check everything roundtripped ok

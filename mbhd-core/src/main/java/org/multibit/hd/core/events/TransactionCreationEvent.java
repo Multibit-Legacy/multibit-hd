@@ -4,12 +4,12 @@ import java.math.BigInteger;
 import java.util.Arrays;
 
 /**
- *  <p>Event to provide the following to UIEventbus subscribers
+ *  <p>Event to provide the following to UI event subscribers:</p>
  *  <ul>
- *  <li>Success/ failure of creation of transaction sending bitcoins</li>
+ *  <li>Success or failure of creation of transaction sending bitcoins</li>
  *  </ul>
  *
- *  If the transaction creation succeeds it will be committed to the wallet, if not it will not be.
+ * <p>Success guarantees that the wallet contains the underlying transaction.</p>
  */
 public class TransactionCreationEvent {
 
@@ -27,8 +27,17 @@ public class TransactionCreationEvent {
 
   private final String transactionCreationFailureReasonKey;
 
-  public TransactionCreationEvent(String transactionId, BigInteger amount, BigInteger feePaid, String destinationAddress, String changeAddress, boolean transactionCreationWasSuccessful,
-                                  String transactionCreationFailureReasonKey, String[] transactionCreationFailureReasonData) {
+  public TransactionCreationEvent(
+    String transactionId,
+    BigInteger amount,
+    BigInteger feePaid,
+    String destinationAddress,
+    String changeAddress,
+    boolean transactionCreationWasSuccessful,
+    String transactionCreationFailureReasonKey,
+    String[] transactionCreationFailureReasonData
+  ) {
+
     this.transactionId = transactionId;
     this.amount = amount;
     this.feePaid = feePaid;
@@ -68,17 +77,18 @@ public class TransactionCreationEvent {
   public String getTransactionId() {
     return transactionId;
   }
-  
+
   @Override
   public String toString() {
     return "TransactionCreationEvent{" +
-            "amount=" + amount +
-            ", feePaid=" + feePaid +
-            ", destinationAddress='" + destinationAddress + '\'' +
-            ", changeAddress='" + changeAddress + '\'' +
-            ", transactionCreationWasSuccessful=" + transactionCreationWasSuccessful +
-            ", transactionCreationFailureReasonKey='" + transactionCreationFailureReasonKey + '\'' +
-            ", transactionCreationFailureReasonData=" + Arrays.toString(transactionCreationFailureReasonData) +
-            '}';
+      "amount=" + amount +
+      ", feePaid=" + feePaid +
+      ", destinationAddress='" + destinationAddress + '\'' +
+      ", changeAddress='" + changeAddress + '\'' +
+      ", transactionCreationWasSuccessful=" + transactionCreationWasSuccessful +
+      ", transactionId='" + transactionId + '\'' +
+      ", transactionCreationFailureReasonKey='" + transactionCreationFailureReasonKey + '\'' +
+      ", transactionCreationFailureReasonData=" + Arrays.toString(transactionCreationFailureReasonData) +
+      '}';
   }
 }

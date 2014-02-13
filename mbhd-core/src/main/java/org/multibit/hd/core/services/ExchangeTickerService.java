@@ -8,7 +8,6 @@ import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
-import org.multibit.hd.core.exceptions.CoreException;
 import org.multibit.hd.core.utils.Dates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +73,7 @@ public class ExchangeTickerService extends AbstractService {
 
       public void run() {
 
-        Preconditions.checkNotNull(currencyUnit,"'currencyUnit' must be present");
+        Preconditions.checkNotNull(currencyUnit, "'currencyUnit' must be present");
 
         // Get the latest ticker data showing BTC to current currency
         Ticker ticker;
@@ -98,7 +97,10 @@ public class ExchangeTickerService extends AbstractService {
           previous = ticker.getLast();
 
         } catch (IOException e) {
-          throw new CoreException(e);
+
+          // Keep the logging to a minimum
+          log.warn("Exchange rate lookup failed " + e.getMessage());
+
         }
       }
 

@@ -31,6 +31,22 @@ public interface MultiBitUI {
    */
   int WIZARD_MIN_HEIGHT = 450;
 
+  /**
+   * The preferred width for the sidebar
+   */
+  int SIDEBAR_LHS_PREF_WIDTH = 150;
+
+  // Corners
+
+  /**
+   * The corner radius to use for rounded rectangles (e.g. panels, text fields etc)
+   */
+  int COMPONENT_CORNER_RADIUS = 10;
+  /**
+   * The corner radius to use for images (e.g. gravatars etc)
+   */
+  int IMAGE_CORNER_RADIUS = 20;
+
   // Fonts
 
   /**
@@ -78,7 +94,7 @@ public interface MultiBitUI {
   /**
    * Small icon size (e.g. stars and status)
    */
-  int SMALL_ICON_SIZE = 14;
+  int SMALL_ICON_SIZE = 16;
 
   // Buttons
 
@@ -102,4 +118,5 @@ public interface MultiBitUI {
    * The maximum length of the seed phrase
    */
   int SEED_PHRASE_LENGTH = 240;
+
 }

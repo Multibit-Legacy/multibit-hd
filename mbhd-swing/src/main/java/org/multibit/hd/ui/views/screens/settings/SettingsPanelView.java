@@ -46,7 +46,7 @@ public class SettingsPanelView extends AbstractScreenView<SettingsPanelModel>  {
     );
 
     JPanel contentPanel = Panels.newPanel(layout);
-    contentPanel.add(new JLabel("Settings"));
+    contentPanel.add(new JLabel("Preferences"));
 
     return contentPanel;
   }

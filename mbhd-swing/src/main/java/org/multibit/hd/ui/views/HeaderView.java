@@ -94,8 +94,8 @@ public class HeaderView {
     trailingSymbolLabel = balanceLabels[2];
     exchangeLabel = balanceLabels[3];
 
-    contentPanel.add(balancePanel, "grow,wrap");
-    contentPanel.add(alertPanel, "grow,aligny top,push");
+    contentPanel.add(balancePanel, "growx,wrap");
+    contentPanel.add(alertPanel, "growx,aligny top,push");
 
     onLocaleChangedEvent(null);
   }

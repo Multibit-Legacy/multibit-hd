@@ -27,7 +27,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
   @Override
   public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
 
-    log.debug("Number of blocks left = {}", blocksLeft);
+    log.trace("Number of blocks left = {}", blocksLeft);
 
     // Determine if peer count message should be suppressed
     // (avoids UI confusion between synchronizing and peer count)
@@ -73,7 +73,8 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
   @Override
   public void onPeerConnected(Peer peer, int peerCount) {
-    log.debug("(connect) Number of peers = " + peerCount + ", downloadPercent = " + downloadPercent);
+
+    log.trace("(connect) Number of peers = " + peerCount + ", downloadPercent = " + downloadPercent);
 
     numberOfConnectedPeers = peerCount;
 
@@ -86,7 +87,8 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
   @Override
   public void onPeerDisconnected(Peer peer, int peerCount) {
-    log.debug("(disconnect) Number of peers = " + peerCount);
+
+    log.trace("(disconnect) Number of peers = " + peerCount);
     if (peerCount == numberOfConnectedPeers) {
       // Don't fire an event - not useful
       return;
@@ -156,6 +158,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
    * @param blocksLeft The number of blocks left to download
    */
   private void updateDownloadPercent(int blocksLeft) {
+
     if (numberOfBlocksAtStart == -1) {
       // We don't have a number of blocks at the start so count down from the blocksLeft figure
       numberOfBlocksAtStart = blocksLeft;

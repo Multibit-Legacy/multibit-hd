@@ -2,12 +2,12 @@ package org.multibit.hd.ui.views;
 
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.MultiBitUI;
-import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;
 import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.slf4j.Logger;
@@ -23,7 +23,7 @@ import java.awt.*;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class MainView extends JFrame {
 
@@ -59,9 +59,6 @@ public class MainView extends JFrame {
 
     // Hard coded
     setMinimumSize(new Dimension(MultiBitUI.UI_MIN_WIDTH, MultiBitUI.UI_MIN_HEIGHT));
-
-    // TODO Configuration based on last position
-    setPreferredSize(new Dimension(MultiBitUI.UI_MIN_WIDTH, MultiBitUI.UI_MIN_HEIGHT));
 
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
@@ -108,24 +105,27 @@ public class MainView extends JFrame {
     JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
     if (Languages.isLeftToRight()) {
-    splitPane.setLeftComponent(sidebarPanel);
-    splitPane.setRightComponent(detailPanel);
+      splitPane.setLeftComponent(sidebarPanel);
+      splitPane.setRightComponent(detailPanel);
     } else {
       splitPane.setLeftComponent(detailPanel);
       splitPane.setRightComponent(sidebarPanel);
     }
 
     splitPane.setDividerSize(3);
+    splitPane.setDividerLocation(180);
 
     // Sets the colouring for divider and borders
     splitPane.setBackground(Themes.currentTheme.text());
-    splitPane.setBorder(BorderFactory
-      .createMatteBorder(1, 0, 1, 0, Themes.currentTheme.text()));
+    splitPane.setBorder(BorderFactory.createMatteBorder(
+      1, 0, 1, 0,
+      Themes.currentTheme.text()
+    ));
 
     // Add the supporting panels
-    mainPanel.add(headerPanel, "grow,wrap");
-    mainPanel.add(splitPane, "grow,wrap");
-    mainPanel.add(footerPanel, "grow,wrap");
+    mainPanel.add(headerPanel, "growx,shrink,wrap"); // Ensure header size remains fixed
+    mainPanel.add(splitPane, "grow,push,wrap");
+    mainPanel.add(footerPanel, "growx,shrink"); // Ensure footer size remains fixed
 
     return mainPanel;
   }

@@ -44,7 +44,7 @@ public class EnterSearchView extends AbstractComponentView<EnterSearchModel> {
       "[]10[]" // Rows
     ));
 
-    enterSearchTextField = TextBoxes.newSelectFile();
+    enterSearchTextField = TextBoxes.newEnterSearch();
 
     // Provide an initial search
     enterSearchTextField.setText(model.getValue());

@@ -194,7 +194,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       WalletId loadedWalletId = BackupManager.INSTANCE.loadBackup(selectedBackupSummaryModel.getValue().getFile());
 
       // Load the wallet into memory that has just been copied to the wallet directory
-      File walletRootDirectory = WalletManager.getWalletDirectory(InstallationManager.createApplicationDataDirectory().getAbsolutePath(), WalletManager.createWalletRoot(loadedWalletId));
+      File walletRootDirectory = WalletManager.getWalletDirectory(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath(), WalletManager.createWalletRoot(loadedWalletId));
       String walletFilename = walletRootDirectory + File.separator + WalletManager.MBHD_WALLET_NAME;
 
       // TODO need to shut down everything beforehand ???

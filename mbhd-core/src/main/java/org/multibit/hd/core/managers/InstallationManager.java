@@ -31,7 +31,7 @@ public class InstallationManager {
    */
   public static File getConfigurationFile() {
 
-    return new File(createApplicationDataDirectory() + "/" + MBHD_CONFIGURATION_FILE);
+    return new File(getOrCreateApplicationDataDirectory() + "/" + MBHD_CONFIGURATION_FILE);
 
   }
 
@@ -39,7 +39,7 @@ public class InstallationManager {
    * <p>Get the directory for the user's application data, creating if not present</p>
    * <p>Checks a few OS-dependent locations first</p>
    */
-  public static File createApplicationDataDirectory() {
+  public static File getOrCreateApplicationDataDirectory() {
 
     // Check the current working directory for the configuration file
     File multibitPropertiesFile = new File(MBHD_CONFIGURATION_FILE);

@@ -111,13 +111,20 @@ public class MultiBitHD {
     bitcoinNetworkService = CoreServices.newBitcoinNetworkService();
 
     // Initialise the wallet manager, which will load the current wallet if available
-    File applicationDataDirectory = InstallationManager.createApplicationDataDirectory();
+    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     // Start up the exchange service
     exchangeTickerService.start();
 
     WalletManager.INSTANCE.initialise(applicationDataDirectory);
     BackupManager.INSTANCE.initialise(applicationDataDirectory, null); // TODO load up the cloud backup if available from properties and insert here
+
+    // TODO Remove this when the Contact screen is ready
+    CoreServices
+      .getOrCreateContactService(
+        WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()
+      ).addDemoContacts();
+
   }
 
   /**

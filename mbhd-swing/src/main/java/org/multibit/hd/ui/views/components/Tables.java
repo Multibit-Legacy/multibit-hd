@@ -16,6 +16,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -33,13 +34,15 @@ public class Tables {
    * Utilities have no public constructor
    */
   private Tables() {
+
   }
 
   /**
    * @param contacts The contacts to show
+   *
    * @return A new "contacts" striped table
    */
-  public static StripedTable newContactsTable(Set<Contact> contacts) {
+  public static StripedTable newContactsTable(List<Contact> contacts) {
 
     ContactTableModel model = new ContactTableModel(contacts);
 
@@ -51,6 +54,13 @@ public class Tables {
 
     table.setRowHeight(MultiBitUI.LARGE_ICON_SIZE + 10);
     table.setAutoCreateRowSorter(true);
+    table.setRowSelectionAllowed(false);
+    table.setCellSelectionEnabled(false);
+
+    // Set preferred widths
+    resizeColumn(table, ContactTableModel.STAR_COLUMN_INDEX, MultiBitUI.NORMAL_ICON_SIZE);
+    resizeColumn(table, ContactTableModel.CHECKBOX_COLUMN_INDEX, MultiBitUI.NORMAL_ICON_SIZE);
+    resizeColumn(table, ContactTableModel.GRAVATAR_COLUMN_INDEX, MultiBitUI.LARGE_ICON_SIZE);
 
     return table;
   }
@@ -86,6 +96,34 @@ public class Tables {
       TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
       JLabel label = (JLabel) renderer;
       label.setHorizontalAlignment(JLabel.CENTER);
+  }
+
+  /**
+   * <p>Remove a column from the table view</p>
+   *
+   * @param table       The table
+   * @param columnIndex The column index
+   */
+  private static void removeColumn(StripedTable table, int columnIndex) {
+
+    String id = table.getColumnName(columnIndex);
+    TableColumn column = table.getColumn(id);
+    table.removeColumn(column);
+
+  }
+
+  /**
+   * <p>Resize a column by setting its preferred width</p>
+   *
+   * @param table          The table
+   * @param columnIndex    The column index
+   * @param preferredWidth The preferred width
+   */
+  private static void resizeColumn(StripedTable table, int columnIndex, int preferredWidth) {
+
+    String id = table.getColumnName(columnIndex);
+    table.getColumn(id).setMaxWidth(preferredWidth);
+
   }
 }
 

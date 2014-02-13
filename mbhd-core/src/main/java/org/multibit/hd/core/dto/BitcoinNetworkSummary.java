@@ -33,7 +33,7 @@ public class BitcoinNetworkSummary {
     return new BitcoinNetworkSummary(
       BitcoinNetworkStatus.NOT_CONNECTED,
       RAGStatus.RED,
-      Optional.<CoreMessageKey>absent(),
+      Optional.of(CoreMessageKey.NOT_INITIALISED),
       Optional.<Object[]>absent(),
       0,
       -1

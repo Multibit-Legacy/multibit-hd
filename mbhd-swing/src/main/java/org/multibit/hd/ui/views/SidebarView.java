@@ -1,9 +1,9 @@
 package org.multibit.hd.ui.views;
 
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.SidebarNodeInfo;
 import org.multibit.hd.ui.views.components.ThemeAwareTreeCellRenderer;
@@ -39,7 +39,7 @@ public class SidebarView {
 
     // Insets for top, left
     MigLayout layout = new MigLayout(
-      "filly, insets 6 10, ", // Layout
+      "fill, insets 6 10, ", // Layout
       "[]", // Columns
       "[]" // Rows
     );
@@ -48,7 +48,7 @@ public class SidebarView {
     // Apply the sidebar theme
     contentPanel.setBackground(Themes.currentTheme.sidebarPanelBackground());
 
-    contentPanel.add(createSidebarContent(), "push");
+    contentPanel.add(createSidebarContent(), "grow,push");
 
   }
 
@@ -115,9 +115,6 @@ public class SidebarView {
     sidebarPane.setViewportView(sidebarTree);
     sidebarPane.setBorder(null);
 
-    // TODO Integrate with configuration
-    sidebarPane.setPreferredSize(new Dimension(150, 1024));
-
     return sidebarPane;
   }
 
@@ -130,16 +127,6 @@ public class SidebarView {
     wallet.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, Screen.CONTACTS));
     wallet.add(TreeNodes.newSidebarTreeNode(MessageKey.TRANSACTIONS, Screen.TRANSACTIONS));
     root.add(wallet);
-
-    DefaultMutableTreeNode trezor1 = TreeNodes.newSidebarTreeNode("Trezor 1", Screen.WALLET);
-    trezor1.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, Screen.CONTACTS));
-    trezor1.add(TreeNodes.newSidebarTreeNode(MessageKey.TRANSACTIONS, Screen.TRANSACTIONS));
-    root.add(trezor1);
-
-    DefaultMutableTreeNode trezor2 = TreeNodes.newSidebarTreeNode("Trezor 2", Screen.WALLET);
-    trezor2.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, Screen.CONTACTS));
-    trezor2.add(TreeNodes.newSidebarTreeNode(MessageKey.TRANSACTIONS, Screen.TRANSACTIONS));
-    root.add(trezor2);
 
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.HELP, Screen.HELP));
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.HISTORY, Screen.HISTORY));

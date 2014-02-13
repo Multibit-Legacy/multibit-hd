@@ -35,7 +35,7 @@ public class ControllerEvents {
    * @param locale The new locale
    */
   public static void fireChangeLocaleEvent(Locale locale) {
-    log.debug("Firing 'change locale' event");
+    log.trace("Firing 'change locale' event");
     CoreServices.uiEventBus.post(new ChangeLocaleEvent(locale));
   }
 
@@ -45,7 +45,7 @@ public class ControllerEvents {
    * @param detailScreen The screen to show
    */
   public static void fireShowDetailScreenEvent(Screen detailScreen) {
-    log.debug("Firing 'show detail screen' event");
+    log.trace("Firing 'show detail screen' event");
     CoreServices.uiEventBus.post(new ShowScreenEvent(detailScreen));
   }
 
@@ -55,7 +55,7 @@ public class ControllerEvents {
    * @param alertModel The alert model
    */
   public static void fireAddAlertEvent(AlertModel alertModel) {
-    log.debug("Firing 'add alert' event");
+    log.trace("Firing 'add alert' event");
     CoreServices.uiEventBus.post(new AddAlertEvent(alertModel));
   }
 
@@ -63,7 +63,7 @@ public class ControllerEvents {
    * <p>Broadcast a new "remove alert" event</p>
    */
   public static void fireRemoveAlertEvent() {
-    log.debug("Firing 'remove alert' event");
+    log.trace("Firing 'remove alert' event");
     CoreServices.uiEventBus.post(new RemoveAlertEvent());
   }
 

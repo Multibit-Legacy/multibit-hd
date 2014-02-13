@@ -42,7 +42,7 @@ public class DetailView {
     MigLayout layout = new MigLayout(
       "fill,insets 0", // Layout constraints
       "[]", // Column constraints
-      "[grow]10[shrink]" // Row constraints
+      "[]" // Row constraints
     );
     contentPanel = Panels.newPanel(layout);
 
@@ -70,7 +70,7 @@ public class DetailView {
     }
 
     // Add the screen holder to the overall content panel
-    contentPanel.add(screenHolder, "grow,wrap");
+    contentPanel.add(screenHolder, "grow");
 
     ControllerEvents.fireShowDetailScreenEvent(Screen.WALLET);
 

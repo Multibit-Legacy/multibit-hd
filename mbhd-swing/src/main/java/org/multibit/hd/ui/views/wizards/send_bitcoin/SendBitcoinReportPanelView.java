@@ -145,7 +145,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     if (getPanelModel().get() != null) {
       String currentTransactionId = getPanelModel().get().getTransactionId();
       if (transactionSeenEvent.getTransactionId().equals(currentTransactionId)) {
-        transactionConfirmationStatus.setText(transactionSeenEvent.toString());
+        transactionConfirmationStatus.setText("Transaction id = " + transactionSeenEvent.getTransactionId());
       }
     }
   }
