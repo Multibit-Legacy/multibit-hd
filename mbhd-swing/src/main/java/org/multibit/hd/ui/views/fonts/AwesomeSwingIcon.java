@@ -1,10 +1,11 @@
 package org.multibit.hd.ui.views.fonts;
 
+import org.multibit.hd.ui.views.components.ImageDecorator;
+
 import javax.swing.*;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Map;
 
 /**
  * <p>Icon to provide the following to UI:</p>
@@ -152,28 +153,19 @@ public class AwesomeSwingIcon implements Icon, PropertyChangeListener {
   @Override
   public void paintIcon(Component c, Graphics g, int x, int y) {
 
-    Graphics2D iconGraphics = (Graphics2D) g.create();
+    Graphics2D g2 = (Graphics2D) g.create();
 
-    Toolkit toolkit = Toolkit.getDefaultToolkit();
-    Map map = (Map) (toolkit.getDesktopProperty("awt.font.desktophints"));
+    g2.setRenderingHints(ImageDecorator.smoothRenderingHints());
 
-    if (map != null) {
-      iconGraphics.addRenderingHints(map);
-    } else {
-      iconGraphics.setRenderingHint(
-        RenderingHints.KEY_TEXT_ANTIALIASING,
-        RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-    }
+    g2.setFont(font);
+    g2.setColor(getForeground());
 
-    iconGraphics.setFont(font);
-    iconGraphics.setColor(getForeground());
+    FontMetrics fm = g2.getFontMetrics();
 
-    FontMetrics fm = iconGraphics.getFontMetrics();
+    g2.translate(x, y + fm.getAscent());
+    g2.drawString(text, 2, 0);
 
-    iconGraphics.translate(x, y + fm.getAscent());
-    iconGraphics.drawString(text, 2, 0);
-
-    iconGraphics.dispose();
+    g2.dispose();
   }
 
   @Override

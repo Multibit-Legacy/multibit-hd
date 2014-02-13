@@ -128,16 +128,6 @@ public class SidebarView {
     wallet.add(TreeNodes.newSidebarTreeNode(MessageKey.TRANSACTIONS, Screen.TRANSACTIONS));
     root.add(wallet);
 
-    DefaultMutableTreeNode trezor1 = TreeNodes.newSidebarTreeNode("Trezor 1", Screen.WALLET);
-    trezor1.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, Screen.CONTACTS));
-    trezor1.add(TreeNodes.newSidebarTreeNode(MessageKey.TRANSACTIONS, Screen.TRANSACTIONS));
-    root.add(trezor1);
-
-    DefaultMutableTreeNode trezor2 = TreeNodes.newSidebarTreeNode("Trezor 2", Screen.WALLET);
-    trezor2.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, Screen.CONTACTS));
-    trezor2.add(TreeNodes.newSidebarTreeNode(MessageKey.TRANSACTIONS, Screen.TRANSACTIONS));
-    root.add(trezor2);
-
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.HELP, Screen.HELP));
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.HISTORY, Screen.HISTORY));
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.SETTINGS, Screen.SETTINGS));
