@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.dto.TransactionData;
+import org.multibit.hd.core.dto.TransactionType;
 import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.managers.WalletManager;
 
@@ -84,9 +85,26 @@ public class WalletService extends AbstractService {
 
     RAGStatus status = calculateStatus(transaction);
 
+    TransactionType transactionType;
+    if (amountBTC.compareTo(BigInteger.ZERO) < 0) {
+      // Debit
+      if (depth == 0) {
+        transactionType = TransactionType.SENDING;
+      } else {
+        transactionType = TransactionType.SENT;
+      }
+    } else {
+      // Credit
+      if (depth == 0) {
+        transactionType = TransactionType.RECEIVING;
+      } else {
+        transactionType = TransactionType.RECEIVED;
+      }
+      // TODO - requested
+    }
     // TODO- fee on send
 
-    TransactionData transactionData = new TransactionData(transactionId, updateTime, status, amountBTC, Optional.<BigInteger>absent(), confidenceType, depth);
+    TransactionData transactionData = new TransactionData(transactionId, updateTime, status, amountBTC, Optional.<BigInteger>absent(), confidenceType, transactionType, depth);
 
     return transactionData;
   }

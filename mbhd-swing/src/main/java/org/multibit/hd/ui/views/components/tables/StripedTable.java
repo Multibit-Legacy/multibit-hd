@@ -67,12 +67,12 @@ public class StripedTable extends JTable {
           newGraphics.setColor(getBackground());
         }
 
-        if (showHorizontalLines) {
-          // Draw the horizontal line
-          newGraphics.drawLine(0, rowYToDraw, getWidth(), rowYToDraw);
-        }
-
         rowYToDraw += getRowHeight();
+
+        //if (showHorizontalLines) {
+            // Draw the horizontal line
+            //newGraphics.drawLine(0, rowYToDraw, getWidth(), rowYToDraw);
+        //  }
 
         virtualRow++;
       }

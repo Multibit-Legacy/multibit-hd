@@ -31,15 +31,18 @@ public class TransactionData {
 
   private final Date updateTime;
 
+  private final TransactionType type;
+
   public TransactionData(String transactionId, Date updateTime, RAGStatus status,
                          BigInteger amountBTC, Optional<BigInteger> feeOnSendBTC,
-                         TransactionConfidence.ConfidenceType confidenceType, int depth) {
+                         TransactionConfidence.ConfidenceType confidenceType, TransactionType type, int depth) {
     this.transactionId = transactionId;
     this.updateTime = updateTime;
     this.status = status;
     this.amountBTC = amountBTC;
     this.feeOnSendBTC = feeOnSendBTC;
     this.confidenceType = confidenceType;
+    this.type = type;
     this.depth = depth;
   }
 
@@ -61,6 +64,7 @@ public class TransactionData {
             ", feeOnSendBTC=" + feeOnSendBTC +
             ", depth=" + depth +
             ", confidenceType=" + confidenceType +
+            ", type=" + type +
             ", updateTime=" + updateTime +
             '}';
   }
@@ -78,6 +82,7 @@ public class TransactionData {
     if (confidenceType != that.confidenceType) return false;
     if (!feeOnSendBTC.equals(that.feeOnSendBTC)) return false;
     if (!transactionId.equals(that.transactionId)) return false;
+    if (!type.equals(that.type)) return false;
     if (!updateTime.equals(that.updateTime)) return false;
 
     return true;
@@ -91,6 +96,7 @@ public class TransactionData {
     result = 31 * result + feeOnSendBTC.hashCode();
     result = 31 * result + depth;
     result = 31 * result + confidenceType.hashCode();
+    result = 31 * result + type.hashCode();
     result = 31 * result + updateTime.hashCode();
     return result;
   }
@@ -121,5 +127,18 @@ public class TransactionData {
 
   public RAGStatus getStatus() {
     return status;
+  }
+
+  public TransactionType getType() {
+    return type;
+  }
+
+  /**
+   * Create a description of the transaction, localised
+   * @return Localised description of the transaction
+   */
+  public String getDescription() {
+    // TODO make this real
+    return "a description";
   }
 }
