@@ -126,7 +126,6 @@ public class MultiBitHD {
           WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()
         ).addDemoContacts();
     }
-
   }
 
   /**

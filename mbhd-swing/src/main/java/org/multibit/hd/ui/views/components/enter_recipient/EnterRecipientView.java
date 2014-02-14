@@ -117,8 +117,6 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
 
           final ListenableFuture<Optional<BufferedImage>> imageFuture = Gravatars.retrieveGravatar(emailAddress);
           Futures.addCallback(imageFuture, new FutureCallback<Optional<BufferedImage>>() {
-
-            // we want this handler to run immediately after we push the big red button!
             public void onSuccess(Optional<BufferedImage> image) {
               if (image.isPresent()) {
 

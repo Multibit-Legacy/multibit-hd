@@ -331,8 +331,8 @@ public enum WalletManager implements WalletEventListener {
       }
       log.debug("... done saving wallet file.");
 
-    } catch (IOException ioe) {
-      throw new WalletSaveException("Cannot save wallet '" + walletFilename, ioe);
+    } catch (IOException | UnsupportedOperationException e) {
+      throw new WalletSaveException("Cannot save wallet '" + walletFilename, e);
     } finally {
       if (fileOutputStream != null) {
         try {

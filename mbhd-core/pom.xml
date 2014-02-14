@@ -33,10 +33,10 @@
                                    <phase>generate-sources</phase>
                                    <configuration>
                                        <tasks>
-                                           <exec executable="protoc" failonerror="true">
+                                           <exec executable="/usr/local/bin/protoc" failonerror="true">
                                                <arg value="--java_out=${project.basedir}/src/main/java"/>
                                                <arg value="-I${project.basedir}/src"/>
-                                               <arg line="${project.basedir}/src/contacts.proto"/>
+                                               <arg line="${project.basedir}/src/main/protobuf/contacts.proto"/>
                                            </exec>
                                        </tasks>
                                    </configuration>
