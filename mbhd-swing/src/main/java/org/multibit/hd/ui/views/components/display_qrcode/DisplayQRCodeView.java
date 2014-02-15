@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.views.components.display_qrcode;
 
 import com.google.common.base.Optional;
-import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.utils.OSUtils;
 import org.multibit.hd.ui.utils.ClipboardUtils;
 import org.multibit.hd.ui.utils.QRCodes;
@@ -40,11 +39,7 @@ public class DisplayQRCodeView extends AbstractComponentView<DisplayQRCodeModel>
   @Override
   public JPanel newComponentPanel() {
 
-    panel = Panels.newPanel(new MigLayout(
-      "insets 0", // Layout
-      "[][]", // Columns
-      "[][]" // Rows
-    ));
+    panel = Panels.newRoundedPanel();
 
     qrCodeImage = QRCodes.generateQRCode(getModel().get().getValue(), 2);
 

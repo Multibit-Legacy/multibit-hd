@@ -38,6 +38,19 @@ public class Panels {
   private static Optional<LightBoxPanel> lightBoxPopoverPanel = Optional.absent();
 
   /**
+   * @return A simple theme-aware panel with a single cell MigLayout
+   */
+  public static JPanel newPanel() {
+
+    return Panels.newPanel(new MigLayout(
+      "fill,insets 0", // Layout
+      "[]", // Columns
+      "[]" // Rows
+    ));
+
+  }
+
+  /**
    * @param layout The layout manager for the panel (typically MigLayout)
    *
    * @return A simple theme-aware detail panel with the given layout
@@ -49,23 +62,11 @@ public class Panels {
     // Theme
     panel.setBackground(Themes.currentTheme.detailPanelBackground());
 
+    // Force transparency
+    panel.setOpaque(false);
+
     // Ensure LTR and RTL is detected by the layout
     panel.applyComponentOrientation(Languages.currentComponentOrientation());
-
-    return panel;
-
-  }
-
-  /**
-   * @return A simple theme-aware panel with a single cell MigLayout
-   */
-  public static JPanel newPanel() {
-
-    JPanel panel = Panels.newPanel(new MigLayout(
-      "fill,insets 0", // Layout
-      "[]", // Columns
-      "[]" // Rows
-    ));
 
     return panel;
 
@@ -81,6 +82,9 @@ public class Panels {
       "[]", // Columns
       "[]" // Rows
     ));
+
+    // Theme
+    panel.setBackground(Themes.currentTheme.detailPanelBackground());
 
     return panel;
 
@@ -148,7 +152,7 @@ public class Panels {
    */
   public synchronized static void showLightBoxPopover(JPanel panel) {
 
-//    Preconditions.checkState(lightBoxPanel.isPresent(), "LightBoxPopover should not be called unless a light box is showing");
+    Preconditions.checkState(lightBoxPanel.isPresent(), "LightBoxPopover should not be called unless a light box is showing");
     Preconditions.checkState(!lightBoxPopoverPanel.isPresent(), "LightBoxPopover should never be called twice");
 
     lightBoxPopoverPanel = Optional.of(new LightBoxPanel(panel, JLayeredPane.DRAG_LAYER));

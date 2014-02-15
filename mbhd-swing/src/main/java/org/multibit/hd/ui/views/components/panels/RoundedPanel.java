@@ -18,10 +18,6 @@ import java.awt.*;
 
 public class RoundedPanel extends JPanel {
 
-  private final Color shadowColor;
-
-  private final int shadowAlpha;
-
   private final int cornerRadius;
 
   /**
@@ -32,26 +28,7 @@ public class RoundedPanel extends JPanel {
 
     setOpaque(false);
 
-    this.shadowColor = Color.BLACK;
-    this.shadowAlpha = 127;
     this.cornerRadius = MultiBitUI.COMPONENT_CORNER_RADIUS;
-
-  }
-
-  /**
-   * @param layout       The layout manager
-   * @param shadowColor  The shadow color (usually black but see LightBoxPanel)
-   * @param shadowAlpha  The transparency value of the shadow (usually 127 representing 0.5f but see LightBoxPanel)
-   * @param cornerRadius The corner radius in pixels (keep this under 20 to avoid obvious rendering artifacts)
-   */
-  public RoundedPanel(LayoutManager2 layout, Color shadowColor, int shadowAlpha, int cornerRadius) {
-    super(layout);
-
-    setOpaque(false);
-
-    this.shadowColor = shadowColor;
-    this.shadowAlpha = shadowAlpha;
-    this.cornerRadius = cornerRadius;
 
   }
 
@@ -64,21 +41,9 @@ public class RoundedPanel extends JPanel {
     int width = getWidth();
     int height = getHeight();
 
-    // Convert the shadow color into an alpha composite
-    Color shadowColorA = new Color(
-      shadowColor.getRed(),
-      shadowColor.getGreen(),
-      shadowColor.getBlue(),
-      shadowAlpha
-    );
-
     // Ensure we render with smooth outcome
     Graphics2D g2 = (Graphics2D) g;
     g2.setRenderingHints(ImageDecorator.smoothRenderingHints());
-
-    // Fill in a solid block of the shadow background
-    g2.setColor(shadowColorA);
-    g2.fillRect(0, 0, width, height);
 
     // Fill in a solid rounded block of the panel
     g2.setColor(getBackground());

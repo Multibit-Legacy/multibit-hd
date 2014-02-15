@@ -46,8 +46,11 @@ public class DetailView {
     );
     contentPanel = Panels.newPanel(layout);
 
-    // Override the default theme
+    // Apply theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
+
+    // Apply opacity
+    contentPanel.setOpaque(true);
 
     for (Screen screen: Screen.values()) {
 

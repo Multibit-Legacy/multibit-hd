@@ -43,11 +43,6 @@ public class BackgroundPanel extends JPanel {
 
   private float alpha = 1.0f;
 
-  /**
-   * True if components should have no opacity
-   */
-  private boolean isTransparentAdd = false;
-
   private Composite originalComposite;
 
   /**
@@ -104,24 +99,6 @@ public class BackgroundPanel extends JPanel {
     setPaint(painter);
     setLayout(new BorderLayout());
 
-  }
-
-  @Override
-  public Component add(Component comp) {
-
-    add(comp, null);
-
-    return comp;
-  }
-
-  @Override
-  public void add(Component comp, Object constraints) {
-
-    if (isTransparentAdd) {
-      makeComponentTransparent(comp);
-    }
-
-    super.add(comp, constraints);
   }
 
   @Override
@@ -233,35 +210,6 @@ public class BackgroundPanel extends JPanel {
 
   }
 
-  /**
-   * <p>Try to make the component transparent.</p>
-   * <p>For components that use a renderer, like JTable, you will also need to
-   * change the renderer to be transparent. An easy way to do this it to
-   * set the background of the table to a Color using an alpha value of 0.
-   * </p>
-   */
-  private void makeComponentTransparent(Component component) {
-
-    if (component instanceof JComponent) {
-
-      ((JComponent) component).setOpaque(false);
-
-    }
-
-    if (component instanceof JScrollPane) {
-
-      JScrollPane scrollPane = (JScrollPane) component;
-      JViewport viewport = scrollPane.getViewport();
-      viewport.setOpaque(false);
-      Component c = viewport.getView();
-
-      if (c instanceof JComponent) {
-        ((JComponent) c).setOpaque(false);
-      }
-    }
-
-  }
-
   @Override
   protected void paintComponent(Graphics g) {
 
@@ -361,15 +309,4 @@ public class BackgroundPanel extends JPanel {
     repaint();
   }
 
-
-  /**
-   * <p>Controls whether components added to this panel should automatically
-   * be made transparent. That is, setOpaque(false) will be invoked.</p>
-   * <p>False by default to ensure panel backgrounds are upheld</p>
-   */
-  public void setTransparentAdd(boolean isTransparentAdd) {
-
-    this.isTransparentAdd = isTransparentAdd;
-
-  }
 }

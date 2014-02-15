@@ -48,6 +48,9 @@ public class SidebarView {
     // Apply the sidebar theme
     contentPanel.setBackground(Themes.currentTheme.sidebarPanelBackground());
 
+    // Apply opacity
+    contentPanel.setOpaque(true);
+
     contentPanel.add(createSidebarContent(), "grow,push");
 
   }

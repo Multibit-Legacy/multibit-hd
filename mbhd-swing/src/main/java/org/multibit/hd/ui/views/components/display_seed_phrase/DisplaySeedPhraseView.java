@@ -63,6 +63,8 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
     panel.add(seedPhrase, "span 3,shrink");
     panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink");
     panel.add(Buttons.newRefreshButton(refreshAction), "shrink");
+
+    // Allowing printing of seed phrase is fraught with security hazards
     //panel.add(Buttons.newPrintButton(printAction), "shrink,wrap");
 
     seedSize.requestFocusInWindow();

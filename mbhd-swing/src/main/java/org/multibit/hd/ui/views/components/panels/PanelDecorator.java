@@ -54,6 +54,7 @@ public class PanelDecorator {
 
     // Apply the theme
     wizardPanel.setBackground(Themes.currentTheme.detailPanelBackground());
+    //wizardPanel.setOpaque(true);
 
     // Add the wizard components
     wizardPanel.add(Labels.newTitleLabel(titleKey), "span 4,shrink,wrap,aligny top");
@@ -376,6 +377,9 @@ public class PanelDecorator {
 
     panel.setBackground(background);
     panel.setForeground(text);
+
+    // Ensure that the background color is presented
+    panel.setOpaque(true);
 
     // Use a simple rounded border
     panel.setBorder(new TextBubbleBorder(border));
