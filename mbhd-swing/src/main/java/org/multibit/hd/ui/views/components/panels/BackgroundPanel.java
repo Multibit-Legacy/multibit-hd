@@ -43,7 +43,11 @@ public class BackgroundPanel extends JPanel {
 
   private float alpha = 1.0f;
 
-  private boolean isTransparentAdd = true;
+  /**
+   * True if components should have no opacity
+   */
+  private boolean isTransparentAdd = false;
+
   private Composite originalComposite;
 
   /**
@@ -240,7 +244,7 @@ public class BackgroundPanel extends JPanel {
 
     if (component instanceof JComponent) {
 
-      ((JComponent)component).setOpaque(false);
+      ((JComponent) component).setOpaque(false);
 
     }
 
@@ -361,7 +365,7 @@ public class BackgroundPanel extends JPanel {
   /**
    * <p>Controls whether components added to this panel should automatically
    * be made transparent. That is, setOpaque(false) will be invoked.</p>
-   * <p>True by default</p>
+   * <p>False by default to ensure panel backgrounds are upheld</p>
    */
   public void setTransparentAdd(boolean isTransparentAdd) {
 

@@ -30,6 +30,7 @@ import org.multibit.hd.ui.views.HeaderView;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,7 +89,8 @@ public class ComponentTestBed {
    */
   public JPanel createTestPanel() {
 
-    AbstractWizard wizard = Wizards.newSendBitcoinWizard();
+    AbstractWizard wizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.CREATE_WALLET_SEED_PHRASE);
+    wizard.show(WelcomeWizardState.CREATE_WALLET_SEED_PHRASE.name());
     return wizard.getWizardPanel();
 
   }
