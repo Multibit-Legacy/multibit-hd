@@ -5,8 +5,8 @@ import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ScreenComponentModelChangedEvent;
 import org.multibit.hd.ui.i18n.MessageKey;
-import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 
 import javax.swing.*;
 

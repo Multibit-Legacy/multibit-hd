@@ -15,6 +15,7 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
@@ -35,6 +36,7 @@ public class Panels {
   public static JFrame frame;
 
   private static Optional<LightBoxPanel> lightBoxPanel = Optional.absent();
+
   private static Optional<LightBoxPanel> lightBoxPopoverPanel = Optional.absent();
 
   /**
@@ -128,6 +130,8 @@ public class Panels {
 
     Preconditions.checkState(!lightBoxPanel.isPresent(), "Light box should never be called twice");
 
+    allowFocus(Panels.frame, false);
+
     lightBoxPanel = Optional.of(new LightBoxPanel(panel, JLayeredPane.MODAL_LAYER));
 
   }
@@ -140,6 +144,8 @@ public class Panels {
     if (lightBoxPanel.isPresent()) {
       lightBoxPanel.get().close();
     }
+
+    allowFocus(Panels.frame, true);
 
     lightBoxPanel = Optional.absent();
 
@@ -374,4 +380,40 @@ public class Panels {
     panel.repaint();
 
   }
+
+  /**
+   * <p>Recursive method to enable or disable the focus on all components in the given container</p>
+   * <p>Filters components that cannot have focus by design (e.g. JLabel)</p>
+   *
+   * @param component The component
+   * @param allowFocus True if the components should be able to gain focus
+   */
+  private static void allowFocus(Component component, boolean allowFocus) {
+
+    // Limit the focus change to those components that could grab it
+    if (component instanceof AbstractButton) {
+      component.setFocusable(allowFocus);
+    }
+    if (component instanceof JComboBox) {
+      component.setFocusable(allowFocus);
+    }
+    if (component instanceof JTree) {
+      component.setFocusable(allowFocus);
+    }
+    if (component instanceof JTextComponent) {
+      component.setFocusable(allowFocus);
+    }
+    if (component instanceof JTable) {
+      component.setFocusable(allowFocus);
+    }
+
+    // Recursive search
+    if (component instanceof Container) {
+      for (Component child : ((Container) component).getComponents()) {
+        allowFocus(child, allowFocus);
+      }
+
+    }
+  }
+
 }
