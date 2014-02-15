@@ -109,6 +109,7 @@ public class Panels {
     ));
     panel.setAlpha(MultiBitUI.DETAIL_PANEL_BACKGROUND_ALPHA);
     panel.setPaint(Themes.currentTheme.detailPanelBackground());
+    panel.setBackground(Themes.currentTheme.detailPanelBackground());
 
     return panel;
 
@@ -166,77 +167,6 @@ public class Panels {
     lightBoxPopoverPanel = Optional.absent();
 
   }
-
-  /**
-   * <p>A "broadcast status" panel provides a means of observing broadcast activity</p>
-   *
-   * @return A new broadcast status panel
-   */
-  public static JPanel newBroadcastStatus() {
-
-    JPanel panel = Panels.newPanel();
-
-    JLabel label = Labels.newStatusLabel(MessageKey.BROADCAST_STATUS, null, true);
-
-    panel.add(label);
-
-    return panel;
-  }
-
-  /**
-   * <p>A "relay status" panel provides a means of observing relay activity</p>
-   *
-   * @return A new relay status panel
-   */
-  public static JPanel newRelayStatus() {
-
-    JPanel panel = Panels.newPanel();
-
-    JLabel label = Labels.newStatusLabel(MessageKey.RELAY_STATUS, null, true);
-
-    panel.add(label);
-
-    return panel;
-  }
-
-  /**
-   * <p>A "confirmation count" panel provides a means of observing confirmations</p>
-   *
-   * @return A new confirmation count status panel
-   */
-  public static JPanel newConfirmationCountStatus(String count, boolean status) {
-
-    JPanel panel = Panels.newPanel();
-
-    JLabel label = Labels.newLabel(MessageKey.CONFIRMATION_STATUS, new Object[]{count}, status);
-
-    panel.add(label);
-
-    return panel;
-  }
-
-  /**
-   * <p>A "verification status" panel shows the user that they have entered their data correctly</p>
-   *
-   * @return A new "verification status" panel (not visible by default)
-   */
-  public static JPanel newVerificationStatus() {
-
-    JPanel panel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0", // Layout
-      "[grow]", // Columns
-      "[]" // Rows
-    ));
-
-    // Add to the panel
-    panel.add(Labels.newVerificationStatus(true), "align center");
-
-    // Typical use case requires this to be invisible
-    panel.setVisible(false);
-
-    return panel;
-  }
-
 
   /**
    * <p>A "language selector" panel provides a means of changing the display language</p>
@@ -313,42 +243,6 @@ public class Panels {
   }
 
   /**
-   * <p>A "restore wallet selector" panel provides a means of choosing how a wallet is to be restored</p>
-   *
-   * @param listener          The action listener
-   * @param backupCommand     The "from backup" command name
-   * @param seedPhraseCommand The "from seed phrase" command name
-   *
-   * @return A new "restore wallet" panel
-   */
-  public static JPanel newRestoreWalletSelector(
-    ActionListener listener,
-    String backupCommand,
-    String seedPhraseCommand
-  ) {
-
-    JPanel panel = Panels.newPanel();
-
-    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.RESTORE_FROM_BACKUP);
-    radio1.setSelected(true);
-    radio1.setActionCommand(backupCommand);
-
-    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.RESTORE_FROM_SEED_PHRASE);
-    radio2.setActionCommand(seedPhraseCommand);
-
-    // Wallet selection is mutually exclusive
-    ButtonGroup group = new ButtonGroup();
-    group.add(radio1);
-    group.add(radio2);
-
-    // Add to the panel
-    panel.add(radio1, "wrap");
-    panel.add(radio2, "wrap");
-
-    return panel;
-  }
-
-  /**
    * <p>A "confirm seed phrase" panel displays the instructions to enter the seed phrase from a piece of paper</p>
    *
    * @return A new "confirm seed phrase" panel
@@ -384,25 +278,6 @@ public class Panels {
 
     // Add to the panel
     panel.add(Labels.newSeedWarningNote(), "push");
-
-    return panel;
-  }
-
-  /**
-   * <p>A "restore select method" panel displays the restore options</p>
-   *
-   * @return A new "restore select method" panel
-   */
-  public static JPanel newRestoreSelectMethod() {
-
-    JPanel panel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0", // Layout
-      "[grow]", // Columns
-      "[]" // Rows
-    ));
-
-    // Add to the panel
-    panel.add(Labels.newRestoreSelectMethodNote(), "push");
 
     return panel;
   }
@@ -470,25 +345,6 @@ public class Panels {
    * @return A new "select backup directory" panel
    */
   public static JPanel newSelectBackupDirectory() {
-
-    JPanel panel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0", // Layout
-      "[grow]", // Columns
-      "[]" // Rows
-    ));
-
-    // Add to the panel
-    panel.add(Labels.newSelectBackupLocationNote(), "push");
-
-    return panel;
-  }
-
-  /**
-   * <p>A "select backup directory" panel displays the instructions to choose an appropriate backup directory</p>
-   *
-   * @return A new "select backup directory" panel
-   */
-  public static JPanel newContactDetail() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       "fillx,insets 0", // Layout
