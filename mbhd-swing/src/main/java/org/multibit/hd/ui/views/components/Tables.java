@@ -54,7 +54,6 @@ public class Tables {
     table.setCellSelectionEnabled(false);
 
     // Set preferred widths
-    resizeColumn(table, ContactTableModel.STAR_COLUMN_INDEX, MultiBitUI.NORMAL_ICON_SIZE + SPACER);
     resizeColumn(table, ContactTableModel.CHECKBOX_COLUMN_INDEX, MultiBitUI.NORMAL_ICON_SIZE + SPACER);
     resizeColumn(table, ContactTableModel.GRAVATAR_COLUMN_INDEX, MultiBitUI.LARGE_ICON_SIZE + SPACER);
 

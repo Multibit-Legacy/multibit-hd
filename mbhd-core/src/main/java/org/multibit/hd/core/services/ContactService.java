@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.multibit.hd.core.dto.Contact;
-import org.multibit.hd.core.dto.StarStyle;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.exceptions.ContactsLoadException;
 import org.multibit.hd.core.exceptions.ContactsSaveException;
@@ -182,22 +181,18 @@ public class ContactService {
     contact1.setEmail("g.rowe@froot.co.uk");
     contact1.getTags().add("VIP");
     contact1.getTags().add("Family");
-    contact1.setStarStyle(StarStyle.EMPTY);
 
     Contact contact2 = newContact("Bob Capital");
     contact2.setEmail("bob.capital@example.org");
     contact2.getTags().add("VIP");
     contact2.getTags().add("Merchandise");
-    contact2.setStarStyle(StarStyle.FILL_1);
 
     Contact contact3 = newContact("Charles Capital");
     contact3.setEmail("charles.capital@example.org");
-    contact3.setStarStyle(StarStyle.FILL_2);
 
     // No email for Derek
     Contact contact4 = newContact("Derek Capital");
     contact4.getTags().add("Family");
-    contact4.setStarStyle(StarStyle.FILL_3);
 
     Contact contact5 = newContact("alice Lower");
     contact5.setEmail("alice.lower@example.org");

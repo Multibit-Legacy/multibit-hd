@@ -1,6 +1,5 @@
 package org.multibit.hd.ui.views.components;
 
-import org.multibit.hd.core.dto.StarStyle;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -35,8 +34,6 @@ public class Images {
    */
   public static Icon newQRCodeIcon() {
 
-    final Icon icon;
-
     try (InputStream is = Images.class.getResourceAsStream("/assets/images/qrcode.png")) {
 
       BufferedImage qrCodePng = ImageIO.read(is);
@@ -60,59 +57,6 @@ public class Images {
       Themes.currentTheme.text(),
       MultiBitUI.LARGE_ICON_SIZE
     );
-
-    return ImageDecorator.toImageIcon(icon);
-
-  }
-
-  /**
-   * @param style The star style
-   *
-   * @return A new "star" image icon suitable for use in tables
-   */
-  public static ImageIcon newStarIcon(StarStyle style) {
-
-    final Icon icon;
-
-    switch (style) {
-      case UNKNOWN:
-        icon = AwesomeDecorator.createIcon(
-          AwesomeIcon.BAN,
-          Themes.currentTheme.text(),
-          MultiBitUI.SMALL_ICON_SIZE
-        );
-        break;
-      case EMPTY:
-        icon = AwesomeDecorator.createIcon(
-          AwesomeIcon.STAR_ALT,
-          Themes.currentTheme.text(),
-          MultiBitUI.SMALL_ICON_SIZE
-        );
-        break;
-      case FILL_1:
-        icon = AwesomeDecorator.createIcon(
-          AwesomeIcon.STAR,
-          Themes.currentTheme.warningAlertBackground(),
-          MultiBitUI.SMALL_ICON_SIZE
-        );
-        break;
-      case FILL_2:
-        icon = AwesomeDecorator.createIcon(
-          AwesomeIcon.STAR,
-          Themes.currentTheme.dangerAlertBackground(),
-          MultiBitUI.SMALL_ICON_SIZE
-        );
-        break;
-      case FILL_3:
-        icon = AwesomeDecorator.createIcon(
-          AwesomeIcon.STAR,
-          Themes.currentTheme.successAlertBackground(),
-          MultiBitUI.SMALL_ICON_SIZE
-        );
-        break;
-      default:
-        throw new IllegalStateException("Unknown star style: " + style.name());
-    }
 
     return ImageDecorator.toImageIcon(icon);
 

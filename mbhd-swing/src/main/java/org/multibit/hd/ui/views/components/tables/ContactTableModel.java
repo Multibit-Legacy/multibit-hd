@@ -7,7 +7,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.multibit.hd.core.dto.Contact;
-import org.multibit.hd.core.dto.StarStyle;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.gravatar.Gravatars;
 import org.multibit.hd.ui.views.components.ImageDecorator;
@@ -31,20 +30,18 @@ public class ContactTableModel extends AbstractTableModel {
 
   public static final int CHECKBOX_COLUMN_INDEX = 0;
   public static final int GRAVATAR_COLUMN_INDEX = 1;
-  public static final int STAR_COLUMN_INDEX = 2;
-  public static final int NAME_COLUMN_INDEX = 3;
-  public static final int EMAIL_COLUMN_INDEX = 4;
-  public static final int ADDRESS_COLUMN_INDEX = 5;
-  public static final int TAG_COLUMN_INDEX = 6;
-  public static final int COLUMN_COUNT = 7;
+  public static final int NAME_COLUMN_INDEX = 2;
+  public static final int EMAIL_COLUMN_INDEX = 3;
+  public static final int ADDRESS_COLUMN_INDEX = 4;
+  public static final int TAG_COLUMN_INDEX = 5;
+  public static final int COLUMN_COUNT = 6;
 
   /**
    * The column names - note the use of spaces as identifiers for blank columns
    */
   private String[] columnNames = {
-    "  ", // Checkbox (wider than a star icon)
-    "   ", // Gravatar
-    " ", // Star icon
+    " ", // Checkbox (wider than a star icon)
+    "  ", // Gravatar
     "Name",
     "Email",
     "Address",
@@ -64,13 +61,9 @@ public class ContactTableModel extends AbstractTableModel {
     int row = 0;
     for (Contact contact : contacts) {
 
-      // Create the star icon
-      final ImageIcon starIcon = Images.newStarIcon(contact.getStarStyle());
-
       // Build row manually to allow for flexible column index reporting
       final Object[] rowData = new Object[COLUMN_COUNT];
       rowData[CHECKBOX_COLUMN_INDEX] = false;
-      rowData[STAR_COLUMN_INDEX] = starIcon;
       rowData[NAME_COLUMN_INDEX] = contact.getName();
       rowData[EMAIL_COLUMN_INDEX] = contact.getEmail().or("");
       rowData[ADDRESS_COLUMN_INDEX] = contact.getBitcoinAddress().or("");
@@ -163,23 +156,6 @@ public class ContactTableModel extends AbstractTableModel {
           setSelectionCheckmark(row, false);
         }
         break;
-      case 2:
-        // Starred
-        for (int row = 0; row < getRowCount(); row++) {
-          // Get the star style
-          StarStyle starStyle = contacts.get(row).getStarStyle();
-          // If it is starred then apply a check or remove the existing one
-          setSelectionCheckmark(row, starStyle.isStarred());
-        }
-        break;
-      case 3:
-        // Unstarred
-        for (int row = 0; row < getRowCount(); row++) {
-          // Get the star style
-          StarStyle starStyle = contacts.get(row).getStarStyle();
-          setSelectionCheckmark(row, !starStyle.isStarred());
-        }
-        break;
       default:
         throw new IllegalStateException("Unknown contact selected index: " + checkSelectorIndex);
     }
@@ -197,26 +173,4 @@ public class ContactTableModel extends AbstractTableModel {
 
   }
 
-  /**
-   * @param row    The row index
-   * @param column The column index
-   */
-  public void nextStarStyle(int row, int column) {
-
-    Preconditions.checkState(column == STAR_COLUMN_INDEX, "'column' is not the star column index");
-
-    // Get the underlying contact
-    Contact contact = contacts.get(row);
-
-    // Get the next star style
-    StarStyle starStyle = contact.getStarStyle().next();
-    contact.setStarStyle(starStyle);
-
-    // Create the image
-    final ImageIcon starIcon = Images.newStarIcon(starStyle);
-
-    // Update the rows
-    setValueAt(starIcon, row, STAR_COLUMN_INDEX);
-
-  }
 }

@@ -4,12 +4,10 @@ import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.dto.Contact;
-import org.multibit.hd.core.dto.StarStyle;
 import org.multibit.hd.core.managers.WalletManagerTest;
 
 import java.io.File;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -82,18 +80,6 @@ public class ContactServiceTest {
     tags.add("froppy");
     newContact.setTags(tags);
 
-    Random random = new Random();
-    int which = random.nextInt(5);
-    StarStyle starStyle;
-    switch(which) {
-      case 0: starStyle = StarStyle.EMPTY; break;
-      case 1: starStyle = StarStyle.FILL_1; break;
-      case 2: starStyle = StarStyle.FILL_2; break;
-      case 3: starStyle = StarStyle.FILL_3; break;
-      case 4: starStyle = StarStyle.UNKNOWN; break;
-      default: starStyle = StarStyle.UNKNOWN; break;
-    }
-    newContact.setStarStyle(starStyle);
     int numberOfContacts = contactService.allContacts(1, 10).size();
 
     // Store the contacts to the backing store
@@ -122,7 +108,6 @@ public class ContactServiceTest {
     assertThat(reloadedContact.getImagePath()).isEqualTo(newContact.getImagePath());
     assertThat(reloadedContact.getId()).isEqualTo(newContact.getId());
     assertThat(reloadedContact.getNotes()).isEqualTo(newContact.getNotes());
-    assertThat(reloadedContact.getStarStyle()).isEqualTo(newContact.getStarStyle());
     assertThat(reloadedContact.getTags()).isEqualTo(newContact.getTags());
   }
 }

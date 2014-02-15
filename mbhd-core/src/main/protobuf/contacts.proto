@@ -50,11 +50,7 @@ message Contact {
   optional string extended_public_key = 6;  // the extended public key of the contact
   optional string notes = 7;                // notes 
   repeated Tag tag = 8;                     // the tags, as repeated strings
-  optional uint32 star_style = 9;              // the star style as an int, encoded:
-                                            // 0 =  UNKNOWN, 1 = FILL_1, 2 = FILL_2, 3 = FILL_3, 4 = EMPTY
-                                            // any other = UNKNOWN
-                                            // (an enum is not used for future proofing the parsing)
-  // Next tag: 10
+  // Next tag: 9
 }
 
 /**

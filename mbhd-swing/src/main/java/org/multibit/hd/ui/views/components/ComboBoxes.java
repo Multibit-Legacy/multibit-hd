@@ -77,8 +77,6 @@ public class ComboBoxes {
     String[] items = new String[]{
       Languages.safeText(MessageKey.ALL),
       Languages.safeText(MessageKey.NONE),
-      Languages.safeText(MessageKey.STARRED),
-      Languages.safeText(MessageKey.UNSTARRED),
     };
 
     JComboBox<String> comboBox = newReadOnlyComboBox(items);

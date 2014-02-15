@@ -42,8 +42,6 @@ public enum MessageKey {
   PREVIOUS("previous"),
   ALL("all"),
   NONE("none"),
-  STARRED("starred"),
-  UNSTARRED("unstarred"),
 
   // Field labels
 

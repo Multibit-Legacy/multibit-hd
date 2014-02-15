@@ -90,10 +90,6 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
           int row = target.getSelectedRow();
           int column = target.getSelectedColumn();
 
-          if (column == ContactTableModel.STAR_COLUMN_INDEX) {
-            contactTableModel.nextStarStyle(row, column);
-          }
-
         }
       }
 

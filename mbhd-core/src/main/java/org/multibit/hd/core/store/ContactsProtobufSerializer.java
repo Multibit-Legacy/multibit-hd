@@ -25,7 +25,6 @@ import com.google.common.collect.Sets;
 import com.google.protobuf.TextFormat;
 import org.multibit.contact.MBHDProtos;
 import org.multibit.hd.core.dto.Contact;
-import org.multibit.hd.core.dto.StarStyle;
 import org.multibit.hd.core.exceptions.ContactsLoadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,7 +106,6 @@ public class ContactsProtobufSerializer {
     contactBuilder.setImagePath(contact.getImagePath().or(""));
     contactBuilder.setExtendedPublicKey(contact.getExtendedPublicKey().or(""));
     contactBuilder.setNotes(contact.getNotes().or(""));
-    contactBuilder.setStarStyle(getStarStyleAsInt(contact.getStarStyle()));
 
     // Construct tags
     List<String> tags = contact.getTags();
@@ -122,31 +120,6 @@ public class ContactsProtobufSerializer {
 
     return contactBuilder.build();
   }
-
-  private static int getStarStyleAsInt(StarStyle starStyle) {
-    if (starStyle == null) {
-      return 0; // unknown
-    }
-
-    switch(starStyle) {
-      case UNKNOWN: return 0;
-      case FILL_1: return 1;
-      case FILL_2: return 2;
-      case FILL_3: return 3;
-      case EMPTY: return 4;
-      default: return 0;
-    }
-  }
-  private static StarStyle getStarStyleFromInt(int starStyleAsInt) {
-     switch(starStyleAsInt) {
-       case 0: return StarStyle.UNKNOWN;
-       case 1: return StarStyle.FILL_1;
-       case 2: return StarStyle.FILL_2;
-       case 3: return StarStyle.FILL_3;
-       case 4: return StarStyle.EMPTY;
-       default: return StarStyle.UNKNOWN;
-     }
-   }
 
   private static MBHDProtos.Tag makeTagProto(String tag) {
     MBHDProtos.Tag.Builder tagBuilder = MBHDProtos.Tag.newBuilder();
@@ -201,7 +174,6 @@ public class ContactsProtobufSerializer {
           contact.setImagePath(contactProto.getImagePath());
           contact.setExtendedPublicKey(contactProto.getExtendedPublicKey());
           contact.setNotes(contactProto.getNotes());
-          contact.setStarStyle(getStarStyleFromInt(contactProto.getStarStyle()));
 
           // Create tags
           List<String> tags = Lists.newArrayList();

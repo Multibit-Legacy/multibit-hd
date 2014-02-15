@@ -27,7 +27,6 @@ public class Contact {
   private Optional<String> extendedPublicKey = Optional.absent();
   private Optional<String> notes = Optional.absent();
   private List<String> tags = Lists.newArrayList();
-  private StarStyle starStyle = StarStyle.EMPTY;
 
   /**
    * @param id   The unique identifier
@@ -117,18 +116,6 @@ public class Contact {
     this.tags = tags;
   }
 
-  /**
-   *
-   * @return The star fill style to use (e.g. EMPTY etc)
-   */
-  public StarStyle getStarStyle() {
-    return starStyle;
-  }
-
-  public void setStarStyle(StarStyle starStyle) {
-    this.starStyle = starStyle;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -136,9 +123,8 @@ public class Contact {
 
     Contact contact = (Contact) o;
 
-    if (id != null ? !id.equals(contact.id) : contact.id != null) return false;
+    return !(id != null ? !id.equals(contact.id) : contact.id != null);
 
-    return true;
   }
 
   @Override
