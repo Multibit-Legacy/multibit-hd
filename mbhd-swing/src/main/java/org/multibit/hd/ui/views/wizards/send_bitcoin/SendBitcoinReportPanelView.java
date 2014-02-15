@@ -102,6 +102,18 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   }
 
   @Override
+  public void afterShow() {
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        getFinishButton().requestFocusInWindow();
+      }
+    });
+
+  }
+
+  @Override
   public void updateFromComponentModels(Optional componentModel) {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
   }

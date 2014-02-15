@@ -132,6 +132,18 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
   }
 
   @Override
+  public void afterShow() {
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        notesTextArea.requestFocusInWindow();
+      }
+    });
+
+  }
+
+  @Override
   public void updateFromComponentModels(Optional componentModel) {
 
     // No need to update since we expose the component models

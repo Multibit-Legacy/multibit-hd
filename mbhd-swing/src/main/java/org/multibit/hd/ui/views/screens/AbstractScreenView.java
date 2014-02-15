@@ -120,6 +120,30 @@ public abstract class AbstractScreenView<M extends ScreenModel> {
   }
 
   /**
+   * <p>Called after this screen has been shown</p>
+   *
+   * <p>Typically this is where a view would attempt to set the focus for its primary component using
+   * the Swing thread as follows:</p>
+   *
+   * <pre>
+   * SwingUtilities.invokeLater(new Runnable() {
+   *
+   * {@literal @}Override public void run() {
+   *   myComponent.requestFocusInWindow();
+   * }
+   *
+   * });
+   *
+   * </pre>
+   */
+  public void afterShow() {
+
+    // Do nothing
+
+  }
+
+
+  /**
    * <p>React to a "screen component model changed" event</p>
    *
    * @param event The event

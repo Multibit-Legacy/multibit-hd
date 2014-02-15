@@ -132,6 +132,11 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
   }
 
   @Override
+  public void requestInitialFocus() {
+    bitcoinAmountText.requestFocusInWindow();
+  }
+
+  @Override
   public void updateModelFromView() {
     // Do nothing - the model is updated during key press
   }

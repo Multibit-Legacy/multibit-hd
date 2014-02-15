@@ -68,6 +68,18 @@ public class CreateWalletCreatePasswordPanelView extends AbstractWizardPanelView
   }
 
   @Override
+  public void afterShow() {
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        confirmPasswordMaV.getView().requestInitialFocus();
+      }
+    });
+
+  }
+
+  @Override
   public void updateFromComponentModels(Optional componentModel) {
 
     // Do nothing

@@ -28,6 +28,8 @@ import java.awt.event.ActionEvent;
  */
 public class ToolsPanelView extends AbstractScreenView<ToolsPanelModel> {
 
+  private JButton welcomeWizard;
+
   /**
    * @param panelModel The model backing this panel view
    * @param screen     The screen to filter events from components
@@ -71,12 +73,25 @@ public class ToolsPanelView extends AbstractScreenView<ToolsPanelModel> {
       }
     };
 
-    contentPanel.add(Buttons.newShowWelcomeWizardButton(showWelcomeWizardAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    welcomeWizard = Buttons.newShowWelcomeWizardButton(showWelcomeWizardAction);
+
+    contentPanel.add(welcomeWizard, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newAddAlertButton(fireDemoAlertAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push,wrap");
 
 
     return contentPanel;
   }
 
+  @Override
+  public void afterShow() {
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        welcomeWizard.requestFocusInWindow();
+      }
+    });
+
+  }
 
 }

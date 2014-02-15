@@ -68,6 +68,11 @@ public class EnterSearchView extends AbstractComponentView<EnterSearchModel> {
   }
 
   @Override
+  public void requestInitialFocus() {
+    enterSearchTextField.requestFocusInWindow();
+  }
+
+  @Override
   public void updateModelFromView() {
     getModel().get().setValue(enterSearchTextField.getText());
   }

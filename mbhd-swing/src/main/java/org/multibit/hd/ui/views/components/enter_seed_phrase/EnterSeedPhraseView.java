@@ -113,6 +113,11 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
   }
 
   @Override
+  public void requestInitialFocus() {
+    seedTimestampText.requestFocusInWindow();
+  }
+
+  @Override
   public void updateModelFromView() {
 
     if (showSeedPhrase) {

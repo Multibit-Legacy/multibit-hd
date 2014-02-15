@@ -115,6 +115,18 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
   }
 
   @Override
+  public void afterShow() {
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        getFinishButton().requestFocusInWindow();
+      }
+    });
+
+  }
+
+  @Override
   public void updateFromComponentModels(Optional componentModel) {
 
     // No need to update since we expose the component models

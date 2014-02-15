@@ -81,6 +81,18 @@ public class RestoreWalletSelectBackupLocationPanelView extends AbstractWizardPa
   }
 
   @Override
+  public void afterShow() {
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        selectFileMaV.getView().requestInitialFocus();
+      }
+    });
+
+  }
+
+  @Override
   public void updateFromComponentModels(Optional componentModel) {
 
     // Do nothing we have a direct reference

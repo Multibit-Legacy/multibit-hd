@@ -86,6 +86,13 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
   }
 
   @Override
+  public void afterShow() {
+
+    // Do nothing
+
+  }
+
+  @Override
   public void updateFromComponentModels(Optional componentModel) {
 
     setPanelModel(currentSelection);

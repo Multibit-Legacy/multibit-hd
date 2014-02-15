@@ -22,6 +22,8 @@ import java.awt.event.ActionEvent;
  */
 public class DisplayBitcoinAddressView extends AbstractComponentView<DisplayBitcoinAddressModel> {
 
+  private JTextField bitcoinAddress;
+
   /**
    * @param model The model backing this view
    */
@@ -40,7 +42,7 @@ public class DisplayBitcoinAddressView extends AbstractComponentView<DisplayBitc
     ));
 
     // Populate the Bitcoin address
-    JTextField bitcoinAddress = TextBoxes.newDisplayBitcoinAddress(getModel().get().getValue());
+    bitcoinAddress = TextBoxes.newDisplayBitcoinAddress(getModel().get().getValue());
 
     // Configure the actions
     Action copyClipboardAction = getCopyClipboardAction();
@@ -50,6 +52,15 @@ public class DisplayBitcoinAddressView extends AbstractComponentView<DisplayBitc
     panel.add(Buttons.newCopyButton(copyClipboardAction));
 
     return panel;
+
+  }
+
+  @Override
+  public void requestInitialFocus() {
+
+    if (bitcoinAddress != null) {
+      bitcoinAddress.requestFocusInWindow();
+    }
 
   }
 

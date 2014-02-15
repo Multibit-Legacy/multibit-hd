@@ -154,6 +154,19 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     return true;
   }
 
+  @Override
+  public void afterShow() {
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        getFinishButton().requestFocusInWindow();
+      }
+    });
+
+  }
+
+
   /**
    * Create a wallet from a seed phrase, timestamp and password
    */

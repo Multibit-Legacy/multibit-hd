@@ -75,6 +75,18 @@ public class CreateWalletConfirmSeedPhrasePanelView extends AbstractWizardPanelV
   }
 
   @Override
+  public void afterShow() {
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        enterSeedPhraseMaV.getView().requestInitialFocus();
+      }
+    });
+
+  }
+
+  @Override
   public void updateFromComponentModels(Optional componentModel) {
 
     List<String> actualSeedPhrase = getWizardModel().getCreateWalletSeedPhrase();

@@ -86,6 +86,11 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
 
   }
 
+  @Override
+  public void requestInitialFocus() {
+    // No focus required
+  }
+
   /**
    * Updates the view to reflect the current Bitcoin and local amounts
    */

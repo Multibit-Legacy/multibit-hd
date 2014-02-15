@@ -85,6 +85,18 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
   }
 
   @Override
+  public void afterShow() {
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        enterRecipientMaV.getView().requestInitialFocus();
+      }
+    });
+
+  }
+
+  @Override
   public void updateFromComponentModels(Optional componentModel) {
 
     // No need to update the wizard it has the references

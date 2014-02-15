@@ -94,6 +94,11 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
 
   }
 
+  @Override
+  public void requestInitialFocus() {
+    password1.requestFocusInWindow();
+  }
+
   /**
    * @return A new action for toggling the display of the seed phrase
    */

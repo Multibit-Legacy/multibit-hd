@@ -81,6 +81,11 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
   }
 
   @Override
+  public void requestInitialFocus() {
+
+  }
+
+  @Override
   public void updateModelFromView() {
 
     Object selectedItem = recipientComboBox.getSelectedItem();

@@ -101,6 +101,13 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
   }
 
   @Override
+  public void afterShow() {
+
+    getFinishButton().requestFocusInWindow();
+
+  }
+
+  @Override
   public void updateFromComponentModels(Optional componentModel) {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
   }

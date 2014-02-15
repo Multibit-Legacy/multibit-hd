@@ -74,6 +74,11 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
   }
 
   @Override
+  public void requestInitialFocus() {
+    seedTimestamp.requestFocusInWindow();
+  }
+
+  @Override
   public void updateModelFromView() {
     // Do nothing - the model is driving the view
   }

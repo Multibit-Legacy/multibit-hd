@@ -78,6 +78,19 @@ public class TransactionsPanelView extends AbstractScreenView<TransactionsPanelM
     return contentPanel;
   }
 
+  @Override
+  public void afterShow() {
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        // TODO Set the search as the focus;
+      }
+    });
+
+  }
+
+
   @Subscribe
   public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
     log.debug("Received the TransactionSeenEvent: " + transactionSeenEvent.toString());

@@ -137,6 +137,8 @@ public abstract class AbstractWizard<M extends WizardModel> {
 
       // No abort so show
       cardLayout.show(wizardPanel, name);
+
+      wizardPanelView.afterShow();
     }
 
   }

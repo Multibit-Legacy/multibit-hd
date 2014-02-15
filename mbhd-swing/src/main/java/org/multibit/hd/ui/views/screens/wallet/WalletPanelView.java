@@ -25,6 +25,9 @@ import java.awt.event.ActionEvent;
  */
 public class WalletPanelView extends AbstractScreenView<WalletPanelModel> {
 
+  private JButton sendBitcoin;
+  private JButton requestBitcoin;
+
   /**
    * @param panelModel The model backing this panel view
    * @param screen     The screen to filter events from components
@@ -68,11 +71,26 @@ public class WalletPanelView extends AbstractScreenView<WalletPanelModel> {
       }
     };
 
-    contentPanel.add(Buttons.newSendBitcoinWizardButton(showSendBitcoinWizardAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
-    contentPanel.add(Buttons.newRequestBitcoinWizardButton(showRequestBitcoinWizardAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
+    sendBitcoin = Buttons.newSendBitcoinWizardButton(showSendBitcoinWizardAction);
+    requestBitcoin = Buttons.newRequestBitcoinWizardButton(showRequestBitcoinWizardAction);
+
+    contentPanel.add(sendBitcoin, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    contentPanel.add(requestBitcoin, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
     contentPanel.add(Components.newWalletDetailPanel(), "span 2,grow");
 
     return contentPanel;
+
+  }
+
+  @Override
+  public void afterShow() {
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        sendBitcoin.requestFocusInWindow();
+      }
+    });
 
   }
 

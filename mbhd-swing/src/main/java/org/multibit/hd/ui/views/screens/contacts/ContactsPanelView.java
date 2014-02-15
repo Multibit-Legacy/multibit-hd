@@ -116,6 +116,18 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
     return contentPanel;
   }
 
+  @Override
+  public void afterShow() {
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        enterSearchMaV.getView().requestInitialFocus();
+      }
+    });
+
+  }
+
   // TODO Move this into a wallet service
   private WalletId getCurrentWalletId() {
     if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {

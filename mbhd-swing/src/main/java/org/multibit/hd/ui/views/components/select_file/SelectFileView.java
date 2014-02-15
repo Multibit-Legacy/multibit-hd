@@ -73,6 +73,11 @@ public class SelectFileView extends AbstractComponentView<SelectFileModel> {
   }
 
   @Override
+  public void requestInitialFocus() {
+    selectedFileTextField.requestFocusInWindow();
+  }
+
+  @Override
   public void updateModelFromView() {
     getModel().get().setValue(selectedFileTextField.getText());
   }

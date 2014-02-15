@@ -3,13 +3,13 @@ package org.multibit.hd.ui.views.wizards;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
-import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardButtonEnabledEvent;
 import org.multibit.hd.ui.events.view.WizardComponentModelChangedEvent;
-import org.multibit.hd.ui.views.components.panels.PanelDecorator;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 
 import javax.swing.*;
 
@@ -204,7 +204,31 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
    */
   public boolean beforeShow() {
 
+    // Default is to return OK
     return true;
+
+  }
+
+  /**
+   * <p>Called after this wizard panel has been shown</p>
+   *
+   * <p>Typically this is where a panel view would attempt to set the focus for its primary component using
+   * the Swing thread as follows:</p>
+   *
+   * <pre>
+   * SwingUtilities.invokeLater(new Runnable() {
+   *
+   * {@literal @}Override public void run() {
+   *   getCancelButton().requestFocusInWindow();
+   * }
+   *
+   * });
+   *
+   * </pre>
+   */
+  public void afterShow() {
+
+    // Do nothing
 
   }
 
@@ -220,7 +244,6 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
    * @param componentModel The component model (
    */
   public abstract void updateFromComponentModels(Optional componentModel);
-
 
   /**
    * <p>React to a "wizard button enable" event</p>
@@ -285,5 +308,4 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
     }
 
   }
-
 }

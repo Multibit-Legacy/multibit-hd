@@ -78,4 +78,12 @@ public abstract class AbstractComponentView<M extends Model> implements View<M> 
   public JPanel currentComponentPanel() {
     return panel;
   }
+
+  /**
+   * <p>Called in the Swing event thread when this component is first shown</p>
+   *
+   * <p>Implementers should select a primary component to <code>requestFocusInWindow()</code></p>
+   */
+  public abstract void requestInitialFocus();
+
 }

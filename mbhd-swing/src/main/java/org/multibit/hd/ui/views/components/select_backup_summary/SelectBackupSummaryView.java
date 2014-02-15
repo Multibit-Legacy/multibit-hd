@@ -63,6 +63,11 @@ public class SelectBackupSummaryView extends AbstractComponentView<SelectBackupS
   }
 
   @Override
+  public void requestInitialFocus() {
+    selectedBackupComboBox.requestFocusInWindow();
+  }
+
+  @Override
   public void updateModelFromView() {
 
     // See the action listener

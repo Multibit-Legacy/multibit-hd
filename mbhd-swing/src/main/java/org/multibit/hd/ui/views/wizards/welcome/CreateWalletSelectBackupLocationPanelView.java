@@ -71,6 +71,18 @@ public class CreateWalletSelectBackupLocationPanelView extends AbstractWizardPan
   }
 
   @Override
+  public void afterShow() {
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        selectFileMaV.getView().requestInitialFocus();
+      }
+    });
+
+  }
+
+  @Override
   public void updateFromComponentModels(Optional componentModel) {
 
     // Do nothing we have a direct reference
@@ -82,4 +94,5 @@ public class CreateWalletSelectBackupLocationPanelView extends AbstractWizardPan
     // Enable the Next button - user can skip entering a cloud backup location
     ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
   }
+
 }

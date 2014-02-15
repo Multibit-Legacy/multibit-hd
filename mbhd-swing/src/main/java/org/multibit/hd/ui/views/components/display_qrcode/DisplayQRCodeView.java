@@ -27,6 +27,7 @@ public class DisplayQRCodeView extends AbstractComponentView<DisplayQRCodeModel>
 
   private Optional<BufferedImage> qrCodeImage;
 
+  private JButton panelCloseButton;
 
   /**
    * @param model The model backing this view
@@ -43,13 +44,16 @@ public class DisplayQRCodeView extends AbstractComponentView<DisplayQRCodeModel>
 
     qrCodeImage = QRCodes.generateQRCode(getModel().get().getValue(), 2);
 
+    panelCloseButton = Buttons.newPanelCloseButton(getClosePopoverAction());
+
     // Add to the panel
     // Bug in JDK 1.7 on Mac prevents clipboard image copy
     // Possibly fixed in JDK 1.8
     if (!OSUtils.isMac()) {
       panel.add(Buttons.newCopyButton(getCopyClipboardAction()), "align left,push");
     }
-    panel.add(Buttons.newPanelCloseButton(getClosePopoverAction()), "align right,shrink,wrap");
+
+    panel.add(panelCloseButton, "align right,shrink,wrap");
     panel.add(Labels.newImageLabel(qrCodeImage), "span 2,grow,push,wrap");
 
     // Panel needs to be this size to allow for largest Bitcoin URI
@@ -57,6 +61,11 @@ public class DisplayQRCodeView extends AbstractComponentView<DisplayQRCodeModel>
 
     return panel;
 
+  }
+
+  @Override
+  public void requestInitialFocus() {
+    panelCloseButton.requestFocusInWindow();
   }
 
   /**

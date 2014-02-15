@@ -71,6 +71,11 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
   }
 
   @Override
+  public void requestInitialFocus() {
+    password.requestFocusInWindow();
+  }
+
+  @Override
   public void updateModelFromView() {
     // Do nothing the model is updated from key release events
   }

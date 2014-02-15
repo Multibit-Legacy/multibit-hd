@@ -87,6 +87,13 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
   }
 
   @Override
+  public void afterShow() {
+
+    // Do nothing
+
+  }
+
+  @Override
   public void updateFromComponentModels(Optional componentModel) {
 
     // Do nothing - panel model is updated via an action and wizard model is not applicable

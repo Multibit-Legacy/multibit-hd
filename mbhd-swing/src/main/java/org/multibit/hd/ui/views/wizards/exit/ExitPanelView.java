@@ -49,11 +49,15 @@ public class ExitPanelView extends AbstractWizardPanelView<ExitWizardModel, Stri
   }
 
   @Override
-  public boolean beforeShow() {
+  public void afterShow() {
 
-    getCancelButton().requestFocusInWindow();
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        getCancelButton().requestFocusInWindow();
+      }
+    });
 
-    return true;
   }
 
   @Override
