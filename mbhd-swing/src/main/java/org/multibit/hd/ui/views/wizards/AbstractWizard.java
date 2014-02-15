@@ -14,6 +14,7 @@ import org.multibit.hd.ui.views.layouts.WizardCardLayout;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.util.Map;
 
 /**
@@ -50,6 +51,14 @@ public abstract class AbstractWizard<M extends WizardModel> {
 
     cardLayout = new WizardCardLayout(0, 0);
     wizardPanel = Panels.newPanel(cardLayout);
+
+    // Bind the ESC key to a Cancel/Exit event
+    wizardPanel.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE,0),"quit");
+    if (isExiting) {
+      wizardPanel.getActionMap().put("quit",getExitAction());
+    } else {
+      wizardPanel.getActionMap().put("quit",getCancelAction());
+    }
 
     // Use current locale for initial creation
     onLocaleChangedEvent(new LocaleChangedEvent());

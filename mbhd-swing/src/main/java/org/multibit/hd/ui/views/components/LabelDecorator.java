@@ -55,7 +55,7 @@ public class LabelDecorator {
         break;
       case MICON:
         label.setText("m");
-        label.setIconTextGap(0);
+        label.setIconTextGap(-2);
         AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, label, false, fontSize);
         break;
       case UICON:
