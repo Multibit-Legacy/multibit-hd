@@ -6,7 +6,11 @@ import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * <p>Utility to provide the following to UI:</p>
@@ -25,6 +29,24 @@ public class Images {
   private Images() {
   }
 
+
+  /**
+   * @return A new "qr code" image icon that's nicer than the Font Awesome version
+   */
+  public static Icon newQRCodeIcon() {
+
+    final Icon icon;
+
+    try (InputStream is = Images.class.getResourceAsStream("/assets/images/qrcode.png")) {
+
+      BufferedImage qrCodePng = ImageIO.read(is);
+      return new ImageIcon(qrCodePng);
+
+    } catch (IOException e) {
+      throw new IllegalStateException("The QR code image is missing");
+    }
+
+  }
 
   /**
    * @return A new "user" image icon suitable for use in tables

@@ -92,6 +92,10 @@ public interface MultiBitUI {
    */
   int LARGE_ICON_SIZE = 60;
   /**
+   * Larger than normal icon size (e.g. buttons needing more attention like QR code)
+   */
+  int NORMAL_PLUS_ICON_SIZE = 30;
+  /**
    * Normal icon size (e.g. standard buttons)
    */
   int NORMAL_ICON_SIZE = 20;
