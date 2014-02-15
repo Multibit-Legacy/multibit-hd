@@ -1,7 +1,9 @@
 package org.multibit.hd.ui.views;
 
 import net.miginfocom.swing.MigLayout;
+import org.joda.time.DateTime;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
@@ -19,6 +21,8 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -27,11 +31,20 @@ import java.awt.*;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class SidebarView {
 
   private final JPanel contentPanel;
+
+  /**
+   * When the last selection was made
+   */
+  private DateTime lastSelectionDateTime = Dates.nowUtc();
+  /**
+   * The detail screen that was selected
+   */
+  private Screen lastSelectedScreen = Screen.WALLET;
 
   public SidebarView() {
 
@@ -81,7 +94,7 @@ public class SidebarView {
     sidebarTree.setCellRenderer(new ThemeAwareTreeCellRenderer());
 
     sidebarTree.setVisibleRowCount(10);
-    sidebarTree.setToggleClickCount(2);
+    sidebarTree.setToggleClickCount(1);
 
     // Ensure we always have the soft wallet open
     TreePath walletPath = sidebarTree.getPathForRow(0);
@@ -95,22 +108,25 @@ public class SidebarView {
 
     sidebarTree.setFont(sidebarTree.getFont().deriveFont(16.0f));
 
+    sidebarTree.addMouseListener(new MouseAdapter() {
+
+      public void mouseReleased(MouseEvent e) {
+
+        TreePath path = sidebarTree.getPathForLocation(e.getX(), e.getY());
+
+        if (path != null) {
+          handleTreeSelection((DefaultMutableTreeNode) path.getLastPathComponent());
+        }
+      }
+    });
+
     sidebarTree.addTreeSelectionListener(new TreeSelectionListener() {
 
       public void valueChanged(TreeSelectionEvent e) {
 
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
 
-        SidebarNodeInfo nodeInfo = (SidebarNodeInfo) node.getUserObject();
-
-        switch (nodeInfo.getDetailScreen()) {
-          // Add special cases
-          case EXIT:
-            Panels.showLightBox(Wizards.newExitWizard().getWizardPanel());
-            break;
-          default:
-            ControllerEvents.fireShowDetailScreenEvent(nodeInfo.getDetailScreen());
-        }
+        handleTreeSelection(node);
 
       }
     });
@@ -120,7 +136,6 @@ public class SidebarView {
 
     return sidebarPane;
   }
-
 
   private DefaultMutableTreeNode createSidebarTreeNodes() {
 
@@ -138,6 +153,34 @@ public class SidebarView {
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.EXIT, Screen.EXIT));
 
     return root;
+  }
+
+
+  /**
+   * @param node The selected node
+   */
+  private void handleTreeSelection(DefaultMutableTreeNode node) {
+
+    SidebarNodeInfo nodeInfo = (SidebarNodeInfo) node.getUserObject();
+
+    Screen detailScreen = nodeInfo.getDetailScreen();
+
+    // Filter out multiple events for the same screen, but allow repeats to occur (such as the exit screen)
+    boolean ignore = detailScreen.equals(lastSelectedScreen) && Dates.nowUtc().isBefore(lastSelectionDateTime.plusSeconds(1));
+    if (!ignore) {
+
+      switch (detailScreen) {
+        // Add special cases
+        case EXIT:
+          Panels.showLightBox(Wizards.newExitWizard().getWizardPanel());
+          break;
+        default:
+          ControllerEvents.fireShowDetailScreenEvent(nodeInfo.getDetailScreen());
+      }
+    }
+
+    lastSelectedScreen = detailScreen;
+    lastSelectionDateTime = Dates.nowUtc();
   }
 
 }
