@@ -49,6 +49,14 @@ public class ExitPanelView extends AbstractWizardPanelView<ExitWizardModel, Stri
   }
 
   @Override
+  public boolean beforeShow() {
+
+    getCancelButton().requestFocusInWindow();
+
+    return true;
+  }
+
+  @Override
   public void updateFromComponentModels(Optional componentModel) {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
   }

@@ -42,8 +42,6 @@ public class LightBoxPanel extends JPanel {
     // Prevent mouse events reaching through the darkened border
     addMouseListener(new ModalMouseListener());
 
-    // TODO Prevent focus events reaching through the darkened border
-
     // Add this panel to the frame's layered panel as the palette layer (directly above the default)
     if (JLayeredPane.MODAL_LAYER.equals(layer)) {
       Panels.frame.getLayeredPane().add(this, JLayeredPane.PALETTE_LAYER);

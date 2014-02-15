@@ -67,9 +67,9 @@ public class SidebarView {
    */
   private JScrollPane createSidebarContent() {
 
-    JScrollPane sidebarPane = new JScrollPane();
+    final JScrollPane sidebarPane = new JScrollPane();
 
-    JTree sidebarTree = new JTree(createSidebarTreeNodes());
+    final JTree sidebarTree = new JTree(createSidebarTreeNodes());
     sidebarTree.setShowsRootHandles(false);
     sidebarTree.setRootVisible(false);
 
