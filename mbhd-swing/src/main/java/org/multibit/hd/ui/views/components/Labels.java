@@ -574,6 +574,7 @@ public class Labels {
       MessageKey.SEED_WARNING_NOTE_2,
       MessageKey.SEED_WARNING_NOTE_3,
       MessageKey.SEED_WARNING_NOTE_4,
+      MessageKey.SEED_WARNING_NOTE_5,
     }, new Object[][]{});
   }
 

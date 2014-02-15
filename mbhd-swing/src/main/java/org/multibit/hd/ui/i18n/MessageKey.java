@@ -155,6 +155,7 @@ public enum MessageKey {
   SEED_WARNING_NOTE_2("seed_warning_note_2"),
   SEED_WARNING_NOTE_3("seed_warning_note_3"),
   SEED_WARNING_NOTE_4("seed_warning_note_4"),
+  SEED_WARNING_NOTE_5("seed_warning_note_5"),
 
   CONFIRM_SEED_PHRASE_NOTE_1("confirm_seed_phrase_note_1"),
   CONFIRM_SEED_PHRASE_NOTE_2("confirm_seed_phrase_note_2"),
