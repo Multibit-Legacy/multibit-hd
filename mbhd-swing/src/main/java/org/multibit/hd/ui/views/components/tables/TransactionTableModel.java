@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.views.components.tables;
 
 import org.multibit.hd.core.dto.TransactionData;
-import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +31,7 @@ public class TransactionTableModel extends AbstractTableModel {
           "Date",
           "Type",
           "Description",
-          "Amount (" + BitcoinSymbol.current().getSymbol() + ")"
+          "Amount"
   };
 
   private Object[][] data;

@@ -3,15 +3,13 @@ package org.multibit.hd.ui.views.components;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.TransactionData;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.views.components.tables.AmountBTCTableHeaderRenderer;
 import org.multibit.hd.ui.views.components.tables.ContactTableModel;
 import org.multibit.hd.ui.views.components.tables.StripedTable;
 import org.multibit.hd.ui.views.components.tables.TransactionTableModel;
 
 import javax.swing.*;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
+import javax.swing.table.*;
 import java.util.*;
 
 /**
@@ -97,6 +95,9 @@ public class Tables {
     resizeColumn(table, TransactionTableModel.TYPE_COLUMN_INDEX, 80, 100);
 
     // Amount BTC column
+    TableColumn column = table.getColumnModel().getColumn(TransactionTableModel.AMOUNT_BTC_COLUMN_INDEX);
+    column.setHeaderRenderer(new AmountBTCTableHeaderRenderer(table.getTableHeader().getDefaultRenderer()));
+
     TableColumn amountBTCTableColumn = table.getColumnModel().getColumn(TransactionTableModel.AMOUNT_BTC_COLUMN_INDEX);
     amountBTCTableColumn.setCellRenderer(Renderers.newTrailingJustifiedNumericRenderer());
     resizeColumn(table, TransactionTableModel.AMOUNT_BTC_COLUMN_INDEX, 120, 180);

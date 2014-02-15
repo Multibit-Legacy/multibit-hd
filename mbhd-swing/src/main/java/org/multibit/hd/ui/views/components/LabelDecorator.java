@@ -43,30 +43,42 @@ public class LabelDecorator {
    * <p>Apply the current Bitcoin symbol text(+icon) to the label</p>
    */
   public static void applyBitcoinSymbolLabel(JLabel label) {
-
-    BitcoinSymbol symbol = BitcoinSymbol.of(Configurations.currentConfiguration.getBitcoinConfiguration().getBitcoinSymbol());
-
-    int fontSize = label.getFont().getSize();
-
-    switch (symbol) {
-      case ICON:
-        AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, label, false, fontSize);
-        label.setIconTextGap(0);
-        break;
-      case MICON:
-        label.setText("m");
-        label.setIconTextGap(-2);
-        AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, label, false, fontSize);
-        break;
-      case UICON:
-        label.setText("\u00B5");
-        label.setIconTextGap(-2);
-        AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, label, false, fontSize);
-        break;
-      default:
-        label.setText(symbol.getSymbol());
-    }
-
+    applyBitcoinSymbolLabel(label, "");
   }
 
+  /**
+    * <p>Apply the current Bitcoin symbol text(+icon) to the label.
+    * @param prefixText The text to prefix the Bitcoin symbol metric symbol.</p>
+    */
+   public static void applyBitcoinSymbolLabel(JLabel label, String prefixText) {
+
+     BitcoinSymbol symbol = BitcoinSymbol.of(Configurations.currentConfiguration.getBitcoinConfiguration().getBitcoinSymbol());
+
+     int fontSize = label.getFont().getSize();
+
+     if (prefixText != null && prefixText.length() > 0) {
+       prefixText = prefixText + " ";
+     }
+
+     switch (symbol) {
+       case ICON:
+         AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, label, false, fontSize);
+         label.setText(prefixText);
+         label.setIconTextGap(0);
+         break;
+       case MICON:
+         label.setText(prefixText + "m");
+         label.setIconTextGap(-2);
+         AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, label, false, fontSize);
+         break;
+       case UICON:
+         label.setText(prefixText + "\u00B5");
+         label.setIconTextGap(-2);
+         AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, label, false, fontSize);
+         break;
+       default:
+         label.setText(symbol.getSymbol());
+     }
+
+   }
 }
