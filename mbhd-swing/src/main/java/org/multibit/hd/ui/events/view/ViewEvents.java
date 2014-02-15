@@ -50,7 +50,7 @@ public class ViewEvents {
   public static void fireBalanceChangedEvent(
     BigInteger satoshis,
     BigMoney localBalance,
-    String rateProvider
+    Optional<String> rateProvider
   ) {
 
     log.trace("Firing 'balance changed' event");

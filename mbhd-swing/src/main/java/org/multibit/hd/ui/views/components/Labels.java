@@ -2,10 +2,8 @@ package org.multibit.hd.ui.views.components;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.utils.BitcoinSymbol;
-import org.multibit.hd.core.utils.CurrencyUtils;
+import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
@@ -148,15 +146,15 @@ public class Labels {
   }
 
   public static void decorateStatusLabel(JLabel statusLabel, Optional<Boolean> status) {
+
     if (status.isPresent()) {
       if (status.get()) {
         AwesomeDecorator.bindIcon(AwesomeIcon.CHECK, statusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
       } else {
         AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, statusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
       }
-    } else {
-      // No icon on the label
     }
+
   }
 
   /**
@@ -301,6 +299,7 @@ public class Labels {
 
     Preconditions.checkNotNull(style, "'style' must be present");
 
+    JLabel leadingBalanceLabel = new JLabel("");
     JLabel primaryBalanceLabel = new JLabel("0.00");
     JLabel secondaryBalanceLabel = new JLabel("");
     JLabel trailingSymbolLabel = new JLabel("");
@@ -327,13 +326,19 @@ public class Labels {
         throw new IllegalStateException("Unknown style:" + style.name());
     }
 
+    leadingBalanceLabel.setFont(largeFont);
+
     primaryBalanceLabel.setFont(largeFont);
     primaryBalanceLabel.setForeground(Color.RED);
+
     secondaryBalanceLabel.setFont(normalFont);
+
     trailingSymbolLabel.setFont(largeFont);
+
     exchangeLabel.setFont(normalFont);
 
     // Theme
+    leadingBalanceLabel.setForeground(Themes.currentTheme.text());
     primaryBalanceLabel.setForeground(Themes.currentTheme.text());
     secondaryBalanceLabel.setForeground(Themes.currentTheme.fadedText());
     trailingSymbolLabel.setForeground(Themes.currentTheme.text());
@@ -341,6 +346,7 @@ public class Labels {
 
     return new JLabel[]{
 
+      leadingBalanceLabel,
       primaryBalanceLabel,
       secondaryBalanceLabel,
       trailingSymbolLabel,
@@ -354,47 +360,6 @@ public class Labels {
    */
   public static JLabel newAmount() {
     return newLabel(MessageKey.AMOUNT);
-  }
-
-  /**
-   * @return A new "Bitcoin currency symbol" based on the current configuration
-   */
-  public static JLabel newBitcoinCurrencySymbol() {
-
-    BitcoinSymbol symbol = BitcoinSymbol.of(
-      Configurations
-        .currentConfiguration
-        .getBitcoinConfiguration()
-        .getBitcoinSymbol()
-    );
-
-    JLabel label = new JLabel();
-    if (BitcoinSymbol.ICON.equals(symbol)) {
-      AwesomeDecorator.applyIcon(
-        AwesomeIcon.BITCOIN,
-        label,
-        true,
-        MultiBitUI.NORMAL_ICON_SIZE
-      );
-    } else {
-      label.setText(symbol.getSymbol());
-    }
-
-    return label;
-
-  }
-
-  /**
-   * @return A new "local currency symbol" based on the current configuration
-   */
-  public static JLabel newLocalCurrencySymbol() {
-
-    JLabel label = new JLabel(CurrencyUtils.currentSymbol());
-
-    Font font = label.getFont().deriveFont(Font.BOLD, (float) MultiBitUI.NORMAL_ICON_SIZE);
-    label.setFont(font);
-
-    return label;
   }
 
   /**

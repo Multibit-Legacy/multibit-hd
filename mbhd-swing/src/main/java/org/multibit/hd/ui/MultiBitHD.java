@@ -6,6 +6,7 @@ import com.xeiam.xchange.currency.MoneyUtils;
 import com.xeiam.xchange.mtgox.v2.MtGoxExchange;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -190,11 +191,28 @@ public class MultiBitHD {
       // Use some dummy data
       satoshis = BigInteger.ZERO;
     }
-    ViewEvents.fireBalanceChangedEvent(
-      satoshis,
-      MoneyUtils.fromSatoshi(0),
-      "Unknown"
-    );
+
+    // Catch up with any early exchange rate events
+    Optional<ExchangeRateChangedEvent> event = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
+
+    if (event.isPresent()) {
+
+      // Provide the exchange name
+      ViewEvents.fireBalanceChangedEvent(
+        satoshis,
+        MoneyUtils.fromSatoshi(0),
+        Optional.of(event.get().getExchangeName())
+      );
+    } else {
+
+      // No exchange provided
+      ViewEvents.fireBalanceChangedEvent(
+        satoshis,
+        MoneyUtils.fromSatoshi(0),
+        Optional.<String>absent()
+      );
+
+    }
   }
 
   /**

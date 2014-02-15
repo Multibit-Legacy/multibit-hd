@@ -11,7 +11,7 @@ package org.multibit.hd.core.config;
  */
 public class BitcoinConfiguration {
 
-  private String bitcoinSymbol = "ICON";
+  private String bitcoinSymbol = "MICON";
   private String exchangeClassName="";
   private String exchangeName="Mt Gox";
 

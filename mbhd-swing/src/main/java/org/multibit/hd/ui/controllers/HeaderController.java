@@ -61,7 +61,11 @@ public class HeaderController {
     BigMoney localBalance = Satoshis.toLocalAmount(satoshis, event.getRate());
 
     // Post the event
-    ViewEvents.fireBalanceChangedEvent(satoshis, localBalance, event.getExchangeName());
+    ViewEvents.fireBalanceChangedEvent(
+      satoshis,
+      localBalance,
+      Optional.of(event.getExchangeName())
+    );
 
   }
 

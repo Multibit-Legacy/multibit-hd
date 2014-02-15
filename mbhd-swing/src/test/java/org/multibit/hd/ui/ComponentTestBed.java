@@ -1,5 +1,6 @@
 package org.multibit.hd.ui;
 
+import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.xeiam.xchange.currency.MoneyUtils;
@@ -270,7 +271,11 @@ public class ComponentTestBed {
 
           Uninterruptibles.sleepUninterruptibly(800, TimeUnit.MILLISECONDS);
 
-          ViewEvents.fireBalanceChangedEvent(BigInteger.valueOf(100_000_000_000L), MoneyUtils.parse("USD 999999999.00"),"Example");
+          ViewEvents.fireBalanceChangedEvent(
+            BigInteger.valueOf(100_000_000_000L),
+            MoneyUtils.parse("USD 999999999.00"),
+            Optional.of("Example")
+          );
 
           if (i % 2 == 0) {
 

@@ -114,6 +114,7 @@ public enum MessageKey {
   WALLET_CREATED_STATUS("wallet_created_status"),
   ALERT_REMAINING("alert_remaining"),
   EXCHANGE_FIAT_RATE("exchange_fiat_rate"),
+  EXCHANGE_FIAT_RATE_WITH_PROVIDER("exchange_fiat_rate_with_provider"),
   SELECT_LANGUAGE("select_language"),
   SEED_SIZE("seed_size"),
   TIMESTAMP("timestamp"),

@@ -31,7 +31,7 @@ public class AwesomeDecorator {
 
       Preconditions.checkNotNull(AWESOME_FONT, "'awesome' font not loaded");
 
-      AWESOME_FONT = AWESOME_FONT.deriveFont(MultiBitUI.NORMAL_ICON_SIZE);
+      AWESOME_FONT = AWESOME_FONT.deriveFont(Font.PLAIN, MultiBitUI.NORMAL_ICON_SIZE);
 
     } catch (FontFormatException | IOException e) {
       throw new UIException(e);
@@ -68,7 +68,9 @@ public class AwesomeDecorator {
    */
   public static void applyIcon(AwesomeIcon icon, JLabel label, boolean leading, int size) {
 
+    // Use an independent label to get the correct font size
     JLabel iconLabel = new JLabel();
+
     iconLabel.setFont(iconLabel.getFont().deriveFont((float) size));
     iconLabel.setForeground(label.getForeground());
 
@@ -128,6 +130,7 @@ public class AwesomeDecorator {
    */
 
   public static void applyIcon(AwesomeIcon icon, JButton button, boolean leading, int verticalAlignment, int size) {
+
     JButton iconButton = new JButton();
     iconButton.setFont(iconButton.getFont().deriveFont((float) size));
     iconButton.setForeground(button.getForeground());

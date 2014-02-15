@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.events.view;
 
+import com.google.common.base.Optional;
 import org.joda.money.BigMoney;
 
 import java.math.BigInteger;
@@ -17,14 +18,14 @@ public class BalanceChangedEvent implements ViewEvent {
 
   private final BigInteger satoshis;
   private final BigMoney localBalance;
-  private final String rateProvider;
+  private final Optional<String> rateProvider;
 
   /**
    * @param satoshis     The current balance in satoshis
    * @param localBalance The current balance in local currency
-   * @param rateProvider The exchange rate provider (e.g. "Bitstamp")
+   * @param rateProvider The exchange rate provider (e.g. "Bitstamp" or absent if no network)
    */
-  public BalanceChangedEvent(BigInteger satoshis, BigMoney localBalance, String rateProvider) {
+  public BalanceChangedEvent(BigInteger satoshis, BigMoney localBalance, Optional<String> rateProvider) {
 
     this.satoshis = satoshis;
     this.localBalance = localBalance;
@@ -49,7 +50,7 @@ public class BalanceChangedEvent implements ViewEvent {
   /**
    * @return The exchange rate provider
    */
-  public String getRateProvider() {
+  public Optional<String> getRateProvider() {
     return rateProvider;
   }
 }

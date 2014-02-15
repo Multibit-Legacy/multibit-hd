@@ -18,15 +18,15 @@ public enum BitcoinSymbol {
   /**
    * The Font Awesome icon (becoming a de facto standard)
    */
-  ICON("\uf15a", BigDecimal.ONE, 8),
+  ICON("", BigDecimal.ONE, 8),
   /**
    * The Font Awesome icon with milli
    */
-  MICON("m\uf15a", new BigDecimal(1_000), 5),
+  MICON("m", new BigDecimal(1_000), 5),
   /**
    * The Font Awesome icon with micro
    */
-  UICON("\u0085\uf15a", new BigDecimal(1_000_000), 2),
+  UICON("\u0085", new BigDecimal(1_000_000), 2),
   /**
    * The current de facto standard but may be superseded (cannot be an ISO standard)
    */

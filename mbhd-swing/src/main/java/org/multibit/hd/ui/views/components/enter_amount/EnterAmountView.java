@@ -5,8 +5,6 @@ import com.google.common.eventbus.Subscribe;
 import com.xeiam.xchange.currency.MoneyUtils;
 import net.miginfocom.swing.MigLayout;
 import org.joda.money.BigMoney;
-import org.multibit.hd.ui.MultiBitUI;
-import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.services.CoreServices;
@@ -14,11 +12,10 @@ import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.core.utils.CurrencyUtils;
 import org.multibit.hd.core.utils.Numbers;
 import org.multibit.hd.core.utils.Satoshis;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.i18n.Languages;
-import org.multibit.hd.ui.views.components.AbstractComponentView;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.components.TextBoxes;
+import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.text_fields.FormattedDecimalField;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -48,7 +45,9 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
   private JLabel exchangeRateStatusLabel = new JLabel("");
   private JLabel approximatelyLabel = new JLabel("");
+
   private JLabel localCurrencySymbolLabel = new JLabel("");
+  private JLabel bitcoinSymbolLabel = new JLabel("");
 
   private Optional<ExchangeRateChangedEvent> latestExchangeRateChangedEvent = Optional.absent();
 
@@ -78,7 +77,9 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     localAmountText = TextBoxes.newCurrencyAmount(999_999_999_999_999.9999);
 
     approximatelyLabel = Labels.newApproximately();
-    localCurrencySymbolLabel = Labels.newLocalCurrencySymbol();
+
+    LabelDecorator.applyLocalCurrencySymbol(localCurrencySymbolLabel);
+    LabelDecorator.applyBitcoinSymbolLabel(bitcoinSymbolLabel);
 
     // Bind a key listener to allow instant update of UI to amount changes
     bitcoinAmountText.addKeyListener(new KeyAdapter() {
@@ -87,7 +88,6 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
       public void keyReleased(KeyEvent e) {
 
         updateLocalAmount();
-
 
       }
     });
@@ -110,14 +110,14 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     panel.add(Labels.newAmount(), "span 4,grow,push,wrap");
 
     if (isCurrencySymbolLeading) {
-      panel.add(Labels.newBitcoinCurrencySymbol());
+      panel.add(bitcoinSymbolLabel);
       panel.add(bitcoinAmountText);
       panel.add(approximatelyLabel, "pushy,baseline");
       panel.add(localCurrencySymbolLabel, "pushy,baseline");
       panel.add(localAmountText, "wrap");
     } else {
       panel.add(bitcoinAmountText);
-      panel.add(Labels.newBitcoinCurrencySymbol());
+      panel.add(bitcoinSymbolLabel);
       panel.add(approximatelyLabel, "pushy,baseline");
       panel.add(localAmountText);
       panel.add(localCurrencySymbolLabel, "pushy,baseline,wrap");
