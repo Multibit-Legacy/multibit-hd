@@ -118,7 +118,7 @@ public class ComboBoxes {
     JComboBox<Recipient> comboBox = new JComboBox<>(filter.create());
 
     // Apply the current theme
-    comboBox.setBackground(Themes.currentTheme.dataEntryBackground());
+    comboBox.setBackground(Themes.currentTheme.detailPanelBackground());
 
     // Use a contact editor to force use of the name field
     comboBox.setEditor(new RecipientComboBoxEditor());
