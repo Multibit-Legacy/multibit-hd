@@ -5,9 +5,11 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.WalletService;
+import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.Tables;
+import org.multibit.hd.ui.views.components.tables.TransactionTableModel;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
 import org.slf4j.Logger;
@@ -30,6 +32,9 @@ public class TransactionsPanelView extends AbstractScreenView<TransactionsPanelM
 
   private WalletService walletService;
   private JTable transactionsTable;
+
+  private long lastSeenEventTime = 0;
+  private static final long CONSOLIDATION_INTERVAL = 1000; // milliseconds
 
   /**
    * @param panelModel The model backing this panel view
@@ -93,15 +98,37 @@ public class TransactionsPanelView extends AbstractScreenView<TransactionsPanelM
   public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
     log.debug("Received the TransactionSeenEvent: " + transactionSeenEvent.toString());
 
-    // TODO bundle up the transactionSeenEvent as there could be a few of them
-//    if (transactionsTable != null) {
-//      ((TransactionTableModel)transactionsTable.getModel()).setTransactions(walletService.getTransactions(), true);
-//    }
-//
-//    // Play a sound the first time a transaction is received
-//    // TODO some more filtering required - just set to play when it confirms for the first time for now
-//    if (transactionSeenEvent.getDepthInBlocks() == 1) {
-//      Sounds.playReceiveBitcoin();
-//    }
+    if (consolidateEvents()) {
+      if (transactionsTable != null) {
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            ((TransactionTableModel) transactionsTable.getModel()).setTransactions(walletService.getTransactions(), true);
+        }
+        });
+      }
+    }
+
+    // Play a sound the first time a transaction is received
+    // TODO some more filtering required - just set to play when it confirms for the first time for now
+    if (transactionSeenEvent.getDepthInBlocks() == 1) {
+      Sounds.playReceiveBitcoin();
+    }
+  }
+
+  /**
+   * Consolidate many transactionSeenEvents into a single signal
+   */
+  synchronized private boolean consolidateEvents() {
+    long now = System.currentTimeMillis();
+
+    if (now -  lastSeenEventTime >= CONSOLIDATION_INTERVAL) {
+      lastSeenEventTime = now;
+      // Emit a signal
+      return true;
+    } else {
+      // Absorb event
+      return false;
+    }
   }
 }
