@@ -1,5 +1,6 @@
 package org.multibit.hd.core.services;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.xeiam.xchange.currency.Currencies;
 import com.xeiam.xchange.dto.marketdata.Ticker;
@@ -86,7 +87,7 @@ public class ExchangeTickerService extends AbstractService {
 
             CoreEvents.fireExchangeRateChangedEvent(
               rate,
-              exchangeName,
+              Optional.of(exchangeName),
               // Exchange rate will expire just after the next update (with small overlap)
               Dates.nowUtc().plusSeconds(TICKER_REFRESH_SECONDS + 5)
             );

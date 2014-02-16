@@ -242,19 +242,6 @@ public class Labels {
   }
 
   /**
-   * @param status True if the status is "good"
-   *
-   * @return A new "exchange rate status" message
-   */
-  public static JLabel newExchangeRateStatus(boolean status) {
-    if (status) {
-      return newStatusLabel(MessageKey.EXCHANGE_RATE_STATUS_OK, null, true);
-    } else {
-      return newStatusLabel(MessageKey.EXCHANGE_RATE_STATUS_WARN, null, false);
-    }
-  }
-
-  /**
    * @return A new "Select language" label
    */
   public static JLabel newSelectLanguageLabel() {

@@ -181,6 +181,7 @@ public class ContactService {
     contact1.setEmail("g.rowe@froot.co.uk");
     contact1.getTags().add("VIP");
     contact1.getTags().add("Family");
+    contact1.setNotes("sal;fjsad;lfjsld;afjlsadjflsakdjf;lsdjfl;asdkjfsla;dfjs;aldfjsladkfj;saldkfj;saldfj;lsdakfjsladkfjsladfjsdl;akfj");
 
     Contact contact2 = newContact("Bob Capital");
     contact2.setEmail("bob.capital@example.org");

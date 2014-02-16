@@ -24,7 +24,9 @@ public class DisplayAmountModel implements Model<DisplayAmountModel> {
   private BigInteger satoshis = BigInteger.ZERO;
   private BigMoney localAmount = CurrencyUtils.ZERO;
 
-  private boolean localAmountVisible = true;
+  // Default to Bitcoin only (exchanges are an optional feature)
+  private boolean localAmountVisible = false;
+  
   private Optional<String> rateProvider = Optional.absent();
 
   /**
@@ -92,6 +94,11 @@ public class DisplayAmountModel implements Model<DisplayAmountModel> {
   }
 
   public void setRateProvider(Optional<String> rateProvider) {
+
     this.rateProvider = rateProvider;
+
+    // Update the local amount visibility
+    localAmountVisible = rateProvider.isPresent();
+
   }
 }

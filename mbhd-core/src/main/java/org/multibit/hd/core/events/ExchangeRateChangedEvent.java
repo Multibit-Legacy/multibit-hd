@@ -1,5 +1,6 @@
 package org.multibit.hd.core.events;
 
+import com.google.common.base.Optional;
 import org.joda.money.BigMoney;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.utils.Dates;
@@ -16,17 +17,17 @@ import org.multibit.hd.core.utils.Dates;
 public class ExchangeRateChangedEvent {
 
   private final BigMoney rate;
-  private final String exchangeName;
+  private final Optional<String> rateProvider;
   private final DateTime expires;
 
   /**
    * @param rate         The rate with the local currency (e.g. "USD 1000" means 1000 USD = 1 bitcoin)
-   * @param exchangeName The exchange name
+   * @param rateProvider The rate provider (absent if unknown)
    * @param expires      The expiry timestamp of this rate
    */
-  public ExchangeRateChangedEvent(BigMoney rate, String exchangeName, DateTime expires) {
+  public ExchangeRateChangedEvent(BigMoney rate, Optional<String> rateProvider, DateTime expires) {
     this.rate = rate;
-    this.exchangeName = exchangeName;
+    this.rateProvider = rateProvider;
     this.expires = expires;
   }
 
@@ -38,10 +39,10 @@ public class ExchangeRateChangedEvent {
   }
 
   /**
-   * @return The name of the exchange (e.g. "Bitstamp")
+   * @return The name of the exchange (e.g. "Bitstamp" or absent if unknown)
    */
-  public String getExchangeName() {
-    return exchangeName;
+  public Optional<String> getRateProvider() {
+    return rateProvider;
   }
 
   /**
@@ -52,17 +53,17 @@ public class ExchangeRateChangedEvent {
   }
 
   /**
-   * @return True if this rate is still within the expiry timestamp
+   * @return True if this rate is still within the expiry timestamp and the rate provider is present
    */
   public boolean isValid() {
-    return Dates.nowUtc().isBefore(expires);
+    return Dates.nowUtc().isBefore(expires) && rateProvider.isPresent();
   }
 
   @Override
   public String toString() {
     return "ExchangeRateChangedEvent{" +
       "rate=" + rate +
-      ", exchangeName='" + exchangeName + '\'' +
+      ", exchangeName='" + rateProvider + '\'' +
       ", expires=" + expires +
       '}';
   }

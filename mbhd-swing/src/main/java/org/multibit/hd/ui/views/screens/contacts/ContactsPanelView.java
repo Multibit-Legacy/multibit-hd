@@ -78,7 +78,7 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
     ContactService contactService = CoreServices.getOrCreateContactService(getCurrentWalletId());
 
     contactsTable = Tables.newContactsTable(contactService.allContacts(1, 10));
-    contactTableModel = (ContactTableModel) contactsTable.getModel();
+    //contactTableModel = (ContactTableModel) contactsTable.getModel();
 
     // Detect clicks on the table
     contactsTable.addMouseListener(new MouseAdapter() {

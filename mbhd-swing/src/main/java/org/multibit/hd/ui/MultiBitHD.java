@@ -201,7 +201,7 @@ public class MultiBitHD {
       ViewEvents.fireBalanceChangedEvent(
         satoshis,
         MoneyUtils.fromSatoshi(0),
-        Optional.of(event.get().getExchangeName())
+        event.get().getRateProvider()
       );
     } else {
 

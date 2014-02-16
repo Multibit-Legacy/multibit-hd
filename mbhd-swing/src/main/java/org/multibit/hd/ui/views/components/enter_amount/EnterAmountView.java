@@ -172,11 +172,11 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
    */
   private void setLocalAmountVisibility() {
 
-    if (latestExchangeRateChangedEvent.isPresent()) {
+    if (latestExchangeRateChangedEvent.isPresent() && latestExchangeRateChangedEvent.get().getRateProvider().isPresent()) {
 
       setLocalCurrencyComponentVisibility(true);
 
-      // Rate may be valid
+      // Rate may not be valid
       setExchangeRateStatus(latestExchangeRateChangedEvent.get().isValid());
 
     } else {
@@ -200,6 +200,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     this.approximatelyLabel.setVisible(visible);
     this.localCurrencySymbolLabel.setVisible(visible);
     this.localAmountText.setVisible(visible);
+    this.exchangeRateStatusLabel.setVisible(visible);
 
   }
 

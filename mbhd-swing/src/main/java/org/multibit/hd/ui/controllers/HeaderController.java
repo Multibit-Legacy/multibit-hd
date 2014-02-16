@@ -64,7 +64,7 @@ public class HeaderController {
     ViewEvents.fireBalanceChangedEvent(
       satoshis,
       localBalance,
-      Optional.of(event.getExchangeName())
+      event.getRateProvider()
     );
 
   }
