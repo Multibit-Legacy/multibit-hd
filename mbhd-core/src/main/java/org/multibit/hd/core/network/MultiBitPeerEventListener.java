@@ -148,10 +148,6 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     return null;
   }
 
-  public int getNumberOfConnectedPeers() {
-    return numberOfConnectedPeers;
-  }
-
   /**
    * <p>Calculate an appropriate download percent</p>
    *

@@ -384,7 +384,7 @@ public class BitcoinNetworkService extends AbstractService {
 
         log.debug("Blockchain downloaded.");
 
-        BitcoinNetworkSummary.newNetworkReady(peerGroup.numConnectedPeers());
+        CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkReady(peerGroup.numConnectedPeers()));
 
       }
     });
