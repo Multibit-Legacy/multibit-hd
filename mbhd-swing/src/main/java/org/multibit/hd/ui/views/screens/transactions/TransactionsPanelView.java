@@ -117,7 +117,7 @@ public class TransactionsPanelView extends AbstractScreenView<TransactionsPanelM
   public void onSlowTransactionSeen() {
     // Can now schedule another onSlowTransactionSeen
     waitingToFire = false;
-    
+
     if (transactionsTable != null) {
       SwingUtilities.invokeLater(new Runnable() {
         @Override

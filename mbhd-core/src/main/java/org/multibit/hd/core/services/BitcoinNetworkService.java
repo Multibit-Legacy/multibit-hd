@@ -382,7 +382,9 @@ public class BitcoinNetworkService extends AbstractService {
         // This method blocks until completed but fires events along the way
         peerGroup.downloadBlockChain();
 
-        log.debug("Blockchain downloaded");
+        log.debug("Blockchain downloaded.");
+
+        BitcoinNetworkSummary.newNetworkReady(peerGroup.numConnectedPeers());
 
       }
     });
