@@ -23,17 +23,17 @@ public class CurrencyUtilsTest {
   @Test
   public void testCurrentZero() throws Exception {
 
-    final BigMoney actual_UK = CurrencyUtils.currentZero();
-
-    assertThat(actual_UK.getCurrencyUnit().getCode()).isEqualTo("GBP");
-    assertThat(actual_UK.getAmount()).isEqualTo(BigDecimal.ZERO);
-
-    setCurrencyUnit(Locale.US);
-
     final BigMoney actual_US = CurrencyUtils.currentZero();
 
     assertThat(actual_US.getCurrencyUnit().getCode()).isEqualTo("USD");
     assertThat(actual_US.getAmount()).isEqualTo(BigDecimal.ZERO);
+
+    setCurrencyUnit(Locale.UK);
+
+    final BigMoney actual_UK = CurrencyUtils.currentZero();
+
+    assertThat(actual_UK.getCurrencyUnit().getCode()).isEqualTo("GBP");
+    assertThat(actual_UK.getAmount()).isEqualTo(BigDecimal.ZERO);
 
     setCurrencyUnit(new Locale("ar", "SA"));
 
@@ -47,15 +47,15 @@ public class CurrencyUtilsTest {
   @Test
   public void testCurrentCode() throws Exception {
 
-    final String actual_UK = CurrencyUtils.currentCode();
-
-    assertThat(actual_UK).isEqualTo("GBP");
-
-    setCurrencyUnit(Locale.US);
-
     final String actual_US = CurrencyUtils.currentCode();
 
     assertThat(actual_US).isEqualTo("USD");
+
+    setCurrencyUnit(Locale.UK);
+
+    final String actual_UK = CurrencyUtils.currentCode();
+
+    assertThat(actual_UK).isEqualTo("GBP");
 
     setCurrencyUnit(new Locale("ar", "SA"));
 
@@ -68,15 +68,15 @@ public class CurrencyUtilsTest {
   @Test
   public void testCurrentSymbol() throws Exception {
 
-    final String actual_UK = CurrencyUtils.currentSymbol();
-
-    assertThat(actual_UK).isEqualTo("£");
-
-    setCurrencyUnit(Locale.US);
-
     final String actual_US = CurrencyUtils.currentSymbol();
 
     assertThat(actual_US).isEqualTo("$");
+
+    setCurrencyUnit(Locale.UK);
+
+    final String actual_UK = CurrencyUtils.currentSymbol();
+
+    assertThat(actual_UK).isEqualTo("£");
 
     setCurrencyUnit(new Locale("ar", "SA"));
 

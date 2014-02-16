@@ -2,8 +2,8 @@ package org.multibit.hd.ui;
 
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Uninterruptibles;
+import com.xeiam.xchange.bitstamp.BitstampExchange;
 import com.xeiam.xchange.currency.MoneyUtils;
-import com.xeiam.xchange.mtgox.v2.MtGoxExchange;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
@@ -108,7 +108,7 @@ public class MultiBitHD {
       System.getProperties().setProperty("com.apple.mrj.application.apple.menu.about.name", Languages.safeText(MessageKey.APPLICATION_TITLE));
     }
 
-    ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(MtGoxExchange.class.getName());
+    ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(BitstampExchange.class.getName());
     bitcoinNetworkService = CoreServices.newBitcoinNetworkService();
 
     // Initialise the wallet manager, which will load the current wallet if available

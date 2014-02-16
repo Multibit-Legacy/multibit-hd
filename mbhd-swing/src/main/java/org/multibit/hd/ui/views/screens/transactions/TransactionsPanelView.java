@@ -5,11 +5,9 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.WalletService;
-import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.Tables;
-import org.multibit.hd.ui.views.components.tables.TransactionTableModel;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
 import org.slf4j.Logger;
@@ -96,14 +94,14 @@ public class TransactionsPanelView extends AbstractScreenView<TransactionsPanelM
     log.debug("Received the TransactionSeenEvent: " + transactionSeenEvent.toString());
 
     // TODO bundle up the transactionSeenEvent as there could be a few of them
-    if (transactionsTable != null) {
-      ((TransactionTableModel)transactionsTable.getModel()).setTransactions(walletService.getTransactions(), true);
-    }
-
-    // Play a sound the first time a transaction is received
-    // TODO some more filtering required - just set to play when it confirms for the first time for now
-    if (transactionSeenEvent.getDepthInBlocks() == 1) {
-      Sounds.playReceiveBitcoin();
-    }
+//    if (transactionsTable != null) {
+//      ((TransactionTableModel)transactionsTable.getModel()).setTransactions(walletService.getTransactions(), true);
+//    }
+//
+//    // Play a sound the first time a transaction is received
+//    // TODO some more filtering required - just set to play when it confirms for the first time for now
+//    if (transactionSeenEvent.getDepthInBlocks() == 1) {
+//      Sounds.playReceiveBitcoin();
+//    }
   }
 }

@@ -91,7 +91,7 @@ public class Configurations {
     properties.put(I18N_GROUPING_SEPARATOR, ",");
     properties.put(I18N_IS_CURRENCY_PREFIXED, "true");
     properties.put(I18N_LOCAL_DECIMAL_PLACES, "4");
-    properties.put(I18N_LOCAL_CURRENCY_UNIT, "GBP");
+    properties.put(I18N_LOCAL_CURRENCY_UNIT, "USD");
 
     // Logging
     properties.put(LOGGING_LEVEL, "warn");
