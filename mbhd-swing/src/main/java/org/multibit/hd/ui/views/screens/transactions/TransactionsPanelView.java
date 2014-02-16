@@ -16,6 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -35,6 +38,7 @@ public class TransactionsPanelView extends AbstractScreenView<TransactionsPanelM
 
   private long lastSeenEventTime = 0;
   private static final long CONSOLIDATION_INTERVAL = 1000; // milliseconds
+  private boolean waitingToFire = false;
 
   /**
    * @param panelModel The model backing this panel view
@@ -98,16 +102,7 @@ public class TransactionsPanelView extends AbstractScreenView<TransactionsPanelM
   public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
     log.debug("Received the TransactionSeenEvent: " + transactionSeenEvent.toString());
 
-    if (consolidateEvents()) {
-      if (transactionsTable != null) {
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            ((TransactionTableModel) transactionsTable.getModel()).setTransactions(walletService.getTransactions(), true);
-        }
-        });
-      }
-    }
+    consolidateEvents();
 
     // Play a sound the first time a transaction is received
     // TODO some more filtering required - just set to play when it confirms for the first time for now
@@ -117,18 +112,39 @@ public class TransactionsPanelView extends AbstractScreenView<TransactionsPanelM
   }
 
   /**
-   * Consolidate many transactionSeenEvents into a single signal
+   * Once transactionSeenEvents are consolidated this method is called
    */
-  synchronized private boolean consolidateEvents() {
-    long now = System.currentTimeMillis();
+  public void onSlowTransactionSeen() {
+    // Can now schedule another onSlowTransactionSeen
+    waitingToFire = false;
+    
+    if (transactionsTable != null) {
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          ((TransactionTableModel) transactionsTable.getModel()).setTransactions(walletService.getTransactions(), true);
+        }
+      });
+    }
+  }
 
-    if (now -  lastSeenEventTime >= CONSOLIDATION_INTERVAL) {
-      lastSeenEventTime = now;
-      // Emit a signal
-      return true;
-    } else {
+  /**
+   * Consolidate many transactionSeenEvents into a single call
+   */
+  private synchronized void consolidateEvents() {
+    if (waitingToFire) {
       // Absorb event
-      return false;
+      return;
+    } else {
+      // Fire in the future
+      waitingToFire = true;
+      Executors.newSingleThreadScheduledExecutor().schedule(new Callable() {
+        @Override
+        public Object call() throws Exception {
+          onSlowTransactionSeen();
+          return null;
+        }
+      }, CONSOLIDATION_INTERVAL, TimeUnit.MILLISECONDS);
     }
   }
 }
