@@ -111,7 +111,7 @@ public class WalletService extends AbstractService {
     String description;
 
     if (transactionType == TransactionType.RECEIVING || transactionType == TransactionType.RECEIVED) {
-      description = "By";
+      description = "by"; // TODO localise
       if (transaction.getOutputs() != null) {
         for (TransactionOutput transactionOutput : transaction.getOutputs()) {
           if (transactionOutput.isMine(wallet)) {
@@ -121,7 +121,7 @@ public class WalletService extends AbstractService {
       }
     } else {
       // Sent
-      description = "To";
+      description = "to"; // TODO localise
       if (transaction.getOutputs() != null) {
         for (TransactionOutput transactionOutput : transaction.getOutputs()) {
           description = description + " " + transactionOutput.getScriptPubKey().getToAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));

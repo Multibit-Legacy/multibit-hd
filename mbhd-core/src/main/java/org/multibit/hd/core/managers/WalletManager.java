@@ -357,8 +357,6 @@ public enum WalletManager implements WalletEventListener {
       // or protobuf format.
       stream = new BufferedInputStream(new FileInputStream(walletFile));
       isWalletSerialised = stream.read() == 0xac && stream.read() == 0xed;
-    } catch (FileNotFoundException e) {
-      log.error(e.getClass().getCanonicalName() + " " + e.getMessage());
     } catch (IOException e) {
       log.error(e.getClass().getCanonicalName() + " " + e.getMessage());
     } finally {
@@ -465,6 +463,4 @@ public enum WalletManager implements WalletEventListener {
       return Optional.absent();
     }
   }
-
-
 }

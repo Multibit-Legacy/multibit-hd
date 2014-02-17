@@ -91,6 +91,8 @@ public class Tables {
     resizeColumn(table, TransactionTableModel.DATE_COLUMN_INDEX, 150, 200);
 
     // Type column
+    TableColumn typeTableColumn = table.getColumnModel().getColumn(TransactionTableModel.TYPE_COLUMN_INDEX);
+    typeTableColumn.setCellRenderer(Renderers.newTransactionTypeRenderer());
     resizeColumn(table, TransactionTableModel.TYPE_COLUMN_INDEX, 80, 100);
 
     // Amount BTC column

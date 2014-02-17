@@ -4,7 +4,6 @@ import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.tables.StripedTable;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.text.SimpleDateFormat;
@@ -27,8 +26,6 @@ public class TrailingJustifiedDateRenderer extends DefaultTableCellRenderer {
 
   public static final String SPACER = "   "; // 3 spaces
 
-  private int selectedRow;
-
   public TrailingJustifiedDateRenderer() {
     label = new JLabel();
     dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", Languages.currentLocale());
@@ -39,7 +36,6 @@ public class TrailingJustifiedDateRenderer extends DefaultTableCellRenderer {
                                                  int column) {
     label.setHorizontalAlignment(SwingConstants.TRAILING);
     label.setOpaque(true);
-    label.setBorder(new EmptyBorder(new Insets(0, TABLE_BORDER, 1, TABLE_BORDER)));
 
     String formattedDate = "";
     if (value != null) {
@@ -59,7 +55,6 @@ public class TrailingJustifiedDateRenderer extends DefaultTableCellRenderer {
     label.setText(formattedDate + SPACER);
 
     if (isSelected) {
-      selectedRow = row;
       label.setBackground(table.getSelectionBackground());
       label.setForeground(table.getSelectionForeground());
     } else {
