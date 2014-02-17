@@ -130,6 +130,7 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
       return WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId();
     }
 
+    // TODO this need removing
     return new WalletId("66666666-77777777-88888888-99999999-aaaaaaaa");
   }
 

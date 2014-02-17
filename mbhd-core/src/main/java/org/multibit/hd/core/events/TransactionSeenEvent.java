@@ -37,6 +37,8 @@ public class TransactionSeenEvent {
     } else {
       depthInBlocks = DEPTH_IN_BLOCKS_IS_UNDEFINED;
     }
+
+
   }
 
   public String getTransactionId() {
