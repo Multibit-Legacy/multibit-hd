@@ -1,6 +1,5 @@
 package org.multibit.hd.ui.views;
 
-import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
@@ -40,8 +39,6 @@ public class HeaderView {
 
   private JLabel alertMessageLabel;
   private JLabel alertRemainingLabel;
-
-  private Optional<BalanceChangedEvent> latestBalanceChangedEvent = Optional.absent();
 
   private final JPanel contentPanel;
   private final JPanel alertPanel;
@@ -105,9 +102,6 @@ public class HeaderView {
    */
   @Subscribe
   public void onBalanceChangedEvent(BalanceChangedEvent event) {
-
-    // Keep track of the latest balance
-    latestBalanceChangedEvent = Optional.of(event);
 
     // Handle the update
     balanceDisplayMaV.getModel().setLocalAmount(event.getLocalBalance());

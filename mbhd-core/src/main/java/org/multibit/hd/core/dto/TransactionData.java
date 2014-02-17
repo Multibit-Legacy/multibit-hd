@@ -33,9 +33,11 @@ public class TransactionData {
 
   private final TransactionType type;
 
+  private final String description;
+
   public TransactionData(String transactionId, Date updateTime, RAGStatus status,
                          BigInteger amountBTC, Optional<BigInteger> feeOnSendBTC,
-                         TransactionConfidence.ConfidenceType confidenceType, TransactionType type, int depth) {
+                         TransactionConfidence.ConfidenceType confidenceType, TransactionType type, int depth, String description) {
     this.transactionId = transactionId;
     this.updateTime = updateTime;
     this.status = status;
@@ -44,6 +46,7 @@ public class TransactionData {
     this.confidenceType = confidenceType;
     this.type = type;
     this.depth = depth;
+    this.description = description;
   }
 
   /*
@@ -66,6 +69,7 @@ public class TransactionData {
             ", confidenceType=" + confidenceType +
             ", type=" + type +
             ", updateTime=" + updateTime +
+            ", description='" + description + "'" +
             '}';
   }
 
@@ -84,6 +88,7 @@ public class TransactionData {
     if (!transactionId.equals(that.transactionId)) return false;
     if (!type.equals(that.type)) return false;
     if (!updateTime.equals(that.updateTime)) return false;
+    if (!description.equals(that.description)) return false;
 
     return true;
   }
@@ -98,6 +103,7 @@ public class TransactionData {
     result = 31 * result + confidenceType.hashCode();
     result = 31 * result + type.hashCode();
     result = 31 * result + updateTime.hashCode();
+    result = 31 * result + description.hashCode();
     return result;
   }
 
@@ -133,12 +139,7 @@ public class TransactionData {
     return type;
   }
 
-  /**
-   * Create a description of the transaction, localised
-   * @return Localised description of the transaction
-   */
   public String getDescription() {
-    // TODO make this real
-    return "a description";
+    return description;
   }
 }

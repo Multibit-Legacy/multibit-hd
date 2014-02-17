@@ -120,7 +120,11 @@ public class ContactTableModel extends AbstractTableModel {
    * rather than a check box.
    */
   public Class getColumnClass(int c) {
-    return getValueAt(0, c).getClass();
+    if (getValueAt(0, c) != null) {
+      return getValueAt(0, c).getClass();
+    } else {
+      return String.class;
+    }
   }
 
   /**

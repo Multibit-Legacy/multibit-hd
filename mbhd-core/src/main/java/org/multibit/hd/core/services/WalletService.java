@@ -1,8 +1,6 @@
 package org.multibit.hd.core.services;
 
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.TransactionConfidence;
-import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.core.*;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
@@ -66,7 +64,13 @@ public class WalletService extends AbstractService {
     return transactionDatas;
   }
 
-  private TransactionData adaptTransaction(Wallet wallet, Transaction transaction) {
+  /**
+   * Adapt a bitcoinj transaction to a TransactionData DTO
+   * @param wallet the current wallet
+   * @param transaction the transaction to adapt
+   * @return TransactionData the transaction data
+   */
+  public static TransactionData adaptTransaction(Wallet wallet, Transaction transaction) {
     String transactionId = transaction.getHashAsString();
     Date updateTime = transaction.getUpdateTime();
     BigInteger amountBTC = transaction.getValue(wallet);
@@ -104,7 +108,28 @@ public class WalletService extends AbstractService {
     }
     // TODO- fee on send
 
-    TransactionData transactionData = new TransactionData(transactionId, updateTime, status, amountBTC, Optional.<BigInteger>absent(), confidenceType, transactionType, depth);
+    String description;
+
+    if (transactionType == TransactionType.RECEIVING || transactionType == TransactionType.RECEIVED) {
+      description = "By";
+      if (transaction.getOutputs() != null) {
+        for (TransactionOutput transactionOutput : transaction.getOutputs()) {
+          if (transactionOutput.isMine(wallet)) {
+            description = description + " " + transactionOutput.getScriptPubKey().getToAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
+          }
+        }
+      }
+    } else {
+      // Sent
+      description = "To";
+      if (transaction.getOutputs() != null) {
+        for (TransactionOutput transactionOutput : transaction.getOutputs()) {
+          description = description + " " + transactionOutput.getScriptPubKey().getToAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
+        }
+      }
+    }
+
+    TransactionData transactionData = new TransactionData(transactionId, updateTime, status, amountBTC, Optional.<BigInteger>absent(), confidenceType, transactionType, depth, description);
 
     return transactionData;
   }
@@ -119,7 +144,7 @@ public class WalletService extends AbstractService {
    * @param transaction
    * @return status of the transaction
    */
-  private RAGStatus calculateStatus(Transaction transaction) {
+  private static RAGStatus calculateStatus(Transaction transaction) {
     if (transaction.getConfidence() != null) {
       TransactionConfidence.ConfidenceType confidenceType = transaction.getConfidence().getConfidenceType();
 
