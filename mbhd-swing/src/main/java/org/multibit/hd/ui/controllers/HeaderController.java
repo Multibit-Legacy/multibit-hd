@@ -7,6 +7,7 @@ import com.google.common.eventbus.Subscribe;
 import org.joda.money.BigMoney;
 import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
+import org.multibit.hd.core.events.SlowTransactionSeenEvent;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Satoshis;
@@ -39,15 +40,14 @@ public class HeaderController {
   }
 
   /**
-   * <p>Called when the balance changes</p>
+   * <p>Called when the exchange rate changes</p>
    *
    * @param event The exchange rate change event
    */
   @Subscribe
-  public void onBalanceChanged(ExchangeRateChangedEvent event) {
+  public void onExchangeRateChangedEvent(ExchangeRateChangedEvent event) {
 
     // Build the exchange string
-    // TODO Link to a real balance and remove BigDecimal
     BigInteger satoshis;
 
     Optional<WalletData> currentWalletData = WalletManager.INSTANCE.getCurrentWalletData();
@@ -67,6 +67,20 @@ public class HeaderController {
       event.getRateProvider()
     );
 
+  }
+
+  /**
+   * <p>Called when there are transactions seen that may change the balance</p>
+   *
+   * @param event The slowTransactionSeenEvent
+   */
+  @Subscribe
+  public void onSlowTransactionSenEventEvent(SlowTransactionSeenEvent event) {
+    Optional<ExchangeRateChangedEvent> exchangeRateChangedEventOptional = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
+
+    if (exchangeRateChangedEventOptional.isPresent()) {
+      onExchangeRateChangedEvent(exchangeRateChangedEventOptional.get());
+    }
   }
 
   /**

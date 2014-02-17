@@ -8,6 +8,10 @@ import org.multibit.hd.core.services.CoreServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 /**
  * <p>Factory to provide the following to application API:</p>
  * <ul>
@@ -20,6 +24,10 @@ import org.slf4j.LoggerFactory;
 public class CoreEvents {
 
   private static final Logger log = LoggerFactory.getLogger(CoreEvents.class);
+
+  private static final long CONSOLIDATION_INTERVAL = 1000; // milliseconds
+  private static boolean waitingToFireSlowTransactionSeenEvent = false;
+  private static final Object lockObject = new Object();
 
   /**
    * Utilities have a private constructor
@@ -72,7 +80,30 @@ public class CoreEvents {
   public static void fireTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
 
     CoreServices.uiEventBus.post(transactionSeenEvent);
+    consolidateTransactionSeenEvents();
 
+  }
+
+  /**
+   * Consolidate many transactionSeenEvents into a single call per (slow)time interval
+   */
+  private static void consolidateTransactionSeenEvents() {
+    synchronized (lockObject) {
+      if (!waitingToFireSlowTransactionSeenEvent) {
+        // Fire in the future
+        waitingToFireSlowTransactionSeenEvent = true;
+        Executors.newSingleThreadScheduledExecutor().schedule(new Callable() {
+          @Override
+          public Object call() throws Exception {
+            CoreServices.uiEventBus.post(new SlowTransactionSeenEvent());
+            synchronized (lockObject) {
+              waitingToFireSlowTransactionSeenEvent = false;
+            }
+            return null;
+          }
+        }, CONSOLIDATION_INTERVAL, TimeUnit.MILLISECONDS);
+      }
+    }
   }
 
   /**

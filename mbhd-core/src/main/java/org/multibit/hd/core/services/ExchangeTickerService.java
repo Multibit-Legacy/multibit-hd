@@ -44,7 +44,7 @@ public class ExchangeTickerService extends AbstractService {
    * of instances of MultiBit out there
    * 15 minutes = 900 seconds and is the recommended value
    */
-  public static final int TICKER_REFRESH_SECONDS = 5; // TODO - change this to 900 seconds
+  public static final int TICKER_REFRESH_SECONDS = 900;
 
   /**
    * @param exchangeName             The friendly exchange name (e.g. "Bitstamp")
