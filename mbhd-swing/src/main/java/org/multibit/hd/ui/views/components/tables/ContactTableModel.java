@@ -14,7 +14,6 @@ import org.multibit.hd.ui.views.components.Images;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
@@ -128,11 +127,6 @@ public class ContactTableModel extends AbstractTableModel {
     } else {
       return String.class;
     }
-    //if (getValueAt(0, c) != null) {
-    //  return getValueAt(0, c).getClass();
-    //} else {
-    //  return String.class;
-    //}
   }
 
   /**
