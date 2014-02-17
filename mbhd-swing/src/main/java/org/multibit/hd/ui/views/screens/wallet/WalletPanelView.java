@@ -6,7 +6,10 @@ import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Components;
+import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.wallet_detail.WalletDetailModel;
+import org.multibit.hd.ui.views.components.wallet_detail.WalletDetailView;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.wizards.Wizards;
@@ -27,6 +30,10 @@ public class WalletPanelView extends AbstractScreenView<WalletPanelModel> {
 
   private JButton sendBitcoin;
   private JButton requestBitcoin;
+
+  private final static String PANEL_NAME = "walletDetail";
+
+  private ModelAndView<WalletDetailModel, WalletDetailView> walletDetailMaV;
 
   /**
    * @param panelModel The model backing this panel view
@@ -74,9 +81,10 @@ public class WalletPanelView extends AbstractScreenView<WalletPanelModel> {
     sendBitcoin = Buttons.newSendBitcoinWizardButton(showSendBitcoinWizardAction);
     requestBitcoin = Buttons.newRequestBitcoinWizardButton(showRequestBitcoinWizardAction);
 
+    walletDetailMaV = Components.newWalletDetailMaV(PANEL_NAME);
     contentPanel.add(sendBitcoin, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(requestBitcoin, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
-    contentPanel.add(Components.newWalletDetailPanel(), "span 2,grow");
+    contentPanel.add(walletDetailMaV.getView().newComponentPanel(), "span 2,grow");
 
     return contentPanel;
 

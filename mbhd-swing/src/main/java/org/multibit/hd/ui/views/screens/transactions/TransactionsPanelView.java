@@ -94,7 +94,7 @@ public class TransactionsPanelView extends AbstractScreenView<TransactionsPanelM
 
   @Subscribe
   public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
-    log.debug("Received the TransactionSeenEvent: " + transactionSeenEvent.toString());
+    log.trace("Received the TransactionSeenEvent: " + transactionSeenEvent.toString());
 
     // Play a sound the first time a transaction is received
     // TODO some more filtering required - just set to play when it confirms for the first time for now
@@ -108,7 +108,7 @@ public class TransactionsPanelView extends AbstractScreenView<TransactionsPanelM
    */
   @Subscribe
   public void onSlowTransactionSeenEvent(SlowTransactionSeenEvent slowTransactionSeenEvent) {
-    log.debug("Received a SlowTransactionSeenEvent.");
+    log.trace("Received a SlowTransactionSeenEvent.");
 
     if (transactionsTable != null) {
       SwingUtilities.invokeLater(new Runnable() {

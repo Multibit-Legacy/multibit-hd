@@ -5,6 +5,7 @@ import org.joda.money.BigMoney;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.models.AlertModel;
+import org.multibit.hd.ui.views.components.wallet_detail.WalletDetail;
 import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.slf4j.Logger;
@@ -100,6 +101,14 @@ public class ViewEvents {
   public static void fireAlertRemovedEvent() {
     log.trace("Firing 'alert removed' event");
     CoreServices.uiEventBus.post(new AlertRemovedEvent());
+  }
+
+  /**
+   * <p>Broadcast a new "wallet detail changed" event</p>
+   */
+  public static void fireWalletDetailChangedEvent(WalletDetail walletDetail) {
+    log.trace("Firing 'walletDetailChanged' event");
+    CoreServices.uiEventBus.post(new WalletDetailChangedEvent(walletDetail));
   }
 
   /**
