@@ -14,6 +14,7 @@ import org.multibit.hd.ui.views.components.Images;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
@@ -116,15 +117,22 @@ public class ContactTableModel extends AbstractTableModel {
   /**
    * JTable uses this method to determine the default renderer/
    * editor for each cell.  If we didn't implement this method,
-   * then the last column would contain text ("true"/"false"),
+   * then the checkbox column would contain text ("true"/"false"),
    * rather than a check box.
    */
   public Class getColumnClass(int c) {
-    if (getValueAt(0, c) != null) {
-      return getValueAt(0, c).getClass();
+    if (c == CHECKBOX_COLUMN_INDEX) {
+      return Boolean.class;
+    } else if (c == GRAVATAR_COLUMN_INDEX) {
+      return ImageIcon.class;
     } else {
       return String.class;
     }
+    //if (getValueAt(0, c) != null) {
+    //  return getValueAt(0, c).getClass();
+    //} else {
+    //  return String.class;
+    //}
   }
 
   /**
