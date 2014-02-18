@@ -65,8 +65,8 @@ message Transaction {
   repeated bytes request_ids = 2;           // The ids of requests related to this transaction.
                                             // If a transaction output sends bitcoin to a request.address then it will appear in this list
                                             // There can be zero, one or more request_ids for a single transaction.
-  optional FiatPayment amount_fiat = 2;     // The fiat amount of the transaction at the time it was first sent or received.
-  optional string note = 3;                 // The note added when the transaction is sent
+  optional FiatPayment amount_fiat = 3;     // The fiat amount of the transaction at the time it was first sent or received.
+  optional string note = 4;                 // The note added when the transaction is sent
 }
 
 
