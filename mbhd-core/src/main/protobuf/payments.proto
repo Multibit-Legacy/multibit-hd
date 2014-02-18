@@ -1,0 +1,79 @@
+/**
+ * Copyright 2014 multibit.org
+ *
+ * Licensed under the MIT license (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://opensource.org/licenses/mit-license.php
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * This protobuf defines the MBHD extra data that is stored with payment requests and transactions.
+ * (This is in addition to that stored in the wallet protobuf, which is 'owned' by bitcoinj)
+ *
+ * Author: Jim Burton
+ */
+ 
+/* Notes:
+ * - To regenerate after editing, run mvn clean package -DupdateProtobuf
+ */
+
+option java_package = "org.multibit.hd.core.protobuf";
+option java_outer_classname = "MBHDPaymentsProtos";
+
+/**
+ * A fiat amount, together with exchange details of how it was generated
+ */
+ message FiatPayment {
+   required string amount = 1;       // The fiat amount of the transaction or request.
+                                     // Stored as a non localised string e.g. 1234.56
+   required string currency = 2;     // The currency code of the fiat amount (e.g. USD)
+   optional string exchange = 3;     // The exchange name used in the definition of the fiat amount e.g. "Bitstamp";
+   optional string rate = 4;         // The exchange rate used in the definition of the fiat amount (this is the price of 1 BTC in the fiat currency)
+                                     // Stored as a non localised string e.g. 1234.56
+ }
+ 
+ 
+/** 
+ * A single payment request (as created on the Request bitcoin screen)
+ */
+message Request {
+  required bytes id = 1;                 // The unique identifier for the payment request, typically a UUID
+  required string address = 2;           // The payment request bitcoin address (as per the bitcoin URI spec)
+  
+  optional string label = 3;             // The label (as per the bitcoin URI spec)
+  optional int64 amount_btc = 4;         // The bitcoin amount, in satoshi (as per the bitcoin URI spec)
+  optional FiatPayment amount_fiat = 5;  // The fiat equivalent of the bitcoin amount
+  optional string note = 6;              // The private note (this is not included on any QRcode)
+  optional int64 date = 7;               // The creation datetime (millis since epoch)
+}
+
+/** 
+ * A single transaction
+ */
+message Transaction {
+  required bytes hash = 1;                  // The transaction hash (i.e. the transaction id as per the wallet Transaction.hash)
+                                            // The corresponding transaction is expected to be in the wallet.
+
+  repeated bytes request_ids = 2;           // The ids of requests related to this transaction.
+                                            // If a transaction output sends bitcoin to a request.address then it will appear in this list
+                                            // There can be zero, one or more request_ids for a single transaction.
+  optional FiatPayment amount_fiat = 2;     // The fiat amount of the transaction at the time it was first sent or received.
+  optional string note = 3;                 // The note added when the transaction is sent
+}
+
+
+/**
+ * The top level message
+ */
+message Payments {
+  repeated Request request = 1;             // Collection of requests
+  repeated Transaction transaction = 2;     // Collection of transactions
+}
