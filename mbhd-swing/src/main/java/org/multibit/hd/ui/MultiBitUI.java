@@ -131,6 +131,7 @@ public interface MultiBitUI {
 
   /**
    * The alpha composite to apply to the background image of a detail panel
+   * Anything below 1.0 is too faded on some monitors
    */
-  float DETAIL_PANEL_BACKGROUND_ALPHA = 0.08f;
+  float DETAIL_PANEL_BACKGROUND_ALPHA = 0.1f;
 }
