@@ -23,9 +23,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.protobuf.TextFormat;
-import org.multibit.hd.core.protobuf.MBHDProtos;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.exceptions.ContactsLoadException;
+import org.multibit.hd.core.protobuf.MBHDContactsProtos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +64,7 @@ public class ContactsProtobufSerializer {
      * Formats the given Contacts to the given output stream in protocol buffer format.<p>
      */
     public void writeContacts(Set<Contact> contacts, OutputStream output) throws IOException {
-        MBHDProtos.Contacts contactsProto = contactsToProto(contacts);
+        MBHDContactsProtos.Contacts contactsProto = contactsToProto(contacts);
         contactsProto.writeTo(output);
     }
 
@@ -76,7 +76,7 @@ public class ContactsProtobufSerializer {
      * mostly contain keys and hashes.
      */
     public String contactsToText(Set<Contact> contacts) {
-      MBHDProtos.Contacts contactsProto = contactsToProto(contacts);
+      MBHDContactsProtos.Contacts contactsProto = contactsToProto(contacts);
         return TextFormat.printToString(contactsProto);
     }
 
@@ -84,21 +84,21 @@ public class ContactsProtobufSerializer {
      * Converts the given contacts to the object representation of the protocol buffers. This can be modified, or
      * additional data fields set, before serialization takes place.
      */
-    public MBHDProtos.Contacts contactsToProto(Set<Contact> contacts) {
-      MBHDProtos.Contacts.Builder contactsBuilder = MBHDProtos.Contacts.newBuilder();
+    public MBHDContactsProtos.Contacts contactsToProto(Set<Contact> contacts) {
+      MBHDContactsProtos.Contacts.Builder contactsBuilder = MBHDContactsProtos.Contacts.newBuilder();
 
       Preconditions.checkNotNull(contacts, "Contacts must be specified");
 
       for (Contact contact : contacts) {
-        MBHDProtos.Contact contactProto = makeContactProto(contact);
+        MBHDContactsProtos.Contact contactProto = makeContactProto(contact);
        contactsBuilder.addContact(contactProto);
       }
 
       return contactsBuilder.build();
     }
 
-  private static MBHDProtos.Contact makeContactProto(Contact contact) {
-    MBHDProtos.Contact.Builder contactBuilder = MBHDProtos.Contact.newBuilder();
+  private static MBHDContactsProtos.Contact makeContactProto(Contact contact) {
+    MBHDContactsProtos.Contact.Builder contactBuilder = MBHDContactsProtos.Contact.newBuilder();
     contactBuilder.setId(contact.getId().toString());
     contactBuilder.setName(contact.getName());
     contactBuilder.setBitcoinAddress(contact.getBitcoinAddress().or(""));
@@ -112,7 +112,7 @@ public class ContactsProtobufSerializer {
     if (tags != null) {
       int tagIndex = 0;
       for (String tag : tags) {
-        MBHDProtos.Tag tagProto = makeTagProto(tag);
+        MBHDContactsProtos.Tag tagProto = makeTagProto(tag);
         contactBuilder.addTag(tagIndex, tagProto);
         tagIndex++;
       }
@@ -121,8 +121,8 @@ public class ContactsProtobufSerializer {
     return contactBuilder.build();
   }
 
-  private static MBHDProtos.Tag makeTagProto(String tag) {
-    MBHDProtos.Tag.Builder tagBuilder = MBHDProtos.Tag.newBuilder();
+  private static MBHDContactsProtos.Tag makeTagProto(String tag) {
+    MBHDContactsProtos.Tag.Builder tagBuilder = MBHDContactsProtos.Tag.newBuilder();
     tagBuilder.setTagValue(tag);
     return tagBuilder.build();
   }
@@ -137,7 +137,7 @@ public class ContactsProtobufSerializer {
      */
     public Set<Contact> readContacts(InputStream input) throws ContactsLoadException {
         try {
-            MBHDProtos.Contacts contactsProto = parseToProto(input);
+            MBHDContactsProtos.Contacts contactsProto = parseToProto(input);
             Set<Contact> contacts = Sets.newHashSet();
             readContacts(contactsProto, contacts);
             return contacts;
@@ -155,13 +155,13 @@ public class ContactsProtobufSerializer {
      *
      * @throws ContactsLoadException thrown in various error conditions (see description).
      */
-    private void readContacts(MBHDProtos.Contacts contactsProto, Set<Contact> contacts) throws ContactsLoadException {
+    private void readContacts(MBHDContactsProtos.Contacts contactsProto, Set<Contact> contacts) throws ContactsLoadException {
       Set<Contact> readContacts = Sets.newHashSet();
 
-      List<MBHDProtos.Contact>contactProtos = contactsProto.getContactList();
+      List<MBHDContactsProtos.Contact>contactProtos = contactsProto.getContactList();
 
       if (contactProtos != null) {
-        for (MBHDProtos.Contact contactProto : contactProtos) {
+        for (MBHDContactsProtos.Contact contactProto : contactProtos) {
           String idAsString = contactProto.getId();
           UUID id = UUID.fromString(idAsString);
 
@@ -177,9 +177,9 @@ public class ContactsProtobufSerializer {
 
           // Create tags
           List<String> tags = Lists.newArrayList();
-          List<MBHDProtos.Tag> tagProtos = contactProto.getTagList();
+          List<MBHDContactsProtos.Tag> tagProtos = contactProto.getTagList();
           if (tagProtos != null) {
-            for (MBHDProtos.Tag tagProto : tagProtos) {
+            for (MBHDContactsProtos.Tag tagProto : tagProtos) {
               tags.add(tagProto.getTagValue());
             }
           }
@@ -197,7 +197,7 @@ public class ContactsProtobufSerializer {
      * Returns the loaded protocol buffer from the given byte stream. This method is designed for low level work involving the
      * wallet file format itself.
      */
-    public static MBHDProtos.Contacts parseToProto(InputStream input) throws IOException {
-        return MBHDProtos.Contacts.parseFrom(input);
+    public static MBHDContactsProtos.Contacts parseToProto(InputStream input) throws IOException {
+        return MBHDContactsProtos.Contacts.parseFrom(input);
     }
 }

@@ -3,8 +3,8 @@
 
 package org.multibit.hd.core.protobuf;
 
-public final class MBHDProtos {
-  private MBHDProtos() {}
+public final class MBHDContactsProtos {
+  private MBHDContactsProtos() {}
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
   }
@@ -39,7 +39,7 @@ public final class MBHDProtos {
         getTagValueBytes();
   }
   /**
-   * Protobuf type {@code wallet.Tag}
+   * Protobuf type {@code Tag}
    *
    * <pre>
    **
@@ -113,14 +113,14 @@ public final class MBHDProtos {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return org.multibit.hd.core.protobuf.MBHDProtos.internal_static_wallet_Tag_descriptor;
+      return org.multibit.hd.core.protobuf.MBHDContactsProtos.internal_static_Tag_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.multibit.hd.core.protobuf.MBHDProtos.internal_static_wallet_Tag_fieldAccessorTable
+      return org.multibit.hd.core.protobuf.MBHDContactsProtos.internal_static_Tag_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              org.multibit.hd.core.protobuf.MBHDProtos.Tag.class, org.multibit.hd.core.protobuf.MBHDProtos.Tag.Builder.class);
+              org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag.class, org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag.Builder.class);
     }
 
     public static com.google.protobuf.Parser<Tag> PARSER =
@@ -241,53 +241,53 @@ public final class MBHDProtos {
       return super.writeReplace();
     }
 
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Tag parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Tag parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Tag parseFrom(byte[] data)
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Tag parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Tag parseFrom(java.io.InputStream input)
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Tag parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Tag parseDelimitedFrom(java.io.InputStream input)
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Tag parseDelimitedFrom(
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Tag parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Tag parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -296,7 +296,7 @@ public final class MBHDProtos {
 
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(org.multibit.hd.core.protobuf.MBHDProtos.Tag prototype) {
+    public static Builder newBuilder(org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
@@ -308,7 +308,7 @@ public final class MBHDProtos {
       return builder;
     }
     /**
-     * Protobuf type {@code wallet.Tag}
+     * Protobuf type {@code Tag}
      *
      * <pre>
      **
@@ -317,20 +317,20 @@ public final class MBHDProtos {
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.multibit.hd.core.protobuf.MBHDProtos.TagOrBuilder {
+       implements org.multibit.hd.core.protobuf.MBHDContactsProtos.TagOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return org.multibit.hd.core.protobuf.MBHDProtos.internal_static_wallet_Tag_descriptor;
+        return org.multibit.hd.core.protobuf.MBHDContactsProtos.internal_static_Tag_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return org.multibit.hd.core.protobuf.MBHDProtos.internal_static_wallet_Tag_fieldAccessorTable
+        return org.multibit.hd.core.protobuf.MBHDContactsProtos.internal_static_Tag_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                org.multibit.hd.core.protobuf.MBHDProtos.Tag.class, org.multibit.hd.core.protobuf.MBHDProtos.Tag.Builder.class);
+                org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag.class, org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag.Builder.class);
       }
 
-      // Construct using org.multibit.hd.core.protobuf.MBHDProtos.Tag.newBuilder()
+      // Construct using org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -361,23 +361,23 @@ public final class MBHDProtos {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return org.multibit.hd.core.protobuf.MBHDProtos.internal_static_wallet_Tag_descriptor;
+        return org.multibit.hd.core.protobuf.MBHDContactsProtos.internal_static_Tag_descriptor;
       }
 
-      public org.multibit.hd.core.protobuf.MBHDProtos.Tag getDefaultInstanceForType() {
-        return org.multibit.hd.core.protobuf.MBHDProtos.Tag.getDefaultInstance();
+      public org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag getDefaultInstanceForType() {
+        return org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag.getDefaultInstance();
       }
 
-      public org.multibit.hd.core.protobuf.MBHDProtos.Tag build() {
-        org.multibit.hd.core.protobuf.MBHDProtos.Tag result = buildPartial();
+      public org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag build() {
+        org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public org.multibit.hd.core.protobuf.MBHDProtos.Tag buildPartial() {
-        org.multibit.hd.core.protobuf.MBHDProtos.Tag result = new org.multibit.hd.core.protobuf.MBHDProtos.Tag(this);
+      public org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag buildPartial() {
+        org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag result = new org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -390,16 +390,16 @@ public final class MBHDProtos {
       }
 
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof org.multibit.hd.core.protobuf.MBHDProtos.Tag) {
-          return mergeFrom((org.multibit.hd.core.protobuf.MBHDProtos.Tag)other);
+        if (other instanceof org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag) {
+          return mergeFrom((org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(org.multibit.hd.core.protobuf.MBHDProtos.Tag other) {
-        if (other == org.multibit.hd.core.protobuf.MBHDProtos.Tag.getDefaultInstance()) return this;
+      public Builder mergeFrom(org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag other) {
+        if (other == org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag.getDefaultInstance()) return this;
         if (other.hasTagValue()) {
           bitField0_ |= 0x00000001;
           tagValue_ = other.tagValue_;
@@ -421,11 +421,11 @@ public final class MBHDProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.multibit.hd.core.protobuf.MBHDProtos.Tag parsedMessage = null;
+        org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.multibit.hd.core.protobuf.MBHDProtos.Tag) e.getUnfinishedMessage();
+          parsedMessage = (org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag) e.getUnfinishedMessage();
           throw e;
         } finally {
           if (parsedMessage != null) {
@@ -534,7 +534,7 @@ public final class MBHDProtos {
         return this;
       }
 
-      // @@protoc_insertion_point(builder_scope:wallet.Tag)
+      // @@protoc_insertion_point(builder_scope:Tag)
     }
 
     static {
@@ -542,7 +542,7 @@ public final class MBHDProtos {
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:wallet.Tag)
+    // @@protoc_insertion_point(class_scope:Tag)
   }
 
   public interface ContactOrBuilder
@@ -737,26 +737,26 @@ public final class MBHDProtos {
     com.google.protobuf.ByteString
         getNotesBytes();
 
-    // repeated .wallet.Tag tag = 8;
+    // repeated .Tag tag = 8;
     /**
-     * <code>repeated .wallet.Tag tag = 8;</code>
+     * <code>repeated .Tag tag = 8;</code>
      *
      * <pre>
      * the tags, as repeated strings
      * </pre>
      */
-    java.util.List<org.multibit.hd.core.protobuf.MBHDProtos.Tag> 
+    java.util.List<org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag> 
         getTagList();
     /**
-     * <code>repeated .wallet.Tag tag = 8;</code>
+     * <code>repeated .Tag tag = 8;</code>
      *
      * <pre>
      * the tags, as repeated strings
      * </pre>
      */
-    org.multibit.hd.core.protobuf.MBHDProtos.Tag getTag(int index);
+    org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag getTag(int index);
     /**
-     * <code>repeated .wallet.Tag tag = 8;</code>
+     * <code>repeated .Tag tag = 8;</code>
      *
      * <pre>
      * the tags, as repeated strings
@@ -764,44 +764,26 @@ public final class MBHDProtos {
      */
     int getTagCount();
     /**
-     * <code>repeated .wallet.Tag tag = 8;</code>
+     * <code>repeated .Tag tag = 8;</code>
      *
      * <pre>
      * the tags, as repeated strings
      * </pre>
      */
-    java.util.List<? extends org.multibit.hd.core.protobuf.MBHDProtos.TagOrBuilder> 
+    java.util.List<? extends org.multibit.hd.core.protobuf.MBHDContactsProtos.TagOrBuilder> 
         getTagOrBuilderList();
     /**
-     * <code>repeated .wallet.Tag tag = 8;</code>
+     * <code>repeated .Tag tag = 8;</code>
      *
      * <pre>
      * the tags, as repeated strings
      * </pre>
      */
-    org.multibit.hd.core.protobuf.MBHDProtos.TagOrBuilder getTagOrBuilder(
+    org.multibit.hd.core.protobuf.MBHDContactsProtos.TagOrBuilder getTagOrBuilder(
         int index);
-
-    // optional uint32 star_style = 9;
-    /**
-     * <code>optional uint32 star_style = 9;</code>
-     *
-     * <pre>
-     * the star style as an int, encoded:
-     * </pre>
-     */
-    boolean hasStarStyle();
-    /**
-     * <code>optional uint32 star_style = 9;</code>
-     *
-     * <pre>
-     * the star style as an int, encoded:
-     * </pre>
-     */
-    int getStarStyle();
   }
   /**
-   * Protobuf type {@code wallet.Contact}
+   * Protobuf type {@code Contact}
    *
    * <pre>
    ** 
@@ -893,15 +875,10 @@ public final class MBHDProtos {
             }
             case 66: {
               if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
-                tag_ = new java.util.ArrayList<org.multibit.hd.core.protobuf.MBHDProtos.Tag>();
+                tag_ = new java.util.ArrayList<org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag>();
                 mutable_bitField0_ |= 0x00000080;
               }
-              tag_.add(input.readMessage(org.multibit.hd.core.protobuf.MBHDProtos.Tag.PARSER, extensionRegistry));
-              break;
-            }
-            case 72: {
-              bitField0_ |= 0x00000080;
-              starStyle_ = input.readUInt32();
+              tag_.add(input.readMessage(org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag.PARSER, extensionRegistry));
               break;
             }
           }
@@ -921,14 +898,14 @@ public final class MBHDProtos {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return org.multibit.hd.core.protobuf.MBHDProtos.internal_static_wallet_Contact_descriptor;
+      return org.multibit.hd.core.protobuf.MBHDContactsProtos.internal_static_Contact_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.multibit.hd.core.protobuf.MBHDProtos.internal_static_wallet_Contact_fieldAccessorTable
+      return org.multibit.hd.core.protobuf.MBHDContactsProtos.internal_static_Contact_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              org.multibit.hd.core.protobuf.MBHDProtos.Contact.class, org.multibit.hd.core.protobuf.MBHDProtos.Contact.Builder.class);
+              org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact.class, org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact.Builder.class);
     }
 
     public static com.google.protobuf.Parser<Contact> PARSER =
@@ -1332,32 +1309,32 @@ public final class MBHDProtos {
       }
     }
 
-    // repeated .wallet.Tag tag = 8;
+    // repeated .Tag tag = 8;
     public static final int TAG_FIELD_NUMBER = 8;
-    private java.util.List<org.multibit.hd.core.protobuf.MBHDProtos.Tag> tag_;
+    private java.util.List<org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag> tag_;
     /**
-     * <code>repeated .wallet.Tag tag = 8;</code>
+     * <code>repeated .Tag tag = 8;</code>
      *
      * <pre>
      * the tags, as repeated strings
      * </pre>
      */
-    public java.util.List<org.multibit.hd.core.protobuf.MBHDProtos.Tag> getTagList() {
+    public java.util.List<org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag> getTagList() {
       return tag_;
     }
     /**
-     * <code>repeated .wallet.Tag tag = 8;</code>
+     * <code>repeated .Tag tag = 8;</code>
      *
      * <pre>
      * the tags, as repeated strings
      * </pre>
      */
-    public java.util.List<? extends org.multibit.hd.core.protobuf.MBHDProtos.TagOrBuilder> 
+    public java.util.List<? extends org.multibit.hd.core.protobuf.MBHDContactsProtos.TagOrBuilder> 
         getTagOrBuilderList() {
       return tag_;
     }
     /**
-     * <code>repeated .wallet.Tag tag = 8;</code>
+     * <code>repeated .Tag tag = 8;</code>
      *
      * <pre>
      * the tags, as repeated strings
@@ -1367,49 +1344,25 @@ public final class MBHDProtos {
       return tag_.size();
     }
     /**
-     * <code>repeated .wallet.Tag tag = 8;</code>
+     * <code>repeated .Tag tag = 8;</code>
      *
      * <pre>
      * the tags, as repeated strings
      * </pre>
      */
-    public org.multibit.hd.core.protobuf.MBHDProtos.Tag getTag(int index) {
+    public org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag getTag(int index) {
       return tag_.get(index);
     }
     /**
-     * <code>repeated .wallet.Tag tag = 8;</code>
+     * <code>repeated .Tag tag = 8;</code>
      *
      * <pre>
      * the tags, as repeated strings
      * </pre>
      */
-    public org.multibit.hd.core.protobuf.MBHDProtos.TagOrBuilder getTagOrBuilder(
+    public org.multibit.hd.core.protobuf.MBHDContactsProtos.TagOrBuilder getTagOrBuilder(
         int index) {
       return tag_.get(index);
-    }
-
-    // optional uint32 star_style = 9;
-    public static final int STAR_STYLE_FIELD_NUMBER = 9;
-    private int starStyle_;
-    /**
-     * <code>optional uint32 star_style = 9;</code>
-     *
-     * <pre>
-     * the star style as an int, encoded:
-     * </pre>
-     */
-    public boolean hasStarStyle() {
-      return ((bitField0_ & 0x00000080) == 0x00000080);
-    }
-    /**
-     * <code>optional uint32 star_style = 9;</code>
-     *
-     * <pre>
-     * the star style as an int, encoded:
-     * </pre>
-     */
-    public int getStarStyle() {
-      return starStyle_;
     }
 
     private void initFields() {
@@ -1421,7 +1374,6 @@ public final class MBHDProtos {
       extendedPublicKey_ = "";
       notes_ = "";
       tag_ = java.util.Collections.emptyList();
-      starStyle_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -1473,9 +1425,6 @@ public final class MBHDProtos {
       for (int i = 0; i < tag_.size(); i++) {
         output.writeMessage(8, tag_.get(i));
       }
-      if (((bitField0_ & 0x00000080) == 0x00000080)) {
-        output.writeUInt32(9, starStyle_);
-      }
       getUnknownFields().writeTo(output);
     }
 
@@ -1517,10 +1466,6 @@ public final class MBHDProtos {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(8, tag_.get(i));
       }
-      if (((bitField0_ & 0x00000080) == 0x00000080)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(9, starStyle_);
-      }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
@@ -1533,53 +1478,53 @@ public final class MBHDProtos {
       return super.writeReplace();
     }
 
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Contact parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Contact parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Contact parseFrom(byte[] data)
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Contact parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Contact parseFrom(java.io.InputStream input)
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Contact parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Contact parseDelimitedFrom(java.io.InputStream input)
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Contact parseDelimitedFrom(
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Contact parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Contact parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -1588,7 +1533,7 @@ public final class MBHDProtos {
 
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(org.multibit.hd.core.protobuf.MBHDProtos.Contact prototype) {
+    public static Builder newBuilder(org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
@@ -1600,7 +1545,7 @@ public final class MBHDProtos {
       return builder;
     }
     /**
-     * Protobuf type {@code wallet.Contact}
+     * Protobuf type {@code Contact}
      *
      * <pre>
      ** 
@@ -1609,20 +1554,20 @@ public final class MBHDProtos {
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.multibit.hd.core.protobuf.MBHDProtos.ContactOrBuilder {
+       implements org.multibit.hd.core.protobuf.MBHDContactsProtos.ContactOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return org.multibit.hd.core.protobuf.MBHDProtos.internal_static_wallet_Contact_descriptor;
+        return org.multibit.hd.core.protobuf.MBHDContactsProtos.internal_static_Contact_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return org.multibit.hd.core.protobuf.MBHDProtos.internal_static_wallet_Contact_fieldAccessorTable
+        return org.multibit.hd.core.protobuf.MBHDContactsProtos.internal_static_Contact_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                org.multibit.hd.core.protobuf.MBHDProtos.Contact.class, org.multibit.hd.core.protobuf.MBHDProtos.Contact.Builder.class);
+                org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact.class, org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact.Builder.class);
       }
 
-      // Construct using org.multibit.hd.core.protobuf.MBHDProtos.Contact.newBuilder()
+      // Construct using org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -1663,8 +1608,6 @@ public final class MBHDProtos {
         } else {
           tagBuilder_.clear();
         }
-        starStyle_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000100);
         return this;
       }
 
@@ -1674,23 +1617,23 @@ public final class MBHDProtos {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return org.multibit.hd.core.protobuf.MBHDProtos.internal_static_wallet_Contact_descriptor;
+        return org.multibit.hd.core.protobuf.MBHDContactsProtos.internal_static_Contact_descriptor;
       }
 
-      public org.multibit.hd.core.protobuf.MBHDProtos.Contact getDefaultInstanceForType() {
-        return org.multibit.hd.core.protobuf.MBHDProtos.Contact.getDefaultInstance();
+      public org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact getDefaultInstanceForType() {
+        return org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact.getDefaultInstance();
       }
 
-      public org.multibit.hd.core.protobuf.MBHDProtos.Contact build() {
-        org.multibit.hd.core.protobuf.MBHDProtos.Contact result = buildPartial();
+      public org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact build() {
+        org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public org.multibit.hd.core.protobuf.MBHDProtos.Contact buildPartial() {
-        org.multibit.hd.core.protobuf.MBHDProtos.Contact result = new org.multibit.hd.core.protobuf.MBHDProtos.Contact(this);
+      public org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact buildPartial() {
+        org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact result = new org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -1730,26 +1673,22 @@ public final class MBHDProtos {
         } else {
           result.tag_ = tagBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
-          to_bitField0_ |= 0x00000080;
-        }
-        result.starStyle_ = starStyle_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof org.multibit.hd.core.protobuf.MBHDProtos.Contact) {
-          return mergeFrom((org.multibit.hd.core.protobuf.MBHDProtos.Contact)other);
+        if (other instanceof org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact) {
+          return mergeFrom((org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(org.multibit.hd.core.protobuf.MBHDProtos.Contact other) {
-        if (other == org.multibit.hd.core.protobuf.MBHDProtos.Contact.getDefaultInstance()) return this;
+      public Builder mergeFrom(org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact other) {
+        if (other == org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact.getDefaultInstance()) return this;
         if (other.hasId()) {
           bitField0_ |= 0x00000001;
           id_ = other.id_;
@@ -1811,9 +1750,6 @@ public final class MBHDProtos {
             }
           }
         }
-        if (other.hasStarStyle()) {
-          setStarStyle(other.getStarStyle());
-        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -1840,11 +1776,11 @@ public final class MBHDProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.multibit.hd.core.protobuf.MBHDProtos.Contact parsedMessage = null;
+        org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.multibit.hd.core.protobuf.MBHDProtos.Contact) e.getUnfinishedMessage();
+          parsedMessage = (org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact) e.getUnfinishedMessage();
           throw e;
         } finally {
           if (parsedMessage != null) {
@@ -2541,27 +2477,27 @@ public final class MBHDProtos {
         return this;
       }
 
-      // repeated .wallet.Tag tag = 8;
-      private java.util.List<org.multibit.hd.core.protobuf.MBHDProtos.Tag> tag_ =
+      // repeated .Tag tag = 8;
+      private java.util.List<org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag> tag_ =
         java.util.Collections.emptyList();
       private void ensureTagIsMutable() {
         if (!((bitField0_ & 0x00000080) == 0x00000080)) {
-          tag_ = new java.util.ArrayList<org.multibit.hd.core.protobuf.MBHDProtos.Tag>(tag_);
+          tag_ = new java.util.ArrayList<org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag>(tag_);
           bitField0_ |= 0x00000080;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilder<
-          org.multibit.hd.core.protobuf.MBHDProtos.Tag, org.multibit.hd.core.protobuf.MBHDProtos.Tag.Builder, org.multibit.hd.core.protobuf.MBHDProtos.TagOrBuilder> tagBuilder_;
+          org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag, org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag.Builder, org.multibit.hd.core.protobuf.MBHDContactsProtos.TagOrBuilder> tagBuilder_;
 
       /**
-       * <code>repeated .wallet.Tag tag = 8;</code>
+       * <code>repeated .Tag tag = 8;</code>
        *
        * <pre>
        * the tags, as repeated strings
        * </pre>
        */
-      public java.util.List<org.multibit.hd.core.protobuf.MBHDProtos.Tag> getTagList() {
+      public java.util.List<org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag> getTagList() {
         if (tagBuilder_ == null) {
           return java.util.Collections.unmodifiableList(tag_);
         } else {
@@ -2569,7 +2505,7 @@ public final class MBHDProtos {
         }
       }
       /**
-       * <code>repeated .wallet.Tag tag = 8;</code>
+       * <code>repeated .Tag tag = 8;</code>
        *
        * <pre>
        * the tags, as repeated strings
@@ -2583,13 +2519,13 @@ public final class MBHDProtos {
         }
       }
       /**
-       * <code>repeated .wallet.Tag tag = 8;</code>
+       * <code>repeated .Tag tag = 8;</code>
        *
        * <pre>
        * the tags, as repeated strings
        * </pre>
        */
-      public org.multibit.hd.core.protobuf.MBHDProtos.Tag getTag(int index) {
+      public org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag getTag(int index) {
         if (tagBuilder_ == null) {
           return tag_.get(index);
         } else {
@@ -2597,14 +2533,14 @@ public final class MBHDProtos {
         }
       }
       /**
-       * <code>repeated .wallet.Tag tag = 8;</code>
+       * <code>repeated .Tag tag = 8;</code>
        *
        * <pre>
        * the tags, as repeated strings
        * </pre>
        */
       public Builder setTag(
-          int index, org.multibit.hd.core.protobuf.MBHDProtos.Tag value) {
+          int index, org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag value) {
         if (tagBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -2618,14 +2554,14 @@ public final class MBHDProtos {
         return this;
       }
       /**
-       * <code>repeated .wallet.Tag tag = 8;</code>
+       * <code>repeated .Tag tag = 8;</code>
        *
        * <pre>
        * the tags, as repeated strings
        * </pre>
        */
       public Builder setTag(
-          int index, org.multibit.hd.core.protobuf.MBHDProtos.Tag.Builder builderForValue) {
+          int index, org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag.Builder builderForValue) {
         if (tagBuilder_ == null) {
           ensureTagIsMutable();
           tag_.set(index, builderForValue.build());
@@ -2636,13 +2572,13 @@ public final class MBHDProtos {
         return this;
       }
       /**
-       * <code>repeated .wallet.Tag tag = 8;</code>
+       * <code>repeated .Tag tag = 8;</code>
        *
        * <pre>
        * the tags, as repeated strings
        * </pre>
        */
-      public Builder addTag(org.multibit.hd.core.protobuf.MBHDProtos.Tag value) {
+      public Builder addTag(org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag value) {
         if (tagBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -2656,14 +2592,14 @@ public final class MBHDProtos {
         return this;
       }
       /**
-       * <code>repeated .wallet.Tag tag = 8;</code>
+       * <code>repeated .Tag tag = 8;</code>
        *
        * <pre>
        * the tags, as repeated strings
        * </pre>
        */
       public Builder addTag(
-          int index, org.multibit.hd.core.protobuf.MBHDProtos.Tag value) {
+          int index, org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag value) {
         if (tagBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -2677,14 +2613,14 @@ public final class MBHDProtos {
         return this;
       }
       /**
-       * <code>repeated .wallet.Tag tag = 8;</code>
+       * <code>repeated .Tag tag = 8;</code>
        *
        * <pre>
        * the tags, as repeated strings
        * </pre>
        */
       public Builder addTag(
-          org.multibit.hd.core.protobuf.MBHDProtos.Tag.Builder builderForValue) {
+          org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag.Builder builderForValue) {
         if (tagBuilder_ == null) {
           ensureTagIsMutable();
           tag_.add(builderForValue.build());
@@ -2695,14 +2631,14 @@ public final class MBHDProtos {
         return this;
       }
       /**
-       * <code>repeated .wallet.Tag tag = 8;</code>
+       * <code>repeated .Tag tag = 8;</code>
        *
        * <pre>
        * the tags, as repeated strings
        * </pre>
        */
       public Builder addTag(
-          int index, org.multibit.hd.core.protobuf.MBHDProtos.Tag.Builder builderForValue) {
+          int index, org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag.Builder builderForValue) {
         if (tagBuilder_ == null) {
           ensureTagIsMutable();
           tag_.add(index, builderForValue.build());
@@ -2713,14 +2649,14 @@ public final class MBHDProtos {
         return this;
       }
       /**
-       * <code>repeated .wallet.Tag tag = 8;</code>
+       * <code>repeated .Tag tag = 8;</code>
        *
        * <pre>
        * the tags, as repeated strings
        * </pre>
        */
       public Builder addAllTag(
-          java.lang.Iterable<? extends org.multibit.hd.core.protobuf.MBHDProtos.Tag> values) {
+          java.lang.Iterable<? extends org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag> values) {
         if (tagBuilder_ == null) {
           ensureTagIsMutable();
           super.addAll(values, tag_);
@@ -2731,7 +2667,7 @@ public final class MBHDProtos {
         return this;
       }
       /**
-       * <code>repeated .wallet.Tag tag = 8;</code>
+       * <code>repeated .Tag tag = 8;</code>
        *
        * <pre>
        * the tags, as repeated strings
@@ -2748,7 +2684,7 @@ public final class MBHDProtos {
         return this;
       }
       /**
-       * <code>repeated .wallet.Tag tag = 8;</code>
+       * <code>repeated .Tag tag = 8;</code>
        *
        * <pre>
        * the tags, as repeated strings
@@ -2765,24 +2701,24 @@ public final class MBHDProtos {
         return this;
       }
       /**
-       * <code>repeated .wallet.Tag tag = 8;</code>
+       * <code>repeated .Tag tag = 8;</code>
        *
        * <pre>
        * the tags, as repeated strings
        * </pre>
        */
-      public org.multibit.hd.core.protobuf.MBHDProtos.Tag.Builder getTagBuilder(
+      public org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag.Builder getTagBuilder(
           int index) {
         return getTagFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .wallet.Tag tag = 8;</code>
+       * <code>repeated .Tag tag = 8;</code>
        *
        * <pre>
        * the tags, as repeated strings
        * </pre>
        */
-      public org.multibit.hd.core.protobuf.MBHDProtos.TagOrBuilder getTagOrBuilder(
+      public org.multibit.hd.core.protobuf.MBHDContactsProtos.TagOrBuilder getTagOrBuilder(
           int index) {
         if (tagBuilder_ == null) {
           return tag_.get(index);  } else {
@@ -2790,13 +2726,13 @@ public final class MBHDProtos {
         }
       }
       /**
-       * <code>repeated .wallet.Tag tag = 8;</code>
+       * <code>repeated .Tag tag = 8;</code>
        *
        * <pre>
        * the tags, as repeated strings
        * </pre>
        */
-      public java.util.List<? extends org.multibit.hd.core.protobuf.MBHDProtos.TagOrBuilder> 
+      public java.util.List<? extends org.multibit.hd.core.protobuf.MBHDContactsProtos.TagOrBuilder> 
            getTagOrBuilderList() {
         if (tagBuilder_ != null) {
           return tagBuilder_.getMessageOrBuilderList();
@@ -2805,45 +2741,45 @@ public final class MBHDProtos {
         }
       }
       /**
-       * <code>repeated .wallet.Tag tag = 8;</code>
+       * <code>repeated .Tag tag = 8;</code>
        *
        * <pre>
        * the tags, as repeated strings
        * </pre>
        */
-      public org.multibit.hd.core.protobuf.MBHDProtos.Tag.Builder addTagBuilder() {
+      public org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag.Builder addTagBuilder() {
         return getTagFieldBuilder().addBuilder(
-            org.multibit.hd.core.protobuf.MBHDProtos.Tag.getDefaultInstance());
+            org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag.getDefaultInstance());
       }
       /**
-       * <code>repeated .wallet.Tag tag = 8;</code>
+       * <code>repeated .Tag tag = 8;</code>
        *
        * <pre>
        * the tags, as repeated strings
        * </pre>
        */
-      public org.multibit.hd.core.protobuf.MBHDProtos.Tag.Builder addTagBuilder(
+      public org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag.Builder addTagBuilder(
           int index) {
         return getTagFieldBuilder().addBuilder(
-            index, org.multibit.hd.core.protobuf.MBHDProtos.Tag.getDefaultInstance());
+            index, org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag.getDefaultInstance());
       }
       /**
-       * <code>repeated .wallet.Tag tag = 8;</code>
+       * <code>repeated .Tag tag = 8;</code>
        *
        * <pre>
        * the tags, as repeated strings
        * </pre>
        */
-      public java.util.List<org.multibit.hd.core.protobuf.MBHDProtos.Tag.Builder> 
+      public java.util.List<org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag.Builder> 
            getTagBuilderList() {
         return getTagFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilder<
-          org.multibit.hd.core.protobuf.MBHDProtos.Tag, org.multibit.hd.core.protobuf.MBHDProtos.Tag.Builder, org.multibit.hd.core.protobuf.MBHDProtos.TagOrBuilder> 
+          org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag, org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag.Builder, org.multibit.hd.core.protobuf.MBHDContactsProtos.TagOrBuilder> 
           getTagFieldBuilder() {
         if (tagBuilder_ == null) {
           tagBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              org.multibit.hd.core.protobuf.MBHDProtos.Tag, org.multibit.hd.core.protobuf.MBHDProtos.Tag.Builder, org.multibit.hd.core.protobuf.MBHDProtos.TagOrBuilder>(
+              org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag, org.multibit.hd.core.protobuf.MBHDContactsProtos.Tag.Builder, org.multibit.hd.core.protobuf.MBHDContactsProtos.TagOrBuilder>(
                   tag_,
                   ((bitField0_ & 0x00000080) == 0x00000080),
                   getParentForChildren(),
@@ -2853,56 +2789,7 @@ public final class MBHDProtos {
         return tagBuilder_;
       }
 
-      // optional uint32 star_style = 9;
-      private int starStyle_ ;
-      /**
-       * <code>optional uint32 star_style = 9;</code>
-       *
-       * <pre>
-       * the star style as an int, encoded:
-       * </pre>
-       */
-      public boolean hasStarStyle() {
-        return ((bitField0_ & 0x00000100) == 0x00000100);
-      }
-      /**
-       * <code>optional uint32 star_style = 9;</code>
-       *
-       * <pre>
-       * the star style as an int, encoded:
-       * </pre>
-       */
-      public int getStarStyle() {
-        return starStyle_;
-      }
-      /**
-       * <code>optional uint32 star_style = 9;</code>
-       *
-       * <pre>
-       * the star style as an int, encoded:
-       * </pre>
-       */
-      public Builder setStarStyle(int value) {
-        bitField0_ |= 0x00000100;
-        starStyle_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional uint32 star_style = 9;</code>
-       *
-       * <pre>
-       * the star style as an int, encoded:
-       * </pre>
-       */
-      public Builder clearStarStyle() {
-        bitField0_ = (bitField0_ & ~0x00000100);
-        starStyle_ = 0;
-        onChanged();
-        return this;
-      }
-
-      // @@protoc_insertion_point(builder_scope:wallet.Contact)
+      // @@protoc_insertion_point(builder_scope:Contact)
     }
 
     static {
@@ -2910,32 +2797,32 @@ public final class MBHDProtos {
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:wallet.Contact)
+    // @@protoc_insertion_point(class_scope:Contact)
   }
 
   public interface ContactsOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
-    // repeated .wallet.Contact contact = 1;
+    // repeated .Contact contact = 1;
     /**
-     * <code>repeated .wallet.Contact contact = 1;</code>
+     * <code>repeated .Contact contact = 1;</code>
      *
      * <pre>
      * the contacts, repeated
      * </pre>
      */
-    java.util.List<org.multibit.hd.core.protobuf.MBHDProtos.Contact> 
+    java.util.List<org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact> 
         getContactList();
     /**
-     * <code>repeated .wallet.Contact contact = 1;</code>
+     * <code>repeated .Contact contact = 1;</code>
      *
      * <pre>
      * the contacts, repeated
      * </pre>
      */
-    org.multibit.hd.core.protobuf.MBHDProtos.Contact getContact(int index);
+    org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact getContact(int index);
     /**
-     * <code>repeated .wallet.Contact contact = 1;</code>
+     * <code>repeated .Contact contact = 1;</code>
      *
      * <pre>
      * the contacts, repeated
@@ -2943,26 +2830,26 @@ public final class MBHDProtos {
      */
     int getContactCount();
     /**
-     * <code>repeated .wallet.Contact contact = 1;</code>
+     * <code>repeated .Contact contact = 1;</code>
      *
      * <pre>
      * the contacts, repeated
      * </pre>
      */
-    java.util.List<? extends org.multibit.hd.core.protobuf.MBHDProtos.ContactOrBuilder> 
+    java.util.List<? extends org.multibit.hd.core.protobuf.MBHDContactsProtos.ContactOrBuilder> 
         getContactOrBuilderList();
     /**
-     * <code>repeated .wallet.Contact contact = 1;</code>
+     * <code>repeated .Contact contact = 1;</code>
      *
      * <pre>
      * the contacts, repeated
      * </pre>
      */
-    org.multibit.hd.core.protobuf.MBHDProtos.ContactOrBuilder getContactOrBuilder(
+    org.multibit.hd.core.protobuf.MBHDContactsProtos.ContactOrBuilder getContactOrBuilder(
         int index);
   }
   /**
-   * Protobuf type {@code wallet.Contacts}
+   * Protobuf type {@code Contacts}
    *
    * <pre>
    **
@@ -3019,10 +2906,10 @@ public final class MBHDProtos {
             }
             case 10: {
               if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-                contact_ = new java.util.ArrayList<org.multibit.hd.core.protobuf.MBHDProtos.Contact>();
+                contact_ = new java.util.ArrayList<org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact>();
                 mutable_bitField0_ |= 0x00000001;
               }
-              contact_.add(input.readMessage(org.multibit.hd.core.protobuf.MBHDProtos.Contact.PARSER, extensionRegistry));
+              contact_.add(input.readMessage(org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact.PARSER, extensionRegistry));
               break;
             }
           }
@@ -3042,14 +2929,14 @@ public final class MBHDProtos {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return org.multibit.hd.core.protobuf.MBHDProtos.internal_static_wallet_Contacts_descriptor;
+      return org.multibit.hd.core.protobuf.MBHDContactsProtos.internal_static_Contacts_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.multibit.hd.core.protobuf.MBHDProtos.internal_static_wallet_Contacts_fieldAccessorTable
+      return org.multibit.hd.core.protobuf.MBHDContactsProtos.internal_static_Contacts_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              org.multibit.hd.core.protobuf.MBHDProtos.Contacts.class, org.multibit.hd.core.protobuf.MBHDProtos.Contacts.Builder.class);
+              org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts.class, org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts.Builder.class);
     }
 
     public static com.google.protobuf.Parser<Contacts> PARSER =
@@ -3067,32 +2954,32 @@ public final class MBHDProtos {
       return PARSER;
     }
 
-    // repeated .wallet.Contact contact = 1;
+    // repeated .Contact contact = 1;
     public static final int CONTACT_FIELD_NUMBER = 1;
-    private java.util.List<org.multibit.hd.core.protobuf.MBHDProtos.Contact> contact_;
+    private java.util.List<org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact> contact_;
     /**
-     * <code>repeated .wallet.Contact contact = 1;</code>
+     * <code>repeated .Contact contact = 1;</code>
      *
      * <pre>
      * the contacts, repeated
      * </pre>
      */
-    public java.util.List<org.multibit.hd.core.protobuf.MBHDProtos.Contact> getContactList() {
+    public java.util.List<org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact> getContactList() {
       return contact_;
     }
     /**
-     * <code>repeated .wallet.Contact contact = 1;</code>
+     * <code>repeated .Contact contact = 1;</code>
      *
      * <pre>
      * the contacts, repeated
      * </pre>
      */
-    public java.util.List<? extends org.multibit.hd.core.protobuf.MBHDProtos.ContactOrBuilder> 
+    public java.util.List<? extends org.multibit.hd.core.protobuf.MBHDContactsProtos.ContactOrBuilder> 
         getContactOrBuilderList() {
       return contact_;
     }
     /**
-     * <code>repeated .wallet.Contact contact = 1;</code>
+     * <code>repeated .Contact contact = 1;</code>
      *
      * <pre>
      * the contacts, repeated
@@ -3102,23 +2989,23 @@ public final class MBHDProtos {
       return contact_.size();
     }
     /**
-     * <code>repeated .wallet.Contact contact = 1;</code>
+     * <code>repeated .Contact contact = 1;</code>
      *
      * <pre>
      * the contacts, repeated
      * </pre>
      */
-    public org.multibit.hd.core.protobuf.MBHDProtos.Contact getContact(int index) {
+    public org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact getContact(int index) {
       return contact_.get(index);
     }
     /**
-     * <code>repeated .wallet.Contact contact = 1;</code>
+     * <code>repeated .Contact contact = 1;</code>
      *
      * <pre>
      * the contacts, repeated
      * </pre>
      */
-    public org.multibit.hd.core.protobuf.MBHDProtos.ContactOrBuilder getContactOrBuilder(
+    public org.multibit.hd.core.protobuf.MBHDContactsProtos.ContactOrBuilder getContactOrBuilder(
         int index) {
       return contact_.get(index);
     }
@@ -3172,53 +3059,53 @@ public final class MBHDProtos {
       return super.writeReplace();
     }
 
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Contacts parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Contacts parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Contacts parseFrom(byte[] data)
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Contacts parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Contacts parseFrom(java.io.InputStream input)
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Contacts parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Contacts parseDelimitedFrom(java.io.InputStream input)
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Contacts parseDelimitedFrom(
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Contacts parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static org.multibit.hd.core.protobuf.MBHDProtos.Contacts parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -3227,7 +3114,7 @@ public final class MBHDProtos {
 
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(org.multibit.hd.core.protobuf.MBHDProtos.Contacts prototype) {
+    public static Builder newBuilder(org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
@@ -3239,7 +3126,7 @@ public final class MBHDProtos {
       return builder;
     }
     /**
-     * Protobuf type {@code wallet.Contacts}
+     * Protobuf type {@code Contacts}
      *
      * <pre>
      **
@@ -3248,20 +3135,20 @@ public final class MBHDProtos {
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.multibit.hd.core.protobuf.MBHDProtos.ContactsOrBuilder {
+       implements org.multibit.hd.core.protobuf.MBHDContactsProtos.ContactsOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return org.multibit.hd.core.protobuf.MBHDProtos.internal_static_wallet_Contacts_descriptor;
+        return org.multibit.hd.core.protobuf.MBHDContactsProtos.internal_static_Contacts_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return org.multibit.hd.core.protobuf.MBHDProtos.internal_static_wallet_Contacts_fieldAccessorTable
+        return org.multibit.hd.core.protobuf.MBHDContactsProtos.internal_static_Contacts_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                org.multibit.hd.core.protobuf.MBHDProtos.Contacts.class, org.multibit.hd.core.protobuf.MBHDProtos.Contacts.Builder.class);
+                org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts.class, org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts.Builder.class);
       }
 
-      // Construct using org.multibit.hd.core.protobuf.MBHDProtos.Contacts.newBuilder()
+      // Construct using org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -3297,23 +3184,23 @@ public final class MBHDProtos {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return org.multibit.hd.core.protobuf.MBHDProtos.internal_static_wallet_Contacts_descriptor;
+        return org.multibit.hd.core.protobuf.MBHDContactsProtos.internal_static_Contacts_descriptor;
       }
 
-      public org.multibit.hd.core.protobuf.MBHDProtos.Contacts getDefaultInstanceForType() {
-        return org.multibit.hd.core.protobuf.MBHDProtos.Contacts.getDefaultInstance();
+      public org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts getDefaultInstanceForType() {
+        return org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts.getDefaultInstance();
       }
 
-      public org.multibit.hd.core.protobuf.MBHDProtos.Contacts build() {
-        org.multibit.hd.core.protobuf.MBHDProtos.Contacts result = buildPartial();
+      public org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts build() {
+        org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public org.multibit.hd.core.protobuf.MBHDProtos.Contacts buildPartial() {
-        org.multibit.hd.core.protobuf.MBHDProtos.Contacts result = new org.multibit.hd.core.protobuf.MBHDProtos.Contacts(this);
+      public org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts buildPartial() {
+        org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts result = new org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts(this);
         int from_bitField0_ = bitField0_;
         if (contactBuilder_ == null) {
           if (((bitField0_ & 0x00000001) == 0x00000001)) {
@@ -3329,16 +3216,16 @@ public final class MBHDProtos {
       }
 
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof org.multibit.hd.core.protobuf.MBHDProtos.Contacts) {
-          return mergeFrom((org.multibit.hd.core.protobuf.MBHDProtos.Contacts)other);
+        if (other instanceof org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts) {
+          return mergeFrom((org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(org.multibit.hd.core.protobuf.MBHDProtos.Contacts other) {
-        if (other == org.multibit.hd.core.protobuf.MBHDProtos.Contacts.getDefaultInstance()) return this;
+      public Builder mergeFrom(org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts other) {
+        if (other == org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts.getDefaultInstance()) return this;
         if (contactBuilder_ == null) {
           if (!other.contact_.isEmpty()) {
             if (contact_.isEmpty()) {
@@ -3383,11 +3270,11 @@ public final class MBHDProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.multibit.hd.core.protobuf.MBHDProtos.Contacts parsedMessage = null;
+        org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.multibit.hd.core.protobuf.MBHDProtos.Contacts) e.getUnfinishedMessage();
+          parsedMessage = (org.multibit.hd.core.protobuf.MBHDContactsProtos.Contacts) e.getUnfinishedMessage();
           throw e;
         } finally {
           if (parsedMessage != null) {
@@ -3398,27 +3285,27 @@ public final class MBHDProtos {
       }
       private int bitField0_;
 
-      // repeated .wallet.Contact contact = 1;
-      private java.util.List<org.multibit.hd.core.protobuf.MBHDProtos.Contact> contact_ =
+      // repeated .Contact contact = 1;
+      private java.util.List<org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact> contact_ =
         java.util.Collections.emptyList();
       private void ensureContactIsMutable() {
         if (!((bitField0_ & 0x00000001) == 0x00000001)) {
-          contact_ = new java.util.ArrayList<org.multibit.hd.core.protobuf.MBHDProtos.Contact>(contact_);
+          contact_ = new java.util.ArrayList<org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact>(contact_);
           bitField0_ |= 0x00000001;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilder<
-          org.multibit.hd.core.protobuf.MBHDProtos.Contact, org.multibit.hd.core.protobuf.MBHDProtos.Contact.Builder, org.multibit.hd.core.protobuf.MBHDProtos.ContactOrBuilder> contactBuilder_;
+          org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact, org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact.Builder, org.multibit.hd.core.protobuf.MBHDContactsProtos.ContactOrBuilder> contactBuilder_;
 
       /**
-       * <code>repeated .wallet.Contact contact = 1;</code>
+       * <code>repeated .Contact contact = 1;</code>
        *
        * <pre>
        * the contacts, repeated
        * </pre>
        */
-      public java.util.List<org.multibit.hd.core.protobuf.MBHDProtos.Contact> getContactList() {
+      public java.util.List<org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact> getContactList() {
         if (contactBuilder_ == null) {
           return java.util.Collections.unmodifiableList(contact_);
         } else {
@@ -3426,7 +3313,7 @@ public final class MBHDProtos {
         }
       }
       /**
-       * <code>repeated .wallet.Contact contact = 1;</code>
+       * <code>repeated .Contact contact = 1;</code>
        *
        * <pre>
        * the contacts, repeated
@@ -3440,13 +3327,13 @@ public final class MBHDProtos {
         }
       }
       /**
-       * <code>repeated .wallet.Contact contact = 1;</code>
+       * <code>repeated .Contact contact = 1;</code>
        *
        * <pre>
        * the contacts, repeated
        * </pre>
        */
-      public org.multibit.hd.core.protobuf.MBHDProtos.Contact getContact(int index) {
+      public org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact getContact(int index) {
         if (contactBuilder_ == null) {
           return contact_.get(index);
         } else {
@@ -3454,14 +3341,14 @@ public final class MBHDProtos {
         }
       }
       /**
-       * <code>repeated .wallet.Contact contact = 1;</code>
+       * <code>repeated .Contact contact = 1;</code>
        *
        * <pre>
        * the contacts, repeated
        * </pre>
        */
       public Builder setContact(
-          int index, org.multibit.hd.core.protobuf.MBHDProtos.Contact value) {
+          int index, org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact value) {
         if (contactBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -3475,14 +3362,14 @@ public final class MBHDProtos {
         return this;
       }
       /**
-       * <code>repeated .wallet.Contact contact = 1;</code>
+       * <code>repeated .Contact contact = 1;</code>
        *
        * <pre>
        * the contacts, repeated
        * </pre>
        */
       public Builder setContact(
-          int index, org.multibit.hd.core.protobuf.MBHDProtos.Contact.Builder builderForValue) {
+          int index, org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact.Builder builderForValue) {
         if (contactBuilder_ == null) {
           ensureContactIsMutable();
           contact_.set(index, builderForValue.build());
@@ -3493,13 +3380,13 @@ public final class MBHDProtos {
         return this;
       }
       /**
-       * <code>repeated .wallet.Contact contact = 1;</code>
+       * <code>repeated .Contact contact = 1;</code>
        *
        * <pre>
        * the contacts, repeated
        * </pre>
        */
-      public Builder addContact(org.multibit.hd.core.protobuf.MBHDProtos.Contact value) {
+      public Builder addContact(org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact value) {
         if (contactBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -3513,14 +3400,14 @@ public final class MBHDProtos {
         return this;
       }
       /**
-       * <code>repeated .wallet.Contact contact = 1;</code>
+       * <code>repeated .Contact contact = 1;</code>
        *
        * <pre>
        * the contacts, repeated
        * </pre>
        */
       public Builder addContact(
-          int index, org.multibit.hd.core.protobuf.MBHDProtos.Contact value) {
+          int index, org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact value) {
         if (contactBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -3534,14 +3421,14 @@ public final class MBHDProtos {
         return this;
       }
       /**
-       * <code>repeated .wallet.Contact contact = 1;</code>
+       * <code>repeated .Contact contact = 1;</code>
        *
        * <pre>
        * the contacts, repeated
        * </pre>
        */
       public Builder addContact(
-          org.multibit.hd.core.protobuf.MBHDProtos.Contact.Builder builderForValue) {
+          org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact.Builder builderForValue) {
         if (contactBuilder_ == null) {
           ensureContactIsMutable();
           contact_.add(builderForValue.build());
@@ -3552,14 +3439,14 @@ public final class MBHDProtos {
         return this;
       }
       /**
-       * <code>repeated .wallet.Contact contact = 1;</code>
+       * <code>repeated .Contact contact = 1;</code>
        *
        * <pre>
        * the contacts, repeated
        * </pre>
        */
       public Builder addContact(
-          int index, org.multibit.hd.core.protobuf.MBHDProtos.Contact.Builder builderForValue) {
+          int index, org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact.Builder builderForValue) {
         if (contactBuilder_ == null) {
           ensureContactIsMutable();
           contact_.add(index, builderForValue.build());
@@ -3570,14 +3457,14 @@ public final class MBHDProtos {
         return this;
       }
       /**
-       * <code>repeated .wallet.Contact contact = 1;</code>
+       * <code>repeated .Contact contact = 1;</code>
        *
        * <pre>
        * the contacts, repeated
        * </pre>
        */
       public Builder addAllContact(
-          java.lang.Iterable<? extends org.multibit.hd.core.protobuf.MBHDProtos.Contact> values) {
+          java.lang.Iterable<? extends org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact> values) {
         if (contactBuilder_ == null) {
           ensureContactIsMutable();
           super.addAll(values, contact_);
@@ -3588,7 +3475,7 @@ public final class MBHDProtos {
         return this;
       }
       /**
-       * <code>repeated .wallet.Contact contact = 1;</code>
+       * <code>repeated .Contact contact = 1;</code>
        *
        * <pre>
        * the contacts, repeated
@@ -3605,7 +3492,7 @@ public final class MBHDProtos {
         return this;
       }
       /**
-       * <code>repeated .wallet.Contact contact = 1;</code>
+       * <code>repeated .Contact contact = 1;</code>
        *
        * <pre>
        * the contacts, repeated
@@ -3622,24 +3509,24 @@ public final class MBHDProtos {
         return this;
       }
       /**
-       * <code>repeated .wallet.Contact contact = 1;</code>
+       * <code>repeated .Contact contact = 1;</code>
        *
        * <pre>
        * the contacts, repeated
        * </pre>
        */
-      public org.multibit.hd.core.protobuf.MBHDProtos.Contact.Builder getContactBuilder(
+      public org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact.Builder getContactBuilder(
           int index) {
         return getContactFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .wallet.Contact contact = 1;</code>
+       * <code>repeated .Contact contact = 1;</code>
        *
        * <pre>
        * the contacts, repeated
        * </pre>
        */
-      public org.multibit.hd.core.protobuf.MBHDProtos.ContactOrBuilder getContactOrBuilder(
+      public org.multibit.hd.core.protobuf.MBHDContactsProtos.ContactOrBuilder getContactOrBuilder(
           int index) {
         if (contactBuilder_ == null) {
           return contact_.get(index);  } else {
@@ -3647,13 +3534,13 @@ public final class MBHDProtos {
         }
       }
       /**
-       * <code>repeated .wallet.Contact contact = 1;</code>
+       * <code>repeated .Contact contact = 1;</code>
        *
        * <pre>
        * the contacts, repeated
        * </pre>
        */
-      public java.util.List<? extends org.multibit.hd.core.protobuf.MBHDProtos.ContactOrBuilder> 
+      public java.util.List<? extends org.multibit.hd.core.protobuf.MBHDContactsProtos.ContactOrBuilder> 
            getContactOrBuilderList() {
         if (contactBuilder_ != null) {
           return contactBuilder_.getMessageOrBuilderList();
@@ -3662,45 +3549,45 @@ public final class MBHDProtos {
         }
       }
       /**
-       * <code>repeated .wallet.Contact contact = 1;</code>
+       * <code>repeated .Contact contact = 1;</code>
        *
        * <pre>
        * the contacts, repeated
        * </pre>
        */
-      public org.multibit.hd.core.protobuf.MBHDProtos.Contact.Builder addContactBuilder() {
+      public org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact.Builder addContactBuilder() {
         return getContactFieldBuilder().addBuilder(
-            org.multibit.hd.core.protobuf.MBHDProtos.Contact.getDefaultInstance());
+            org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact.getDefaultInstance());
       }
       /**
-       * <code>repeated .wallet.Contact contact = 1;</code>
+       * <code>repeated .Contact contact = 1;</code>
        *
        * <pre>
        * the contacts, repeated
        * </pre>
        */
-      public org.multibit.hd.core.protobuf.MBHDProtos.Contact.Builder addContactBuilder(
+      public org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact.Builder addContactBuilder(
           int index) {
         return getContactFieldBuilder().addBuilder(
-            index, org.multibit.hd.core.protobuf.MBHDProtos.Contact.getDefaultInstance());
+            index, org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact.getDefaultInstance());
       }
       /**
-       * <code>repeated .wallet.Contact contact = 1;</code>
+       * <code>repeated .Contact contact = 1;</code>
        *
        * <pre>
        * the contacts, repeated
        * </pre>
        */
-      public java.util.List<org.multibit.hd.core.protobuf.MBHDProtos.Contact.Builder> 
+      public java.util.List<org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact.Builder> 
            getContactBuilderList() {
         return getContactFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilder<
-          org.multibit.hd.core.protobuf.MBHDProtos.Contact, org.multibit.hd.core.protobuf.MBHDProtos.Contact.Builder, org.multibit.hd.core.protobuf.MBHDProtos.ContactOrBuilder> 
+          org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact, org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact.Builder, org.multibit.hd.core.protobuf.MBHDContactsProtos.ContactOrBuilder> 
           getContactFieldBuilder() {
         if (contactBuilder_ == null) {
           contactBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              org.multibit.hd.core.protobuf.MBHDProtos.Contact, org.multibit.hd.core.protobuf.MBHDProtos.Contact.Builder, org.multibit.hd.core.protobuf.MBHDProtos.ContactOrBuilder>(
+              org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact, org.multibit.hd.core.protobuf.MBHDContactsProtos.Contact.Builder, org.multibit.hd.core.protobuf.MBHDContactsProtos.ContactOrBuilder>(
                   contact_,
                   ((bitField0_ & 0x00000001) == 0x00000001),
                   getParentForChildren(),
@@ -3710,7 +3597,7 @@ public final class MBHDProtos {
         return contactBuilder_;
       }
 
-      // @@protoc_insertion_point(builder_scope:wallet.Contacts)
+      // @@protoc_insertion_point(builder_scope:Contacts)
     }
 
     static {
@@ -3718,24 +3605,24 @@ public final class MBHDProtos {
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:wallet.Contacts)
+    // @@protoc_insertion_point(class_scope:Contacts)
   }
 
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_wallet_Tag_descriptor;
+    internal_static_Tag_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_wallet_Tag_fieldAccessorTable;
+      internal_static_Tag_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_wallet_Contact_descriptor;
+    internal_static_Contact_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_wallet_Contact_fieldAccessorTable;
+      internal_static_Contact_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_wallet_Contacts_descriptor;
+    internal_static_Contacts_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_wallet_Contacts_fieldAccessorTable;
+      internal_static_Contacts_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -3745,38 +3632,37 @@ public final class MBHDProtos {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\034main/protobuf/contacts.proto\022\006wallet\"\030" +
-      "\n\003Tag\022\021\n\ttag_value\030\001 \002(\t\"\271\001\n\007Contact\022\n\n\002" +
-      "id\030\001 \002(\t\022\014\n\004name\030\002 \002(\t\022\r\n\005email\030\003 \001(\t\022\022\n" +
-      "\nimage_path\030\004 \001(\t\022\027\n\017bitcoin_address\030\005 \001" +
-      "(\t\022\033\n\023extended_public_key\030\006 \001(\t\022\r\n\005notes" +
-      "\030\007 \001(\t\022\030\n\003tag\030\010 \003(\0132\013.wallet.Tag\022\022\n\nstar" +
-      "_style\030\t \001(\r\",\n\010Contacts\022 \n\007contact\030\001 \003(" +
-      "\0132\017.wallet.ContactB+\n\035org.multibit.hd.co" +
-      "re.protobufB\nMBHDProtos"
+      "\n\034main/protobuf/contacts.proto\"\030\n\003Tag\022\021\n" +
+      "\ttag_value\030\001 \002(\t\"\236\001\n\007Contact\022\n\n\002id\030\001 \002(\t" +
+      "\022\014\n\004name\030\002 \002(\t\022\r\n\005email\030\003 \001(\t\022\022\n\nimage_p" +
+      "ath\030\004 \001(\t\022\027\n\017bitcoin_address\030\005 \001(\t\022\033\n\023ex" +
+      "tended_public_key\030\006 \001(\t\022\r\n\005notes\030\007 \001(\t\022\021" +
+      "\n\003tag\030\010 \003(\0132\004.Tag\"%\n\010Contacts\022\031\n\007contact" +
+      "\030\001 \003(\0132\010.ContactB3\n\035org.multibit.hd.core" +
+      ".protobufB\022MBHDContactsProtos"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
         public com.google.protobuf.ExtensionRegistry assignDescriptors(
             com.google.protobuf.Descriptors.FileDescriptor root) {
           descriptor = root;
-          internal_static_wallet_Tag_descriptor =
+          internal_static_Tag_descriptor =
             getDescriptor().getMessageTypes().get(0);
-          internal_static_wallet_Tag_fieldAccessorTable = new
+          internal_static_Tag_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_wallet_Tag_descriptor,
+              internal_static_Tag_descriptor,
               new java.lang.String[] { "TagValue", });
-          internal_static_wallet_Contact_descriptor =
+          internal_static_Contact_descriptor =
             getDescriptor().getMessageTypes().get(1);
-          internal_static_wallet_Contact_fieldAccessorTable = new
+          internal_static_Contact_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_wallet_Contact_descriptor,
-              new java.lang.String[] { "Id", "Name", "Email", "ImagePath", "BitcoinAddress", "ExtendedPublicKey", "Notes", "Tag", "StarStyle", });
-          internal_static_wallet_Contacts_descriptor =
+              internal_static_Contact_descriptor,
+              new java.lang.String[] { "Id", "Name", "Email", "ImagePath", "BitcoinAddress", "ExtendedPublicKey", "Notes", "Tag", });
+          internal_static_Contacts_descriptor =
             getDescriptor().getMessageTypes().get(2);
-          internal_static_wallet_Contacts_fieldAccessorTable = new
+          internal_static_Contacts_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_wallet_Contacts_descriptor,
+              internal_static_Contacts_descriptor,
               new java.lang.String[] { "Contact", });
           return null;
         }

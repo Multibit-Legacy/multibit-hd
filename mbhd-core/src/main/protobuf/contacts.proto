@@ -22,11 +22,8 @@
  * - To regenerate after editing, run mvn clean package -DupdateProtobuf
  */
 
- 
-package wallet;
-
 option java_package = "org.multibit.hd.core.protobuf";
-option java_outer_classname = "MBHDProtos";
+option java_outer_classname = "MBHDContactsProtos";
 
 /**
  * A single tag
