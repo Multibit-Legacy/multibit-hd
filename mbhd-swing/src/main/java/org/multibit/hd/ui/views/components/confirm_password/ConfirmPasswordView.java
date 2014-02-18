@@ -83,6 +83,9 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
     verificationStatusLabel.setVisible(false);
 
     // Add to the panel
+    // Cannot affect the focus traversal to be p1 -> p2 -> eye reliably
+    // Tried using cell positioning, custom traversal policy etc but
+    // nothing is reliable enough
     panel.add(Labels.newEnterPassword());
     panel.add(password1);
     panel.add(Buttons.newShowButton(toggleDisplayAction), "spany 2,wrap");

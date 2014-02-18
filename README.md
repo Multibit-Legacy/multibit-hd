@@ -63,6 +63,12 @@ pre-date 2009 making it much harder for [dependency chain attacks](http://gary-r
 
 Swing also allows us to smoothly integrate with the native platform which puts it ahead of JavaFX until at least Q4 2014.
 
+#### Why not SwingX ?
+
+SwingX is a large support library that introduces a lot of additional functionality to Swing applications. Much of this additional
+functionality is not required by MultiBit or can be relatively easily worked around. Consequently including it would increase the
+available attack surface.
+
 #### Why the Nimbus look and feel ?
 
 In Java 7 the Nimbus look and feel became integrated with the JDK. It provides a modern 2D rendered UI that is the same across
