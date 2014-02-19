@@ -122,14 +122,31 @@ public class ContactService {
    *
    * @return A filtered set of Contacts for the given page and query
    */
-  public List<Contact> filterContactsByName(String query) {
+  public List<Contact> filterContactsByContent(String query) {
 
     String lowerQuery = query.toLowerCase();
 
     List<Contact> filteredContacts = Lists.newArrayList();
 
     for (Contact contact : contacts) {
-      if (contact.getName().toLowerCase().contains(lowerQuery)) {
+
+      boolean isNameMatched = contact.getName().toLowerCase().contains(lowerQuery);
+      boolean isEmailMatched = contact.getEmail().or("").toLowerCase().contains(lowerQuery);
+      boolean isNoteMatched = contact.getNotes().or("").toLowerCase().contains(lowerQuery);
+
+      boolean isTagMatched = false;
+      for (String tag : contact.getTags()) {
+        if (tag.toLowerCase().contains(lowerQuery)) {
+          isTagMatched = true;
+          break;
+        }
+      }
+
+      if (isNameMatched
+        || isEmailMatched
+        || isNoteMatched
+        || isTagMatched
+        ) {
         filteredContacts.add(contact);
       }
     }

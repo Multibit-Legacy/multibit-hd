@@ -7,7 +7,7 @@ import org.multibit.hd.ui.models.Model;
 /**
  * <p>Model to provide the following to view:</p>
  * <ul>
- * <li>Show/hide the seed phrase (initially hidden)</li>
+ * <li>Store the search query</li>
  * </ul>
  *
  * @since 0.0.1
@@ -36,7 +36,11 @@ public class EnterSearchModel implements Model<String> {
     this.selectedFile = value;
 
     // Ensure the "next" button is kept disabled
-    ViewEvents.fireWizardComponentModelChangedEvent(panelName, Optional.of(this));
+    ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
 
+  }
+
+  public String getPanelName() {
+    return panelName;
   }
 }

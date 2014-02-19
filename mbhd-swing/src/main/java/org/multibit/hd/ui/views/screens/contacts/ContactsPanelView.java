@@ -1,7 +1,9 @@
 package org.multibit.hd.ui.views.screens.contacts;
 
+import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.Contact;
+import org.multibit.hd.ui.events.view.ComponentChangedEvent;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.enter_search.EnterSearchModel;
@@ -31,12 +33,6 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
   // View components
   private ModelAndView<EnterSearchModel, EnterSearchView> enterSearchMaV;
   private JComboBox<String> checkSelectorComboBox;
-  private JButton addButton;
-  private JButton editButton;
-  private JButton deleteButton;
-  private JButton undoButton;
-
-  private JTable contactsTable;
   private ContactTableModel contactsTableModel;
 
   /**
@@ -67,16 +63,14 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
     // Create view components
     enterSearchMaV = Components.newEnterSearchMaV(getScreen().name());
     checkSelectorComboBox = ComboBoxes.newContactsCheckboxComboBox(this);
-    addButton = Buttons.newAddButton(getAddAction());
-    editButton = Buttons.newEditButton(getEditAction());
-    deleteButton = Buttons.newDeleteButton(getDeleteAction());
-    undoButton = Buttons.newUndoButton(getUndoAction());
-
-    getSearchAction();
+    JButton addButton = Buttons.newAddButton(getAddAction());
+    JButton editButton = Buttons.newEditButton(getEditAction());
+    JButton deleteButton = Buttons.newDeleteButton(getDeleteAction());
+    JButton undoButton = Buttons.newUndoButton(getUndoAction());
 
     // Populate the model
 
-    contactsTable = Tables.newContactsTable(getScreenModel().getContacts());
+    JTable contactsTable = Tables.newContactsTable(getScreenModel().getContacts());
     contactsTableModel = (ContactTableModel) contactsTable.getModel();
 
     // Detect clicks on the table
@@ -111,17 +105,19 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
 
   }
 
-  /**
-   * @return The search contact action
-   */
-  private Action getSearchAction() {
-    return new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
+  @Subscribe
+  public void onComponentChangedEvent(ComponentChangedEvent event) {
 
+    // Check if this event applies to us
+    if (event.getPanelName().equals(getScreen().name())) {
 
-      }
-    };
+      // Check the search MaV model for a query and apply it
+      List<Contact> contacts = getScreenModel().filterContactsByContent(enterSearchMaV.getModel().getValue());
+
+      // Repopulate the table accordingly
+      contactsTableModel.populateTableData(contacts);
+
+    }
   }
 
   /**

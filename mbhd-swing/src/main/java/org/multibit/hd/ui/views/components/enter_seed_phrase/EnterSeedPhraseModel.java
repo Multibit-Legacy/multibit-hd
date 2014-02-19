@@ -69,7 +69,7 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
     this.seedTimestamp = seedTimestamp;
 
     // Have a possible match so alert the panel model
-    ViewEvents.fireWizardComponentModelChangedEvent(panelName, Optional.of(this));
+    ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
 
   }
 
@@ -95,7 +95,7 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
     if (SeedPhraseSize.isValid(seedPhrase.size())) {
 
       // Have a possible match so alert the panel model
-      ViewEvents.fireWizardComponentModelChangedEvent(panelName, Optional.of(this));
+      ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
     } else {
 
       // Ensure the "next" button is kept disabled

@@ -46,6 +46,11 @@ public class ContactsPanelModel extends AbstractScreenModel {
 
   }
 
+  public List<Contact> filterContactsByContent(String query) {
+
+    return contactService.filterContactsByContent(query);
+  }
+
   // TODO Move this into a wallet service
   private WalletId getCurrentWalletId() {
     if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {

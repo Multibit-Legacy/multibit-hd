@@ -44,7 +44,7 @@ public class SelectBackupSummaryModel implements Model<BackupSummary> {
   public void setValue(BackupSummary value) {
     this.selectedBackup = value;
 
-    ViewEvents.fireWizardComponentModelChangedEvent(panelName, Optional.of(this));
+    ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
   }
 
   /**

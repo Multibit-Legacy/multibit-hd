@@ -13,12 +13,12 @@ import com.google.common.base.Preconditions;
  * @since 0.0.1
  *  
  */
-public class WizardComponentModelChangedEvent implements ViewEvent {
+public class ComponentChangedEvent implements ViewEvent {
 
   private final String panelName;
   private final Optional componentModel;
 
-  public WizardComponentModelChangedEvent(String panelName, Optional componentModel) {
+  public ComponentChangedEvent(String panelName, Optional componentModel) {
 
     Preconditions.checkNotNull(panelName, "'panelName' must be present");
     Preconditions.checkNotNull(componentModel, "'componentModel' must be present");

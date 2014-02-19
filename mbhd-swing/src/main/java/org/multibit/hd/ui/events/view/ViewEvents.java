@@ -6,7 +6,6 @@ import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.components.wallet_detail.WalletDetail;
-import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,25 +124,14 @@ public class ViewEvents {
   }
 
   /**
-   * <p>Broadcast a new "wizard component model changed" event</p>
+   * <p>Broadcast a new "component changed" event</p>
    *
-   * @param panelName      The panel name to which this applies
-   * @param componentModel The component model
+   * @param panelName      The unique panel name to which this applies (use screen name for detail screens)
+   * @param componentModel The component model containing the change (absent if the component has no model)
    */
-  public static void fireWizardComponentModelChangedEvent(String panelName, Optional componentModel) {
-    log.trace("Firing 'wizard component model changed' event");
-    CoreServices.uiEventBus.post(new WizardComponentModelChangedEvent(panelName, componentModel));
-  }
-
-  /**
-   * <p>Broadcast a new "detail view component model changed" event</p>
-   *
-   * @param detailView      The detail view to which this applies
-   * @param componentModel The component model
-   */
-  public static void fireDetailComponentModelChangedEvent(Screen detailView, Optional componentModel) {
-    log.trace("Firing 'detail view component model changed' event");
-    CoreServices.uiEventBus.post(new ScreenComponentModelChangedEvent(detailView, componentModel));
+  public static void fireComponentChangedEvent(String panelName, Optional componentModel) {
+    log.trace("Firing 'component changed' event");
+    CoreServices.uiEventBus.post(new ComponentChangedEvent(panelName, componentModel));
   }
 
   /**

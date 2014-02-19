@@ -55,7 +55,7 @@ public class ContactServiceTest {
   @Test
   public void testFilterContactsByName() throws Exception {
 
-    List<Contact> filteredContacts = contactService.filterContactsByName("Alice");
+    List<Contact> filteredContacts = contactService.filterContactsByContent("Alice");
 
     assertThat(filteredContacts.size()).isEqualTo(2);
 
@@ -97,7 +97,7 @@ public class ContactServiceTest {
 
     assertThat(allContacts.size()).isEqualTo(numberOfContacts);
 
-    List<Contact> reloadedContacts = contactService.filterContactsByName(newContactName);
+    List<Contact> reloadedContacts = contactService.filterContactsByContent(newContactName);
     Contact reloadedContact = reloadedContacts.iterator().next();
 
     // Check everything roundtripped ok

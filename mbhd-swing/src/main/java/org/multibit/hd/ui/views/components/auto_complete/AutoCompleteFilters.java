@@ -49,7 +49,7 @@ public class AutoCompleteFilters {
           return new Recipient[]{};
         }
 
-        List<Contact> contacts = CoreServices.getOrCreateContactService(getCurrentWalletId()).filterContactsByName(fragment);
+        List<Contact> contacts = CoreServices.getOrCreateContactService(getCurrentWalletId()).filterContactsByContent(fragment);
 
         return populateRecipients(contacts);
       }

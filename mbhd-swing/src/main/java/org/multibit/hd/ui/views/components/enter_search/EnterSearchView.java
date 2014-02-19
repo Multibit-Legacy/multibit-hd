@@ -1,6 +1,8 @@
 package org.multibit.hd.ui.views.components.enter_search;
 
+import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.components.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
@@ -14,8 +16,7 @@ import java.awt.event.KeyEvent;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>User entry of a seed phrase </li>
- * <li>Support for refresh and reveal operations</li>
+ * <li>User entry of a search query</li>
  * </ul>
  *
  * @since 0.0.1
@@ -78,7 +79,7 @@ public class EnterSearchView extends AbstractComponentView<EnterSearchModel> {
   }
 
   /**
-   * @return A new action for toggling the display of the seed phrase
+   * @return A new action for broadcasting the component model update without revealing the model reference
    */
   private Action getEnterSearchAction() {
     // Show or hide the seed phrase
@@ -88,6 +89,8 @@ public class EnterSearchView extends AbstractComponentView<EnterSearchModel> {
       public void actionPerformed(ActionEvent e) {
 
         getModel().get().setValue(enterSearchTextField.getText());
+
+        ViewEvents.fireComponentChangedEvent(getModel().get().getPanelName(), Optional.of(getModel().get().getValue()));
 
       }
 
