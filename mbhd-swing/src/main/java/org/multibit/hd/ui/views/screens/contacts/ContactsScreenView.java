@@ -105,6 +105,11 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
 
   }
 
+  /**
+   * <p>Called when the search box is updated</p>
+   *
+   * @param event The "component changed" event
+   */
   @Subscribe
   public void onComponentChangedEvent(ComponentChangedEvent event) {
 
@@ -178,8 +183,13 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
       @Override
       public void actionPerformed(ActionEvent e) {
 
+        // Get all contacts after undo is applied
         List<Contact> contacts = getScreenModel().undo();
 
+        // Clear the current search query to ensure users can see an effect
+        enterSearchMaV.getView().clear();
+
+        // Repopulate
         contactsTableModel.populateTableData(contacts);
 
       }

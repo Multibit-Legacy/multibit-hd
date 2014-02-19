@@ -79,10 +79,22 @@ public class EnterSearchView extends AbstractComponentView<EnterSearchModel> {
   }
 
   /**
+   * <p>Clear the current search query</p>
+   */
+  public void clear() {
+
+    enterSearchTextField.setText("");
+
+    getModel().get().setValue("");
+
+  }
+
+  /**
    * @return A new action for broadcasting the component model update without revealing the model reference
    */
   private Action getEnterSearchAction() {
-    // Show or hide the seed phrase
+
+    // Respond to a search button click
     return new AbstractAction() {
 
       @Override
@@ -95,5 +107,6 @@ public class EnterSearchView extends AbstractComponentView<EnterSearchModel> {
       }
 
     };
+
   }
 }
