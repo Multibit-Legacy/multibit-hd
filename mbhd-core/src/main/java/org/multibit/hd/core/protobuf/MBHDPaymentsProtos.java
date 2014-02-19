@@ -1168,27 +1168,9 @@ public final class MBHDPaymentsProtos {
   public interface RequestOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
-    // required bytes id = 1;
+    // required string address = 1;
     /**
-     * <code>required bytes id = 1;</code>
-     *
-     * <pre>
-     * The unique identifier for the payment request, typically a UUID
-     * </pre>
-     */
-    boolean hasId();
-    /**
-     * <code>required bytes id = 1;</code>
-     *
-     * <pre>
-     * The unique identifier for the payment request, typically a UUID
-     * </pre>
-     */
-    com.google.protobuf.ByteString getId();
-
-    // required string address = 2;
-    /**
-     * <code>required string address = 2;</code>
+     * <code>required string address = 1;</code>
      *
      * <pre>
      * The payment request bitcoin address (as per the bitcoin URI spec)
@@ -1196,7 +1178,7 @@ public final class MBHDPaymentsProtos {
      */
     boolean hasAddress();
     /**
-     * <code>required string address = 2;</code>
+     * <code>required string address = 1;</code>
      *
      * <pre>
      * The payment request bitcoin address (as per the bitcoin URI spec)
@@ -1204,7 +1186,7 @@ public final class MBHDPaymentsProtos {
      */
     java.lang.String getAddress();
     /**
-     * <code>required string address = 2;</code>
+     * <code>required string address = 1;</code>
      *
      * <pre>
      * The payment request bitcoin address (as per the bitcoin URI spec)
@@ -1213,9 +1195,9 @@ public final class MBHDPaymentsProtos {
     com.google.protobuf.ByteString
         getAddressBytes();
 
-    // optional string label = 3;
+    // optional string label = 2;
     /**
-     * <code>optional string label = 3;</code>
+     * <code>optional string label = 2;</code>
      *
      * <pre>
      * The label (as per the bitcoin URI spec)
@@ -1223,7 +1205,7 @@ public final class MBHDPaymentsProtos {
      */
     boolean hasLabel();
     /**
-     * <code>optional string label = 3;</code>
+     * <code>optional string label = 2;</code>
      *
      * <pre>
      * The label (as per the bitcoin URI spec)
@@ -1231,7 +1213,7 @@ public final class MBHDPaymentsProtos {
      */
     java.lang.String getLabel();
     /**
-     * <code>optional string label = 3;</code>
+     * <code>optional string label = 2;</code>
      *
      * <pre>
      * The label (as per the bitcoin URI spec)
@@ -1240,9 +1222,9 @@ public final class MBHDPaymentsProtos {
     com.google.protobuf.ByteString
         getLabelBytes();
 
-    // optional int64 amount_btc = 4;
+    // optional int64 amount_btc = 3;
     /**
-     * <code>optional int64 amount_btc = 4;</code>
+     * <code>optional int64 amount_btc = 3;</code>
      *
      * <pre>
      * The bitcoin amount, in satoshi (as per the bitcoin URI spec)
@@ -1250,7 +1232,7 @@ public final class MBHDPaymentsProtos {
      */
     boolean hasAmountBtc();
     /**
-     * <code>optional int64 amount_btc = 4;</code>
+     * <code>optional int64 amount_btc = 3;</code>
      *
      * <pre>
      * The bitcoin amount, in satoshi (as per the bitcoin URI spec)
@@ -1258,9 +1240,9 @@ public final class MBHDPaymentsProtos {
      */
     long getAmountBtc();
 
-    // optional .FiatPayment amount_fiat = 5;
+    // optional .FiatPayment amount_fiat = 4;
     /**
-     * <code>optional .FiatPayment amount_fiat = 5;</code>
+     * <code>optional .FiatPayment amount_fiat = 4;</code>
      *
      * <pre>
      * The fiat equivalent of the bitcoin amount
@@ -1268,7 +1250,7 @@ public final class MBHDPaymentsProtos {
      */
     boolean hasAmountFiat();
     /**
-     * <code>optional .FiatPayment amount_fiat = 5;</code>
+     * <code>optional .FiatPayment amount_fiat = 4;</code>
      *
      * <pre>
      * The fiat equivalent of the bitcoin amount
@@ -1276,7 +1258,7 @@ public final class MBHDPaymentsProtos {
      */
     org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPayment getAmountFiat();
     /**
-     * <code>optional .FiatPayment amount_fiat = 5;</code>
+     * <code>optional .FiatPayment amount_fiat = 4;</code>
      *
      * <pre>
      * The fiat equivalent of the bitcoin amount
@@ -1284,9 +1266,9 @@ public final class MBHDPaymentsProtos {
      */
     org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPaymentOrBuilder getAmountFiatOrBuilder();
 
-    // optional string note = 6;
+    // optional string note = 5;
     /**
-     * <code>optional string note = 6;</code>
+     * <code>optional string note = 5;</code>
      *
      * <pre>
      * The private note (this is not included on any QRcode)
@@ -1294,7 +1276,7 @@ public final class MBHDPaymentsProtos {
      */
     boolean hasNote();
     /**
-     * <code>optional string note = 6;</code>
+     * <code>optional string note = 5;</code>
      *
      * <pre>
      * The private note (this is not included on any QRcode)
@@ -1302,7 +1284,7 @@ public final class MBHDPaymentsProtos {
      */
     java.lang.String getNote();
     /**
-     * <code>optional string note = 6;</code>
+     * <code>optional string note = 5;</code>
      *
      * <pre>
      * The private note (this is not included on any QRcode)
@@ -1311,9 +1293,9 @@ public final class MBHDPaymentsProtos {
     com.google.protobuf.ByteString
         getNoteBytes();
 
-    // optional int64 date = 7;
+    // optional int64 date = 6;
     /**
-     * <code>optional int64 date = 7;</code>
+     * <code>optional int64 date = 6;</code>
      *
      * <pre>
      * The creation datetime (millis since epoch)
@@ -1321,7 +1303,7 @@ public final class MBHDPaymentsProtos {
      */
     boolean hasDate();
     /**
-     * <code>optional int64 date = 7;</code>
+     * <code>optional int64 date = 6;</code>
      *
      * <pre>
      * The creation datetime (millis since epoch)
@@ -1387,27 +1369,22 @@ public final class MBHDPaymentsProtos {
             }
             case 10: {
               bitField0_ |= 0x00000001;
-              id_ = input.readBytes();
+              address_ = input.readBytes();
               break;
             }
             case 18: {
               bitField0_ |= 0x00000002;
-              address_ = input.readBytes();
-              break;
-            }
-            case 26: {
-              bitField0_ |= 0x00000004;
               label_ = input.readBytes();
               break;
             }
-            case 32: {
-              bitField0_ |= 0x00000008;
+            case 24: {
+              bitField0_ |= 0x00000004;
               amountBtc_ = input.readInt64();
               break;
             }
-            case 42: {
+            case 34: {
               org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPayment.Builder subBuilder = null;
-              if (((bitField0_ & 0x00000010) == 0x00000010)) {
+              if (((bitField0_ & 0x00000008) == 0x00000008)) {
                 subBuilder = amountFiat_.toBuilder();
               }
               amountFiat_ = input.readMessage(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPayment.PARSER, extensionRegistry);
@@ -1415,16 +1392,16 @@ public final class MBHDPaymentsProtos {
                 subBuilder.mergeFrom(amountFiat_);
                 amountFiat_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00000010;
+              bitField0_ |= 0x00000008;
               break;
             }
-            case 50: {
-              bitField0_ |= 0x00000020;
+            case 42: {
+              bitField0_ |= 0x00000010;
               note_ = input.readBytes();
               break;
             }
-            case 56: {
-              bitField0_ |= 0x00000040;
+            case 48: {
+              bitField0_ |= 0x00000020;
               date_ = input.readInt64();
               break;
             }
@@ -1468,45 +1445,21 @@ public final class MBHDPaymentsProtos {
     }
 
     private int bitField0_;
-    // required bytes id = 1;
-    public static final int ID_FIELD_NUMBER = 1;
-    private com.google.protobuf.ByteString id_;
-    /**
-     * <code>required bytes id = 1;</code>
-     *
-     * <pre>
-     * The unique identifier for the payment request, typically a UUID
-     * </pre>
-     */
-    public boolean hasId() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
-    }
-    /**
-     * <code>required bytes id = 1;</code>
-     *
-     * <pre>
-     * The unique identifier for the payment request, typically a UUID
-     * </pre>
-     */
-    public com.google.protobuf.ByteString getId() {
-      return id_;
-    }
-
-    // required string address = 2;
-    public static final int ADDRESS_FIELD_NUMBER = 2;
+    // required string address = 1;
+    public static final int ADDRESS_FIELD_NUMBER = 1;
     private java.lang.Object address_;
     /**
-     * <code>required string address = 2;</code>
+     * <code>required string address = 1;</code>
      *
      * <pre>
      * The payment request bitcoin address (as per the bitcoin URI spec)
      * </pre>
      */
     public boolean hasAddress() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
+      return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>required string address = 2;</code>
+     * <code>required string address = 1;</code>
      *
      * <pre>
      * The payment request bitcoin address (as per the bitcoin URI spec)
@@ -1527,7 +1480,7 @@ public final class MBHDPaymentsProtos {
       }
     }
     /**
-     * <code>required string address = 2;</code>
+     * <code>required string address = 1;</code>
      *
      * <pre>
      * The payment request bitcoin address (as per the bitcoin URI spec)
@@ -1547,21 +1500,21 @@ public final class MBHDPaymentsProtos {
       }
     }
 
-    // optional string label = 3;
-    public static final int LABEL_FIELD_NUMBER = 3;
+    // optional string label = 2;
+    public static final int LABEL_FIELD_NUMBER = 2;
     private java.lang.Object label_;
     /**
-     * <code>optional string label = 3;</code>
+     * <code>optional string label = 2;</code>
      *
      * <pre>
      * The label (as per the bitcoin URI spec)
      * </pre>
      */
     public boolean hasLabel() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
+      return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     /**
-     * <code>optional string label = 3;</code>
+     * <code>optional string label = 2;</code>
      *
      * <pre>
      * The label (as per the bitcoin URI spec)
@@ -1582,7 +1535,7 @@ public final class MBHDPaymentsProtos {
       }
     }
     /**
-     * <code>optional string label = 3;</code>
+     * <code>optional string label = 2;</code>
      *
      * <pre>
      * The label (as per the bitcoin URI spec)
@@ -1602,21 +1555,21 @@ public final class MBHDPaymentsProtos {
       }
     }
 
-    // optional int64 amount_btc = 4;
-    public static final int AMOUNT_BTC_FIELD_NUMBER = 4;
+    // optional int64 amount_btc = 3;
+    public static final int AMOUNT_BTC_FIELD_NUMBER = 3;
     private long amountBtc_;
     /**
-     * <code>optional int64 amount_btc = 4;</code>
+     * <code>optional int64 amount_btc = 3;</code>
      *
      * <pre>
      * The bitcoin amount, in satoshi (as per the bitcoin URI spec)
      * </pre>
      */
     public boolean hasAmountBtc() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
+      return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     /**
-     * <code>optional int64 amount_btc = 4;</code>
+     * <code>optional int64 amount_btc = 3;</code>
      *
      * <pre>
      * The bitcoin amount, in satoshi (as per the bitcoin URI spec)
@@ -1626,21 +1579,21 @@ public final class MBHDPaymentsProtos {
       return amountBtc_;
     }
 
-    // optional .FiatPayment amount_fiat = 5;
-    public static final int AMOUNT_FIAT_FIELD_NUMBER = 5;
+    // optional .FiatPayment amount_fiat = 4;
+    public static final int AMOUNT_FIAT_FIELD_NUMBER = 4;
     private org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPayment amountFiat_;
     /**
-     * <code>optional .FiatPayment amount_fiat = 5;</code>
+     * <code>optional .FiatPayment amount_fiat = 4;</code>
      *
      * <pre>
      * The fiat equivalent of the bitcoin amount
      * </pre>
      */
     public boolean hasAmountFiat() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
+      return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     /**
-     * <code>optional .FiatPayment amount_fiat = 5;</code>
+     * <code>optional .FiatPayment amount_fiat = 4;</code>
      *
      * <pre>
      * The fiat equivalent of the bitcoin amount
@@ -1650,7 +1603,7 @@ public final class MBHDPaymentsProtos {
       return amountFiat_;
     }
     /**
-     * <code>optional .FiatPayment amount_fiat = 5;</code>
+     * <code>optional .FiatPayment amount_fiat = 4;</code>
      *
      * <pre>
      * The fiat equivalent of the bitcoin amount
@@ -1660,21 +1613,21 @@ public final class MBHDPaymentsProtos {
       return amountFiat_;
     }
 
-    // optional string note = 6;
-    public static final int NOTE_FIELD_NUMBER = 6;
+    // optional string note = 5;
+    public static final int NOTE_FIELD_NUMBER = 5;
     private java.lang.Object note_;
     /**
-     * <code>optional string note = 6;</code>
+     * <code>optional string note = 5;</code>
      *
      * <pre>
      * The private note (this is not included on any QRcode)
      * </pre>
      */
     public boolean hasNote() {
-      return ((bitField0_ & 0x00000020) == 0x00000020);
+      return ((bitField0_ & 0x00000010) == 0x00000010);
     }
     /**
-     * <code>optional string note = 6;</code>
+     * <code>optional string note = 5;</code>
      *
      * <pre>
      * The private note (this is not included on any QRcode)
@@ -1695,7 +1648,7 @@ public final class MBHDPaymentsProtos {
       }
     }
     /**
-     * <code>optional string note = 6;</code>
+     * <code>optional string note = 5;</code>
      *
      * <pre>
      * The private note (this is not included on any QRcode)
@@ -1715,21 +1668,21 @@ public final class MBHDPaymentsProtos {
       }
     }
 
-    // optional int64 date = 7;
-    public static final int DATE_FIELD_NUMBER = 7;
+    // optional int64 date = 6;
+    public static final int DATE_FIELD_NUMBER = 6;
     private long date_;
     /**
-     * <code>optional int64 date = 7;</code>
+     * <code>optional int64 date = 6;</code>
      *
      * <pre>
      * The creation datetime (millis since epoch)
      * </pre>
      */
     public boolean hasDate() {
-      return ((bitField0_ & 0x00000040) == 0x00000040);
+      return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     /**
-     * <code>optional int64 date = 7;</code>
+     * <code>optional int64 date = 6;</code>
      *
      * <pre>
      * The creation datetime (millis since epoch)
@@ -1740,7 +1693,6 @@ public final class MBHDPaymentsProtos {
     }
 
     private void initFields() {
-      id_ = com.google.protobuf.ByteString.EMPTY;
       address_ = "";
       label_ = "";
       amountBtc_ = 0L;
@@ -1753,10 +1705,6 @@ public final class MBHDPaymentsProtos {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
 
-      if (!hasId()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
       if (!hasAddress()) {
         memoizedIsInitialized = 0;
         return false;
@@ -1775,25 +1723,22 @@ public final class MBHDPaymentsProtos {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, id_);
+        output.writeBytes(1, getAddressBytes());
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeBytes(2, getAddressBytes());
+        output.writeBytes(2, getLabelBytes());
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeBytes(3, getLabelBytes());
+        output.writeInt64(3, amountBtc_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeInt64(4, amountBtc_);
+        output.writeMessage(4, amountFiat_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeMessage(5, amountFiat_);
+        output.writeBytes(5, getNoteBytes());
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
-        output.writeBytes(6, getNoteBytes());
-      }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        output.writeInt64(7, date_);
+        output.writeInt64(6, date_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -1806,31 +1751,27 @@ public final class MBHDPaymentsProtos {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, id_);
+          .computeBytesSize(1, getAddressBytes());
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, getAddressBytes());
+          .computeBytesSize(2, getLabelBytes());
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(3, getLabelBytes());
+          .computeInt64Size(3, amountBtc_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(4, amountBtc_);
+          .computeMessageSize(4, amountFiat_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(5, amountFiat_);
+          .computeBytesSize(5, getNoteBytes());
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(6, getNoteBytes());
-      }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(7, date_);
+          .computeInt64Size(6, date_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1954,24 +1895,22 @@ public final class MBHDPaymentsProtos {
 
       public Builder clear() {
         super.clear();
-        id_ = com.google.protobuf.ByteString.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
         address_ = "";
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000001);
         label_ = "";
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000002);
         amountBtc_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000004);
         if (amountFiatBuilder_ == null) {
           amountFiat_ = org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPayment.getDefaultInstance();
         } else {
           amountFiatBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000008);
         note_ = "";
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000010);
         date_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
 
@@ -2003,33 +1942,29 @@ public final class MBHDPaymentsProtos {
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
-        result.id_ = id_;
+        result.address_ = address_;
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
-        result.address_ = address_;
+        result.label_ = label_;
         if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000004;
         }
-        result.label_ = label_;
+        result.amountBtc_ = amountBtc_;
         if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
           to_bitField0_ |= 0x00000008;
-        }
-        result.amountBtc_ = amountBtc_;
-        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
-          to_bitField0_ |= 0x00000010;
         }
         if (amountFiatBuilder_ == null) {
           result.amountFiat_ = amountFiat_;
         } else {
           result.amountFiat_ = amountFiatBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
-          to_bitField0_ |= 0x00000020;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
         }
         result.note_ = note_;
-        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
-          to_bitField0_ |= 0x00000040;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
         }
         result.date_ = date_;
         result.bitField0_ = to_bitField0_;
@@ -2048,16 +1983,13 @@ public final class MBHDPaymentsProtos {
 
       public Builder mergeFrom(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request other) {
         if (other == org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request.getDefaultInstance()) return this;
-        if (other.hasId()) {
-          setId(other.getId());
-        }
         if (other.hasAddress()) {
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000001;
           address_ = other.address_;
           onChanged();
         }
         if (other.hasLabel()) {
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000002;
           label_ = other.label_;
           onChanged();
         }
@@ -2068,7 +2000,7 @@ public final class MBHDPaymentsProtos {
           mergeAmountFiat(other.getAmountFiat());
         }
         if (other.hasNote()) {
-          bitField0_ |= 0x00000020;
+          bitField0_ |= 0x00000010;
           note_ = other.note_;
           onChanged();
         }
@@ -2080,10 +2012,6 @@ public final class MBHDPaymentsProtos {
       }
 
       public final boolean isInitialized() {
-        if (!hasId()) {
-          
-          return false;
-        }
         if (!hasAddress()) {
           
           return false;
@@ -2116,72 +2044,20 @@ public final class MBHDPaymentsProtos {
       }
       private int bitField0_;
 
-      // required bytes id = 1;
-      private com.google.protobuf.ByteString id_ = com.google.protobuf.ByteString.EMPTY;
-      /**
-       * <code>required bytes id = 1;</code>
-       *
-       * <pre>
-       * The unique identifier for the payment request, typically a UUID
-       * </pre>
-       */
-      public boolean hasId() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      /**
-       * <code>required bytes id = 1;</code>
-       *
-       * <pre>
-       * The unique identifier for the payment request, typically a UUID
-       * </pre>
-       */
-      public com.google.protobuf.ByteString getId() {
-        return id_;
-      }
-      /**
-       * <code>required bytes id = 1;</code>
-       *
-       * <pre>
-       * The unique identifier for the payment request, typically a UUID
-       * </pre>
-       */
-      public Builder setId(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
-        id_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>required bytes id = 1;</code>
-       *
-       * <pre>
-       * The unique identifier for the payment request, typically a UUID
-       * </pre>
-       */
-      public Builder clearId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        id_ = getDefaultInstance().getId();
-        onChanged();
-        return this;
-      }
-
-      // required string address = 2;
+      // required string address = 1;
       private java.lang.Object address_ = "";
       /**
-       * <code>required string address = 2;</code>
+       * <code>required string address = 1;</code>
        *
        * <pre>
        * The payment request bitcoin address (as per the bitcoin URI spec)
        * </pre>
        */
       public boolean hasAddress() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
+        return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>required string address = 2;</code>
+       * <code>required string address = 1;</code>
        *
        * <pre>
        * The payment request bitcoin address (as per the bitcoin URI spec)
@@ -2199,7 +2075,7 @@ public final class MBHDPaymentsProtos {
         }
       }
       /**
-       * <code>required string address = 2;</code>
+       * <code>required string address = 1;</code>
        *
        * <pre>
        * The payment request bitcoin address (as per the bitcoin URI spec)
@@ -2219,7 +2095,7 @@ public final class MBHDPaymentsProtos {
         }
       }
       /**
-       * <code>required string address = 2;</code>
+       * <code>required string address = 1;</code>
        *
        * <pre>
        * The payment request bitcoin address (as per the bitcoin URI spec)
@@ -2230,26 +2106,26 @@ public final class MBHDPaymentsProtos {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000002;
+  bitField0_ |= 0x00000001;
         address_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required string address = 2;</code>
+       * <code>required string address = 1;</code>
        *
        * <pre>
        * The payment request bitcoin address (as per the bitcoin URI spec)
        * </pre>
        */
       public Builder clearAddress() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000001);
         address_ = getDefaultInstance().getAddress();
         onChanged();
         return this;
       }
       /**
-       * <code>required string address = 2;</code>
+       * <code>required string address = 1;</code>
        *
        * <pre>
        * The payment request bitcoin address (as per the bitcoin URI spec)
@@ -2260,26 +2136,26 @@ public final class MBHDPaymentsProtos {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000002;
+  bitField0_ |= 0x00000001;
         address_ = value;
         onChanged();
         return this;
       }
 
-      // optional string label = 3;
+      // optional string label = 2;
       private java.lang.Object label_ = "";
       /**
-       * <code>optional string label = 3;</code>
+       * <code>optional string label = 2;</code>
        *
        * <pre>
        * The label (as per the bitcoin URI spec)
        * </pre>
        */
       public boolean hasLabel() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>optional string label = 3;</code>
+       * <code>optional string label = 2;</code>
        *
        * <pre>
        * The label (as per the bitcoin URI spec)
@@ -2297,7 +2173,7 @@ public final class MBHDPaymentsProtos {
         }
       }
       /**
-       * <code>optional string label = 3;</code>
+       * <code>optional string label = 2;</code>
        *
        * <pre>
        * The label (as per the bitcoin URI spec)
@@ -2317,7 +2193,7 @@ public final class MBHDPaymentsProtos {
         }
       }
       /**
-       * <code>optional string label = 3;</code>
+       * <code>optional string label = 2;</code>
        *
        * <pre>
        * The label (as per the bitcoin URI spec)
@@ -2328,26 +2204,26 @@ public final class MBHDPaymentsProtos {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000004;
+  bitField0_ |= 0x00000002;
         label_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string label = 3;</code>
+       * <code>optional string label = 2;</code>
        *
        * <pre>
        * The label (as per the bitcoin URI spec)
        * </pre>
        */
       public Builder clearLabel() {
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000002);
         label_ = getDefaultInstance().getLabel();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string label = 3;</code>
+       * <code>optional string label = 2;</code>
        *
        * <pre>
        * The label (as per the bitcoin URI spec)
@@ -2358,26 +2234,26 @@ public final class MBHDPaymentsProtos {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000004;
+  bitField0_ |= 0x00000002;
         label_ = value;
         onChanged();
         return this;
       }
 
-      // optional int64 amount_btc = 4;
+      // optional int64 amount_btc = 3;
       private long amountBtc_ ;
       /**
-       * <code>optional int64 amount_btc = 4;</code>
+       * <code>optional int64 amount_btc = 3;</code>
        *
        * <pre>
        * The bitcoin amount, in satoshi (as per the bitcoin URI spec)
        * </pre>
        */
       public boolean hasAmountBtc() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       /**
-       * <code>optional int64 amount_btc = 4;</code>
+       * <code>optional int64 amount_btc = 3;</code>
        *
        * <pre>
        * The bitcoin amount, in satoshi (as per the bitcoin URI spec)
@@ -2387,48 +2263,48 @@ public final class MBHDPaymentsProtos {
         return amountBtc_;
       }
       /**
-       * <code>optional int64 amount_btc = 4;</code>
+       * <code>optional int64 amount_btc = 3;</code>
        *
        * <pre>
        * The bitcoin amount, in satoshi (as per the bitcoin URI spec)
        * </pre>
        */
       public Builder setAmountBtc(long value) {
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000004;
         amountBtc_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional int64 amount_btc = 4;</code>
+       * <code>optional int64 amount_btc = 3;</code>
        *
        * <pre>
        * The bitcoin amount, in satoshi (as per the bitcoin URI spec)
        * </pre>
        */
       public Builder clearAmountBtc() {
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000004);
         amountBtc_ = 0L;
         onChanged();
         return this;
       }
 
-      // optional .FiatPayment amount_fiat = 5;
+      // optional .FiatPayment amount_fiat = 4;
       private org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPayment amountFiat_ = org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPayment.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPayment, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPayment.Builder, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPaymentOrBuilder> amountFiatBuilder_;
       /**
-       * <code>optional .FiatPayment amount_fiat = 5;</code>
+       * <code>optional .FiatPayment amount_fiat = 4;</code>
        *
        * <pre>
        * The fiat equivalent of the bitcoin amount
        * </pre>
        */
       public boolean hasAmountFiat() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
+        return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       /**
-       * <code>optional .FiatPayment amount_fiat = 5;</code>
+       * <code>optional .FiatPayment amount_fiat = 4;</code>
        *
        * <pre>
        * The fiat equivalent of the bitcoin amount
@@ -2442,7 +2318,7 @@ public final class MBHDPaymentsProtos {
         }
       }
       /**
-       * <code>optional .FiatPayment amount_fiat = 5;</code>
+       * <code>optional .FiatPayment amount_fiat = 4;</code>
        *
        * <pre>
        * The fiat equivalent of the bitcoin amount
@@ -2458,11 +2334,11 @@ public final class MBHDPaymentsProtos {
         } else {
           amountFiatBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000010;
+        bitField0_ |= 0x00000008;
         return this;
       }
       /**
-       * <code>optional .FiatPayment amount_fiat = 5;</code>
+       * <code>optional .FiatPayment amount_fiat = 4;</code>
        *
        * <pre>
        * The fiat equivalent of the bitcoin amount
@@ -2476,11 +2352,11 @@ public final class MBHDPaymentsProtos {
         } else {
           amountFiatBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000010;
+        bitField0_ |= 0x00000008;
         return this;
       }
       /**
-       * <code>optional .FiatPayment amount_fiat = 5;</code>
+       * <code>optional .FiatPayment amount_fiat = 4;</code>
        *
        * <pre>
        * The fiat equivalent of the bitcoin amount
@@ -2488,7 +2364,7 @@ public final class MBHDPaymentsProtos {
        */
       public Builder mergeAmountFiat(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPayment value) {
         if (amountFiatBuilder_ == null) {
-          if (((bitField0_ & 0x00000010) == 0x00000010) &&
+          if (((bitField0_ & 0x00000008) == 0x00000008) &&
               amountFiat_ != org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPayment.getDefaultInstance()) {
             amountFiat_ =
               org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPayment.newBuilder(amountFiat_).mergeFrom(value).buildPartial();
@@ -2499,11 +2375,11 @@ public final class MBHDPaymentsProtos {
         } else {
           amountFiatBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000010;
+        bitField0_ |= 0x00000008;
         return this;
       }
       /**
-       * <code>optional .FiatPayment amount_fiat = 5;</code>
+       * <code>optional .FiatPayment amount_fiat = 4;</code>
        *
        * <pre>
        * The fiat equivalent of the bitcoin amount
@@ -2516,23 +2392,23 @@ public final class MBHDPaymentsProtos {
         } else {
           amountFiatBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
       /**
-       * <code>optional .FiatPayment amount_fiat = 5;</code>
+       * <code>optional .FiatPayment amount_fiat = 4;</code>
        *
        * <pre>
        * The fiat equivalent of the bitcoin amount
        * </pre>
        */
       public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPayment.Builder getAmountFiatBuilder() {
-        bitField0_ |= 0x00000010;
+        bitField0_ |= 0x00000008;
         onChanged();
         return getAmountFiatFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .FiatPayment amount_fiat = 5;</code>
+       * <code>optional .FiatPayment amount_fiat = 4;</code>
        *
        * <pre>
        * The fiat equivalent of the bitcoin amount
@@ -2546,7 +2422,7 @@ public final class MBHDPaymentsProtos {
         }
       }
       /**
-       * <code>optional .FiatPayment amount_fiat = 5;</code>
+       * <code>optional .FiatPayment amount_fiat = 4;</code>
        *
        * <pre>
        * The fiat equivalent of the bitcoin amount
@@ -2566,20 +2442,20 @@ public final class MBHDPaymentsProtos {
         return amountFiatBuilder_;
       }
 
-      // optional string note = 6;
+      // optional string note = 5;
       private java.lang.Object note_ = "";
       /**
-       * <code>optional string note = 6;</code>
+       * <code>optional string note = 5;</code>
        *
        * <pre>
        * The private note (this is not included on any QRcode)
        * </pre>
        */
       public boolean hasNote() {
-        return ((bitField0_ & 0x00000020) == 0x00000020);
+        return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
-       * <code>optional string note = 6;</code>
+       * <code>optional string note = 5;</code>
        *
        * <pre>
        * The private note (this is not included on any QRcode)
@@ -2597,7 +2473,7 @@ public final class MBHDPaymentsProtos {
         }
       }
       /**
-       * <code>optional string note = 6;</code>
+       * <code>optional string note = 5;</code>
        *
        * <pre>
        * The private note (this is not included on any QRcode)
@@ -2617,7 +2493,7 @@ public final class MBHDPaymentsProtos {
         }
       }
       /**
-       * <code>optional string note = 6;</code>
+       * <code>optional string note = 5;</code>
        *
        * <pre>
        * The private note (this is not included on any QRcode)
@@ -2628,26 +2504,26 @@ public final class MBHDPaymentsProtos {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000020;
+  bitField0_ |= 0x00000010;
         note_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string note = 6;</code>
+       * <code>optional string note = 5;</code>
        *
        * <pre>
        * The private note (this is not included on any QRcode)
        * </pre>
        */
       public Builder clearNote() {
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000010);
         note_ = getDefaultInstance().getNote();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string note = 6;</code>
+       * <code>optional string note = 5;</code>
        *
        * <pre>
        * The private note (this is not included on any QRcode)
@@ -2658,26 +2534,26 @@ public final class MBHDPaymentsProtos {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000020;
+  bitField0_ |= 0x00000010;
         note_ = value;
         onChanged();
         return this;
       }
 
-      // optional int64 date = 7;
+      // optional int64 date = 6;
       private long date_ ;
       /**
-       * <code>optional int64 date = 7;</code>
+       * <code>optional int64 date = 6;</code>
        *
        * <pre>
        * The creation datetime (millis since epoch)
        * </pre>
        */
       public boolean hasDate() {
-        return ((bitField0_ & 0x00000040) == 0x00000040);
+        return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       /**
-       * <code>optional int64 date = 7;</code>
+       * <code>optional int64 date = 6;</code>
        *
        * <pre>
        * The creation datetime (millis since epoch)
@@ -2687,27 +2563,27 @@ public final class MBHDPaymentsProtos {
         return date_;
       }
       /**
-       * <code>optional int64 date = 7;</code>
+       * <code>optional int64 date = 6;</code>
        *
        * <pre>
        * The creation datetime (millis since epoch)
        * </pre>
        */
       public Builder setDate(long value) {
-        bitField0_ |= 0x00000040;
+        bitField0_ |= 0x00000020;
         date_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional int64 date = 7;</code>
+       * <code>optional int64 date = 6;</code>
        *
        * <pre>
        * The creation datetime (millis since epoch)
        * </pre>
        */
       public Builder clearDate() {
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000020);
         date_ = 0L;
         onChanged();
         return this;
@@ -2745,31 +2621,31 @@ public final class MBHDPaymentsProtos {
      */
     com.google.protobuf.ByteString getHash();
 
-    // repeated bytes request_ids = 2;
+    // repeated bytes request_address = 2;
     /**
-     * <code>repeated bytes request_ids = 2;</code>
+     * <code>repeated bytes request_address = 2;</code>
      *
      * <pre>
-     * The ids of requests related to this transaction.
+     * The Request.address(es) related to this transaction.
      * </pre>
      */
-    java.util.List<com.google.protobuf.ByteString> getRequestIdsList();
+    java.util.List<com.google.protobuf.ByteString> getRequestAddressList();
     /**
-     * <code>repeated bytes request_ids = 2;</code>
+     * <code>repeated bytes request_address = 2;</code>
      *
      * <pre>
-     * The ids of requests related to this transaction.
+     * The Request.address(es) related to this transaction.
      * </pre>
      */
-    int getRequestIdsCount();
+    int getRequestAddressCount();
     /**
-     * <code>repeated bytes request_ids = 2;</code>
+     * <code>repeated bytes request_address = 2;</code>
      *
      * <pre>
-     * The ids of requests related to this transaction.
+     * The Request.address(es) related to this transaction.
      * </pre>
      */
-    com.google.protobuf.ByteString getRequestIds(int index);
+    com.google.protobuf.ByteString getRequestAddress(int index);
 
     // optional .FiatPayment amount_fiat = 3;
     /**
@@ -2777,7 +2653,7 @@ public final class MBHDPaymentsProtos {
      *
      * <pre>
      * If a transaction output sends bitcoin to a request.address then it will appear in this list
-     * There can be zero, one or more request_ids for a single transaction.
+     * There can be zero, one or more request_address for a single transaction.
      * </pre>
      */
     boolean hasAmountFiat();
@@ -2786,7 +2662,7 @@ public final class MBHDPaymentsProtos {
      *
      * <pre>
      * If a transaction output sends bitcoin to a request.address then it will appear in this list
-     * There can be zero, one or more request_ids for a single transaction.
+     * There can be zero, one or more request_address for a single transaction.
      * </pre>
      */
     org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPayment getAmountFiat();
@@ -2795,7 +2671,7 @@ public final class MBHDPaymentsProtos {
      *
      * <pre>
      * If a transaction output sends bitcoin to a request.address then it will appear in this list
-     * There can be zero, one or more request_ids for a single transaction.
+     * There can be zero, one or more request_address for a single transaction.
      * </pre>
      */
     org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPaymentOrBuilder getAmountFiatOrBuilder();
@@ -2890,10 +2766,10 @@ public final class MBHDPaymentsProtos {
             }
             case 18: {
               if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-                requestIds_ = new java.util.ArrayList<com.google.protobuf.ByteString>();
+                requestAddress_ = new java.util.ArrayList<com.google.protobuf.ByteString>();
                 mutable_bitField0_ |= 0x00000002;
               }
-              requestIds_.add(input.readBytes());
+              requestAddress_.add(input.readBytes());
               break;
             }
             case 26: {
@@ -2923,7 +2799,7 @@ public final class MBHDPaymentsProtos {
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
         if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-          requestIds_ = java.util.Collections.unmodifiableList(requestIds_);
+          requestAddress_ = java.util.Collections.unmodifiableList(requestAddress_);
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -2981,39 +2857,39 @@ public final class MBHDPaymentsProtos {
       return hash_;
     }
 
-    // repeated bytes request_ids = 2;
-    public static final int REQUEST_IDS_FIELD_NUMBER = 2;
-    private java.util.List<com.google.protobuf.ByteString> requestIds_;
+    // repeated bytes request_address = 2;
+    public static final int REQUEST_ADDRESS_FIELD_NUMBER = 2;
+    private java.util.List<com.google.protobuf.ByteString> requestAddress_;
     /**
-     * <code>repeated bytes request_ids = 2;</code>
+     * <code>repeated bytes request_address = 2;</code>
      *
      * <pre>
-     * The ids of requests related to this transaction.
+     * The Request.address(es) related to this transaction.
      * </pre>
      */
     public java.util.List<com.google.protobuf.ByteString>
-        getRequestIdsList() {
-      return requestIds_;
+        getRequestAddressList() {
+      return requestAddress_;
     }
     /**
-     * <code>repeated bytes request_ids = 2;</code>
+     * <code>repeated bytes request_address = 2;</code>
      *
      * <pre>
-     * The ids of requests related to this transaction.
+     * The Request.address(es) related to this transaction.
      * </pre>
      */
-    public int getRequestIdsCount() {
-      return requestIds_.size();
+    public int getRequestAddressCount() {
+      return requestAddress_.size();
     }
     /**
-     * <code>repeated bytes request_ids = 2;</code>
+     * <code>repeated bytes request_address = 2;</code>
      *
      * <pre>
-     * The ids of requests related to this transaction.
+     * The Request.address(es) related to this transaction.
      * </pre>
      */
-    public com.google.protobuf.ByteString getRequestIds(int index) {
-      return requestIds_.get(index);
+    public com.google.protobuf.ByteString getRequestAddress(int index) {
+      return requestAddress_.get(index);
     }
 
     // optional .FiatPayment amount_fiat = 3;
@@ -3024,7 +2900,7 @@ public final class MBHDPaymentsProtos {
      *
      * <pre>
      * If a transaction output sends bitcoin to a request.address then it will appear in this list
-     * There can be zero, one or more request_ids for a single transaction.
+     * There can be zero, one or more request_address for a single transaction.
      * </pre>
      */
     public boolean hasAmountFiat() {
@@ -3035,7 +2911,7 @@ public final class MBHDPaymentsProtos {
      *
      * <pre>
      * If a transaction output sends bitcoin to a request.address then it will appear in this list
-     * There can be zero, one or more request_ids for a single transaction.
+     * There can be zero, one or more request_address for a single transaction.
      * </pre>
      */
     public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPayment getAmountFiat() {
@@ -3046,7 +2922,7 @@ public final class MBHDPaymentsProtos {
      *
      * <pre>
      * If a transaction output sends bitcoin to a request.address then it will appear in this list
-     * There can be zero, one or more request_ids for a single transaction.
+     * There can be zero, one or more request_address for a single transaction.
      * </pre>
      */
     public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPaymentOrBuilder getAmountFiatOrBuilder() {
@@ -3110,7 +2986,7 @@ public final class MBHDPaymentsProtos {
 
     private void initFields() {
       hash_ = com.google.protobuf.ByteString.EMPTY;
-      requestIds_ = java.util.Collections.emptyList();
+      requestAddress_ = java.util.Collections.emptyList();
       amountFiat_ = org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPayment.getDefaultInstance();
       note_ = "";
     }
@@ -3139,8 +3015,8 @@ public final class MBHDPaymentsProtos {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeBytes(1, hash_);
       }
-      for (int i = 0; i < requestIds_.size(); i++) {
-        output.writeBytes(2, requestIds_.get(i));
+      for (int i = 0; i < requestAddress_.size(); i++) {
+        output.writeBytes(2, requestAddress_.get(i));
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeMessage(3, amountFiat_);
@@ -3163,12 +3039,12 @@ public final class MBHDPaymentsProtos {
       }
       {
         int dataSize = 0;
-        for (int i = 0; i < requestIds_.size(); i++) {
+        for (int i = 0; i < requestAddress_.size(); i++) {
           dataSize += com.google.protobuf.CodedOutputStream
-            .computeBytesSizeNoTag(requestIds_.get(i));
+            .computeBytesSizeNoTag(requestAddress_.get(i));
         }
         size += dataSize;
-        size += 1 * getRequestIdsList().size();
+        size += 1 * getRequestAddressList().size();
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
@@ -3302,7 +3178,7 @@ public final class MBHDPaymentsProtos {
         super.clear();
         hash_ = com.google.protobuf.ByteString.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000001);
-        requestIds_ = java.util.Collections.emptyList();
+        requestAddress_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000002);
         if (amountFiatBuilder_ == null) {
           amountFiat_ = org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPayment.getDefaultInstance();
@@ -3345,10 +3221,10 @@ public final class MBHDPaymentsProtos {
         }
         result.hash_ = hash_;
         if (((bitField0_ & 0x00000002) == 0x00000002)) {
-          requestIds_ = java.util.Collections.unmodifiableList(requestIds_);
+          requestAddress_ = java.util.Collections.unmodifiableList(requestAddress_);
           bitField0_ = (bitField0_ & ~0x00000002);
         }
-        result.requestIds_ = requestIds_;
+        result.requestAddress_ = requestAddress_;
         if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000002;
         }
@@ -3380,13 +3256,13 @@ public final class MBHDPaymentsProtos {
         if (other.hasHash()) {
           setHash(other.getHash());
         }
-        if (!other.requestIds_.isEmpty()) {
-          if (requestIds_.isEmpty()) {
-            requestIds_ = other.requestIds_;
+        if (!other.requestAddress_.isEmpty()) {
+          if (requestAddress_.isEmpty()) {
+            requestAddress_ = other.requestAddress_;
             bitField0_ = (bitField0_ & ~0x00000002);
           } else {
-            ensureRequestIdsIsMutable();
-            requestIds_.addAll(other.requestIds_);
+            ensureRequestAddressIsMutable();
+            requestAddress_.addAll(other.requestAddress_);
           }
           onChanged();
         }
@@ -3487,101 +3363,101 @@ public final class MBHDPaymentsProtos {
         return this;
       }
 
-      // repeated bytes request_ids = 2;
-      private java.util.List<com.google.protobuf.ByteString> requestIds_ = java.util.Collections.emptyList();
-      private void ensureRequestIdsIsMutable() {
+      // repeated bytes request_address = 2;
+      private java.util.List<com.google.protobuf.ByteString> requestAddress_ = java.util.Collections.emptyList();
+      private void ensureRequestAddressIsMutable() {
         if (!((bitField0_ & 0x00000002) == 0x00000002)) {
-          requestIds_ = new java.util.ArrayList<com.google.protobuf.ByteString>(requestIds_);
+          requestAddress_ = new java.util.ArrayList<com.google.protobuf.ByteString>(requestAddress_);
           bitField0_ |= 0x00000002;
          }
       }
       /**
-       * <code>repeated bytes request_ids = 2;</code>
+       * <code>repeated bytes request_address = 2;</code>
        *
        * <pre>
-       * The ids of requests related to this transaction.
+       * The Request.address(es) related to this transaction.
        * </pre>
        */
       public java.util.List<com.google.protobuf.ByteString>
-          getRequestIdsList() {
-        return java.util.Collections.unmodifiableList(requestIds_);
+          getRequestAddressList() {
+        return java.util.Collections.unmodifiableList(requestAddress_);
       }
       /**
-       * <code>repeated bytes request_ids = 2;</code>
+       * <code>repeated bytes request_address = 2;</code>
        *
        * <pre>
-       * The ids of requests related to this transaction.
+       * The Request.address(es) related to this transaction.
        * </pre>
        */
-      public int getRequestIdsCount() {
-        return requestIds_.size();
+      public int getRequestAddressCount() {
+        return requestAddress_.size();
       }
       /**
-       * <code>repeated bytes request_ids = 2;</code>
+       * <code>repeated bytes request_address = 2;</code>
        *
        * <pre>
-       * The ids of requests related to this transaction.
+       * The Request.address(es) related to this transaction.
        * </pre>
        */
-      public com.google.protobuf.ByteString getRequestIds(int index) {
-        return requestIds_.get(index);
+      public com.google.protobuf.ByteString getRequestAddress(int index) {
+        return requestAddress_.get(index);
       }
       /**
-       * <code>repeated bytes request_ids = 2;</code>
+       * <code>repeated bytes request_address = 2;</code>
        *
        * <pre>
-       * The ids of requests related to this transaction.
+       * The Request.address(es) related to this transaction.
        * </pre>
        */
-      public Builder setRequestIds(
+      public Builder setRequestAddress(
           int index, com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  ensureRequestIdsIsMutable();
-        requestIds_.set(index, value);
+  ensureRequestAddressIsMutable();
+        requestAddress_.set(index, value);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated bytes request_ids = 2;</code>
+       * <code>repeated bytes request_address = 2;</code>
        *
        * <pre>
-       * The ids of requests related to this transaction.
+       * The Request.address(es) related to this transaction.
        * </pre>
        */
-      public Builder addRequestIds(com.google.protobuf.ByteString value) {
+      public Builder addRequestAddress(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  ensureRequestIdsIsMutable();
-        requestIds_.add(value);
+  ensureRequestAddressIsMutable();
+        requestAddress_.add(value);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated bytes request_ids = 2;</code>
+       * <code>repeated bytes request_address = 2;</code>
        *
        * <pre>
-       * The ids of requests related to this transaction.
+       * The Request.address(es) related to this transaction.
        * </pre>
        */
-      public Builder addAllRequestIds(
+      public Builder addAllRequestAddress(
           java.lang.Iterable<? extends com.google.protobuf.ByteString> values) {
-        ensureRequestIdsIsMutable();
-        super.addAll(values, requestIds_);
+        ensureRequestAddressIsMutable();
+        super.addAll(values, requestAddress_);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated bytes request_ids = 2;</code>
+       * <code>repeated bytes request_address = 2;</code>
        *
        * <pre>
-       * The ids of requests related to this transaction.
+       * The Request.address(es) related to this transaction.
        * </pre>
        */
-      public Builder clearRequestIds() {
-        requestIds_ = java.util.Collections.emptyList();
+      public Builder clearRequestAddress() {
+        requestAddress_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
@@ -3596,7 +3472,7 @@ public final class MBHDPaymentsProtos {
        *
        * <pre>
        * If a transaction output sends bitcoin to a request.address then it will appear in this list
-       * There can be zero, one or more request_ids for a single transaction.
+       * There can be zero, one or more request_address for a single transaction.
        * </pre>
        */
       public boolean hasAmountFiat() {
@@ -3607,7 +3483,7 @@ public final class MBHDPaymentsProtos {
        *
        * <pre>
        * If a transaction output sends bitcoin to a request.address then it will appear in this list
-       * There can be zero, one or more request_ids for a single transaction.
+       * There can be zero, one or more request_address for a single transaction.
        * </pre>
        */
       public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPayment getAmountFiat() {
@@ -3622,7 +3498,7 @@ public final class MBHDPaymentsProtos {
        *
        * <pre>
        * If a transaction output sends bitcoin to a request.address then it will appear in this list
-       * There can be zero, one or more request_ids for a single transaction.
+       * There can be zero, one or more request_address for a single transaction.
        * </pre>
        */
       public Builder setAmountFiat(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPayment value) {
@@ -3643,7 +3519,7 @@ public final class MBHDPaymentsProtos {
        *
        * <pre>
        * If a transaction output sends bitcoin to a request.address then it will appear in this list
-       * There can be zero, one or more request_ids for a single transaction.
+       * There can be zero, one or more request_address for a single transaction.
        * </pre>
        */
       public Builder setAmountFiat(
@@ -3662,7 +3538,7 @@ public final class MBHDPaymentsProtos {
        *
        * <pre>
        * If a transaction output sends bitcoin to a request.address then it will appear in this list
-       * There can be zero, one or more request_ids for a single transaction.
+       * There can be zero, one or more request_address for a single transaction.
        * </pre>
        */
       public Builder mergeAmountFiat(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPayment value) {
@@ -3686,7 +3562,7 @@ public final class MBHDPaymentsProtos {
        *
        * <pre>
        * If a transaction output sends bitcoin to a request.address then it will appear in this list
-       * There can be zero, one or more request_ids for a single transaction.
+       * There can be zero, one or more request_address for a single transaction.
        * </pre>
        */
       public Builder clearAmountFiat() {
@@ -3704,7 +3580,7 @@ public final class MBHDPaymentsProtos {
        *
        * <pre>
        * If a transaction output sends bitcoin to a request.address then it will appear in this list
-       * There can be zero, one or more request_ids for a single transaction.
+       * There can be zero, one or more request_address for a single transaction.
        * </pre>
        */
       public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPayment.Builder getAmountFiatBuilder() {
@@ -3717,7 +3593,7 @@ public final class MBHDPaymentsProtos {
        *
        * <pre>
        * If a transaction output sends bitcoin to a request.address then it will appear in this list
-       * There can be zero, one or more request_ids for a single transaction.
+       * There can be zero, one or more request_address for a single transaction.
        * </pre>
        */
       public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPaymentOrBuilder getAmountFiatOrBuilder() {
@@ -3732,7 +3608,7 @@ public final class MBHDPaymentsProtos {
        *
        * <pre>
        * If a transaction output sends bitcoin to a request.address then it will appear in this list
-       * There can be zero, one or more request_ids for a single transaction.
+       * There can be zero, one or more request_address for a single transaction.
        * </pre>
        */
       private com.google.protobuf.SingleFieldBuilder<
@@ -3950,6 +3826,24 @@ public final class MBHDPaymentsProtos {
      */
     org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionOrBuilder getTransactionOrBuilder(
         int index);
+
+    // required int32 last_address_index = 3;
+    /**
+     * <code>required int32 last_address_index = 3;</code>
+     *
+     * <pre>
+     * The last (highest) address generating index that was used to create a Request.address
+     * </pre>
+     */
+    boolean hasLastAddressIndex();
+    /**
+     * <code>required int32 last_address_index = 3;</code>
+     *
+     * <pre>
+     * The last (highest) address generating index that was used to create a Request.address
+     * </pre>
+     */
+    int getLastAddressIndex();
   }
   /**
    * Protobuf type {@code Payments}
@@ -4023,6 +3917,11 @@ public final class MBHDPaymentsProtos {
               transaction_.add(input.readMessage(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction.PARSER, extensionRegistry));
               break;
             }
+            case 24: {
+              bitField0_ |= 0x00000001;
+              lastAddressIndex_ = input.readInt32();
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -4068,6 +3967,7 @@ public final class MBHDPaymentsProtos {
       return PARSER;
     }
 
+    private int bitField0_;
     // repeated .Request request = 1;
     public static final int REQUEST_FIELD_NUMBER = 1;
     private java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request> request_;
@@ -4180,15 +4080,44 @@ public final class MBHDPaymentsProtos {
       return transaction_.get(index);
     }
 
+    // required int32 last_address_index = 3;
+    public static final int LAST_ADDRESS_INDEX_FIELD_NUMBER = 3;
+    private int lastAddressIndex_;
+    /**
+     * <code>required int32 last_address_index = 3;</code>
+     *
+     * <pre>
+     * The last (highest) address generating index that was used to create a Request.address
+     * </pre>
+     */
+    public boolean hasLastAddressIndex() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required int32 last_address_index = 3;</code>
+     *
+     * <pre>
+     * The last (highest) address generating index that was used to create a Request.address
+     * </pre>
+     */
+    public int getLastAddressIndex() {
+      return lastAddressIndex_;
+    }
+
     private void initFields() {
       request_ = java.util.Collections.emptyList();
       transaction_ = java.util.Collections.emptyList();
+      lastAddressIndex_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
 
+      if (!hasLastAddressIndex()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       for (int i = 0; i < getRequestCount(); i++) {
         if (!getRequest(i).isInitialized()) {
           memoizedIsInitialized = 0;
@@ -4214,6 +4143,9 @@ public final class MBHDPaymentsProtos {
       for (int i = 0; i < transaction_.size(); i++) {
         output.writeMessage(2, transaction_.get(i));
       }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeInt32(3, lastAddressIndex_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -4230,6 +4162,10 @@ public final class MBHDPaymentsProtos {
       for (int i = 0; i < transaction_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, transaction_.get(i));
+      }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, lastAddressIndex_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -4366,6 +4302,8 @@ public final class MBHDPaymentsProtos {
         } else {
           transactionBuilder_.clear();
         }
+        lastAddressIndex_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -4393,6 +4331,7 @@ public final class MBHDPaymentsProtos {
       public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Payments buildPartial() {
         org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Payments result = new org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Payments(this);
         int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
         if (requestBuilder_ == null) {
           if (((bitField0_ & 0x00000001) == 0x00000001)) {
             request_ = java.util.Collections.unmodifiableList(request_);
@@ -4411,6 +4350,11 @@ public final class MBHDPaymentsProtos {
         } else {
           result.transaction_ = transactionBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.lastAddressIndex_ = lastAddressIndex_;
+        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -4478,11 +4422,18 @@ public final class MBHDPaymentsProtos {
             }
           }
         }
+        if (other.hasLastAddressIndex()) {
+          setLastAddressIndex(other.getLastAddressIndex());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
 
       public final boolean isInitialized() {
+        if (!hasLastAddressIndex()) {
+          
+          return false;
+        }
         for (int i = 0; i < getRequestCount(); i++) {
           if (!getRequest(i).isInitialized()) {
             
@@ -5141,6 +5092,55 @@ public final class MBHDPaymentsProtos {
         return transactionBuilder_;
       }
 
+      // required int32 last_address_index = 3;
+      private int lastAddressIndex_ ;
+      /**
+       * <code>required int32 last_address_index = 3;</code>
+       *
+       * <pre>
+       * The last (highest) address generating index that was used to create a Request.address
+       * </pre>
+       */
+      public boolean hasLastAddressIndex() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required int32 last_address_index = 3;</code>
+       *
+       * <pre>
+       * The last (highest) address generating index that was used to create a Request.address
+       * </pre>
+       */
+      public int getLastAddressIndex() {
+        return lastAddressIndex_;
+      }
+      /**
+       * <code>required int32 last_address_index = 3;</code>
+       *
+       * <pre>
+       * The last (highest) address generating index that was used to create a Request.address
+       * </pre>
+       */
+      public Builder setLastAddressIndex(int value) {
+        bitField0_ |= 0x00000004;
+        lastAddressIndex_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required int32 last_address_index = 3;</code>
+       *
+       * <pre>
+       * The last (highest) address generating index that was used to create a Request.address
+       * </pre>
+       */
+      public Builder clearLastAddressIndex() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        lastAddressIndex_ = 0;
+        onChanged();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:Payments)
     }
 
@@ -5183,16 +5183,17 @@ public final class MBHDPaymentsProtos {
     java.lang.String[] descriptorData = {
       "\n\034main/protobuf/payments.proto\"O\n\013FiatPa" +
       "yment\022\016\n\006amount\030\001 \002(\t\022\020\n\010currency\030\002 \002(\t\022" +
-      "\020\n\010exchange\030\003 \001(\t\022\014\n\004rate\030\004 \001(\t\"\210\001\n\007Requ" +
-      "est\022\n\n\002id\030\001 \002(\014\022\017\n\007address\030\002 \002(\t\022\r\n\005labe" +
-      "l\030\003 \001(\t\022\022\n\namount_btc\030\004 \001(\003\022!\n\013amount_fi" +
-      "at\030\005 \001(\0132\014.FiatPayment\022\014\n\004note\030\006 \001(\t\022\014\n\004" +
-      "date\030\007 \001(\003\"a\n\013Transaction\022\014\n\004hash\030\001 \002(\014\022" +
-      "\023\n\013request_ids\030\002 \003(\014\022!\n\013amount_fiat\030\003 \001(" +
-      "\0132\014.FiatPayment\022\014\n\004note\030\004 \001(\t\"H\n\010Payment" +
-      "s\022\031\n\007request\030\001 \003(\0132\010.Request\022!\n\013transact",
-      "ion\030\002 \003(\0132\014.TransactionB3\n\035org.multibit." +
-      "hd.core.protobufB\022MBHDPaymentsProtos"
+      "\020\n\010exchange\030\003 \001(\t\022\014\n\004rate\030\004 \001(\t\"|\n\007Reque" +
+      "st\022\017\n\007address\030\001 \002(\t\022\r\n\005label\030\002 \001(\t\022\022\n\nam" +
+      "ount_btc\030\003 \001(\003\022!\n\013amount_fiat\030\004 \001(\0132\014.Fi" +
+      "atPayment\022\014\n\004note\030\005 \001(\t\022\014\n\004date\030\006 \001(\003\"e\n" +
+      "\013Transaction\022\014\n\004hash\030\001 \002(\014\022\027\n\017request_ad" +
+      "dress\030\002 \003(\014\022!\n\013amount_fiat\030\003 \001(\0132\014.FiatP" +
+      "ayment\022\014\n\004note\030\004 \001(\t\"d\n\010Payments\022\031\n\007requ" +
+      "est\030\001 \003(\0132\010.Request\022!\n\013transaction\030\002 \003(\013",
+      "2\014.Transaction\022\032\n\022last_address_index\030\003 \002" +
+      "(\005B3\n\035org.multibit.hd.core.protobufB\022MBH" +
+      "DPaymentsProtos"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -5210,19 +5211,19 @@ public final class MBHDPaymentsProtos {
           internal_static_Request_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Request_descriptor,
-              new java.lang.String[] { "Id", "Address", "Label", "AmountBtc", "AmountFiat", "Note", "Date", });
+              new java.lang.String[] { "Address", "Label", "AmountBtc", "AmountFiat", "Note", "Date", });
           internal_static_Transaction_descriptor =
             getDescriptor().getMessageTypes().get(2);
           internal_static_Transaction_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Transaction_descriptor,
-              new java.lang.String[] { "Hash", "RequestIds", "AmountFiat", "Note", });
+              new java.lang.String[] { "Hash", "RequestAddress", "AmountFiat", "Note", });
           internal_static_Payments_descriptor =
             getDescriptor().getMessageTypes().get(3);
           internal_static_Payments_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Payments_descriptor,
-              new java.lang.String[] { "Request", "Transaction", });
+              new java.lang.String[] { "Request", "Transaction", "LastAddressIndex", });
           return null;
         }
       };

@@ -45,14 +45,14 @@ option java_outer_classname = "MBHDPaymentsProtos";
  * A single payment request (as created on the Request bitcoin screen)
  */
 message Request {
-  required bytes id = 1;                 // The unique identifier for the payment request, typically a UUID
-  required string address = 2;           // The payment request bitcoin address (as per the bitcoin URI spec)
+  required string address = 1;           // The payment request bitcoin address (as per the bitcoin URI spec)
+                                         // Each new request has a distinct address so it can be used as a key for Requests
   
-  optional string label = 3;             // The label (as per the bitcoin URI spec)
-  optional int64 amount_btc = 4;         // The bitcoin amount, in satoshi (as per the bitcoin URI spec)
-  optional FiatPayment amount_fiat = 5;  // The fiat equivalent of the bitcoin amount
-  optional string note = 6;              // The private note (this is not included on any QRcode)
-  optional int64 date = 7;               // The creation datetime (millis since epoch)
+  optional string label = 2;             // The label (as per the bitcoin URI spec)
+  optional int64 amount_btc = 3;         // The bitcoin amount, in satoshi (as per the bitcoin URI spec)
+  optional FiatPayment amount_fiat = 4;  // The fiat equivalent of the bitcoin amount
+  optional string note = 5;              // The private note (this is not included on any QRcode)
+  optional int64 date = 6;               // The creation datetime (millis since epoch)
 }
 
 /** 
@@ -62,9 +62,9 @@ message Transaction {
   required bytes hash = 1;                  // The transaction hash (i.e. the transaction id as per the wallet Transaction.hash)
                                             // The corresponding transaction is expected to be in the wallet.
 
-  repeated bytes request_ids = 2;           // The ids of requests related to this transaction.
+  repeated bytes request_address = 2;       // The Request.address(es) related to this transaction.
                                             // If a transaction output sends bitcoin to a request.address then it will appear in this list
-                                            // There can be zero, one or more request_ids for a single transaction.
+                                            // There can be zero, one or more request_address for a single transaction.
   optional FiatPayment amount_fiat = 3;     // The fiat amount of the transaction at the time it was first sent or received.
   optional string note = 4;                 // The note added when the transaction is sent
 }
@@ -76,4 +76,9 @@ message Transaction {
 message Payments {
   repeated Request request = 1;             // Collection of requests
   repeated Transaction transaction = 2;     // Collection of transactions
+  required int32 last_address_index = 3;    // The last (highest) address generating index that was used to create a Request.address
+                                            // (This will migrate into the wallet when the wallet supports HD address creation -
+                                            // currently it is simply 0,1,2,3,... )
+
+  // Next tag: 4
 }
