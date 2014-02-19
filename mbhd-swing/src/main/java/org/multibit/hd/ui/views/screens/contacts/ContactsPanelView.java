@@ -1,10 +1,7 @@
 package org.multibit.hd.ui.views.screens.contacts;
 
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.dto.WalletId;
-import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.services.ContactService;
-import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.enter_search.EnterSearchModel;
@@ -18,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -39,8 +37,7 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
   private JButton undoButton;
 
   private JTable contactsTable;
-  private ContactTableModel contactTableModel;
-
+  private ContactTableModel contactsTableModel;
 
   /**
    * @param panelModel The model backing this panel view
@@ -77,28 +74,13 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
 
     getSearchAction();
 
-    ContactService contactService = CoreServices.getOrCreateContactService(getCurrentWalletId());
+    // Populate the model
 
-    contactsTable = Tables.newContactsTable(contactService.allContacts(1, 10));
-    //contactTableModel = (ContactTableModel) contactsTable.getModel();
-
-
+    contactsTable = Tables.newContactsTable(getScreenModel().getContacts());
+    contactsTableModel = (ContactTableModel) contactsTable.getModel();
 
     // Detect clicks on the table
-    contactsTable.addMouseListener(new MouseAdapter() {
-
-      public void mousePressed(MouseEvent e) {
-
-        if (e.getClickCount() > 0) {
-          JTable target = (JTable) e.getSource();
-          int row = target.getSelectedRow();
-          int column = target.getSelectedColumn();
-
-        }
-      }
-
-    });
-
+    contactsTable.addMouseListener(getTableMouseListener());
 
     // Create the scroll pane and add the table to it.
     JScrollPane scrollPane = new JScrollPane(contactsTable);
@@ -129,16 +111,6 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
 
   }
 
-  // TODO Move this into a wallet service
-  private WalletId getCurrentWalletId() {
-    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
-      return WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId();
-    }
-
-    // TODO this need removing
-    return new WalletId("66666666-77777777-88888888-99999999-aaaaaaaa");
-  }
-
   /**
    * @return The search contact action
    */
@@ -155,11 +127,12 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
   /**
    * @return The add contact action
    */
-  public Action getAddAction() {
+  private Action getAddAction() {
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
 
+        // TODO Show contact edit wizard
 
       }
     };
@@ -168,11 +141,12 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
   /**
    * @return The edit contact action
    */
-  public Action getEditAction() {
+  private Action getEditAction() {
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
 
+        // TODO Show contact edit wizard
 
       }
     };
@@ -181,13 +155,19 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
   /**
    * @return The delete contact action
    */
-  public Action getDeleteAction() {
+  private Action getDeleteAction() {
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        // Locate all the selected columns
+        // Get the list of selected contacts
+        List<Contact> selectedContacts = contactsTableModel.getContactsBySelection(true);
 
+        // Remove them from the table model
+        contactsTableModel.removeContacts(selectedContacts);
+
+        // Remove them from the screen model
+        getScreenModel().removeAll(selectedContacts);
 
       }
     };
@@ -196,7 +176,7 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
   /**
    * @return The undo action
    */
-  public Action getUndoAction() {
+  private Action getUndoAction() {
 
     return new AbstractAction() {
       @Override
@@ -215,10 +195,41 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
     // User has selected from the checkboxes so interpret the result
     int checkSelectorIndex = checkSelectorComboBox.getSelectedIndex();
 
-    ContactTableModel model = (ContactTableModel) contactsTable.getModel();
+    contactsTableModel.updateSelectionCheckboxes(checkSelectorIndex);
 
-    model.updateSelectionCheckboxes(checkSelectorIndex);
+  }
 
+  /**
+   * @return The table mouse listener
+   */
+  private MouseAdapter getTableMouseListener() {
+    return new MouseAdapter() {
+
+      public void mousePressed(MouseEvent e) {
+
+        // Check box handling
+        if (e.getClickCount() > 0) {
+          JTable target = (JTable) e.getSource();
+          int row = target.getSelectedRow();
+
+          // Check the check box
+          contactsTableModel.setSelectionCheckmark(row, true);
+
+        }
+
+        // Edit requested
+        if (e.getClickCount() == 2) {
+
+          JTable target = (JTable) e.getSource();
+          int row = target.getSelectedRow();
+
+          // TODO Show edit wizard
+
+        }
+
+      }
+
+    };
   }
 
 }

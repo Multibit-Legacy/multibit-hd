@@ -37,7 +37,7 @@ public class ContactServiceTest {
   @Test
   public void testAllContacts() throws Exception {
 
-    List<Contact> allContacts = contactService.allContacts(1, 10);
+    List<Contact> allContacts = contactService.allContacts();
 
     assertThat(allContacts.size()).isEqualTo(6);
 
@@ -47,7 +47,7 @@ public class ContactServiceTest {
    public void testClearContacts() throws Exception {
 
      contactService.clear();
-     List<Contact> allContacts = contactService.allContacts(1, 10);
+     List<Contact> allContacts = contactService.allContacts();
 
      assertThat(allContacts.size()).isEqualTo(0);
 
@@ -55,7 +55,7 @@ public class ContactServiceTest {
   @Test
   public void testFilterContactsByName() throws Exception {
 
-    List<Contact> filteredContacts = contactService.filterContactsByName(1, 10, "Alice");
+    List<Contact> filteredContacts = contactService.filterContactsByName("Alice");
 
     assertThat(filteredContacts.size()).isEqualTo(2);
 
@@ -80,24 +80,24 @@ public class ContactServiceTest {
     tags.add("froppy");
     newContact.setTags(tags);
 
-    int numberOfContacts = contactService.allContacts(1, 10).size();
+    int numberOfContacts = contactService.allContacts().size();
 
     // Store the contacts to the backing store
     contactService.store();
 
     // Clear the cached contacts and check it is empty
     contactService.clear();
-    List<Contact> allContacts = contactService.allContacts(1, 10);
+    List<Contact> allContacts = contactService.allContacts();
     assertThat(allContacts.size()).isEqualTo(0);
 
     // Reload it - there should be the same number of contacts and the new contact should be available
     contactService.load();
 
-    allContacts = contactService.allContacts(1, 10);
+    allContacts = contactService.allContacts();
 
     assertThat(allContacts.size()).isEqualTo(numberOfContacts);
 
-    List<Contact> reloadedContacts = contactService.filterContactsByName(1, 10, newContactName);
+    List<Contact> reloadedContacts = contactService.filterContactsByName(newContactName);
     Contact reloadedContact = reloadedContacts.iterator().next();
 
     // Check everything roundtripped ok

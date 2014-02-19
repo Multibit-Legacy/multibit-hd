@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.components.tables;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -56,46 +57,11 @@ public class ContactTableModel extends AbstractTableModel {
     Preconditions.checkNotNull(contacts, "'contacts' must be present");
 
     this.contacts = contacts;
-    data = new Object[contacts.size()][];
 
-    int row = 0;
-    for (Contact contact : contacts) {
+    populateTableData();
 
-      // Build row manually to allow for flexible column index reporting
-      final Object[] rowData = new Object[COLUMN_COUNT];
-      rowData[CHECKBOX_COLUMN_INDEX] = false;
-      rowData[NAME_COLUMN_INDEX] = contact.getName();
-      rowData[EMAIL_COLUMN_INDEX] = contact.getEmail().or("");
-      rowData[ADDRESS_COLUMN_INDEX] = contact.getBitcoinAddress().or("");
-      rowData[TAG_COLUMN_INDEX] = Joiner.on(" ").join(contact.getTags());
-
-      // Ensure we download the Gravatar asynchronously
-      final ListenableFuture<Optional<BufferedImage>> imageFuture = Gravatars.retrieveGravatar(contact.getEmail().or("nobody@example.org"));
-      Futures.addCallback(imageFuture, new FutureCallback<Optional<BufferedImage>>() {
-
-        // we want this handler to run immediately after we push the big red button!
-        public void onSuccess(Optional<BufferedImage> image) {
-          if (image.isPresent()) {
-            final ImageIcon gravatar = ImageDecorator.toImageIcon(
-              ImageDecorator.applyRoundedCorners(image.get(), MultiBitUI.IMAGE_CORNER_RADIUS)
-            );
-            rowData[GRAVATAR_COLUMN_INDEX] = gravatar;
-          } else {
-            rowData[GRAVATAR_COLUMN_INDEX] = Images.newUserIcon();
-          }
-        }
-
-        public void onFailure(Throwable thrown) {
-          rowData[GRAVATAR_COLUMN_INDEX] = Images.newUserIcon();
-        }
-      });
-
-      data[row] = rowData;
-
-      row++;
-
-    }
   }
+
 
   public int getColumnCount() {
     return columnNames.length;
@@ -120,6 +86,7 @@ public class ContactTableModel extends AbstractTableModel {
    * rather than a check box.
    */
   public Class getColumnClass(int c) {
+
     if (c == CHECKBOX_COLUMN_INDEX) {
       return Boolean.class;
     } else if (c == GRAVATAR_COLUMN_INDEX) {
@@ -127,6 +94,7 @@ public class ContactTableModel extends AbstractTableModel {
     } else {
       return String.class;
     }
+
   }
 
   /**
@@ -135,6 +103,8 @@ public class ContactTableModel extends AbstractTableModel {
   public void setValueAt(Object value, int row, int col) {
 
     data[row][col] = value;
+
+    // Keep repaints to a minimum
     fireTableCellUpdated(row, col);
 
   }
@@ -169,13 +139,101 @@ public class ContactTableModel extends AbstractTableModel {
   }
 
   /**
-   * @param row     The row index
-   * @param checked True if the checkbox column should be checked
+   * @param row      The row index
+   * @param selected True if the checkbox column should be marked as selected
    */
-  public void setSelectionCheckmark(int row, boolean checked) {
+  public void setSelectionCheckmark(int row, boolean selected) {
 
     // If it is not starred then apply a check or remove the existing one
-    setValueAt(checked, row, CHECKBOX_COLUMN_INDEX);
+    setValueAt(selected, row, CHECKBOX_COLUMN_INDEX);
+
+  }
+
+  /**
+   * @param selected True if a selected checkbox indicates that the row should be included in the result set
+   *
+   * @return A list of contacts by selection
+   */
+  public List<Contact> getContactsBySelection(boolean selected) {
+
+    List<Contact> results = Lists.newArrayList();
+
+    for (int row = 0; row < getRowCount(); row++) {
+
+      if (getValueAt(row, CHECKBOX_COLUMN_INDEX).equals(selected)) {
+
+        results.add(contacts.get(row));
+
+      }
+
+    }
+
+    return results;
+  }
+
+  /**
+   * @param list The list of contacts to remove
+   */
+  public void removeContacts(List<Contact> list) {
+
+    contacts.removeAll(list);
+
+    populateTableData();
+
+  }
+
+  /**
+   * <p>Populate the table data from the current contacts</p>
+   */
+  public void populateTableData() {
+
+    data = new Object[contacts.size()][];
+
+    int row = 0;
+    for (Contact contact : contacts) {
+
+      // Build row manually to allow for flexible column index reporting
+      final Object[] rowData = new Object[COLUMN_COUNT];
+      rowData[CHECKBOX_COLUMN_INDEX] = false;
+      rowData[NAME_COLUMN_INDEX] = contact.getName();
+      rowData[EMAIL_COLUMN_INDEX] = contact.getEmail().or("");
+      rowData[ADDRESS_COLUMN_INDEX] = contact.getBitcoinAddress().or("");
+      rowData[TAG_COLUMN_INDEX] = Joiner.on(" ").join(contact.getTags());
+
+      // Ensure we download the Gravatar asynchronously
+      final ListenableFuture<Optional<BufferedImage>> imageFuture = Gravatars.retrieveGravatar(contact.getEmail().or("nobody@example.org"));
+      Futures.addCallback(imageFuture, new FutureCallback<Optional<BufferedImage>>() {
+
+        // we want this handler to run immediately after we push the big red button!
+        public void onSuccess(Optional<BufferedImage> image) {
+
+          if (image.isPresent()) {
+            final ImageIcon gravatar = ImageDecorator.toImageIcon(
+              ImageDecorator.applyRoundedCorners(image.get(), MultiBitUI.IMAGE_CORNER_RADIUS)
+            );
+            rowData[GRAVATAR_COLUMN_INDEX] = gravatar;
+          } else {
+            rowData[GRAVATAR_COLUMN_INDEX] = Images.newUserIcon();
+          }
+
+          // Ensure all listeners update to the new situation
+          fireTableDataChanged();
+        }
+
+        public void onFailure(Throwable thrown) {
+
+          rowData[GRAVATAR_COLUMN_INDEX] = Images.newUserIcon();
+
+          // Ensure all listeners update to the new situation
+          fireTableDataChanged();
+        }
+      });
+
+      data[row] = rowData;
+
+      row++;
+
+    }
 
   }
 

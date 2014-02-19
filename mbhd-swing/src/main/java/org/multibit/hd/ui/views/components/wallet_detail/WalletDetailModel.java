@@ -65,7 +65,7 @@ public class WalletDetailModel implements Model<WalletDetail> {
       walletDetail.setWalletDirectory(walletFile.getParentFile().getName());
 
       ContactService contactService = CoreServices.getOrCreateContactService(walletData.getWalletId());
-      walletDetail.setNumberofContacts(contactService.allContacts(1, 100).size());
+      walletDetail.setNumberofContacts(contactService.allContacts().size());
 
       walletDetail.setNumberOfTransactions(WalletManager.INSTANCE.getCurrentWalletData().get().getWallet().getTransactions(true).size());
     }
