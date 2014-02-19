@@ -138,7 +138,18 @@ public class ContactService {
   }
 
   /**
-   * <p>Remove the given selected contacts from the cache. A subsequent <code>store()</code> will purge them from the backing store.</p>
+   * <p>Add the given contacts to the cache. A subsequent <code>store()</code> will add them from the backing store.</p>
+   *
+   * @param selectedContacts The selected contacts
+   */
+  public void addAll(List<Contact> selectedContacts) {
+
+    contacts.addAll(selectedContacts);
+
+  }
+
+  /**
+   * <p>Remove the given contacts from the cache. A subsequent <code>store()</code> will purge them from the backing store.</p>
    *
    * @param selectedContacts The selected contacts
    */
@@ -173,6 +184,7 @@ public class ContactService {
 
   }
 
+
   /**
    * <p>Save the contact data to the backing store</p>
    */
@@ -187,7 +199,6 @@ public class ContactService {
     }
 
   }
-
 
   /**
    * <p>Add some demo contacts to the contacts list</p>

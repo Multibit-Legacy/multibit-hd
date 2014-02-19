@@ -9,6 +9,7 @@ import org.multibit.hd.ui.views.screens.AbstractScreenModel;
 import org.multibit.hd.ui.views.screens.Screen;
 
 import java.util.List;
+import java.util.Stack;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -22,6 +23,8 @@ import java.util.List;
 public class ContactsPanelModel extends AbstractScreenModel {
 
   private final ContactService contactService;
+
+  private final Stack<List<Contact>> undoStack = new Stack<>();
 
   public ContactsPanelModel(Screen screen) {
     super(screen);
@@ -37,6 +40,8 @@ public class ContactsPanelModel extends AbstractScreenModel {
 
   public void removeAll(List<Contact> selectedContacts) {
 
+    undoStack.push(selectedContacts);
+
     contactService.removeAll(selectedContacts);
 
   }
@@ -49,5 +54,14 @@ public class ContactsPanelModel extends AbstractScreenModel {
 
     // TODO this need removing
     return new WalletId("66666666-77777777-88888888-99999999-aaaaaaaa");
+  }
+
+  public List<Contact> undo() {
+
+    List<Contact> contacts = undoStack.pop();
+
+    contactService.addAll(contacts);
+
+    return contactService.allContacts();
   }
 }

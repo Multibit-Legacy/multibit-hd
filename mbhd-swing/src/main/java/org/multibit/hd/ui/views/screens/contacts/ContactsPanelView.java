@@ -182,8 +182,9 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        // Locate all the selected columns
+        List<Contact> contacts = getScreenModel().undo();
 
+        contactsTableModel.populateTableData(contacts);
 
       }
     };

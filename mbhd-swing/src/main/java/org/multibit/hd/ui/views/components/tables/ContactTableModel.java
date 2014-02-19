@@ -50,15 +50,13 @@ public class ContactTableModel extends AbstractTableModel {
   };
 
   private Object[][] data;
-  private final List<Contact> contacts;
+  private List<Contact> contacts;
 
   public ContactTableModel(List<Contact> contacts) {
 
     Preconditions.checkNotNull(contacts, "'contacts' must be present");
 
-    this.contacts = contacts;
-
-    populateTableData();
+    populateTableData(contacts);
 
   }
 
@@ -178,14 +176,19 @@ public class ContactTableModel extends AbstractTableModel {
 
     contacts.removeAll(list);
 
-    populateTableData();
+    populateTableData(contacts);
 
   }
 
+
   /**
    * <p>Populate the table data from the current contacts</p>
+   *
+   * @param contacts The contacts that will form the basis of the table model in the same order as presented
    */
-  public void populateTableData() {
+  public void populateTableData(List<Contact> contacts) {
+
+    this.contacts = contacts;
 
     data = new Object[contacts.size()][];
 
@@ -204,7 +207,6 @@ public class ContactTableModel extends AbstractTableModel {
       final ListenableFuture<Optional<BufferedImage>> imageFuture = Gravatars.retrieveGravatar(contact.getEmail().or("nobody@example.org"));
       Futures.addCallback(imageFuture, new FutureCallback<Optional<BufferedImage>>() {
 
-        // we want this handler to run immediately after we push the big red button!
         public void onSuccess(Optional<BufferedImage> image) {
 
           if (image.isPresent()) {
