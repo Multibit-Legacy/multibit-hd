@@ -61,12 +61,18 @@ public class ContactsScreenModel extends AbstractScreenModel {
     return new WalletId("66666666-77777777-88888888-99999999-aaaaaaaa");
   }
 
+  /**
+   * @return The complete list of contacts (no filtering) with the most recent deletes re-instated
+   */
   public List<Contact> undo() {
 
-    List<Contact> contacts = undoStack.pop();
+    if (!undoStack.empty()) {
+      List<Contact> contacts = undoStack.pop();
 
-    contactService.addAll(contacts);
+      contactService.addAll(contacts);
+    }
 
     return contactService.allContacts();
+
   }
 }

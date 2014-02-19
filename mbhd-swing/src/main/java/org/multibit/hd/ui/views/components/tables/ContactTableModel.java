@@ -180,7 +180,6 @@ public class ContactTableModel extends AbstractTableModel {
 
   }
 
-
   /**
    * <p>Populate the table data from the current contacts</p>
    *
