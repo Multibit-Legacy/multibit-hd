@@ -20,6 +20,7 @@ package org.multibit.hd.core.store;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import org.joda.time.DateTime;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.protobuf.MBHDContactsProtos;
 import org.multibit.hd.core.protobuf.MBHDPaymentsProtos;
@@ -29,7 +30,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Serialize and de-serialize payments to a byte stream containing a
@@ -95,14 +98,15 @@ public class PaymentsProtobufSerializer {
 
   private static MBHDPaymentsProtos.PaymentRequest makePaymentRequestProto(PaymentRequest paymentRequest) {
     MBHDPaymentsProtos.PaymentRequest.Builder paymentRequestBuilder = MBHDPaymentsProtos.PaymentRequest.newBuilder();
-//    contactBuilder.setId(contact.getId().toString());
-//    contactBuilder.setName(contact.getName());
-//    contactBuilder.setBitcoinAddress(contact.getBitcoinAddress().or(""));
-//    contactBuilder.setEmail(contact.getEmail().or(""));
-//    contactBuilder.setImagePath(contact.getImagePath().or(""));
-//    contactBuilder.setExtendedPublicKey(contact.getExtendedPublicKey().or(""));
-//    contactBuilder.setNotes(contact.getNotes().or(""));
-//
+
+    paymentRequestBuilder.setAddress(paymentRequest.getAddress());
+    paymentRequestBuilder.setNote(paymentRequest.getNote());
+    paymentRequestBuilder.setAmountBtc(paymentRequest.getAmount_btc().longValue());
+    paymentRequestBuilder.setDate(paymentRequest.getDate().getMillis());
+    paymentRequestBuilder.setLabel(paymentRequestBuilder.getLabel());
+
+    // TODO FIATAMOUNT
+
 //    // Construct tags
 //    List<String> tags = contact.getTags();
 //    if (tags != null) {
@@ -179,37 +183,24 @@ public class PaymentsProtobufSerializer {
       Collection<PaymentRequest> paymentRequests = Lists.newArrayList();
       Collection<TransactionInfo> transactionInfos = Lists.newArrayList();
 
-//      List<MBHDContactsProtos.Contact>contactProtos = contactsProto.getContactList();
-//
-//      if (contactProtos != null) {
-//        for (MBHDContactsProtos.Contact contactProto : contactProtos) {
-//          String idAsString = contactProto.getId();
-//          UUID id = UUID.fromString(idAsString);
-//
-//          String name = contactProto.getName();
-//
-//          Contact contact = new Contact(id, name);
-//
-//          contact.setEmail(contactProto.getEmail());
-//          contact.setBitcoinAddress(contactProto.getBitcoinAddress());
-//          contact.setImagePath(contactProto.getImagePath());
-//          contact.setExtendedPublicKey(contactProto.getExtendedPublicKey());
-//          contact.setNotes(contactProto.getNotes());
-//
-//          // Create tags
-//          List<String> tags = Lists.newArrayList();
-//          List<MBHDContactsProtos.Tag> tagProtos = contactProto.getTagList();
-//          if (tagProtos != null) {
-//            for (MBHDContactsProtos.Tag tagProto : tagProtos) {
-//              tags.add(tagProto.getTagValue());
-//            }
-//          }
-//          contact.setTags(tags);
-//          readContacts.add(contact);
-//        }
-//      }
+      List<MBHDPaymentsProtos.PaymentRequest> paymentRequestProtos = paymentsProto.getPaymentRequestList();
+      if (paymentRequestProtos != null) {
+        for (MBHDPaymentsProtos.PaymentRequest paymentRequestProto : paymentRequestProtos) {
+          PaymentRequest paymentRequest = new PaymentRequest();
+          paymentRequest.setAddress(paymentRequestProto.getAddress());
+          paymentRequest.setLabel(paymentRequestProto.getLabel());
+          paymentRequest.setNote(paymentRequestProto.getNote());
+          paymentRequest.setDate(new DateTime(paymentRequestProto.getDate() * 1000));
+          paymentRequest.setAmount_btc(BigInteger.valueOf(paymentRequestProto.getAmountBtc()));
+          // TODO fiat payment
 
-      // Everything read ok - put the new payment requests and transactions into the passed in payments object
+          paymentRequests.add(paymentRequest);
+        }
+      }
+
+      // TODO transactionInfo
+
+
       payments.setPaymentRequests(paymentRequests);
       payments.setTransactionInfos(transactionInfos);
     }
