@@ -20,13 +20,13 @@ import java.util.Stack;
  * @since 0.0.1
  *  
  */
-public class ContactsPanelModel extends AbstractScreenModel {
+public class ContactsScreenModel extends AbstractScreenModel {
 
   private final ContactService contactService;
 
   private final Stack<List<Contact>> undoStack = new Stack<>();
 
-  public ContactsPanelModel(Screen screen) {
+  public ContactsScreenModel(Screen screen) {
     super(screen);
 
     // Provide an initial population of contacts

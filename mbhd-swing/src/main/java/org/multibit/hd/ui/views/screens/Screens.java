@@ -1,22 +1,22 @@
 package org.multibit.hd.ui.views.screens;
 
 import org.multibit.hd.ui.i18n.MessageKey;
-import org.multibit.hd.ui.views.screens.contacts.ContactsPanelModel;
-import org.multibit.hd.ui.views.screens.contacts.ContactsPanelView;
-import org.multibit.hd.ui.views.screens.exit.ExitPanelModel;
-import org.multibit.hd.ui.views.screens.exit.ExitPanelView;
-import org.multibit.hd.ui.views.screens.help.HelpPanelModel;
-import org.multibit.hd.ui.views.screens.help.HelpPanelView;
-import org.multibit.hd.ui.views.screens.history.HistoryPanelModel;
-import org.multibit.hd.ui.views.screens.history.HistoryPanelView;
-import org.multibit.hd.ui.views.screens.settings.SettingsPanelModel;
-import org.multibit.hd.ui.views.screens.settings.SettingsPanelView;
-import org.multibit.hd.ui.views.screens.tools.ToolsPanelModel;
-import org.multibit.hd.ui.views.screens.tools.ToolsPanelView;
-import org.multibit.hd.ui.views.screens.transactions.TransactionsPanelModel;
-import org.multibit.hd.ui.views.screens.transactions.TransactionsPanelView;
-import org.multibit.hd.ui.views.screens.wallet.WalletPanelModel;
-import org.multibit.hd.ui.views.screens.wallet.WalletPanelView;
+import org.multibit.hd.ui.views.screens.contacts.ContactsScreenModel;
+import org.multibit.hd.ui.views.screens.contacts.ContactsScreenView;
+import org.multibit.hd.ui.views.screens.exit.ExitScreenModel;
+import org.multibit.hd.ui.views.screens.exit.ExitScreenView;
+import org.multibit.hd.ui.views.screens.help.HelpScreenModel;
+import org.multibit.hd.ui.views.screens.help.HelpScreenView;
+import org.multibit.hd.ui.views.screens.history.HistoryScreenModel;
+import org.multibit.hd.ui.views.screens.history.HistoryScreenView;
+import org.multibit.hd.ui.views.screens.settings.SettingsScreenModel;
+import org.multibit.hd.ui.views.screens.settings.SettingsScreenView;
+import org.multibit.hd.ui.views.screens.tools.ToolsScreenModel;
+import org.multibit.hd.ui.views.screens.tools.ToolsScreenView;
+import org.multibit.hd.ui.views.screens.transactions.TransactionsScreenModel;
+import org.multibit.hd.ui.views.screens.transactions.TransactionsScreenView;
+import org.multibit.hd.ui.views.screens.wallet.WalletScreenModel;
+import org.multibit.hd.ui.views.screens.wallet.WalletScreenView;
 
 /**
  * <p>Factory to provide the following to UI:</p>
@@ -59,28 +59,28 @@ public class Screens {
 
     switch (screen) {
       case WALLET:
-        view = new WalletPanelView(new WalletPanelModel(screen), screen, MessageKey.CONTACTS);
+        view = new WalletScreenView(new WalletScreenModel(screen), screen, MessageKey.CONTACTS);
         break;
       case CONTACTS:
-        view = new ContactsPanelView(new ContactsPanelModel(screen), screen, MessageKey.CONTACTS);
+        view = new ContactsScreenView(new ContactsScreenModel(screen), screen, MessageKey.CONTACTS);
         break;
       case TRANSACTIONS:
-        view = new TransactionsPanelView(new TransactionsPanelModel(screen), screen, MessageKey.CONTACTS);
+        view = new TransactionsScreenView(new TransactionsScreenModel(screen), screen, MessageKey.CONTACTS);
         break;
       case HELP:
-        view = new HelpPanelView(new HelpPanelModel(screen), screen, MessageKey.CONTACTS);
+        view = new HelpScreenView(new HelpScreenModel(screen), screen, MessageKey.CONTACTS);
         break;
       case HISTORY:
-        view = new HistoryPanelView(new HistoryPanelModel(screen), screen, MessageKey.CONTACTS);
+        view = new HistoryScreenView(new HistoryScreenModel(screen), screen, MessageKey.CONTACTS);
         break;
       case SETTINGS:
-        view = new SettingsPanelView(new SettingsPanelModel(screen), screen, MessageKey.CONTACTS);
+        view = new SettingsScreenView(new SettingsScreenModel(screen), screen, MessageKey.CONTACTS);
         break;
       case TOOLS:
-        view = new ToolsPanelView(new ToolsPanelModel(screen), screen, MessageKey.CONTACTS);
+        view = new ToolsScreenView(new ToolsScreenModel(screen), screen, MessageKey.CONTACTS);
         break;
       case EXIT:
-        view = new ExitPanelView(new ExitPanelModel(screen), screen, MessageKey.CONTACTS);
+        view = new ExitScreenView(new ExitScreenModel(screen), screen, MessageKey.CONTACTS);
         break;
       default:
         throw new IllegalStateException("Unknown screen:" + screen.name());

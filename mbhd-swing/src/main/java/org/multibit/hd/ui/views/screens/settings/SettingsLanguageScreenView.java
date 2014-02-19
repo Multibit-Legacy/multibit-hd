@@ -21,12 +21,12 @@ import java.awt.event.ActionListener;
  * @since 0.0.1
  *         
  */
-public class SettingsLanguagePanelView implements ActionListener {
+public class SettingsLanguageScreenView implements ActionListener {
 
 
   private JComboBox<String> languageComboBox;
 
-  public SettingsLanguagePanelView() {
+  public SettingsLanguageScreenView() {
 
   }
 

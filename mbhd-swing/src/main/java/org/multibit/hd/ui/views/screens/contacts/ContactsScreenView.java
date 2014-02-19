@@ -28,7 +28,7 @@ import java.util.List;
  * @since 0.0.1
  *  
  */
-public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> implements ActionListener {
+public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> implements ActionListener {
 
   // View components
   private ModelAndView<EnterSearchModel, EnterSearchView> enterSearchMaV;
@@ -40,7 +40,7 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
    * @param screen     The screen to filter events from components
    * @param title      The key to the main title of this panel view
    */
-  public ContactsPanelView(ContactsPanelModel panelModel, Screen screen, MessageKey title) {
+  public ContactsScreenView(ContactsScreenModel panelModel, Screen screen, MessageKey title) {
     super(panelModel, screen, title);
   }
 

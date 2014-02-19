@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.screens.help;
+package org.multibit.hd.ui.views.screens.history;
 
 import org.multibit.hd.ui.views.screens.AbstractScreenModel;
 import org.multibit.hd.ui.views.screens.Screen;
@@ -6,15 +6,15 @@ import org.multibit.hd.ui.views.screens.Screen;
 /**
  * <p>View to provide the following to application:</p>
  * <ul>
- * <li>Provision of components and layout for the help screen</li>
+ * <li>Provision of components and layout for the history screen</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class HelpPanelModel extends AbstractScreenModel {
+public class HistoryScreenModel extends AbstractScreenModel {
 
-  public HelpPanelModel(Screen screen) {
+  public HistoryScreenModel(Screen screen) {
     super(screen);
   }
 

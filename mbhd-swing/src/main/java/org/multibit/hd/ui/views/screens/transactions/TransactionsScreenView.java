@@ -27,9 +27,9 @@ import javax.swing.*;
  * @since 0.0.1
  *  
  */
-public class TransactionsPanelView extends AbstractScreenView<TransactionsPanelModel> {
+public class TransactionsScreenView extends AbstractScreenView<TransactionsScreenModel> {
 
-  private static final Logger log = LoggerFactory.getLogger(TransactionsPanelView.class);
+  private static final Logger log = LoggerFactory.getLogger(TransactionsScreenView.class);
 
   private WalletService walletService;
   private JTable transactionsTable;
@@ -39,7 +39,7 @@ public class TransactionsPanelView extends AbstractScreenView<TransactionsPanelM
    * @param screen     The screen to filter events from components
    * @param title      The key to the main title of this panel view
    */
-  public TransactionsPanelView(TransactionsPanelModel panelModel, Screen screen, MessageKey title) {
+  public TransactionsScreenView(TransactionsScreenModel panelModel, Screen screen, MessageKey title) {
     super(panelModel, screen, title);
 
     // Register for transaction seen events so it can update.
