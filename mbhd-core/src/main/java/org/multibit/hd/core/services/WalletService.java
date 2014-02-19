@@ -25,6 +25,11 @@ import java.util.Set;
  */
 public class WalletService extends AbstractService {
 
+  /**
+   * The name of the protobuf file containing additional payments information
+   */
+  public static final String PAYMENTS_DATABASE_NAME = "payments.db";
+
   @Override
   public void start() {
     this.requireSingleThreadExecutor();

@@ -1165,7 +1165,7 @@ public final class MBHDPaymentsProtos {
     // @@protoc_insertion_point(class_scope:FiatPayment)
   }
 
-  public interface RequestOrBuilder
+  public interface PaymentRequestOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
     // required string address = 1;
@@ -1312,29 +1312,29 @@ public final class MBHDPaymentsProtos {
     long getDate();
   }
   /**
-   * Protobuf type {@code Request}
+   * Protobuf type {@code PaymentRequest}
    *
    * <pre>
    ** 
    * A single payment request (as created on the Request bitcoin screen)
    * </pre>
    */
-  public static final class Request extends
+  public static final class PaymentRequest extends
       com.google.protobuf.GeneratedMessage
-      implements RequestOrBuilder {
-    // Use Request.newBuilder() to construct.
-    private Request(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      implements PaymentRequestOrBuilder {
+    // Use PaymentRequest.newBuilder() to construct.
+    private PaymentRequest(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
       this.unknownFields = builder.getUnknownFields();
     }
-    private Request(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+    private PaymentRequest(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
 
-    private static final Request defaultInstance;
-    public static Request getDefaultInstance() {
+    private static final PaymentRequest defaultInstance;
+    public static PaymentRequest getDefaultInstance() {
       return defaultInstance;
     }
 
-    public Request getDefaultInstanceForType() {
+    public PaymentRequest getDefaultInstanceForType() {
       return defaultInstance;
     }
 
@@ -1344,7 +1344,7 @@ public final class MBHDPaymentsProtos {
         getUnknownFields() {
       return this.unknownFields;
     }
-    private Request(
+    private PaymentRequest(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -1419,28 +1419,28 @@ public final class MBHDPaymentsProtos {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return org.multibit.hd.core.protobuf.MBHDPaymentsProtos.internal_static_Request_descriptor;
+      return org.multibit.hd.core.protobuf.MBHDPaymentsProtos.internal_static_PaymentRequest_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.multibit.hd.core.protobuf.MBHDPaymentsProtos.internal_static_Request_fieldAccessorTable
+      return org.multibit.hd.core.protobuf.MBHDPaymentsProtos.internal_static_PaymentRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request.class, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request.Builder.class);
+              org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest.class, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest.Builder.class);
     }
 
-    public static com.google.protobuf.Parser<Request> PARSER =
-        new com.google.protobuf.AbstractParser<Request>() {
-      public Request parsePartialFrom(
+    public static com.google.protobuf.Parser<PaymentRequest> PARSER =
+        new com.google.protobuf.AbstractParser<PaymentRequest>() {
+      public PaymentRequest parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Request(input, extensionRegistry);
+        return new PaymentRequest(input, extensionRegistry);
       }
     };
 
     @java.lang.Override
-    public com.google.protobuf.Parser<Request> getParserForType() {
+    public com.google.protobuf.Parser<PaymentRequest> getParserForType() {
       return PARSER;
     }
 
@@ -1785,53 +1785,53 @@ public final class MBHDPaymentsProtos {
       return super.writeReplace();
     }
 
-    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request parseFrom(byte[] data)
+    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request parseFrom(java.io.InputStream input)
+    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request parseDelimitedFrom(java.io.InputStream input)
+    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request parseDelimitedFrom(
+    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -1840,7 +1840,7 @@ public final class MBHDPaymentsProtos {
 
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request prototype) {
+    public static Builder newBuilder(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
@@ -1852,7 +1852,7 @@ public final class MBHDPaymentsProtos {
       return builder;
     }
     /**
-     * Protobuf type {@code Request}
+     * Protobuf type {@code PaymentRequest}
      *
      * <pre>
      ** 
@@ -1861,20 +1861,20 @@ public final class MBHDPaymentsProtos {
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.multibit.hd.core.protobuf.MBHDPaymentsProtos.RequestOrBuilder {
+       implements org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequestOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return org.multibit.hd.core.protobuf.MBHDPaymentsProtos.internal_static_Request_descriptor;
+        return org.multibit.hd.core.protobuf.MBHDPaymentsProtos.internal_static_PaymentRequest_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return org.multibit.hd.core.protobuf.MBHDPaymentsProtos.internal_static_Request_fieldAccessorTable
+        return org.multibit.hd.core.protobuf.MBHDPaymentsProtos.internal_static_PaymentRequest_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request.class, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request.Builder.class);
+                org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest.class, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest.Builder.class);
       }
 
-      // Construct using org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request.newBuilder()
+      // Construct using org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -1920,23 +1920,23 @@ public final class MBHDPaymentsProtos {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return org.multibit.hd.core.protobuf.MBHDPaymentsProtos.internal_static_Request_descriptor;
+        return org.multibit.hd.core.protobuf.MBHDPaymentsProtos.internal_static_PaymentRequest_descriptor;
       }
 
-      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request getDefaultInstanceForType() {
-        return org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request.getDefaultInstance();
+      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest getDefaultInstanceForType() {
+        return org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest.getDefaultInstance();
       }
 
-      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request build() {
-        org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request result = buildPartial();
+      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest build() {
+        org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request buildPartial() {
-        org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request result = new org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request(this);
+      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest buildPartial() {
+        org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest result = new org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -1973,16 +1973,16 @@ public final class MBHDPaymentsProtos {
       }
 
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request) {
-          return mergeFrom((org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request)other);
+        if (other instanceof org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest) {
+          return mergeFrom((org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request other) {
-        if (other == org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request.getDefaultInstance()) return this;
+      public Builder mergeFrom(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest other) {
+        if (other == org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest.getDefaultInstance()) return this;
         if (other.hasAddress()) {
           bitField0_ |= 0x00000001;
           address_ = other.address_;
@@ -2029,11 +2029,11 @@ public final class MBHDPaymentsProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request parsedMessage = null;
+        org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request) e.getUnfinishedMessage();
+          parsedMessage = (org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest) e.getUnfinishedMessage();
           throw e;
         } finally {
           if (parsedMessage != null) {
@@ -2589,18 +2589,18 @@ public final class MBHDPaymentsProtos {
         return this;
       }
 
-      // @@protoc_insertion_point(builder_scope:Request)
+      // @@protoc_insertion_point(builder_scope:PaymentRequest)
     }
 
     static {
-      defaultInstance = new Request(true);
+      defaultInstance = new PaymentRequest(true);
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:Request)
+    // @@protoc_insertion_point(class_scope:PaymentRequest)
   }
 
-  public interface TransactionOrBuilder
+  public interface TransactionInfoOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
     // required bytes hash = 1;
@@ -2704,29 +2704,29 @@ public final class MBHDPaymentsProtos {
         getNoteBytes();
   }
   /**
-   * Protobuf type {@code Transaction}
+   * Protobuf type {@code TransactionInfo}
    *
    * <pre>
    ** 
-   * A single transaction
+   * A single "extra" transaction info (this is data additional to the bitcoinj Transaction)
    * </pre>
    */
-  public static final class Transaction extends
+  public static final class TransactionInfo extends
       com.google.protobuf.GeneratedMessage
-      implements TransactionOrBuilder {
-    // Use Transaction.newBuilder() to construct.
-    private Transaction(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      implements TransactionInfoOrBuilder {
+    // Use TransactionInfo.newBuilder() to construct.
+    private TransactionInfo(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
       this.unknownFields = builder.getUnknownFields();
     }
-    private Transaction(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+    private TransactionInfo(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
 
-    private static final Transaction defaultInstance;
-    public static Transaction getDefaultInstance() {
+    private static final TransactionInfo defaultInstance;
+    public static TransactionInfo getDefaultInstance() {
       return defaultInstance;
     }
 
-    public Transaction getDefaultInstanceForType() {
+    public TransactionInfo getDefaultInstanceForType() {
       return defaultInstance;
     }
 
@@ -2736,7 +2736,7 @@ public final class MBHDPaymentsProtos {
         getUnknownFields() {
       return this.unknownFields;
     }
-    private Transaction(
+    private TransactionInfo(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -2807,28 +2807,28 @@ public final class MBHDPaymentsProtos {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return org.multibit.hd.core.protobuf.MBHDPaymentsProtos.internal_static_Transaction_descriptor;
+      return org.multibit.hd.core.protobuf.MBHDPaymentsProtos.internal_static_TransactionInfo_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.multibit.hd.core.protobuf.MBHDPaymentsProtos.internal_static_Transaction_fieldAccessorTable
+      return org.multibit.hd.core.protobuf.MBHDPaymentsProtos.internal_static_TransactionInfo_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction.class, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction.Builder.class);
+              org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.class, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.Builder.class);
     }
 
-    public static com.google.protobuf.Parser<Transaction> PARSER =
-        new com.google.protobuf.AbstractParser<Transaction>() {
-      public Transaction parsePartialFrom(
+    public static com.google.protobuf.Parser<TransactionInfo> PARSER =
+        new com.google.protobuf.AbstractParser<TransactionInfo>() {
+      public TransactionInfo parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Transaction(input, extensionRegistry);
+        return new TransactionInfo(input, extensionRegistry);
       }
     };
 
     @java.lang.Override
-    public com.google.protobuf.Parser<Transaction> getParserForType() {
+    public com.google.protobuf.Parser<TransactionInfo> getParserForType() {
       return PARSER;
     }
 
@@ -3066,53 +3066,53 @@ public final class MBHDPaymentsProtos {
       return super.writeReplace();
     }
 
-    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction parseFrom(byte[] data)
+    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction parseFrom(java.io.InputStream input)
+    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction parseDelimitedFrom(java.io.InputStream input)
+    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction parseDelimitedFrom(
+    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction parseFrom(
+    public static org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -3121,7 +3121,7 @@ public final class MBHDPaymentsProtos {
 
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction prototype) {
+    public static Builder newBuilder(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
@@ -3133,29 +3133,29 @@ public final class MBHDPaymentsProtos {
       return builder;
     }
     /**
-     * Protobuf type {@code Transaction}
+     * Protobuf type {@code TransactionInfo}
      *
      * <pre>
      ** 
-     * A single transaction
+     * A single "extra" transaction info (this is data additional to the bitcoinj Transaction)
      * </pre>
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionOrBuilder {
+       implements org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfoOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return org.multibit.hd.core.protobuf.MBHDPaymentsProtos.internal_static_Transaction_descriptor;
+        return org.multibit.hd.core.protobuf.MBHDPaymentsProtos.internal_static_TransactionInfo_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return org.multibit.hd.core.protobuf.MBHDPaymentsProtos.internal_static_Transaction_fieldAccessorTable
+        return org.multibit.hd.core.protobuf.MBHDPaymentsProtos.internal_static_TransactionInfo_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction.class, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction.Builder.class);
+                org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.class, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.Builder.class);
       }
 
-      // Construct using org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction.newBuilder()
+      // Construct using org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -3197,23 +3197,23 @@ public final class MBHDPaymentsProtos {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return org.multibit.hd.core.protobuf.MBHDPaymentsProtos.internal_static_Transaction_descriptor;
+        return org.multibit.hd.core.protobuf.MBHDPaymentsProtos.internal_static_TransactionInfo_descriptor;
       }
 
-      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction getDefaultInstanceForType() {
-        return org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction.getDefaultInstance();
+      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo getDefaultInstanceForType() {
+        return org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.getDefaultInstance();
       }
 
-      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction build() {
-        org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction result = buildPartial();
+      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo build() {
+        org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction buildPartial() {
-        org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction result = new org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction(this);
+      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo buildPartial() {
+        org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo result = new org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -3243,16 +3243,16 @@ public final class MBHDPaymentsProtos {
       }
 
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction) {
-          return mergeFrom((org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction)other);
+        if (other instanceof org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo) {
+          return mergeFrom((org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction other) {
-        if (other == org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction.getDefaultInstance()) return this;
+      public Builder mergeFrom(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo other) {
+        if (other == org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.getDefaultInstance()) return this;
         if (other.hasHash()) {
           setHash(other.getHash());
         }
@@ -3296,11 +3296,11 @@ public final class MBHDPaymentsProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction parsedMessage = null;
+        org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction) e.getUnfinishedMessage();
+          parsedMessage = (org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo) e.getUnfinishedMessage();
           throw e;
         } finally {
           if (parsedMessage != null) {
@@ -3723,108 +3723,108 @@ public final class MBHDPaymentsProtos {
         return this;
       }
 
-      // @@protoc_insertion_point(builder_scope:Transaction)
+      // @@protoc_insertion_point(builder_scope:TransactionInfo)
     }
 
     static {
-      defaultInstance = new Transaction(true);
+      defaultInstance = new TransactionInfo(true);
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:Transaction)
+    // @@protoc_insertion_point(class_scope:TransactionInfo)
   }
 
   public interface PaymentsOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
-    // repeated .Request request = 1;
+    // repeated .PaymentRequest payment_request = 1;
     /**
-     * <code>repeated .Request request = 1;</code>
+     * <code>repeated .PaymentRequest payment_request = 1;</code>
      *
      * <pre>
      * Collection of requests
      * </pre>
      */
-    java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request> 
-        getRequestList();
+    java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest> 
+        getPaymentRequestList();
     /**
-     * <code>repeated .Request request = 1;</code>
+     * <code>repeated .PaymentRequest payment_request = 1;</code>
      *
      * <pre>
      * Collection of requests
      * </pre>
      */
-    org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request getRequest(int index);
+    org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest getPaymentRequest(int index);
     /**
-     * <code>repeated .Request request = 1;</code>
+     * <code>repeated .PaymentRequest payment_request = 1;</code>
      *
      * <pre>
      * Collection of requests
      * </pre>
      */
-    int getRequestCount();
+    int getPaymentRequestCount();
     /**
-     * <code>repeated .Request request = 1;</code>
+     * <code>repeated .PaymentRequest payment_request = 1;</code>
      *
      * <pre>
      * Collection of requests
      * </pre>
      */
-    java.util.List<? extends org.multibit.hd.core.protobuf.MBHDPaymentsProtos.RequestOrBuilder> 
-        getRequestOrBuilderList();
+    java.util.List<? extends org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequestOrBuilder> 
+        getPaymentRequestOrBuilderList();
     /**
-     * <code>repeated .Request request = 1;</code>
+     * <code>repeated .PaymentRequest payment_request = 1;</code>
      *
      * <pre>
      * Collection of requests
      * </pre>
      */
-    org.multibit.hd.core.protobuf.MBHDPaymentsProtos.RequestOrBuilder getRequestOrBuilder(
+    org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequestOrBuilder getPaymentRequestOrBuilder(
         int index);
 
-    // repeated .Transaction transaction = 2;
+    // repeated .TransactionInfo transaction_info = 2;
     /**
-     * <code>repeated .Transaction transaction = 2;</code>
+     * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
      * Collection of transactions
      * </pre>
      */
-    java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction> 
-        getTransactionList();
+    java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo> 
+        getTransactionInfoList();
     /**
-     * <code>repeated .Transaction transaction = 2;</code>
+     * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
      * Collection of transactions
      * </pre>
      */
-    org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction getTransaction(int index);
+    org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo getTransactionInfo(int index);
     /**
-     * <code>repeated .Transaction transaction = 2;</code>
+     * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
      * Collection of transactions
      * </pre>
      */
-    int getTransactionCount();
+    int getTransactionInfoCount();
     /**
-     * <code>repeated .Transaction transaction = 2;</code>
+     * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
      * Collection of transactions
      * </pre>
      */
-    java.util.List<? extends org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionOrBuilder> 
-        getTransactionOrBuilderList();
+    java.util.List<? extends org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfoOrBuilder> 
+        getTransactionInfoOrBuilderList();
     /**
-     * <code>repeated .Transaction transaction = 2;</code>
+     * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
      * Collection of transactions
      * </pre>
      */
-    org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionOrBuilder getTransactionOrBuilder(
+    org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfoOrBuilder getTransactionInfoOrBuilder(
         int index);
 
     // required int32 last_address_index = 3;
@@ -3903,18 +3903,18 @@ public final class MBHDPaymentsProtos {
             }
             case 10: {
               if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-                request_ = new java.util.ArrayList<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request>();
+                paymentRequest_ = new java.util.ArrayList<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest>();
                 mutable_bitField0_ |= 0x00000001;
               }
-              request_.add(input.readMessage(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request.PARSER, extensionRegistry));
+              paymentRequest_.add(input.readMessage(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest.PARSER, extensionRegistry));
               break;
             }
             case 18: {
               if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-                transaction_ = new java.util.ArrayList<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction>();
+                transactionInfo_ = new java.util.ArrayList<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo>();
                 mutable_bitField0_ |= 0x00000002;
               }
-              transaction_.add(input.readMessage(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction.PARSER, extensionRegistry));
+              transactionInfo_.add(input.readMessage(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.PARSER, extensionRegistry));
               break;
             }
             case 24: {
@@ -3931,10 +3931,10 @@ public final class MBHDPaymentsProtos {
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
         if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-          request_ = java.util.Collections.unmodifiableList(request_);
+          paymentRequest_ = java.util.Collections.unmodifiableList(paymentRequest_);
         }
         if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-          transaction_ = java.util.Collections.unmodifiableList(transaction_);
+          transactionInfo_ = java.util.Collections.unmodifiableList(transactionInfo_);
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -3968,116 +3968,116 @@ public final class MBHDPaymentsProtos {
     }
 
     private int bitField0_;
-    // repeated .Request request = 1;
-    public static final int REQUEST_FIELD_NUMBER = 1;
-    private java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request> request_;
+    // repeated .PaymentRequest payment_request = 1;
+    public static final int PAYMENT_REQUEST_FIELD_NUMBER = 1;
+    private java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest> paymentRequest_;
     /**
-     * <code>repeated .Request request = 1;</code>
+     * <code>repeated .PaymentRequest payment_request = 1;</code>
      *
      * <pre>
      * Collection of requests
      * </pre>
      */
-    public java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request> getRequestList() {
-      return request_;
+    public java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest> getPaymentRequestList() {
+      return paymentRequest_;
     }
     /**
-     * <code>repeated .Request request = 1;</code>
+     * <code>repeated .PaymentRequest payment_request = 1;</code>
      *
      * <pre>
      * Collection of requests
      * </pre>
      */
-    public java.util.List<? extends org.multibit.hd.core.protobuf.MBHDPaymentsProtos.RequestOrBuilder> 
-        getRequestOrBuilderList() {
-      return request_;
+    public java.util.List<? extends org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequestOrBuilder> 
+        getPaymentRequestOrBuilderList() {
+      return paymentRequest_;
     }
     /**
-     * <code>repeated .Request request = 1;</code>
+     * <code>repeated .PaymentRequest payment_request = 1;</code>
      *
      * <pre>
      * Collection of requests
      * </pre>
      */
-    public int getRequestCount() {
-      return request_.size();
+    public int getPaymentRequestCount() {
+      return paymentRequest_.size();
     }
     /**
-     * <code>repeated .Request request = 1;</code>
+     * <code>repeated .PaymentRequest payment_request = 1;</code>
      *
      * <pre>
      * Collection of requests
      * </pre>
      */
-    public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request getRequest(int index) {
-      return request_.get(index);
+    public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest getPaymentRequest(int index) {
+      return paymentRequest_.get(index);
     }
     /**
-     * <code>repeated .Request request = 1;</code>
+     * <code>repeated .PaymentRequest payment_request = 1;</code>
      *
      * <pre>
      * Collection of requests
      * </pre>
      */
-    public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.RequestOrBuilder getRequestOrBuilder(
+    public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequestOrBuilder getPaymentRequestOrBuilder(
         int index) {
-      return request_.get(index);
+      return paymentRequest_.get(index);
     }
 
-    // repeated .Transaction transaction = 2;
-    public static final int TRANSACTION_FIELD_NUMBER = 2;
-    private java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction> transaction_;
+    // repeated .TransactionInfo transaction_info = 2;
+    public static final int TRANSACTION_INFO_FIELD_NUMBER = 2;
+    private java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo> transactionInfo_;
     /**
-     * <code>repeated .Transaction transaction = 2;</code>
+     * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
      * Collection of transactions
      * </pre>
      */
-    public java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction> getTransactionList() {
-      return transaction_;
+    public java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo> getTransactionInfoList() {
+      return transactionInfo_;
     }
     /**
-     * <code>repeated .Transaction transaction = 2;</code>
+     * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
      * Collection of transactions
      * </pre>
      */
-    public java.util.List<? extends org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionOrBuilder> 
-        getTransactionOrBuilderList() {
-      return transaction_;
+    public java.util.List<? extends org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfoOrBuilder> 
+        getTransactionInfoOrBuilderList() {
+      return transactionInfo_;
     }
     /**
-     * <code>repeated .Transaction transaction = 2;</code>
+     * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
      * Collection of transactions
      * </pre>
      */
-    public int getTransactionCount() {
-      return transaction_.size();
+    public int getTransactionInfoCount() {
+      return transactionInfo_.size();
     }
     /**
-     * <code>repeated .Transaction transaction = 2;</code>
+     * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
      * Collection of transactions
      * </pre>
      */
-    public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction getTransaction(int index) {
-      return transaction_.get(index);
+    public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo getTransactionInfo(int index) {
+      return transactionInfo_.get(index);
     }
     /**
-     * <code>repeated .Transaction transaction = 2;</code>
+     * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
      * Collection of transactions
      * </pre>
      */
-    public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionOrBuilder getTransactionOrBuilder(
+    public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfoOrBuilder getTransactionInfoOrBuilder(
         int index) {
-      return transaction_.get(index);
+      return transactionInfo_.get(index);
     }
 
     // required int32 last_address_index = 3;
@@ -4105,8 +4105,8 @@ public final class MBHDPaymentsProtos {
     }
 
     private void initFields() {
-      request_ = java.util.Collections.emptyList();
-      transaction_ = java.util.Collections.emptyList();
+      paymentRequest_ = java.util.Collections.emptyList();
+      transactionInfo_ = java.util.Collections.emptyList();
       lastAddressIndex_ = 0;
     }
     private byte memoizedIsInitialized = -1;
@@ -4118,14 +4118,14 @@ public final class MBHDPaymentsProtos {
         memoizedIsInitialized = 0;
         return false;
       }
-      for (int i = 0; i < getRequestCount(); i++) {
-        if (!getRequest(i).isInitialized()) {
+      for (int i = 0; i < getPaymentRequestCount(); i++) {
+        if (!getPaymentRequest(i).isInitialized()) {
           memoizedIsInitialized = 0;
           return false;
         }
       }
-      for (int i = 0; i < getTransactionCount(); i++) {
-        if (!getTransaction(i).isInitialized()) {
+      for (int i = 0; i < getTransactionInfoCount(); i++) {
+        if (!getTransactionInfo(i).isInitialized()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -4137,11 +4137,11 @@ public final class MBHDPaymentsProtos {
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
-      for (int i = 0; i < request_.size(); i++) {
-        output.writeMessage(1, request_.get(i));
+      for (int i = 0; i < paymentRequest_.size(); i++) {
+        output.writeMessage(1, paymentRequest_.get(i));
       }
-      for (int i = 0; i < transaction_.size(); i++) {
-        output.writeMessage(2, transaction_.get(i));
+      for (int i = 0; i < transactionInfo_.size(); i++) {
+        output.writeMessage(2, transactionInfo_.get(i));
       }
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeInt32(3, lastAddressIndex_);
@@ -4155,13 +4155,13 @@ public final class MBHDPaymentsProtos {
       if (size != -1) return size;
 
       size = 0;
-      for (int i = 0; i < request_.size(); i++) {
+      for (int i = 0; i < paymentRequest_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, request_.get(i));
+          .computeMessageSize(1, paymentRequest_.get(i));
       }
-      for (int i = 0; i < transaction_.size(); i++) {
+      for (int i = 0; i < transactionInfo_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, transaction_.get(i));
+          .computeMessageSize(2, transactionInfo_.get(i));
       }
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
@@ -4280,8 +4280,8 @@ public final class MBHDPaymentsProtos {
       }
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-          getRequestFieldBuilder();
-          getTransactionFieldBuilder();
+          getPaymentRequestFieldBuilder();
+          getTransactionInfoFieldBuilder();
         }
       }
       private static Builder create() {
@@ -4290,17 +4290,17 @@ public final class MBHDPaymentsProtos {
 
       public Builder clear() {
         super.clear();
-        if (requestBuilder_ == null) {
-          request_ = java.util.Collections.emptyList();
+        if (paymentRequestBuilder_ == null) {
+          paymentRequest_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x00000001);
         } else {
-          requestBuilder_.clear();
+          paymentRequestBuilder_.clear();
         }
-        if (transactionBuilder_ == null) {
-          transaction_ = java.util.Collections.emptyList();
+        if (transactionInfoBuilder_ == null) {
+          transactionInfo_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x00000002);
         } else {
-          transactionBuilder_.clear();
+          transactionInfoBuilder_.clear();
         }
         lastAddressIndex_ = 0;
         bitField0_ = (bitField0_ & ~0x00000004);
@@ -4332,23 +4332,23 @@ public final class MBHDPaymentsProtos {
         org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Payments result = new org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Payments(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
-        if (requestBuilder_ == null) {
+        if (paymentRequestBuilder_ == null) {
           if (((bitField0_ & 0x00000001) == 0x00000001)) {
-            request_ = java.util.Collections.unmodifiableList(request_);
+            paymentRequest_ = java.util.Collections.unmodifiableList(paymentRequest_);
             bitField0_ = (bitField0_ & ~0x00000001);
           }
-          result.request_ = request_;
+          result.paymentRequest_ = paymentRequest_;
         } else {
-          result.request_ = requestBuilder_.build();
+          result.paymentRequest_ = paymentRequestBuilder_.build();
         }
-        if (transactionBuilder_ == null) {
+        if (transactionInfoBuilder_ == null) {
           if (((bitField0_ & 0x00000002) == 0x00000002)) {
-            transaction_ = java.util.Collections.unmodifiableList(transaction_);
+            transactionInfo_ = java.util.Collections.unmodifiableList(transactionInfo_);
             bitField0_ = (bitField0_ & ~0x00000002);
           }
-          result.transaction_ = transaction_;
+          result.transactionInfo_ = transactionInfo_;
         } else {
-          result.transaction_ = transactionBuilder_.build();
+          result.transactionInfo_ = transactionInfoBuilder_.build();
         }
         if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000001;
@@ -4370,55 +4370,55 @@ public final class MBHDPaymentsProtos {
 
       public Builder mergeFrom(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Payments other) {
         if (other == org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Payments.getDefaultInstance()) return this;
-        if (requestBuilder_ == null) {
-          if (!other.request_.isEmpty()) {
-            if (request_.isEmpty()) {
-              request_ = other.request_;
+        if (paymentRequestBuilder_ == null) {
+          if (!other.paymentRequest_.isEmpty()) {
+            if (paymentRequest_.isEmpty()) {
+              paymentRequest_ = other.paymentRequest_;
               bitField0_ = (bitField0_ & ~0x00000001);
             } else {
-              ensureRequestIsMutable();
-              request_.addAll(other.request_);
+              ensurePaymentRequestIsMutable();
+              paymentRequest_.addAll(other.paymentRequest_);
             }
             onChanged();
           }
         } else {
-          if (!other.request_.isEmpty()) {
-            if (requestBuilder_.isEmpty()) {
-              requestBuilder_.dispose();
-              requestBuilder_ = null;
-              request_ = other.request_;
+          if (!other.paymentRequest_.isEmpty()) {
+            if (paymentRequestBuilder_.isEmpty()) {
+              paymentRequestBuilder_.dispose();
+              paymentRequestBuilder_ = null;
+              paymentRequest_ = other.paymentRequest_;
               bitField0_ = (bitField0_ & ~0x00000001);
-              requestBuilder_ = 
+              paymentRequestBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
-                   getRequestFieldBuilder() : null;
+                   getPaymentRequestFieldBuilder() : null;
             } else {
-              requestBuilder_.addAllMessages(other.request_);
+              paymentRequestBuilder_.addAllMessages(other.paymentRequest_);
             }
           }
         }
-        if (transactionBuilder_ == null) {
-          if (!other.transaction_.isEmpty()) {
-            if (transaction_.isEmpty()) {
-              transaction_ = other.transaction_;
+        if (transactionInfoBuilder_ == null) {
+          if (!other.transactionInfo_.isEmpty()) {
+            if (transactionInfo_.isEmpty()) {
+              transactionInfo_ = other.transactionInfo_;
               bitField0_ = (bitField0_ & ~0x00000002);
             } else {
-              ensureTransactionIsMutable();
-              transaction_.addAll(other.transaction_);
+              ensureTransactionInfoIsMutable();
+              transactionInfo_.addAll(other.transactionInfo_);
             }
             onChanged();
           }
         } else {
-          if (!other.transaction_.isEmpty()) {
-            if (transactionBuilder_.isEmpty()) {
-              transactionBuilder_.dispose();
-              transactionBuilder_ = null;
-              transaction_ = other.transaction_;
+          if (!other.transactionInfo_.isEmpty()) {
+            if (transactionInfoBuilder_.isEmpty()) {
+              transactionInfoBuilder_.dispose();
+              transactionInfoBuilder_ = null;
+              transactionInfo_ = other.transactionInfo_;
               bitField0_ = (bitField0_ & ~0x00000002);
-              transactionBuilder_ = 
+              transactionInfoBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
-                   getTransactionFieldBuilder() : null;
+                   getTransactionInfoFieldBuilder() : null;
             } else {
-              transactionBuilder_.addAllMessages(other.transaction_);
+              transactionInfoBuilder_.addAllMessages(other.transactionInfo_);
             }
           }
         }
@@ -4434,14 +4434,14 @@ public final class MBHDPaymentsProtos {
           
           return false;
         }
-        for (int i = 0; i < getRequestCount(); i++) {
-          if (!getRequest(i).isInitialized()) {
+        for (int i = 0; i < getPaymentRequestCount(); i++) {
+          if (!getPaymentRequest(i).isInitialized()) {
             
             return false;
           }
         }
-        for (int i = 0; i < getTransactionCount(); i++) {
-          if (!getTransaction(i).isInitialized()) {
+        for (int i = 0; i < getTransactionInfoCount(); i++) {
+          if (!getTransactionInfo(i).isInitialized()) {
             
             return false;
           }
@@ -4468,628 +4468,628 @@ public final class MBHDPaymentsProtos {
       }
       private int bitField0_;
 
-      // repeated .Request request = 1;
-      private java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request> request_ =
+      // repeated .PaymentRequest payment_request = 1;
+      private java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest> paymentRequest_ =
         java.util.Collections.emptyList();
-      private void ensureRequestIsMutable() {
+      private void ensurePaymentRequestIsMutable() {
         if (!((bitField0_ & 0x00000001) == 0x00000001)) {
-          request_ = new java.util.ArrayList<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request>(request_);
+          paymentRequest_ = new java.util.ArrayList<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest>(paymentRequest_);
           bitField0_ |= 0x00000001;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilder<
-          org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request.Builder, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.RequestOrBuilder> requestBuilder_;
+          org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest.Builder, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequestOrBuilder> paymentRequestBuilder_;
 
       /**
-       * <code>repeated .Request request = 1;</code>
+       * <code>repeated .PaymentRequest payment_request = 1;</code>
        *
        * <pre>
        * Collection of requests
        * </pre>
        */
-      public java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request> getRequestList() {
-        if (requestBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(request_);
+      public java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest> getPaymentRequestList() {
+        if (paymentRequestBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(paymentRequest_);
         } else {
-          return requestBuilder_.getMessageList();
+          return paymentRequestBuilder_.getMessageList();
         }
       }
       /**
-       * <code>repeated .Request request = 1;</code>
+       * <code>repeated .PaymentRequest payment_request = 1;</code>
        *
        * <pre>
        * Collection of requests
        * </pre>
        */
-      public int getRequestCount() {
-        if (requestBuilder_ == null) {
-          return request_.size();
+      public int getPaymentRequestCount() {
+        if (paymentRequestBuilder_ == null) {
+          return paymentRequest_.size();
         } else {
-          return requestBuilder_.getCount();
+          return paymentRequestBuilder_.getCount();
         }
       }
       /**
-       * <code>repeated .Request request = 1;</code>
+       * <code>repeated .PaymentRequest payment_request = 1;</code>
        *
        * <pre>
        * Collection of requests
        * </pre>
        */
-      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request getRequest(int index) {
-        if (requestBuilder_ == null) {
-          return request_.get(index);
+      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest getPaymentRequest(int index) {
+        if (paymentRequestBuilder_ == null) {
+          return paymentRequest_.get(index);
         } else {
-          return requestBuilder_.getMessage(index);
+          return paymentRequestBuilder_.getMessage(index);
         }
       }
       /**
-       * <code>repeated .Request request = 1;</code>
+       * <code>repeated .PaymentRequest payment_request = 1;</code>
        *
        * <pre>
        * Collection of requests
        * </pre>
        */
-      public Builder setRequest(
-          int index, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request value) {
-        if (requestBuilder_ == null) {
+      public Builder setPaymentRequest(
+          int index, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest value) {
+        if (paymentRequestBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          ensureRequestIsMutable();
-          request_.set(index, value);
+          ensurePaymentRequestIsMutable();
+          paymentRequest_.set(index, value);
           onChanged();
         } else {
-          requestBuilder_.setMessage(index, value);
+          paymentRequestBuilder_.setMessage(index, value);
         }
         return this;
       }
       /**
-       * <code>repeated .Request request = 1;</code>
+       * <code>repeated .PaymentRequest payment_request = 1;</code>
        *
        * <pre>
        * Collection of requests
        * </pre>
        */
-      public Builder setRequest(
-          int index, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request.Builder builderForValue) {
-        if (requestBuilder_ == null) {
-          ensureRequestIsMutable();
-          request_.set(index, builderForValue.build());
+      public Builder setPaymentRequest(
+          int index, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest.Builder builderForValue) {
+        if (paymentRequestBuilder_ == null) {
+          ensurePaymentRequestIsMutable();
+          paymentRequest_.set(index, builderForValue.build());
           onChanged();
         } else {
-          requestBuilder_.setMessage(index, builderForValue.build());
+          paymentRequestBuilder_.setMessage(index, builderForValue.build());
         }
         return this;
       }
       /**
-       * <code>repeated .Request request = 1;</code>
+       * <code>repeated .PaymentRequest payment_request = 1;</code>
        *
        * <pre>
        * Collection of requests
        * </pre>
        */
-      public Builder addRequest(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request value) {
-        if (requestBuilder_ == null) {
+      public Builder addPaymentRequest(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest value) {
+        if (paymentRequestBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          ensureRequestIsMutable();
-          request_.add(value);
+          ensurePaymentRequestIsMutable();
+          paymentRequest_.add(value);
           onChanged();
         } else {
-          requestBuilder_.addMessage(value);
+          paymentRequestBuilder_.addMessage(value);
         }
         return this;
       }
       /**
-       * <code>repeated .Request request = 1;</code>
+       * <code>repeated .PaymentRequest payment_request = 1;</code>
        *
        * <pre>
        * Collection of requests
        * </pre>
        */
-      public Builder addRequest(
-          int index, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request value) {
-        if (requestBuilder_ == null) {
+      public Builder addPaymentRequest(
+          int index, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest value) {
+        if (paymentRequestBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          ensureRequestIsMutable();
-          request_.add(index, value);
+          ensurePaymentRequestIsMutable();
+          paymentRequest_.add(index, value);
           onChanged();
         } else {
-          requestBuilder_.addMessage(index, value);
+          paymentRequestBuilder_.addMessage(index, value);
         }
         return this;
       }
       /**
-       * <code>repeated .Request request = 1;</code>
+       * <code>repeated .PaymentRequest payment_request = 1;</code>
        *
        * <pre>
        * Collection of requests
        * </pre>
        */
-      public Builder addRequest(
-          org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request.Builder builderForValue) {
-        if (requestBuilder_ == null) {
-          ensureRequestIsMutable();
-          request_.add(builderForValue.build());
+      public Builder addPaymentRequest(
+          org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest.Builder builderForValue) {
+        if (paymentRequestBuilder_ == null) {
+          ensurePaymentRequestIsMutable();
+          paymentRequest_.add(builderForValue.build());
           onChanged();
         } else {
-          requestBuilder_.addMessage(builderForValue.build());
+          paymentRequestBuilder_.addMessage(builderForValue.build());
         }
         return this;
       }
       /**
-       * <code>repeated .Request request = 1;</code>
+       * <code>repeated .PaymentRequest payment_request = 1;</code>
        *
        * <pre>
        * Collection of requests
        * </pre>
        */
-      public Builder addRequest(
-          int index, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request.Builder builderForValue) {
-        if (requestBuilder_ == null) {
-          ensureRequestIsMutable();
-          request_.add(index, builderForValue.build());
+      public Builder addPaymentRequest(
+          int index, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest.Builder builderForValue) {
+        if (paymentRequestBuilder_ == null) {
+          ensurePaymentRequestIsMutable();
+          paymentRequest_.add(index, builderForValue.build());
           onChanged();
         } else {
-          requestBuilder_.addMessage(index, builderForValue.build());
+          paymentRequestBuilder_.addMessage(index, builderForValue.build());
         }
         return this;
       }
       /**
-       * <code>repeated .Request request = 1;</code>
+       * <code>repeated .PaymentRequest payment_request = 1;</code>
        *
        * <pre>
        * Collection of requests
        * </pre>
        */
-      public Builder addAllRequest(
-          java.lang.Iterable<? extends org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request> values) {
-        if (requestBuilder_ == null) {
-          ensureRequestIsMutable();
-          super.addAll(values, request_);
+      public Builder addAllPaymentRequest(
+          java.lang.Iterable<? extends org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest> values) {
+        if (paymentRequestBuilder_ == null) {
+          ensurePaymentRequestIsMutable();
+          super.addAll(values, paymentRequest_);
           onChanged();
         } else {
-          requestBuilder_.addAllMessages(values);
+          paymentRequestBuilder_.addAllMessages(values);
         }
         return this;
       }
       /**
-       * <code>repeated .Request request = 1;</code>
+       * <code>repeated .PaymentRequest payment_request = 1;</code>
        *
        * <pre>
        * Collection of requests
        * </pre>
        */
-      public Builder clearRequest() {
-        if (requestBuilder_ == null) {
-          request_ = java.util.Collections.emptyList();
+      public Builder clearPaymentRequest() {
+        if (paymentRequestBuilder_ == null) {
+          paymentRequest_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x00000001);
           onChanged();
         } else {
-          requestBuilder_.clear();
+          paymentRequestBuilder_.clear();
         }
         return this;
       }
       /**
-       * <code>repeated .Request request = 1;</code>
+       * <code>repeated .PaymentRequest payment_request = 1;</code>
        *
        * <pre>
        * Collection of requests
        * </pre>
        */
-      public Builder removeRequest(int index) {
-        if (requestBuilder_ == null) {
-          ensureRequestIsMutable();
-          request_.remove(index);
+      public Builder removePaymentRequest(int index) {
+        if (paymentRequestBuilder_ == null) {
+          ensurePaymentRequestIsMutable();
+          paymentRequest_.remove(index);
           onChanged();
         } else {
-          requestBuilder_.remove(index);
+          paymentRequestBuilder_.remove(index);
         }
         return this;
       }
       /**
-       * <code>repeated .Request request = 1;</code>
+       * <code>repeated .PaymentRequest payment_request = 1;</code>
        *
        * <pre>
        * Collection of requests
        * </pre>
        */
-      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request.Builder getRequestBuilder(
+      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest.Builder getPaymentRequestBuilder(
           int index) {
-        return getRequestFieldBuilder().getBuilder(index);
+        return getPaymentRequestFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .Request request = 1;</code>
+       * <code>repeated .PaymentRequest payment_request = 1;</code>
        *
        * <pre>
        * Collection of requests
        * </pre>
        */
-      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.RequestOrBuilder getRequestOrBuilder(
+      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequestOrBuilder getPaymentRequestOrBuilder(
           int index) {
-        if (requestBuilder_ == null) {
-          return request_.get(index);  } else {
-          return requestBuilder_.getMessageOrBuilder(index);
+        if (paymentRequestBuilder_ == null) {
+          return paymentRequest_.get(index);  } else {
+          return paymentRequestBuilder_.getMessageOrBuilder(index);
         }
       }
       /**
-       * <code>repeated .Request request = 1;</code>
+       * <code>repeated .PaymentRequest payment_request = 1;</code>
        *
        * <pre>
        * Collection of requests
        * </pre>
        */
-      public java.util.List<? extends org.multibit.hd.core.protobuf.MBHDPaymentsProtos.RequestOrBuilder> 
-           getRequestOrBuilderList() {
-        if (requestBuilder_ != null) {
-          return requestBuilder_.getMessageOrBuilderList();
+      public java.util.List<? extends org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequestOrBuilder> 
+           getPaymentRequestOrBuilderList() {
+        if (paymentRequestBuilder_ != null) {
+          return paymentRequestBuilder_.getMessageOrBuilderList();
         } else {
-          return java.util.Collections.unmodifiableList(request_);
+          return java.util.Collections.unmodifiableList(paymentRequest_);
         }
       }
       /**
-       * <code>repeated .Request request = 1;</code>
+       * <code>repeated .PaymentRequest payment_request = 1;</code>
        *
        * <pre>
        * Collection of requests
        * </pre>
        */
-      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request.Builder addRequestBuilder() {
-        return getRequestFieldBuilder().addBuilder(
-            org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request.getDefaultInstance());
+      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest.Builder addPaymentRequestBuilder() {
+        return getPaymentRequestFieldBuilder().addBuilder(
+            org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest.getDefaultInstance());
       }
       /**
-       * <code>repeated .Request request = 1;</code>
+       * <code>repeated .PaymentRequest payment_request = 1;</code>
        *
        * <pre>
        * Collection of requests
        * </pre>
        */
-      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request.Builder addRequestBuilder(
+      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest.Builder addPaymentRequestBuilder(
           int index) {
-        return getRequestFieldBuilder().addBuilder(
-            index, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request.getDefaultInstance());
+        return getPaymentRequestFieldBuilder().addBuilder(
+            index, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest.getDefaultInstance());
       }
       /**
-       * <code>repeated .Request request = 1;</code>
+       * <code>repeated .PaymentRequest payment_request = 1;</code>
        *
        * <pre>
        * Collection of requests
        * </pre>
        */
-      public java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request.Builder> 
-           getRequestBuilderList() {
-        return getRequestFieldBuilder().getBuilderList();
+      public java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest.Builder> 
+           getPaymentRequestBuilderList() {
+        return getPaymentRequestFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilder<
-          org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request.Builder, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.RequestOrBuilder> 
-          getRequestFieldBuilder() {
-        if (requestBuilder_ == null) {
-          requestBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Request.Builder, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.RequestOrBuilder>(
-                  request_,
+          org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest.Builder, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequestOrBuilder> 
+          getPaymentRequestFieldBuilder() {
+        if (paymentRequestBuilder_ == null) {
+          paymentRequestBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest.Builder, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequestOrBuilder>(
+                  paymentRequest_,
                   ((bitField0_ & 0x00000001) == 0x00000001),
                   getParentForChildren(),
                   isClean());
-          request_ = null;
+          paymentRequest_ = null;
         }
-        return requestBuilder_;
+        return paymentRequestBuilder_;
       }
 
-      // repeated .Transaction transaction = 2;
-      private java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction> transaction_ =
+      // repeated .TransactionInfo transaction_info = 2;
+      private java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo> transactionInfo_ =
         java.util.Collections.emptyList();
-      private void ensureTransactionIsMutable() {
+      private void ensureTransactionInfoIsMutable() {
         if (!((bitField0_ & 0x00000002) == 0x00000002)) {
-          transaction_ = new java.util.ArrayList<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction>(transaction_);
+          transactionInfo_ = new java.util.ArrayList<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo>(transactionInfo_);
           bitField0_ |= 0x00000002;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilder<
-          org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction.Builder, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionOrBuilder> transactionBuilder_;
+          org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.Builder, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfoOrBuilder> transactionInfoBuilder_;
 
       /**
-       * <code>repeated .Transaction transaction = 2;</code>
+       * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
        * Collection of transactions
        * </pre>
        */
-      public java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction> getTransactionList() {
-        if (transactionBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(transaction_);
+      public java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo> getTransactionInfoList() {
+        if (transactionInfoBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(transactionInfo_);
         } else {
-          return transactionBuilder_.getMessageList();
+          return transactionInfoBuilder_.getMessageList();
         }
       }
       /**
-       * <code>repeated .Transaction transaction = 2;</code>
+       * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
        * Collection of transactions
        * </pre>
        */
-      public int getTransactionCount() {
-        if (transactionBuilder_ == null) {
-          return transaction_.size();
+      public int getTransactionInfoCount() {
+        if (transactionInfoBuilder_ == null) {
+          return transactionInfo_.size();
         } else {
-          return transactionBuilder_.getCount();
+          return transactionInfoBuilder_.getCount();
         }
       }
       /**
-       * <code>repeated .Transaction transaction = 2;</code>
+       * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
        * Collection of transactions
        * </pre>
        */
-      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction getTransaction(int index) {
-        if (transactionBuilder_ == null) {
-          return transaction_.get(index);
+      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo getTransactionInfo(int index) {
+        if (transactionInfoBuilder_ == null) {
+          return transactionInfo_.get(index);
         } else {
-          return transactionBuilder_.getMessage(index);
+          return transactionInfoBuilder_.getMessage(index);
         }
       }
       /**
-       * <code>repeated .Transaction transaction = 2;</code>
+       * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
        * Collection of transactions
        * </pre>
        */
-      public Builder setTransaction(
-          int index, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction value) {
-        if (transactionBuilder_ == null) {
+      public Builder setTransactionInfo(
+          int index, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo value) {
+        if (transactionInfoBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          ensureTransactionIsMutable();
-          transaction_.set(index, value);
+          ensureTransactionInfoIsMutable();
+          transactionInfo_.set(index, value);
           onChanged();
         } else {
-          transactionBuilder_.setMessage(index, value);
+          transactionInfoBuilder_.setMessage(index, value);
         }
         return this;
       }
       /**
-       * <code>repeated .Transaction transaction = 2;</code>
+       * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
        * Collection of transactions
        * </pre>
        */
-      public Builder setTransaction(
-          int index, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction.Builder builderForValue) {
-        if (transactionBuilder_ == null) {
-          ensureTransactionIsMutable();
-          transaction_.set(index, builderForValue.build());
+      public Builder setTransactionInfo(
+          int index, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.Builder builderForValue) {
+        if (transactionInfoBuilder_ == null) {
+          ensureTransactionInfoIsMutable();
+          transactionInfo_.set(index, builderForValue.build());
           onChanged();
         } else {
-          transactionBuilder_.setMessage(index, builderForValue.build());
+          transactionInfoBuilder_.setMessage(index, builderForValue.build());
         }
         return this;
       }
       /**
-       * <code>repeated .Transaction transaction = 2;</code>
+       * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
        * Collection of transactions
        * </pre>
        */
-      public Builder addTransaction(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction value) {
-        if (transactionBuilder_ == null) {
+      public Builder addTransactionInfo(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo value) {
+        if (transactionInfoBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          ensureTransactionIsMutable();
-          transaction_.add(value);
+          ensureTransactionInfoIsMutable();
+          transactionInfo_.add(value);
           onChanged();
         } else {
-          transactionBuilder_.addMessage(value);
+          transactionInfoBuilder_.addMessage(value);
         }
         return this;
       }
       /**
-       * <code>repeated .Transaction transaction = 2;</code>
+       * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
        * Collection of transactions
        * </pre>
        */
-      public Builder addTransaction(
-          int index, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction value) {
-        if (transactionBuilder_ == null) {
+      public Builder addTransactionInfo(
+          int index, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo value) {
+        if (transactionInfoBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          ensureTransactionIsMutable();
-          transaction_.add(index, value);
+          ensureTransactionInfoIsMutable();
+          transactionInfo_.add(index, value);
           onChanged();
         } else {
-          transactionBuilder_.addMessage(index, value);
+          transactionInfoBuilder_.addMessage(index, value);
         }
         return this;
       }
       /**
-       * <code>repeated .Transaction transaction = 2;</code>
+       * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
        * Collection of transactions
        * </pre>
        */
-      public Builder addTransaction(
-          org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction.Builder builderForValue) {
-        if (transactionBuilder_ == null) {
-          ensureTransactionIsMutable();
-          transaction_.add(builderForValue.build());
+      public Builder addTransactionInfo(
+          org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.Builder builderForValue) {
+        if (transactionInfoBuilder_ == null) {
+          ensureTransactionInfoIsMutable();
+          transactionInfo_.add(builderForValue.build());
           onChanged();
         } else {
-          transactionBuilder_.addMessage(builderForValue.build());
+          transactionInfoBuilder_.addMessage(builderForValue.build());
         }
         return this;
       }
       /**
-       * <code>repeated .Transaction transaction = 2;</code>
+       * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
        * Collection of transactions
        * </pre>
        */
-      public Builder addTransaction(
-          int index, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction.Builder builderForValue) {
-        if (transactionBuilder_ == null) {
-          ensureTransactionIsMutable();
-          transaction_.add(index, builderForValue.build());
+      public Builder addTransactionInfo(
+          int index, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.Builder builderForValue) {
+        if (transactionInfoBuilder_ == null) {
+          ensureTransactionInfoIsMutable();
+          transactionInfo_.add(index, builderForValue.build());
           onChanged();
         } else {
-          transactionBuilder_.addMessage(index, builderForValue.build());
+          transactionInfoBuilder_.addMessage(index, builderForValue.build());
         }
         return this;
       }
       /**
-       * <code>repeated .Transaction transaction = 2;</code>
+       * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
        * Collection of transactions
        * </pre>
        */
-      public Builder addAllTransaction(
-          java.lang.Iterable<? extends org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction> values) {
-        if (transactionBuilder_ == null) {
-          ensureTransactionIsMutable();
-          super.addAll(values, transaction_);
+      public Builder addAllTransactionInfo(
+          java.lang.Iterable<? extends org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo> values) {
+        if (transactionInfoBuilder_ == null) {
+          ensureTransactionInfoIsMutable();
+          super.addAll(values, transactionInfo_);
           onChanged();
         } else {
-          transactionBuilder_.addAllMessages(values);
+          transactionInfoBuilder_.addAllMessages(values);
         }
         return this;
       }
       /**
-       * <code>repeated .Transaction transaction = 2;</code>
+       * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
        * Collection of transactions
        * </pre>
        */
-      public Builder clearTransaction() {
-        if (transactionBuilder_ == null) {
-          transaction_ = java.util.Collections.emptyList();
+      public Builder clearTransactionInfo() {
+        if (transactionInfoBuilder_ == null) {
+          transactionInfo_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x00000002);
           onChanged();
         } else {
-          transactionBuilder_.clear();
+          transactionInfoBuilder_.clear();
         }
         return this;
       }
       /**
-       * <code>repeated .Transaction transaction = 2;</code>
+       * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
        * Collection of transactions
        * </pre>
        */
-      public Builder removeTransaction(int index) {
-        if (transactionBuilder_ == null) {
-          ensureTransactionIsMutable();
-          transaction_.remove(index);
+      public Builder removeTransactionInfo(int index) {
+        if (transactionInfoBuilder_ == null) {
+          ensureTransactionInfoIsMutable();
+          transactionInfo_.remove(index);
           onChanged();
         } else {
-          transactionBuilder_.remove(index);
+          transactionInfoBuilder_.remove(index);
         }
         return this;
       }
       /**
-       * <code>repeated .Transaction transaction = 2;</code>
+       * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
        * Collection of transactions
        * </pre>
        */
-      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction.Builder getTransactionBuilder(
+      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.Builder getTransactionInfoBuilder(
           int index) {
-        return getTransactionFieldBuilder().getBuilder(index);
+        return getTransactionInfoFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .Transaction transaction = 2;</code>
+       * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
        * Collection of transactions
        * </pre>
        */
-      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionOrBuilder getTransactionOrBuilder(
+      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfoOrBuilder getTransactionInfoOrBuilder(
           int index) {
-        if (transactionBuilder_ == null) {
-          return transaction_.get(index);  } else {
-          return transactionBuilder_.getMessageOrBuilder(index);
+        if (transactionInfoBuilder_ == null) {
+          return transactionInfo_.get(index);  } else {
+          return transactionInfoBuilder_.getMessageOrBuilder(index);
         }
       }
       /**
-       * <code>repeated .Transaction transaction = 2;</code>
+       * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
        * Collection of transactions
        * </pre>
        */
-      public java.util.List<? extends org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionOrBuilder> 
-           getTransactionOrBuilderList() {
-        if (transactionBuilder_ != null) {
-          return transactionBuilder_.getMessageOrBuilderList();
+      public java.util.List<? extends org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfoOrBuilder> 
+           getTransactionInfoOrBuilderList() {
+        if (transactionInfoBuilder_ != null) {
+          return transactionInfoBuilder_.getMessageOrBuilderList();
         } else {
-          return java.util.Collections.unmodifiableList(transaction_);
+          return java.util.Collections.unmodifiableList(transactionInfo_);
         }
       }
       /**
-       * <code>repeated .Transaction transaction = 2;</code>
+       * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
        * Collection of transactions
        * </pre>
        */
-      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction.Builder addTransactionBuilder() {
-        return getTransactionFieldBuilder().addBuilder(
-            org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction.getDefaultInstance());
+      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.Builder addTransactionInfoBuilder() {
+        return getTransactionInfoFieldBuilder().addBuilder(
+            org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.getDefaultInstance());
       }
       /**
-       * <code>repeated .Transaction transaction = 2;</code>
+       * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
        * Collection of transactions
        * </pre>
        */
-      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction.Builder addTransactionBuilder(
+      public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.Builder addTransactionInfoBuilder(
           int index) {
-        return getTransactionFieldBuilder().addBuilder(
-            index, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction.getDefaultInstance());
+        return getTransactionInfoFieldBuilder().addBuilder(
+            index, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.getDefaultInstance());
       }
       /**
-       * <code>repeated .Transaction transaction = 2;</code>
+       * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
        * Collection of transactions
        * </pre>
        */
-      public java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction.Builder> 
-           getTransactionBuilderList() {
-        return getTransactionFieldBuilder().getBuilderList();
+      public java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.Builder> 
+           getTransactionInfoBuilderList() {
+        return getTransactionInfoFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilder<
-          org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction.Builder, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionOrBuilder> 
-          getTransactionFieldBuilder() {
-        if (transactionBuilder_ == null) {
-          transactionBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Transaction.Builder, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionOrBuilder>(
-                  transaction_,
+          org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.Builder, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfoOrBuilder> 
+          getTransactionInfoFieldBuilder() {
+        if (transactionInfoBuilder_ == null) {
+          transactionInfoBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.Builder, org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfoOrBuilder>(
+                  transactionInfo_,
                   ((bitField0_ & 0x00000002) == 0x00000002),
                   getParentForChildren(),
                   isClean());
-          transaction_ = null;
+          transactionInfo_ = null;
         }
-        return transactionBuilder_;
+        return transactionInfoBuilder_;
       }
 
       // required int32 last_address_index = 3;
@@ -5158,15 +5158,15 @@ public final class MBHDPaymentsProtos {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_FiatPayment_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_Request_descriptor;
+    internal_static_PaymentRequest_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_Request_fieldAccessorTable;
+      internal_static_PaymentRequest_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_Transaction_descriptor;
+    internal_static_TransactionInfo_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_Transaction_fieldAccessorTable;
+      internal_static_TransactionInfo_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_Payments_descriptor;
   private static
@@ -5183,17 +5183,18 @@ public final class MBHDPaymentsProtos {
     java.lang.String[] descriptorData = {
       "\n\034main/protobuf/payments.proto\"O\n\013FiatPa" +
       "yment\022\016\n\006amount\030\001 \002(\t\022\020\n\010currency\030\002 \002(\t\022" +
-      "\020\n\010exchange\030\003 \001(\t\022\014\n\004rate\030\004 \001(\t\"|\n\007Reque" +
-      "st\022\017\n\007address\030\001 \002(\t\022\r\n\005label\030\002 \001(\t\022\022\n\nam" +
-      "ount_btc\030\003 \001(\003\022!\n\013amount_fiat\030\004 \001(\0132\014.Fi" +
-      "atPayment\022\014\n\004note\030\005 \001(\t\022\014\n\004date\030\006 \001(\003\"e\n" +
-      "\013Transaction\022\014\n\004hash\030\001 \002(\014\022\027\n\017request_ad" +
-      "dress\030\002 \003(\014\022!\n\013amount_fiat\030\003 \001(\0132\014.FiatP" +
-      "ayment\022\014\n\004note\030\004 \001(\t\"d\n\010Payments\022\031\n\007requ" +
-      "est\030\001 \003(\0132\010.Request\022!\n\013transaction\030\002 \003(\013",
-      "2\014.Transaction\022\032\n\022last_address_index\030\003 \002" +
-      "(\005B3\n\035org.multibit.hd.core.protobufB\022MBH" +
-      "DPaymentsProtos"
+      "\020\n\010exchange\030\003 \001(\t\022\014\n\004rate\030\004 \001(\t\"\203\001\n\016Paym" +
+      "entRequest\022\017\n\007address\030\001 \002(\t\022\r\n\005label\030\002 \001" +
+      "(\t\022\022\n\namount_btc\030\003 \001(\003\022!\n\013amount_fiat\030\004 " +
+      "\001(\0132\014.FiatPayment\022\014\n\004note\030\005 \001(\t\022\014\n\004date\030" +
+      "\006 \001(\003\"i\n\017TransactionInfo\022\014\n\004hash\030\001 \002(\014\022\027" +
+      "\n\017request_address\030\002 \003(\014\022!\n\013amount_fiat\030\003" +
+      " \001(\0132\014.FiatPayment\022\014\n\004note\030\004 \001(\t\"|\n\010Paym" +
+      "ents\022(\n\017payment_request\030\001 \003(\0132\017.PaymentR",
+      "equest\022*\n\020transaction_info\030\002 \003(\0132\020.Trans" +
+      "actionInfo\022\032\n\022last_address_index\030\003 \002(\005B3" +
+      "\n\035org.multibit.hd.core.protobufB\022MBHDPay" +
+      "mentsProtos"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -5206,24 +5207,24 @@ public final class MBHDPaymentsProtos {
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_FiatPayment_descriptor,
               new java.lang.String[] { "Amount", "Currency", "Exchange", "Rate", });
-          internal_static_Request_descriptor =
+          internal_static_PaymentRequest_descriptor =
             getDescriptor().getMessageTypes().get(1);
-          internal_static_Request_fieldAccessorTable = new
+          internal_static_PaymentRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_Request_descriptor,
+              internal_static_PaymentRequest_descriptor,
               new java.lang.String[] { "Address", "Label", "AmountBtc", "AmountFiat", "Note", "Date", });
-          internal_static_Transaction_descriptor =
+          internal_static_TransactionInfo_descriptor =
             getDescriptor().getMessageTypes().get(2);
-          internal_static_Transaction_fieldAccessorTable = new
+          internal_static_TransactionInfo_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_Transaction_descriptor,
+              internal_static_TransactionInfo_descriptor,
               new java.lang.String[] { "Hash", "RequestAddress", "AmountFiat", "Note", });
           internal_static_Payments_descriptor =
             getDescriptor().getMessageTypes().get(3);
           internal_static_Payments_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Payments_descriptor,
-              new java.lang.String[] { "Request", "Transaction", "LastAddressIndex", });
+              new java.lang.String[] { "PaymentRequest", "TransactionInfo", "LastAddressIndex", });
           return null;
         }
       };

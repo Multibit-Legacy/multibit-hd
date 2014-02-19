@@ -18,11 +18,9 @@
 
 package org.multibit.hd.core.store;
 
-import com.google.bitcoin.core.Transaction;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.protobuf.TextFormat;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.exceptions.ContactsLoadException;
 import org.multibit.hd.core.protobuf.MBHDContactsProtos;
@@ -66,18 +64,6 @@ public class ContactsProtobufSerializer {
     public void writeContacts(Set<Contact> contacts, OutputStream output) throws IOException {
         MBHDContactsProtos.Contacts contactsProto = contactsToProto(contacts);
         contactsProto.writeTo(output);
-    }
-
-    /**
-     * Returns the given contacts formatted as text. The text format is that used by protocol buffers and although it
-     * can also be parsed using {@link TextFormat#merge(CharSequence, com.google.protobuf.Message.Builder)},
-     * it is designed more for debugging than storage. It is not well specified and wallets are largely binary data
-     * structures anyway, consisting as they do of keys (large random numbers) and {@link Transaction}s which also
-     * mostly contain keys and hashes.
-     */
-    public String contactsToText(Set<Contact> contacts) {
-      MBHDContactsProtos.Contacts contactsProto = contactsToProto(contacts);
-        return TextFormat.printToString(contactsProto);
     }
 
     /**
