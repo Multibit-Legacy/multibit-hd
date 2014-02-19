@@ -36,6 +36,7 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
   private JButton addButton;
   private JButton editButton;
   private JButton deleteButton;
+  private JButton undoButton;
 
   private JTable contactsTable;
   private ContactTableModel contactTableModel;
@@ -60,7 +61,7 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
 
     MigLayout layout = new MigLayout(
       "fill,insets 10 5 0 0", // Layout constraints
-      "[][][][]push[]", // Column constraints
+      "[][][][][]push[]", // Column constraints
       "[shrink][shrink][grow]" // Row constraints
     );
 
@@ -72,6 +73,7 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
     addButton = Buttons.newAddButton(getAddAction());
     editButton = Buttons.newEditButton(getEditAction());
     deleteButton = Buttons.newDeleteButton(getDeleteAction());
+    undoButton = Buttons.newUndoButton(getUndoAction());
 
     getSearchAction();
 
@@ -79,6 +81,8 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
 
     contactsTable = Tables.newContactsTable(contactService.allContacts(1, 10));
     //contactTableModel = (ContactTableModel) contactsTable.getModel();
+
+
 
     // Detect clicks on the table
     contactsTable.addMouseListener(new MouseAdapter() {
@@ -101,13 +105,14 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
     scrollPane.setViewportBorder(null);
 
     // Add to the panel
-    contentPanel.add(enterSearchMaV.getView().newComponentPanel(), "span 5,growx,push,wrap");
+    contentPanel.add(enterSearchMaV.getView().newComponentPanel(), "span 6,growx,push,wrap");
     contentPanel.add(checkSelectorComboBox, "shrink");
     contentPanel.add(addButton, "shrink");
     contentPanel.add(editButton, "shrink");
     contentPanel.add(deleteButton, "shrink");
-    contentPanel.add(new JLabel(""), "grow,push,wrap");
-    contentPanel.add(scrollPane, "span 5,grow,push");
+    contentPanel.add(undoButton, "shrink");
+    contentPanel.add(new JLabel(""), "grow,push,wrap"); // Empty label to pack buttons
+    contentPanel.add(scrollPane, "span 6,grow,push");
 
     return contentPanel;
   }
@@ -181,11 +186,28 @@ public class ContactsPanelView extends AbstractScreenView<ContactsPanelModel> im
       @Override
       public void actionPerformed(ActionEvent e) {
 
+        // Locate all the selected columns
+
 
       }
     };
   }
 
+  /**
+   * @return The undo action
+   */
+  public Action getUndoAction() {
+
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        // Locate all the selected columns
+
+
+      }
+    };
+  }
 
   @Override
   public void actionPerformed(ActionEvent e) {

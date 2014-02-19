@@ -29,9 +29,9 @@ import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.FooterView;
 import org.multibit.hd.ui.views.HeaderView;
 import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.Wizards;
-import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
+import org.multibit.hd.ui.views.screens.AbstractScreenView;
+import org.multibit.hd.ui.views.screens.Screen;
+import org.multibit.hd.ui.views.screens.Screens;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,16 +83,15 @@ public class ComponentTestBed {
    * <h3>Detail screen</h3>
    * <pre>
    * AbstractScreenView screen = Screens.newScreen(Screen.CONTACTS);
-   * return screen.getScreenPanel();
+   * return screen.newScreenViewPanel();
    * </pre>
    *
    * @return The panel under test
    */
   public JPanel createTestPanel() {
 
-    AbstractWizard wizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.CREATE_WALLET_CREATE_PASSWORD);
-    wizard.show(WelcomeWizardState.CREATE_WALLET_CREATE_PASSWORD.name());
-    return wizard.getWizardPanel();
+    AbstractScreenView screen = Screens.newScreen(Screen.CONTACTS);
+    return screen.newScreenViewPanel();
 
   }
 
