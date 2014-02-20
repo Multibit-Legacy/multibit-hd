@@ -36,7 +36,7 @@ public class AutoCompleteFilters {
       @Override
       public Recipient[] create() {
 
-        List<Contact> contacts = CoreServices.getOrCreateContactService(getCurrentWalletId()).allContacts(1, 10);
+        List<Contact> contacts = CoreServices.getOrCreateContactService(getCurrentWalletId()).allContacts();
 
         return populateRecipients(contacts);
 
@@ -49,7 +49,7 @@ public class AutoCompleteFilters {
           return new Recipient[]{};
         }
 
-        List<Contact> contacts = CoreServices.getOrCreateContactService(getCurrentWalletId()).filterContactsByName(1, 10, fragment);
+        List<Contact> contacts = CoreServices.getOrCreateContactService(getCurrentWalletId()).filterContactsByContent(fragment);
 
         return populateRecipients(contacts);
       }

@@ -26,7 +26,7 @@ import java.awt.event.ActionEvent;
  * @since 0.0.1
  *  
  */
-public class ToolsPanelView extends AbstractScreenView<ToolsPanelModel> {
+public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
 
   private JButton welcomeWizard;
 
@@ -35,7 +35,7 @@ public class ToolsPanelView extends AbstractScreenView<ToolsPanelModel> {
    * @param screen     The screen to filter events from components
    * @param title      The key to the main title of this panel view
    */
-  public ToolsPanelView(ToolsPanelModel panelModel, Screen screen, MessageKey title) {
+  public ToolsScreenView(ToolsScreenModel panelModel, Screen screen, MessageKey title) {
     super(panelModel, screen, title);
   }
 

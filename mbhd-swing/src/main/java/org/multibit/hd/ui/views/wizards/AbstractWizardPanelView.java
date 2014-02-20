@@ -4,9 +4,9 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.events.view.ComponentChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardButtonEnabledEvent;
-import org.multibit.hd.ui.events.view.WizardComponentModelChangedEvent;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
@@ -233,7 +233,7 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
   }
 
   /**
-   * <p>Called when a wizard state transition occurs (e.g. "next" button click) and in response to a {@link WizardComponentModelChangedEvent}</p>
+   * <p>Called when a wizard state transition occurs (e.g. "next" button click) and in response to a {@link org.multibit.hd.ui.events.view.ComponentChangedEvent}</p>
    *
    * <p>Implementers must:</p>
    * <ol>
@@ -298,7 +298,7 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
    * @param event The wizard button enable event
    */
   @Subscribe
-  public void onWizardComponentModelChangedEvent(WizardComponentModelChangedEvent event) {
+  public void onWizardComponentModelChangedEvent(ComponentChangedEvent event) {
 
     if (panelName.equals(event.getPanelName())) {
 

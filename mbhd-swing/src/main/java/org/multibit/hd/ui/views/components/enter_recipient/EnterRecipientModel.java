@@ -43,7 +43,7 @@ public class EnterRecipientModel implements Model<Recipient> {
     this.recipient = Optional.of(value);
 
     // Fire a component model updated event
-    ViewEvents.fireWizardComponentModelChangedEvent(panelName, Optional.of(this));
+    ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
   }
 
   /**

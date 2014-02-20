@@ -19,14 +19,14 @@ import javax.swing.*;
  * @since 0.0.1
  *         
  */
-public class ExitPanelView extends AbstractScreenView<ExitPanelModel>  {
+public class ExitScreenView extends AbstractScreenView<ExitScreenModel>  {
 
   /**
    * @param panelModel The model backing this panel view
    * @param screen     The screen to filter events from components
    * @param title      The key to the main title of this panel view
    */
-  public ExitPanelView(ExitPanelModel panelModel, Screen screen, MessageKey title) {
+  public ExitScreenView(ExitScreenModel panelModel, Screen screen, MessageKey title) {
     super(panelModel, screen, title);
   }
 

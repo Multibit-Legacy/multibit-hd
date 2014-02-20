@@ -68,7 +68,7 @@ public class EnterAmountModel implements Model<EnterAmountModel> {
     satoshis = Optional.of(value);
 
     // Fire a component model updated event
-    ViewEvents.fireWizardComponentModelChangedEvent(panelName, Optional.of(this));
+    ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
 
   }
 

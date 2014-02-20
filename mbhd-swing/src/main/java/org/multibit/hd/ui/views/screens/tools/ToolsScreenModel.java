@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.screens.settings;
+package org.multibit.hd.ui.views.screens.tools;
 
 import org.multibit.hd.ui.views.screens.AbstractScreenModel;
 import org.multibit.hd.ui.views.screens.Screen;
@@ -6,15 +6,15 @@ import org.multibit.hd.ui.views.screens.Screen;
 /**
  * <p>View to provide the following to application:</p>
  * <ul>
- * <li>Provision of components and layout for the settings screen</li>
+ * <li>Provision of components and layout for the tools screen</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class SettingsPanelModel extends AbstractScreenModel {
+public class ToolsScreenModel extends AbstractScreenModel {
 
-  public SettingsPanelModel(Screen screen) {
+  public ToolsScreenModel(Screen screen) {
     super(screen);
   }
 

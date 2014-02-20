@@ -59,7 +59,7 @@ public class EnterPasswordModel implements Model<String> {
     this.password = Optional.of(password);
 
     // Alert the panel model that a component has changed
-    ViewEvents.fireWizardComponentModelChangedEvent(panelName, Optional.of(this));
+    ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
 
   }
 }

@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.screens.help;
+package org.multibit.hd.ui.views.screens.settings;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
@@ -12,20 +12,20 @@ import javax.swing.*;
 /**
  * <p>View to provide the following to application:</p>
  * <ul>
- * <li>Provision of components and layout for the help detail display</li>
+ * <li>Provision of components and layout for the tools detail display</li>
  * </ul>
  *
  * @since 0.0.1
  *         
  */
-public class HelpPanelView extends AbstractScreenView<HelpPanelModel>  {
+public class SettingsScreenView extends AbstractScreenView<SettingsScreenModel>  {
 
   /**
    * @param panelModel The model backing this panel view
    * @param screen     The screen to filter events from components
    * @param title      The key to the main title of this panel view
    */
-  public HelpPanelView(HelpPanelModel panelModel, Screen screen, MessageKey title) {
+  public SettingsScreenView(SettingsScreenModel panelModel, Screen screen, MessageKey title) {
     super(panelModel, screen, title);
   }
 
@@ -46,7 +46,7 @@ public class HelpPanelView extends AbstractScreenView<HelpPanelModel>  {
     );
 
     JPanel contentPanel = Panels.newPanel(layout);
-    contentPanel.add(new JLabel("Help"));
+    contentPanel.add(new JLabel("Preferences"));
 
     return contentPanel;
   }

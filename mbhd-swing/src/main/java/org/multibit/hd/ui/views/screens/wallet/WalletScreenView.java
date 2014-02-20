@@ -26,7 +26,7 @@ import java.awt.event.ActionEvent;
  * @since 0.0.1
  *  
  */
-public class WalletPanelView extends AbstractScreenView<WalletPanelModel> {
+public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
 
   private JButton sendBitcoin;
   private JButton requestBitcoin;
@@ -40,7 +40,7 @@ public class WalletPanelView extends AbstractScreenView<WalletPanelModel> {
    * @param screen     The screen to filter events from components
    * @param title      The key to the main title of this panel view
    */
-  public WalletPanelView(WalletPanelModel panelModel, Screen screen, MessageKey title) {
+  public WalletScreenView(WalletScreenModel panelModel, Screen screen, MessageKey title) {
     super(panelModel, screen, title);
   }
 

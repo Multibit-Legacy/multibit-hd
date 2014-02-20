@@ -215,6 +215,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
+        <!-- Require v16.0.1+ for full JDK1.7.0_51+ compliance -->
         <version>13.0.1</version>
       </dependency>
 

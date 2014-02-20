@@ -7,7 +7,7 @@ import org.multibit.hd.ui.controllers.SettingsController;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.screens.settings.SettingsLanguagePanelView;
+import org.multibit.hd.ui.views.screens.settings.SettingsLanguageScreenView;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -32,7 +32,7 @@ public class SettingsView {
   private JButton applyButton;
   private JButton undoButton;
 
-  private SettingsLanguagePanelView settingsLanguageView = new SettingsLanguagePanelView();
+  private SettingsLanguageScreenView settingsLanguageView = new SettingsLanguageScreenView();
 
   private final SettingsController controller;
 
@@ -58,13 +58,13 @@ public class SettingsView {
     tabbedPane.addTab("Language 1", settingsLanguageView.initComponents());
     tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
 
-    tabbedPane.addTab("Language 2", new SettingsLanguagePanelView().initComponents());
+    tabbedPane.addTab("Language 2", new SettingsLanguageScreenView().initComponents());
     tabbedPane.setMnemonicAt(1, KeyEvent.VK_2);
 
-    tabbedPane.addTab("Language 3", new SettingsLanguagePanelView().initComponents());
+    tabbedPane.addTab("Language 3", new SettingsLanguageScreenView().initComponents());
     tabbedPane.setMnemonicAt(2, KeyEvent.VK_3);
 
-    tabbedPane.addTab("Language 4", new SettingsLanguagePanelView().initComponents());
+    tabbedPane.addTab("Language 4", new SettingsLanguageScreenView().initComponents());
     tabbedPane.setMnemonicAt(3, KeyEvent.VK_4);
 
     applyButton = Buttons.newApplyButton(null);

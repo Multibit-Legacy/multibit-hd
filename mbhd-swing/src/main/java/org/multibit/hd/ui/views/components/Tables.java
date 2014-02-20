@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.components;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.TransactionData;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.tables.AmountBTCTableHeaderRenderer;
 import org.multibit.hd.ui.views.components.tables.ContactTableModel;
 import org.multibit.hd.ui.views.components.tables.StripedTable;
@@ -56,6 +57,8 @@ public class Tables {
     // Set preferred widths
     resizeColumn(table, ContactTableModel.CHECKBOX_COLUMN_INDEX, MultiBitUI.NORMAL_ICON_SIZE + SPACER);
     resizeColumn(table, ContactTableModel.GRAVATAR_COLUMN_INDEX, MultiBitUI.LARGE_ICON_SIZE + SPACER);
+
+    table.applyComponentOrientation(Languages.currentComponentOrientation());
 
     return table;
   }
