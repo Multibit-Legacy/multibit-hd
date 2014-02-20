@@ -1,5 +1,10 @@
 package org.multibit.hd.ui.views.wizards;
 
+import com.google.common.base.Preconditions;
+import org.multibit.hd.core.dto.Contact;
+import org.multibit.hd.ui.views.wizards.edit_contact.EditContactState;
+import org.multibit.hd.ui.views.wizards.edit_contact.EditContactWizard;
+import org.multibit.hd.ui.views.wizards.edit_contact.EditContactWizardModel;
 import org.multibit.hd.ui.views.wizards.exit.ExitState;
 import org.multibit.hd.ui.views.wizards.exit.ExitWizard;
 import org.multibit.hd.ui.views.wizards.exit.ExitWizardModel;
@@ -12,6 +17,8 @@ import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinWizardModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizard;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
+
+import java.util.List;
 
 /**
  * <p>Factory to provide the following to UI:</p>
@@ -69,6 +76,20 @@ public class Wizards {
   public static ReceiveBitcoinWizard newRequestBitcoinWizard() {
 
     return new ReceiveBitcoinWizard(new ReceiveBitcoinWizardModel(ReceiveBitcoinState.ENTER_AMOUNT), false);
+
+  }
+
+  /**
+   *
+   * @param contacts The list of contacts to edit
+   *
+   * @return A new "edit contact" wizard for contacts
+   */
+  public static EditContactWizard newEditContactWizard(List<Contact> contacts) {
+
+    Preconditions.checkState(!contacts.isEmpty(), "'contacts' cannot be empty");
+
+    return new EditContactWizard(new EditContactWizardModel(EditContactState.ENTER_DETAILS, contacts));
 
   }
 

@@ -142,7 +142,6 @@ public class MultiBitHD {
       walletService.initialise(applicationDataDirectory, WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId());
     }
 
-
   }
 
   /**

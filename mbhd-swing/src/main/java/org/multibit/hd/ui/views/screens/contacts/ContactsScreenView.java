@@ -11,6 +11,7 @@ import org.multibit.hd.ui.views.components.enter_search.EnterSearchView;
 import org.multibit.hd.ui.views.components.tables.ContactTableModel;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
+import org.multibit.hd.ui.views.wizards.Wizards;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -58,6 +59,11 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
       "[shrink][shrink][grow]" // Row constraints
     );
 
+    // Populate the model
+
+    JTable contactsTable = Tables.newContactsTable(getScreenModel().getContacts());
+    contactsTableModel = (ContactTableModel) contactsTable.getModel();
+
     JPanel contentPanel = Panels.newPanel(layout);
 
     // Create view components
@@ -67,11 +73,6 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
     JButton editButton = Buttons.newEditButton(getEditAction());
     JButton deleteButton = Buttons.newDeleteButton(getDeleteAction());
     JButton undoButton = Buttons.newUndoButton(getUndoAction());
-
-    // Populate the model
-
-    JTable contactsTable = Tables.newContactsTable(getScreenModel().getContacts());
-    contactsTableModel = (ContactTableModel) contactsTable.getModel();
 
     // Detect clicks on the table
     contactsTable.addMouseListener(getTableMouseListener());
@@ -143,11 +144,19 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
    * @return The edit contact action
    */
   private Action getEditAction() {
+
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        // TODO Show contact edit wizard
+        // Get the currently selected Contact
+        final List<Contact> contacts = contactsTableModel.getContactsBySelection(true);
+
+        // Ensure we have at least one contact to work with
+        if (!contacts.isEmpty()) {
+
+          Panels.showLightBox(Wizards.newEditContactWizard(contacts).getWizardPanel());
+        }
 
       }
     };
@@ -210,33 +219,28 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
    * @return The table mouse listener
    */
   private MouseAdapter getTableMouseListener() {
+
     return new MouseAdapter() {
 
       public void mousePressed(MouseEvent e) {
 
-        // Check box handling
-        if (e.getClickCount() > 0) {
+        if (e.getClickCount() == 1) {
+
+          // Toggle the check mark
           JTable target = (JTable) e.getSource();
           int row = target.getSelectedRow();
 
-          // Check the check box
-          contactsTableModel.setSelectionCheckmark(row, true);
-
-        }
-
-        // Edit requested
-        if (e.getClickCount() == 2) {
-
-          JTable target = (JTable) e.getSource();
-          int row = target.getSelectedRow();
-
-          // TODO Show edit wizard
+          contactsTableModel.setSelectionCheckmark(
+            row,
+            !(boolean) contactsTableModel.getValueAt(row, ContactTableModel.CHECKBOX_COLUMN_INDEX)
+          );
 
         }
 
       }
 
     };
+
   }
 
 }

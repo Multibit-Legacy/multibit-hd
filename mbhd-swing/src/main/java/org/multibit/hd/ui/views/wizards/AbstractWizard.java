@@ -202,6 +202,22 @@ public abstract class AbstractWizard<M extends WizardModel> {
   }
 
   /**
+   * @param wizardView The wizard view (providing a reference to its underlying panel model)
+   *
+   * @return The "apply" action based on the model state
+   */
+  public <P> Action getApplyAction(final AbstractWizardPanelView<M, P> wizardView) {
+
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        Panels.hideLightBox();
+      }
+    };
+  }
+
+  /**
    * @return The wizard model
    */
   public M getWizardModel() {

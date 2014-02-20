@@ -114,6 +114,50 @@ public class TextBoxes {
   }
 
   /**
+   * @param readOnly True if the field should be read only (i.e. in multi-edit mode)
+   *
+   * @return A new "enter name" text field
+   */
+  public static JTextField newEnterName(boolean readOnly) {
+
+    return readOnly ? newReadOnlyTextField(40) : newTextField(40);
+
+  }
+
+  /**
+   * @param readOnly True if the field should be read only (i.e. in multi-edit mode)
+   *
+   * @return A new "enter email address" text field
+   */
+  public static JTextField newEnterEmailAddress(boolean readOnly) {
+
+    return readOnly ? newReadOnlyTextField(40) : newTextField(40);
+
+  }
+
+  /**
+   * @param readOnly True if the field should be read only (i.e. in multi-edit mode)
+   *
+   * @return A new "enter Bitcoin address" text field
+   */
+  public static JTextField newEnterBitcoinAddress(boolean readOnly) {
+
+    return readOnly ? newReadOnlyTextField(40) : newTextField(40);
+
+  }
+
+  /**
+   * @param readOnly True if the field should be read only (i.e. in multi-edit mode)
+   *
+   * @return A new "enter extended public key" text field
+   */
+  public static JTextField newEnterExtendedPublicKey(boolean readOnly) {
+
+    return readOnly ? newReadOnlyTextField(40) : newTextField(40);
+
+  }
+
+  /**
    * @param bitcoinAddress The Bitcoin address to display
    *
    * @return A new "display Bitcoin address" text field
@@ -206,7 +250,7 @@ public class TextBoxes {
   }
 
   /**
-   * @return A new "Notes" text area
+   * @return A new "notes" text area
    */
   public static JTextArea newEnterNotes() {
 
@@ -231,6 +275,15 @@ public class TextBoxes {
     textArea.setBackground(Themes.currentTheme.dataEntryBackground());
 
     return textArea;
+  }
+
+  /**
+   * @return A new "tags" text field
+   */
+  public static JTextArea newEnterTags() {
+
+    return newEnterNotes();
+
   }
 
   /**

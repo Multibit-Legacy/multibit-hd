@@ -56,6 +56,12 @@ public enum MessageKey {
   TRANSACTION_FEE("transaction_fee"),
   DEVELOPER_FEE("developer_fee"),
 
+  NAME("name"),
+  EMAIL_ADDRESS("email_address"),
+  BITCOIN_ADDRESS("bitcoin_address"),
+  EXTENDED_PUBLIC_KEY("extended_public_key"),
+  TAGS("tags"),
+
   // Sidebar
 
   CONTACTS("contacts"),
@@ -68,6 +74,7 @@ public enum MessageKey {
 
   APPROXIMATELY("approximately"),
   PARANTHESES("parantheses"),
+  MULTIPLE("multiple"),
 
   // Panels
 
@@ -95,6 +102,8 @@ public enum MessageKey {
   RESTORE_WALLET_SELECT_BACKUP_TITLE("restore_wallet_select_backup_title"),
   RESTORE_WALLET_TIMESTAMP_TITLE("restore_wallet_timestamp_title"),
   RESTORE_WALLET_REPORT_TITLE("restore_wallet_report_title"),
+  EDIT_CONTACT_TITLE("edit_contact_title"),
+  EDIT_CONTACTS_TITLE("edit_contacts_title"),
 
   // Labels
   CONFIRM_SEND_MESSAGE("confirm_send_message"),
@@ -116,6 +125,7 @@ public enum MessageKey {
   SELECT_LANGUAGE("select_language"),
   SEED_SIZE("seed_size"),
   TIMESTAMP("timestamp"),
+  MULTI_EDIT_NOTE("multi_edit_note"),
 
   // Tool buttons
   SHOW_WELCOME_WIZARD("show_welcome_wizard"),
