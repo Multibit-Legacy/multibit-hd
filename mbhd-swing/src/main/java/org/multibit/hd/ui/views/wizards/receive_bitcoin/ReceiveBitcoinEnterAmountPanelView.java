@@ -63,7 +63,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
 
     enterAmountMaV = Components.newEnterAmountMaV(getPanelName());
 
-    // TODO Link this to the recipient address service OR get from WalletService
+    // TODO get the next address from WalletService
     Address nextAddress = WalletManager.INSTANCE.getCurrentWalletData().get().getWallet().getKeys().get(0).toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
     displayBitcoinAddressMaV = Components.newDisplayBitcoinAddressMaV(nextAddress.toString());
 
@@ -160,6 +160,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
         );
 
         displayQRCodeMaV.getModel().setValue(bitcoinUri);
+        displayQRCodeMaV.getModel().setLabel(label.getText());
 
         // Show the QR code as a popover
         Panels.showLightBoxPopover(displayQRCodeMaV.getView().newComponentPanel());

@@ -14,6 +14,7 @@ import org.multibit.hd.ui.models.Model;
 public class DisplayQRCodeModel implements Model<String> {
 
   private String content;
+  private String label;
 
   @Override
   public String getValue() {
@@ -23,6 +24,14 @@ public class DisplayQRCodeModel implements Model<String> {
   @Override
   public void setValue(String value) {
     this.content = value;
+  }
+
+  public void setLabel(String label) {
+    this.label = label;
+  }
+
+  public String getLabel() {
+    return label;
   }
 
 }
