@@ -11,6 +11,8 @@ import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.store.Payments;
 import org.multibit.hd.core.store.PaymentsProtobufSerializer;
 import org.multibit.hd.core.utils.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,6 +31,8 @@ import java.util.Set;
  * Most of the functionality is provided by WalletManager and BackupManager.
  */
 public class WalletService {
+
+  private static final Logger log = LoggerFactory.getLogger(WalletService.class);
 
   /**
    * The name of the directory (within the wallet directory) that contains the payments database
@@ -272,5 +276,33 @@ public class WalletService {
 
   public Payments getPayments() {
     return payments;
+  }
+
+  public int getLastIndexUsed(){
+    return payments.getLastIndexUsed();
+  }
+
+  /**
+   * Create the next private key for the wallet.
+   * This is worked out deterministically and uses the lastIndexUsed on the Payments so that each address is unique
+   *
+   * Remember to save both the dirty wallet and the payment requests backing store after calling this method
+   *
+   * @return Address the next generated address, as a String. The corresponding private key will be added to the wallet
+   */
+  public String generateNextReceivingAddress() {
+    Optional<WalletData> walletDataOptional = WalletManager.INSTANCE.getCurrentWalletData();
+    if (!walletDataOptional.isPresent()) {
+      // No wallet is present
+      throw new IllegalStateException("Trying to add a key to a non-existent wallet");
+    } else {
+      // increment the lastIndexUsed
+      int currentLastIndexUsed = payments.getLastIndexUsed();
+      currentLastIndexUsed++;
+      payments.setLastIndexUsed(currentLastIndexUsed);
+      log.debug("The last index used has been incremented to " + currentLastIndexUsed);
+      ECKey newKey = WalletManager.INSTANCE.createAndAddNewWalletKey(walletDataOptional.get().getWallet(), currentLastIndexUsed);
+      return newKey.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
+    }
   }
 }

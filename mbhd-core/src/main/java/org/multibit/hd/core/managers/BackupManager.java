@@ -207,7 +207,7 @@ public enum BackupManager {
     Preconditions.checkNotNull(walletData);
     Preconditions.checkNotNull(walletData.getWallet());
     Preconditions.checkNotNull(walletData.getWalletId());
-    Preconditions.checkNotNull(applicationDataDirectory); // Indicates not initialised
+    Preconditions.checkNotNull(applicationDataDirectory); // Indicates BackupManager is not initialised - call initialise with the applicationDataDirectory
 
     // Find the wallet root directory for this wallet id
     File walletRootDirectory = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), WalletManager.createWalletRoot(walletData.getWalletId()));
