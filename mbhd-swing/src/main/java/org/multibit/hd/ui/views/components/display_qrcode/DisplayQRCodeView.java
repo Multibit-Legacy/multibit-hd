@@ -42,7 +42,7 @@ public class DisplayQRCodeView extends AbstractComponentView<DisplayQRCodeModel>
 
     panel = Panels.newRoundedPanel();
 
-    qrCodeImage = QRCodes.generateQRCode(getModel().get().getValue(), 2);
+    qrCodeImage = QRCodes.generateQRCode(getModel().get().getValue(), 3);
 
     panelCloseButton = Buttons.newPanelCloseButton(getClosePopoverAction());
 
@@ -56,8 +56,11 @@ public class DisplayQRCodeView extends AbstractComponentView<DisplayQRCodeModel>
     panel.add(panelCloseButton, "align right,shrink,wrap");
     panel.add(Labels.newImageLabel(qrCodeImage), "span 2,grow,push,wrap");
 
+    JLabel labelLabel = Labels.newBlankLabel();
+    labelLabel.setText(getModel().get().getLabel());
+    panel.add(labelLabel, "align center,push,wrap");
     // Panel needs to be this size to allow for largest Bitcoin URI
-    panel.setSize(350, 350);
+    panel.setSize(450, 450);
 
     return panel;
 
