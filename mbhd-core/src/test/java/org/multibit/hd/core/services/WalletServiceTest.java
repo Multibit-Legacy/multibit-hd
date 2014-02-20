@@ -42,7 +42,7 @@ public class WalletServiceTest {
 
     WalletManager.INSTANCE.initialise(temporaryDirectory);
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
-    WalletManager.INSTANCE.createWallet(seed1, PASSWORD);
+    WalletManager.INSTANCE.createWallet(temporaryDirectory.getAbsolutePath(), seed1, PASSWORD);
 
     walletService = new WalletService();
 
