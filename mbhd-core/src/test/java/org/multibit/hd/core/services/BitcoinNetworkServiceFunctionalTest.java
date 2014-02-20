@@ -7,16 +7,17 @@ import com.google.common.util.concurrent.Uninterruptibles;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.TransactionData;
 import org.multibit.hd.core.dto.WalletData;
-import org.multibit.hd.core.seed_phrase.Bip39SeedPhraseGenerator;
-import org.multibit.hd.core.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.managers.WalletManagerTest;
+import org.multibit.hd.core.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.core.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.utils.Dates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,17 +112,13 @@ public class BitcoinNetworkServiceFunctionalTest {
     // See if there are any transactions
     WalletService walletService = CoreServices.newWalletService();
 
-    walletService.start();
+    walletService.initialise(temporaryDirectory, new WalletId(seed));
 
     // Get the current wallets transactions - there should be some
     Set<TransactionData>transactions = walletService.getTransactions();
 
     log.debug("The transactions in the wallet are:\n" + transactions);
     assertThat(transactions.size() > 0).isTrue();
-
-    walletService.stopAndWait();
-
-
   }
 
   @Test

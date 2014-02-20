@@ -1,5 +1,7 @@
 package org.multibit.hd.core.store;
 
+import com.google.common.collect.Lists;
+
 import java.util.Collection;
 
 /**
@@ -19,6 +21,8 @@ public class Payments {
 
   public Payments(int lastIndexUsed) {
     this.lastIndexUsed = lastIndexUsed;
+    this.paymentRequests = Lists.newArrayList();
+    this.transactionInfos = Lists.newArrayList();
   }
 
   public int getLastIndexUsed() {

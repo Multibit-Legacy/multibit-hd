@@ -7,7 +7,6 @@ import com.google.common.collect.Sets;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.exceptions.PaymentsSaveException;
-import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.store.Payments;
 import org.multibit.hd.core.store.PaymentsProtobufSerializer;
@@ -28,9 +27,8 @@ import java.util.Set;
  *  </ul>
  * <p/>
  * Most of the functionality is provided by WalletManager and BackupManager.
- * This service provides a single point of entry for GUI code and encapsulates things in a service thread. 
  */
-public class WalletService extends AbstractService {
+public class WalletService {
 
   /**
    * The name of the directory (within the wallet directory) that contains the payments database
@@ -41,6 +39,13 @@ public class WalletService extends AbstractService {
    * The name of the protobuf file containing additional payments information
    */
   public static final String PAYMENTS_DATABASE_NAME = "payments.db";
+
+  /**
+   * The location of the main user data directory where wallets etc are stored.
+   * This is typically created from InstallationManager.getOrCreateApplicationDataDirectory() but
+   * is passed in to make this service easier to test
+   */
+  private File applicationDataDirectory;
 
   /**
    * The location of the backing writeContacts for the payments
@@ -62,23 +67,19 @@ public class WalletService extends AbstractService {
    */
   private WalletId walletId;
 
-  @Override
-  public void start() {
-    this.requireSingleThreadExecutor();
-  }
-
   /**
    * Initialise the wallet service with a wallet id so that it knows where to put files etc
    *
    * @param walletId the walletId to use for this WalletService
    */
-  public void initialise(WalletId walletId) {
+  public void initialise(File applicationDataDirectory, WalletId walletId) {
+    Preconditions.checkNotNull(applicationDataDirectory, "'applicationDataDirectory' must be present");
     Preconditions.checkNotNull(walletId, "'walletId' must be present");
 
+    this.applicationDataDirectory = applicationDataDirectory;
     this.walletId = walletId;
 
     // Work out where to writeContacts the contacts for this wallet id.
-    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
     String walletRoot = WalletManager.createWalletRoot(walletId);
 
     File walletDirectory = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), walletRoot);
@@ -88,12 +89,13 @@ public class WalletService extends AbstractService {
 
     this.backingStoreFile = new File(paymentsDirectory.getAbsolutePath() + File.separator + PAYMENTS_DATABASE_NAME);
 
-
     protobufSerializer = new PaymentsProtobufSerializer();
 
     // Load the payments data from the backing store if it exists
     if (backingStoreFile.exists()) {
       readPayments();
+    } else {
+      payments = new Payments(0);
     }
   }
 
@@ -197,9 +199,7 @@ public class WalletService extends AbstractService {
       }
     }
 
-    TransactionData transactionData = new TransactionData(transactionId, updateTime, status, amountBTC, Optional.<BigInteger>absent(), confidenceType, transactionType, depth, description);
-
-    return transactionData;
+    return new TransactionData(transactionId, updateTime, status, amountBTC, Optional.<BigInteger>absent(), confidenceType, transactionType, depth, description);
   }
 
   /**
@@ -253,7 +253,6 @@ public class WalletService extends AbstractService {
     }
   }
 
-
   /**
    * <p>Save the payments data to the backing store</p>
    */
@@ -271,4 +270,7 @@ public class WalletService extends AbstractService {
     return walletId;
   }
 
+  public Payments getPayments() {
+    return payments;
+  }
 }

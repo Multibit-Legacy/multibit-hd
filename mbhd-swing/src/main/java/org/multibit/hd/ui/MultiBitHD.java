@@ -176,7 +176,7 @@ public class MultiBitHD {
       WalletData walletData = WalletManager.INSTANCE.getCurrentWalletData().get();
       log.debug("The current wallet is:\nWallet id = '" + walletData.getWalletId().toString() + "\n" + walletData.getWallet().toString());
 
-      // TODO need to show warm start dialog (to get password) and unencrypt wallet and contacts
+      // TODO need to show warm start dialog (to get password) and unencrypt wallet, contacts and payments
 
     } else {
       // Show an exiting Welcome wizard
