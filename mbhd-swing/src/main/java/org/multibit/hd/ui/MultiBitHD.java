@@ -13,6 +13,7 @@ import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.ExchangeTickerService;
+import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.core.utils.OSUtils;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.controllers.HeaderController;
@@ -48,6 +49,8 @@ public class MultiBitHD {
 
   private static BitcoinNetworkService bitcoinNetworkService;
 
+  private static WalletService walletService;
+
   /**
    * <p>Main entry point to the application</p>
    *
@@ -69,6 +72,12 @@ public class MultiBitHD {
   public static BitcoinNetworkService getBitcoinNetworkService() {
     return bitcoinNetworkService;
   }
+  /**
+    * @return The wallet service for the UI
+    */
+   public static WalletService getWalletService() {
+     return walletService;
+   }
 
   /**
    * <p>Initialise the JVM. This occurs before anything else is called.</p>
@@ -101,7 +110,7 @@ public class MultiBitHD {
     // Start the core services
     CoreServices.main(args);
 
-    // Pre-load sound library
+    // Pre-loadContacts sound library
     Sounds.initialise();
 
     if (OSUtils.isMac()) {
@@ -111,22 +120,29 @@ public class MultiBitHD {
     ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(BitstampExchange.class.getName());
     bitcoinNetworkService = CoreServices.newBitcoinNetworkService();
 
-    // Initialise the wallet manager, which will load the current wallet if available
+    // Initialise the wallet manager, which will loadContacts the current wallet if available
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     // Start up the exchange service
     exchangeTickerService.start();
 
     WalletManager.INSTANCE.initialise(applicationDataDirectory);
-    BackupManager.INSTANCE.initialise(applicationDataDirectory, null); // TODO load up the cloud backup if available from properties and insert here
+    BackupManager.INSTANCE.initialise(applicationDataDirectory, null); // TODO loadContacts up the cloud backup if available from properties and insert here
 
-    // TODO Remove this when the Contact screen is ready
     if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
+      // TODO Remove this when the Contact screen is ready
       CoreServices
-        .getOrCreateContactService(
-          WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()
-        ).addDemoContacts();
+              .getOrCreateContactService(
+                      WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()
+              ).addDemoContacts();
+
+      // Initialise the WalletService, which provides transaction information from the wallet
+      // TODO the GUI should just use the WalletService and not go to the WalletManager directly
+      walletService = CoreServices.newWalletService();
+      walletService.initialise(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId());
     }
+
+
   }
 
   /**
@@ -141,10 +157,10 @@ public class MultiBitHD {
     FooterView footerView = new FooterView();
 
     MainView mainView = new MainView(
-      headerView.getContentPanel(),
-      sidebarView.getContentPanel(),
-      detailView.getContentPanel(),
-      footerView.getContentPanel()
+            headerView.getContentPanel(),
+            sidebarView.getContentPanel(),
+            detailView.getContentPanel(),
+            footerView.getContentPanel()
     );
 
     // Create controllers
@@ -199,17 +215,17 @@ public class MultiBitHD {
 
       // Provide the exchange name
       ViewEvents.fireBalanceChangedEvent(
-        satoshis,
-        MoneyUtils.fromSatoshi(0),
-        event.get().getRateProvider()
+              satoshis,
+              MoneyUtils.fromSatoshi(0),
+              event.get().getRateProvider()
       );
     } else {
 
       // No exchange provided
       ViewEvents.fireBalanceChangedEvent(
-        satoshis,
-        MoneyUtils.fromSatoshi(0),
-        Optional.<String>absent()
+              satoshis,
+              MoneyUtils.fromSatoshi(0),
+              Optional.<String>absent()
       );
 
     }

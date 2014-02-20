@@ -108,7 +108,7 @@ public class MacApplicationBuilder {
 
       // Must have successfully loaded the Apple JDK or its not there
 
-      // Try to load the EAWT support classes
+      // Try to loadContacts the EAWT support classes
       Class nativeApplicationClass = Class.forName("com.apple.eawt.Application");
       // Instantiate through getApplication()
       nativeApplication = nativeApplicationClass.getMethod("getApplication", new Class[0]).invoke(null);

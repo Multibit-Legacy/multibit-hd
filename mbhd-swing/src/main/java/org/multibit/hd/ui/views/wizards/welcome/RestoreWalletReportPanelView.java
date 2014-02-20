@@ -201,7 +201,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
     if (selectedBackupSummaryModel == null || selectedBackupSummaryModel.getValue() == null ||
             selectedBackupSummaryModel.getValue().getFile() == null) {
-      log.debug("No wallet backup to load from the model");
+      log.debug("No wallet backup to loadContacts from the model");
       return false;
     }
 

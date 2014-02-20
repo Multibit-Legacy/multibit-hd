@@ -31,7 +31,14 @@ import java.util.UUID;
  */
 public class ContactService {
 
+  /**
+   * The name of the directory (within the wallets directory) that contains the contacts database
+   */
   public final static String CONTACTS_DIRECTORY_NAME = "contacts";
+
+  /**
+   * The name of the contacts database
+   */
   public final static String CONTACTS_DATABASE_NAME = "contacts.db";
 
   /**
@@ -40,11 +47,12 @@ public class ContactService {
   private final Set<Contact> contacts = Sets.newHashSet();
 
   /**
-   * The location of the backing store for the contacts
+   * The location of the backing writeContacts for the contacts
    */
   private File backingStoreFile;
+
   /**
-   * The serializer for the backing store
+   * The serializer for the backing writeContacts
    */
   private ContactsProtobufSerializer protobufSerializer;
 
@@ -57,7 +65,7 @@ public class ContactService {
 
     Preconditions.checkNotNull(walletId, "'walletId' must be present");
 
-    // Work out where to store the contacts for this wallet id.
+    // Work out where to writeContacts the contacts for this wallet id.
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
     String walletRoot = WalletManager.createWalletRoot(walletId);
 
@@ -72,7 +80,7 @@ public class ContactService {
   }
 
   /**
-   * <p>Create a ContactService with the specified File as the backing store. (This exists primarily for testing where you just run things in a temporary directory)</p>
+   * <p>Create a ContactService with the specified File as the backing writeContacts. (This exists primarily for testing where you just run things in a temporary directory)</p>
    * <p>Reduced visibility constructor to prevent accidental instance creation outside of CoreServices.</p>
    */
   ContactService(File backingStoreFile) {
@@ -86,9 +94,9 @@ public class ContactService {
 
     protobufSerializer = new ContactsProtobufSerializer();
 
-    // Load the contact data from the backing store if it exists
+    // Load the contact data from the backing writeContacts if it exists
     if (backingStoreFile.exists()) {
-      load();
+      loadContacts();
     }
 
   }
@@ -155,7 +163,7 @@ public class ContactService {
   }
 
   /**
-   * <p>Add the given contacts to the cache. A subsequent <code>store()</code> will add them from the backing store.</p>
+   * <p>Add the given contacts to the cache. A subsequent <code>writeContacts()</code> will add them from the backing writeContacts.</p>
    *
    * @param selectedContacts The selected contacts
    */
@@ -166,7 +174,7 @@ public class ContactService {
   }
 
   /**
-   * <p>Remove the given contacts from the cache. A subsequent <code>store()</code> will purge them from the backing store.</p>
+   * <p>Remove the given contacts from the cache. A subsequent <code>writeContacts()</code> will purge them from the backing writeContacts.</p>
    *
    * @param selectedContacts The selected contacts
    */
@@ -185,9 +193,9 @@ public class ContactService {
   }
 
   /**
-   * <p>Populate the internal cache of Contacts from the backing store</p>
+   * <p>Populate the internal cache of Contacts from the backing writeContacts</p>
    */
-  public void load() throws ContactsLoadException {
+  public void loadContacts() throws ContactsLoadException {
 
     try (FileInputStream fis = new FileInputStream(backingStoreFile)) {
 
@@ -196,16 +204,15 @@ public class ContactService {
       contacts.addAll(loadedContacts);
 
     } catch (IOException e) {
-      throw new ContactsLoadException("Could not load contacts db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");
+      throw new ContactsLoadException("Could not loadContacts contacts db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");
     }
-
   }
 
 
   /**
    * <p>Save the contact data to the backing store</p>
    */
-  public void store() throws ContactsSaveException {
+  public void writeContacts() throws ContactsSaveException {
 
     try (FileOutputStream fos = new FileOutputStream(backingStoreFile)) {
 
@@ -214,7 +221,6 @@ public class ContactService {
     } catch (IOException e) {
       throw new ContactsSaveException("Could not save contacts db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");
     }
-
   }
 
   /**

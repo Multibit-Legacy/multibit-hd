@@ -2,7 +2,7 @@ package org.multibit.hd.core.exceptions;
 
 
 /**
- * <p>Exception to provide Payments load failure information :</p>
+ * <p>Exception to provide Payments loadContacts failure information :</p>
  *
  * <p>This base exception acts as a general failure mode not attributable to a specific cause (other than
  * that reported in the exception message). Since this is in English, it may not be worth reporting directly

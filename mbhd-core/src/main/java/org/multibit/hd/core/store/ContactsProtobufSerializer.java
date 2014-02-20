@@ -114,7 +114,7 @@ public class ContactsProtobufSerializer {
   }
 
     /**
-     * <p>Parses a Contacts from the given stream, using the provided Contacts instance to load data into.
+     * <p>Parses a Contacts from the given stream, using the provided Contacts instance to loadContacts data into.
      * <p>A Contacts db can be unreadable for various reasons, such as inability to open the file, corrupt data, internally
      * inconsistent data, You should always
      * handle {@link org.multibit.hd.core.exceptions.ContactsLoadException} and communicate failure to the user in an appropriate manner.</p>

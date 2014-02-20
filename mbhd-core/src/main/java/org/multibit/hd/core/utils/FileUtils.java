@@ -192,7 +192,7 @@ public class FileUtils {
       if (new File(srcFolder).list() != null) {
         for (String fileName : new File(srcFolder).list()) {
           if (!includeBlockStore && fileName.endsWith(InstallationManager.MBHD_PREFIX + InstallationManager.SPV_BLOCKCHAIN_SUFFIX)) {
-            // Do not include the block store (to save space)
+            // Do not include the block writeContacts (to save space)
             continue;
           }
           addFileToZip(srcFolder, fileName, zip, includeBlockStore);
@@ -235,7 +235,7 @@ public class FileUtils {
     if (folderOnDisk.list() != null) {
       for (String fileName : folderOnDisk.list()) {
         if (!includeBlockStore && fileName.endsWith(InstallationManager.MBHD_PREFIX + InstallationManager.SPV_BLOCKCHAIN_SUFFIX)) {
-          // Do not include the block store (to save space)
+          // Do not include the block writeContacts (to save space)
           continue;
         }
         addFileToZip(path, srcFolder + File.separator + fileName, zip, includeBlockStore);

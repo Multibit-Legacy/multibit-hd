@@ -28,7 +28,7 @@ public class BackupSummary {
   /**
    * @param walletId The unique wallet identifier
    * @param name     The name given to the wallet
-   * @param file     The backup filename to load
+   * @param file     The backup filename to loadContacts
    */
   public BackupSummary(WalletId walletId, String name, File file) {
 

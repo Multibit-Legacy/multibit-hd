@@ -11,9 +11,9 @@ import com.google.bitcoin.store.WalletProtobufSerializer;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.dto.WalletId;
-import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.exceptions.WalletLoadException;
@@ -34,8 +34,8 @@ import java.util.concurrent.TimeUnit;
  *  <p>Manager to provide the following to core users:<br>
  *  <ul>
  *  <li>create wallet</li>
- *  <li>load wallet</li>
- *  <li>store wallet</li>
+ *  <li>loadContacts wallet</li>
+ *  <li>writeContacts wallet</li>
  *  <li>tracks the current wallet and the list of wallet directories</li>
  *  </ul>
  */
@@ -116,9 +116,9 @@ public enum WalletManager implements WalletEventListener {
   private Optional<WalletData> currentWalletData = Optional.absent();
 
   /**
-   * Initialise enum, load up the available wallets and find the current wallet
+   * Initialise enum, loadContacts up the available wallets and find the current wallet
    *
-   * @param applicationDataDirectory The directory in which to store and read wallets.
+   * @param applicationDataDirectory The directory in which to writeContacts and read wallets.
    */
   public void initialise(File applicationDataDirectory) {
     this.applicationDataDirectory = applicationDataDirectory;
@@ -128,8 +128,8 @@ public enum WalletManager implements WalletEventListener {
 
     // TODO enable user to switch wallets - currently using the first
 
-    // If a wallet directory is present try to load it.
-    // TODO catch wallet load exceptions and report
+    // If a wallet directory is present try to loadContacts it.
+    // TODO catch wallet loadContacts exceptions and report
     if (!walletDirectories.isEmpty()) {
       String walletFilename = walletDirectories.get(0) + File.separator + MBHD_WALLET_NAME;
       WalletData walletData = loadFromFile(new File(walletFilename));
@@ -185,7 +185,7 @@ public enum WalletManager implements WalletEventListener {
     File walletDirectory = WalletManager.getWalletDirectory(parentDirectoryName, walletRoot);
     File walletFile = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME);
     if (walletFile.exists()) {
-      // There is already a wallet created with this root - if so load it and return that
+      // There is already a wallet created with this root - if so loadContacts it and return that
       walletDataToReturn = loadFromFile(walletFile);
       Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(walletRoot);
       setCurrentWalletData(walletDataToReturn);
@@ -214,7 +214,7 @@ public enum WalletManager implements WalletEventListener {
       // The listener has a 'after save' callback which ensures rolling backups and local/ cloud backups are also saved where necessary
       walletToReturn.autosaveToFile(walletFile, AUTOSAVE_DELAY, TimeUnit.MILLISECONDS, new WalletAutoSaveListener());
 
-      // Save it now to ensure it is on te disk
+      // Save it now to ensure it is on the disk
       saveWallet(walletToReturn, walletFile.getAbsolutePath());
       if (Configurations.currentConfiguration != null) {
         Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(walletRoot);
@@ -251,7 +251,7 @@ public enum WalletManager implements WalletEventListener {
   /**
    * Load up a Wallet from a specified wallet file.
    *
-   * @param walletFile The file containing the wallet to load
+   * @param walletFile The file containing the wallet to loadContacts
    * @return Wallet - the loaded wallet
    * @throws IllegalArgumentException if wallet file is null
    * @throws WalletLoadException
@@ -267,7 +267,7 @@ public enum WalletManager implements WalletEventListener {
     try {
       if (isWalletSerialised(walletFile)) {
         // Serialised wallets are no longer supported.
-        throw new WalletLoadException("Could not load wallet '" + walletFilename
+        throw new WalletLoadException("Could not loadContacts wallet '" + walletFilename
                 + "'. Serialized wallets are no longer supported.");
       }
 

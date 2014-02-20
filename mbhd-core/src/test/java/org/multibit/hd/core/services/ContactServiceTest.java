@@ -82,8 +82,8 @@ public class ContactServiceTest {
 
     int numberOfContacts = contactService.allContacts().size();
 
-    // Store the contacts to the backing store
-    contactService.store();
+    // Store the contacts to the backing writeContacts
+    contactService.writeContacts();
 
     // Clear the cached contacts and check it is empty
     contactService.clear();
@@ -91,7 +91,7 @@ public class ContactServiceTest {
     assertThat(allContacts.size()).isEqualTo(0);
 
     // Reload it - there should be the same number of contacts and the new contact should be available
-    contactService.load();
+    contactService.loadContacts();
 
     allContacts = contactService.allContacts();
 

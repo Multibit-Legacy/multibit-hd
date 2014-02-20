@@ -521,10 +521,10 @@ public enum BackupManager {
 //  }
 //
 //  /**
-//   * Work out the best wallet backups to try to load
+//   * Work out the best wallet backups to try to loadContacts
 //   *
 //   * @param walletFile
-//   * @return Collection<String> The best wallets to try to load, in order of goodness.
+//   * @return Collection<String> The best wallets to try to loadContacts, in order of goodness.
 //   */
 //  Collection<String> calculateBestWalletBackups(File walletFile, WalletInfoData walletInfo) {
 //    Collection<String> backupWalletsToTry = new ArrayList<String>();

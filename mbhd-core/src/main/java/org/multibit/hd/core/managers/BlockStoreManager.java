@@ -27,7 +27,7 @@ public class BlockStoreManager {
    * @param blockchainFilename
    * @param checkpointsFilename
    * @param checkpointDate      Date to checkpoint the blockstore from
-   * @param createNew           if true then create a new block store
+   * @param createNew           if true then create a new block writeContacts
    * @return The created blockStore
    * @throws BlockStoreException
    * @throws IOException
@@ -51,29 +51,29 @@ public class BlockStoreManager {
       System.gc();
       blockStoreFile.setWritable(true);
       boolean deletedOk = blockStoreFile.delete();
-      log.debug("Deleting SPV block store '{}' from disk.1", blockchainFilename + ", deletedOk = " + deletedOk);
+      log.debug("Deleting SPV block writeContacts '{}' from disk.1", blockchainFilename + ", deletedOk = " + deletedOk);
       blockStoreCreatedNew = true;
     }
 
-    log.debug("Opening / Creating SPV block store '{}' from disk", blockchainFilename);
+    log.debug("Opening / Creating SPV block writeContacts '{}' from disk", blockchainFilename);
     try {
       blockStore = new SPVBlockStore(BitcoinNetworkService.NETWORK_PARAMETERS, blockStoreFile);
     } catch (BlockStoreException bse) {
       try {
-        log.error("Failed to open/ create SPV block store '{}' from disk", blockchainFilename);
-        // If the block store creation failed, delete the block store file and try again.
+        log.error("Failed to open/ create SPV block writeContacts '{}' from disk", blockchainFilename);
+        // If the block writeContacts creation failed, delete the block writeContacts file and try again.
 
         // Garbage collect any closed references to the blockchainFile.
         System.gc();
         blockStoreFile.setWritable(true);
         boolean deletedOk = blockStoreFile.delete();
-        log.debug("Deleting SPV block store '{}' from disk.2", blockchainFilename + ", deletedOk = " + deletedOk);
+        log.debug("Deleting SPV block writeContacts '{}' from disk.2", blockchainFilename + ", deletedOk = " + deletedOk);
         blockStoreCreatedNew = true;
 
         blockStore = new SPVBlockStore(BitcoinNetworkService.NETWORK_PARAMETERS, blockStoreFile);
       } catch (BlockStoreException bse2) {
         bse2.printStackTrace();
-        log.error("Unrecoverable failure in opening block store. This is bad.");
+        log.error("Unrecoverable failure in opening block writeContacts. This is bad.");
         // Throw the exception so that it is indicated on the UI.
         throw bse2;
       }
@@ -84,7 +84,7 @@ public class BlockStoreManager {
       try (FileInputStream stream = new FileInputStream(checkpointsFile)) {
         if (checkpointDate == null) {
           if (blockStoreCreatedNew) {
-            // Brand new block store - managers from today. This
+            // Brand new block writeContacts - managers from today. This
             // will go back to the last managers.
             CheckpointManager.checkpoint(BitcoinNetworkService.NETWORK_PARAMETERS, stream, blockStore, (new Date()).getTime() / 1000);
           }

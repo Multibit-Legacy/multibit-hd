@@ -2,7 +2,7 @@ package org.multibit.hd.core.exceptions;
 
 
 /**
- * <p>Exception to provide Wallet load failure information :</p>
+ * <p>Exception to provide Wallet loadContacts failure information :</p>
  * <ul>
  * <li>Provision of wallet info loading and saving messages</li>
  * </ul>

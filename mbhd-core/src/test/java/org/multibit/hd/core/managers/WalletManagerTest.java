@@ -61,7 +61,7 @@ public class WalletManagerTest {
 
   @Test
   public void testCreateProtobufEncryptedWallet() throws Exception {
-    // Create a random temporary directory to store the wallets
+    // Create a random temporary directory to writeContacts the wallets
     File temporaryDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
     walletManager.initialise(temporaryDirectory);
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);

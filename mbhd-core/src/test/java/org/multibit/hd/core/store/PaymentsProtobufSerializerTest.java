@@ -207,13 +207,13 @@ public class PaymentsProtobufSerializerTest {
   }
 
   /**
-   * Round trip the payments i.e. store to disk and read back in
+   * Round trip the payments i.e. writeContacts to disk and read back in
    *
    * @throws Exception
    */
   public Payments roundTrip(Payments payments) throws Exception {
 
-    // Store the payments to the backing store
+    // Store the payments to the backing writeContacts
     serializer.writePayments(payments, new FileOutputStream(paymentsFile));
 
     // Reload it

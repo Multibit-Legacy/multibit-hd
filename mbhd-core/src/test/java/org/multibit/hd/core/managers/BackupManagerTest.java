@@ -40,7 +40,7 @@ public class BackupManagerTest extends TestCase {
 
   @Test
   public void testBackupWallet() throws IOException {
-    // Create a random temporary directory in which to store the wallet directory
+    // Create a random temporary directory in which to writeContacts the wallet directory
     File temporaryWalletParentDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
 
     WalletManager walletManager = WalletManager.INSTANCE;

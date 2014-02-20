@@ -114,7 +114,7 @@ public class ComponentTestBed {
     CoreServices.newExchangeService(MtGoxExchange.class.getName()).start();
     CoreServices.newBitcoinNetworkService().start();
 
-    // Initialise the wallet manager, which will load the current wallet if available
+    // Initialise the wallet manager, which will loadContacts the current wallet if available
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
     WalletManager.INSTANCE.initialise(applicationDataDirectory);
 

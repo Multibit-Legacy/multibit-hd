@@ -5,7 +5,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
 import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.core.services.WalletService;
+import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
@@ -31,7 +31,6 @@ public class TransactionsScreenView extends AbstractScreenView<TransactionsScree
 
   private static final Logger log = LoggerFactory.getLogger(TransactionsScreenView.class);
 
-  private WalletService walletService;
   private JTable transactionsTable;
 
   /**
@@ -44,8 +43,6 @@ public class TransactionsScreenView extends AbstractScreenView<TransactionsScree
 
     // Register for transaction seen events so it can update.
     CoreServices.uiEventBus.register(this);
-
-    walletService = CoreServices.newWalletService();
   }
 
   @Override
@@ -67,7 +64,7 @@ public class TransactionsScreenView extends AbstractScreenView<TransactionsScree
     // Create view components
     JPanel contentPanel = Panels.newPanel(layout);
 
-    transactionsTable = Tables.newTransactionsTable(walletService.getTransactions());
+    transactionsTable = Tables.newTransactionsTable(MultiBitHD.getWalletService().getTransactions());
 
     // Create the scroll pane and add the table to it.
     JScrollPane scrollPane = new JScrollPane(transactionsTable);
@@ -114,7 +111,7 @@ public class TransactionsScreenView extends AbstractScreenView<TransactionsScree
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
-          ((TransactionTableModel) transactionsTable.getModel()).setTransactions(walletService.getTransactions(), true);
+          ((TransactionTableModel) transactionsTable.getModel()).setTransactions(MultiBitHD.getWalletService().getTransactions(), true);
         }
       });
     }
