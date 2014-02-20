@@ -139,7 +139,7 @@ public class MultiBitHD {
       // Initialise the WalletService, which provides transaction information from the wallet
       // TODO the GUI should just use the WalletService and not go to the WalletManager directly
       walletService = CoreServices.newWalletService();
-      walletService.initialise(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId());
+      walletService.initialise(applicationDataDirectory, WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId());
     }
 
 
