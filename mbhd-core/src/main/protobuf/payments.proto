@@ -49,7 +49,7 @@ message PaymentRequest {
                                          // Each new request has a distinct address so it can be used as a key for Requests
   
   optional string label = 2;             // The label (as per the bitcoin URI spec)
-  optional int64 amount_btc = 3;         // The bitcoin amount, in satoshi (as per the bitcoin URI spec)
+  optional int64 amountBTC = 3;         // The bitcoin amount, in satoshi (as per the bitcoin URI spec)
   optional FiatPayment amount_fiat = 4;  // The fiat equivalent of the bitcoin amount
   optional string note = 5;              // The private note (this is not included on any QRcode)
   optional int64 date = 6;               // The creation datetime (millis since epoch)
@@ -62,7 +62,7 @@ message TransactionInfo {
   required bytes hash = 1;                  // The transaction hash (i.e. the transaction id as per the wallet Transaction.hash)
                                             // The corresponding transaction is expected to be in the wallet.
 
-  repeated bytes request_address = 2;       // The Request.address(es) related to this transaction.
+  repeated string request_address = 2;      // The Request.address(es) related to this transaction.
                                             // If a transaction output sends bitcoin to a request.address then it will appear in this list
                                             // There can be zero, one or more request_address for a single transaction.
   optional FiatPayment amount_fiat = 3;     // The fiat amount of the transaction at the time it was first sent or received.

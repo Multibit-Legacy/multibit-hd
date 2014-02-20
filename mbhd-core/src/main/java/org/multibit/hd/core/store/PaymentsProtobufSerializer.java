@@ -20,6 +20,7 @@ package org.multibit.hd.core.store;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.protobuf.ByteString;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.protobuf.MBHDContactsProtos;
@@ -41,109 +42,109 @@ import java.util.List;
  * language and compilers that generate code to work with those data structures for many languages. Protocol buffers
  * can have their format evolved over time: conceptually they represent data using (tag, length, value) tuples. The
  * format is defined by the <tt>bitcoin.proto</tt> file in the bitcoinj source distribution.<p>
- *
+ * <p/>
  * This class is used through its static methods. The most common operations are writePayments and readPayments, which do
  * the obvious operations on Output/InputStreams. You can use a {@link java.io.ByteArrayInputStream} and equivalent
  * {@link java.io.ByteArrayOutputStream} if you'd like byte arrays instead. The protocol buffer can also be manipulated
  * in its object form if you'd like to modify the flattened data structure before serialization to binary.<p>
- * 
+ *
  * @author Miron Cuperman
  * @author Jim Burton
  */
 public class PaymentsProtobufSerializer {
-    private static final Logger log = LoggerFactory.getLogger(PaymentsProtobufSerializer.class);
+  private static final Logger log = LoggerFactory.getLogger(PaymentsProtobufSerializer.class);
 
 
-    public PaymentsProtobufSerializer() {
-    }
+  public PaymentsProtobufSerializer() {
+  }
 
 
-    /**
-     * Formats the given Payments to the given output stream in protocol buffer format.<p>
-     */
-    public void writePayments(Payments payments, OutputStream output) throws IOException {
-        MBHDPaymentsProtos.Payments paymentsProto = paymentsToProto(payments);
-      paymentsProto.writeTo(output);
-    }
+  /**
+   * Formats the given Payments to the given output stream in protocol buffer format.<p>
+   */
+  public void writePayments(Payments payments, OutputStream output) throws IOException {
+    MBHDPaymentsProtos.Payments paymentsProto = paymentsToProto(payments);
+    paymentsProto.writeTo(output);
+  }
 
-    /**
-     * Converts the given payments to the object representation of the protocol buffers. This can be modified, or
-     * additional data fields set, before serialization takes place.
-     */
-    public MBHDPaymentsProtos.Payments paymentsToProto(Payments payments) {
-      MBHDPaymentsProtos.Payments.Builder paymentsBuilder = MBHDPaymentsProtos.Payments.newBuilder();
+  /**
+   * Converts the given payments to the object representation of the protocol buffers. This can be modified, or
+   * additional data fields set, before serialization takes place.
+   */
+  public MBHDPaymentsProtos.Payments paymentsToProto(Payments payments) {
+    MBHDPaymentsProtos.Payments.Builder paymentsBuilder = MBHDPaymentsProtos.Payments.newBuilder();
 
-      Preconditions.checkNotNull(payments, "Payments must be specified");
+    Preconditions.checkNotNull(payments, "Payments must be specified");
 
-      paymentsBuilder.setLastAddressIndex(payments.getLastIndexUsed());
+    paymentsBuilder.setLastAddressIndex(payments.getLastIndexUsed());
 
-      Collection<PaymentRequest> paymentRequests = payments.getPaymentRequests();
-      if (paymentRequests != null) {
-        for (PaymentRequest paymentRequest : paymentRequests) {
-          MBHDPaymentsProtos.PaymentRequest paymentRequestProto = makePaymentRequestProto(paymentRequest);
-          paymentsBuilder.addPaymentRequest(paymentRequestProto);
-        }
+    Collection<PaymentRequest> paymentRequests = payments.getPaymentRequests();
+    if (paymentRequests != null) {
+      for (PaymentRequest paymentRequest : paymentRequests) {
+        MBHDPaymentsProtos.PaymentRequest paymentRequestProto = makePaymentRequestProto(paymentRequest);
+        paymentsBuilder.addPaymentRequest(paymentRequestProto);
       }
-
-      Collection<TransactionInfo> transactionInfos = payments.getTransactionInfos();
-       if (transactionInfos != null) {
-         for (TransactionInfo transactionInfo : transactionInfos) {
-           MBHDPaymentsProtos.TransactionInfo transactionInfoProto = makeTransactionInfoProto(transactionInfo);
-           paymentsBuilder.addTransactionInfo(transactionInfoProto);
-         }
-       }
-
-       return paymentsBuilder.build();
     }
+
+    Collection<TransactionInfo> transactionInfos = payments.getTransactionInfos();
+    if (transactionInfos != null) {
+      for (TransactionInfo transactionInfo : transactionInfos) {
+        MBHDPaymentsProtos.TransactionInfo transactionInfoProto = makeTransactionInfoProto(transactionInfo);
+        paymentsBuilder.addTransactionInfo(transactionInfoProto);
+      }
+    }
+
+    return paymentsBuilder.build();
+  }
 
   private static MBHDPaymentsProtos.PaymentRequest makePaymentRequestProto(PaymentRequest paymentRequest) {
     MBHDPaymentsProtos.PaymentRequest.Builder paymentRequestBuilder = MBHDPaymentsProtos.PaymentRequest.newBuilder();
-
     paymentRequestBuilder.setAddress(paymentRequest.getAddress());
     paymentRequestBuilder.setNote(paymentRequest.getNote());
-    paymentRequestBuilder.setAmountBtc(paymentRequest.getAmount_btc().longValue());
+    paymentRequestBuilder.setAmountBTC(paymentRequest.getAmountBTC().longValue());
     paymentRequestBuilder.setDate(paymentRequest.getDate().getMillis());
-    paymentRequestBuilder.setLabel(paymentRequestBuilder.getLabel());
+    paymentRequestBuilder.setLabel(paymentRequest.getLabel());
 
-    // TODO FIATAMOUNT
+    FiatPayment fiatPayment = paymentRequest.getAmountFiat();
+    if (fiatPayment != null) {
+      MBHDPaymentsProtos.FiatPayment.Builder fiatPaymentBuilder = MBHDPaymentsProtos.FiatPayment.newBuilder();
+      fiatPaymentBuilder.setAmount(fiatPayment.getAmount());
+      fiatPaymentBuilder.setCurrency(fiatPayment.getCurrency());
+      fiatPaymentBuilder.setExchange(fiatPayment.getExchange());
+      fiatPaymentBuilder.setRate(fiatPayment.getRate());
 
-//    // Construct tags
-//    List<String> tags = contact.getTags();
-//    if (tags != null) {
-//      int tagIndex = 0;
-//      for (String tag : tags) {
-//        MBHDContactsProtos.Tag tagProto = makeTagProto(tag);
-//        contactBuilder.addTag(tagIndex, tagProto);
-//        tagIndex++;
-//      }
-//    }
+      paymentRequestBuilder.setAmountFiat(fiatPaymentBuilder);
+    }
 
     return paymentRequestBuilder.build();
   }
 
   private static MBHDPaymentsProtos.TransactionInfo makeTransactionInfoProto(TransactionInfo transactionInfo) {
-     MBHDPaymentsProtos.TransactionInfo.Builder transactionInfoBuilder = MBHDPaymentsProtos.TransactionInfo.newBuilder();
- //    contactBuilder.setId(contact.getId().toString());
- //    contactBuilder.setName(contact.getName());
- //    contactBuilder.setBitcoinAddress(contact.getBitcoinAddress().or(""));
- //    contactBuilder.setEmail(contact.getEmail().or(""));
- //    contactBuilder.setImagePath(contact.getImagePath().or(""));
- //    contactBuilder.setExtendedPublicKey(contact.getExtendedPublicKey().or(""));
- //    contactBuilder.setNotes(contact.getNotes().or(""));
- //
- //    // Construct tags
- //    List<String> tags = contact.getTags();
- //    if (tags != null) {
- //      int tagIndex = 0;
- //      for (String tag : tags) {
- //        MBHDContactsProtos.Tag tagProto = makeTagProto(tag);
- //        contactBuilder.addTag(tagIndex, tagProto);
- //        tagIndex++;
- //      }
- //    }
+    MBHDPaymentsProtos.TransactionInfo.Builder transactionInfoBuilder = MBHDPaymentsProtos.TransactionInfo.newBuilder();
 
-     return transactionInfoBuilder.build();
-   }
+    transactionInfoBuilder.setHash(ByteString.copyFrom(transactionInfo.getHash()));
+    transactionInfoBuilder.setNote(transactionInfo.getNote());
+    Collection<String> requestAddresses = transactionInfo.getRequestAddresses();
+
+    if (requestAddresses != null) {
+      for (String requestAddress : requestAddresses) {
+        transactionInfoBuilder.addRequestAddress(requestAddress);
+      }
+    }
+
+    FiatPayment fiatPayment = transactionInfo.getAmountFiat();
+    if (fiatPayment != null) {
+      MBHDPaymentsProtos.FiatPayment.Builder fiatPaymentBuilder = MBHDPaymentsProtos.FiatPayment.newBuilder();
+      fiatPaymentBuilder.setAmount(fiatPayment.getAmount());
+      fiatPaymentBuilder.setCurrency(fiatPayment.getCurrency());
+      fiatPaymentBuilder.setExchange(fiatPayment.getExchange());
+      fiatPaymentBuilder.setRate(fiatPayment.getRate());
+
+      transactionInfoBuilder.setAmountFiat(fiatPaymentBuilder);
+    }
+
+    return transactionInfoBuilder.build();
+  }
 
   private static MBHDContactsProtos.Tag makeTagProto(String tag) {
     MBHDContactsProtos.Tag.Builder tagBuilder = MBHDContactsProtos.Tag.newBuilder();
@@ -151,65 +152,118 @@ public class PaymentsProtobufSerializer {
     return tagBuilder.build();
   }
 
-    /**
-     * <p>Parses a Payments from the given stream, using the provided Payments instance to load data into.
-     * <p>A Payments db can be unreadable for various reasons, such as inability to open the file, corrupt data, internally
-     * inconsistent data, You should always
-     * handle {@link org.multibit.hd.core.exceptions.PaymentsLoadException} and communicate failure to the user in an appropriate manner.</p>
-     *
-     * @throws org.multibit.hd.core.exceptions.PaymentsLoadException thrown in various error conditions (see description).
-     */
-    public Payments readPayments(InputStream input) throws PaymentsLoadException {
-        try {
-            MBHDPaymentsProtos.Payments paymentsProto = parseToProto(input);
-            Payments payments = new Payments(paymentsProto.getLastAddressIndex());
-            readPayments(paymentsProto, payments);
-            return payments;
-        } catch (IOException e) {
-            throw new PaymentsLoadException("Could not parse input stream to protobuf", e);
-        }
+  /**
+   * <p>Parses a Payments from the given stream, using the provided Payments instance to load data into.
+   * <p>A Payments db can be unreadable for various reasons, such as inability to open the file, corrupt data, internally
+   * inconsistent data, You should always
+   * handle {@link org.multibit.hd.core.exceptions.PaymentsLoadException} and communicate failure to the user in an appropriate manner.</p>
+   *
+   * @throws org.multibit.hd.core.exceptions.PaymentsLoadException thrown in various error conditions (see description).
+   */
+  public Payments readPayments(InputStream input) throws PaymentsLoadException {
+    try {
+      MBHDPaymentsProtos.Payments paymentsProto = parseToProto(input);
+      Payments payments = new Payments(paymentsProto.getLastAddressIndex());
+      readPayments(paymentsProto, payments);
+      return payments;
+    } catch (IOException e) {
+      throw new PaymentsLoadException("Could not parse input stream to protobuf", e);
     }
+  }
 
-    /**
-     * <p>Loads payments data from the given protocol buffer and inserts it into the given Payments object.
-     *
-     * <p>A payments db can be unreadable for various reasons, such as inability to open the file, corrupt data, internally
-     * inconsistent data, a wallet extension marked as mandatory that cannot be handled and so on. You should always
-     * handle {@link org.multibit.hd.core.exceptions.PaymentsLoadException} and communicate failure to the user in an appropriate manner.</p>
-     *
-     * @throws org.multibit.hd.core.exceptions.PaymentsLoadException thrown in various error conditions (see description).
-     */
-    private void readPayments(MBHDPaymentsProtos.Payments paymentsProto, Payments payments) throws PaymentsLoadException {
-      Collection<PaymentRequest> paymentRequests = Lists.newArrayList();
-      Collection<TransactionInfo> transactionInfos = Lists.newArrayList();
+  /**
+   * <p>Loads payments data from the given protocol buffer and inserts it into the given Payments object.
+   * <p/>
+   * <p>A payments db can be unreadable for various reasons, such as inability to open the file, corrupt data, internally
+   * inconsistent data, a wallet extension marked as mandatory that cannot be handled and so on. You should always
+   * handle {@link org.multibit.hd.core.exceptions.PaymentsLoadException} and communicate failure to the user in an appropriate manner.</p>
+   *
+   * @throws org.multibit.hd.core.exceptions.PaymentsLoadException thrown in various error conditions (see description).
+   */
+  private void readPayments(MBHDPaymentsProtos.Payments paymentsProto, Payments payments) throws PaymentsLoadException {
+    Collection<PaymentRequest> paymentRequests = Lists.newArrayList();
+    Collection<TransactionInfo> transactionInfos = Lists.newArrayList();
 
-      List<MBHDPaymentsProtos.PaymentRequest> paymentRequestProtos = paymentsProto.getPaymentRequestList();
-      if (paymentRequestProtos != null) {
-        for (MBHDPaymentsProtos.PaymentRequest paymentRequestProto : paymentRequestProtos) {
-          PaymentRequest paymentRequest = new PaymentRequest();
-          paymentRequest.setAddress(paymentRequestProto.getAddress());
+    List<MBHDPaymentsProtos.PaymentRequest> paymentRequestProtos = paymentsProto.getPaymentRequestList();
+    if (paymentRequestProtos != null) {
+      for (MBHDPaymentsProtos.PaymentRequest paymentRequestProto : paymentRequestProtos) {
+        PaymentRequest paymentRequest = new PaymentRequest();
+        paymentRequest.setAddress(paymentRequestProto.getAddress());
+        if (paymentRequestProto.hasLabel()) {
           paymentRequest.setLabel(paymentRequestProto.getLabel());
-          paymentRequest.setNote(paymentRequestProto.getNote());
-          paymentRequest.setDate(new DateTime(paymentRequestProto.getDate() * 1000));
-          paymentRequest.setAmount_btc(BigInteger.valueOf(paymentRequestProto.getAmountBtc()));
-          // TODO fiat payment
-
-          paymentRequests.add(paymentRequest);
         }
+        if (paymentRequestProto.hasNote()) {
+          paymentRequest.setNote(paymentRequestProto.getNote());
+        }
+        if (paymentRequestProto.hasDate()) {
+          paymentRequest.setDate(new DateTime(paymentRequestProto.getDate()));
+        }
+        if (paymentRequestProto.hasAmountBTC()) {
+          paymentRequest.setAmountBTC(BigInteger.valueOf(paymentRequestProto.getAmountBTC()));
+        }
+
+        if (paymentRequestProto.hasAmountFiat()) {
+          FiatPayment fiatPayment = new FiatPayment();
+          paymentRequest.setAmountFiat(fiatPayment);
+          MBHDPaymentsProtos.FiatPayment fiatPaymentProto = paymentRequestProto.getAmountFiat();
+          fiatPayment.setAmount(fiatPaymentProto.getAmount());
+          if (fiatPaymentProto.hasCurrency()) {
+            fiatPayment.setCurrency(fiatPaymentProto.getCurrency());
+          }
+          if (fiatPaymentProto.hasExchange()) {
+            fiatPayment.setExchange(fiatPaymentProto.getExchange());
+          }
+          if (fiatPaymentProto.hasRate()) {
+            fiatPayment.setRate(fiatPaymentProto.getRate());
+          }
+        }
+
+        paymentRequests.add(paymentRequest);
       }
-
-      // TODO transactionInfo
-
-
-      payments.setPaymentRequests(paymentRequests);
-      payments.setTransactionInfos(transactionInfos);
     }
 
-    /**
-     * Returns the loaded protocol buffer from the given byte stream. This method is designed for low level work involving the
-     * wallet file format itself.
-     */
-    public static MBHDPaymentsProtos.Payments parseToProto(InputStream input) throws IOException {
-        return MBHDPaymentsProtos.Payments.parseFrom(input);
+    List<MBHDPaymentsProtos.TransactionInfo> transactionInfoProtos = paymentsProto.getTransactionInfoList();
+    if (transactionInfoProtos != null) {
+      for (MBHDPaymentsProtos.TransactionInfo transactionInfoProto : transactionInfoProtos) {
+        org.multibit.hd.core.store.TransactionInfo transactionInfo = new TransactionInfo();
+
+        transactionInfo.setHash(transactionInfoProto.getHash().toByteArray());
+
+        if (transactionInfoProto.hasNote()) {
+          transactionInfo.setNote(transactionInfoProto.getNote());
+        }
+
+        transactionInfo.setRequestAddresses(transactionInfoProto.getRequestAddressList());
+
+        if (transactionInfoProto.hasAmountFiat()) {
+          FiatPayment fiatPayment = new FiatPayment();
+          transactionInfo.setAmountFiat(fiatPayment);
+          MBHDPaymentsProtos.FiatPayment fiatPaymentProto = transactionInfoProto.getAmountFiat();
+          fiatPayment.setAmount(fiatPaymentProto.getAmount());
+          if (fiatPaymentProto.hasCurrency()) {
+            fiatPayment.setCurrency(fiatPaymentProto.getCurrency());
+          }
+          if (fiatPaymentProto.hasExchange()) {
+            fiatPayment.setExchange(fiatPaymentProto.getExchange());
+          }
+          if (fiatPaymentProto.hasRate()) {
+            fiatPayment.setRate(fiatPaymentProto.getRate());
+          }
+        }
+
+        transactionInfos.add(transactionInfo);
+      }
     }
+
+    payments.setPaymentRequests(paymentRequests);
+    payments.setTransactionInfos(transactionInfos);
+  }
+
+  /**
+   * Returns the loaded protocol buffer from the given byte stream. This method is designed for low level work involving the
+   * wallet file format itself.
+   */
+  public static MBHDPaymentsProtos.Payments parseToProto(InputStream input) throws IOException {
+    return MBHDPaymentsProtos.Payments.parseFrom(input);
+  }
 }

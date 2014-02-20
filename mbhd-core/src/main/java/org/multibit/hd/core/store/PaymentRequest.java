@@ -19,8 +19,8 @@ public class PaymentRequest {
 
   private String address;
   private String label;
-  private BigInteger amount_btc;
-  private FiatPayment fiatPayment;
+  private BigInteger amountBTC;
+  private FiatPayment amountFiat;
   private String note;
   private DateTime date;
 
@@ -41,20 +41,20 @@ public class PaymentRequest {
     this.label = label;
   }
 
-  public BigInteger getAmount_btc() {
-    return amount_btc;
+  public BigInteger getAmountBTC() {
+    return amountBTC;
   }
 
-  public void setAmount_btc(BigInteger amount_btc) {
-    this.amount_btc = amount_btc;
+  public void setAmountBTC(BigInteger amountBTC) {
+    this.amountBTC = amountBTC;
   }
 
-  public FiatPayment getFiatPayment() {
-    return fiatPayment;
+  public FiatPayment getAmountFiat() {
+    return amountFiat;
   }
 
-  public void setFiatPayment(FiatPayment fiatPayment) {
-    this.fiatPayment = fiatPayment;
+  public void setAmountFiat(FiatPayment amountFiat) {
+    this.amountFiat = amountFiat;
   }
 
   public String getNote() {
@@ -81,9 +81,9 @@ public class PaymentRequest {
      PaymentRequest that = (PaymentRequest) o;
 
      if (address != null ? !address.equals(that.address) : that.address != null) return false;
-     if (amount_btc != null ? !amount_btc.equals(that.amount_btc) : that.amount_btc != null) return false;
+     if (amountBTC != null ? !amountBTC.equals(that.amountBTC) : that.amountBTC != null) return false;
      if (date != null ? !date.equals(that.date) : that.date != null) return false;
-     if (fiatPayment != null ? !fiatPayment.equals(that.fiatPayment) : that.fiatPayment != null) return false;
+     if (amountFiat != null ? !amountFiat.equals(that.amountFiat) : that.amountFiat != null) return false;
      if (label != null ? !label.equals(that.label) : that.label != null) return false;
      if (note != null ? !note.equals(that.note) : that.note != null) return false;
 
@@ -94,8 +94,8 @@ public class PaymentRequest {
    public int hashCode() {
      int result = address != null ? address.hashCode() : 0;
      result = 31 * result + (label != null ? label.hashCode() : 0);
-     result = 31 * result + (amount_btc != null ? amount_btc.hashCode() : 0);
-     result = 31 * result + (fiatPayment != null ? fiatPayment.hashCode() : 0);
+     result = 31 * result + (amountBTC != null ? amountBTC.hashCode() : 0);
+     result = 31 * result + (amountFiat != null ? amountFiat.hashCode() : 0);
      result = 31 * result + (note != null ? note.hashCode() : 0);
      result = 31 * result + (date != null ? date.hashCode() : 0);
      return result;
