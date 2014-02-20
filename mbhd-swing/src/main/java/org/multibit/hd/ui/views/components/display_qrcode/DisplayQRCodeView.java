@@ -60,7 +60,8 @@ public class DisplayQRCodeView extends AbstractComponentView<DisplayQRCodeModel>
     labelLabel.setText(getModel().get().getLabel());
     panel.add(labelLabel, "align center,push,wrap");
     // Panel needs to be this size to allow for largest Bitcoin URI
-    panel.setSize(450, 450);
+    panel.setSize(500, 450);
+
 
     return panel;
 

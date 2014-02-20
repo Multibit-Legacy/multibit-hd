@@ -34,8 +34,8 @@ import java.util.concurrent.TimeUnit;
  *  <p>Manager to provide the following to core users:<br>
  *  <ul>
  *  <li>create wallet</li>
- *  <li>loadContacts wallet</li>
- *  <li>writeContacts wallet</li>
+ *  <li>save wallet wallet</li>
+ *  <li>load wallet wallet</li>
  *  <li>tracks the current wallet and the list of wallet directories</li>
  *  </ul>
  */
@@ -80,6 +80,13 @@ public enum WalletManager implements WalletEventListener {
     }
   };
 
+
+  // TODO remove the storage of the seed in memory
+  private byte[] seed;
+
+  // TODO remove the storage of the password in memory
+  private CharSequence password;
+
   private static final int AUTOSAVE_DELAY = 20000; // millisecond
 
   private static WalletProtobufSerializer walletProtobufSerializer;
@@ -103,7 +110,7 @@ public enum WalletManager implements WalletEventListener {
   /**
    * The wallet version number for protobuf encrypted wallets - compatible with MultiBit
    */
-  public static final int ENCRYPTED_WALLET_VERSION = 3; // TODO - need a new version when the wallet format is modified
+  public static final int ENCRYPTED_WALLET_VERSION = 3; // TODO - need a new version when the wallet HD format is created
 
   public static final String MBHD_WALLET_PREFIX = "mbhd";
   public static final String MBHD_WALLET_SUFFIX = ".wallet";
@@ -128,8 +135,7 @@ public enum WalletManager implements WalletEventListener {
 
     // TODO enable user to switch wallets - currently using the first
 
-    // If a wallet directory is present try to loadContacts it.
-    // TODO catch wallet loadContacts exceptions and report
+    // If a wallet directory is present try to load the wallet
     if (!walletDirectories.isEmpty()) {
       String walletFilename = walletDirectories.get(0) + File.separator + MBHD_WALLET_NAME;
       WalletData walletData = loadFromFile(new File(walletFilename));
@@ -178,6 +184,9 @@ public enum WalletManager implements WalletEventListener {
   public WalletData createWallet(String parentDirectoryName, byte[] seed, CharSequence password) throws WalletLoadException, WalletVersionException, IOException {
     WalletData walletDataToReturn;
 
+    this.seed = seed;
+    this.password = password;
+
     // Create a wallet id from the seed to work out the wallet root directory
     WalletId walletId = new WalletId(seed);
     String walletRoot = createWalletRoot(walletId);
@@ -187,7 +196,9 @@ public enum WalletManager implements WalletEventListener {
     if (walletFile.exists()) {
       // There is already a wallet created with this root - if so loadContacts it and return that
       walletDataToReturn = loadFromFile(walletFile);
-      Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(walletRoot);
+      if (Configurations.currentConfiguration != null) {
+        Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(walletRoot);
+      }
       setCurrentWalletData(walletDataToReturn);
     } else {
       // Create the containing directory if it does not exist
@@ -202,12 +213,8 @@ public enum WalletManager implements WalletEventListener {
       Wallet walletToReturn = new Wallet(BitcoinNetworkService.NETWORK_PARAMETERS, keyCrypter);
       walletToReturn.setVersion(ENCRYPTED_WALLET_VERSION);
 
-      // Ensure that the seed is within the Bitcoin EC group.
-      BigInteger seedBigInteger = moduloSeedByECGroupSize(seed);
-
-      ECKey newKey = new ECKey(seedBigInteger);
-      newKey = newKey.encrypt(walletToReturn.getKeyCrypter(), walletToReturn.getKeyCrypter().deriveKey(password));
-      walletToReturn.addKey(newKey);
+      // Add the 'zero index key into the wallet
+      createAndAddNewWalletKey(walletToReturn, 0);
 
       // Set up autosave on the wallet.
       // This ensures the wallet is saved on modification
@@ -235,17 +242,36 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
+   * Create a new key for the wallet using the seed of the wallet and an index 0, 1,2,3,4 etc.
+   *
+   * TODO this will be replaced by the proper HD wallet algorithm when it is added to bitcoinj
+   * Note that the "last used index"needs to be persisted - this is currently stored in the top level of the payments db
+   * but it would be better in the wallet itself
+   *
+   * TODO also the seed and password should not be stored in memory as is currently being done
+   */
+  public ECKey createAndAddNewWalletKey(Wallet wallet, int indexToCreate) {
+      // Ensure that the seed combined with the index is within the Bitcoin EC group.
+      BigInteger privateKeyToUse = moduloSeedByECGroupSize(new BigInteger(1, seed).add(BigInteger.valueOf(indexToCreate)));
+
+      ECKey newKey = new ECKey(privateKeyToUse);
+      newKey = newKey.encrypt(wallet.getKeyCrypter(), wallet.getKeyCrypter().deriveKey(password));
+      wallet.addKey(newKey);
+
+    return newKey;
+  }
+
+  /**
    * Ensure that the seed is within the range of the bitcoin EC group
    *
-   * @param seed
-   * @return the seed, guaranteed to be within the Bitcon EC group range
+   * @param seedAsBigInteger the seed - converted to a BigInteger
+   * @return the seed, guaranteed to be within the Bitcoin EC group range
    */
-  private BigInteger moduloSeedByECGroupSize(byte[] seed) {
+  private BigInteger moduloSeedByECGroupSize(BigInteger seedAsBigInteger) {
     X9ECParameters params = SECNamedCurves.getByName("secp256k1");
     BigInteger sizeOfGroup = params.getN();
 
-    BigInteger seedBigInteger = new BigInteger(1, seed);
-    return seedBigInteger.mod(sizeOfGroup);
+    return seedAsBigInteger.mod(sizeOfGroup);
   }
 
   /**
