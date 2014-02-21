@@ -122,6 +122,7 @@ public interface MultiBitUI {
    * The maximum length of the password
    */
   int PASSWORD_LENGTH = 40;
+
   /**
    * The maximum length of the seed phrase
    */

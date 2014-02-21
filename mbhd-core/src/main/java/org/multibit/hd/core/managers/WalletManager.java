@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.asn1.sec.SECNamedCurves;
 import org.spongycastle.asn1.x9.X9ECParameters;
+import org.spongycastle.crypto.params.KeyParameter;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -36,7 +37,7 @@ import java.util.concurrent.TimeUnit;
  *  <li>create wallet</li>
  *  <li>save wallet wallet</li>
  *  <li>load wallet wallet</li>
- *  <li>tracks the current wallet and the list of wallet directories</li>
+ * <li>tracks the current wallet and the list of wallet directories</li>
  *  </ul>
  */
 public enum WalletManager implements WalletEventListener {
@@ -79,13 +80,6 @@ public enum WalletManager implements WalletEventListener {
 
     }
   };
-
-
-  // TODO remove the storage of the seed in memory
-  private byte[] seed;
-
-  // TODO remove the storage of the password in memory
-  private CharSequence password;
 
   private static final int AUTOSAVE_DELAY = 20000; // millisecond
 
@@ -184,9 +178,6 @@ public enum WalletManager implements WalletEventListener {
   public WalletData createWallet(String parentDirectoryName, byte[] seed, CharSequence password) throws WalletLoadException, WalletVersionException, IOException {
     WalletData walletDataToReturn;
 
-    this.seed = seed;
-    this.password = password;
-
     // Create a wallet id from the seed to work out the wallet root directory
     WalletId walletId = new WalletId(seed);
     String walletRoot = createWalletRoot(walletId);
@@ -213,8 +204,13 @@ public enum WalletManager implements WalletEventListener {
       Wallet walletToReturn = new Wallet(BitcoinNetworkService.NETWORK_PARAMETERS, keyCrypter);
       walletToReturn.setVersion(ENCRYPTED_WALLET_VERSION);
 
-      // Add the 'zero index key into the wallet
-      createAndAddNewWalletKey(walletToReturn, 0);
+      // Add the 'zero index' key into the wallet
+      // Ensure that the seed is within the Bitcoin EC group.
+      BigInteger privateKeyToUse = moduloSeedByECGroupSize(new BigInteger(1, seed));
+
+      ECKey newKey = new ECKey(privateKeyToUse);
+      newKey = newKey.encrypt(walletToReturn.getKeyCrypter(), walletToReturn.getKeyCrypter().deriveKey(password));
+      walletToReturn.addKey(newKey);
 
       // Set up autosave on the wallet.
       // This ensures the wallet is saved on modification
@@ -243,20 +239,25 @@ public enum WalletManager implements WalletEventListener {
 
   /**
    * Create a new key for the wallet using the seed of the wallet and an index 0, 1,2,3,4 etc.
-   *
+   * <p/>
    * TODO this will be replaced by the proper HD wallet algorithm when it is added to bitcoinj
    * Note that the "last used index"needs to be persisted - this is currently stored in the top level of the payments db
    * but it would be better in the wallet itself
-   *
-   * TODO also the seed and password should not be stored in memory as is currently being done
    */
-  public ECKey createAndAddNewWalletKey(Wallet wallet, int indexToCreate) {
-      // Ensure that the seed combined with the index is within the Bitcoin EC group.
-      BigInteger privateKeyToUse = moduloSeedByECGroupSize(new BigInteger(1, seed).add(BigInteger.valueOf(indexToCreate)));
+  public ECKey createAndAddNewWalletKey(Wallet wallet, CharSequence walletPassword, int indexToCreate) {
+    Preconditions.checkState(wallet.getKeychainSize() > 0, "There is no 'first key' to derive subsequent keys from");
 
-      ECKey newKey = new ECKey(privateKeyToUse);
-      newKey = newKey.encrypt(wallet.getKeyCrypter(), wallet.getKeyCrypter().deriveKey(password));
-      wallet.addKey(newKey);
+    // Get the private key from the first private key in the wallet - subsequent keys are derived from this.
+    ECKey firstKey = wallet.getKeys().get(0);
+    KeyParameter aesKey = wallet.getKeyCrypter().deriveKey(walletPassword);
+    ECKey decryptedFirstKey = firstKey.decrypt(wallet.getKeyCrypter(), aesKey);
+
+    // Ensure that the seed combined with the index is within the Bitcoin EC group.
+    BigInteger privateKeyToUse = moduloSeedByECGroupSize(new BigInteger(1, decryptedFirstKey.getPrivKeyBytes()).add(BigInteger.valueOf(indexToCreate)));
+
+    ECKey newKey = new ECKey(privateKeyToUse);
+    newKey = newKey.encrypt(wallet.getKeyCrypter(), aesKey);
+    wallet.addKey(newKey);
 
     return newKey;
   }

@@ -4,6 +4,8 @@ import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.WalletDetailChangedEvent;
+import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Panels;
 
@@ -47,22 +49,21 @@ public class WalletDetailView extends AbstractComponentView<WalletDetailModel> {
             "[][][][]"  // Rows
     ));
 
-    // TODO Internationalize
-    panel.add(new JLabel("Summary"), "wrap");
+    panel.add(new JLabel(Languages.safeText(MessageKey.SUMMARY)), "wrap");
 
-    panel.add(new JLabel("Application directory:"));
+    panel.add(new JLabel(Languages.safeText(MessageKey.APPLICATION_DIRECTORY) + ":"));
     applicationDirectoryLabel = new JLabel(walletDetail.getApplicationDirectory());
     panel.add(applicationDirectoryLabel, "push,wrap");
 
-    panel.add(new JLabel("Wallet directory:"));
+    panel.add(new JLabel(Languages.safeText(MessageKey.WALLET_DIRECTORY) + ":"));
     walletDirectoryLabel = new JLabel(walletDetail.getWalletDirectory());
     panel.add(walletDirectoryLabel, "push,wrap");
 
-    panel.add(new JLabel("Contacts:"));
+    panel.add(new JLabel(Languages.safeText(MessageKey.CONTACTS) + ":"));
     numberOfContactsLabel = new JLabel(String.valueOf(walletDetail.getNumberofContacts()));
     panel.add(numberOfContactsLabel, "push,wrap");
 
-    panel.add(new JLabel("Transactions:"));
+    panel.add(new JLabel(Languages.safeText(MessageKey.TRANSACTIONS) + ":"));
     numberOfTransactionsLabel = new JLabel(String.valueOf(walletDetail.getNumberOfTransactions()));
     panel.add(numberOfTransactionsLabel, "push,wrap");
 
