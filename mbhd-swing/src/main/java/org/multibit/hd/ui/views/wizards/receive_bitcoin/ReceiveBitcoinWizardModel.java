@@ -3,6 +3,8 @@ package org.multibit.hd.ui.views.wizards.receive_bitcoin;
 import com.google.common.base.Optional;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountModel;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 
@@ -18,8 +20,12 @@ import java.math.BigInteger;
  */
 public class ReceiveBitcoinWizardModel extends AbstractWizardModel<ReceiveBitcoinState> {
 
+  private static final Logger log = LoggerFactory.getLogger(ReceiveBitcoinWizardModel.class);
+
   private Optional<String> recipientAddress = Optional.absent();
   private Optional<String> transactionLabel = Optional.absent();
+
+  private Optional<String> notes = Optional.absent();
 
   private EnterAmountModel enterAmountModel;
 
@@ -30,6 +36,10 @@ public class ReceiveBitcoinWizardModel extends AbstractWizardModel<ReceiveBitcoi
     super(state);
   }
 
+  @Override
+  public void showNext() {
+    log.debug("state = " + state);
+  }
   /**
    * @return The Bitcoin amount in satoshis
    */
@@ -51,6 +61,14 @@ public class ReceiveBitcoinWizardModel extends AbstractWizardModel<ReceiveBitcoi
 
   public void setTransactionLabel(String transactionLabel) {
     this.transactionLabel = Optional.of(transactionLabel);
+  }
+
+  public Optional<String> getNotes() {
+    return notes;
+  }
+
+  public void setNotes(Optional<String> notes) {
+    this.notes = notes;
   }
 
   /**

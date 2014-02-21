@@ -27,4 +27,6 @@ public class ReceiveBitcoinWizard extends AbstractWizard<ReceiveBitcoinWizardMod
 
   }
 
+
+
 }

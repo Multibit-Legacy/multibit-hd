@@ -4,8 +4,14 @@ import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
+import org.joda.time.DateTime;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.WalletService;
+import org.multibit.hd.core.store.FiatPayment;
+import org.multibit.hd.core.store.PaymentRequest;
+import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.MessageKey;
@@ -22,9 +28,12 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.math.BigInteger;
 
 /**
@@ -38,6 +47,8 @@ import java.math.BigInteger;
  */
 
 public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<ReceiveBitcoinWizardModel, ReceiveBitcoinEnterAmountPanelModel> {
+
+  private static final Logger log = LoggerFactory.getLogger(ReceiveBitcoinEnterAmountPanelView.class);
 
   // Panel specific components
   private JTextArea notesTextArea;
@@ -88,7 +99,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
 
     getWizardModel().setEnterAmountModel(enterAmountMaV.getModel());
     getWizardModel().setTransactionLabel(label.getText());
-
+    getWizardModel().setNotes(Optional.of(notesTextArea.getText()));
   }
 
   @Override
@@ -119,7 +130,6 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
 
     // Finish button is always enabled
     ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
-
   }
 
   @Override
@@ -129,14 +139,43 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
       @Override
       public void run() {
         getFinishButton().requestFocusInWindow();
+
+        getFinishButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+              savePaymentRequest();
+            }
+          });
       }
     });
 
   }
 
+  /**
+   * Save the displayed payment request
+   */
+  private void savePaymentRequest() {
+    WalletService walletService = MultiBitHD.getWalletService();
+
+    Preconditions.checkNotNull(walletService, "The wallet service was null so cannot save the payment request");
+
+    PaymentRequest paymentRequest = new PaymentRequest();
+    paymentRequest.setNote(notesTextArea.getText());
+    paymentRequest.setDate(DateTime.now());
+    paymentRequest.setAddress(displayBitcoinAddressMaV.getModel().getValue());
+    paymentRequest.setLabel(label.getText());
+    paymentRequest.setAmountBTC(enterAmountMaV.getModel().getSatoshis());
+    FiatPayment fiatPayment = new FiatPayment();
+    fiatPayment.setAmount(enterAmountMaV.getModel().getLocalAmount().toString());
+    // TODO add exchange rate and exchange name
+    paymentRequest.setAmountFiat(fiatPayment);
+
+    walletService.getPayments().getPaymentRequests().add(paymentRequest);
+    walletService.writePayments();
+  }
+
   @Override
   public void updateFromComponentModels(Optional componentModel) {
-
     // No need to update since we expose the component models
 
     // No view events to fire
