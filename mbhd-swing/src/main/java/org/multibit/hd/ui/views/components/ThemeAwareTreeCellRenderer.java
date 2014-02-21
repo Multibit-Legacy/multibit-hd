@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -18,7 +19,7 @@ import java.awt.*;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
 
@@ -60,42 +61,47 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
     // Minimalist focus
     setBorderSelectionColor(UIManager.getColor("nimbusFocus"));
 
-    // Iconography
+    // Iconography (not all icons are created with the same size)
     if (leaf) {
       switch (nodeInfo.getDetailScreen()) {
 
         case CONTACTS:
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.USER, Color.BLACK, 20));
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.USER, Color.BLACK, MultiBitUI.NORMAL_ICON_SIZE));
           break;
         case TRANSACTIONS:
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.LIST, Color.BLACK, 18));
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.LIST, Color.BLACK, MultiBitUI.NORMAL_ICON_SIZE - 2));
           break;
         case HELP:
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.QUESTION, Color.BLACK, 20));
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.QUESTION, Color.BLACK, MultiBitUI.NORMAL_ICON_SIZE + 15));
           break;
         case HISTORY:
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.ARCHIVE, Color.BLACK, 20));
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.ARCHIVE, Color.BLACK, MultiBitUI.NORMAL_ICON_SIZE));
           break;
         case SETTINGS:
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.GEARS, Color.BLACK, 20));
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.GEARS, Color.BLACK, MultiBitUI.NORMAL_ICON_SIZE - 1));
           break;
         case TOOLS:
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.WRENCH, Color.BLACK, 20));
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.WRENCH, Color.BLACK, MultiBitUI.NORMAL_ICON_SIZE));
           break;
         case EXIT:
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.SIGN_OUT, Color.BLACK, 20));
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.SIGN_OUT, Color.BLACK, MultiBitUI.NORMAL_ICON_SIZE + 2));
           break;
       }
 
     } else {
 
-      setOpenIcon(AwesomeDecorator.createIcon(AwesomeIcon.CARET_DOWN, Color.BLACK, 20));
+      setOpenIcon(
+        AwesomeDecorator.createIcon(
+          AwesomeIcon.CARET_DOWN,
+          Themes.currentTheme.text(),
+          MultiBitUI.NORMAL_ICON_SIZE)
+      );
+
       setClosedIcon(
         AwesomeDecorator.createIcon(
-          AwesomeDecorator.select(
-            AwesomeIcon.CARET_RIGHT,
-            AwesomeIcon.CARET_LEFT),
-          Color.BLACK, 20));
+          AwesomeDecorator.select(AwesomeIcon.CARET_RIGHT,AwesomeIcon.CARET_LEFT),
+          Themes.currentTheme.text(),
+          MultiBitUI.NORMAL_ICON_SIZE));
 
     }
 
