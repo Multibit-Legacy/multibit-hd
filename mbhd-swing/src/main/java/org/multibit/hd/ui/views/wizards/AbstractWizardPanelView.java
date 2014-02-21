@@ -245,6 +245,20 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
   }
 
   /**
+   * <p>Called before this wizard panel is about to be hidden</p>
+   *
+   * <p>Typically this is where a panel view would store any user entered data</p>
+   *
+   * @return True if the panel can be hidden, false if the hide operation should be aborted (perhaps due to a data error)
+   */
+  public boolean beforeHide() {
+
+    // Default is to return OK
+    return true;
+
+  }
+
+  /**
    * <p>Called when a wizard state transition occurs (e.g. "next" button click) and in response to a {@link org.multibit.hd.ui.events.view.ComponentChangedEvent}</p>
    *
    * <p>Implementers must:</p>
