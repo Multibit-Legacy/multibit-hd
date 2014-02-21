@@ -1,4 +1,4 @@
-package org.multibit.hd.core.store;
+package org.multibit.hd.core.dto;
 
 import org.joda.time.DateTime;
 
@@ -15,7 +15,7 @@ import java.math.BigInteger;
  *  </p>
  *  
  */
-public class PaymentRequest {
+public class PaymentRequestData implements PaymentData {
 
   private String address;
   private String label;
@@ -57,10 +57,12 @@ public class PaymentRequest {
     this.amountFiat = amountFiat;
   }
 
+  @Override
   public String getNote() {
     return note;
   }
 
+  @Override
   public void setNote(String note) {
     this.note = note;
   }
@@ -78,7 +80,7 @@ public class PaymentRequest {
      if (this == o) return true;
      if (o == null || getClass() != o.getClass()) return false;
 
-     PaymentRequest that = (PaymentRequest) o;
+     PaymentRequestData that = (PaymentRequestData) o;
 
      if (address != null ? !address.equals(that.address) : that.address != null) return false;
      if (amountBTC != null ? !amountBTC.equals(that.amountBTC) : that.amountBTC != null) return false;

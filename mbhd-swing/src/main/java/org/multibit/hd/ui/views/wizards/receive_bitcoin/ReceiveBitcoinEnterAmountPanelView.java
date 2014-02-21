@@ -1,16 +1,14 @@
 package org.multibit.hd.ui.views.wizards.receive_bitcoin;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
-import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.services.WalletService;
-import org.multibit.hd.core.store.FiatPayment;
-import org.multibit.hd.core.store.PaymentRequest;
+import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -77,9 +75,9 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
 
     enterAmountMaV = Components.newEnterAmountMaV(getPanelName());
 
-    // TODO get the next address from WalletService
-    Address nextAddress = WalletManager.INSTANCE.getCurrentWalletData().get().getWallet().getKeys().get(0).toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
-    displayBitcoinAddressMaV = Components.newDisplayBitcoinAddressMaV(nextAddress.toString());
+    // Get the next receiving address from the wallet service
+    String nextAddress = MultiBitHD.getWalletService().generateNextReceivingAddress(Optional.<CharSequence>absent());
+    displayBitcoinAddressMaV = Components.newDisplayBitcoinAddressMaV(nextAddress);
 
     // Create the QR code display
     displayQRCodeMaV = Components.newDisplayQRCodeMaV();
@@ -159,18 +157,19 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
 
     Preconditions.checkNotNull(walletService, "The wallet service was null so cannot save the payment request");
 
-    PaymentRequest paymentRequest = new PaymentRequest();
-    paymentRequest.setNote(notesTextArea.getText());
-    paymentRequest.setDate(DateTime.now());
-    paymentRequest.setAddress(displayBitcoinAddressMaV.getModel().getValue());
-    paymentRequest.setLabel(label.getText());
-    paymentRequest.setAmountBTC(enterAmountMaV.getModel().getSatoshis());
+    PaymentRequestData paymentRequestData = new PaymentRequestData();
+    paymentRequestData.setNote(notesTextArea.getText());
+    paymentRequestData.setDate(DateTime.now());
+    paymentRequestData.setAddress(displayBitcoinAddressMaV.getModel().getValue());
+    paymentRequestData.setLabel(label.getText());
+    paymentRequestData.setAmountBTC(enterAmountMaV.getModel().getSatoshis());
     FiatPayment fiatPayment = new FiatPayment();
     fiatPayment.setAmount(enterAmountMaV.getModel().getLocalAmount().toString());
-    // TODO add exchange rate and exchange name
-    paymentRequest.setAmountFiat(fiatPayment);
+    fiatPayment.setCurrency(Configurations.currentConfiguration.getI18NConfiguration().getLocalCurrencyUnit().getCurrencyCode());
+    fiatPayment.setExchange(Configurations.currentConfiguration.getBitcoinConfiguration().getExchangeName());
+    paymentRequestData.setAmountFiat(fiatPayment);
 
-    walletService.getPayments().getPaymentRequests().add(paymentRequest);
+    walletService.getPayments().getPaymentRequestDatas().add(paymentRequestData);
     walletService.writePayments();
   }
 

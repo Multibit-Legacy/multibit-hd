@@ -22,6 +22,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.protobuf.ByteString;
 import org.joda.time.DateTime;
+import org.multibit.hd.core.dto.FiatPayment;
+import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.protobuf.MBHDContactsProtos;
 import org.multibit.hd.core.protobuf.MBHDPaymentsProtos;
@@ -78,10 +80,10 @@ public class PaymentsProtobufSerializer {
 
     paymentsBuilder.setLastAddressIndex(payments.getLastIndexUsed());
 
-    Collection<PaymentRequest> paymentRequests = payments.getPaymentRequests();
-    if (paymentRequests != null) {
-      for (PaymentRequest paymentRequest : paymentRequests) {
-        MBHDPaymentsProtos.PaymentRequest paymentRequestProto = makePaymentRequestProto(paymentRequest);
+    Collection<PaymentRequestData> paymentRequestDatas = payments.getPaymentRequestDatas();
+    if (paymentRequestDatas != null) {
+      for (PaymentRequestData paymentRequestData : paymentRequestDatas) {
+        MBHDPaymentsProtos.PaymentRequest paymentRequestProto = makePaymentRequestProto(paymentRequestData);
         paymentsBuilder.addPaymentRequest(paymentRequestProto);
       }
     }
@@ -97,15 +99,15 @@ public class PaymentsProtobufSerializer {
     return paymentsBuilder.build();
   }
 
-  private static MBHDPaymentsProtos.PaymentRequest makePaymentRequestProto(PaymentRequest paymentRequest) {
+  private static MBHDPaymentsProtos.PaymentRequest makePaymentRequestProto(PaymentRequestData paymentRequestData) {
     MBHDPaymentsProtos.PaymentRequest.Builder paymentRequestBuilder = MBHDPaymentsProtos.PaymentRequest.newBuilder();
-    paymentRequestBuilder.setAddress(paymentRequest.getAddress());
-    paymentRequestBuilder.setNote(paymentRequest.getNote() == null ? "" : paymentRequest.getNote());
-    paymentRequestBuilder.setAmountBTC(paymentRequest.getAmountBTC().longValue());
-    paymentRequestBuilder.setDate(paymentRequest.getDate().getMillis());
-    paymentRequestBuilder.setLabel(paymentRequest.getLabel() == null ? "" : paymentRequest.getLabel());
+    paymentRequestBuilder.setAddress(paymentRequestData.getAddress());
+    paymentRequestBuilder.setNote(paymentRequestData.getNote() == null ? "" : paymentRequestData.getNote());
+    paymentRequestBuilder.setAmountBTC(paymentRequestData.getAmountBTC().longValue());
+    paymentRequestBuilder.setDate(paymentRequestData.getDate().getMillis());
+    paymentRequestBuilder.setLabel(paymentRequestData.getLabel() == null ? "" : paymentRequestData.getLabel());
 
-    FiatPayment fiatPayment = paymentRequest.getAmountFiat();
+    FiatPayment fiatPayment = paymentRequestData.getAmountFiat();
     if (fiatPayment != null) {
       MBHDPaymentsProtos.FiatPayment.Builder fiatPaymentBuilder = MBHDPaymentsProtos.FiatPayment.newBuilder();
       fiatPaymentBuilder.setAmount(fiatPayment.getAmount());
@@ -181,30 +183,30 @@ public class PaymentsProtobufSerializer {
    * @throws org.multibit.hd.core.exceptions.PaymentsLoadException thrown in various error conditions (see description).
    */
   private void readPayments(MBHDPaymentsProtos.Payments paymentsProto, Payments payments) throws PaymentsLoadException {
-    Collection<PaymentRequest> paymentRequests = Lists.newArrayList();
+    Collection<PaymentRequestData> paymentRequestDatas = Lists.newArrayList();
     Collection<TransactionInfo> transactionInfos = Lists.newArrayList();
 
     List<MBHDPaymentsProtos.PaymentRequest> paymentRequestProtos = paymentsProto.getPaymentRequestList();
     if (paymentRequestProtos != null) {
       for (MBHDPaymentsProtos.PaymentRequest paymentRequestProto : paymentRequestProtos) {
-        PaymentRequest paymentRequest = new PaymentRequest();
-        paymentRequest.setAddress(paymentRequestProto.getAddress());
+        PaymentRequestData paymentRequestData = new PaymentRequestData();
+        paymentRequestData.setAddress(paymentRequestProto.getAddress());
         if (paymentRequestProto.hasLabel()) {
-          paymentRequest.setLabel(paymentRequestProto.getLabel());
+          paymentRequestData.setLabel(paymentRequestProto.getLabel());
         }
         if (paymentRequestProto.hasNote()) {
-          paymentRequest.setNote(paymentRequestProto.getNote());
+          paymentRequestData.setNote(paymentRequestProto.getNote());
         }
         if (paymentRequestProto.hasDate()) {
-          paymentRequest.setDate(new DateTime(paymentRequestProto.getDate()));
+          paymentRequestData.setDate(new DateTime(paymentRequestProto.getDate()));
         }
         if (paymentRequestProto.hasAmountBTC()) {
-          paymentRequest.setAmountBTC(BigInteger.valueOf(paymentRequestProto.getAmountBTC()));
+          paymentRequestData.setAmountBTC(BigInteger.valueOf(paymentRequestProto.getAmountBTC()));
         }
 
         if (paymentRequestProto.hasAmountFiat()) {
           FiatPayment fiatPayment = new FiatPayment();
-          paymentRequest.setAmountFiat(fiatPayment);
+          paymentRequestData.setAmountFiat(fiatPayment);
           MBHDPaymentsProtos.FiatPayment fiatPaymentProto = paymentRequestProto.getAmountFiat();
           fiatPayment.setAmount(fiatPaymentProto.getAmount());
           if (fiatPaymentProto.hasCurrency()) {
@@ -218,7 +220,7 @@ public class PaymentsProtobufSerializer {
           }
         }
 
-        paymentRequests.add(paymentRequest);
+        paymentRequestDatas.add(paymentRequestData);
       }
     }
 
@@ -255,7 +257,7 @@ public class PaymentsProtobufSerializer {
       }
     }
 
-    payments.setPaymentRequests(paymentRequests);
+    payments.setPaymentRequestDatas(paymentRequestDatas);
     payments.setTransactionInfos(transactionInfos);
   }
 

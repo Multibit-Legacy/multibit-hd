@@ -104,7 +104,7 @@ public class WalletService {
   }
 
   /**
-   * Get all the transactions in the current wallet
+   * Get all the payments (transactions and payment requests) in the current wallet
    */
   public Set<TransactionData> getTransactions() {
     // See if there is a current wallet
@@ -203,7 +203,7 @@ public class WalletService {
       }
     }
 
-    return new TransactionData(transactionId, updateTime, status, amountBTC, Optional.<BigInteger>absent(), confidenceType, transactionType, depth, description);
+    return new TransactionData(transactionId, updateTime, status, amountBTC, Optional.<BigInteger>absent(), confidenceType, transactionType, depth, description, "");
   }
 
   /**

@@ -1,4 +1,4 @@
-package org.multibit.hd.core.store;
+package org.multibit.hd.core.dto;
 
 /**
  *  <p>DTO to provide the following to WalletService:<br>

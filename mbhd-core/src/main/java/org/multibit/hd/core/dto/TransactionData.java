@@ -15,7 +15,7 @@ import java.util.Date;
  *  
  */
 
-public class TransactionData {
+public class TransactionData implements PaymentData {
 
   private final RAGStatus status;
 
@@ -35,9 +35,11 @@ public class TransactionData {
 
   private final String description;
 
+  private String note;
+
   public TransactionData(String transactionId, Date updateTime, RAGStatus status,
                          BigInteger amountBTC, Optional<BigInteger> feeOnSendBTC,
-                         TransactionConfidence.ConfidenceType confidenceType, TransactionType type, int depth, String description) {
+                         TransactionConfidence.ConfidenceType confidenceType, TransactionType type, int depth, String description, String note) {
     this.transactionId = transactionId;
     this.updateTime = updateTime;
     this.status = status;
@@ -47,16 +49,11 @@ public class TransactionData {
     this.type = type;
     this.depth = depth;
     this.description = description;
+    this.note = note;
   }
 
-  /*
-  Manual notes,
-  automatic notes,
-  tags,
-  fiat amount,
-  exchange rate,
-  exchange name,
-   */
+ // FiatPayment( =  fiat amount + exchange rate + exchange name)
+
 
   @Override
   public String toString() {
@@ -70,6 +67,7 @@ public class TransactionData {
             ", type=" + type +
             ", updateTime=" + updateTime +
             ", description='" + description + "'" +
+            ", note='" + note + "'" +
             '}';
   }
 
@@ -89,6 +87,7 @@ public class TransactionData {
     if (!type.equals(that.type)) return false;
     if (!updateTime.equals(that.updateTime)) return false;
     if (!description.equals(that.description)) return false;
+    if (!note.equals(that.note)) return false;
 
     return true;
   }
@@ -104,6 +103,7 @@ public class TransactionData {
     result = 31 * result + type.hashCode();
     result = 31 * result + updateTime.hashCode();
     result = 31 * result + description.hashCode();
+    result = 31 * result + note.hashCode();
     return result;
   }
 
@@ -141,5 +141,15 @@ public class TransactionData {
 
   public String getDescription() {
     return description;
+  }
+
+  @Override
+  public String getNote() {
+    return note;
+  }
+
+  @Override
+  public void setNote(String note) {
+    this.note = note;
   }
 }
