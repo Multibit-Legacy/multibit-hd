@@ -108,11 +108,11 @@ public class WalletServiceTest {
 
   @Test
    public void testGenerateNextReceivingAddress() throws Exception {
-    // The generated addresses for indices 1, 2, 3, 4 respectively (index = 0 is added tot he wallet at creation time)
-    assertThat("1ELwsxsbJEWTn9RCmkViLVGehwxEk61SbY").isEqualTo(walletService.generateNextReceivingAddress());
-    assertThat("1L8HQhmDbs2i662EgitrRnFUyzXFckK5t").isEqualTo(walletService.generateNextReceivingAddress());
-    assertThat("1AoKyvbxbvLWHQqRo2xkWzzyaLq1u1Mr2j").isEqualTo(walletService.generateNextReceivingAddress());
-    assertThat("1D8hgjF8pWBKDMsuN2N59JsvuUNaQs6dAz").isEqualTo(walletService.generateNextReceivingAddress());
+    // The generated addresses for indices 1, 2, 3, 4 respectively (index = 0 is added to the wallet at creation time)
+    assertThat("1ELwsxsbJEWTn9RCmkViLVGehwxEk61SbY").isEqualTo(walletService.generateNextReceivingAddress(PASSWORD));
+    assertThat("1L8HQhmDbs2i662EgitrRnFUyzXFckK5t").isEqualTo(walletService.generateNextReceivingAddress(PASSWORD));
+    assertThat("1AoKyvbxbvLWHQqRo2xkWzzyaLq1u1Mr2j").isEqualTo(walletService.generateNextReceivingAddress(PASSWORD));
+    assertThat("1D8hgjF8pWBKDMsuN2N59JsvuUNaQs6dAz").isEqualTo(walletService.generateNextReceivingAddress(PASSWORD));
 
     // In real life you now need to save the payments db to save the lastIndexUsed !
   }
