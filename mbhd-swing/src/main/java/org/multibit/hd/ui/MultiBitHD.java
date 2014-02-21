@@ -7,6 +7,7 @@ import com.xeiam.xchange.currency.MoneyUtils;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
+import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -137,9 +138,13 @@ public class MultiBitHD {
               ).addDemoContacts();
 
       // Initialise the WalletService, which provides transaction information from the wallet
-      // TODO the GUI should just use the WalletService and not go to the WalletManager directly
       walletService = CoreServices.newWalletService();
-      walletService.initialise(applicationDataDirectory, WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId());
+      try {
+        walletService.initialise(applicationDataDirectory, WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId());
+      } catch (PaymentsLoadException ple) {
+        // Payments db did not load  TODO tell user or abort ??
+        log.error(ple.getClass().getCanonicalName() + "" + ple.getMessage());
+      }
     }
 
 

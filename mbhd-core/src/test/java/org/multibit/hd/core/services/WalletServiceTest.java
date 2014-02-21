@@ -1,8 +1,11 @@
 package org.multibit.hd.core.services;
 
+import com.google.bitcoin.core.NetworkParameters;
+import com.google.common.base.Optional;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletIdTest;
 import org.multibit.hd.core.managers.BackupManager;
@@ -28,7 +31,9 @@ public class WalletServiceTest {
 
   private WalletService walletService;
 
-  private static final String PASSWORD = "throckSplockChockAdock";
+  private static final CharSequence PASSWORD = "throckSplockChockAdock";
+
+  private String firstAddress;
 
   @Before
   public void setUp() throws Exception {
@@ -42,7 +47,9 @@ public class WalletServiceTest {
 
     WalletManager.INSTANCE.initialise(temporaryDirectory);
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
-    WalletManager.INSTANCE.createWallet(temporaryDirectory.getAbsolutePath(), seed1, PASSWORD);
+    WalletData walletData = WalletManager.INSTANCE.createWallet(temporaryDirectory.getAbsolutePath(), seed1, PASSWORD);
+
+    firstAddress = walletData.getWallet().getKeys().get(0).toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
 
     walletService = new WalletService();
 
@@ -109,12 +116,15 @@ public class WalletServiceTest {
   @Test
    public void testGenerateNextReceivingAddress() throws Exception {
     // The generated addresses for indices 1, 2, 3, 4 respectively (index = 0 is added to the wallet at creation time)
-    assertThat("1ELwsxsbJEWTn9RCmkViLVGehwxEk61SbY").isEqualTo(walletService.generateNextReceivingAddress(PASSWORD));
-    assertThat("1L8HQhmDbs2i662EgitrRnFUyzXFckK5t").isEqualTo(walletService.generateNextReceivingAddress(PASSWORD));
-    assertThat("1AoKyvbxbvLWHQqRo2xkWzzyaLq1u1Mr2j").isEqualTo(walletService.generateNextReceivingAddress(PASSWORD));
-    assertThat("1D8hgjF8pWBKDMsuN2N59JsvuUNaQs6dAz").isEqualTo(walletService.generateNextReceivingAddress(PASSWORD));
+    assertThat("1ELwsxsbJEWTn9RCmkViLVGehwxEk61SbY").isEqualTo(walletService.generateNextReceivingAddress(Optional.of(PASSWORD)));
+    assertThat("1L8HQhmDbs2i662EgitrRnFUyzXFckK5t").isEqualTo(walletService.generateNextReceivingAddress(Optional.of(PASSWORD)));
+    assertThat("1AoKyvbxbvLWHQqRo2xkWzzyaLq1u1Mr2j").isEqualTo(walletService.generateNextReceivingAddress(Optional.of(PASSWORD)));
+    assertThat("1D8hgjF8pWBKDMsuN2N59JsvuUNaQs6dAz").isEqualTo(walletService.generateNextReceivingAddress(Optional.of(PASSWORD)));
 
     // In real life you now need to save the payments db to save the lastIndexUsed !
+
+    // Test the 'no-generate' functionality works
+    assertThat(firstAddress).isEqualTo(walletService.generateNextReceivingAddress(Optional.<CharSequence>absent()));
   }
 
 }
