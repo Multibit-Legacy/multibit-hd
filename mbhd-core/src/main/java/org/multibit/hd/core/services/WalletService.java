@@ -72,7 +72,7 @@ public class WalletService {
   private WalletId walletId;
 
   /**
-   * Initialise the wallet service with a wallet id so that it knows where to put files etc
+   * Initialise the wallet service with a user data directory and a wallet id so that it knows where to put files etc
    *
    * @param walletId the walletId to use for this WalletService
    */
@@ -121,7 +121,7 @@ public class WalletService {
     Wallet wallet = walletData.getWallet();
 
     // There should be a wallet
-    Preconditions.checkNotNull(wallet);
+    Preconditions.checkNotNull(wallet, "There is no wallet to process");
 
     Set<Transaction> transactions = wallet.getTransactions(true);
 
@@ -248,12 +248,13 @@ public class WalletService {
    * <p>Populate the internal cache of Payments from the backing store</p>
    */
   public void readPayments() throws PaymentsLoadException {
+    Preconditions.checkNotNull(backingStoreFile, "There is no backingStoreFile. Please initialise WalletService.");
     try (FileInputStream fis = new FileInputStream(backingStoreFile)) {
 
       payments = protobufSerializer.readPayments(fis);
 
     } catch (IOException | PaymentsLoadException e) {
-      throw new PaymentsLoadException("Could not loadContacts payments db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");
+      throw new PaymentsLoadException("Could not read payments db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");
     }
   }
 
@@ -261,12 +262,14 @@ public class WalletService {
    * <p>Save the payments data to the backing store</p>
    */
   public void writePayments() throws PaymentsSaveException {
+    Preconditions.checkNotNull(backingStoreFile, "There is no backingStoreFile. Please initialise WalletService.");
+
     try (FileOutputStream fos = new FileOutputStream(backingStoreFile)) {
 
       protobufSerializer.writePayments(payments, fos);
 
     } catch (IOException | PaymentsSaveException e) {
-      throw new PaymentsSaveException("Could not save payments db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");
+      throw new PaymentsSaveException("Could not write payments db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");
     }
   }
 
@@ -278,31 +281,39 @@ public class WalletService {
     return payments;
   }
 
-  public int getLastIndexUsed(){
+  public int getLastIndexUsed() {
     return payments.getLastIndexUsed();
   }
 
   /**
-   * Create the next private key for the wallet.
-   * This is worked out deterministically and uses the lastIndexUsed on the Payments so that each address is unique
+   * Create the next receiving address for the wallet.
+   * This is either the first key's address in the wallet or is
+   * worked out deterministically and uses the lastIndexUsed on the Payments so that each address is unique
+   * <p/>
+   * Remember to save both the dirty wallet and the payment requests backing store after calling this method when new keys are generated
+   * TODO replace with proper HD algorithm
    *
-   * Remember to save both the dirty wallet and the payment requests backing store after calling this method
-   *
+   * @param walletPasswordOptional Either: Optional.absent() = just recycle the first address in the wallet or:  password of the wallet to which the new private key is added
    * @return Address the next generated address, as a String. The corresponding private key will be added to the wallet
    */
-  public String generateNextReceivingAddress() {
+  public String generateNextReceivingAddress(Optional<CharSequence> walletPasswordOptional) {
     Optional<WalletData> walletDataOptional = WalletManager.INSTANCE.getCurrentWalletData();
     if (!walletDataOptional.isPresent()) {
       // No wallet is present
       throw new IllegalStateException("Trying to add a key to a non-existent wallet");
     } else {
-      // increment the lastIndexUsed
-      int currentLastIndexUsed = payments.getLastIndexUsed();
-      currentLastIndexUsed++;
-      payments.setLastIndexUsed(currentLastIndexUsed);
-      log.debug("The last index used has been incremented to " + currentLastIndexUsed);
-      ECKey newKey = WalletManager.INSTANCE.createAndAddNewWalletKey(walletDataOptional.get().getWallet(), currentLastIndexUsed);
-      return newKey.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
+      // If there is no password then recycle the first address in the wallet
+      if (walletPasswordOptional.isPresent()) {
+        // increment the lastIndexUsed
+        int currentLastIndexUsed = payments.getLastIndexUsed();
+        currentLastIndexUsed++;
+        payments.setLastIndexUsed(currentLastIndexUsed);
+        log.debug("The last index used has been incremented to " + currentLastIndexUsed);
+        ECKey newKey = WalletManager.INSTANCE.createAndAddNewWalletKey(walletDataOptional.get().getWallet(), walletPasswordOptional.get(), currentLastIndexUsed);
+        return newKey.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
+      } else {
+        return walletDataOptional.get().getWallet().getKeys().get(0).toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
+      }
     }
   }
 }

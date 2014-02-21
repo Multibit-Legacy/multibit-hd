@@ -100,18 +100,18 @@ public class PaymentsProtobufSerializer {
   private static MBHDPaymentsProtos.PaymentRequest makePaymentRequestProto(PaymentRequest paymentRequest) {
     MBHDPaymentsProtos.PaymentRequest.Builder paymentRequestBuilder = MBHDPaymentsProtos.PaymentRequest.newBuilder();
     paymentRequestBuilder.setAddress(paymentRequest.getAddress());
-    paymentRequestBuilder.setNote(paymentRequest.getNote());
+    paymentRequestBuilder.setNote(paymentRequest.getNote() == null ? "" : paymentRequest.getNote());
     paymentRequestBuilder.setAmountBTC(paymentRequest.getAmountBTC().longValue());
     paymentRequestBuilder.setDate(paymentRequest.getDate().getMillis());
-    paymentRequestBuilder.setLabel(paymentRequest.getLabel());
+    paymentRequestBuilder.setLabel(paymentRequest.getLabel() == null ? "" : paymentRequest.getLabel());
 
     FiatPayment fiatPayment = paymentRequest.getAmountFiat();
     if (fiatPayment != null) {
       MBHDPaymentsProtos.FiatPayment.Builder fiatPaymentBuilder = MBHDPaymentsProtos.FiatPayment.newBuilder();
       fiatPaymentBuilder.setAmount(fiatPayment.getAmount());
-      fiatPaymentBuilder.setCurrency(fiatPayment.getCurrency());
-      fiatPaymentBuilder.setExchange(fiatPayment.getExchange());
-      fiatPaymentBuilder.setRate(fiatPayment.getRate());
+      fiatPaymentBuilder.setCurrency(fiatPayment.getCurrency() == null ? "" : fiatPayment.getCurrency());
+      fiatPaymentBuilder.setExchange(fiatPayment.getExchange() == null ? "" : fiatPayment.getExchange());
+      fiatPaymentBuilder.setRate(fiatPayment.getRate() == null ? "" : fiatPayment.getRate());
 
       paymentRequestBuilder.setAmountFiat(fiatPaymentBuilder);
     }

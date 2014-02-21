@@ -47,6 +47,7 @@ public enum MessageKey {
 
   RECIPIENT("recipient"),
   TRANSACTION_LABEL("transaction_label"),
+  QR_CODE_LABEL_LABEL("qr_code_label_label"),
   NOTES("notes"),
   SELECT_FOLDER("select_folder"),
   SELECT_FILE("select_file"),
@@ -194,6 +195,11 @@ public enum MessageKey {
 
   RECIPIENT_SUMMARY("recipient_summary"),
   AMOUNT_SUMMARY("amount_summary"),
+
+  // Wallet detail panel
+  SUMMARY("summary"),
+  APPLICATION_DIRECTORY("application_directory"),
+  WALLET_DIRECTORY("wallet_directory")
 
   // End of enum
   ;
