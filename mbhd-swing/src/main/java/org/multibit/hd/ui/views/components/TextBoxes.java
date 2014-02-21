@@ -269,6 +269,10 @@ public class TextBoxes {
     doc.setDocumentFilter(new DocumentMaxLengthFilter(MultiBitUI.SEED_PHRASE_LENGTH));
     textArea.setDocument(doc);
 
+    // Ensure line wrapping occurs correctly
+    textArea.setLineWrap(true);
+    textArea.setWrapStyleWord(true);
+
     // Ensure TAB transfers focus
     AbstractAction transferFocus = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
