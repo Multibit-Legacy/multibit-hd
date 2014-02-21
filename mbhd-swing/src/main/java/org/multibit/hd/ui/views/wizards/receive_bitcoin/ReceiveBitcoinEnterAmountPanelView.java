@@ -6,6 +6,7 @@ import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.*;
@@ -39,6 +40,8 @@ import java.math.BigInteger;
 public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<ReceiveBitcoinWizardModel, ReceiveBitcoinEnterAmountPanelModel> {
 
   // Panel specific components
+  private JTextArea notesTextArea;
+
   private ModelAndView<EnterAmountModel, EnterAmountView> enterAmountMaV;
   private ModelAndView<DisplayBitcoinAddressModel, DisplayBitcoinAddressView> displayBitcoinAddressMaV;
   private ModelAndView<DisplayQRCodeModel, DisplayQRCodeView> displayQRCodeMaV;
@@ -73,6 +76,9 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     label = TextBoxes.newEnterLabel();
     showQRCode = Buttons.newQRCodeButton(getShowQRCodePopoverAction());
 
+    // User entered text
+    notesTextArea = TextBoxes.newEnterNotes(MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH);
+
     // Configure the panel model
     setPanelModel(new ReceiveBitcoinEnterAmountPanelModel(
       getPanelName(),
@@ -100,8 +106,10 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     panel.add(Labels.newRecipient());
     panel.add(displayBitcoinAddressMaV.getView().newComponentPanel(), "growx,push");
     panel.add(showQRCode, "wrap");
-    panel.add(Labels.newTransactionLabel());
+    panel.add(Labels.newQRCodeLabelLabel());
     panel.add(label, "span 2,wrap");
+    panel.add(Labels.newNotes());
+    panel.add(notesTextArea, "span 3,wrap");
 
     return panel;
   }
@@ -164,10 +172,8 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
 
         // Show the QR code as a popover
         Panels.showLightBoxPopover(displayQRCodeMaV.getView().newComponentPanel());
-
       }
 
     };
   }
-
 }

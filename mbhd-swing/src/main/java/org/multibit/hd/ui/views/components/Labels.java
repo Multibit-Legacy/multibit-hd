@@ -484,6 +484,13 @@ public class Labels {
   }
 
   /**
+    * @return A new "QR code label" message for use with receiving addresses
+    */
+   public static JLabel newQRCodeLabelLabel() {
+     return newLabel(MessageKey.QR_CODE_LABEL_LABEL);
+   }
+
+   /**
    * @return A new "notes" message
    */
   public static JLabel newNotes() {

@@ -209,8 +209,16 @@ public class TextBoxes {
    * @return A new "Notes" text area
    */
   public static JTextArea newEnterNotes() {
+    return TextBoxes.newEnterNotes(MultiBitUI.PASSWORD_LENGTH);
+  }
 
-    JTextArea textArea = new JTextArea(6, MultiBitUI.PASSWORD_LENGTH);
+
+  /**
+   * @return A new "Notes" text area
+   */
+  public static JTextArea newEnterNotes(int width) {
+
+    JTextArea textArea = new JTextArea(6, width);
 
     // Limit the length of the underlying document
     DefaultStyledDocument doc = new DefaultStyledDocument();
