@@ -42,6 +42,7 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
   private Optional<JButton> nextButton = Optional.absent();
   private Optional<JButton> previousButton = Optional.absent();
   private Optional<JButton> finishButton = Optional.absent();
+  private Optional<JButton> applyButton = Optional.absent();
 
   private final String panelName;
 
@@ -196,6 +197,17 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
   }
 
   /**
+   * @return The "apply" button for this view
+   */
+  public JButton getApplyButton() {
+    return applyButton.get();
+  }
+
+  public void setApplyButton(JButton applyButton) {
+    this.applyButton = Optional.fromNullable(applyButton);
+  }
+
+  /**
    * <p>Called before this wizard panel is about to be shown</p>
    *
    * <p>Typically this is where a panel view would reference the wizard model to obtain earlier values for display</p>
@@ -229,6 +241,20 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
   public void afterShow() {
 
     // Do nothing
+
+  }
+
+  /**
+   * <p>Called before this wizard panel is about to be hidden</p>
+   *
+   * <p>Typically this is where a panel view would store any user entered data</p>
+   *
+   * @return True if the panel can be hidden, false if the hide operation should be aborted (perhaps due to a data error)
+   */
+  public boolean beforeHide() {
+
+    // Default is to return OK
+    return true;
 
   }
 

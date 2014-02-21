@@ -162,6 +162,28 @@ public class PanelDecorator {
   }
 
   /**
+   * <p>Add a cancel, apply combination</p>
+   *
+   * @param view   The view containing the panel to decorate
+   * @param wizard The wizard providing the actions
+   * @param <M>    The wizard model type
+   * @param <P>    The wizard panel model type
+   */
+  public static <M extends WizardModel, P> void addCancelApply(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
+
+    Preconditions.checkNotNull(view, "'view' must be present");
+    Preconditions.checkNotNull(view, "'wizard' must be present");
+    Preconditions.checkNotNull(view.getWizardPanel(), "'wizardPanel' must be present");
+
+    // Use the wizard panel
+    JPanel wizardPanel = view.getWizardPanel();
+
+    addCancel(view, wizard, wizardPanel);
+    addApply(view, wizard, wizardPanel);
+
+  }
+
+  /**
    * <p>Add an exit/cancel, next button combination</p>
    *
    * @param view   The view containing the panel to decorate
@@ -504,4 +526,24 @@ public class PanelDecorator {
     view.setFinishButton(Buttons.newFinishButton(wizard.getFinishAction(view)));
     wizardPanel.add(view.getFinishButton(), "cell 3 2");
   }
+
+  /**
+   * <p>Add an "apply" button into an appropriate cell</p>
+   *
+   * @param view        The view containing the panel to decorate
+   * @param wizard      The wizard providing the actions
+   * @param wizardPanel The wizard panel providing the layout
+   * @param <M>         The wizard model type
+   * @param <P>         The wizard panel model type
+   */
+  private static <M extends WizardModel, P> void addApply(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard, JPanel wizardPanel) {
+
+    Preconditions.checkNotNull(view, "'view' must be present");
+    Preconditions.checkNotNull(view, "'wizard' must be present");
+    Preconditions.checkNotNull(view.getWizardPanel(), "'wizardPanel' must be present");
+
+    view.setApplyButton(Buttons.newApplyButton(wizard.getApplyAction(view)));
+    wizardPanel.add(view.getApplyButton(), "cell 3 2");
+  }
+
 }

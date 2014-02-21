@@ -119,22 +119,6 @@ public class Buttons {
   /**
    * @param action The click action
    *
-   * @return A new "Apply" button with icon
-   */
-  public static JButton newApplyButton(Action action) {
-
-    JButton button = newButton(action, MessageKey.APPLY);
-    button.setAction(action);
-
-    AwesomeDecorator.applyIcon(AwesomeIcon.EDIT, button, true, MultiBitUI.NORMAL_ICON_SIZE);
-
-    return button;
-
-  }
-
-  /**
-   * @param action The click action
-   *
    * @return A new "Undo" button with icon
    */
   public static JButton newUndoButton(Action action) {
@@ -230,6 +214,22 @@ public class Buttons {
     button.setAction(action);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.FLAG_CHECKERED, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
+
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "Apply" button with icon
+   */
+  public static JButton newApplyButton(Action action) {
+
+    JButton button = newButton(action, MessageKey.APPLY);
+    button.setAction(action);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
 

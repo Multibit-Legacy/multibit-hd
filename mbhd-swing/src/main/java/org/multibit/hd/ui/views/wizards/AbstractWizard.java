@@ -53,11 +53,11 @@ public abstract class AbstractWizard<M extends WizardModel> {
     wizardPanel = Panels.newPanel(cardLayout);
 
     // Bind the ESC key to a Cancel/Exit event
-    wizardPanel.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE,0),"quit");
+    wizardPanel.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "quit");
     if (isExiting) {
-      wizardPanel.getActionMap().put("quit",getExitAction());
+      wizardPanel.getActionMap().put("quit", getExitAction());
     } else {
-      wizardPanel.getActionMap().put("quit",getCancelAction());
+      wizardPanel.getActionMap().put("quit", getCancelAction());
     }
 
     // Use current locale for initial creation
@@ -115,16 +115,31 @@ public abstract class AbstractWizard<M extends WizardModel> {
   protected abstract void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap);
 
   /**
-   * <p>Close the wizard</p>
+   * <p>Hide the wizard</p>
+   *
+   * @param name The panel name
    */
-  public void close() {
+  public void hide(String name) {
 
-    Panels.hideLightBox();
+    Preconditions.checkState(wizardViewMap.containsKey(name), "'" + name + "' is not a valid panel name");
+
+    final AbstractWizardPanelView wizardPanelView = wizardViewMap.get(name);
+
+    // Provide warning that the panel is about to be shown
+    if (wizardPanelView.beforeHide()) {
+
+      // No abort so hide
+      Panels.hideLightBox();
+
+    }
+
 
   }
 
   /**
    * <p>Show the named panel</p>
+   *
+   * @param name The panel name
    */
   public void show(String name) {
 
@@ -179,7 +194,8 @@ public abstract class AbstractWizard<M extends WizardModel> {
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        Panels.hideLightBox();
+
+        hide(wizardModel.getPanelName());
       }
     };
 
@@ -196,7 +212,25 @@ public abstract class AbstractWizard<M extends WizardModel> {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        Panels.hideLightBox();
+        hide(wizardModel.getPanelName());
+
+      }
+    };
+  }
+
+  /**
+   * @param wizardView The wizard view (providing a reference to its underlying panel model)
+   *
+   * @return The "apply" action based on the model state
+   */
+  public <P> Action getApplyAction(final AbstractWizardPanelView<M, P> wizardView) {
+
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        hide(wizardModel.getPanelName());
+
       }
     };
   }

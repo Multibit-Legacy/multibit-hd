@@ -22,12 +22,16 @@ import org.multibit.hd.ui.views.components.enter_search.EnterSearchModel;
 import org.multibit.hd.ui.views.components.enter_search.EnterSearchView;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseView;
+import org.multibit.hd.ui.views.components.enter_tags.EnterTagsModel;
+import org.multibit.hd.ui.views.components.enter_tags.EnterTagsView;
 import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSummaryModel;
 import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSummaryView;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.components.select_file.SelectFileView;
 import org.multibit.hd.ui.views.components.wallet_detail.WalletDetailModel;
 import org.multibit.hd.ui.views.components.wallet_detail.WalletDetailView;
+
+import java.util.List;
 
 /**
  * <p>Factory to provide the following to UI:</p>
@@ -123,6 +127,7 @@ public class Components {
    * <p>A "confirm password" model and view handles a password with confirmation and reveal</p>
    *
    * @param panelName The panel name to identify "verification status" and "next" buttons
+   *
    * @return A new "confirm password" model and view
    */
   public static ModelAndView<ConfirmPasswordModel, ConfirmPasswordView> newConfirmPasswordMaV(String panelName) {
@@ -138,6 +143,7 @@ public class Components {
    * <p>An "enter password" model and view handles password entry with reveal</p>
    *
    * @param panelName The panel name to identify "next" buttons
+   *
    * @return A new "enter password" model and view
    */
   public static ModelAndView<EnterPasswordModel, EnterPasswordView> newEnterPasswordMaV(String panelName) {
@@ -177,6 +183,7 @@ public class Components {
    * </ul>
    *
    * @param bitcoinAddress The Bitcoin address
+   *
    * @return A new "display Bitcoin address" model and view
    */
   public static ModelAndView<DisplayBitcoinAddressModel, DisplayBitcoinAddressView> newDisplayBitcoinAddressMaV(final String bitcoinAddress) {
@@ -192,6 +199,7 @@ public class Components {
    * <p>A "seed phrase" model and view displays the words used in a BIP0039 seed (no edit/copy/paste etc)</p>
    *
    * @param generator The seed phrase generator
+   *
    * @return A new "seed phrase" model and view
    */
   public static ModelAndView<DisplaySeedPhraseModel, DisplaySeedPhraseView> newDisplaySeedPhraseMaV(final SeedPhraseGenerator generator) {
@@ -209,6 +217,7 @@ public class Components {
    * @param panelName      The panel name to identify "verification status" and "next" buttons
    * @param showTimestamp  True if the timestamp field should be visible
    * @param showSeedPhrase True if the seed phrase field should be visible
+   *
    * @return A new "seed phrase" model and view
    */
   public static ModelAndView<EnterSeedPhraseModel, EnterSeedPhraseView> newEnterSeedPhraseMaV(String panelName, boolean showTimestamp, boolean showSeedPhrase) {
@@ -224,6 +233,7 @@ public class Components {
    * <p>A "select file" model and view handles user data entry of a file or path</p>
    *
    * @param panelName The panel name to identify "next" button
+   *
    * @return A new "select file" model and view
    */
   public static ModelAndView<SelectFileModel, SelectFileView> newSelectFileMaV(String panelName) {
@@ -239,6 +249,7 @@ public class Components {
    * <p>An "enter search" model and view handles user data entry of a search</p>
    *
    * @param panelName The panel name to filter events
+   *
    * @return A new "enter search" model and view
    */
   public static ModelAndView<EnterSearchModel, EnterSearchView> newEnterSearchMaV(String panelName) {
@@ -251,9 +262,27 @@ public class Components {
   }
 
   /**
+   * <p>An "enter tags" model and view handles user data entry of multiple tags</p>
+   *
+   * @param panelName The panel name to filter events
+   * @param tags      The list of tags to edit
+   *
+   * @return A new "enter tags" model and view
+   */
+  public static ModelAndView<EnterTagsModel, EnterTagsView> newEnterTagsMaV(String panelName, List<String> tags) {
+
+    EnterTagsModel model = new EnterTagsModel(panelName, tags);
+    EnterTagsView view = new EnterTagsView(model);
+
+    return new ModelAndView<>(model, view);
+
+  }
+
+  /**
    * <p>A "select backup summary" model and view handles user selection of a backup summary</p>
    *
    * @param panelName The panel name to identify "next" button
+   *
    * @return A new "select backup summary" model and view
    */
   public static ModelAndView<SelectBackupSummaryModel, SelectBackupSummaryView> newSelectBackupSummaryMaV(String panelName) {
@@ -269,6 +298,7 @@ public class Components {
    * <p>A "display amount" model and view handles presentation of a Bitcoin and local currency amount</p>
    *
    * @param style The display amount style
+   *
    * @return A new "display amount" model and view
    */
   public static ModelAndView<DisplayAmountModel, DisplayAmountView> newDisplayAmountMaV(DisplayAmountStyle style) {

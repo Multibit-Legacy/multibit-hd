@@ -54,7 +54,6 @@ public class TransactionData implements PaymentData {
 
  // FiatPayment( =  fiat amount + exchange rate + exchange name)
 
-
   @Override
   public String toString() {
     return "TransactionData{" +

@@ -128,7 +128,9 @@ public class MultiBitHD {
     exchangeTickerService.start();
 
     WalletManager.INSTANCE.initialise(applicationDataDirectory);
-    BackupManager.INSTANCE.initialise(applicationDataDirectory, null); // TODO loadContacts up the cloud backup if available from properties and insert here
+    BackupManager.INSTANCE.initialise(applicationDataDirectory, null);
+
+    // TODO loadContacts up the cloud backup if available from properties and insert here
 
     if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
       // TODO Remove this when the Contact screen is ready
@@ -146,7 +148,6 @@ public class MultiBitHD {
         log.error(ple.getClass().getCanonicalName() + "" + ple.getMessage());
       }
     }
-
 
   }
 

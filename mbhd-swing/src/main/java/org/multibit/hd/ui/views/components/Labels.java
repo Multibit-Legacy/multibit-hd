@@ -484,6 +484,42 @@ public class Labels {
   }
 
   /**
+<<<<<<< HEAD
+   * @return A new "contact name" label
+   */
+  public static JLabel newName() {
+    return newLabel(MessageKey.NAME);
+  }
+
+  /**
+   * @return A new "contact email" label
+   */
+  public static JLabel newEmailAddress() {
+    return newLabel(MessageKey.EMAIL_ADDRESS);
+  }
+
+  /**
+   * @return A new "contact Bitcoin address" label
+   */
+  public static JLabel newBitcoinAddress() {
+    return newLabel(MessageKey.BITCOIN_ADDRESS);
+  }
+
+  /**
+   * @return A new "contact extended public key" label
+   */
+  public static JLabel newExtendedPublicKey() {
+    return newLabel(MessageKey.EXTENDED_PUBLIC_KEY);
+  }
+
+  /**
+   * @return A new "tags" label
+   */
+  public static JLabel newTags() {
+    return newLabel(MessageKey.TAGS);
+  }
+
+  /**
     * @return A new "QR code label" message for use with receiving addresses
     */
    public static JLabel newQRCodeLabelLabel() {
@@ -495,6 +531,13 @@ public class Labels {
    */
   public static JLabel newNotes() {
     return newLabel(MessageKey.NOTES);
+  }
+
+  /**
+   * @return A new "multi edit note" label
+   */
+  public static JLabel newMultiEditNote() {
+    return newLabel(MessageKey.MULTI_EDIT_NOTE);
   }
 
   /**
@@ -624,5 +667,4 @@ public class Labels {
     }, new Object[][]{});
 
   }
-
 }
