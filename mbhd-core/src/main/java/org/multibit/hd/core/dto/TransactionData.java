@@ -50,9 +50,7 @@ public class TransactionData {
   }
 
   /*
-  Manual notes,
-  automatic notes,
-  tags,
+  notes,
   fiat amount,
   exchange rate,
   exchange name,
