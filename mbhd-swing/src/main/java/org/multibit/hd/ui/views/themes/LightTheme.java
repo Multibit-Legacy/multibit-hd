@@ -117,6 +117,11 @@ public class LightTheme implements Theme {
   }
 
   @Override
+  public Color pinkBackground() {
+    return Color.PINK;
+  }
+
+  @Override
   public Color successAlertFadedBackground() {
 
     NamedButtonRegionPainter painter = new NamedButtonRegionPainter(colors[0][1], NamedButtonRegionPainter.BACKGROUND_DEFAULT);

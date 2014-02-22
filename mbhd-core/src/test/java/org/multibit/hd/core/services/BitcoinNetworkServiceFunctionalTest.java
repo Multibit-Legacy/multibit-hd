@@ -8,7 +8,7 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.dto.TransactionData;
+import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
@@ -115,7 +115,7 @@ public class BitcoinNetworkServiceFunctionalTest {
     walletService.initialise(temporaryDirectory, new WalletId(seed));
 
     // Get the current wallets transactions - there should be some
-    Set<TransactionData>transactions = walletService.getTransactions();
+    Set<PaymentData>transactions = walletService.getPaymentDatas();
 
     log.debug("The transactions in the wallet are:\n" + transactions);
     assertThat(transactions.size() > 0).isTrue();

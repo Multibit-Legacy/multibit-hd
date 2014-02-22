@@ -2,9 +2,9 @@ package org.multibit.hd.core.dto;
 
 import com.google.bitcoin.core.TransactionConfidence;
 import com.google.common.base.Optional;
+import org.joda.time.DateTime;
 
 import java.math.BigInteger;
-import java.util.Date;
 
 /**
  *  <p>Data object to provide the following to Transaction display:<br>
@@ -15,7 +15,7 @@ import java.util.Date;
  *  
  */
 
-public class TransactionData {
+public class TransactionData implements PaymentData {
 
   private final RAGStatus status;
 
@@ -29,17 +29,19 @@ public class TransactionData {
 
   private final TransactionConfidence.ConfidenceType confidenceType;
 
-  private final Date updateTime;
+  private final DateTime date;
 
-  private final TransactionType type;
+  private final PaymentType type;
 
   private final String description;
 
-  public TransactionData(String transactionId, Date updateTime, RAGStatus status,
+  private String note;
+
+  public TransactionData(String transactionId, DateTime date, RAGStatus status,
                          BigInteger amountBTC, Optional<BigInteger> feeOnSendBTC,
-                         TransactionConfidence.ConfidenceType confidenceType, TransactionType type, int depth, String description) {
+                         TransactionConfidence.ConfidenceType confidenceType, PaymentType type, int depth, String description, String note) {
     this.transactionId = transactionId;
-    this.updateTime = updateTime;
+    this.date = date;
     this.status = status;
     this.amountBTC = amountBTC;
     this.feeOnSendBTC = feeOnSendBTC;
@@ -47,14 +49,10 @@ public class TransactionData {
     this.type = type;
     this.depth = depth;
     this.description = description;
+    this.note = note;
   }
 
-  /*
-  notes,
-  fiat amount,
-  exchange rate,
-  exchange name,
-   */
+ // FiatPayment( =  fiat amount + exchange rate + exchange name)
 
   @Override
   public String toString() {
@@ -66,8 +64,9 @@ public class TransactionData {
             ", depth=" + depth +
             ", confidenceType=" + confidenceType +
             ", type=" + type +
-            ", updateTime=" + updateTime +
+            ", date=" + date +
             ", description='" + description + "'" +
+            ", note='" + note + "'" +
             '}';
   }
 
@@ -85,8 +84,9 @@ public class TransactionData {
     if (!feeOnSendBTC.equals(that.feeOnSendBTC)) return false;
     if (!transactionId.equals(that.transactionId)) return false;
     if (!type.equals(that.type)) return false;
-    if (!updateTime.equals(that.updateTime)) return false;
+    if (!date.equals(that.date)) return false;
     if (!description.equals(that.description)) return false;
+    if (!note.equals(that.note)) return false;
 
     return true;
   }
@@ -100,8 +100,9 @@ public class TransactionData {
     result = 31 * result + depth;
     result = 31 * result + confidenceType.hashCode();
     result = 31 * result + type.hashCode();
-    result = 31 * result + updateTime.hashCode();
+    result = 31 * result + date.hashCode();
     result = 31 * result + description.hashCode();
+    result = 31 * result + note.hashCode();
     return result;
   }
 
@@ -125,19 +126,29 @@ public class TransactionData {
     return confidenceType;
   }
 
-  public Date getUpdateTime() {
-    return updateTime;
+  public DateTime getDate() {
+    return date;
   }
 
+  @Override
   public RAGStatus getStatus() {
     return status;
   }
 
-  public TransactionType getType() {
+  public PaymentType getType() {
     return type;
   }
 
   public String getDescription() {
     return description;
+  }
+
+  @Override
+  public String getNote() {
+    return note;
+  }
+
+  public void setNote(String note) {
+    this.note = note;
   }
 }

@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components.renderers;
 
+import org.joda.time.DateTime;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.tables.StripedTable;
 
@@ -7,7 +8,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  *  <p>Renderer to provide the following to tables:<br>
@@ -39,10 +39,11 @@ public class TrailingJustifiedDateRenderer extends DefaultTableCellRenderer {
 
     String formattedDate = "";
     if (value != null) {
-      if (value instanceof Date) {
-        if (((Date) value).getTime() != 0) {
+      if (value instanceof DateTime) {
+        DateTime date = (DateTime) value;
+        if (date.getMillis() != 0) {
           try {
-            formattedDate = dateFormatter.format(value);
+            formattedDate = dateFormatter.format(date.toDate());
           } catch (IllegalArgumentException iae) {
             // ok
           }

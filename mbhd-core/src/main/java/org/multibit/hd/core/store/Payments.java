@@ -1,6 +1,7 @@
 package org.multibit.hd.core.store;
 
 import com.google.common.collect.Lists;
+import org.multibit.hd.core.dto.PaymentRequestData;
 
 import java.util.Collection;
 
@@ -15,13 +16,13 @@ import java.util.Collection;
 public class Payments {
   private int lastIndexUsed;
 
-  private Collection<PaymentRequest> paymentRequests;
+  private Collection<PaymentRequestData> paymentRequestDatas;
 
   private Collection<TransactionInfo> transactionInfos;
 
   public Payments(int lastIndexUsed) {
     this.lastIndexUsed = lastIndexUsed;
-    this.paymentRequests = Lists.newArrayList();
+    this.paymentRequestDatas = Lists.newArrayList();
     this.transactionInfos = Lists.newArrayList();
   }
 
@@ -33,12 +34,12 @@ public class Payments {
     this.lastIndexUsed = lastIndexUsed;
   }
 
-  public Collection<PaymentRequest> getPaymentRequests() {
-    return paymentRequests;
+  public Collection<PaymentRequestData> getPaymentRequestDatas() {
+    return paymentRequestDatas;
   }
 
-  public void setPaymentRequests(Collection<PaymentRequest> paymentRequests) {
-    this.paymentRequests = paymentRequests;
+  public void setPaymentRequestDatas(Collection<PaymentRequestData> paymentRequestDatas) {
+    this.paymentRequestDatas = paymentRequestDatas;
   }
 
   public Collection<TransactionInfo> getTransactionInfos() {

@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components.tables;
 
-import org.multibit.hd.core.dto.TransactionData;
+import org.multibit.hd.core.dto.PaymentData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,13 +10,13 @@ import java.util.Set;
 /**
  * <p>TableModel to provide the following to contact JTable:</p>
  * <ul>
- * <li>Adapts a list of contacts into a table model</li>
+ * <li>Adapts a list of payments into a table model</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class TransactionTableModel extends AbstractTableModel {
+public class PaymentTableModel extends AbstractTableModel {
 
   public static final int STATUS_COLUMN_INDEX = 0;
   public static final int DATE_COLUMN_INDEX = 1;
@@ -24,7 +24,7 @@ public class TransactionTableModel extends AbstractTableModel {
   public static final int DESCRIPTION_COLUMN_INDEX = 3;
   public static final int AMOUNT_BTC_COLUMN_INDEX = 4;
 
-  private static final Logger log = LoggerFactory.getLogger(TransactionTableModel.class);
+  private static final Logger log = LoggerFactory.getLogger(PaymentTableModel.class);
 
   private String[] columnNames = {
           "Status",
@@ -36,27 +36,27 @@ public class TransactionTableModel extends AbstractTableModel {
 
   private Object[][] data;
 
-  public TransactionTableModel(Set<TransactionData> transactions) {
-    setTransactions(transactions, false);
+  public PaymentTableModel(Set<PaymentData> paymentDatas) {
+    setPaymentDatas(paymentDatas, false);
   }
 
   /**
-   * Set the transactions into the table
+   * Set the payment datas into the table
    *
-   * @param transactions the transactions to show in the table
+   * @param paymentDatas the paymentDatas to show in the table
    */
-  public void setTransactions(Set<TransactionData> transactions, boolean fireTableDataChanged) {
-    data = new Object[transactions.size()][];
+  public void setPaymentDatas(Set<PaymentData> paymentDatas, boolean fireTableDataChanged) {
+    data = new Object[paymentDatas.size()][];
 
     int row = 0;
-    for (TransactionData transaction : transactions) {
+    for (PaymentData payment : paymentDatas) {
 
       Object[] rowData = new Object[]{
-              transaction.getStatus(),
-              transaction.getUpdateTime(),
-              transaction.getType(),
-              transaction.getDescription(),
-              transaction.getAmountBTC()
+              payment.getStatus(),
+              payment.getDate(),
+              payment.getType(),
+              payment.getDescription(),
+              payment.getAmountBTC()
       };
 
       data[row] = rowData;

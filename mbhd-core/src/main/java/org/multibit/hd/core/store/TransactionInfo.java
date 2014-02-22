@@ -1,5 +1,7 @@
 package org.multibit.hd.core.store;
 
+import org.multibit.hd.core.dto.FiatPayment;
+
 import java.util.Arrays;
 import java.util.Collection;
 

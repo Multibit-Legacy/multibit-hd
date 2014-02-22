@@ -4,6 +4,8 @@ import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+import org.multibit.hd.core.dto.FiatPayment;
+import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.managers.WalletManagerTest;
 import org.multibit.hd.core.services.WalletService;
 
@@ -52,67 +54,67 @@ public class PaymentsProtobufSerializerTest {
   @Test
   public void testRequests() throws Exception {
     // Test you can add some payment requests and read them back
-    Collection<PaymentRequest> paymentRequests = Lists.newArrayList();
+    Collection<PaymentRequestData> paymentRequestDatas = Lists.newArrayList();
 
-    PaymentRequest paymentRequest1 = new PaymentRequest();
+    PaymentRequestData paymentRequestData1 = new PaymentRequestData();
 
-    paymentRequest1.setAddress("1abc");
-    paymentRequest1.setAmountBTC(BigInteger.valueOf(245));
+    paymentRequestData1.setAddress("1abc");
+    paymentRequestData1.setAmountBTC(BigInteger.valueOf(245));
     DateTime date1 = new DateTime();
-    paymentRequest1.setDate(date1);
-    paymentRequest1.setLabel("label1");
-    paymentRequest1.setNote("note1");
+    paymentRequestData1.setDate(date1);
+    paymentRequestData1.setLabel("label1");
+    paymentRequestData1.setNote("note1");
 
     FiatPayment fiatPayment1 = new FiatPayment();
-    paymentRequest1.setAmountFiat(fiatPayment1);
+    paymentRequestData1.setAmountFiat(fiatPayment1);
     fiatPayment1.setAmount("12345.6");
     fiatPayment1.setCurrency("USD");
     fiatPayment1.setRate("10.0");
     fiatPayment1.setExchange("Bitstamp");
 
-    PaymentRequest paymentRequest2 = new PaymentRequest();
-    paymentRequest2.setAddress("1xyz");
-    paymentRequest2.setAmountBTC(BigInteger.valueOf(789));
+    PaymentRequestData paymentRequestData2 = new PaymentRequestData();
+    paymentRequestData2.setAddress("1xyz");
+    paymentRequestData2.setAmountBTC(BigInteger.valueOf(789));
     DateTime date2 = date1.plusDays(7);
-    paymentRequest2.setDate(date2);
-    paymentRequest2.setLabel("label2");
-    paymentRequest2.setNote("note2");
+    paymentRequestData2.setDate(date2);
+    paymentRequestData2.setLabel("label2");
+    paymentRequestData2.setNote("note2");
 
     FiatPayment fiatPayment2 = new FiatPayment();
-    paymentRequest2.setAmountFiat(fiatPayment2);
+    paymentRequestData2.setAmountFiat(fiatPayment2);
     fiatPayment2.setAmount("12345.678");
     fiatPayment2.setCurrency("GBP");
     fiatPayment2.setRate("20.0");
     fiatPayment2.setExchange("OER");
 
-    paymentRequests.add(paymentRequest1);
-    paymentRequests.add(paymentRequest2);
+    paymentRequestDatas.add(paymentRequestData1);
+    paymentRequestDatas.add(paymentRequestData2);
 
     Payments payments = new Payments(1);
-    payments.setPaymentRequests(paymentRequests);
+    payments.setPaymentRequestDatas(paymentRequestDatas);
 
     Payments newPayments = roundTrip(payments);
 
-    Collection<PaymentRequest> newPaymentRequests = newPayments.getPaymentRequests();
-    assertThat(newPaymentRequests.size()).isEqualTo(2);
+    Collection<PaymentRequestData> newPaymentRequestDatas = newPayments.getPaymentRequestDatas();
+    assertThat(newPaymentRequestDatas.size()).isEqualTo(2);
 
-    Iterator<PaymentRequest> iterator = newPaymentRequests.iterator();
-    PaymentRequest newPaymentRequest1 = iterator.next();
-    PaymentRequest newPaymentRequest2 = iterator.next();
+    Iterator<PaymentRequestData> iterator = newPaymentRequestDatas.iterator();
+    PaymentRequestData newPaymentRequestData1 = iterator.next();
+    PaymentRequestData newPaymentRequestData2 = iterator.next();
 
-    checkPaymentRequest(paymentRequest1, newPaymentRequest1);
-    checkPaymentRequest(paymentRequest2, newPaymentRequest2);
+    checkPaymentRequest(paymentRequestData1, newPaymentRequestData1);
+    checkPaymentRequest(paymentRequestData2, newPaymentRequestData2);
   }
 
-  private void checkPaymentRequest(PaymentRequest paymentRequest, PaymentRequest other) {
-    assertThat(other.getAddress()).isEqualTo(paymentRequest.getAddress());
-    assertThat(other.getLabel()).isEqualTo(paymentRequest.getLabel());
-    assertThat(other.getNote()).isEqualTo(paymentRequest.getNote());
-    assertThat(other.getAmountBTC()).isEqualTo(paymentRequest.getAmountBTC());
-    assertThat(other.getDate()).isEqualTo(paymentRequest.getDate());
+  private void checkPaymentRequest(PaymentRequestData paymentRequestData, PaymentRequestData other) {
+    assertThat(other.getAddress()).isEqualTo(paymentRequestData.getAddress());
+    assertThat(other.getLabel()).isEqualTo(paymentRequestData.getLabel());
+    assertThat(other.getNote()).isEqualTo(paymentRequestData.getNote());
+    assertThat(other.getAmountBTC()).isEqualTo(paymentRequestData.getAmountBTC());
+    assertThat(other.getDate()).isEqualTo(paymentRequestData.getDate());
 
     FiatPayment fiatPayment = other.getAmountFiat();
-    FiatPayment otherFiatPayment = paymentRequest.getAmountFiat();
+    FiatPayment otherFiatPayment = paymentRequestData.getAmountFiat();
     assertThat(fiatPayment.getAmount()).isEqualTo(otherFiatPayment.getAmount());
     assertThat(fiatPayment.getCurrency()).isEqualTo(otherFiatPayment.getCurrency());
     assertThat(fiatPayment.getRate()).isEqualTo(otherFiatPayment.getRate());
