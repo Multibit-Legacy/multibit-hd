@@ -114,6 +114,7 @@ public enum MessageKey {
   RESTORE_WALLET_TIMESTAMP_TITLE("restore_wallet_timestamp_title"),
   RESTORE_WALLET_REPORT_TITLE("restore_wallet_report_title"),
 
+  NEW_CONTACT_TITLE("new_contact_title"),
   EDIT_CONTACT_TITLE("edit_contact_title"),
   EDIT_CONTACTS_TITLE("edit_contacts_title"),
 

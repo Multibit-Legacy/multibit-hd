@@ -15,6 +15,11 @@ public enum WizardButton {
   CANCEL,
   NEXT,
   PREVIOUS,
-  FINISH
+  FINISH,
+  APPLY,
+  RESTORE
+
+  // End of enum
+  ;
 
 }

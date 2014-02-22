@@ -33,20 +33,23 @@ public abstract class AbstractWizard<M extends WizardModel> {
   private final WizardCardLayout cardLayout;
   private final JPanel wizardPanel;
   private final M wizardModel;
+  protected Optional wizardParameter = Optional.absent();
 
   private final boolean exiting;
   private Map<String, AbstractWizardPanelView> wizardViewMap = Maps.newHashMap();
 
   /**
-   * @param wizardModel The overall wizard data model containing the aggregate information of all components in the wizard
-   * @param isExiting   True if the exit button should trigger an application shutdown
+   * @param wizardModel     The overall wizard data model containing the aggregate information of all components in the wizard
+   * @param isExiting       True if the exit button should trigger an application shutdown
+   * @param wizardParameter An optional parameter that can be referenced during construction
    */
-  protected AbstractWizard(M wizardModel, boolean isExiting) {
+  protected AbstractWizard(M wizardModel, boolean isExiting, Optional wizardParameter) {
 
     Preconditions.checkNotNull(wizardModel, "'model' must be present");
 
     this.wizardModel = wizardModel;
     this.exiting = isExiting;
+    this.wizardParameter = wizardParameter;
 
     CoreServices.uiEventBus.register(this);
 

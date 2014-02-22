@@ -17,6 +17,7 @@ import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.wizards.Wizards;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactState;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactWizardModel;
+import org.multibit.hd.ui.views.wizards.edit_contact.EnterDetailsMode;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -162,6 +163,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
    * @return The add contact action
    */
   private Action getAddAction() {
+
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -173,8 +175,8 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
 
         contacts.add(contact);
 
-        // Fire up a wizard
-        Panels.showLightBox(Wizards.newEditContactWizard(contacts).getWizardPanel());
+        // Fire up a wizard in new mode
+        Panels.showLightBox(Wizards.newEditContactWizard(contacts, EnterDetailsMode.NEW).getWizardPanel());
 
       }
     };
@@ -195,8 +197,17 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
         // Ensure we have at least one contact to work with
         if (!contacts.isEmpty()) {
 
-          // Fire up a wizard
-          Panels.showLightBox(Wizards.newEditContactWizard(contacts).getWizardPanel());
+          if (contacts.size() == 1) {
+
+            // Fire up a wizard in single mode
+            Panels.showLightBox(Wizards.newEditContactWizard(contacts, EnterDetailsMode.EDIT_SINGLE).getWizardPanel());
+
+          } else {
+
+            // Fire up a wizard in multi mode
+            Panels.showLightBox(Wizards.newEditContactWizard(contacts, EnterDetailsMode.EDIT_MULTIPLE).getWizardPanel());
+
+          }
 
         }
 
@@ -208,6 +219,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
    * @return The delete contact action
    */
   private Action getDeleteAction() {
+
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -223,6 +235,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
 
       }
     };
+
   }
 
   /**

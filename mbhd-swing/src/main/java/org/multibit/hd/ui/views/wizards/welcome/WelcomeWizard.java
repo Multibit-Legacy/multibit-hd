@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
+import com.google.common.base.Optional;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
@@ -21,7 +22,7 @@ import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
 public class WelcomeWizard extends AbstractWizard<WelcomeWizardModel> {
 
   public WelcomeWizard(WelcomeWizardModel model, boolean isExiting) {
-    super(model, isExiting);
+    super(model, isExiting, Optional.absent());
   }
 
   @Override

@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.password;
 
+import com.google.common.base.Optional;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
@@ -20,7 +21,7 @@ import java.util.Map;
 public class PasswordWizard extends AbstractWizard<PasswordWizardModel> {
 
   public PasswordWizard(PasswordWizardModel model, boolean isExiting) {
-    super(model, isExiting);
+    super(model, isExiting, Optional.absent());
   }
 
   @Override

@@ -41,7 +41,7 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
   private Optional<JButton> cancelButton = Optional.absent();
   private Optional<JButton> nextButton = Optional.absent();
   private Optional<JButton> previousButton = Optional.absent();
-  private Optional<JButton> recoverButton = Optional.absent();
+  private Optional<JButton> restoreButton = Optional.absent();
   private Optional<JButton> finishButton = Optional.absent();
   private Optional<JButton> applyButton = Optional.absent();
 
@@ -190,11 +190,11 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
    * @return The "recover" button for this view
    */
   public JButton getRestoreButton() {
-    return recoverButton.get();
+    return restoreButton.get();
   }
 
   public void setRestoreButton(JButton recoverButton) {
-    this.recoverButton = Optional.fromNullable(recoverButton);
+    this.restoreButton = Optional.fromNullable(recoverButton);
   }
 
   /**
@@ -326,6 +326,16 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
       case FINISH:
         if (finishButton.isPresent()) {
           finishButton.get().setEnabled(event.isEnabled());
+        }
+        break;
+      case APPLY:
+        if (applyButton.isPresent()) {
+          applyButton.get().setEnabled(event.isEnabled());
+        }
+        break;
+      case RESTORE:
+        if (restoreButton.isPresent()) {
+          restoreButton.get().setEnabled(event.isEnabled());
         }
         break;
     }

@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.receive_bitcoin;
 
+import com.google.common.base.Optional;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
@@ -17,7 +18,7 @@ import java.util.Map;
 public class ReceiveBitcoinWizard extends AbstractWizard<ReceiveBitcoinWizardModel> {
 
   public ReceiveBitcoinWizard(ReceiveBitcoinWizardModel model, boolean isExiting) {
-    super(model, isExiting);
+    super(model, isExiting, Optional.absent());
   }
 
   @Override

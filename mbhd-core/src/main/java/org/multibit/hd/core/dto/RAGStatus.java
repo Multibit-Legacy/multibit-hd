@@ -30,7 +30,7 @@ public enum RAGStatus {
   PINK,
 
   /**
-   * Empty indicates there is no applicable RAGstatus
+   * Empty indicates there is no applicable RAG status
    */
   EMPTY
 

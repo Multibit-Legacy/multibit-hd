@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.exit;
 
+import com.google.common.base.Optional;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
@@ -17,7 +18,7 @@ import java.util.Map;
 public class ExitWizard extends AbstractWizard<ExitWizardModel> {
 
   public ExitWizard(ExitWizardModel model, boolean isExiting) {
-    super(model, isExiting);
+    super(model, isExiting, Optional.absent());
   }
 
   @Override

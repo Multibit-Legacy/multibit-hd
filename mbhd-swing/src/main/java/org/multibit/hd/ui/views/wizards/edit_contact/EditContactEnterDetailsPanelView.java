@@ -8,7 +8,6 @@ import com.google.common.collect.Sets;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.enter_tags.EnterTagsModel;
 import org.multibit.hd.ui.views.components.enter_tags.EnterTagsView;
@@ -22,6 +21,9 @@ import org.multibit.hd.ui.views.wizards.WizardButton;
 import javax.swing.*;
 import java.util.List;
 import java.util.Set;
+
+import static org.multibit.hd.ui.views.wizards.edit_contact.EnterDetailsMode.EDIT_MULTIPLE;
+import static org.multibit.hd.ui.views.wizards.edit_contact.EnterDetailsMode.NEW;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -43,18 +45,20 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
   private JTextArea notes;
   private ModelAndView<EnterTagsModel, EnterTagsView> enterTagsMaV;
 
-  private boolean multiEdit;
+  private EnterDetailsMode mode;
 
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name
+   * @param mode      The editing more to use
    */
-  public EditContactEnterDetailsPanelView(AbstractWizard<EditContactWizardModel> wizard, String panelName, boolean multiEdit) {
+  public EditContactEnterDetailsPanelView(AbstractWizard<EditContactWizardModel> wizard, String panelName, EnterDetailsMode mode) {
 
-    super(wizard.getWizardModel(), panelName, multiEdit ? MessageKey.EDIT_CONTACTS_TITLE : MessageKey.EDIT_CONTACT_TITLE);
+    super(wizard.getWizardModel(), panelName, mode.getMessageKey());
 
     PanelDecorator.addCancelApply(this, wizard);
 
+    this.mode = mode;
   }
 
   @Override
@@ -84,7 +88,8 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
     Preconditions.checkState(!contacts.isEmpty(), "'contacts' cannot be empty");
 
-    this.multiEdit = contacts.size() > 1;
+    // Cannot reference "mode" here due to super constructor sequence
+    boolean multiEdit = contacts.size() > 1;
 
     Contact firstContact = getWizardModel().getContacts().get(0);
 
@@ -152,8 +157,8 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
       panel.add(Labels.newMultiEditNote(), "grow,push,span 2,wrap");
 
       // Provide a short list of names with ellipsis
-      panel.add(Labels.newNames());
-      panel.add(TextBoxes.newTruncatedList(allNames, 400), "grow,push,wrap");
+      panel.add(Labels.newNames(), "aligny top");
+      panel.add(TextBoxes.newTruncatedList(allNames, 400), "grow,push,aligny top,wrap");
     }
 
     // Tags must be top aligned since it is a tall component
@@ -161,7 +166,7 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
     panel.add(enterTagsMaV.getView().newComponentPanel(), "growx,aligny top,wrap");
 
     // Ensure we shrink to avoid scrunching up if no tags are present
-    panel.add(Labels.newNotes(), "aligny top");
+    panel.add(Labels.newNotes());
     panel.add(notes, "shrink,wrap");
 
     return panel;
@@ -171,8 +176,8 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
   @Override
   public void fireInitialStateViewEvents() {
 
-    // Finish button is always enabled
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
+    // Apply button starts off enabled
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.APPLY, true);
 
   }
 
@@ -184,6 +189,11 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
       public void run() {
 
         name.requestFocusInWindow();
+
+        // Ensure user overwrites
+        if (mode.equals(NEW)) {
+          name.selectAll();
+        }
 
       }
     });
@@ -197,6 +207,8 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
       // Ensure the wizard model correctly reflects the contents of the components
       updateFromComponentModels(Optional.absent());
+
+      // TODO Apply validation to various fields
 
     }
 
@@ -214,25 +226,34 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
     List<Contact> contacts = getWizardModel().getContacts();
     for (Contact contact : contacts) {
 
-      // Append the given notes to the contacts
-      String contactNotes = contact.getNotes().or("").trim();
-      if (Strings.isNullOrEmpty(contactNotes)) {
-        contact.setNotes(notes.getText().trim());
-      } else {
-        contact.setNotes(contactNotes+"\n\n"+notes.getText().trim());
-      }
+      if (!mode.equals(EDIT_MULTIPLE)) {
 
-      contact.setTags(tags);
-
-      if (!multiEdit) {
+        // Handle the single item properties
         contact.setName(name.getText());
         contact.setEmail(emailAddress.getText());
         contact.setBitcoinAddress(bitcoinAddress.getText());
         contact.setExtendedPublicKey(extendedPublicKey.getText());
 
+        // Notes are not appended
+        contact.setNotes(notes.getText().trim());
+
         // TODO Support image
 
+      } else {
+
+        // Ignore the single item properties
+
+        // Append the given notes to the contacts
+        String contactNotes = contact.getNotes().or("").trim();
+        if (Strings.isNullOrEmpty(contactNotes)) {
+          contact.setNotes(notes.getText().trim());
+        } else {
+          contact.setNotes(contactNotes + "\n\n" + notes.getText().trim());
+        }
       }
+
+      // Tags are treated the same
+      contact.setTags(tags);
 
     }
 

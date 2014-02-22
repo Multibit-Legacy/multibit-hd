@@ -5,6 +5,7 @@ import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactState;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactWizard;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactWizardModel;
+import org.multibit.hd.ui.views.wizards.edit_contact.EnterDetailsMode;
 import org.multibit.hd.ui.views.wizards.exit.ExitState;
 import org.multibit.hd.ui.views.wizards.exit.ExitWizard;
 import org.multibit.hd.ui.views.wizards.exit.ExitWizardModel;
@@ -83,15 +84,19 @@ public class Wizards {
   }
 
   /**
-   * @param contacts       The list of contacts to edit
+   * @param contacts The list of contacts to edit
+   * @param mode     The editing mode
    *
    * @return A new "edit contact" wizard for contacts
    */
-  public static EditContactWizard newEditContactWizard(List<Contact> contacts) {
+  public static EditContactWizard newEditContactWizard(List<Contact> contacts, EnterDetailsMode mode) {
 
     Preconditions.checkState(!contacts.isEmpty(), "'contacts' cannot be empty");
 
-    return new EditContactWizard(new EditContactWizardModel(EditContactState.ENTER_DETAILS, contacts));
+    return new EditContactWizard(
+      new EditContactWizardModel(EditContactState.ENTER_DETAILS, contacts),
+      mode
+    );
 
   }
 
