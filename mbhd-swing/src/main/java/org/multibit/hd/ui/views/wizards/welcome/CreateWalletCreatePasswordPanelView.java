@@ -53,7 +53,7 @@ public class CreateWalletCreatePasswordPanelView extends AbstractWizardPanelView
   @Override
   public JPanel newWizardViewPanel() {
 
-    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.GLOBE);
+    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.KEY);
 
     panel.setLayout(new MigLayout(
       "fill,insets 0", // Layout constraints

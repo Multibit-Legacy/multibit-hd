@@ -21,7 +21,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Set;
 
 /**
  * <p>Utility to provide the following to UI:</p>
@@ -622,7 +621,8 @@ public class Labels {
     return newNoteLabel(new MessageKey[]{
       MessageKey.RESTORE_TIMESTAMP_NOTE_1,
       MessageKey.RESTORE_TIMESTAMP_NOTE_2,
-      MessageKey.RESTORE_TIMESTAMP_NOTE_3
+      MessageKey.RESTORE_TIMESTAMP_NOTE_3,
+      MessageKey.RESTORE_TIMESTAMP_NOTE_4,
     }, new Object[][]{});
   }
 
@@ -676,4 +676,17 @@ public class Labels {
     }, new Object[][]{});
 
   }
+
+  /**
+   * @return A new "password" note (password wizard)
+   */
+  public static JLabel newPasswordNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.PASSWORD_NOTE_1,
+      MessageKey.PASSWORD_NOTE_2
+    }, new Object[][]{});
+
+  }
+
 }

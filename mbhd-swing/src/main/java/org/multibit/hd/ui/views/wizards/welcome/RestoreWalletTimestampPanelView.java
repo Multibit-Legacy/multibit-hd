@@ -70,7 +70,7 @@ public class RestoreWalletTimestampPanelView extends AbstractWizardPanelView<Wel
   @Override
   public JPanel newWizardViewPanel() {
 
-    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.GLOBE);
+    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.MAGIC);
 
     panel.setLayout(new MigLayout(
       "fill,insets 0,hidemode 1", // Layout constraints

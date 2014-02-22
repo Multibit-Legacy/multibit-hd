@@ -8,6 +8,9 @@ import org.multibit.hd.ui.views.wizards.edit_contact.EditContactWizardModel;
 import org.multibit.hd.ui.views.wizards.exit.ExitState;
 import org.multibit.hd.ui.views.wizards.exit.ExitWizard;
 import org.multibit.hd.ui.views.wizards.exit.ExitWizardModel;
+import org.multibit.hd.ui.views.wizards.password.PasswordState;
+import org.multibit.hd.ui.views.wizards.password.PasswordWizard;
+import org.multibit.hd.ui.views.wizards.password.PasswordWizardModel;
 import org.multibit.hd.ui.views.wizards.receive_bitcoin.ReceiveBitcoinState;
 import org.multibit.hd.ui.views.wizards.receive_bitcoin.ReceiveBitcoinWizard;
 import org.multibit.hd.ui.views.wizards.receive_bitcoin.ReceiveBitcoinWizardModel;
@@ -101,11 +104,29 @@ public class Wizards {
   }
 
   /**
-   * @return A new "welcome" wizard for recovery set up
+   * @return A new "welcome" wizard for wallet recovery set up
    */
   public static WelcomeWizard newClosingWelcomeWizard(WelcomeWizardState initialState) {
 
     return new WelcomeWizard(new WelcomeWizardModel(initialState), false);
+  }
+
+  /**
+   * @return A new "password" wizard for a warm start
+   */
+  public static PasswordWizard newExitingPasswordWizard() {
+
+    return new PasswordWizard(new PasswordWizardModel(PasswordState.ENTER_PASSWORD), true);
+
+  }
+
+  /**
+   * @return A new "password" wizard for password recovery set up
+   */
+  public static PasswordWizard newClosingPasswordWizard() {
+
+    return new PasswordWizard(new PasswordWizardModel(PasswordState.ENTER_PASSWORD), false);
+
   }
 
 }

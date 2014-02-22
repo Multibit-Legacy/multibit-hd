@@ -29,9 +29,8 @@ import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.FooterView;
 import org.multibit.hd.ui.views.HeaderView;
 import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.screens.AbstractScreenView;
-import org.multibit.hd.ui.views.screens.Screen;
-import org.multibit.hd.ui.views.screens.Screens;
+import org.multibit.hd.ui.views.wizards.AbstractWizard;
+import org.multibit.hd.ui.views.wizards.Wizards;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,8 +89,8 @@ public class ComponentTestBed {
    */
   public JPanel createTestPanel() {
 
-    AbstractScreenView screen = Screens.newScreen(Screen.CONTACTS);
-    return screen.newScreenViewPanel();
+    AbstractWizard wizard = Wizards.newExitingPasswordWizard();
+    return wizard.getWizardPanel();
 
   }
 

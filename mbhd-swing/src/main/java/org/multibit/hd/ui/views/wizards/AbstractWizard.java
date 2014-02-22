@@ -294,4 +294,29 @@ public abstract class AbstractWizard<M extends WizardModel> {
     };
   }
 
+  /**
+   * @param wizardView The wizard view (providing a reference to its underlying panel model)
+   *
+   * @return The "recover" action based on the model state
+   */
+  public <P> Action getRestoreAction(final AbstractWizardPanelView<M, P> wizardView) {
+
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        // Ensure the panel updates its model (the button is outside of the panel itself)
+        wizardView.updateFromComponentModels(Optional.absent());
+
+        // Aggregate the panel information into the wizard model
+
+        // Move to the recover state (equivalent to next)
+        wizardModel.showNext();
+
+        // Show the panel based on the state
+        show(wizardModel.getPanelName());
+      }
+    };
+  }
+
 }

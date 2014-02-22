@@ -33,6 +33,7 @@ public enum MessageKey {
   ADD("add"),
   EDIT("edit"),
   DELETE("delete"),
+  RESTORE("restore"),
 
   // Nouns
 
@@ -89,11 +90,15 @@ public enum MessageKey {
 
   // Titles
   APPLICATION_TITLE("application_title"),
-  SEND_BITCOIN_TITLE("send_bitcoin_title"),
+
   RECEIVE_BITCOIN_TITLE("receive_bitcoin_title"),
+
+  SEND_BITCOIN_TITLE("send_bitcoin_title"),
   CONFIRM_SEND_TITLE("confirm_send_title"),
   SEND_PROGRESS_TITLE("send_progress_title"),
+
   EXIT_TITLE("exit_title"),
+
   WELCOME_TITLE("welcome_title"),
   SELECT_WALLET_TITLE("select_wallet_title"),
   CREATE_WALLET_SEED_PHRASE_TITLE("create_wallet_seed_phrase_title"),
@@ -101,13 +106,19 @@ public enum MessageKey {
   CREATE_WALLET_PASSWORD_TITLE("create_wallet_password_title"),
   SELECT_BACKUP_LOCATION_TITLE("select_backup_location_title"),
   CREATE_WALLET_REPORT_TITLE("create_wallet_report_title"),
+
   RESTORE_WALLET_SEED_PHRASE_TITLE("restore_wallet_seed_phrase_title"),
   RESTORE_WALLET_BACKUP_LOCATION_TITLE("restore_wallet_backup_location_title"),
   RESTORE_WALLET_SELECT_BACKUP_TITLE("restore_wallet_select_backup_title"),
   RESTORE_WALLET_TIMESTAMP_TITLE("restore_wallet_timestamp_title"),
   RESTORE_WALLET_REPORT_TITLE("restore_wallet_report_title"),
+
   EDIT_CONTACT_TITLE("edit_contact_title"),
   EDIT_CONTACTS_TITLE("edit_contacts_title"),
+
+  PASSWORD_TITLE("password_title"),
+  PASSWORD_ENTER_SEED_PHRASE_TITLE("password_enter_seed_phrase_title"),
+  PASSWORD_REPORT_TITLE("password_report_title"),
 
   // Labels
   CONFIRM_SEND_MESSAGE("confirm_send_message"),
@@ -195,6 +206,10 @@ public enum MessageKey {
   RESTORE_TIMESTAMP_NOTE_1("restore_timestamp_note_1"),
   RESTORE_TIMESTAMP_NOTE_2("restore_timestamp_note_2"),
   RESTORE_TIMESTAMP_NOTE_3("restore_timestamp_note_3"),
+  RESTORE_TIMESTAMP_NOTE_4("restore_timestamp_note_4"),
+
+  PASSWORD_NOTE_1("password_note_1"),
+  PASSWORD_NOTE_2("password_note_2"),
 
   RECIPIENT_SUMMARY("recipient_summary"),
   AMOUNT_SUMMARY("amount_summary"),

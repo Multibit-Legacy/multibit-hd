@@ -56,7 +56,7 @@ public class RestoreWalletSelectBackupLocationPanelView extends AbstractWizardPa
   @Override
   public JPanel newWizardViewPanel() {
 
-    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.GLOBE);
+    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.FOLDER_OPEN);
 
     panel.setLayout(new MigLayout(
             "fillx,insets 0", // Layout constraints

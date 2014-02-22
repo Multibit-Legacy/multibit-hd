@@ -41,6 +41,7 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
   private Optional<JButton> cancelButton = Optional.absent();
   private Optional<JButton> nextButton = Optional.absent();
   private Optional<JButton> previousButton = Optional.absent();
+  private Optional<JButton> recoverButton = Optional.absent();
   private Optional<JButton> finishButton = Optional.absent();
   private Optional<JButton> applyButton = Optional.absent();
 
@@ -183,6 +184,17 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
 
   public void setPreviousButton(JButton previousButton) {
     this.previousButton = Optional.fromNullable(previousButton);
+  }
+
+  /**
+   * @return The "recover" button for this view
+   */
+  public JButton getRestoreButton() {
+    return recoverButton.get();
+  }
+
+  public void setRestoreButton(JButton recoverButton) {
+    this.recoverButton = Optional.fromNullable(recoverButton);
   }
 
   /**

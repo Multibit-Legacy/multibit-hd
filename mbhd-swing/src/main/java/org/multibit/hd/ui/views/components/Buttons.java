@@ -468,6 +468,20 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "restore" button with icon
+   */
+  public static JButton newRestoreButton(Action action) {
+
+    JButton button = newButton(action, MessageKey.RESTORE);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.MAGIC, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "send Bitcoin" wizard button with icon
    */
   public static JButton newSendBitcoinWizardButton(Action action) {

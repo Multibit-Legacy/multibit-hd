@@ -252,6 +252,29 @@ public class PanelDecorator {
   }
 
   /**
+   * <p>Add an exit/cancel, restore, finish button combination</p>
+   *
+   * @param view   The view containing the panel to decorate
+   * @param wizard The wizard providing the actions
+   * @param <M>    The wizard model type
+   * @param <P>    The wizard panel model type
+   */
+  public static <M extends WizardModel, P> void addExitCancelRestoreFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
+
+    Preconditions.checkNotNull(view, "'view' must be present");
+    Preconditions.checkNotNull(view, "'wizard' must be present");
+    Preconditions.checkNotNull(view.getWizardPanel(), "'wizardPanel' must be present");
+
+    // Use the current panel
+    JPanel wizardPanel = view.getWizardPanel();
+
+    addExitCancel(view, wizard, wizardPanel);
+    addRestore(view, wizard, wizardPanel);
+    addFinish(view, wizard, wizardPanel);
+
+  }
+
+  /**
    * <p>Add a cancel, previous, send(next) button combination</p>
    *
    * @param view   The view containing the panel to decorate
@@ -440,6 +463,20 @@ public class PanelDecorator {
   private static <M extends WizardModel, P> void addPrevious(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard, JPanel wizardPanel) {
     view.setPreviousButton(Buttons.newPreviousButton(wizard.getPreviousAction(view)));
     wizardPanel.add(view.getPreviousButton(), "cell 2 2");
+  }
+
+  /**
+   * <p>Add a "restore" button into the standard cell</p>
+   *
+   * @param view        The view containing the panel to decorate
+   * @param wizard      The wizard providing the actions
+   * @param wizardPanel The wizard panel providing the layout
+   * @param <M>         The wizard model type
+   * @param <P>         The wizard panel model type
+   */
+  private static <M extends WizardModel, P> void addRestore(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard, JPanel wizardPanel) {
+    view.setRestoreButton(Buttons.newRestoreButton(wizard.getRestoreAction(view)));
+    wizardPanel.add(view.getRestoreButton(), "cell 2 2");
   }
 
   /**

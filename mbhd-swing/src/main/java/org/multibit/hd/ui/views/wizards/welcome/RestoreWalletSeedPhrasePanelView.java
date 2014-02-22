@@ -59,7 +59,7 @@ public class RestoreWalletSeedPhrasePanelView extends AbstractWizardPanelView<We
   @Override
   public JPanel newWizardViewPanel() {
 
-    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.GLOBE);
+    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.KEY);
 
     panel.setLayout(new MigLayout(
       "fill,insets 0,hidemode 1", // Layout constraints
