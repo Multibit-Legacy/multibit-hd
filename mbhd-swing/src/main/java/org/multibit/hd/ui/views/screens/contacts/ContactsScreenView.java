@@ -1,9 +1,12 @@
 package org.multibit.hd.ui.views.screens.contacts;
 
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.ui.events.view.ComponentChangedEvent;
+import org.multibit.hd.ui.events.view.WizardHideEvent;
+import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.enter_search.EnterSearchModel;
@@ -12,12 +15,15 @@ import org.multibit.hd.ui.views.components.tables.ContactTableModel;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.edit_contact.EditContactState;
+import org.multibit.hd.ui.views.wizards.edit_contact.EditContactWizardModel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -34,6 +40,8 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
   // View components
   private ModelAndView<EnterSearchModel, EnterSearchView> enterSearchMaV;
   private JComboBox<String> checkSelectorComboBox;
+
+  private JTable contactsTable;
   private ContactTableModel contactsTableModel;
 
   /**
@@ -61,7 +69,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
 
     // Populate the model
 
-    JTable contactsTable = Tables.newContactsTable(getScreenModel().getContacts());
+    contactsTable = Tables.newContactsTable(getScreenModel().getContacts());
     contactsTableModel = (ContactTableModel) contactsTable.getModel();
 
     JPanel contentPanel = Panels.newPanel(layout);
@@ -127,6 +135,30 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
   }
 
   /**
+   * <p>Handle the transfer of data from the "edit contact" wizard</p>
+   *
+   * @param event The "wizard hide" event
+   */
+  @Subscribe
+  public void onWizardHideEvent(WizardHideEvent event) {
+
+    // Filter other events
+    if (!event.getPanelName().equals(EditContactState.ENTER_DETAILS.name())) {
+      return;
+    }
+
+    // Transfer the data from the wizard model back into the table model (we may have a new contact)
+    List<Contact> contacts = ((EditContactWizardModel) event.getWizardModel()).getContacts();
+
+    getScreenModel().getContactService().updateContacts(contacts);
+    getScreenModel().getContactService().writeContacts();
+
+    // Repopulate the table accordingly
+    contactsTableModel.populateTableData(getScreenModel().getContacts());
+
+  }
+
+  /**
    * @return The add contact action
    */
   private Action getAddAction() {
@@ -134,7 +166,15 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        // TODO Show contact edit wizard
+        // Get the currently selected contacts
+        final List<Contact> contacts = Lists.newArrayList();
+
+        Contact contact = getScreenModel().getContactService().newContact(Languages.safeText(MessageKey.NAME));
+
+        contacts.add(contact);
+
+        // Fire up a wizard
+        Panels.showLightBox(Wizards.newEditContactWizard(contacts).getWizardPanel());
 
       }
     };
@@ -195,7 +235,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
       public void actionPerformed(ActionEvent e) {
 
         // Get all contacts after undo is applied
-        List<Contact> contacts = getScreenModel().undo();
+        Collection<Contact> contacts = getScreenModel().undo();
 
         // Clear the current search query to ensure users can see an effect
         enterSearchMaV.getView().clear();
@@ -232,10 +272,15 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
           JTable target = (JTable) e.getSource();
           int row = target.getSelectedRow();
 
-          contactsTableModel.setSelectionCheckmark(
-            row,
-            !(boolean) contactsTableModel.getValueAt(row, ContactTableModel.CHECKBOX_COLUMN_INDEX)
-          );
+          if (row != -1) {
+
+            int modelRow = contactsTable.convertRowIndexToModel(row);
+
+            contactsTableModel.setSelectionCheckmark(
+              modelRow,
+              !(boolean) contactsTableModel.getValueAt(modelRow, ContactTableModel.CHECKBOX_COLUMN_INDEX)
+            );
+          }
 
         }
 

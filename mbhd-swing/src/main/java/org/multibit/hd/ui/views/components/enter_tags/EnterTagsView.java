@@ -162,6 +162,12 @@ public class EnterTagsView extends AbstractComponentView<EnterTagsModel> {
    * <p>Inner class to handle adding a new tag</p>
    */
   private void removeTag(int index) {
+
+    String tag = tagsListModel.getElementAt(index);
+
+    // Remove it from the model
+    getModel().get().getTags().remove(tag);
+
     // User wants to remove this entry
     tagsListModel.remove(index);
 
@@ -186,18 +192,23 @@ public class EnterTagsView extends AbstractComponentView<EnterTagsModel> {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-      String name = tagText.getText();
+      String tag = tagText.getText();
 
       // Check if this has already been taken
-      if (name.equals("") || tagsListModel.contains(name) || tagsListModel.size() >= 8) {
+      if (tag.equals("") || tagsListModel.contains(tag) || tagsListModel.size() >= 8) {
         Sounds.playBeep();
         tagText.requestFocusInWindow();
         tagText.selectAll();
         return;
       }
 
-      // Must be unique so add to the end
-      tagsListModel.addElement(tagText.getText());
+      // Must be unique to be here
+
+      // Add it to the model
+      getModel().get().getTags().add(tag);
+
+      // Add to the end
+      tagsListModel.addElement(tag);
 
       // Reset the text field
       tagText.requestFocusInWindow();

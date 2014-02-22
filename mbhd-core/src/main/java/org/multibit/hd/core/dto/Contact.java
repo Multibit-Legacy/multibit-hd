@@ -99,6 +99,9 @@ public class Contact {
     this.extendedPublicKey = Optional.fromNullable(extendedPublicKey);
   }
 
+  /**
+   * @return The notes associated with the contact
+   */
   public Optional<String> getNotes() {
     return notes;
   }
@@ -107,6 +110,9 @@ public class Contact {
     this.notes = Optional.fromNullable(notes);
   }
 
+  /**
+   * @return The tags associated with the contact
+   */
   public List<String> getTags() {
     return tags;
   }
@@ -141,8 +147,8 @@ public class Contact {
       ", imagePath=" + imagePath +
       ", bitcoinAddress=****" +
       ", extendedPublicKey=****" +
-      ", notes=" + notes +
-      ", tags=" + tags +
+      ", notes=****" +
+      ", tags=****" +
       '}';
   }
 }

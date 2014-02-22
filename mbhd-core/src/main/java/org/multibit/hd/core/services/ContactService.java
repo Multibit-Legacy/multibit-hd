@@ -11,11 +11,14 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.store.ContactsProtobufSerializer;
 import org.multibit.hd.core.utils.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -30,6 +33,8 @@ import java.util.UUID;
  *  
  */
 public class ContactService {
+
+  private static final Logger log = LoggerFactory.getLogger(ContactService.class);
 
   /**
    * The name of the directory (within the wallets directory) that contains the contacts database
@@ -169,35 +174,18 @@ public class ContactService {
    *
    * @param selectedContacts The selected contacts
    */
-  public void addAll(List<Contact> selectedContacts) {
+  public void addAll(Collection<Contact> selectedContacts) {
 
     contacts.addAll(selectedContacts);
 
   }
 
   /**
-   * <p>Remove the given contacts from the cache. A subsequent <code>writeContacts()</code> will purge them from the backing writeContacts.</p>
-   *
-   * @param selectedContacts The selected contacts
-   */
-  public void removeAll(List<Contact> selectedContacts) {
-
-    contacts.removeAll(selectedContacts);
-
-  }
-
-  /**
-   * <p>Clear all contact data</p>
-   * <p>Reduced visibility for testing</p>
-   */
-  void clear() {
-    contacts.clear();
-  }
-
-  /**
    * <p>Populate the internal cache of Contacts from the backing writeContacts</p>
    */
   public void loadContacts() throws ContactsLoadException {
+
+    log.debug("Loading contacts from '{}'", backingStoreFile.getAbsolutePath());
 
     try (FileInputStream fis = new FileInputStream(backingStoreFile)) {
 
@@ -211,12 +199,40 @@ public class ContactService {
   }
 
   /**
+   * <p>Clear all contact data</p>
+   * <p>Reduced visibility for testing</p>
+   */
+  void clear() {
+    contacts.clear();
+  }
+
+  /**
+   * <p>Remove the given contacts from the cache. A subsequent <code>writeContacts()</code> will purge them from the backing writeContacts.</p>
+   *
+   * @param selectedContacts The selected contacts
+   */
+  public void removeAll(Collection<Contact> selectedContacts) {
+
+    Preconditions.checkNotNull(selectedContacts, "'selectedContacts' must be present");
+
+    log.debug("Removing {} contact(s)", selectedContacts.size());
+
+    contacts.removeAll(selectedContacts);
+
+  }
+
+  /**
+   * <p>Update the contacts with any changes or additions</p>
    *
    * @param editedContacts The edited contacts that will be merged into the current contacts
    */
-  public void updateContacts(List<Contact> editedContacts) {
+  public void updateContacts(Collection<Contact> editedContacts) {
 
-    for (Contact editedContact: editedContacts) {
+    Preconditions.checkNotNull(editedContacts, "'editedContacts' must be present");
+
+    log.debug("Updating {} contact(s)", editedContacts.size());
+
+    for (Contact editedContact : editedContacts) {
 
       if (!contacts.contains(editedContact)) {
 
@@ -233,6 +249,8 @@ public class ContactService {
    */
   public void writeContacts() throws ContactsSaveException {
 
+    log.debug("Writing {} contact(s)", contacts.size());
+
     try (FileOutputStream fos = new FileOutputStream(backingStoreFile)) {
 
       protobufSerializer.writeContacts(contacts, fos);
@@ -247,6 +265,11 @@ public class ContactService {
    * <p>Used by ComponentTestBed and tests</p>
    */
   public void addDemoContacts() {
+
+    // Only add the demo contacts if there are none present
+    if (!contacts.isEmpty()) {
+      return;
+    }
 
     Contact contact1 = newContact("Alice Capital");
     contact1.setEmail("g.rowe@froot.co.uk");
@@ -276,4 +299,5 @@ public class ContactService {
     contact6.setEmail("alicia.lower@example.org");
 
   }
+
 }

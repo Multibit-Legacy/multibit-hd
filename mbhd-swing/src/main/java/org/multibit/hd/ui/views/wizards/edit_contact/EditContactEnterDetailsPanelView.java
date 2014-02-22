@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.edit_contact;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import net.miginfocom.swing.MigLayout;
@@ -102,15 +103,8 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
       // Multiple contacts so some fields are not for display
 
-      // Combine all notes from all contacts (with a double line break between each)
-      StringBuilder sb = new StringBuilder();
-      for (Contact contact : contacts) {
-        if (contact.getNotes().isPresent()) {
-          sb.append(contact.getNotes().get());
-          sb.append("\n\n");
-        }
-      }
-      notes.setText(sb.toString());
+      // Notes are initially empty since concatenating from multiple contacts
+      // quickly becomes unmanageable
 
       // Combine all tags from all contacts (no duplicates)
       Set<String> allTags = Sets.newHashSet();
@@ -125,12 +119,11 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
     } else {
 
       // Use a single contact
-      name.setText(firstContact.getName());
-      emailAddress.setText(firstContact.getEmail().or(""));
-      bitcoinAddress.setText(firstContact.getBitcoinAddress().or(""));
-      extendedPublicKey.setText(firstContact.getExtendedPublicKey().or(""));
-
-      notes.setText(firstContact.getNotes().or(""));
+      name.setText(firstContact.getName().trim());
+      emailAddress.setText(firstContact.getEmail().or("").trim());
+      bitcoinAddress.setText(firstContact.getBitcoinAddress().or("").trim());
+      extendedPublicKey.setText(firstContact.getExtendedPublicKey().or("").trim());
+      notes.setText(firstContact.getNotes().or("").trim());
 
       // Base the tags on first contact tags
       enterTagsMaV = Components.newEnterTagsMaV(getPanelName(), firstContact.getTags());
@@ -215,13 +208,20 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 
-    List<Contact> contacts = getWizardModel().getContacts();
     List<String> tags = enterTagsMaV.getModel().getValue();
 
     // Update the selected contacts
+    List<Contact> contacts = getWizardModel().getContacts();
     for (Contact contact : contacts) {
 
-      contact.setNotes(contact.getNotes().or(""));
+      // Append the given notes to the contacts
+      String contactNotes = contact.getNotes().or("").trim();
+      if (Strings.isNullOrEmpty(contactNotes)) {
+        contact.setNotes(notes.getText().trim());
+      } else {
+        contact.setNotes(contactNotes+"\n\n"+notes.getText().trim());
+      }
+
       contact.setTags(tags);
 
       if (!multiEdit) {

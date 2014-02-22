@@ -16,6 +16,7 @@ import org.multibit.hd.ui.views.components.Images;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.image.BufferedImage;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -50,7 +51,7 @@ public class ContactTableModel extends AbstractTableModel {
   };
 
   private Object[][] data;
-  private List<Contact> contacts;
+  private List<Contact> contacts = Lists.newArrayList();
 
   public ContactTableModel(List<Contact> contacts) {
 
@@ -137,13 +138,13 @@ public class ContactTableModel extends AbstractTableModel {
   }
 
   /**
-   * @param row      The row index
+   * @param modelRow The model row index (after <code>convertRowIndexToModel</code> has been applied)
    * @param selected True if the checkbox column should be marked as selected
    */
-  public void setSelectionCheckmark(int row, boolean selected) {
+  public void setSelectionCheckmark(int modelRow, boolean selected) {
 
     // If it is not starred then apply a check or remove the existing one
-    setValueAt(selected, row, CHECKBOX_COLUMN_INDEX);
+    setValueAt(selected, modelRow, CHECKBOX_COLUMN_INDEX);
 
   }
 
@@ -185,9 +186,9 @@ public class ContactTableModel extends AbstractTableModel {
    *
    * @param contacts The contacts that will form the basis of the table model in the same order as presented
    */
-  public void populateTableData(List<Contact> contacts) {
+  public void populateTableData(Collection<Contact> contacts) {
 
-    this.contacts = contacts;
+    this.contacts = Lists.newArrayList(contacts);
 
     data = new Object[contacts.size()][];
 

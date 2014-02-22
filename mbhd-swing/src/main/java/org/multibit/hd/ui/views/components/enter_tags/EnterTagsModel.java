@@ -29,12 +29,13 @@ public class EnterTagsModel implements Model<List<String>> {
 
   @Override
   public List<String> getValue() {
-    return tags;
+    return getTags();
   }
 
   @Override
   public void setValue(List<String> value) {
 
+    tags.clear();
     tags.addAll(value);
 
   }
@@ -43,14 +44,12 @@ public class EnterTagsModel implements Model<List<String>> {
     return panelName;
   }
 
-  public String[] getTagArray() {
+  /**
+   * @return The current tags
+   */
+  public List<String> getTags() {
 
-    // Avoid empty array creation
-    if (tags.isEmpty()) {
-      return new String[] {};
-    }
-
-    return tags.toArray(new String[tags.size()]);
+    return tags;
 
   }
 }
