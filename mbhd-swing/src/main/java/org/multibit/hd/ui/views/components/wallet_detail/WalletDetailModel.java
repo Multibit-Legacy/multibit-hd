@@ -8,6 +8,7 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
 import org.slf4j.Logger;
@@ -65,9 +66,9 @@ public class WalletDetailModel implements Model<WalletDetail> {
       walletDetail.setWalletDirectory(walletFile.getParentFile().getName());
 
       ContactService contactService = CoreServices.getOrCreateContactService(walletData.getWalletId());
-      walletDetail.setNumberofContacts(contactService.allContacts().size());
+      walletDetail.setNumberOfContacts(contactService.allContacts().size());
 
-      walletDetail.setNumberOfTransactions(WalletManager.INSTANCE.getCurrentWalletData().get().getWallet().getTransactions(true).size());
+      walletDetail.setNumberOfPayments(MultiBitHD.getWalletService().getPaymentDatas().size());
     }
   }
 

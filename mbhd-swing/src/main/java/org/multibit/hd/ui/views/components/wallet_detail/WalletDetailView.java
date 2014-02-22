@@ -60,11 +60,11 @@ public class WalletDetailView extends AbstractComponentView<WalletDetailModel> {
     panel.add(walletDirectoryLabel, "push,wrap");
 
     panel.add(new JLabel(Languages.safeText(MessageKey.CONTACTS) + ":"));
-    numberOfContactsLabel = new JLabel(String.valueOf(walletDetail.getNumberofContacts()));
+    numberOfContactsLabel = new JLabel(String.valueOf(walletDetail.getNumberOfContacts()));
     panel.add(numberOfContactsLabel, "push,wrap");
 
     panel.add(new JLabel(Languages.safeText(MessageKey.TRANSACTIONS) + ":"));
-    numberOfTransactionsLabel = new JLabel(String.valueOf(walletDetail.getNumberOfTransactions()));
+    numberOfTransactionsLabel = new JLabel(String.valueOf(walletDetail.getNumberOfPayments()));
     panel.add(numberOfTransactionsLabel, "push,wrap");
 
     return panel;
@@ -89,8 +89,8 @@ public class WalletDetailView extends AbstractComponentView<WalletDetailModel> {
     WalletDetail walletDetail = walletDetailChangedEvent.getWalletDetail();
     applicationDirectoryLabel.setText(walletDetail.getApplicationDirectory());
     walletDirectoryLabel.setText(walletDetail.getWalletDirectory());
-    numberOfContactsLabel.setText(String.valueOf(walletDetail.getNumberofContacts()));
-    numberOfTransactionsLabel.setText(String.valueOf(walletDetail.getNumberOfTransactions()));
+    numberOfContactsLabel.setText(String.valueOf(walletDetail.getNumberOfContacts()));
+    numberOfTransactionsLabel.setText(String.valueOf(walletDetail.getNumberOfPayments()));
   }
 
 }

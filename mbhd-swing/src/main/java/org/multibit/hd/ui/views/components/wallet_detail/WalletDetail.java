@@ -7,26 +7,26 @@ package org.multibit.hd.ui.views.components.wallet_detail;
  *  
  */
 public class WalletDetail {
-  private int numberOfTransactions;
-   private int numberofContacts;
+  private int numberOfPayments;
+   private int numberOfContacts;
 
    private String applicationDirectory;
    private String walletDirectory;
 
-  public int getNumberOfTransactions() {
-    return numberOfTransactions;
+  public int getNumberOfPayments() {
+    return numberOfPayments;
   }
 
-  public void setNumberOfTransactions(int numberOfTransactions) {
-    this.numberOfTransactions = numberOfTransactions;
+  public void setNumberOfPayments(int numberOfPayments) {
+    this.numberOfPayments = numberOfPayments;
   }
 
-  public int getNumberofContacts() {
-    return numberofContacts;
+  public int getNumberOfContacts() {
+    return numberOfContacts;
   }
 
-  public void setNumberofContacts(int numberofContacts) {
-    this.numberofContacts = numberofContacts;
+  public void setNumberOfContacts(int numberOfContacts) {
+    this.numberOfContacts = numberOfContacts;
   }
 
   public String getApplicationDirectory() {

@@ -68,16 +68,16 @@ public class PaymentRequestData implements PaymentData {
   @Override
   public String getDescription() {
     // TODO localise
-    StringBuffer buffer = new StringBuffer();
-    buffer.append("by you");
+    StringBuilder builder = new StringBuilder();
+    builder.append("by you");
     if (getLabel() != null && getLabel().length() >0) {
-      buffer.append(SEPARATOR).append(getLabel());
+      builder.append(SEPARATOR).append(getLabel());
     }
     if (getNote() != null && getNote().length() >0) {
-      buffer.append(SEPARATOR).append(getNote());
+      builder.append(SEPARATOR).append(getNote());
     }
-    buffer.append(SEPARATOR).append("To ").append(getAddress());
-    return buffer.toString();
+    builder.append(SEPARATOR).append("To ").append(getAddress());
+    return builder.toString();
   }
 
   public void setNote(String note) {
