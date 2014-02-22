@@ -66,7 +66,7 @@ public class PaymentRequestData implements PaymentData {
   @Override
   public String getDescription() {
     // TODO localise
-    return "By you. " + getLabel() + " " + getNote();
+    return "by you. " + getLabel() + " . " + getNote();
   }
 
   public void setNote(String note) {
