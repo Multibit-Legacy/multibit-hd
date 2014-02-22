@@ -56,6 +56,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
   private ModelAndView<DisplayQRCodeModel, DisplayQRCodeView> displayQRCodeMaV;
 
   private JTextField label;
+  private JLabel addressCommentLabel;
 
   private JButton showQRCode;
 
@@ -84,6 +85,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
 
     label = TextBoxes.newEnterLabel();
     showQRCode = Buttons.newQRCodeButton(getShowQRCodePopoverAction());
+    addressCommentLabel = Labels.newLabel(MessageKey.ONE_OF_YOUR_ADDRESSES);
 
     // User entered text
     notesTextArea = TextBoxes.newEnterNotes(MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH);
@@ -115,10 +117,12 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     panel.add(Labels.newRecipient());
     panel.add(displayBitcoinAddressMaV.getView().newComponentPanel(), "growx,push");
     panel.add(showQRCode, "wrap");
+    panel.add(Labels.newBlankLabel());
+    panel.add( addressCommentLabel, "wrap");
     panel.add(Labels.newQRCodeLabelLabel());
     panel.add(label, "span 2,wrap");
     panel.add(Labels.newNotes());
-    panel.add(notesTextArea, "span 3,wrap");
+    panel.add(notesTextArea, "span 3,push,wrap");
 
     return panel;
   }

@@ -50,6 +50,7 @@ public enum MessageKey {
   TRANSACTION_LABEL("transaction_label"),
   QR_CODE_LABEL_LABEL("qr_code_label_label"),
   NOTES("notes"),
+  ONE_OF_YOUR_ADDRESSES("one_of_your_addresses"),
   SELECT_FOLDER("select_folder"),
   SELECT_FILE("select_file"),
   ENTER_PASSWORD("enter_password"),

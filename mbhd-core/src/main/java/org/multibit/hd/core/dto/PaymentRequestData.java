@@ -24,6 +24,8 @@ public class PaymentRequestData implements PaymentData {
   private String note;
   private DateTime date;
 
+  public static final String SEPARATOR = ". ";
+
   public String getAddress() {
 
     return address;
@@ -66,7 +68,16 @@ public class PaymentRequestData implements PaymentData {
   @Override
   public String getDescription() {
     // TODO localise
-    return "by you. " + getLabel() + " . " + getNote();
+    StringBuffer buffer = new StringBuffer();
+    buffer.append("by you");
+    if (getLabel() != null && getLabel().length() >0) {
+      buffer.append(SEPARATOR).append(getLabel());
+    }
+    if (getNote() != null && getNote().length() >0) {
+      buffer.append(SEPARATOR).append(getNote());
+    }
+    buffer.append(SEPARATOR).append("To ").append(getAddress());
+    return buffer.toString();
   }
 
   public void setNote(String note) {
