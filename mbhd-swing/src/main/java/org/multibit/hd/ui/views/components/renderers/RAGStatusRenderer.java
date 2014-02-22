@@ -44,6 +44,9 @@ public class RAGStatusRenderer extends DefaultTableCellRenderer {
         case GREEN:
           label.setForeground(Themes.currentTheme.successAlertBackground());
           break;
+        case PINK:
+                 label.setForeground(Themes.currentTheme.pinkBackground());
+                 break;
         default:
           // Unknown status
           throw new IllegalStateException("Unknown status " + status);

@@ -114,6 +114,11 @@ public interface Theme {
   Color successAlertBackground();
 
   /**
+   * @return The background colour of pink things
+   */
+  Color pinkBackground();
+
+  /**
    * @return The background colour of a success alert with fading (matches button theme)
    */
   Color successAlertFadedBackground();
