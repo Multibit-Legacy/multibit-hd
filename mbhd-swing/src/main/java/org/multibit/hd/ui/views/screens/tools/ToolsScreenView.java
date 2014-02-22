@@ -69,7 +69,7 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        ControllerEvents.fireAddAlertEvent(new AlertModel("Demonstrate alert", RAGStatus.GREEN));
+        ControllerEvents.fireAddAlertEvent(new AlertModel("Demonstrate alert", RAGStatus.PINK));
       }
     };
 

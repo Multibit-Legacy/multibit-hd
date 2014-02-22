@@ -25,7 +25,7 @@ public enum RAGStatus {
   GREEN,
 
   /**
-   * Pink is used for additional space e.g. a transaction has been requested
+   * Pink means pending, no action required but keep an eye on things
    */
   PINK,
 

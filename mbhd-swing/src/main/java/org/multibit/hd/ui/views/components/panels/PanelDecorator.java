@@ -409,6 +409,23 @@ public class PanelDecorator {
   }
 
   /**
+   * <p>Make the panel have the "pending" theme</p>
+   *
+   * @param panel The panel to decorate
+   */
+  public static void applyPendingTheme(JPanel panel) {
+
+    Preconditions.checkNotNull(panel, "'panel' must be present");
+
+    Color background = Themes.currentTheme.pendingAlertBackground();
+    Color border = Themes.currentTheme.pendingAlertBorder();
+    Color text = Themes.currentTheme.pendingAlertText();
+
+    applyTheme(panel, background, border, text);
+
+  }
+
+  /**
    * <p>Apply panel colours</p>
    *
    * @param panel      The target panel

@@ -114,11 +114,6 @@ public interface Theme {
   Color successAlertBackground();
 
   /**
-   * @return The background colour of pink things
-   */
-  Color pinkBackground();
-
-  /**
    * @return The background colour of a success alert with fading (matches button theme)
    */
   Color successAlertFadedBackground();
@@ -147,4 +142,25 @@ public interface Theme {
    * @return The text of an info alert
    */
   Color infoAlertText();
+
+  /**
+   * @return The background colour of a pending alert
+   */
+  Color pendingAlertBackground();
+
+  /**
+   * @return The background colour of a pending alert with fading (matches button theme)
+   */
+  Color pendingAlertFadedBackground();
+
+  /**
+   * @return The border of a pending alert
+   */
+  Color pendingAlertBorder();
+
+  /**
+   * @return The text of a pending alert
+   */
+  Color pendingAlertText();
+
 }

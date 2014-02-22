@@ -117,8 +117,23 @@ public class LightTheme implements Theme {
   }
 
   @Override
-  public Color pinkBackground() {
-    return Color.PINK;
+  public Color pendingAlertBackground() {
+    return new Color(0xffafaf);
+  }
+
+  @Override
+  public Color pendingAlertFadedBackground() {
+    return new Color(0xffcfcf);
+  }
+
+  @Override
+  public Color pendingAlertBorder() {
+    return new Color(0xe05f5f);
+  }
+
+  @Override
+  public Color pendingAlertText() {
+    return text();
   }
 
   @Override

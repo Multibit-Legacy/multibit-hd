@@ -136,6 +136,9 @@ public class HeaderView {
       case GREEN:
         PanelDecorator.applySuccessTheme(alertPanel);
         break;
+      case PINK:
+        PanelDecorator.applyPendingTheme(alertPanel);
+        break;
       default:
         throw new IllegalStateException("Unknown severity: " + alertModel.getSeverity().name());
     }
