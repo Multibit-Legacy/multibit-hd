@@ -1,14 +1,16 @@
 package org.multibit.hd.ui.i18n;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
-import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.ui.exceptions.UIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.text.MessageFormat;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -19,7 +21,7 @@ import java.util.ResourceBundle;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class Languages {
 
@@ -107,14 +109,13 @@ public class Languages {
    *
    * @return The matching index (0-based)
    *
-   * @throws org.multibit.hd.ui.exceptions.UIException
-   *          If there is no match
+   * @throws org.multibit.hd.ui.exceptions.UIException If there is no match
    */
   public static int getIndexFromLocale(Locale locale) {
 
     Preconditions.checkNotNull(locale, "'locale' must be present");
 
-    String language = locale.getLanguage().toLowerCase().substring(0,2);
+    String language = locale.getLanguage().toLowerCase().substring(0, 2);
 
     for (int i = 0; i < LANGUAGE_CODES.length; i++) {
 
@@ -174,27 +175,54 @@ public class Languages {
   }
 
   /**
-    * @param key    The key (must be present in the bundle)
-    * @param values An optional collection of value substitutions for {@link MessageFormat}
-    *
-    * @return The localised text with any substitutions made
-    */
-   public static String safeText(String key, Object... values) {
+   * @param key    The key (must be present in the bundle)
+   * @param values An optional collection of value substitutions for {@link MessageFormat}
+   *
+   * @return The localised text with any substitutions made
+   */
+  public static String safeText(String key, Object... values) {
 
-     ResourceBundle rb = currentResourceBundle();
+    ResourceBundle rb = currentResourceBundle();
 
-     final String message;
+    final String message;
 
-     if (!rb.containsKey(key)) {
-       // If no key is present then use it direct
-       message = "Key '" + key + "' is not localised!";
-     } else {
-       // Must have the key to be here
-       message = rb.getString(key);
-     }
+    if (!rb.containsKey(key)) {
+      // If no key is present then use it direct
+      message = "Key '" + key + "' is not localised!";
+    } else {
+      // Must have the key to be here
+      message = rb.getString(key);
+    }
 
-     return MessageFormat.format(message, values);
-   }
+    return MessageFormat.format(message, values);
+  }
+
+  /**
+   * @param contents  The contents to join into a localised comma-separated list
+   * @param maxLength The maximum length of the result single string
+   *
+   * @return The localised comma-separated list with ellipsis appended if truncated
+   */
+  public static String truncatedList(Collection<String> contents, int maxLength) {
+
+    String joinedContents = Joiner
+      .on(Languages.safeText(MessageKey.LIST_COMMA)+ " ")
+      .join(contents);
+
+    String ellipsis = Languages.safeText(MessageKey.LIST_ELLIPSIS);
+
+    // Determine the truncation point (if required)
+    int maxIndex = Math.min(joinedContents.length() - 1, maxLength - ellipsis.length() - 1);
+
+    if (maxIndex == joinedContents.length() - 1) {
+      // No truncation
+      return joinedContents;
+    } else {
+      // Apply truncation (with ellipsis)
+      return joinedContents.substring(0, maxIndex) + ellipsis;
+    }
+
+  }
 
   /**
    * <p>Internal access only - external consumers should use safeText()</p>

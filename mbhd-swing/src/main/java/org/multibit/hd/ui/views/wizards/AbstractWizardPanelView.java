@@ -247,11 +247,13 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
   /**
    * <p>Called before this wizard panel is about to be hidden</p>
    *
-   * <p>Typically this is where a panel view would store any user entered data</p>
+   * <p>Typically this is where a panel view would {@link #updateFromComponentModels}, but implementations will vary</p>
+   *
+   * @param isExitCancel True if this hide action comes from a exit or cancel operation
    *
    * @return True if the panel can be hidden, false if the hide operation should be aborted (perhaps due to a data error)
    */
-  public boolean beforeHide() {
+  public boolean beforeHide(boolean isExitCancel) {
 
     // Default is to return OK
     return true;

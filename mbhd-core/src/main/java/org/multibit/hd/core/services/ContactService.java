@@ -122,7 +122,9 @@ public class ContactService {
    * @return A list of all Contacts for the given page
    */
   public List<Contact> allContacts() {
+
     return Lists.newArrayList(contacts);
+
   }
 
   /**
@@ -208,6 +210,23 @@ public class ContactService {
     }
   }
 
+  /**
+   *
+   * @param editedContacts The edited contacts that will be merged into the current contacts
+   */
+  public void updateContacts(List<Contact> editedContacts) {
+
+    for (Contact editedContact: editedContacts) {
+
+      if (!contacts.contains(editedContact)) {
+
+        contacts.add(editedContact);
+
+      }
+
+    }
+
+  }
 
   /**
    * <p>Save the contact data to the backing store</p>
@@ -233,18 +252,21 @@ public class ContactService {
     contact1.setEmail("g.rowe@froot.co.uk");
     contact1.getTags().add("VIP");
     contact1.getTags().add("Family");
-    contact1.setNotes("sal;fjsad;lfjsld;afjlsadjflsakdjf;lsdjfl;asdkjfsla;dfjs;aldfjsladkfj;saldkfj;saldfj;lsdakfjsladkfjsladfjsdl;akfj");
+    contact1.setNotes("This is a really long note that should span over several lines when finally rendered to the screen. It began with Alice Capital.");
 
     Contact contact2 = newContact("Bob Capital");
     contact2.setEmail("bob.capital@example.org");
+    contact2.setNotes("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
     contact2.getTags().add("VIP");
     contact2.getTags().add("Merchandise");
 
     Contact contact3 = newContact("Charles Capital");
+    contact2.setNotes("Charles Capital's note 1\n\nCharles Capital's note 2");
     contact3.setEmail("charles.capital@example.org");
 
     // No email for Derek
     Contact contact4 = newContact("Derek Capital");
+    contact2.setNotes("Derek Capital's note 1\n\nDerek Capital's note 2");
     contact4.getTags().add("Family");
 
     Contact contact5 = newContact("alice Lower");

@@ -7,7 +7,6 @@ import com.google.common.collect.Sets;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.enter_tags.EnterTagsModel;
@@ -82,11 +81,11 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
     List<Contact> contacts = getWizardModel().getContacts();
 
-    Preconditions.checkState(!contacts.isEmpty(),"'contacts' cannot be empty");
+    Preconditions.checkState(!contacts.isEmpty(), "'contacts' cannot be empty");
 
     this.multiEdit = contacts.size() > 1;
 
-    Contact firstContact  = getWizardModel().getContacts().get(0);
+    Contact firstContact = getWizardModel().getContacts().get(0);
 
     name = TextBoxes.newEnterName(multiEdit);
     emailAddress = TextBoxes.newEnterEmailAddress(multiEdit);
@@ -96,21 +95,31 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
     // Always allow non-unique fields
     notes = TextBoxes.newEnterNotes();
 
+    List<String> allNames = Lists.newArrayList();
+
     // Populate the fields from the model
     if (multiEdit) {
 
       // Multiple contacts so some fields are not for display
-      name.setText(Languages.safeText(MessageKey.MULTIPLE));
-      emailAddress.setText(Languages.safeText(MessageKey.MULTIPLE));
-      bitcoinAddress.setText(Languages.safeText(MessageKey.MULTIPLE));
-      extendedPublicKey.setText(Languages.safeText(MessageKey.MULTIPLE));
+
+      // Combine all notes from all contacts (with a double line break between each)
+      StringBuilder sb = new StringBuilder();
+      for (Contact contact : contacts) {
+        if (contact.getNotes().isPresent()) {
+          sb.append(contact.getNotes().get());
+          sb.append("\n\n");
+        }
+      }
+      notes.setText(sb.toString());
 
       // Combine all tags from all contacts (no duplicates)
       Set<String> allTags = Sets.newHashSet();
-      for (Contact contact: contacts) {
+      for (Contact contact : contacts) {
         allTags.addAll(contact.getTags());
+        allNames.add(contact.getName());
       }
 
+      // Base the tags on all tags
       enterTagsMaV = Components.newEnterTagsMaV(getPanelName(), Lists.newArrayList(allTags));
 
     } else {
@@ -123,33 +132,43 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
       notes.setText(firstContact.getNotes().or(""));
 
+      // Base the tags on first contact tags
       enterTagsMaV = Components.newEnterTagsMaV(getPanelName(), firstContact.getTags());
 
     }
 
-    // Exclude unique contact fields
-    panel.add(Labels.newName());
-    panel.add(name, "grow,push,wrap");
+    if (!multiEdit) {
 
-    panel.add(Labels.newEmailAddress());
-    panel.add(emailAddress, "grow,push,wrap");
+      // Allow unique contact fields
+      panel.add(Labels.newName());
+      panel.add(name, "grow,push,wrap");
 
-    panel.add(Labels.newBitcoinAddress());
-    panel.add(bitcoinAddress, "grow,push,wrap");
+      panel.add(Labels.newEmailAddress());
+      panel.add(emailAddress, "grow,push,wrap");
 
-    panel.add(Labels.newExtendedPublicKey());
-    panel.add(extendedPublicKey, "grow,push,wrap");
+      panel.add(Labels.newBitcoinAddress());
+      panel.add(bitcoinAddress, "grow,push,wrap");
 
-    // Always allow non-unique fields
-    if (multiEdit) {
-      panel.add(Labels.newMultiEditNote(),"grow,push,span 2,wrap");
+      panel.add(Labels.newExtendedPublicKey());
+      panel.add(extendedPublicKey, "grow,push,wrap");
+
     }
 
-    panel.add(Labels.newTags(),"aligny top");
-    panel.add(enterTagsMaV.getView().newComponentPanel(), "grow,push,wrap");
+    // Provide a note
+    if (multiEdit) {
+      panel.add(Labels.newMultiEditNote(), "grow,push,span 2,wrap");
+
+      // Provide a short list of names with ellipsis
+      panel.add(Labels.newNames());
+      panel.add(TextBoxes.newTruncatedList(allNames, 400), "grow,push,wrap");
+    }
+
+    // Tags must be top aligned since it is a tall component
+    panel.add(Labels.newTags(), "aligny top");
+    panel.add(enterTagsMaV.getView().newComponentPanel(), "growx,aligny top,wrap");
 
     // Ensure we shrink to avoid scrunching up if no tags are present
-    panel.add(Labels.newNotes());
+    panel.add(Labels.newNotes(), "aligny top");
     panel.add(notes, "shrink,wrap");
 
     return panel;
@@ -170,18 +189,52 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        getApplyButton().requestFocusInWindow();
+
+        name.requestFocusInWindow();
+
       }
     });
 
   }
 
   @Override
+  public boolean beforeHide(boolean isExitCancel) {
+
+    if (!isExitCancel) {
+
+      // Ensure the wizard model correctly reflects the contents of the components
+      updateFromComponentModels(Optional.absent());
+
+    }
+
+    // Must be OK to proceed
+    return true;
+
+  }
+
+  @Override
   public void updateFromComponentModels(Optional componentModel) {
 
-    // No need to update since we expose the component models
+    List<Contact> contacts = getWizardModel().getContacts();
+    List<String> tags = enterTagsMaV.getModel().getValue();
 
-    // No view events to fire
+    // Update the selected contacts
+    for (Contact contact : contacts) {
+
+      contact.setNotes(contact.getNotes().or(""));
+      contact.setTags(tags);
+
+      if (!multiEdit) {
+        contact.setName(name.getText());
+        contact.setEmail(emailAddress.getText());
+        contact.setBitcoinAddress(bitcoinAddress.getText());
+        contact.setExtendedPublicKey(extendedPublicKey.getText());
+
+        // TODO Support image
+
+      }
+
+    }
 
   }
 

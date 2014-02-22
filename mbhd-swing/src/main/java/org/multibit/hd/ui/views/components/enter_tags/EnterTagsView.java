@@ -39,7 +39,7 @@ public class EnterTagsView extends AbstractComponentView<EnterTagsModel> {
     EnterTagsModel model = getModel().get();
 
     panel = Panels.newPanel(new MigLayout(
-      "fill,insets 0", // Layout
+      "fillx,insets 0", // Layout
       "[][]", // Columns
       "[][]" // Rows
     ));
@@ -80,7 +80,7 @@ public class EnterTagsView extends AbstractComponentView<EnterTagsModel> {
     // Add to the panel
     panel.add(tagText, "grow,push");
     panel.add(addTagButton, "shrink,wrap");
-    panel.add(listScrollPane, "grow,span 2,push");
+    panel.add(listScrollPane, "grow,span 2,push,height 100");
 
     return panel;
 

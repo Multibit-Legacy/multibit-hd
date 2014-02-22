@@ -12,12 +12,12 @@ package org.multibit.hd.ui.views.wizards;
 public interface WizardModel {
 
   /**
-   * Show the next view (usually in response to a "next" button click)
+   * <p>Show the next view (usually in response to a "next" button click)</p>
    */
   void showNext();
 
   /**
-   * Show the previous view (usually in response to a "previous" button click)
+   * <p>Show the previous view (usually in response to a "previous" button click)</p>
    */
   void showPrevious();
 

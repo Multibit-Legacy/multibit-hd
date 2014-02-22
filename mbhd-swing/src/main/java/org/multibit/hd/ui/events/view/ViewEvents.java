@@ -7,6 +7,7 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.components.wallet_detail.WalletDetail;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.multibit.hd.ui.views.wizards.WizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,6 +122,17 @@ public class ViewEvents {
     log.trace("Firing 'wizard button enabled {}' event: {}", panelName, enabled);
     CoreServices.uiEventBus.post(new WizardButtonEnabledEvent(panelName, wizardButton, enabled));
 
+  }
+
+  /**
+   * <p>Broadcast a new "wizard hide" event</p>
+   *
+   * @param panelName   The unique panel name to which this applies (use screen name for detail screens)
+   * @param wizardModel The wizard model containing all the user data
+   */
+  public static void fireWizardHideEvent(String panelName, WizardModel wizardModel) {
+    log.trace("Firing 'wizard hide' event");
+    CoreServices.uiEventBus.post(new WizardHideEvent(panelName, wizardModel));
   }
 
   /**

@@ -21,6 +21,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Set;
 
 /**
  * <p>Utility to provide the following to UI:</p>
@@ -440,6 +441,7 @@ public class Labels {
     return newLabel(MessageKey.TRANSACTION_FEE);
   }
 
+
   /**
    * @return A new "circle" label
    */
@@ -451,7 +453,6 @@ public class Labels {
 
     return label;
   }
-
 
   /**
    * @param developerFee The developer fee in satoshis
@@ -484,7 +485,8 @@ public class Labels {
   }
 
   /**
-<<<<<<< HEAD
+   * <<<<<<< HEAD
+   *
    * @return A new "contact name" label
    */
   public static JLabel newName() {
@@ -513,6 +515,13 @@ public class Labels {
   }
 
   /**
+   * @return A new "names" label
+   */
+  public static JLabel newNames() {
+    return newLabel(MessageKey.NAMES);
+  }
+
+  /**
    * @return A new "tags" label
    */
   public static JLabel newTags() {
@@ -520,13 +529,13 @@ public class Labels {
   }
 
   /**
-    * @return A new "QR code label" message for use with receiving addresses
-    */
-   public static JLabel newQRCodeLabelLabel() {
-     return newLabel(MessageKey.QR_CODE_LABEL_LABEL);
-   }
+   * @return A new "QR code label" message for use with receiving addresses
+   */
+  public static JLabel newQRCodeLabelLabel() {
+    return newLabel(MessageKey.QR_CODE_LABEL_LABEL);
+  }
 
-   /**
+  /**
    * @return A new "notes" message
    */
   public static JLabel newNotes() {

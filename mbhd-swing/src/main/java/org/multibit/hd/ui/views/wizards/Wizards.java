@@ -80,8 +80,7 @@ public class Wizards {
   }
 
   /**
-   *
-   * @param contacts The list of contacts to edit
+   * @param contacts       The list of contacts to edit
    *
    * @return A new "edit contact" wizard for contacts
    */

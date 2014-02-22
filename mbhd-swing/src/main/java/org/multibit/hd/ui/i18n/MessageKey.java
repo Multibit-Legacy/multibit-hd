@@ -42,6 +42,7 @@ public enum MessageKey {
   PREVIOUS("previous"),
   ALL("all"),
   NONE("none"),
+  MULTIPLE("multiple"),
 
   // Field labels
 
@@ -58,6 +59,7 @@ public enum MessageKey {
   DEVELOPER_FEE("developer_fee"),
 
   NAME("name"),
+  NAMES("names"),
   EMAIL_ADDRESS("email_address"),
   BITCOIN_ADDRESS("bitcoin_address"),
   EXTENDED_PUBLIC_KEY("extended_public_key"),
@@ -75,7 +77,8 @@ public enum MessageKey {
 
   APPROXIMATELY("approximately"),
   PARANTHESES("parantheses"),
-  MULTIPLE("multiple"),
+  LIST_COMMA("list_comma"),
+  LIST_ELLIPSIS("list_ellipsis"),
 
   // Panels
 

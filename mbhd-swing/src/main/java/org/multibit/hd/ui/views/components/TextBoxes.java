@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.components;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.borders.TextBubbleBorder;
 import org.multibit.hd.ui.views.components.text_fields.FormattedDecimalField;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -11,6 +12,7 @@ import javax.swing.*;
 import javax.swing.text.DefaultStyledDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Collection;
 
 /**
  * <p>Utility to provide the following to UI:</p>
@@ -290,12 +292,29 @@ public class TextBoxes {
   }
 
   /**
-   * @return A new "tags" text field
+   * <p>Create a new truncated localised comma separated list label (e.g. "a, b, c ..."</p>
+   *
+   * @param contents  The contents to join into a localised comma-separated list
+   * @param maxLength The maximum length of the resulting string (including ellipsis)
+   *
+   * @return A new truncated list text area
    */
-  public static JTextArea newEnterTags() {
+  public static JTextArea newTruncatedList(Collection<String> contents, int maxLength) {
 
-    return newEnterNotes();
+    JTextArea textArea = new JTextArea(Languages.truncatedList(contents, maxLength));
 
+    textArea.setBorder(BorderFactory.createEmptyBorder());
+    textArea.setOpaque(false);
+    textArea.setEditable(false);
+
+    // Ensure the background is transparent
+    textArea.setBackground(new Color(0, 0, 0, 0));
+    textArea.setForeground(Themes.currentTheme.text());
+
+    textArea.setLineWrap(true);
+    textArea.setWrapStyleWord(true);
+
+    return textArea;
   }
 
   /**

@@ -149,13 +149,15 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        // Get the currently selected Contact
+        // Get the currently selected contacts
         final List<Contact> contacts = contactsTableModel.getContactsBySelection(true);
 
         // Ensure we have at least one contact to work with
         if (!contacts.isEmpty()) {
 
+          // Fire up a wizard
           Panels.showLightBox(Wizards.newEditContactWizard(contacts).getWizardPanel());
+
         }
 
       }

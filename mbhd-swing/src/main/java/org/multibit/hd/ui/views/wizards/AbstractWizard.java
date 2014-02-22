@@ -8,6 +8,7 @@ import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.layouts.WizardCardLayout;
 
@@ -117,22 +118,25 @@ public abstract class AbstractWizard<M extends WizardModel> {
   /**
    * <p>Hide the wizard</p>
    *
-   * @param name The panel name
+   * @param isExitCancel True if this hide operation comes from an exit or cancel
+   * @param name         The panel name
    */
-  public void hide(String name) {
+  public void hide(String name, boolean isExitCancel) {
 
     Preconditions.checkState(wizardViewMap.containsKey(name), "'" + name + "' is not a valid panel name");
 
     final AbstractWizardPanelView wizardPanelView = wizardViewMap.get(name);
 
     // Provide warning that the panel is about to be shown
-    if (wizardPanelView.beforeHide()) {
+    if (wizardPanelView.beforeHide(isExitCancel)) {
 
       // No abort so hide
       Panels.hideLightBox();
 
-    }
+      // Issue the wizard hide event
+      ViewEvents.fireWizardHideEvent(name, wizardModel);
 
+    }
 
   }
 
@@ -195,7 +199,7 @@ public abstract class AbstractWizard<M extends WizardModel> {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        hide(wizardModel.getPanelName());
+        hide(wizardModel.getPanelName(), true);
       }
     };
 
@@ -212,7 +216,7 @@ public abstract class AbstractWizard<M extends WizardModel> {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        hide(wizardModel.getPanelName());
+        hide(wizardModel.getPanelName(), false);
 
       }
     };
@@ -229,7 +233,7 @@ public abstract class AbstractWizard<M extends WizardModel> {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        hide(wizardModel.getPanelName());
+        hide(wizardModel.getPanelName(), false);
 
       }
     };
