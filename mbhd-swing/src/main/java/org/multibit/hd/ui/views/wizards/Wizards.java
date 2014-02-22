@@ -116,7 +116,7 @@ public class Wizards {
    */
   public static PasswordWizard newExitingPasswordWizard() {
 
-    return new PasswordWizard(new PasswordWizardModel(PasswordState.ENTER_PASSWORD), true);
+    return new PasswordWizard(new PasswordWizardModel(PasswordState.PASSWORD_ENTER_PASSWORD), true);
 
   }
 
@@ -125,7 +125,7 @@ public class Wizards {
    */
   public static PasswordWizard newClosingPasswordWizard() {
 
-    return new PasswordWizard(new PasswordWizardModel(PasswordState.ENTER_PASSWORD), false);
+    return new PasswordWizard(new PasswordWizardModel(PasswordState.PASSWORD_ENTER_PASSWORD), false);
 
   }
 
