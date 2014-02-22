@@ -18,6 +18,7 @@ import org.multibit.hd.ui.views.components.display_amount.DisplayAmountModel;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
+import org.multibit.hd.ui.views.themes.NimbusDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
@@ -39,6 +40,7 @@ public class HeaderView {
 
   private JLabel alertMessageLabel;
   private JLabel alertRemainingLabel;
+  private JButton alertButton;
 
   private final JPanel contentPanel;
   private final JPanel alertPanel;
@@ -57,7 +59,7 @@ public class HeaderView {
     // Create the alert panel
     alertPanel = Panels.newPanel(new MigLayout(
       "fillx,insets 5", // Layout insets define the padding for the alert
-      "[grow][][]", // Columns
+      "[grow][][][]", // Columns
       "[]" // Rows
     ));
 
@@ -125,19 +127,32 @@ public class HeaderView {
     alertMessageLabel.setText(alertModel.getLocalisedMessage());
     alertRemainingLabel.setText(alertModel.getRemainingText());
 
+    if (alertModel.getButton().isPresent()) {
+
+      JButton button = alertModel.getButton().get();
+      alertButton.setAction(button.getAction());
+      alertButton.setText(button.getText());
+      alertButton.setIcon(button.getIcon());
+
+      alertButton.setVisible(true);
+    }
 
     switch (alertModel.getSeverity()) {
       case RED:
         PanelDecorator.applyDangerTheme(alertPanel);
+        NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), alertButton);
         break;
       case AMBER:
         PanelDecorator.applyWarningTheme(alertPanel);
+        NimbusDecorator.applyThemeColor(Themes.currentTheme.warningAlertBackground(), alertButton);
         break;
       case GREEN:
         PanelDecorator.applySuccessTheme(alertPanel);
+        NimbusDecorator.applyThemeColor(Themes.currentTheme.successAlertBackground(), alertButton);
         break;
       case PINK:
         PanelDecorator.applyPendingTheme(alertPanel);
+        NimbusDecorator.applyThemeColor(Themes.currentTheme.pendingAlertBackground(), alertButton);
         break;
       default:
         throw new IllegalStateException("Unknown severity: " + alertModel.getSeverity().name());
@@ -167,6 +182,9 @@ public class HeaderView {
     alertMessageLabel = Labels.newBlankLabel();
     alertRemainingLabel = Labels.newBlankLabel();
 
+    alertButton = new JButton();
+    alertButton.setVisible(false);
+
     JLabel closeLabel = Labels.newPanelCloseLabel(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent e) {
@@ -178,9 +196,11 @@ public class HeaderView {
     if (Languages.isLeftToRight()) {
       alertPanel.add(alertMessageLabel, "push");
       alertPanel.add(alertRemainingLabel, "shrink,right");
+      alertPanel.add(alertButton, "shrink,right");
       alertPanel.add(closeLabel);
     } else {
       alertPanel.add(closeLabel);
+      alertPanel.add(alertButton, "shrink,left");
       alertPanel.add(alertRemainingLabel, "shrink,left");
       alertPanel.add(alertMessageLabel, "push");
     }

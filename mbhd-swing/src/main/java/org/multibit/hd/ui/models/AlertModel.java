@@ -1,8 +1,11 @@
 package org.multibit.hd.ui.models;
 
-import org.multibit.hd.ui.i18n.MessageKey;
+import com.google.common.base.Optional;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.i18n.MessageKey;
+
+import javax.swing.*;
 
 /**
  * <p>Value object to provide the following to Alert API:</p>
@@ -11,7 +14,7 @@ import org.multibit.hd.ui.i18n.Languages;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class AlertModel implements Model<String> {
 
@@ -19,6 +22,8 @@ public class AlertModel implements Model<String> {
   private String localisedMessage;
 
   private int remaining = 0;
+
+  private Optional<JButton> button = Optional.absent();
 
   public AlertModel(String localisedMessage, RAGStatus severity) {
     this.severity = severity;
@@ -43,9 +48,20 @@ public class AlertModel implements Model<String> {
 
   public String getRemainingText() {
     if (remaining > 0) {
-      return Languages.safeText(MessageKey.ALERT_REMAINING,remaining);
+      return Languages.safeText(MessageKey.ALERT_REMAINING, remaining);
     }
     return "";
+  }
+
+  /**
+   * @return The optional button leading to an action
+   */
+  public Optional<JButton> getButton() {
+    return button;
+  }
+
+  public void setButton(JButton button) {
+    this.button = Optional.fromNullable(button);
   }
 
   @Override
