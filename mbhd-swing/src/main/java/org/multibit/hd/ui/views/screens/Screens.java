@@ -13,8 +13,8 @@ import org.multibit.hd.ui.views.screens.settings.SettingsScreenModel;
 import org.multibit.hd.ui.views.screens.settings.SettingsScreenView;
 import org.multibit.hd.ui.views.screens.tools.ToolsScreenModel;
 import org.multibit.hd.ui.views.screens.tools.ToolsScreenView;
-import org.multibit.hd.ui.views.screens.transactions.TransactionsScreenModel;
-import org.multibit.hd.ui.views.screens.transactions.TransactionsScreenView;
+import org.multibit.hd.ui.views.screens.transactions.PaymentsScreenModel;
+import org.multibit.hd.ui.views.screens.transactions.PaymentsScreenView;
 import org.multibit.hd.ui.views.screens.wallet.WalletScreenModel;
 import org.multibit.hd.ui.views.screens.wallet.WalletScreenView;
 
@@ -65,7 +65,7 @@ public class Screens {
         view = new ContactsScreenView(new ContactsScreenModel(screen), screen, MessageKey.CONTACTS);
         break;
       case TRANSACTIONS:
-        view = new TransactionsScreenView(new TransactionsScreenModel(screen), screen, MessageKey.CONTACTS);
+        view = new PaymentsScreenView(new PaymentsScreenModel(screen), screen, MessageKey.CONTACTS);
         break;
       case HELP:
         view = new HelpScreenView(new HelpScreenModel(screen), screen, MessageKey.CONTACTS);

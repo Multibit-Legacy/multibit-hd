@@ -4,6 +4,7 @@ import com.google.bitcoin.core.*;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
+import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.exceptions.PaymentsSaveException;
@@ -95,7 +96,7 @@ public class WalletService {
 
     protobufSerializer = new PaymentsProtobufSerializer();
 
-    // Load the payments data from the backing store if it exists
+    // Load the payment request data from the backing store if it exists
     if (backingStoreFile.exists()) {
       readPayments();
     } else {
@@ -106,7 +107,7 @@ public class WalletService {
   /**
    * Get all the payments (transactions and payment requests) in the current wallet
    */
-  public Set<TransactionData> getTransactions() {
+  public Set<PaymentData> getPaymentDatas() {
     // See if there is a current wallet
     WalletManager walletManager = WalletManager.INSTANCE;
 
@@ -123,6 +124,7 @@ public class WalletService {
     // There should be a wallet
     Preconditions.checkNotNull(wallet, "There is no wallet to process");
 
+    // Get and adapt all the transactions in the wallet
     Set<Transaction> transactions = wallet.getTransactions(true);
 
     // Adapted transaction data to return
@@ -134,7 +136,11 @@ public class WalletService {
         transactionDatas.add(transactionData);
       }
     }
-    return transactionDatas;
+
+    // Union all the transactionDatas and paymentDatas
+    Set<PaymentData> paymentDatas = Sets.union(transactionDatas, Sets.newHashSet(payments.getPaymentRequestDatas()));
+
+    return paymentDatas;
   }
 
   /**
@@ -163,20 +169,20 @@ public class WalletService {
 
     RAGStatus status = calculateStatus(transaction);
 
-    TransactionType transactionType;
+    PaymentType paymentType;
     if (amountBTC.compareTo(BigInteger.ZERO) < 0) {
       // Debit
       if (depth == 0) {
-        transactionType = TransactionType.SENDING;
+        paymentType = PaymentType.SENDING;
       } else {
-        transactionType = TransactionType.SENT;
+        paymentType = PaymentType.SENT;
       }
     } else {
       // Credit
       if (depth == 0) {
-        transactionType = TransactionType.RECEIVING;
+        paymentType = PaymentType.RECEIVING;
       } else {
-        transactionType = TransactionType.RECEIVED;
+        paymentType = PaymentType.RECEIVED;
       }
       // TODO - requested
     }
@@ -184,7 +190,7 @@ public class WalletService {
 
     String description;
 
-    if (transactionType == TransactionType.RECEIVING || transactionType == TransactionType.RECEIVED) {
+    if (paymentType == PaymentType.RECEIVING || paymentType == PaymentType.RECEIVED) {
       description = "by"; // TODO localise
       if (transaction.getOutputs() != null) {
         for (TransactionOutput transactionOutput : transaction.getOutputs()) {
@@ -198,12 +204,13 @@ public class WalletService {
       description = "to"; // TODO localise
       if (transaction.getOutputs() != null) {
         for (TransactionOutput transactionOutput : transaction.getOutputs()) {
+          // TODO Beef up description for other cases
           description = description + " " + transactionOutput.getScriptPubKey().getToAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
         }
       }
     }
 
-    return new TransactionData(transactionId, updateTime, status, amountBTC, Optional.<BigInteger>absent(), confidenceType, transactionType, depth, description, "");
+    return new TransactionData(transactionId, new DateTime(updateTime), status, amountBTC, Optional.<BigInteger>absent(), confidenceType, paymentType, depth, description, "");
   }
 
   /**

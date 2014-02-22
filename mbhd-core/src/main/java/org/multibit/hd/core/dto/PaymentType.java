@@ -1,17 +1,14 @@
 package org.multibit.hd.core.dto;
 
 /**
- *  <p>[Pattern] to provide the following to [related classes]:<br>
+ *  <p>DTO to provide the following to PaymentData:<br>
  *  <ul>
- *  <li></li>
+ *  <li>The type of the transaction or payment</li>
  *  </ul>
- *  Example:<br>
- *  <pre>
- *  </pre>
  *  </p>
  *  
  */
-public enum TransactionType {
+public enum PaymentType {
 
   /**
    * The transaction is currently being received to the wallet i.e. zero confirmation
@@ -34,7 +31,7 @@ public enum TransactionType {
   SENT,
 
   /**
-   * The transaction has been requested, using the 'Request bitcoin' screen but no transaction to that address
+   * The payment has been requested, using the 'Request bitcoin' screen but no transaction to that address
    * has been received.
    */
   REQUESTED

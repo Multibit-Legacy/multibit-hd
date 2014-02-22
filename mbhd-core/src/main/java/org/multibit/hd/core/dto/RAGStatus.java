@@ -22,7 +22,18 @@ public enum RAGStatus {
   /**
    * Green means go, no action required all is well
    */
-  GREEN
+  GREEN,
+
+  /**
+   * Pink is used for additional space e.g. a transaction has been requested
+   */
+  PINK,
+
+  /**
+   * Empty indicates there is no applicable RAGstatus
+   */
+  EMPTY
+
 
   // End of enum
   ;

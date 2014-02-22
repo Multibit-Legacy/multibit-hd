@@ -12,9 +12,9 @@ import org.multibit.hd.ui.views.screens.Screen;
  * @since 0.0.1
  *  
  */
-public class TransactionsScreenModel extends AbstractScreenModel {
+public class PaymentsScreenModel extends AbstractScreenModel {
 
-  public TransactionsScreenModel(Screen screen) {
+  public PaymentsScreenModel(Screen screen) {
     super(screen);
   }
 

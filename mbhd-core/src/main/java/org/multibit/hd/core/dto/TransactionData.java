@@ -2,9 +2,9 @@ package org.multibit.hd.core.dto;
 
 import com.google.bitcoin.core.TransactionConfidence;
 import com.google.common.base.Optional;
+import org.joda.time.DateTime;
 
 import java.math.BigInteger;
-import java.util.Date;
 
 /**
  *  <p>Data object to provide the following to Transaction display:<br>
@@ -29,19 +29,19 @@ public class TransactionData implements PaymentData {
 
   private final TransactionConfidence.ConfidenceType confidenceType;
 
-  private final Date updateTime;
+  private final DateTime date;
 
-  private final TransactionType type;
+  private final PaymentType type;
 
   private final String description;
 
   private String note;
 
-  public TransactionData(String transactionId, Date updateTime, RAGStatus status,
+  public TransactionData(String transactionId, DateTime date, RAGStatus status,
                          BigInteger amountBTC, Optional<BigInteger> feeOnSendBTC,
-                         TransactionConfidence.ConfidenceType confidenceType, TransactionType type, int depth, String description, String note) {
+                         TransactionConfidence.ConfidenceType confidenceType, PaymentType type, int depth, String description, String note) {
     this.transactionId = transactionId;
-    this.updateTime = updateTime;
+    this.date = date;
     this.status = status;
     this.amountBTC = amountBTC;
     this.feeOnSendBTC = feeOnSendBTC;
@@ -64,7 +64,7 @@ public class TransactionData implements PaymentData {
             ", depth=" + depth +
             ", confidenceType=" + confidenceType +
             ", type=" + type +
-            ", updateTime=" + updateTime +
+            ", date=" + date +
             ", description='" + description + "'" +
             ", note='" + note + "'" +
             '}';
@@ -84,7 +84,7 @@ public class TransactionData implements PaymentData {
     if (!feeOnSendBTC.equals(that.feeOnSendBTC)) return false;
     if (!transactionId.equals(that.transactionId)) return false;
     if (!type.equals(that.type)) return false;
-    if (!updateTime.equals(that.updateTime)) return false;
+    if (!date.equals(that.date)) return false;
     if (!description.equals(that.description)) return false;
     if (!note.equals(that.note)) return false;
 
@@ -100,7 +100,7 @@ public class TransactionData implements PaymentData {
     result = 31 * result + depth;
     result = 31 * result + confidenceType.hashCode();
     result = 31 * result + type.hashCode();
-    result = 31 * result + updateTime.hashCode();
+    result = 31 * result + date.hashCode();
     result = 31 * result + description.hashCode();
     result = 31 * result + note.hashCode();
     return result;
@@ -126,15 +126,16 @@ public class TransactionData implements PaymentData {
     return confidenceType;
   }
 
-  public Date getUpdateTime() {
-    return updateTime;
+  public DateTime getDate() {
+    return date;
   }
 
+  @Override
   public RAGStatus getStatus() {
     return status;
   }
 
-  public TransactionType getType() {
+  public PaymentType getType() {
     return type;
   }
 
@@ -147,7 +148,6 @@ public class TransactionData implements PaymentData {
     return note;
   }
 
-  @Override
   public void setNote(String note) {
     this.note = note;
   }

@@ -41,6 +41,7 @@ public class PaymentRequestData implements PaymentData {
     this.label = label;
   }
 
+  @Override
   public BigInteger getAmountBTC() {
     return amountBTC;
   }
@@ -63,16 +64,32 @@ public class PaymentRequestData implements PaymentData {
   }
 
   @Override
+  public String getDescription() {
+    // TODO localise
+    return "By you. " + getLabel() + " " + getNote();
+  }
+
   public void setNote(String note) {
     this.note = note;
   }
 
+  @Override
   public DateTime getDate() {
     return date;
   }
 
   public void setDate(DateTime date) {
     this.date = date;
+  }
+
+  @Override
+  public PaymentType getType() {
+    return PaymentType.REQUESTED;
+  }
+
+  @Override
+  public RAGStatus getStatus() {
+    return RAGStatus.PINK;
   }
 
   @Override

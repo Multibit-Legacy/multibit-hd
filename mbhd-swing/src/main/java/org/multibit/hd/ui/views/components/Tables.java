@@ -1,16 +1,20 @@
 package org.multibit.hd.ui.views.components;
 
+import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.Contact;
-import org.multibit.hd.core.dto.TransactionData;
+import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.tables.AmountBTCTableHeaderRenderer;
 import org.multibit.hd.ui.views.components.tables.ContactTableModel;
+import org.multibit.hd.ui.views.components.tables.PaymentTableModel;
 import org.multibit.hd.ui.views.components.tables.StripedTable;
-import org.multibit.hd.ui.views.components.tables.TransactionTableModel;
 
 import javax.swing.*;
-import javax.swing.table.*;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import java.util.*;
 
 /**
@@ -64,12 +68,12 @@ public class Tables {
   }
 
   /**
-   * @param transactions The transactions to show
+   * @param paymentDatas The payments to show
    * @return A new "transactions" striped table
    */
-  public static StripedTable newTransactionsTable(Set<TransactionData> transactions) {
+  public static StripedTable newPaymentsTable(Set<PaymentData> paymentDatas) {
 
-    TransactionTableModel model = new TransactionTableModel(transactions);
+    PaymentTableModel model = new PaymentTableModel(paymentDatas);
 
     StripedTable table = new StripedTable(model);
 
@@ -84,27 +88,27 @@ public class Tables {
     table.setColumnSelectionAllowed(false);
 
     // Status column
-    TableColumn statusTableColumn = table.getColumnModel().getColumn(TransactionTableModel.STATUS_COLUMN_INDEX);
+    TableColumn statusTableColumn = table.getColumnModel().getColumn(PaymentTableModel.STATUS_COLUMN_INDEX);
     statusTableColumn.setCellRenderer(Renderers.newRAGStatusRenderer());
-    resizeColumn(table, TransactionTableModel.STATUS_COLUMN_INDEX, 60, 90);
+    resizeColumn(table, PaymentTableModel.STATUS_COLUMN_INDEX, 60, 90);
 
     // Date column
-    TableColumn dateTableColumn = table.getColumnModel().getColumn(TransactionTableModel.DATE_COLUMN_INDEX);
+    TableColumn dateTableColumn = table.getColumnModel().getColumn(PaymentTableModel.DATE_COLUMN_INDEX);
     dateTableColumn.setCellRenderer(Renderers.newTrailingJustifiedDateRenderer());
-    resizeColumn(table, TransactionTableModel.DATE_COLUMN_INDEX, 150, 200);
+    resizeColumn(table, PaymentTableModel.DATE_COLUMN_INDEX, 150, 200);
 
     // Type column
-    TableColumn typeTableColumn = table.getColumnModel().getColumn(TransactionTableModel.TYPE_COLUMN_INDEX);
-    typeTableColumn.setCellRenderer(Renderers.newTransactionTypeRenderer());
-    resizeColumn(table, TransactionTableModel.TYPE_COLUMN_INDEX, 80, 100);
+    TableColumn typeTableColumn = table.getColumnModel().getColumn(PaymentTableModel.TYPE_COLUMN_INDEX);
+    typeTableColumn.setCellRenderer(Renderers.newPaymentTypeRenderer());
+    resizeColumn(table, PaymentTableModel.TYPE_COLUMN_INDEX, 80, 100);
 
     // Amount BTC column
-    TableColumn column = table.getColumnModel().getColumn(TransactionTableModel.AMOUNT_BTC_COLUMN_INDEX);
+    TableColumn column = table.getColumnModel().getColumn(PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX);
     column.setHeaderRenderer(new AmountBTCTableHeaderRenderer(table.getTableHeader().getDefaultRenderer()));
 
-    TableColumn amountBTCTableColumn = table.getColumnModel().getColumn(TransactionTableModel.AMOUNT_BTC_COLUMN_INDEX);
+    TableColumn amountBTCTableColumn = table.getColumnModel().getColumn(PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX);
     amountBTCTableColumn.setCellRenderer(Renderers.newTrailingJustifiedNumericRenderer());
-    resizeColumn(table, TransactionTableModel.AMOUNT_BTC_COLUMN_INDEX, 120, 180);
+    resizeColumn(table, PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX, 120, 180);
 
     // Row sorter for date
     rowSorter = new TableRowSorter<TableModel>(table.getModel());
@@ -114,9 +118,9 @@ public class Tables {
     List<TableRowSorter.SortKey> sortKeys = new ArrayList<TableRowSorter.SortKey>();
     sortKeys.add(new TableRowSorter.SortKey(1, SortOrder.DESCENDING));
     rowSorter.setSortKeys(sortKeys);
-    Comparator<Date> comparator = new Comparator<Date>() {
+    Comparator<DateTime> comparator = new Comparator<DateTime>() {
       @Override
-      public int compare(Date o1, Date o2) {
+      public int compare(DateTime o1, DateTime o2) {
         if (o1 == null) {
           if (o2 == null) {
             return 0;
@@ -128,8 +132,8 @@ public class Tables {
             return -1;
           }
         }
-        long n1 = o1.getTime();
-        long n2 = o2.getTime();
+        long n1 = o1.getMillis();
+        long n2 = o2.getMillis();
         if (n1 == 0) {
           // Object 1 has missing date.
           return 1;

@@ -1,5 +1,9 @@
 package org.multibit.hd.core.dto;
 
+import org.joda.time.DateTime;
+
+import java.math.BigInteger;
+
 /**
  *  <p>Interface to provide the following to payments view:<br>
  *  <ul>
@@ -9,8 +13,15 @@ package org.multibit.hd.core.dto;
  */
 public interface PaymentData {
 
+  public PaymentType getType();
+
+  public RAGStatus getStatus();
+
+  public DateTime getDate();
+
+  public BigInteger getAmountBTC();
+
   public String getNote();
 
-  public void setNote(String note);
-
+  public String getDescription();
 }

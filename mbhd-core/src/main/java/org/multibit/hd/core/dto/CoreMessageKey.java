@@ -36,11 +36,13 @@ public enum CoreMessageKey {
   COULD_NOT_CONNECT_TO_BITCOIN_NETWORK("core_could_not_connect_to_bitcoin_network"),
   NO_ACTIVE_WALLET("core_no_active_wallet"),
 
-  // Transaction adaption
-  TRANSACTION_RECEIVED("core_transaction_received"),
-  TRANSACTION_RECEIVING("core_transaction_receiving"),
-  TRANSACTION_SENT("core_transaction_sent"),
-  TRANSACTION_SENDING("core_transaction_sending"),
+  // Transaction/Payment adaption
+  PAYMENT_REQUESTED("core_payment_requested"),
+  PAYMENT_RECEIVED("core_payment_received"),
+  PAYMENT_RECEIVING("core_payment_receiving"),
+  PAYMENT_SENT("core_payment_sent"),
+  PAYMENT_SENDING("core_payment_sending"),
+
   TRANSACTION_TO("core_transaction_to"),
   TRANSACTION_BY("core_transaction_by")
   // End of enum
