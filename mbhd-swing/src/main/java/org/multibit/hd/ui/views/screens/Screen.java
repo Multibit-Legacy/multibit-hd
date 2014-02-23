@@ -31,7 +31,7 @@ public enum Screen {
    */
   CONTACTS,
   /**
-   * The wallet transactions screen
+   * The wallet payments screen
    */
   TRANSACTIONS,
   /**

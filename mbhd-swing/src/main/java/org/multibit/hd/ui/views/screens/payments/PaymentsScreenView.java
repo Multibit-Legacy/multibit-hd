@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.screens.transactions;
+package org.multibit.hd.ui.views.screens.payments;
 
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
@@ -7,6 +7,7 @@ import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.audio.Sounds;
+import org.multibit.hd.ui.events.view.WalletDetailChangedEvent;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.Tables;
@@ -107,6 +108,20 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
   public void onSlowTransactionSeenEvent(SlowTransactionSeenEvent slowTransactionSeenEvent) {
     log.trace("Received a SlowTransactionSeenEvent.");
 
+    update();
+  }
+
+  /**
+    * Update the payments when a walletDetailsChangedEvent occurs
+    */
+   @Subscribe
+   public void onWalletDetailChangedEvent(WalletDetailChangedEvent walletDetailChangedEvent) {
+     log.trace("Received a WalletDetailsChangedEvent.");
+
+     update();
+   }
+
+  private void update() {
     if (paymentsTable != null) {
       SwingUtilities.invokeLater(new Runnable() {
         @Override

@@ -13,8 +13,8 @@ import org.multibit.hd.ui.views.screens.settings.SettingsScreenModel;
 import org.multibit.hd.ui.views.screens.settings.SettingsScreenView;
 import org.multibit.hd.ui.views.screens.tools.ToolsScreenModel;
 import org.multibit.hd.ui.views.screens.tools.ToolsScreenView;
-import org.multibit.hd.ui.views.screens.transactions.PaymentsScreenModel;
-import org.multibit.hd.ui.views.screens.transactions.PaymentsScreenView;
+import org.multibit.hd.ui.views.screens.payments.PaymentsScreenModel;
+import org.multibit.hd.ui.views.screens.payments.PaymentsScreenView;
 import org.multibit.hd.ui.views.screens.wallet.WalletScreenModel;
 import org.multibit.hd.ui.views.screens.wallet.WalletScreenView;
 

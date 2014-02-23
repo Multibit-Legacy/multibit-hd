@@ -70,7 +70,7 @@ public class HeaderController {
   }
 
   /**
-   * <p>Called when there are transactions seen that may change the balance</p>
+   * <p>Called when there are payments seen that may change the balance</p>
    *
    * @param event The slowTransactionSeenEvent
    */

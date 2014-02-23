@@ -91,7 +91,7 @@ public abstract class AbstractScreenView<M extends ScreenModel> {
    *
    * <p>Implementers must create a new panel</p>
    *
-   * @return A new panel containing the data components specific to this screen (e.g. contacts or transactions)
+   * @return A new panel containing the data components specific to this screen (e.g. contacts or payments)
    */
   public abstract JPanel newScreenViewPanel();
 

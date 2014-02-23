@@ -6,9 +6,14 @@ import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.dto.PaymentRequestData;
-import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.core.dto.FiatPayment;
+import org.multibit.hd.core.dto.PaymentRequestData;
+import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.ContactService;
+import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -22,6 +27,7 @@ import org.multibit.hd.ui.views.components.enter_amount.EnterAmountModel;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountView;
 import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
+import org.multibit.hd.ui.views.components.wallet_detail.WalletDetail;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
@@ -31,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.File;
 import java.math.BigInteger;
 
 /**
@@ -142,15 +148,21 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
       public void run() {
         getFinishButton().requestFocusInWindow();
 
-        getFinishButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-              savePaymentRequest();
-            }
-          });
+//        getFinishButton().addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//              savePaymentRequest();
+//            }
+//          });
       }
     });
 
+  }
+
+  @Override
+  public boolean beforeHide(boolean isExitCancel) {
+    savePaymentRequest();
+    return true;
   }
 
   /**
@@ -175,6 +187,22 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
 
     walletService.getPayments().getPaymentRequestDatas().add(paymentRequestData);
     walletService.writePayments();
+
+    // Ensure the views that display payments update
+    WalletDetail walletDetail = new WalletDetail();
+    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
+      WalletData walletData = WalletManager.INSTANCE.getCurrentWalletData().get();
+      walletDetail.setApplicationDirectory(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath());
+
+      File walletFile = WalletManager.INSTANCE.getCurrentWalletFilename().get();
+      walletDetail.setWalletDirectory(walletFile.getParentFile().getName());
+
+      ContactService contactService = CoreServices.getOrCreateContactService(walletData.getWalletId());
+      walletDetail.setNumberOfContacts(contactService.allContacts().size());
+
+      walletDetail.setNumberOfPayments(MultiBitHD.getWalletService().getPaymentDatas().size());
+      ViewEvents.fireWalletDetailChangedEvent(walletDetail);
+    }
   }
 
   @Override

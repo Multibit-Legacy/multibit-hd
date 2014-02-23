@@ -3838,7 +3838,7 @@ public final class MBHDPaymentsProtos {
      * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
-     * Collection of transactions
+     * Collection of payments
      * </pre>
      */
     java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo> 
@@ -3847,7 +3847,7 @@ public final class MBHDPaymentsProtos {
      * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
-     * Collection of transactions
+     * Collection of payments
      * </pre>
      */
     org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo getTransactionInfo(int index);
@@ -3855,7 +3855,7 @@ public final class MBHDPaymentsProtos {
      * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
-     * Collection of transactions
+     * Collection of payments
      * </pre>
      */
     int getTransactionInfoCount();
@@ -3863,7 +3863,7 @@ public final class MBHDPaymentsProtos {
      * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
-     * Collection of transactions
+     * Collection of payments
      * </pre>
      */
     java.util.List<? extends org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfoOrBuilder> 
@@ -3872,7 +3872,7 @@ public final class MBHDPaymentsProtos {
      * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
-     * Collection of transactions
+     * Collection of payments
      * </pre>
      */
     org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfoOrBuilder getTransactionInfoOrBuilder(
@@ -4082,7 +4082,7 @@ public final class MBHDPaymentsProtos {
      * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
-     * Collection of transactions
+     * Collection of payments
      * </pre>
      */
     public java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo> getTransactionInfoList() {
@@ -4092,7 +4092,7 @@ public final class MBHDPaymentsProtos {
      * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
-     * Collection of transactions
+     * Collection of payments
      * </pre>
      */
     public java.util.List<? extends org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfoOrBuilder> 
@@ -4103,7 +4103,7 @@ public final class MBHDPaymentsProtos {
      * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
-     * Collection of transactions
+     * Collection of payments
      * </pre>
      */
     public int getTransactionInfoCount() {
@@ -4113,7 +4113,7 @@ public final class MBHDPaymentsProtos {
      * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
-     * Collection of transactions
+     * Collection of payments
      * </pre>
      */
     public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo getTransactionInfo(int index) {
@@ -4123,7 +4123,7 @@ public final class MBHDPaymentsProtos {
      * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
-     * Collection of transactions
+     * Collection of payments
      * </pre>
      */
     public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfoOrBuilder getTransactionInfoOrBuilder(
@@ -4848,7 +4848,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of transactions
+       * Collection of payments
        * </pre>
        */
       public java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo> getTransactionInfoList() {
@@ -4862,7 +4862,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of transactions
+       * Collection of payments
        * </pre>
        */
       public int getTransactionInfoCount() {
@@ -4876,7 +4876,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of transactions
+       * Collection of payments
        * </pre>
        */
       public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo getTransactionInfo(int index) {
@@ -4890,7 +4890,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of transactions
+       * Collection of payments
        * </pre>
        */
       public Builder setTransactionInfo(
@@ -4911,7 +4911,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of transactions
+       * Collection of payments
        * </pre>
        */
       public Builder setTransactionInfo(
@@ -4929,7 +4929,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of transactions
+       * Collection of payments
        * </pre>
        */
       public Builder addTransactionInfo(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo value) {
@@ -4949,7 +4949,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of transactions
+       * Collection of payments
        * </pre>
        */
       public Builder addTransactionInfo(
@@ -4970,7 +4970,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of transactions
+       * Collection of payments
        * </pre>
        */
       public Builder addTransactionInfo(
@@ -4988,7 +4988,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of transactions
+       * Collection of payments
        * </pre>
        */
       public Builder addTransactionInfo(
@@ -5006,7 +5006,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of transactions
+       * Collection of payments
        * </pre>
        */
       public Builder addAllTransactionInfo(
@@ -5024,7 +5024,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of transactions
+       * Collection of payments
        * </pre>
        */
       public Builder clearTransactionInfo() {
@@ -5041,7 +5041,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of transactions
+       * Collection of payments
        * </pre>
        */
       public Builder removeTransactionInfo(int index) {
@@ -5058,7 +5058,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of transactions
+       * Collection of payments
        * </pre>
        */
       public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.Builder getTransactionInfoBuilder(
@@ -5069,7 +5069,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of transactions
+       * Collection of payments
        * </pre>
        */
       public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfoOrBuilder getTransactionInfoOrBuilder(
@@ -5083,7 +5083,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of transactions
+       * Collection of payments
        * </pre>
        */
       public java.util.List<? extends org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfoOrBuilder> 
@@ -5098,7 +5098,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of transactions
+       * Collection of payments
        * </pre>
        */
       public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.Builder addTransactionInfoBuilder() {
@@ -5109,7 +5109,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of transactions
+       * Collection of payments
        * </pre>
        */
       public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.Builder addTransactionInfoBuilder(
@@ -5121,7 +5121,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of transactions
+       * Collection of payments
        * </pre>
        */
       public java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.Builder> 

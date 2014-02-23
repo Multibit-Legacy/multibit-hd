@@ -73,7 +73,7 @@ public class WalletDetailModel implements Model<WalletDetail> {
   }
 
   /**
-   * Update the transactions when a slowTransactionSeenEvent occurs
+   * Update the payments when a slowTransactionSeenEvent occurs
    */
   @Subscribe
   public void onSlowTransactionSeenEvent(SlowTransactionSeenEvent slowTransactionSeenEvent) {

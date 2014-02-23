@@ -105,7 +105,7 @@ public class WalletService {
   }
 
   /**
-   * Get all the payments (transactions and payment requests) in the current wallet
+   * Get all the payments (payments and payment requests) in the current wallet
    */
   public Set<PaymentData> getPaymentDatas() {
     // See if there is a current wallet
@@ -124,7 +124,7 @@ public class WalletService {
     // There should be a wallet
     Preconditions.checkNotNull(wallet, "There is no wallet to process");
 
-    // Get and adapt all the transactions in the wallet
+    // Get and adapt all the payments in the wallet
     Set<Transaction> transactions = wallet.getTransactions(true);
 
     // Adapted transaction data to return

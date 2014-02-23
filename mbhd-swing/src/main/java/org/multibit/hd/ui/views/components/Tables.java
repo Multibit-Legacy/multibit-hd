@@ -69,7 +69,7 @@ public class Tables {
 
   /**
    * @param paymentDatas The payments to show
-   * @return A new "transactions" striped table
+   * @return A new "payments" striped table
    */
   public static StripedTable newPaymentsTable(Set<PaymentData> paymentDatas) {
 
