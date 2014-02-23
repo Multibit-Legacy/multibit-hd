@@ -1,7 +1,9 @@
 package org.multibit.hd.ui.views.screens.payments;
 
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
 import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.services.CoreServices;
@@ -18,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.util.Set;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -65,7 +68,13 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     // Create view components
     JPanel contentPanel = Panels.newPanel(layout);
 
-    paymentsTable = Tables.newPaymentsTable(MultiBitHD.getWalletService().getPaymentDatas());
+    Set<PaymentData> paymentDatas;
+    if (MultiBitHD.getWalletService() == null) {
+      paymentDatas = Sets.newHashSet();
+    } else {
+      paymentDatas = MultiBitHD.getWalletService().getPaymentDatas();
+    }
+    paymentsTable = Tables.newPaymentsTable(paymentDatas);
 
     // Create the scroll pane and add the table to it.
     JScrollPane scrollPane = new JScrollPane(paymentsTable);

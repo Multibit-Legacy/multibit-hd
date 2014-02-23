@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components.auto_complete;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.Recipient;
@@ -36,7 +37,7 @@ public class AutoCompleteFilters {
       @Override
       public Recipient[] create() {
 
-        List<Contact> contacts = CoreServices.getOrCreateContactService(getCurrentWalletId()).allContacts();
+        List<Contact> contacts = CoreServices.getOrCreateContactService(Optional.of(getCurrentWalletId())).allContacts();
 
         return populateRecipients(contacts);
 
@@ -49,7 +50,7 @@ public class AutoCompleteFilters {
           return new Recipient[]{};
         }
 
-        List<Contact> contacts = CoreServices.getOrCreateContactService(getCurrentWalletId()).filterContactsByContent(fragment);
+        List<Contact> contacts = CoreServices.getOrCreateContactService(Optional.of(getCurrentWalletId())).filterContactsByContent(fragment);
 
         return populateRecipients(contacts);
       }

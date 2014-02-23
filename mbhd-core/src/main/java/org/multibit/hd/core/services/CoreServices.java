@@ -1,5 +1,6 @@
 package org.multibit.hd.core.services;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
@@ -79,7 +80,6 @@ public class CoreServices {
 
   /**
    * @param exchangeClassName The exchange class name taken from the XChange library
-   *
    * @return A new exchange service based on the current configuration
    */
   public static ExchangeTickerService newExchangeService(String exchangeClassName) {
@@ -89,9 +89,9 @@ public class CoreServices {
 
     // Update the configuration with the current exchange name
     Configurations
-      .currentConfiguration
-      .getBitcoinConfiguration()
-      .setExchangeName(exchange.getExchangeSpecification().getExchangeName());
+            .currentConfiguration
+            .getBitcoinConfiguration()
+            .setExchangeName(exchange.getExchangeSpecification().getExchangeName());
 
     return new ExchangeTickerService(exchange.getExchangeSpecification().getExchangeName(), exchange.getPollingMarketDataService());
 
@@ -130,18 +130,22 @@ public class CoreServices {
   /**
    * @return The contact service for a wallet
    */
-  public static ContactService getOrCreateContactService(WalletId walletId) {
+  public static ContactService getOrCreateContactService(Optional<WalletId> walletIdOptional) {
 
-    Preconditions.checkNotNull(walletId, "'walletId' must be present");
+    Preconditions.checkNotNull(walletIdOptional, "'walletIdOptional' must be present");
 
-    // Check if the contact service has been created for this wallet ID
-    if (!contactServiceMap.containsKey(walletId)) {
-      contactServiceMap.put(walletId, new ContactService(walletId));
+    if (!walletIdOptional.isPresent()) {
+      // No walletId loaded yet - return an EmptyContactService
+      return new EmptyContactService();
+    } else {
+      WalletId walletId = walletIdOptional.get();
+      // Check if the contact service has been created for this wallet ID
+      if (!contactServiceMap.containsKey(walletId)) {
+        contactServiceMap.put(walletId, new PersistentContactService(walletId));
+      }
+
+      // Return the existing or new contact service
+      return contactServiceMap.get(walletId);
     }
-
-    // Return the existing or new contact service
-    return contactServiceMap.get(walletId);
-
   }
-
 }

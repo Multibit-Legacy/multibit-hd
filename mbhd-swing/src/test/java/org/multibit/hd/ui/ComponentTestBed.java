@@ -117,7 +117,7 @@ public class ComponentTestBed {
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
     WalletManager.INSTANCE.initialise(applicationDataDirectory);
 
-    ContactService contactService = CoreServices.getOrCreateContactService(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId());
+    ContactService contactService = CoreServices.getOrCreateContactService(Optional.of(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()));
     contactService.addDemoContacts();
 
   }

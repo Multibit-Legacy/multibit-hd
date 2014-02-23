@@ -3,6 +3,8 @@ package org.multibit.hd.ui.views.wizards.password;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
@@ -102,6 +104,21 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
       }
     });
 
+  }
+
+  @Override
+  public boolean beforeHide(boolean isExiting) {
+    // If a password has been entered, put it into the WalletData (so that it is available for address generation)
+    // TODO - remove when we have proper HD wallets  - won't need password for address generation
+    CharSequence password = enterPasswordMaV.getModel().getValue();
+    if (!"".equals(password)) {
+      // TODO should be using WalletService
+      Optional<WalletData> walletDataOptional = WalletManager.INSTANCE.getCurrentWalletData();
+      if (walletDataOptional.isPresent()) {
+        walletDataOptional.get().setPassword(password);
+      }
+    }
+    return true;
   }
 
   @Override

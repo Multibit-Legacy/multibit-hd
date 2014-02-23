@@ -68,7 +68,7 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
     // Configure the panel model
     setPanelModel(new EditContactEnterDetailsPanelModel(
-      getPanelName()
+            getPanelName()
     ));
 
   }
@@ -79,9 +79,9 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.EDIT);
 
     panel.setLayout(new MigLayout(
-      "fillx,insets 0", // Layout constraints
-      "[][]", // Column constraints
-      "[][][]" // Row constraints
+            "fillx,insets 0", // Layout constraints
+            "[][]", // Column constraints
+            "[][][]" // Row constraints
     ));
 
     List<Contact> contacts = getWizardModel().getContacts();
@@ -123,16 +123,27 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
     } else {
 
-      // Use a single contact
-      name.setText(firstContact.getName().trim());
-      emailAddress.setText(firstContact.getEmail().or("").trim());
-      bitcoinAddress.setText(firstContact.getBitcoinAddress().or("").trim());
-      extendedPublicKey.setText(firstContact.getExtendedPublicKey().or("").trim());
-      notes.setText(firstContact.getNotes().or("").trim());
+      if (firstContact != null) {
+        // Use a single contact
+        name.setText(firstContact.getName() == null ? "" : firstContact.getName().trim());
+        emailAddress.setText(firstContact.getEmail().or("").trim());
+        bitcoinAddress.setText(firstContact.getBitcoinAddress().or("").trim());
+        extendedPublicKey.setText(firstContact.getExtendedPublicKey().or("").trim());
+        notes.setText(firstContact.getNotes().or("").trim());
 
-      // Base the tags on first contact tags
-      enterTagsMaV = Components.newEnterTagsMaV(getPanelName(), firstContact.getTags());
+        // Base the tags on first contact tags
+        enterTagsMaV = Components.newEnterTagsMaV(getPanelName(), firstContact.getTags() == null ? Lists.<String>newArrayList() : firstContact.getTags());
+      } else {
+        name.setText("");
+        emailAddress.setText("");
+        bitcoinAddress.setText("");
+        extendedPublicKey.setText("");
+        notes.setText("");
 
+        // Empty tags
+        enterTagsMaV = Components.newEnterTagsMaV(getPanelName(), Lists.<String>newArrayList());
+
+      }
     }
 
     if (!multiEdit) {

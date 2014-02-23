@@ -14,7 +14,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 public class ContactServiceTest {
 
-  private ContactService contactService;
+  private PersistentContactService contactService;
 
   @Before
   public void setUp() throws Exception {
@@ -22,7 +22,7 @@ public class ContactServiceTest {
     File temporaryDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
     File contactDbFile = new File(temporaryDirectory.getAbsolutePath() + File.separator + ContactService.CONTACTS_DATABASE_NAME);
 
-    contactService = new ContactService(contactDbFile);
+    contactService = new PersistentContactService(contactDbFile);
     contactService.addDemoContacts();
 
   }
