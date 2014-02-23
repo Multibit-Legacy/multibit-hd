@@ -7,7 +7,9 @@ import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -36,7 +38,12 @@ public class Images {
 
     try (InputStream is = Images.class.getResourceAsStream("/assets/images/qrcode.png")) {
 
-      BufferedImage qrCodePng = ImageIO.read(is);
+      // Transform the mask color into the current themed text
+      BufferedImage qrCodePng = colorImage(
+        ImageIO.read(is),
+        Themes.currentTheme.text()
+      );
+
       return new ImageIcon(qrCodePng);
 
     } catch (IOException e) {
@@ -60,6 +67,39 @@ public class Images {
 
     return ImageDecorator.toImageIcon(icon);
 
+  }
+
+  /**
+   * <p>Applies a single alpha-blended color over all pixels</p>
+   * @param image    The source image
+   * @param newColor The color to use as the replacement to non-transparent pixels
+   *
+   * @return The new image with color applied
+   */
+  public static BufferedImage colorImage(BufferedImage image, Color newColor) {
+
+    int width = image.getWidth();
+    int height = image.getHeight();
+
+    WritableRaster raster = image.getRaster();
+
+    int newColorRed = newColor.getRed();
+    int newColorGreen = newColor.getGreen();
+    int newColorBlue = newColor.getBlue();
+
+    for (int x = 0; x < width; x++) {
+      for (int y = 0; y < height; y++) {
+        int[] pixels = raster.getPixel(x, y, (int[]) null);
+
+        pixels[0] = newColorRed;
+        pixels[1] = newColorGreen;
+        pixels[2] = newColorBlue;
+
+        raster.setPixel(x, y, pixels);
+      }
+    }
+
+    return image;
   }
 
 }
