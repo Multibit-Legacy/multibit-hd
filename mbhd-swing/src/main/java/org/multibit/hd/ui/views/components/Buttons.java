@@ -84,16 +84,20 @@ public class Buttons {
   }
 
   /**
-   * @param action The click action
+   * <p>Create a new alert panel button</p>
    *
-   * @return A new "Yes" button with icon
+   * @param action     The click action
+   * @param messageKey The message key to use
+   * @param icon       The awesome icon to use
+   *
+   * @return A new "alert panel" button with icon
    */
-  public static JButton newYesButton(Action action) {
+  public static JButton newAlertPanelButton(Action action, MessageKey messageKey, AwesomeIcon icon) {
 
-    JButton button = newButton(action, MessageKey.YES);
+    JButton button = newButton(action, messageKey);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, button, true, MultiBitUI.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(icon, button, true, MultiBitUI.SMALL_ICON_SIZE);
 
     return button;
 

@@ -9,6 +9,7 @@ import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.wizards.Wizards;
@@ -78,7 +79,7 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
             System.out.println("Done something");
           }
         };
-        JButton button = Buttons.newYesButton(action);
+        JButton button = Buttons.newAlertPanelButton(action, MessageKey.YES, AwesomeIcon.CHECK);
         alertModel.setButton(button);
 
         ControllerEvents.fireAddAlertEvent(alertModel);
