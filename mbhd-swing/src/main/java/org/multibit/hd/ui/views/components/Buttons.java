@@ -220,6 +220,22 @@ public class Buttons {
   }
 
   /**
+    * @param action The click action
+    *
+    * @return A new "Unlock" button with icon (this is a finish button but just looks differently)
+    */
+   public static JButton newUnlockButton(Action action) {
+
+     JButton button = newButton(action, MessageKey.PASSWORD_UNLOCK);
+     button.setAction(action);
+
+     AwesomeDecorator.applyIcon(AwesomeIcon.KEY, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+
+     return button;
+
+   }
+
+  /**
    * @param action The click action
    *
    * @return A new "Apply" button with icon

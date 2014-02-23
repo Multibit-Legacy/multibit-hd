@@ -259,7 +259,7 @@ public class PanelDecorator {
    * @param <M>    The wizard model type
    * @param <P>    The wizard panel model type
    */
-  public static <M extends WizardModel, P> void addExitCancelRestoreFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
+  public static <M extends WizardModel, P> void addExitCancelRestoreUnlock(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
 
     Preconditions.checkNotNull(view, "'view' must be present");
     Preconditions.checkNotNull(view, "'wizard' must be present");
@@ -270,7 +270,7 @@ public class PanelDecorator {
 
     addExitCancel(view, wizard, wizardPanel);
     addRestore(view, wizard, wizardPanel);
-    addFinish(view, wizard, wizardPanel);
+    addUnlock(view, wizard, wizardPanel);
 
   }
 
@@ -578,6 +578,25 @@ public class PanelDecorator {
     Preconditions.checkNotNull(view.getWizardPanel(), "'wizardPanel' must be present");
 
     view.setFinishButton(Buttons.newFinishButton(wizard.getFinishAction(view)));
+    wizardPanel.add(view.getFinishButton(), "cell 3 2");
+  }
+
+  /**
+   * <p>Add an "unlock" button into an appropriate cell</p>
+   *
+   * @param view        The view containing the panel to decorate
+   * @param wizard      The wizard providing the actions
+   * @param wizardPanel The wizard panel providing the layout
+   * @param <M>         The wizard model type
+   * @param <P>         The wizard panel model type
+   */
+  private static <M extends WizardModel, P> void addUnlock(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard, JPanel wizardPanel) {
+
+    Preconditions.checkNotNull(view, "'view' must be present");
+    Preconditions.checkNotNull(view, "'wizard' must be present");
+    Preconditions.checkNotNull(view.getWizardPanel(), "'wizardPanel' must be present");
+
+    view.setFinishButton(Buttons.newUnlockButton(wizard.getFinishAction(view)));
     wizardPanel.add(view.getFinishButton(), "cell 3 2");
   }
 

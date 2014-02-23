@@ -121,6 +121,7 @@ public enum MessageKey {
   PASSWORD_TITLE("password_title"),
   PASSWORD_ENTER_SEED_PHRASE_TITLE("password_enter_seed_phrase_title"),
   PASSWORD_REPORT_TITLE("password_report_title"),
+  PASSWORD_UNLOCK("password_unlock"),
 
   // Labels
   CONFIRM_SEND_MESSAGE("confirm_send_message"),

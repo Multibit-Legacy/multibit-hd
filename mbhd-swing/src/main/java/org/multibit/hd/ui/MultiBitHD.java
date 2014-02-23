@@ -130,8 +130,6 @@ public class MultiBitHD {
     WalletManager.INSTANCE.initialise(applicationDataDirectory);
     BackupManager.INSTANCE.initialise(applicationDataDirectory, null);
 
-    // TODO loadContacts up the cloud backup if available from properties and insert here
-
     if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
       // TODO Remove this when the Contact screen is ready
       CoreServices
@@ -183,6 +181,7 @@ public class MultiBitHD {
       log.debug("The current wallet is:\nWallet id = '" + walletData.getWalletId().toString() + "\n" + walletData.getWallet().toString());
 
       // TODO need to show warm start dialog (to get password) and unencrypt wallet, contacts and payments
+       Panels.showLightBox(Wizards.newClosingPasswordWizard().getWizardPanel());
 
     } else {
       // Show an exiting Welcome wizard

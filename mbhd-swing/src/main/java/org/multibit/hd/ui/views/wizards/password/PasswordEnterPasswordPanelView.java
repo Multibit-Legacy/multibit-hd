@@ -42,8 +42,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
 
     super(wizard.getWizardModel(), panelName, MessageKey.PASSWORD_TITLE);
 
-    PanelDecorator.addExitCancelRestoreFinish(this, wizard);
-
+    PanelDecorator.addExitCancelRestoreUnlock(this, wizard);
   }
 
   @Override
