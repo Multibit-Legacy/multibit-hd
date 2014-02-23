@@ -12,6 +12,8 @@ public class WalletData {
 
   private final WalletId walletId;
 
+  private CharSequence password;
+
   public WalletData(WalletId walletId, Wallet wallet) {
 
     this.walletId = walletId;
@@ -26,11 +28,19 @@ public class WalletData {
     return walletId;
   }
 
+  public CharSequence getPassword() {
+    return password;
+  }
+
+  public void setPassword(CharSequence password) {
+    this.password = password;
+  }
+
   @Override
   public String toString() {
     return "WalletData{" +
-      "walletId=" + walletId +
-      ", wallet=" + wallet +
-      '}';
+            "walletId=" + walletId +
+            ", wallet=" + wallet +
+            '}';
   }
 }

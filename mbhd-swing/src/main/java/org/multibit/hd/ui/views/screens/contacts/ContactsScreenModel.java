@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.screens.contacts;
 
+import com.google.common.base.Optional;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.managers.WalletManager;
@@ -87,13 +88,12 @@ public class ContactsScreenModel extends AbstractScreenModel {
   }
 
   // TODO Move this into a wallet service
-  private WalletId getCurrentWalletId() {
+  private Optional<WalletId> getCurrentWalletId() {
 
     if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
-      return WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId();
+      return Optional.of(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId());
+    } else {
+      return Optional.absent();
     }
-
-    // TODO this need removing
-    return new WalletId("66666666-77777777-88888888-99999999-aaaaaaaa");
   }
 }

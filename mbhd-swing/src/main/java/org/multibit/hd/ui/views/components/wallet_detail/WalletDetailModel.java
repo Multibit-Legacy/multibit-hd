@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components.wallet_detail;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.dto.WalletData;
@@ -65,7 +66,7 @@ public class WalletDetailModel implements Model<WalletDetail> {
       File walletFile = WalletManager.INSTANCE.getCurrentWalletFilename().get();
       walletDetail.setWalletDirectory(walletFile.getParentFile().getName());
 
-      ContactService contactService = CoreServices.getOrCreateContactService(walletData.getWalletId());
+      ContactService contactService = CoreServices.getOrCreateContactService(Optional.of(walletData.getWalletId()));
       walletDetail.setNumberOfContacts(contactService.allContacts().size());
 
       walletDetail.setNumberOfPayments(MultiBitHD.getWalletService().getPaymentDatas().size());

@@ -82,8 +82,17 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
 
     enterAmountMaV = Components.newEnterAmountMaV(getPanelName());
 
+    // See if there is a password entered for the wallet
+    // TODO - remove when HDwallets supported - won't need a password to generate the next address
+    Optional<WalletData> walletDataOptional = WalletManager.INSTANCE.getCurrentWalletData();
+    Optional<CharSequence> passwordParameter = Optional.absent();
+    if (walletDataOptional.isPresent()) {
+      if (!"".equals(walletDataOptional.get().getPassword())) {
+        passwordParameter = Optional.of(walletDataOptional.get().getPassword());
+      }
+    }
     // Get the next receiving address from the wallet service
-    String nextAddress = MultiBitHD.getWalletService().generateNextReceivingAddress(Optional.<CharSequence>absent());
+    String nextAddress = MultiBitHD.getWalletService().generateNextReceivingAddress(passwordParameter);
     displayBitcoinAddressMaV = Components.newDisplayBitcoinAddressMaV(nextAddress);
 
     // Create the QR code display
@@ -147,13 +156,6 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
       @Override
       public void run() {
         getFinishButton().requestFocusInWindow();
-
-//        getFinishButton().addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//              savePaymentRequest();
-//            }
-//          });
       }
     });
 
@@ -197,7 +199,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
       File walletFile = WalletManager.INSTANCE.getCurrentWalletFilename().get();
       walletDetail.setWalletDirectory(walletFile.getParentFile().getName());
 
-      ContactService contactService = CoreServices.getOrCreateContactService(walletData.getWalletId());
+      ContactService contactService = CoreServices.getOrCreateContactService(Optional.of(walletData.getWalletId()));
       walletDetail.setNumberOfContacts(contactService.allContacts().size());
 
       walletDetail.setNumberOfPayments(MultiBitHD.getWalletService().getPaymentDatas().size());

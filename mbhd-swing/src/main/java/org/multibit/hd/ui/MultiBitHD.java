@@ -134,8 +134,8 @@ public class MultiBitHD {
       // TODO Remove this when the Contact screen is ready
       CoreServices
               .getOrCreateContactService(
-                      WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()
-              ).addDemoContacts();
+                      Optional.of(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()
+                      )).addDemoContacts();
 
       // Initialise the WalletService, which provides transaction information from the wallet
       walletService = CoreServices.newWalletService();
