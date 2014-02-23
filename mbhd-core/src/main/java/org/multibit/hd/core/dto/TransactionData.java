@@ -7,7 +7,7 @@ import org.joda.time.DateTime;
 import java.math.BigInteger;
 
 /**
- *  <p>Data object to provide the following to Transaction display:<br>
+ *  <p>Data object to provide the following to Payments display:<br>
  *  <ul>
  *  <li>Contains transaction relevant data</li>
  *  <li>Immutable</li>
