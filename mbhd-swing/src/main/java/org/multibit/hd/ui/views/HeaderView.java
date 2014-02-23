@@ -58,7 +58,7 @@ public class HeaderView {
 
     // Create the alert panel
     alertPanel = Panels.newPanel(new MigLayout(
-      "fillx,insets 5", // Layout insets define the padding for the alert
+      "fillx,insets 0", // Layout insets define the padding for the alert
       "[grow][][][]", // Columns
       "[]" // Rows
     ));
