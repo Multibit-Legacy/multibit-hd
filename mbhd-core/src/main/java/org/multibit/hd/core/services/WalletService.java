@@ -191,7 +191,7 @@ public class WalletService {
     String description;
 
     if (paymentType == PaymentType.RECEIVING || paymentType == PaymentType.RECEIVED) {
-      description = "by"; // TODO localise
+      description = "By"; // TODO localise
       if (transaction.getOutputs() != null) {
         for (TransactionOutput transactionOutput : transaction.getOutputs()) {
           if (transactionOutput.isMine(wallet)) {
@@ -201,7 +201,7 @@ public class WalletService {
       }
     } else {
       // Sent
-      description = "to"; // TODO localise
+      description = "To"; // TODO localise
       if (transaction.getOutputs() != null) {
         for (TransactionOutput transactionOutput : transaction.getOutputs()) {
           // TODO Beef up description for other cases
