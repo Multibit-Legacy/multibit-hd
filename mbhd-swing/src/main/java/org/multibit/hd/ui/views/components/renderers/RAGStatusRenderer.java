@@ -28,8 +28,6 @@ public class RAGStatusRenderer extends DefaultTableCellRenderer {
     label.setVerticalAlignment(SwingConstants.CENTER);
     label.setOpaque(true);
 
-    AwesomeDecorator.bindIcon(AwesomeIcon.CIRCLE, label, false, MultiBitUI.SMALL_ICON_SIZE);
-
     // Get the RAG (which is in the model as a RAGStatus
     if (value instanceof RAGStatus) {
       RAGStatus status = (RAGStatus) value;
@@ -37,15 +35,19 @@ public class RAGStatusRenderer extends DefaultTableCellRenderer {
       switch (status) {
         case RED:
           label.setForeground(Themes.currentTheme.dangerAlertBackground());
+          AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, label, false, MultiBitUI.SMALL_ICON_SIZE);
           break;
         case AMBER:
-          label.setForeground(Themes.currentTheme.warningAlertBackground());
+          label.setForeground(Themes.currentTheme.text());
+          AwesomeDecorator.bindIcon(AwesomeIcon.EXCHANGE, label, false, MultiBitUI.SMALL_ICON_SIZE);
           break;
         case GREEN:
           label.setForeground(Themes.currentTheme.successAlertBackground());
+          AwesomeDecorator.bindIcon(AwesomeIcon.CHECK, label, false, MultiBitUI.SMALL_ICON_SIZE);
           break;
         case PINK:
-          label.setForeground(Themes.currentTheme.pendingAlertBackground());
+          label.setForeground(Themes.currentTheme.pendingAlertBackground().darker());
+          AwesomeDecorator.bindIcon(AwesomeIcon.FILE_TEXT, label, false, MultiBitUI.SMALL_ICON_SIZE);
           break;
         default:
           // Unknown status

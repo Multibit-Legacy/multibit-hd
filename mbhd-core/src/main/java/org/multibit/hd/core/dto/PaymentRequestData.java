@@ -69,14 +69,14 @@ public class PaymentRequestData implements PaymentData {
   public String getDescription() {
     // TODO localise
     StringBuilder builder = new StringBuilder();
-    builder.append("by you");
+    builder.append("You requested: ");
     if (getLabel() != null && getLabel().length() >0) {
-      builder.append(SEPARATOR).append(getLabel());
+      builder.append(getLabel()).append(SEPARATOR);
     }
     if (getNote() != null && getNote().length() >0) {
-      builder.append(SEPARATOR).append(getNote());
+      builder.append(getNote()).append(SEPARATOR);
     }
-    builder.append(SEPARATOR).append("To ").append(getAddress());
+    builder.append("To ").append(getAddress());
     return builder.toString();
   }
 
