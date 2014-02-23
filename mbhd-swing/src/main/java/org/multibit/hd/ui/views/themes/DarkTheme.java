@@ -7,33 +7,33 @@ import java.awt.*;
 /**
  * <p>Strategy to provide the following to Themes API:</p>
  * <ul>
- * <li>A light theme using an accented analogic colour wheel</li>
+ * <li>A low-light dark theme using an accented analogic colour wheel</li>
  * </ul>
  * <p>See <a href="http://colorschemedesigner.com/#2U62lw0w0w0w0">colour scheme</a> and Export to a file as a starting point</p>
  *
  * @since 0.0.1
  *         
  */
-public class LightTheme implements Theme {
+public class DarkTheme implements Theme {
 
   @Override
   public Color readOnlyBackground() {
-    return new Color(0x6e86d6);
+    return new Color(0x2c4081);
   }
 
   @Override
   public Color readOnlyBorder() {
-    return new Color(0x061f70);
+    return new Color(0x4869d6);
   }
 
   @Override
   public Color dataEntryBackground() {
-    return new Color(0xf3fd72);
+    return new Color(0xe9fb00);
   }
 
   @Override
   public Color dataEntryBorder() {
-    return new Color(0x97a300);
+    return new Color(0xeffd3f);
   }
 
   @Override
@@ -43,37 +43,37 @@ public class LightTheme implements Theme {
 
   @Override
   public Color headerPanelBackground() {
-    return new Color(0xe0e0e0);
+    return new Color(0x404040);
   }
 
   @Override
   public Color detailPanelBackground() {
-    return new Color(0xf0f0e0);
+    return new Color(0x303030);
   }
 
   @Override
   public Color buttonBackground() {
-    return new Color(0xd0d0d0);
+    return new Color(0x506040);
   }
 
   @Override
   public Color sidebarPanelBackground() {
-    return new Color(0xf0f0f0);
+    return new Color(0x303030);
   }
 
   @Override
   public Color text() {
-    return new Color(6, 6, 6);
+    return new Color(0xbababa);
   }
 
   @Override
   public Color fadedText() {
-    return new Color(0x808080);
+    return new Color(0x9a9a9a);
   }
 
   @Override
   public Color inverseText() {
-    return new Color(0xfafafa);
+    return new Color(0x060606);
   }
 
   @Override
@@ -136,7 +136,7 @@ public class LightTheme implements Theme {
 
   @Override
   public Color infoAlertBorder() {
-    return new Color(0x061f70);
+    return new Color(0x2c4081);
   }
 
   @Override
@@ -161,7 +161,7 @@ public class LightTheme implements Theme {
 
   @Override
   public Color dangerAlertBackground() {
-    return new Color(0xff8373);
+    return new Color(0xbf4030);
   }
 
   @Override

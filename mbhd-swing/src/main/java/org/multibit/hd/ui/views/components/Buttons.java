@@ -45,6 +45,10 @@ public class Buttons {
     // Ensure we use the correct component orientation
     button.applyComponentOrientation(Languages.currentComponentOrientation());
 
+    // Apply default theme
+    NimbusDecorator.applyThemeColor(Themes.currentTheme.buttonBackground(), button);
+    button.setForeground(Themes.currentTheme.text());
+
     return button;
   }
 
@@ -63,7 +67,6 @@ public class Buttons {
 
     // TODO Accessibility API - append _ACCESSIBILITY to .name() ?
 
-
     return button;
   }
 
@@ -79,6 +82,9 @@ public class Buttons {
 
     button.setVerticalTextPosition(SwingConstants.BOTTOM);
     button.setHorizontalTextPosition(SwingConstants.CENTER);
+
+    // Apply default theme
+    NimbusDecorator.applyThemeColor(Themes.currentTheme.buttonBackground(), button);
 
     return button;
   }

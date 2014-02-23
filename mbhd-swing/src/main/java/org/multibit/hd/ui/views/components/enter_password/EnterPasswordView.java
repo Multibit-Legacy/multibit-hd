@@ -58,6 +58,7 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
       @Override
       public void keyReleased(KeyEvent e) {
         getModel().get().setPassword(password.getPassword());
+
       }
 
     });

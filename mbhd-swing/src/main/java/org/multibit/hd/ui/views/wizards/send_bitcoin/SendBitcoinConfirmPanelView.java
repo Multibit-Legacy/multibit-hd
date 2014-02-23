@@ -77,7 +77,7 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
   public JPanel newWizardViewPanel() {
 
     // Blank labels populated from wizard model later
-    recipientSummaryLabel = new JLabel("");
+    recipientSummaryLabel = Labels.newBlankLabel();
 
     // User entered text
     notesTextArea = TextBoxes.newEnterNotes();

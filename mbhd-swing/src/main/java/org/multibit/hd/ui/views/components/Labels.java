@@ -47,14 +47,28 @@ public class Labels {
    * @return A new label with default styling
    */
   public static JLabel newLabel(MessageKey key, Object... values) {
-    return new JLabel(Languages.safeText(key, values));
+
+    JLabel label = new JLabel(Languages.safeText(key, values));
+
+    // Apply theme
+    label.setForeground(Themes.currentTheme.text());
+
+    return label;
+
   }
 
   /**
    * @return A new blank label with default styling
    */
   public static JLabel newBlankLabel() {
-    return new JLabel("");
+
+    JLabel label = new JLabel("");
+
+    // Apply theme
+    label.setForeground(Themes.currentTheme.text());
+
+    return label;
+
   }
 
   /**
@@ -137,7 +151,7 @@ public class Labels {
     if (key.isPresent()) {
       label = newLabel(key.get(), values);
     } else {
-      label = new JLabel();
+      label = newBlankLabel();
     }
 
     decorateStatusLabel(label, status);
@@ -165,12 +179,19 @@ public class Labels {
   public static JLabel newImageLabel(Optional<BufferedImage> image) {
 
     if (image.isPresent()) {
-      return new JLabel(new ImageIcon(image.get()));
+      JLabel label = new JLabel(new ImageIcon(image.get()));
+
+      // Apply theme
+      label.setForeground(Themes.currentTheme.text());
+
+      return label;
     }
 
     // Fall back to a default image
-    JLabel label = new JLabel();
+    JLabel label = newBlankLabel();
+
     AwesomeDecorator.applyIcon(AwesomeIcon.USER, label, true, MultiBitUI.LARGE_ICON_SIZE);
+
     return label;
 
   }
@@ -256,7 +277,7 @@ public class Labels {
    */
   public static JLabel newPanelCloseLabel(MouseAdapter mouseAdapter) {
 
-    JLabel panelCloseLabel = new JLabel();
+    JLabel panelCloseLabel = newBlankLabel();
 
     // Font
     Font panelCloseFont = panelCloseLabel.getFont().deriveFont(MultiBitUI.PANEL_CLOSE_FONT_SIZE);
@@ -286,11 +307,11 @@ public class Labels {
 
     Preconditions.checkNotNull(style, "'style' must be present");
 
-    JLabel leadingBalanceLabel = new JLabel("");
-    JLabel primaryBalanceLabel = new JLabel("0.00");
-    JLabel secondaryBalanceLabel = new JLabel("");
-    JLabel trailingSymbolLabel = new JLabel("");
-    JLabel exchangeLabel = new JLabel("");
+    JLabel leadingBalanceLabel = newBlankLabel();
+    JLabel primaryBalanceLabel = newBlankLabel();
+    JLabel secondaryBalanceLabel = newBlankLabel();
+    JLabel trailingSymbolLabel = newBlankLabel();
+    JLabel exchangeLabel = newBlankLabel();
 
     // Font
     final Font largeFont;
@@ -316,7 +337,6 @@ public class Labels {
     leadingBalanceLabel.setFont(largeFont);
 
     primaryBalanceLabel.setFont(largeFont);
-    primaryBalanceLabel.setForeground(Color.RED);
 
     secondaryBalanceLabel.setFont(normalFont);
 
@@ -325,11 +345,7 @@ public class Labels {
     exchangeLabel.setFont(normalFont);
 
     // Theme
-    leadingBalanceLabel.setForeground(Themes.currentTheme.text());
-    primaryBalanceLabel.setForeground(Themes.currentTheme.text());
     secondaryBalanceLabel.setForeground(Themes.currentTheme.fadedText());
-    trailingSymbolLabel.setForeground(Themes.currentTheme.text());
-    exchangeLabel.setForeground(Themes.currentTheme.text());
 
     return new JLabel[]{
 

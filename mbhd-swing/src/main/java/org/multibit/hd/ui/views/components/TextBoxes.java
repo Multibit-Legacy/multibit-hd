@@ -42,6 +42,8 @@ public class TextBoxes {
     textField.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
     textField.setBackground(Themes.currentTheme.dataEntryBackground());
 
+    textField.setOpaque(false);
+
     return textField;
   }
 
@@ -58,6 +60,8 @@ public class TextBoxes {
     // Set the theme
     textField.setBorder(new TextBubbleBorder(Themes.currentTheme.readOnlyBorder()));
     textField.setBackground(Themes.currentTheme.readOnlyBackground());
+
+    textField.setOpaque(false);
 
     return textField;
   }
@@ -196,6 +200,8 @@ public class TextBoxes {
     textField.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
     textField.setBackground(Themes.currentTheme.dataEntryBackground());
 
+    textField.setOpaque(false);
+
     return textField;
   }
 
@@ -226,6 +232,8 @@ public class TextBoxes {
     textField.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
     textField.setBackground(Themes.currentTheme.dataEntryBackground());
 
+    textField.setOpaque(false);
+
     return textField;
   }
 
@@ -247,6 +255,8 @@ public class TextBoxes {
     // Set the theme
     passwordField.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
     passwordField.setBackground(Themes.currentTheme.dataEntryBackground());
+
+    passwordField.setOpaque(false);
 
     return passwordField;
   }
@@ -288,6 +298,8 @@ public class TextBoxes {
     textArea.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
     textArea.setBackground(Themes.currentTheme.dataEntryBackground());
 
+    textArea.setOpaque(false);
+
     return textArea;
   }
 
@@ -304,12 +316,12 @@ public class TextBoxes {
     JTextArea textArea = new JTextArea(Languages.truncatedList(contents, maxLength));
 
     textArea.setBorder(BorderFactory.createEmptyBorder());
-    textArea.setOpaque(false);
     textArea.setEditable(false);
 
     // Ensure the background is transparent
     textArea.setBackground(new Color(0, 0, 0, 0));
     textArea.setForeground(Themes.currentTheme.text());
+    textArea.setOpaque(false);
 
     textArea.setLineWrap(true);
     textArea.setWrapStyleWord(true);

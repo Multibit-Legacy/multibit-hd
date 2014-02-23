@@ -56,7 +56,8 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
 
     // Theme
     ret.setBorder(border);
-    ret.setForeground(Themes.currentTheme.text());
+    Color iconColor = Themes.currentTheme.text();
+    ret.setForeground(iconColor);
 
     // Minimalist focus
     setBorderSelectionColor(UIManager.getColor("nimbusFocus"));
@@ -66,25 +67,25 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
       switch (nodeInfo.getDetailScreen()) {
 
         case CONTACTS:
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.USER, Color.BLACK, MultiBitUI.NORMAL_ICON_SIZE));
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.USER, iconColor, MultiBitUI.NORMAL_ICON_SIZE));
           break;
         case TRANSACTIONS:
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.LIST, Color.BLACK, MultiBitUI.NORMAL_ICON_SIZE - 2));
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.LIST, iconColor, MultiBitUI.NORMAL_ICON_SIZE - 2));
           break;
         case HELP:
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.QUESTION, Color.BLACK, MultiBitUI.NORMAL_ICON_SIZE + 15));
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.QUESTION, iconColor, MultiBitUI.NORMAL_ICON_SIZE + 15));
           break;
         case HISTORY:
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.ARCHIVE, Color.BLACK, MultiBitUI.NORMAL_ICON_SIZE));
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.ARCHIVE, iconColor, MultiBitUI.NORMAL_ICON_SIZE));
           break;
         case SETTINGS:
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.GEARS, Color.BLACK, MultiBitUI.NORMAL_ICON_SIZE - 1));
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.GEARS, iconColor, MultiBitUI.NORMAL_ICON_SIZE - 1));
           break;
         case TOOLS:
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.WRENCH, Color.BLACK, MultiBitUI.NORMAL_ICON_SIZE));
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.WRENCH, iconColor, MultiBitUI.NORMAL_ICON_SIZE));
           break;
         case EXIT:
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.SIGN_OUT, Color.BLACK, MultiBitUI.NORMAL_ICON_SIZE + 2));
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.SIGN_OUT, iconColor, MultiBitUI.NORMAL_ICON_SIZE + 2));
           break;
       }
 

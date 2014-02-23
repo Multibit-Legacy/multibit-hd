@@ -54,6 +54,11 @@ public interface Theme {
   Color invalidDataEntryBackground();
 
   /**
+   * @return The background colour for a button to match the overall theme (needs to contrast with the detail panel backgrond)
+   */
+  Color buttonBackground();
+
+  /**
    * @return The normal font colour for the theme
    */
   Color text();

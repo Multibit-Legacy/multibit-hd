@@ -32,18 +32,25 @@ public abstract class AbstractNamedRegionPainter extends AbstractRegionPainter {
   protected Ellipse2D ellipse = new Ellipse2D.Float(0, 0, 0, 0);
 
   /**
-   * The color corresponding to the "namedButtonColor" reference below
+   * The color corresponding to the "foregroundBasisColor" reference
    */
-  private final Color namedButtonColor;
+  private final Color foregroundBasisColor;
 
   /**
-   * @param color The color to use as the basis for the painter
-   * @param state The state of the button to which this painter will apply
+   * The color corresponding to the "backgroundBasisColor" reference
    */
-  public AbstractNamedRegionPainter(Color color, int state) {
+  private final Color backgroundBasisColor;
+
+  /**
+   * @param foregroundBasisColor The color to use as the basis for the foreground
+   * @param backgroundBasisColor The color to use as the basis for the background
+   * @param state           The state of the button to which this painter will apply
+   */
+  public AbstractNamedRegionPainter(Color foregroundBasisColor, Color backgroundBasisColor, int state) {
 
     this.state = state;
-    this.namedButtonColor = color;
+    this.foregroundBasisColor = foregroundBasisColor;
+    this.backgroundBasisColor = backgroundBasisColor;
 
   }
 
@@ -53,7 +60,7 @@ public abstract class AbstractNamedRegionPainter extends AbstractRegionPainter {
   }
 
   /**
-   * Decodes and returns a color
+   * <p>Decodes and returns a color based on the background</p>
    *
    * @param hOffset The hue offset used for derivation.
    * @param sOffset The saturation offset used for derivation.
@@ -62,15 +69,38 @@ public abstract class AbstractNamedRegionPainter extends AbstractRegionPainter {
    *
    * @return The derived color, who's color value will change if the parent uiDefault color changes.
    */
-  public Color adjustColor(float hOffset, float sOffset, float bOffset, int aOffset) {
+  public Color adjustBackgroundColor(float hOffset, float sOffset, float bOffset, int aOffset) {
 
 
-    float[] tmp = Color.RGBtoHSB(namedButtonColor.getRed(), namedButtonColor.getGreen(), namedButtonColor.getBlue(), null);
+    float[] tmp = Color.RGBtoHSB(backgroundBasisColor.getRed(), backgroundBasisColor.getGreen(), backgroundBasisColor.getBlue(), null);
     // apply offsets
     tmp[0] = clamp(tmp[0] + hOffset);
     tmp[1] = clamp(tmp[1] + sOffset);
     tmp[2] = clamp(tmp[2] + bOffset);
-    int alpha = clamp(namedButtonColor.getAlpha() + aOffset);
+    int alpha = clamp(backgroundBasisColor.getAlpha() + aOffset);
+    int argbValue = (Color.HSBtoRGB(tmp[0], tmp[1], tmp[2]) & 0xFFFFFF) | (alpha << 24);
+    return new Color(argbValue, true);
+  }
+
+  /**
+   * <p>Decodes and returns a color based on the foreground</p>
+   *
+   * @param hOffset The hue offset used for derivation.
+   * @param sOffset The saturation offset used for derivation.
+   * @param bOffset The brightness offset used for derivation.
+   * @param aOffset The alpha offset used for derivation. Between 0...255
+   *
+   * @return The derived color, who's color value will change if the parent uiDefault color changes.
+   */
+  public Color adjustForegroundColor(float hOffset, float sOffset, float bOffset, int aOffset) {
+
+
+    float[] tmp = Color.RGBtoHSB(foregroundBasisColor.getRed(), foregroundBasisColor.getGreen(), foregroundBasisColor.getBlue(), null);
+    // apply offsets
+    tmp[0] = clamp(tmp[0] + hOffset);
+    tmp[1] = clamp(tmp[1] + sOffset);
+    tmp[2] = clamp(tmp[2] + bOffset);
+    int alpha = clamp(foregroundBasisColor.getAlpha() + aOffset);
     int argbValue = (Color.HSBtoRGB(tmp[0], tmp[1], tmp[2]) & 0xFFFFFF) | (alpha << 24);
     return new Color(argbValue, true);
   }

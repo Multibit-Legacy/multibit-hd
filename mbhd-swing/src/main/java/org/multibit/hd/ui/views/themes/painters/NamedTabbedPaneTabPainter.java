@@ -1,5 +1,7 @@
 package org.multibit.hd.ui.views.themes.painters;
 
+import org.multibit.hd.ui.views.themes.Themes;
+
 import javax.swing.*;
 import javax.swing.plaf.nimbus.AbstractRegionPainter;
 import java.awt.*;
@@ -7,13 +9,10 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 
 /**
- * <p>[Pattern] to provide the following to {@link Object}:</p>
+ * <p>Region painter to provide the following to Nimbus LaF:</p>
  * <ul>
- * <li></li>
+ * <li>Custom painting with graduated color</li>
  * </ul>
- * <p>Example:</p>
- * <pre>
- * </pre>
  *
  * @since 0.0.1
  *  
@@ -36,42 +35,42 @@ public final class NamedTabbedPaneTabPainter extends AbstractNamedRegionPainter 
   public static final int BACKGROUND_SELECTED_PRESSED_FOCUSED = 11;
 
   // All Colors used for painting
-  private Color color1 = adjustColor(0.032459438f, -0.55535716f, -0.109803945f, 0);
-  private Color color2 = adjustColor(0.08801502f, 0.3642857f, -0.4784314f, 0);
-  private Color color3 = adjustColor(0.08801502f, -0.63174605f, 0.43921566f, 0);
-  private Color color4 = adjustColor(0.05468172f, -0.6145278f, 0.37647057f, 0);
-  private Color color5 = adjustColor(0.032459438f, -0.5953556f, 0.32549018f, 0);
-  private Color color6 = adjustColor(0.032459438f, -0.54616207f, -0.02352941f, 0);
-  private Color color7 = adjustColor(0.08801502f, -0.6317773f, 0.4470588f, 0);
-  private Color color8 = adjustColor(0.021348298f, -0.61547136f, 0.41960782f, 0);
-  private Color color9 = adjustColor(0.032459438f, -0.5985242f, 0.39999998f, 0);
-  private Color color10 = adjustColor(0.08801502f, 0.3642857f, -0.52156866f, 0);
-  private Color color11 = adjustColor(0.027408898f, -0.5847884f, 0.2980392f, 0);
-  private Color color12 = adjustColor(0.035931647f, -0.5553123f, 0.23137254f, 0);
-  private Color color13 = adjustColor(0.029681683f, -0.5281874f, 0.18039215f, 0);
-  private Color color14 = adjustColor(0.03801495f, -0.5456242f, 0.3215686f, 0);
-  private Color color15 = adjustColor(0.032459438f, -0.59181184f, 0.25490195f, 0);
-  private Color color16 = adjustColor(0.05468172f, -0.58308274f, 0.19607842f, 0);
-  private Color color17 = adjustColor(0.046348333f, -0.6006266f, 0.34509802f, 0);
-  private Color color18 = adjustColor(0.046348333f, -0.60015875f, 0.3333333f, 0);
-  private Color color19 = adjustColor(0.004681647f, -0.6197143f, 0.43137252f, 0);
-  private Color color20 = adjustColor(7.13408E-4f, -0.543609f, 0.34509802f, 0);
-  private Color color21 = adjustColor(-0.0020751357f, -0.45610264f, 0.2588235f, 0);
-  private Color color22 = adjustColor(5.1498413E-4f, -0.43866998f, 0.24705881f, 0);
-  private Color color23 = adjustColor(5.1498413E-4f, -0.44879842f, 0.29019606f, 0);
-  private Color color24 = adjustColor(5.1498413E-4f, -0.08776909f, -0.2627451f, 0);
-  private Color color25 = adjustColor(0.06332368f, 0.3642857f, -0.4431373f, 0);
-  private Color color26 = adjustColor(0.004681647f, -0.6198413f, 0.43921566f, 0);
-  private Color color27 = adjustColor(-0.0022627711f, -0.5335866f, 0.372549f, 0);
-  private Color color28 = adjustColor(-0.0017285943f, -0.4608264f, 0.32549018f, 0);
-  private Color color29 = adjustColor(5.1498413E-4f, -0.4555341f, 0.3215686f, 0);
-  private Color color30 = adjustColor(5.1498413E-4f, -0.46404046f, 0.36470586f, 0);
-  private Color color31 = adjustColor(-0.57865167f, -0.6357143f, -0.54901963f, 0);
-  private Color color32 = adjustColor(-4.2033195E-4f, -0.38050595f, 0.20392156f, 0);
-  private Color color33 = adjustColor(0.0013483167f, -0.16401619f, 0.0745098f, 0);
-  private Color color34 = adjustColor(-0.0010001659f, -0.01599598f, 0.007843137f, 0);
-  private Color color35 = adjustColor(0.0f, 0.0f, 0.0f, 0);
-  private Color color36 = adjustColor(0.0018727183f, -0.038398862f, 0.035294116f, 0);
+  private Color color1 = adjustForegroundColor(0.032459438f, -0.55535716f, -0.109803945f, 0);
+  private Color color2 = adjustForegroundColor(0.08801502f, 0.3642857f, -0.4784314f, 0);
+  private Color color3 = adjustForegroundColor(0.08801502f, -0.63174605f, 0.43921566f, 0);
+  private Color color4 = adjustForegroundColor(0.05468172f, -0.6145278f, 0.37647057f, 0);
+  private Color color5 = adjustForegroundColor(0.032459438f, -0.5953556f, 0.32549018f, 0);
+  private Color color6 = adjustForegroundColor(0.032459438f, -0.54616207f, -0.02352941f, 0);
+  private Color color7 = adjustForegroundColor(0.08801502f, -0.6317773f, 0.4470588f, 0);
+  private Color color8 = adjustForegroundColor(0.021348298f, -0.61547136f, 0.41960782f, 0);
+  private Color color9 = adjustForegroundColor(0.032459438f, -0.5985242f, 0.39999998f, 0);
+  private Color color10 = adjustForegroundColor(0.08801502f, 0.3642857f, -0.52156866f, 0);
+  private Color color11 = adjustForegroundColor(0.027408898f, -0.5847884f, 0.2980392f, 0);
+  private Color color12 = adjustForegroundColor(0.035931647f, -0.5553123f, 0.23137254f, 0);
+  private Color color13 = adjustForegroundColor(0.029681683f, -0.5281874f, 0.18039215f, 0);
+  private Color color14 = adjustForegroundColor(0.03801495f, -0.5456242f, 0.3215686f, 0);
+  private Color color15 = adjustForegroundColor(0.032459438f, -0.59181184f, 0.25490195f, 0);
+  private Color color16 = adjustForegroundColor(0.05468172f, -0.58308274f, 0.19607842f, 0);
+  private Color color17 = adjustForegroundColor(0.046348333f, -0.6006266f, 0.34509802f, 0);
+  private Color color18 = adjustForegroundColor(0.046348333f, -0.60015875f, 0.3333333f, 0);
+  private Color color19 = adjustForegroundColor(0.004681647f, -0.6197143f, 0.43137252f, 0);
+  private Color color20 = adjustForegroundColor(7.13408E-4f, -0.543609f, 0.34509802f, 0);
+  private Color color21 = adjustForegroundColor(-0.0020751357f, -0.45610264f, 0.2588235f, 0);
+  private Color color22 = adjustForegroundColor(5.1498413E-4f, -0.43866998f, 0.24705881f, 0);
+  private Color color23 = adjustForegroundColor(5.1498413E-4f, -0.44879842f, 0.29019606f, 0);
+  private Color color24 = adjustForegroundColor(5.1498413E-4f, -0.08776909f, -0.2627451f, 0);
+  private Color color25 = adjustForegroundColor(0.06332368f, 0.3642857f, -0.4431373f, 0);
+  private Color color26 = adjustForegroundColor(0.004681647f, -0.6198413f, 0.43921566f, 0);
+  private Color color27 = adjustForegroundColor(-0.0022627711f, -0.5335866f, 0.372549f, 0);
+  private Color color28 = adjustForegroundColor(-0.0017285943f, -0.4608264f, 0.32549018f, 0);
+  private Color color29 = adjustForegroundColor(5.1498413E-4f, -0.4555341f, 0.3215686f, 0);
+  private Color color30 = adjustForegroundColor(5.1498413E-4f, -0.46404046f, 0.36470586f, 0);
+  private Color color31 = adjustForegroundColor(-0.57865167f, -0.6357143f, -0.54901963f, 0);
+  private Color color32 = adjustForegroundColor(-4.2033195E-4f, -0.38050595f, 0.20392156f, 0);
+  private Color color33 = adjustForegroundColor(0.0013483167f, -0.16401619f, 0.0745098f, 0);
+  private Color color34 = adjustForegroundColor(-0.0010001659f, -0.01599598f, 0.007843137f, 0);
+  private Color color35 = adjustForegroundColor(0.0f, 0.0f, 0.0f, 0);
+  private Color color36 = adjustForegroundColor(0.0018727183f, -0.038398862f, 0.035294116f, 0);
   private Color color37 = decodeColor("nimbusRed", 0.0f, 0.0f, 0.0f, 0);
 
   /**
@@ -79,7 +78,7 @@ public final class NamedTabbedPaneTabPainter extends AbstractNamedRegionPainter 
    * @param state The state of the button to which this painter will apply
    */
   public NamedTabbedPaneTabPainter(Color color, int state) {
-    super(color, state);
+    super(color, Themes.currentTheme.detailPanelBackground(), state);
 
     Insets insets = null;
     switch (state) {

@@ -97,7 +97,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
     contentPanel.add(editButton, "shrink");
     contentPanel.add(deleteButton, "shrink");
     contentPanel.add(undoButton, "shrink");
-    contentPanel.add(new JLabel(""), "grow,push,wrap"); // Empty label to pack buttons
+    contentPanel.add(Labels.newBlankLabel(), "grow,push,wrap"); // Empty label to pack buttons
     contentPanel.add(scrollPane, "span 6,grow,push");
 
     return contentPanel;

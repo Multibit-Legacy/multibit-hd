@@ -1,5 +1,7 @@
 package org.multibit.hd.ui.views.components.tables;
 
+import org.multibit.hd.ui.views.themes.Themes;
+
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -20,8 +22,8 @@ import java.awt.*;
  */
 public class StripedTable extends JTable {
 
-  public static Color alternateColor = UIManager.getColor("Table.alternateRowColor");
-  public static Color rowColor = Color.WHITE; // TODO centralise
+  public static Color alternateColor = Themes.currentTheme.headerPanelBackground();
+  public static Color rowColor = Themes.currentTheme.sidebarPanelBackground();
 
   public StripedTable(AbstractTableModel model) {
     super(model);
@@ -57,15 +59,19 @@ public class StripedTable extends JTable {
 
       while (rowYToDraw < getHeight()) {
         if (virtualRow % 2 == 0) {
+
           // Even row
           newGraphics.setColor(alternateColor);
 
-          // Draw the rectangle
-          newGraphics.fillRect(0, rowYToDraw, getWidth(), getRowHeight());
+        } else {
 
-          // Switch back to odd for the next one
-          newGraphics.setColor(getBackground());
+          // Odd row
+          newGraphics.setColor(rowColor);
+
         }
+
+        // Draw the rectangle
+        newGraphics.fillRect(0, rowYToDraw, getWidth(), getRowHeight());
 
         rowYToDraw += getRowHeight();
 
@@ -100,7 +106,7 @@ public class StripedTable extends JTable {
     Component c = super.prepareRenderer(renderer, row, column);
 
     // Use custom rendering to overcome background color bug in Nimbus
-    if (rowSelectionAllowed && !isRowSelected(row)) {
+    if (!isRowSelected(row)) {
       c.setBackground(row % 2 == 0 ? rowColor : alternateColor);
     }
 

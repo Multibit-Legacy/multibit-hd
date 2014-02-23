@@ -43,11 +43,11 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
   private FormattedDecimalField bitcoinAmountText;
   private FormattedDecimalField localAmountText;
 
-  private JLabel exchangeRateStatusLabel = new JLabel("");
-  private JLabel approximatelyLabel = new JLabel("");
+  private JLabel exchangeRateStatusLabel = Labels.newBlankLabel();
+  private JLabel approximatelyLabel = Labels.newBlankLabel();
 
-  private JLabel localCurrencySymbolLabel = new JLabel("");
-  private JLabel bitcoinSymbolLabel = new JLabel("");
+  private JLabel localCurrencySymbolLabel = Labels.newBlankLabel();
+  private JLabel bitcoinSymbolLabel = Labels.newBlankLabel();
 
   private Optional<ExchangeRateChangedEvent> latestExchangeRateChangedEvent = Optional.absent();
 

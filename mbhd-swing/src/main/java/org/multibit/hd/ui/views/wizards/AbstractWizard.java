@@ -64,6 +64,10 @@ public abstract class AbstractWizard<M extends WizardModel> {
       wizardPanel.getActionMap().put("quit", getCancelAction());
     }
 
+    // TODO Bind the ENTER key to a Next/Finish/Apply event to speed up data entry through keyboard
+    //wizardPanel.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "next");
+    //wizardPanel.getActionMap().put("next", getNextAction(null));
+
     // Use current locale for initial creation
     onLocaleChangedEvent(new LocaleChangedEvent());
 

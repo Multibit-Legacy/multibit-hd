@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.components.renderers;
 
 import org.multibit.hd.ui.i18n.Formats;
+import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.tables.StripedTable;
 
 import javax.swing.*;
@@ -25,7 +26,7 @@ public class AmountBTCRenderer extends DefaultTableCellRenderer {
   private int selectedRow;
 
   public AmountBTCRenderer() {
-    label = new JLabel("");
+    label = Labels.newBlankLabel();
   }
 
   public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,

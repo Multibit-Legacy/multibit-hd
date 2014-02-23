@@ -10,6 +10,7 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ProgressChangedEvent;
 import org.multibit.hd.ui.events.view.SystemStatusChangedEvent;
+import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -57,13 +58,15 @@ public class FooterView {
     progressBar.setMinimum(0);
     progressBar.setMaximum(100);
     progressBar.setForeground(Themes.currentTheme.infoAlertBackground());
+
     progressBar.setEnabled(false);
+    progressBar.setOpaque(false);
 
     messageLabel = new JLabel();
 
     // Label text and icon are different colours so must be separated
-    statusLabel = new JLabel("");
-    statusIcon = new JLabel("");
+    statusLabel = Labels.newBlankLabel();
+    statusIcon = Labels.newBlankLabel();
     AwesomeDecorator.bindIcon(AwesomeIcon.CIRCLE, statusIcon, false, MultiBitUI.SMALL_ICON_SIZE);
 
     // Start with no knowledge so assume the worst

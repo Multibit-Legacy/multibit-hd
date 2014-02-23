@@ -51,11 +51,7 @@ public class MainView extends JFrame {
     // Provide all panels with a reference to the main frame
     Panels.frame = this;
 
-    setDefaultLookAndFeelDecorated(true);
-
     setTitle(Languages.safeText(MessageKey.APPLICATION_TITLE));
-
-    setBackground(Themes.currentTheme.headerPanelBackground());
 
     // Hard coded
     setMinimumSize(new Dimension(MultiBitUI.UI_MIN_WIDTH, MultiBitUI.UI_MIN_HEIGHT));
@@ -100,6 +96,9 @@ public class MainView extends JFrame {
 
     // Set the overall tone
     mainPanel.setBackground(Themes.currentTheme.headerPanelBackground());
+
+    // Require opaque to ensure the color is shown
+    mainPanel.setOpaque(true);
 
     // Create a splitter pane
     JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
