@@ -70,13 +70,20 @@ public class PaymentRequestData implements PaymentData {
     // TODO localise
     StringBuilder builder = new StringBuilder();
     boolean appendAddress = true;
+    boolean appendSeparator = false;
+
     builder.append("You requested: ");
     if (getLabel() != null && getLabel().length() >0) {
+      builder.append(getLabel());
       appendAddress = false;
-      builder.append(getLabel()).append(SEPARATOR);
+      appendSeparator = true;
     }
     if (getNote() != null && getNote().length() >0) {
-      appendAddress = false;      builder.append(getNote()).append(SEPARATOR);
+      if (appendSeparator){
+        builder.append(SEPARATOR);
+      }
+      builder.append(getNote());
+      appendAddress = false;
     }
     if (appendAddress) {
       builder.append("To ").append(getAddress());
