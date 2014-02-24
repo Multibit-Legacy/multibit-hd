@@ -87,9 +87,10 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     // TODO - remove when HDwallets supported - won't need a password to generate the next address
     Optional<WalletData> walletDataOptional = WalletManager.INSTANCE.getCurrentWalletData();
     Optional<CharSequence> passwordParameter = Optional.absent();
+    CharSequence password = walletDataOptional.get().getPassword();
     if (walletDataOptional.isPresent()) {
-      if (!"".equals(walletDataOptional.get().getPassword())) {
-        passwordParameter = Optional.of(walletDataOptional.get().getPassword());
+      if (!( password == null) && !"".equals(password)) {
+        passwordParameter = Optional.of(password);
       }
     }
     // Get the next receiving address from the wallet service

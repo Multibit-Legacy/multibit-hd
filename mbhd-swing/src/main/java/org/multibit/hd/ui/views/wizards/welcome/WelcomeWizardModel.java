@@ -7,11 +7,12 @@ import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.exceptions.SeedPhraseException;
+import org.multibit.hd.core.managers.BackupManager;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.core.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.seed_phrase.SeedPhraseSize;
-import org.multibit.hd.core.managers.BackupManager;
-import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -23,6 +24,8 @@ import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSum
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.List;
@@ -43,6 +46,8 @@ import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
  *  
  */
 public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> {
+
+  private static final Logger log = LoggerFactory.getLogger(WelcomeWizardModel.class);
 
   /**
    * The "select wallet" radio button choice (as a state)
@@ -243,11 +248,16 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
     EnterSeedPhraseModel restoreWalletEnterSeedPhraseModel = getRestoreWalletEnterSeedPhraseModel();
 
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-    byte[] seed = seedGenerator.convertToSeed(restoreWalletEnterSeedPhraseModel.getSeedPhrase());
-    WalletId walletId = new WalletId(seed);
-    backupSummaries = BackupManager.INSTANCE.getCloudBackups(walletId, new File(getRestoreLocation()));
+    try {
+      byte[] seed = seedGenerator.convertToSeed(restoreWalletEnterSeedPhraseModel.getSeedPhrase());
+      WalletId walletId = new WalletId(seed);
+      backupSummaries = BackupManager.INSTANCE.getCloudBackups(walletId, new File(getRestoreLocation()));
 
-    return !backupSummaries.isEmpty();
+      return !backupSummaries.isEmpty();
+    } catch (SeedPhraseException spe) {
+      log.error("The seed phrase is incorrect.");
+      return false;
+    }
   }
 
   /**

@@ -52,6 +52,8 @@ public class MultiBitHD {
 
   private static WalletService walletService;
 
+  private static File applicationDataDirectory;
+
   /**
    * <p>Main entry point to the application</p>
    *
@@ -73,12 +75,17 @@ public class MultiBitHD {
   public static BitcoinNetworkService getBitcoinNetworkService() {
     return bitcoinNetworkService;
   }
+
   /**
-    * @return The wallet service for the UI
-    */
-   public static WalletService getWalletService() {
-     return walletService;
-   }
+   * @return The wallet service for the UI
+   */
+  public static WalletService getWalletService() {
+    return walletService;
+  }
+
+  public static void setWalletService(WalletService newWalletService) {
+    walletService = newWalletService;
+  }
 
   /**
    * <p>Initialise the JVM. This occurs before anything else is called.</p>
@@ -122,7 +129,7 @@ public class MultiBitHD {
     bitcoinNetworkService = CoreServices.newBitcoinNetworkService();
 
     // Initialise the wallet manager, which will loadContacts the current wallet if available
-    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+    applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     // Start up the exchange service
     exchangeTickerService.start();
@@ -146,7 +153,6 @@ public class MultiBitHD {
         log.error(ple.getClass().getCanonicalName() + "" + ple.getMessage());
       }
     }
-
   }
 
   /**
@@ -180,8 +186,7 @@ public class MultiBitHD {
       WalletData walletData = WalletManager.INSTANCE.getCurrentWalletData().get();
       log.debug("The current wallet is:\nWallet id = '" + walletData.getWalletId().toString() + "\n" + walletData.getWallet().toString());
 
-      // TODO need to show warm start dialog (to get password) and unencrypt wallet, contacts and payments
-       Panels.showLightBox(Wizards.newClosingPasswordWizard().getWizardPanel());
+      Panels.showLightBox(Wizards.newClosingPasswordWizard().getWizardPanel());
 
     } else {
       // Show an exiting Welcome wizard
