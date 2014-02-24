@@ -122,7 +122,7 @@ public class WalletService {
 
   /**
    * Get all the payments (payments and payment requests) in the current wallet.
-   * (This is a bit expensive)
+   * (This is a bit expensive so don't call it indiscriminately)
    */
   public Set<PaymentData> getPaymentDatas() {
     // See if there is a current wallet
@@ -155,16 +155,14 @@ public class WalletService {
     }
 
     // Determine which paymentRequests have not been fully funded
-    Set paymentRequestsNotFullyFunded = Sets.newHashSet();
+    Set<PaymentRequestData> paymentRequestsNotFullyFunded = Sets.newHashSet();
     for (PaymentRequestData basePaymentRequestData : paymentRequestMap.values()) {
       if (basePaymentRequestData.getPaidAmountBTC().compareTo(basePaymentRequestData.getAmountBTC()) < 0) {
         paymentRequestsNotFullyFunded.add(basePaymentRequestData);
       }
     }
     // Union all the transactionDatas and paymentDatas
-    Set<PaymentData> paymentDatas = Sets.union(transactionDatas, paymentRequestsNotFullyFunded);
-
-    return paymentDatas;
+    return Sets.union(transactionDatas, paymentRequestsNotFullyFunded);
   }
 
   /**
@@ -177,7 +175,7 @@ public class WalletService {
    * @return TransactionData the transaction data
    */
   public TransactionData adaptTransaction(Wallet wallet, Transaction transaction) {
-    String transactionId = transaction.getHashAsString();
+    String transactionHashAsString = transaction.getHashAsString();
     Date updateTime = transaction.getUpdateTime();
     BigInteger amountBTC = transaction.getValue(wallet);
 
@@ -214,11 +212,10 @@ public class WalletService {
     // TODO - fee on send
 
     String description;
-    String addresses;
 
     if (paymentType == PaymentType.RECEIVING || paymentType == PaymentType.RECEIVED) {
       description = "";
-      addresses = "";
+      String addresses = "";
 
       boolean descriptiveTextIsAvailable = false;
       if (transaction.getOutputs() != null) {
@@ -231,9 +228,9 @@ public class WalletService {
             PaymentRequestData paymentRequestData = paymentRequestMap.get(receivingAddress);
             if (paymentRequestData != null) {
               // Yes - this output funds a payment address
-              if (!paymentRequestData.getPayingTransactionHashes().contains(transactionId)) {
+              if (!paymentRequestData.getPayingTransactionHashes().contains(transactionHashAsString)) {
                 // We have not yet added this tx to the total paid amount
-                paymentRequestData.getPayingTransactionHashes().add(transactionId);
+                paymentRequestData.getPayingTransactionHashes().add(transactionHashAsString);
                 paymentRequestData.setPaidAmountBTC(paymentRequestData.getPaidAmountBTC().add(amountBTC));
               }
 
@@ -265,11 +262,11 @@ public class WalletService {
     }
 
     // Create the DTO from the raw transaction info
-    TransactionData transactionData = new TransactionData(transactionId, new DateTime(updateTime), status, amountBTC,
+    TransactionData transactionData = new TransactionData(transactionHashAsString, new DateTime(updateTime), status, amountBTC,
             Optional.<BigInteger>absent(), confidenceType, paymentType, depth, description);
 
     // See if there is a transactionInfo for this transaction
-    TransactionInfo transactionInfo = transactionInfoMap.get(transaction.getHash().getBytes());
+    TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
     if (transactionInfo != null) {
       String note = transactionInfo.getNote();
       if (note != null) {
