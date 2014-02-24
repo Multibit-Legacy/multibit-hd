@@ -112,7 +112,7 @@ public class WalletService {
 
     // Load the payment request data from the backing store if it exists
     // Initial values
-    lastIndexUsed = -1; // -1 is not set yet
+    lastIndexUsed = 0;
     paymentRequestMap = Maps.newHashMap();
     transactionInfoMap = Maps.newHashMap();
     if (backingStoreFile.exists()) {
@@ -166,7 +166,7 @@ public class WalletService {
    * @param transaction the transaction to adapt
    * @return TransactionData the transaction data
    */
-  public static TransactionData adaptTransaction(Wallet wallet, Transaction transaction) {
+  public TransactionData adaptTransaction(Wallet wallet, Transaction transaction) {
     String transactionId = transaction.getHashAsString();
     Date updateTime = transaction.getUpdateTime();
     BigInteger amountBTC = transaction.getValue(wallet);
@@ -200,9 +200,8 @@ public class WalletService {
       } else {
         paymentType = PaymentType.RECEIVED;
       }
-      // TODO - requested
     }
-    // TODO- fee on send
+    // TODO - fee on send
 
     String description;
 
@@ -226,7 +225,29 @@ public class WalletService {
       }
     }
 
-    return new TransactionData(transactionId, new DateTime(updateTime), status, amountBTC, Optional.<BigInteger>absent(), confidenceType, paymentType, depth, description, "");
+    // Create the DTO from the raw transaction info
+    TransactionData transactionData = new TransactionData(transactionId, new DateTime(updateTime), status, amountBTC,
+            Optional.<BigInteger>absent(), confidenceType, paymentType, depth, description);
+
+    // See if there is a transactionInfo for this transaction
+    TransactionInfo transactionInfo = transactionInfoMap.get(transaction.getHash().getBytes());
+    if (transactionInfo != null) {
+      String note = transactionInfo.getNote();
+      if (note != null) {
+        transactionData.setNote(note);
+        // if there is a real note use that as the description
+        if (note.length() > 0) {
+          transactionData.setDescription(note);
+        }
+      } else {
+        transactionData.setNote("");
+      }
+      transactionData.setAmountFiat(transactionInfo.getAmountFiat());
+    } else {
+      transactionData.setNote("");
+    }
+
+    return transactionData;
   }
 
   /**
@@ -323,6 +344,10 @@ public class WalletService {
 
   public void addPaymentRequest(PaymentRequestData paymentRequestData) {
     paymentRequestMap.put(paymentRequestData.getAddress(), paymentRequestData);
+  }
+
+  public void addTransactionInfo(TransactionInfo transactionInfo) {
+     transactionInfoMap.put(transactionInfo.getHash(), transactionInfo);
   }
 
   public Collection<PaymentRequestData> getPaymentRequests() {

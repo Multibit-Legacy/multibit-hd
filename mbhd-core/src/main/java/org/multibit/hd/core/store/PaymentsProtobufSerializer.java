@@ -137,10 +137,10 @@ public class PaymentsProtobufSerializer {
     FiatPayment fiatPayment = transactionInfo.getAmountFiat();
     if (fiatPayment != null) {
       MBHDPaymentsProtos.FiatPayment.Builder fiatPaymentBuilder = MBHDPaymentsProtos.FiatPayment.newBuilder();
-      fiatPaymentBuilder.setAmount(fiatPayment.getAmount());
-      fiatPaymentBuilder.setCurrency(fiatPayment.getCurrency());
-      fiatPaymentBuilder.setExchange(fiatPayment.getExchange());
-      fiatPaymentBuilder.setRate(fiatPayment.getRate());
+      fiatPaymentBuilder.setAmount(fiatPayment.getAmount() == null ? "" : fiatPayment.getAmount());
+      fiatPaymentBuilder.setCurrency(fiatPayment.getCurrency() == null ? "" : fiatPayment.getCurrency());
+      fiatPaymentBuilder.setExchange(fiatPayment.getExchange()== null ? "" : fiatPayment.getExchange());
+      fiatPaymentBuilder.setRate(fiatPayment.getRate() == null ? "" : fiatPayment.getRate());
 
       transactionInfoBuilder.setAmountFiat(fiatPaymentBuilder);
     }

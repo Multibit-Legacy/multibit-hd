@@ -21,6 +21,8 @@ public interface PaymentData {
 
   public BigInteger getAmountBTC();
 
+  public FiatPayment getAmountFiat();
+
   public String getNote();
 
   public String getDescription();

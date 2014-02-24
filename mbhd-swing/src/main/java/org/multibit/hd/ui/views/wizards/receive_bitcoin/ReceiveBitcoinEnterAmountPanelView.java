@@ -9,6 +9,7 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.ContactService;
@@ -185,6 +186,12 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     fiatPayment.setAmount(enterAmountMaV.getModel().getLocalAmount().toString());
     fiatPayment.setCurrency(Configurations.currentConfiguration.getI18NConfiguration().getLocalCurrencyUnit().getCurrencyCode());
     fiatPayment.setExchange(Configurations.currentConfiguration.getBitcoinConfiguration().getExchangeName());
+    Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
+    if (exchangeRateChangedEvent.isPresent()) {
+      fiatPayment.setRate(exchangeRateChangedEvent.get().getRate().toString());
+    } else {
+      fiatPayment.setRate("");
+    }
     paymentRequestData.setAmountFiat(fiatPayment);
 
     walletService.addPaymentRequest(paymentRequestData);

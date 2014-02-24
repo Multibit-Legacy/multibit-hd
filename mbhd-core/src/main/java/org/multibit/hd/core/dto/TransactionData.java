@@ -23,6 +23,8 @@ public class TransactionData implements PaymentData {
 
   private final BigInteger amountBTC;
 
+  private FiatPayment amountFiat;
+
   private final Optional<BigInteger> feeOnSendBTC;
 
   private final int depth;
@@ -33,13 +35,13 @@ public class TransactionData implements PaymentData {
 
   private final PaymentType type;
 
-  private final String description;
+  private String description;
 
   private String note;
 
   public TransactionData(String transactionId, DateTime date, RAGStatus status,
                          BigInteger amountBTC, Optional<BigInteger> feeOnSendBTC,
-                         TransactionConfidence.ConfidenceType confidenceType, PaymentType type, int depth, String description, String note) {
+                         TransactionConfidence.ConfidenceType confidenceType, PaymentType type, int depth, String description) {
     this.transactionId = transactionId;
     this.date = date;
     this.status = status;
@@ -49,10 +51,7 @@ public class TransactionData implements PaymentData {
     this.type = type;
     this.depth = depth;
     this.description = description;
-    this.note = note;
   }
-
- // FiatPayment( =  fiat amount + exchange rate + exchange name)
 
   @Override
   public String toString() {
@@ -143,6 +142,10 @@ public class TransactionData implements PaymentData {
     return description;
   }
 
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
   @Override
   public String getNote() {
     return note;
@@ -150,5 +153,14 @@ public class TransactionData implements PaymentData {
 
   public void setNote(String note) {
     this.note = note;
+  }
+
+  @Override
+  public FiatPayment getAmountFiat() {
+    return amountFiat;
+  }
+
+  public void setAmountFiat(FiatPayment fiatPayment) {
+    this.amountFiat = fiatPayment;
   }
 }

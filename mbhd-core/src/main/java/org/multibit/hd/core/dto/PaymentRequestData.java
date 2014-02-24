@@ -52,6 +52,7 @@ public class PaymentRequestData implements PaymentData {
     this.amountBTC = amountBTC;
   }
 
+  @Override
   public FiatPayment getAmountFiat() {
     return amountFiat;
   }

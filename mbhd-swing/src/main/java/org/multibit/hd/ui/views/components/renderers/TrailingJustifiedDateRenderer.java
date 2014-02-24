@@ -45,10 +45,15 @@ public class TrailingJustifiedDateRenderer extends DefaultTableCellRenderer {
         DateTime date = (DateTime) value;
         if (date.getMillis() != 0) {
           try {
+            // TODO Localise
             if (date.toDateMidnight().equals((DateTime.now().toDateMidnight()))) {
               formattedDate = "Today " + shortDateFormatter.format(date.toDate());
             } else {
-              formattedDate = longDateFormatter.format(date.toDate());
+              if (date.toDateMidnight().equals((DateTime.now().minusDays(1).toDateMidnight()))) {
+                formattedDate = "Yesterday " + shortDateFormatter.format(date.toDate());
+              } else {
+                formattedDate = longDateFormatter.format(date.toDate());
+              }
             }
           } catch (IllegalArgumentException iae) {
             // ok
