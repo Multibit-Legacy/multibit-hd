@@ -3,6 +3,7 @@ package org.multibit.hd.core.services;
 import com.google.bitcoin.core.*;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.*;
@@ -11,6 +12,7 @@ import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.store.Payments;
 import org.multibit.hd.core.store.PaymentsProtobufSerializer;
+import org.multibit.hd.core.store.TransactionInfo;
 import org.multibit.hd.core.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +22,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -63,9 +67,19 @@ public class WalletService {
   private PaymentsProtobufSerializer protobufSerializer;
 
   /**
-   * The payments containing payment requests and transaction infos
+   * The payment requests in a map, indexed by the bitcoin addressand transaction infos
    */
-  private Payments payments;
+  private Map<String, PaymentRequestData> paymentRequestMap;
+
+  /**
+   * The additional transaction information, in the form of a map, index by the transaction hash
+   */
+  private Map<byte[], TransactionInfo> transactionInfoMap;
+
+  /**
+   * The last index used for address generation
+   */
+  private int lastIndexUsed;
 
   /**
    * The wallet id that this WalletService is using
@@ -97,10 +111,12 @@ public class WalletService {
     protobufSerializer = new PaymentsProtobufSerializer();
 
     // Load the payment request data from the backing store if it exists
+    // Initial values
+    lastIndexUsed = -1; // -1 is not set yet
+    paymentRequestMap = Maps.newHashMap();
+    transactionInfoMap = Maps.newHashMap();
     if (backingStoreFile.exists()) {
       readPayments();
-    } else {
-      payments = new Payments(0);
     }
   }
 
@@ -138,7 +154,7 @@ public class WalletService {
     }
 
     // Union all the transactionDatas and paymentDatas
-    Set<PaymentData> paymentDatas = Sets.union(transactionDatas, Sets.newHashSet(payments.getPaymentRequestDatas()));
+    Set<PaymentData> paymentDatas = Sets.union(transactionDatas, Sets.newHashSet(paymentRequestMap.values()));
 
     return paymentDatas;
   }
@@ -258,8 +274,26 @@ public class WalletService {
     Preconditions.checkNotNull(backingStoreFile, "There is no backingStoreFile. Please initialise WalletService.");
     try (FileInputStream fis = new FileInputStream(backingStoreFile)) {
 
-      payments = protobufSerializer.readPayments(fis);
+      Payments payments = protobufSerializer.readPayments(fis);
 
+      lastIndexUsed = payments.getLastIndexUsed();
+
+      // For quick access payment requests and transaction infos are stored in maps
+      Collection<PaymentRequestData> paymentRequestDatas = payments.getPaymentRequestDatas();
+      if (paymentRequestDatas != null) {
+        paymentRequestMap.clear();
+        for (PaymentRequestData paymentRequestData : paymentRequestDatas) {
+          paymentRequestMap.put(paymentRequestData.getAddress(), paymentRequestData);
+        }
+      }
+
+      Collection<TransactionInfo> transactionInfos = payments.getTransactionInfos();
+      if (transactionInfos != null) {
+        transactionInfoMap.clear();
+        for (TransactionInfo transactionInfo : transactionInfos) {
+          transactionInfoMap.put(transactionInfo.getHash(), transactionInfo);
+        }
+      }
     } catch (IOException | PaymentsLoadException e) {
       throw new PaymentsLoadException("Could not read payments db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");
     }
@@ -273,6 +307,9 @@ public class WalletService {
 
     try (FileOutputStream fos = new FileOutputStream(backingStoreFile)) {
 
+      Payments payments = new Payments(lastIndexUsed);
+      payments.setTransactionInfos(transactionInfoMap.values());
+      payments.setPaymentRequestDatas(paymentRequestMap.values());
       protobufSerializer.writePayments(payments, fos);
 
     } catch (IOException | PaymentsSaveException e) {
@@ -284,12 +321,12 @@ public class WalletService {
     return walletId;
   }
 
-  public Payments getPayments() {
-    return payments;
+  public void addPaymentRequest(PaymentRequestData paymentRequestData) {
+    paymentRequestMap.put(paymentRequestData.getAddress(), paymentRequestData);
   }
 
-  public int getLastIndexUsed() {
-    return payments.getLastIndexUsed();
+  public Collection<PaymentRequestData> getPaymentRequests() {
+    return paymentRequestMap.values();
   }
 
   /**
@@ -312,11 +349,9 @@ public class WalletService {
       // If there is no password then recycle the first address in the wallet
       if (walletPasswordOptional.isPresent()) {
         // increment the lastIndexUsed
-        int currentLastIndexUsed = payments.getLastIndexUsed();
-        currentLastIndexUsed++;
-        payments.setLastIndexUsed(currentLastIndexUsed);
-        log.debug("The last index used has been incremented to " + currentLastIndexUsed);
-        ECKey newKey = WalletManager.INSTANCE.createAndAddNewWalletKey(walletDataOptional.get().getWallet(), walletPasswordOptional.get(), currentLastIndexUsed);
+        lastIndexUsed++;
+        log.debug("The last index used has been incremented to " + lastIndexUsed);
+        ECKey newKey = WalletManager.INSTANCE.createAndAddNewWalletKey(walletDataOptional.get().getWallet(), walletPasswordOptional.get(), lastIndexUsed);
         return newKey.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
       } else {
         return walletDataOptional.get().getWallet().getKeys().get(0).toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();

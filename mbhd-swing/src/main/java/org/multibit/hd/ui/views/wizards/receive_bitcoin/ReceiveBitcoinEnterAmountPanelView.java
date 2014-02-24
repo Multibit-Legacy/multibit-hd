@@ -187,7 +187,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     fiatPayment.setExchange(Configurations.currentConfiguration.getBitcoinConfiguration().getExchangeName());
     paymentRequestData.setAmountFiat(fiatPayment);
 
-    walletService.getPayments().getPaymentRequestDatas().add(paymentRequestData);
+    walletService.addPaymentRequest(paymentRequestData);
     walletService.writePayments();
 
     // Ensure the views that display payments update
