@@ -30,6 +30,7 @@ public class RecipientComboBoxEditor implements ComboBoxEditor {
 
     // Apply theme
     editor.setBackground(Themes.currentTheme.dataEntryBackground());
+    editor.setOpaque(false);
 
     // Apply rounded corners
     editor.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));

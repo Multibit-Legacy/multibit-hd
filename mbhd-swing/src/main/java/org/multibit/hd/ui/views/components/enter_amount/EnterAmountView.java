@@ -22,6 +22,7 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
@@ -79,6 +80,11 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     approximatelyLabel = Labels.newApproximately();
 
     LabelDecorator.applyLocalCurrencySymbol(localCurrencySymbolLabel);
+
+    // Ensure the Bitcoin symbol label matches the local currency
+    Font font = bitcoinSymbolLabel.getFont().deriveFont(Font.PLAIN, (float) MultiBitUI.NORMAL_ICON_SIZE);
+    bitcoinSymbolLabel.setFont(font);
+
     LabelDecorator.applyBitcoinSymbolLabel(bitcoinSymbolLabel);
 
     // Bind a key listener to allow instant update of UI to amount changes

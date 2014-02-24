@@ -43,7 +43,7 @@ public class FormattedDecimalField extends JFormattedTextField {
 
     Preconditions.checkState(decimalPlaces >= 0 && decimalPlaces < 15, "'decimalPlaces' must be in range [0,15)");
 
-    setInputVerifier(new ThemedDecimalInputVerifier(min, max));
+    setInputVerifier(new ThemeAwareDecimalInputVerifier(min, max));
 
     setBackground(Themes.currentTheme.dataEntryBackground());
 

@@ -195,7 +195,7 @@ public class Panels {
     JComboBox<String> languages = ComboBoxes.newLanguagesComboBox(listener);
 
     panel.add(label);
-    panel.add(languages, "wrap");
+    panel.add(languages, "growx,width min:350:,push,wrap");
 
     return panel;
   }

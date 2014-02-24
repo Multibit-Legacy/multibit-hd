@@ -283,7 +283,7 @@ public class Labels {
     Font panelCloseFont = panelCloseLabel.getFont().deriveFont(MultiBitUI.PANEL_CLOSE_FONT_SIZE);
     panelCloseLabel.setFont(panelCloseFont);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, panelCloseLabel, true, 16);
+    AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, panelCloseLabel, true, 16);
     panelCloseLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     panelCloseLabel.addMouseListener(mouseAdapter);
 

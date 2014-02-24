@@ -79,6 +79,11 @@ public interface Theme {
   Color inverseFadedText();
 
   /**
+   * @return The font colour for a button to match the overall theme
+   */
+  Color buttonText();
+
+  /**
    * @return The background colour of a danger alert
    */
   Color dangerAlertBackground();

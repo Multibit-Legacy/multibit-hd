@@ -12,8 +12,8 @@ package org.multibit.hd.ui.views.themes;
 public class Themes {
 
   // TODO Link this to the configuration
-  //public static Theme currentTheme = new DarkTheme();
-  public static Theme currentTheme = new LightTheme();
+  public static Theme currentTheme = new DarkTheme();
+  //public static Theme currentTheme = new LightTheme();
 
   /**
    * Utilities do not have public constructors

@@ -7,13 +7,12 @@ import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteDecorator;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilter;
+import org.multibit.hd.ui.views.components.combo_boxes.ThemeAwareComboBox;
 import org.multibit.hd.ui.views.components.select_backup_summary.BackupSummaryListCellRenderer;
 import org.multibit.hd.ui.views.components.select_contact.RecipientComboBoxEditor;
 import org.multibit.hd.ui.views.components.select_contact.RecipientListCellRenderer;
-import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import java.awt.event.ActionListener;
 import java.util.List;
 
@@ -37,19 +36,27 @@ public class ComboBoxes {
   /**
    * @return A new combo box with default styling (no listener since it will cause early event triggers during set up)
    */
-  @SuppressWarnings("unchecked")
   public static <T> JComboBox<T> newComboBox(T[] items) {
 
-    JComboBox<T> comboBox = new JComboBox<>(items);
+    JComboBox<T> comboBox = new ThemeAwareComboBox<>(items);
 
-    // Use a basic renderer to avoid confusing visual artifacts like tick marks
-    comboBox.setRenderer(new BasicComboBoxRenderer());
+    // Apply theme to main combo box (usually on a detail pane)
+//    comboBox.setBackground(Themes.currentTheme.detailPanelBackground());
+//    comboBox.setOpaque(false);
+
+    // Apply theme to default editor (data entry)
+//    JTextField editorComponent = (JTextField) comboBox.getEditor().getEditorComponent();
+//    editorComponent.setBackground(Themes.currentTheme.dataEntryBackground());
+//    editorComponent.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
+//    editorComponent.setOpaque(false);
 
     // Ensure we use the correct component orientation
     comboBox.applyComponentOrientation(Languages.currentComponentOrientation());
 
     // Ensure that keyboard navigation does not trigger action events
     comboBox.putClientProperty("JComboBox.isTableCellEditor", Boolean.TRUE);
+
+    //NimbusDecorator.applyThemeColor(Color.RED, comboBox);
 
     return comboBox;
 
@@ -96,6 +103,7 @@ public class ComboBoxes {
   public static JComboBox<String> newLanguagesComboBox(ActionListener listener) {
 
     JComboBox<String> comboBox = newComboBox(Languages.getLanguageNames(true));
+
     comboBox.setSelectedIndex(Languages.getIndexFromLocale(Languages.currentLocale()));
     comboBox.setEditable(false);
 
@@ -113,10 +121,7 @@ public class ComboBoxes {
    */
   public static JComboBox<Recipient> newRecipientComboBox(AutoCompleteFilter<Recipient> filter) {
 
-    JComboBox<Recipient> comboBox = new JComboBox<>(filter.create());
-
-    // Apply the current theme
-    comboBox.setBackground(Themes.currentTheme.detailPanelBackground());
+    JComboBox<Recipient> comboBox = newComboBox(filter.create());
 
     // Use a contact editor to force use of the name field
     comboBox.setEditor(new RecipientComboBoxEditor());
@@ -130,9 +135,6 @@ public class ComboBoxes {
 
     // Ensure we start with nothing selected
     comboBox.setSelectedIndex(-1);
-
-    // Ensure we use the correct component orientation
-    comboBox.applyComponentOrientation(Languages.currentComponentOrientation());
 
     AutoCompleteDecorator.apply(comboBox, filter);
 
@@ -154,10 +156,7 @@ public class ComboBoxes {
     // Convert the backup summaries to an array
     BackupSummary[] backupSummaryArray = new BackupSummary[backupSummaries.size()];
 
-    JComboBox<BackupSummary> comboBox = new JComboBox<>(backupSummaryArray);
-
-    // Apply the current theme
-    comboBox.setBackground(Themes.currentTheme.dataEntryBackground());
+    JComboBox<BackupSummary> comboBox = newComboBox(backupSummaryArray);
 
     // Ensure that keyboard navigation does not trigger action events
     comboBox.putClientProperty("JComboBox.isTableCellEditor", Boolean.TRUE);
@@ -168,9 +167,6 @@ public class ComboBoxes {
 
     // Ensure we start with nothing selected
     comboBox.setSelectedIndex(-1);
-
-    // Ensure we use the correct component orientation
-    comboBox.applyComponentOrientation(Languages.currentComponentOrientation());
 
     return comboBox;
 

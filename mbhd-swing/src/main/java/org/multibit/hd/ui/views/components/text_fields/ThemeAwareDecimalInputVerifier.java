@@ -19,7 +19,7 @@ import java.awt.*;
  * @since 0.0.1
  *  
  */
-public class ThemedDecimalInputVerifier extends InputVerifier {
+public class ThemeAwareDecimalInputVerifier extends InputVerifier {
 
   private final Double minValue;
   private final Double maxValue;
@@ -27,7 +27,7 @@ public class ThemedDecimalInputVerifier extends InputVerifier {
   private final Color invalidColor = Themes.currentTheme.invalidDataEntryBackground();
   private final Color validColor = Themes.currentTheme.dataEntryBackground();
 
-  public ThemedDecimalInputVerifier() {
+  public ThemeAwareDecimalInputVerifier() {
     minValue = -Double.MAX_VALUE;
     maxValue = Double.MAX_VALUE;
   }
@@ -39,7 +39,7 @@ public class ThemedDecimalInputVerifier extends InputVerifier {
    * @throws IllegalArgumentException
    */
 
-  public ThemedDecimalInputVerifier(Double min, Double max) {
+  public ThemeAwareDecimalInputVerifier(Double min, Double max) {
 
     Preconditions.checkNotNull(min, "'min' must be present");
     Preconditions.checkNotNull(max, "'max' must be present");

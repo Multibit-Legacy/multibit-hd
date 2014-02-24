@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components.select_contact;
 
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.ui.utils.HtmlUtils;
+import org.multibit.hd.ui.views.themes.Themes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +30,7 @@ public class RecipientListCellRenderer extends JLabel implements ListCellRendere
 
     setOpaque(true);
     setVerticalAlignment(CENTER);
+    setBackground(Themes.currentTheme.dataEntryBackground());
 
   }
 
@@ -44,19 +46,17 @@ public class RecipientListCellRenderer extends JLabel implements ListCellRendere
       setBackground(list.getSelectionBackground());
       setForeground(list.getSelectionForeground());
     } else {
-      setBackground(list.getBackground());
-      setForeground(list.getForeground());
+      setBackground(Themes.currentTheme.dataEntryBackground());
+      setForeground(Themes.currentTheme.text());
     }
 
     String fragment = textField.getText();
-    log.debug("Recipient fragment: '{}'",fragment);
     String sourceText;
     if (value.getContact().isPresent()) {
       sourceText = value.getContact().get().getName();
     } else {
       sourceText = value.getBitcoinAddress();
     }
-    log.debug("Recipient source text: '{}'",sourceText);
 
     // Embolden the matching fragments
     setText(HtmlUtils.applyBoldFragments(fragment, sourceText));
