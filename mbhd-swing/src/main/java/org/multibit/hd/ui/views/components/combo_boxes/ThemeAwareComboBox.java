@@ -1,5 +1,7 @@
 package org.multibit.hd.ui.views.components.combo_boxes;
 
+import org.multibit.hd.ui.views.themes.Themes;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -27,14 +29,13 @@ public class ThemeAwareComboBox<E> extends JComboBox<E> {
 
     try {
 
-      // Work out the size of the text area
+      // Work out the size of the text area based on the arrow button
       Rectangle arrowButtonBounds = getComponent(0).getBounds();
       g.setClip(
         0, 0,
         getWidth() - arrowButtonBounds.width, getHeight()
       );
-//      setBackground(Themes.currentTheme.dataEntryBackground());
-      setBackground(Color.YELLOW);
+      setBackground(Themes.currentTheme.dataEntryBackground());
 
       super.paintComponent(g);
 
@@ -43,8 +44,7 @@ public class ThemeAwareComboBox<E> extends JComboBox<E> {
         arrowButtonBounds.x, arrowButtonBounds.y,
         arrowButtonBounds.width, arrowButtonBounds.height
       );
-//      setBackground(Themes.currentTheme.buttonBackground());
-      setBackground(Color.RED);
+      setBackground(Themes.currentTheme.buttonBackground());
 
       super.paintComponent(g);
 

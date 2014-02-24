@@ -146,7 +146,7 @@ public class LightTheme implements Theme {
 
   @Override
   public Color dangerAlertBackground() {
-    return new Color(252,144,136);
+    return new Color(252, 101, 91);
   }
 
   @Override
@@ -163,7 +163,7 @@ public class LightTheme implements Theme {
 
   @Override
   public Color dangerAlertBorder() {
-    return new Color(246,80,69);
+    return new Color(198, 54, 45);
   }
 
   @Override

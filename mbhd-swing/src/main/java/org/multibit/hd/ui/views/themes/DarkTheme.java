@@ -93,7 +93,7 @@ public class DarkTheme implements Theme {
 
   @Override
   public Color successAlertBackground() {
-    return new Color(188,236,160);
+    return new Color(111,176,83);
   }
 
   @Override
@@ -113,6 +113,7 @@ public class DarkTheme implements Theme {
   public Color successAlertBorder() {
     return new Color(64,106,45);
   }
+
 
   @Override
   public Color infoAlertBackground() {
@@ -146,7 +147,7 @@ public class DarkTheme implements Theme {
 
   @Override
   public Color dangerAlertBackground() {
-    return new Color(252,144,136);
+    return new Color(252, 101, 91);
   }
 
   @Override
@@ -163,7 +164,7 @@ public class DarkTheme implements Theme {
 
   @Override
   public Color dangerAlertBorder() {
-    return new Color(246,80,69);
+    return new Color(198, 54, 45);
   }
 
   @Override

@@ -72,6 +72,21 @@ public class Labels {
   }
 
   /**
+   * <p>A convenience method for creating a themed label with direct text. This is not internationalised.</p>
+   * @return A new value label with default styling for placing direct text
+   */
+  public static JLabel newValueLabel(String value) {
+
+    JLabel label = new JLabel(value);
+
+    // Apply theme
+    label.setForeground(Themes.currentTheme.text());
+
+    return label;
+
+  }
+
+  /**
    * @param key The message key
    *
    * @return A new label with appropriate font and theme

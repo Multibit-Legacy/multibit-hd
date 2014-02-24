@@ -1,8 +1,6 @@
 package org.multibit.hd.ui.views.components.select_contact;
 
 import org.multibit.hd.core.dto.Recipient;
-import org.multibit.hd.ui.views.components.borders.TextBubbleBorder;
-import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
@@ -28,12 +26,12 @@ public class RecipientComboBoxEditor implements ComboBoxEditor {
     // Use a modified text field with a workaround
     editor = new ComboBoxTextField("", 0);
 
-    // Apply theme
-    editor.setBackground(Themes.currentTheme.dataEntryBackground());
-    editor.setOpaque(false);
-
-    // Apply rounded corners
-    editor.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
+//    // Apply theme
+//    editor.setBackground(Themes.currentTheme.dataEntryBackground());
+//    editor.setOpaque(false);
+//
+//    // Apply rounded corners
+//    editor.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
 
   }
 

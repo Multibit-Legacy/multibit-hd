@@ -56,8 +56,6 @@ public class ComboBoxes {
     // Ensure that keyboard navigation does not trigger action events
     comboBox.putClientProperty("JComboBox.isTableCellEditor", Boolean.TRUE);
 
-    //NimbusDecorator.applyThemeColor(Color.RED, comboBox);
-
     return comboBox;
 
   }

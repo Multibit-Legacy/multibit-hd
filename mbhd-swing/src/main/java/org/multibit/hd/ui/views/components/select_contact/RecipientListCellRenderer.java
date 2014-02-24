@@ -30,7 +30,6 @@ public class RecipientListCellRenderer extends JLabel implements ListCellRendere
 
     setOpaque(true);
     setVerticalAlignment(CENTER);
-    setBackground(Themes.currentTheme.dataEntryBackground());
 
   }
 
