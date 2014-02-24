@@ -22,6 +22,7 @@ public class Themes {
     // TODO Link this to the configuration
     // Always switch into the configured theme at startup
     switchTheme(new LightTheme());
+    //switchTheme(new DarkTheme());
 
   }
 
@@ -37,8 +38,8 @@ public class Themes {
 
     currentTheme = newTheme;
 
-    // Gets used in borders
-    UIManager.put("nimbusBase", currentTheme.text());
+    // Gets used in combo box borders and provides the basis for a "default button"
+    UIManager.put("nimbusBase", currentTheme.readOnlyComboBox());
 
     // Provides basis for text
     UIManager.put("nimbusBlueGrey", currentTheme.fadedText());

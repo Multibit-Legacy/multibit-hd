@@ -94,7 +94,9 @@ public class SidebarView {
     sidebarTree.setCellRenderer(new ThemeAwareTreeCellRenderer());
 
     sidebarTree.setVisibleRowCount(10);
-    sidebarTree.setToggleClickCount(1);
+
+    // Require 2 clicks to toggle to make UX smoother when simply selecting wallet
+    sidebarTree.setToggleClickCount(2);
 
     // Ensure we always have the soft wallet open
     TreePath walletPath = sidebarTree.getPathForRow(0);

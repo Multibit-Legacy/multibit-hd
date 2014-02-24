@@ -142,6 +142,9 @@ public abstract class AbstractWizard<M extends WizardModel> {
     // Provide warning that the panel is about to be shown
     if (wizardPanelView.beforeHide(isExitCancel)) {
 
+      // De-register
+      wizardPanelView.deregisterDefaultButton();
+
       // No abort so hide
       Panels.hideLightBox();
 
@@ -162,6 +165,9 @@ public abstract class AbstractWizard<M extends WizardModel> {
     Preconditions.checkState(wizardViewMap.containsKey(name), "'" + name + "' is not a valid panel name");
 
     final AbstractWizardPanelView wizardPanelView = wizardViewMap.get(name);
+
+    // De-register any existing default buttons from previous panels
+    wizardPanelView.deregisterDefaultButton();
 
     // Provide warning that the panel is about to be shown
     if (wizardPanelView.beforeShow()) {

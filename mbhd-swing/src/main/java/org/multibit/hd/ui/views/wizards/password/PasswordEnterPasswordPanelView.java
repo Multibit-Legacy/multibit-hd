@@ -97,6 +97,8 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
   @Override
   public void afterShow() {
 
+    registerDefaultButton(getFinishButton());
+
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
@@ -148,4 +150,3 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
   }
 
 }
-

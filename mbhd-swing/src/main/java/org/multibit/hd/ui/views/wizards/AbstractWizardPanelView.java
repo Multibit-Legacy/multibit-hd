@@ -236,7 +236,12 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
   /**
    * <p>Called after this wizard panel has been shown</p>
    *
-   * <p>Typically this is where a panel view would attempt to set the focus for its primary component using
+   * <p>Typically this is where a panel view would attempt to:</p>
+   * <ul>
+   * <li>set the focus for its primary component using (see later)</li>
+   * <li>register a default button to speed up keyboard data entry</li>
+   * </ul>
+   *
    * the Swing thread as follows:</p>
    *
    * <pre>
@@ -284,6 +289,34 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
    * @param componentModel The component model (
    */
   public abstract void updateFromComponentModels(Optional componentModel);
+
+  /**
+   * <p>Deregisters the default button (called automatically when the wizard closes)</p>
+   */
+  public void deregisterDefaultButton() {
+
+    Panels.frame.getRootPane().setDefaultButton(null);
+
+  }
+
+  /**
+   * <p>Registers the default button for the wizard panel. Use this method with caution since it may give unintended side effects that affect the user experience.</p>
+   *
+   * @param button The button to use as the default (triggered on an "ENTER" key release)
+   */
+  public void registerDefaultButton(JButton button) {
+
+    Panels.frame.getRootPane().setDefaultButton(button);
+
+    // Remove the binding for pressed
+    Panels.frame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+      .put(KeyStroke.getKeyStroke("ENTER"), "none");
+
+    // Target the binding for released
+    Panels.frame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+      .put(KeyStroke.getKeyStroke("released ENTER"), "press");
+
+  }
 
   /**
    * <p>React to a "wizard button enable" event</p>
@@ -358,4 +391,6 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
     }
 
   }
+
+
 }

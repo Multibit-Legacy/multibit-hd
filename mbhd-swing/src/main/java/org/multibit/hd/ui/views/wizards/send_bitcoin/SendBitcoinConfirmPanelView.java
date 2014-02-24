@@ -136,6 +136,8 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
   @Override
   public void afterShow() {
 
+    registerDefaultButton(getNextButton());
+
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {

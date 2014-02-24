@@ -69,12 +69,12 @@ public class DarkTheme implements Theme {
 
   @Override
   public Color text() {
-    return new Color(187, 187, 187);
+    return new Color(207, 207, 207);
   }
 
   @Override
   public Color fadedText() {
-    return new Color(147, 147, 147);
+    return new Color(187, 187, 187);
   }
 
   @Override
