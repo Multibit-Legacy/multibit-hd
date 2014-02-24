@@ -28,7 +28,9 @@ public class RecipientListCellRenderer extends JLabel implements ListCellRendere
 
     this.textField = textField;
 
+    // Must be opaque to ensure background color is shown
     setOpaque(true);
+
     setVerticalAlignment(CENTER);
 
   }
@@ -41,12 +43,15 @@ public class RecipientListCellRenderer extends JLabel implements ListCellRendere
     boolean cellHasFocus
   ) {
 
+    // Ensure the popup list retains a nice border
+    list.setBorder(BorderFactory.createLineBorder(Themes.currentTheme.dataEntryBorder()));
+
     if (isSelected) {
       setBackground(list.getSelectionBackground());
       setForeground(list.getSelectionForeground());
     } else {
       setBackground(Themes.currentTheme.dataEntryBackground());
-      setForeground(Themes.currentTheme.text());
+      setForeground(Themes.currentTheme.buttonText());
     }
 
     String fragment = textField.getText();
@@ -65,5 +70,10 @@ public class RecipientListCellRenderer extends JLabel implements ListCellRendere
 
     return this;
   }
+
+  @Override public String getName() {
+    return "List.cellRenderer";
+  }
+
 
 }

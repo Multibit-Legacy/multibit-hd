@@ -131,6 +131,9 @@ public class NimbusDecorator {
     comboBoxButtonTheme.put("ComboBox:\"ComboBox.arrowButton\"[Pressed].foregroundPainter", new NamedComboBoxArrowButtonPainter(color, NamedComboBoxArrowButtonPainter.FOREGROUND_PRESSED));
     comboBoxButtonTheme.put("ComboBox:\"ComboBox.arrowButton\"[Selected].foregroundPainter", new NamedComboBoxArrowButtonPainter(color, NamedComboBoxArrowButtonPainter.FOREGROUND_SELECTED));
 
+    comboBoxButtonTheme.put("ComboBox:\"ComboBox.textField\"[Disabled].backgroundPainter", new NamedComboBoxTextFieldPainter(color, NamedComboBoxTextFieldPainter.BACKGROUND_DISABLED));
+    comboBoxButtonTheme.put("ComboBox:\"ComboBox.textField\"[Enabled].backgroundPainter", new NamedComboBoxTextFieldPainter(color, NamedComboBoxTextFieldPainter.BACKGROUND_ENABLED));
+    comboBoxButtonTheme.put("ComboBox:\"ComboBox.textField\"[Selected].backgroundPainter", new NamedComboBoxTextFieldPainter(color, NamedComboBoxTextFieldPainter.BACKGROUND_SELECTED));
 
     // Add the theme to the component
     comboBox.putClientProperty("Nimbus.Overrides.InheritDefaults", Boolean.TRUE);

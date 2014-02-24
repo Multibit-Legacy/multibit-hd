@@ -8,6 +8,7 @@ import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
 import org.multibit.hd.ui.events.view.AlertAddedEvent;
 import org.multibit.hd.ui.events.view.BalanceChangedEvent;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;
+import org.multibit.hd.ui.events.view.ThemeChangedEvent;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.components.Components;
@@ -88,7 +89,7 @@ public class HeaderView {
   /**
    * <p>Handles the representation of the header when a locale change occurs</p>
    *
-   * @param event The balance change event
+   * @param event The locale change event
    */
   @Subscribe
   public void onLocaleChangedEvent(LocaleChangedEvent event) {
@@ -97,6 +98,17 @@ public class HeaderView {
 
   }
 
+  /**
+   * <p>Handles the representation of the header when a theme change occurs</p>
+   *
+   * @param event The theme change event
+   */
+  @Subscribe
+  public void onThemeChangedEvent(ThemeChangedEvent event) {
+
+    populateAlertPanel();
+
+  }
   /**
    * <p>Handles the representation of the balance based on the current configuration</p>
    *

@@ -27,7 +27,7 @@ public class ThemeAwareTagPillListCellRenderer extends DefaultListCellRenderer {
 
     // Ensure consistent color
     setBackground(Themes.currentTheme.readOnlyBackground());
-    setForeground(Themes.currentTheme.inverseText());
+    setForeground(Themes.currentTheme.buttonText());
 
     // Place close icon on right to ensure consistent rendering
     AwesomeDecorator.applyIcon(

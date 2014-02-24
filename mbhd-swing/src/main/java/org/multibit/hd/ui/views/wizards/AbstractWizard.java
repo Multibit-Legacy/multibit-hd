@@ -8,6 +8,7 @@ import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;
+import org.multibit.hd.ui.events.view.ThemeChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.layouts.WizardCardLayout;
@@ -84,8 +85,6 @@ public abstract class AbstractWizard<M extends WizardModel> {
   @Subscribe
   public void onLocaleChangedEvent(LocaleChangedEvent event) {
 
-    Preconditions.checkNotNull(event, "'event' must be present");
-
     // Clear out any existing components
     wizardPanel.removeAll();
 
@@ -114,6 +113,12 @@ public abstract class AbstractWizard<M extends WizardModel> {
     // Invalidate for new layout
     Panels.invalidate(wizardPanel);
 
+  }
+
+  @Subscribe
+  public void onThemeChangedEvent(ThemeChangedEvent event) {
+
+    onLocaleChangedEvent(null);
   }
 
   /**

@@ -39,6 +39,12 @@ public interface Theme {
   Color readOnlyBorder();
 
   /**
+   *
+   * @return The background color for read only combo box (Nimbus mangles this value considerably)
+   */
+  Color readOnlyComboBox();
+
+  /**
    * @return The background colour for data handling elements (like text areas, tree views etc)
    */
   Color dataEntryBackground();
@@ -172,5 +178,4 @@ public interface Theme {
    * @return The text of a pending alert
    */
   Color pendingAlertText();
-
 }

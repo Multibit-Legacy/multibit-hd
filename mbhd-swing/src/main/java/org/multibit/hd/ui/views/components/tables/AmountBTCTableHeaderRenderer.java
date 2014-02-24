@@ -23,7 +23,9 @@ public class AmountBTCTableHeaderRenderer extends JLabel implements TableCellRen
   private TableCellRenderer defaultRenderer;
 
   public AmountBTCTableHeaderRenderer(TableCellRenderer defaultRenderer) {
+
     this.defaultRenderer = defaultRenderer;
+
   }
 
   @Override

@@ -3,13 +3,18 @@ package org.multibit.hd.ui.views.components;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.Recipient;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteDecorator;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilter;
-import org.multibit.hd.ui.views.components.combo_boxes.ThemeAwareComboBox;
 import org.multibit.hd.ui.views.components.select_backup_summary.BackupSummaryListCellRenderer;
+import org.multibit.hd.ui.views.components.select_contact.RecipientComboBoxEditor;
+import org.multibit.hd.ui.views.components.select_contact.RecipientListCellRenderer;
+import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.List;
 
@@ -31,21 +36,19 @@ public class ComboBoxes {
   }
 
   /**
-   * @return A new combo box with default styling (no listener since it will cause early event triggers during set up)
+   * @param items The items for the combo box model
+   *
+   * @return A new editable combo box with default styling (no listener since it will cause early event triggers during set up)
    */
   public static <T> JComboBox<T> newComboBox(T[] items) {
 
-    JComboBox<T> comboBox = new ThemeAwareComboBox<>(items);
+    JComboBox<T> comboBox = new JComboBox<>(items);
 
-    // Apply theme to main combo box (usually on a detail pane)
-//    comboBox.setBackground(Themes.currentTheme.detailPanelBackground());
-//    comboBox.setOpaque(false);
+    // Required to match icon button heights
+    comboBox.setMinimumSize(new Dimension(100, MultiBitUI.NORMAL_ICON_SIZE + 14));
 
-    // Apply theme to default editor (data entry)
-//    JTextField editorComponent = (JTextField) comboBox.getEditor().getEditorComponent();
-//    editorComponent.setBackground(Themes.currentTheme.dataEntryBackground());
-//    editorComponent.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
-//    editorComponent.setOpaque(false);
+    // Required to blend in with panel
+    comboBox.setBackground(Themes.currentTheme.detailPanelBackground());
 
     // Ensure we use the correct component orientation
     comboBox.applyComponentOrientation(Languages.currentComponentOrientation());
@@ -63,7 +66,11 @@ public class ComboBoxes {
   public static <T> JComboBox<T> newReadOnlyComboBox(T[] items) {
 
     JComboBox<T> comboBox = newComboBox(items);
+
     comboBox.setEditable(false);
+
+    // Apply theme
+    comboBox.setBackground(Themes.currentTheme.readOnlyComboBox());
 
     return comboBox;
 
@@ -72,7 +79,7 @@ public class ComboBoxes {
   /**
    * @param listener The action listener to alert when the selection is made
    *
-   * @return A new "contact checkbox" combo box (all, none, starred, unstarred etc)
+   * @return A new "contact checkbox" combo box (all, none)
    */
   public static JComboBox<String> newContactsCheckboxComboBox(ActionListener listener) {
 
@@ -97,10 +104,9 @@ public class ComboBoxes {
    */
   public static JComboBox<String> newLanguagesComboBox(ActionListener listener) {
 
-    JComboBox<String> comboBox = newComboBox(Languages.getLanguageNames(true));
+    JComboBox<String> comboBox = newReadOnlyComboBox(Languages.getLanguageNames(true));
 
     comboBox.setSelectedIndex(Languages.getIndexFromLocale(Languages.currentLocale()));
-    comboBox.setEditable(false);
 
     // Add the listener at the end to avoid false events
     comboBox.addActionListener(listener);
@@ -118,20 +124,19 @@ public class ComboBoxes {
 
     JComboBox<Recipient> comboBox = newComboBox(filter.create());
 
-    // Use a contact editor to force use of the name field
-    //comboBox.setEditor(new RecipientComboBoxEditor());
+    comboBox.setEditable(true);
 
-    // Ensure that keyboard navigation does not trigger action events
-//    comboBox.putClientProperty("JComboBox.isTableCellEditor", Boolean.TRUE);
+    // Use a contact editor to force use of the name field
+    comboBox.setEditor(new RecipientComboBoxEditor());
 
     // Use a contact list cell renderer to ensure thumbnails are maintained
-//    ListCellRenderer<Recipient> renderer = new RecipientListCellRenderer((JTextField) comboBox.getEditor().getEditorComponent());
-//    comboBox.setRenderer(renderer);
+    ListCellRenderer<Recipient> renderer = new RecipientListCellRenderer((JTextField) comboBox.getEditor().getEditorComponent());
+    comboBox.setRenderer(renderer);
 
     // Ensure we start with nothing selected
     comboBox.setSelectedIndex(-1);
 
-//    AutoCompleteDecorator.apply(comboBox, filter);
+    AutoCompleteDecorator.apply(comboBox, filter);
 
     return comboBox;
 
@@ -151,10 +156,7 @@ public class ComboBoxes {
     // Convert the backup summaries to an array
     BackupSummary[] backupSummaryArray = new BackupSummary[backupSummaries.size()];
 
-    JComboBox<BackupSummary> comboBox = newComboBox(backupSummaryArray);
-
-    // Ensure that keyboard navigation does not trigger action events
-    comboBox.putClientProperty("JComboBox.isTableCellEditor", Boolean.TRUE);
+    JComboBox<BackupSummary> comboBox = newReadOnlyComboBox(backupSummaryArray);
 
     // Use a backup summary list cell renderer to ensure the correct fields are displayed
     ListCellRenderer<BackupSummary> renderer = new BackupSummaryListCellRenderer();
@@ -174,13 +176,12 @@ public class ComboBoxes {
    */
   public static JComboBox<String> newSeedSizeComboBox(ActionListener listener) {
 
-    JComboBox<String> comboBox = newComboBox(new String[]{
+    JComboBox<String> comboBox = newReadOnlyComboBox(new String[]{
       "12",
       "18",
       "24"
     });
     comboBox.setSelectedIndex(0);
-    comboBox.setEditable(false);
 
     // Add the listener at the end to avoid false events
     comboBox.addActionListener(listener);

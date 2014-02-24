@@ -610,13 +610,19 @@ public class Labels {
    */
   public static JLabel newSeedWarningNote() {
 
-    return newNoteLabel(new MessageKey[]{
+    JLabel label = newNoteLabel(new MessageKey[]{
       MessageKey.SEED_WARNING_NOTE_1,
       MessageKey.SEED_WARNING_NOTE_2,
       MessageKey.SEED_WARNING_NOTE_3,
       MessageKey.SEED_WARNING_NOTE_4,
       MessageKey.SEED_WARNING_NOTE_5,
     }, new Object[][]{});
+
+    // Allow for danger theme
+    label.setForeground(Themes.currentTheme.dangerAlertText());
+
+    return label;
+
   }
 
   /**

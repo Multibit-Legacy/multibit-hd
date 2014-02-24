@@ -47,6 +47,11 @@ public class LightTheme implements Theme {
   }
 
   @Override
+  public Color readOnlyComboBox() {
+    return new Color(25,81,130);
+  }
+
+  @Override
   public Color dataEntryBackground() {
     return new Color(250,241,157);
   }
@@ -168,7 +173,7 @@ public class LightTheme implements Theme {
 
   @Override
   public Color dangerAlertText() {
-    return inverseText();
+    return text();
   }
 
   @Override

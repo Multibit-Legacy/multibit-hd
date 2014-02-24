@@ -39,7 +39,7 @@ public class CreateWalletSelectBackupLocationPanelView extends AbstractWizardPan
 
     super(wizard.getWizardModel(), panelName, MessageKey.SELECT_BACKUP_LOCATION_TITLE);
 
-    PanelDecorator.addExitCancelNext(this, wizard);
+    PanelDecorator.addExitCancelPreviousNext(this, wizard);
 
   }
 

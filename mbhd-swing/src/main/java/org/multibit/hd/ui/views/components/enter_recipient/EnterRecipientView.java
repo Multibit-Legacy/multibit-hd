@@ -72,7 +72,7 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
 
     panel.add(Labels.newRecipient());
     // Specify minimum width for consistent appearance across contact names and locales
-    panel.add(recipientComboBox, "growx,w min:400:,push");
+    panel.add(recipientComboBox, "growx,width min:350:,push");
     panel.add(pasteButton, "shrink");
     panel.add(imageLabel, "shrink,wrap");
 

@@ -22,6 +22,7 @@ import org.multibit.hd.ui.controllers.MainController;
 import org.multibit.hd.ui.events.controller.ChangeLocaleEvent;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;
+import org.multibit.hd.ui.events.view.ThemeChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
@@ -29,8 +30,12 @@ import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.FooterView;
 import org.multibit.hd.ui.views.HeaderView;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.themes.DarkTheme;
+import org.multibit.hd.ui.views.themes.LightTheme;
+import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +94,8 @@ public class ComponentTestBed {
    */
   public JPanel createTestPanel() {
 
-    AbstractWizard wizard = Wizards.newExitingPasswordWizard();
+    AbstractWizard wizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE);
+    wizard.show(WelcomeWizardState.WELCOME_SELECT_LANGUAGE.name());
     return wizard.getWizardPanel();
 
   }
@@ -184,6 +190,13 @@ public class ComponentTestBed {
   }
 
   @Subscribe
+  public void onThemeChangedEvent(ThemeChangedEvent event) {
+
+    show();
+
+  }
+
+  @Subscribe
   public void onShutdownEvent(ShutdownEvent event) {
 
     frame.dispose();
@@ -213,11 +226,28 @@ public class ComponentTestBed {
       }
     };
 
+    // Create the toggle button action
+    Action toggleThemeAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        if (Themes.currentTheme instanceof DarkTheme) {
+          Themes.switchTheme(new LightTheme());
+        } else {
+          Themes.switchTheme(new DarkTheme());
+        }
+
+        ViewEvents.fireThemeChangedEvent();
+
+      }
+    };
+
     log.info("Adding test bed controls");
 
     // Create test bed controls
     JButton toggleLocaleButton = new JButton(toggleLocaleAction);
     toggleLocaleButton.setText(Languages.safeText(MessageKey.SELECT_LANGUAGE));
+    JButton toggleThemeButton = new JButton(toggleThemeAction);
+    toggleThemeButton.setText("Theme");
 
     // Set up the frame to use the minimum size
 
@@ -232,14 +262,15 @@ public class ComponentTestBed {
     // Set up the wrapping panel
     contentPanel = Panels.newPanel(new MigLayout(
       "fill,insets 0", // Layout
-      "[]", // Columns
+      "[][]", // Columns
       "[][]" // Rows
     ));
     contentPanel.setOpaque(true);
 
     log.info("Adding test panel");
-    contentPanel.add(createTestPanel(), "grow,push,wrap");
-    contentPanel.add(toggleLocaleButton, "center");
+    contentPanel.add(createTestPanel(), "grow,push,span 2,wrap");
+    contentPanel.add(toggleLocaleButton, "push");
+    contentPanel.add(toggleThemeButton, "shrink");
 
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     frame.add(contentPanel);

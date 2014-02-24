@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;
+import org.multibit.hd.ui.events.view.ThemeChangedEvent;
 import org.multibit.hd.ui.views.components.Panels;
 
 import javax.swing.*;
@@ -45,14 +46,19 @@ public abstract class AbstractScreen<M extends ScreenModel> {
   @Subscribe
   public void onLocaleChangedEvent(LocaleChangedEvent event) {
 
-    Preconditions.checkNotNull(event, "'event' must be present");
-
     // Clear out any existing components
     detailPanel.removeAll();
 
 
     // Invalidate for new layout
     Panels.invalidate(detailPanel);
+
+  }
+
+  @Subscribe
+  public void onThemeChangedEvent(ThemeChangedEvent event) {
+
+    onLocaleChangedEvent(null);
 
   }
 

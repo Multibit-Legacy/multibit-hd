@@ -1,7 +1,5 @@
 package org.multibit.hd.ui.views.themes.painters;
 
-import org.multibit.hd.ui.views.themes.Themes;
-
 import javax.swing.*;
 import javax.swing.plaf.nimbus.AbstractRegionPainter;
 import java.awt.*;
@@ -79,7 +77,8 @@ public class NamedComboBoxArrowButtonPainter extends AbstractNamedRegionPainter 
    */
   public NamedComboBoxArrowButtonPainter(Color color, int state) {
 
-    super(color, Themes.currentTheme.buttonBackground(), state);
+//    super(color, Themes.currentTheme.buttonBackground(), state);
+    super(Color.RED, Color.BLUE, state);
 
     Insets insets = new Insets(8, 1, 8, 8);
     this.ctx = new AbstractRegionPainter.PaintContext(insets, new Dimension(20, 24), false);

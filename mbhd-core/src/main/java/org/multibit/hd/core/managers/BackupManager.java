@@ -92,6 +92,7 @@ public enum BackupManager {
    *
    * @param walletId      The walletId to subset on
    * @param directoryName The directory to look in
+   *
    * @return The wallet backups available
    */
   public List<BackupSummary> getWalletBackups(WalletId walletId, File directoryName) {
@@ -108,7 +109,7 @@ public enum BackupManager {
 
     // Look for filenames with format "mbhd-" + [formatted wallet id ] + "-YYYYMMDDHHMMSS.zip"
     String backupRegex = WalletManager.WALLET_DIRECTORY_PREFIX + WalletManager.SEPARATOR + walletId.toFormattedString() +
-            WalletManager.SEPARATOR + "\\d{" + BACKUP_SUFFIX_FORMAT.length() + "}" + BACKUP_ZIP_FILE_EXTENSION_REGEX;
+      WalletManager.SEPARATOR + "\\d{" + BACKUP_SUFFIX_FORMAT.length() + "}" + BACKUP_ZIP_FILE_EXTENSION_REGEX;
     if (listOfFiles != null) {
       for (int i = 0; i < listOfFiles.length; i++) {
         if (listOfFiles[i].isFile()) {
@@ -116,11 +117,11 @@ public enum BackupManager {
             if (listOfFiles[i].length() > 0) {
               BackupSummary backupSummary = new BackupSummary(walletId, listOfFiles[i].getName(), listOfFiles[i]);
               // Work out timestamp
-              int start = (WalletManager.MBHD_WALLET_PREFIX + WalletManager.SEPARATOR + WalletManager.SEPARATOR).length() +  WalletId.LENGTH_OF_FORMATTED_WALLETID;
+              int start = (WalletManager.MBHD_WALLET_PREFIX + WalletManager.SEPARATOR + WalletManager.SEPARATOR).length() + WalletId.LENGTH_OF_FORMATTED_WALLETID;
               int stop = start + BACKUP_SUFFIX_FORMAT.length();
               String timeStampString = FileUtils.filePart(listOfFiles[i].getName().substring(start, stop));
               try {
-                DateTime timestamp = new DateTime( getDateFormat().parse(timeStampString));
+                DateTime timestamp = new DateTime(getDateFormat().parse(timeStampString));
                 backupSummary.setCreated(timestamp);
               } catch (ParseException pe) {
                 pe.printStackTrace();
@@ -140,6 +141,7 @@ public enum BackupManager {
    * These are ordered in the order of timestamp i.e  the oldest one is first, the newest one is last
    *
    * @param walletId the wallet id of the wallet to search for rolling backups for
+   *
    * @return a list of filenames of the rolling backups, oldest first
    */
   public List<File> getRollingBackups(WalletId walletId) {
@@ -147,7 +149,7 @@ public enum BackupManager {
 
     // Calculate the directory the rolling backups are stored in for this wallet id
     String rollingBackupDirectoryName = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), WalletManager.createWalletRoot(walletId)) +
-            File.separator + ROLLING_BACKUP_DIRECTORY_NAME;
+      File.separator + ROLLING_BACKUP_DIRECTORY_NAME;
     File rollingBackupDirectory = new File(rollingBackupDirectoryName);
 
     if (!rollingBackupDirectory.exists()) {
@@ -200,14 +202,16 @@ public enum BackupManager {
    * There is a maximum number of rolling backups, removals are done using a first in - first out rule.
    *
    * @param walletData The wallet data with the wallet to backup
+   *
    * @return the File of the created rolling wallet backup
+   *
    * @throws java.io.IOException if the wallet backup could not be created
    */
   public File createRollingBackup(WalletData walletData) throws IOException {
-    Preconditions.checkNotNull(walletData);
-    Preconditions.checkNotNull(walletData.getWallet());
-    Preconditions.checkNotNull(walletData.getWalletId());
-    Preconditions.checkNotNull(applicationDataDirectory); // Indicates BackupManager is not initialised - call initialise with the applicationDataDirectory
+    Preconditions.checkNotNull(walletData, "'walletData' must be present");
+    Preconditions.checkNotNull(walletData.getWallet(), "'wallet' must be present");
+    Preconditions.checkNotNull(walletData.getWalletId(), "'walletId' must be present");
+    Preconditions.checkNotNull(applicationDataDirectory, "'applicationDataDirectory' must be present. Check BackupManager has been initialised");
 
     // Find the wallet root directory for this wallet id
     File walletRootDirectory = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), WalletManager.createWalletRoot(walletData.getWalletId()));
@@ -220,7 +224,7 @@ public enum BackupManager {
     FileUtils.createDirectoryIfNecessary(new File(rollingBackupDirectoryName));
 
     String walletBackupFilename = rollingBackupDirectoryName + File.separator + WalletManager.MBHD_WALLET_PREFIX + WalletManager.SEPARATOR
-            + getDateFormat().format(new Date()) + WalletManager.MBHD_WALLET_SUFFIX;
+      + getDateFormat().format(new Date()) + WalletManager.MBHD_WALLET_SUFFIX;
 
     File walletBackupFile = new File(walletBackupFilename);
     log.debug("Creating rolling-backup '" + walletBackupFilename + "'");
