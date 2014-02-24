@@ -74,7 +74,7 @@ public class WalletService {
   /**
    * The additional transaction information, in the form of a map, index by the transaction hash
    */
-  private Map<byte[], TransactionInfo> transactionInfoMap;
+  private Map<String, TransactionInfo> transactionInfoMap;
 
   /**
    * The last index used for address generation
@@ -121,7 +121,8 @@ public class WalletService {
   }
 
   /**
-   * Get all the payments (payments and payment requests) in the current wallet
+   * Get all the payments (payments and payment requests) in the current wallet.
+   * (This is a bit expensive)
    */
   public Set<PaymentData> getPaymentDatas() {
     // See if there is a current wallet
@@ -153,14 +154,23 @@ public class WalletService {
       }
     }
 
+    // Determine which paymentRequests have not been fully funded
+    Set paymentRequestsNotFullyFunded = Sets.newHashSet();
+    for (PaymentRequestData basePaymentRequestData : paymentRequestMap.values()) {
+      if (basePaymentRequestData.getPaidAmountBTC().compareTo(basePaymentRequestData.getAmountBTC()) < 0) {
+        paymentRequestsNotFullyFunded.add(basePaymentRequestData);
+      }
+    }
     // Union all the transactionDatas and paymentDatas
-    Set<PaymentData> paymentDatas = Sets.union(transactionDatas, Sets.newHashSet(paymentRequestMap.values()));
+    Set<PaymentData> paymentDatas = Sets.union(transactionDatas, paymentRequestsNotFullyFunded);
 
     return paymentDatas;
   }
 
   /**
-   * Adapt a bitcoinj transaction to a TransactionData DTO
+   * Adapt a bitcoinj transaction to a TransactionData DTO.
+   * Also merges in any transactionInfo available.
+   * Also checks if this transaction funds any payment requests
    *
    * @param wallet      the current wallet
    * @param transaction the transaction to adapt
@@ -204,15 +214,44 @@ public class WalletService {
     // TODO - fee on send
 
     String description;
+    String addresses;
 
     if (paymentType == PaymentType.RECEIVING || paymentType == PaymentType.RECEIVED) {
-      description = "By"; // TODO localise
+      description = "";
+      addresses = "";
+
+      boolean descriptiveTextIsAvailable = false;
       if (transaction.getOutputs() != null) {
         for (TransactionOutput transactionOutput : transaction.getOutputs()) {
           if (transactionOutput.isMine(wallet)) {
-            description = description + " " + transactionOutput.getScriptPubKey().getToAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
+            String receivingAddress = transactionOutput.getScriptPubKey().getToAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
+            addresses = addresses + " " + receivingAddress;
+
+            // Check if this output funds any payment requests;
+            PaymentRequestData paymentRequestData = paymentRequestMap.get(receivingAddress);
+            if (paymentRequestData != null) {
+              // Yes - this output funds a payment address
+              if (!paymentRequestData.getPayingTransactionHashes().contains(transactionId)) {
+                // We have not yet added this tx to the total paid amount
+                paymentRequestData.getPayingTransactionHashes().add(transactionId);
+                paymentRequestData.setPaidAmountBTC(paymentRequestData.getPaidAmountBTC().add(amountBTC));
+              }
+
+              if (paymentRequestData.getLabel() != null && paymentRequestData.getLabel().length() > 0) {
+                descriptiveTextIsAvailable = true;
+                description = description + paymentRequestData.getLabel() + " ";
+              }
+              if (paymentRequestData.getNote() != null && paymentRequestData.getNote().length() > 0) {
+                descriptiveTextIsAvailable = true;
+                description = description + paymentRequestData.getNote() + " ";
+              }
+            }
           }
         }
+      }
+
+      if (!descriptiveTextIsAvailable) {
+        description = "By: " + addresses.trim();
       }
     } else {
       // Sent
@@ -347,7 +386,7 @@ public class WalletService {
   }
 
   public void addTransactionInfo(TransactionInfo transactionInfo) {
-     transactionInfoMap.put(transactionInfo.getHash(), transactionInfo);
+    transactionInfoMap.put(transactionInfo.getHash(), transactionInfo);
   }
 
   public Collection<PaymentRequestData> getPaymentRequests() {

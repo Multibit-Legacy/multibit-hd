@@ -20,7 +20,6 @@ package org.multibit.hd.core.store;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.protobuf.ByteString;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.PaymentRequestData;
@@ -124,7 +123,7 @@ public class PaymentsProtobufSerializer {
   private static MBHDPaymentsProtos.TransactionInfo makeTransactionInfoProto(TransactionInfo transactionInfo) {
     MBHDPaymentsProtos.TransactionInfo.Builder transactionInfoBuilder = MBHDPaymentsProtos.TransactionInfo.newBuilder();
 
-    transactionInfoBuilder.setHash(ByteString.copyFrom(transactionInfo.getHash()));
+    transactionInfoBuilder.setHash(transactionInfo.getHash());
     transactionInfoBuilder.setNote(transactionInfo.getNote());
     Collection<String> requestAddresses = transactionInfo.getRequestAddresses();
 
@@ -229,7 +228,7 @@ public class PaymentsProtobufSerializer {
       for (MBHDPaymentsProtos.TransactionInfo transactionInfoProto : transactionInfoProtos) {
         org.multibit.hd.core.store.TransactionInfo transactionInfo = new TransactionInfo();
 
-        transactionInfo.setHash(transactionInfoProto.getHash().toByteArray());
+        transactionInfo.setHash(transactionInfoProto.getHash());
 
         if (transactionInfoProto.hasNote()) {
           transactionInfo.setNote(transactionInfoProto.getNote());

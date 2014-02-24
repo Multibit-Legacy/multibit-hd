@@ -2,7 +2,6 @@ package org.multibit.hd.core.store;
 
 import org.multibit.hd.core.dto.FiatPayment;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -14,16 +13,20 @@ import java.util.Collection;
  *  
  */
 public class TransactionInfo {
-  private byte[] hash;
+  private String hash;
   private Collection<String> requestAddresses;
   private FiatPayment amountFiat;
   private String note;
 
-  public byte[] getHash() {
+  /**
+   * The transaction hash as a String (commonly referred to as transaction id but don't forget about malleability!)
+   * @return
+   */
+  public String getHash() {
     return hash;
   }
 
-  public void setHash(byte[] hash) {
+  public void setHash(String hash) {
     this.hash = hash;
   }
 
@@ -59,7 +62,7 @@ public class TransactionInfo {
     TransactionInfo that = (TransactionInfo) o;
 
     if (amountFiat != null ? !amountFiat.equals(that.amountFiat) : that.amountFiat != null) return false;
-    if (!Arrays.equals(hash, that.hash)) return false;
+    if (hash != null ? !hash.equals(that.hash) : that.hash != null) return false;
     if (note != null ? !note.equals(that.note) : that.note != null) return false;
     if (requestAddresses != null ? !requestAddresses.equals(that.requestAddresses) : that.requestAddresses != null)
       return false;
@@ -69,7 +72,7 @@ public class TransactionInfo {
 
   @Override
   public int hashCode() {
-    int result = Arrays.hashCode(hash);
+    int result = hash.hashCode();
     result = 31 * result + (requestAddresses != null ? requestAddresses.hashCode() : 0);
     result = 31 * result + (amountFiat != null ? amountFiat.hashCode() : 0);
     result = 31 * result + (note != null ? note.hashCode() : 0);

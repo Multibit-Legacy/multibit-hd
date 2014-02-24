@@ -1,6 +1,5 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
-import com.google.bitcoin.core.Utils;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
@@ -138,8 +137,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
     // Create a transactionInfo to match the event created, regardless of success or failure
     TransactionInfo transactionInfo = new TransactionInfo();
-    // TODO - better to have string or hash but not both !
-    transactionInfo.setHash(Utils.parseAsHexOrBase58(transactionCreationEvent.getTransactionId()));
+    transactionInfo.setHash(transactionCreationEvent.getTransactionId());
     String note = getNotes();
     if (note == null) {
       note = "";

@@ -2603,23 +2603,32 @@ public final class MBHDPaymentsProtos {
   public interface TransactionInfoOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
-    // required bytes hash = 1;
+    // required string hash = 1;
     /**
-     * <code>required bytes hash = 1;</code>
+     * <code>required string hash = 1;</code>
      *
      * <pre>
-     * The transaction hash (i.e. the transaction id as per the wallet Transaction.hash)
+     * The transaction hash (i.e. the transaction id as per the wallet Transaction.hash.toString)
      * </pre>
      */
     boolean hasHash();
     /**
-     * <code>required bytes hash = 1;</code>
+     * <code>required string hash = 1;</code>
      *
      * <pre>
-     * The transaction hash (i.e. the transaction id as per the wallet Transaction.hash)
+     * The transaction hash (i.e. the transaction id as per the wallet Transaction.hash.toString)
      * </pre>
      */
-    com.google.protobuf.ByteString getHash();
+    java.lang.String getHash();
+    /**
+     * <code>required string hash = 1;</code>
+     *
+     * <pre>
+     * The transaction hash (i.e. the transaction id as per the wallet Transaction.hash.toString)
+     * </pre>
+     */
+    com.google.protobuf.ByteString
+        getHashBytes();
 
     // repeated string request_address = 2;
     /**
@@ -2843,28 +2852,59 @@ public final class MBHDPaymentsProtos {
     }
 
     private int bitField0_;
-    // required bytes hash = 1;
+    // required string hash = 1;
     public static final int HASH_FIELD_NUMBER = 1;
-    private com.google.protobuf.ByteString hash_;
+    private java.lang.Object hash_;
     /**
-     * <code>required bytes hash = 1;</code>
+     * <code>required string hash = 1;</code>
      *
      * <pre>
-     * The transaction hash (i.e. the transaction id as per the wallet Transaction.hash)
+     * The transaction hash (i.e. the transaction id as per the wallet Transaction.hash.toString)
      * </pre>
      */
     public boolean hasHash() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>required bytes hash = 1;</code>
+     * <code>required string hash = 1;</code>
      *
      * <pre>
-     * The transaction hash (i.e. the transaction id as per the wallet Transaction.hash)
+     * The transaction hash (i.e. the transaction id as per the wallet Transaction.hash.toString)
      * </pre>
      */
-    public com.google.protobuf.ByteString getHash() {
-      return hash_;
+    public java.lang.String getHash() {
+      java.lang.Object ref = hash_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          hash_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string hash = 1;</code>
+     *
+     * <pre>
+     * The transaction hash (i.e. the transaction id as per the wallet Transaction.hash.toString)
+     * </pre>
+     */
+    public com.google.protobuf.ByteString
+        getHashBytes() {
+      java.lang.Object ref = hash_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        hash_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
 
     // repeated string request_address = 2;
@@ -3006,7 +3046,7 @@ public final class MBHDPaymentsProtos {
     }
 
     private void initFields() {
-      hash_ = com.google.protobuf.ByteString.EMPTY;
+      hash_ = "";
       requestAddress_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       amountFiat_ = org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPayment.getDefaultInstance();
       note_ = "";
@@ -3034,7 +3074,7 @@ public final class MBHDPaymentsProtos {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, hash_);
+        output.writeBytes(1, getHashBytes());
       }
       for (int i = 0; i < requestAddress_.size(); i++) {
         output.writeBytes(2, requestAddress_.getByteString(i));
@@ -3056,7 +3096,7 @@ public final class MBHDPaymentsProtos {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, hash_);
+          .computeBytesSize(1, getHashBytes());
       }
       {
         int dataSize = 0;
@@ -3197,7 +3237,7 @@ public final class MBHDPaymentsProtos {
 
       public Builder clear() {
         super.clear();
-        hash_ = com.google.protobuf.ByteString.EMPTY;
+        hash_ = "";
         bitField0_ = (bitField0_ & ~0x00000001);
         requestAddress_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000002);
@@ -3276,7 +3316,9 @@ public final class MBHDPaymentsProtos {
       public Builder mergeFrom(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo other) {
         if (other == org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.getDefaultInstance()) return this;
         if (other.hasHash()) {
-          setHash(other.getHash());
+          bitField0_ |= 0x00000001;
+          hash_ = other.hash_;
+          onChanged();
         }
         if (!other.requestAddress_.isEmpty()) {
           if (requestAddress_.isEmpty()) {
@@ -3333,36 +3375,65 @@ public final class MBHDPaymentsProtos {
       }
       private int bitField0_;
 
-      // required bytes hash = 1;
-      private com.google.protobuf.ByteString hash_ = com.google.protobuf.ByteString.EMPTY;
+      // required string hash = 1;
+      private java.lang.Object hash_ = "";
       /**
-       * <code>required bytes hash = 1;</code>
+       * <code>required string hash = 1;</code>
        *
        * <pre>
-       * The transaction hash (i.e. the transaction id as per the wallet Transaction.hash)
+       * The transaction hash (i.e. the transaction id as per the wallet Transaction.hash.toString)
        * </pre>
        */
       public boolean hasHash() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>required bytes hash = 1;</code>
+       * <code>required string hash = 1;</code>
        *
        * <pre>
-       * The transaction hash (i.e. the transaction id as per the wallet Transaction.hash)
+       * The transaction hash (i.e. the transaction id as per the wallet Transaction.hash.toString)
        * </pre>
        */
-      public com.google.protobuf.ByteString getHash() {
-        return hash_;
+      public java.lang.String getHash() {
+        java.lang.Object ref = hash_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          hash_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
       }
       /**
-       * <code>required bytes hash = 1;</code>
+       * <code>required string hash = 1;</code>
        *
        * <pre>
-       * The transaction hash (i.e. the transaction id as per the wallet Transaction.hash)
+       * The transaction hash (i.e. the transaction id as per the wallet Transaction.hash.toString)
        * </pre>
        */
-      public Builder setHash(com.google.protobuf.ByteString value) {
+      public com.google.protobuf.ByteString
+          getHashBytes() {
+        java.lang.Object ref = hash_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          hash_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string hash = 1;</code>
+       *
+       * <pre>
+       * The transaction hash (i.e. the transaction id as per the wallet Transaction.hash.toString)
+       * </pre>
+       */
+      public Builder setHash(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -3372,15 +3443,32 @@ public final class MBHDPaymentsProtos {
         return this;
       }
       /**
-       * <code>required bytes hash = 1;</code>
+       * <code>required string hash = 1;</code>
        *
        * <pre>
-       * The transaction hash (i.e. the transaction id as per the wallet Transaction.hash)
+       * The transaction hash (i.e. the transaction id as per the wallet Transaction.hash.toString)
        * </pre>
        */
       public Builder clearHash() {
         bitField0_ = (bitField0_ & ~0x00000001);
         hash_ = getDefaultInstance().getHash();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string hash = 1;</code>
+       *
+       * <pre>
+       * The transaction hash (i.e. the transaction id as per the wallet Transaction.hash.toString)
+       * </pre>
+       */
+      public Builder setHashBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        hash_ = value;
         onChanged();
         return this;
       }
@@ -3838,7 +3926,7 @@ public final class MBHDPaymentsProtos {
      * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
-     * Collection of payments
+     * Collection of transactions
      * </pre>
      */
     java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo> 
@@ -3847,7 +3935,7 @@ public final class MBHDPaymentsProtos {
      * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
-     * Collection of payments
+     * Collection of transactions
      * </pre>
      */
     org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo getTransactionInfo(int index);
@@ -3855,7 +3943,7 @@ public final class MBHDPaymentsProtos {
      * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
-     * Collection of payments
+     * Collection of transactions
      * </pre>
      */
     int getTransactionInfoCount();
@@ -3863,7 +3951,7 @@ public final class MBHDPaymentsProtos {
      * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
-     * Collection of payments
+     * Collection of transactions
      * </pre>
      */
     java.util.List<? extends org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfoOrBuilder> 
@@ -3872,7 +3960,7 @@ public final class MBHDPaymentsProtos {
      * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
-     * Collection of payments
+     * Collection of transactions
      * </pre>
      */
     org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfoOrBuilder getTransactionInfoOrBuilder(
@@ -4082,7 +4170,7 @@ public final class MBHDPaymentsProtos {
      * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
-     * Collection of payments
+     * Collection of transactions
      * </pre>
      */
     public java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo> getTransactionInfoList() {
@@ -4092,7 +4180,7 @@ public final class MBHDPaymentsProtos {
      * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
-     * Collection of payments
+     * Collection of transactions
      * </pre>
      */
     public java.util.List<? extends org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfoOrBuilder> 
@@ -4103,7 +4191,7 @@ public final class MBHDPaymentsProtos {
      * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
-     * Collection of payments
+     * Collection of transactions
      * </pre>
      */
     public int getTransactionInfoCount() {
@@ -4113,7 +4201,7 @@ public final class MBHDPaymentsProtos {
      * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
-     * Collection of payments
+     * Collection of transactions
      * </pre>
      */
     public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo getTransactionInfo(int index) {
@@ -4123,7 +4211,7 @@ public final class MBHDPaymentsProtos {
      * <code>repeated .TransactionInfo transaction_info = 2;</code>
      *
      * <pre>
-     * Collection of payments
+     * Collection of transactions
      * </pre>
      */
     public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfoOrBuilder getTransactionInfoOrBuilder(
@@ -4848,7 +4936,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of payments
+       * Collection of transactions
        * </pre>
        */
       public java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo> getTransactionInfoList() {
@@ -4862,7 +4950,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of payments
+       * Collection of transactions
        * </pre>
        */
       public int getTransactionInfoCount() {
@@ -4876,7 +4964,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of payments
+       * Collection of transactions
        * </pre>
        */
       public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo getTransactionInfo(int index) {
@@ -4890,7 +4978,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of payments
+       * Collection of transactions
        * </pre>
        */
       public Builder setTransactionInfo(
@@ -4911,7 +4999,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of payments
+       * Collection of transactions
        * </pre>
        */
       public Builder setTransactionInfo(
@@ -4929,7 +5017,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of payments
+       * Collection of transactions
        * </pre>
        */
       public Builder addTransactionInfo(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo value) {
@@ -4949,7 +5037,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of payments
+       * Collection of transactions
        * </pre>
        */
       public Builder addTransactionInfo(
@@ -4970,7 +5058,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of payments
+       * Collection of transactions
        * </pre>
        */
       public Builder addTransactionInfo(
@@ -4988,7 +5076,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of payments
+       * Collection of transactions
        * </pre>
        */
       public Builder addTransactionInfo(
@@ -5006,7 +5094,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of payments
+       * Collection of transactions
        * </pre>
        */
       public Builder addAllTransactionInfo(
@@ -5024,7 +5112,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of payments
+       * Collection of transactions
        * </pre>
        */
       public Builder clearTransactionInfo() {
@@ -5041,7 +5129,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of payments
+       * Collection of transactions
        * </pre>
        */
       public Builder removeTransactionInfo(int index) {
@@ -5058,7 +5146,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of payments
+       * Collection of transactions
        * </pre>
        */
       public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.Builder getTransactionInfoBuilder(
@@ -5069,7 +5157,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of payments
+       * Collection of transactions
        * </pre>
        */
       public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfoOrBuilder getTransactionInfoOrBuilder(
@@ -5083,7 +5171,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of payments
+       * Collection of transactions
        * </pre>
        */
       public java.util.List<? extends org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfoOrBuilder> 
@@ -5098,7 +5186,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of payments
+       * Collection of transactions
        * </pre>
        */
       public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.Builder addTransactionInfoBuilder() {
@@ -5109,7 +5197,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of payments
+       * Collection of transactions
        * </pre>
        */
       public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.Builder addTransactionInfoBuilder(
@@ -5121,7 +5209,7 @@ public final class MBHDPaymentsProtos {
        * <code>repeated .TransactionInfo transaction_info = 2;</code>
        *
        * <pre>
-       * Collection of payments
+       * Collection of transactions
        * </pre>
        */
       public java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.Builder> 
@@ -5238,7 +5326,7 @@ public final class MBHDPaymentsProtos {
       "entRequest\022\017\n\007address\030\001 \002(\t\022\r\n\005label\030\002 \001" +
       "(\t\022\021\n\tamountBTC\030\003 \001(\003\022!\n\013amount_fiat\030\004 \001" +
       "(\0132\014.FiatPayment\022\014\n\004note\030\005 \001(\t\022\014\n\004date\030\006" +
-      " \001(\003\"i\n\017TransactionInfo\022\014\n\004hash\030\001 \002(\014\022\027\n" +
+      " \001(\003\"i\n\017TransactionInfo\022\014\n\004hash\030\001 \002(\t\022\027\n" +
       "\017request_address\030\002 \003(\t\022!\n\013amount_fiat\030\003 " +
       "\001(\0132\014.FiatPayment\022\014\n\004note\030\004 \001(\t\"|\n\010Payme" +
       "nts\022(\n\017payment_request\030\001 \003(\0132\017.PaymentRe",

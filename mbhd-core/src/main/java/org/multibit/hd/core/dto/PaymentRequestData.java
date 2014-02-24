@@ -1,8 +1,10 @@
 package org.multibit.hd.core.dto;
 
+import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
 
 import java.math.BigInteger;
+import java.util.Set;
 
 /**
  *  <p>DTO to provide the following to WalletService:<br>
@@ -24,7 +26,35 @@ public class PaymentRequestData implements PaymentData {
   private String note;
   private DateTime date;
 
+  /**
+   * The amount of bitcoin actually paid by transactions
+   */
+  private BigInteger paidAmountBTC;
+
+  private Set<String> payingTransactionHashes;
+
   public static final String SEPARATOR = ". ";
+
+  public PaymentRequestData() {
+    paidAmountBTC = BigInteger.ZERO;
+    payingTransactionHashes = Sets.newHashSet();
+  }
+
+  public Set<String> getPayingTransactionHashes() {
+    return payingTransactionHashes;
+  }
+
+  public void setPayingTransactionHashes(Set<String> payingTransactionHashes) {
+    this.payingTransactionHashes = payingTransactionHashes;
+  }
+
+  public BigInteger getPaidAmountBTC() {
+    return paidAmountBTC;
+  }
+
+  public void setPaidAmountBTC(BigInteger paidAmountBTC) {
+    this.paidAmountBTC = paidAmountBTC;
+  }
 
   public String getAddress() {
 
