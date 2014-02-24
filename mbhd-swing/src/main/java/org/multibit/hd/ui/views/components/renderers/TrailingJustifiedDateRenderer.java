@@ -18,7 +18,8 @@ import java.text.SimpleDateFormat;
  */
 public class TrailingJustifiedDateRenderer extends DefaultTableCellRenderer {
 
-  SimpleDateFormat dateFormatter;
+  SimpleDateFormat longDateFormatter;
+  SimpleDateFormat shortDateFormatter;
 
   JLabel label;
 
@@ -28,7 +29,8 @@ public class TrailingJustifiedDateRenderer extends DefaultTableCellRenderer {
 
   public TrailingJustifiedDateRenderer() {
     label = new JLabel();
-    dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", Languages.currentLocale());
+    longDateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", Languages.currentLocale());
+    shortDateFormatter = new SimpleDateFormat("HH:mm", Languages.currentLocale());
   }
 
   @Override
@@ -43,7 +45,16 @@ public class TrailingJustifiedDateRenderer extends DefaultTableCellRenderer {
         DateTime date = (DateTime) value;
         if (date.getMillis() != 0) {
           try {
-            formattedDate = dateFormatter.format(date.toDate());
+            // TODO Localise
+            if (date.toDateMidnight().equals((DateTime.now().toDateMidnight()))) {
+              formattedDate = "Today " + shortDateFormatter.format(date.toDate());
+            } else {
+              if (date.toDateMidnight().equals((DateTime.now().minusDays(1).toDateMidnight()))) {
+                formattedDate = "Yesterday " + shortDateFormatter.format(date.toDate());
+              } else {
+                formattedDate = longDateFormatter.format(date.toDate());
+              }
+            }
           } catch (IllegalArgumentException iae) {
             // ok
           }

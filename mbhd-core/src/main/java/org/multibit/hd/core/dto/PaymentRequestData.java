@@ -1,8 +1,10 @@
 package org.multibit.hd.core.dto;
 
+import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
 
 import java.math.BigInteger;
+import java.util.Set;
 
 /**
  *  <p>DTO to provide the following to WalletService:<br>
@@ -24,7 +26,35 @@ public class PaymentRequestData implements PaymentData {
   private String note;
   private DateTime date;
 
+  /**
+   * The amount of bitcoin actually paid by transactions
+   */
+  private BigInteger paidAmountBTC;
+
+  private Set<String> payingTransactionHashes;
+
   public static final String SEPARATOR = ". ";
+
+  public PaymentRequestData() {
+    paidAmountBTC = BigInteger.ZERO;
+    payingTransactionHashes = Sets.newHashSet();
+  }
+
+  public Set<String> getPayingTransactionHashes() {
+    return payingTransactionHashes;
+  }
+
+  public void setPayingTransactionHashes(Set<String> payingTransactionHashes) {
+    this.payingTransactionHashes = payingTransactionHashes;
+  }
+
+  public BigInteger getPaidAmountBTC() {
+    return paidAmountBTC;
+  }
+
+  public void setPaidAmountBTC(BigInteger paidAmountBTC) {
+    this.paidAmountBTC = paidAmountBTC;
+  }
 
   public String getAddress() {
 
@@ -52,6 +82,7 @@ public class PaymentRequestData implements PaymentData {
     this.amountBTC = amountBTC;
   }
 
+  @Override
   public FiatPayment getAmountFiat() {
     return amountFiat;
   }
@@ -69,14 +100,25 @@ public class PaymentRequestData implements PaymentData {
   public String getDescription() {
     // TODO localise
     StringBuilder builder = new StringBuilder();
+    boolean appendAddress = true;
+    boolean appendSeparator = false;
+
     builder.append("You requested: ");
     if (getLabel() != null && getLabel().length() >0) {
-      builder.append(getLabel()).append(SEPARATOR);
+      builder.append(getLabel());
+      appendAddress = false;
+      appendSeparator = true;
     }
     if (getNote() != null && getNote().length() >0) {
-      builder.append(getNote()).append(SEPARATOR);
+      if (appendSeparator){
+        builder.append(SEPARATOR);
+      }
+      builder.append(getNote());
+      appendAddress = false;
     }
-    builder.append("To ").append(getAddress());
+    if (appendAddress) {
+      builder.append("To ").append(getAddress());
+    }
     return builder.toString();
   }
 

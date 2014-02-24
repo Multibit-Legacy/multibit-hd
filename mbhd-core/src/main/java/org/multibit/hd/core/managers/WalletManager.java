@@ -223,6 +223,7 @@ public enum WalletManager implements WalletEventListener {
         Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(walletRoot);
       }
       walletDataToReturn = new WalletData(walletId, walletToReturn);
+      walletDataToReturn.setPassword(password);
       setCurrentWalletData(walletDataToReturn);
     }
 

@@ -59,7 +59,7 @@ message PaymentRequest {
  * A single "extra" transaction info (this is data additional to the bitcoinj Transaction)
  */
 message TransactionInfo {
-  required bytes hash = 1;                  // The transaction hash (i.e. the transaction id as per the wallet Transaction.hash)
+  required string hash = 1;                 // The transaction hash (i.e. the transaction id as per the wallet Transaction.hash.toString)
                                             // The corresponding transaction is expected to be in the wallet.
 
   repeated string request_address = 2;      // The Request.address(es) related to this transaction.

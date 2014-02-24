@@ -11,13 +11,11 @@ import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.managers.WalletManagerTest;
 import org.multibit.hd.core.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.core.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.core.dto.PaymentRequestData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Collection;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -56,7 +54,7 @@ public class WalletServiceTest {
   @Test
   public void testCreatePaymentRequest() throws Exception {
     // Initially there are no payment requests
-    assertThat(walletService.getPayments().getPaymentRequestDatas().size()).isEqualTo(0);
+    assertThat(walletService.getPaymentRequests().size()).isEqualTo(0);
 
     // Create a new payment request
     PaymentRequestData paymentRequestData1 = new PaymentRequestData();
@@ -75,21 +73,16 @@ public class WalletServiceTest {
     fiatPayment1.setRate("10.0");
     fiatPayment1.setExchange("Bitstamp");
 
-    // TODO should be using unmodifiable Collections
-    walletService.getPayments().getPaymentRequestDatas().add(paymentRequestData1);
+    walletService.addPaymentRequest(paymentRequestData1);
 
     // Write the payment requests to the backing store
     walletService.writePayments();
-
-    // Clear the payment requests
-    walletService.getPayments().setPaymentRequestDatas(new ArrayList<PaymentRequestData>());
-    assertThat(walletService.getPayments().getPaymentRequestDatas().size()).isEqualTo(0);
 
     // Read the payment requests
     walletService.readPayments();
 
     // Check the new payment request is present
-    Collection<PaymentRequestData> newPaymentRequestDatas = walletService.getPayments().getPaymentRequestDatas();
+    Collection<PaymentRequestData> newPaymentRequestDatas = walletService.getPaymentRequests();
     assertThat(newPaymentRequestDatas.size()).isEqualTo(1);
 
     checkPaymentRequest(paymentRequestData1, newPaymentRequestDatas.iterator().next());

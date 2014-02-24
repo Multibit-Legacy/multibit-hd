@@ -87,15 +87,15 @@ public class Tables {
     table.setRowSelectionAllowed(true);
     table.setColumnSelectionAllowed(false);
 
-    // Status column
-    TableColumn statusTableColumn = table.getColumnModel().getColumn(PaymentTableModel.STATUS_COLUMN_INDEX);
-    statusTableColumn.setCellRenderer(Renderers.newRAGStatusRenderer());
-    resizeColumn(table, PaymentTableModel.STATUS_COLUMN_INDEX, 60, 90);
-
     // Date column
     TableColumn dateTableColumn = table.getColumnModel().getColumn(PaymentTableModel.DATE_COLUMN_INDEX);
     dateTableColumn.setCellRenderer(Renderers.newTrailingJustifiedDateRenderer());
     resizeColumn(table, PaymentTableModel.DATE_COLUMN_INDEX, 150, 200);
+
+    // Status column
+    TableColumn statusTableColumn = table.getColumnModel().getColumn(PaymentTableModel.STATUS_COLUMN_INDEX);
+    statusTableColumn.setCellRenderer(Renderers.newRAGStatusRenderer());
+    resizeColumn(table, PaymentTableModel.STATUS_COLUMN_INDEX, 60, 90);
 
     // Type column
     TableColumn typeTableColumn = table.getColumnModel().getColumn(PaymentTableModel.TYPE_COLUMN_INDEX);
@@ -116,7 +116,7 @@ public class Tables {
 
     // Sort by date descending.
     List<TableRowSorter.SortKey> sortKeys = new ArrayList<TableRowSorter.SortKey>();
-    sortKeys.add(new TableRowSorter.SortKey(1, SortOrder.DESCENDING));
+    sortKeys.add(new TableRowSorter.SortKey(PaymentTableModel.DATE_COLUMN_INDEX, SortOrder.DESCENDING));
     rowSorter.setSortKeys(sortKeys);
     Comparator<DateTime> comparator = new Comparator<DateTime>() {
       @Override
@@ -151,9 +151,9 @@ public class Tables {
         }
       }
     };
-    rowSorter.setComparator(1, comparator);
+    rowSorter.setComparator(PaymentTableModel.DATE_COLUMN_INDEX, comparator);
 
-    // TODO - also add to fiat column if it is present
+    // TODO - also fiat column
 
     justifyColumnHeaders(table);
     return table;

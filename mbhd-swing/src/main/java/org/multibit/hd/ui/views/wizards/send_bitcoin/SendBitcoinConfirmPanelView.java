@@ -41,6 +41,8 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
 
   private JLabel recipientSummaryLabel;
 
+  private SendBitcoinConfirmPanelModel panelModel;
+
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name for filtering component events
@@ -62,7 +64,7 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     enterPasswordMaV = Components.newEnterPasswordMaV(getPanelName());
 
     // Configure the panel model
-    SendBitcoinConfirmPanelModel panelModel = new SendBitcoinConfirmPanelModel(
+    panelModel = new SendBitcoinConfirmPanelModel(
       getPanelName(),
       enterPasswordMaV.getModel()
     );
@@ -146,13 +148,13 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 
-    // No need to update since we expose the component models
+    panelModel.setNotes(notesTextArea.getText());
 
     // Determine any events
     ViewEvents.fireWizardButtonEnabledEvent(
-      getPanelName(),
-      WizardButton.NEXT,
-      isNextEnabled()
+            getPanelName(),
+            WizardButton.NEXT,
+            isNextEnabled()
     );
 
   }

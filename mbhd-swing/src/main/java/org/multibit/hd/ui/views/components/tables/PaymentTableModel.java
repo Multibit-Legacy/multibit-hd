@@ -18,8 +18,8 @@ import java.util.Set;
  */
 public class PaymentTableModel extends AbstractTableModel {
 
-  public static final int STATUS_COLUMN_INDEX = 0;
-  public static final int DATE_COLUMN_INDEX = 1;
+  public static final int DATE_COLUMN_INDEX = 0;
+  public static final int STATUS_COLUMN_INDEX = 1;
   public static final int TYPE_COLUMN_INDEX = 2;
   public static final int DESCRIPTION_COLUMN_INDEX = 3;
   public static final int AMOUNT_BTC_COLUMN_INDEX = 4;
@@ -27,8 +27,8 @@ public class PaymentTableModel extends AbstractTableModel {
   private static final Logger log = LoggerFactory.getLogger(PaymentTableModel.class);
 
   private String[] columnNames = {
-          "Status",
           "Date",
+          "Status",
           "Type",
           "Description",
           "Amount"
@@ -52,8 +52,8 @@ public class PaymentTableModel extends AbstractTableModel {
     for (PaymentData payment : paymentDatas) {
 
       Object[] rowData = new Object[]{
-              payment.getStatus(),
               payment.getDate(),
+              payment.getStatus(),
               payment.getType(),
               payment.getDescription(),
               payment.getAmountBTC()

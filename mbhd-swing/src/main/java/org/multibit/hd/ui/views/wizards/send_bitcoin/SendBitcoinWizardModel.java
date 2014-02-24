@@ -1,9 +1,17 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.eventbus.Subscribe;
 import org.joda.money.BigMoney;
+import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.Recipient;
+import org.multibit.hd.core.events.ExchangeRateChangedEvent;
+import org.multibit.hd.core.events.TransactionCreationEvent;
 import org.multibit.hd.core.services.BitcoinNetworkService;
+import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.store.TransactionInfo;
 import org.multibit.hd.core.utils.Satoshis;
 import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
@@ -58,6 +66,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
    */
   public SendBitcoinWizardModel(SendBitcoinState state) {
     super(state);
+    CoreServices.uiEventBus.register(this);
   }
 
   @Override
@@ -100,7 +109,6 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   }
 
   private void sendBitcoin() {
-
     // Actually send the bitcoin
     Preconditions.checkNotNull(enterAmountPanelModel);
     Preconditions.checkNotNull(confirmPanelModel);
@@ -114,15 +122,41 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     String password = confirmPanelModel.getPasswordModel().getValue();
 
     log.debug("Just about to send bitcoin : amount = '{}', address = '{}', changeAddress = '{}'.",
-      satoshis,
-      bitcoinAddress,
-      changeAddress
+            satoshis,
+            bitcoinAddress,
+            changeAddress
     );
 
     bitcoinNetworkService.send(bitcoinAddress, satoshis, changeAddress, BitcoinNetworkService.DEFAULT_FEE_PER_KB, password);
 
     // The send throws TransactionCreationEvents and BitcoinSentEvents to which you subscribe to to work out success and failure.
 
+  }
+
+  @Subscribe
+  public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
+    // Create a transactionInfo to match the event created, regardless of success or failure
+    TransactionInfo transactionInfo = new TransactionInfo();
+    transactionInfo.setHash(transactionCreationEvent.getTransactionId());
+    String note = getNotes();
+    if (note == null) {
+      note = "";
+    }
+    transactionInfo.setNote(note);
+    FiatPayment fiatPayment = new FiatPayment();
+    fiatPayment.setAmount(getLocalAmount().toString());
+    fiatPayment.setCurrency(Configurations.currentConfiguration.getI18NConfiguration().getLocalCurrencyUnit().getCurrencyCode());
+    fiatPayment.setExchange(Configurations.currentConfiguration.getBitcoinConfiguration().getExchangeName());
+    Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
+    if (exchangeRateChangedEvent.isPresent()) {
+      fiatPayment.setRate(exchangeRateChangedEvent.get().getRate().toString());
+    } else {
+      fiatPayment.setRate("");
+    }
+    transactionInfo.setAmountFiat(fiatPayment);
+
+    MultiBitHD.getWalletService().addTransactionInfo(transactionInfo);
+    MultiBitHD.getWalletService().writePayments();
   }
 
   @Override
@@ -135,8 +169,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
    */
   public Recipient getRecipient() {
     return enterAmountPanelModel
-      .getEnterRecipientModel()
-      .getRecipient().get();
+            .getEnterRecipientModel()
+            .getRecipient().get();
   }
 
   /**
@@ -144,8 +178,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
    */
   public BigInteger getSatoshis() {
     return enterAmountPanelModel
-      .getEnterAmountModel()
-      .getSatoshis();
+            .getEnterAmountModel()
+            .getSatoshis();
   }
 
   /**
@@ -153,8 +187,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
    */
   public BigMoney getLocalAmount() {
     return enterAmountPanelModel
-      .getEnterAmountModel()
-      .getLocalAmount();
+            .getEnterAmountModel()
+            .getLocalAmount();
   }
 
   /**
@@ -168,8 +202,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
    * @return The notes the user entered
    */
   public String getNotes() {
-    return confirmPanelModel
-      .getNotes();
+    return confirmPanelModel.getNotes();
   }
 
   /**

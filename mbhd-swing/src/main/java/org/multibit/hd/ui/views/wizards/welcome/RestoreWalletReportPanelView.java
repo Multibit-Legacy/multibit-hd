@@ -5,22 +5,25 @@ import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.WalletId;
-import org.multibit.hd.core.seed_phrase.Bip39SeedPhraseGenerator;
-import org.multibit.hd.core.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.core.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.core.utils.Dates;
+import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
-import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
+import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
+import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSummaryModel;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -181,6 +184,16 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       // TODO necessary to backup any existing wallet with the same seed before creation/ overwrite ?
       WalletManager.INSTANCE.createWallet(seed, password);
 
+      // Initialise the WalletService with the newly created wallet, which provides transaction information from the wallet
+
+      WalletService walletService = CoreServices.newWalletService();
+      MultiBitHD.setWalletService(walletService);
+      try {
+        walletService.initialise(InstallationManager.getOrCreateApplicationDataDirectory(),new WalletId(seed));
+      } catch (PaymentsLoadException ple) {
+        log.error("Failed to restore wallet. Error was '" + ple.getMessage() + "'.");
+         return false;
+      }
       CoreServices.newBitcoinNetworkService().replayWallet(replayDate);
 
       return true;

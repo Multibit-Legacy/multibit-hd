@@ -20,7 +20,7 @@ public class PaymentTypeRenderer extends DefaultTableCellRenderer {
   public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                                                  int column) {
 
-    label.setHorizontalAlignment(SwingConstants.CENTER);
+    label.setHorizontalAlignment(SwingConstants.LEADING);
     label.setOpaque(true);
 
     if (value instanceof PaymentType) {

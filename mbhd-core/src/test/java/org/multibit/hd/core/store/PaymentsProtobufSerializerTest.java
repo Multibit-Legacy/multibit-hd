@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Random;
@@ -127,7 +126,7 @@ public class PaymentsProtobufSerializerTest {
 
     TransactionInfo transactionInfo1 = new TransactionInfo();
     transactionInfos.add(transactionInfo1);
-    transactionInfo1.setHash(new byte[]{(byte) 0x01, (byte) 0x02, (byte) 0xFF});
+    transactionInfo1.setHash("010203");
     transactionInfo1.setNote("notes1");
 
     Collection<String> requestAddresses1 = Lists.newArrayList();
@@ -146,7 +145,7 @@ public class PaymentsProtobufSerializerTest {
 
     TransactionInfo transactionInfo2 = new TransactionInfo();
     transactionInfos.add(transactionInfo2);
-    transactionInfo2.setHash(new byte[]{(byte) 0x01, (byte) 0x02, (byte) 0xFF});
+    transactionInfo2.setHash("010203");
     transactionInfo2.setNote("notes1");
 
     Collection<String> requestAddresses2 = Lists.newArrayList();
@@ -181,7 +180,7 @@ public class PaymentsProtobufSerializerTest {
   }
 
   private void checkTransactionInfo(TransactionInfo transactionInfo, TransactionInfo other) throws Exception {
-    assertThat(Arrays.equals(other.getHash(), transactionInfo.getHash())).isTrue();
+    assertThat(other.getHash().equals(transactionInfo.getHash())).isTrue();
 
     Collection<String> requestAddresses = transactionInfo.getRequestAddresses();
     Collection<String> otherRequestAddresses = other.getRequestAddresses();

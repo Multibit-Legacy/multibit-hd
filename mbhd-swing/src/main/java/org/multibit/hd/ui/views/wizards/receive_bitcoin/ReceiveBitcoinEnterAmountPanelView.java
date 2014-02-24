@@ -9,6 +9,7 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.ContactService;
@@ -86,9 +87,10 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     // TODO - remove when HDwallets supported - won't need a password to generate the next address
     Optional<WalletData> walletDataOptional = WalletManager.INSTANCE.getCurrentWalletData();
     Optional<CharSequence> passwordParameter = Optional.absent();
+    CharSequence password = walletDataOptional.get().getPassword();
     if (walletDataOptional.isPresent()) {
-      if (!"".equals(walletDataOptional.get().getPassword())) {
-        passwordParameter = Optional.of(walletDataOptional.get().getPassword());
+      if (!( password == null) && !"".equals(password)) {
+        passwordParameter = Optional.of(password);
       }
     }
     // Get the next receiving address from the wallet service
@@ -185,9 +187,15 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     fiatPayment.setAmount(enterAmountMaV.getModel().getLocalAmount().toString());
     fiatPayment.setCurrency(Configurations.currentConfiguration.getI18NConfiguration().getLocalCurrencyUnit().getCurrencyCode());
     fiatPayment.setExchange(Configurations.currentConfiguration.getBitcoinConfiguration().getExchangeName());
+    Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
+    if (exchangeRateChangedEvent.isPresent()) {
+      fiatPayment.setRate(exchangeRateChangedEvent.get().getRate().toString());
+    } else {
+      fiatPayment.setRate("");
+    }
     paymentRequestData.setAmountFiat(fiatPayment);
 
-    walletService.getPayments().getPaymentRequestDatas().add(paymentRequestData);
+    walletService.addPaymentRequest(paymentRequestData);
     walletService.writePayments();
 
     // Ensure the views that display payments update
