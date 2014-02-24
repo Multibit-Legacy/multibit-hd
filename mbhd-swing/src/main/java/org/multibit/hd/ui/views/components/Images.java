@@ -41,7 +41,7 @@ public class Images {
       // Transform the mask color into the current themed text
       BufferedImage qrCodePng = colorImage(
         ImageIO.read(is),
-        Themes.currentTheme.text()
+        Themes.currentTheme.buttonText()
       );
 
       return new ImageIcon(qrCodePng);

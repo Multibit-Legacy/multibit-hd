@@ -87,6 +87,7 @@ public class Panels {
 
     // Theme
     panel.setBackground(Themes.currentTheme.detailPanelBackground());
+    panel.setForeground(Themes.currentTheme.fadedText());
 
     return panel;
 

@@ -54,7 +54,6 @@ public class PanelDecorator {
 
     // Apply the theme
     wizardPanel.setBackground(Themes.currentTheme.detailPanelBackground());
-    //wizardPanel.setOpaque(true);
 
     // Add the wizard components
     wizardPanel.add(Labels.newTitleLabel(titleKey), "span 4,shrink,wrap,aligny top");

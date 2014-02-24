@@ -43,7 +43,7 @@ public class AutoCompleteDecorator {
       public void keyReleased(KeyEvent ke) {
 
         // Prevent action keys (navigation etc) from triggering changes
-        if (ke.isActionKey() || ke.getKeyCode()==10) {
+        if (ke.isActionKey() || ke.getKeyCode()==KeyEvent.VK_TAB) {
           return;
         }
 

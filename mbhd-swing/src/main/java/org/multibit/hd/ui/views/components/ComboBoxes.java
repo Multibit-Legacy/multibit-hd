@@ -5,12 +5,9 @@ import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
-import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteDecorator;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilter;
 import org.multibit.hd.ui.views.components.combo_boxes.ThemeAwareComboBox;
 import org.multibit.hd.ui.views.components.select_backup_summary.BackupSummaryListCellRenderer;
-import org.multibit.hd.ui.views.components.select_contact.RecipientComboBoxEditor;
-import org.multibit.hd.ui.views.components.select_contact.RecipientListCellRenderer;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
@@ -122,19 +119,19 @@ public class ComboBoxes {
     JComboBox<Recipient> comboBox = newComboBox(filter.create());
 
     // Use a contact editor to force use of the name field
-    comboBox.setEditor(new RecipientComboBoxEditor());
+    //comboBox.setEditor(new RecipientComboBoxEditor());
 
     // Ensure that keyboard navigation does not trigger action events
-    comboBox.putClientProperty("JComboBox.isTableCellEditor", Boolean.TRUE);
+//    comboBox.putClientProperty("JComboBox.isTableCellEditor", Boolean.TRUE);
 
     // Use a contact list cell renderer to ensure thumbnails are maintained
-    ListCellRenderer<Recipient> renderer = new RecipientListCellRenderer((JTextField) comboBox.getEditor().getEditorComponent());
-    comboBox.setRenderer(renderer);
+//    ListCellRenderer<Recipient> renderer = new RecipientListCellRenderer((JTextField) comboBox.getEditor().getEditorComponent());
+//    comboBox.setRenderer(renderer);
 
     // Ensure we start with nothing selected
     comboBox.setSelectedIndex(-1);
 
-    AutoCompleteDecorator.apply(comboBox, filter);
+//    AutoCompleteDecorator.apply(comboBox, filter);
 
     return comboBox;
 
