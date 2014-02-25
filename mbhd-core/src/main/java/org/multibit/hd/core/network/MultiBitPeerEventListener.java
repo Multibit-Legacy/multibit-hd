@@ -10,6 +10,7 @@ import org.multibit.hd.core.managers.WalletManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigInteger;
 import java.util.List;
 
 public class MultiBitPeerEventListener implements PeerEventListener {
@@ -129,7 +130,11 @@ public class MultiBitPeerEventListener implements PeerEventListener {
                     currentWallet.receivePending(transaction, null);
 
                     // Emit an event so that GUI elements can update as required
-                    CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(transaction));
+                    TransactionSeenEvent transactionSeenEvent = new TransactionSeenEvent((transaction));
+                    BigInteger value = transaction.getValue(currentWallet);
+                    transactionSeenEvent.setValue(value);
+                    transactionSeenEvent.setFirstAppearanceInWallet(true);
+                    CoreEvents.fireTransactionSeenEvent(transactionSeenEvent);
                   }
                 }
               }

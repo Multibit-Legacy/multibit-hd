@@ -4,13 +4,16 @@ import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.PaymentData;
+import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
 import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.audio.Sounds;
+import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.WalletDetailChangedEvent;
 import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.Tables;
 import org.multibit.hd.ui.views.components.tables.PaymentTableModel;
@@ -20,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.math.BigInteger;
 import java.util.Set;
 
 /**
@@ -105,8 +109,13 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
 
     // Play a sound the first time a transaction is received
     // TODO some more filtering required - just set to play when it confirms for the first time for now
-    if (transactionSeenEvent.getDepthInBlocks() == 1) {
+    if (transactionSeenEvent.getDepthInBlocks() == 1 && transactionSeenEvent.getValue().compareTo(BigInteger.ZERO) >0) {
       Sounds.playReceiveBitcoin();
+    }
+
+    if (transactionSeenEvent.isFirstAppearanceInWallet()) {
+      AlertModel alertModel = new AlertModel("A new payment has been received.", RAGStatus.PINK);
+      ControllerEvents.fireAddAlertEvent(alertModel);
     }
   }
 

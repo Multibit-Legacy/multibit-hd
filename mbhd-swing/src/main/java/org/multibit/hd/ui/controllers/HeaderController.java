@@ -80,7 +80,7 @@ public class HeaderController {
    * @param event The slowTransactionSeenEvent
    */
   @Subscribe
-  public void onSlowTransactionSenEventEvent(SlowTransactionSeenEvent event) {
+  public void onSlowTransactionSeenEventEvent(SlowTransactionSeenEvent event) {
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEventOptional = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
 
     if (exchangeRateChangedEventOptional.isPresent()) {
