@@ -13,7 +13,7 @@ import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
-import org.multibit.hd.ui.models.AlertModel;
+import org.multibit.hd.ui.models.Models;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,7 +103,7 @@ public class Gravatars {
             DateTime lastFailure = lastFailedDownload.get().get();
             if (lastFailure.plusMinutes(1).isBefore(now)) {
               // It's been a while since we had a failure so OK to notify the user again
-              ControllerEvents.fireAddAlertEvent(new AlertModel(Languages.safeText(MessageKey.NETWORK_CONFIGURATION_ERROR), RAGStatus.AMBER));
+              ControllerEvents.fireAddAlertEvent(Models.newAlertModel(Languages.safeText(MessageKey.NETWORK_CONFIGURATION_ERROR), RAGStatus.AMBER));
             }
           }
           lastFailedDownload.set(Optional.of(now));

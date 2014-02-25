@@ -17,7 +17,7 @@ import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.wizards.Wizards;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactState;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactWizardModel;
-import org.multibit.hd.ui.views.wizards.edit_contact.EnterDetailsMode;
+import org.multibit.hd.ui.views.wizards.edit_contact.EnterContactDetailsMode;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -176,7 +176,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
         contacts.add(contact);
 
         // Fire up a wizard in new mode
-        Panels.showLightBox(Wizards.newEditContactWizard(contacts, EnterDetailsMode.NEW).getWizardPanel());
+        Panels.showLightBox(Wizards.newEditContactWizard(contacts, EnterContactDetailsMode.NEW).getWizardPanel());
 
       }
     };
@@ -200,12 +200,12 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
           if (contacts.size() == 1) {
 
             // Fire up a wizard in single mode
-            Panels.showLightBox(Wizards.newEditContactWizard(contacts, EnterDetailsMode.EDIT_SINGLE).getWizardPanel());
+            Panels.showLightBox(Wizards.newEditContactWizard(contacts, EnterContactDetailsMode.EDIT_SINGLE).getWizardPanel());
 
           } else {
 
             // Fire up a wizard in multi mode
-            Panels.showLightBox(Wizards.newEditContactWizard(contacts, EnterDetailsMode.EDIT_MULTIPLE).getWizardPanel());
+            Panels.showLightBox(Wizards.newEditContactWizard(contacts, EnterContactDetailsMode.EDIT_MULTIPLE).getWizardPanel());
 
           }
 

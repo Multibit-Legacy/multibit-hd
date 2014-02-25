@@ -2,10 +2,15 @@ package org.multibit.hd.ui.views.wizards;
 
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.dto.Contact;
+import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactState;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactWizard;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactWizardModel;
-import org.multibit.hd.ui.views.wizards.edit_contact.EnterDetailsMode;
+import org.multibit.hd.ui.views.wizards.edit_contact.EnterContactDetailsMode;
+import org.multibit.hd.ui.views.wizards.edit_history.EditHistoryState;
+import org.multibit.hd.ui.views.wizards.edit_history.EditHistoryWizard;
+import org.multibit.hd.ui.views.wizards.edit_history.EditHistoryWizardModel;
+import org.multibit.hd.ui.views.wizards.edit_history.EnterHistoryDetailsMode;
 import org.multibit.hd.ui.views.wizards.exit.ExitState;
 import org.multibit.hd.ui.views.wizards.exit.ExitWizard;
 import org.multibit.hd.ui.views.wizards.exit.ExitWizardModel;
@@ -89,12 +94,29 @@ public class Wizards {
    *
    * @return A new "edit contact" wizard for contacts
    */
-  public static EditContactWizard newEditContactWizard(List<Contact> contacts, EnterDetailsMode mode) {
+  public static EditContactWizard newEditContactWizard(List<Contact> contacts, EnterContactDetailsMode mode) {
 
     Preconditions.checkState(!contacts.isEmpty(), "'contacts' cannot be empty");
 
     return new EditContactWizard(
       new EditContactWizardModel(EditContactState.ENTER_DETAILS, contacts),
+      mode
+    );
+
+  }
+
+  /**
+   * @param historyEntries The list of history entries to edit
+   * @param mode           The editing mode
+   *
+   * @return A new "edit history" wizard for history entries
+   */
+  public static EditHistoryWizard newEditHistoryWizard(List<HistoryEntry> historyEntries, EnterHistoryDetailsMode mode) {
+
+    Preconditions.checkState(!historyEntries.isEmpty(), "'historyEntries' cannot be empty");
+
+    return new EditHistoryWizard(
+      new EditHistoryWizardModel(EditHistoryState.ENTER_DETAILS, historyEntries),
       mode
     );
 

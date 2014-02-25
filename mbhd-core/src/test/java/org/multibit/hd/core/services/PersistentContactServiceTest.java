@@ -12,7 +12,7 @@ import java.util.UUID;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class ContactServiceTest {
+public class PersistentContactServiceTest {
 
   private PersistentContactService contactService;
 
@@ -100,7 +100,7 @@ public class ContactServiceTest {
     List<Contact> reloadedContacts = contactService.filterContactsByContent(newContactName);
     Contact reloadedContact = reloadedContacts.iterator().next();
 
-    // Check everything roundtripped ok
+    // Check everything round-tripped OK
     assertThat(reloadedContact.getName()).isEqualTo(newContactName);
     assertThat(reloadedContact.getBitcoinAddress()).isEqualTo(newContact.getBitcoinAddress());
     assertThat(reloadedContact.getEmail()).isEqualTo(newContact.getEmail());

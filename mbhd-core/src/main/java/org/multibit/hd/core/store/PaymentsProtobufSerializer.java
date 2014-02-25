@@ -37,28 +37,29 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Serialize and de-serialize payments to a byte stream containing a
- * <a href="http://code.google.com/apis/protocolbuffers/docs/overview.html">protocol buffer</a>. Protocol buffers are
- * a data interchange format developed by Google with an efficient binary representation, a type safe specification
- * language and compilers that generate code to work with those data structures for many languages. Protocol buffers
- * can have their format evolved over time: conceptually they represent data using (tag, length, value) tuples. The
- * format is defined by the <tt>bitcoin.proto</tt> file in the bitcoinj source distribution.<p>
- * <p/>
- * This class is used through its static methods. The most common operations are writePayments and readPayments, which do
- * the obvious operations on Output/InputStreams. You can use a {@link java.io.ByteArrayInputStream} and equivalent
- * {@link java.io.ByteArrayOutputStream} if you'd like byte arrays instead. The protocol buffer can also be manipulated
- * in its object form if you'd like to modify the flattened data structure before serialization to binary.<p>
+ * <p>
+ * Serialize and de-serialize contacts to a byte stream containing a
+ * <a href="http://code.google.com/apis/protocolbuffers/docs/overview.html">protocol buffer</a>.</p>
  *
- * @author Miron Cuperman
- * @author Jim Burton
+ * <p>Protocol buffers are a data interchange format developed by Google with an efficient binary representation, a type safe specification
+ * language and compilers that generate code to work with those data structures for many languages. Protocol buffers
+ * can have their format evolved over time: conceptually they represent data using (tag, length, value) tuples.</p>
+ *
+ * <p>The format is defined by the <tt>payments.proto</tt> file in the MBHD source distribution.</p>
+ *
+ * <p>This class is used through its static methods. The most common operations are <code>writePayments</code> and <code>readPayments</code>, which do
+ * the obvious operations on Output/InputStreams. You can use a {@link java.io.ByteArrayInputStream} and equivalent
+ * {@link java.io.ByteArrayOutputStream} if byte arrays are preferred. The protocol buffer can also be manipulated
+ * in its object form if you'd like to modify the flattened data structure before serialization to binary.</p>
+ *
+ * <p>Based on the original work by Miron Cuperman for the Bitcoinj project</p>
  */
 public class PaymentsProtobufSerializer {
-  private static final Logger log = LoggerFactory.getLogger(PaymentsProtobufSerializer.class);
 
+  private static final Logger log = LoggerFactory.getLogger(PaymentsProtobufSerializer.class);
 
   public PaymentsProtobufSerializer() {
   }
-
 
   /**
    * Formats the given Payments to the given output stream in protocol buffer format.<p>
@@ -96,61 +97,6 @@ public class PaymentsProtobufSerializer {
     }
 
     return paymentsBuilder.build();
-  }
-
-  private static MBHDPaymentsProtos.PaymentRequest makePaymentRequestProto(PaymentRequestData paymentRequestData) {
-    MBHDPaymentsProtos.PaymentRequest.Builder paymentRequestBuilder = MBHDPaymentsProtos.PaymentRequest.newBuilder();
-    paymentRequestBuilder.setAddress(paymentRequestData.getAddress());
-    paymentRequestBuilder.setNote(paymentRequestData.getNote() == null ? "" : paymentRequestData.getNote());
-    paymentRequestBuilder.setAmountBTC(paymentRequestData.getAmountBTC().longValue());
-    paymentRequestBuilder.setDate(paymentRequestData.getDate().getMillis());
-    paymentRequestBuilder.setLabel(paymentRequestData.getLabel() == null ? "" : paymentRequestData.getLabel());
-
-    FiatPayment fiatPayment = paymentRequestData.getAmountFiat();
-    if (fiatPayment != null) {
-      MBHDPaymentsProtos.FiatPayment.Builder fiatPaymentBuilder = MBHDPaymentsProtos.FiatPayment.newBuilder();
-      fiatPaymentBuilder.setAmount(fiatPayment.getAmount());
-      fiatPaymentBuilder.setCurrency(fiatPayment.getCurrency() == null ? "" : fiatPayment.getCurrency());
-      fiatPaymentBuilder.setExchange(fiatPayment.getExchange() == null ? "" : fiatPayment.getExchange());
-      fiatPaymentBuilder.setRate(fiatPayment.getRate() == null ? "" : fiatPayment.getRate());
-
-      paymentRequestBuilder.setAmountFiat(fiatPaymentBuilder);
-    }
-
-    return paymentRequestBuilder.build();
-  }
-
-  private static MBHDPaymentsProtos.TransactionInfo makeTransactionInfoProto(TransactionInfo transactionInfo) {
-    MBHDPaymentsProtos.TransactionInfo.Builder transactionInfoBuilder = MBHDPaymentsProtos.TransactionInfo.newBuilder();
-
-    transactionInfoBuilder.setHash(transactionInfo.getHash());
-    transactionInfoBuilder.setNote(transactionInfo.getNote());
-    Collection<String> requestAddresses = transactionInfo.getRequestAddresses();
-
-    if (requestAddresses != null) {
-      for (String requestAddress : requestAddresses) {
-        transactionInfoBuilder.addRequestAddress(requestAddress);
-      }
-    }
-
-    FiatPayment fiatPayment = transactionInfo.getAmountFiat();
-    if (fiatPayment != null) {
-      MBHDPaymentsProtos.FiatPayment.Builder fiatPaymentBuilder = MBHDPaymentsProtos.FiatPayment.newBuilder();
-      fiatPaymentBuilder.setAmount(fiatPayment.getAmount() == null ? "" : fiatPayment.getAmount());
-      fiatPaymentBuilder.setCurrency(fiatPayment.getCurrency() == null ? "" : fiatPayment.getCurrency());
-      fiatPaymentBuilder.setExchange(fiatPayment.getExchange()== null ? "" : fiatPayment.getExchange());
-      fiatPaymentBuilder.setRate(fiatPayment.getRate() == null ? "" : fiatPayment.getRate());
-
-      transactionInfoBuilder.setAmountFiat(fiatPaymentBuilder);
-    }
-
-    return transactionInfoBuilder.build();
-  }
-
-  private static MBHDContactsProtos.Tag makeTagProto(String tag) {
-    MBHDContactsProtos.Tag.Builder tagBuilder = MBHDContactsProtos.Tag.newBuilder();
-    tagBuilder.setTagValue(tag);
-    return tagBuilder.build();
   }
 
   /**
@@ -266,5 +212,60 @@ public class PaymentsProtobufSerializer {
    */
   public static MBHDPaymentsProtos.Payments parseToProto(InputStream input) throws IOException {
     return MBHDPaymentsProtos.Payments.parseFrom(input);
+  }
+
+  private static MBHDPaymentsProtos.PaymentRequest makePaymentRequestProto(PaymentRequestData paymentRequestData) {
+    MBHDPaymentsProtos.PaymentRequest.Builder paymentRequestBuilder = MBHDPaymentsProtos.PaymentRequest.newBuilder();
+    paymentRequestBuilder.setAddress(paymentRequestData.getAddress());
+    paymentRequestBuilder.setNote(paymentRequestData.getNote() == null ? "" : paymentRequestData.getNote());
+    paymentRequestBuilder.setAmountBTC(paymentRequestData.getAmountBTC().longValue());
+    paymentRequestBuilder.setDate(paymentRequestData.getDate().getMillis());
+    paymentRequestBuilder.setLabel(paymentRequestData.getLabel() == null ? "" : paymentRequestData.getLabel());
+
+    FiatPayment fiatPayment = paymentRequestData.getAmountFiat();
+    if (fiatPayment != null) {
+      MBHDPaymentsProtos.FiatPayment.Builder fiatPaymentBuilder = MBHDPaymentsProtos.FiatPayment.newBuilder();
+      fiatPaymentBuilder.setAmount(fiatPayment.getAmount());
+      fiatPaymentBuilder.setCurrency(fiatPayment.getCurrency() == null ? "" : fiatPayment.getCurrency());
+      fiatPaymentBuilder.setExchange(fiatPayment.getExchange() == null ? "" : fiatPayment.getExchange());
+      fiatPaymentBuilder.setRate(fiatPayment.getRate() == null ? "" : fiatPayment.getRate());
+
+      paymentRequestBuilder.setAmountFiat(fiatPaymentBuilder);
+    }
+
+    return paymentRequestBuilder.build();
+  }
+
+  private static MBHDContactsProtos.Tag makeTagProto(String tag) {
+    MBHDContactsProtos.Tag.Builder tagBuilder = MBHDContactsProtos.Tag.newBuilder();
+    tagBuilder.setTagValue(tag);
+    return tagBuilder.build();
+  }
+
+  private static MBHDPaymentsProtos.TransactionInfo makeTransactionInfoProto(TransactionInfo transactionInfo) {
+    MBHDPaymentsProtos.TransactionInfo.Builder transactionInfoBuilder = MBHDPaymentsProtos.TransactionInfo.newBuilder();
+
+    transactionInfoBuilder.setHash(transactionInfo.getHash());
+    transactionInfoBuilder.setNote(transactionInfo.getNote());
+    Collection<String> requestAddresses = transactionInfo.getRequestAddresses();
+
+    if (requestAddresses != null) {
+      for (String requestAddress : requestAddresses) {
+        transactionInfoBuilder.addRequestAddress(requestAddress);
+      }
+    }
+
+    FiatPayment fiatPayment = transactionInfo.getAmountFiat();
+    if (fiatPayment != null) {
+      MBHDPaymentsProtos.FiatPayment.Builder fiatPaymentBuilder = MBHDPaymentsProtos.FiatPayment.newBuilder();
+      fiatPaymentBuilder.setAmount(fiatPayment.getAmount() == null ? "" : fiatPayment.getAmount());
+      fiatPaymentBuilder.setCurrency(fiatPayment.getCurrency() == null ? "" : fiatPayment.getCurrency());
+      fiatPaymentBuilder.setExchange(fiatPayment.getExchange() == null ? "" : fiatPayment.getExchange());
+      fiatPaymentBuilder.setRate(fiatPayment.getRate() == null ? "" : fiatPayment.getRate());
+
+      transactionInfoBuilder.setAmountFiat(fiatPaymentBuilder);
+    }
+
+    return transactionInfoBuilder.build();
   }
 }

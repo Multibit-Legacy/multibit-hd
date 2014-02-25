@@ -36,20 +36,21 @@ public class PaymentTableModel extends AbstractTableModel {
 
   private Object[][] data;
 
-  public PaymentTableModel(Set<PaymentData> paymentDatas) {
-    setPaymentDatas(paymentDatas, false);
+  public PaymentTableModel(Set<PaymentData> paymentData) {
+    setPaymentData(paymentData, false);
   }
 
   /**
-   * Set the payment datas into the table
+   * Set the payment data into the table
    *
-   * @param paymentDatas the paymentDatas to show in the table
+   * @param paymentData The paymentData to show in the table
    */
-  public void setPaymentDatas(Set<PaymentData> paymentDatas, boolean fireTableDataChanged) {
-    data = new Object[paymentDatas.size()][];
+  public void setPaymentData(Set<PaymentData> paymentData, boolean fireTableDataChanged) {
+
+    data = new Object[paymentData.size()][];
 
     int row = 0;
-    for (PaymentData payment : paymentDatas) {
+    for (PaymentData payment : paymentData) {
 
       Object[] rowData = new Object[]{
               payment.getDate(),

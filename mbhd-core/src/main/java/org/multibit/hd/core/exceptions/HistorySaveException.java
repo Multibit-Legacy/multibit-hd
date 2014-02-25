@@ -1,7 +1,7 @@
 package org.multibit.hd.core.exceptions;
 
 /**
- * <p>Exception to provide Contacts save failure information :</p>
+ * <p>Exception to provide History save failure information :</p>
  *
  * <p>This base exception acts as a general failure mode not attributable to a specific cause (other than
  * that reported in the exception message). Since this is in English, it may not be worth reporting directly
@@ -9,13 +9,13 @@ package org.multibit.hd.core.exceptions;
  *
  * @since 0.0.1
  */
-public class ContactsSaveException extends RuntimeException {
+public class HistorySaveException extends RuntimeException {
 
-    public ContactsSaveException(String s) {
+    public HistorySaveException(String s) {
         super(s);
     }
 
-    public ContactsSaveException(String s, Throwable throwable) {
+    public HistorySaveException(String s, Throwable throwable) {
         super(s, throwable);
     }
 }

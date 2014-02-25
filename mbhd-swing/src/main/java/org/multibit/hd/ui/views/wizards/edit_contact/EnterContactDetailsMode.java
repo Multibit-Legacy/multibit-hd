@@ -12,7 +12,7 @@ import org.multibit.hd.ui.i18n.MessageKey;
  * @since 0.0.1
  *  
  */
-public enum EnterDetailsMode {
+public enum EnterContactDetailsMode {
 
   NEW(MessageKey.NEW_CONTACT_TITLE),
   EDIT_SINGLE(MessageKey.EDIT_CONTACT_TITLE),
@@ -20,7 +20,7 @@ public enum EnterDetailsMode {
 
   private final MessageKey messageKey;
 
-  EnterDetailsMode(MessageKey messageKey) {
+  EnterContactDetailsMode(MessageKey messageKey) {
 
     this.messageKey = messageKey;
   }

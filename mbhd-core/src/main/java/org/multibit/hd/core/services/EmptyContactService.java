@@ -9,15 +9,10 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- *  <p>Class to provide the following to ContactService consumers:<br>
+ *  <p>Class to provide the following to ContactService consumers:</p>
  *  <ul>
  *  <li>An empty contact service i.e no backing store</li>
  *  </ul>
- *  Example:<br>
- *  <pre>
- *  </pre>
- *  </p>
- *  
  */
 public class EmptyContactService implements ContactService {
   @Override

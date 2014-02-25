@@ -100,6 +100,17 @@ public class ComboBoxes {
   /**
    * @param listener The action listener to alert when the selection is made
    *
+   * @return A new "history checkbox" combo box (all, none) - kept separate from contacts
+   */
+  public static JComboBox<String> newHistoryCheckboxComboBox(ActionListener listener) {
+
+    return newContactsCheckboxComboBox(listener);
+
+  }
+
+  /**
+   * @param listener The action listener to alert when the selection is made
+   *
    * @return A new "language" combo box
    */
   public static JComboBox<String> newLanguagesComboBox(ActionListener listener) {

@@ -40,9 +40,18 @@ public class CoreServices {
    */
   public static final ApplicationEventService applicationEventService;
 
+  /**
+   * Keep track of history entries (e.g. tracking money, errors etc) across all wallets
+   */
+  public static final HistoryService historyService;
+
   static {
     applicationEventService = new ApplicationEventService();
+    historyService = new PersistentHistoryService();
+
     uiEventBus.register(applicationEventService);
+    uiEventBus.register(historyService);
+
   }
 
   private static final Map<WalletId, ContactService> contactServiceMap = Maps.newHashMap();
@@ -124,6 +133,15 @@ public class CoreServices {
   public static ApplicationEventService getApplicationEventService() {
 
     return applicationEventService;
+
+  }
+
+  /**
+   * @return The history service singleton
+   */
+  public static HistoryService getHistoryService() {
+
+    return historyService;
 
   }
 

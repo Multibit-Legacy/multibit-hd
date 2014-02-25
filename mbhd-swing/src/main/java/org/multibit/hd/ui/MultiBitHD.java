@@ -186,7 +186,8 @@ public class MultiBitHD {
       WalletData walletData = WalletManager.INSTANCE.getCurrentWalletData().get();
       log.debug("The current wallet is:\nWallet id = '" + walletData.getWalletId().toString() + "\n" + walletData.getWallet().toString());
 
-      Panels.showLightBox(Wizards.newClosingPasswordWizard().getWizardPanel());
+      // Force an exit if the user can't get through
+      Panels.showLightBox(Wizards.newExitingPasswordWizard().getWizardPanel());
 
     } else {
       // Show an exiting Welcome wizard

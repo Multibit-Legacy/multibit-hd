@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.edit_contact;
+package org.multibit.hd.ui.views.wizards.edit_history;
 
 import com.google.common.base.Optional;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -15,9 +15,9 @@ import java.util.Map;
  * @since 0.0.1
  *  
  */
-public class EditContactWizard extends AbstractWizard<EditContactWizardModel> {
+public class EditHistoryWizard extends AbstractWizard<EditHistoryWizardModel> {
 
-  public EditContactWizard(EditContactWizardModel model, EnterContactDetailsMode mode) {
+  public EditHistoryWizard(EditHistoryWizardModel model, EnterHistoryDetailsMode mode) {
     super(model, false, Optional.of(mode));
   }
 
@@ -26,11 +26,11 @@ public class EditContactWizard extends AbstractWizard<EditContactWizardModel> {
 
     // Use the wizard parameter to retrieve the appropriate mode
     wizardViewMap.put(
-      EditContactState.ENTER_DETAILS.name(),
-      new EditContactEnterDetailsPanelView(
+      EditHistoryState.ENTER_DETAILS.name(),
+      new EditHistoryEnterDetailsPanelView(
         this,
-        EditContactState.ENTER_DETAILS.name(),
-        (EnterContactDetailsMode) wizardParameter.get()
+        EditHistoryState.ENTER_DETAILS.name(),
+        (EnterHistoryDetailsMode) wizardParameter.get()
       )
     );
 

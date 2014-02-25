@@ -144,7 +144,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
-          ((PaymentTableModel) paymentsTable.getModel()).setPaymentDatas(MultiBitHD.getWalletService().getPaymentDatas(), true);
+          ((PaymentTableModel) paymentsTable.getModel()).setPaymentData(MultiBitHD.getWalletService().getPaymentDatas(), true);
         }
       });
     }

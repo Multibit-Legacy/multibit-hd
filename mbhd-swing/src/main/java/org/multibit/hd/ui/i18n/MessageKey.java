@@ -66,6 +66,7 @@ public enum MessageKey {
   BITCOIN_ADDRESS("bitcoin_address"),
   EXTENDED_PUBLIC_KEY("extended_public_key"),
   TAGS("tags"),
+  DESCRIPTION("description"),
 
   // Sidebar
 
@@ -117,6 +118,10 @@ public enum MessageKey {
   NEW_CONTACT_TITLE("new_contact_title"),
   EDIT_CONTACT_TITLE("edit_contact_title"),
   EDIT_CONTACTS_TITLE("edit_contacts_title"),
+
+  NEW_HISTORY_ENTRY_TITLE("new_history_entry_title"),
+  EDIT_HISTORY_ENTRY_TITLE("edit_history_entry_title"),
+  EDIT_HISTORY_ENTRIES_TITLE("edit_history_entries_title"),
 
   PASSWORD_TITLE("password_title"),
   PASSWORD_ENTER_SEED_PHRASE_TITLE("password_enter_seed_phrase_title"),

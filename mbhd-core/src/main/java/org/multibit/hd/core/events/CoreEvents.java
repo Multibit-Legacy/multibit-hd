@@ -123,6 +123,18 @@ public class CoreEvents {
   }
 
   /**
+   * <p>Broadcast a new "history" event</p>
+   *
+   * @param description The description
+   */
+  public static void fireHistoryEvent(String description) {
+
+    log.trace("Firing 'history' event");
+
+    CoreServices.uiEventBus.post(new HistoryEvent(description));
+  }
+
+  /**
    * <p>Broadcast a new "shutdown" event</p>
    */
   public static void fireShutdownEvent() {

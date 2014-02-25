@@ -1,7 +1,9 @@
 package org.multibit.hd.ui.views.components;
 
+import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.Contact;
+import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.i18n.Languages;
@@ -12,7 +14,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -64,16 +65,18 @@ public class Tables {
 
     table.applyComponentOrientation(Languages.currentComponentOrientation());
 
+    justifyColumnHeaders(table);
+
     return table;
   }
 
   /**
-   * @param paymentDatas The payments to show
+   * @param paymentData The payments to show
    * @return A new "payments" striped table
    */
-  public static StripedTable newPaymentsTable(Set<PaymentData> paymentDatas) {
+  public static StripedTable newPaymentsTable(Set<PaymentData> paymentData) {
 
-    PaymentTableModel model = new PaymentTableModel(paymentDatas);
+    PaymentTableModel model = new PaymentTableModel(paymentData);
 
     StripedTable table = new StripedTable(model);
 
@@ -111,14 +114,66 @@ public class Tables {
     resizeColumn(table, PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX, 120, 180);
 
     // Row sorter for date
-    rowSorter = new TableRowSorter<TableModel>(table.getModel());
+    rowSorter = new TableRowSorter<>(table.getModel());
     table.setRowSorter(rowSorter);
 
-    // Sort by date descending.
-    List<TableRowSorter.SortKey> sortKeys = new ArrayList<TableRowSorter.SortKey>();
-    sortKeys.add(new TableRowSorter.SortKey(PaymentTableModel.DATE_COLUMN_INDEX, SortOrder.DESCENDING));
+    // Sort by date descending
+    Comparator<DateTime> comparator = newDateTimeComparator(SortOrder.DESCENDING);
+    rowSorter.setComparator(PaymentTableModel.DATE_COLUMN_INDEX, comparator);
+
+    // TODO - also fiat column
+
+    justifyColumnHeaders(table);
+
+    return table;
+  }
+
+  /**
+   * @param historyEntries The history entries to show
+   * @return A new "contacts" striped table
+   */
+  public static StripedTable newHistoryTable(List<HistoryEntry> historyEntries) {
+
+    HistoryTableModel model = new HistoryTableModel(historyEntries);
+
+    StripedTable table = new StripedTable(model);
+
+    table.setFillsViewportHeight(true);
+    table.setShowHorizontalLines(true);
+    table.setShowVerticalLines(false);
+
+    table.setRowHeight(MultiBitUI.NORMAL_ICON_SIZE + SPACER);
+    table.setAutoCreateRowSorter(true);
+    table.setRowSelectionAllowed(false);
+    table.setCellSelectionEnabled(false);
+
+    // Date column
+    TableColumn dateTableColumn = table.getColumnModel().getColumn(HistoryTableModel.CREATED_COLUMN_INDEX);
+    dateTableColumn.setCellRenderer(Renderers.newTrailingJustifiedDateRenderer());
+    resizeColumn(table, HistoryTableModel.CREATED_COLUMN_INDEX, 150, 200);
+
+    // Set preferred widths
+    resizeColumn(table, HistoryTableModel.CHECKBOX_COLUMN_INDEX, MultiBitUI.NORMAL_ICON_SIZE + SPACER);
+    resizeColumn(table, HistoryTableModel.DESCRIPTION_COLUMN_INDEX, MultiBitUI.HUGE_ICON_SIZE + SPACER);
+
+    table.applyComponentOrientation(Languages.currentComponentOrientation());
+
+    justifyColumnHeaders(table);
+
+    return table;
+  }
+
+  /**
+   * @return A new DateTime comparator for use with a TableRowSorter
+   */
+  private static Comparator<DateTime> newDateTimeComparator(final SortOrder sortOrder) {
+
+    List<TableRowSorter.SortKey> sortKeys = Lists.newArrayList();
+    sortKeys.add(new TableRowSorter.SortKey(PaymentTableModel.DATE_COLUMN_INDEX, sortOrder));
+
     rowSorter.setSortKeys(sortKeys);
-    Comparator<DateTime> comparator = new Comparator<DateTime>() {
+
+    return new Comparator<DateTime>() {
       @Override
       public int compare(DateTime o1, DateTime o2) {
         if (o1 == null) {
@@ -151,22 +206,21 @@ public class Tables {
         }
       }
     };
-    rowSorter.setComparator(PaymentTableModel.DATE_COLUMN_INDEX, comparator);
 
-    // TODO - also fiat column
-
-    justifyColumnHeaders(table);
-    return table;
   }
 
   private static void justifyColumnHeaders(JTable table) {
+
     TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
     JLabel label = (JLabel) renderer;
     label.setHorizontalAlignment(JLabel.CENTER);
+
   }
 
   private static void resizeColumn(StripedTable table, int columnIndex, int preferredWidth) {
+
     resizeColumn(table, columnIndex, preferredWidth, preferredWidth);
+
   }
 
   /**

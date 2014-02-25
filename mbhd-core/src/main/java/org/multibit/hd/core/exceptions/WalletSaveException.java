@@ -10,8 +10,6 @@ package org.multibit.hd.core.exceptions;
  */
 public class WalletSaveException extends RuntimeException {
 
-    private static final long serialVersionUID = 2372470341301293437L;
-
     public WalletSaveException(String s) {
         super(s);
     }

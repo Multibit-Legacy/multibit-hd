@@ -7,6 +7,7 @@ import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.models.AlertModel;
+import org.multibit.hd.ui.models.Models;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -70,7 +71,7 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        AlertModel alertModel = new AlertModel("Demonstrate alert", RAGStatus.PINK);
+        AlertModel alertModel = Models.newAlertModel("Demonstrate alert", RAGStatus.PINK);
 
         // Demonstrate a button
         AbstractAction action = new AbstractAction() {

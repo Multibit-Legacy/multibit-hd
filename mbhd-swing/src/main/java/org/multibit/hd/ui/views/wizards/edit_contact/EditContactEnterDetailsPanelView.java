@@ -22,8 +22,8 @@ import javax.swing.*;
 import java.util.List;
 import java.util.Set;
 
-import static org.multibit.hd.ui.views.wizards.edit_contact.EnterDetailsMode.EDIT_MULTIPLE;
-import static org.multibit.hd.ui.views.wizards.edit_contact.EnterDetailsMode.NEW;
+import static org.multibit.hd.ui.views.wizards.edit_contact.EnterContactDetailsMode.EDIT_MULTIPLE;
+import static org.multibit.hd.ui.views.wizards.edit_contact.EnterContactDetailsMode.NEW;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -45,14 +45,14 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
   private JTextArea notes;
   private ModelAndView<EnterTagsModel, EnterTagsView> enterTagsMaV;
 
-  private EnterDetailsMode mode;
+  private EnterContactDetailsMode mode;
 
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name
    * @param mode      The editing more to use
    */
-  public EditContactEnterDetailsPanelView(AbstractWizard<EditContactWizardModel> wizard, String panelName, EnterDetailsMode mode) {
+  public EditContactEnterDetailsPanelView(AbstractWizard<EditContactWizardModel> wizard, String panelName, EnterContactDetailsMode mode) {
 
     super(wizard.getWizardModel(), panelName, mode.getMessageKey());
 

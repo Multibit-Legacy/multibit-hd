@@ -515,7 +515,14 @@ public class Labels {
   }
 
   /**
-   * <<<<<<< HEAD
+   *
+   * @return A new "description" label
+   */
+  public static JLabel newDescription() {
+    return newLabel(MessageKey.DESCRIPTION);
+  }
+
+  /**
    *
    * @return A new "contact name" label
    */

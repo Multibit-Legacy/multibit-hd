@@ -26,7 +26,7 @@ import org.multibit.hd.ui.events.view.ThemeChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
-import org.multibit.hd.ui.models.AlertModel;
+import org.multibit.hd.ui.models.Models;
 import org.multibit.hd.ui.views.FooterView;
 import org.multibit.hd.ui.views.HeaderView;
 import org.multibit.hd.ui.views.components.Panels;
@@ -308,17 +308,17 @@ public class ComponentTestBed {
 
           if (i % 2 == 0) {
 
-            ControllerEvents.fireAddAlertEvent(new AlertModel("Something happened", RAGStatus.RED));
+            ControllerEvents.fireAddAlertEvent(Models.newAlertModel("Something happened", RAGStatus.RED));
 
           }
           if (i % 3 == 0) {
 
-            ControllerEvents.fireAddAlertEvent(new AlertModel("Something happened", RAGStatus.AMBER));
+            ControllerEvents.fireAddAlertEvent(Models.newAlertModel("Something happened", RAGStatus.AMBER));
 
           }
           if (i % 5 == 0) {
 
-            ControllerEvents.fireAddAlertEvent(new AlertModel("Something happened", RAGStatus.GREEN));
+            ControllerEvents.fireAddAlertEvent(Models.newAlertModel("Something happened", RAGStatus.GREEN));
             Sounds.playReceiveBitcoin();
 
           }
