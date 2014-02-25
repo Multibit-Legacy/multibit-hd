@@ -165,5 +165,4 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
       }
     }
   }
-
 }

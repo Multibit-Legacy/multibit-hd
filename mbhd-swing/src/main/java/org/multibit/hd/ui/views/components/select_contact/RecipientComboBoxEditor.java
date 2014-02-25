@@ -50,8 +50,9 @@ public class RecipientComboBoxEditor implements ComboBoxEditor {
     String editorText;
 
     if (anObject instanceof String) {
-      // User is typing in the editor
+      // User is typing or has pasted in the editor
       editorText = (String) anObject;
+      recipient = null;
     } else {
       // User has selected from the list
       Recipient recipient = (Recipient) anObject;
@@ -77,10 +78,11 @@ public class RecipientComboBoxEditor implements ComboBoxEditor {
   }
 
   public Object getItem() {
-
-    if (recipient != null) {
+    if (recipient != null &&recipient.getContact().isPresent()) {
+      // There is a hit on a contact
       return recipient;
     } else {
+      // return the editor contents, which may be a pasted address
       return editor.getText();
     }
   }

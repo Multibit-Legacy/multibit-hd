@@ -12,6 +12,8 @@ import org.multibit.hd.ui.utils.ClipboardUtils;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilter;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -30,6 +32,8 @@ import java.awt.image.BufferedImage;
  *  
  */
 public class EnterRecipientView extends AbstractComponentView<EnterRecipientModel> {
+
+  private static final Logger log = LoggerFactory.getLogger(EnterRecipientView.class);
 
   // View components
   private JComboBox<Recipient> recipientComboBox;
@@ -90,6 +94,9 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
 
     Object selectedItem = recipientComboBox.getSelectedItem();
     Object editedItem = recipientComboBox.getEditor().getItem();
+
+    log.debug("selectedItem = " + selectedItem);
+    log.debug("editedItem = " + selectedItem);
 
     // Use pastes in preference to selection
     if (editedItem != null) {
@@ -166,6 +173,7 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
         Optional<String> pastedText = ClipboardUtils.pasteStringFromClipboard();
 
         if (pastedText.isPresent()) {
+          log.debug("Pasted text :'" + pastedText.get());
 
           recipientComboBox.getEditor().setItem(pastedText.get());
           updateModelFromView();
