@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.math.BigInteger;
 import java.util.Set;
 
 /**
@@ -109,7 +108,8 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
 
     // Play a sound the first time a transaction is received
     // TODO some more filtering required - just set to play when it confirms for the first time for now
-    if (transactionSeenEvent.getDepthInBlocks() == 1 && transactionSeenEvent.getValue() != null && transactionSeenEvent.getValue().compareTo(BigInteger.ZERO) >0) {
+    if (transactionSeenEvent.getDepthInBlocks() == 1) {
+      //  && transactionSeenEvent.getValue() != null && transactionSeenEvent.getValue().compareTo(BigInteger.ZERO) >0
       Sounds.playReceiveBitcoin();
     }
 
