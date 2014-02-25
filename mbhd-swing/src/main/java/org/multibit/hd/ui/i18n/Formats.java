@@ -81,6 +81,9 @@ public class Formats {
    */
   public static String formatLocalAmount(BigMoney amount) {
 
+    if (amount == null) {
+      return "";
+    }
     I18NConfiguration configuration = Configurations.currentConfiguration.getI18NConfiguration();
 
     Locale currentLocale = configuration.getLocale();

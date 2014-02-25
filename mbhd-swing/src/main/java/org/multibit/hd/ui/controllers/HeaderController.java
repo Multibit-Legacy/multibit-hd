@@ -58,8 +58,13 @@ public class HeaderController {
       // Unknown at this time
       satoshis = BigInteger.ZERO;
     }
-    BigMoney localBalance = Satoshis.toLocalAmount(satoshis, event.getRate());
+    BigMoney localBalance;
 
+    if (event.getRate() != null) {
+      localBalance = Satoshis.toLocalAmount(satoshis, event.getRate());
+    } else {
+      localBalance = null;
+    }
     // Post the event
     ViewEvents.fireBalanceChangedEvent(
       satoshis,
@@ -80,6 +85,9 @@ public class HeaderController {
 
     if (exchangeRateChangedEventOptional.isPresent()) {
       onExchangeRateChangedEvent(exchangeRateChangedEventOptional.get());
+    } else {
+      // No exchange rate available but fire an event anyhow to force a balance change event
+      onExchangeRateChangedEvent(new ExchangeRateChangedEvent(null, Optional.<String>absent(), null));
     }
   }
 
