@@ -95,6 +95,11 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     }
     // Get the next receiving address from the wallet service
     String nextAddress = MultiBitHD.getWalletService().generateNextReceivingAddress(passwordParameter);
+    // Recreate bloom filter
+    if (MultiBitHD.getBitcoinNetworkService() != null) {
+      MultiBitHD.getBitcoinNetworkService().recalculateFastCatchupAndFilter();
+    }
+
     displayBitcoinAddressMaV = Components.newDisplayBitcoinAddressMaV(nextAddress);
 
     // Create the QR code display
