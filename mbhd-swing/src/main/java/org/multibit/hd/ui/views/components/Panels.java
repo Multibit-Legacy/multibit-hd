@@ -294,6 +294,27 @@ public class Panels {
   }
 
   /**
+   * <p>A "debugger warning" panel displays instructions to the user about a debugger being attached</p>
+   *
+   * @return A new "debugger warning" panel
+   */
+  public static JPanel newDebuggerWarning() {
+
+    JPanel panel = Panels.newPanel(new MigLayout(
+      "fillx,insets 0", // Layout
+      "[grow]", // Columns
+      "[]" // Rows
+    ));
+
+    PanelDecorator.applyDangerFadedTheme(panel);
+
+    // Add to the panel
+    panel.add(Labels.newDebuggerWarningNote(), "push");
+
+    return panel;
+  }
+
+  /**
    * <p>A "restore from backup" panel displays the instructions to restore from a backup folder</p>
    *
    * @return A new "restore from backup" panel

@@ -10,6 +10,8 @@ import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountView;
 import org.multibit.hd.ui.views.components.display_qrcode.DisplayQRCodeModel;
 import org.multibit.hd.ui.views.components.display_qrcode.DisplayQRCodeView;
+import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertModel;
+import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertView;
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseModel;
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseView;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountModel;
@@ -170,6 +172,25 @@ public class Components {
 
     DisplayQRCodeModel model = new DisplayQRCodeModel();
     DisplayQRCodeView view = new DisplayQRCodeView(model);
+
+    return new ModelAndView<>(model, view);
+
+  }
+
+  /**
+   * <p>A "display security alert" model and view displays a security alert with the following features:</p>
+   * <ul>
+   * <li>Danger themed message panel</li>
+   * <li>Button to close the light box popover</li>
+   * <li></li>
+   * </ul>
+   *
+   * @return A new "display security alert" model and view
+   */
+  public static ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> newDisplaySecurityAlertMaV() {
+
+    DisplaySecurityAlertModel model = new DisplaySecurityAlertModel();
+    DisplaySecurityAlertView view = new DisplaySecurityAlertView(model);
 
     return new ModelAndView<>(model, view);
 

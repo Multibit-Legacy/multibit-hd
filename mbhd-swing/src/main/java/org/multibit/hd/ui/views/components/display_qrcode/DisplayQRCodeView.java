@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components.display_qrcode;
 
 import com.google.common.base.Optional;
 import org.multibit.hd.core.utils.OSUtils;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.utils.ClipboardUtils;
 import org.multibit.hd.ui.utils.QRCodes;
 import org.multibit.hd.ui.views.components.AbstractComponentView;
@@ -59,9 +60,9 @@ public class DisplayQRCodeView extends AbstractComponentView<DisplayQRCodeModel>
     JLabel labelLabel = Labels.newBlankLabel();
     labelLabel.setText(getModel().get().getLabel());
     panel.add(labelLabel, "align center,push,wrap");
-    // Panel needs to be this size to allow for largest Bitcoin URI
-    panel.setSize(500, 450);
 
+    // Set minimum size
+    panel.setSize(MultiBitUI.POPOVER_MAX_WIDTH, MultiBitUI.POPOVER_MAX_HEIGHT);
 
     return panel;
 

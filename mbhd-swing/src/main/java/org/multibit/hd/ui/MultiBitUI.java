@@ -23,13 +23,30 @@ public interface MultiBitUI {
   int UI_MIN_HEIGHT = 600;
 
   /**
-   * The minimum width for a wizard panel (600 is about right)
+   * The minimum width for a wizard panel (600 is about right) allowing for popovers
    */
   int WIZARD_MIN_WIDTH = 600;
   /**
-   * The minimum height for a wizard panel (450 is tight)
+   * The minimum height for a wizard panel (450 is tight) allowing for popovers
    */
   int WIZARD_MIN_HEIGHT = 450;
+
+  /**
+   * The preferred width for a wizard popover (must be less than the MAX defined below)
+   */
+  int POPOVER_PREF_WIDTH = 500;
+  /**
+   * The preferred height for a wizard popover (must be less than the MAX defined below)
+   */
+  int POPOVER_PREF_HEIGHT = 350;
+  /**
+   * The maximum width for a wizard popover (500 allows for maximum Bitcoin URI QR code)
+   */
+  int POPOVER_MAX_WIDTH = 500;
+  /**
+   * The maximum height for a wizard popover (450 allows for maximum Bitcoin URI QR code)
+   */
+  int POPOVER_MAX_HEIGHT = 450;
 
   /**
    * The preferred width for the sidebar

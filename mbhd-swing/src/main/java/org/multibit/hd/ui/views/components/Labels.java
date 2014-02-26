@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.components;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.i18n.Languages;
@@ -98,6 +99,37 @@ public class Labels {
     // Font
     Font font = label.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE);
     label.setFont(font);
+
+    // Theme
+    label.setForeground(Themes.currentTheme.text());
+
+    return label;
+
+  }
+
+  /**
+   * <p>Create a new label with appropriate font/theme for a note. Interpret the contents of the text as Markdown for HTML translation.</p>
+   *
+   * @param keys   The message keys for each line referencing simple HTML (standard wrapping/breaking elements like {@literal <html></html>} and {@literal <br/>} will be provided)
+   * @param values The substitution values for each line if applicable
+   *
+   * @return A new label with HTML formatting to correctly render the line break and contents
+   */
+  public static JLabel newNoteLabel(CoreMessageKey[] keys, Object[][] values) {
+
+    String[] lines = new String[keys.length];
+    for (int i = 0; i < keys.length; i++) {
+      if (values.length > 0) {
+        // Substitution is required
+        lines[i] = Languages.safeText(keys[i], values[i]);
+      } else {
+        // Key only
+        lines[i] = Languages.safeText(keys[i]);
+      }
+    }
+
+    // Wrap in HTML to ensure LTR/RTL and line breaks are respected
+    JLabel label = new JLabel(HtmlUtils.localiseWithLineBreaks(lines));
 
     // Theme
     label.setForeground(Themes.currentTheme.text());
@@ -611,6 +643,24 @@ public class Labels {
     }, new Object[][]{});
 
   }
+
+  /**
+   * @return A new "debugger warning" note
+   */
+  public static JLabel newDebuggerWarningNote() {
+
+    JLabel label = newNoteLabel(new CoreMessageKey[]{
+      CoreMessageKey.DEBUGGER_ATTACHED,
+      CoreMessageKey.SECURITY_ADVICE
+    }, new Object[][]{});
+
+    // Allow for danger theme
+    label.setForeground(Themes.currentTheme.dangerAlertText());
+
+    return label;
+
+  }
+
 
   /**
    * @return A new "seed warning" note

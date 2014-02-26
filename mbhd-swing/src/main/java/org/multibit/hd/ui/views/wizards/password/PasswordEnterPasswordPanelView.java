@@ -4,13 +4,17 @@ import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertModel;
+import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertView;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordView;
 import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
@@ -35,6 +39,7 @@ import javax.swing.*;
 public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<PasswordWizardModel, PasswordEnterPasswordPanelModel> {
 
   // Panel specific components
+  private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityAlertMaV;
   private ModelAndView<EnterPasswordModel, EnterPasswordView> enterPasswordMaV;
 
   /**
@@ -50,6 +55,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
   @Override
   public void newPanelModel() {
 
+    displaySecurityAlertMaV = Components.newDisplaySecurityAlertMaV();
     enterPasswordMaV = Components.newEnterPasswordMaV(getPanelName());
 
     // Configure the panel model
@@ -102,7 +108,20 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
+
         enterPasswordMaV.getView().requestInitialFocus();
+
+        // Check for any security alerts
+        Optional<SecurityEvent> securityEvent = CoreServices.applicationEventService.getLatestSecurityEvent();
+        if (securityEvent.isPresent()) {
+
+          displaySecurityAlertMaV.getModel().setValue(securityEvent.get());
+
+          // Show the security alert as a popover
+          Panels.showLightBoxPopover(displaySecurityAlertMaV.getView().newComponentPanel());
+
+        }
+
       }
     });
 
