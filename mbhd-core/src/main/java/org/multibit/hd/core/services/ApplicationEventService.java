@@ -3,6 +3,7 @@ package org.multibit.hd.core.services;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
+import org.multibit.hd.core.events.SecurityEvent;
 
 /**
  * <p>Service to provide the following to application:</p>
@@ -17,11 +18,13 @@ import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 public class ApplicationEventService {
 
   private Optional<ExchangeRateChangedEvent> latestExchangeRateChangedEvent = Optional.absent();
+  private Optional<SecurityEvent> latestSecurityEvent = Optional.absent();
 
   /**
    * Reduced visibility constructor to prevent accidental instance creation outside of CoreServices
    */
   ApplicationEventService() {
+    CoreServices.uiEventBus.register(this);
   }
 
   /**
@@ -32,11 +35,26 @@ public class ApplicationEventService {
   }
 
   /**
+   * @return The latest "security" event
+   */
+  public Optional<SecurityEvent> getLatestSecurityEvent() {
+    return latestSecurityEvent;
+  }
+
+  /**
    * @param event The "exchange rate changed" event
    */
   @Subscribe
   public void onExchangeRateChangedEvent(ExchangeRateChangedEvent event) {
     latestExchangeRateChangedEvent = Optional.of(event);
+  }
+
+  /**
+   * @param event The "security" event
+   */
+  @Subscribe
+  public void onSecurityEvent(SecurityEvent event) {
+    latestSecurityEvent = Optional.of(event);
   }
 
 }

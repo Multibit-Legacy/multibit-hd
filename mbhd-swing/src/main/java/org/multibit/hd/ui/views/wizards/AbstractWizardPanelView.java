@@ -295,7 +295,7 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
    */
   public void deregisterDefaultButton() {
 
-    Panels.frame.getRootPane().setDefaultButton(null);
+ //   Panels.frame.getRootPane().setDefaultButton(null);
 
   }
 

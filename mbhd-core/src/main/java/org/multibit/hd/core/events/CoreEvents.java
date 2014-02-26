@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import org.joda.money.BigMoney;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
+import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.services.CoreServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,6 +121,18 @@ public class CoreEvents {
     }
 
     CoreServices.uiEventBus.post(new BitcoinNetworkChangedEvent(bitcoinNetworkSummary));
+  }
+
+  /**
+   * <p>Broadcast a new "security" event</p>
+   *
+   * @param securitySummary The security summary
+   */
+  public static void fireSecurityEvent(SecuritySummary securitySummary) {
+
+    log.trace("Firing 'security' event");
+
+    CoreServices.uiEventBus.post(new SecurityEvent(securitySummary));
   }
 
   /**

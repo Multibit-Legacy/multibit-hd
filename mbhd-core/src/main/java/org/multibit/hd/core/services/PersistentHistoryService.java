@@ -51,6 +51,8 @@ public class PersistentHistoryService implements HistoryService {
 
   public PersistentHistoryService() {
 
+    CoreServices.uiEventBus.register(this);
+
     this.backingStoreFile = new File(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath() + File.separator + HISTORY_DATABASE_NAME);
 
     initialise();
@@ -81,6 +83,8 @@ public class PersistentHistoryService implements HistoryService {
 
   @Override
   public HistoryEntry newHistoryEntry(String description) {
+
+    log.debug("New history event '{}'",description);
 
     HistoryEntry historyEntry = new HistoryEntry(UUID.randomUUID(), description);
 

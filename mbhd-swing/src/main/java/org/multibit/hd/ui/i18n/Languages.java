@@ -206,7 +206,7 @@ public class Languages {
   public static String truncatedList(Collection<String> contents, int maxLength) {
 
     String joinedContents = Joiner
-      .on(Languages.safeText(MessageKey.LIST_COMMA)+ " ")
+      .on(Languages.safeText(MessageKey.LIST_COMMA) + " ")
       .join(contents);
 
     String ellipsis = Languages.safeText(MessageKey.LIST_ELLIPSIS);
@@ -220,6 +220,25 @@ public class Languages {
     } else {
       // Apply truncation (with ellipsis)
       return joinedContents.substring(0, maxIndex) + ellipsis;
+    }
+
+  }
+
+  /**
+   * <p>Appends fragment2 to fragment1 preserving LTR/RTL since Strings are presented as LTR.</p>
+   *
+   * @param fragment1 The first fragment
+   * @param fragment2 The second fragment
+   * @param separator The separator, usually a space
+   *
+   * @return The LHS with RHS appended so that the result reads correctly in the current locale
+   */
+  public static String append(String fragment1, String fragment2, String separator) {
+
+    if (Languages.isLeftToRight()) {
+      return fragment1 + separator + fragment2;
+    } else {
+      return fragment2 + separator + fragment1;
     }
 
   }

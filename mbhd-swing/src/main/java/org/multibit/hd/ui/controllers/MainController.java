@@ -5,11 +5,16 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
+import org.multibit.hd.core.dto.CoreMessageKey;
+import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
+import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.controller.ChangeLocaleEvent;
+import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.models.Models;
 import org.multibit.hd.ui.views.components.Panels;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +49,8 @@ public class MainController {
    */
   @Subscribe
   public synchronized void onChangeLocaleEvent(ChangeLocaleEvent event) {
+
+    log.trace("Received 'locale change' event");
 
     Preconditions.checkNotNull(event, "'event' must be present");
     Preconditions.checkNotNull(event.getLocale(), "'locale' must be present");
@@ -84,7 +91,7 @@ public class MainController {
   @Subscribe
   public void onBitcoinNetworkChangeEvent(BitcoinNetworkChangedEvent event) {
 
-    //log.debug("Received 'Bitcoin network changed' event");
+    log.trace("Received 'Bitcoin network changed' event");
 
     Preconditions.checkNotNull(event, "'event' must be present");
     Preconditions.checkNotNull(event.getSummary(), "'summary' must be present");
@@ -111,6 +118,40 @@ public class MainController {
 
     // Ensure everyone is aware of the update
     ViewEvents.fireSystemStatusChangedEvent(localisedMessage, summary.getSeverity());
+  }
+
+  @Subscribe
+  public void onSecurityEvent(SecurityEvent event) {
+
+    log.trace("Received 'security' event");
+
+    Preconditions.checkNotNull(event, "'event' must be present");
+    Preconditions.checkNotNull(event.getSummary(), "'summary' must be present");
+
+    SecuritySummary summary = event.getSummary();
+
+    Preconditions.checkNotNull(summary.getSeverity(), "'severity' must be present");
+    Preconditions.checkNotNull(summary.getMessageKey(), "'errorKey' must be present");
+    Preconditions.checkNotNull(summary.getMessageData(), "'errorData' must be present");
+
+    final String localisedMessage;
+    if (summary.getMessageKey().isPresent() && summary.getMessageData().isPresent()) {
+      // There is a message key with data
+      localisedMessage = Languages.safeText(summary.getMessageKey().get(), summary.getMessageData().get());
+    } else if (summary.getMessageKey().isPresent()) {
+      // There is a message key only
+      localisedMessage = Languages.safeText(summary.getMessageKey().get());
+    } else {
+      // There is no message key so use the status only
+      localisedMessage = summary.getSeverity().name();
+    }
+
+    // Append general security advice allowing for LTR/RTL
+    ControllerEvents.fireAddAlertEvent(
+      Models.newAlertModel(
+        Languages.append(localisedMessage, Languages.safeText(CoreMessageKey.SECURITY_ADVICE), " "),
+        summary.getSeverity())
+    );
   }
 
 }

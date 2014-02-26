@@ -7,6 +7,7 @@ import com.xeiam.xchange.currency.MoneyUtils;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
+import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -140,9 +141,9 @@ public class MultiBitHD {
     if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
       // TODO Remove this when the Contact screen is ready
       CoreServices
-              .getOrCreateContactService(
-                      Optional.of(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()
-                      )).addDemoContacts();
+        .getOrCreateContactService(
+          Optional.of(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()
+          )).addDemoContacts();
 
       // Initialise the WalletService, which provides transaction information from the wallet
       walletService = CoreServices.newWalletService();
@@ -167,10 +168,10 @@ public class MultiBitHD {
     FooterView footerView = new FooterView();
 
     MainView mainView = new MainView(
-            headerView.getContentPanel(),
-            sidebarView.getContentPanel(),
-            detailView.getContentPanel(),
-            footerView.getContentPanel()
+      headerView.getContentPanel(),
+      sidebarView.getContentPanel(),
+      detailView.getContentPanel(),
+      footerView.getContentPanel()
     );
 
     // Create controllers
@@ -219,24 +220,25 @@ public class MultiBitHD {
       satoshis = BigInteger.ZERO;
     }
 
+    // Catch up with any early security events
+    Optional<SecurityEvent> securityEvent = CoreServices.getApplicationEventService().getLatestSecurityEvent();
+
+    if (securityEvent.isPresent()) {
+      mainController.onSecurityEvent(securityEvent.get());
+    }
+
     // Catch up with any early exchange rate events
-    Optional<ExchangeRateChangedEvent> event = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
+    Optional<ExchangeRateChangedEvent> exchangeEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
 
-    if (event.isPresent()) {
-
-      // Provide the exchange name
-      ViewEvents.fireBalanceChangedEvent(
-              satoshis,
-              MoneyUtils.fromSatoshi(0),
-              event.get().getRateProvider()
-      );
+    if (exchangeEvent.isPresent()) {
+      headerController.onExchangeRateChangedEvent(exchangeEvent.get());
     } else {
 
-      // No exchange provided
+      // No exchange provided so simulate a non-event
       ViewEvents.fireBalanceChangedEvent(
-              satoshis,
-              MoneyUtils.fromSatoshi(0),
-              Optional.<String>absent()
+        satoshis,
+        MoneyUtils.fromSatoshi(0),
+        Optional.<String>absent()
       );
 
     }

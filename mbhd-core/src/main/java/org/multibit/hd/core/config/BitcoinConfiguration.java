@@ -13,7 +13,7 @@ public class BitcoinConfiguration {
 
   private String bitcoinSymbol = "MICON";
   private String exchangeClassName="";
-  private String exchangeName="Mt Gox";
+  private String exchangeName="Bitstamp";
 
   /**
    * @return The Bitcoin symbol to use (compatible with BitcoinSymbol)

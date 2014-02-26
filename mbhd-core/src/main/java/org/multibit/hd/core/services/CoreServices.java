@@ -7,7 +7,9 @@ import com.google.common.eventbus.EventBus;
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.logging.LoggingFactory;
 import org.multibit.hd.core.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.core.seed_phrase.SeedPhraseGenerator;
@@ -36,21 +38,26 @@ public class CoreServices {
   public static final EventBus uiEventBus = new EventBus();
 
   /**
-   * Keep track of selected application events (e.g. exchange rate changes etc)
+   * Keep track of selected application events (e.g. exchange rate changes, security alerts etc)
    */
   public static final ApplicationEventService applicationEventService;
 
   /**
-   * Keep track of history entries (e.g. tracking money, errors etc) across all wallets
+   * Keep track of history entries (e.g. tracking money, security, errors etc) across all wallets
    */
   public static final HistoryService historyService;
 
-  static {
-    applicationEventService = new ApplicationEventService();
-    historyService = new PersistentHistoryService();
+  /**
+   * Keep track of security events (e.g. debugger, file permissions etc) across all wallets
+   */
+  public static final SecurityCheckingService securityCheckingService;
 
-    uiEventBus.register(applicationEventService);
-    uiEventBus.register(historyService);
+  static {
+
+    // Order is important here
+    applicationEventService = new ApplicationEventService();
+    securityCheckingService = new SecurityCheckingService();
+    historyService = new PersistentHistoryService();
 
   }
 
@@ -79,16 +86,20 @@ public class CoreServices {
     new LoggingFactory(Configurations.currentConfiguration.getLoggingConfiguration(), "MBHD").configure();
 
     if (OSUtils.isDebuggerAttached()) {
-      // TODO Inform the user of the problem
+
+      CoreEvents.fireSecurityEvent(SecuritySummary.newDebuggerAttached());
+
       log.error("************************************************************************");
       log.error("* A debugger is attached. This is a security risk in normal operation. *");
       log.error("************************************************************************");
+
     }
 
   }
 
   /**
    * @param exchangeClassName The exchange class name taken from the XChange library
+   *
    * @return A new exchange service based on the current configuration
    */
   public static ExchangeTickerService newExchangeService(String exchangeClassName) {
@@ -98,9 +109,9 @@ public class CoreServices {
 
     // Update the configuration with the current exchange name
     Configurations
-            .currentConfiguration
-            .getBitcoinConfiguration()
-            .setExchangeName(exchange.getExchangeSpecification().getExchangeName());
+      .currentConfiguration
+      .getBitcoinConfiguration()
+      .setExchangeName(exchange.getExchangeSpecification().getExchangeName());
 
     return new ExchangeTickerService(exchange.getExchangeSpecification().getExchangeName(), exchange.getPollingMarketDataService());
 
@@ -143,6 +154,13 @@ public class CoreServices {
 
     return historyService;
 
+  }
+
+  /**
+   * @return The security checking service singleton
+   */
+  public static SecurityCheckingService getSecurityCheckingService() {
+    return securityCheckingService;
   }
 
   /**

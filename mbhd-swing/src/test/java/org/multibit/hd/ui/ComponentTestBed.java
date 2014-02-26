@@ -3,8 +3,8 @@ package org.multibit.hd.ui;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
+import com.xeiam.xchange.bitstamp.BitstampExchange;
 import com.xeiam.xchange.currency.MoneyUtils;
-import com.xeiam.xchange.mtgox.v2.MtGoxExchange;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
@@ -116,7 +116,7 @@ public class ComponentTestBed {
     CoreServices.uiEventBus.register(this);
 
     // Standard support services
-    CoreServices.newExchangeService(MtGoxExchange.class.getName()).start();
+    CoreServices.newExchangeService(BitstampExchange.class.getName()).start();
     CoreServices.newBitcoinNetworkService().start();
 
     // Initialise the wallet manager, which will loadContacts the current wallet if available

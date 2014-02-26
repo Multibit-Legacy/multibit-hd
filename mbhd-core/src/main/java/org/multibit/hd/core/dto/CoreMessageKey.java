@@ -31,6 +31,11 @@ public enum CoreMessageKey {
   BITCOIN_SENT_OK("core_bitcoin_sent_ok"),
   BITCOIN_SEND_FAILED("core_bitcoin_send_failed"),
 
+  // Security
+  DEBUGGER_ATTACHED("core_debugger_attached"),
+  BACKUP_FAILED("core_backup_failed"),
+  SECURITY_ADVICE("core_security_advice"),
+
   // Errors
   THE_ERROR_WAS("core_the_error_was"),
   COULD_NOT_CONNECT_TO_BITCOIN_NETWORK("core_could_not_connect_to_bitcoin_network"),
