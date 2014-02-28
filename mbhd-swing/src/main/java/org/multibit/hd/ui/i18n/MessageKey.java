@@ -154,6 +154,11 @@ public enum MessageKey {
 
   // Tool buttons
   SHOW_WELCOME_WIZARD("show_welcome_wizard"),
+  SHOW_SOUND_WIZARD("show_sound_wizard"),
+  SHOW_BITCOIN_WIZARD("show_bitcoin_wizard"),
+  SHOW_APPLICATION_WIZARD("show_application_wizard"),
+  SHOW_I18N_WIZARD("show_i18n_wizard"),
+
   SHOW_ALERT("show_alert"),
   HIDE_ALERT("hide_alert"),
 

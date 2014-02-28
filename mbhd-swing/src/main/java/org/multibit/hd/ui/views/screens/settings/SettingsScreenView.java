@@ -2,12 +2,15 @@ package org.multibit.hd.ui.views.screens.settings;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -19,6 +22,8 @@ import javax.swing.*;
  *         
  */
 public class SettingsScreenView extends AbstractScreenView<SettingsScreenModel>  {
+
+  private JButton showI18NSettingsWizardButton;
 
   /**
    * @param panelModel The model backing this panel view
@@ -47,10 +52,59 @@ public class SettingsScreenView extends AbstractScreenView<SettingsScreenModel> 
 
     JPanel contentPanel = Panels.newPanel(layout);
 
-    // TODO Implement this
-    contentPanel.add(new JLabel("Preferences"));
+    Action showI18nAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        //Panels.showLightBox(Wizards.newI18NSettingsWizard().getWizardPanel());
+      }
+    };
+    Action showBitcoinAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        //Panels.showLightBox(Wizards.newBitcoinSettingsWizard().getWizardPanel());
+      }
+    };
+    Action showApplicationAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        //Panels.showLightBox(Wizards.newApplicationSettingsWizard().getWizardPanel());
+      }
+    };
+    Action showSoundAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        //Panels.showLightBox(Wizards.newSoundSettingsWizard().getWizardPanel());
+      }
+    };
+
+    showI18NSettingsWizardButton = Buttons.newShowI18NSettingsWizardButton(showI18nAction);
+
+    contentPanel.add(showI18NSettingsWizardButton, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    contentPanel.add(Buttons.newShowBitcoinSettingsWizardButton(showBitcoinAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push,wrap");
+
+    contentPanel.add(Buttons.newShowApplicationSettingsWizardButton(showApplicationAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    contentPanel.add(Buttons.newShowSoundSettingsWizardButton(showSoundAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push,wrap");
+
 
     return contentPanel;
   }
 
+  @Override
+  public void afterShow() {
+
+    SwingUtilities.invokeLater(
+      new Runnable() {
+      @Override
+      public void run() {
+
+        showI18NSettingsWizardButton.requestFocusInWindow();
+
+      }
+    });
+
+  }
 }

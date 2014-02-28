@@ -562,6 +562,86 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "internationalisation settings" wizard button with icon
+   */
+  public static JButton newShowI18NSettingsWizardButton(Action action) {
+
+    JButton button = newLargeButton(action, MessageKey.SHOW_I18N_WIZARD);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.GLOBE,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "Bitcoin settings" wizard button with icon
+   */
+  public static JButton newShowBitcoinSettingsWizardButton(Action action) {
+
+    JButton button = newLargeButton(action, MessageKey.SHOW_BITCOIN_WIZARD);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.BITCOIN,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "Application settings" wizard button with icon
+   */
+  public static JButton newShowApplicationSettingsWizardButton(Action action) {
+
+    JButton button = newLargeButton(action, MessageKey.SHOW_APPLICATION_WIZARD);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.WRENCH,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "Sound settings" wizard button with icon
+   */
+  public static JButton newShowSoundSettingsWizardButton(Action action) {
+
+    JButton button = newLargeButton(action, MessageKey.SHOW_SOUND_WIZARD);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.MUSIC,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "Alert" button with icon
    */
   public static JButton newAddAlertButton(Action action) {
