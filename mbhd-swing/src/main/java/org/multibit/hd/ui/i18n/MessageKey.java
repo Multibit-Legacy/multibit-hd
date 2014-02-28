@@ -155,6 +155,7 @@ public enum MessageKey {
   // Tool buttons
   SHOW_WELCOME_WIZARD("show_welcome_wizard"),
   SHOW_ALERT("show_alert"),
+  HIDE_ALERT("hide_alert"),
 
   // Radio buttons
   CREATE_WALLET("create_wallet"),

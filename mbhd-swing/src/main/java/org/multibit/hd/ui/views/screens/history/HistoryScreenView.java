@@ -33,7 +33,7 @@ import java.util.List;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> implements ActionListener {
 
@@ -123,8 +123,7 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
       // Check the search MaV model for a query and apply it
       List<HistoryEntry> historyEntries = getScreenModel().filterHistoryByContent(enterSearchMaV.getModel().getValue());
 
-      // Repopulate the table accordingly
-      historyTableModel.populateTableData(historyEntries);
+      update();
 
     }
   }
@@ -148,8 +147,7 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
     getScreenModel().getHistoryService().updateHistory(historyEntries);
     getScreenModel().getHistoryService().writeHistory();
 
-    // Repopulate the table accordingly
-    historyTableModel.populateTableData(getScreenModel().getHistory());
+    update();
 
   }
 
@@ -161,8 +159,7 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
   @Subscribe
   public void onHistoryChangedEvent(HistoryChangedEvent event) {
 
-    // Repopulate the table accordingly
-    historyTableModel.populateTableData(getScreenModel().getHistory());
+    update();
 
   }
 
@@ -240,6 +237,19 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
 
     };
 
+  }
+
+  private void update() {
+    if (historyTable != null) {
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+
+          // Repopulate the table accordingly
+          historyTableModel.setHistoryEntries(getScreenModel().getHistory(), true);
+        }
+      });
+    }
   }
 
 }

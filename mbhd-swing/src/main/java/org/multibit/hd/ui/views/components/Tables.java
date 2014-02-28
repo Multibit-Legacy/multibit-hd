@@ -130,7 +130,11 @@ public class Tables {
     table.setRowSorter(rowSorter);
 
     // Sort by date descending
-    Comparator<DateTime> comparator = newDateTimeComparator(SortOrder.DESCENDING, PaymentTableModel.DATE_COLUMN_INDEX, rowSorter);
+    List<TableRowSorter.SortKey> sortKeys = Lists.newArrayList();
+    sortKeys.add(new TableRowSorter.SortKey(PaymentTableModel.DATE_COLUMN_INDEX, SortOrder.DESCENDING));
+    rowSorter.setSortKeys(sortKeys);
+
+    Comparator<DateTime> comparator = newDateTimeComparator();
     rowSorter.setComparator(PaymentTableModel.DATE_COLUMN_INDEX, comparator);
 
     // TODO - also fiat column
@@ -182,7 +186,11 @@ public class Tables {
     table.setRowSorter(rowSorter);
 
     // Sort by date descending
-    Comparator<DateTime> comparator = newDateTimeComparator(SortOrder.DESCENDING, HistoryTableModel.CREATED_COLUMN_INDEX, rowSorter);
+    List<TableRowSorter.SortKey> sortKeys = Lists.newArrayList();
+    sortKeys.add(new TableRowSorter.SortKey(HistoryTableModel.CREATED_COLUMN_INDEX, SortOrder.DESCENDING));
+    rowSorter.setSortKeys(sortKeys);
+
+    Comparator<DateTime> comparator = newDateTimeComparator();
     rowSorter.setComparator(HistoryTableModel.CREATED_COLUMN_INDEX, comparator);
 
     justifyColumnHeaders(table);
@@ -191,53 +199,24 @@ public class Tables {
   }
 
   /**
-   * @param sortOrder   The sort order (ascending, descending)
-   * @param columnIndex The column index
-   * @param rowSorter   The row sorter to use
    *
    * @return A new DateTime comparator for use with a TableRowSorter
    */
-  private static Comparator<DateTime> newDateTimeComparator(final SortOrder sortOrder, int columnIndex, TableRowSorter<TableModel> rowSorter) {
-
-    List<TableRowSorter.SortKey> sortKeys = Lists.newArrayList();
-    sortKeys.add(new TableRowSorter.SortKey(columnIndex, sortOrder));
-
-    rowSorter.setSortKeys(sortKeys);
+  private static Comparator<DateTime> newDateTimeComparator() {
 
     return new Comparator<DateTime>() {
+
       @Override
       public int compare(DateTime o1, DateTime o2) {
-        if (o1 == null) {
-          if (o2 == null) {
-            return 0;
-          } else {
-            return 1;
-          }
-        } else {
-          if (o2 == null) {
-            return -1;
-          }
-        }
-        long n1 = o1.getMillis();
-        long n2 = o2.getMillis();
-        if (n1 == 0) {
-          // Object 1 has missing date.
+
+        if (o1 != null && o2 == null) {
           return 1;
         }
-        if (n2 == 0) {
-          // Object 2 has missing date.
-          return -1;
-        }
-        if (n1 < n2) {
-          return -1;
-        } else if (n1 > n2) {
-          return 1;
-        } else {
-          return 0;
-        }
+
+        return o1 != null ? o1.compareTo(o2) : 0;
+
       }
     };
-
   }
 
   private static void justifyColumnHeaders(JTable table) {

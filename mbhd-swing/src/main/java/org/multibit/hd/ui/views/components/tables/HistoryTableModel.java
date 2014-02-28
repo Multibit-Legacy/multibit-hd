@@ -42,7 +42,7 @@ public class HistoryTableModel extends AbstractTableModel {
 
     Preconditions.checkNotNull(historyEntries, "'contacts' must be present");
 
-    populateTableData(historyEntries);
+    setHistoryEntries(historyEntries, false);
 
   }
 
@@ -147,22 +147,12 @@ public class HistoryTableModel extends AbstractTableModel {
   }
 
   /**
-   * @param list The list of contacts to remove
-   */
-  public void removeHistory(List<HistoryEntry> list) {
-
-    historyEntries.removeAll(list);
-
-    populateTableData(historyEntries);
-
-  }
-
-  /**
    * <p>Populate the table data from the current history entries</p>
    *
-   * @param entries The contacts that will form the basis of the table model in the same order as presented
+   * @param entries              The history entries that will form the basis of the table model in the same order as presented
+   * @param fireTableDataChanged True if the table data changed event should be fired
    */
-  public void populateTableData(Collection<HistoryEntry> entries) {
+  public void setHistoryEntries(Collection<HistoryEntry> entries, boolean fireTableDataChanged) {
 
     this.historyEntries = Lists.newArrayList(entries);
 
@@ -183,6 +173,11 @@ public class HistoryTableModel extends AbstractTableModel {
       row++;
 
     }
+
+    if (fireTableDataChanged) {
+      fireTableDataChanged();
+    }
+
 
   }
 

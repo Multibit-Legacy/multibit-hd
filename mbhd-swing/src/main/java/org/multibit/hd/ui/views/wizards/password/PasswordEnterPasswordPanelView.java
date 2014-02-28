@@ -8,6 +8,7 @@ import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.Labels;
@@ -139,6 +140,10 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
         walletDataOptional.get().setPassword(password);
       }
     }
+
+    // Keep track of this
+    CoreServices.logHistory(Languages.safeText(MessageKey.CONFIRM_PASSWORD));
+
     return true;
   }
 

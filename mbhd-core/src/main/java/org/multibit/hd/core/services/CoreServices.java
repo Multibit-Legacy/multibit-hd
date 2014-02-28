@@ -209,16 +209,16 @@ public class CoreServices {
   /**
    * <p>Convenience method to log a new history event for the current wallet</p>
    *
-   * @param description The description
+   * @param localisedDescription The localised description text
    */
-  public static void logHistory(String description) {
+  public static void logHistory(String localisedDescription) {
 
     HistoryService historyService = CoreServices.getOrCreateHistoryService(
       Optional.of(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId())
     );
 
     // Create the history entry and persist it
-    HistoryEntry historyEntry = historyService.newHistoryEntry(description);
+    HistoryEntry historyEntry = historyService.newHistoryEntry(localisedDescription);
     historyService.writeHistory();
 
     // OK to let everyone else know
