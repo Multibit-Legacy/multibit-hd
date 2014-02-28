@@ -90,7 +90,7 @@ public class Tables {
     table.setShowHorizontalLines(true);
     table.setShowVerticalLines(false);
 
-    table.setRowHeight(40);
+    table.setRowHeight(MultiBitUI.NORMAL_PLUS_ICON_SIZE + SPACER);
     table.setAutoCreateRowSorter(true);
     table.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
     table.setRowSelectionAllowed(true);
@@ -130,7 +130,7 @@ public class Tables {
     table.setRowSorter(rowSorter);
 
     // Sort by date descending
-    Comparator<DateTime> comparator = newDateTimeComparator(SortOrder.DESCENDING, rowSorter);
+    Comparator<DateTime> comparator = newDateTimeComparator(SortOrder.DESCENDING, PaymentTableModel.DATE_COLUMN_INDEX, rowSorter);
     rowSorter.setComparator(PaymentTableModel.DATE_COLUMN_INDEX, comparator);
 
     // TODO - also fiat column
@@ -155,10 +155,11 @@ public class Tables {
     table.setShowHorizontalLines(true);
     table.setShowVerticalLines(false);
 
-    table.setRowHeight(MultiBitUI.NORMAL_ICON_SIZE + SPACER);
+    table.setRowHeight(MultiBitUI.NORMAL_PLUS_ICON_SIZE + SPACER);
     table.setAutoCreateRowSorter(true);
-    table.setRowSelectionAllowed(false);
-    table.setCellSelectionEnabled(false);
+    table.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+    table.setRowSelectionAllowed(true);
+    table.setColumnSelectionAllowed(false);
 
     // Apply theme
     table.setForeground(Themes.currentTheme.text());
@@ -181,7 +182,7 @@ public class Tables {
     table.setRowSorter(rowSorter);
 
     // Sort by date descending
-    Comparator<DateTime> comparator = newDateTimeComparator(SortOrder.DESCENDING, rowSorter);
+    Comparator<DateTime> comparator = newDateTimeComparator(SortOrder.DESCENDING, HistoryTableModel.CREATED_COLUMN_INDEX, rowSorter);
     rowSorter.setComparator(HistoryTableModel.CREATED_COLUMN_INDEX, comparator);
 
     justifyColumnHeaders(table);
@@ -190,12 +191,16 @@ public class Tables {
   }
 
   /**
+   * @param sortOrder   The sort order (ascending, descending)
+   * @param columnIndex The column index
+   * @param rowSorter   The row sorter to use
+   *
    * @return A new DateTime comparator for use with a TableRowSorter
    */
-  private static Comparator<DateTime> newDateTimeComparator(final SortOrder sortOrder, TableRowSorter<TableModel> rowSorter) {
+  private static Comparator<DateTime> newDateTimeComparator(final SortOrder sortOrder, int columnIndex, TableRowSorter<TableModel> rowSorter) {
 
     List<TableRowSorter.SortKey> sortKeys = Lists.newArrayList();
-    sortKeys.add(new TableRowSorter.SortKey(PaymentTableModel.DATE_COLUMN_INDEX, sortOrder));
+    sortKeys.add(new TableRowSorter.SortKey(columnIndex, sortOrder));
 
     rowSorter.setSortKeys(sortKeys);
 

@@ -52,6 +52,8 @@ public class ConfirmPasswordModel implements Model<String> {
       passwordsEqual = (result == 0);
     }
 
+    // TODO Consider a check for whitespace characters leading or trailing
+
     // Fire the UI events for "verification status" message and "next" button
     ViewEvents.fireVerificationStatusChangedEvent(panelName, passwordsEqual);
     ViewEvents.fireWizardButtonEnabledEvent(panelName, WizardButton.NEXT, passwordsEqual);

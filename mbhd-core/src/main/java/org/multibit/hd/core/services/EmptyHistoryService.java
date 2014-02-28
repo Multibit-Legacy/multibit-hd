@@ -2,7 +2,6 @@ package org.multibit.hd.core.services;
 
 import com.google.common.collect.Lists;
 import org.multibit.hd.core.dto.HistoryEntry;
-import org.multibit.hd.core.events.HistoryEvent;
 import org.multibit.hd.core.exceptions.HistoryLoadException;
 import org.multibit.hd.core.exceptions.HistorySaveException;
 
@@ -63,13 +62,6 @@ public class EmptyHistoryService implements HistoryService {
 
   @Override
   public void writeHistory() throws HistorySaveException {
-
-  }
-
-  @Override
-  public void onHistoryEvent(HistoryEvent event) {
-
-    newHistoryEntry(event.getDescription());
 
   }
 

@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.dto.WalletId;
-import org.multibit.hd.core.events.HistoryEvent;
 import org.multibit.hd.core.exceptions.HistoryLoadException;
 import org.multibit.hd.core.exceptions.HistorySaveException;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -213,15 +212,6 @@ public class PersistentHistoryService implements HistoryService {
     } catch (IOException e) {
       throw new HistorySaveException("Could not save history db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");
     }
-  }
-
-  @Override
-  public void onHistoryEvent(HistoryEvent event) {
-
-    // Ensure we create a new entry and persist it
-    newHistoryEntry(event.getDescription());
-    writeHistory();
-
   }
 
   @Override

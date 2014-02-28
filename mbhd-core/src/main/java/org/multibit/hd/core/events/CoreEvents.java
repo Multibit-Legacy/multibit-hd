@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import org.joda.money.BigMoney;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
+import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.services.CoreServices;
 import org.slf4j.Logger;
@@ -136,15 +137,15 @@ public class CoreEvents {
   }
 
   /**
-   * <p>Broadcast a new "history" event</p>
+   * <p>Broadcast a new "history changed" event</p>
    *
-   * @param description The description
+   * @param historyEntry The history entry from the History service
    */
-  public static void fireHistoryEvent(String description) {
+  public static void fireHistoryChangedEvent(HistoryEntry historyEntry) {
 
-    log.trace("Firing 'history' event");
+    log.trace("Firing 'history changed' event");
 
-    CoreServices.uiEventBus.post(new HistoryEvent(description));
+    CoreServices.uiEventBus.post(new HistoryChangedEvent(historyEntry));
   }
 
   /**

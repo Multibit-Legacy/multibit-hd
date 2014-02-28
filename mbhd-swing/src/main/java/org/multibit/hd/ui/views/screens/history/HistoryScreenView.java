@@ -3,7 +3,7 @@ package org.multibit.hd.ui.views.screens.history;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.HistoryEntry;
-import org.multibit.hd.core.events.HistoryEvent;
+import org.multibit.hd.core.events.HistoryChangedEvent;
 import org.multibit.hd.ui.events.view.ComponentChangedEvent;
 import org.multibit.hd.ui.events.view.WizardHideEvent;
 import org.multibit.hd.ui.i18n.MessageKey;
@@ -156,10 +156,10 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
   /**
    * <p>Handle the addition of data as a result of a "history" event</p>
    *
-   * @param event The "history" event
+   * @param event The "history changed" event
    */
   @Subscribe
-  public void onHistoryEvent(HistoryEvent event) {
+  public void onHistoryChangedEvent(HistoryChangedEvent event) {
 
     // Repopulate the table accordingly
     historyTableModel.populateTableData(getScreenModel().getHistory());

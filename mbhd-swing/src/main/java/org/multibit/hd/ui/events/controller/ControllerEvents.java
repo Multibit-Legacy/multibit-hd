@@ -57,6 +57,10 @@ public class ControllerEvents {
   public static void fireAddAlertEvent(AlertModel alertModel) {
     log.trace("Firing 'add alert' event");
     CoreServices.uiEventBus.post(new AddAlertEvent(alertModel));
+
+    // Keep track of this
+    CoreServices.logHistory("Added an alert: " + alertModel.getSeverity().name());
+
   }
 
   /**

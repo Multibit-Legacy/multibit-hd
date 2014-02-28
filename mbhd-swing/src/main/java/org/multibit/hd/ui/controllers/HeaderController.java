@@ -6,7 +6,6 @@ import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import org.joda.money.BigMoney;
 import org.multibit.hd.core.dto.WalletData;
-import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
 import org.multibit.hd.core.managers.WalletManager;
@@ -108,8 +107,6 @@ public class HeaderController {
 
     // The alert structure has changed so inform the view
     ViewEvents.fireAlertAddedEvent(alertModels.get(0));
-
-    CoreEvents.fireHistoryEvent("Added an alert: "+event.getAlertModel().getSeverity().name());
 
   }
 

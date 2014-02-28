@@ -1,8 +1,6 @@
 package org.multibit.hd.core.services;
 
-import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.dto.HistoryEntry;
-import org.multibit.hd.core.events.HistoryEvent;
 import org.multibit.hd.core.exceptions.HistoryLoadException;
 import org.multibit.hd.core.exceptions.HistorySaveException;
 
@@ -78,14 +76,6 @@ public interface HistoryService {
    * @throws HistorySaveException If something goes wrong
    */
   void writeHistory() throws HistorySaveException;
-
-  /**
-   * <p>Respond to a history event being created in the wider system</p>
-   *
-   * @param event The history event
-   */
-  @Subscribe
-  void onHistoryEvent(HistoryEvent event);
 
   /**
    * <p>Create some demonstration entries for testing purposes</p>

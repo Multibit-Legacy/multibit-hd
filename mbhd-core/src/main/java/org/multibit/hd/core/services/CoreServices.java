@@ -7,10 +7,12 @@ import com.google.common.eventbus.EventBus;
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.logging.LoggingFactory;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.core.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.utils.OSUtils;
@@ -202,5 +204,25 @@ public class CoreServices {
       // Return the existing or new contact service
       return contactServiceMap.get(walletId);
     }
+  }
+
+  /**
+   * <p>Convenience method to log a new history event for the current wallet</p>
+   *
+   * @param description The description
+   */
+  public static void logHistory(String description) {
+
+    HistoryService historyService = CoreServices.getOrCreateHistoryService(
+      Optional.of(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId())
+    );
+
+    // Create the history entry and persist it
+    HistoryEntry historyEntry = historyService.newHistoryEntry(description);
+    historyService.writeHistory();
+
+    // OK to let everyone else know
+    CoreEvents.fireHistoryChangedEvent(historyEntry);
+
   }
 }

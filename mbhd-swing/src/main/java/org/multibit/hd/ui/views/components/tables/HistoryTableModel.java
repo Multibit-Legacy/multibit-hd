@@ -6,7 +6,6 @@ import org.multibit.hd.core.dto.HistoryEntry;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -70,15 +69,7 @@ public class HistoryTableModel extends AbstractTableModel {
    * rather than a check box.
    */
   public Class getColumnClass(int c) {
-
-    if (c == CHECKBOX_COLUMN_INDEX) {
-      return Boolean.class;
-    } else if (c == CREATED_COLUMN_INDEX) {
-      return Date.class;
-    } else {
-      return String.class;
-    }
-
+    return getValueAt(0, c).getClass();
   }
 
   /**
@@ -183,7 +174,7 @@ public class HistoryTableModel extends AbstractTableModel {
       // Build row manually to allow for flexible column index reporting
       final Object[] rowData = new Object[COLUMN_COUNT];
       rowData[CHECKBOX_COLUMN_INDEX] = false;
-      rowData[CREATED_COLUMN_INDEX] = historyEntry.getCreated().toDate();
+      rowData[CREATED_COLUMN_INDEX] = historyEntry.getCreated();
       rowData[DESCRIPTION_COLUMN_INDEX] = historyEntry.getDescription();
       rowData[NOTES_COLUMN_INDEX] = historyEntry.getNotes().or("");
 
