@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components.renderers;
 
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.tables.StripedTable;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -16,8 +17,7 @@ import java.awt.*;
  */
 public class RAGStatusRenderer extends DefaultTableCellRenderer {
 
-  private JLabel label = new JLabel();
-  private int selectedRow;
+  private JLabel label = Labels.newBlankLabel();
 
   @Override
   public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
@@ -56,7 +56,6 @@ public class RAGStatusRenderer extends DefaultTableCellRenderer {
     }
 
     if (isSelected) {
-      selectedRow = row;
       label.setBackground(table.getSelectionBackground());
     } else {
       if (row % 2 == 1) {

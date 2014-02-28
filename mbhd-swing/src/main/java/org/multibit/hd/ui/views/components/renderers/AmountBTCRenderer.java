@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.components.renderers;
 import org.multibit.hd.ui.i18n.Formats;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.tables.StripedTable;
+import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -19,11 +20,6 @@ import java.math.BigInteger;
  */
 public class AmountBTCRenderer extends DefaultTableCellRenderer {
   JLabel label;
-
-  public static Color CREDIT_FOREGROUND_COLOR = Color.GREEN.darker().darker();
-  public static Color DEBIT_FOREGROUND_COLOR = Color.RED.darker();
-
-  private int selectedRow;
 
   public AmountBTCRenderer() {
     label = Labels.newBlankLabel();
@@ -42,22 +38,21 @@ public class AmountBTCRenderer extends DefaultTableCellRenderer {
       label.setText(balanceString + TrailingJustifiedDateRenderer.SPACER);
 
       if ((valueBigInteger.compareTo(BigInteger.ZERO) < 0)) {
-        // Debit.
+        // Debit
         if (isSelected) {
           label.setForeground(table.getSelectionForeground());
         } else {
-          label.setForeground(DEBIT_FOREGROUND_COLOR);
+          label.setForeground(Themes.currentTheme.debitText());
         }
       } else {
-        // Credit.
+        // Credit
         if (isSelected) {
           label.setForeground(table.getSelectionForeground());
         } else {
-          label.setForeground(CREDIT_FOREGROUND_COLOR);
+          label.setForeground(Themes.currentTheme.creditText());
         }
       }
       if (isSelected) {
-        selectedRow = row;
         label.setBackground(table.getSelectionBackground());
         label.setForeground(table.getSelectionForeground());
       } else {

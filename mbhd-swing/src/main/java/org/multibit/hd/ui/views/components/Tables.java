@@ -8,6 +8,7 @@ import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.tables.*;
+import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
@@ -59,6 +60,9 @@ public class Tables {
     table.setRowSelectionAllowed(false);
     table.setCellSelectionEnabled(false);
 
+    // Apply theme
+    table.setForeground(Themes.currentTheme.text());
+
     // Set preferred widths
     resizeColumn(table, ContactTableModel.CHECKBOX_COLUMN_INDEX, MultiBitUI.NORMAL_ICON_SIZE + SPACER);
     resizeColumn(table, ContactTableModel.GRAVATAR_COLUMN_INDEX, MultiBitUI.LARGE_ICON_SIZE + SPACER);
@@ -89,6 +93,9 @@ public class Tables {
     table.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
     table.setRowSelectionAllowed(true);
     table.setColumnSelectionAllowed(false);
+
+    // Apply theme
+    table.setForeground(Themes.currentTheme.text());
 
     // Date column
     TableColumn dateTableColumn = table.getColumnModel().getColumn(PaymentTableModel.DATE_COLUMN_INDEX);
@@ -146,6 +153,9 @@ public class Tables {
     table.setAutoCreateRowSorter(true);
     table.setRowSelectionAllowed(false);
     table.setCellSelectionEnabled(false);
+
+    // Apply theme
+    table.setForeground(Themes.currentTheme.text());
 
     // Date column
     TableColumn dateTableColumn = table.getColumnModel().getColumn(HistoryTableModel.CREATED_COLUMN_INDEX);

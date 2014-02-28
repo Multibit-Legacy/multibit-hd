@@ -202,4 +202,14 @@ public class LightTheme implements Theme {
     return text();
   }
 
+  @Override
+  public Color creditText() {
+    return new Color(0,200,0);
+  }
+
+  @Override
+  public Color debitText() {
+    return new Color(200,0,0);
+  }
+
 }

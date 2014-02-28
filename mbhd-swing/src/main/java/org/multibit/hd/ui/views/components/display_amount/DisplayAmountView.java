@@ -71,7 +71,7 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
       panel.add(secondaryBalanceLabel, "left,shrink,gap 0");
       panel.add(trailingSymbolLabel, "left,shrink,gap 0");
       panel.add(exchangeLabel, "left,shrink,gap 0");
-      panel.add(new JLabel(), "push,wrap"); // Provides a flexible column
+      panel.add(Labels.newBlankLabel(), "push,wrap"); // Provides a flexible column
     } else {
 
       panel.add(exchangeLabel, "right,shrink,gap 0");
@@ -79,7 +79,7 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
       panel.add(primaryBalanceLabel, "right,shrink,baseline");
       panel.add(secondaryBalanceLabel, "right,shrink,gap 0");
       panel.add(trailingSymbolLabel, "right,shrink,gap 0");
-      panel.add(new JLabel(), "push,wrap"); // Provides a flexible column
+      panel.add(Labels.newBlankLabel(), "push,wrap"); // Provides a flexible column
     }
 
     return panel;

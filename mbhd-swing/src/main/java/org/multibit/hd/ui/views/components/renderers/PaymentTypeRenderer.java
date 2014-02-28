@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.components.renderers;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.PaymentType;
 import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.tables.StripedTable;
 
 import javax.swing.*;
@@ -14,7 +15,7 @@ import java.awt.*;
  */
 public class PaymentTypeRenderer extends DefaultTableCellRenderer {
 
-  private JLabel label = new JLabel();
+  private JLabel label = Labels.newBlankLabel();
 
   @Override
   public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
@@ -52,7 +53,6 @@ public class PaymentTypeRenderer extends DefaultTableCellRenderer {
       label.setBackground(table.getSelectionBackground());
       label.setForeground(table.getSelectionForeground());
     } else {
-      label.setForeground(Color.BLACK); // TODO pick up from constants class
       if (row % 2 == 1) {
         label.setBackground(StripedTable.alternateColor);
       } else {

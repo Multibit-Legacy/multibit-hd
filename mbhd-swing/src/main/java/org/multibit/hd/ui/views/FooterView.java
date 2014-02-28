@@ -62,7 +62,7 @@ public class FooterView {
     progressBar.setEnabled(false);
     progressBar.setOpaque(false);
 
-    messageLabel = new JLabel();
+    messageLabel = Labels.newBlankLabel();
 
     // Label text and icon are different colours so must be separated
     statusLabel = Labels.newBlankLabel();

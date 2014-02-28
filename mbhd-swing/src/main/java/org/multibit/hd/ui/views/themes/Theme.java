@@ -178,4 +178,17 @@ public interface Theme {
    * @return The text of a pending alert
    */
   Color pendingAlertText();
+
+  /**
+   *
+   * @return The text of a credit entry in a payment screen (usually green or black)
+   */
+  Color creditText();
+
+  /**
+   *
+   * @return The text of a debit entry in a payment screen (usually red)
+   */
+  Color debitText();
+
 }

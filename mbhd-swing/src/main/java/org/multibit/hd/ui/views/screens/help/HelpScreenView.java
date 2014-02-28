@@ -46,6 +46,8 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel>  {
     );
 
     JPanel contentPanel = Panels.newPanel(layout);
+
+    // TODO Implement this
     contentPanel.add(new JLabel("Help"));
 
     return contentPanel;

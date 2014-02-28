@@ -61,6 +61,9 @@ public class PersistentHistoryService implements HistoryService {
 
     Preconditions.checkNotNull(walletId, "'walletId' must be present");
 
+    // Register for events
+    CoreServices.uiEventBus.register(this);
+
     // Work out where to writeContacts the contacts for this wallet id.
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
     String walletRoot = WalletManager.createWalletRoot(walletId);

@@ -204,4 +204,14 @@ public class DarkTheme implements Theme {
     return inverseText();
   }
 
+  @Override
+  public Color creditText() {
+    return new Color(0,200,0);
+  }
+
+  @Override
+  public Color debitText() {
+    return new Color(255,0,0);
+  }
+
 }

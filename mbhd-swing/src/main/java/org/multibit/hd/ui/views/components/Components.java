@@ -47,45 +47,6 @@ import java.util.List;
 public class Components {
 
   /**
-   * <p>A wallet detail panel provides a summary of the information contained within the wallet</p>
-   *
-   * @return A new wallet detail panel
-   */
-//  public static JPanel newWalletDetailPanel() {
-//
-//    MigLayout layout = new MigLayout(
-//            "fillx", // Layout
-//            "[]10[grow]", // Columns
-//            "[][][][]"  // Rows
-//    );
-//
-//    JPanel panel = Panels.newPanel(layout);
-//
-//    // TODO Add this to a wallet service
-//    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
-//      WalletData walletData = WalletManager.INSTANCE.getCurrentWalletData().get();
-//      String applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath();
-//      File walletFile = WalletManager.INSTANCE.getCurrentWalletFilename().get();
-//      String walletDirectory = walletFile.getParentFile().getName();
-//
-//      ContactService contactService = CoreServices.getOrCreateContactService(walletData.getWalletId());
-//      int contactCount = contactService.allContacts(1, 100).size();
-//
-//      // TODO Internationalize
-//      panel.add(new JLabel("Summary"), "wrap");
-//      panel.add(new JLabel("Application directory:"));
-//      panel.add(new JLabel(applicationDirectory), "push,wrap");
-//      panel.add(new JLabel("Wallet directory:"));
-//      panel.add(new JLabel(walletDirectory), "push,wrap");
-//      panel.add(new JLabel("Contacts:"));
-//      panel.add(new JLabel(String.valueOf(contactCount)), "push,wrap");
-//      panel.add(new JLabel("Transactions:"));
-//      panel.add(new JLabel("165"), "push,wrap");
-//    }
-//    return panel;
-//  }
-
-  /**
    * <p>A "wallet detail" panel provides summary details of the current wallet</p>
    *
    * @return A new "walletDetail" panel

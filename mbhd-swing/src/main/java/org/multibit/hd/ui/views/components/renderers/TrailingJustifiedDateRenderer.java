@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components.renderers;
 
 import org.joda.time.DateTime;
 import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.tables.StripedTable;
 
 import javax.swing.*;
@@ -28,7 +29,7 @@ public class TrailingJustifiedDateRenderer extends DefaultTableCellRenderer {
   public static final String SPACER = "   "; // 3 spaces
 
   public TrailingJustifiedDateRenderer() {
-    label = new JLabel();
+    label = Labels.newBlankLabel();
     longDateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", Languages.currentLocale());
     shortDateFormatter = new SimpleDateFormat("HH:mm", Languages.currentLocale());
   }

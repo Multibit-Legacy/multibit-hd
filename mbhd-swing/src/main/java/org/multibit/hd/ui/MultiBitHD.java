@@ -139,11 +139,6 @@ public class MultiBitHD {
     BackupManager.INSTANCE.initialise(applicationDataDirectory, null);
 
     if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
-      // TODO Remove this when the Contact screen is ready
-      CoreServices
-        .getOrCreateContactService(
-          Optional.of(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()
-          )).addDemoContacts();
 
       // Initialise the WalletService, which provides transaction information from the wallet
       walletService = CoreServices.newWalletService();
@@ -153,6 +148,9 @@ public class MultiBitHD {
         // Payments db did not load  TODO tell user or abort ??
         log.error(ple.getClass().getCanonicalName() + "" + ple.getMessage());
       }
+
+      // Create the history service for this wallet to catch any system events
+      CoreServices.getOrCreateHistoryService(Optional.of(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()));
     }
   }
 
