@@ -365,6 +365,8 @@ public class Buttons {
   public static JButton newQRCodeButton(Action action) {
 
     JButton button = newButton(action);
+
+    // Require this background color to ensure people can find the QR code icon quickly
     NimbusDecorator.applyThemeColor(
       Themes.currentTheme.readOnlyBackground(),
       button

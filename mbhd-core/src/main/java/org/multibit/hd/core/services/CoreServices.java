@@ -43,11 +43,6 @@ public class CoreServices {
   public static final ApplicationEventService applicationEventService;
 
   /**
-   * Keep track of history entries (e.g. tracking money, security, errors etc) across all wallets
-   */
-  public static final HistoryService historyService;
-
-  /**
    * Keep track of security events (e.g. debugger, file permissions etc) across all wallets
    */
   public static final SecurityCheckingService securityCheckingService;
@@ -57,11 +52,18 @@ public class CoreServices {
     // Order is important here
     applicationEventService = new ApplicationEventService();
     securityCheckingService = new SecurityCheckingService();
-    historyService = new PersistentHistoryService();
 
   }
 
+  /**
+   * Keeps track of all the contact services against hard and soft wallets
+   */
   private static final Map<WalletId, ContactService> contactServiceMap = Maps.newHashMap();
+
+  /**
+   * Keeps track of all the history services against hard and soft wallets
+   */
+  private static final Map<WalletId, HistoryService> historyServiceMap = Maps.newHashMap();
 
   /**
    * Utilities have a private constructor
@@ -148,15 +150,6 @@ public class CoreServices {
   }
 
   /**
-   * @return The history service singleton
-   */
-  public static HistoryService getHistoryService() {
-
-    return historyService;
-
-  }
-
-  /**
    * @return The security checking service singleton
    */
   public static SecurityCheckingService getSecurityCheckingService() {
@@ -164,6 +157,32 @@ public class CoreServices {
   }
 
   /**
+   * @param walletIdOptional The optional wallet ID, if absent an EmptyHistoryService will be returned (usually for testing)
+   *
+   * @return The history service for a wallet
+   */
+  public static HistoryService getOrCreateHistoryService(Optional<WalletId> walletIdOptional) {
+
+    Preconditions.checkNotNull(walletIdOptional, "'walletIdOptional' must be present");
+
+    if (!walletIdOptional.isPresent()) {
+      // No walletId loaded yet - return an EmptyContactService
+      return new EmptyHistoryService();
+    } else {
+      WalletId walletId = walletIdOptional.get();
+      // Check if the history service has been created for this wallet ID
+      if (!historyServiceMap.containsKey(walletId)) {
+        historyServiceMap.put(walletId, new PersistentHistoryService(walletId));
+      }
+
+      // Return the existing or new history service
+      return historyServiceMap.get(walletId);
+    }
+  }
+
+  /**
+   * @param walletIdOptional The optional wallet ID, if absent an EmptyContactService will be returned
+   *
    * @return The contact service for a wallet
    */
   public static ContactService getOrCreateContactService(Optional<WalletId> walletIdOptional) {

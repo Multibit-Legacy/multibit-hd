@@ -16,6 +16,7 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.services.HistoryService;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.controllers.HeaderController;
 import org.multibit.hd.ui.controllers.MainController;
@@ -126,6 +127,8 @@ public class ComponentTestBed {
     ContactService contactService = CoreServices.getOrCreateContactService(Optional.of(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()));
     contactService.addDemoContacts();
 
+    HistoryService historyService = CoreServices.getOrCreateHistoryService(Optional.of(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()));
+    historyService.addDemoHistory();
   }
 
   /**

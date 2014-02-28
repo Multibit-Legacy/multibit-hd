@@ -80,7 +80,7 @@ public interface HistoryService {
   void writeHistory() throws HistorySaveException;
 
   /**
-   * <p>Respond to a history event</p>
+   * <p>Respond to a history event being created in the wider system</p>
    *
    * @param event The history event
    */

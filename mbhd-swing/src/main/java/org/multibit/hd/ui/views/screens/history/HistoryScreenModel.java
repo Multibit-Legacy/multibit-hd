@@ -1,6 +1,9 @@
 package org.multibit.hd.ui.views.screens.history;
 
+import com.google.common.base.Optional;
 import org.multibit.hd.core.dto.HistoryEntry;
+import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.HistoryService;
 import org.multibit.hd.ui.views.screens.AbstractScreenModel;
@@ -26,7 +29,7 @@ public class HistoryScreenModel extends AbstractScreenModel {
     super(screen);
 
     // Provide an initial population of entries
-    this.historyService= CoreServices.getHistoryService();
+    this.historyService = CoreServices.getOrCreateHistoryService(getCurrentWalletId());
 
   }
 
@@ -48,5 +51,16 @@ public class HistoryScreenModel extends AbstractScreenModel {
   public HistoryService getHistoryService() {
     return historyService;
   }
+
+  // TODO Move this into a wallet service
+  private Optional<WalletId> getCurrentWalletId() {
+
+    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
+      return Optional.of(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId());
+    } else {
+      return Optional.absent();
+    }
+  }
+
 
 }

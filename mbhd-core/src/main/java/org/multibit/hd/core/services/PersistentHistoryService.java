@@ -4,11 +4,14 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.multibit.hd.core.dto.HistoryEntry;
+import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.events.HistoryEvent;
 import org.multibit.hd.core.exceptions.HistoryLoadException;
 import org.multibit.hd.core.exceptions.HistorySaveException;
 import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.store.HistoryProtobufSerializer;
+import org.multibit.hd.core.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,14 +52,27 @@ public class PersistentHistoryService implements HistoryService {
    */
   private HistoryProtobufSerializer protobufSerializer;
 
-  public PersistentHistoryService() {
+  /**
+   * <p>Create a HistoryService for a Wallet with the given walletId</p>
+   *
+   * <p>Reduced visibility constructor to prevent accidental instance creation outside of CoreServices.</p>
+   */
+  PersistentHistoryService(WalletId walletId) {
 
-    CoreServices.uiEventBus.register(this);
+    Preconditions.checkNotNull(walletId, "'walletId' must be present");
 
-    this.backingStoreFile = new File(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath() + File.separator + HISTORY_DATABASE_NAME);
+    // Work out where to writeContacts the contacts for this wallet id.
+    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+    String walletRoot = WalletManager.createWalletRoot(walletId);
+
+    File walletDirectory = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), walletRoot);
+
+    File historyDirectory = new File(walletDirectory.getAbsolutePath() + File.separator + HISTORY_DIRECTORY_NAME);
+    FileUtils.createDirectoryIfNecessary(historyDirectory);
+
+    this.backingStoreFile = new File(historyDirectory.getAbsolutePath() + File.separator + HISTORY_DATABASE_NAME);
 
     initialise();
-
   }
 
   /**
@@ -84,7 +100,7 @@ public class PersistentHistoryService implements HistoryService {
   @Override
   public HistoryEntry newHistoryEntry(String description) {
 
-    log.debug("New history event '{}'",description);
+    log.debug("New history event '{}'", description);
 
     HistoryEntry historyEntry = new HistoryEntry(UUID.randomUUID(), description);
 
@@ -199,7 +215,9 @@ public class PersistentHistoryService implements HistoryService {
   @Override
   public void onHistoryEvent(HistoryEvent event) {
 
+    // Ensure we create a new entry and persist it
     newHistoryEntry(event.getDescription());
+    writeHistory();
 
   }
 
@@ -214,19 +232,19 @@ public class PersistentHistoryService implements HistoryService {
     HistoryEntry history1 = newHistoryEntry("Something happened 1");
     history1.setNotes("This is a really long note that should span over several lines when finally rendered to the screen. It began with Alice Capital.");
 
-    HistoryEntry  history2 = newHistoryEntry("Something happened 2");
+    HistoryEntry history2 = newHistoryEntry("Something happened 2");
     history2.setNotes("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 
-    HistoryEntry  history3 = newHistoryEntry("Something happened 2");
+    HistoryEntry history3 = newHistoryEntry("Something happened 2");
     history2.setNotes("Charles Capital's note 1\n\nCharles Capital's note 2");
 
     // No email for Derek
-    HistoryEntry  history4 = newHistoryEntry("Something happened 2");
+    HistoryEntry history4 = newHistoryEntry("Something happened 2");
     history2.setNotes("Derek Capital's note 1\n\nDerek Capital's note 2");
 
-    HistoryEntry  history5 = newHistoryEntry("Something happened 2");
+    HistoryEntry history5 = newHistoryEntry("Something happened 2");
 
-    HistoryEntry  history6 = newHistoryEntry("Something happened 2");
+    HistoryEntry history6 = newHistoryEntry("Something happened 2");
 
   }
 
