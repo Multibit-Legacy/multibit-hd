@@ -31,6 +31,7 @@ public class HistoryTableModel extends AbstractTableModel {
    */
   private String[] columnNames = {
     " ", // Checkbox (wider than a star icon)
+    "Date",
     "Description",
     "Notes",
   };

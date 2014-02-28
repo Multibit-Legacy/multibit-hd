@@ -30,8 +30,6 @@ import java.util.Set;
  */
 public class Tables {
 
-  private static TableRowSorter<TableModel> rowSorter;
-
   private static int SPACER = 10;
 
   /**
@@ -43,6 +41,7 @@ public class Tables {
 
   /**
    * @param contacts The contacts to show
+   *
    * @return A new "contacts" striped table
    */
   public static StripedTable newContactsTable(List<Contact> contacts) {
@@ -63,11 +62,13 @@ public class Tables {
     // Apply theme
     table.setForeground(Themes.currentTheme.text());
 
+    // Orientation
+    table.applyComponentOrientation(Languages.currentComponentOrientation());
+
     // Set preferred widths
     resizeColumn(table, ContactTableModel.CHECKBOX_COLUMN_INDEX, MultiBitUI.NORMAL_ICON_SIZE + SPACER);
     resizeColumn(table, ContactTableModel.GRAVATAR_COLUMN_INDEX, MultiBitUI.LARGE_ICON_SIZE + SPACER);
 
-    table.applyComponentOrientation(Languages.currentComponentOrientation());
 
     justifyColumnHeaders(table);
 
@@ -76,6 +77,7 @@ public class Tables {
 
   /**
    * @param paymentData The payments to show
+   *
    * @return A new "payments" striped table
    */
   public static StripedTable newPaymentsTable(Set<PaymentData> paymentData) {
@@ -96,6 +98,9 @@ public class Tables {
 
     // Apply theme
     table.setForeground(Themes.currentTheme.text());
+
+    // Orientation
+    table.setComponentOrientation(Languages.currentComponentOrientation());
 
     // Date column
     TableColumn dateTableColumn = table.getColumnModel().getColumn(PaymentTableModel.DATE_COLUMN_INDEX);
@@ -121,11 +126,11 @@ public class Tables {
     resizeColumn(table, PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX, 120, 180);
 
     // Row sorter for date
-    rowSorter = new TableRowSorter<>(table.getModel());
+    TableRowSorter<TableModel> rowSorter = new TableRowSorter<>(table.getModel());
     table.setRowSorter(rowSorter);
 
     // Sort by date descending
-    Comparator<DateTime> comparator = newDateTimeComparator(SortOrder.DESCENDING);
+    Comparator<DateTime> comparator = newDateTimeComparator(SortOrder.DESCENDING, rowSorter);
     rowSorter.setComparator(PaymentTableModel.DATE_COLUMN_INDEX, comparator);
 
     // TODO - also fiat column
@@ -137,6 +142,7 @@ public class Tables {
 
   /**
    * @param historyEntries The history entries to show
+   *
    * @return A new "contacts" striped table
    */
   public static StripedTable newHistoryTable(List<HistoryEntry> historyEntries) {
@@ -157,6 +163,9 @@ public class Tables {
     // Apply theme
     table.setForeground(Themes.currentTheme.text());
 
+    // Orientation
+    table.applyComponentOrientation(Languages.currentComponentOrientation());
+
     // Date column
     TableColumn dateTableColumn = table.getColumnModel().getColumn(HistoryTableModel.CREATED_COLUMN_INDEX);
     dateTableColumn.setCellRenderer(Renderers.newTrailingJustifiedDateRenderer());
@@ -165,8 +174,15 @@ public class Tables {
     // Set preferred widths
     resizeColumn(table, HistoryTableModel.CHECKBOX_COLUMN_INDEX, MultiBitUI.NORMAL_ICON_SIZE + SPACER);
     resizeColumn(table, HistoryTableModel.DESCRIPTION_COLUMN_INDEX, MultiBitUI.HUGE_ICON_SIZE + SPACER);
+    resizeColumn(table, HistoryTableModel.NOTES_COLUMN_INDEX, MultiBitUI.HUGE_ICON_SIZE + SPACER);
 
-    table.applyComponentOrientation(Languages.currentComponentOrientation());
+    // Row sorter for date
+    TableRowSorter<TableModel> rowSorter = new TableRowSorter<>(table.getModel());
+    table.setRowSorter(rowSorter);
+
+    // Sort by date descending
+    Comparator<DateTime> comparator = newDateTimeComparator(SortOrder.DESCENDING, rowSorter);
+    rowSorter.setComparator(HistoryTableModel.CREATED_COLUMN_INDEX, comparator);
 
     justifyColumnHeaders(table);
 
@@ -176,7 +192,7 @@ public class Tables {
   /**
    * @return A new DateTime comparator for use with a TableRowSorter
    */
-  private static Comparator<DateTime> newDateTimeComparator(final SortOrder sortOrder) {
+  private static Comparator<DateTime> newDateTimeComparator(final SortOrder sortOrder, TableRowSorter<TableModel> rowSorter) {
 
     List<TableRowSorter.SortKey> sortKeys = Lists.newArrayList();
     sortKeys.add(new TableRowSorter.SortKey(PaymentTableModel.DATE_COLUMN_INDEX, sortOrder));
@@ -242,9 +258,11 @@ public class Tables {
    * @param maxWidth       The maximum width
    */
   private static void resizeColumn(StripedTable table, int columnIndex, int preferredWidth, int maxWidth) {
+
     String id = table.getColumnName(columnIndex);
     table.getColumn(id).setPreferredWidth(preferredWidth);
     table.getColumn(id).setMaxWidth(maxWidth);
+
   }
 }
 
