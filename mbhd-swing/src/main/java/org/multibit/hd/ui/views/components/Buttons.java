@@ -365,6 +365,10 @@ public class Buttons {
   public static JButton newQRCodeButton(Action action) {
 
     JButton button = newButton(action);
+    NimbusDecorator.applyThemeColor(
+      Themes.currentTheme.readOnlyBackground(),
+      button
+    );
 
     Icon enabledIcon = Images.newQRCodeIcon();
 
