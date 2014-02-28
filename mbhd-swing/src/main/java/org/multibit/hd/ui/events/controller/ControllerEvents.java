@@ -19,7 +19,7 @@ import java.util.Locale;
  * low level event (such as a mouse click) will initiate it.</p>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class ControllerEvents {
 
@@ -39,9 +39,6 @@ public class ControllerEvents {
   public static void fireChangeLocaleEvent(Locale locale) {
     log.trace("Firing 'change locale' event");
     CoreServices.uiEventBus.post(new ChangeLocaleEvent(locale));
-
-    // Keep track of this
-    CoreServices.logHistory("Changed locale: " + locale.toString());
   }
 
   /**
@@ -64,7 +61,7 @@ public class ControllerEvents {
     CoreServices.uiEventBus.post(new AddAlertEvent(alertModel));
 
     // Keep track of this
-    CoreServices.logHistory(Languages.safeText(MessageKey.SHOW_ALERT) + alertModel.getSeverity().name());
+    CoreServices.logHistory(Languages.safeText(MessageKey.SHOW_ALERT) + " " + alertModel.getLocalisedMessage());
 
   }
 
