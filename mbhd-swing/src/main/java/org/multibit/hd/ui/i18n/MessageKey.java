@@ -185,9 +185,6 @@ public enum MessageKey {
   SEED_PRINT_NOTE_3("seed_print_note_3"),
   SEED_PRINT_NOTE_4("seed_print_note_4"),
 
-  DEBUGGER_WARNING_NOTE_1("debugger_warning_note_1"),
-  DEBUGGER_WARNING_NOTE_2("debugger_warning_note_2"),
-
   SEED_WARNING_NOTE_1("seed_warning_note_1"),
   SEED_WARNING_NOTE_2("seed_warning_note_2"),
   SEED_WARNING_NOTE_3("seed_warning_note_3"),
