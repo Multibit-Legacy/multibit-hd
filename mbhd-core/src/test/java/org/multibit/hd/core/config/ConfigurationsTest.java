@@ -37,7 +37,7 @@ public class ConfigurationsTest {
     assertThat(configuration.getBitcoinConfiguration().getBitcoinSymbol()).isEqualTo("MICON");
 
     // Internationalisation
-    assertThat(configuration.getLocale().getLanguage()).isEqualTo("en_GB");
+    assertThat(configuration.getLocale().getLanguage()).isEqualTo("en");
     assertThat(configuration.getI18NConfiguration().getDecimalSeparator()).isEqualTo('.');
     assertThat(configuration.getI18NConfiguration().getGroupingSeparator()).isEqualTo(',');
     assertThat(configuration.getI18NConfiguration().isCurrencySymbolLeading()).isTrue();
