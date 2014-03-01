@@ -23,7 +23,7 @@ public class I18NConfiguration {
 
   private Character groupingSeparator;
 
-  private Locale locale = Locale.getDefault();
+  private Locale locale;
 
   private boolean currencySymbolLeading = true;
 
@@ -34,9 +34,20 @@ public class I18NConfiguration {
 
   public I18NConfiguration() {
 
-    // Get the decimal and grouping separators for the current locale
-    DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getInstance();
+    this(Locale.getDefault());
+
+  }
+
+  /**
+   * @param locale The locale on which to set defaults
+   */
+  public I18NConfiguration(Locale locale) {
+    this.locale = locale;
+
+    // Get the decimal and grouping separators for the given locale
+    DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
     DecimalFormatSymbols symbols = decimalFormat.getDecimalFormatSymbols();
+
     decimalSeparator = symbols.getDecimalSeparator();
     groupingSeparator = symbols.getGroupingSeparator();
 
@@ -100,7 +111,7 @@ public class I18NConfiguration {
   }
 
   /**
-   * @return The local currency unit
+   * @return The local currency unit (e.g. USD, GBP etc for use with local currencies in Joda Money)
    */
   public CurrencyUnit getLocalCurrencyUnit() {
     return localCurrencyUnit;
@@ -132,16 +143,15 @@ public class I18NConfiguration {
   }
 
   /**
-   *
    * @param value The string representation of the locale (e.g. "en_GB" etc)
    */
   public void setLocale(String value) {
 
-    Preconditions.checkNotNull(value,"'value' must be present");
+    Preconditions.checkNotNull(value, "'value' must be present");
 
     String[] parameters = value.split("_");
 
-    Preconditions.checkState(parameters.length > 0,"'value' must not be empty");
+    Preconditions.checkState(parameters.length > 0, "'value' must not be empty");
 
     final Locale newLocale;
 
@@ -156,7 +166,7 @@ public class I18NConfiguration {
         newLocale = new Locale(parameters[0], parameters[1], parameters[2]);
         break;
       default:
-        throw new IllegalArgumentException("Unknown locale descriptor: "+value);
+        throw new IllegalArgumentException("Unknown locale descriptor: " + value);
     }
 
     setLocale(newLocale);

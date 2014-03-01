@@ -1,6 +1,8 @@
 package org.multibit.hd.ui.views.wizards;
 
 import com.google.common.base.Preconditions;
+import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.config.I18NConfiguration;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactState;
@@ -161,6 +163,9 @@ public class Wizards {
 
   public static I18NSettingsWizard newI18NSettingsWizard() {
 
-    return new I18NSettingsWizard(new I18NSettingsWizardModel(I18NSettingsState.I18N_ENTER_DETAILS));
+    // Ensure we work with a copy of the current configuration in case of cancellation
+    I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration().deepCopy();
+
+    return new I18NSettingsWizard(new I18NSettingsWizardModel(I18NSettingsState.I18N_ENTER_DETAILS, i18nConfiguration));
   }
 }

@@ -2,7 +2,6 @@ package org.multibit.hd.ui.i18n;
 
 import com.google.common.base.Preconditions;
 import org.joda.money.BigMoney;
-import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.I18NConfiguration;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.core.utils.Satoshis;
@@ -28,19 +27,19 @@ public class Formats {
    * <p>For example, 12345.6789 becomes "12,345.67", "89" </p>
    * <p>The amount will be adjusted by the symbolic multiplier from the current confiuration</p>
    *
-   * @param satoshis The amount in satoshis
+   * @param satoshis          The amount in satoshis
+   * @param i18nConfiguration The I18NConfiguration to use as the basis for presentation
    *
    * @return The left [0] and right [1] components suitable for presentation as a balance with no symbolic decoration
    */
-  public static String[] formatSatoshisAsSymbolic(BigInteger satoshis) {
+  public static String[] formatSatoshisAsSymbolic(BigInteger satoshis, I18NConfiguration i18nConfiguration) {
 
     Preconditions.checkNotNull(satoshis, "'satoshis' must be present");
+    Preconditions.checkNotNull(i18nConfiguration, "'i18nConfiguration' must be present");
 
-    I18NConfiguration configuration = Configurations.currentConfiguration.getI18NConfiguration();
+    Locale currentLocale = i18nConfiguration.getLocale();
 
-    Locale currentLocale = configuration.getLocale();
-
-    DecimalFormatSymbols dfs = configureDecimalFormatSymbols(configuration, currentLocale);
+    DecimalFormatSymbols dfs = configureDecimalFormatSymbols(i18nConfiguration, currentLocale);
     DecimalFormat localFormat = configureBitcoinDecimalFormat(dfs);
 
     // Apply formatting to the symbolic amount
@@ -75,21 +74,21 @@ public class Formats {
   /**
    * <p>Provide a simple representation for a local currency amount.</p>
    *
-   * @param amount The amount as a plain number (no multipliers)
+   * @param amount            The amount as a plain number (no multipliers)
+   * @param i18nConfiguration The I18NConfiguration to use as the basis for presentation
    *
    * @return The local currency representation with no symbolic decoration
    */
-  public static String formatLocalAmount(BigMoney amount) {
+  public static String formatLocalAmount(BigMoney amount, I18NConfiguration i18nConfiguration) {
 
     if (amount == null) {
       return "";
     }
-    I18NConfiguration configuration = Configurations.currentConfiguration.getI18NConfiguration();
 
-    Locale currentLocale = configuration.getLocale();
+    Locale currentLocale = i18nConfiguration.getLocale();
 
-    DecimalFormatSymbols dfs = configureDecimalFormatSymbols(configuration, currentLocale);
-    DecimalFormat localFormat = configureLocalDecimalFormat(dfs);
+    DecimalFormatSymbols dfs = configureDecimalFormatSymbols(i18nConfiguration, currentLocale);
+    DecimalFormat localFormat = configureLocalDecimalFormat(dfs, i18nConfiguration);
 
     return localFormat.format(amount.getAmount());
 
@@ -118,19 +117,20 @@ public class Formats {
   }
 
   /**
-   * @param dfs The decimal format symbols
+   * @param dfs               The decimal format symbols
+   * @param i18nConfiguration The I18NConfiguration to use as the basis for presentation
    *
    * @return A decimal format suitable for local currency balance representation
    */
-  private static DecimalFormat configureLocalDecimalFormat(DecimalFormatSymbols dfs) {
+  private static DecimalFormat configureLocalDecimalFormat(DecimalFormatSymbols dfs, I18NConfiguration i18nConfiguration) {
 
     DecimalFormat format = new DecimalFormat();
 
     format.setDecimalFormatSymbols(dfs);
 
     format.setMinimumIntegerDigits(1);
-    format.setMaximumFractionDigits(Configurations.currentConfiguration.getI18NConfiguration().getLocalDecimalPlaces());
-    format.setMinimumFractionDigits(Configurations.currentConfiguration.getI18NConfiguration().getLocalDecimalPlaces());
+    format.setMaximumFractionDigits(i18nConfiguration.getLocalDecimalPlaces());
+    format.setMinimumFractionDigits(i18nConfiguration.getLocalDecimalPlaces());
 
     format.setDecimalSeparatorAlwaysShown(true);
 

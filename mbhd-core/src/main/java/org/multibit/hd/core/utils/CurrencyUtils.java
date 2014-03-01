@@ -63,20 +63,20 @@ public class CurrencyUtils {
   }
 
   /**
-   * @return The current local currency ISO-4217 3 letter code (e.g. "USD")
-   */
-  public static String currentCode() {
-
-    return currentUnit().getCode();
-
-  }
-
-  /**
    * @return The current local currency unit
    */
   public static CurrencyUnit currentUnit() {
 
     return Configurations.currentConfiguration.getI18NConfiguration().getLocalCurrencyUnit();
+
+  }
+
+  /**
+   * @return The current local currency ISO-4217 3 letter code (e.g. "USD")
+   */
+  public static String currentCode() {
+
+    return currentUnit().getCode();
 
   }
 

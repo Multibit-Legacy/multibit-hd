@@ -33,19 +33,20 @@ public class Languages {
   private static final String LANGUAGE_CHOICE_TEMPLATE = "showPreferencesPanel.language.%d";
 
   /**
-   * The 2-letter short language code suitable for use with Locale
-   * The ordering is consistent with the presentation of the language
-   * list within the resource bundle, but this list is 0-based
+   * <p>The 2-letter short language code and 2-letter region code suitable for use with Locale</p>
+   * <p>The ordering is consistent with the presentation of the language list within the resource bundle,
+   * but this list is 0-based</p>
+   * <p>Language_Country is required to support detection of currencies in Joda Money through locale</p>
    */
   private static final String[] LANGUAGE_CODES = new String[]{
     // 0 - 9
-    "en", "es", "ru", "sv", "no", "it", "fr", "de", "pt", "hi",
+    "en_US", "es_ES", "ru_RU", "sv_SV", "no_NO", "it_IT", "fr_FR", "de_DE", "pt_PT", "hi_IN",
     // 10 - 19
-    "th", "nl", "zh", "ja", "ar", "ko", "lv", "tr", "fi", "pl",
+    "th_TH", "nl_NL", "zh_CN", "ja_JP", "ar_AR", "ko_KR", "lv_LV", "tr_TR", "fi_FI", "pl_PL",
     // 20 - 29
-    "hr", "hu", "el", "da", "eo", "fa", "he", "sk", "cs", "id",
+    "hr_HR", "hu_HU", "el_GR", "da_DK", "eo_ES", "fa_IR", "he_IL", "sk_SK", "cs_CZ", "id_ID",
     // 30 - 35
-    "sl", "ta", "ro", "af", "tl", "sw",
+    "sl_SI", "ta_LK", "ro_RO", "af_AF", "tl_PH", "sw_KE",
   };
 
   /**
@@ -96,8 +97,8 @@ public class Languages {
 
     String separator = String.valueOf(symbols.getDecimalSeparator());
 
-    return new String[] {
-      Languages.append(separator, Languages.safeText(MessageKey.DECIMAL_DEFAULT)," "),
+    return new String[]{
+      Languages.append(separator, Languages.safeText(MessageKey.DECIMAL_DEFAULT), " "),
       Languages.safeText(MessageKey.DECIMAL_COMMA),
       Languages.safeText(MessageKey.DECIMAL_POINT),
       Languages.safeText(MessageKey.DECIMAL_SPACE),
@@ -118,7 +119,7 @@ public class Languages {
 
     String separator = String.valueOf(symbols.getGroupingSeparator());
 
-    return new String[] {
+    return new String[]{
       Languages.append(separator, Languages.safeText(MessageKey.DECIMAL_DEFAULT), " "),
       Languages.safeText(MessageKey.DECIMAL_COMMA),
       Languages.safeText(MessageKey.DECIMAL_POINT),
@@ -138,15 +139,36 @@ public class Languages {
   }
 
   /**
-   * @param code The 2 letter ISO code of the language
+   * @param value The encoding of the locale (e.g. "ll", "ll_rr", "ll_rr_vv")
    *
    * @return A new resource bundle based on the locale
    */
-  public static Locale newLocaleFromCode(String code) {
+  public static Locale newLocaleFromCode(String value) {
 
-    Preconditions.checkNotNull(code, "'code' must be present");
+    Preconditions.checkNotNull(value, "'value' must be present");
 
-    return new Locale(code);
+    String[] parameters = value.split("_");
+
+    Preconditions.checkState(parameters.length > 0, "'value' must not be empty");
+
+    final Locale newLocale;
+
+    switch (parameters.length) {
+      case 1:
+        newLocale = new Locale(parameters[0]);
+        break;
+      case 2:
+        newLocale = new Locale(parameters[0], parameters[1]);
+        break;
+      case 3:
+        newLocale = new Locale(parameters[0], parameters[1], parameters[2]);
+        break;
+      default:
+        throw new IllegalArgumentException("Unknown locale descriptor: " + value);
+    }
+
+    return newLocale;
+
   }
 
   /**

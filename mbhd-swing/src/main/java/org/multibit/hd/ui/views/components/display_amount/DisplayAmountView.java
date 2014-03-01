@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components.display_amount;
 
+import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.I18NConfiguration;
 import org.multibit.hd.core.utils.CurrencyUtils;
@@ -97,8 +98,10 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
    */
   public void updateView(I18NConfiguration i18nConfiguration) {
 
+    Preconditions.checkNotNull(i18nConfiguration, "'i18nConfiguration' must be present");
+
     // Display using the symbolic amount
-    String[] bitcoinDisplay = Formats.formatSatoshisAsSymbolic(getModel().get().getSatoshis());
+    String[] bitcoinDisplay = Formats.formatSatoshisAsSymbolic(getModel().get().getSatoshis(), i18nConfiguration);
 
     if (i18nConfiguration.isCurrencySymbolLeading()) {
       handleLeadingSymbol();
@@ -112,7 +115,7 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
     String localSymbol = CurrencyUtils.currentSymbol();
 
     if (getModel().get().isLocalAmountVisible()) {
-      String localDisplay = Formats.formatLocalAmount(getModel().get().getLocalAmount());
+      String localDisplay = Formats.formatLocalAmount(getModel().get().getLocalAmount(), i18nConfiguration);
       if (getModel().get().getRateProvider().isPresent()) {
         // Have a provider
         exchangeLabel.setText(

@@ -120,7 +120,9 @@ public class ComboBoxes {
     comboBox.setSelectedIndex(Languages.getIndexFromLocale(Languages.currentLocale()));
 
     // Add the listener at the end to avoid false events
+    comboBox.setActionCommand("languages");
     comboBox.addActionListener(listener);
+
 
     return comboBox;
 
@@ -139,6 +141,7 @@ public class ComboBoxes {
     //comboBox.setSelectedIndex(Configurations.getIndexFromLocale(Languages.currentLocale()));
 
     // Add the listener at the end to avoid false events
+    comboBox.setActionCommand("decimal");
     comboBox.addActionListener(listener);
 
     return comboBox;
@@ -158,6 +161,7 @@ public class ComboBoxes {
     //comboBox.setSelectedIndex(Configurations.getIndexFromLocale(Languages.currentLocale()));
 
     // Add the listener at the end to avoid false events
+    comboBox.setActionCommand("grouping");
     comboBox.addActionListener(listener);
 
     return comboBox;

@@ -1,14 +1,12 @@
 package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.xeiam.xchange.currency.Currencies;
 import com.xeiam.xchange.dto.marketdata.Ticker;
 import com.xeiam.xchange.service.polling.PollingMarketDataService;
 import org.joda.money.BigMoney;
-import org.joda.money.CurrencyUnit;
-import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.utils.CurrencyUtils;
 import org.multibit.hd.core.utils.Dates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,16 +68,12 @@ public class ExchangeTickerService extends AbstractService {
 
       private BigMoney previous;
 
-      private CurrencyUnit currencyUnit = Configurations.currentConfiguration.getI18NConfiguration().getLocalCurrencyUnit();
-
       public void run() {
-
-        Preconditions.checkNotNull(currencyUnit, "'currencyUnit' must be present");
 
         // Get the latest ticker data showing BTC to current currency
         Ticker ticker;
         try {
-          ticker = pollingMarketDataService.getTicker(Currencies.BTC, currencyUnit.getCurrencyCode());
+          ticker = pollingMarketDataService.getTicker(Currencies.BTC, CurrencyUtils.currentCode());
 
           if (previous == null || !ticker.getLast().isEqual(previous)) {
 

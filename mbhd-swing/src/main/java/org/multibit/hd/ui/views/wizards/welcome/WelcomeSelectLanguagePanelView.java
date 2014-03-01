@@ -113,7 +113,7 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
   public void actionPerformed(ActionEvent e) {
 
     JComboBox source = (JComboBox) e.getSource();
-    localeCode = String.valueOf(source.getSelectedItem()).substring(0, 2);
+    localeCode = String.valueOf(source.getSelectedItem()).substring(0, 5);
 
     Locale locale = Languages.newLocaleFromCode(localeCode);
 

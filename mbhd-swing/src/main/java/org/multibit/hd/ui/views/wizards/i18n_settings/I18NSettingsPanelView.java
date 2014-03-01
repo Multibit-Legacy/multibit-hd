@@ -37,8 +37,6 @@ import java.util.Locale;
 
 public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsWizardModel, I18NSettingsPanelModel> implements ActionListener {
 
-  private String localeCode = Languages.currentLocale().getLanguage();
-
   // Panel specific components
   private JComboBox<String> languagesComboBox;
   private JComboBox<String> decimalComboBox;
@@ -88,7 +86,7 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
     Preconditions.checkNotNull(locale, "'locale' cannot be empty");
 
     displayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT);
-    displayAmountMaV.getModel().setSatoshis(BigInteger.valueOf(1_234_456_789));
+    displayAmountMaV.getModel().setSatoshis(BigInteger.valueOf(1_234_567_890_123_456L));
     displayAmountMaV.getModel().setLocalAmountVisible(false);
 
     languagesComboBox = ComboBoxes.newLanguagesComboBox(this);
@@ -160,20 +158,81 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
 
   }
 
+
   /**
-   * <p>Handle the change locale action event</p>
+   * <p>Handle one of the combo boxes changing</p>
    *
    * @param e The action event
    */
   @Override
   public void actionPerformed(ActionEvent e) {
 
-    JComboBox source = (JComboBox) e.getSource();
-    localeCode = String.valueOf(source.getSelectedItem()).substring(0, 2);
-
-    // TODO Provide a demonstration panel containing a Bitcoin amount with language
+    if ("languages".equals(e.getActionCommand())) {
+      handleLanguageSelection(e);
+    }
+    if ("decimal".equals(e.getActionCommand())) {
+      handleDecimalSelection(e);
+    }
+    if ("grouping".equals(e.getActionCommand())) {
+      handleGroupingSelection(e);
+    }
 
   }
 
+  /**
+   * <p>The language selection has changed</p>
+   *
+   * @param e The action event
+   */
+  private void handleLanguageSelection(ActionEvent e) {
+
+    JComboBox source = (JComboBox) e.getSource();
+    String localeCode = String.valueOf(source.getSelectedItem()).substring(0, 5);
+
+    Locale locale = Languages.newLocaleFromCode(localeCode);
+
+    // Create a new configuration to reset the separators
+    I18NConfiguration i18nConfiguration = new I18NConfiguration(locale);
+
+    // Update the model
+    getWizardModel().setI18nConfiguration(i18nConfiguration);
+
+    displayAmountMaV.getView().updateView(getWizardModel().getI18nConfiguration());
+
+  }
+
+  /**
+   * <p>The decimal separator selection has changed</p>
+   *
+   * @param e The action event
+   */
+  private void handleDecimalSelection(ActionEvent e) {
+
+    JComboBox source = (JComboBox) e.getSource();
+    Character decimal = String.valueOf(source.getSelectedItem()).charAt(0);
+
+    // Update the model
+    getWizardModel().getI18nConfiguration().setDecimalSeparator(decimal);
+
+    displayAmountMaV.getView().updateView(getWizardModel().getI18nConfiguration());
+
+  }
+
+  /**
+   * <p>The grouping separator selection has changed</p>
+   *
+   * @param e The action event
+   */
+  private void handleGroupingSelection(ActionEvent e) {
+
+    JComboBox source = (JComboBox) e.getSource();
+    Character grouping = String.valueOf(source.getSelectedItem()).charAt(0);
+
+    // Update the model
+    getWizardModel().getI18nConfiguration().setGroupingSeparator(grouping);
+
+    displayAmountMaV.getView().updateView(getWizardModel().getI18nConfiguration());
+
+  }
 
 }

@@ -1,5 +1,7 @@
 package org.multibit.hd.ui.views.components.renderers;
 
+import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.config.I18NConfiguration;
 import org.multibit.hd.ui.i18n.Formats;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.tables.StripedTable;
@@ -32,9 +34,15 @@ public class AmountBTCRenderer extends DefaultTableCellRenderer {
     label.setBorder(new EmptyBorder(new Insets(0, TrailingJustifiedDateRenderer.TABLE_BORDER, 1, TrailingJustifiedDateRenderer.TABLE_BORDER)));
 
     if (value instanceof BigInteger) {
+
+      // Do the Bitcoin processing
+
       BigInteger valueBigInteger = (BigInteger) value;
-      String[] balanceArray = Formats.formatSatoshisAsSymbolic(valueBigInteger);
+      I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration();
+
+      String[] balanceArray = Formats.formatSatoshisAsSymbolic(valueBigInteger, i18nConfiguration);
       String balanceString = balanceArray[0] + balanceArray[1];
+
       label.setText(balanceString + TrailingJustifiedDateRenderer.SPACER);
 
       if ((valueBigInteger.compareTo(BigInteger.ZERO) < 0)) {
