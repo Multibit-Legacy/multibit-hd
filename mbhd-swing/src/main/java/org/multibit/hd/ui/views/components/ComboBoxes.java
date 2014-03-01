@@ -17,6 +17,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * <p>Utility to provide the following to UI:</p>
@@ -45,7 +46,7 @@ public class ComboBoxes {
     JComboBox<T> comboBox = new JComboBox<>(items);
 
     // Required to match icon button heights
-    comboBox.setMinimumSize(new Dimension(100, MultiBitUI.NORMAL_ICON_SIZE + 14));
+    comboBox.setMinimumSize(new Dimension(50, MultiBitUI.NORMAL_ICON_SIZE + 14));
 
     // Required to blend in with panel
     comboBox.setBackground(Themes.currentTheme.detailPanelBackground());
@@ -110,14 +111,15 @@ public class ComboBoxes {
 
   /**
    * @param listener The action listener to alert when the selection is made
+   * @param locale   The locale to use
    *
    * @return A new "language" combo box
    */
-  public static JComboBox<String> newLanguagesComboBox(ActionListener listener) {
+  public static JComboBox<String> newLanguagesComboBox(ActionListener listener, Locale locale) {
 
-    JComboBox<String> comboBox = newReadOnlyComboBox(Languages.getLanguageNames(true));
+    JComboBox<String> comboBox = newReadOnlyComboBox(Languages.getLanguageNames(true, locale));
 
-    comboBox.setSelectedIndex(Languages.getIndexFromLocale(Languages.currentLocale()));
+    comboBox.setSelectedIndex(Languages.getIndexFromLocale(locale));
 
     // Add the listener at the end to avoid false events
     comboBox.setActionCommand("languages");
@@ -130,12 +132,13 @@ public class ComboBoxes {
 
   /**
    * @param listener The action listener to alert when the selection is made
+   * @param locale   The locale to use
    *
    * @return A new "decimal" combo box
    */
-  public static JComboBox<String> newDecimalComboBox(ActionListener listener) {
+  public static JComboBox<String> newDecimalComboBox(ActionListener listener, Locale locale) {
 
-    JComboBox<String> comboBox = newReadOnlyComboBox(Languages.getDecimalSeparators());
+    JComboBox<String> comboBox = newReadOnlyComboBox(Languages.getDecimalSeparators(locale));
 
     // TODO Determine the current index
     //comboBox.setSelectedIndex(Configurations.getIndexFromLocale(Languages.currentLocale()));
@@ -150,12 +153,13 @@ public class ComboBoxes {
 
   /**
    * @param listener The action listener to alert when the selection is made
+   * @param locale   The locale to use
    *
    * @return A new "grouping" combo box
    */
-  public static JComboBox<String> newGroupingComboBox(ActionListener listener) {
+  public static JComboBox<String> newGroupingComboBox(ActionListener listener, Locale locale) {
 
-    JComboBox<String> comboBox = newReadOnlyComboBox(Languages.getGroupingSeparators());
+    JComboBox<String> comboBox = newReadOnlyComboBox(Languages.getGroupingSeparators(locale));
 
     // TODO Determine the current index
     //comboBox.setSelectedIndex(Configurations.getIndexFromLocale(Languages.currentLocale()));

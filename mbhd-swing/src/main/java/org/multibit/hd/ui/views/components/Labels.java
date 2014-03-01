@@ -267,11 +267,21 @@ public class Labels {
   /**
    * @param status True if the status is "good"
    *
-   * @return A new "verification" status label
+   * @return A new "verification" status label (confirms user has done something right)
    */
   public static JLabel newVerificationStatus(boolean status) {
 
     return newStatusLabel(MessageKey.VERIFICATION_STATUS, null, status);
+  }
+
+  /**
+   * @param status True if the status is "good"
+   *
+   * @return A new "validity" status label (confirms user has made a valid combination)
+   */
+  public static JLabel newErrorStatus(boolean status) {
+
+    return newStatusLabel(MessageKey.ERROR, null, status);
   }
 
   /**

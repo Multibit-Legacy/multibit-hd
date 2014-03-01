@@ -43,6 +43,7 @@ public enum MessageKey {
   PREVIOUS("previous"),
   ALL("all"),
   NONE("none"),
+  ERROR("error"),
 
   // Field labels
 

@@ -73,7 +73,7 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
       "[][]" // Row constraints
     ));
 
-    JComboBox<String> languagesComboBox = ComboBoxes.newLanguagesComboBox(this);
+    JComboBox<String> languagesComboBox = ComboBoxes.newLanguagesComboBox(this, Languages.currentLocale());
 
     panel.add(Labels.newSelectLanguageLabel(),"shrink");
     panel.add(languagesComboBox, "growx,width min:350:,push,wrap");

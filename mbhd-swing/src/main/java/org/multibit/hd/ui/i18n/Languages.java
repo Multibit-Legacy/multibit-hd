@@ -57,12 +57,13 @@ public class Languages {
 
   /**
    * @param includeCodes True if the list should prefix the names with the ISO language code
+   * @param locale       The locale to use
    *
    * @return An unsorted array of the available languages
    */
-  public static String[] getLanguageNames(boolean includeCodes) {
+  public static String[] getLanguageNames(boolean includeCodes, Locale locale) {
 
-    ResourceBundle rb = currentResourceBundle();
+    ResourceBundle rb = ResourceBundle.getBundle(BASE_NAME, locale);
 
     String[] items = new String[LANGUAGE_CODES.length];
 
@@ -91,7 +92,7 @@ public class Languages {
    *
    * @return The array. [0] is the default separator for the locale
    */
-  public static String[] getDecimalSeparators() {
+  public static String[] getDecimalSeparators(Locale locale) {
 
     DecimalFormatSymbols symbols = new DecimalFormatSymbols(currentLocale());
 
@@ -106,6 +107,7 @@ public class Languages {
 
   }
 
+
   /**
    * <p>Provide an array of the available grouping separators for this locale (e.g. 1,234,456 has a decimal comma)</p>
    * <p>Note that each language will have its own variant for a comma and a point. A hard space '\u00a0' is needed to
@@ -113,9 +115,9 @@ public class Languages {
    *
    * @return The array. [0] is the default separator for the locale
    */
-  public static String[] getGroupingSeparators() {
+  public static String[] getGroupingSeparators(Locale locale) {
 
-    DecimalFormatSymbols symbols = new DecimalFormatSymbols(currentLocale());
+    DecimalFormatSymbols symbols = new DecimalFormatSymbols(locale);
 
     String separator = String.valueOf(symbols.getGroupingSeparator());
 
