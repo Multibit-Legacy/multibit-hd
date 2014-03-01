@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.i18n_settings;
 
+import org.multibit.hd.core.config.I18NConfiguration;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
 
 /**
@@ -13,11 +14,18 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
  */
 public class I18NSettingsPanelModel extends AbstractWizardPanelModel {
 
+  private final I18NConfiguration i18NConfiguration;
+
   /**
    * @param panelName The panel name
    */
-  public I18NSettingsPanelModel(String panelName) {
+  public I18NSettingsPanelModel(String panelName, I18NConfiguration i18nConfiguration) {
     super(panelName);
+    this.i18NConfiguration = i18nConfiguration;
+  }
+
+  public I18NConfiguration getI18NConfiguration() {
+    return i18NConfiguration;
   }
 
 }

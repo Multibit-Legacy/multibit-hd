@@ -344,6 +344,14 @@ public class Labels {
   }
 
   /**
+   * @return A new "example" label
+   */
+  public static JLabel newExampleLabel() {
+
+    return Labels.newLabel(MessageKey.EXAMPLE);
+  }
+
+  /**
    * @param mouseAdapter The mouse adapter that provides the event handling
    *
    * @return A new panel close "X" label with icon

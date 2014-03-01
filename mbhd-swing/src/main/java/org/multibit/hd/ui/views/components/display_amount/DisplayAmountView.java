@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.views.components.display_amount;
 
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.I18NConfiguration;
 import org.multibit.hd.core.utils.CurrencyUtils;
 import org.multibit.hd.ui.i18n.Formats;
@@ -92,11 +91,11 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
   }
 
   /**
-   * Updates the view to reflect the current Bitcoin and local amounts
+   * <p>Updates the view to reflect the current Bitcoin and local amounts</p>
+   *
+   * @param i18nConfiguration The I18NConfiguration to use
    */
-  public void updateView() {
-
-    I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration();
+  public void updateView(I18NConfiguration i18nConfiguration) {
 
     // Display using the symbolic amount
     String[] bitcoinDisplay = Formats.formatSatoshisAsSymbolic(getModel().get().getSatoshis());

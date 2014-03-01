@@ -3,6 +3,8 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.config.I18NConfiguration;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.components.*;
@@ -112,20 +114,22 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
   @Override
   public boolean beforeShow() {
 
+    I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration();
+
     // Update the model and view for the amount
     transactionDisplayAmountMaV.getModel().setSatoshis(getWizardModel().getSatoshis());
     transactionDisplayAmountMaV.getModel().setLocalAmount(getWizardModel().getLocalAmount());
-    transactionDisplayAmountMaV.getView().updateView();
+    transactionDisplayAmountMaV.getView().updateView(i18nConfiguration);
 
     // Update the model and view for the transaction fee
     transactionFeeDisplayAmountMaV.getModel().setSatoshis(getWizardModel().getTransactionFee());
     transactionFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
-    transactionFeeDisplayAmountMaV.getView().updateView();
+    transactionFeeDisplayAmountMaV.getView().updateView(i18nConfiguration);
 
     // Update the model and view for the developer fee
     developerFeeDisplayAmountMaV.getModel().setSatoshis(getWizardModel().getDeveloperFee());
     developerFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
-    developerFeeDisplayAmountMaV.getView().updateView();
+    developerFeeDisplayAmountMaV.getView().updateView(i18nConfiguration);
 
     // Update the model and view for the recipient
     recipientSummaryLabel.setText(getWizardModel().getRecipient().getSummary());

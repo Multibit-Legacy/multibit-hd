@@ -66,6 +66,7 @@ public enum MessageKey {
   EXTENDED_PUBLIC_KEY("extended_public_key"),
   TAGS("tags"),
   DESCRIPTION("description"),
+  EXAMPLE("example"),
 
   DISPLAY_LANGUAGE("display_language"),
   SELECT_DECIMAL_SEPARATOR("select_decimal_separator"),

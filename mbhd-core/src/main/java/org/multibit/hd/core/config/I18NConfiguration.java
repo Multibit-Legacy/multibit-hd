@@ -1,5 +1,6 @@
 package org.multibit.hd.core.config;
 
+import com.google.common.base.Preconditions;
 import org.joda.money.CurrencyUnit;
 
 import java.text.DecimalFormat;
@@ -127,6 +128,38 @@ public class I18NConfiguration {
     i18n.setLocalCurrencyUnit(getLocalCurrencyUnit());
 
     return i18n;
+
+  }
+
+  /**
+   *
+   * @param value The string representation of the locale (e.g. "en_GB" etc)
+   */
+  public void setLocale(String value) {
+
+    Preconditions.checkNotNull(value,"'value' must be present");
+
+    String[] parameters = value.split("_");
+
+    Preconditions.checkState(parameters.length > 0,"'value' must not be empty");
+
+    final Locale newLocale;
+
+    switch (parameters.length) {
+      case 1:
+        newLocale = new Locale(parameters[0]);
+        break;
+      case 2:
+        newLocale = new Locale(parameters[0], parameters[1]);
+        break;
+      case 3:
+        newLocale = new Locale(parameters[0], parameters[1], parameters[2]);
+        break;
+      default:
+        throw new IllegalArgumentException("Unknown locale descriptor: "+value);
+    }
+
+    setLocale(newLocale);
 
   }
 }

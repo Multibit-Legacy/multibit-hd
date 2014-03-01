@@ -4,7 +4,6 @@ import ch.qos.logback.classic.Level;
 import com.google.common.base.Preconditions;
 import org.joda.money.CurrencyUnit;
 
-import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
@@ -77,7 +76,7 @@ public class ConfigurationReadAdapter {
   private void adaptI18N(String key, String value) {
 
     if (Configurations.I18N_LOCALE.equalsIgnoreCase(key)) {
-      configuration.getI18NConfiguration().setLocale(new Locale(value));
+      configuration.getI18NConfiguration().setLocale(value);
     }
     if (Configurations.I18N_DECIMAL_SEPARATOR.equalsIgnoreCase(key)) {
       configuration.getI18NConfiguration().setDecimalSeparator(value.charAt(0));

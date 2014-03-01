@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views;
 
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
@@ -122,7 +123,7 @@ public class HeaderView {
     balanceDisplayMaV.getModel().setSatoshis(event.getSatoshis());
     balanceDisplayMaV.getModel().setRateProvider(event.getRateProvider());
 
-    balanceDisplayMaV.getView().updateView();
+    balanceDisplayMaV.getView().updateView(Configurations.currentConfiguration.getI18NConfiguration());
   }
 
   /**

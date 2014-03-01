@@ -86,7 +86,7 @@ public class Configurations {
     properties.put(BITCOIN_SYMBOL, "MICON");
 
     // Localisation
-    properties.put(I18N_LOCALE, "en_gb");
+    properties.put(I18N_LOCALE, "en_GB");
     properties.put(I18N_DECIMAL_SEPARATOR, ".");
     properties.put(I18N_GROUPING_SEPARATOR, ",");
     properties.put(I18N_IS_CURRENCY_PREFIXED, "true");

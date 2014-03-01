@@ -4,12 +4,14 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.config.I18NConfiguration;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
-import org.multibit.hd.ui.views.components.ComboBoxes;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.*;
+import org.multibit.hd.ui.views.components.display_amount.DisplayAmountModel;
+import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
+import org.multibit.hd.ui.views.components.display_amount.DisplayAmountView;
 import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -20,6 +22,7 @@ import org.multibit.hd.ui.views.wizards.WizardButton;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigInteger;
 import java.util.Locale;
 
 /**
@@ -41,6 +44,8 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
   private JComboBox<String> decimalComboBox;
   private JComboBox<String> groupingComboBox;
 
+  private ModelAndView<DisplayAmountModel, DisplayAmountView> displayAmountMaV;
+
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name
@@ -56,9 +61,13 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
   @Override
   public void newPanelModel() {
 
+    // Use a deep copy to avoid reference leaks
+    I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration().deepCopy();
+
     // Configure the panel model
     setPanelModel(new I18NSettingsPanelModel(
-      getPanelName()
+      getPanelName(),
+      i18nConfiguration
     ));
 
   }
@@ -78,17 +87,27 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
 
     Preconditions.checkNotNull(locale, "'locale' cannot be empty");
 
+    displayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT);
+    displayAmountMaV.getModel().setSatoshis(BigInteger.valueOf(1_234_456_789));
+    displayAmountMaV.getModel().setLocalAmountVisible(false);
+
     languagesComboBox = ComboBoxes.newLanguagesComboBox(this);
     decimalComboBox = ComboBoxes.newDecimalComboBox(this);
     groupingComboBox = ComboBoxes.newGroupingComboBox(this);
 
-    panel.add(Labels.newI18NSettingsNote(),"span 2,wrap");
-    panel.add(Labels.newSelectLanguageLabel(),"shrink");
+    panel.add(Labels.newI18NSettingsNote(), "span 2,wrap");
+
+    panel.add(Labels.newSelectLanguageLabel(), "shrink");
     panel.add(languagesComboBox, "growx,width min:350:,wrap");
-    panel.add(Labels.newSelectDecimalLabel(),"shrink");
+
+    panel.add(Labels.newSelectDecimalLabel(), "shrink");
     panel.add(decimalComboBox, "wrap");
-    panel.add(Labels.newSelectGroupingLabel(),"shrink");
+
+    panel.add(Labels.newSelectGroupingLabel(), "shrink");
     panel.add(groupingComboBox, "wrap");
+
+    panel.add(Labels.newExampleLabel(), "shrink");
+    panel.add(displayAmountMaV.getView().newComponentPanel(), "grow,push,wrap");
 
     return panel;
 
@@ -110,6 +129,8 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
       public void run() {
 
         languagesComboBox.requestFocusInWindow();
+
+        displayAmountMaV.getView().updateView(getPanelModel().get().getI18NConfiguration());
 
       }
     });
