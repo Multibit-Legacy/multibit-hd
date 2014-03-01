@@ -43,7 +43,6 @@ public enum MessageKey {
   PREVIOUS("previous"),
   ALL("all"),
   NONE("none"),
-  MULTIPLE("multiple"),
 
   // Field labels
 
@@ -68,6 +67,10 @@ public enum MessageKey {
   TAGS("tags"),
   DESCRIPTION("description"),
 
+  DISPLAY_LANGUAGE("display_language"),
+  SELECT_DECIMAL_SEPARATOR("select_decimal_separator"),
+  SELECT_GROUPING_SEPARATOR("select_grouping_separator"),
+
   // Sidebar
 
   CONTACTS("contacts"),
@@ -82,11 +85,13 @@ public enum MessageKey {
   PARANTHESES("parantheses"),
   LIST_COMMA("list_comma"),
   LIST_ELLIPSIS("list_ellipsis"),
+  DECIMAL_COMMA("decimal_comma"),
+  DECIMAL_POINT("decimal_point"),
+  DECIMAL_SPACE("decimal_space"),
 
   // Panels
 
   NETWORK_CONFIGURATION_ERROR("network_configuration_error"),
-  DISPLAY_LANGUAGE("display_language"),
   HELP("help"),
   SETTINGS("settings"),
 
@@ -226,6 +231,8 @@ public enum MessageKey {
 
   PASSWORD_NOTE_1("password_note_1"),
   PASSWORD_NOTE_2("password_note_2"),
+
+  I18N_SETTINGS_NOTE_1("i18n_settings_note_1"),
 
   RECIPIENT_SUMMARY("recipient_summary"),
   AMOUNT_SUMMARY("amount_summary"),

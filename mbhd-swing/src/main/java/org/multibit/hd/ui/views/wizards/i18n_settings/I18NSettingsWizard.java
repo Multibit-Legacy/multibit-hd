@@ -26,8 +26,8 @@ public class I18NSettingsWizard extends AbstractWizard<I18NSettingsWizardModel> 
 
     // Use the wizard parameter to retrieve the appropriate mode
     wizardViewMap.put(
-      I18NSettingsState.ENTER_DETAILS.name(),
-      new I18NSettingsPanelView(this,I18NSettingsState.ENTER_DETAILS.name())
+      I18NSettingsState.I18N_ENTER_DETAILS.name(),
+      new I18NSettingsPanelView(this,I18NSettingsState.I18N_ENTER_DETAILS.name())
     );
 
   }

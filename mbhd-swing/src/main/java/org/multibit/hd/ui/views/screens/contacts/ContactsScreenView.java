@@ -144,7 +144,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
   public void onWizardHideEvent(WizardHideEvent event) {
 
     // Filter other events
-    if (!event.getPanelName().equals(EditContactState.ENTER_DETAILS.name())) {
+    if (!event.getPanelName().equals(EditContactState.EDIT_CONTACT_ENTER_DETAILS.name())) {
       return;
     }
 

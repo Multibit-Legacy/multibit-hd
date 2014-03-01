@@ -328,6 +328,22 @@ public class Labels {
   }
 
   /**
+   * @return A new "select decimal separator" label
+   */
+  public static JLabel newSelectDecimalLabel() {
+
+    return Labels.newLabel(MessageKey.SELECT_DECIMAL_SEPARATOR);
+  }
+
+  /**
+   * @return A new "select grouping separator" label
+   */
+  public static JLabel newSelectGroupingLabel() {
+
+    return Labels.newLabel(MessageKey.SELECT_GROUPING_SEPARATOR);
+  }
+
+  /**
    * @param mouseAdapter The mouse adapter that provides the event handling
    *
    * @return A new panel close "X" label with icon
@@ -787,6 +803,17 @@ public class Labels {
     return newNoteLabel(new MessageKey[]{
       MessageKey.PASSWORD_NOTE_1,
       MessageKey.PASSWORD_NOTE_2
+    }, new Object[][]{});
+
+  }
+
+  /**
+   * @return A new "internationalisation settings" note (password wizard)
+   */
+  public static JLabel newI18NSettingsNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.I18N_SETTINGS_NOTE_1
     }, new Object[][]{});
 
   }

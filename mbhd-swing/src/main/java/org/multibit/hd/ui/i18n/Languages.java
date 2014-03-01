@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
+import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Locale;
@@ -79,6 +80,45 @@ public class Languages {
     }
 
     return items;
+
+  }
+
+  /**
+   * <p>Provide an array of the available grouping separators for this locale (e.g. 1,234,456 has a decimal comma)</p>
+   * <p>Note that each language will have its own variant for a comma and a point. A hard space '\u00a0' is needed to
+   * ensure that values do not wrap.</p>
+   *
+   * @return The array. [0] is the default separator for the locale
+   */
+  public static String[] getDecimalSeparators() {
+
+    DecimalFormatSymbols symbols = new DecimalFormatSymbols(currentLocale());
+
+    return new String[] {
+      String.valueOf(symbols.getDecimalSeparator()),
+      Languages.safeText(MessageKey.DECIMAL_COMMA),
+      Languages.safeText(MessageKey.DECIMAL_POINT),
+      Languages.safeText(MessageKey.DECIMAL_SPACE),
+    };
+
+  }
+
+  /**
+   * <p>Provide an array of the available grouping separators for this locale (e.g. 1,234,456 has a decimal comma)</p>
+   * <p>Note that each language will have its own variant for a comma and a point. A hard space '\u00a0' is needed to
+   * ensure that values do not wrap.</p>
+   *
+   * @return The array. [0] is the default separator for the locale
+   */
+  public static String[] getGroupingSeparators() {
+
+    DecimalFormatSymbols symbols = new DecimalFormatSymbols(currentLocale());
+    return new String[] {
+      String.valueOf(symbols.getGroupingSeparator()),
+      Languages.safeText(MessageKey.DECIMAL_COMMA),
+      Languages.safeText(MessageKey.DECIMAL_POINT),
+      String.valueOf('\u00a0'),
+    };
 
   }
 
@@ -266,4 +306,5 @@ public class Languages {
   public static boolean isLeftToRight() {
     return ComponentOrientation.getOrientation(currentLocale()).isLeftToRight();
   }
+
 }

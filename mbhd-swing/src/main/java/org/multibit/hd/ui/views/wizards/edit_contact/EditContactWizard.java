@@ -26,10 +26,10 @@ public class EditContactWizard extends AbstractWizard<EditContactWizardModel> {
 
     // Use the wizard parameter to retrieve the appropriate mode
     wizardViewMap.put(
-      EditContactState.ENTER_DETAILS.name(),
+      EditContactState.EDIT_CONTACT_ENTER_DETAILS.name(),
       new EditContactEnterDetailsPanelView(
         this,
-        EditContactState.ENTER_DETAILS.name(),
+        EditContactState.EDIT_CONTACT_ENTER_DETAILS.name(),
         (EnterContactDetailsMode) wizardParameter.get()
       )
     );

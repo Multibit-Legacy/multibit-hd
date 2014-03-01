@@ -21,8 +21,8 @@ public class Themes {
 
     // TODO Link this to the configuration
     // Always switch into the configured theme at startup
-    //switchTheme(new LightTheme());
-    switchTheme(new DarkTheme());
+    switchTheme(new LightTheme());
+    //switchTheme(new DarkTheme());
 
   }
 

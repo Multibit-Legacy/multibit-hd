@@ -2,14 +2,14 @@ package org.multibit.hd.ui.views.wizards.i18n_settings;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
-import org.multibit.hd.ui.views.components.*;
-import org.multibit.hd.ui.views.components.enter_tags.EnterTagsModel;
-import org.multibit.hd.ui.views.components.enter_tags.EnterTagsView;
+import org.multibit.hd.ui.views.components.ComboBoxes;
+import org.multibit.hd.ui.views.components.Labels;
+import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -37,12 +37,9 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
   private String localeCode = Languages.currentLocale().getLanguage();
 
   // Panel specific components
-  private JTextField name;
-  private JTextField emailAddress;
-  private JTextField bitcoinAddress;
-  private JTextField extendedPublicKey;
-  private JTextArea notes;
-  private ModelAndView<EnterTagsModel, EnterTagsView> enterLanguageMaV;
+  private JComboBox<String> languagesComboBox;
+  private JComboBox<String> decimalComboBox;
+  private JComboBox<String> groupingComboBox;
 
   /**
    * @param wizard    The wizard managing the states
@@ -58,8 +55,6 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
 
   @Override
   public void newPanelModel() {
-
-    name = TextBoxes.newEnterLabel();
 
     // Configure the panel model
     setPanelModel(new I18NSettingsPanelModel(
@@ -79,49 +74,21 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
       "[][][]" // Row constraints
     ));
 
-    Locale locale = getWizardModel().getLocale();
+    Locale locale = Configurations.currentConfiguration.getLocale();
 
     Preconditions.checkNotNull(locale, "'locale' cannot be empty");
 
-    JComboBox<String> languagesComboBox = ComboBoxes.newLanguagesComboBox(this);
+    languagesComboBox = ComboBoxes.newLanguagesComboBox(this);
+    decimalComboBox = ComboBoxes.newDecimalComboBox(this);
+    groupingComboBox = ComboBoxes.newGroupingComboBox(this);
 
-    panel.add(Labels.newSelectLanguageLabel(), "wrap");
-    panel.add(languagesComboBox, "growx,width min:350:,push,wrap");
-    panel.add(Labels.newWelcomeNote(), "wrap");
-
-
-    name = TextBoxes.newReadOnlyTextField(10);
-    emailAddress = TextBoxes.newReadOnlyTextField(10);
-    bitcoinAddress = TextBoxes.newReadOnlyTextField(10);
-    extendedPublicKey = TextBoxes.newReadOnlyTextField(10);
-
-    // Always allow non-unique fields
-    notes = TextBoxes.newEnterNotes();
-
-    // Empty tags
-    enterLanguageMaV = Components.newEnterTagsMaV(getPanelName(), Lists.<String>newArrayList());
-
-    // Allow unique contact fields
-    panel.add(Labels.newName());
-    panel.add(name, "grow,push,wrap");
-
-    panel.add(Labels.newEmailAddress());
-    panel.add(emailAddress, "grow,push,wrap");
-
-    panel.add(Labels.newBitcoinAddress());
-    panel.add(bitcoinAddress, "grow,push,wrap");
-
-    panel.add(Labels.newExtendedPublicKey());
-    panel.add(extendedPublicKey, "grow,push,wrap");
-
-
-    // Tags must be top aligned since it is a tall component
-    panel.add(Labels.newTags(), "aligny top");
-    panel.add(enterLanguageMaV.getView().newComponentPanel(), "growx,aligny top,wrap");
-
-    // Ensure we shrink to avoid scrunching up if no tags are present
-    panel.add(Labels.newNotes());
-    panel.add(notes, "shrink,wrap");
+    panel.add(Labels.newI18NSettingsNote(),"span 2,wrap");
+    panel.add(Labels.newSelectLanguageLabel(),"shrink");
+    panel.add(languagesComboBox, "growx,width min:350:,wrap");
+    panel.add(Labels.newSelectDecimalLabel(),"shrink");
+    panel.add(decimalComboBox, "wrap");
+    panel.add(Labels.newSelectGroupingLabel(),"shrink");
+    panel.add(groupingComboBox, "wrap");
 
     return panel;
 
@@ -142,7 +109,7 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
       @Override
       public void run() {
 
-        name.requestFocusInWindow();
+        languagesComboBox.requestFocusInWindow();
 
       }
     });

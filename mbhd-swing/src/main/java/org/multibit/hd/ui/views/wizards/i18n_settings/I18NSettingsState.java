@@ -11,7 +11,7 @@ package org.multibit.hd.ui.views.wizards.i18n_settings;
  */
 public enum I18NSettingsState {
 
-  ENTER_DETAILS,
+  I18N_ENTER_DETAILS,
 
   // End of enum
   ;

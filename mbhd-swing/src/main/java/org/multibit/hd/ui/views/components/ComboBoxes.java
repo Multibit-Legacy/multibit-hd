@@ -127,6 +127,44 @@ public class ComboBoxes {
   }
 
   /**
+   * @param listener The action listener to alert when the selection is made
+   *
+   * @return A new "decimal" combo box
+   */
+  public static JComboBox<String> newDecimalComboBox(ActionListener listener) {
+
+    JComboBox<String> comboBox = newReadOnlyComboBox(Languages.getDecimalSeparators());
+
+    // TODO Determine the current index
+    //comboBox.setSelectedIndex(Configurations.getIndexFromLocale(Languages.currentLocale()));
+
+    // Add the listener at the end to avoid false events
+    comboBox.addActionListener(listener);
+
+    return comboBox;
+
+  }
+
+  /**
+   * @param listener The action listener to alert when the selection is made
+   *
+   * @return A new "grouping" combo box
+   */
+  public static JComboBox<String> newGroupingComboBox(ActionListener listener) {
+
+    JComboBox<String> comboBox = newReadOnlyComboBox(Languages.getGroupingSeparators());
+
+    // TODO Determine the current index
+    //comboBox.setSelectedIndex(Configurations.getIndexFromLocale(Languages.currentLocale()));
+
+    // Add the listener at the end to avoid false events
+    comboBox.addActionListener(listener);
+
+    return comboBox;
+
+  }
+
+  /**
    * @param filter The contact auto-complete filter
    *
    * @return A new "recipient" combo box with auto-complete functionality

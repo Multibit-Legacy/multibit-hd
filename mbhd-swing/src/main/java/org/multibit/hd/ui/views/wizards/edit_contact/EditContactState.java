@@ -11,7 +11,7 @@ package org.multibit.hd.ui.views.wizards.edit_contact;
  */
 public enum EditContactState {
 
-  ENTER_DETAILS,
+  EDIT_CONTACT_ENTER_DETAILS,
 
   // End of enum
   ;

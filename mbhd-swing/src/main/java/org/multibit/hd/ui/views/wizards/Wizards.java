@@ -102,7 +102,7 @@ public class Wizards {
     Preconditions.checkState(!contacts.isEmpty(), "'contacts' cannot be empty");
 
     return new EditContactWizard(
-      new EditContactWizardModel(EditContactState.ENTER_DETAILS, contacts),
+      new EditContactWizardModel(EditContactState.EDIT_CONTACT_ENTER_DETAILS, contacts),
       mode
     );
 
@@ -161,6 +161,6 @@ public class Wizards {
 
   public static I18NSettingsWizard newI18NSettingsWizard() {
 
-    return new I18NSettingsWizard(new I18NSettingsWizardModel(I18NSettingsState.ENTER_DETAILS));
+    return new I18NSettingsWizard(new I18NSettingsWizardModel(I18NSettingsState.I18N_ENTER_DETAILS));
   }
 }
