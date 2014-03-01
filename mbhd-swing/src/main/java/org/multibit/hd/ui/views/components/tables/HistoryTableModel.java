@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components.tables;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.HistoryEntry;
 
 import javax.swing.table.AbstractTableModel;
@@ -69,7 +70,14 @@ public class HistoryTableModel extends AbstractTableModel {
    * rather than a check box.
    */
   public Class getColumnClass(int c) {
-    return getValueAt(0, c).getClass();
+    if (c == CHECKBOX_COLUMN_INDEX) {
+       return Boolean.class;
+     } else if (c == CREATED_COLUMN_INDEX) {
+       return DateTime.class;
+     } else {
+       return String.class;
+     }
+
   }
 
   /**
