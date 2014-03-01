@@ -85,6 +85,7 @@ public enum MessageKey {
   PARANTHESES("parantheses"),
   LIST_COMMA("list_comma"),
   LIST_ELLIPSIS("list_ellipsis"),
+  DECIMAL_DEFAULT("decimal_default"),
   DECIMAL_COMMA("decimal_comma"),
   DECIMAL_POINT("decimal_point"),
   DECIMAL_SPACE("decimal_space"),

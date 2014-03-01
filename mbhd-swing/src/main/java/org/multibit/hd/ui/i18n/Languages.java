@@ -94,8 +94,10 @@ public class Languages {
 
     DecimalFormatSymbols symbols = new DecimalFormatSymbols(currentLocale());
 
+    String separator = String.valueOf(symbols.getDecimalSeparator());
+
     return new String[] {
-      String.valueOf(symbols.getDecimalSeparator()),
+      Languages.append(separator, Languages.safeText(MessageKey.DECIMAL_DEFAULT)," "),
       Languages.safeText(MessageKey.DECIMAL_COMMA),
       Languages.safeText(MessageKey.DECIMAL_POINT),
       Languages.safeText(MessageKey.DECIMAL_SPACE),
@@ -113,11 +115,14 @@ public class Languages {
   public static String[] getGroupingSeparators() {
 
     DecimalFormatSymbols symbols = new DecimalFormatSymbols(currentLocale());
+
+    String separator = String.valueOf(symbols.getGroupingSeparator());
+
     return new String[] {
-      String.valueOf(symbols.getGroupingSeparator()),
+      Languages.append(separator, Languages.safeText(MessageKey.DECIMAL_DEFAULT), " "),
       Languages.safeText(MessageKey.DECIMAL_COMMA),
       Languages.safeText(MessageKey.DECIMAL_POINT),
-      String.valueOf('\u00a0'),
+      Languages.safeText(MessageKey.DECIMAL_SPACE),
     };
 
   }
