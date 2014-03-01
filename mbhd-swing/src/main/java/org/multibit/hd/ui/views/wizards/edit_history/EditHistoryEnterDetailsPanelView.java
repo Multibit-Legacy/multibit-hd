@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -19,6 +20,7 @@ import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
 import java.util.List;
+import java.util.Set;
 
 import static org.multibit.hd.ui.views.wizards.edit_history.EnterHistoryDetailsMode.EDIT_MULTIPLE;
 import static org.multibit.hd.ui.views.wizards.edit_history.EnterHistoryDetailsMode.NEW;
@@ -62,7 +64,7 @@ public class EditHistoryEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
     // Configure the panel model
     setPanelModel(new EditHistoryEnterDetailsPanelModel(
-            getPanelName()
+      getPanelName()
     ));
 
   }
@@ -73,9 +75,9 @@ public class EditHistoryEnterDetailsPanelView extends AbstractWizardPanelView<Ed
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.EDIT);
 
     panel.setLayout(new MigLayout(
-            "fillx,insets 0", // Layout constraints
-            "[][]", // Column constraints
-            "[][][]" // Row constraints
+      "fillx,insets 0", // Layout constraints
+      "[][]", // Column constraints
+      "[][][]" // Row constraints
     ));
 
     List<HistoryEntry> historyEntries = getWizardModel().getHistoryEntries();
@@ -90,25 +92,34 @@ public class EditHistoryEnterDetailsPanelView extends AbstractWizardPanelView<Ed
     // Always allow non-unique fields
     notes = TextBoxes.newEnterNotes();
 
+    Set<String> allDescriptions = Sets.newHashSet();
+
     // Populate the fields from the model
+    if (multiEdit) {
+
+      // Multiple history entries so some fields are not for display
+
+      // Notes are initially empty since concatenating from multiple contacts
+      // quickly becomes unmanageable
+
+      // Combine all descriptions from all history entries (no duplicates)
+      for (HistoryEntry historyEntry : getWizardModel().getHistoryEntries()) {
+        allDescriptions.add(historyEntry.getDescription());
+      }
+
+    } else {
+
 
       if (firstEntry != null) {
-        // Use a single contact
-        descriptionReadOnly.setText(firstEntry.getDescription().trim());
+        // Use a single history entry
         notes.setText(firstEntry.getNotes().or("").trim());
+        descriptionReadOnly.setText(firstEntry.getDescription());
 
       } else {
-        descriptionReadOnly.setText("");
         notes.setText("");
+        descriptionReadOnly.setText("");
 
-    }
-
-    if (!multiEdit) {
-
-      // Allow unique contact fields
-      panel.add(Labels.newDescription());
-      panel.add(descriptionReadOnly, "grow,push,wrap");
-
+      }
     }
 
     // Provide a note
@@ -117,12 +128,18 @@ public class EditHistoryEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
       // Provide a short list of names with ellipsis
       panel.add(Labels.newDescription(), "aligny top");
-      panel.add(descriptionReadOnly, "grow,push,aligny top,wrap");
+      panel.add(TextBoxes.newTruncatedList(allDescriptions, 400), "grow,push,aligny top,wrap");
+
+    } else {
+
+      // Provide a single description
+      panel.add(Labels.newDescription());
+      panel.add(descriptionReadOnly, "growx,push,wrap");
     }
 
-    // Ensure we shrink to avoid scrunching up if no tags are present
+    // Ensure we grow to avoid scrunching up
     panel.add(Labels.newNotes());
-    panel.add(notes, "shrink,wrap");
+    panel.add(notes, "grow,push,aligny top,wrap");
 
     return panel;
 
