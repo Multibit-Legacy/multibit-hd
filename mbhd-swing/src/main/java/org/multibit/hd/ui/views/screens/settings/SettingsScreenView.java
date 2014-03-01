@@ -8,6 +8,7 @@ import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
+import org.multibit.hd.ui.views.wizards.Wizards;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -56,7 +57,7 @@ public class SettingsScreenView extends AbstractScreenView<SettingsScreenModel> 
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        //Panels.showLightBox(Wizards.newI18NSettingsWizard().getWizardPanel());
+        Panels.showLightBox(Wizards.newI18NSettingsWizard().getWizardPanel());
       }
     };
     Action showBitcoinAction = new AbstractAction() {

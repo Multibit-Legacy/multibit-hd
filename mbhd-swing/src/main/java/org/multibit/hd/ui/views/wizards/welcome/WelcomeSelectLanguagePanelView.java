@@ -6,6 +6,7 @@ import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.views.components.ComboBoxes;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
@@ -29,7 +30,7 @@ import java.util.Locale;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> implements ActionListener {
 
@@ -39,8 +40,8 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
   private String localeCode = Languages.currentLocale().getLanguage();
 
   /**
-   * @param wizard The wizard managing the states
-   * @param panelName   The panel name to filter events from components
+   * @param wizard    The wizard managing the states
+   * @param panelName The panel name to filter events from components
    */
   public WelcomeSelectLanguagePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
@@ -68,12 +69,15 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
 
     panel.setLayout(new MigLayout(
       "fill,insets 0", // Layout constraints
-      "[][][]", // Column constraints
-      "[]10[]" // Row constraints
+      "[][]", // Column constraints
+      "[][]" // Row constraints
     ));
 
-    panel.add(Panels.newLanguageSelector(this), "wrap");
-    panel.add(Labels.newWelcomeNote(), "wrap");
+    JComboBox<String> languagesComboBox = ComboBoxes.newLanguagesComboBox(this);
+
+    panel.add(Labels.newSelectLanguageLabel(),"shrink");
+    panel.add(languagesComboBox, "growx,width min:350:,push,wrap");
+    panel.add(Labels.newWelcomeNote(), "grow,push,span 2,wrap");
 
     return panel;
   }
@@ -109,11 +113,11 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
   public void actionPerformed(ActionEvent e) {
 
     JComboBox source = (JComboBox) e.getSource();
-    localeCode = String.valueOf(source.getSelectedItem()).substring(0,2);
+    localeCode = String.valueOf(source.getSelectedItem()).substring(0, 2);
 
     Locale locale = Languages.newLocaleFromCode(localeCode);
 
-    log.debug("Language changed to '{}'",localeCode);
+    log.debug("Language changed to '{}'", localeCode);
 
     ControllerEvents.fireChangeLocaleEvent(locale);
 

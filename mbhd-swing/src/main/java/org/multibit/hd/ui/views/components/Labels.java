@@ -74,6 +74,7 @@ public class Labels {
 
   /**
    * <p>A convenience method for creating a themed label with direct text. This is not internationalised.</p>
+   *
    * @return A new value label with default styling for placing direct text
    */
   public static JLabel newValueLabel(String value) {
@@ -310,11 +311,20 @@ public class Labels {
   }
 
   /**
-   * @return A new "Select language" label
+   * @return A new "select language" label
    */
   public static JLabel newSelectLanguageLabel() {
 
-    return new JLabel(Languages.safeText(MessageKey.DISPLAY_LANGUAGE));
+    JLabel label = Labels.newLabel(MessageKey.DISPLAY_LANGUAGE);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.GLOBE,
+      label,
+      true,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
+
+    return label;
   }
 
   /**
@@ -547,7 +557,6 @@ public class Labels {
   }
 
   /**
-   *
    * @return A new "description" label
    */
   public static JLabel newDescription() {
@@ -555,7 +564,6 @@ public class Labels {
   }
 
   /**
-   *
    * @return A new "contact name" label
    */
   public static JLabel newName() {

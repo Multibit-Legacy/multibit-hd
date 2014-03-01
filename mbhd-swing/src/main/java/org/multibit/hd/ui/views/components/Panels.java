@@ -180,28 +180,6 @@ public class Panels {
   }
 
   /**
-   * <p>A "language selector" panel provides a means of changing the display language</p>
-   *
-   * @param listener The action listener
-   *
-   * @return A new "language selector" panel
-   */
-  public static JPanel newLanguageSelector(ActionListener listener) {
-
-    JPanel panel = Panels.newPanel();
-
-    JLabel label = Labels.newLabel(MessageKey.SELECT_LANGUAGE);
-    AwesomeDecorator.applyIcon(AwesomeIcon.GLOBE, label, true, MultiBitUI.LARGE_ICON_SIZE);
-
-    JComboBox<String> languages = ComboBoxes.newLanguagesComboBox(listener);
-
-    panel.add(label);
-    panel.add(languages, "growx,width min:350:,push,wrap");
-
-    return panel;
-  }
-
-  /**
    * <p>A "wallet selector" panel provides a means of choosing how a wallet is to be created/accessed</p>
    *
    * @param listener        The action listener

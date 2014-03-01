@@ -14,6 +14,9 @@ import org.multibit.hd.ui.views.wizards.edit_history.EnterHistoryDetailsMode;
 import org.multibit.hd.ui.views.wizards.exit.ExitState;
 import org.multibit.hd.ui.views.wizards.exit.ExitWizard;
 import org.multibit.hd.ui.views.wizards.exit.ExitWizardModel;
+import org.multibit.hd.ui.views.wizards.i18n_settings.I18NSettingsState;
+import org.multibit.hd.ui.views.wizards.i18n_settings.I18NSettingsWizard;
+import org.multibit.hd.ui.views.wizards.i18n_settings.I18NSettingsWizardModel;
 import org.multibit.hd.ui.views.wizards.password.PasswordState;
 import org.multibit.hd.ui.views.wizards.password.PasswordWizard;
 import org.multibit.hd.ui.views.wizards.password.PasswordWizardModel;
@@ -156,4 +159,8 @@ public class Wizards {
 
   }
 
+  public static I18NSettingsWizard newI18NSettingsWizard() {
+
+    return new I18NSettingsWizard(new I18NSettingsWizardModel(I18NSettingsState.ENTER_DETAILS));
+  }
 }
