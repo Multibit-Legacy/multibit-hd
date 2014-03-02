@@ -46,7 +46,7 @@ public class ComboBoxes {
     JComboBox<T> comboBox = new JComboBox<>(items);
 
     // Required to match icon button heights
-    comboBox.setMinimumSize(new Dimension(50, MultiBitUI.NORMAL_ICON_SIZE + 14));
+    comboBox.setMinimumSize(new Dimension(25, MultiBitUI.NORMAL_ICON_SIZE + 14));
 
     // Required to blend in with panel
     comboBox.setBackground(Themes.currentTheme.detailPanelBackground());

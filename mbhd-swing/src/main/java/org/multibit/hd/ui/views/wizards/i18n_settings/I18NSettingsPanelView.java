@@ -45,8 +45,9 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
   private JLabel decimalErrorStatus;
   private JLabel groupingErrorStatus;
 
-//  private int decimalLastIndex = 0;
-//  private int groupingLastIndex = 0;
+  private int languagesLastIndex = 0;
+  private int decimalLastIndex = 0;
+  private int groupingLastIndex = 0;
 
   private ModelAndView<DisplayAmountModel, DisplayAmountView> displayAmountMaV;
 
@@ -99,6 +100,11 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
     decimalComboBox = ComboBoxes.newDecimalComboBox(this, Languages.currentLocale());
     groupingComboBox = ComboBoxes.newGroupingComboBox(this, Languages.currentLocale());
 
+    // Record the current index positions for the combo boxes
+    languagesLastIndex = languagesComboBox.getSelectedIndex();
+    decimalLastIndex = decimalComboBox.getSelectedIndex();
+    groupingLastIndex = groupingComboBox.getSelectedIndex();
+
     decimalErrorStatus = Labels.newErrorStatus(false);
     decimalErrorStatus.setVisible(false);
     groupingErrorStatus = Labels.newErrorStatus(false);
@@ -107,17 +113,18 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
     panel.add(Labels.newI18NSettingsNote(), "growx,push,span 4,wrap");
 
     panel.add(Labels.newSelectLanguageLabel(), "shrink");
-    panel.add(languagesComboBox, "growx,span 3,width min:200:,wrap");
-
-    panel.add(Labels.newSelectDecimalLabel(), "shrink");
-    panel.add(decimalComboBox, "shrink");
-    panel.add(decimalErrorStatus, "grow");
-    panel.add(Labels.newBlankLabel(),"grow,push,wrap");
+    panel.add(languagesComboBox, "growx,span 2,push,width 200:200");
+    panel.add(Labels.newBlankLabel(), "grow,push,wrap");
 
     panel.add(Labels.newSelectGroupingLabel(), "shrink");
     panel.add(groupingComboBox, "shrink");
     panel.add(groupingErrorStatus, "grow");
-    panel.add(Labels.newBlankLabel(),"grow,push,wrap");
+    panel.add(Labels.newBlankLabel(), "grow,push,wrap");
+
+    panel.add(Labels.newSelectDecimalLabel(), "shrink");
+    panel.add(decimalComboBox, "shrink");
+    panel.add(decimalErrorStatus, "grow");
+    panel.add(Labels.newBlankLabel(), "grow,push,wrap");
 
     panel.add(Labels.newExampleLabel(), "shrink");
     panel.add(displayAmountMaV.getView().newComponentPanel(), "grow,push,span 3,wrap");
@@ -185,11 +192,11 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
     if ("languages".equals(e.getActionCommand())) {
       handleLanguageSelection(e);
     }
-    if ("decimal".equals(e.getActionCommand())) {
-      handleDecimalSelection(e);
-    }
     if ("grouping".equals(e.getActionCommand())) {
       handleGroupingSelection(e);
+    }
+    if ("decimal".equals(e.getActionCommand())) {
+      handleDecimalSelection(e);
     }
 
   }
@@ -208,12 +215,77 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
 
     // Create a new configuration to reset the separators
     I18NConfiguration i18nConfiguration = new I18NConfiguration(locale);
+    // Retain the last selections
+    i18nConfiguration.setGroupingSeparator(Languages.getGroupingSeparators(locale)[groupingLastIndex].charAt(0));
+    i18nConfiguration.setDecimalSeparator(Languages.getDecimalSeparators(locale)[decimalLastIndex].charAt(0));
+
+    // Update the last index
+    languagesLastIndex = source.getSelectedIndex();
 
     // Update the model
     getWizardModel().setI18nConfiguration(i18nConfiguration);
 
-    // Update the combo box
-    //JComboBox<String> newLanguages = ComboBoxes.newLanguagesComboBox(this, locale);
+    System.out.printf(",%d %d %d", languagesLastIndex, groupingLastIndex, decimalLastIndex);
+
+    // Update the languages combo box
+    DefaultComboBoxModel<String> languagesModel = new DefaultComboBoxModel<>(Languages.getLanguageNames(true, locale));
+    languagesComboBox.setModel(languagesModel);
+    languagesComboBox.setSelectedIndex(languagesLastIndex);
+
+    // Update the grouping combo box
+    DefaultComboBoxModel<String> groupingModel = new DefaultComboBoxModel<>(Languages.getGroupingSeparators(locale));
+    groupingComboBox.setModel(groupingModel);
+    groupingComboBox.setSelectedIndex(groupingLastIndex);
+
+    // Update the decimal combo box
+    i18nConfiguration.setGroupingSeparator(groupingComboBox.getSelectedItem().toString().charAt(0));
+    DefaultComboBoxModel<String> decimalModel = new DefaultComboBoxModel<>(Languages.getDecimalSeparators(locale));
+    decimalComboBox.setModel(decimalModel);
+    decimalComboBox.setSelectedIndex(decimalLastIndex);
+
+    // Update the display to match the new configuration
+    displayAmountMaV.getView().updateView(getWizardModel().getI18nConfiguration());
+
+  }
+
+  /**
+   * <p>The grouping separator selection has changed</p>
+   *
+   * @param e The action event
+   */
+  private void handleGroupingSelection(ActionEvent e) {
+
+    System.out.println("Grouping selected");
+
+    JComboBox source = (JComboBox) e.getSource();
+    Character grouping = String.valueOf(source.getSelectedItem()).charAt(0);
+
+    // Validate the combination
+    if (grouping.equals(getWizardModel().getI18nConfiguration().getDecimalSeparator())) {
+      Sounds.playBeep();
+      decimalErrorStatus.setVisible(false);
+      groupingErrorStatus.setVisible(true);
+      ViewEvents.fireWizardButtonEnabledEvent(
+        getPanelName(),
+        WizardButton.APPLY,
+        false
+      );
+      return;
+    } else {
+      decimalErrorStatus.setVisible(false);
+      groupingErrorStatus.setVisible(false);
+      ViewEvents.fireWizardButtonEnabledEvent(
+        getPanelName(),
+        WizardButton.APPLY,
+        true
+      );
+    }
+
+    // Update the last index
+    groupingLastIndex = source.getSelectedIndex();
+
+    // Update the model
+    getWizardModel().getI18nConfiguration().setGroupingSeparator(grouping);
 
     displayAmountMaV.getView().updateView(getWizardModel().getI18nConfiguration());
 
@@ -226,6 +298,8 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
    */
   private void handleDecimalSelection(ActionEvent e) {
 
+    System.out.println("Decimal selected");
+
     JComboBox source = (JComboBox) e.getSource();
     Character decimal = String.valueOf(source.getSelectedItem()).charAt(0);
 
@@ -234,42 +308,27 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
       Sounds.playBeep();
       groupingErrorStatus.setVisible(false);
       decimalErrorStatus.setVisible(true);
+      ViewEvents.fireWizardButtonEnabledEvent(
+        getPanelName(),
+        WizardButton.APPLY,
+        false
+      );
       return;
     } else {
       groupingErrorStatus.setVisible(false);
       decimalErrorStatus.setVisible(false);
+      ViewEvents.fireWizardButtonEnabledEvent(
+        getPanelName(),
+        WizardButton.APPLY,
+        true
+      );
     }
+
+    // Update the last index
+    decimalLastIndex = source.getSelectedIndex();
 
     // Update the model
     getWizardModel().getI18nConfiguration().setDecimalSeparator(decimal);
-
-    displayAmountMaV.getView().updateView(getWizardModel().getI18nConfiguration());
-
-  }
-
-  /**
-   * <p>The grouping separator selection has changed</p>
-   *
-   * @param e The action event
-   */
-  private void handleGroupingSelection(ActionEvent e) {
-
-    JComboBox source = (JComboBox) e.getSource();
-    Character grouping = String.valueOf(source.getSelectedItem()).charAt(0);
-
-    // Validate the combination
-    if (grouping.equals(getWizardModel().getI18nConfiguration().getDecimalSeparator())) {
-      Sounds.playBeep();
-      decimalErrorStatus.setVisible(false);
-      groupingErrorStatus.setVisible(true);
-      return;
-    } else {
-      decimalErrorStatus.setVisible(false);
-      groupingErrorStatus.setVisible(false);
-    }
-
-    // Update the model
-    getWizardModel().getI18nConfiguration().setGroupingSeparator(grouping);
 
     displayAmountMaV.getView().updateView(getWizardModel().getI18nConfiguration());
 
