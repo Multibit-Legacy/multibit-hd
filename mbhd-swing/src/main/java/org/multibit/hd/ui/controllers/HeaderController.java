@@ -77,10 +77,11 @@ public class HeaderController {
   /**
    * <p>Called when there are payments seen that may change the balance</p>
    *
-   * @param event The slowTransactionSeenEvent
+   * @param event The slow transaction seen event
    */
   @Subscribe
-  public void onSlowTransactionSeenEventEvent(SlowTransactionSeenEvent event) {
+  public void onSlowTransactionSeenEvent(SlowTransactionSeenEvent event) {
+
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEventOptional = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
 
     if (exchangeRateChangedEventOptional.isPresent()) {

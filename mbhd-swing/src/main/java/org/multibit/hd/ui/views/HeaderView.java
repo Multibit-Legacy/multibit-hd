@@ -77,7 +77,6 @@ public class HeaderView {
     contentPanel.add(balanceDisplayMaV.getView().newComponentPanel(), "growx,wrap");
     contentPanel.add(alertPanel, "growx,aligny top,push");
 
-    onLocaleChangedEvent(null);
   }
 
   /**
@@ -96,6 +95,8 @@ public class HeaderView {
   public void onLocaleChangedEvent(LocaleChangedEvent event) {
 
     populateAlertPanel();
+
+    balanceDisplayMaV.getView().updateView(Configurations.currentConfiguration.getI18NConfiguration());
 
   }
 

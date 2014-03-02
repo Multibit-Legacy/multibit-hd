@@ -208,6 +208,7 @@ public enum BackupManager {
    * @throws java.io.IOException if the wallet backup could not be created
    */
   public File createRollingBackup(WalletData walletData) throws IOException {
+
     Preconditions.checkNotNull(walletData, "'walletData' must be present");
     Preconditions.checkNotNull(walletData.getWallet(), "'wallet' must be present");
     Preconditions.checkNotNull(walletData.getWalletId(), "'walletId' must be present");

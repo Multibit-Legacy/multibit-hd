@@ -43,7 +43,7 @@ public class MainController {
   }
 
   /**
-   * <p>Update the application configuration</p>
+   * <p>Update all views to use the current configuration</p>
    *
    * @param event The change configuration event
    */
@@ -56,10 +56,6 @@ public class MainController {
 
     Locale locale = Configurations.currentConfiguration.getLocale();
 
-    // Configure all Swing components to use the new locale
-    Locale.setDefault(locale);
-    Panels.frame.setLocale(locale);
-
     // Ensure the resource bundle is reset
     ResourceBundle.clearCache();
 
@@ -69,7 +65,7 @@ public class MainController {
     // Ensure LTR and RTL language formats are in place
     Panels.frame.applyComponentOrientation(ComponentOrientation.getOrientation(locale));
 
-    // Update the views
+    // Update the views to use the new locale (and any other relevant configuration)
     ViewEvents.fireLocaleChangedEvent();
 
     // Allow time for the views to update

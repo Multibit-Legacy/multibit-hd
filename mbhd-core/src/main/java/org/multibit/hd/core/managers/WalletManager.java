@@ -122,6 +122,7 @@ public enum WalletManager implements WalletEventListener {
    * @param applicationDataDirectory The directory in which to writeContacts and read wallets.
    */
   public void initialise(File applicationDataDirectory) {
+
     this.applicationDataDirectory = applicationDataDirectory;
 
     // Work out the list of available wallets in the application data directory
@@ -137,6 +138,7 @@ public enum WalletManager implements WalletEventListener {
     } else {
       currentWalletData = Optional.absent();
     }
+
   }
 
   /**
@@ -153,10 +155,11 @@ public enum WalletManager implements WalletEventListener {
    * @throws WalletVersionException if there is already a simple wallet but the wallet version cannot be understood
    */
   public WalletData createWallet(byte[] seed, CharSequence password) throws WalletLoadException, WalletVersionException, IOException {
+
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
     return createWallet(applicationDataDirectory.getAbsolutePath(), seed, password);
-  }
 
+  }
 
   /**
    * Create a wallet that contains only a single, random private key.
@@ -176,6 +179,7 @@ public enum WalletManager implements WalletEventListener {
    * @throws WalletVersionException if there is already a wallet but the wallet version cannot be understood
    */
   public WalletData createWallet(String parentDirectoryName, byte[] seed, CharSequence password) throws WalletLoadException, WalletVersionException, IOException {
+
     WalletData walletDataToReturn;
 
     // Create a wallet id from the seed to work out the wallet root directory

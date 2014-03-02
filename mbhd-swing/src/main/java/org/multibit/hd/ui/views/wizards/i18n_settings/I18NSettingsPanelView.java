@@ -3,9 +3,9 @@ package org.multibit.hd.ui.views.wizards.i18n_settings;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.I18NConfiguration;
-import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
@@ -163,11 +163,10 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
 
     if (!isExitCancel) {
 
-      // Model is kept continuously up to date
-      CoreEvents.fireConfigurationChangedEvent();
-      Configurations.currentConfiguration.setI18NConfiguration(getWizardModel().getI18nConfiguration());
-
-
+      // Switch the main configuration over to the new one
+      Configuration newConfiguration = Configurations.currentConfiguration.deepCopy();
+      newConfiguration.setI18NConfiguration(getWizardModel().getI18nConfiguration());
+      Configurations.switchConfiguration(newConfiguration);
 
     }
 
@@ -227,8 +226,6 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
     // Update the model
     getWizardModel().setI18nConfiguration(i18nConfiguration);
 
-    System.out.printf(",%d %d %d", languagesLastIndex, groupingLastIndex, decimalLastIndex);
-
     // Update the languages combo box
     DefaultComboBoxModel<String> languagesModel = new DefaultComboBoxModel<>(Languages.getLanguageNames(true, locale));
     languagesComboBox.setModel(languagesModel);
@@ -256,8 +253,6 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
    * @param e The action event
    */
   private void handleGroupingSelection(ActionEvent e) {
-
-    System.out.println("Grouping selected");
 
     JComboBox source = (JComboBox) e.getSource();
     Character grouping = String.valueOf(source.getSelectedItem()).charAt(0);
@@ -299,8 +294,6 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
    * @param e The action event
    */
   private void handleDecimalSelection(ActionEvent e) {
-
-    System.out.println("Decimal selected");
 
     JComboBox source = (JComboBox) e.getSource();
     Character decimal = String.valueOf(source.getSelectedItem()).charAt(0);

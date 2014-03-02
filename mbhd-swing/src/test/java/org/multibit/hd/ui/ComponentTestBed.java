@@ -91,16 +91,15 @@ public class ComponentTestBed {
    * return screen.newScreenViewPanel();
    * </pre>
    *
-   * @return The panel under test
    */
   public JPanel createTestPanel() {
 
     AbstractWizard wizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE);
     wizard.show(WelcomeWizardState.WELCOME_SELECT_LANGUAGE.name());
+
     return wizard.getWizardPanel();
 
   }
-
   /**
    * @param args Any command line arguments for the CoreServices
    */
@@ -145,7 +144,7 @@ public class ComponentTestBed {
 
     ComponentTestBed testBed = new ComponentTestBed(args);
 
-    // See createTestPanel() to configure panel under test
+    testBed.createTestPanel();
 
     log.info("Showing component");
 
@@ -268,9 +267,11 @@ public class ComponentTestBed {
 
     log.info("Adding test panel");
     contentPanel.add(createTestPanel(), "grow,push,span 2,wrap");
+
     contentPanel.add(toggleLocaleButton, "push");
     contentPanel.add(toggleThemeButton, "shrink");
 
+    log.info("Packing and presenting");
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     frame.add(contentPanel);
     frame.pack();

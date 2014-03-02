@@ -1,7 +1,6 @@
 package org.multibit.hd.core.config;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 
 /**
  * <p>Configuration to provide the following to application:</p>
@@ -32,11 +31,13 @@ public class ApplicationConfiguration {
    * @return The root of the current wallet
    */
   public String getCurrentWalletRoot() {
-     Preconditions.checkState(currentWalletRoot != null && !"".equals(currentWalletRoot.trim()));
+
      return currentWalletRoot;
+
    }
 
    public void setCurrentWalletRoot(String currentWalletRoot) {
+
      this.currentWalletRoot = currentWalletRoot;
    }
 

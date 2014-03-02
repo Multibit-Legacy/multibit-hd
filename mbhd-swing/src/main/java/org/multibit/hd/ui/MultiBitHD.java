@@ -51,11 +51,8 @@ public class MultiBitHD {
 
   private static WalletService walletService;
 
-  private static File applicationDataDirectory;
-
   private static MainController mainController;
   private static HeaderController headerController;
-  private static SidebarController sidebarController;
 
   /**
    * <p>Main entry point to the application</p>
@@ -64,12 +61,16 @@ public class MultiBitHD {
    */
   public static void main(final String[] args) throws InterruptedException, UnsupportedLookAndFeelException {
 
+    // Prepare the JVM (Nimbus etc)
     initialiseJVM();
 
+    // Start core services (security alerts, configuration etc)
     initialiseCore(args);
 
+    // Create a new UI based on the configuration
     initialiseUI();
 
+    // Start supporting services (exchange, wallet access etc)
     initialiseSupport();
 
   }
@@ -133,8 +134,8 @@ public class MultiBitHD {
     ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(BitstampExchange.class.getName());
     bitcoinNetworkService = CoreServices.newBitcoinNetworkService();
 
-    // Initialise the wallet manager, which will loadContacts the current wallet if available
-    applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+    // Initialise the wallet manager, which will load the current wallet if available
+    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     // Start up the exchange service
     exchangeTickerService.start();
@@ -160,8 +161,9 @@ public class MultiBitHD {
 
   /**
    * <p>Initialise the UI once all the core services are in place</p>
+   * <p>This creates the views and controllers that respond to configuration and theme changes</p>
    */
-  private static void initialiseUI() {
+  public static void initialiseUI() {
 
     // Create views
     HeaderView headerView = new HeaderView();
@@ -169,7 +171,8 @@ public class MultiBitHD {
     DetailView detailView = new DetailView();
     FooterView footerView = new FooterView();
 
-    MainView mainView = new MainView(
+    // Build the main view
+    new MainView(
       headerView.getContentPanel(),
       sidebarView.getContentPanel(),
       detailView.getContentPanel(),
@@ -179,8 +182,9 @@ public class MultiBitHD {
     // Create controllers
     mainController = new MainController();
     headerController = new HeaderController();
-    sidebarController = new SidebarController();
+    new SidebarController();
 
+    // Each view will respond to a locale change independently
     ViewEvents.fireLocaleChangedEvent();
 
   }
@@ -298,4 +302,5 @@ public class MultiBitHD {
     log.info("Configuring native event handling");
 
   }
+
 }

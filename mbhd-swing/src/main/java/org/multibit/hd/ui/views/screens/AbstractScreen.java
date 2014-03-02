@@ -49,7 +49,6 @@ public abstract class AbstractScreen<M extends ScreenModel> {
     // Clear out any existing components
     detailPanel.removeAll();
 
-
     // Invalidate for new layout
     Panels.invalidate(detailPanel);
 

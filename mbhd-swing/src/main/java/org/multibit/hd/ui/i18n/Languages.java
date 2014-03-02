@@ -70,7 +70,8 @@ public class Languages {
     for (int i = 0; i < LANGUAGE_CODES.length; i++) {
 
       // Use a 1-based lookup for the resource bundle
-      String key = String.format(LANGUAGE_CHOICE_TEMPLATE, i + 1);
+      // Ensure we don't get numerical representations mixed up in the keys
+      String key = String.format(Locale.UK,LANGUAGE_CHOICE_TEMPLATE, i + 1);
       String value = rb.getString(key);
 
       if (includeCodes) {
