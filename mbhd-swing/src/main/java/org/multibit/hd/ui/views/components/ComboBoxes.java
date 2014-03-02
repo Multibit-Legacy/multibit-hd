@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.components;
 
 import com.google.common.base.Preconditions;
+import org.multibit.hd.core.config.I18NConfiguration;
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.ui.MultiBitUI;
@@ -119,7 +120,7 @@ public class ComboBoxes {
 
     JComboBox<String> comboBox = newReadOnlyComboBox(Languages.getLanguageNames(true, locale));
 
-    comboBox.setSelectedIndex(Languages.getIndexFromLocale(locale));
+    comboBox.setSelectedIndex(Languages.getLanguageIndexFromLocale(locale));
 
     // Add the listener at the end to avoid false events
     comboBox.setActionCommand("languages");
@@ -132,16 +133,23 @@ public class ComboBoxes {
 
   /**
    * @param listener The action listener to alert when the selection is made
-   * @param locale   The locale to use
+   * @param i18nConfiguration The I18NConfiguration to use
    *
    * @return A new "decimal" combo box
    */
-  public static JComboBox<String> newDecimalComboBox(ActionListener listener, Locale locale) {
+  public static JComboBox<String> newDecimalComboBox(ActionListener listener, I18NConfiguration i18nConfiguration) {
 
-    JComboBox<String> comboBox = newReadOnlyComboBox(Languages.getDecimalSeparators(locale));
+    String[] decimalSeparators = Languages.getDecimalSeparators(i18nConfiguration.getLocale());
+    JComboBox<String> comboBox = newReadOnlyComboBox(decimalSeparators);
 
-    // TODO Determine the current index
-    //comboBox.setSelectedIndex(Configurations.getIndexFromLocale(Languages.currentLocale()));
+    // Determine the first matching separator
+    Character decimal = i18nConfiguration.getDecimalSeparator();
+    for (int i=0; i<decimalSeparators.length; i++) {
+      if (decimal.equals(decimalSeparators[i].charAt(0))) {
+        comboBox.setSelectedIndex(i);
+        break;
+      }
+    }
 
     // Add the listener at the end to avoid false events
     comboBox.setActionCommand("decimal");
@@ -153,16 +161,23 @@ public class ComboBoxes {
 
   /**
    * @param listener The action listener to alert when the selection is made
-   * @param locale   The locale to use
+   * @param i18nConfiguration The I18NConfiguration to use
    *
-   * @return A new "grouping" combo box
+   * @return A new "decimal" combo box
    */
-  public static JComboBox<String> newGroupingComboBox(ActionListener listener, Locale locale) {
+  public static JComboBox<String> newGroupingComboBox(ActionListener listener, I18NConfiguration i18nConfiguration) {
 
-    JComboBox<String> comboBox = newReadOnlyComboBox(Languages.getGroupingSeparators(locale));
+    String[] groupingSeparators = Languages.getGroupingSeparators(i18nConfiguration.getLocale());
+    JComboBox<String> comboBox = newReadOnlyComboBox(groupingSeparators);
 
-    // TODO Determine the current index
-    //comboBox.setSelectedIndex(Configurations.getIndexFromLocale(Languages.currentLocale()));
+    // Determine the first matching separator
+    Character grouping = i18nConfiguration.getGroupingSeparator();
+    for (int i=0; i<groupingSeparators.length; i++) {
+      if (grouping.equals(groupingSeparators[i].charAt(0))) {
+        comboBox.setSelectedIndex(i);
+        break;
+      }
+    }
 
     // Add the listener at the end to avoid false events
     comboBox.setActionCommand("grouping");

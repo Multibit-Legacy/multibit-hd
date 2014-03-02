@@ -9,7 +9,6 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -39,7 +38,7 @@ public class Images {
     try (InputStream is = Images.class.getResourceAsStream("/assets/images/qrcode.png")) {
 
       // Transform the mask color into the current themed text
-      BufferedImage qrCodePng = colorImage(
+      BufferedImage qrCodePng = ImageDecorator.applyColor(
         ImageIO.read(is),
         Themes.currentTheme.buttonText()
       );
@@ -70,36 +69,33 @@ public class Images {
   }
 
   /**
-   * <p>Applies a single alpha-blended color over all pixels</p>
-   * @param image    The source image
-   * @param newColor The color to use as the replacement to non-transparent pixels
+   * @param confirmationCount The confirmation count
+   * @param isCoinbase        True if this transaction requires the coinbase rules (120 confirmations)
    *
-   * @return The new image with color applied
+   * @return A new "confirmation" image icon suitable for use in tables
    */
-  public static BufferedImage colorImage(BufferedImage image, Color newColor) {
+  public static ImageIcon newConfirmationIcon(int confirmationCount, boolean isCoinbase) {
 
-    int width = image.getWidth();
-    int height = image.getHeight();
+    BufferedImage background = new BufferedImage(MultiBitUI.NORMAL_ICON_SIZE, MultiBitUI.NORMAL_ICON_SIZE, BufferedImage.TYPE_INT_ARGB);
 
-    WritableRaster raster = image.getRaster();
+    Graphics2D g2 = background.createGraphics();
 
-    int newColorRed = newColor.getRed();
-    int newColorGreen = newColor.getGreen();
-    int newColorBlue = newColor.getBlue();
+    g2.setRenderingHints(ImageDecorator.smoothRenderingHints());
 
-    for (int x = 0; x < width; x++) {
-      for (int y = 0; y < height; y++) {
-        int[] pixels = raster.getPixel(x, y, (int[]) null);
-
-        pixels[0] = newColorRed;
-        pixels[1] = newColorGreen;
-        pixels[2] = newColorBlue;
-
-        raster.setPixel(x, y, pixels);
-      }
+    final int angle;
+    if (isCoinbase) {
+      angle = confirmationCount * 3 >= 360 ? 360 : confirmationCount * 3;
+      g2.setColor(Color.BLUE);
+    } else {
+      angle = confirmationCount * 60 >= 360 ? 360 : confirmationCount * 60;
+      g2.setColor(Color.GREEN);
     }
+    g2.fillArc(0, 0, MultiBitUI.NORMAL_ICON_SIZE, MultiBitUI.NORMAL_ICON_SIZE, 90, -angle);
 
-    return image;
+    g2.dispose();
+
+    return ImageDecorator.toImageIcon(background);
+
   }
 
 }

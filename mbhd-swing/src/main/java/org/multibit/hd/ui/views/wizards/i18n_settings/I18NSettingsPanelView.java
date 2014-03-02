@@ -89,7 +89,8 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
       "[][][]" // Row constraints
     ));
 
-    Locale locale = Configurations.currentConfiguration.getLocale();
+    I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration().deepCopy();
+    Locale locale = i18nConfiguration.getLocale();
 
     Preconditions.checkNotNull(locale, "'locale' cannot be empty");
 
@@ -97,9 +98,9 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
     displayAmountMaV.getModel().setSatoshis(BigInteger.valueOf(1_234_567_890_123L));
     displayAmountMaV.getModel().setLocalAmountVisible(false);
 
-    languagesComboBox = ComboBoxes.newLanguagesComboBox(this, Languages.currentLocale());
-    decimalComboBox = ComboBoxes.newDecimalComboBox(this, Languages.currentLocale());
-    groupingComboBox = ComboBoxes.newGroupingComboBox(this, Languages.currentLocale());
+    languagesComboBox = ComboBoxes.newLanguagesComboBox(this, locale);
+    decimalComboBox = ComboBoxes.newDecimalComboBox(this, i18nConfiguration);
+    groupingComboBox = ComboBoxes.newGroupingComboBox(this, i18nConfiguration);
 
     // Record the current index positions for the combo boxes
     languagesLastIndex = languagesComboBox.getSelectedIndex();
@@ -212,33 +213,36 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
     JComboBox source = (JComboBox) e.getSource();
     String localeCode = String.valueOf(source.getSelectedItem()).substring(0, 5);
 
-    Locale locale = Languages.newLocaleFromCode(localeCode);
+    // Determine the new locale
+    Locale newLocale = Languages.newLocaleFromCode(localeCode);
 
     // Create a new configuration to reset the separators
-    I18NConfiguration i18nConfiguration = new I18NConfiguration(locale);
-    // Retain the last selections
-    i18nConfiguration.setGroupingSeparator(Languages.getGroupingSeparators(locale)[groupingLastIndex].charAt(0));
-    i18nConfiguration.setDecimalSeparator(Languages.getDecimalSeparators(locale)[decimalLastIndex].charAt(0));
+    I18NConfiguration i18nConfiguration = new I18NConfiguration(newLocale);
 
-    // Update the last index
-    languagesLastIndex = source.getSelectedIndex();
+    // Retain the last selections (and current local currency)
+    i18nConfiguration.setGroupingSeparator(Languages.getGroupingSeparators(newLocale)[groupingLastIndex].charAt(0));
+    i18nConfiguration.setDecimalSeparator(Languages.getDecimalSeparators(newLocale)[decimalLastIndex].charAt(0));
+    i18nConfiguration.setLocalCurrencyUnit(Configurations.currentConfiguration.getI18NConfiguration().getLocalCurrencyUnit());
 
     // Update the model
     getWizardModel().setI18nConfiguration(i18nConfiguration);
 
+    // Update the last index
+    languagesLastIndex = source.getSelectedIndex();
+
     // Update the languages combo box
-    DefaultComboBoxModel<String> languagesModel = new DefaultComboBoxModel<>(Languages.getLanguageNames(true, locale));
+    DefaultComboBoxModel<String> languagesModel = new DefaultComboBoxModel<>(Languages.getLanguageNames(true, newLocale));
     languagesComboBox.setModel(languagesModel);
     languagesComboBox.setSelectedIndex(languagesLastIndex);
 
     // Update the grouping combo box
-    DefaultComboBoxModel<String> groupingModel = new DefaultComboBoxModel<>(Languages.getGroupingSeparators(locale));
+    DefaultComboBoxModel<String> groupingModel = new DefaultComboBoxModel<>(Languages.getGroupingSeparators(newLocale));
     groupingComboBox.setModel(groupingModel);
     groupingComboBox.setSelectedIndex(groupingLastIndex);
 
     // Update the decimal combo box
     i18nConfiguration.setGroupingSeparator(groupingComboBox.getSelectedItem().toString().charAt(0));
-    DefaultComboBoxModel<String> decimalModel = new DefaultComboBoxModel<>(Languages.getDecimalSeparators(locale));
+    DefaultComboBoxModel<String> decimalModel = new DefaultComboBoxModel<>(Languages.getDecimalSeparators(newLocale));
     decimalComboBox.setModel(decimalModel);
     decimalComboBox.setSelectedIndex(decimalLastIndex);
 

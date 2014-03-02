@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.util.Map;
 
 /**
@@ -60,13 +61,9 @@ public class ImageDecorator {
   /**
    * @param icon The icon
    *
-   * @return An image icon suitable for use in tables etc
+   * @return A buffered image suitable for use with panels, overlays etc
    */
-  public static ImageIcon toImageIcon(Icon icon) {
-
-    if (icon instanceof ImageIcon) {
-      return (ImageIcon) icon;
-    }
+  public static BufferedImage toBufferedImage(Icon icon) {
 
     // Get the size
     int w = icon.getIconWidth();
@@ -81,13 +78,43 @@ public class ImageDecorator {
     BufferedImage image = gc.createCompatibleImage(w, h, Transparency.BITMASK);
 
     Graphics2D g = image.createGraphics();
-    g.setRenderingHints(ImageDecorator.smoothRenderingHints());
+
+    // Keep it smooth
+    g.setRenderingHints(smoothRenderingHints());
 
     // Paint the icon on to it
     icon.paintIcon(null, g, 0, 0);
 
     g.dispose();
 
+    return image;
+  }
+
+  /**
+   * @param image The buffered image
+   *
+   * @return An image icon suitable for use in tables etc
+   */
+  public static ImageIcon toImageIcon(BufferedImage image) {
+
+    return new ImageIcon(image);
+  }
+
+  /**
+   * @param icon The icon
+   *
+   * @return An image icon suitable for use in tables etc
+   */
+  public static ImageIcon toImageIcon(Icon icon) {
+
+    if (icon instanceof ImageIcon) {
+      return (ImageIcon) icon;
+    }
+
+    // Use buffered image as an intermediate format
+    BufferedImage image = toBufferedImage(icon);
+
+    // Convert to image icon for tables
     return toImageIcon(image);
 
   }
@@ -109,12 +136,68 @@ public class ImageDecorator {
   }
 
   /**
-   * @param image The buffered image
+   * <p>Applies a single alpha-blended color over all pixels</p>
    *
-   * @return An image icon suitable for use in tables etc
+   * @param image    The source image
+   * @param newColor The color to use as the replacement to non-transparent pixels
+   *
+   * @return The new image with color applied
    */
-  public static ImageIcon toImageIcon(BufferedImage image) {
+  public static BufferedImage applyColor(BufferedImage image, Color newColor) {
 
-    return new ImageIcon(image);
+    int width = image.getWidth();
+    int height = image.getHeight();
+
+    WritableRaster raster = image.getRaster();
+
+    int newColorRed = newColor.getRed();
+    int newColorGreen = newColor.getGreen();
+    int newColorBlue = newColor.getBlue();
+
+    for (int x = 0; x < width; x++) {
+      for (int y = 0; y < height; y++) {
+        int[] pixels = raster.getPixel(x, y, (int[]) null);
+
+        pixels[0] = newColorRed;
+        pixels[1] = newColorGreen;
+        pixels[2] = newColorBlue;
+
+        raster.setPixel(x, y, pixels);
+      }
+    }
+
+    return image;
+  }
+
+  /**
+   * <p>Overlay the foreground onto the background with an offset</p>
+   *
+   * @param foreground The foreground image
+   * @param background The background image
+   * @param x          The x position on the background to place the foreground image
+   * @param y          The y position on the background to place the foreground image
+   *
+   * @return The (clipped if necessary) foreground image placed over the background image
+   */
+  public static BufferedImage overlayImages(BufferedImage foreground, BufferedImage background, int x, int y) {
+    int bx = background.getWidth();
+    int by = background.getHeight();
+
+    // Get the graphics context
+    Graphics2D g2 = background.createGraphics();
+
+    // Blend images smoothly
+    g2.setRenderingHints(smoothRenderingHints());
+
+    // Draw background image at (0,0)
+    g2.drawImage(background, 0, 0, null);
+
+    // Draw clipped foreground image at (x,y) not exceeding background boundaries
+    g2.drawImage(foreground, x, y, bx - x, by - y, null);
+
+    // Tidy up
+    g2.dispose();
+
+    return background;
   }
 }

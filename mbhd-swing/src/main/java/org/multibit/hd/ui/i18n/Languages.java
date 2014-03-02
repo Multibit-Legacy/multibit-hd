@@ -181,7 +181,7 @@ public class Languages {
    *
    * @throws org.multibit.hd.ui.exceptions.UIException If there is no match
    */
-  public static int getIndexFromLocale(Locale locale) {
+  public static int getLanguageIndexFromLocale(Locale locale) {
 
     Preconditions.checkNotNull(locale, "'locale' must be present");
 
