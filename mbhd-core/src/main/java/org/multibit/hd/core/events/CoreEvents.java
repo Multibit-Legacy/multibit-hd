@@ -157,4 +157,15 @@ public class CoreEvents {
     CoreServices.uiEventBus.post(new ShutdownEvent());
 
   }
+
+  /**
+   * <p>Broadcast a new "configuration changed" event</p>
+   */
+  public static void fireConfigurationChangedEvent() {
+
+    log.trace("Firing 'configuration changed' event");
+    CoreServices.uiEventBus.post(new ConfigurationChangedEvent());
+
+  }
+
 }

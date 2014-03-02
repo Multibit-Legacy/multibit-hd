@@ -9,7 +9,7 @@ import java.util.Arrays;
  *  <li>Success/ failure of send bitcoins</li>
  *  </ul>
  */
-public class BitcoinSentEvent {
+public class BitcoinSentEvent implements CoreEvent {
 
   private final BigInteger amount;
 

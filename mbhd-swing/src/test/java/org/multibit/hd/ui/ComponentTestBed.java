@@ -10,6 +10,7 @@ import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.RAGStatus;
+import org.multibit.hd.core.events.ConfigurationChangedEvent;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -20,7 +21,6 @@ import org.multibit.hd.core.services.HistoryService;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.controllers.HeaderController;
 import org.multibit.hd.ui.controllers.MainController;
-import org.multibit.hd.ui.events.controller.ChangeLocaleEvent;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;
 import org.multibit.hd.ui.events.view.ThemeChangedEvent;
@@ -154,18 +154,14 @@ public class ComponentTestBed {
   }
 
   @Subscribe
-  public void onChangeLocaleEvent(ChangeLocaleEvent event) {
+  public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
 
-    Locale locale = event.getLocale();
+    Locale locale = Configurations.currentConfiguration.getLocale();
 
-    Locale.setDefault(locale);
     frame.setLocale(locale);
 
     // Ensure the resource bundle is reset
     ResourceBundle.clearCache();
-
-    // Update the main configuration
-    Configurations.currentConfiguration.getI18NConfiguration().setLocale(locale);
 
     // Ensure LTR and RTL language formats are in place
     frame.applyComponentOrientation(ComponentOrientation.getOrientation(locale));

@@ -2,7 +2,8 @@ package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.events.controller.ControllerEvents;
+import org.multibit.hd.core.config.Configuration;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
@@ -119,7 +120,10 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
 
     log.debug("Language changed to '{}'", localeCode);
 
-    ControllerEvents.fireChangeLocaleEvent(locale);
+    Configuration newConfiguration = Configurations.currentConfiguration.deepCopy();
+
+    newConfiguration.getI18NConfiguration().setLocale(locale);
+    Configurations.switchConfiguration(newConfiguration);
 
   }
 }

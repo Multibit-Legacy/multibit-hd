@@ -12,7 +12,7 @@ import org.multibit.hd.core.dto.HistoryEntry;
  * @since 0.0.1
  *  
  */
-public class HistoryChangedEvent {
+public class HistoryChangedEvent implements CoreEvent {
 
   private final HistoryEntry historyEntry;
 

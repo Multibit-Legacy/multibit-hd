@@ -8,9 +8,9 @@ import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
+import org.multibit.hd.core.events.ConfigurationChangedEvent;
 import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.events.controller.ChangeLocaleEvent;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
@@ -43,19 +43,18 @@ public class MainController {
   }
 
   /**
-   * <p>Update the application locale</p>
+   * <p>Update the application configuration</p>
    *
-   * @param event The change locale event
+   * @param event The change configuration event
    */
   @Subscribe
-  public synchronized void onChangeLocaleEvent(ChangeLocaleEvent event) {
+  public synchronized void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
 
-    log.trace("Received 'locale change' event");
+    log.trace("Received 'configuration changed' event");
 
     Preconditions.checkNotNull(event, "'event' must be present");
-    Preconditions.checkNotNull(event.getLocale(), "'locale' must be present");
 
-    Locale locale = event.getLocale();
+    Locale locale = Configurations.currentConfiguration.getLocale();
 
     // Configure all Swing components to use the new locale
     Locale.setDefault(locale);
@@ -63,9 +62,6 @@ public class MainController {
 
     // Ensure the resource bundle is reset
     ResourceBundle.clearCache();
-
-    // Update the main configuration
-    Configurations.currentConfiguration.getI18NConfiguration().setLocale(locale);
 
     // Update the frame to allow for LTR or RTL transition
     Panels.frame.setLocale(locale);

@@ -11,7 +11,7 @@ import java.util.Arrays;
  *
  * <p>Success guarantees that the wallet contains the underlying transaction.</p>
  */
-public class TransactionCreationEvent {
+public class TransactionCreationEvent implements CoreEvent {
 
   private final BigInteger amount;
 

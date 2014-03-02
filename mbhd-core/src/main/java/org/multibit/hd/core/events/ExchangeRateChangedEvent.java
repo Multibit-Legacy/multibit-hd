@@ -14,7 +14,7 @@ import org.multibit.hd.core.utils.Dates;
  * @since 0.0.1
  *  
  */
-public class ExchangeRateChangedEvent {
+public class ExchangeRateChangedEvent implements CoreEvent {
 
   private final BigMoney rate;
   private final Optional<String> rateProvider;

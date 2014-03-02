@@ -3,6 +3,7 @@ package org.multibit.hd.core.config;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.io.Files;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.exceptions.CoreException;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
@@ -24,7 +26,7 @@ import java.util.Properties;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class Configurations {
 
@@ -101,6 +103,27 @@ public class Configurations {
     properties.put(LOGGING_PACKAGE_PREFIX + "org.multibit", "debug");
 
     return new ConfigurationReadAdapter(properties).adapt();
+
+  }
+
+  /**
+   * <p>Handle the process of switching to a new configuration</p>
+   *
+   * @param newConfiguration The new configuration
+   */
+  public static synchronized void switchConfiguration(Configuration newConfiguration) {
+
+    // Keep track of the previous configuration
+    previousConfiguration = currentConfiguration;
+
+    // Set the replacement
+    currentConfiguration = newConfiguration;
+
+    // Update any JVM classes
+    Locale.setDefault(currentConfiguration.getLocale());
+
+    // Notify interested parties
+    CoreEvents.fireConfigurationChangedEvent();
 
   }
 
@@ -222,5 +245,4 @@ public class Configurations {
 
     }
   }
-
 }

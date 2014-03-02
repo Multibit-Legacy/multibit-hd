@@ -4,7 +4,6 @@ import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.xeiam.xchange.bitstamp.BitstampExchange;
 import com.xeiam.xchange.currency.MoneyUtils;
-import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.events.SecurityEvent;
@@ -21,7 +20,6 @@ import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.controllers.HeaderController;
 import org.multibit.hd.ui.controllers.MainController;
 import org.multibit.hd.ui.controllers.SidebarController;
-import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
@@ -55,6 +53,10 @@ public class MultiBitHD {
 
   private static File applicationDataDirectory;
 
+  private static MainController mainController;
+  private static HeaderController headerController;
+  private static SidebarController sidebarController;
+
   /**
    * <p>Main entry point to the application</p>
    *
@@ -67,6 +69,8 @@ public class MultiBitHD {
     initialiseCore(args);
 
     initialiseUI();
+
+    initialiseSupport();
 
   }
 
@@ -173,57 +177,36 @@ public class MultiBitHD {
     );
 
     // Create controllers
-    MainController mainController = new MainController();
-    HeaderController headerController = new HeaderController();
-    SidebarController sidebarController = new SidebarController();
+    mainController = new MainController();
+    headerController = new HeaderController();
+    sidebarController = new SidebarController();
 
-    // Show the UI for the current locale
-    ControllerEvents.fireChangeLocaleEvent(Configurations.currentConfiguration.getLocale());
+    ViewEvents.fireLocaleChangedEvent();
 
-    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
-      // There is a wallet present - warm start
-      WalletData walletData = WalletManager.INSTANCE.getCurrentWalletData().get();
-      log.debug("The current wallet is:\nWallet id = '" + walletData.getWalletId().toString() + "\n" + walletData.getWallet().toString());
+  }
 
-      // Force an exit if the user can't get through
-      Panels.showLightBox(Wizards.newExitingPasswordWizard().getWizardPanel());
+  /**
+   * <p>Initialise the UI support services</p>
+   */
+  private static void initialiseSupport() {
 
-    } else {
-      // Show an exiting Welcome wizard
-      log.debug("There is no current wallet so showing the 'WelcomeWizard'");
-      Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardPanel());
-    }
+    showPasswordOrWizard();
 
-    // TODO enable the user to switch between the existing wallets
+    overlaySecurityAlerts();
 
-    // Start the bitcoin network service
-    bitcoinNetworkService.start();
+    BigInteger satoshis = getStartingBalance();
 
-    Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
+    showExchangeRate(satoshis);
 
-    // If the network starts ok start downloading blocks to catch up with the current blockchain
-    if (bitcoinNetworkService.isStartedOk()) {
-      bitcoinNetworkService.downloadBlockChain();
-    }
+    startBitcoinNetwork();
+  }
 
-    // Provide a starting balance
-    // TODO Get this from CoreServices - bitcoinj wallet class should not appear in GUI code
-    BigInteger satoshis;
-    Optional<WalletData> currentWalletData = WalletManager.INSTANCE.getCurrentWalletData();
-    if (currentWalletData.isPresent()) {
-      // Use the real wallet data
-      satoshis = currentWalletData.get().getWallet().getBalance();
-    } else {
-      // Use some dummy data
-      satoshis = BigInteger.ZERO;
-    }
-
-    // Catch up with any early security events
-    Optional<SecurityEvent> securityEvent = CoreServices.getApplicationEventService().getLatestSecurityEvent();
-
-    if (securityEvent.isPresent()) {
-      mainController.onSecurityEvent(securityEvent.get());
-    }
+  /**
+   * <p>Show any available exchange rate in the header</p>
+   *
+   * @param satoshis The current balance in satoshis
+   */
+  private static void showExchangeRate(BigInteger satoshis) {
 
     // Catch up with any early exchange rate events
     Optional<ExchangeRateChangedEvent> exchangeEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
@@ -239,6 +222,71 @@ public class MultiBitHD {
         Optional.<String>absent()
       );
 
+    }
+  }
+
+  /**
+   * <p>Show any security alerts</p>
+   */
+  private static void overlaySecurityAlerts() {
+
+    // Catch up with any early security events
+    Optional<SecurityEvent> securityEvent = CoreServices.getApplicationEventService().getLatestSecurityEvent();
+
+    if (securityEvent.isPresent()) {
+      mainController.onSecurityEvent(securityEvent.get());
+    }
+
+  }
+
+  /**
+   * <p>Show any available starting balance</p>
+   *
+   * @return The current balance in satoshis
+   */
+  private static BigInteger getStartingBalance() {
+
+    // TODO Get this from CoreServices - bitcoinj wallet class should not appear in GUI code
+    Optional<WalletData> currentWalletData = WalletManager.INSTANCE.getCurrentWalletData();
+
+    BigInteger satoshis;
+    if (currentWalletData.isPresent()) {
+      // Use the real wallet data
+      satoshis = currentWalletData.get().getWallet().getBalance();
+    } else {
+      // Use some dummy data
+      satoshis = BigInteger.ZERO;
+    }
+
+    return satoshis;
+  }
+
+  private static void startBitcoinNetwork() {
+    // Start the bitcoin network service
+    bitcoinNetworkService.start();
+
+    Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
+
+    // If the network starts ok start downloading blocks to catch up with the current blockchain
+    if (bitcoinNetworkService.isStartedOk()) {
+      bitcoinNetworkService.downloadBlockChain();
+    }
+  }
+
+  private static void showPasswordOrWizard() {
+    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
+
+      // There is a wallet present - warm start
+      WalletData walletData = WalletManager.INSTANCE.getCurrentWalletData().get();
+      log.debug("The current wallet is:\nWallet id = '" + walletData.getWalletId().toString() + "\n" + walletData.getWallet().toString());
+
+      // Force an exit if the user can't get through
+      Panels.showLightBox(Wizards.newExitingPasswordWizard().getWizardPanel());
+
+    } else {
+      // Show an exiting Welcome wizard
+      log.debug("There is no current wallet so showing the 'WelcomeWizard'");
+      Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardPanel());
     }
   }
 
