@@ -49,6 +49,7 @@ public class Configurations {
   public static final String I18N_IS_CURRENCY_PREFIXED = "i18n.is-prefixed";
   public static final String I18N_LOCAL_DECIMAL_PLACES = "i18n.local-decimal-places";
   public static final String I18N_LOCAL_CURRENCY_UNIT = "i18n.local-currency-unit";
+  public static final String I18N_LOCAL_CURRENCY_SYMBOL = "i18n.local-currency-symbol";
 
   // Logging
   public static final String LOGGING = "logging";

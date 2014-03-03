@@ -1,14 +1,17 @@
 package org.multibit.hd.ui.views.components;
 
 import com.google.common.base.Preconditions;
+import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.I18NConfiguration;
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.Recipient;
+import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteDecorator;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilter;
+import org.multibit.hd.ui.views.components.display_amount.BitcoinSymbolListCellRenderer;
 import org.multibit.hd.ui.views.components.select_backup_summary.BackupSummaryListCellRenderer;
 import org.multibit.hd.ui.views.components.select_contact.RecipientComboBoxEditor;
 import org.multibit.hd.ui.views.components.select_contact.RecipientListCellRenderer;
@@ -30,6 +33,31 @@ import java.util.Locale;
  *  
  */
 public class ComboBoxes {
+
+  /**
+   * The "languages" combo box action command
+   */
+  public static final String LANGUAGES_COMMAND = "languages";
+  /**
+   * The "placement" combo box action command
+   */
+  public static final String PLACEMENT_COMMAND = "placement";
+  /**
+   * The "decimal separator" combo box action command
+   */
+  public static final String DECIMAL_COMMAND = "decimal";
+  /**
+   * The "grouping separator" combo box action command
+   */
+  public static final String GROUPING_COMMAND = "grouping";
+  /**
+   * The "local symbol" combo box action command
+   */
+  public static final String LOCAL_SYMBOL_COMMAND = "localSymbol";
+  /**
+   * The "Bitcoin symbol" combo box action command
+   */
+  public static final String BITCOIN_SYMBOL_COMMAND = "bitcoinSymbol";
 
   /**
    * Utilities have no public constructor
@@ -123,7 +151,7 @@ public class ComboBoxes {
     comboBox.setSelectedIndex(Languages.getLanguageIndexFromLocale(locale));
 
     // Add the listener at the end to avoid false events
-    comboBox.setActionCommand("languages");
+    comboBox.setActionCommand(LANGUAGES_COMMAND);
     comboBox.addActionListener(listener);
 
 
@@ -132,7 +160,7 @@ public class ComboBoxes {
   }
 
   /**
-   * @param listener The action listener to alert when the selection is made
+   * @param listener          The action listener to alert when the selection is made
    * @param i18nConfiguration The I18NConfiguration to use
    *
    * @return A new "decimal" combo box
@@ -144,7 +172,7 @@ public class ComboBoxes {
 
     // Determine the first matching separator
     Character decimal = i18nConfiguration.getDecimalSeparator();
-    for (int i=0; i<decimalSeparators.length; i++) {
+    for (int i = 0; i < decimalSeparators.length; i++) {
       if (decimal.equals(decimalSeparators[i].charAt(0))) {
         comboBox.setSelectedIndex(i);
         break;
@@ -152,7 +180,7 @@ public class ComboBoxes {
     }
 
     // Add the listener at the end to avoid false events
-    comboBox.setActionCommand("decimal");
+    comboBox.setActionCommand(DECIMAL_COMMAND);
     comboBox.addActionListener(listener);
 
     return comboBox;
@@ -160,7 +188,7 @@ public class ComboBoxes {
   }
 
   /**
-   * @param listener The action listener to alert when the selection is made
+   * @param listener          The action listener to alert when the selection is made
    * @param i18nConfiguration The I18NConfiguration to use
    *
    * @return A new "decimal" combo box
@@ -172,7 +200,7 @@ public class ComboBoxes {
 
     // Determine the first matching separator
     Character grouping = i18nConfiguration.getGroupingSeparator();
-    for (int i=0; i<groupingSeparators.length; i++) {
+    for (int i = 0; i < groupingSeparators.length; i++) {
       if (grouping.equals(groupingSeparators[i].charAt(0))) {
         comboBox.setSelectedIndex(i);
         break;
@@ -180,11 +208,89 @@ public class ComboBoxes {
     }
 
     // Add the listener at the end to avoid false events
-    comboBox.setActionCommand("grouping");
+    comboBox.setActionCommand(GROUPING_COMMAND);
     comboBox.addActionListener(listener);
 
     return comboBox;
 
+  }
+
+  /**
+   * <p>Provide a choice between the local currency symbol, or its 3-letter code</p>
+   *
+   * @param listener          The action listener to alert when the selection is made
+   * @param i18nConfiguration The I18N configuration to use
+   *
+   * @return A new "local symbol" combo box (e.g. ["$", "USD"] or ["£","GBP"] etc)
+   */
+  public static JComboBox<String> newLocalSymbolComboBox(ActionListener listener, I18NConfiguration i18nConfiguration) {
+
+    String[] localSymbols = new String[]{
+      i18nConfiguration.getLocalCurrencySymbol(),
+      i18nConfiguration.getLocalCurrencyUnit().getCurrencyCode(),
+    };
+    JComboBox<String> comboBox = newReadOnlyComboBox(localSymbols);
+
+    // Ensure we have no ugly scrollbar
+    comboBox.setMaximumRowCount(localSymbols.length);
+
+    // Add the listener at the end to avoid false events
+    comboBox.setActionCommand(LOCAL_SYMBOL_COMMAND);
+    comboBox.addActionListener(listener);
+
+    return comboBox;
+  }
+
+  /**
+   * @param listener             The action listener to alert when the selection is made
+   * @param bitcoinConfiguration The Bitcoin configuration to use
+   *
+   * @return A new "Bitcoin symbol" combo box (e.g. "mB", "XBT" etc)
+   */
+  public static JComboBox<BitcoinSymbol> newBitcoinSymbolComboBox(ActionListener listener, BitcoinConfiguration bitcoinConfiguration) {
+
+    // Order of insertion is important here
+    JComboBox<BitcoinSymbol> comboBox = newReadOnlyComboBox(BitcoinSymbol.values());
+
+    comboBox.setEditable(false);
+
+    // Ensure we have no ugly scrollbar
+    comboBox.setMaximumRowCount(BitcoinSymbol.values().length);
+
+    // Use a list cell renderer to ensure Bitcoin symbols are correctly presented
+    ListCellRenderer<BitcoinSymbol> renderer = new BitcoinSymbolListCellRenderer();
+    comboBox.setRenderer(renderer);
+
+    // Ensure we start with the given symbol selected
+    BitcoinSymbol bitcoinSymbol = BitcoinSymbol.of(bitcoinConfiguration.getBitcoinSymbol());
+    comboBox.setSelectedIndex(bitcoinSymbol.ordinal());
+
+    // Add the listener at the end to avoid false events
+    comboBox.setActionCommand(BITCOIN_SYMBOL_COMMAND);
+    comboBox.addActionListener(listener);
+
+    return comboBox;
+  }
+
+  /**
+   * @param listener The action listener to alert when the selection is made
+   *
+   * @return A new "placement" combo box (e.g. "Leading", "Trailing" etc)
+   */
+  public static JComboBox<String> newPlacementComboBox(ActionListener listener) {
+
+    // Order of insertion is important here
+    String[] positions = new String[]{
+      Languages.safeText(MessageKey.LEADING),
+      Languages.safeText(MessageKey.TRAILING),
+    };
+    JComboBox<String> comboBox = newReadOnlyComboBox(positions);
+
+    // Add the listener at the end to avoid false events
+    comboBox.setActionCommand(PLACEMENT_COMMAND);
+    comboBox.addActionListener(listener);
+
+    return comboBox;
   }
 
   /**
@@ -260,5 +366,4 @@ public class ComboBoxes {
 
     return comboBox;
   }
-
 }

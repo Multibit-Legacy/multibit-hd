@@ -2,8 +2,9 @@ package org.multibit.hd.ui.views.components.display_amount;
 
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.config.BitcoinConfiguration;
+import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.I18NConfiguration;
-import org.multibit.hd.core.utils.CurrencyUtils;
 import org.multibit.hd.ui.i18n.Formats;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
@@ -14,6 +15,7 @@ import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 
 import javax.swing.*;
+import java.math.BigInteger;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -94,61 +96,47 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
   /**
    * <p>Updates the view to reflect the current Bitcoin and local amounts</p>
    *
-   * @param i18nConfiguration The I18NConfiguration to use
+   * @param configuration The Configuration to use
    */
-  public void updateView(I18NConfiguration i18nConfiguration) {
+  public void updateView(Configuration configuration) {
 
-    Preconditions.checkNotNull(i18nConfiguration, "'i18nConfiguration' must be present");
+    Preconditions.checkNotNull(configuration, "'configuration' must be present");
+
+    I18NConfiguration i18nConfiguration = configuration.getI18NConfiguration();
+    BitcoinConfiguration bitcoinConfiguration = configuration.getBitcoinConfiguration();
+    BigInteger satoshis = getModel().get().getSatoshis();
 
     // Display using the symbolic amount
-    String[] bitcoinDisplay = Formats.formatSatoshisAsSymbolic(getModel().get().getSatoshis(), i18nConfiguration);
+    String[] bitcoinDisplay = Formats.formatSatoshisAsSymbolic(satoshis, i18nConfiguration, bitcoinConfiguration);
 
     if (i18nConfiguration.isCurrencySymbolLeading()) {
-      handleLeadingSymbol();
+      handleLeadingSymbol(bitcoinConfiguration);
     } else {
-      handleTrailingSymbol();
+      handleTrailingSymbol(bitcoinConfiguration);
     }
 
     primaryBalanceLabel.setText(bitcoinDisplay[0]);
     secondaryBalanceLabel.setText(bitcoinDisplay[1]);
 
-    String localSymbol = CurrencyUtils.currentSymbol();
+    String localSymbol = i18nConfiguration.getLocalCurrencySymbol();
 
     if (getModel().get().isLocalAmountVisible()) {
       String localDisplay = Formats.formatLocalAmount(getModel().get().getLocalAmount(), i18nConfiguration);
-      if (getModel().get().getRateProvider().isPresent()) {
-        // Have a provider
-        exchangeLabel.setText(
-          Languages.safeText(
-            MessageKey.EXCHANGE_FIAT_RATE_WITH_PROVIDER,
-            " ~ " + localSymbol,
-            localDisplay,
-            getModel().get().getRateProvider().get()
-          ));
-      } else {
-        // No provider
-        exchangeLabel.setText(
-          Languages.safeText(
-            MessageKey.EXCHANGE_FIAT_RATE,
-            " ~ " + localSymbol,
-            localDisplay
-          ));
-
-      }
+      // Exchange label text is complex
+      handleExchangeLabelText(i18nConfiguration, localSymbol, localDisplay);
       exchangeLabel.setVisible(true);
     } else {
       exchangeLabel.setVisible(false);
     }
   }
 
-
   /**
    * <p>Place currency symbol before the number</p>
    */
-  private void handleLeadingSymbol() {
+  private void handleLeadingSymbol(BitcoinConfiguration bitcoinConfiguration) {
 
     // Add the symbol to the leading position
-    LabelDecorator.applyBitcoinSymbolLabel(leadingSymbolLabel);
+    LabelDecorator.applyBitcoinSymbolLabel(leadingSymbolLabel, bitcoinConfiguration, "");
 
     // Remove it from the trailing position
     AwesomeDecorator.removeIcon(trailingSymbolLabel);
@@ -156,18 +144,79 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
 
   }
 
+
   /**
    * <p>Place currency symbol after the number</p>
    */
-  private void handleTrailingSymbol() {
+  private void handleTrailingSymbol(BitcoinConfiguration bitcoinConfiguration) {
 
-    // Add the symbol to the trailing position
-    LabelDecorator.applyBitcoinSymbolLabel(trailingSymbolLabel);
+    // Add the symbol to the trailing position (no text)
+    LabelDecorator.applyBitcoinSymbolLabel(trailingSymbolLabel, bitcoinConfiguration, "");
 
     // Remove it from the leading position
     AwesomeDecorator.removeIcon(leadingSymbolLabel);
     leadingSymbolLabel.setText("");
 
+  }
+
+  /**
+   * <p>Populates the exchange label text according to the configured symbols and available providers</p>
+   * <p>Note the use of non-breaking spaces (\u00a0) to ensure the entire number is correctly represented</p>
+   *
+   * @param i18nConfiguration The I18N configuration
+   * @param localSymbol       The local symbol (e.g. "$")
+   * @param localDisplay      The local display (e.g. "1,234.567")
+   */
+  private void handleExchangeLabelText(I18NConfiguration i18nConfiguration, String localSymbol, String localDisplay) {
+
+    if (getModel().get().getRateProvider().isPresent()) {
+
+      // Have a provider
+      if (i18nConfiguration.isCurrencySymbolLeading()) {
+        // Use leading format
+        exchangeLabel.setText(
+          Languages.safeText(
+            MessageKey.EXCHANGE_FIAT_RATE_WITH_PROVIDER,
+            "~\u00a0" + localSymbol + "\u00a0",
+            localDisplay,
+            getModel().get().getRateProvider().get()
+          ));
+
+      } else {
+
+        // Use trailing format
+        exchangeLabel.setText(
+          Languages.safeText(
+            MessageKey.EXCHANGE_FIAT_RATE_WITH_PROVIDER,
+            "~\u00a0",
+            localDisplay + "\u00a0" + localSymbol + "\u00a0",
+            getModel().get().getRateProvider().get()
+          ));
+
+      }
+    } else {
+
+      // No provider
+      if (i18nConfiguration.isCurrencySymbolLeading()) {
+        // Use leading format
+        exchangeLabel.setText(
+          Languages.safeText(
+            MessageKey.EXCHANGE_FIAT_RATE,
+            "~\u00a0" + localSymbol + "\u00a0",
+            localDisplay
+          ));
+
+      } else {
+        // Use trailing format
+        exchangeLabel.setText(
+          Languages.safeText(
+            MessageKey.EXCHANGE_FIAT_RATE,
+            "~\u00a0",
+            localDisplay + "\u00a0" + localSymbol
+          ));
+      }
+
+    }
   }
 
 }

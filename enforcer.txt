@@ -40,7 +40,6 @@
                                         <urn>com.xeiam.xchange:xchange-campbx:1.7.0:jar:null:compile:7d09f12cc34689671347981537e31958da39f406</urn>
                                         <urn>com.xeiam.xchange:xchange-cavirtex:1.7.0:jar:null:compile:b4e04ec1b466d23136711b0d35b533c1311d0a61</urn>
                                         <urn>com.xeiam.xchange:xchange-core:1.7.0:jar:null:compile:731476908c5adb4dc2b1feed01a6fa1d430c9041</urn>
-                                        <urn>com.xeiam.xchange:xchange-mtgox:1.7.0:jar:null:compile:b74144f11b35519821de8e65aa7ee73aeea3b5a6</urn>
                                         <urn>com.xeiam.xchange:xchange-openexchangerates:1.7.0:jar:null:compile:6914f3b1ee26b8e613143d040ebeb3a5fb8c2e6a</urn>
                                         <urn>com.xeiam.xchart:xchart:2.2.0:jar:null:compile:3e3d4f50597c0b64b12c1c5eec335e940dce9501</urn>
                                         <urn>commons-codec:commons-codec:1.4:jar:null:compile:4216af16d38465bbab0f3dff8efa14204f7a399a</urn>

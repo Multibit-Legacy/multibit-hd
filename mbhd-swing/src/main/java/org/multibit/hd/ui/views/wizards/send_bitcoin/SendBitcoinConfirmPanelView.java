@@ -3,10 +3,10 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.config.I18NConfiguration;
-import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountModel;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
@@ -114,22 +114,22 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
   @Override
   public boolean beforeShow() {
 
-    I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration();
+    Configuration configuration = Configurations.currentConfiguration;
 
     // Update the model and view for the amount
     transactionDisplayAmountMaV.getModel().setSatoshis(getWizardModel().getSatoshis());
     transactionDisplayAmountMaV.getModel().setLocalAmount(getWizardModel().getLocalAmount());
-    transactionDisplayAmountMaV.getView().updateView(i18nConfiguration);
+    transactionDisplayAmountMaV.getView().updateView(configuration);
 
     // Update the model and view for the transaction fee
     transactionFeeDisplayAmountMaV.getModel().setSatoshis(getWizardModel().getTransactionFee());
     transactionFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
-    transactionFeeDisplayAmountMaV.getView().updateView(i18nConfiguration);
+    transactionFeeDisplayAmountMaV.getView().updateView(configuration);
 
     // Update the model and view for the developer fee
     developerFeeDisplayAmountMaV.getModel().setSatoshis(getWizardModel().getDeveloperFee());
     developerFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
-    developerFeeDisplayAmountMaV.getView().updateView(i18nConfiguration);
+    developerFeeDisplayAmountMaV.getView().updateView(configuration);
 
     // Update the model and view for the recipient
     recipientSummaryLabel.setText(getWizardModel().getRecipient().getSummary());

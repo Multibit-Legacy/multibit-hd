@@ -1,10 +1,10 @@
-package org.multibit.hd.ui.views.wizards.i18n_settings;
+package org.multibit.hd.ui.views.wizards.bitcoin_settings;
 
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 
 /**
- * <p>Model object to provide the following to "edit contact" wizard:</p>
+ * <p>Model object to provide the following to "Bitcoin settings" wizard:</p>
  * <ul>
  * <li>Storage of panel data</li>
  * <li>State transition management</li>
@@ -13,15 +13,15 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
  * @since 0.0.1
  *  
  */
-public class I18NSettingsWizardModel extends AbstractWizardModel<I18NSettingsState> {
+public class BitcoinSettingsWizardModel extends AbstractWizardModel<BitcoinSettingsState> {
 
   private Configuration configuration;
 
   /**
    * @param state         The state object
-   * @param configuration The configuration to use
+   * @param configuration The new configuration (require both Bitcoin and I18N details)
    */
-  public I18NSettingsWizardModel(I18NSettingsState state, Configuration configuration) {
+  public BitcoinSettingsWizardModel(BitcoinSettingsState state, Configuration configuration) {
     super(state);
     this.configuration = configuration;
   }
@@ -34,7 +34,7 @@ public class I18NSettingsWizardModel extends AbstractWizardModel<I18NSettingsSta
   }
 
   /**
-   * @param configuration The new Configuration
+   * @param configuration The new configuration
    */
   public void setConfiguration(Configuration configuration) {
     this.configuration = configuration;

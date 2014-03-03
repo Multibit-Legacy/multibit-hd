@@ -100,7 +100,7 @@ public class Languages {
     String separator = String.valueOf(symbols.getDecimalSeparator());
 
     return new String[]{
-      Languages.append(separator, Languages.safeText(MessageKey.DECIMAL_DEFAULT), " "),
+      separator + " " + Languages.safeText(MessageKey.DECIMAL_DEFAULT),
       Languages.safeText(MessageKey.DECIMAL_COMMA),
       Languages.safeText(MessageKey.DECIMAL_POINT),
       Languages.safeText(MessageKey.DECIMAL_SPACE),
@@ -123,7 +123,7 @@ public class Languages {
     String separator = String.valueOf(symbols.getGroupingSeparator());
 
     return new String[]{
-      Languages.append(separator, Languages.safeText(MessageKey.DECIMAL_DEFAULT), " "),
+      separator + " " + Languages.safeText(MessageKey.DECIMAL_DEFAULT),
       Languages.safeText(MessageKey.DECIMAL_COMMA),
       Languages.safeText(MessageKey.DECIMAL_POINT),
       Languages.safeText(MessageKey.DECIMAL_SPACE),
@@ -290,25 +290,6 @@ public class Languages {
     } else {
       // Apply truncation (with ellipsis)
       return joinedContents.substring(0, maxIndex) + ellipsis;
-    }
-
-  }
-
-  /**
-   * <p>Appends fragment2 to fragment1 preserving LTR/RTL since Strings are presented as LTR.</p>
-   *
-   * @param fragment1 The first fragment
-   * @param fragment2 The second fragment
-   * @param separator The separator, usually a space
-   *
-   * @return The LHS with RHS appended so that the result reads correctly in the current locale
-   */
-  public static String append(String fragment1, String fragment2, String separator) {
-
-    if (Languages.isLeftToRight()) {
-      return fragment1 + separator + fragment2;
-    } else {
-      return fragment2 + separator + fragment1;
     }
 
   }

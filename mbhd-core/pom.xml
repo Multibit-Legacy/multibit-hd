@@ -78,12 +78,6 @@
       <artifactId>xchange-core</artifactId>
       <version>${xchange.version}</version>
     </dependency>
-    <!-- XChange MtGox exchange support -->
-    <dependency>
-      <groupId>com.xeiam.xchange</groupId>
-      <artifactId>xchange-mtgox</artifactId>
-      <version>${xchange.version}</version>
-    </dependency>
     <!-- XChange VirtEx exchange support -->
     <dependency>
       <groupId>com.xeiam.xchange</groupId>

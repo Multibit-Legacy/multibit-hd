@@ -141,7 +141,7 @@ public class PaymentsProtobufSerializerTest {
     fiatPayment1.setAmount("99.9");
     fiatPayment1.setCurrency("EUR");
     fiatPayment1.setRate("30.0");
-    fiatPayment1.setExchange("MtGox");
+    fiatPayment1.setExchange("Bitstamp");
 
     TransactionInfo transactionInfo2 = new TransactionInfo();
     transactionInfos.add(transactionInfo2);
@@ -160,7 +160,7 @@ public class PaymentsProtobufSerializerTest {
     fiatPayment2.setAmount("11.1");
     fiatPayment2.setCurrency("JPY");
     fiatPayment2.setRate("50.0");
-    fiatPayment2.setExchange("MtGoxJunior");
+    fiatPayment2.setExchange("BitstampJunior");
 
     Payments payments = new Payments(1);
     payments.setTransactionInfos(transactionInfos);

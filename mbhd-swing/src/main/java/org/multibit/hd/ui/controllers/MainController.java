@@ -141,7 +141,7 @@ public class MainController {
     // Append general security advice allowing for LTR/RTL
     ControllerEvents.fireAddAlertEvent(
       Models.newAlertModel(
-        Languages.append(localisedMessage, Languages.safeText(CoreMessageKey.SECURITY_ADVICE), " "),
+        localisedMessage + " " + Languages.safeText(CoreMessageKey.SECURITY_ADVICE),
         summary.getSeverity())
     );
   }

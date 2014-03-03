@@ -2,6 +2,7 @@ package org.multibit.hd.ui.i18n;
 
 import com.google.common.base.Preconditions;
 import org.joda.money.BigMoney;
+import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.I18NConfiguration;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.core.utils.Satoshis;
@@ -27,26 +28,32 @@ public class Formats {
    * <p>For example, 12345.6789 becomes "12,345.67", "89" </p>
    * <p>The amount will be adjusted by the symbolic multiplier from the current confiuration</p>
    *
-   * @param satoshis          The amount in satoshis
-   * @param i18nConfiguration The I18NConfiguration to use as the basis for presentation
+   * @param satoshis             The amount in satoshis
+   * @param i18nConfiguration    The I18NConfiguration to use as the basis for presentation
+   * @param bitcoinConfiguration The Bitcoin configuration to use as the basis for the symbol
    *
    * @return The left [0] and right [1] components suitable for presentation as a balance with no symbolic decoration
    */
-  public static String[] formatSatoshisAsSymbolic(BigInteger satoshis, I18NConfiguration i18nConfiguration) {
+  public static String[] formatSatoshisAsSymbolic(
+    BigInteger satoshis,
+    I18NConfiguration i18nConfiguration,
+    BitcoinConfiguration bitcoinConfiguration
+  ) {
 
     Preconditions.checkNotNull(satoshis, "'satoshis' must be present");
     Preconditions.checkNotNull(i18nConfiguration, "'i18nConfiguration' must be present");
 
     Locale currentLocale = i18nConfiguration.getLocale();
+    BitcoinSymbol bitcoinSymbol = BitcoinSymbol.of(bitcoinConfiguration.getBitcoinSymbol());
 
     DecimalFormatSymbols dfs = configureDecimalFormatSymbols(i18nConfiguration, currentLocale);
-    DecimalFormat localFormat = configureBitcoinDecimalFormat(dfs);
+    DecimalFormat localFormat = configureBitcoinDecimalFormat(dfs, bitcoinSymbol);
 
     // Apply formatting to the symbolic amount
     String formattedAmount = localFormat.format(Satoshis.toSymbolicAmount(satoshis));
 
     // The Satoshi symbol does not have decimals
-    if (BitcoinSymbol.SATOSHI.equals(BitcoinSymbol.current())) {
+    if (BitcoinSymbol.SATOSHI.equals(bitcoinSymbol)) {
 
       return new String[]{
         formattedAmount,
@@ -99,7 +106,7 @@ public class Formats {
    *
    * @return A decimal format suitable for Bitcoin balance representation
    */
-  private static DecimalFormat configureBitcoinDecimalFormat(DecimalFormatSymbols dfs) {
+  private static DecimalFormat configureBitcoinDecimalFormat(DecimalFormatSymbols dfs, BitcoinSymbol bitcoinSymbol) {
 
     DecimalFormat format = new DecimalFormat();
 
@@ -108,8 +115,8 @@ public class Formats {
     format.setMaximumIntegerDigits(16);
     format.setMinimumIntegerDigits(1);
 
-    format.setMaximumFractionDigits(BitcoinSymbol.current().decimalPlaces());
-    format.setMinimumFractionDigits(BitcoinSymbol.current().decimalPlaces());
+    format.setMaximumFractionDigits(bitcoinSymbol.decimalPlaces());
+    format.setMinimumFractionDigits(bitcoinSymbol.decimalPlaces());
 
     format.setDecimalSeparatorAlwaysShown(false);
 

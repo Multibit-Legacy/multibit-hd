@@ -3,6 +3,7 @@ package org.multibit.hd.core.config;
 import ch.qos.logback.classic.Level;
 import com.google.common.base.Preconditions;
 import org.joda.money.CurrencyUnit;
+import org.multibit.hd.core.utils.CurrencyUtils;
 
 import java.util.Map;
 import java.util.Properties;
@@ -92,6 +93,9 @@ public class ConfigurationReadAdapter {
     }
     if (Configurations.I18N_LOCAL_CURRENCY_UNIT.equalsIgnoreCase(key)) {
       configuration.getI18NConfiguration().setLocalCurrencyUnit(CurrencyUnit.of(value));
+    }
+    if (Configurations.I18N_LOCAL_CURRENCY_SYMBOL.equalsIgnoreCase(key)) {
+      configuration.getI18NConfiguration().setLocalCurrencySymbol(value);
     }
 
   }

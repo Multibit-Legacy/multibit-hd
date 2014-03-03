@@ -96,7 +96,7 @@ public class HeaderView {
 
     populateAlertPanel();
 
-    balanceDisplayMaV.getView().updateView(Configurations.currentConfiguration.getI18NConfiguration());
+    balanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
 
   }
 
@@ -124,7 +124,7 @@ public class HeaderView {
     balanceDisplayMaV.getModel().setSatoshis(event.getSatoshis());
     balanceDisplayMaV.getModel().setRateProvider(event.getRateProvider());
 
-    balanceDisplayMaV.getView().updateView(Configurations.currentConfiguration.getI18NConfiguration());
+    balanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
   }
 
   /**

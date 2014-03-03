@@ -3,6 +3,7 @@ package org.multibit.hd.core.utils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Locale;
@@ -10,6 +11,13 @@ import java.util.Locale;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class DatesTest {
+
+  @Before
+  public void setUp() throws Exception {
+
+    Locale.setDefault(Locale.UK);
+
+  }
 
   @Test
   public void testMidnightUtc() {

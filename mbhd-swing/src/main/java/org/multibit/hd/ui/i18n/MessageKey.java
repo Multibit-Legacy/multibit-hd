@@ -44,6 +44,11 @@ public enum MessageKey {
   ALL("all"),
   NONE("none"),
   ERROR("error"),
+  DEFAULT("default"),
+
+  // Adjectives
+  LEADING("leading"),
+  TRAILING("trailing"),
 
   // Field labels
 
@@ -72,6 +77,9 @@ public enum MessageKey {
   DISPLAY_LANGUAGE("display_language"),
   SELECT_DECIMAL_SEPARATOR("select_decimal_separator"),
   SELECT_GROUPING_SEPARATOR("select_grouping_separator"),
+  SELECT_LOCAL_SYMBOL("select_local_symbol"),
+  SELECT_BITCOIN_SYMBOL("select_bitcoin_symbol"),
+  SELECT_PLACEMENT("select_placement"),
 
   // Sidebar
 
@@ -236,6 +244,8 @@ public enum MessageKey {
   PASSWORD_NOTE_2("password_note_2"),
 
   I18N_SETTINGS_NOTE_1("i18n_settings_note_1"),
+
+  BITCOIN_SETTINGS_NOTE_1("bitcoin_settings_note_1"),
 
   RECIPIENT_SUMMARY("recipient_summary"),
   AMOUNT_SUMMARY("amount_summary"),

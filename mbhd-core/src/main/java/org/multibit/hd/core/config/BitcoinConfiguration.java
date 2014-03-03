@@ -47,7 +47,7 @@ public class BitcoinConfiguration {
   }
 
   /**
-   * @return The friendly exchange name (e.g. "Mt Gox", "Bitstamp" etc)
+   * @return The friendly exchange name (e.g. "Bitstamp" etc)
    */
   public String getExchangeName() {
     return exchangeName;

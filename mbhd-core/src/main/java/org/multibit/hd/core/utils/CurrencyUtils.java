@@ -3,7 +3,6 @@ package org.multibit.hd.core.utils;
 import com.google.common.collect.Maps;
 import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
-import org.multibit.hd.core.config.Configurations;
 
 import java.util.Comparator;
 import java.util.Currency;
@@ -67,7 +66,7 @@ public class CurrencyUtils {
    */
   public static CurrencyUnit currentUnit() {
 
-    return Configurations.currentConfiguration.getI18NConfiguration().getLocalCurrencyUnit();
+    return CurrencyUnit.getInstance(Locale.getDefault());
 
   }
 
@@ -94,7 +93,7 @@ public class CurrencyUtils {
   /**
    * @param currencyCode The 3 letter ISO 4217 currency code (e.g. "GBP", "USD" etc)
    *
-   * @return The currency symbol
+   * @return The currency symbol appropriate for the given currency code in the current locale
    */
   public static String symbolFor(String currencyCode) {
 
@@ -104,5 +103,28 @@ public class CurrencyUtils {
 
   }
 
+  /**
+   * @param locale The locale to use
+   *
+   * @return The currency symbol appropriate for the locale (e.g. "$")
+   */
+  public static String symbolFor(Locale locale) {
 
+    Currency currency = Currency.getInstance(locale);
+
+    return currency.getSymbol(currencyLocaleMap.get(currency));
+
+  }
+
+  /**
+   * @param locale The locale to use
+   *
+   * @return The currency code appropriate for the locale (e.g "USD")
+   */
+  public static String codeFor(Locale locale) {
+
+    Currency currency = Currency.getInstance(locale);
+
+    return currency.getCurrencyCode();
+  }
 }

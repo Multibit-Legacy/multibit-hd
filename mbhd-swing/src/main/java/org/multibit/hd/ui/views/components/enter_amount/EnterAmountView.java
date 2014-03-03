@@ -85,6 +85,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     Font font = bitcoinSymbolLabel.getFont().deriveFont(Font.PLAIN, (float) MultiBitUI.NORMAL_ICON_SIZE);
     bitcoinSymbolLabel.setFont(font);
 
+    // Use the current Bitcoin configuration
     LabelDecorator.applyBitcoinSymbolLabel(bitcoinSymbolLabel);
 
     // Bind a key listener to allow instant update of UI to amount changes

@@ -2,6 +2,7 @@ package org.multibit.hd.core.config;
 
 import com.google.common.base.Preconditions;
 import org.joda.money.CurrencyUnit;
+import org.multibit.hd.core.utils.CurrencyUtils;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -29,6 +30,8 @@ public class I18NConfiguration {
 
   private CurrencyUnit localCurrencyUnit;
 
+  private String localCurrencySymbol;
+
   // Use 4 as the default as it is common in forex representations
   private int localDecimalPlaces = 4;
 
@@ -52,6 +55,7 @@ public class I18NConfiguration {
     groupingSeparator = symbols.getGroupingSeparator();
 
     localCurrencyUnit = CurrencyUnit.getInstance(locale);
+    localCurrencySymbol = CurrencyUtils.symbolFor(locale);
 
   }
 
@@ -125,6 +129,20 @@ public class I18NConfiguration {
   }
 
   /**
+   * @return The local currency symbol (e.g. "$", "£" etc)
+   */
+  public String getLocalCurrencySymbol() {
+    return localCurrencySymbol;
+  }
+
+  /**
+   * @param localCurrencySymbol The local currency symbol
+   */
+  public void setLocalCurrencySymbol(String localCurrencySymbol) {
+    this.localCurrencySymbol = localCurrencySymbol;
+  }
+
+  /**
    * @return A deep copy of this object
    */
   public I18NConfiguration deepCopy() {
@@ -137,6 +155,7 @@ public class I18NConfiguration {
     i18n.setGroupingSeparator(getGroupingSeparator());
     i18n.setLocalDecimalPlaces(getLocalDecimalPlaces());
     i18n.setLocalCurrencyUnit(getLocalCurrencyUnit());
+    i18n.setLocalCurrencySymbol(getLocalCurrencySymbol());
 
     return i18n;
 

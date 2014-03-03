@@ -1,10 +1,8 @@
 package org.multibit.hd.core.utils;
 
 import org.joda.money.BigMoney;
-import org.joda.money.CurrencyUnit;
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.core.config.Configurations;
 
 import java.math.BigDecimal;
 import java.util.Locale;
@@ -16,8 +14,13 @@ public class CurrencyUtilsTest {
   @Before
   public void setUp() throws Exception {
 
-    Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
+    Locale.setDefault(Locale.US);
 
+  }
+
+  public void tearDown() {
+
+    Locale.setDefault(Locale.UK);
   }
 
   @Test
@@ -28,14 +31,14 @@ public class CurrencyUtilsTest {
     assertThat(actual_US.getCurrencyUnit().getCode()).isEqualTo("USD");
     assertThat(actual_US.getAmount()).isEqualTo(BigDecimal.ZERO);
 
-    setCurrencyUnit(Locale.UK);
+    Locale.setDefault(Locale.UK);
 
     final BigMoney actual_UK = CurrencyUtils.currentZero();
 
     assertThat(actual_UK.getCurrencyUnit().getCode()).isEqualTo("GBP");
     assertThat(actual_UK.getAmount()).isEqualTo(BigDecimal.ZERO);
 
-    setCurrencyUnit(new Locale("ar", "SA"));
+    Locale.setDefault(new Locale("ar", "SA"));
 
     final BigMoney actual_AR = CurrencyUtils.currentZero();
 
@@ -51,13 +54,13 @@ public class CurrencyUtilsTest {
 
     assertThat(actual_US).isEqualTo("USD");
 
-    setCurrencyUnit(Locale.UK);
+    Locale.setDefault(Locale.UK);
 
     final String actual_UK = CurrencyUtils.currentCode();
 
     assertThat(actual_UK).isEqualTo("GBP");
 
-    setCurrencyUnit(new Locale("ar", "SA"));
+    Locale.setDefault(new Locale("ar", "SA"));
 
     final String actual_AR = CurrencyUtils.currentCode();
 
@@ -72,13 +75,13 @@ public class CurrencyUtilsTest {
 
     assertThat(actual_US).isEqualTo("$");
 
-    setCurrencyUnit(Locale.UK);
+    Locale.setDefault(Locale.UK);
 
     final String actual_UK = CurrencyUtils.currentSymbol();
 
     assertThat(actual_UK).isEqualTo("£");
 
-    setCurrencyUnit(new Locale("ar", "SA"));
+    Locale.setDefault(new Locale("ar", "SA"));
 
     final char[] actual_AR = CurrencyUtils.currentSymbol().toCharArray();
 
@@ -90,9 +93,4 @@ public class CurrencyUtilsTest {
 
   }
 
-  private void setCurrencyUnit(Locale locale) {
-
-    Configurations.currentConfiguration.getI18NConfiguration().setLocalCurrencyUnit(CurrencyUnit.getInstance(locale));
-
-  }
 }

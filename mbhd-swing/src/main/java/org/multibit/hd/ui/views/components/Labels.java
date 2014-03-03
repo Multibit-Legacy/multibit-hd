@@ -331,7 +331,7 @@ public class Labels {
       AwesomeIcon.GLOBE,
       label,
       true,
-      MultiBitUI.LARGE_ICON_SIZE
+      MultiBitUI.NORMAL_PLUS_ICON_SIZE
     );
 
     return label;
@@ -351,6 +351,30 @@ public class Labels {
   public static JLabel newSelectGroupingLabel() {
 
     return Labels.newLabel(MessageKey.SELECT_GROUPING_SEPARATOR);
+  }
+
+  /**
+   * @return A new "select local currency symbol" label
+   */
+  public static JLabel newLocalSymbolLabel() {
+
+    return Labels.newLabel(MessageKey.SELECT_LOCAL_SYMBOL);
+  }
+
+  /**
+   * @return A new "select local Bitcoin symbol" label
+   */
+  public static JLabel newBitcoinSymbolLabel() {
+
+    return Labels.newLabel(MessageKey.SELECT_BITCOIN_SYMBOL);
+  }
+
+  /**
+   * @return A new "select placement" label
+   */
+  public static JLabel newPlacementLabel() {
+
+    return Labels.newLabel(MessageKey.SELECT_PLACEMENT);
   }
 
   /**
@@ -826,12 +850,23 @@ public class Labels {
   }
 
   /**
-   * @return A new "internationalisation settings" note (password wizard)
+   * @return A new "internationalisation settings" note
    */
   public static JLabel newI18NSettingsNote() {
 
     return newNoteLabel(new MessageKey[]{
       MessageKey.I18N_SETTINGS_NOTE_1
+    }, new Object[][]{});
+
+  }
+
+  /**
+   * @return A new "Bitcoin settings" note
+   */
+  public static JLabel newBitcoinSettingsNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.BITCOIN_SETTINGS_NOTE_1
     }, new Object[][]{});
 
   }

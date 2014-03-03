@@ -119,7 +119,10 @@ public class Tables {
 
     // Amount BTC column
     TableColumn column = table.getColumnModel().getColumn(PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX);
-    column.setHeaderRenderer(new AmountBTCTableHeaderRenderer(table.getTableHeader().getDefaultRenderer()));
+    column.setHeaderRenderer(new AmountBTCTableHeaderRenderer(
+      table.getTableHeader().getDefaultRenderer(),
+      new int[] {PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX}
+    ));
 
     TableColumn amountBTCTableColumn = table.getColumnModel().getColumn(PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX);
     amountBTCTableColumn.setCellRenderer(Renderers.newTrailingJustifiedNumericRenderer());

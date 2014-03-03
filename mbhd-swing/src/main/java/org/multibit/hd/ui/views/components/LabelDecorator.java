@@ -1,8 +1,9 @@
 package org.multibit.hd.ui.views.components;
 
+import com.google.common.base.Strings;
+import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.utils.BitcoinSymbol;
-import org.multibit.hd.core.utils.CurrencyUtils;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -28,11 +29,11 @@ public class LabelDecorator {
   }
 
   /**
-   * <p>Apply the current local currency symbol to the label</p>
+   * <p>Apply the configured local currency symbol to the label</p>
    */
   public static void applyLocalCurrencySymbol(JLabel label) {
 
-    label.setText(CurrencyUtils.currentSymbol());
+    label.setText(Configurations.currentConfiguration.getI18NConfiguration().getLocalCurrencySymbol());
 
     Font font = label.getFont().deriveFont(Font.BOLD, (float) MultiBitUI.NORMAL_ICON_SIZE);
     label.setFont(font);
@@ -40,45 +41,54 @@ public class LabelDecorator {
   }
 
   /**
-   * <p>Apply the current Bitcoin symbol text(+icon) to the label</p>
+   * <p>Apply the given Bitcoin symbol text(+icon) to the label using the current Bitcoin configuration</p>
+   *
+   * @param label The label to apply the symbol to
    */
   public static void applyBitcoinSymbolLabel(JLabel label) {
-    applyBitcoinSymbolLabel(label, "");
+    applyBitcoinSymbolLabel(
+      label,
+      Configurations.currentConfiguration.getBitcoinConfiguration(),
+      "");
   }
 
   /**
-    * <p>Apply the current Bitcoin symbol text(+icon) to the label.
-    * @param prefixText The text to prefix the Bitcoin symbol metric symbol.</p>
-    */
-   public static void applyBitcoinSymbolLabel(JLabel label, String prefixText) {
+   * <p>Apply the given Bitcoin symbol text(+icon) to the label. Removes any existing icon, including Bitcoin if symbol requires it.</p>
+   *
+   * @param label                The label to apply the symbol to
+   * @param bitcoinConfiguration The Bitcoin configuration to use
+   * @param leadingText           The text leading the Bitcoin symbol (e.g. "Amount" or "" )</p>
+   */
+  public static void applyBitcoinSymbolLabel(JLabel label, BitcoinConfiguration bitcoinConfiguration, String leadingText) {
 
-     BitcoinSymbol symbol = BitcoinSymbol.of(Configurations.currentConfiguration.getBitcoinConfiguration().getBitcoinSymbol());
+    BitcoinSymbol symbol = BitcoinSymbol.of(bitcoinConfiguration.getBitcoinSymbol());
 
-     int fontSize = label.getFont().getSize();
+    int fontSize = label.getFont().getSize();
 
-     if (prefixText != null && prefixText.length() > 0) {
-       prefixText = prefixText + " ";
-     }
+    if (!Strings.isNullOrEmpty(leadingText)) {
+      leadingText = leadingText + " ";
+    }
 
-     switch (symbol) {
-       case ICON:
-         AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, label, false, fontSize);
-         label.setText(prefixText);
-         label.setIconTextGap(0);
-         break;
-       case MICON:
-         label.setText(prefixText + "m");
-         label.setIconTextGap(-2);
-         AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, label, false, fontSize);
-         break;
-       case UICON:
-         label.setText(prefixText + "\u00B5");
-         label.setIconTextGap(-2);
-         AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, label, false, fontSize);
-         break;
-       default:
-         label.setText(symbol.getSymbol());
-     }
+    switch (symbol) {
+      case ICON:
+        label.setText(leadingText);
+        label.setIconTextGap(0);
+        AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, label, false, fontSize);
+        break;
+      case MICON:
+        label.setText(leadingText + "m");
+        label.setIconTextGap(-2);
+        AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, label, false, fontSize);
+        break;
+      case UICON:
+        label.setText(leadingText + "\u00B5");
+        label.setIconTextGap(-2);
+        AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, label, false, fontSize);
+        break;
+      default:
+        label.setText(symbol.getSymbol());
+        AwesomeDecorator.removeIcon(label);
+    }
 
-   }
+  }
 }

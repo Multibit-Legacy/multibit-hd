@@ -51,7 +51,7 @@ public class ExchangeTickerServiceTest {
   @Test
   public void testStart() throws Exception {
 
-    ExchangeTickerService testObject = new ExchangeTickerService("Mt Gox", pollingMarketDataService);
+    ExchangeTickerService testObject = new ExchangeTickerService("Bitstamp", pollingMarketDataService);
 
     CoreServices.uiEventBus.register(this);
 
