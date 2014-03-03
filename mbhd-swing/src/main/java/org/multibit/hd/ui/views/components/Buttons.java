@@ -602,6 +602,26 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "exchange rate provider settings" wizard button with icon
+   */
+  public static JButton newShowExchangeSettingsWizardButton(Action action) {
+
+    JButton button = newLargeButton(action, MessageKey.SHOW_EXCHANGE_WIZARD);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.DOLLAR,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "Application settings" wizard button with icon
    */
   public static JButton newShowApplicationSettingsWizardButton(Action action) {

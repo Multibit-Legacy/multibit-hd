@@ -85,7 +85,8 @@ public class SettingsScreenView extends AbstractScreenView<SettingsScreenModel> 
     showI18NSettingsWizardButton = Buttons.newShowI18NSettingsWizardButton(showI18nAction);
 
     contentPanel.add(showI18NSettingsWizardButton, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
-    contentPanel.add(Buttons.newShowBitcoinSettingsWizardButton(showBitcoinAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push,wrap");
+    contentPanel.add(Buttons.newShowBitcoinSettingsWizardButton(showBitcoinAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push");
+    contentPanel.add(Buttons.newShowExchangeSettingsWizardButton(showBitcoinAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push,wrap");
 
     contentPanel.add(Buttons.newShowApplicationSettingsWizardButton(showApplicationAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowSoundSettingsWizardButton(showSoundAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push,wrap");

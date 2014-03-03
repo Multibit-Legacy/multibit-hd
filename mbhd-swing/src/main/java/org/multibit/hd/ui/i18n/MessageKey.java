@@ -172,6 +172,7 @@ public enum MessageKey {
   SHOW_WELCOME_WIZARD("show_welcome_wizard"),
   SHOW_SOUND_WIZARD("show_sound_wizard"),
   SHOW_BITCOIN_WIZARD("show_bitcoin_wizard"),
+  SHOW_EXCHANGE_WIZARD("show_exchange_wizard"),
   SHOW_APPLICATION_WIZARD("show_application_wizard"),
   SHOW_I18N_WIZARD("show_i18n_wizard"),
 
