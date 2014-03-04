@@ -28,12 +28,10 @@ public class I18NConfiguration {
 
   private boolean currencySymbolLeading = true;
 
+  // Local settings
   private CurrencyUnit localCurrencyUnit;
-
   private String localCurrencySymbol;
-
-  // Use 4 as the default as it is common in forex representations
-  private int localDecimalPlaces = 4;
+  private int localDecimalPlaces;
 
   public I18NConfiguration() {
 
@@ -54,6 +52,9 @@ public class I18NConfiguration {
     decimalSeparator = symbols.getDecimalSeparator();
     groupingSeparator = symbols.getGroupingSeparator();
 
+    // TODO Avoid switching local currency here
+    // Fix by splitting language, currency and display configurations
+    localDecimalPlaces = decimalFormat.getMinimumFractionDigits();
     localCurrencyUnit = CurrencyUnit.getInstance(locale);
     localCurrencySymbol = CurrencyUtils.symbolFor(locale);
 

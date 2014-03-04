@@ -7,12 +7,14 @@ import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.i18n.LanguageKey;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteDecorator;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilter;
 import org.multibit.hd.ui.views.components.display_amount.BitcoinSymbolListCellRenderer;
 import org.multibit.hd.ui.views.components.renderers.BackupSummaryListCellRenderer;
+import org.multibit.hd.ui.views.components.renderers.LanguageListCellRenderer;
 import org.multibit.hd.ui.views.components.select_contact.RecipientComboBoxEditor;
 import org.multibit.hd.ui.views.components.select_contact.RecipientListCellRenderer;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -140,20 +142,30 @@ public class ComboBoxes {
 
   /**
    * @param listener The action listener to alert when the selection is made
-   * @param locale   The locale to use
+   * @param locale   The locale to use for initial selection
    *
-   * @return A new "language" combo box
+   * @return A new "language" combo box containing all supported languages and variants
    */
   public static JComboBox<String> newLanguagesComboBox(ActionListener listener, Locale locale) {
 
-    JComboBox<String> comboBox = newReadOnlyComboBox(Languages.getLanguageNames(true, locale));
+    // Get the language names in the order they are declared
+    String[] languageNames = new String[LanguageKey.values().length];
+    int i = 0;
+    for (LanguageKey languageKey : LanguageKey.values()) {
+      languageNames[i] = languageKey.getLanguageName();
+      i++;
+    }
 
-    comboBox.setSelectedIndex(Languages.getLanguageIndexFromLocale(locale));
+    // Populate the combo box and declare a suitable renderer
+    JComboBox<String> comboBox = newReadOnlyComboBox(languageNames);
+    comboBox.setRenderer(new LanguageListCellRenderer());
+
+    // Can use the ordinal due to the declaration ordering
+    comboBox.setSelectedIndex(LanguageKey.fromLocale(locale).ordinal());
 
     // Add the listener at the end to avoid false events
     comboBox.setActionCommand(LANGUAGES_COMMAND);
     comboBox.addActionListener(listener);
-
 
     return comboBox;
 
@@ -167,7 +179,7 @@ public class ComboBoxes {
    */
   public static JComboBox<String> newDecimalComboBox(ActionListener listener, I18NConfiguration i18nConfiguration) {
 
-    String[] decimalSeparators = Languages.getDecimalSeparators(i18nConfiguration.getLocale());
+    String[] decimalSeparators = Languages.getAmountSeparators();
     JComboBox<String> comboBox = newReadOnlyComboBox(decimalSeparators);
 
     // Determine the first matching separator
@@ -195,7 +207,7 @@ public class ComboBoxes {
    */
   public static JComboBox<String> newGroupingComboBox(ActionListener listener, I18NConfiguration i18nConfiguration) {
 
-    String[] groupingSeparators = Languages.getGroupingSeparators(i18nConfiguration.getLocale());
+    String[] groupingSeparators = Languages.getAmountSeparators();
     JComboBox<String> comboBox = newReadOnlyComboBox(groupingSeparators);
 
     // Determine the first matching separator

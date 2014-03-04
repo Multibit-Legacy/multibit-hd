@@ -4,12 +4,8 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.CoreMessageKey;
-import org.multibit.hd.ui.exceptions.UIException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.awt.*;
-import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Locale;
@@ -26,28 +22,7 @@ import java.util.ResourceBundle;
  */
 public class Languages {
 
-  private static final Logger log = LoggerFactory.getLogger(Languages.class);
-
-  private static final String BASE_NAME = "i18n.viewer";
-
-  private static final String LANGUAGE_CHOICE_TEMPLATE = "showPreferencesPanel.language.%d";
-
-  /**
-   * <p>The 2-letter short language code and 2-letter region code suitable for use with Locale</p>
-   * <p>The ordering is consistent with the presentation of the language list within the resource bundle,
-   * but this list is 0-based</p>
-   * <p>Language_Country is required to support detection of currencies in Joda Money through locale</p>
-   */
-  private static final String[] LANGUAGE_CODES = new String[]{
-    // 0 - 9
-    "en_US", "es_ES", "ru_RU", "sv_SV", "no_NO", "it_IT", "fr_FR", "de_DE", "pt_PT", "hi_IN",
-    // 10 - 19
-    "th_TH", "nl_NL", "zh_CN", "ja_JP", "ar_AR", "ko_KR", "lv_LV", "tr_TR", "fi_FI", "pl_PL",
-    // 20 - 29
-    "hr_HR", "hu_HU", "el_GR", "da_DK", "eo_ES", "fa_IR", "he_IL", "sk_SK", "cs_CZ", "id_ID",
-    // 30 - 35
-    "sl_SI", "ta_LK", "ro_RO", "af_AF", "tl_PH", "sw_KE",
-  };
+  public static final String BASE_NAME = "i18n.viewer";
 
   /**
    * Utilities have private constructors
@@ -56,74 +31,14 @@ public class Languages {
   }
 
   /**
-   * @param includeCodes True if the list should prefix the names with the ISO language code
-   * @param locale       The locale to use
-   *
-   * @return An unsorted array of the available languages
-   */
-  public static String[] getLanguageNames(boolean includeCodes, Locale locale) {
-
-    ResourceBundle rb = ResourceBundle.getBundle(BASE_NAME, locale);
-
-    String[] items = new String[LANGUAGE_CODES.length];
-
-    for (int i = 0; i < LANGUAGE_CODES.length; i++) {
-
-      // Use a 1-based lookup for the resource bundle
-      // Ensure we don't get numerical representations mixed up in the keys
-      String key = String.format(Locale.UK,LANGUAGE_CHOICE_TEMPLATE, i + 1);
-      String value = rb.getString(key);
-
-      if (includeCodes) {
-        items[i] = LANGUAGE_CODES[i] + ": " + value;
-      } else {
-        items[i] = value;
-      }
-
-    }
-
-    return items;
-
-  }
-
-  /**
-   * <p>Provide an array of the available grouping separators for this locale (e.g. 1,234,456 has a decimal comma)</p>
-   * <p>Note that each language will have its own variant for a comma and a point. A hard space '\u00a0' is needed to
+   * <p>Provide an array of the available amount separators. A hard space '\u00a0' is needed to
    * ensure that values do not wrap.</p>
    *
-   * @return The array. [0] is the default separator for the locale
+   * @return The array
    */
-  public static String[] getDecimalSeparators(Locale locale) {
-
-    DecimalFormatSymbols symbols = new DecimalFormatSymbols(currentLocale());
-
-    String separator = String.valueOf(symbols.getDecimalSeparator());
+  public static String[] getAmountSeparators() {
 
     return new String[]{
-      separator + " " + Languages.safeText(MessageKey.DECIMAL_DEFAULT),
-      Languages.safeText(MessageKey.DECIMAL_COMMA),
-      Languages.safeText(MessageKey.DECIMAL_POINT),
-      Languages.safeText(MessageKey.DECIMAL_SPACE),
-    };
-
-  }
-
-
-  /**
-   * <p>Provide an array of the available grouping separators for this locale (e.g. 1,234,456 has a decimal comma)</p>
-   * <p>Note that each language will have its own variant for a comma and a point. A hard space '\u00a0' is needed to
-   * ensure that values do not wrap.</p>
-   *
-   * @return The array. [0] is the default separator for the locale
-   */
-  public static String[] getGroupingSeparators(Locale locale) {
-
-    DecimalFormatSymbols symbols = new DecimalFormatSymbols(locale);
-
-    String separator = String.valueOf(symbols.getGroupingSeparator());
-
-    return new String[]{
-      separator + " " + Languages.safeText(MessageKey.DECIMAL_DEFAULT),
       Languages.safeText(MessageKey.DECIMAL_COMMA),
       Languages.safeText(MessageKey.DECIMAL_POINT),
       Languages.safeText(MessageKey.DECIMAL_SPACE),
@@ -172,30 +87,6 @@ public class Languages {
 
     return newLocale;
 
-  }
-
-  /**
-   * @param locale The locale
-   *
-   * @return The matching index (0-based)
-   *
-   * @throws org.multibit.hd.ui.exceptions.UIException If there is no match
-   */
-  public static int getLanguageIndexFromLocale(Locale locale) {
-
-    Preconditions.checkNotNull(locale, "'locale' must be present");
-
-    String language = locale.getLanguage().toLowerCase().substring(0, 2);
-
-    for (int i = 0; i < LANGUAGE_CODES.length; i++) {
-
-      if (LANGUAGE_CODES[i].startsWith(language)) {
-        return i;
-      }
-
-    }
-
-    throw new UIException("Unknown locale: " + locale);
   }
 
   /**

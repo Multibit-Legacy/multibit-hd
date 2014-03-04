@@ -7,6 +7,7 @@ import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.I18NConfiguration;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.i18n.LanguageKey;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.ComboBoxes;
@@ -71,9 +72,9 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.GLOBE);
 
     panel.setLayout(new MigLayout(
-      "fillx,insets 0", // Layout constraints
-      "[][][][]", // Column constraints
-      "[][][]" // Row constraints
+      "fill,insets 0", // Layout constraints
+      "[][]", // Column constraints
+      "[][]" // Row constraints
     ));
 
     I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration().deepCopy();
@@ -83,10 +84,10 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
 
     languagesComboBox = ComboBoxes.newLanguagesComboBox(this, locale);
 
-    panel.add(Labels.newI18NSettingsNote(), "growx,push,span 4,wrap");
+    panel.add(Labels.newI18NSettingsNote(), "growx,push,span 2,wrap");
 
-    panel.add(Labels.newSelectLanguageLabel(), "shrink");
-    panel.add(languagesComboBox, "growx,push,span 3,width 275:275,wrap");
+    panel.add(Labels.newSelectLanguageLabel(),"shrink");
+    panel.add(languagesComboBox, "growx,width min:350:,push,wrap");
 
     return panel;
 
@@ -145,7 +146,7 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
   public void actionPerformed(ActionEvent e) {
 
     JComboBox source = (JComboBox) e.getSource();
-    String localeCode = String.valueOf(source.getSelectedItem()).substring(0, 5);
+    String localeCode = LanguageKey.values()[source.getSelectedIndex()].getKey();
 
     // Determine the new locale
     Locale newLocale = Languages.newLocaleFromCode(localeCode);

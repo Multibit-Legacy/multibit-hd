@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.themes;
 
 import com.google.common.base.Preconditions;
+import org.multibit.hd.ui.i18n.LanguageKey;
 
 import javax.swing.*;
 
@@ -15,16 +16,8 @@ import javax.swing.*;
  */
 public class Themes {
 
-  public static Theme currentTheme;
-
-  static {
-
-    // TODO Link this to the configuration
-    // Always switch into the configured theme at startup
-    switchTheme(new LightTheme());
-    //switchTheme(new DarkTheme());
-
-  }
+  // Always start with the light theme and switch during startup if required
+  public static Theme currentTheme = new LightTheme();
 
   /**
    * Utilities do not have public constructors
@@ -54,6 +47,9 @@ public class Themes {
     UIManager.put("nimbusSelectedText", currentTheme.infoAlertText());
     UIManager.put("nimbusSelection", currentTheme.infoAlertBackground());
     UIManager.put("nimbusSelectionBackground", currentTheme.infoAlertBackground());
+
+    // Ensure the language icons match
+    LanguageKey.resetIcons();
 
   }
 
