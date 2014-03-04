@@ -1,9 +1,11 @@
 package org.multibit.hd.ui.views.components.renderers;
 
+import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.views.components.Images;
 import org.multibit.hd.ui.views.components.Labels;
+import org.multibit.hd.ui.views.components.tables.PaymentTableModel;
 import org.multibit.hd.ui.views.components.tables.StripedTable;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -12,7 +14,6 @@ import org.multibit.hd.ui.views.themes.Themes;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
-import java.util.Random;
 
 /**
  * Render a RAGStatus as an icon
@@ -20,6 +21,12 @@ import java.util.Random;
 public class RAGStatusTableCellRenderer extends DefaultTableCellRenderer {
 
   private JLabel label = Labels.newBlankLabel();
+
+  private PaymentTableModel paymentTableModel;
+
+  public RAGStatusTableCellRenderer(PaymentTableModel paymentTableModel) {
+      this.paymentTableModel = paymentTableModel;
+  }
 
   @Override
   public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
@@ -46,13 +53,11 @@ public class RAGStatusTableCellRenderer extends DefaultTableCellRenderer {
         case GREEN:
           label.setForeground(Themes.currentTheme.successAlertBackground());
 
-          //AwesomeDecorator.bindIcon(AwesomeIcon.CHECK, label, false, MultiBitUI.SMALL_ICON_SIZE);
-          Random rnd = new Random();
-          if (rnd.nextInt(2)==0) {
-            label.setIcon(Images.newConfirmationIcon(rnd.nextInt(140)+1, true));
-          } else {
-            label.setIcon(Images.newConfirmationIcon(rnd.nextInt(10)+1, false));
-          }
+          // TODO - cope with sorting
+          java.util.List<PaymentData> paymentDatas = paymentTableModel.getPaymentData();
+          int modelRow = table.convertRowIndexToModel(row);
+          PaymentData rowPaymentData = paymentDatas.get(modelRow);
+          label.setIcon(Images.newConfirmationIcon(rowPaymentData.getDepth(), rowPaymentData.isCoinBase()));
 
           break;
         case PINK:

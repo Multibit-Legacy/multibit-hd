@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.screens.payments;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
@@ -23,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.util.Set;
+import java.util.List;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -71,9 +72,9 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     // Create view components
     JPanel contentPanel = Panels.newPanel(layout);
 
-    Set<PaymentData> paymentDatas;
+    List<PaymentData> paymentDatas;
     if (MultiBitHD.getWalletService() == null) {
-      paymentDatas = Sets.newHashSet();
+      paymentDatas = Lists.newArrayList();
     } else {
       paymentDatas = MultiBitHD.getWalletService().getPaymentDatas();
     }
