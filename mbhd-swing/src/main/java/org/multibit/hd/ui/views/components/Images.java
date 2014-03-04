@@ -85,12 +85,27 @@ public class Images {
     final int angle;
     if (isCoinbase) {
       angle = confirmationCount * 3 >= 360 ? 360 : confirmationCount * 3;
-      g2.setColor(Color.BLUE);
     } else {
       angle = confirmationCount * 60 >= 360 ? 360 : confirmationCount * 60;
-      g2.setColor(Color.GREEN);
+
     }
-    g2.fillArc(0, 0, MultiBitUI.NORMAL_ICON_SIZE, MultiBitUI.NORMAL_ICON_SIZE, 90, -angle);
+    g2.setColor(Color.GREEN);
+    g2.fillArc(1, 1, MultiBitUI.NORMAL_ICON_SIZE - 2, MultiBitUI.NORMAL_ICON_SIZE - 2, 90, -angle);
+
+    g2.setColor(Color.GREEN.darker());
+    g2.drawArc(1, 1, MultiBitUI.NORMAL_ICON_SIZE - 2, MultiBitUI.NORMAL_ICON_SIZE - 2, 90, -angle);
+    if (angle != 360) {
+      int center = (int)( MultiBitUI.NORMAL_ICON_SIZE * 0.5);
+      int diameter = center - 1;
+      // vertical stroke
+      g2.drawLine(center, center, center, 1);
+
+      // angled stroke
+      int xFinish = (int) (center + diameter * Math.cos(Math.toRadians(90 - angle)));
+      int yFinish = (int) (center - diameter * Math.sin(Math.toRadians(90 - angle)));
+
+      g2.drawLine(center, center, xFinish, yFinish);
+    }
 
     g2.dispose();
 

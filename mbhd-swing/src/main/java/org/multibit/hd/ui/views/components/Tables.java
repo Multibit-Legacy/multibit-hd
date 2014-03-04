@@ -17,7 +17,6 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 
 /**
  * <p>Utility to provide the following to UI:</p>
@@ -80,7 +79,7 @@ public class Tables {
    *
    * @return A new "payments" striped table
    */
-  public static StripedTable newPaymentsTable(Set<PaymentData> paymentData) {
+  public static StripedTable newPaymentsTable(List<PaymentData> paymentData) {
 
     PaymentTableModel model = new PaymentTableModel(paymentData);
 
@@ -109,7 +108,7 @@ public class Tables {
 
     // Status column
     TableColumn statusTableColumn = table.getColumnModel().getColumn(PaymentTableModel.STATUS_COLUMN_INDEX);
-    statusTableColumn.setCellRenderer(Renderers.newRAGStatusRenderer());
+    statusTableColumn.setCellRenderer(Renderers.newRAGStatusRenderer(model));
     resizeColumn(table, PaymentTableModel.STATUS_COLUMN_INDEX, 60, 90);
 
     // Type column

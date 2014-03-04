@@ -53,6 +53,7 @@ public class PaymentTypeRenderer extends DefaultTableCellRenderer {
       label.setBackground(table.getSelectionBackground());
       label.setForeground(table.getSelectionForeground());
     } else {
+      label.setForeground(table.getForeground());
       if (row % 2 == 1) {
         label.setBackground(StripedTable.alternateColor);
       } else {
