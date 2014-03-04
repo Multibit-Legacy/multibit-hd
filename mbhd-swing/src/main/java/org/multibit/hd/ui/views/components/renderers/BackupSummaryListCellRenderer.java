@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.components.select_backup_summary;
+package org.multibit.hd.ui.views.components.renderers;
 
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.utils.Dates;

@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.components;
 
 import org.multibit.hd.ui.i18n.Languages;
-import org.multibit.hd.ui.views.components.labels.ThemeAwareTagPillListCellRenderer;
+import org.multibit.hd.ui.views.components.renderers.TagPillListCellRenderer;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
@@ -35,7 +35,7 @@ public class ListBoxes {
 
     final JList<String> list = new JList<>(listModel);
 
-    list.setCellRenderer(new ThemeAwareTagPillListCellRenderer());
+    list.setCellRenderer(new TagPillListCellRenderer());
     list.setLayoutOrientation(JList.VERTICAL_WRAP);
 
     list.setBorder(BorderFactory.createEmptyBorder());

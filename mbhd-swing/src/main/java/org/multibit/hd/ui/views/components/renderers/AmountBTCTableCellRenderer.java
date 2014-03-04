@@ -21,10 +21,10 @@ import java.math.BigInteger;
  *  </ul>
  *  
  */
-public class AmountBTCRenderer extends DefaultTableCellRenderer {
+public class AmountBTCTableCellRenderer extends DefaultTableCellRenderer {
   JLabel label;
 
-  public AmountBTCRenderer() {
+  public AmountBTCTableCellRenderer() {
     label = Labels.newBlankLabel();
   }
 
@@ -32,7 +32,7 @@ public class AmountBTCRenderer extends DefaultTableCellRenderer {
                                                  int column) {
     label.setHorizontalAlignment(SwingConstants.TRAILING);
     label.setOpaque(true);
-    label.setBorder(new EmptyBorder(new Insets(0, TrailingJustifiedDateRenderer.TABLE_BORDER, 1, TrailingJustifiedDateRenderer.TABLE_BORDER)));
+    label.setBorder(new EmptyBorder(new Insets(0, TrailingJustifiedDateTableCellRenderer.TABLE_BORDER, 1, TrailingJustifiedDateTableCellRenderer.TABLE_BORDER)));
 
     if (value instanceof BigInteger) {
 
@@ -45,7 +45,7 @@ public class AmountBTCRenderer extends DefaultTableCellRenderer {
       String[] balanceArray = Formats.formatSatoshisAsSymbolic(valueBigInteger, i18nConfiguration, bitcoinConfiguration);
       String balanceString = balanceArray[0] + balanceArray[1];
 
-      label.setText(balanceString + TrailingJustifiedDateRenderer.SPACER);
+      label.setText(balanceString + TrailingJustifiedDateTableCellRenderer.SPACER);
 
       if ((valueBigInteger.compareTo(BigInteger.ZERO) < 0)) {
         // Debit

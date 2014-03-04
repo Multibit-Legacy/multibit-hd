@@ -17,7 +17,7 @@ import java.util.Random;
 /**
  * Render a RAGStatus as an icon
  */
-public class RAGStatusRenderer extends DefaultTableCellRenderer {
+public class RAGStatusTableCellRenderer extends DefaultTableCellRenderer {
 
   private JLabel label = Labels.newBlankLabel();
 

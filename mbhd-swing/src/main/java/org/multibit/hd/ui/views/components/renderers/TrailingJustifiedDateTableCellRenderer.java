@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat;
  *  </ul>
  *  
  */
-public class TrailingJustifiedDateRenderer extends DefaultTableCellRenderer {
+public class TrailingJustifiedDateTableCellRenderer extends DefaultTableCellRenderer {
 
   SimpleDateFormat longDateFormatter;
   SimpleDateFormat shortDateFormatter;
@@ -28,7 +28,7 @@ public class TrailingJustifiedDateRenderer extends DefaultTableCellRenderer {
 
   public static final String SPACER = "   "; // 3 spaces
 
-  public TrailingJustifiedDateRenderer() {
+  public TrailingJustifiedDateTableCellRenderer() {
     label = Labels.newBlankLabel();
     longDateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", Languages.currentLocale());
     shortDateFormatter = new SimpleDateFormat("HH:mm", Languages.currentLocale());

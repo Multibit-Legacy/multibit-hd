@@ -12,7 +12,7 @@ import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteDecorator;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilter;
 import org.multibit.hd.ui.views.components.display_amount.BitcoinSymbolListCellRenderer;
-import org.multibit.hd.ui.views.components.select_backup_summary.BackupSummaryListCellRenderer;
+import org.multibit.hd.ui.views.components.renderers.BackupSummaryListCellRenderer;
 import org.multibit.hd.ui.views.components.select_contact.RecipientComboBoxEditor;
 import org.multibit.hd.ui.views.components.select_contact.RecipientListCellRenderer;
 import org.multibit.hd.ui.views.themes.Themes;

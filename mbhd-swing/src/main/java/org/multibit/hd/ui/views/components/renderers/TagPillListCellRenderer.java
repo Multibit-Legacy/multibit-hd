@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.components.labels;
+package org.multibit.hd.ui.views.components.renderers;
 
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.i18n.Languages;
@@ -21,9 +21,9 @@ import java.awt.*;
  * @since 0.0.1
  *  
  */
-public class ThemeAwareTagPillListCellRenderer extends DefaultListCellRenderer {
+public class TagPillListCellRenderer extends DefaultListCellRenderer {
 
-  public ThemeAwareTagPillListCellRenderer() {
+  public TagPillListCellRenderer() {
 
     // Ensure consistent color
     setBackground(Themes.currentTheme.readOnlyBackground());

@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.components.tables;
+package org.multibit.hd.ui.views.components.renderers;
 
 /**
  * <p>Table header renderer to provide the following to tables:<br>

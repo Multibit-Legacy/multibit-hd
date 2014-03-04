@@ -1,9 +1,9 @@
 package org.multibit.hd.ui.views.components;
 
-import org.multibit.hd.ui.views.components.renderers.AmountBTCRenderer;
-import org.multibit.hd.ui.views.components.renderers.PaymentTypeRenderer;
-import org.multibit.hd.ui.views.components.renderers.RAGStatusRenderer;
-import org.multibit.hd.ui.views.components.renderers.TrailingJustifiedDateRenderer;
+import org.multibit.hd.ui.views.components.renderers.AmountBTCTableCellRenderer;
+import org.multibit.hd.ui.views.components.renderers.PaymentTypeTableCellRenderer;
+import org.multibit.hd.ui.views.components.renderers.RAGStatusTableCellRenderer;
+import org.multibit.hd.ui.views.components.renderers.TrailingJustifiedDateTableCellRenderer;
 
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -25,18 +25,18 @@ public class Renderers {
   }
 
   public static DefaultTableCellRenderer newRAGStatusRenderer() {
-    return new RAGStatusRenderer();
+    return new RAGStatusTableCellRenderer();
   }
 
   public static DefaultTableCellRenderer newTrailingJustifiedDateRenderer() {
-    return new TrailingJustifiedDateRenderer();
+    return new TrailingJustifiedDateTableCellRenderer();
   }
 
   public static DefaultTableCellRenderer newTrailingJustifiedNumericRenderer() {
-    return new AmountBTCRenderer();
+    return new AmountBTCTableCellRenderer();
   }
 
   public static DefaultTableCellRenderer newPaymentTypeRenderer() {
-     return new PaymentTypeRenderer();
+     return new PaymentTypeTableCellRenderer();
    }
 }

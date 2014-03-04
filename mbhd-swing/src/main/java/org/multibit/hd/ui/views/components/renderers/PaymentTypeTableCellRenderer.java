@@ -13,7 +13,7 @@ import java.awt.*;
 /**
  * Render the transaction type as localised text
  */
-public class PaymentTypeRenderer extends DefaultTableCellRenderer {
+public class PaymentTypeTableCellRenderer extends DefaultTableCellRenderer {
 
   private JLabel label = Labels.newBlankLabel();
 
