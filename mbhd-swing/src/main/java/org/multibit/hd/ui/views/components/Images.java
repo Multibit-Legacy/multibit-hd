@@ -76,6 +76,13 @@ public class Images {
    */
   public static ImageIcon newConfirmationIcon(int confirmationCount, boolean isCoinbase) {
 
+    if ((!isCoinbase && confirmationCount >= 6) || (isCoinbase && confirmationCount >= 120)) {
+      return ImageDecorator.toImageIcon(AwesomeDecorator.createIcon(
+              AwesomeIcon.CHECK,
+              Themes.currentTheme.successAlertBackground(),
+              MultiBitUI.SMALL_ICON_SIZE));
+    }
+      
     BufferedImage background = new BufferedImage(MultiBitUI.NORMAL_ICON_SIZE, MultiBitUI.NORMAL_ICON_SIZE, BufferedImage.TYPE_INT_ARGB);
 
     Graphics2D g2 = background.createGraphics();
@@ -89,10 +96,10 @@ public class Images {
       angle = confirmationCount * 60 >= 360 ? 360 : confirmationCount * 60;
 
     }
-    g2.setColor(Color.GREEN);
+    g2.setColor(Themes.currentTheme.successAlertBackground());
     g2.fillArc(1, 1, MultiBitUI.NORMAL_ICON_SIZE - 2, MultiBitUI.NORMAL_ICON_SIZE - 2, 90, -angle);
 
-    g2.setColor(Color.GREEN.darker());
+    g2.setColor(Themes.currentTheme.successAlertBackground().darker());
     g2.drawArc(1, 1, MultiBitUI.NORMAL_ICON_SIZE - 2, MultiBitUI.NORMAL_ICON_SIZE - 2, 90, -angle);
     if (angle != 360) {
       int center = (int)( MultiBitUI.NORMAL_ICON_SIZE * 0.5);

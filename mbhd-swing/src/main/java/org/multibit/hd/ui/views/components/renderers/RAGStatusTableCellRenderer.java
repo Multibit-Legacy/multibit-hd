@@ -53,7 +53,6 @@ public class RAGStatusTableCellRenderer extends DefaultTableCellRenderer {
         case GREEN:
           label.setForeground(Themes.currentTheme.successAlertBackground());
 
-          // TODO - cope with sorting
           java.util.List<PaymentData> paymentDatas = paymentTableModel.getPaymentData();
           int modelRow = table.convertRowIndexToModel(row);
           PaymentData rowPaymentData = paymentDatas.get(modelRow);
