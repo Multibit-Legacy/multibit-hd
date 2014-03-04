@@ -97,6 +97,16 @@ public class PaymentRequestData implements PaymentData {
   }
 
   @Override
+  public boolean isCoinBase() {
+    return false;
+  }
+
+  @Override
+  public int getDepth() {
+    return  -1; // no depth for payment requests
+  }
+
+  @Override
   public String getDescription() {
     // TODO localise
     StringBuilder builder = new StringBuilder();

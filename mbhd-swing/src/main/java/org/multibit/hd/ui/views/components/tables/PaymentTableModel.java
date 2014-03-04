@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.table.AbstractTableModel;
-import java.util.Set;
+import java.util.List;
 
 /**
  * <p>TableModel to provide the following to contact JTable:</p>
@@ -36,7 +36,9 @@ public class PaymentTableModel extends AbstractTableModel {
 
   private Object[][] data;
 
-  public PaymentTableModel(Set<PaymentData> paymentData) {
+  private List<PaymentData> paymentData;
+
+  public PaymentTableModel(List<PaymentData> paymentData) {
     setPaymentData(paymentData, false);
   }
 
@@ -45,7 +47,9 @@ public class PaymentTableModel extends AbstractTableModel {
    *
    * @param paymentData The paymentData to show in the table
    */
-  public void setPaymentData(Set<PaymentData> paymentData, boolean fireTableDataChanged) {
+  public void setPaymentData(List<PaymentData> paymentData, boolean fireTableDataChanged) {
+
+    this.paymentData = paymentData;
 
     data = new Object[paymentData.size()][];
 
@@ -109,4 +113,9 @@ public class PaymentTableModel extends AbstractTableModel {
   public void setValueAt(Object value, int row, int col) {
     // No table updates allowed
   }
+
+  public List<PaymentData> getPaymentData() {
+    return paymentData;
+  }
+
 }

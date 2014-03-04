@@ -4,6 +4,7 @@ import org.multibit.hd.ui.views.components.renderers.AmountBTCTableCellRenderer;
 import org.multibit.hd.ui.views.components.renderers.PaymentTypeTableCellRenderer;
 import org.multibit.hd.ui.views.components.renderers.RAGStatusTableCellRenderer;
 import org.multibit.hd.ui.views.components.renderers.TrailingJustifiedDateTableCellRenderer;
+import org.multibit.hd.ui.views.components.tables.PaymentTableModel;
 
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -24,8 +25,8 @@ public class Renderers {
   private Renderers() {
   }
 
-  public static DefaultTableCellRenderer newRAGStatusRenderer() {
-    return new RAGStatusTableCellRenderer();
+  public static DefaultTableCellRenderer newRAGStatusRenderer(PaymentTableModel paymentTableModel) {
+    return new RAGStatusTableCellRenderer(paymentTableModel);
   }
 
   public static DefaultTableCellRenderer newTrailingJustifiedDateRenderer() {

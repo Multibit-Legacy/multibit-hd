@@ -3,6 +3,7 @@ package org.multibit.hd.core.services;
 import com.google.bitcoin.core.*;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
@@ -22,10 +23,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  *  <p>Service to provide the following to GUI classes:<br>
@@ -124,14 +122,14 @@ public class WalletService {
    * Get all the payments (payments and payment requests) in the current wallet.
    * (This is a bit expensive so don't call it indiscriminately)
    */
-  public Set<PaymentData> getPaymentDatas() {
+  public List<PaymentData> getPaymentDatas() {
     // See if there is a current wallet
     WalletManager walletManager = WalletManager.INSTANCE;
 
     Optional<WalletData> walletDataOptional = walletManager.getCurrentWalletData();
     if (!walletDataOptional.isPresent()) {
       // No wallet is present
-      return Sets.newHashSet();
+      return Lists.newArrayList();
     }
 
     // Wallet is present
@@ -162,7 +160,7 @@ public class WalletService {
       }
     }
     // Union all the transactionDatas and paymentDatas
-    return Sets.union(transactionDatas, paymentRequestsNotFullyFunded);
+    return Lists.newArrayList(Sets.union(transactionDatas, paymentRequestsNotFullyFunded));
   }
 
   /**
@@ -263,7 +261,7 @@ public class WalletService {
 
     // Create the DTO from the raw transaction info
     TransactionData transactionData = new TransactionData(transactionHashAsString, new DateTime(updateTime), status, amountBTC,
-            Optional.<BigInteger>absent(), confidenceType, paymentType, depth, description);
+            Optional.<BigInteger>absent(), confidenceType, paymentType, depth, description, transaction.isCoinBase());
 
     // See if there is a transactionInfo for this transaction
     TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);

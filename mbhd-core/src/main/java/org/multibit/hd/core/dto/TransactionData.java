@@ -39,9 +39,11 @@ public class TransactionData implements PaymentData {
 
   private String note;
 
+  private final boolean coinBase;
+
   public TransactionData(String transactionId, DateTime date, RAGStatus status,
                          BigInteger amountBTC, Optional<BigInteger> feeOnSendBTC,
-                         TransactionConfidence.ConfidenceType confidenceType, PaymentType type, int depth, String description) {
+                         TransactionConfidence.ConfidenceType confidenceType, PaymentType type, int depth, String description, boolean coinBase) {
     this.transactionId = transactionId;
     this.date = date;
     this.status = status;
@@ -51,6 +53,7 @@ public class TransactionData implements PaymentData {
     this.type = type;
     this.depth = depth;
     this.description = description;
+    this.coinBase = coinBase;
   }
 
   @Override
@@ -117,6 +120,7 @@ public class TransactionData implements PaymentData {
     return feeOnSendBTC;
   }
 
+  @Override
   public int getDepth() {
     return depth;
   }
@@ -162,5 +166,10 @@ public class TransactionData implements PaymentData {
 
   public void setAmountFiat(FiatPayment fiatPayment) {
     this.amountFiat = fiatPayment;
+  }
+
+  @Override
+  public boolean isCoinBase() {
+    return coinBase;
   }
 }
