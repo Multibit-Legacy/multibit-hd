@@ -159,6 +159,7 @@ public class ComboBoxes {
     // Populate the combo box and declare a suitable renderer
     JComboBox<String> comboBox = newReadOnlyComboBox(languageNames);
     comboBox.setRenderer(new LanguageListCellRenderer());
+    comboBox.setMaximumRowCount(12);
 
     // Can use the ordinal due to the declaration ordering
     comboBox.setSelectedIndex(LanguageKey.fromLocale(locale).ordinal());

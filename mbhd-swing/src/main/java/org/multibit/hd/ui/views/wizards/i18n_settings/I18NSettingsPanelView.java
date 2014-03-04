@@ -84,10 +84,10 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
 
     languagesComboBox = ComboBoxes.newLanguagesComboBox(this, locale);
 
-    panel.add(Labels.newI18NSettingsNote(), "growx,push,span 2,wrap");
+    panel.add(Labels.newI18NSettingsNote(), "growx,span 2,wrap");
 
-    panel.add(Labels.newSelectLanguageLabel(),"shrink");
-    panel.add(languagesComboBox, "growx,width min:350:,push,wrap");
+    panel.add(Labels.newSelectLanguageLabel(),"shrink,aligny top");
+    panel.add(languagesComboBox, "growx,width min:350:,push,aligny top,wrap");
 
     return panel;
 
