@@ -3,7 +3,6 @@ package org.multibit.hd.ui.views.wizards.i18n_settings;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.I18NConfiguration;
@@ -154,13 +153,8 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
 
     // Create a new configuration to reset the separators
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
-    BitcoinConfiguration bitcoinConfiguration = new BitcoinConfiguration(newLocale);
-    configuration.setBitcoinConfiguration(bitcoinConfiguration);
-
-    // Retain the last selections (and current local currency)
-    bitcoinConfiguration.setLocalCurrencyUnit(
-      Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencyUnit()
-    );
+    I18NConfiguration i18NConfiguration = new I18NConfiguration(newLocale);
+    configuration.setI18NConfiguration(i18NConfiguration);
 
     // Update the model
     getWizardModel().setConfiguration(configuration);
