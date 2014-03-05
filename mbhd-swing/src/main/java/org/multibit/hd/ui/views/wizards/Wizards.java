@@ -16,6 +16,9 @@ import org.multibit.hd.ui.views.wizards.edit_history.EditHistoryState;
 import org.multibit.hd.ui.views.wizards.edit_history.EditHistoryWizard;
 import org.multibit.hd.ui.views.wizards.edit_history.EditHistoryWizardModel;
 import org.multibit.hd.ui.views.wizards.edit_history.EnterHistoryDetailsMode;
+import org.multibit.hd.ui.views.wizards.exchange_settings.ExchangeSettingsState;
+import org.multibit.hd.ui.views.wizards.exchange_settings.ExchangeSettingsWizard;
+import org.multibit.hd.ui.views.wizards.exchange_settings.ExchangeSettingsWizardModel;
 import org.multibit.hd.ui.views.wizards.exit.ExitState;
 import org.multibit.hd.ui.views.wizards.exit.ExitWizard;
 import org.multibit.hd.ui.views.wizards.exit.ExitWizardModel;
@@ -176,7 +179,7 @@ public class Wizards {
   }
 
   /**
-   * @return A new "Bitcoin settings" wizard for language selection
+   * @return A new "Bitcoin settings" wizard for currency selection
    */
   public static BitcoinSettingsWizard newBitcoinSettingsWizard() {
 
@@ -184,6 +187,17 @@ public class Wizards {
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
 
     return new BitcoinSettingsWizard(new BitcoinSettingsWizardModel(BitcoinSettingsState.BITCOIN_ENTER_DETAILS, configuration));
+  }
+
+  /**
+   * @return A new "Exchange settings" wizard for exchange rate provider selection
+   */
+  public static ExchangeSettingsWizard newExchangeSettingsWizard() {
+
+    // Ensure we work with a copy of the current configuration in case of cancellation
+    Configuration configuration = Configurations.currentConfiguration.deepCopy();
+
+    return new ExchangeSettingsWizard(new ExchangeSettingsWizardModel(ExchangeSettingsState.EXCHANGE_ENTER_DETAILS, configuration));
   }
 
 }

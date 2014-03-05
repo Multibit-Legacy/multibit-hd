@@ -41,25 +41,33 @@ public class ComboBoxes {
    */
   public static final String LANGUAGES_COMMAND = "languages";
   /**
-   * The "placement" combo box action command
+   * The "Bitcoin symbol" combo box action command
    */
-  public static final String PLACEMENT_COMMAND = "placement";
-  /**
-   * The "decimal separator" combo box action command
-   */
-  public static final String DECIMAL_COMMAND = "decimal";
-  /**
-   * The "grouping separator" combo box action command
-   */
-  public static final String GROUPING_COMMAND = "grouping";
+  public static final String BITCOIN_SYMBOL_COMMAND = "bitcoinSymbol";
   /**
    * The "local symbol" combo box action command
    */
   public static final String LOCAL_SYMBOL_COMMAND = "localSymbol";
   /**
-   * The "Bitcoin symbol" combo box action command
+   * The "placement" combo box action command
    */
-  public static final String BITCOIN_SYMBOL_COMMAND = "bitcoinSymbol";
+  public static final String PLACEMENT_COMMAND = "placement";
+  /**
+   * The "grouping separator" combo box action command
+   */
+  public static final String GROUPING_COMMAND = "grouping";
+  /**
+   * The "decimal separator" combo box action command
+   */
+  public static final String DECIMAL_COMMAND = "decimal";
+  /**
+   * The "exchange rate provider" combo box action command
+   */
+  public static final String EXCHANGE_RATE_PROVIDER_COMMAND = "exchange";
+  /**
+   * The "currency" combo box action command
+   */
+  public static final String CURRENCY_COMMAND = "currency";
 
   /**
    * Utilities have no public constructor
@@ -296,8 +304,8 @@ public class ComboBoxes {
       comboBox.setSelectedIndex(1);
     }
 
-      // Add the listener at the end to avoid false events
-      comboBox.setActionCommand(PLACEMENT_COMMAND);
+    // Add the listener at the end to avoid false events
+    comboBox.setActionCommand(PLACEMENT_COMMAND);
     comboBox.addActionListener(listener);
 
     return comboBox;
@@ -309,6 +317,8 @@ public class ComboBoxes {
    * @return A new "recipient" combo box with auto-complete functionality
    */
   public static JComboBox<Recipient> newRecipientComboBox(AutoCompleteFilter<Recipient> filter) {
+
+    Preconditions.checkNotNull(filter, "'filter' must be present");
 
     JComboBox<Recipient> comboBox = newComboBox(filter.create());
 
@@ -334,12 +344,12 @@ public class ComboBoxes {
    * @param listener        The action listener
    * @param backupSummaries The backup summary entries
    *
-   * @return A new "recipient" combo box with auto-complete functionality
+   * @return A new "backup summary" combo box
    */
   public static JComboBox<BackupSummary> newBackupSummaryComboBox(ActionListener listener, List<BackupSummary> backupSummaries) {
 
     Preconditions.checkNotNull(listener, "'listener' must be present");
-    Preconditions.checkNotNull(listener, "'backupSummaries' must be present");
+    Preconditions.checkNotNull(backupSummaries, "'backupSummaries' must be present");
 
     // Convert the backup summaries to an array
     BackupSummary[] backupSummaryArray = new BackupSummary[backupSummaries.size()];
@@ -352,6 +362,61 @@ public class ComboBoxes {
 
     // Ensure we start with nothing selected
     comboBox.setSelectedIndex(-1);
+
+    // Add the listener at the end to avoid false events
+    comboBox.addActionListener(listener);
+
+    return comboBox;
+
+  }
+
+  /**
+   * @param listener The action listener
+   * @param names    The exchange rate provider names
+   *
+   * @return A new "exchange rate provider" combo box
+   */
+  public static JComboBox<String> newExchangeRateProviderComboBox(ActionListener listener, List<String> names, BitcoinConfiguration bitcoinConfiguration) {
+
+    Preconditions.checkNotNull(listener, "'listener' must be present");
+    Preconditions.checkNotNull(names, "'names' must be present");
+
+    // Convert the names to an array
+    String[] namesArray = new String[names.size()];
+    namesArray = names.toArray(namesArray);
+
+    JComboBox<String> comboBox = newReadOnlyComboBox(namesArray);
+    selectFirstMatch(comboBox, namesArray, bitcoinConfiguration.getExchangeName());
+
+    // Add the listener at the end to avoid false events
+    comboBox.setActionCommand(EXCHANGE_RATE_PROVIDER_COMMAND);
+    comboBox.addActionListener(listener);
+
+    return comboBox;
+
+  }
+
+  /**
+   * @param listener The action listener
+   * @param names    The currency names
+   *
+   * @return A new "currency code" combo box
+   */
+  public static JComboBox<String> newCurrencyCodeComboBox(ActionListener listener, List<String> names, BitcoinConfiguration bitcoinConfiguration) {
+
+    Preconditions.checkNotNull(listener, "'listener' must be present");
+    Preconditions.checkNotNull(names, "'names' must be present");
+
+    // Convert the names to an array
+    String[] namesArray = new String[names.size()];
+    namesArray = names.toArray(namesArray);
+
+    JComboBox<String> comboBox = newReadOnlyComboBox(namesArray);
+    selectFirstMatch(comboBox, namesArray, bitcoinConfiguration.getLocalCurrencyUnit().getCode());
+
+    // Add the listener at the end to avoid false events
+    comboBox.setActionCommand(CURRENCY_COMMAND);
+    comboBox.addActionListener(listener);
 
     return comboBox;
 
@@ -379,8 +444,15 @@ public class ComboBoxes {
 
   public static void selectFirstMatch(JComboBox<String> comboBox, String[] items, String item) {
 
+    // Avoid working with nulls
+    if (item == null) {
+      comboBox.setSelectedIndex(-1);
+      return;
+    }
+
     // Determine the first matching separator
     for (int i = 0; i < items.length; i++) {
+      Preconditions.checkNotNull(items[i], "'items[" + i + "]' must be present");
       if (items[i].startsWith(item)) {
         comboBox.setSelectedIndex(i);
         break;

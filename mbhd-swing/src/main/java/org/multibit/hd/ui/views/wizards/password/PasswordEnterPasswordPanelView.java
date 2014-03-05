@@ -74,7 +74,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
   @Override
   public JPanel newWizardViewPanel() {
 
-    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.KEY);
+    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.LOCK);
 
     panel.setLayout(new MigLayout(
       Panels.migXLayout(),

@@ -370,9 +370,6 @@ public class TextBoxes {
     textArea.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "transferFocus");
     textArea.getActionMap().put("transferFocus", transferFocus);
 
-//    // Ensure we provide a suitable inner margin to allow letters to be clear
-//    textArea.setMargin(new Insets(6, 4, 6, 4));
-//
     // Ensure line and word wrapping occur as required
     textArea.setLineWrap(true);
     textArea.setWrapStyleWord(true);
@@ -383,6 +380,15 @@ public class TextBoxes {
     textArea.setFont(new Font("Courier New", Font.PLAIN, 14));
 
     return textArea;
+
+  }
+
+  /**
+   * @return A new "enter access code" (API key) text field
+   */
+  public static JTextField newEnterAccessCode() {
+
+    return newTextField(40);
 
   }
 

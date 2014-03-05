@@ -238,7 +238,7 @@ public class Buttons {
      JButton button = newButton(action, MessageKey.PASSWORD_UNLOCK);
      button.setAction(action);
 
-     AwesomeDecorator.applyIcon(AwesomeIcon.KEY, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+     AwesomeDecorator.applyIcon(AwesomeIcon.UNLOCK, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
      return button;
 

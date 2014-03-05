@@ -362,6 +362,22 @@ public class Labels {
   }
 
   /**
+   * @return A new "select local currency code" label
+   */
+  public static JLabel newLocalCurrencyLabel() {
+
+    return Labels.newLabel(MessageKey.SELECT_LOCAL_CURRENCY);
+  }
+
+  /**
+   * @return A new "enter access code" label (for API keys)
+   */
+  public static JLabel newAccessCodeLabel() {
+
+    return Labels.newLabel(MessageKey.ENTER_ACCESS_CODE);
+  }
+
+  /**
    * @return A new "select local Bitcoin symbol" label
    */
   public static JLabel newBitcoinSymbolLabel() {
@@ -383,6 +399,14 @@ public class Labels {
   public static JLabel newExampleLabel() {
 
     return Labels.newLabel(MessageKey.EXAMPLE);
+  }
+
+  /**
+   * @return A new "select exchange rate provider" label
+   */
+  public static JLabel newSelectExchangeRateProviderLabel() {
+
+    return Labels.newLabel(MessageKey.SELECT_EXCHANGE_RATE_PROVIDER);
   }
 
   /**
@@ -867,6 +891,17 @@ public class Labels {
 
     return newNoteLabel(new MessageKey[]{
       MessageKey.BITCOIN_SETTINGS_NOTE_1
+    }, new Object[][]{});
+
+  }
+
+  /**
+   * @return A new "exchange settings" note
+   */
+  public static JLabel newExchangeSettingsNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.EXCHANGE_SETTINGS_NOTE_1
     }, new Object[][]{});
 
   }

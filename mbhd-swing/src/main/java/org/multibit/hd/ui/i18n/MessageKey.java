@@ -81,6 +81,10 @@ public enum MessageKey {
   SELECT_BITCOIN_SYMBOL("select_bitcoin_symbol"),
   SELECT_PLACEMENT("select_placement"),
 
+  SELECT_EXCHANGE_RATE_PROVIDER("select_exchange_rate_provider"),
+  SELECT_LOCAL_CURRENCY("select_local_currency"),
+  ENTER_ACCESS_CODE("enter_access_code"),
+
   // Sidebar
 
   CONTACTS("contacts"),
@@ -246,6 +250,8 @@ public enum MessageKey {
   I18N_SETTINGS_NOTE_1("i18n_settings_note_1"),
 
   BITCOIN_SETTINGS_NOTE_1("bitcoin_settings_note_1"),
+
+  EXCHANGE_SETTINGS_NOTE_1("exchange_settings_note_1"),
 
   RECIPIENT_SUMMARY("recipient_summary"),
   AMOUNT_SUMMARY("amount_summary"),
