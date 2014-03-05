@@ -204,7 +204,7 @@ public class LightTheme implements Theme {
 
   @Override
   public Color creditText() {
-    return new Color(0,200,0);
+    return successAlertBackground().darker().darker();
   }
 
   @Override
