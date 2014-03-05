@@ -5,6 +5,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Labels;
+import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.borders.TextBubbleBorder;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -46,7 +47,7 @@ public class PanelDecorator {
 
     // Standard wizard layout
     MigLayout layout = new MigLayout(
-      "fillx,insets 5", // Layout constraints
+      Panels.migLayout("fill,insets 5"),
       "[][][][]", // Column constraints
       "[shrink]10[grow]10[]" // Row constraints
     );
@@ -74,8 +75,8 @@ public class PanelDecorator {
 
     // Standard wizard layout
     MigLayout layout = new MigLayout(
-      "fillx,insets 5", // Layout constraints
-      "[][][][]", // Column constraints
+      Panels.migLayout("insets 5"),
+      "[][][][]",
       "[shrink]10[grow]10[]" // Row constraints
     );
     detailPanel.setLayout(layout);

@@ -11,9 +11,9 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
+import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
-import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -62,7 +62,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
     // Configure the panel model
     SendBitcoinReportPanelModel panelModel = new SendBitcoinReportPanelModel(
-            getPanelName()
+      getPanelName()
     );
     setPanelModel(panelModel);
 
@@ -77,9 +77,9 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.CLOUD_UPLOAD);
 
     panel.setLayout(new MigLayout(
-            "fill,insets 0", // Layout constraints
-            "[][][]", // Column constraints
-            "[]10[]10[]" // Row constraints
+      Panels.migXYLayout(),
+      "[][][]", // Column constraints
+      "[]10[]10[]" // Row constraints
     ));
 
     // Apply the theme
@@ -130,7 +130,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
       Labels.decorateStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.TRUE));
     } else {
       String detailMessage = Languages.safeText(transactionCreationEvent.getTransactionCreationFailureReasonKey(),
-              (Object[]) transactionCreationEvent.getTransactionCreationFailureReasonData());
+        (Object[]) transactionCreationEvent.getTransactionCreationFailureReasonData());
       transactionConstructionStatusSummary.setText(Languages.safeText(CoreMessageKey.TRANSACTION_CREATION_FAILED));
       transactionConstructionStatusDetail.setText(detailMessage);
       Labels.decorateStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.FALSE));

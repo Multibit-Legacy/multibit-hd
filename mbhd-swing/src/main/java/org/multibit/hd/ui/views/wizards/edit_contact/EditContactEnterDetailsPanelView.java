@@ -68,7 +68,7 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
     // Configure the panel model
     setPanelModel(new EditContactEnterDetailsPanelModel(
-            getPanelName()
+      getPanelName()
     ));
 
   }
@@ -79,9 +79,9 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.EDIT);
 
     panel.setLayout(new MigLayout(
-            "fillx,insets 0", // Layout constraints
-            "[][]", // Column constraints
-            "[][][]" // Row constraints
+      Panels.migXYLayout(),
+      "[][]", // Column constraints
+      "[][][]" // Row constraints
     ));
 
     List<Contact> contacts = getWizardModel().getContacts();

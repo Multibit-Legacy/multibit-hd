@@ -186,11 +186,11 @@ public class Languages {
   }
 
   /**
-   * <p>Internal access only - external consumers should use safeText()</p>
+   * <p>Package access only - external consumers should use safeText()</p>
    *
    * @return The resource bundle based on the current locale
    */
-  private static ResourceBundle currentResourceBundle() {
+  static ResourceBundle currentResourceBundle() {
 
     return ResourceBundle.getBundle(BASE_NAME, currentLocale());
   }

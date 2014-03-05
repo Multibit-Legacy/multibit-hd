@@ -79,10 +79,11 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
 
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.BITCOIN);
 
+
     panel.setLayout(new MigLayout(
-      "fillx,insets 0", // Layout constraints
+      Panels.migXYLayout(),
       "[][][]", // Column constraints
-      "[][][][][][][]" // Row constraints
+      "[][][][][][][][]" // Row constraints
     ));
 
     I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration().deepCopy();
@@ -93,14 +94,14 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
 
     displayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT);
     displayAmountMaV.getModel().setSatoshis(BigInteger.valueOf(1_234_567_890_123L));
-    displayAmountMaV.getModel().setLocalAmount(BigMoney.of(i18nConfiguration.getLocalCurrencyUnit(), 12345678901.23));
+    displayAmountMaV.getModel().setLocalAmount(BigMoney.of(bitcoinConfiguration.getLocalCurrencyUnit(), 12345678901.23));
     displayAmountMaV.getModel().setRateProvider(Optional.of(Languages.safeText(MessageKey.EXAMPLE)));
     displayAmountMaV.getModel().setLocalAmountVisible(true);
 
-    JComboBox<String> decimalComboBox = ComboBoxes.newDecimalComboBox(this, i18nConfiguration);
-    JComboBox<String> groupingComboBox = ComboBoxes.newGroupingComboBox(this, i18nConfiguration);
+    JComboBox<String> decimalComboBox = ComboBoxes.newDecimalComboBox(this, bitcoinConfiguration);
+    JComboBox<String> groupingComboBox = ComboBoxes.newGroupingComboBox(this, bitcoinConfiguration);
 
-    localSymbolComboBox = ComboBoxes.newLocalSymbolComboBox(this, i18nConfiguration);
+    localSymbolComboBox = ComboBoxes.newLocalSymbolComboBox(this, bitcoinConfiguration);
     JComboBox<String> placementComboBox = ComboBoxes.newPlacementComboBox(this);
     JComboBox<BitcoinSymbol> bitcoinSymbolComboBox = ComboBoxes.newBitcoinSymbolComboBox(this, bitcoinConfiguration);
 
@@ -109,7 +110,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
     groupingErrorStatus = Labels.newErrorStatus(false);
     groupingErrorStatus.setVisible(false);
 
-    panel.add(Labels.newBitcoinSettingsNote(), "growx,push,span 4,wrap");
+    panel.add(Labels.newBitcoinSettingsNote(), "growx,push,span 3,wrap");
 
     panel.add(Labels.newBitcoinSymbolLabel(), "shrink");
     panel.add(bitcoinSymbolComboBox, "growx,push,wrap");
@@ -129,7 +130,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
     panel.add(decimalErrorStatus, "grow,push,wrap");
 
     panel.add(Labels.newExampleLabel(), "shrink,wrap");
-    panel.add(displayAmountMaV.getView().newComponentPanel(), "grow,push,span 3,wrap");
+    panel.add(displayAmountMaV.getView().newComponentPanel(), "growx,push,span 3,wrap");
 
     return panel;
 
@@ -218,7 +219,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
     Character grouping = String.valueOf(source.getSelectedItem()).charAt(0);
 
     // Validate the combination
-    if (grouping.equals(getWizardModel().getConfiguration().getI18NConfiguration().getDecimalSeparator())) {
+    if (grouping.equals(getWizardModel().getConfiguration().getBitcoinConfiguration().getDecimalSeparator())) {
       Sounds.playBeep();
       decimalErrorStatus.setVisible(false);
       groupingErrorStatus.setVisible(true);
@@ -239,7 +240,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
     }
 
     // Update the model
-    getWizardModel().getConfiguration().getI18NConfiguration().setGroupingSeparator(grouping);
+    getWizardModel().getConfiguration().getBitcoinConfiguration().setGroupingSeparator(grouping);
 
     displayAmountMaV.getView().updateView(getWizardModel().getConfiguration());
 
@@ -256,7 +257,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
     Character decimal = String.valueOf(source.getSelectedItem()).charAt(0);
 
     // Validate the combination
-    if (decimal.equals(getWizardModel().getConfiguration().getI18NConfiguration().getGroupingSeparator())) {
+    if (decimal.equals(getWizardModel().getConfiguration().getBitcoinConfiguration().getGroupingSeparator())) {
       Sounds.playBeep();
       groupingErrorStatus.setVisible(false);
       decimalErrorStatus.setVisible(true);
@@ -277,7 +278,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
     }
 
     // Update the model
-    getWizardModel().getConfiguration().getI18NConfiguration().setDecimalSeparator(decimal);
+    getWizardModel().getConfiguration().getBitcoinConfiguration().setDecimalSeparator(decimal);
 
     displayAmountMaV.getView().updateView(getWizardModel().getConfiguration());
 
@@ -294,7 +295,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
     String localSymbol = (String) source.getSelectedItem();
 
     // Change the local symbol
-    getWizardModel().getConfiguration().getI18NConfiguration().setLocalCurrencySymbol(localSymbol);
+    getWizardModel().getConfiguration().getBitcoinConfiguration().setLocalCurrencySymbol(localSymbol);
 
     // Update the display to match the new configuration
     displayAmountMaV.getView().updateView(getWizardModel().getConfiguration());
@@ -312,7 +313,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
     boolean isLeading = (source.getSelectedIndex() == 0);
 
     // Change the position
-    getWizardModel().getConfiguration().getI18NConfiguration().setCurrencySymbolLeading(isLeading);
+    getWizardModel().getConfiguration().getBitcoinConfiguration().setCurrencySymbolLeading(isLeading);
 
     // Update the display to match the new configuration
     displayAmountMaV.getView().updateView(getWizardModel().getConfiguration());

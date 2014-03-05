@@ -259,7 +259,7 @@ public class ComponentTestBed {
 
     // Set up the wrapping panel
     contentPanel = Panels.newPanel(new MigLayout(
-      "fill,insets 0", // Layout
+      Panels.migXYLayout(),
       "[][]", // Columns
       "[][]" // Rows
     ));

@@ -88,7 +88,7 @@ public class MainView extends JFrame {
 
     // Create the main panel and place it in this frame
     MigLayout layout = new MigLayout(
-      "fill,insets 0", // Layout
+      Panels.migXYLayout(),
       "[]", // Columns
       "[][][]"  // Rows
     );
@@ -103,16 +103,20 @@ public class MainView extends JFrame {
     // Create a splitter pane
     JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
+    // Set the divider width (3 is about right for a clean look)
+    splitPane.setDividerSize(3);
+
     if (Languages.isLeftToRight()) {
       splitPane.setLeftComponent(sidebarPanel);
       splitPane.setRightComponent(detailPanel);
+      // TODO Use the configuration to provide the basis
+      splitPane.setDividerLocation(180);
     } else {
       splitPane.setLeftComponent(detailPanel);
       splitPane.setRightComponent(sidebarPanel);
+      // TODO Use the configuration to provide the basis
+      splitPane.setDividerLocation(Panels.frame.getWidth() - 180);
     }
-
-    splitPane.setDividerSize(3);
-    splitPane.setDividerLocation(180);
 
     // Sets the colouring for divider and borders
     splitPane.setBackground(Themes.currentTheme.text());
@@ -120,6 +124,8 @@ public class MainView extends JFrame {
       1, 0, 1, 0,
       Themes.currentTheme.text()
     ));
+
+    splitPane.applyComponentOrientation(Languages.currentComponentOrientation());
 
     // Add the supporting panels
     mainPanel.add(headerPanel, "growx,shrink,wrap"); // Ensure header size remains fixed

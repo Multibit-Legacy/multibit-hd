@@ -31,7 +31,7 @@ public class ExchangeTickerServiceTest {
   public void setUp() throws IOException {
 
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
-    Configurations.currentConfiguration.getI18NConfiguration().setLocalCurrencyUnit(CurrencyUnit.USD);
+    Configurations.currentConfiguration.getBitcoinConfiguration().setLocalCurrencyUnit(CurrencyUnit.USD);
 
     Ticker ticker = Ticker.TickerBuilder
       .newInstance()

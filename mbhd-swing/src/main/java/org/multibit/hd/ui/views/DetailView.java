@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views;
 
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
-import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.controller.ShowScreenEvent;
@@ -39,12 +38,7 @@ public class DetailView {
 
     CoreServices.uiEventBus.register(this);
 
-    MigLayout layout = new MigLayout(
-      "fill,insets 0", // Layout constraints
-      "[]", // Column constraints
-      "[]" // Row constraints
-    );
-    contentPanel = Panels.newPanel(layout);
+    contentPanel = Panels.newPanel();
 
     // Apply theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());

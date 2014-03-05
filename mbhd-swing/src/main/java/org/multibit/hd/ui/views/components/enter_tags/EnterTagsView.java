@@ -39,7 +39,7 @@ public class EnterTagsView extends AbstractComponentView<EnterTagsModel> {
     EnterTagsModel model = getModel().get();
 
     panel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0", // Layout
+      Panels.migXLayout(),
       "[][]", // Columns
       "[][]" // Rows
     ));

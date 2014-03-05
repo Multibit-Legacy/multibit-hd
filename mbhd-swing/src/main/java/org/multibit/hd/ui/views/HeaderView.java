@@ -53,14 +53,14 @@ public class HeaderView {
 
     // Create the content panel
     contentPanel = Panels.newPanel(new MigLayout(
-      "fillx,insets 10 10 0 10,hidemode 3", // Layout insets ensure border is tight to sidebar
+      Panels.migLayout("fillx,insets 10 10 0 10,hidemode 3"), // Layout insets ensure border is tight to sidebar
       "[]", // Columns
       "[][shrink]" // Rows
     ));
 
     // Create the alert panel
     alertPanel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0", // Layout insets define the padding for the alert
+      Panels.migXLayout(),
       "[grow][][][]", // Columns
       "[]" // Rows
     ));
@@ -111,6 +111,7 @@ public class HeaderView {
     populateAlertPanel();
 
   }
+
   /**
    * <p>Handles the representation of the balance based on the current configuration</p>
    *

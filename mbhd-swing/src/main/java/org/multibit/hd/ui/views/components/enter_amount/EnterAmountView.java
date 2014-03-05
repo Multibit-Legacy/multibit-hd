@@ -68,7 +68,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
   public JPanel newComponentPanel() {
 
     panel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0", // Layout
+      Panels.migXLayout(),
       "[][][][][][]", // Columns
       "[][][]" // Rows
     ));
@@ -110,7 +110,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     // Arrange label placement according to configuration
     boolean isCurrencySymbolLeading = Configurations
       .currentConfiguration
-      .getI18NConfiguration()
+      .getBitcoinConfiguration()
       .isCurrencySymbolLeading();
 
     // Add to the panel

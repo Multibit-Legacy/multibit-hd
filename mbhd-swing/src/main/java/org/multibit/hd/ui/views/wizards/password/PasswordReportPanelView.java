@@ -50,7 +50,7 @@ public class PasswordReportPanelView extends AbstractWizardPanelView<PasswordWiz
 
     // Configure the panel model
     PasswordReportPanelModel panelModel = new PasswordReportPanelModel(
-            getPanelName()
+      getPanelName()
     );
     setPanelModel(panelModel);
 
@@ -65,9 +65,9 @@ public class PasswordReportPanelView extends AbstractWizardPanelView<PasswordWiz
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.MAGIC);
 
     panel.setLayout(new MigLayout(
-            "fill,insets 0", // Layout constraints
-            "[][][]", // Column constraints
-            "[]10[]10[]" // Row constraints
+      Panels.migXYLayout(),
+      "[][][]", // Column constraints
+      "[]10[]10[]" // Row constraints
     ));
 
     // Apply the theme

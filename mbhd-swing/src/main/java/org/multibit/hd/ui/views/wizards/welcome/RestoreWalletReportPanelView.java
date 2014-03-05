@@ -83,9 +83,9 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.FILE_TEXT);
 
     panel.setLayout(new MigLayout(
-            "fill,insets 0", // Layout constraints
-            "[][][]", // Column constraints
-            "[]10[]10[]10[]" // Row constraints
+      Panels.migXYLayout(),
+      "[][][]", // Column constraints
+      "[]10[]10[]10[]" // Row constraints
     ));
 
     // Apply the theme
@@ -189,10 +189,10 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       WalletService walletService = CoreServices.newWalletService();
       MultiBitHD.setWalletService(walletService);
       try {
-        walletService.initialise(InstallationManager.getOrCreateApplicationDataDirectory(),new WalletId(seed));
+        walletService.initialise(InstallationManager.getOrCreateApplicationDataDirectory(), new WalletId(seed));
       } catch (PaymentsLoadException ple) {
         log.error("Failed to restore wallet. Error was '" + ple.getMessage() + "'.");
-         return false;
+        return false;
       }
       CoreServices.newBitcoinNetworkService().replayWallet(replayDate);
 
@@ -213,7 +213,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     SelectBackupSummaryModel selectedBackupSummaryModel = getWizardModel().getSelectBackupSummaryModel();
 
     if (selectedBackupSummaryModel == null || selectedBackupSummaryModel.getValue() == null ||
-            selectedBackupSummaryModel.getValue().getFile() == null) {
+      selectedBackupSummaryModel.getValue().getFile() == null) {
       log.debug("No wallet backup to loadContacts from the model");
       return false;
     }

@@ -67,11 +67,11 @@ public class Images {
     g2.setColor(Themes.currentTheme.readOnlyComboBox());
     g2.fillRect(0,0,26,20);
 
-    // Write the language code
+    // Write the language code (looks better with white lowercase)
     g2.setRenderingHints(ImageDecorator.smoothRenderingHints());
-    g2.setColor(Themes.currentTheme.fadedText());
+    g2.setColor(Color.WHITE);
     g2.setFont(imageFont);
-    g2.drawString(code.toUpperCase(), 3, 16);
+    g2.drawString(code, 3, 16);
 
     g2.dispose();
 

@@ -40,12 +40,55 @@ public class Panels {
   private static Optional<LightBoxPanel> lightBoxPopoverPanel = Optional.absent();
 
   /**
-   * @return A simple theme-aware panel with a single cell MigLayout
+   * <p>A default MiG layout constraint with:</p>
+   * <ul>
+   * <li>Zero insets</li>
+   * <li>Fills all available space (X and Y)</li>
+   * <li>Handles left-to-right and right-to-left presentation automatically</li>
+   * </ul>
+   *
+   * @return A default MiG layout constraint that fills all X and Y with RTL appended
+   */
+  public static String migXYLayout() {
+    return migLayout("fill,insets 0");
+  }
+
+  /**
+   * <p>A default MiG layout constraint with:</p>
+   * <ul>
+   * <li>Zero insets</li>
+   * <li>Fills all available space (X only)</li>
+   * <li>Handles left-to-right and right-to-left presentation automatically</li>
+   * </ul>
+   *
+   * @return A default MiG layout constraint that fills all X with RTL appended
+   */
+  public static String migXLayout() {
+    return migLayout("fillx,insets 0");
+  }
+
+  /**
+   * <p>A non-standard MiG layout constraint with:</p>
+   * <ul>
+   * <li>Optional "fill", "insets", "hidemode" etc</li>
+   * <li>Handles left-to-right and right-to-left presentation automatically</li>
+   * </ul>
+   *
+   * @param layout Any of the usual MiG layout constraints except RTL (e.g. "fillx,insets 1 2 3 4")
+   *
+   * @return The MiG layout constraint with RTL handling appended
+   */
+  public static String migLayout(String layout) {
+    return layout + (Languages.isLeftToRight() ? "" : ",rtl");
+  }
+
+  /**
+   * @return A simple theme-aware panel with a single cell MigLayout that fills all X and Y
    */
   public static JPanel newPanel() {
 
     return Panels.newPanel(new MigLayout(
-      "fill,insets 0", // Layout
+      migXYLayout(), // Layout
       "[]", // Columns
       "[]" // Rows
     ));
@@ -80,7 +123,7 @@ public class Panels {
   public static JPanel newRoundedPanel() {
 
     JPanel panel = new RoundedPanel(new MigLayout(
-      "fill,insets 0", // Layout
+      Panels.migXLayout(),
       "[]", // Columns
       "[]" // Rows
     ));
@@ -110,7 +153,7 @@ public class Panels {
     BackgroundPanel panel = new BackgroundPanel(image, BackgroundPanel.ACTUAL);
 
     panel.setLayout(new MigLayout(
-      "fill,insets 0", // Layout
+      Panels.migXLayout(),
       "[]", // Columns
       "[]" // Rows
     ));
@@ -239,7 +282,7 @@ public class Panels {
   public static JPanel newConfirmSeedPhrase() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0", // Layout
+      Panels.migXYLayout(),
       "[grow]", // Columns
       "[]" // Rows
     ));
@@ -258,7 +301,7 @@ public class Panels {
   public static JPanel newSeedPhraseWarning() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0", // Layout
+      Panels.migXLayout(),
       "[grow]", // Columns
       "[]" // Rows
     ));
@@ -279,7 +322,7 @@ public class Panels {
   public static JPanel newDebuggerWarning() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0", // Layout
+      Panels.migXLayout(),
       "[grow]", // Columns
       "[]" // Rows
     ));
@@ -300,7 +343,7 @@ public class Panels {
   public static JPanel newRestoreFromBackup() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0", // Layout
+      Panels.migXLayout(),
       "[grow]", // Columns
       "[]" // Rows
     ));
@@ -319,7 +362,7 @@ public class Panels {
   public static JPanel newRestoreFromSeedPhrase() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0", // Layout
+      Panels.migXLayout(),
       "[grow]", // Columns
       "[]" // Rows
     ));
@@ -338,7 +381,7 @@ public class Panels {
   public static JPanel newRestoreFromTimestamp() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0", // Layout
+      Panels.migXLayout(),
       "[grow]", // Columns
       "[]" // Rows
     ));
@@ -357,7 +400,7 @@ public class Panels {
   public static JPanel newSelectBackupDirectory() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0", // Layout
+      Panels.migXLayout(),
       "[grow]", // Columns
       "[]" // Rows
     ));
@@ -385,7 +428,7 @@ public class Panels {
    * <p>Recursive method to enable or disable the focus on all components in the given container</p>
    * <p>Filters components that cannot have focus by design (e.g. JLabel)</p>
    *
-   * @param component The component
+   * @param component  The component
    * @param allowFocus True if the components should be able to gain focus
    */
   private static void allowFocus(Component component, boolean allowFocus) {

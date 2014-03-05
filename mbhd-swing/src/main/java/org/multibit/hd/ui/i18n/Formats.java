@@ -46,7 +46,7 @@ public class Formats {
     Locale currentLocale = i18nConfiguration.getLocale();
     BitcoinSymbol bitcoinSymbol = BitcoinSymbol.of(bitcoinConfiguration.getBitcoinSymbol());
 
-    DecimalFormatSymbols dfs = configureDecimalFormatSymbols(i18nConfiguration, currentLocale);
+    DecimalFormatSymbols dfs = configureDecimalFormatSymbols(bitcoinConfiguration, currentLocale);
     DecimalFormat localFormat = configureBitcoinDecimalFormat(dfs, bitcoinSymbol);
 
     // Apply formatting to the symbolic amount
@@ -81,21 +81,20 @@ public class Formats {
   /**
    * <p>Provide a simple representation for a local currency amount.</p>
    *
-   * @param amount            The amount as a plain number (no multipliers)
-   * @param i18nConfiguration The I18NConfiguration to use as the basis for presentation
+   * @param amount               The amount as a plain number (no multipliers)
+   * @param locale               The locale to use
+   * @param bitcoinConfiguration The I18NConfiguration to use as the basis for presentation
    *
    * @return The local currency representation with no symbolic decoration
    */
-  public static String formatLocalAmount(BigMoney amount, I18NConfiguration i18nConfiguration) {
+  public static String formatLocalAmount(BigMoney amount, Locale locale, BitcoinConfiguration bitcoinConfiguration) {
 
     if (amount == null) {
       return "";
     }
 
-    Locale currentLocale = i18nConfiguration.getLocale();
-
-    DecimalFormatSymbols dfs = configureDecimalFormatSymbols(i18nConfiguration, currentLocale);
-    DecimalFormat localFormat = configureLocalDecimalFormat(dfs, i18nConfiguration);
+    DecimalFormatSymbols dfs = configureDecimalFormatSymbols(bitcoinConfiguration, locale);
+    DecimalFormat localFormat = configureLocalDecimalFormat(dfs, bitcoinConfiguration);
 
     return localFormat.format(amount.getAmount());
 
@@ -124,20 +123,20 @@ public class Formats {
   }
 
   /**
-   * @param dfs               The decimal format symbols
-   * @param i18nConfiguration The I18NConfiguration to use as the basis for presentation
+   * @param dfs                  The decimal format symbols
+   * @param bitcoinConfiguration The Bitcoin configuration to use
    *
    * @return A decimal format suitable for local currency balance representation
    */
-  private static DecimalFormat configureLocalDecimalFormat(DecimalFormatSymbols dfs, I18NConfiguration i18nConfiguration) {
+  private static DecimalFormat configureLocalDecimalFormat(DecimalFormatSymbols dfs, BitcoinConfiguration bitcoinConfiguration) {
 
     DecimalFormat format = new DecimalFormat();
 
     format.setDecimalFormatSymbols(dfs);
 
     format.setMinimumIntegerDigits(1);
-    format.setMaximumFractionDigits(i18nConfiguration.getLocalDecimalPlaces());
-    format.setMinimumFractionDigits(i18nConfiguration.getLocalDecimalPlaces());
+    format.setMaximumFractionDigits(bitcoinConfiguration.getLocalDecimalPlaces());
+    format.setMinimumFractionDigits(bitcoinConfiguration.getLocalDecimalPlaces());
 
     format.setDecimalSeparatorAlwaysShown(true);
 
@@ -145,17 +144,17 @@ public class Formats {
   }
 
   /**
-   * @param configuration The internationalisation configuration
-   * @param currentLocale The current locale
+   * @param bitcoinConfiguration The Bitcoin configuration
+   * @param currentLocale        The current locale
    *
    * @return The decimal format symbols to use based on the configuration and locale
    */
-  private static DecimalFormatSymbols configureDecimalFormatSymbols(I18NConfiguration configuration, Locale currentLocale) {
+  private static DecimalFormatSymbols configureDecimalFormatSymbols(BitcoinConfiguration bitcoinConfiguration, Locale currentLocale) {
 
     DecimalFormatSymbols dfs = new DecimalFormatSymbols(currentLocale);
 
-    dfs.setDecimalSeparator(configuration.getDecimalSeparator());
-    dfs.setGroupingSeparator(configuration.getGroupingSeparator());
+    dfs.setDecimalSeparator(bitcoinConfiguration.getDecimalSeparator());
+    dfs.setGroupingSeparator(bitcoinConfiguration.getGroupingSeparator());
 
     return dfs;
 

@@ -35,12 +35,12 @@ public class ConfigurationsTest {
 
     // Bitcoin
     assertThat(configuration.getBitcoinConfiguration().getBitcoinSymbol()).isEqualTo("MICON");
+    assertThat(configuration.getBitcoinConfiguration().getDecimalSeparator()).isEqualTo('.');
+    assertThat(configuration.getBitcoinConfiguration().getGroupingSeparator()).isEqualTo(',');
+    assertThat(configuration.getBitcoinConfiguration().isCurrencySymbolLeading()).isTrue();
 
     // Internationalisation
     assertThat(configuration.getLocale().getLanguage()).isEqualTo("en");
-    assertThat(configuration.getI18NConfiguration().getDecimalSeparator()).isEqualTo('.');
-    assertThat(configuration.getI18NConfiguration().getGroupingSeparator()).isEqualTo(',');
-    assertThat(configuration.getI18NConfiguration().isCurrencySymbolLeading()).isTrue();
 
     // Logging
     assertThat(configuration.getLoggingConfiguration().getLoggers().get("org.multibit")).isEqualTo(Level.DEBUG);
@@ -56,12 +56,12 @@ public class ConfigurationsTest {
 
     // Bitcoin
     assertThat(properties.get(BITCOIN_SYMBOL)).isEqualTo("MICON");
+    assertThat(properties.get(BITCOIN_DECIMAL_SEPARATOR)).isEqualTo('.');
+    assertThat(properties.get(BITCOIN_GROUPING_SEPARATOR)).isEqualTo(',');
+    assertThat(properties.get(BITCOIN_IS_CURRENCY_PREFIXED)).isEqualTo("true");
 
     // Internationalisation
     assertThat(properties.get(I18N_LOCALE).toString()).isEqualTo("en_GB");
-    assertThat(properties.get(I18N_DECIMAL_SEPARATOR)).isEqualTo('.');
-    assertThat(properties.get(I18N_GROUPING_SEPARATOR)).isEqualTo(',');
-    assertThat(properties.get(I18N_IS_CURRENCY_PREFIXED)).isEqualTo("true");
 
     // Logging
     assertThat(properties.get(LOGGING_PACKAGE_PREFIX + "org.multibit")).isEqualTo("DEBUG");

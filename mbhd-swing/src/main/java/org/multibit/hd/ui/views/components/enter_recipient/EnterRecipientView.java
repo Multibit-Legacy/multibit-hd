@@ -65,7 +65,7 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
     pasteButton = Buttons.newPasteButton(getPasteAction());
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0", // Layout
+      Panels.migXLayout(),
       "[][][][]", // Columns
       "[]" // Rows
     ));

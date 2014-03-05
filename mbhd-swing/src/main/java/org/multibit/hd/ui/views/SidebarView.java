@@ -52,7 +52,7 @@ public class SidebarView {
 
     // Insets for top, left
     MigLayout layout = new MigLayout(
-      "fill, insets 6 10, ", // Layout
+      Panels.migLayout("fill, insets 6 10"),
       "[]", // Columns
       "[]" // Rows
     );
