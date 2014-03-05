@@ -23,43 +23,42 @@ import java.util.ResourceBundle;
  */
 public enum LanguageKey {
 
-  EN_GB("en_gb"),
-  ES_ES("es_es"),
-  RU_RU("ru_ru"),
-  SV_SV("sv_sv"),
-  NO_NO("no_no"),
-  IT_IT("it_it"),
-  FR_FR("fr_fr"),
-  DE_DE("de_de"),
-  PT_PT("pt_pt"),
-  HI_IN("hi_in"),
-  TH_TH("th_th"),
-  NL_NL("nl_nl"),
-  ZH_CN("zh_cn"),
-  JA_JP("ja_jp"),
+  AF_AF("af_af"),
   AR_AR("ar_ar"),
-  KO_KR("ko_kr"),
-  LV_LV("lv_lv"),
-  TR_TR("tr_tr"),
+  CS_CZ("cs_cz"),
+  DA_DK("da_dk"),
+  DE_DE("de_de"),
+  EL_GR("el_gr"),
+  EN_GB("en_gb"),
+  EO_ES("eo_es"),
+  ES_ES("es_es"),
+  FA_IR("fa_ir"),
   FI_FI("fi_fi"),
-  PL_PL("pl_pl"),
+  FR_FR("fr_fr"),
+  HE_IL("he_il"),
+  HI_IN("hi_in"),
   HR_HR("hr_hr"),
   HU_HU("hu_hu"),
-  EL_GR("el_gr"),
-  DA_DK("da_dk"),
-  EO_ES("eo_es"),
-  FA_IR("fa_ir"),
-  HE_IL("he_il"),
-  SK_SK("sk_sk"),
-  CS_CZ("cs_cz"),
   ID_ID("id_id"),
-  SL_SI("sl_si"),
-  TA_LK("ta_lk"),
+  IT_IT("it_it"),
+  JA_JP("ja_jp"),
+  KO_KR("ko_kr"),
+  LV_LV("lv_lv"),
+  NL_NL("nl_nl"),
+  NO_NO("no_no"),
+  PL_PL("pl_pl"),
+  PT_PT("pt_pt"),
   RO_RO("ro_ro"),
-  AF_AF("af_af"),
-  TL_PH("tl_ph"),
+  RU_RU("ru_ru"),
+  SK_SK("sk_sk"),
+  SL_SI("sl_si"),
+  SV_SV("sv_sv"),
   SW_KE("sw_ke"),
-
+  TA_LK("ta_lk"),
+  TH_TH("th_th"),
+  TL_PH("tl_ph"),
+  TR_TR("tr_tr"),
+  ZH_CN("zh_cn"),
   // End of enum
   ;
 
@@ -74,7 +73,7 @@ public enum LanguageKey {
     ResourceBundle rb = ResourceBundle.getBundle(Languages.BASE_NAME);
 
     this.key = key;
-    this.languageCode = key.substring(0, 2).toUpperCase();
+    this.languageCode = key.substring(0, 2);
     this.icon = Images.newLanguageIcon(languageCode);
     this.languageName = rb.getString(key);
   }
