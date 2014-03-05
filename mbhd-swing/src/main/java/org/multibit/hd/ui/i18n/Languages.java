@@ -36,18 +36,27 @@ public class Languages {
    *
    * @return The array
    */
-  public static String[] getAmountSeparators() {
+  public static String[] getCurrencySeparators(boolean forGrouping) {
 
-    return new String[]{
-      Languages.safeText(MessageKey.DECIMAL_COMMA),
-      Languages.safeText(MessageKey.DECIMAL_POINT),
-      Languages.safeText(MessageKey.DECIMAL_SPACE),
-    };
+    if (forGrouping) {
+      // Groups can be separated by comma, point and space
+      return new String[]{
+        Languages.safeText(MessageKey.DECIMAL_COMMA),
+        Languages.safeText(MessageKey.DECIMAL_POINT),
+        Languages.safeText(MessageKey.DECIMAL_SPACE)
+      };
+    } else {
+      // Decimals can be separated by comma and point only
+      return new String[]{
+        Languages.safeText(MessageKey.DECIMAL_COMMA),
+        Languages.safeText(MessageKey.DECIMAL_POINT)
+      };
 
+    }
   }
 
   /**
-   * @return Current locale
+   * @return Current locale from configuration
    */
   public static Locale currentLocale() {
 

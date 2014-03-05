@@ -56,7 +56,7 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
 
     // Create the balance panel - forcing a LTR layout to ensure correct placement of labels
     panel = Panels.newPanel(new MigLayout(
-      "fill,ltr,insets 0", // Layout
+      "debug,fillx,insets 0,hidemode 1,ltr", // Layout
       "[][][][][][]", // Columns
       "[]" // Rows
     ));
@@ -72,7 +72,7 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
     // Determine how to add them back into the panel
     if (Languages.isLeftToRight()) {
       panel.add(leadingSymbolLabel, "left,shrink,gap 0,baseline");
-      panel.add(primaryBalanceLabel, "left,shrink,baseline");
+      panel.add(primaryBalanceLabel, "left,shrink,gap 0,baseline");
       panel.add(secondaryBalanceLabel, "left,shrink,gap 0");
       panel.add(trailingSymbolLabel, "left,shrink,gap 0");
       panel.add(exchangeLabel, "left,shrink,gap 0");
@@ -117,6 +117,9 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
     } else {
       handleTrailingSymbol(bitcoinConfiguration);
     }
+
+    // Ensure we hide the leading label if it's not required
+    leadingSymbolLabel.setVisible(bitcoinConfiguration.isCurrencySymbolLeading());
 
     primaryBalanceLabel.setText(bitcoinDisplay[0]);
     secondaryBalanceLabel.setText(bitcoinDisplay[1]);

@@ -112,7 +112,13 @@ public class CurrencyUtils {
 
     Currency currency = Currency.getInstance(locale);
 
-    return currency.getSymbol(currencyLocaleMap.get(currency));
+    // Not all currencies are known to all JVMs
+    if (currencyLocaleMap.containsKey(currency)) {
+      return currency.getSymbol(currencyLocaleMap.get(currency));
+    } else {
+      // Make best guess from JVM
+      return currency.getSymbol();
+    }
 
   }
 

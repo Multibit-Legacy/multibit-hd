@@ -179,7 +179,7 @@ public class ComboBoxes {
    */
   public static JComboBox<String> newDecimalComboBox(ActionListener listener, BitcoinConfiguration bitcoinConfiguration) {
 
-    String[] decimalSeparators = Languages.getAmountSeparators();
+    String[] decimalSeparators = Languages.getCurrencySeparators(false);
     JComboBox<String> comboBox = newReadOnlyComboBox(decimalSeparators);
 
     // Determine the first matching separator
@@ -207,7 +207,7 @@ public class ComboBoxes {
    */
   public static JComboBox<String> newGroupingComboBox(ActionListener listener, BitcoinConfiguration bitcoinConfiguration) {
 
-    String[] groupingSeparators = Languages.getAmountSeparators();
+    String[] groupingSeparators = Languages.getCurrencySeparators(true);
     JComboBox<String> comboBox = newReadOnlyComboBox(groupingSeparators);
 
     // Determine the first matching separator

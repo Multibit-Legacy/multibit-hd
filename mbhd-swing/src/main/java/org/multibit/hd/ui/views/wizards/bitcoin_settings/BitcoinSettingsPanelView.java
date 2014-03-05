@@ -27,6 +27,7 @@ import org.multibit.hd.ui.views.wizards.WizardButton;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Locale;
 
@@ -93,8 +94,8 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
     Preconditions.checkNotNull(locale, "'locale' cannot be empty");
 
     displayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT);
-    displayAmountMaV.getModel().setSatoshis(BigInteger.valueOf(1_234_567_890_123L));
-    displayAmountMaV.getModel().setLocalAmount(BigMoney.of(bitcoinConfiguration.getLocalCurrencyUnit(), 12345678901.23));
+    displayAmountMaV.getModel().setSatoshis(BigInteger.valueOf(123_456_789_012_345L)); // 1.23... million bitcoins
+    displayAmountMaV.getModel().setLocalAmount(BigMoney.of(bitcoinConfiguration.getLocalCurrencyUnit(), new BigDecimal("12345678.9012")));
     displayAmountMaV.getModel().setRateProvider(Optional.of(Languages.safeText(MessageKey.EXAMPLE)));
     displayAmountMaV.getModel().setLocalAmountVisible(true);
 
@@ -228,7 +229,6 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
         WizardButton.APPLY,
         false
       );
-      return;
     } else {
       decimalErrorStatus.setVisible(false);
       groupingErrorStatus.setVisible(false);
@@ -239,7 +239,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
       );
     }
 
-    // Update the model
+    // Update the model (even if in error)
     getWizardModel().getConfiguration().getBitcoinConfiguration().setGroupingSeparator(grouping);
 
     displayAmountMaV.getView().updateView(getWizardModel().getConfiguration());
@@ -266,7 +266,6 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
         WizardButton.APPLY,
         false
       );
-      return;
     } else {
       groupingErrorStatus.setVisible(false);
       decimalErrorStatus.setVisible(false);
@@ -277,7 +276,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
       );
     }
 
-    // Update the model
+    // Update the model (even if in error)
     getWizardModel().getConfiguration().getBitcoinConfiguration().setDecimalSeparator(decimal);
 
     displayAmountMaV.getView().updateView(getWizardModel().getConfiguration());
