@@ -69,7 +69,7 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.GLOBE);
 
     panel.setLayout(new MigLayout(
-      "fill,insets 0", // Layout constraints
+      Panels.migLayout(0),
       "[][]", // Column constraints
       "[][]" // Row constraints
     ));

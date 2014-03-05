@@ -77,7 +77,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.KEY);
 
     panel.setLayout(new MigLayout(
-      "fillx,insets 0", // Layout constraints
+      "fillx,insets 0"+ (Languages.isLeftToRight() ? "" : ",rtl"), // Layout constraints
       "[]", // Column constraints
       "[]10[]" // Row constraints
     ));

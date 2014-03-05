@@ -4,6 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.config.Configurations;
 
+import java.util.ResourceBundle;
+
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class MessageKeyTest {
@@ -25,4 +27,33 @@ public class MessageKeyTest {
     }
 
   }
+
+  @Test
+  public void testSimilar_EN() throws Exception {
+
+    ResourceBundle base = Languages.currentResourceBundle();
+
+    for (MessageKey messageKey : MessageKey.values()) {
+
+      String content =Languages.safeText(messageKey);
+
+      for (String otherKey: base.keySet()) {
+
+        if (messageKey.getKey().equals(otherKey)) {
+          continue;
+        }
+
+        String otherContent = base.getString(otherKey);
+
+        if (otherContent.contains(content)) {
+          System.out.printf("MessageKey: '%s' ('%s') is similar to resource key '%s' ('%s'))%n", messageKey.getKey(), content, otherKey, otherContent);
+        }
+
+      }
+
+
+    }
+
+  }
+
 }

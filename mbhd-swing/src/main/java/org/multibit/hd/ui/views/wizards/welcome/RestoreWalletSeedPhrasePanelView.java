@@ -7,11 +7,11 @@ import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.ModelAndView;
-import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
-import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseView;
+import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
+import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
@@ -27,7 +27,7 @@ import java.util.List;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 
 public class RestoreWalletSeedPhrasePanelView extends AbstractWizardPanelView<WelcomeWizardModel, List<String>> {
@@ -35,8 +35,8 @@ public class RestoreWalletSeedPhrasePanelView extends AbstractWizardPanelView<We
   private ModelAndView<EnterSeedPhraseModel, EnterSeedPhraseView> enterSeedPhraseMaV;
 
   /**
-   * @param wizard The wizard managing the states
-   * @param panelName   The panel name to filter events from components
+   * @param wizard    The wizard managing the states
+   * @param panelName The panel name to filter events from components
    */
   public RestoreWalletSeedPhrasePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
@@ -49,7 +49,7 @@ public class RestoreWalletSeedPhrasePanelView extends AbstractWizardPanelView<We
   public void newPanelModel() {
 
     // Do not ask for timestamp until necessary
-    enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV(getPanelName(),false, true);
+    enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV(getPanelName(), false, true);
     setPanelModel(enterSeedPhraseMaV.getModel().getValue());
 
     getWizardModel().setRestoreWalletEnterSeedPhraseModel(enterSeedPhraseMaV.getModel());
@@ -62,7 +62,7 @@ public class RestoreWalletSeedPhrasePanelView extends AbstractWizardPanelView<We
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.KEY);
 
     panel.setLayout(new MigLayout(
-      "fill,insets 0,hidemode 1", // Layout constraints
+      Panels.migLayout(0) + ",hidemode 1",
       "[]", // Column constraints
       "[][]" // Row constraints
     ));

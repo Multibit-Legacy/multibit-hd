@@ -130,7 +130,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.CLOUD_DOWNLOAD);
 
     panel.setLayout(new MigLayout(
-      "fillx,insets 0", // Layout constraints
+      Panels.migLayout(0),
       "[][][]", // Column constraints
       "[]10[]" // Row constraints
     ));

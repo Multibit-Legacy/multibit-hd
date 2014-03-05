@@ -52,7 +52,7 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
     CoreServices.uiEventBus.register(this);
 
     MigLayout layout = new MigLayout(
-      "fill", // Layout constraints
+      Panels.migLayout(0),
       "[]10[]", // Column constraints
       "[]50[]" // Row constraints
     );

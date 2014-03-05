@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.i18n.Languages;
@@ -40,14 +41,41 @@ public class Panels {
   private static Optional<LightBoxPanel> lightBoxPopoverPanel = Optional.absent();
 
   /**
+   * @param rows The number of rows
+   *
+   * @return A standard MiG row constraint string for the given number of rows
+   */
+  public static String migRows(int rows) {
+    return Strings.repeat("[]", rows);
+  }
+
+  /**
+   * @param columns The number of columns
+   *
+   * @return A standard MiG column constraint string for the given number of columns
+   */
+  public static String migColumns(int columns) {
+    return Strings.repeat("[]", columns);
+  }
+
+  /**
+   * @param insets The insets in pixels (usually zero)
+   *
+   * @return A standard MiG layout constraint string handling LTR/RTL handling built-in
+   */
+  public static String migLayout(int insets) {
+    return "fill,insets " + insets + (Languages.isLeftToRight() ? "" : ",rtl");
+  }
+
+  /**
    * @return A simple theme-aware panel with a single cell MigLayout
    */
   public static JPanel newPanel() {
 
     return Panels.newPanel(new MigLayout(
-      "fill,insets 0", // Layout
-      "[]", // Columns
-      "[]" // Rows
+      migLayout(0), // Layout
+      migColumns(1), // Columns
+      migRows(1) // Rows
     ));
 
   }
@@ -385,7 +413,7 @@ public class Panels {
    * <p>Recursive method to enable or disable the focus on all components in the given container</p>
    * <p>Filters components that cannot have focus by design (e.g. JLabel)</p>
    *
-   * @param component The component
+   * @param component  The component
    * @param allowFocus True if the components should be able to gain focus
    */
   private static void allowFocus(Component component, boolean allowFocus) {

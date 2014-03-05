@@ -4,7 +4,10 @@ import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.MessageKey;
-import org.multibit.hd.ui.views.components.*;
+import org.multibit.hd.ui.views.components.Components;
+import org.multibit.hd.ui.views.components.Labels;
+import org.multibit.hd.ui.views.components.ModelAndView;
+import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
@@ -59,9 +62,9 @@ public class RestoreWalletSelectBackupLocationPanelView extends AbstractWizardPa
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.FOLDER_OPEN);
 
     panel.setLayout(new MigLayout(
-            "fillx,insets 0", // Layout constraints
-            "[][]", // Column constraints
-            "[][][]" // Row constraints
+      Panels.migLayout(0),
+      "[][]", // Column constraints
+      "[][][]" // Row constraints
     ));
 
     panel.add(Panels.newRestoreFromBackup(), "span 2,grow,wrap");

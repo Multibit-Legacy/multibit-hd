@@ -79,10 +79,11 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
 
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.BITCOIN);
 
+
     panel.setLayout(new MigLayout(
-      "fillx,insets 0", // Layout constraints
-      "[][][]", // Column constraints
-      "[][][][][][][]" // Row constraints
+      Panels.migLayout(0),
+      Panels.migColumns(3), // Column constraints
+      Panels.migRows(8) // Row constraints
     ));
 
     I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration().deepCopy();
@@ -109,7 +110,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
     groupingErrorStatus = Labels.newErrorStatus(false);
     groupingErrorStatus.setVisible(false);
 
-    panel.add(Labels.newBitcoinSettingsNote(), "growx,push,span 4,wrap");
+    panel.add(Labels.newBitcoinSettingsNote(), "growx,push,span 3,wrap");
 
     panel.add(Labels.newBitcoinSymbolLabel(), "shrink");
     panel.add(bitcoinSymbolComboBox, "growx,push,wrap");
@@ -129,7 +130,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
     panel.add(decimalErrorStatus, "grow,push,wrap");
 
     panel.add(Labels.newExampleLabel(), "shrink,wrap");
-    panel.add(displayAmountMaV.getView().newComponentPanel(), "grow,push,span 3,wrap");
+    panel.add(displayAmountMaV.getView().newComponentPanel(), "growx,push,span 3,wrap");
 
     return panel;
 

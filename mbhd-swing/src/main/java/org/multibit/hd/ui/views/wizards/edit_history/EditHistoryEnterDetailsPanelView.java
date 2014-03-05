@@ -75,7 +75,7 @@ public class EditHistoryEnterDetailsPanelView extends AbstractWizardPanelView<Ed
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.EDIT);
 
     panel.setLayout(new MigLayout(
-      "fillx,insets 0", // Layout constraints
+      Panels.migLayout(0),
       "[][]", // Column constraints
       "[][][]" // Row constraints
     ));

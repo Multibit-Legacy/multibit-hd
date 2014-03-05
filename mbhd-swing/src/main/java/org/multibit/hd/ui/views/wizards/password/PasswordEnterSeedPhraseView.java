@@ -70,12 +70,12 @@ public class PasswordEnterSeedPhraseView extends AbstractWizardPanelView<Passwor
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.MAGIC);
 
     panel.setLayout(new MigLayout(
-      "fill,insets 0,hidemode 1", // Layout constraints
+      Panels.migLayout(0) + ",hidemode 1",
       "[]", // Column constraints
       "[][]" // Row constraints
     ));
 
-    panel.add(Labels.newRestoreFromSeedPhraseNote(),"wrap");
+    panel.add(Labels.newRestoreFromSeedPhraseNote(), "wrap");
     panel.add(enterSeedPhraseMaV.getView().newComponentPanel(), "wrap");
 
     return panel;

@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.views.screens.payments;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.PaymentData;
@@ -64,9 +63,9 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     CoreServices.uiEventBus.register(this);
 
     MigLayout layout = new MigLayout(
-            "fill, insets 0", // Layout constraints
-            "[]", // Column constraints
-            "[]" // Row constraints
+      Panels.migLayout(0),
+      "[]", // Column constraints
+      "[]" // Row constraints
     );
 
     // Create view components
@@ -131,14 +130,14 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
   }
 
   /**
-    * Update the payments when a walletDetailsChangedEvent occurs
-    */
-   @Subscribe
-   public void onWalletDetailChangedEvent(WalletDetailChangedEvent walletDetailChangedEvent) {
-     log.trace("Received a WalletDetailsChangedEvent.");
+   * Update the payments when a walletDetailsChangedEvent occurs
+   */
+  @Subscribe
+  public void onWalletDetailChangedEvent(WalletDetailChangedEvent walletDetailChangedEvent) {
+    log.trace("Received a WalletDetailsChangedEvent.");
 
-     update();
-   }
+    update();
+  }
 
   private void update() {
     if (paymentsTable != null) {
