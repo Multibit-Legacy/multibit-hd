@@ -33,7 +33,7 @@ public class LabelDecorator {
    */
   public static void applyLocalCurrencySymbol(JLabel label) {
 
-    label.setText(Configurations.currentConfiguration.getI18NConfiguration().getLocalCurrencySymbol());
+    label.setText(Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencySymbol());
 
     Font font = label.getFont().deriveFont(Font.BOLD, (float) MultiBitUI.NORMAL_ICON_SIZE);
     label.setFont(font);

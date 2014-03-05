@@ -41,15 +41,15 @@ public class Configurations {
 
   // Bitcoin
   public static final String BITCOIN_SYMBOL = "bitcoin.symbol";
+  public static final String BITCOIN_DECIMAL_SEPARATOR = "bitcoin.decimal-separator";
+  public static final String BITCOIN_GROUPING_SEPARATOR = "bitcoin.grouping-separator";
+  public static final String BITCOIN_IS_CURRENCY_PREFIXED = "bitcoin.is-prefixed";
+  public static final String BITCOIN_LOCAL_DECIMAL_PLACES = "bitcoin.local-decimal-places";
+  public static final String BITCOIN_LOCAL_CURRENCY_UNIT = "bitcoin.local-currency-unit";
+  public static final String BITCOIN_LOCAL_CURRENCY_SYMBOL = "bitcoin.local-currency-symbol";
 
   // Internationalisation (i18n)
   public static final String I18N_LOCALE = "i18n.locale";
-  public static final String I18N_DECIMAL_SEPARATOR = "i18n.decimal-separator";
-  public static final String I18N_GROUPING_SEPARATOR = "i18n.grouping-separator";
-  public static final String I18N_IS_CURRENCY_PREFIXED = "i18n.is-prefixed";
-  public static final String I18N_LOCAL_DECIMAL_PLACES = "i18n.local-decimal-places";
-  public static final String I18N_LOCAL_CURRENCY_UNIT = "i18n.local-currency-unit";
-  public static final String I18N_LOCAL_CURRENCY_SYMBOL = "i18n.local-currency-symbol";
 
   // Logging
   public static final String LOGGING = "logging";
@@ -57,7 +57,6 @@ public class Configurations {
   public static final String LOGGING_FILE = LOGGING + ".file";
   public static final String LOGGING_ARCHIVE = LOGGING + ".archive";
   public static final String LOGGING_PACKAGE_PREFIX = LOGGING + ".package.";
-
 
   /**
    * The current runtime configuration (preserved across soft restarts)
@@ -87,14 +86,14 @@ public class Configurations {
 
     // Bitcoin
     properties.put(BITCOIN_SYMBOL, "MICON");
+    properties.put(BITCOIN_DECIMAL_SEPARATOR, ".");
+    properties.put(BITCOIN_GROUPING_SEPARATOR, ",");
+    properties.put(BITCOIN_IS_CURRENCY_PREFIXED, "true");
+    properties.put(BITCOIN_LOCAL_DECIMAL_PLACES, "2");
+    properties.put(BITCOIN_LOCAL_CURRENCY_UNIT, "USD");
 
     // Localisation
     properties.put(I18N_LOCALE, "en_GB");
-    properties.put(I18N_DECIMAL_SEPARATOR, ".");
-    properties.put(I18N_GROUPING_SEPARATOR, ",");
-    properties.put(I18N_IS_CURRENCY_PREFIXED, "true");
-    properties.put(I18N_LOCAL_DECIMAL_PLACES, "2");
-    properties.put(I18N_LOCAL_CURRENCY_UNIT, "USD");
 
     // Logging
     properties.put(LOGGING_LEVEL, "warn");

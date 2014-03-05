@@ -3,7 +3,6 @@ package org.multibit.hd.core.config;
 import ch.qos.logback.classic.Level;
 import com.google.common.base.Preconditions;
 import org.joda.money.CurrencyUnit;
-import org.multibit.hd.core.utils.CurrencyUtils;
 
 import java.util.Map;
 import java.util.Properties;
@@ -72,30 +71,30 @@ public class ConfigurationReadAdapter {
     if (Configurations.BITCOIN_SYMBOL.equalsIgnoreCase(key)) {
       configuration.getBitcoinConfiguration().setBitcoinSymbol(value);
     }
+    if (Configurations.BITCOIN_DECIMAL_SEPARATOR.equalsIgnoreCase(key)) {
+      configuration.getBitcoinConfiguration().setDecimalSeparator(value.charAt(0));
+    }
+    if (Configurations.BITCOIN_GROUPING_SEPARATOR.equalsIgnoreCase(key)) {
+      configuration.getBitcoinConfiguration().setGroupingSeparator(value.charAt(0));
+    }
+    if (Configurations.BITCOIN_IS_CURRENCY_PREFIXED.equalsIgnoreCase(key)) {
+      configuration.getBitcoinConfiguration().setCurrencySymbolLeading(Boolean.valueOf(value));
+    }
+    if (Configurations.BITCOIN_LOCAL_DECIMAL_PLACES.equalsIgnoreCase(key)) {
+      configuration.getBitcoinConfiguration().setLocalDecimalPlaces(Integer.valueOf(value));
+    }
+    if (Configurations.BITCOIN_LOCAL_CURRENCY_UNIT.equalsIgnoreCase(key)) {
+      configuration.getBitcoinConfiguration().setLocalCurrencyUnit(CurrencyUnit.of(value));
+    }
+    if (Configurations.BITCOIN_LOCAL_CURRENCY_SYMBOL.equalsIgnoreCase(key)) {
+      configuration.getBitcoinConfiguration().setLocalCurrencySymbol(value);
+    }
 
   }
   private void adaptI18N(String key, String value) {
 
     if (Configurations.I18N_LOCALE.equalsIgnoreCase(key)) {
       configuration.getI18NConfiguration().setLocale(value);
-    }
-    if (Configurations.I18N_DECIMAL_SEPARATOR.equalsIgnoreCase(key)) {
-      configuration.getI18NConfiguration().setDecimalSeparator(value.charAt(0));
-    }
-    if (Configurations.I18N_GROUPING_SEPARATOR.equalsIgnoreCase(key)) {
-      configuration.getI18NConfiguration().setGroupingSeparator(value.charAt(0));
-    }
-    if (Configurations.I18N_IS_CURRENCY_PREFIXED.equalsIgnoreCase(key)) {
-      configuration.getI18NConfiguration().setCurrencySymbolLeading(Boolean.valueOf(value));
-    }
-    if (Configurations.I18N_LOCAL_DECIMAL_PLACES.equalsIgnoreCase(key)) {
-      configuration.getI18NConfiguration().setLocalDecimalPlaces(Integer.valueOf(value));
-    }
-    if (Configurations.I18N_LOCAL_CURRENCY_UNIT.equalsIgnoreCase(key)) {
-      configuration.getI18NConfiguration().setLocalCurrencyUnit(CurrencyUnit.of(value));
-    }
-    if (Configurations.I18N_LOCAL_CURRENCY_SYMBOL.equalsIgnoreCase(key)) {
-      configuration.getI18NConfiguration().setLocalCurrencySymbol(value);
     }
 
   }

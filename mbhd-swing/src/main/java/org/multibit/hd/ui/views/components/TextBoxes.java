@@ -215,7 +215,7 @@ public class TextBoxes {
     // Use the current configuration to provide the decimal places
     int decimalPlaces = Configurations
       .currentConfiguration
-      .getI18NConfiguration()
+      .getBitcoinConfiguration()
       .getLocalDecimalPlaces();
 
     // Allow an extra 6 digits for local currency

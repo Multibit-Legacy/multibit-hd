@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.components;
 
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.config.BitcoinConfiguration;
-import org.multibit.hd.core.config.I18NConfiguration;
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.utils.BitcoinSymbol;
@@ -173,18 +172,18 @@ public class ComboBoxes {
   }
 
   /**
-   * @param listener          The action listener to alert when the selection is made
-   * @param i18nConfiguration The I18NConfiguration to use
+   * @param listener             The action listener to alert when the selection is made
+   * @param bitcoinConfiguration The Bitcoin configuration to use
    *
    * @return A new "decimal" combo box
    */
-  public static JComboBox<String> newDecimalComboBox(ActionListener listener, I18NConfiguration i18nConfiguration) {
+  public static JComboBox<String> newDecimalComboBox(ActionListener listener, BitcoinConfiguration bitcoinConfiguration) {
 
     String[] decimalSeparators = Languages.getAmountSeparators();
     JComboBox<String> comboBox = newReadOnlyComboBox(decimalSeparators);
 
     // Determine the first matching separator
-    Character decimal = i18nConfiguration.getDecimalSeparator();
+    Character decimal = bitcoinConfiguration.getDecimalSeparator();
     for (int i = 0; i < decimalSeparators.length; i++) {
       if (decimal.equals(decimalSeparators[i].charAt(0))) {
         comboBox.setSelectedIndex(i);
@@ -201,18 +200,18 @@ public class ComboBoxes {
   }
 
   /**
-   * @param listener          The action listener to alert when the selection is made
-   * @param i18nConfiguration The I18NConfiguration to use
+   * @param listener             The action listener to alert when the selection is made
+   * @param bitcoinConfiguration The Bitcoin configuration to use
    *
    * @return A new "decimal" combo box
    */
-  public static JComboBox<String> newGroupingComboBox(ActionListener listener, I18NConfiguration i18nConfiguration) {
+  public static JComboBox<String> newGroupingComboBox(ActionListener listener, BitcoinConfiguration bitcoinConfiguration) {
 
     String[] groupingSeparators = Languages.getAmountSeparators();
     JComboBox<String> comboBox = newReadOnlyComboBox(groupingSeparators);
 
     // Determine the first matching separator
-    Character grouping = i18nConfiguration.getGroupingSeparator();
+    Character grouping = bitcoinConfiguration.getGroupingSeparator();
     for (int i = 0; i < groupingSeparators.length; i++) {
       if (grouping.equals(groupingSeparators[i].charAt(0))) {
         comboBox.setSelectedIndex(i);
@@ -231,16 +230,16 @@ public class ComboBoxes {
   /**
    * <p>Provide a choice between the local currency symbol, or its 3-letter code</p>
    *
-   * @param listener          The action listener to alert when the selection is made
-   * @param i18nConfiguration The I18N configuration to use
+   * @param listener             The action listener to alert when the selection is made
+   * @param bitcoinConfiguration The Bitcoin configuration to use
    *
    * @return A new "local symbol" combo box (e.g. ["$", "USD"] or ["£","GBP"] etc)
    */
-  public static JComboBox<String> newLocalSymbolComboBox(ActionListener listener, I18NConfiguration i18nConfiguration) {
+  public static JComboBox<String> newLocalSymbolComboBox(ActionListener listener, BitcoinConfiguration bitcoinConfiguration) {
 
     String[] localSymbols = new String[]{
-      i18nConfiguration.getLocalCurrencySymbol(),
-      i18nConfiguration.getLocalCurrencyUnit().getCurrencyCode(),
+      bitcoinConfiguration.getLocalCurrencySymbol(),
+      bitcoinConfiguration.getLocalCurrencyUnit().getCurrencyCode(),
     };
     JComboBox<String> comboBox = newReadOnlyComboBox(localSymbols);
 

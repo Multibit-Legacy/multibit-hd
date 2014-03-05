@@ -1,11 +1,7 @@
 package org.multibit.hd.core.config;
 
 import com.google.common.base.Preconditions;
-import org.joda.money.CurrencyUnit;
-import org.multibit.hd.core.utils.CurrencyUtils;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 /**
@@ -20,18 +16,7 @@ import java.util.Locale;
 @SuppressWarnings("UnusedDeclaration")
 public class I18NConfiguration {
 
-  private Character decimalSeparator;
-
-  private Character groupingSeparator;
-
   private Locale locale;
-
-  private boolean currencySymbolLeading = true;
-
-  // Local settings
-  private CurrencyUnit localCurrencyUnit;
-  private String localCurrencySymbol;
-  private int localDecimalPlaces;
 
   public I18NConfiguration() {
 
@@ -45,41 +30,19 @@ public class I18NConfiguration {
   public I18NConfiguration(Locale locale) {
     this.locale = locale;
 
-    // Get the decimal and grouping separators for the given locale
-    DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
-    DecimalFormatSymbols symbols = decimalFormat.getDecimalFormatSymbols();
-
-    decimalSeparator = symbols.getDecimalSeparator();
-    groupingSeparator = symbols.getGroupingSeparator();
-
-    // TODO Avoid switching local currency here
-    // Fix by splitting language, currency and display configurations
-    localDecimalPlaces = decimalFormat.getMinimumFractionDigits();
-    localCurrencyUnit = CurrencyUnit.getInstance(locale);
-    localCurrencySymbol = CurrencyUtils.symbolFor(locale);
-
   }
 
   /**
-   * @return The decimal separator
+   * @return A deep copy of this object
    */
-  public Character getDecimalSeparator() {
-    return decimalSeparator;
-  }
+  public I18NConfiguration deepCopy() {
 
-  public void setDecimalSeparator(Character separator) {
-    this.decimalSeparator = separator;
-  }
+    I18NConfiguration configuration = new I18NConfiguration();
 
-  /**
-   * @return The grouping separator
-   */
-  public Character getGroupingSeparator() {
-    return groupingSeparator;
-  }
+    configuration.setLocale(getLocale());
 
-  public void setGroupingSeparator(Character groupingSeparator) {
-    this.groupingSeparator = groupingSeparator;
+    return configuration;
+
   }
 
   /**
@@ -91,75 +54,6 @@ public class I18NConfiguration {
 
   public void setLocale(Locale locale) {
     this.locale = locale;
-  }
-
-  public void setCurrencySymbolLeading(boolean currencySymbolLeading) {
-    this.currencySymbolLeading = currencySymbolLeading;
-  }
-
-  /**
-   * @return True if the currency symbol should lead the numerical element which is always read left to right
-   */
-  public boolean isCurrencySymbolLeading() {
-    return currencySymbolLeading;
-  }
-
-  /**
-   * @return The number of decimal places to show for the local currency
-   */
-  public int getLocalDecimalPlaces() {
-    return localDecimalPlaces;
-  }
-
-  public void setLocalDecimalPlaces(int localDecimalPlaces) {
-    this.localDecimalPlaces = localDecimalPlaces;
-  }
-
-  /**
-   * @return The local currency unit (e.g. USD, GBP etc for use with local currencies in Joda Money)
-   */
-  public CurrencyUnit getLocalCurrencyUnit() {
-    return localCurrencyUnit;
-  }
-
-  /**
-   * @param localCurrencyUnit The local currency unit
-   */
-  public void setLocalCurrencyUnit(CurrencyUnit localCurrencyUnit) {
-    this.localCurrencyUnit = localCurrencyUnit;
-  }
-
-  /**
-   * @return The local currency symbol (e.g. "$", "£" etc)
-   */
-  public String getLocalCurrencySymbol() {
-    return localCurrencySymbol;
-  }
-
-  /**
-   * @param localCurrencySymbol The local currency symbol
-   */
-  public void setLocalCurrencySymbol(String localCurrencySymbol) {
-    this.localCurrencySymbol = localCurrencySymbol;
-  }
-
-  /**
-   * @return A deep copy of this object
-   */
-  public I18NConfiguration deepCopy() {
-
-    I18NConfiguration i18n = new I18NConfiguration();
-
-    i18n.setCurrencySymbolLeading(isCurrencySymbolLeading());
-    i18n.setLocale(getLocale());
-    i18n.setDecimalSeparator(getDecimalSeparator());
-    i18n.setGroupingSeparator(getGroupingSeparator());
-    i18n.setLocalDecimalPlaces(getLocalDecimalPlaces());
-    i18n.setLocalCurrencyUnit(getLocalCurrencyUnit());
-    i18n.setLocalCurrencySymbol(getLocalCurrencySymbol());
-
-    return i18n;
-
   }
 
   /**

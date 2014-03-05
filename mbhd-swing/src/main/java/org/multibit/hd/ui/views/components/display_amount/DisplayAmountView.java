@@ -16,6 +16,7 @@ import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 
 import javax.swing.*;
 import java.math.BigInteger;
+import java.util.Locale;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -111,7 +112,7 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
     // Display using the symbolic amount
     String[] bitcoinDisplay = Formats.formatSatoshisAsSymbolic(satoshis, i18nConfiguration, bitcoinConfiguration);
 
-    if (i18nConfiguration.isCurrencySymbolLeading()) {
+    if (bitcoinConfiguration.isCurrencySymbolLeading()) {
       handleLeadingSymbol(bitcoinConfiguration);
     } else {
       handleTrailingSymbol(bitcoinConfiguration);
@@ -120,12 +121,13 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
     primaryBalanceLabel.setText(bitcoinDisplay[0]);
     secondaryBalanceLabel.setText(bitcoinDisplay[1]);
 
-    String localSymbol = i18nConfiguration.getLocalCurrencySymbol();
+    Locale locale = i18nConfiguration.getLocale();
+    String localSymbol = bitcoinConfiguration.getLocalCurrencySymbol();
 
     if (getModel().get().isLocalAmountVisible()) {
-      String localDisplay = Formats.formatLocalAmount(getModel().get().getLocalAmount(), i18nConfiguration);
+      String localDisplay = Formats.formatLocalAmount(getModel().get().getLocalAmount(), locale, bitcoinConfiguration);
       // Exchange label text is complex
-      handleExchangeLabelText(i18nConfiguration, localSymbol, localDisplay);
+      handleExchangeLabelText(bitcoinConfiguration, localSymbol, localDisplay);
       exchangeLabel.setVisible(true);
     } else {
       exchangeLabel.setVisible(false);
@@ -165,16 +167,16 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
    * <p>Populates the exchange label text according to the configured symbols and available providers</p>
    * <p>Note the use of non-breaking spaces (\u00a0) to ensure the entire number is correctly represented</p>
    *
-   * @param i18nConfiguration The I18N configuration
+   * @param bitcoinConfiguration The Bitcoin configuration
    * @param localSymbol       The local symbol (e.g. "$")
    * @param localDisplay      The local display (e.g. "1,234.567")
    */
-  private void handleExchangeLabelText(I18NConfiguration i18nConfiguration, String localSymbol, String localDisplay) {
+  private void handleExchangeLabelText(BitcoinConfiguration bitcoinConfiguration, String localSymbol, String localDisplay) {
 
     if (getModel().get().getRateProvider().isPresent()) {
 
       // Have a provider
-      if (i18nConfiguration.isCurrencySymbolLeading()) {
+      if (bitcoinConfiguration.isCurrencySymbolLeading()) {
         // Use leading format
         exchangeLabel.setText(
           Languages.safeText(
@@ -199,7 +201,7 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
     } else {
 
       // No provider
-      if (i18nConfiguration.isCurrencySymbolLeading()) {
+      if (bitcoinConfiguration.isCurrencySymbolLeading()) {
         // Use leading format
         exchangeLabel.setText(
           Languages.safeText(
