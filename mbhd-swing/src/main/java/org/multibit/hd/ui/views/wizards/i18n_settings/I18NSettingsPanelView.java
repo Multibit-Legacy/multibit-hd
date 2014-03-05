@@ -72,7 +72,7 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.GLOBE);
 
     panel.setLayout(new MigLayout(
-      Panels.migLayout(0),
+      Panels.migXYLayout(),
       "[][]", // Column constraints
       "[][]" // Row constraints
     ));

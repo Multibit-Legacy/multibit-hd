@@ -40,7 +40,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel>  {
     CoreServices.uiEventBus.register(this);
 
     MigLayout layout = new MigLayout(
-      Panels.migLayout(0), // Layout constraints
+      Panels.migXYLayout(),
       "[]10[]", // Column constraints
       "[]50[]" // Row constraints
     );

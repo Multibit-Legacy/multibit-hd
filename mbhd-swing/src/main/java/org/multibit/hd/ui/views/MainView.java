@@ -88,7 +88,7 @@ public class MainView extends JFrame {
 
     // Create the main panel and place it in this frame
     MigLayout layout = new MigLayout(
-      "fill,insets 0", // Layout
+      Panels.migXYLayout(),
       "[]", // Columns
       "[][][]"  // Rows
     );

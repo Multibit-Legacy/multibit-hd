@@ -63,7 +63,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     CoreServices.uiEventBus.register(this);
 
     MigLayout layout = new MigLayout(
-      Panels.migLayout(0),
+      Panels.migLayout("fill,insets 10 5 0 0"),
       "[]", // Column constraints
       "[]" // Row constraints
     );

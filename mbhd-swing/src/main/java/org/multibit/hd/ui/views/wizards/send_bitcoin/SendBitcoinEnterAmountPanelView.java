@@ -73,7 +73,7 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.CLOUD_UPLOAD);
 
     panel.setLayout(new MigLayout(
-      Panels.migLayout(0),
+      Panels.migXYLayout(),
       "[]", // Column constraints
       "[]10[]" // Row constraints
     ));

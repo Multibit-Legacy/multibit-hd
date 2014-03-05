@@ -70,7 +70,7 @@ public class PasswordEnterSeedPhraseView extends AbstractWizardPanelView<Passwor
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.MAGIC);
 
     panel.setLayout(new MigLayout(
-      Panels.migLayout(0) + ",hidemode 1",
+      Panels.migLayout("fill,insets 0,hidemode 1"),
       "[]", // Column constraints
       "[][]" // Row constraints
     ));

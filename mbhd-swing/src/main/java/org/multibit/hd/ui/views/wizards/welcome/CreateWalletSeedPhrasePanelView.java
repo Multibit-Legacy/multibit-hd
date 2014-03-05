@@ -64,7 +64,7 @@ public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<Wel
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.KEY);
 
     panel.setLayout(new MigLayout(
-      Panels.migLayout(0),
+      Panels.migXYLayout(),
       "[]", // Column constraints
       "[][]" // Row constraints
     ));

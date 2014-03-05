@@ -56,7 +56,7 @@ public class CreateWalletCreatePasswordPanelView extends AbstractWizardPanelView
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.KEY);
 
     panel.setLayout(new MigLayout(
-      Panels.migLayout(0),
+      Panels.migXYLayout(),
       "[]", // Column constraints
       "[]10[]" // Row constraints
     ));

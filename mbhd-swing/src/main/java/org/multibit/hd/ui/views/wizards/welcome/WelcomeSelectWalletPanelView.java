@@ -61,7 +61,7 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.BITCOIN);
 
     panel.setLayout(new MigLayout(
-      Panels.migLayout(0),
+      Panels.migXYLayout(),
       "[]", // Column constraints
       "[]" // Row constraints
     ));

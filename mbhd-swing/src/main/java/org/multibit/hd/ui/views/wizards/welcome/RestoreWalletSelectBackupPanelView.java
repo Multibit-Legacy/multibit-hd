@@ -64,7 +64,7 @@ public class RestoreWalletSelectBackupPanelView extends AbstractWizardPanelView<
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.BITCOIN);
 
     panel.setLayout(new MigLayout(
-      Panels.migLayout(0),
+      Panels.migXYLayout(),
       "[][][]", // Column constraints
       "[]10[]" // Row constraints
     ));

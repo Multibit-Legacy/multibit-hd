@@ -59,7 +59,7 @@ public class CreateWalletSelectBackupLocationPanelView extends AbstractWizardPan
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.FOLDER_OPEN);
 
     panel.setLayout(new MigLayout(
-      Panels.migLayout(0),
+      Panels.migXYLayout(),
       "[]", // Column constraints
       "[]10[]" // Row constraints
     ));

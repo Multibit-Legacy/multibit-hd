@@ -62,7 +62,7 @@ public class RestoreWalletSelectBackupLocationPanelView extends AbstractWizardPa
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.FOLDER_OPEN);
 
     panel.setLayout(new MigLayout(
-      Panels.migLayout(0),
+      Panels.migXYLayout(),
       "[][]", // Column constraints
       "[][][]" // Row constraints
     ));

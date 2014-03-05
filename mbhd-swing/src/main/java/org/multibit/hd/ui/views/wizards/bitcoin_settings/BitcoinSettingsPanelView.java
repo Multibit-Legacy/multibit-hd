@@ -81,9 +81,9 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
 
 
     panel.setLayout(new MigLayout(
-      Panels.migLayout(0),
-      Panels.migColumns(3), // Column constraints
-      Panels.migRows(8) // Row constraints
+      Panels.migXYLayout(),
+      "[][][]", // Column constraints
+      "[][][][][][][][]" // Row constraints
     ));
 
     I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration().deepCopy();

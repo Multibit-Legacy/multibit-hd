@@ -89,7 +89,7 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.CLOUD_UPLOAD);
 
     panel.setLayout(new MigLayout(
-      Panels.migLayout(0),
+      Panels.migXYLayout(),
       "[][]", // Column constraints
       "[]10[]10[][][]10[][]" // Row constraints
     ));

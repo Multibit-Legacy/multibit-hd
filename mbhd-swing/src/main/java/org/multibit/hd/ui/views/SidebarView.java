@@ -5,7 +5,6 @@ import org.joda.time.DateTime;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
-import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.SidebarNodeInfo;
@@ -53,7 +52,7 @@ public class SidebarView {
 
     // Insets for top, left
     MigLayout layout = new MigLayout(
-      "fill, insets 6 10" + (Languages.isLeftToRight() ? "" : ",rtl"), // Layout
+      Panels.migLayout("fill, insets 6 10"),
       "[]", // Columns
       "[]" // Rows
     );

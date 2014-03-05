@@ -68,7 +68,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
   public JPanel newComponentPanel() {
 
     panel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0", // Layout
+      Panels.migXLayout(),
       "[][][][][][]", // Columns
       "[][][]" // Rows
     ));

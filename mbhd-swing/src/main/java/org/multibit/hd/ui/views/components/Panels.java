@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.components;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.i18n.Languages;
@@ -41,41 +40,57 @@ public class Panels {
   private static Optional<LightBoxPanel> lightBoxPopoverPanel = Optional.absent();
 
   /**
-   * @param rows The number of rows
+   * <p>A default MiG layout constraint with:</p>
+   * <ul>
+   * <li>Zero insets</li>
+   * <li>Fills all available space (X and Y)</li>
+   * <li>Handles left-to-right and right-to-left presentation automatically</li>
+   * </ul>
    *
-   * @return A standard MiG row constraint string for the given number of rows
+   * @return A default MiG layout constraint that fills all X and Y with RTL appended
    */
-  public static String migRows(int rows) {
-    return Strings.repeat("[]", rows);
+  public static String migXYLayout() {
+    return migLayout("fill,insets 0");
   }
 
   /**
-   * @param columns The number of columns
+   * <p>A default MiG layout constraint with:</p>
+   * <ul>
+   * <li>Zero insets</li>
+   * <li>Fills all available space (X only)</li>
+   * <li>Handles left-to-right and right-to-left presentation automatically</li>
+   * </ul>
    *
-   * @return A standard MiG column constraint string for the given number of columns
+   * @return A default MiG layout constraint that fills all X with RTL appended
    */
-  public static String migColumns(int columns) {
-    return Strings.repeat("[]", columns);
+  public static String migXLayout() {
+    return migLayout("fillx,insets 0");
   }
 
   /**
-   * @param insets The insets in pixels (usually zero)
+   * <p>A non-standard MiG layout constraint with:</p>
+   * <ul>
+   * <li>Optional "fill", "insets", "hidemode" etc</li>
+   * <li>Handles left-to-right and right-to-left presentation automatically</li>
+   * </ul>
    *
-   * @return A standard MiG layout constraint string handling LTR/RTL handling built-in
+   * @param layout Any of the usual MiG layout constraints except RTL (e.g. "fillx,insets 1 2 3 4")
+   *
+   * @return The MiG layout constraint with RTL handling appended
    */
-  public static String migLayout(int insets) {
-    return "fill,insets " + insets + (Languages.isLeftToRight() ? "" : ",rtl");
+  public static String migLayout(String layout) {
+    return layout + (Languages.isLeftToRight() ? "" : ",rtl");
   }
 
   /**
-   * @return A simple theme-aware panel with a single cell MigLayout
+   * @return A simple theme-aware panel with a single cell MigLayout that fills all X and Y
    */
   public static JPanel newPanel() {
 
     return Panels.newPanel(new MigLayout(
-      migLayout(0), // Layout
-      migColumns(1), // Columns
-      migRows(1) // Rows
+      migXYLayout(), // Layout
+      "[]", // Columns
+      "[]" // Rows
     ));
 
   }
@@ -108,7 +123,7 @@ public class Panels {
   public static JPanel newRoundedPanel() {
 
     JPanel panel = new RoundedPanel(new MigLayout(
-      "fill,insets 0", // Layout
+      Panels.migXLayout(),
       "[]", // Columns
       "[]" // Rows
     ));
@@ -138,7 +153,7 @@ public class Panels {
     BackgroundPanel panel = new BackgroundPanel(image, BackgroundPanel.ACTUAL);
 
     panel.setLayout(new MigLayout(
-      "fill,insets 0", // Layout
+      Panels.migXLayout(),
       "[]", // Columns
       "[]" // Rows
     ));
@@ -267,7 +282,7 @@ public class Panels {
   public static JPanel newConfirmSeedPhrase() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0", // Layout
+      Panels.migXYLayout(),
       "[grow]", // Columns
       "[]" // Rows
     ));
@@ -286,7 +301,7 @@ public class Panels {
   public static JPanel newSeedPhraseWarning() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0", // Layout
+      Panels.migXLayout(),
       "[grow]", // Columns
       "[]" // Rows
     ));
@@ -307,7 +322,7 @@ public class Panels {
   public static JPanel newDebuggerWarning() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0", // Layout
+      Panels.migXLayout(),
       "[grow]", // Columns
       "[]" // Rows
     ));
@@ -328,7 +343,7 @@ public class Panels {
   public static JPanel newRestoreFromBackup() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0", // Layout
+      Panels.migXLayout(),
       "[grow]", // Columns
       "[]" // Rows
     ));
@@ -347,7 +362,7 @@ public class Panels {
   public static JPanel newRestoreFromSeedPhrase() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0", // Layout
+      Panels.migXLayout(),
       "[grow]", // Columns
       "[]" // Rows
     ));
@@ -366,7 +381,7 @@ public class Panels {
   public static JPanel newRestoreFromTimestamp() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0", // Layout
+      Panels.migXLayout(),
       "[grow]", // Columns
       "[]" // Rows
     ));
@@ -385,7 +400,7 @@ public class Panels {
   public static JPanel newSelectBackupDirectory() {
 
     JPanel panel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0", // Layout
+      Panels.migXLayout(),
       "[grow]", // Columns
       "[]" // Rows
     ));

@@ -51,6 +51,8 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
   @Override
   public JPanel newComponentPanel() {
 
+    // TODO Experiment with the new MiG layout
+
     // Create the balance panel - forcing a LTR layout to ensure correct placement of labels
     panel = Panels.newPanel(new MigLayout(
       "fill,ltr,insets 0", // Layout

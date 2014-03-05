@@ -6,7 +6,6 @@ import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.events.HistoryChangedEvent;
 import org.multibit.hd.ui.events.view.ComponentChangedEvent;
 import org.multibit.hd.ui.events.view.WizardHideEvent;
-import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.enter_search.EnterSearchModel;
@@ -63,7 +62,7 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
   public JPanel newScreenViewPanel() {
 
     MigLayout layout = new MigLayout(
-      "fill,insets 10 5 0 0" + (Languages.isLeftToRight() ? "" : ",rtl"), // Layout constraints
+      Panels.migLayout("fill,insets 10 5 0 0"),
       "[][][][][]push[]", // Column constraints
       "[shrink][shrink][grow]" // Row constraints
     );

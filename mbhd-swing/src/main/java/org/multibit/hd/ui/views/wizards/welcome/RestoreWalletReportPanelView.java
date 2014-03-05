@@ -83,7 +83,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.FILE_TEXT);
 
     panel.setLayout(new MigLayout(
-      Panels.migLayout(0),
+      Panels.migXYLayout(),
       "[][][]", // Column constraints
       "[]10[]10[]10[]" // Row constraints
     ));

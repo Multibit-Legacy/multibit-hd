@@ -65,7 +65,7 @@ public class PasswordReportPanelView extends AbstractWizardPanelView<PasswordWiz
     BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.MAGIC);
 
     panel.setLayout(new MigLayout(
-      Panels.migLayout(0),
+      Panels.migXYLayout(),
       "[][][]", // Column constraints
       "[]10[]10[]" // Row constraints
     ));

@@ -55,7 +55,7 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
     CoreServices.uiEventBus.register(this);
 
     MigLayout layout = new MigLayout(
-      Panels.migLayout(0),
+      Panels.migXYLayout(),
       "[]10[]", // Column constraints
       "[]50[]" // Row constraints
     );
