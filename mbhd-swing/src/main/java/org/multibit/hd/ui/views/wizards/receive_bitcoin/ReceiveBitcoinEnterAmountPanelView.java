@@ -189,7 +189,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     paymentRequestData.setLabel(label.getText());
     paymentRequestData.setAmountBTC(enterAmountMaV.getModel().getSatoshis());
     FiatPayment fiatPayment = new FiatPayment();
-    fiatPayment.setAmount(enterAmountMaV.getModel().getLocalAmount().toString());
+    fiatPayment.setAmount(enterAmountMaV.getModel().getLocalAmount().getAmount().stripTrailingZeros().toPlainString());
     fiatPayment.setCurrency(Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencyUnit().getCurrencyCode());
     fiatPayment.setExchange(Configurations.currentConfiguration.getBitcoinConfiguration().getExchangeName());
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();

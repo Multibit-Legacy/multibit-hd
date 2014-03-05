@@ -9,12 +9,13 @@ import org.multibit.hd.ui.i18n.Formats;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.tables.StripedTable;
 import org.multibit.hd.ui.views.themes.Themes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
-import java.math.BigInteger;
 
 /**
  *  <p>Renderer to provide the following to tables:<br>
@@ -26,6 +27,8 @@ import java.math.BigInteger;
 public class AmountFiatTableCellRenderer extends DefaultTableCellRenderer {
   JLabel label;
 
+  private static final Logger log = LoggerFactory.getLogger(AmountFiatTableCellRenderer.class);
+
   public AmountFiatTableCellRenderer() {
     label = Labels.newBlankLabel();
   }
@@ -36,32 +39,41 @@ public class AmountFiatTableCellRenderer extends DefaultTableCellRenderer {
     label.setOpaque(true);
     label.setBorder(new EmptyBorder(new Insets(0, TrailingJustifiedDateTableCellRenderer.TABLE_BORDER, 1, TrailingJustifiedDateTableCellRenderer.TABLE_BORDER)));
 
-    if (value instanceof BigInteger) {
+    if (value instanceof FiatPayment) {
 
       // Do the Bitcoin processing
 
       FiatPayment fiatPayment = (FiatPayment) value;
-      Double amountAsDouble = Double.parseDouble(fiatPayment.getAmount());
-      I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration();
-      BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
 
-      String balance = Formats.formatLocalAmount(BigMoney.of(bitcoinConfiguration.getLocalCurrencyUnit(), amountAsDouble), i18nConfiguration.getLocale(), bitcoinConfiguration);
+      if (!(fiatPayment.getAmount() == null) && !"".equals(fiatPayment.getAmount())) {
+        try {
+          Double amountAsDouble = Double.parseDouble(fiatPayment.getAmount());
+          I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration();
+          BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
 
-      label.setText(balance+ TrailingJustifiedDateTableCellRenderer.SPACER);
+          String balance = Formats.formatLocalAmount(BigMoney.of(bitcoinConfiguration.getLocalCurrencyUnit(), amountAsDouble), i18nConfiguration.getLocale(), bitcoinConfiguration);
 
-      if (amountAsDouble < 0) {
-        // Debit
-        if (isSelected) {
-          label.setForeground(table.getSelectionForeground());
-        } else {
-          label.setForeground(Themes.currentTheme.debitText());
-        }
-      } else {
-        // Credit
-        if (isSelected) {
-          label.setForeground(table.getSelectionForeground());
-        } else {
-          label.setForeground(Themes.currentTheme.creditText());
+          label.setText(balance + TrailingJustifiedDateTableCellRenderer.SPACER);
+
+          if (amountAsDouble < 0) {
+            // Debit
+            if (isSelected) {
+              label.setForeground(table.getSelectionForeground());
+            } else {
+              label.setForeground(Themes.currentTheme.debitText());
+            }
+          } else {
+            // Credit
+            if (isSelected) {
+              label.setForeground(table.getSelectionForeground());
+            } else {
+              label.setForeground(Themes.currentTheme.creditText());
+            }
+          }
+        } catch (NumberFormatException nfe) {
+          // The fiat amount could not be understood as a number
+          // show nothing
+          log.error(nfe.getClass().getCanonicalName() + " " + nfe.getMessage());
         }
       }
       if (isSelected) {

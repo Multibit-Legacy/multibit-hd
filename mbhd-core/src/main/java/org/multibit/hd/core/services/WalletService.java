@@ -6,6 +6,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import org.joda.money.BigMoney;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
@@ -17,6 +18,7 @@ import org.multibit.hd.core.store.Payments;
 import org.multibit.hd.core.store.PaymentsProtobufSerializer;
 import org.multibit.hd.core.store.TransactionInfo;
 import org.multibit.hd.core.utils.FileUtils;
+import org.multibit.hd.core.utils.Satoshis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -182,7 +184,7 @@ public class WalletService {
     TransactionConfidence transactionConfidence = transaction.getConfidence();
 
     int depth = 0; // By default not in a block
-    TransactionConfidence.ConfidenceType confidenceType = TransactionConfidence.ConfidenceType.UNKNOWN; // By default do not know the confidence
+    TransactionConfidence.ConfidenceType confidenceType = TransactionConfidence.ConfidenceType.UNKNOWN;
 
     if (transactionConfidence != null) {
       confidenceType = transaction.getConfidence().getConfidenceType();
@@ -266,10 +268,12 @@ public class WalletService {
     amountFiat.setCurrency(Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencyUnit().getCurrencyCode());
     amountFiat.setExchange(Configurations.currentConfiguration.getBitcoinConfiguration().getExchangeName());
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
-    if (exchangeRateChangedEvent.isPresent()) {
+    if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
+
       amountFiat.setRate(exchangeRateChangedEvent.get().getRate().toString());
-      // TODO
-      amountFiat.setAmount("100.00");
+      BigMoney localAmount = Satoshis.toLocalAmount(amountBTC, exchangeRateChangedEvent.get().getRate());
+      // TODO check if the currency is different to that in the header.
+      amountFiat.setAmount(localAmount.getAmount().stripTrailingZeros().toPlainString());
     } else {
       amountFiat.setRate("");
       amountFiat.setAmount((""));
