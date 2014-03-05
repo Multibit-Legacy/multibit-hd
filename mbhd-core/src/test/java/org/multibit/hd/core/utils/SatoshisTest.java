@@ -2,10 +2,7 @@ package org.multibit.hd.core.utils;
 
 import com.xeiam.xchange.currency.MoneyUtils;
 import org.joda.money.BigMoney;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.core.config.Configurations;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -21,18 +18,6 @@ public class SatoshisTest {
   };
 
   private BigMoney exchangeRate = MoneyUtils.parseMoney("GBP", new BigDecimal("1000"));
-
-  @Before
-  public void setUp() throws Exception {
-
-    Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
-
-  }
-
-  @After
-  public void tearDown() throws Exception {
-
-  }
 
   @Test
   public void testToLocalAmount() throws Exception {
@@ -177,14 +162,14 @@ public class SatoshisTest {
   @Test
   public void testFromSymbolicAmount_BTC_XBT() throws Exception {
 
-    // BTC/XBT
-    Configurations.currentConfiguration.getBitcoinConfiguration().setBitcoinSymbol("BTC");
+    // Bitcoin symbol
+    BitcoinSymbol bitcoinSymbol = BitcoinSymbol.BTC;
 
     // Large
     BigDecimal localAmount1 = new BigDecimal("20999999.12345678");
 
     BigInteger expected1 = testAmounts[0];
-    BigInteger actual1 = Satoshis.fromSymbolicAmount(localAmount1);
+    BigInteger actual1 = Satoshis.fromSymbolicAmount(localAmount1, bitcoinSymbol);
 
     assertThat(actual1).isEqualTo(expected1);
 
@@ -192,7 +177,7 @@ public class SatoshisTest {
     BigDecimal localAmount2 = new BigDecimal("0.12345678");
 
     BigInteger expected2 = testAmounts[1];
-    BigInteger actual2 = Satoshis.fromSymbolicAmount(localAmount2);
+    BigInteger actual2 = Satoshis.fromSymbolicAmount(localAmount2, bitcoinSymbol);
 
     assertThat(actual2).isEqualTo(expected2);
 
@@ -200,7 +185,7 @@ public class SatoshisTest {
     BigDecimal localAmount3 = new BigDecimal("0.00000001");
 
     BigInteger expected3 = testAmounts[2];
-    BigInteger actual3 = Satoshis.fromSymbolicAmount(localAmount3);
+    BigInteger actual3 = Satoshis.fromSymbolicAmount(localAmount3, bitcoinSymbol);
 
     assertThat(actual3).isEqualTo(expected3);
 
@@ -209,14 +194,14 @@ public class SatoshisTest {
   @Test
   public void testFromSymbolicAmount_mBTC_mXBT() throws Exception {
 
-    // mBTC/mXBT
-    Configurations.currentConfiguration.getBitcoinConfiguration().setBitcoinSymbol("mBTC");
+    // Bitcoin symbol
+    BitcoinSymbol bitcoinSymbol = BitcoinSymbol.MBTC;
 
     // Large
     BigDecimal localAmount1 = new BigDecimal("20999999123.45678");
 
     BigInteger expected1 = testAmounts[0];
-    BigInteger actual1 = Satoshis.fromSymbolicAmount(localAmount1);
+    BigInteger actual1 = Satoshis.fromSymbolicAmount(localAmount1, bitcoinSymbol);
 
     assertThat(actual1).isEqualTo(expected1);
 
@@ -224,7 +209,7 @@ public class SatoshisTest {
     BigDecimal localAmount2 = new BigDecimal("123.45678");
 
     BigInteger expected2 = testAmounts[1];
-    BigInteger actual2 = Satoshis.fromSymbolicAmount(localAmount2);
+    BigInteger actual2 = Satoshis.fromSymbolicAmount(localAmount2, bitcoinSymbol);
 
     assertThat(actual2).isEqualTo(expected2);
 
@@ -232,7 +217,7 @@ public class SatoshisTest {
     BigDecimal localAmount3 = new BigDecimal("0.00001");
 
     BigInteger expected3 = testAmounts[2];
-    BigInteger actual3 = Satoshis.fromSymbolicAmount(localAmount3);
+    BigInteger actual3 = Satoshis.fromSymbolicAmount(localAmount3, bitcoinSymbol);
 
     assertThat(actual3).isEqualTo(expected3);
 
@@ -241,14 +226,14 @@ public class SatoshisTest {
   @Test
   public void testFromSymbolicAmount_uBTC_uXBT() throws Exception {
 
-    // uBTC/uXBT
-    Configurations.currentConfiguration.getBitcoinConfiguration().setBitcoinSymbol("uBTC");
+    // Bitcoin symbol
+    BitcoinSymbol bitcoinSymbol = BitcoinSymbol.UBTC;
 
     // Large
     BigDecimal localAmount1 = new BigDecimal("20999999123456.78");
 
     BigInteger expected1 = testAmounts[0];
-    BigInteger actual1 = Satoshis.fromSymbolicAmount(localAmount1);
+    BigInteger actual1 = Satoshis.fromSymbolicAmount(localAmount1, bitcoinSymbol);
 
     assertThat(actual1).isEqualTo(expected1);
 
@@ -256,7 +241,7 @@ public class SatoshisTest {
     BigDecimal localAmount2 = new BigDecimal("123456.78");
 
     BigInteger expected2 = testAmounts[1];
-    BigInteger actual2 = Satoshis.fromSymbolicAmount(localAmount2);
+    BigInteger actual2 = Satoshis.fromSymbolicAmount(localAmount2, bitcoinSymbol);
 
     assertThat(actual2).isEqualTo(expected2);
 
@@ -264,7 +249,7 @@ public class SatoshisTest {
     BigDecimal localAmount3 = new BigDecimal("0.01");
 
     BigInteger expected3 = testAmounts[2];
-    BigInteger actual3 = Satoshis.fromSymbolicAmount(localAmount3);
+    BigInteger actual3 = Satoshis.fromSymbolicAmount(localAmount3, bitcoinSymbol);
 
     assertThat(actual3).isEqualTo(expected3);
 
@@ -273,14 +258,14 @@ public class SatoshisTest {
   @Test
   public void testFromSymbolicAmount_Satoshi() throws Exception {
 
-    // Satoshi
-    Configurations.currentConfiguration.getBitcoinConfiguration().setBitcoinSymbol("satoshi");
+    // Bitcoin symbol
+    BitcoinSymbol bitcoinSymbol = BitcoinSymbol.SATOSHI;
 
     // Large
     BigDecimal localAmount1 = new BigDecimal("2099999912345678");
 
     BigInteger expected1 = testAmounts[0];
-    BigInteger actual1 = Satoshis.fromSymbolicAmount(localAmount1);
+    BigInteger actual1 = Satoshis.fromSymbolicAmount(localAmount1, bitcoinSymbol);
 
     assertThat(actual1).isEqualTo(expected1);
 
@@ -288,7 +273,7 @@ public class SatoshisTest {
     BigDecimal localAmount2 = new BigDecimal("12345678");
 
     BigInteger expected2 = testAmounts[1];
-    BigInteger actual2 = Satoshis.fromSymbolicAmount(localAmount2);
+    BigInteger actual2 = Satoshis.fromSymbolicAmount(localAmount2, bitcoinSymbol);
 
     assertThat(actual2).isEqualTo(expected2);
 
@@ -296,7 +281,7 @@ public class SatoshisTest {
     BigDecimal localAmount3 = new BigDecimal("1");
 
     BigInteger expected3 = testAmounts[2];
-    BigInteger actual3 = Satoshis.fromSymbolicAmount(localAmount3);
+    BigInteger actual3 = Satoshis.fromSymbolicAmount(localAmount3, bitcoinSymbol);
 
     assertThat(actual3).isEqualTo(expected3);
 
@@ -305,14 +290,14 @@ public class SatoshisTest {
   @Test
   public void testToSymbolicAmount_BTC_XBT() throws Exception {
 
-    // Satoshi
-    Configurations.currentConfiguration.getBitcoinConfiguration().setBitcoinSymbol("BTC");
+    // Bitcoin symbol
+    BitcoinSymbol bitcoinSymbol = BitcoinSymbol.BTC;
 
     // Large
     BigInteger localAmount1 = new BigInteger("2099999912345678");
 
     BigDecimal expected1 = new BigDecimal("20999999.12345678");
-    BigDecimal actual1 = Satoshis.toSymbolicAmount(localAmount1);
+    BigDecimal actual1 = Satoshis.toSymbolicAmount(localAmount1, bitcoinSymbol);
 
     assertThat(actual1).isEqualTo(expected1);
 
@@ -320,7 +305,7 @@ public class SatoshisTest {
     BigInteger localAmount2 = new BigInteger("12345678");
 
     BigDecimal expected2 = new BigDecimal("0.12345678");
-    BigDecimal actual2 = Satoshis.toSymbolicAmount(localAmount2);
+    BigDecimal actual2 = Satoshis.toSymbolicAmount(localAmount2, bitcoinSymbol);
 
     assertThat(actual2).isEqualTo(expected2);
 
@@ -328,7 +313,7 @@ public class SatoshisTest {
     BigInteger localAmount3 = new BigInteger("1");
 
     BigDecimal expected3 = new BigDecimal("0.00000001");
-    BigDecimal actual3 = Satoshis.toSymbolicAmount(localAmount3);
+    BigDecimal actual3 = Satoshis.toSymbolicAmount(localAmount3, bitcoinSymbol);
 
     assertThat(actual3).isEqualTo(expected3);
 
@@ -337,14 +322,14 @@ public class SatoshisTest {
   @Test
   public void testToSymbolicAmount_mBTC_mXBT() throws Exception {
 
-    // mBTC/mXBT
-    Configurations.currentConfiguration.getBitcoinConfiguration().setBitcoinSymbol("mBTC");
+    // Bitcoin symbol
+    BitcoinSymbol bitcoinSymbol = BitcoinSymbol.MBTC;
 
     // Large
     BigInteger localAmount1 = new BigInteger("2099999912345678");
 
     BigDecimal expected1 = new BigDecimal("20999999123.45678");
-    BigDecimal actual1 = Satoshis.toSymbolicAmount(localAmount1);
+    BigDecimal actual1 = Satoshis.toSymbolicAmount(localAmount1, bitcoinSymbol);
 
     assertThat(actual1).isEqualTo(expected1);
 
@@ -352,7 +337,7 @@ public class SatoshisTest {
     BigInteger localAmount2 = new BigInteger("12345678");
 
     BigDecimal expected2 = new BigDecimal("123.45678");
-    BigDecimal actual2 = Satoshis.toSymbolicAmount(localAmount2);
+    BigDecimal actual2 = Satoshis.toSymbolicAmount(localAmount2, bitcoinSymbol);
 
     assertThat(actual2).isEqualTo(expected2);
 
@@ -360,7 +345,7 @@ public class SatoshisTest {
     BigInteger localAmount3 = new BigInteger("1");
 
     BigDecimal expected3 = new BigDecimal("0.00001");
-    BigDecimal actual3 = Satoshis.toSymbolicAmount(localAmount3);
+    BigDecimal actual3 = Satoshis.toSymbolicAmount(localAmount3, bitcoinSymbol);
 
     assertThat(actual3).isEqualTo(expected3);
 
@@ -369,14 +354,14 @@ public class SatoshisTest {
   @Test
   public void testToSymbolicAmount_uBTC_uXBT() throws Exception {
 
-    // mBTC/mXBT
-    Configurations.currentConfiguration.getBitcoinConfiguration().setBitcoinSymbol("uBTC");
+    // Bitcoin symbol
+    BitcoinSymbol bitcoinSymbol = BitcoinSymbol.UBTC;
 
     // Large
     BigInteger localAmount1 = new BigInteger("2099999912345678");
 
     BigDecimal expected1 = new BigDecimal("20999999123456.78");
-    BigDecimal actual1 = Satoshis.toSymbolicAmount(localAmount1);
+    BigDecimal actual1 = Satoshis.toSymbolicAmount(localAmount1, bitcoinSymbol);
 
     assertThat(actual1).isEqualTo(expected1);
 
@@ -384,7 +369,7 @@ public class SatoshisTest {
     BigInteger localAmount2 = new BigInteger("12345678");
 
     BigDecimal expected2 = new BigDecimal("123456.78");
-    BigDecimal actual2 = Satoshis.toSymbolicAmount(localAmount2);
+    BigDecimal actual2 = Satoshis.toSymbolicAmount(localAmount2, bitcoinSymbol);
 
     assertThat(actual2).isEqualTo(expected2);
 
@@ -392,7 +377,7 @@ public class SatoshisTest {
     BigInteger localAmount3 = new BigInteger("1");
 
     BigDecimal expected3 = new BigDecimal("0.01");
-    BigDecimal actual3 = Satoshis.toSymbolicAmount(localAmount3);
+    BigDecimal actual3 = Satoshis.toSymbolicAmount(localAmount3, bitcoinSymbol);
 
     assertThat(actual3).isEqualTo(expected3);
 
@@ -401,14 +386,14 @@ public class SatoshisTest {
   @Test
   public void testToSymbolicAmount_Satoshi() throws Exception {
 
-    // Satoshi
-    Configurations.currentConfiguration.getBitcoinConfiguration().setBitcoinSymbol("satoshi");
+    // Bitcoin symbol
+    BitcoinSymbol bitcoinSymbol = BitcoinSymbol.SATOSHI;
 
     // Large
     BigInteger localAmount1 = new BigInteger("2099999912345678");
 
     BigDecimal expected1 = new BigDecimal("2099999912345678");
-    BigDecimal actual1 = Satoshis.toSymbolicAmount(localAmount1);
+    BigDecimal actual1 = Satoshis.toSymbolicAmount(localAmount1, bitcoinSymbol);
 
     assertThat(actual1).isEqualTo(expected1);
 
@@ -416,7 +401,7 @@ public class SatoshisTest {
     BigInteger localAmount2 = new BigInteger("12345678");
 
     BigDecimal expected2 = new BigDecimal("12345678");
-    BigDecimal actual2 = Satoshis.toSymbolicAmount(localAmount2);
+    BigDecimal actual2 = Satoshis.toSymbolicAmount(localAmount2, bitcoinSymbol);
 
     assertThat(actual2).isEqualTo(expected2);
 
@@ -424,7 +409,7 @@ public class SatoshisTest {
     BigInteger localAmount3 = new BigInteger("1");
 
     BigDecimal expected3 = new BigDecimal("1");
-    BigDecimal actual3 = Satoshis.toSymbolicAmount(localAmount3);
+    BigDecimal actual3 = Satoshis.toSymbolicAmount(localAmount3, bitcoinSymbol);
 
     assertThat(actual3).isEqualTo(expected3);
 

@@ -246,6 +246,8 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     String text = localAmountText.getText();
     Optional<Double> value = Numbers.parseDouble(text);
 
+    BitcoinSymbol bitcoinSymbol = BitcoinSymbol.current();
+
     if (latestExchangeRateChangedEvent.isPresent()) {
 
       if (value.isPresent()) {
@@ -262,7 +264,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
           getModel().get().setLocalAmount(localAmount);
 
           // Use the symbolic amount for display formatting
-          BigDecimal symbolicAmount = Satoshis.toSymbolicAmount(satoshis);
+          BigDecimal symbolicAmount = Satoshis.toSymbolicAmount(satoshis, bitcoinSymbol);
           bitcoinAmountText.setValue(symbolicAmount.doubleValue());
 
           // Give feedback to the user
@@ -301,13 +303,15 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     String text = bitcoinAmountText.getText();
     Optional<Double> value = Numbers.parseDouble(text);
 
+    BitcoinSymbol bitcoinSymbol = BitcoinSymbol.current();
+
     if (latestExchangeRateChangedEvent.isPresent()) {
 
       if (value.isPresent()) {
 
         try {
           // Convert to satoshis
-          BigInteger satoshis = Satoshis.fromSymbolicAmount(new BigDecimal(value.get()));
+          BigInteger satoshis = Satoshis.fromSymbolicAmount(new BigDecimal(value.get()), bitcoinSymbol);
 
           // Apply the exchange rate
           BigMoney localAmount = Satoshis.toLocalAmount(satoshis, latestExchangeRateChangedEvent.get().getRate());
@@ -342,7 +346,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
         try {
           // Convert to satoshis
-          BigInteger satoshis = Satoshis.fromSymbolicAmount(new BigDecimal(value.get()));
+          BigInteger satoshis = Satoshis.fromSymbolicAmount(new BigDecimal(value.get()), bitcoinSymbol);
 
           // Update the model
           getModel().get().setSatoshis(satoshis);

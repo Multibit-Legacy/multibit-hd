@@ -54,7 +54,7 @@ public class Satoshis {
     Preconditions.checkNotNull(localAmount, "'localAmount' must be present");
     Preconditions.checkNotNull(exchangeRate, "'exchangeRate' must be present");
 
-    Preconditions.checkState(localAmount.getCurrencyUnit().equals(exchangeRate.getCurrencyUnit()), "'localAmount' has a different currency unit to 'exchangeRate': "+localAmount.getCurrencyUnit().getCode() + " vs " + exchangeRate.getCurrencyUnit().getCode());
+    Preconditions.checkState(localAmount.getCurrencyUnit().equals(exchangeRate.getCurrencyUnit()), "'localAmount' has a different currency unit to 'exchangeRate': " + localAmount.getCurrencyUnit().getCode() + " vs " + exchangeRate.getCurrencyUnit().getCode());
 
     BigDecimal bitcoinAmount = localAmount.getAmount().setScale(8).divide(exchangeRate.getAmount(), 8, RoundingMode.HALF_EVEN);
 
@@ -100,15 +100,16 @@ public class Satoshis {
 
   /**
    * @param symbolicAmount A Bitcoin amount expressed in terms of the current symbolic multiplier (e.g. "1.5" in mBTC is 150 000 satoshis)
+   * @param bitcoinSymbol  The Bitcoin symbol to use for the multiplier
    *
    * @return The satoshi value (e.g. 150 000)
    */
-  public static BigInteger fromSymbolicAmount(BigDecimal symbolicAmount) {
+  public static BigInteger fromSymbolicAmount(BigDecimal symbolicAmount, BitcoinSymbol bitcoinSymbol) {
 
     Preconditions.checkNotNull(symbolicAmount, "'symbolicAmount' must be present");
 
     // Convert to plain amount
-    BigDecimal plainAmount = symbolicAmount.divide(BitcoinSymbol.current().multiplier(), 12, RoundingMode.HALF_EVEN);
+    BigDecimal plainAmount = symbolicAmount.divide(bitcoinSymbol.multiplier(), 12, RoundingMode.HALF_EVEN);
 
     // Convert to satoshis
     return fromPlainAmount(plainAmount);
@@ -118,11 +119,12 @@ public class Satoshis {
    * <p>Convert the given satoshi value into a symbolic amount <strong>suitable for display only</strong>.</p>
    * <p>The result is scaled so that decimals are dropped making it unsuitable for calculations.</p>
    *
-   * @param satoshis The satoshi value (e.g. 150 000)
+   * @param satoshis      The satoshi value (e.g. 150 000)
+   * @param bitcoinSymbol The Bitcoin symbol to use for the multiplier
    *
    * @return A Bitcoin amount expressed in terms of the current symbolic multiplier (e.g. "1.5" in mBTC)
    */
-  public static BigDecimal toSymbolicAmount(BigInteger satoshis) {
+  public static BigDecimal toSymbolicAmount(BigInteger satoshis, BitcoinSymbol bitcoinSymbol) {
 
     Preconditions.checkNotNull(satoshis, "'satoshis' must be present");
 
@@ -130,10 +132,10 @@ public class Satoshis {
     String plainString = Utils.bitcoinValueToPlainString(satoshis);
 
     // Apply the current symbolic multiplier
-    BigDecimal symbolicAmount = new BigDecimal(plainString).multiply(BitcoinSymbol.current().multiplier());
+    BigDecimal symbolicAmount = new BigDecimal(plainString).multiply(bitcoinSymbol.multiplier());
 
     // Reduce the scale to match the multiplier
-    return symbolicAmount.setScale(BitcoinSymbol.current().decimalPlaces());
+    return symbolicAmount.setScale(bitcoinSymbol.decimalPlaces());
 
   }
 

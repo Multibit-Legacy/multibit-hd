@@ -50,7 +50,7 @@ public class Formats {
     DecimalFormat localFormat = configureBitcoinDecimalFormat(dfs, bitcoinSymbol);
 
     // Apply formatting to the symbolic amount
-    String formattedAmount = localFormat.format(Satoshis.toSymbolicAmount(satoshis));
+    String formattedAmount = localFormat.format(Satoshis.toSymbolicAmount(satoshis, bitcoinSymbol));
 
     // The Satoshi symbol does not have decimals
     if (BitcoinSymbol.SATOSHI.equals(bitcoinSymbol)) {
