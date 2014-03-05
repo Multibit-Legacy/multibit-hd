@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import org.multibit.hd.ui.i18n.LanguageKey;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * <p>utility to provide the following to Views:</p>
@@ -53,4 +54,12 @@ public class Themes {
 
   }
 
+  /**
+   * @param color The color
+   *
+   * @return A hex representation of the RGB values (e.g. "abcdef")
+   */
+  public static String toHexString(Color color) {
+    return Integer.toHexString(color.getRGB());
+  }
 }
