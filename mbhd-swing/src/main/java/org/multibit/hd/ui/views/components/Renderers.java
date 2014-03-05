@@ -1,9 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
-import org.multibit.hd.ui.views.components.renderers.AmountBTCTableCellRenderer;
-import org.multibit.hd.ui.views.components.renderers.PaymentTypeTableCellRenderer;
-import org.multibit.hd.ui.views.components.renderers.RAGStatusTableCellRenderer;
-import org.multibit.hd.ui.views.components.renderers.TrailingJustifiedDateTableCellRenderer;
+import org.multibit.hd.ui.views.components.renderers.*;
 import org.multibit.hd.ui.views.components.tables.PaymentTableModel;
 
 import javax.swing.table.DefaultTableCellRenderer;
@@ -36,8 +33,12 @@ public class Renderers {
   public static DefaultTableCellRenderer newTrailingJustifiedNumericRenderer() {
     return new AmountBTCTableCellRenderer();
   }
+  public static DefaultTableCellRenderer newTrailingJustifiedFiatRenderer() {
+    return new AmountFiatTableCellRenderer();
+  }
 
   public static DefaultTableCellRenderer newPaymentTypeRenderer() {
      return new PaymentTypeTableCellRenderer();
-   }
+  }
+
 }

@@ -42,12 +42,13 @@ public class TransactionData implements PaymentData {
   private final boolean coinBase;
 
   public TransactionData(String transactionId, DateTime date, RAGStatus status,
-                         BigInteger amountBTC, Optional<BigInteger> feeOnSendBTC,
+                         BigInteger amountBTC, FiatPayment amountFiat, Optional<BigInteger> feeOnSendBTC,
                          TransactionConfidence.ConfidenceType confidenceType, PaymentType type, int depth, String description, boolean coinBase) {
     this.transactionId = transactionId;
     this.date = date;
     this.status = status;
     this.amountBTC = amountBTC;
+    this.amountFiat = amountFiat;
     this.feeOnSendBTC = feeOnSendBTC;
     this.confidenceType = confidenceType;
     this.type = type;
@@ -62,6 +63,7 @@ public class TransactionData implements PaymentData {
             "transactionId='" + transactionId + '\'' +
             "status=" + status +
             ", amountBTC=" + amountBTC +
+            ", amountFiat=" + amountFiat +
             ", feeOnSendBTC=" + feeOnSendBTC +
             ", depth=" + depth +
             ", confidenceType=" + confidenceType +
@@ -82,6 +84,7 @@ public class TransactionData implements PaymentData {
     if (depth != that.depth) return false;
     if (status != that.status) return false;
     if (!amountBTC.equals(that.amountBTC)) return false;
+    if (!amountFiat.equals(that.amountFiat)) return false;
     if (confidenceType != that.confidenceType) return false;
     if (!feeOnSendBTC.equals(that.feeOnSendBTC)) return false;
     if (!transactionId.equals(that.transactionId)) return false;
@@ -98,6 +101,7 @@ public class TransactionData implements PaymentData {
     int result = transactionId.hashCode();
     result = 31 * result + status.hashCode();
     result = 31 * result + amountBTC.hashCode();
+    result = 31 * result + amountFiat.hashCode();
     result = 31 * result + feeOnSendBTC.hashCode();
     result = 31 * result + depth;
     result = 31 * result + confidenceType.hashCode();
