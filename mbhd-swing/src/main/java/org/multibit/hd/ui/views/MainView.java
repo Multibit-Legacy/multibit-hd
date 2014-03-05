@@ -110,12 +110,12 @@ public class MainView extends JFrame {
       splitPane.setLeftComponent(sidebarPanel);
       splitPane.setRightComponent(detailPanel);
       // TODO Use the configuration to provide the basis
-      splitPane.setDividerLocation(180);
+      splitPane.setDividerLocation(MultiBitUI.SIDEBAR_LHS_PREF_WIDTH);
     } else {
       splitPane.setLeftComponent(detailPanel);
       splitPane.setRightComponent(sidebarPanel);
       // TODO Use the configuration to provide the basis
-      splitPane.setDividerLocation(Panels.frame.getWidth() - 180);
+      splitPane.setDividerLocation(Panels.frame.getWidth() - MultiBitUI.SIDEBAR_LHS_PREF_WIDTH);
     }
 
     // Sets the colouring for divider and borders

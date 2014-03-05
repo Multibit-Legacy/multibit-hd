@@ -14,13 +14,13 @@ public interface MultiBitUI {
   // Panel dimensions
 
   /**
-   * The minimum width for the application UI (900 is about right)
+   * The minimum width for the application UI (900 is the minimum for tables)
    */
-  int UI_MIN_WIDTH = 900;
+  int UI_MIN_WIDTH = 1000;
   /**
-   * The minimum height for the application UI (600 is about right)
+   * The minimum height for the application UI (550 is the minimum)
    */
-  int UI_MIN_HEIGHT = 600;
+  int UI_MIN_HEIGHT = 560;
 
   /**
    * The minimum width for a wizard panel (600 is about right) allowing for popovers
@@ -51,7 +51,7 @@ public interface MultiBitUI {
   /**
    * The preferred width for the sidebar
    */
-  int SIDEBAR_LHS_PREF_WIDTH = 150;
+  int SIDEBAR_LHS_PREF_WIDTH = 180;
 
   // Corners
 
