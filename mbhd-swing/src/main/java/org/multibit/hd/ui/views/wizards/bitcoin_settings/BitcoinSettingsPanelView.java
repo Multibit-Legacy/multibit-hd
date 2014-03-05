@@ -103,7 +103,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
     JComboBox<String> groupingComboBox = ComboBoxes.newGroupingComboBox(this, bitcoinConfiguration);
 
     localSymbolComboBox = ComboBoxes.newLocalSymbolComboBox(this, bitcoinConfiguration);
-    JComboBox<String> placementComboBox = ComboBoxes.newPlacementComboBox(this);
+    JComboBox<String> placementComboBox = ComboBoxes.newPlacementComboBox(this, bitcoinConfiguration);
     JComboBox<BitcoinSymbol> bitcoinSymbolComboBox = ComboBoxes.newBitcoinSymbolComboBox(this, bitcoinConfiguration);
 
     decimalErrorStatus = Labels.newErrorStatus(false);

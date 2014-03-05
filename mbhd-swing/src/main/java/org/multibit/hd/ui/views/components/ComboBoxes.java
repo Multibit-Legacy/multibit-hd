@@ -5,6 +5,7 @@ import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.utils.BitcoinSymbol;
+import org.multibit.hd.core.utils.CurrencyUtils;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.i18n.LanguageKey;
 import org.multibit.hd.ui.i18n.Languages;
@@ -183,13 +184,8 @@ public class ComboBoxes {
     JComboBox<String> comboBox = newReadOnlyComboBox(decimalSeparators);
 
     // Determine the first matching separator
-    Character decimal = bitcoinConfiguration.getDecimalSeparator();
-    for (int i = 0; i < decimalSeparators.length; i++) {
-      if (decimal.equals(decimalSeparators[i].charAt(0))) {
-        comboBox.setSelectedIndex(i);
-        break;
-      }
-    }
+    String decimal = bitcoinConfiguration.getDecimalSeparator().toString();
+    selectFirstMatch(comboBox, decimalSeparators, decimal);
 
     // Add the listener at the end to avoid false events
     comboBox.setActionCommand(DECIMAL_COMMAND);
@@ -211,13 +207,8 @@ public class ComboBoxes {
     JComboBox<String> comboBox = newReadOnlyComboBox(groupingSeparators);
 
     // Determine the first matching separator
-    Character grouping = bitcoinConfiguration.getGroupingSeparator();
-    for (int i = 0; i < groupingSeparators.length; i++) {
-      if (grouping.equals(groupingSeparators[i].charAt(0))) {
-        comboBox.setSelectedIndex(i);
-        break;
-      }
-    }
+    String grouping = bitcoinConfiguration.getGroupingSeparator().toString();
+    selectFirstMatch(comboBox, groupingSeparators, grouping);
 
     // Add the listener at the end to avoid false events
     comboBox.setActionCommand(GROUPING_COMMAND);
@@ -238,10 +229,11 @@ public class ComboBoxes {
   public static JComboBox<String> newLocalSymbolComboBox(ActionListener listener, BitcoinConfiguration bitcoinConfiguration) {
 
     String[] localSymbols = new String[]{
-      bitcoinConfiguration.getLocalCurrencySymbol(),
+      CurrencyUtils.symbolFor(bitcoinConfiguration.getLocalCurrencyUnit().getCurrencyCode()),
       bitcoinConfiguration.getLocalCurrencyUnit().getCurrencyCode(),
     };
     JComboBox<String> comboBox = newReadOnlyComboBox(localSymbols);
+    selectFirstMatch(comboBox, localSymbols, bitcoinConfiguration.getLocalCurrencySymbol());
 
     // Ensure we have no ugly scrollbar
     comboBox.setMaximumRowCount(localSymbols.length);
@@ -285,11 +277,12 @@ public class ComboBoxes {
   }
 
   /**
-   * @param listener The action listener to alert when the selection is made
+   * @param listener             The action listener to alert when the selection is made
+   * @param bitcoinConfiguration The Bitcoin configuration to use
    *
    * @return A new "placement" combo box (e.g. "Leading", "Trailing" etc)
    */
-  public static JComboBox<String> newPlacementComboBox(ActionListener listener) {
+  public static JComboBox<String> newPlacementComboBox(ActionListener listener, BitcoinConfiguration bitcoinConfiguration) {
 
     // Order of insertion is important here
     String[] positions = new String[]{
@@ -297,9 +290,14 @@ public class ComboBoxes {
       Languages.safeText(MessageKey.TRAILING),
     };
     JComboBox<String> comboBox = newReadOnlyComboBox(positions);
+    if (bitcoinConfiguration.isCurrencySymbolLeading()) {
+      comboBox.setSelectedIndex(0);
+    } else {
+      comboBox.setSelectedIndex(1);
+    }
 
-    // Add the listener at the end to avoid false events
-    comboBox.setActionCommand(PLACEMENT_COMMAND);
+      // Add the listener at the end to avoid false events
+      comboBox.setActionCommand(PLACEMENT_COMMAND);
     comboBox.addActionListener(listener);
 
     return comboBox;
@@ -378,4 +376,17 @@ public class ComboBoxes {
 
     return comboBox;
   }
+
+  public static void selectFirstMatch(JComboBox<String> comboBox, String[] items, String item) {
+
+    // Determine the first matching separator
+    for (int i = 0; i < items.length; i++) {
+      if (items[i].startsWith(item)) {
+        comboBox.setSelectedIndex(i);
+        break;
+      }
+    }
+
+  }
+
 }
