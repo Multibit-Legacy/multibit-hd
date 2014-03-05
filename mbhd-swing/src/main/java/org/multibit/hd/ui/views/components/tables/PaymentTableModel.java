@@ -1,6 +1,10 @@
 package org.multibit.hd.ui.views.components.tables;
 
+import org.joda.time.DateTime;
+import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.PaymentData;
+import org.multibit.hd.core.dto.RAGStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +27,7 @@ public class PaymentTableModel extends AbstractTableModel {
   public static final int TYPE_COLUMN_INDEX = 2;
   public static final int DESCRIPTION_COLUMN_INDEX = 3;
   public static final int AMOUNT_BTC_COLUMN_INDEX = 4;
+  public static final int AMOUNT_FIAT_COLUMN_INDEX = 5;
 
   private static final Logger log = LoggerFactory.getLogger(PaymentTableModel.class);
 
@@ -31,7 +36,8 @@ public class PaymentTableModel extends AbstractTableModel {
           "Status",
           "Type",
           "Description",
-          "Amount"
+          "Amount",
+          "Amount " + Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencySymbol()
   };
 
   private Object[][] data;
@@ -61,7 +67,8 @@ public class PaymentTableModel extends AbstractTableModel {
               payment.getStatus(),
               payment.getType(),
               payment.getDescription(),
-              payment.getAmountBTC()
+              payment.getAmountBTC(),
+              payment.getAmountFiat()
       };
 
       data[row] = rowData;
@@ -104,7 +111,15 @@ public class PaymentTableModel extends AbstractTableModel {
    * rather than a check box.
    */
   public Class getColumnClass(int c) {
-    return getValueAt(0, c).getClass();
+    switch (c) {
+      case DATE_COLUMN_INDEX : return DateTime.class;
+      case STATUS_COLUMN_INDEX : return RAGStatus.class;
+      case TYPE_COLUMN_INDEX : return String.class;
+      case DESCRIPTION_COLUMN_INDEX : return String.class;
+      case AMOUNT_BTC_COLUMN_INDEX : return String.class;
+      case AMOUNT_FIAT_COLUMN_INDEX : return FiatPayment.class;
+      default: return String.class;
+     }
   }
 
   /**

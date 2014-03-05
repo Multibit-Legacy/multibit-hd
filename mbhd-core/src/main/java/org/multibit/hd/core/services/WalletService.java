@@ -7,7 +7,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
+import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.managers.WalletManager;
@@ -259,8 +261,22 @@ public class WalletService {
       }
     }
 
+    // Work out the fiat equivalent of the bitcoin payment
+    FiatPayment amountFiat = new FiatPayment();
+    amountFiat.setCurrency(Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencyUnit().getCurrencyCode());
+    amountFiat.setExchange(Configurations.currentConfiguration.getBitcoinConfiguration().getExchangeName());
+    Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
+    if (exchangeRateChangedEvent.isPresent()) {
+      amountFiat.setRate(exchangeRateChangedEvent.get().getRate().toString());
+      // TODO
+      amountFiat.setAmount("100.00");
+    } else {
+      amountFiat.setRate("");
+      amountFiat.setAmount((""));
+    }
+
     // Create the DTO from the raw transaction info
-    TransactionData transactionData = new TransactionData(transactionHashAsString, new DateTime(updateTime), status, amountBTC,
+    TransactionData transactionData = new TransactionData(transactionHashAsString, new DateTime(updateTime), status, amountBTC, amountFiat,
             Optional.<BigInteger>absent(), confidenceType, paymentType, depth, description, transaction.isCoinBase());
 
     // See if there is a transactionInfo for this transaction

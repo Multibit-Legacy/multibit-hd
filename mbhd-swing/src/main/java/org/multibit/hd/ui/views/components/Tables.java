@@ -128,7 +128,18 @@ public class Tables {
     amountBTCTableColumn.setCellRenderer(Renderers.newTrailingJustifiedNumericRenderer());
     resizeColumn(table, PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX, 120, 180);
 
-    // Row sorter for date
+   // Amount Fiat column
+    TableColumn fiatColumn = table.getColumnModel().getColumn(PaymentTableModel.AMOUNT_FIAT_COLUMN_INDEX);
+//    fiatColumn.setHeaderRenderer(new AmountBTCTableHeaderRenderer(
+//      table.getTableHeader().getDefaultRenderer(),
+//      new int[] {PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX}
+//    ));
+
+    TableColumn amountFiatTableColumn = table.getColumnModel().getColumn(PaymentTableModel.AMOUNT_FIAT_COLUMN_INDEX);
+    amountFiatTableColumn.setCellRenderer(Renderers.newTrailingJustifiedFiatRenderer());
+    resizeColumn(table, PaymentTableModel.AMOUNT_FIAT_COLUMN_INDEX, 120, 180);
+
+   // Row sorter for date
     TableRowSorter<TableModel> rowSorter = new TableRowSorter<>(table.getModel());
     table.setRowSorter(rowSorter);
 
@@ -139,8 +150,6 @@ public class Tables {
 
     Comparator<DateTime> comparator = newDateTimeComparator();
     rowSorter.setComparator(PaymentTableModel.DATE_COLUMN_INDEX, comparator);
-
-    // TODO - also fiat column
 
     justifyColumnHeaders(table);
 

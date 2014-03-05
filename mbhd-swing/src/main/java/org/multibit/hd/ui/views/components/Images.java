@@ -124,13 +124,16 @@ public class Images {
       angle = confirmationCount * 60 >= 360 ? 360 : confirmationCount * 60;
 
     }
+
+    // Have an icon size between same and normal for the pie icons
+    int iconSize = (int) ((MultiBitUI.NORMAL_ICON_SIZE + MultiBitUI.SMALL_ICON_SIZE) * 0.5);
     g2.setColor(Themes.currentTheme.successAlertBackground());
-    g2.fillArc(1, 1, MultiBitUI.NORMAL_ICON_SIZE - 2, MultiBitUI.NORMAL_ICON_SIZE - 2, 90, -angle);
+    g2.fillArc(1, 1, iconSize - 2, iconSize - 2, 90, -angle);
 
     g2.setColor(Themes.currentTheme.successAlertBackground().darker());
-    g2.drawArc(1, 1, MultiBitUI.NORMAL_ICON_SIZE - 2, MultiBitUI.NORMAL_ICON_SIZE - 2, 90, -angle);
+    g2.drawArc(1, 1, iconSize - 2, iconSize - 2, 90, -angle);
     if (angle != 360) {
-      int center = (int)( MultiBitUI.NORMAL_ICON_SIZE * 0.5);
+      int center = (int)( iconSize * 0.5);
       int diameter = center - 1;
       // vertical stroke
       g2.drawLine(center, center, center, 1);
