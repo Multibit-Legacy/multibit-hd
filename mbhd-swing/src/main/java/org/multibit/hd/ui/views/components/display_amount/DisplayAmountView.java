@@ -52,12 +52,10 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
   @Override
   public JPanel newComponentPanel() {
 
-    // TODO Experiment with the new MiG layout
-
     // Create the balance panel - forcing a LTR layout to ensure correct placement of labels
     panel = Panels.newPanel(new MigLayout(
-      "debug,fillx,insets 0,hidemode 1,ltr", // Layout
-      "[][][][][][]", // Columns
+      "fillx,insets 0,hidemode 2,ltr", // Layout
+      "[]0[]5[]5[]5[]5[]", // Columns require careful padding for leading/trailing symbols
       "[]" // Rows
     ));
 
@@ -71,19 +69,19 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
 
     // Determine how to add them back into the panel
     if (Languages.isLeftToRight()) {
-      panel.add(leadingSymbolLabel, "left,shrink,gap 0,baseline");
-      panel.add(primaryBalanceLabel, "left,shrink,gap 0,baseline");
-      panel.add(secondaryBalanceLabel, "left,shrink,gap 0");
-      panel.add(trailingSymbolLabel, "left,shrink,gap 0");
-      panel.add(exchangeLabel, "left,shrink,gap 0");
+      panel.add(leadingSymbolLabel, "left,shrink,baseline");
+      panel.add(primaryBalanceLabel, "left,shrink,baseline");
+      panel.add(secondaryBalanceLabel, "left,shrink");
+      panel.add(trailingSymbolLabel, "left,shrink");
+      panel.add(exchangeLabel, "left,shrink");
       panel.add(Labels.newBlankLabel(), "push,wrap"); // Provides a flexible column
     } else {
 
-      panel.add(exchangeLabel, "right,shrink,gap 0");
-      panel.add(leadingSymbolLabel, "right,shrink,gap 0");
+      panel.add(exchangeLabel, "right,shrink");
+      panel.add(leadingSymbolLabel, "right,shrink");
       panel.add(primaryBalanceLabel, "right,shrink,baseline");
-      panel.add(secondaryBalanceLabel, "right,shrink,gap 0");
-      panel.add(trailingSymbolLabel, "right,shrink,gap 0");
+      panel.add(secondaryBalanceLabel, "right,shrink");
+      panel.add(trailingSymbolLabel, "right,shrink");
       panel.add(Labels.newBlankLabel(), "push,wrap"); // Provides a flexible column
     }
 
@@ -114,14 +112,15 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
 
     if (bitcoinConfiguration.isCurrencySymbolLeading()) {
       handleLeadingSymbol(bitcoinConfiguration);
+      leadingSymbolLabel.setVisible(true);
+      // Require a hard space to ensure leading/trailing symbols look right
+      primaryBalanceLabel.setText("\u00a0" + bitcoinDisplay[0]);
     } else {
       handleTrailingSymbol(bitcoinConfiguration);
+      leadingSymbolLabel.setVisible(false);
+      primaryBalanceLabel.setText(bitcoinDisplay[0]);
     }
 
-    // Ensure we hide the leading label if it's not required
-    leadingSymbolLabel.setVisible(bitcoinConfiguration.isCurrencySymbolLeading());
-
-    primaryBalanceLabel.setText(bitcoinDisplay[0]);
     secondaryBalanceLabel.setText(bitcoinDisplay[1]);
 
     Locale locale = i18nConfiguration.getLocale();
@@ -171,8 +170,8 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
    * <p>Note the use of non-breaking spaces (\u00a0) to ensure the entire number is correctly represented</p>
    *
    * @param bitcoinConfiguration The Bitcoin configuration
-   * @param localSymbol       The local symbol (e.g. "$")
-   * @param localDisplay      The local display (e.g. "1,234.567")
+   * @param localSymbol          The local symbol (e.g. "$")
+   * @param localDisplay         The local display (e.g. "1,234.567")
    */
   private void handleExchangeLabelText(BitcoinConfiguration bitcoinConfiguration, String localSymbol, String localDisplay) {
 
