@@ -100,7 +100,6 @@ public class DatesTest {
   @Test
   public void testParseSmtpUtc_FrenchLocale() {
 
-    // Failed
     DateTime instant = Dates.parseSmtpUtc("01 janv. 2000", Locale.FRANCE).withZone(DateTimeZone.UTC);
     assertThat(Dates.formatISO8601(instant)).isEqualTo("2000-01-01T00:00:00Z");
 
@@ -109,7 +108,6 @@ public class DatesTest {
   @Test
   public void testParseSmtpUtc_ThaiLocale() {
 
-    // Failed
     DateTime instant = Dates.parseSmtpUtc("01 ม.ค. 2000", new Locale("th", "TH", "TH")).withZone(DateTimeZone.UTC);
     assertThat(Dates.formatISO8601(instant)).isEqualTo("2000-01-01T00:00:00Z");
 
@@ -118,7 +116,6 @@ public class DatesTest {
   @Test
   public void testNewSeedTimestamp() {
 
-    // Failed
     DateTimeUtils.setCurrentMillisFixed(new DateTime(2014, 1, 27, 0, 0, 0, 0).getMillis());
     assertThat(Dates.newSeedTimestamp()).isEqualTo("1850/07");
 
