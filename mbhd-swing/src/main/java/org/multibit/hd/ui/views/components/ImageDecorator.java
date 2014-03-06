@@ -180,6 +180,7 @@ public class ImageDecorator {
    * @return The (clipped if necessary) foreground image placed over the background image
    */
   public static BufferedImage overlayImages(BufferedImage foreground, BufferedImage background, int x, int y) {
+
     int bx = background.getWidth();
     int by = background.getHeight();
 
@@ -200,4 +201,36 @@ public class ImageDecorator {
 
     return background;
   }
+
+  /**
+   * <p>Rotate an image about its center</p>
+   *
+   * @param theta The number of radians to rotate (-PI rotates 180 degrees clockwise)
+   *
+   * @return The image rotated by the required amount
+   */
+  public static BufferedImage rotate(BufferedImage image, double theta) {
+
+    // Calculate the center of rotation
+    double x = image.getWidth() / 2;
+    double y = image.getHeight() / 2;
+
+    // Get the graphics context
+    Graphics2D g2 = image.createGraphics();
+
+    // Blend images smoothly
+    g2.setRenderingHints(smoothRenderingHints());
+
+    // Rotate the image about the given center
+    g2.rotate(theta, x, y);
+
+    // Draw the image
+    g2.drawImage(image, 0, 0, null);
+
+    // Tidy up
+    g2.dispose();
+
+    return image;
+  }
+
 }

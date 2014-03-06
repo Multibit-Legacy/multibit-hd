@@ -499,6 +499,52 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "back" button with icon
+   */
+  public static JButton newBackButton(Action action) {
+
+    JButton button = newButton(action);
+
+    AwesomeIcon icon = AwesomeDecorator.select(AwesomeIcon.ARROW_LEFT, AwesomeIcon.ARROW_RIGHT);
+
+    AwesomeDecorator.applyIcon(icon, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "forward" button with icon
+   */
+  public static JButton newForwardButton(Action action) {
+
+    JButton button = newButton(action);
+
+    AwesomeIcon icon = AwesomeDecorator.select(AwesomeIcon.ARROW_RIGHT, AwesomeIcon.ARROW_LEFT);
+
+    AwesomeDecorator.applyIcon(icon, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "launch browser" button with icon
+   */
+  public static JButton newLaunchBrowserButton(Action action) {
+
+    JButton button = newButton(action);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.LAPTOP, button, true, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "restore" button with icon
    */
   public static JButton newRestoreButton(Action action) {
