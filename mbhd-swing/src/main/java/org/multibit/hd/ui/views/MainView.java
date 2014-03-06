@@ -6,10 +6,13 @@ import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;
+import org.multibit.hd.ui.events.view.WizardHideEvent;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.themes.Themes;
+import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +36,9 @@ public class MainView extends JFrame {
   private SidebarView sidebarView;
   private DetailView detailView;
   private FooterView footerView;
+
+  // Need to track if the welcome wizard was showing before a refresh occurred
+  private boolean showExitingWelcomeWizard = false;
 
   public MainView() {
 
@@ -60,17 +66,35 @@ public class MainView extends JFrame {
   @Subscribe
   public void onLocaleChangedEvent(LocaleChangedEvent event) {
 
+    refresh();
+
+  }
+
+  public void refresh() {
+
     log.debug("Received 'locale changed' event");
 
-    getContentPane().removeAll();
-    getContentPane().add(createMainContent());
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
 
-    pack();
+        getContentPane().removeAll();
+        getContentPane().add(createMainContent());
 
-    setVisible(true);
+        pack();
 
-    // Catch up on events
-    CoreServices.getApplicationEventService().repeatLatestEvents();
+        setVisible(true);
+
+        // Catch up on events
+        CoreServices.getApplicationEventService().repeatLatestEvents();
+
+        // Check for any wizards that were showing before the refresh occurred
+        if (showExitingWelcomeWizard) {
+          showExitingWelcomeWizard();
+        }
+
+      }
+    });
 
   }
 
@@ -141,4 +165,19 @@ public class MainView extends JFrame {
 
     return mainPanel;
   }
+
+  public void showExitingWelcomeWizard() {
+
+    showExitingWelcomeWizard = true;
+    Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardPanel());
+
+  }
+
+  @Subscribe
+  public void onWizardHideEvent(WizardHideEvent event) {
+
+    showExitingWelcomeWizard = false;
+
+  }
+
 }

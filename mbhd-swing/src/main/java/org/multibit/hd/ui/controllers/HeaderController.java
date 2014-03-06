@@ -11,6 +11,7 @@ import org.multibit.hd.core.events.SlowTransactionSeenEvent;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Satoshis;
+import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.controller.AddAlertEvent;
 import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -103,6 +104,14 @@ public class HeaderController {
     // Add this to the list
     alertModels.add(event.getAlertModel());
 
+    // Play a beep on the first alert
+    switch (event.getAlertModel().getSeverity()) {
+      case RED:
+      case AMBER:
+        Sounds.playBeep();
+        break;
+    }
+
     // Adjust the models to reflect the new M of N values
     updateRemaining();
 
@@ -143,15 +152,15 @@ public class HeaderController {
    */
   private void updateRemaining() {
 
-    Preconditions.checkNotNull(alertModels,"'alertModels' must be present");
+    Preconditions.checkNotNull(alertModels, "'alertModels' must be present");
 
     // Update the "remaining" based on the position in the list
     for (int i = 0; i < alertModels.size(); i++) {
       AlertModel alertModel = alertModels.get(i);
 
-      Preconditions.checkNotNull(alertModel,"'alertModel' must be present");
+      Preconditions.checkNotNull(alertModel, "'alertModel' must be present");
 
-      alertModel.setRemaining(alertModels.size()-1);
+      alertModel.setRemaining(alertModels.size() - 1);
     }
 
   }

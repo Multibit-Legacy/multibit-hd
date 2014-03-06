@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.multibit.hd.core.dto.HistoryEntry;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.HistoryLoadException;
 import org.multibit.hd.core.protobuf.MBHDHistoryProtos;
 import org.slf4j.Logger;
@@ -80,21 +81,22 @@ public class HistoryProtobufSerializer {
    *
    * @throws org.multibit.hd.core.exceptions.HistoryLoadException thrown in various error conditions (see description).
    */
-  public Set<HistoryEntry> readHistoryEntries(InputStream input) throws HistoryLoadException {
+  public Set<HistoryEntry> readHistoryEntries(InputStream input) {
 
+    Set<HistoryEntry> historyEntries = Sets.newHashSet();
     try {
 
       MBHDHistoryProtos.History historyProto = parseToProto(input);
 
-      Set<HistoryEntry> historyEntries = Sets.newHashSet();
       readHistoryEntry(historyProto, historyEntries);
 
       return historyEntries;
 
     } catch (IOException e) {
-      throw new HistoryLoadException("Could not parse input stream to protobuf", e);
+      ExceptionHandler.handleThrowable(new HistoryLoadException("Could not parse input stream to protobuf", e));
     }
 
+    return historyEntries;
   }
 
   /**
@@ -113,9 +115,8 @@ public class HistoryProtobufSerializer {
    *
    * <p>You should always handle {@link org.multibit.hd.core.exceptions.HistoryLoadException} and communicate failure to the user in an appropriate manner.</p>
    *
-   * @throws org.multibit.hd.core.exceptions.HistoryLoadException If something goes wrong
    */
-  private void readHistoryEntry(MBHDHistoryProtos.History historyProto, Set<HistoryEntry> historyEntries) throws HistoryLoadException {
+  private void readHistoryEntry(MBHDHistoryProtos.History historyProto, Set<HistoryEntry> historyEntries) {
 
     Set<HistoryEntry> readHistoryEntry = Sets.newHashSet();
 

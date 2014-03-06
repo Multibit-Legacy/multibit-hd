@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.HistoryLoadException;
 import org.multibit.hd.core.exceptions.HistorySaveException;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -157,8 +158,8 @@ public class PersistentHistoryService implements HistoryService {
       history.clear();
       history.addAll(loadedHistory);
 
-    } catch (IOException e) {
-      throw new HistoryLoadException("Could not loadHistory history db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");
+    } catch (IOException e ) {
+      ExceptionHandler.handleThrowable(new HistoryLoadException("Could not loadHistory history db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'."));
     }
   }
 

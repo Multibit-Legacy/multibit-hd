@@ -8,6 +8,8 @@ import org.multibit.hd.ui.views.components.display_address.DisplayBitcoinAddress
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountModel;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountView;
+import org.multibit.hd.ui.views.components.display_message.DisplayInfoMessageModel;
+import org.multibit.hd.ui.views.components.display_message.DisplayInfoMessageView;
 import org.multibit.hd.ui.views.components.display_qrcode.DisplayQRCodeModel;
 import org.multibit.hd.ui.views.components.display_qrcode.DisplayQRCodeView;
 import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertModel;
@@ -143,7 +145,6 @@ public class Components {
    * <ul>
    * <li>Danger themed message panel</li>
    * <li>Button to close the light box popover</li>
-   * <li></li>
    * </ul>
    *
    * @return A new "display security alert" model and view
@@ -152,6 +153,24 @@ public class Components {
 
     DisplaySecurityAlertModel model = new DisplaySecurityAlertModel();
     DisplaySecurityAlertView view = new DisplaySecurityAlertView(model);
+
+    return new ModelAndView<>(model, view);
+
+  }
+
+  /**
+   * <p>A "display info message" model and view displays a message with the following features:</p>
+   * <ul>
+   * <li>Success themed message panel</li>
+   * <li>Button to close the light box popover</li>
+   * </ul>
+   *
+   * @return A new "display info message" model and view
+   */
+  public static ModelAndView<DisplayInfoMessageModel, DisplayInfoMessageView> newDisplayInfoMessageMaV() {
+
+    DisplayInfoMessageModel model = new DisplayInfoMessageModel();
+    DisplayInfoMessageView view = new DisplayInfoMessageView(model);
 
     return new ModelAndView<>(model, view);
 

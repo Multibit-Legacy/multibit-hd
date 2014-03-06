@@ -35,11 +35,11 @@ public enum LanguageKey {
   FA_IR("fa_ir"),
   FI_FI("fi_fi"),
   FR_FR("fr_fr"),
-  HE_IL("he_il"),
   HI_IN("hi_in"),
   HR_HR("hr_hr"),
   HU_HU("hu_hu"),
-  ID_ID("id_id"),
+  IN_ID("in_id"), // Legacy form of ID_ID
+  IW_IL("iw_il"), // Legacy form of HE_IL
   IT_IT("it_it"),
   JA_JP("ja_jp"),
   KO_KR("ko_kr"),
@@ -58,6 +58,7 @@ public enum LanguageKey {
   TH_TH("th_th"),
   TL_PH("tl_ph"),
   TR_TR("tr_tr"),
+  VI_VN("vi_vn"),
   ZH_CN("zh_cn"),
   // End of enum
   ;

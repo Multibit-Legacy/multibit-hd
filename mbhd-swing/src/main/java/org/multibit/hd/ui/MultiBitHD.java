@@ -3,9 +3,8 @@ package org.multibit.hd.ui;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.xeiam.xchange.bitstamp.BitstampExchange;
-import com.xeiam.xchange.currency.MoneyUtils;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.WalletData;
-import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.managers.BackupManager;
@@ -20,14 +19,10 @@ import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.controllers.HeaderController;
 import org.multibit.hd.ui.controllers.MainController;
 import org.multibit.hd.ui.controllers.SidebarController;
-import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.platform.GenericApplication;
-import org.multibit.hd.ui.views.*;
-import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.wizards.Wizards;
-import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
+import org.multibit.hd.ui.views.MainView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +47,7 @@ public class MultiBitHD {
   private static WalletService walletService;
 
   private static MainController mainController;
-  private static HeaderController headerController;
+  private static MainView mainView;
 
   /**
    * <p>Main entry point to the application</p>
@@ -70,7 +65,7 @@ public class MultiBitHD {
     // Create a new UI based on the configuration
     initialiseUI();
 
-    // Start supporting services (exchange, wallet access etc)
+    // Start supporting services (wizards, exchange, wallet access etc)
     initialiseSupport();
 
   }
@@ -166,15 +161,13 @@ public class MultiBitHD {
   public static void initialiseUI() {
 
     // Build the main view
-    new MainView();
+    mainView = new MainView();
+    mainView.refresh();
 
     // Create controllers
     mainController = new MainController();
-    headerController = new HeaderController();
+    new HeaderController();
     new SidebarController();
-
-    // Each view will respond to a locale change independently
-    ViewEvents.fireLocaleChangedEvent();
 
   }
 
@@ -187,35 +180,16 @@ public class MultiBitHD {
 
     overlaySecurityAlerts();
 
-    BigInteger satoshis = getStartingBalance();
+    // Continue building the support services in the background
+    SafeExecutors.newFixedThreadPool(1).execute(new Runnable() {
+      @Override
+      public void run() {
 
-    showExchangeRate(satoshis);
+        startBitcoinNetwork();
 
-    startBitcoinNetwork();
-  }
+      }
+    });
 
-  /**
-   * <p>Show any available exchange rate in the header</p>
-   *
-   * @param satoshis The current balance in satoshis
-   */
-  private static void showExchangeRate(BigInteger satoshis) {
-
-    // Catch up with any early exchange rate events
-    Optional<ExchangeRateChangedEvent> exchangeEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
-
-    if (exchangeEvent.isPresent()) {
-      headerController.onExchangeRateChangedEvent(exchangeEvent.get());
-    } else {
-
-      // No exchange provided so simulate a non-event
-      ViewEvents.fireBalanceChangedEvent(
-        satoshis,
-        MoneyUtils.fromSatoshi(0),
-        Optional.<String>absent()
-      );
-
-    }
   }
 
   /**
@@ -255,6 +229,7 @@ public class MultiBitHD {
   }
 
   private static void startBitcoinNetwork() {
+
     // Start the bitcoin network service
     bitcoinNetworkService.start();
 
@@ -264,23 +239,29 @@ public class MultiBitHD {
     if (bitcoinNetworkService.isStartedOk()) {
       bitcoinNetworkService.downloadBlockChain();
     }
+
   }
 
   private static void showPasswordOrWizard() {
-    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
 
-      // There is a wallet present - warm start
-      WalletData walletData = WalletManager.INSTANCE.getCurrentWalletData().get();
-      log.debug("The current wallet is:\nWallet id = '" + walletData.getWalletId().toString() + "\n" + walletData.getWallet().toString());
+    // TODO Reinstate this
 
-      // Force an exit if the user can't get through
-      Panels.showLightBox(Wizards.newExitingPasswordWizard().getWizardPanel());
+//    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
+//
+//      // There is a wallet present - warm start
+//      WalletData walletData = WalletManager.INSTANCE.getCurrentWalletData().get();
+//      log.debug("The current wallet is:\nWallet id = '" + walletData.getWalletId().toString() + "\n" + walletData.getWallet().toString());
+//
+//      // Force an exit if the user can't get through
+//    mainView.showExitingPasswordWizard();
+//      Panels.showLightBox(Wizards.newExitingPasswordWizard().getWizardPanel());
+//
+//    } else {
+    // Show an exiting Welcome wizard
+    log.debug("There is no current wallet so showing the 'WelcomeWizard'");
+    mainView.showExitingWelcomeWizard();
+//    }
 
-    } else {
-      // Show an exiting Welcome wizard
-      log.debug("There is no current wallet so showing the 'WelcomeWizard'");
-      Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardPanel());
-    }
   }
 
   /**

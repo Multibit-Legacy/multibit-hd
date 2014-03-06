@@ -127,7 +127,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
 
     // Actually create the wallet
     boolean walletCreatedStatus = false;
-    byte[] seed = null;
+    byte[] seed;
     try {
       // Attempt to create the wallet (the manager will track the ID etc)
       WalletManager walletManager = WalletManager.INSTANCE;

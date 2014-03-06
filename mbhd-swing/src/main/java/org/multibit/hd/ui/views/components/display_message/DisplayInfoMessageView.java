@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.components.display_security_alert;
+package org.multibit.hd.ui.views.components.display_message;
 
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.views.components.AbstractComponentView;
@@ -11,22 +11,22 @@ import java.awt.event.ActionEvent;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Presentation of security alert in eye-catching colours</li>
+ * <li>Presentation of the info message</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class DisplaySecurityAlertView extends AbstractComponentView<DisplaySecurityAlertModel> {
+public class DisplayInfoMessageView extends AbstractComponentView<DisplayInfoMessageModel> {
 
-  private JLabel securityAlertMessage;
+  private JLabel infoMessage;
 
   private JButton panelCloseButton;
 
   /**
    * @param model The model backing this view
    */
-  public DisplaySecurityAlertView(DisplaySecurityAlertModel model) {
+  public DisplayInfoMessageView(DisplayInfoMessageModel model) {
     super(model);
 
   }
@@ -39,7 +39,7 @@ public class DisplaySecurityAlertView extends AbstractComponentView<DisplaySecur
     panelCloseButton = Buttons.newPanelCloseButton(getClosePopoverAction());
 
     panel.add(panelCloseButton, "aligny top, alignx right,shrink,wrap");
-    panel.add(Panels.newDebuggerWarning(), "align center,wrap");
+    panel.add(Panels.newLanguageChange(), "align center,grow,wrap");
 
     // Set size
     panel.setSize(MultiBitUI.POPOVER_PREF_WIDTH, MultiBitUI.POPOVER_PREF_HEIGHT);

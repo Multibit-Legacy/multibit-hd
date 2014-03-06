@@ -23,7 +23,7 @@ public class LightBoxPanel extends JPanel {
 
   /**
    * @param contentPanel The panel containing the light box components (e.g. a wizard)
-   * @param layer The layer which to place the panel (JLayeredPane.POPUP_LAYER is normal, DRAG_LAYER for popovers)
+   * @param layer The layer which to place the panel (JLayeredPane.MODAL_LAYER for wizards, DRAG_LAYER for popovers within wizards)
    */
   public LightBoxPanel(JPanel contentPanel, Integer layer) {
 
@@ -94,9 +94,11 @@ public class LightBoxPanel extends JPanel {
    */
   public void close() {
 
-    // Tidy up the layered pane
+    // Tidy up the layered pane - cannot remove by reference
+    // The lightbox panel is always here
     Panels.frame.getLayeredPane().remove(1);
-    Panels.frame.getLayeredPane().remove(contentPanel);
+    // The content panel is always here after the removal
+    Panels.frame.getLayeredPane().remove(0);
 
     // Repaint
     Panels.frame.validate();

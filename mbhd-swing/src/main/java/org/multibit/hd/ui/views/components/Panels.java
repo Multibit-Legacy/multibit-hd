@@ -336,6 +336,27 @@ public class Panels {
   }
 
   /**
+   * <p>A "language change" panel displays instructions to the user about a language change</p>
+   *
+   * @return A new "language change" panel
+   */
+  public static JPanel newLanguageChange() {
+
+    JPanel panel = Panels.newPanel(new MigLayout(
+      Panels.migXLayout(),
+      "[grow]", // Columns
+      "[]" // Rows
+    ));
+
+    PanelDecorator.applySuccessFadedTheme(panel);
+
+    // Add to the panel
+    panel.add(Labels.newLanguageChangeNote(), "push");
+
+    return panel;
+  }
+
+  /**
    * <p>A "restore from backup" panel displays the instructions to restore from a backup folder</p>
    *
    * @return A new "restore from backup" panel

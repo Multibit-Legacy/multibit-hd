@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.I18NConfiguration;
@@ -78,7 +79,7 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
 
     JComboBox<String> languagesComboBox = ComboBoxes.newLanguagesComboBox(this, Languages.currentLocale());
 
-    panel.add(Labels.newSelectLanguageLabel(),"shrink");
+    panel.add(Labels.newSelectLanguageLabel(), "shrink");
     panel.add(languagesComboBox, "growx,width min:350:,push,wrap");
     panel.add(Labels.newWelcomeNote(), "grow,push,span 2,wrap");
 
@@ -113,25 +114,33 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
    * @param e The action event
    */
   @Override
-  public void actionPerformed(ActionEvent e) {
+  public void actionPerformed(final ActionEvent e) {
 
-    JComboBox source = (JComboBox) e.getSource();
-    String localeCode = LanguageKey.values()[source.getSelectedIndex()].getKey();
+    // Hand over the configuration change to a background task
+    SafeExecutors.newFixedThreadPool(1).execute(new Runnable() {
+      @Override
+      public void run() {
 
-    // Determine the new locale
-    Locale newLocale = Languages.newLocaleFromCode(localeCode);
+        JComboBox source = (JComboBox) e.getSource();
+        String localeCode = LanguageKey.values()[source.getSelectedIndex()].getKey();
 
-    // Create a new configuration to reset the separators
-    Configuration configuration = Configurations.currentConfiguration.deepCopy();
-    I18NConfiguration i18NConfiguration = new I18NConfiguration(newLocale);
-    configuration.setI18NConfiguration(i18NConfiguration);
+        // Determine the new locale
+        Locale newLocale = Languages.newLocaleFromCode(localeCode);
 
-    // Update the main configuration
-    Configuration newConfiguration = Configurations.currentConfiguration.deepCopy();
-    newConfiguration.getI18NConfiguration().setLocale(newLocale);
+        // Create a new configuration to reset the separators
+        Configuration configuration = Configurations.currentConfiguration.deepCopy();
+        I18NConfiguration i18NConfiguration = new I18NConfiguration(newLocale);
+        configuration.setI18NConfiguration(i18NConfiguration);
 
-    // Make the switch immediately
-    Configurations.switchConfiguration(newConfiguration);
+        // Update the main configuration
+        Configuration newConfiguration = Configurations.currentConfiguration.deepCopy();
+        newConfiguration.getI18NConfiguration().setLocale(newLocale);
+
+        // Make the switch immediately
+        Configurations.switchConfiguration(newConfiguration);
+
+      }
+    });
 
   }
 }

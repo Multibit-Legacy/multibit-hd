@@ -751,6 +751,21 @@ public class Labels {
 
   }
 
+  /**
+   * @return A new "language change" note
+   */
+  public static JLabel newLanguageChangeNote() {
+
+    JLabel label = newNoteLabel(new MessageKey[]{
+      MessageKey.LANGUAGE_CHANGE_NOTE_1
+    }, new Object[][]{});
+
+    // Allow for danger theme
+    label.setForeground(Themes.currentTheme.successAlertText());
+
+    return label;
+
+  }
 
   /**
    * @return A new "seed warning" note

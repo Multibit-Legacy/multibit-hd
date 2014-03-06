@@ -253,6 +253,8 @@ public enum MessageKey {
 
   EXCHANGE_SETTINGS_NOTE_1("exchange_settings_note_1"),
 
+  LANGUAGE_CHANGE_NOTE_1("language_change_note_1"),
+
   RECIPIENT_SUMMARY("recipient_summary"),
   AMOUNT_SUMMARY("amount_summary"),
 
