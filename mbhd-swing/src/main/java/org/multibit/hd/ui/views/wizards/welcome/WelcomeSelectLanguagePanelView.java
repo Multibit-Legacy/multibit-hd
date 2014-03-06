@@ -4,7 +4,9 @@ import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.config.I18NConfiguration;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.i18n.LanguageKey;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.ComboBoxes;
@@ -114,15 +116,21 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
   public void actionPerformed(ActionEvent e) {
 
     JComboBox source = (JComboBox) e.getSource();
-    localeCode = String.valueOf(source.getSelectedItem()).substring(0, 5);
+    String localeCode = LanguageKey.values()[source.getSelectedIndex()].getKey();
 
-    Locale locale = Languages.newLocaleFromCode(localeCode);
+    // Determine the new locale
+    Locale newLocale = Languages.newLocaleFromCode(localeCode);
 
-    log.debug("Language changed to '{}'", localeCode);
+    // Create a new configuration to reset the separators
+    Configuration configuration = Configurations.currentConfiguration.deepCopy();
+    I18NConfiguration i18NConfiguration = new I18NConfiguration(newLocale);
+    configuration.setI18NConfiguration(i18NConfiguration);
 
+    // Update the main configuration
     Configuration newConfiguration = Configurations.currentConfiguration.deepCopy();
+    newConfiguration.getI18NConfiguration().setLocale(newLocale);
 
-    newConfiguration.getI18NConfiguration().setLocale(locale);
+    // Make the switch immediately
     Configurations.switchConfiguration(newConfiguration);
 
   }
