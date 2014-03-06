@@ -94,8 +94,8 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     Preconditions.checkNotNull(locale, "'locale' cannot be empty");
 
     // TODO Hook this into the configuration/exchange service
-    List<String> names = Lists.newArrayList("Bitstamp", "BTC-e", "Open Exchange Rates", "Coinbase", "Cavirtex");
-    List<String> currencies = Lists.newArrayList("USD", "RUB", "GBP", "EUR");
+    List<String> names = Lists.newArrayList("(No exchange)","Bitstamp", "BTC-e", "Open Exchange Rates", "Coinbase", "Cavirtex");
+    List<String> currencies = Lists.newArrayList("(No currency)", "USD", "RUB", "GBP", "EUR");
 
     exchangeRateProviderComboBox = ComboBoxes.newExchangeRateProviderComboBox(this, names, bitcoinConfiguration);
     currencyCodeComboBox = ComboBoxes.newCurrencyCodeComboBox(this, currencies, bitcoinConfiguration);
