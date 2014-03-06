@@ -46,7 +46,7 @@ public class FooterView {
     CoreServices.uiEventBus.register(this);
 
     contentPanel = Panels.newPanel(new MigLayout(
-      "ins 7",
+      Panels.migLayout("insets 7"),
       "[][][]",
       "[]"
     ));
@@ -61,6 +61,7 @@ public class FooterView {
 
     progressBar.setEnabled(false);
     progressBar.setOpaque(false);
+    progressBar.setVisible(false);
 
     messageLabel = Labels.newBlankLabel();
 

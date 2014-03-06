@@ -29,22 +29,12 @@ public class MainView extends JFrame {
 
   private static final Logger log = LoggerFactory.getLogger(MainView.class);
 
-  private final JPanel headerPanel;
-  private final JPanel sidebarPanel;
-  private final JPanel detailPanel;
-  private final JPanel footerPanel;
+  private HeaderView headerView;
+  private SidebarView sidebarView;
+  private DetailView detailView;
+  private FooterView footerView;
 
-  public MainView(
-    JPanel headerPanel,
-    JPanel sidebarPanel,
-    JPanel detailPanel,
-    JPanel footerPanel
-  ) {
-
-    this.headerPanel = headerPanel;
-    this.sidebarPanel = sidebarPanel;
-    this.detailPanel = detailPanel;
-    this.footerPanel = footerPanel;
+  public MainView() {
 
     CoreServices.uiEventBus.register(this);
 
@@ -79,6 +69,9 @@ public class MainView extends JFrame {
 
     setVisible(true);
 
+    // Catch up on events
+    CoreServices.getApplicationEventService().repeatLatestEvents();
+
   }
 
   /**
@@ -100,6 +93,20 @@ public class MainView extends JFrame {
     // Require opaque to ensure the color is shown
     mainPanel.setOpaque(true);
 
+    // Deregister any previous references
+    if (headerView != null) {
+      CoreServices.uiEventBus.unregister(headerView);
+      CoreServices.uiEventBus.unregister(sidebarView);
+      CoreServices.uiEventBus.unregister(detailView);
+      CoreServices.uiEventBus.unregister(footerView);
+    }
+
+    // Create supporting views (rebuild every time for language support)
+    headerView = new HeaderView();
+    sidebarView = new SidebarView();
+    detailView = new DetailView();
+    footerView = new FooterView();
+
     // Create a splitter pane
     JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
@@ -107,13 +114,13 @@ public class MainView extends JFrame {
     splitPane.setDividerSize(3);
 
     if (Languages.isLeftToRight()) {
-      splitPane.setLeftComponent(sidebarPanel);
-      splitPane.setRightComponent(detailPanel);
+      splitPane.setLeftComponent(sidebarView.getContentPanel());
+      splitPane.setRightComponent(detailView.getContentPanel());
       // TODO Use the configuration to provide the basis
       splitPane.setDividerLocation(MultiBitUI.SIDEBAR_LHS_PREF_WIDTH);
     } else {
-      splitPane.setLeftComponent(detailPanel);
-      splitPane.setRightComponent(sidebarPanel);
+      splitPane.setLeftComponent(detailView.getContentPanel());
+      splitPane.setRightComponent(sidebarView.getContentPanel());
       // TODO Use the configuration to provide the basis
       splitPane.setDividerLocation(Panels.frame.getWidth() - MultiBitUI.SIDEBAR_LHS_PREF_WIDTH);
     }
@@ -128,9 +135,9 @@ public class MainView extends JFrame {
     splitPane.applyComponentOrientation(Languages.currentComponentOrientation());
 
     // Add the supporting panels
-    mainPanel.add(headerPanel, "growx,shrink,wrap"); // Ensure header size remains fixed
+    mainPanel.add(headerView.getContentPanel(), "growx,shrink,wrap"); // Ensure header size remains fixed
     mainPanel.add(splitPane, "grow,push,wrap");
-    mainPanel.add(footerPanel, "growx,shrink"); // Ensure footer size remains fixed
+    mainPanel.add(footerView.getContentPanel(), "growx,shrink"); // Ensure footer size remains fixed
 
     return mainPanel;
   }

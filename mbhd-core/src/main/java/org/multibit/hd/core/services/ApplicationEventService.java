@@ -2,6 +2,8 @@ package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
+import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.events.SecurityEvent;
 
@@ -10,7 +12,7 @@ import org.multibit.hd.core.events.SecurityEvent;
  * <ul>
  * <li>Tracking selected application events</li>
  * </ul>
- * <p>Having this service allows the UI to catch up with previous events</p>
+ * <p>Having this service allows the UI to catch up with previous events after a locale change or slow startup</p>
  *
  * @since 0.0.1
  *  
@@ -19,6 +21,7 @@ public class ApplicationEventService {
 
   private Optional<ExchangeRateChangedEvent> latestExchangeRateChangedEvent = Optional.absent();
   private Optional<SecurityEvent> latestSecurityEvent = Optional.absent();
+  private Optional<BitcoinNetworkChangedEvent> latestBitcoinNetworkChangedEvent = Optional.absent();
 
   /**
    * Reduced visibility constructor to prevent accidental instance creation outside of CoreServices
@@ -42,6 +45,36 @@ public class ApplicationEventService {
   }
 
   /**
+   * @return The latest "Bitcoin network changed" event
+   */
+  public Optional<BitcoinNetworkChangedEvent> getLatestBitcoinNetworkChangedEvent() {
+    return latestBitcoinNetworkChangedEvent;
+  }
+
+  /**
+   * <p>Repeats the latest events since the UI has become out of synch due to a restart of some kind</p>
+   */
+  public void repeatLatestEvents() {
+
+    if (latestBitcoinNetworkChangedEvent.isPresent()) {
+      CoreEvents.fireBitcoinNetworkChangedEvent(latestBitcoinNetworkChangedEvent.get().getSummary());
+    }
+
+    if (latestExchangeRateChangedEvent.isPresent()) {
+      CoreEvents.fireExchangeRateChangedEvent(
+        latestExchangeRateChangedEvent.get().getRate(),
+        latestExchangeRateChangedEvent.get().getRateProvider(),
+        latestExchangeRateChangedEvent.get().getExpires()
+      );
+    }
+
+    if (latestSecurityEvent.isPresent()) {
+      CoreEvents.fireSecurityEvent(latestSecurityEvent.get().getSummary());
+    }
+
+  }
+
+  /**
    * @param event The "exchange rate changed" event
    */
   @Subscribe
@@ -55,6 +88,14 @@ public class ApplicationEventService {
   @Subscribe
   public void onSecurityEvent(SecurityEvent event) {
     latestSecurityEvent = Optional.of(event);
+  }
+
+  /**
+   * @param event The "Bitcoin network changed" event
+   */
+  @Subscribe
+  public void onBitcoinNetworkChangedEvent(BitcoinNetworkChangedEvent event) {
+    latestBitcoinNetworkChangedEvent = Optional.of(event);
   }
 
 }

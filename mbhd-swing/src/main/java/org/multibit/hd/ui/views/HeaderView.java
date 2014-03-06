@@ -9,7 +9,6 @@ import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
 import org.multibit.hd.ui.events.view.AlertAddedEvent;
 import org.multibit.hd.ui.events.view.BalanceChangedEvent;
-import org.multibit.hd.ui.events.view.LocaleChangedEvent;
 import org.multibit.hd.ui.events.view.ThemeChangedEvent;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.models.AlertModel;
@@ -78,6 +77,10 @@ public class HeaderView {
     contentPanel.add(balanceDisplayMaV.getView().newComponentPanel(), "growx,push,wrap");
     contentPanel.add(alertPanel, "growx,aligny top,push");
 
+    populateAlertPanel();
+
+    balanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
+
   }
 
   /**
@@ -85,20 +88,6 @@ public class HeaderView {
    */
   public JPanel getContentPanel() {
     return contentPanel;
-  }
-
-  /**
-   * <p>Handles the representation of the header when a locale change occurs</p>
-   *
-   * @param event The locale change event
-   */
-  @Subscribe
-  public void onLocaleChangedEvent(LocaleChangedEvent event) {
-
-    populateAlertPanel();
-
-    balanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
-
   }
 
   /**

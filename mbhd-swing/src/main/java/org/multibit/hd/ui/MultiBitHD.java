@@ -165,19 +165,8 @@ public class MultiBitHD {
    */
   public static void initialiseUI() {
 
-    // Create views
-    HeaderView headerView = new HeaderView();
-    SidebarView sidebarView = new SidebarView();
-    DetailView detailView = new DetailView();
-    FooterView footerView = new FooterView();
-
     // Build the main view
-    new MainView(
-      headerView.getContentPanel(),
-      sidebarView.getContentPanel(),
-      detailView.getContentPanel(),
-      footerView.getContentPanel()
-    );
+    new MainView();
 
     // Create controllers
     mainController = new MainController();

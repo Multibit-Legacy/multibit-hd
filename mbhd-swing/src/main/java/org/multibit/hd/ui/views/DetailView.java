@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views;
 
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.controller.ShowScreenEvent;
@@ -24,7 +25,7 @@ import java.util.Map;
  * @since 0.0.1
  *         
  */
-public class DetailView {
+public class DetailView  {
 
   private final JPanel contentPanel;
 
@@ -40,36 +41,44 @@ public class DetailView {
 
     contentPanel = Panels.newPanel();
 
-    // Apply theme
-    contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
+    // Initialise the rest in the background
+    SafeExecutors.newFixedThreadPool(1).execute(new Runnable() {
+      @Override
+      public void run() {
 
-    // Apply opacity
-    contentPanel.setOpaque(true);
+        // Apply theme
+        contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
-    for (Screen screen: Screen.values()) {
+        // Apply opacity
+        contentPanel.setOpaque(true);
 
-      AbstractScreenView view = Screens.newScreen(screen);
+        for (Screen screen: Screen.values()) {
 
-      // Keep track of the view instances in case of a locale change
-      screenViewMap.put(screen, view);
+          AbstractScreenView view = Screens.newScreen(screen);
 
-      // Add their panels to the overall card layout
-      screenHolder.add(view.newScreenViewPanel(), screen.name());
+          // Keep track of the view instances in case of a locale change
+          screenViewMap.put(screen, view);
 
-    }
+          // Add their panels to the overall card layout
+          screenHolder.add(view.newScreenViewPanel(), screen.name());
 
-    // Once all the views are initialised allow events to occur
-    for (Map.Entry<Screen, AbstractScreenView> entry : screenViewMap.entrySet()) {
+        }
 
-      // Ensure the screen is in the correct starting state
-      entry.getValue().fireInitialStateViewEvents();
+        // Once all the views are initialised allow events to occur
+        for (Map.Entry<Screen, AbstractScreenView> entry : screenViewMap.entrySet()) {
 
-    }
+          // Ensure the screen is in the correct starting state
+          entry.getValue().fireInitialStateViewEvents();
 
-    // Add the screen holder to the overall content panel
-    contentPanel.add(screenHolder, "grow");
+        }
 
-    ControllerEvents.fireShowDetailScreenEvent(Screen.WALLET);
+        // Add the screen holder to the overall content panel
+        contentPanel.add(screenHolder, "grow");
+
+        ControllerEvents.fireShowDetailScreenEvent(Screen.WALLET);
+      }
+
+    });
 
   }
 
