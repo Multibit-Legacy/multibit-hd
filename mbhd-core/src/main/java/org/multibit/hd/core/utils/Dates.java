@@ -33,7 +33,7 @@ public class Dates {
   /**
    * Produces "Sat, 01 Jan 2000 23:59:59 GMT"
    */
-  private static final DateTimeFormatter httpDateFormatter = DateTimeFormat
+  private static final DateTimeFormatter utcHttpDateFormatter = DateTimeFormat
     .forPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'")
     .withLocale(Locale.US) // For common language
     .withZone(DateTimeZone.UTC); // For GMT
@@ -41,12 +41,12 @@ public class Dates {
   /**
    * Produces "01 Jan 2000" for simplified unambiguous user date as defined in RFC1123 (SMTP)
    */
-  private static final DateTimeFormatter smtpDateFormatter = DateTimeFormat.forPattern("dd MMM yyyy");
+  private static final DateTimeFormatter utcSmtpDateFormatter = DateTimeFormat.forPattern("dd MMM yyyy").withZoneUTC();
 
   /**
    * Produces Saturday, January 01 (no year component since this is for nearby dates)
    */
-  private static final DateTimeFormatter deliveryDateFormatter = DateTimeFormat.forPattern("EEEE, MMMM dd");
+  private static final DateTimeFormatter utcDeliveryDateFormatter = DateTimeFormat.forPattern("EEEE, MMMM dd").withZoneUTC();
 
   /**
    * Parses ISO8601 in UTC without milliseconds (e.g. "yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
@@ -57,7 +57,7 @@ public class Dates {
    * @return The current midnight in UTC
    */
   public static DateTime midnightUtc() {
-    return DateTime.now(DateTimeZone.UTC).toDateMidnight().toDateTime();
+    return nowUtc().toDateMidnight().toDateTime();
   }
 
   /**
@@ -96,7 +96,7 @@ public class Dates {
     if (when == null) {
       return "";
     }
-    return ISODateTimeFormat.basicDate().print(when);
+    return ISODateTimeFormat.basicDate().withZoneUTC().print(when);
   }
 
   /**
@@ -109,7 +109,7 @@ public class Dates {
     if (when == null) {
       return "";
     }
-    return ISODateTimeFormat.basicDate().withLocale(locale).print(when);
+    return ISODateTimeFormat.basicDate().withZoneUTC().withLocale(locale).print(when);
   }
 
   /**
@@ -121,7 +121,7 @@ public class Dates {
     if (when == null) {
       return "";
     }
-    return deliveryDateFormatter.print(when);
+    return utcDeliveryDateFormatter.print(when);
   }
 
   /**
@@ -134,7 +134,7 @@ public class Dates {
     if (when == null) {
       return "";
     }
-    return deliveryDateFormatter.withLocale(locale).print(when);
+    return utcDeliveryDateFormatter.withLocale(locale).print(when);
   }
 
   /**
@@ -146,7 +146,7 @@ public class Dates {
     if (when == null) {
       return "";
     }
-    return smtpDateFormatter.print(when);
+    return utcSmtpDateFormatter.print(when);
   }
 
   /**
@@ -159,7 +159,7 @@ public class Dates {
     if (when == null) {
       return "";
     }
-    return smtpDateFormatter.withLocale(locale).print(when);
+    return utcSmtpDateFormatter.withLocale(locale).print(when);
   }
 
   /**
@@ -171,7 +171,7 @@ public class Dates {
     if (when == null) {
       return "";
     }
-    return httpDateFormatter.print(when);
+    return utcHttpDateFormatter.print(when);
   }
 
   /**
@@ -218,7 +218,7 @@ public class Dates {
    * @throws IllegalArgumentException If the text cannot be parsed
    */
   public static DateTime parseSmtpUtc(String text) {
-    return smtpDateFormatter.withZoneUTC().parseDateTime(text);
+    return utcSmtpDateFormatter.parseDateTime(text);
   }
 
   /**
@@ -230,7 +230,7 @@ public class Dates {
    * @throws IllegalArgumentException If the text cannot be parsed
    */
   public static DateTime parseSmtpUtc(String text, Locale locale) {
-    return smtpDateFormatter.withLocale(locale).parseDateTime(text);
+    return utcSmtpDateFormatter.withLocale(locale).parseDateTime(text);
   }
 
   /**
