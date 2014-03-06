@@ -14,8 +14,9 @@ import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.WalletDetailChangedEvent;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.models.AlertModel;
-import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.components.Tables;
+import org.multibit.hd.ui.views.components.*;
+import org.multibit.hd.ui.views.components.enter_search.EnterSearchModel;
+import org.multibit.hd.ui.views.components.enter_search.EnterSearchView;
 import org.multibit.hd.ui.views.components.tables.PaymentTableModel;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
@@ -23,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.util.List;
 
 /**
@@ -39,6 +41,9 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
   private static final Logger log = LoggerFactory.getLogger(PaymentsScreenView.class);
 
   private JTable paymentsTable;
+
+   // View components
+  private ModelAndView<EnterSearchModel, EnterSearchView> enterSearchMaV;
 
   /**
    * @param panelModel The model backing this panel view
@@ -64,12 +69,20 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
 
     MigLayout layout = new MigLayout(
       Panels.migLayout("fill,insets 10 5 0 0"),
-      "[]", // Column constraints
+      "[][][][][]push[]", // Column constraints
       "[]" // Row constraints
     );
 
     // Create view components
     JPanel contentPanel = Panels.newPanel(layout);
+
+      // Create view components
+    enterSearchMaV = Components.newEnterSearchMaV(getScreen().name());
+
+    JButton detailsButton = Buttons.newDetailsButton(getDetailsAction());
+    JButton deleteRequestButton = Buttons.newDeletePaymentRequestButton(getDeletePaymentRequestAction());
+    JButton undoButton = Buttons.newUndoButton(getUndoAction());
+    JButton exportButton = Buttons.newExportButton(getExportAction());
 
     List<PaymentData> paymentDatas;
     if (MultiBitHD.getWalletService() == null) {
@@ -83,8 +96,15 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     JScrollPane scrollPane = new JScrollPane(paymentsTable);
     scrollPane.setViewportBorder(null);
 
-    // Add to the panel
-    contentPanel.add(scrollPane, "grow");
+    // Add to the panelontact
+    contentPanel.add(enterSearchMaV.getView().newComponentPanel(), "span 6,growx,push,wrap");
+    contentPanel.add(detailsButton, "shrink");
+    contentPanel.add(exportButton, "shrink");
+    contentPanel.add(deleteRequestButton, "shrink");
+    contentPanel.add(undoButton, "shrink");
+    contentPanel.add(Labels.newBlankLabel(), "growx,push,wrap"); // Empty label to pack buttons
+
+    contentPanel.add(scrollPane, "span 6, grow");
 
     return contentPanel;
   }
@@ -149,4 +169,70 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
       });
     }
   }
+
+  /**
+    * @return The show transaction details action
+    */
+   private Action getDetailsAction() {
+
+     return new AbstractAction() {
+       @Override
+       public void actionPerformed(ActionEvent e) {
+
+         int selectedRow = paymentsTable.getSelectedRow();
+         log.debug("getDetailsAction : selectedRow = " + selectedRow);
+
+         // Ensure we have at least one contact to work with
+//         if (!historyEntries.isEmpty()) {
+//
+//             // Fire up a wizard in single mode
+//             Panels.showLightBox(Wizards.newEditHistoryWizard(historyEntries, EnterHistoryDetailsMode.EDIT_SINGLE).getWizardPanel());
+//
+//         }
+
+       }
+     };
+   }
+
+  /**
+     * @return The export transaction details action
+     */
+    private Action getExportAction() {
+
+      return new AbstractAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          int selectedRow = paymentsTable.getSelectedRow();
+          log.debug("getExportAction : selectedRow = " + selectedRow);
+        }
+      };
+    }
+
+  /**
+     * @return The undo details action
+     */
+    private Action getUndoAction() {
+
+      return new AbstractAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          int selectedRow = paymentsTable.getSelectedRow();
+          log.debug("getUndoAction : selectedRow = " + selectedRow);
+        }
+      };
+    }
+
+   /**
+     * @return The delete payment request  action
+     */
+    private Action getDeletePaymentRequestAction() {
+
+      return new AbstractAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          int selectedRow = paymentsTable.getSelectedRow();
+          log.debug("getExportAction : selectedRow = " + selectedRow);
+        }
+      };
+    }
 }
