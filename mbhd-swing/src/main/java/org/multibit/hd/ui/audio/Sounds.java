@@ -47,6 +47,8 @@ public class Sounds {
    */
   public static void playBeep() {
 
+    // TODO Check with configuration if this is desired
+
     Toolkit.getDefaultToolkit().beep();
   }
 
@@ -54,6 +56,8 @@ public class Sounds {
    * Plays the "receive bitcoin" sound in a new thread
    */
   public static void playReceiveBitcoin() {
+
+    // TODO Check with configuration if this is desired
 
     ExecutorService executorService = SafeExecutors.newSingleThreadExecutor();
 
@@ -70,6 +74,8 @@ public class Sounds {
    * @param name The name of the sound file (no extension)
    */
   private static void play(String name) {
+
+    // TODO Check with configuration if this is desired
 
     Preconditions.checkState(allSounds.containsKey(name), "'" + name + "' must be present (did you initialise?)");
 

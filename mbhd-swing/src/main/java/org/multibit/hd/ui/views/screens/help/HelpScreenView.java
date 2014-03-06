@@ -2,14 +2,20 @@ package org.multibit.hd.ui.views.screens.help;
 
 import com.google.common.collect.Lists;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.ui.audio.Sounds;
+import org.multibit.hd.ui.events.controller.ControllerEvents;
+import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.models.Models;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.themes.Themes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
@@ -35,6 +41,8 @@ import java.util.LinkedList;
  *  
  */
 public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
+
+  private static final Logger log = LoggerFactory.getLogger(HelpScreenView.class);
 
   private static final String HELP_BASE_URL = "http://www.multibit.org/v0.5/";
 
@@ -167,8 +175,6 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
         if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 
-          System.out.println(e.getURL().toString());
-
           URL url = e.getURL();
 
           boolean isMultiBit = url.toString().startsWith("/") || url.toString().startsWith(HELP_BASE_URL);
@@ -195,14 +201,25 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
     return editorPane;
   }
 
+  /**
+   * <p>Point the editor pane to the given URL for rendering</p>
+   *
+   * @param url The URL to render
+   */
   private void browse(URL url) {
+
     try {
 
       editorPane.setPage(url);
       launchBrowserButton.setBackground(Themes.currentTheme.buttonBackground());
 
     } catch (IOException e) {
-      e.printStackTrace();
+      // Log the error and report a failure to the user via the alerts
+      log.error(e.getMessage(), e);
+      ControllerEvents.fireAddAlertEvent(Models.newAlertModel(
+        Languages.safeText(MessageKey.NETWORK_CONFIGURATION_ERROR),
+        RAGStatus.AMBER
+      ));
     }
   }
 

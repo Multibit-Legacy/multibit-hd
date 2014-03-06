@@ -34,7 +34,7 @@ public class DatesTest {
   @Test
   public void testMidnightUtc() {
 
-    DateTimeUtils.setCurrentMillisFixed(new DateTime(2000, 1, 2, 3, 4, 5, 6).getMillis());
+    DateTimeUtils.setCurrentMillisFixed(new DateTime(2000, 1, 2, 3, 4, 5, 6, DateTimeZone.UTC).getMillis());
 
     assertThat(Dates.formatISO8601(Dates.midnightUtc())).isEqualTo("2000-01-02T00:00:00Z");
   }
@@ -116,10 +116,10 @@ public class DatesTest {
   @Test
   public void testNewSeedTimestamp() {
 
-    DateTimeUtils.setCurrentMillisFixed(new DateTime(2014, 1, 27, 0, 0, 0, 0).getMillis());
+    DateTimeUtils.setCurrentMillisFixed(new DateTime(2014, 1, 27, 0, 0, 0, 0, DateTimeZone.UTC).getMillis());
     assertThat(Dates.newSeedTimestamp()).isEqualTo("1850/07");
 
-    DateTimeUtils.setCurrentMillisFixed(new DateTime(2014, 1, 17, 0, 0, 0, 0).getMillis());
+    DateTimeUtils.setCurrentMillisFixed(new DateTime(2014, 1, 17, 0, 0, 0, 0, DateTimeZone.UTC).getMillis());
     assertThat(Dates.newSeedTimestamp()).isEqualTo("1840/94");
 
   }
