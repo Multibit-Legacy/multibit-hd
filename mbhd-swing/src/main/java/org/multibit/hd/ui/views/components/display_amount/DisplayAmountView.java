@@ -54,7 +54,7 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
 
     // Create the balance panel - forcing a LTR layout to ensure correct placement of labels
     panel = Panels.newPanel(new MigLayout(
-      "fillx,insets 0,hidemode 2,ltr", // Layout
+      "fillx,insets 0,hidemode 2,ltr", // Layout requires LTR
       "[]0[]5[]5[]5[]5[]", // Columns require careful padding for leading/trailing symbols
       "[]" // Rows
     ));
@@ -69,20 +69,19 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
 
     // Determine how to add them back into the panel
     if (Languages.isLeftToRight()) {
-      panel.add(leadingSymbolLabel, "left,shrink,baseline");
-      panel.add(primaryBalanceLabel, "left,shrink,baseline");
-      panel.add(secondaryBalanceLabel, "left,shrink");
-      panel.add(trailingSymbolLabel, "left,shrink");
-      panel.add(exchangeLabel, "left,shrink");
+      panel.add(leadingSymbolLabel, "shrink,baseline");
+      panel.add(primaryBalanceLabel, "shrink,baseline");
+      panel.add(secondaryBalanceLabel, "shrink");
+      panel.add(trailingSymbolLabel, "shrink");
+      panel.add(exchangeLabel, "shrink");
       panel.add(Labels.newBlankLabel(), "push,wrap"); // Provides a flexible column
     } else {
-
-      panel.add(exchangeLabel, "right,shrink");
-      panel.add(leadingSymbolLabel, "right,shrink");
-      panel.add(primaryBalanceLabel, "right,shrink,baseline");
-      panel.add(secondaryBalanceLabel, "right,shrink");
-      panel.add(trailingSymbolLabel, "right,shrink");
-      panel.add(Labels.newBlankLabel(), "push,wrap"); // Provides a flexible column
+      panel.add(Labels.newBlankLabel(), "push"); // Provides a flexible column
+      panel.add(exchangeLabel, "shrink");
+      panel.add(leadingSymbolLabel, "shrink");
+      panel.add(primaryBalanceLabel, "shrink,baseline");
+      panel.add(secondaryBalanceLabel, "shrink");
+      panel.add(trailingSymbolLabel, "shrink,wrap");
     }
 
     return panel;

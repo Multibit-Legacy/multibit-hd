@@ -5,6 +5,7 @@ import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
@@ -69,21 +70,27 @@ public class LabelDecorator {
       leadingText = leadingText + " ";
     }
 
+    int horizontalTextPosition = Languages.isLeftToRight() ? SwingConstants.LEADING : SwingConstants.TRAILING;
+
+    // Due to NIST standards for SI units the text always leads the icon (RTL is ignored)
     switch (symbol) {
       case ICON:
         label.setText(leadingText);
         label.setIconTextGap(0);
         AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, label, false, fontSize);
+        label.setHorizontalTextPosition(horizontalTextPosition);
         break;
       case MICON:
-        label.setText(leadingText + "m");
+        label.setText(leadingText + symbol.getSymbol());
         label.setIconTextGap(-2);
         AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, label, false, fontSize);
+        label.setHorizontalTextPosition(horizontalTextPosition);
         break;
       case UICON:
-        label.setText(leadingText + "\u00B5");
+        label.setText(leadingText + symbol.getSymbol());
         label.setIconTextGap(-2);
         AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, label, false, fontSize);
+        label.setHorizontalTextPosition(horizontalTextPosition);
         break;
       default:
         label.setText(symbol.getSymbol());

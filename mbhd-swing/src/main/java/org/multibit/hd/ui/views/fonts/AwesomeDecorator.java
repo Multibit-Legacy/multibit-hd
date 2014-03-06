@@ -17,7 +17,7 @@ import java.io.InputStream;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class AwesomeDecorator {
 
@@ -118,15 +118,16 @@ public class AwesomeDecorator {
   public static void applyIcon(AwesomeIcon icon, JButton button, boolean leading, int size) {
     applyIcon(icon, button, leading, JLabel.CENTER, size);
   }
+
   /**
    * <p>Apply an icon to a button. Both icon states (enabled/disabled) will be added.</p>
    * <p>The icon will use the font and color from the button, but <strong>will not</strong> reflect any subsequent updates.</p>
    *
-   * @param icon    The icon reference
-   * @param button  The button
-   * @param leading True if the icon comes before the text in the reading direction (LTR and RTL is handled automatically)
+   * @param icon              The icon reference
+   * @param button            The button
+   * @param leading           True if the icon comes before the text in the reading direction (LTR and RTL is handled automatically)
    * @param verticalAlignment One of JLabel.TOP, JLabel.CENTER, JLabel.BOTTOM The position of the text relative to the icon
-   * @param size    The icon size (font metrics)
+   * @param size              The icon size (font metrics)
    */
 
   public static void applyIcon(AwesomeIcon icon, JButton button, boolean leading, int verticalAlignment, int size) {

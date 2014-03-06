@@ -9,6 +9,12 @@ import java.math.BigDecimal;
  * <ul>
  * <li>Various Bitcoin symbols</li>
  * </ul>
+ * <h3>A note on internationalisation</h3>
+ * <p>According to the <a href="http://physics.nist.gov/Pubs/SP811/sec07.html">NIST guidelines</a>, quantities expressed in SI units should be
+ * represented in a left-to-right manner using English prefixes (e.g. "m", "\u00B5") and standard Arabic numerals (0,1,2,3...). This is because
+ * the combination of an SI prefix and a quantity is treated as a mathematical entity that is not subject to translation or localisation. The
+ * usual treatment of currency representation is then applied so that local grouping and decimal separators and/or leading/trailing currency symbols
+ * can be shown.</p>
  *
  * @since 0.0.1
  *  
@@ -26,7 +32,7 @@ public enum BitcoinSymbol {
   /**
    * The Font Awesome icon with micro
    */
-  UICON("\u0085", new BigDecimal(1_000_000), 2),
+  UICON("\u00b5", new BigDecimal(1_000_000), 2),
   /**
    * The current de facto standard but may be superseded (cannot be an ISO standard)
    */
@@ -38,7 +44,7 @@ public enum BitcoinSymbol {
   /**
    * A micro in the current de facto standard
    */
-  UBTC("\u00B5BTC", new BigDecimal(1_000_000), 2),
+  UBTC("\u00b5BTC", new BigDecimal(1_000_000), 2),
   /**
    * The only possible ISO standard name
    */
@@ -50,7 +56,7 @@ public enum BitcoinSymbol {
   /**
    * A micro in the only possible ISO standard name
    */
-  UXBT("\u00B5XBT", new BigDecimal(1_000_000), 2),
+  UXBT("\u00b5XBT", new BigDecimal(1_000_000), 2),
   /**
    * Subject of much debate (see <a href="http://www.reddit.com/r/Bitcoin/comments/1rmto3/its_bits/">this Reddit article</a>)
    * However, a "bit" is already used for measuring data transmission and reusing it here would be confusing
