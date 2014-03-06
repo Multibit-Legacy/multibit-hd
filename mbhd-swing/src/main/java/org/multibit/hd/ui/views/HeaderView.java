@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
 import org.multibit.hd.ui.events.view.AlertAddedEvent;
@@ -154,10 +155,12 @@ public class HeaderView {
 
     switch (alertModel.getSeverity()) {
       case RED:
+        Sounds.playBeep();
         PanelDecorator.applyDangerTheme(alertPanel);
         NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), alertButton);
         break;
       case AMBER:
+        Sounds.playBeep();
         PanelDecorator.applyWarningTheme(alertPanel);
         NimbusDecorator.applyThemeColor(Themes.currentTheme.warningAlertBackground(), alertButton);
         break;
