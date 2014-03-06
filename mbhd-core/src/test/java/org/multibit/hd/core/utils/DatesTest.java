@@ -3,6 +3,7 @@ package org.multibit.hd.core.utils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,7 +16,18 @@ public class DatesTest {
   @Before
   public void setUp() throws Exception {
 
+    // We work in the UK locale for consistency
     Locale.setDefault(Locale.UK);
+    DateTimeUtils.setCurrentMillisFixed(new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeZone.UTC).getMillis());
+
+  }
+
+  @After
+  public void tearDown() throws Exception {
+
+    // Ensure any changes are returned to UK locale
+    Locale.setDefault(Locale.UK);
+    DateTimeUtils.setCurrentMillisSystem();
 
   }
 
@@ -30,15 +42,11 @@ public class DatesTest {
   @Test
   public void testFormatDelivery_DefaultLocale() {
 
-    DateTimeUtils.setCurrentMillisFixed(new DateTime(2000, 1, 1, 0, 0, 0, 0).getMillis());
-
     assertThat(Dates.formatDeliveryDate(Dates.nowUtc())).isEqualTo("Saturday, January 01");
   }
 
   @Test
   public void testFormatDelivery_FrenchLocale() {
-
-    DateTimeUtils.setCurrentMillisFixed(new DateTime(2000, 1, 1, 0, 0, 0, 0).getMillis());
 
     assertThat(Dates.formatDeliveryDate(Dates.nowUtc(), Locale.FRANCE)).isEqualTo("samedi, janvier 01");
   }
@@ -46,15 +54,11 @@ public class DatesTest {
   @Test
   public void testFormatDelivery_ThaiLocale() {
 
-    DateTimeUtils.setCurrentMillisFixed(new DateTime(2000, 1, 1, 0, 0, 0, 0).getMillis());
-
     assertThat(Dates.formatDeliveryDate(Dates.nowUtc(), new Locale("th", "TH", "TH"))).isEqualTo("วันเสาร์, มกราคม 01");
   }
 
   @Test
   public void testFormatSmtp_DefaultLocale() {
-
-    DateTimeUtils.setCurrentMillisFixed(new DateTime(2000, 1, 1, 0, 0, 0, 0).getMillis());
 
     assertThat(Dates.formatSmtpDate(Dates.nowUtc())).isEqualTo("01 Jan 2000");
   }
@@ -62,15 +66,11 @@ public class DatesTest {
   @Test
   public void testFormatSmtp_FrenchLocale() {
 
-    DateTimeUtils.setCurrentMillisFixed(new DateTime(2000, 1, 1, 0, 0, 0, 0).getMillis());
-
     assertThat(Dates.formatSmtpDate(Dates.nowUtc(), Locale.FRANCE)).isEqualTo("01 janv. 2000");
   }
 
   @Test
   public void testFormatSmtp_ThaiLocale() {
-
-    DateTimeUtils.setCurrentMillisFixed(new DateTime(2000, 1, 1, 0, 0, 0, 0).getMillis());
 
     assertThat(Dates.formatSmtpDate(Dates.nowUtc(), new Locale("th", "TH", "TH"))).isEqualTo("01 ม.ค. 2000");
   }
@@ -100,6 +100,7 @@ public class DatesTest {
   @Test
   public void testParseSmtpUtc_FrenchLocale() {
 
+    // Failed
     DateTime instant = Dates.parseSmtpUtc("01 janv. 2000", Locale.FRANCE).withZone(DateTimeZone.UTC);
     assertThat(Dates.formatISO8601(instant)).isEqualTo("2000-01-01T00:00:00Z");
 
@@ -108,6 +109,7 @@ public class DatesTest {
   @Test
   public void testParseSmtpUtc_ThaiLocale() {
 
+    // Failed
     DateTime instant = Dates.parseSmtpUtc("01 ม.ค. 2000", new Locale("th", "TH", "TH")).withZone(DateTimeZone.UTC);
     assertThat(Dates.formatISO8601(instant)).isEqualTo("2000-01-01T00:00:00Z");
 
@@ -116,6 +118,7 @@ public class DatesTest {
   @Test
   public void testNewSeedTimestamp() {
 
+    // Failed
     DateTimeUtils.setCurrentMillisFixed(new DateTime(2014, 1, 27, 0, 0, 0, 0).getMillis());
     assertThat(Dates.newSeedTimestamp()).isEqualTo("1850/07");
 
