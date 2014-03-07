@@ -5,10 +5,14 @@ import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.dto.PaymentData;
+import org.multibit.hd.core.dto.PaymentType;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.i18n.Languages;
 import org.multibit.hd.ui.views.components.renderers.AmountBTCTableHeaderRenderer;
-import org.multibit.hd.ui.views.components.tables.*;
+import org.multibit.hd.ui.views.components.tables.ContactTableModel;
+import org.multibit.hd.ui.views.components.tables.HistoryTableModel;
+import org.multibit.hd.ui.views.components.tables.PaymentTableModel;
+import org.multibit.hd.ui.views.components.tables.StripedTable;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
@@ -16,6 +20,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.List;
 
@@ -142,8 +147,17 @@ public class Tables {
     sortKeys.add(new TableRowSorter.SortKey(PaymentTableModel.DATE_COLUMN_INDEX, SortOrder.DESCENDING));
     rowSorter.setSortKeys(sortKeys);
 
+    // Comparator for date
     Comparator<DateTime> comparator = newDateTimeComparator();
     rowSorter.setComparator(PaymentTableModel.DATE_COLUMN_INDEX, comparator);
+
+    // Comparator for amount BTC
+    Comparator<BigInteger> comparatorBigInteger = newBigIntegerComparator();
+    rowSorter.setComparator(PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX, comparatorBigInteger);
+
+   // Comparator for payment type
+    Comparator<PaymentType> comparatorPaymentType = newPaymentTypeComparator();
+    rowSorter.setComparator(PaymentTableModel.TYPE_COLUMN_INDEX, comparatorPaymentType);
 
     justifyColumnHeaders(table);
 
@@ -205,7 +219,6 @@ public class Tables {
   }
 
   /**
-   *
    * @return A new DateTime comparator for use with a TableRowSorter
    */
   private static Comparator<DateTime> newDateTimeComparator() {
@@ -224,6 +237,46 @@ public class Tables {
       }
     };
   }
+
+  /**
+    * @return A new BigInteger comparator for use with a TableRowSorter
+    */
+   private static Comparator<BigInteger> newBigIntegerComparator() {
+
+     return new Comparator<BigInteger>() {
+
+       @Override
+       public int compare(BigInteger o1, BigInteger o2) {
+
+         if (o1 != null && o2 == null) {
+           return 1;
+         }
+
+         return o1 != null ? o1.compareTo(o2) : 0;
+
+       }
+     };
+   }
+
+  /**
+    * @return A new PaymentType comparator for use with a TableRowSorter
+    */
+   private static Comparator<PaymentType> newPaymentTypeComparator() {
+
+     return new Comparator<PaymentType>() {
+
+       @Override
+       public int compare(PaymentType o1, PaymentType o2) {
+
+         if (o1 != null && o2 == null) {
+           return 1;
+         }
+
+         return o1 != null ? o1.compareTo(o2) : 0;
+
+       }
+     };
+   }
 
   private static void justifyColumnHeaders(JTable table) {
 

@@ -9,6 +9,11 @@ package org.multibit.hd.core.dto;
  *  
  */
 public enum PaymentType {
+  /**
+   * The payment has been requested, using the 'Request bitcoin' screen but no transaction to that address
+   * has been received.
+   */
+  REQUESTED,
 
   /**
    * The transaction is currently being received to the wallet i.e. zero confirmation
@@ -28,13 +33,7 @@ public enum PaymentType {
   /**
    * The transaction has been sent i.e. at least one confirmation
    */
-  SENT,
-
-  /**
-   * The payment has been requested, using the 'Request bitcoin' screen but no transaction to that address
-   * has been received.
-   */
-  REQUESTED
+  SENT
 
   // End of enum
   ;
