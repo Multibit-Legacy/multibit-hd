@@ -237,7 +237,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
           PaymentData paymentData = ((PaymentTableModel)paymentsTable.getModel()).getPaymentData().get(selectedModelRow);
 
           if (paymentData instanceof PaymentRequestData) {
-            // we can delete this
+            // We can delete this
             MultiBitHD.getWalletService().deletePaymentRequest((PaymentRequestData)paymentData);
             update();
           }

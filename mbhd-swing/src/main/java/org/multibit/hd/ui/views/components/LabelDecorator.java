@@ -93,7 +93,7 @@ public class LabelDecorator {
         label.setHorizontalTextPosition(horizontalTextPosition);
         break;
       default:
-        label.setText(symbol.getSymbol());
+        label.setText(leadingText + symbol.getSymbol());
         AwesomeDecorator.removeIcon(label);
     }
 
