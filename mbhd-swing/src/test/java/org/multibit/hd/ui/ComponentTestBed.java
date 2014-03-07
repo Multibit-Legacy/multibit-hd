@@ -97,7 +97,7 @@ public class ComponentTestBed {
     AbstractWizard wizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE);
     wizard.show(WelcomeWizardState.WELCOME_SELECT_LANGUAGE.name());
 
-    return wizard.getWizardPanel();
+    return wizard.getWizardScreenHolder();
 
   }
   /**

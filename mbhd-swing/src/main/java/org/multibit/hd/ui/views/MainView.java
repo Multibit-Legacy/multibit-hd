@@ -37,8 +37,9 @@ public class MainView extends JFrame {
   private DetailView detailView;
   private FooterView footerView;
 
-  // Need to track if the welcome wizard was showing before a refresh occurred
+  // Need to track if a wizard was showing before a refresh occurred
   private boolean showExitingWelcomeWizard = false;
+  private boolean showExitingPasswordWizard = false;
 
   public MainView() {
 
@@ -87,17 +88,23 @@ public class MainView extends JFrame {
     getContentPane().removeAll();
     getContentPane().add(createMainContent());
 
-    // Tidy up and show
-    pack();
-    setVisible(true);
-
     // Catch up on recent events
     CoreServices.getApplicationEventService().repeatLatestEvents();
 
+    Panels.hideLightBox();
+
     // Check for any wizards that were showing before the refresh occurred
     if (showExitingWelcomeWizard) {
-      Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardPanel());
+      Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardScreenHolder());
     }
+    if (showExitingPasswordWizard) {
+      // Force an exit if the user can't get through
+      Panels.showLightBox(Wizards.newExitingPasswordWizard().getWizardScreenHolder());
+    }
+
+    // Tidy up and show
+    pack();
+    setVisible(true);
 
   }
 
@@ -178,10 +185,20 @@ public class MainView extends JFrame {
 
   }
 
+  /**
+   * @param show True if the exiting password wizard should be shown during the next refresh
+   */
+  public void setShowExitingPasswordWizard(boolean show) {
+
+    showExitingPasswordWizard = show;
+
+  }
+
   @Subscribe
   public void onWizardHideEvent(WizardHideEvent event) {
 
     showExitingWelcomeWizard = false;
+    showExitingPasswordWizard = false;
 
   }
 

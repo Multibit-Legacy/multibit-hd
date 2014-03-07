@@ -38,14 +38,19 @@ public abstract class AbstractWizardPanelView<M extends WizardModel, P> {
   private final M wizardModel;
 
   /**
+   * The panel name to identify this panel and filter events
+   */
+  private final String panelName;
+
+  /**
    * The optional panel model (some panels are read only views)
    */
   private Optional<P> panelModel;
 
   /**
-   * The outer wizard panel (title, buttons) containing the current wizard panel
+   * The wizard screen panel (title, contents, buttons)
    */
-  private JPanel wizardPanel;
+  private JPanel wizardScreenPanel;
 
   /**
    * The content panel with the specific components for data entry/review
@@ -53,9 +58,9 @@ public abstract class AbstractWizardPanelView<M extends WizardModel, P> {
   private JPanel contentPanel;
 
   /**
-   * True if the components making up this screen have been populated
+   * True if the contents making up this screen have been populated
    */
-  private boolean initialised;
+  private boolean initialised = false;
 
   // Buttons
   private Optional<JButton> exitButton = Optional.absent();
@@ -65,11 +70,6 @@ public abstract class AbstractWizardPanelView<M extends WizardModel, P> {
   private Optional<JButton> restoreButton = Optional.absent();
   private Optional<JButton> finishButton = Optional.absent();
   private Optional<JButton> applyButton = Optional.absent();
-
-  /**
-   * The panel name to identify this panel and filter events
-   */
-  private final String panelName;
 
   /**
    * @param wizard         The wizard
@@ -88,21 +88,24 @@ public abstract class AbstractWizardPanelView<M extends WizardModel, P> {
     // All wizard views can receive events
     CoreServices.uiEventBus.register(this);
 
-    // All wizard panels are decorated with the same theme and layout at creation
-    // so just need a simple panel to begin with
-    wizardPanel = Panels.newRoundedPanel();
+    // All wizard screen panels are decorated with the same theme and
+    // layout at creation so just need a simple panel to begin with
+    wizardScreenPanel = Panels.newRoundedPanel();
 
     // All wizard panels require a backing model
     newPanelModel();
 
     // Create a new wizard panel and apply the wizard theme
-    PanelDecorator.applyWizardTheme(wizardPanel);
+    PanelDecorator.applyWizardTheme(wizardScreenPanel);
 
     // Add the title to the wizard
-    initialiseTitle(wizardPanel, title);
+    initialiseTitle(wizardScreenPanel, title);
 
-    // Provide a basic content panel with no content (allows lazy initialisation later)
+    // Provide a basic empty content panel (allows lazy initialisation later)
     contentPanel = Panels.newDetailBackgroundPanel(backgroundIcon);
+
+    // Add it to the wizard panel as a placeholder
+    wizardScreenPanel.add(contentPanel, "span 4,grow,wrap");
 
     // Add the buttons to the wizard
     initialiseButtons(wizard);
@@ -121,12 +124,12 @@ public abstract class AbstractWizardPanelView<M extends WizardModel, P> {
   /**
    * <p>Initialise the title section of the wizard panel</p>
    *
-   * @param wizardPanel The wizard panel (title, contents, buttons)
-   * @param titleKey    The title key to add to the panel
+   * @param wizardScreenPanel The wizard screen panel (title, contents, buttons)
+   * @param titleKey          The title key to add to the panel
    */
-  protected void initialiseTitle(JPanel wizardPanel, MessageKey titleKey) {
+  protected void initialiseTitle(JPanel wizardScreenPanel, MessageKey titleKey) {
 
-    wizardPanel.add(Labels.newTitleLabel(titleKey), "span 4,shrink,wrap,aligny top");
+    wizardScreenPanel.add(Labels.newTitleLabel(titleKey), "span 4,shrink,wrap,aligny top");
 
   }
 
@@ -168,21 +171,25 @@ public abstract class AbstractWizardPanelView<M extends WizardModel, P> {
   }
 
   /**
-   * <p>Get the overall wizard panel (title, content, buttons) lazily initialising the content as necessary</p>
+   * <p>Get the overall wizard screen panel (title, content, buttons) lazily initialising the content as necessary</p>
+   *
+   * @param initialiseContent True if the wizard screen content should be initialised
    *
    * @return The wizard panel
    */
-  public JPanel getWizardPanel() {
+  public JPanel getWizardScreenPanel(boolean initialiseContent) {
 
-    if (!isInitialised()) {
+    if (initialiseContent) {
+      if (!isInitialised()) {
 
-      initialiseContent(contentPanel);
+        initialiseContent(contentPanel);
 
-      setInitialised(false);
+        setInitialised(true);
 
+      }
     }
 
-    return wizardPanel;
+    return wizardScreenPanel;
   }
 
   /**

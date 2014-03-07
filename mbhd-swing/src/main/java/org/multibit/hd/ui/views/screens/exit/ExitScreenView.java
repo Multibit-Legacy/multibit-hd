@@ -53,7 +53,7 @@ public class ExitScreenView extends AbstractScreenView<ExitScreenModel>  {
   @Override
   public boolean beforeShow() {
 
-    Panels.showLightBox(Wizards.newExitWizard().getWizardPanel());
+    Panels.showLightBox(Wizards.newExitWizard().getWizardScreenHolder());
     return true;
 
   }

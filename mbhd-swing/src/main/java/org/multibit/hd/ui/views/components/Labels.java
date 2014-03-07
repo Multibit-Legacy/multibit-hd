@@ -756,14 +756,9 @@ public class Labels {
    */
   public static JLabel newLanguageChangeNote() {
 
-    JLabel label = newNoteLabel(new MessageKey[]{
+    return newNoteLabel(new MessageKey[]{
       MessageKey.LANGUAGE_CHANGE_NOTE_1
     }, new Object[][]{});
-
-    // Allow for danger theme
-    label.setForeground(Themes.currentTheme.successAlertText());
-
-    return label;
 
   }
 
@@ -884,17 +879,6 @@ public class Labels {
     return newNoteLabel(new MessageKey[]{
       MessageKey.PASSWORD_NOTE_1,
       MessageKey.PASSWORD_NOTE_2
-    }, new Object[][]{});
-
-  }
-
-  /**
-   * @return A new "internationalisation settings" note
-   */
-  public static JLabel newI18NSettingsNote() {
-
-    return newNoteLabel(new MessageKey[]{
-      MessageKey.I18N_SETTINGS_NOTE_1
     }, new Object[][]{});
 
   }

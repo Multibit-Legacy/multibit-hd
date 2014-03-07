@@ -181,12 +181,12 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
           if (historyEntries.size() == 1) {
 
             // Fire up a wizard in single mode
-            Panels.showLightBox(Wizards.newEditHistoryWizard(historyEntries, EnterHistoryDetailsMode.EDIT_SINGLE).getWizardPanel());
+            Panels.showLightBox(Wizards.newEditHistoryWizard(historyEntries, EnterHistoryDetailsMode.EDIT_SINGLE).getWizardScreenHolder());
 
           } else {
 
             // Fire up a wizard in multi mode
-            Panels.showLightBox(Wizards.newEditHistoryWizard(historyEntries, EnterHistoryDetailsMode.EDIT_MULTIPLE).getWizardPanel());
+            Panels.showLightBox(Wizards.newEditHistoryWizard(historyEntries, EnterHistoryDetailsMode.EDIT_MULTIPLE).getWizardScreenHolder());
 
           }
 

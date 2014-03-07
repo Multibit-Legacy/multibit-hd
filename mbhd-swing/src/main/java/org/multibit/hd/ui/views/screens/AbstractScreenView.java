@@ -101,7 +101,7 @@ public abstract class AbstractScreenView<M extends ScreenModel> {
 
       currentScreenViewPanel = initialiseScreenViewPanel();
 
-      setInitialised(false);
+      setInitialised(true);
 
     }
 

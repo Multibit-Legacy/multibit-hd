@@ -57,21 +57,21 @@ public class SettingsScreenView extends AbstractScreenView<SettingsScreenModel> 
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        Panels.showLightBox(Wizards.newI18NSettingsWizard().getWizardPanel());
+        Panels.showLightBox(Wizards.newI18NSettingsWizard().getWizardScreenHolder());
       }
     };
     Action showBitcoinAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        Panels.showLightBox(Wizards.newBitcoinSettingsWizard().getWizardPanel());
+        Panels.showLightBox(Wizards.newBitcoinSettingsWizard().getWizardScreenHolder());
       }
     };
     Action showExchangeAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        Panels.showLightBox(Wizards.newExchangeSettingsWizard().getWizardPanel());
+        Panels.showLightBox(Wizards.newExchangeSettingsWizard().getWizardScreenHolder());
       }
     };
     Action showApplicationAction = new AbstractAction() {

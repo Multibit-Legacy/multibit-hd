@@ -67,7 +67,7 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        Panels.showLightBox(Wizards.newSendBitcoinWizard().getWizardPanel());
+        Panels.showLightBox(Wizards.newSendBitcoinWizard().getWizardScreenHolder());
       }
     };
 
@@ -75,7 +75,7 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        Panels.showLightBox(Wizards.newRequestBitcoinWizard().getWizardPanel());
+        Panels.showLightBox(Wizards.newRequestBitcoinWizard().getWizardScreenHolder());
       }
     };
 

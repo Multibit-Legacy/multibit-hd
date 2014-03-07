@@ -59,9 +59,6 @@ public class MainController {
     // Ensure the resource bundle is reset
     ResourceBundle.clearCache();
 
-
-    Panels.hideLightBox();
-
     // Update the frame to allow for LTR or RTL transition
     Panels.frame.setLocale(locale);
 

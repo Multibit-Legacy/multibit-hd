@@ -247,8 +247,6 @@ public enum MessageKey {
   PASSWORD_NOTE_1("password_note_1"),
   PASSWORD_NOTE_2("password_note_2"),
 
-  I18N_SETTINGS_NOTE_1("i18n_settings_note_1"),
-
   BITCOIN_SETTINGS_NOTE_1("bitcoin_settings_note_1"),
 
   EXCHANGE_SETTINGS_NOTE_1("exchange_settings_note_1"),

@@ -174,7 +174,7 @@ public class SidebarView {
       switch (detailScreen) {
         // Add special cases
         case EXIT:
-          Panels.showLightBox(Wizards.newExitWizard().getWizardPanel());
+          Panels.showLightBox(Wizards.newExitWizard().getWizardScreenHolder());
           break;
         default:
           ControllerEvents.fireShowDetailScreenEvent(nodeInfo.getDetailScreen());

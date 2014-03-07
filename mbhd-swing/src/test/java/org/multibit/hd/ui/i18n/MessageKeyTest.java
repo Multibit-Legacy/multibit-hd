@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.i18n;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.multibit.hd.core.config.Configurations;
 
@@ -28,7 +29,7 @@ public class MessageKeyTest {
 
   }
 
-  @Test
+  @Ignore
   public void testSimilar_EN() throws Exception {
 
     ResourceBundle base = Languages.currentResourceBundle();

@@ -176,7 +176,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
         contacts.add(contact);
 
         // Fire up a wizard in new mode
-        Panels.showLightBox(Wizards.newEditContactWizard(contacts, EnterContactDetailsMode.NEW).getWizardPanel());
+        Panels.showLightBox(Wizards.newEditContactWizard(contacts, EnterContactDetailsMode.NEW).getWizardScreenHolder());
 
       }
     };
@@ -200,12 +200,12 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
           if (contacts.size() == 1) {
 
             // Fire up a wizard in single mode
-            Panels.showLightBox(Wizards.newEditContactWizard(contacts, EnterContactDetailsMode.EDIT_SINGLE).getWizardPanel());
+            Panels.showLightBox(Wizards.newEditContactWizard(contacts, EnterContactDetailsMode.EDIT_SINGLE).getWizardScreenHolder());
 
           } else {
 
             // Fire up a wizard in multi mode
-            Panels.showLightBox(Wizards.newEditContactWizard(contacts, EnterContactDetailsMode.EDIT_MULTIPLE).getWizardPanel());
+            Panels.showLightBox(Wizards.newEditContactWizard(contacts, EnterContactDetailsMode.EDIT_MULTIPLE).getWizardScreenHolder());
 
           }
 

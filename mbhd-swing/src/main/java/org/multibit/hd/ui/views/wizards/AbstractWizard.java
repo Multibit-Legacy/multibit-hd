@@ -28,8 +28,14 @@ import java.util.Map;
  */
 public abstract class AbstractWizard<M extends WizardModel> {
 
+  /**
+   * The wizard screen holder card layout to which each wizard screen panel is added
+   */
   private final WizardCardLayout cardLayout = new WizardCardLayout(0, 0);
-  private final JPanel wizardPanel = Panels.newPanel(cardLayout);
+  /**
+   * Keeps all of the wizard screen panels in a card layout
+   */
+  private final JPanel wizardScreenHolder = Panels.newPanel(cardLayout);
 
   private final M wizardModel;
   protected Optional wizardParameter = Optional.absent();
@@ -53,11 +59,11 @@ public abstract class AbstractWizard<M extends WizardModel> {
     CoreServices.uiEventBus.register(this);
 
     // Bind the ESC key to a Cancel/Exit event
-    wizardPanel.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "quit");
+    wizardScreenHolder.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "quit");
     if (isExiting) {
-      wizardPanel.getActionMap().put("quit", getExitAction());
+      wizardScreenHolder.getActionMap().put("quit", getExitAction());
     } else {
-      wizardPanel.getActionMap().put("quit", getCancelAction());
+      wizardScreenHolder.getActionMap().put("quit", getCancelAction());
     }
 
     // TODO Bind the ENTER key to a Next/Finish/Apply event to speed up data entry through keyboard
@@ -75,10 +81,10 @@ public abstract class AbstractWizard<M extends WizardModel> {
 
     }
 
-    wizardPanel.setMinimumSize(new Dimension(MultiBitUI.WIZARD_MIN_WIDTH, MultiBitUI.WIZARD_MIN_HEIGHT));
-    wizardPanel.setPreferredSize(new Dimension(MultiBitUI.WIZARD_MIN_WIDTH, MultiBitUI.WIZARD_MIN_HEIGHT));
-
-    wizardPanel.setSize(new Dimension(MultiBitUI.WIZARD_MIN_WIDTH, MultiBitUI.WIZARD_MIN_HEIGHT));
+    // Ensure the wizard panel has size
+    wizardScreenHolder.setMinimumSize(new Dimension(MultiBitUI.WIZARD_MIN_WIDTH, MultiBitUI.WIZARD_MIN_HEIGHT));
+    wizardScreenHolder.setPreferredSize(new Dimension(MultiBitUI.WIZARD_MIN_WIDTH, MultiBitUI.WIZARD_MIN_HEIGHT));
+    wizardScreenHolder.setSize(new Dimension(MultiBitUI.WIZARD_MIN_WIDTH, MultiBitUI.WIZARD_MIN_HEIGHT));
 
     // Show the panel specified by the initial state
     show(wizardModel.getPanelName());
@@ -98,8 +104,8 @@ public abstract class AbstractWizard<M extends WizardModel> {
 
     if (!wizardPanelView.isInitialised()) {
 
-      // Initialise the panel and add it to the card layout parent
-      wizardPanel.add(wizardPanelView.getWizardPanel(), name);
+      // Initialise the wizard screen panel and add it to the card layout parent
+      wizardScreenHolder.add(wizardPanelView.getWizardScreenPanel(true), name);
 
     }
 
@@ -110,7 +116,7 @@ public abstract class AbstractWizard<M extends WizardModel> {
     if (wizardPanelView.beforeShow()) {
 
       // No abort so show
-      cardLayout.show(wizardPanel, name);
+      cardLayout.show(wizardScreenHolder, name);
 
       wizardPanelView.afterShow();
     }
@@ -154,8 +160,8 @@ public abstract class AbstractWizard<M extends WizardModel> {
   /**
    * @return The wizard panel
    */
-  public JPanel getWizardPanel() {
-    return wizardPanel;
+  public JPanel getWizardScreenHolder() {
+    return wizardScreenHolder;
   }
 
   /**

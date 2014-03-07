@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.xeiam.xchange.bitstamp.BitstampExchange;
 import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.managers.BackupManager;
@@ -170,30 +171,30 @@ public class MultiBitHD {
         new HeaderController();
         new SidebarController();
 
-        // TODO Reinstate this
+        // Check for a current wallet
+        if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
 
-//    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
-//
-//      // There is a wallet present - warm start
-//      WalletData walletData = WalletManager.INSTANCE.getCurrentWalletData().get();
-//      log.debug("The current wallet is:\nWallet id = '" + walletData.getWalletId().toString() + "\n" + walletData.getWallet().toString());
-//
-//      // Force an exit if the user can't get through
-//    mainView.showExitingPasswordWizard();
-//      Panels.showLightBox(Wizards.newExitingPasswordWizard().getWizardPanel());
-//
-//    } else {
-        // Show an exiting Welcome wizard
-        log.debug("There is no current wallet so showing the 'WelcomeWizard'");
-        mainView.setShowExitingWelcomeWizard(false);
+          // There is a wallet present - warm start
+          WalletData walletData = WalletManager.INSTANCE.getCurrentWalletData().get();
+          log.debug("The current wallet is:\nWallet id = '" + walletData.getWalletId().toString() + "\n" + walletData.getWallet().toString());
+
+          mainView.setShowExitingPasswordWizard(true);
+
+        } else {
+
+          // No wallet - cold start
+          log.debug("There is no current wallet so showing the 'WelcomeWizard'");
+          mainView.setShowExitingWelcomeWizard(true);
+
+        }
 
         mainView.refresh();
 
         overlaySecurityAlerts();
 
       }
-    });
 
+    });
   }
 
   /**
