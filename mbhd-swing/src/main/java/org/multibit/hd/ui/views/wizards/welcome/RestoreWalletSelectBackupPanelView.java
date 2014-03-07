@@ -4,8 +4,10 @@ import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.MessageKey;
-import org.multibit.hd.ui.views.components.*;
-import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
+import org.multibit.hd.ui.views.components.Components;
+import org.multibit.hd.ui.views.components.Labels;
+import org.multibit.hd.ui.views.components.ModelAndView;
+import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSummaryModel;
 import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSummaryView;
@@ -40,9 +42,7 @@ public class RestoreWalletSelectBackupPanelView extends AbstractWizardPanelView<
    */
   public RestoreWalletSelectBackupPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), panelName, MessageKey.RESTORE_WALLET_SELECT_BACKUP_TITLE);
-
-    PanelDecorator.addExitCancelPreviousNext(this, wizard);
+    super(wizard, panelName, MessageKey.RESTORE_WALLET_SELECT_BACKUP_TITLE, AwesomeIcon.BITCOIN);
 
   }
 
@@ -59,20 +59,24 @@ public class RestoreWalletSelectBackupPanelView extends AbstractWizardPanelView<
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void initialiseContent(JPanel contentPanel) {
 
-    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.BITCOIN);
-
-    panel.setLayout(new MigLayout(
+    contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[][][]", // Column constraints
       "[]10[]" // Row constraints
     ));
 
-    panel.add(Labels.newSelectBackupNote(), "wrap");
-    panel.add(selectBackupMaV.getView().newComponentPanel(), "growx,wrap");
+    contentPanel.add(Labels.newSelectBackupNote(), "wrap");
+    contentPanel.add(selectBackupMaV.getView().newComponentPanel(), "growx,wrap");
 
-    return panel;
+  }
+
+  @Override
+  protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
+
+    PanelDecorator.addExitCancelPreviousNext(this, wizard);
+
   }
 
   @Override

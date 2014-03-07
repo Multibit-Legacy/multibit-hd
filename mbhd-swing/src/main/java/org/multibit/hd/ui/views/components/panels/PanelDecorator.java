@@ -35,15 +35,11 @@ public class PanelDecorator {
   /**
    * <p>Create the standard "wizard" theme</p>
    *
-   * @param wizardPanel The wizard panel to decorate (arranged as [title][dataPanel][buttons])
-   * @param dataPanel   The data panel sandwiched into the wizard
-   * @param titleKey    The key to use for the title text
+   * @param wizardPanel The wizard panel to decorate and prepare for title, content and buttons
    */
-  public static void applyWizardTheme(JPanel wizardPanel, JPanel dataPanel, MessageKey titleKey) {
+  public static void applyWizardTheme(JPanel wizardPanel) {
 
     Preconditions.checkNotNull(wizardPanel, "'wizardPanel' must be present");
-    Preconditions.checkNotNull(dataPanel, "'dataPanel' must be present");
-    Preconditions.checkNotNull(titleKey, "'titleKey' must be present");
 
     // Standard wizard layout
     MigLayout layout = new MigLayout(
@@ -55,10 +51,6 @@ public class PanelDecorator {
 
     // Apply the theme
     wizardPanel.setBackground(Themes.currentTheme.detailPanelBackground());
-
-    // Add the wizard components
-    wizardPanel.add(Labels.newTitleLabel(titleKey), "span 4,shrink,wrap,aligny top");
-    wizardPanel.add(dataPanel, "span 4,grow,wrap");
 
   }
 

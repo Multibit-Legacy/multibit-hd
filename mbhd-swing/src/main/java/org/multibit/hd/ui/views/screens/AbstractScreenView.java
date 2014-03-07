@@ -28,9 +28,17 @@ public abstract class AbstractScreenView<M extends ScreenModel> {
 
   private final M screenModel;
 
-  private JPanel screenPanel;
-
   private final Screen screen;
+
+  /**
+   * The current screen view panel with the specific components for the view
+   */
+  private JPanel currentScreenViewPanel;
+
+  /**
+   * True if the components making up this screen have been populated
+   */
+  private boolean initialised;
 
   /**
    * @param screenModel The screen model managing the states
@@ -51,7 +59,7 @@ public abstract class AbstractScreenView<M extends ScreenModel> {
 
     // All screens are decorated with the same theme and layout at creation
     // so just need a vanilla panel to begin with
-    screenPanel = Panels.newPanel();
+    JPanel screenPanel = Panels.newPanel();
 
     // All detail panels require a backing model
     newScreenModel();
@@ -62,7 +70,7 @@ public abstract class AbstractScreenView<M extends ScreenModel> {
   }
 
   /**
-   * @return The wizard model providing aggregated state information
+   * @return The screen model providing aggregated state information
    */
   public M getScreenModel() {
     return screenModel;
@@ -78,11 +86,28 @@ public abstract class AbstractScreenView<M extends ScreenModel> {
   /**
    * <p>Called when the screen is first created to initialise the model and subsequently on a locale change event.</p>
    *
-   * <p>This is called before {@link AbstractScreenView#newScreenViewPanel()}</p>
+   * <p>This is called before {@link AbstractScreenView#initialiseScreenViewPanel()}</p>
    *
    * <p>Implementers must create a new panel model and bind it to the overall screen</p>
    */
   public abstract void newScreenModel();
+
+  /**
+   * @return The current screen view panel with lazy initialisation
+   */
+  public JPanel getScreenViewPanel() {
+
+    if (!isInitialised()) {
+
+      currentScreenViewPanel = initialiseScreenViewPanel();
+
+      setInitialised(false);
+
+    }
+
+    return currentScreenViewPanel;
+
+  }
 
   /**
    * <p>Called when the screen is first created to initialise the panel and subsequently on a locale change event.</p>
@@ -93,7 +118,7 @@ public abstract class AbstractScreenView<M extends ScreenModel> {
    *
    * @return A new panel containing the data components specific to this screen (e.g. contacts or payments)
    */
-  public abstract JPanel newScreenViewPanel();
+  protected abstract JPanel initialiseScreenViewPanel();
 
   /**
    * <p>Update the view with any required view events to create a clean initial state (all initialisation will have completed)</p>
@@ -142,6 +167,16 @@ public abstract class AbstractScreenView<M extends ScreenModel> {
 
   }
 
+  /**
+   * @return True if the implementer has configured all the components for display
+   */
+  public boolean isInitialised() {
+    return initialised;
+  }
+
+  public void setInitialised(boolean initialised) {
+    this.initialised = initialised;
+  }
 
   /**
    * <p>React to a "screen component model changed" event</p>

@@ -2,11 +2,9 @@ package org.multibit.hd.ui.views.wizards.password;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -37,11 +35,7 @@ public class PasswordReportPanelView extends AbstractWizardPanelView<PasswordWiz
    */
   public PasswordReportPanelView(AbstractWizard<PasswordWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), panelName, MessageKey.PASSWORD_REPORT_TITLE);
-
-    PanelDecorator.addExitCancelPreviousFinish(this, wizard);
-
-    CoreServices.uiEventBus.register(this);
+    super(wizard, panelName, MessageKey.PASSWORD_REPORT_TITLE, AwesomeIcon.MAGIC);
 
   }
 
@@ -60,24 +54,28 @@ public class PasswordReportPanelView extends AbstractWizardPanelView<PasswordWiz
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void initialiseContent(JPanel contentPanel) {
 
-    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.MAGIC);
-
-    panel.setLayout(new MigLayout(
+    contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[][][]", // Column constraints
       "[]10[]10[]" // Row constraints
     ));
 
     // Apply the theme
-    panel.setBackground(Themes.currentTheme.detailPanelBackground());
+    contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
     passwordRecoveryStatus = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
 
-    panel.add(passwordRecoveryStatus, "wrap");
+    contentPanel.add(passwordRecoveryStatus, "wrap");
 
-    return panel;
+  }
+
+  @Override
+  protected void initialiseButtons(AbstractWizard<PasswordWizardModel> wizard) {
+
+    PanelDecorator.addExitCancelPreviousFinish(this, wizard);
+
   }
 
   @Override

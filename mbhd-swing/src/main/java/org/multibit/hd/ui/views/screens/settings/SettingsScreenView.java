@@ -41,7 +41,7 @@ public class SettingsScreenView extends AbstractScreenView<SettingsScreenModel> 
   }
 
   @Override
-  public JPanel newScreenViewPanel() {
+  public JPanel initialiseScreenViewPanel() {
 
     CoreServices.uiEventBus.register(this);
 

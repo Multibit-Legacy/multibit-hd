@@ -11,7 +11,6 @@ import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.enter_tags.EnterTagsModel;
 import org.multibit.hd.ui.views.components.enter_tags.EnterTagsView;
-import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -54,9 +53,7 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
    */
   public EditContactEnterDetailsPanelView(AbstractWizard<EditContactWizardModel> wizard, String panelName, EnterContactDetailsMode mode) {
 
-    super(wizard.getWizardModel(), panelName, mode.getMessageKey());
-
-    PanelDecorator.addCancelApply(this, wizard);
+    super(wizard, panelName, mode.getMessageKey(), AwesomeIcon.EDIT);
 
     this.mode = mode;
   }
@@ -74,11 +71,9 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void initialiseContent(JPanel contentPanel) {
 
-    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.EDIT);
-
-    panel.setLayout(new MigLayout(
+    contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[][]", // Column constraints
       "[][][]" // Row constraints
@@ -149,38 +144,43 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
     if (!multiEdit) {
 
       // Allow unique contact fields
-      panel.add(Labels.newName());
-      panel.add(name, "grow,push,wrap");
+      contentPanel.add(Labels.newName());
+      contentPanel.add(name, "grow,push,wrap");
 
-      panel.add(Labels.newEmailAddress());
-      panel.add(emailAddress, "grow,push,wrap");
+      contentPanel.add(Labels.newEmailAddress());
+      contentPanel.add(emailAddress, "grow,push,wrap");
 
-      panel.add(Labels.newBitcoinAddress());
-      panel.add(bitcoinAddress, "grow,push,wrap");
+      contentPanel.add(Labels.newBitcoinAddress());
+      contentPanel.add(bitcoinAddress, "grow,push,wrap");
 
-      panel.add(Labels.newExtendedPublicKey());
-      panel.add(extendedPublicKey, "grow,push,wrap");
+      contentPanel.add(Labels.newExtendedPublicKey());
+      contentPanel.add(extendedPublicKey, "grow,push,wrap");
 
     }
 
     // Provide a note
     if (multiEdit) {
-      panel.add(Labels.newMultiEditNote(), "grow,push,span 2,wrap");
+      contentPanel.add(Labels.newMultiEditNote(), "grow,push,span 2,wrap");
 
       // Provide a short list of names with ellipsis
-      panel.add(Labels.newNames(), "aligny top");
-      panel.add(TextBoxes.newTruncatedList(allNames, 400), "grow,push,aligny top,wrap");
+      contentPanel.add(Labels.newNames(), "aligny top");
+      contentPanel.add(TextBoxes.newTruncatedList(allNames, 400), "grow,push,aligny top,wrap");
     }
 
     // Tags must be top aligned since it is a tall component
-    panel.add(Labels.newTags(), "aligny top");
-    panel.add(enterTagsMaV.getView().newComponentPanel(), "growx,aligny top,wrap");
+    contentPanel.add(Labels.newTags(), "aligny top");
+    contentPanel.add(enterTagsMaV.getView().newComponentPanel(), "growx,aligny top,wrap");
 
     // Ensure we shrink to avoid scrunching up if no tags are present
-    panel.add(Labels.newNotes());
-    panel.add(notes, "shrink,wrap");
+    contentPanel.add(Labels.newNotes());
+    contentPanel.add(notes, "shrink,wrap");
 
-    return panel;
+  }
+
+  @Override
+  protected void initialiseButtons(AbstractWizard<EditContactWizardModel> wizard) {
+
+    PanelDecorator.addCancelApply(this, wizard);
 
   }
 

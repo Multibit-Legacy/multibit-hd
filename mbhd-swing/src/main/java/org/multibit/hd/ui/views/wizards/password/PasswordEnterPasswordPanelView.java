@@ -18,7 +18,6 @@ import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurit
 import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertView;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordView;
-import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -48,9 +47,8 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
    */
   public PasswordEnterPasswordPanelView(AbstractWizard<PasswordWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), panelName, MessageKey.PASSWORD_TITLE);
+    super(wizard, panelName, MessageKey.PASSWORD_TITLE, AwesomeIcon.LOCK);
 
-    PanelDecorator.addExitCancelRestoreUnlock(this, wizard);
   }
 
   @Override
@@ -72,21 +70,25 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void initialiseContent(JPanel contentPanel) {
 
-    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.LOCK);
-
-    panel.setLayout(new MigLayout(
+    contentPanel.setLayout(new MigLayout(
       Panels.migXLayout(),
       "[]", // Column constraints
       "[]10[]" // Row constraints
     ));
 
-    panel.add(Labels.newPasswordNote(),"wrap");
+    contentPanel.add(Labels.newPasswordNote(), "wrap");
 
-    panel.add(enterPasswordMaV.getView().newComponentPanel(), "wrap");
+    contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "wrap");
 
-    return panel;
+  }
+
+  @Override
+  protected void initialiseButtons(AbstractWizard<PasswordWizardModel> wizard) {
+
+    PanelDecorator.addExitCancelRestoreUnlock(this, wizard);
+
   }
 
   @Override

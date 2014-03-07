@@ -16,7 +16,6 @@ import org.multibit.hd.ui.views.components.ComboBoxes;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.TextBoxes;
-import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -55,9 +54,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
    */
   public ExchangeSettingsPanelView(AbstractWizard<ExchangeSettingsWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), panelName, MessageKey.SHOW_EXCHANGE_WIZARD);
-
-    PanelDecorator.addCancelApply(this, wizard);
+    super(wizard, panelName, MessageKey.SHOW_EXCHANGE_WIZARD, AwesomeIcon.DOLLAR);
 
   }
 
@@ -76,12 +73,9 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void initialiseContent(JPanel contentPanel) {
 
-    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.DOLLAR);
-
-
-    panel.setLayout(new MigLayout(
+    contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[][][]", // Column constraints
       "[][][]" // Row constraints
@@ -112,20 +106,25 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     accessCodeLabel = Labels.newAccessCodeLabel();
     accessCodeLabel.setVisible(false);
 
-    panel.add(Labels.newExchangeSettingsNote(), "growx,push,span 3,wrap");
+    contentPanel.add(Labels.newExchangeSettingsNote(), "growx,push,span 3,wrap");
 
-    panel.add(Labels.newSelectExchangeRateProviderLabel(), "shrink");
-    panel.add(exchangeRateProviderComboBox, "growx,push,wrap");
+    contentPanel.add(Labels.newSelectExchangeRateProviderLabel(), "shrink");
+    contentPanel.add(exchangeRateProviderComboBox, "growx,push,wrap");
 
-    panel.add(Labels.newLocalCurrencyLabel(), "shrink");
-    panel.add(currencyCodeComboBox, "growx,push");
-    panel.add(exchangeErrorStatus, "grow,push,wrap");
+    contentPanel.add(Labels.newLocalCurrencyLabel(), "shrink");
+    contentPanel.add(currencyCodeComboBox, "growx,push");
+    contentPanel.add(exchangeErrorStatus, "grow,push,wrap");
 
-    panel.add(accessCodeLabel, "shrink");
-    panel.add(accessCode, "growx,push");
-    panel.add(accessCodeErrorStatus, "grow,push,wrap");
+    contentPanel.add(accessCodeLabel, "shrink");
+    contentPanel.add(accessCode, "growx,push");
+    contentPanel.add(accessCodeErrorStatus, "grow,push,wrap");
 
-    return panel;
+  }
+
+  @Override
+  protected void initialiseButtons(AbstractWizard<ExchangeSettingsWizardModel> wizard) {
+
+    PanelDecorator.addCancelApply(this, wizard);
 
   }
 

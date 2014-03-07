@@ -13,14 +13,11 @@ import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.ComboBoxes;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -38,8 +35,6 @@ import java.util.Locale;
  */
 public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> implements ActionListener {
 
-  private static final Logger log = LoggerFactory.getLogger(WelcomeSelectLanguagePanelView.class);
-
   // Model
   private String localeCode = Languages.currentLocale().getLanguage();
 
@@ -49,9 +44,7 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
    */
   public WelcomeSelectLanguagePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), panelName, MessageKey.WELCOME_TITLE);
-
-    PanelDecorator.addExitCancelNext(this, wizard);
+    super(wizard, panelName, MessageKey.WELCOME_TITLE, AwesomeIcon.GLOBE);
 
   }
 
@@ -67,11 +60,9 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void initialiseContent(JPanel contentPanel) {
 
-    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.GLOBE);
-
-    panel.setLayout(new MigLayout(
+    contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[][]", // Column constraints
       "[][]" // Row constraints
@@ -79,11 +70,17 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
 
     JComboBox<String> languagesComboBox = ComboBoxes.newLanguagesComboBox(this, Languages.currentLocale());
 
-    panel.add(Labels.newSelectLanguageLabel(), "shrink");
-    panel.add(languagesComboBox, "growx,width min:350:,push,wrap");
-    panel.add(Labels.newWelcomeNote(), "grow,push,span 2,wrap");
+    contentPanel.add(Labels.newSelectLanguageLabel(), "shrink");
+    contentPanel.add(languagesComboBox, "growx,width min:350:,push,wrap");
+    contentPanel.add(Labels.newWelcomeNote(), "grow,push,span 2,wrap");
 
-    return panel;
+  }
+
+  @Override
+  protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
+
+    PanelDecorator.addExitCancelNext(this, wizard);
+
   }
 
   @Override

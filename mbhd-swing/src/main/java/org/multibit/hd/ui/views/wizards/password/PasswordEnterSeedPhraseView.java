@@ -10,7 +10,6 @@ import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseView;
-import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -41,9 +40,7 @@ public class PasswordEnterSeedPhraseView extends AbstractWizardPanelView<Passwor
    */
   public PasswordEnterSeedPhraseView(AbstractWizard<PasswordWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), panelName, MessageKey.PASSWORD_ENTER_SEED_PHRASE_TITLE);
-
-    PanelDecorator.addExitCancelPreviousNext(this, wizard);
+    super(wizard, panelName, MessageKey.PASSWORD_ENTER_SEED_PHRASE_TITLE, AwesomeIcon.MAGIC);
 
   }
 
@@ -65,20 +62,24 @@ public class PasswordEnterSeedPhraseView extends AbstractWizardPanelView<Passwor
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void initialiseContent(JPanel contentPanel) {
 
-    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.MAGIC);
-
-    panel.setLayout(new MigLayout(
+    contentPanel.setLayout(new MigLayout(
       Panels.migLayout("fill,insets 0,hidemode 1"),
       "[]", // Column constraints
       "[][]" // Row constraints
     ));
 
-    panel.add(Labels.newRestoreFromSeedPhraseNote(), "wrap");
-    panel.add(enterSeedPhraseMaV.getView().newComponentPanel(), "wrap");
+    contentPanel.add(Labels.newRestoreFromSeedPhraseNote(), "wrap");
+    contentPanel.add(enterSeedPhraseMaV.getView().newComponentPanel(), "wrap");
 
-    return panel;
+  }
+
+  @Override
+  protected void initialiseButtons(AbstractWizard<PasswordWizardModel> wizard) {
+
+    PanelDecorator.addExitCancelPreviousNext(this, wizard);
+
   }
 
   @Override

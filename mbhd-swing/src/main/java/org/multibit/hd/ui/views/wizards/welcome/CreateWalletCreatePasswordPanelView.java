@@ -3,10 +3,12 @@ package org.multibit.hd.ui.views.wizards.welcome;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.i18n.MessageKey;
-import org.multibit.hd.ui.views.components.*;
+import org.multibit.hd.ui.views.components.Components;
+import org.multibit.hd.ui.views.components.Labels;
+import org.multibit.hd.ui.views.components.ModelAndView;
+import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordView;
-import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -34,9 +36,7 @@ public class CreateWalletCreatePasswordPanelView extends AbstractWizardPanelView
    */
   public CreateWalletCreatePasswordPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), panelName, MessageKey.CREATE_WALLET_PASSWORD_TITLE);
-
-    PanelDecorator.addExitCancelNext(this, wizard);
+    super(wizard, panelName, MessageKey.CREATE_WALLET_PASSWORD_TITLE, AwesomeIcon.KEY);
 
   }
 
@@ -51,20 +51,24 @@ public class CreateWalletCreatePasswordPanelView extends AbstractWizardPanelView
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void initialiseContent(JPanel contentPanel) {
 
-    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.KEY);
-
-    panel.setLayout(new MigLayout(
+    contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[]", // Column constraints
       "[]10[]" // Row constraints
     ));
 
-    panel.add(Labels.newWalletPasswordNote(),"wrap");
-    panel.add(confirmPasswordMaV.getView().newComponentPanel(),"wrap");
+    contentPanel.add(Labels.newWalletPasswordNote(), "wrap");
+    contentPanel.add(confirmPasswordMaV.getView().newComponentPanel(), "wrap");
 
-    return panel;
+  }
+
+  @Override
+  protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
+
+    PanelDecorator.addExitCancelNext(this, wizard);
+
   }
 
   @Override

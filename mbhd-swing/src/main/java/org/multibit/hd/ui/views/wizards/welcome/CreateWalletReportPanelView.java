@@ -11,7 +11,6 @@ import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -48,9 +47,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
    */
   public CreateWalletReportPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), panelName, MessageKey.CREATE_WALLET_REPORT_TITLE);
-
-    PanelDecorator.addFinish(this, wizard);
+    super(wizard, panelName, MessageKey.CREATE_WALLET_REPORT_TITLE, AwesomeIcon.FILE_TEXT);
 
   }
 
@@ -65,18 +62,16 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void initialiseContent(JPanel contentPanel) {
 
-    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.FILE_TEXT);
-
-    panel.setLayout(new MigLayout(
+    contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[][][]", // Column constraints
       "[]10[]10[]10[]" // Row constraints
     ));
 
     // Apply the theme
-    panel.setBackground(Themes.currentTheme.detailPanelBackground());
+    contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
     // Initialise to failure
     seedPhraseCreatedStatusLabel = Labels.newSeedPhraseCreatedStatus(false);
@@ -84,12 +79,18 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
     walletCreatedStatusLabel = Labels.newWalletCreatedStatus(false);
     backupLocationStatusLabel = Labels.newBackupLocationStatus(false);
 
-    panel.add(backupLocationStatusLabel, "wrap");
-    panel.add(seedPhraseCreatedStatusLabel, "wrap");
-    panel.add(walletPasswordCreatedStatusLabel, "wrap");
-    panel.add(walletCreatedStatusLabel, "wrap");
+    contentPanel.add(backupLocationStatusLabel, "wrap");
+    contentPanel.add(seedPhraseCreatedStatusLabel, "wrap");
+    contentPanel.add(walletPasswordCreatedStatusLabel, "wrap");
+    contentPanel.add(walletCreatedStatusLabel, "wrap");
 
-    return panel;
+  }
+
+  @Override
+  protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
+
+    PanelDecorator.addFinish(this, wizard);
+
   }
 
   @Override

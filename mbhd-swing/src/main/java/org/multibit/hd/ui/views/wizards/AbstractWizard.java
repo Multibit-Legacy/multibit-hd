@@ -3,12 +3,9 @@ package org.multibit.hd.ui.views.wizards;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
-import org.multibit.hd.ui.events.view.LocaleChangedEvent;
-import org.multibit.hd.ui.events.view.ThemeChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.layouts.WizardCardLayout;
@@ -31,8 +28,9 @@ import java.util.Map;
  */
 public abstract class AbstractWizard<M extends WizardModel> {
 
-  private final WizardCardLayout cardLayout;
-  private final JPanel wizardPanel;
+  private final WizardCardLayout cardLayout = new WizardCardLayout(0, 0);
+  private final JPanel wizardPanel = Panels.newPanel(cardLayout);
+
   private final M wizardModel;
   protected Optional wizardParameter = Optional.absent();
 
@@ -54,9 +52,6 @@ public abstract class AbstractWizard<M extends WizardModel> {
 
     CoreServices.uiEventBus.register(this);
 
-    cardLayout = new WizardCardLayout(0, 0);
-    wizardPanel = Panels.newPanel(cardLayout);
-
     // Bind the ESC key to a Cancel/Exit event
     wizardPanel.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "quit");
     if (isExiting) {
@@ -69,8 +64,16 @@ public abstract class AbstractWizard<M extends WizardModel> {
     //wizardPanel.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "next");
     //wizardPanel.getActionMap().put("next", getNextAction(null));
 
-    // Use current locale for initial creation
-    onLocaleChangedEvent(new LocaleChangedEvent());
+    // Populate based on the current locale
+    populateWizardViewMap(wizardViewMap);
+
+    // Once all the views are created allow events to occur
+    for (Map.Entry<String, AbstractWizardPanelView> entry : wizardViewMap.entrySet()) {
+
+      // Ensure the panel is in the correct starting state
+      entry.getValue().fireInitialStateViewEvents();
+
+    }
 
     wizardPanel.setMinimumSize(new Dimension(MultiBitUI.WIZARD_MIN_WIDTH, MultiBitUI.WIZARD_MIN_HEIGHT));
     wizardPanel.setPreferredSize(new Dimension(MultiBitUI.WIZARD_MIN_WIDTH, MultiBitUI.WIZARD_MIN_HEIGHT));
@@ -82,50 +85,37 @@ public abstract class AbstractWizard<M extends WizardModel> {
 
   }
 
-  @Subscribe
-  public void onLocaleChangedEvent(LocaleChangedEvent event) {
-
-    // Clear out any existing components
-    wizardPanel.removeAll();
-
-    // Clear out any existing views
-    wizardViewMap.clear();
-
-    // Re-populate based on the new locale (could involve an LTR or RTL transition)
-    populateWizardViewMap(wizardViewMap);
-
-    // Bind the views into the wizard panel, and share their panel names
-    for (Map.Entry<String, AbstractWizardPanelView> entry : wizardViewMap.entrySet()) {
-
-      // Add it to the panel
-      wizardPanel.add(entry.getValue().getWizardPanel(), entry.getKey());
-
-    }
-
-    // Once all the views are initialised allow events to occur
-    for (Map.Entry<String, AbstractWizardPanelView> entry : wizardViewMap.entrySet()) {
-
-      // Ensure the panel is in the correct starting state
-      entry.getValue().fireInitialStateViewEvents();
-
-    }
-
-    // Invalidate for new layout
-    Panels.invalidate(wizardPanel);
-
-  }
-
-  @Subscribe
-  public void onThemeChangedEvent(ThemeChangedEvent event) {
-
-    onLocaleChangedEvent(null);
-  }
-
   /**
-   * <p>Add fresh content to the wizard view map</p>
-   * <p>The map will be empty whenever this is called</p>
+   * <p>Show the named panel</p>
+   *
+   * @param name The panel name
    */
-  protected abstract void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap);
+  public void show(String name) {
+
+    Preconditions.checkState(wizardViewMap.containsKey(name), "'" + name + "' is not a valid panel name");
+
+    final AbstractWizardPanelView wizardPanelView = wizardViewMap.get(name);
+
+    if (!wizardPanelView.isInitialised()) {
+
+      // Initialise the panel and add it to the card layout parent
+      wizardPanel.add(wizardPanelView.getWizardPanel(), name);
+
+    }
+
+    // De-register any existing default buttons from previous panels
+    wizardPanelView.deregisterDefaultButton();
+
+    // Provide warning that the panel is about to be shown
+    if (wizardPanelView.beforeShow()) {
+
+      // No abort so show
+      cardLayout.show(wizardPanel, name);
+
+      wizardPanelView.afterShow();
+    }
+
+  }
 
   /**
    * <p>Hide the wizard</p>
@@ -156,29 +146,10 @@ public abstract class AbstractWizard<M extends WizardModel> {
   }
 
   /**
-   * <p>Show the named panel</p>
-   *
-   * @param name The panel name
+   * <p>Add fresh content to the wizard view map</p>
+   * <p>The map will be empty whenever this is called</p>
    */
-  public void show(String name) {
-
-    Preconditions.checkState(wizardViewMap.containsKey(name), "'" + name + "' is not a valid panel name");
-
-    final AbstractWizardPanelView wizardPanelView = wizardViewMap.get(name);
-
-    // De-register any existing default buttons from previous panels
-    wizardPanelView.deregisterDefaultButton();
-
-    // Provide warning that the panel is about to be shown
-    if (wizardPanelView.beforeShow()) {
-
-      // No abort so show
-      cardLayout.show(wizardPanel, name);
-
-      wizardPanelView.afterShow();
-    }
-
-  }
+  protected abstract void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap);
 
   /**
    * @return The wizard panel

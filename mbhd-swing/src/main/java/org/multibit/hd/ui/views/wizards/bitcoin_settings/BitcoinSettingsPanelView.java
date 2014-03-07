@@ -17,7 +17,6 @@ import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountModel;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountView;
-import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -55,9 +54,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
    */
   public BitcoinSettingsPanelView(AbstractWizard<BitcoinSettingsWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), panelName, MessageKey.SHOW_BITCOIN_WIZARD);
-
-    PanelDecorator.addCancelApply(this, wizard);
+    super(wizard, panelName, MessageKey.SHOW_BITCOIN_WIZARD, AwesomeIcon.BITCOIN);
 
   }
 
@@ -76,12 +73,9 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void initialiseContent(JPanel contentPanel) {
 
-    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.BITCOIN);
-
-
-    panel.setLayout(new MigLayout(
+    contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[][][]", // Column constraints
       "[][][][][][][][]" // Row constraints
@@ -111,29 +105,34 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
     groupingErrorStatus = Labels.newErrorStatus(false);
     groupingErrorStatus.setVisible(false);
 
-    panel.add(Labels.newBitcoinSettingsNote(), "growx,push,span 3,wrap");
+    contentPanel.add(Labels.newBitcoinSettingsNote(), "growx,push,span 3,wrap");
 
-    panel.add(Labels.newBitcoinSymbolLabel(), "shrink");
-    panel.add(bitcoinSymbolComboBox, "growx,push,wrap");
+    contentPanel.add(Labels.newBitcoinSymbolLabel(), "shrink");
+    contentPanel.add(bitcoinSymbolComboBox, "growx,push,wrap");
 
-    panel.add(Labels.newLocalSymbolLabel(), "shrink");
-    panel.add(localSymbolComboBox, "growx,push,wrap");
+    contentPanel.add(Labels.newLocalSymbolLabel(), "shrink");
+    contentPanel.add(localSymbolComboBox, "growx,push,wrap");
 
-    panel.add(Labels.newPlacementLabel(), "shrink");
-    panel.add(placementComboBox, "growx,push,wrap");
+    contentPanel.add(Labels.newPlacementLabel(), "shrink");
+    contentPanel.add(placementComboBox, "growx,push,wrap");
 
-    panel.add(Labels.newSelectGroupingLabel(), "shrink");
-    panel.add(groupingComboBox, "growx,push");
-    panel.add(groupingErrorStatus, "grow,push,wrap");
+    contentPanel.add(Labels.newSelectGroupingLabel(), "shrink");
+    contentPanel.add(groupingComboBox, "growx,push");
+    contentPanel.add(groupingErrorStatus, "grow,push,wrap");
 
-    panel.add(Labels.newSelectDecimalLabel(), "shrink");
-    panel.add(decimalComboBox, "growx,push");
-    panel.add(decimalErrorStatus, "grow,push,wrap");
+    contentPanel.add(Labels.newSelectDecimalLabel(), "shrink");
+    contentPanel.add(decimalComboBox, "growx,push");
+    contentPanel.add(decimalErrorStatus, "grow,push,wrap");
 
-    panel.add(Labels.newExampleLabel(), "shrink,wrap");
-    panel.add(displayAmountMaV.getView().newComponentPanel(), "growx,push,span 3,wrap");
+    contentPanel.add(Labels.newExampleLabel(), "shrink,wrap");
+    contentPanel.add(displayAmountMaV.getView().newComponentPanel(), "growx,push,span 3,wrap");
 
-    return panel;
+  }
+
+  @Override
+  protected void initialiseButtons(AbstractWizard<BitcoinSettingsWizardModel> wizard) {
+
+    PanelDecorator.addCancelApply(this, wizard);
 
   }
 

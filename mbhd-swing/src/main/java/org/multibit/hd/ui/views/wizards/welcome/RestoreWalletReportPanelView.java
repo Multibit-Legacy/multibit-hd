@@ -22,7 +22,6 @@ import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
-import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSummaryModel;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
@@ -61,9 +60,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
    */
   public RestoreWalletReportPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), panelName, MessageKey.RESTORE_WALLET_REPORT_TITLE);
-
-    PanelDecorator.addFinish(this, wizard);
+    super(wizard, panelName, MessageKey.RESTORE_WALLET_REPORT_TITLE, AwesomeIcon.FILE_TEXT);
 
   }
 
@@ -78,25 +75,29 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void initialiseContent(JPanel contentPanel) {
 
-    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.FILE_TEXT);
-
-    panel.setLayout(new MigLayout(
+    contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[][][]", // Column constraints
       "[]10[]10[]10[]" // Row constraints
     ));
 
     // Apply the theme
-    panel.setBackground(Themes.currentTheme.detailPanelBackground());
+    contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
     // Initialise to failure
     walletCreatedStatusLabel = Labels.newWalletCreatedStatus(false);
 
-    panel.add(walletCreatedStatusLabel, "wrap");
+    contentPanel.add(walletCreatedStatusLabel, "wrap");
 
-    return panel;
+  }
+
+  @Override
+  protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
+
+    PanelDecorator.addFinish(this, wizard);
+
   }
 
   @Override

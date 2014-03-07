@@ -11,7 +11,6 @@ import org.multibit.hd.ui.views.components.enter_amount.EnterAmountModel;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountView;
 import org.multibit.hd.ui.views.components.enter_recipient.EnterRecipientModel;
 import org.multibit.hd.ui.views.components.enter_recipient.EnterRecipientView;
-import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -42,9 +41,7 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
    */
   public SendBitcoinEnterAmountPanelView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), panelName, MessageKey.SEND_BITCOIN_TITLE);
-
-    PanelDecorator.addExitCancelNext(this, wizard);
+    super(wizard, panelName, MessageKey.SEND_BITCOIN_TITLE, AwesomeIcon.CLOUD_UPLOAD);
 
   }
 
@@ -68,20 +65,24 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void initialiseContent(JPanel contentPanel) {
 
-    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.CLOUD_UPLOAD);
-
-    panel.setLayout(new MigLayout(
+    contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[]", // Column constraints
       "[]10[]" // Row constraints
     ));
 
-    panel.add(enterRecipientMaV.getView().newComponentPanel(), "wrap");
-    panel.add(enterAmountMaV.getView().newComponentPanel(), "wrap");
+    contentPanel.add(enterRecipientMaV.getView().newComponentPanel(), "wrap");
+    contentPanel.add(enterAmountMaV.getView().newComponentPanel(), "wrap");
 
-    return panel;
+  }
+
+  @Override
+  protected void initialiseButtons(AbstractWizard<SendBitcoinWizardModel> wizard) {
+
+    PanelDecorator.addExitCancelNext(this, wizard);
+
   }
 
   @Override

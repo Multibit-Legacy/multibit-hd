@@ -11,7 +11,6 @@ import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.TextBoxes;
-import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -50,9 +49,7 @@ public class EditHistoryEnterDetailsPanelView extends AbstractWizardPanelView<Ed
    */
   public EditHistoryEnterDetailsPanelView(AbstractWizard<EditHistoryWizardModel> wizard, String panelName, EnterHistoryDetailsMode mode) {
 
-    super(wizard.getWizardModel(), panelName, mode.getMessageKey());
-
-    PanelDecorator.addCancelApply(this, wizard);
+    super(wizard, panelName, mode.getMessageKey(), AwesomeIcon.EDIT);
 
     this.mode = mode;
   }
@@ -70,11 +67,9 @@ public class EditHistoryEnterDetailsPanelView extends AbstractWizardPanelView<Ed
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void initialiseContent(JPanel contentPanel) {
 
-    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.EDIT);
-
-    panel.setLayout(new MigLayout(
+    contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[][]", // Column constraints
       "[][][]" // Row constraints
@@ -124,24 +119,29 @@ public class EditHistoryEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
     // Provide a note
     if (multiEdit) {
-      panel.add(Labels.newMultiEditNote(), "grow,push,span 2,wrap");
+      contentPanel.add(Labels.newMultiEditNote(), "grow,push,span 2,wrap");
 
       // Provide a short list of names with ellipsis
-      panel.add(Labels.newDescription(), "aligny top");
-      panel.add(TextBoxes.newTruncatedList(allDescriptions, 400), "grow,push,aligny top,wrap");
+      contentPanel.add(Labels.newDescription(), "aligny top");
+      contentPanel.add(TextBoxes.newTruncatedList(allDescriptions, 400), "grow,push,aligny top,wrap");
 
     } else {
 
       // Provide a single description
-      panel.add(Labels.newDescription());
-      panel.add(descriptionReadOnly, "growx,push,wrap");
+      contentPanel.add(Labels.newDescription());
+      contentPanel.add(descriptionReadOnly, "growx,push,wrap");
     }
 
     // Ensure we grow to avoid scrunching up
-    panel.add(Labels.newNotes());
-    panel.add(notes, "grow,push,aligny top,wrap");
+    contentPanel.add(Labels.newNotes());
+    contentPanel.add(notes, "grow,push,aligny top,wrap");
 
-    return panel;
+  }
+
+  @Override
+  protected void initialiseButtons(AbstractWizard<EditHistoryWizardModel> wizard) {
+
+    PanelDecorator.addCancelApply(this, wizard);
 
   }
 

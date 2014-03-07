@@ -2,16 +2,15 @@ package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.core.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.ModelAndView;
-import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
-import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseModel;
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseView;
+import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
@@ -39,9 +38,7 @@ public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<Wel
    */
   public CreateWalletSeedPhrasePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), panelName, MessageKey.CREATE_WALLET_SEED_PHRASE_TITLE);
-
-    PanelDecorator.addExitCancelPreviousNext(this, wizard);
+    super(wizard, panelName, MessageKey.CREATE_WALLET_SEED_PHRASE_TITLE, AwesomeIcon.KEY);
 
   }
 
@@ -59,20 +56,24 @@ public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<Wel
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void initialiseContent(JPanel contentPanel) {
 
-    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.KEY);
-
-    panel.setLayout(new MigLayout(
+    contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[]", // Column constraints
       "[][]" // Row constraints
     ));
 
-    panel.add(Panels.newSeedPhraseWarning(), "grow,push,wrap");
-    panel.add(displaySeedPhraseMaV.getView().newComponentPanel(), "wrap");
+    contentPanel.add(Panels.newSeedPhraseWarning(), "grow,push,wrap");
+    contentPanel.add(displaySeedPhraseMaV.getView().newComponentPanel(), "wrap");
 
-    return panel;
+  }
+
+  @Override
+  protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
+
+    PanelDecorator.addExitCancelPreviousNext(this, wizard);
+
   }
 
   @Override

@@ -13,7 +13,6 @@ import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.ComboBoxes;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -46,9 +45,7 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
    */
   public I18NSettingsPanelView(AbstractWizard<I18NSettingsWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), panelName, MessageKey.SHOW_I18N_WIZARD);
-
-    PanelDecorator.addCancelApply(this, wizard);
+    super(wizard, panelName, MessageKey.SHOW_I18N_WIZARD, AwesomeIcon.GLOBE);
 
   }
 
@@ -67,11 +64,9 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void initialiseContent(JPanel contentPanel) {
 
-    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.GLOBE);
-
-    panel.setLayout(new MigLayout(
+    contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[][]", // Column constraints
       "[][]" // Row constraints
@@ -84,12 +79,17 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
 
     languagesComboBox = ComboBoxes.newLanguagesComboBox(this, locale);
 
-    panel.add(Labels.newI18NSettingsNote(), "growx,span 2,wrap");
+    contentPanel.add(Labels.newI18NSettingsNote(), "growx,span 2,wrap");
 
-    panel.add(Labels.newSelectLanguageLabel(),"shrink,aligny top");
-    panel.add(languagesComboBox, "growx,width min:350:,push,aligny top,wrap");
+    contentPanel.add(Labels.newSelectLanguageLabel(), "shrink,aligny top");
+    contentPanel.add(languagesComboBox, "growx,width min:350:,push,aligny top,wrap");
 
-    return panel;
+  }
+
+  @Override
+  protected void initialiseButtons(AbstractWizard<I18NSettingsWizardModel> wizard) {
+
+    PanelDecorator.addCancelApply(this, wizard);
 
   }
 

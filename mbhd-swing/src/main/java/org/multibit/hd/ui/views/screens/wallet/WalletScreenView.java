@@ -50,8 +50,9 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
   }
 
   @Override
-  public JPanel newScreenViewPanel() {
+  public JPanel initialiseScreenViewPanel() {
 
+    // Only register when there is something to do
     CoreServices.uiEventBus.register(this);
 
     MigLayout layout = new MigLayout(

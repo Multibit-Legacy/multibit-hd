@@ -59,7 +59,7 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
   }
 
   @Override
-  public JPanel newScreenViewPanel() {
+  public JPanel initialiseScreenViewPanel() {
 
     MigLayout layout = new MigLayout(
       Panels.migLayout("fill,insets 10 5 0 0"),

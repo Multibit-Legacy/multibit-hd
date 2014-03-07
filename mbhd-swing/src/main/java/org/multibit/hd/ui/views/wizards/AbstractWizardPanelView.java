@@ -8,8 +8,10 @@ import org.multibit.hd.ui.events.view.ComponentChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardButtonEnabledEvent;
 import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
+import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
 import javax.swing.*;
 
@@ -18,23 +20,42 @@ import javax.swing.*;
  * <ul>
  * <li>Standard methods common to wizard panel views</li>
  * </ul>
- * <p>A wizard panel view contains the title, components and buttons. It relies on
+ * <p>A wizard panel view contains three sections: title, content and buttons. It relies on
  * its implementers to provide the panel containing the specific components for the
  * user interaction.</p>
  *
- * @param <W> the wizard model
+ * @param <M> the wizard model
  * @param <P> the panel model
  *
  * @since 0.0.1
  *  
  */
-public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
+public abstract class AbstractWizardPanelView<M extends WizardModel, P> {
 
-  private final W wizardModel;
+  /**
+   * The overall wizard model
+   */
+  private final M wizardModel;
 
+  /**
+   * The optional panel model (some panels are read only views)
+   */
   private Optional<P> panelModel;
 
+  /**
+   * The outer wizard panel (title, buttons) containing the current wizard panel
+   */
   private JPanel wizardPanel;
+
+  /**
+   * The content panel with the specific components for data entry/review
+   */
+  private JPanel contentPanel;
+
+  /**
+   * True if the components making up this screen have been populated
+   */
+  private boolean initialised;
 
   // Buttons
   private Optional<JButton> exitButton = Optional.absent();
@@ -45,40 +66,90 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
   private Optional<JButton> finishButton = Optional.absent();
   private Optional<JButton> applyButton = Optional.absent();
 
+  /**
+   * The panel name to identify this panel and filter events
+   */
   private final String panelName;
 
   /**
-   * @param wizardModel The wizard model managing the states
-   * @param panelName   The panel name to filter events from components
-   * @param title       The key to the main title of the wizard panel
+   * @param wizard         The wizard
+   * @param panelName      The panel name to filter events from components
+   * @param title          The key for the title section text
+   * @param backgroundIcon The icon for the content section background
    */
-  public AbstractWizardPanelView(W wizardModel, String panelName, MessageKey title) {
+  public AbstractWizardPanelView(AbstractWizard<M> wizard, String panelName, MessageKey title, AwesomeIcon backgroundIcon) {
 
-    Preconditions.checkNotNull(wizardModel, "'wizardModel' must be present");
+    Preconditions.checkNotNull(wizard, "'wizard' must be present");
     Preconditions.checkNotNull(title, "'title' must be present");
 
-    this.wizardModel = wizardModel;
+    this.wizardModel = wizard.getWizardModel();
     this.panelName = panelName;
 
     // All wizard views can receive events
     CoreServices.uiEventBus.register(this);
 
     // All wizard panels are decorated with the same theme and layout at creation
-    // so just need a vanilla panel to begin with
+    // so just need a simple panel to begin with
     wizardPanel = Panels.newRoundedPanel();
 
     // All wizard panels require a backing model
     newPanelModel();
 
     // Create a new wizard panel and apply the wizard theme
-    PanelDecorator.applyWizardTheme(wizardPanel, newWizardViewPanel(), title);
+    PanelDecorator.applyWizardTheme(wizardPanel);
+
+    // Add the title to the wizard
+    initialiseTitle(wizardPanel, title);
+
+    // Provide a basic content panel with no content (allows lazy initialisation later)
+    contentPanel = Panels.newDetailBackgroundPanel(backgroundIcon);
+
+    // Add the buttons to the wizard
+    initialiseButtons(wizard);
 
   }
 
   /**
+   * <p>Called when the wizard is first created to initialise the panel model.</p>
+   *
+   * <p>This is called before {@link AbstractWizardPanelView#initialiseTitle(javax.swing.JPanel, org.multibit.hd.ui.i18n.MessageKey)} ()}</p>
+   *
+   * <p>Implementers must create a new panel model and bind it to the overall wizard</p>
+   */
+  public abstract void newPanelModel();
+
+  /**
+   * <p>Initialise the title section of the wizard panel</p>
+   *
+   * @param wizardPanel The wizard panel (title, contents, buttons)
+   * @param titleKey    The title key to add to the panel
+   */
+  protected void initialiseTitle(JPanel wizardPanel, MessageKey titleKey) {
+
+    wizardPanel.add(Labels.newTitleLabel(titleKey), "span 4,shrink,wrap,aligny top");
+
+  }
+
+  /**
+   * <p>Initialise the content section of the wizard panel just before first showing</p>
+   * <p>Implementers should set the layout and populate the components</p>
+   *
+   * @param contentPanel The empty content panel with the current theme and initial background icon
+   */
+  public abstract void initialiseContent(JPanel contentPanel);
+
+  /**
+   * <p>Initialise the content section of the wizard panel</p>
+   * <p>Implementers should use <code>PanelDecorator</code> to add buttons</p>
+   *
+   * @param wizard The wizard providing exit/cancel information for button selection
+   */
+  protected abstract void initialiseButtons(AbstractWizard<M> wizard);
+
+  /**
    * @return The wizard model providing aggregated state information
    */
-  public W getWizardModel() {
+  public M getWizardModel() {
     return wizardModel;
   }
 
@@ -97,31 +168,22 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
   }
 
   /**
-   * @return The wizard panel (title, wizard components, buttons)
+   * <p>Get the overall wizard panel (title, content, buttons) lazily initialising the content as necessary</p>
+   *
+   * @return The wizard panel
    */
   public JPanel getWizardPanel() {
+
+    if (!isInitialised()) {
+
+      initialiseContent(contentPanel);
+
+      setInitialised(false);
+
+    }
+
     return wizardPanel;
   }
-
-  /**
-   * <p>Called when the wizard is first created to initialise the panel model and subsequently on a locale change event.</p>
-   *
-   * <p>This is called before {@link AbstractWizardPanelView#newWizardViewPanel()}</p>
-   *
-   * <p>Implementers must create a new panel model and bind it to the overall wizard</p>
-   */
-  public abstract void newPanelModel();
-
-  /**
-   * <p>Called when the wizard is first created to initialise the panel and subsequently on a locale change event.</p>
-   *
-   * <p>This is called after {@link AbstractWizardPanelView#newPanelModel()}</p>
-   *
-   * <p>Implementers must create a new panel</p>
-   *
-   * @return A new panel containing the data components specific to this wizard view (e.g. language selector or seed phrase display)
-   */
-  public abstract JPanel newWizardViewPanel();
 
   /**
    * @param panelModel The panel model
@@ -295,7 +357,7 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
    */
   public void deregisterDefaultButton() {
 
- //   Panels.frame.getRootPane().setDefaultButton(null);
+    //   Panels.frame.getRootPane().setDefaultButton(null);
 
   }
 
@@ -316,6 +378,17 @@ public abstract class AbstractWizardPanelView<W extends WizardModel, P> {
     Panels.frame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
       .put(KeyStroke.getKeyStroke("released ENTER"), "press");
 
+  }
+
+  /**
+   * @return True if this wizard panel has been initialised
+   */
+  public boolean isInitialised() {
+    return initialised;
+  }
+
+  public void setInitialised(boolean initialised) {
+    this.initialised = initialised;
   }
 
   /**

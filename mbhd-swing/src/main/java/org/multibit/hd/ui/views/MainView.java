@@ -66,35 +66,38 @@ public class MainView extends JFrame {
   @Subscribe
   public void onLocaleChangedEvent(LocaleChangedEvent event) {
 
-    refresh();
-
-  }
-
-  public void refresh() {
-
     log.debug("Received 'locale changed' event");
 
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-
-        getContentPane().removeAll();
-        getContentPane().add(createMainContent());
-
-        pack();
-
-        setVisible(true);
-
-        // Catch up on events
-        CoreServices.getApplicationEventService().repeatLatestEvents();
-
-        // Check for any wizards that were showing before the refresh occurred
-        if (showExitingWelcomeWizard) {
-          showExitingWelcomeWizard();
-        }
-
+        refresh();
       }
     });
+
+  }
+
+  /**
+   * <p>Rebuild the contents of the main view based on the current configuration and theme</p>
+   * <p>This should be in the Swing AWT event thread</p>
+   */
+  public void refresh() {
+
+    // Clear out all the old content and rebuild it from scratch
+    getContentPane().removeAll();
+    getContentPane().add(createMainContent());
+
+    // Tidy up and show
+    pack();
+    setVisible(true);
+
+    // Catch up on recent events
+    CoreServices.getApplicationEventService().repeatLatestEvents();
+
+    // Check for any wizards that were showing before the refresh occurred
+    if (showExitingWelcomeWizard) {
+      Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardPanel());
+    }
 
   }
 
@@ -166,10 +169,12 @@ public class MainView extends JFrame {
     return mainPanel;
   }
 
-  public void showExitingWelcomeWizard() {
+  /**
+   * @param show True if the exiting welcome wizard should be shown during the next refresh
+   */
+  public void setShowExitingWelcomeWizard(boolean show) {
 
-    showExitingWelcomeWizard = true;
-    Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardPanel());
+    showExitingWelcomeWizard = show;
 
   }
 

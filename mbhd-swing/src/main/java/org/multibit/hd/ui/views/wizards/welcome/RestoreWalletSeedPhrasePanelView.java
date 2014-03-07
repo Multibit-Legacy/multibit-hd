@@ -10,7 +10,6 @@ import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseView;
-import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -40,9 +39,8 @@ public class RestoreWalletSeedPhrasePanelView extends AbstractWizardPanelView<We
    */
   public RestoreWalletSeedPhrasePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), panelName, MessageKey.RESTORE_WALLET_SEED_PHRASE_TITLE);
+    super(wizard, panelName, MessageKey.RESTORE_WALLET_SEED_PHRASE_TITLE, AwesomeIcon.KEY);
 
-    PanelDecorator.addExitCancelPreviousNext(this, wizard);
   }
 
   @Override
@@ -57,20 +55,24 @@ public class RestoreWalletSeedPhrasePanelView extends AbstractWizardPanelView<We
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void initialiseContent(JPanel contentPanel) {
 
-    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.KEY);
-
-    panel.setLayout(new MigLayout(
+    contentPanel.setLayout(new MigLayout(
       Panels.migLayout("fill,insets 0,hidemode 1"),
       "[]", // Column constraints
       "[][]" // Row constraints
     ));
 
-    panel.add(Panels.newRestoreFromSeedPhrase(), "wrap");
-    panel.add(enterSeedPhraseMaV.getView().newComponentPanel(), "wrap");
+    contentPanel.add(Panels.newRestoreFromSeedPhrase(), "wrap");
+    contentPanel.add(enterSeedPhraseMaV.getView().newComponentPanel(), "wrap");
 
-    return panel;
+  }
+
+  @Override
+  protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
+
+    PanelDecorator.addExitCancelPreviousNext(this, wizard);
+
   }
 
   @Override

@@ -64,7 +64,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
   }
 
   @Override
-  public JPanel newScreenViewPanel() {
+  public JPanel initialiseScreenViewPanel() {
 
     CoreServices.uiEventBus.register(this);
 

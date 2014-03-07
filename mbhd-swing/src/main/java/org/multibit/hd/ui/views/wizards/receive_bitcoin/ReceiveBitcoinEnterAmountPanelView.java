@@ -26,7 +26,6 @@ import org.multibit.hd.ui.views.components.display_qrcode.DisplayQRCodeModel;
 import org.multibit.hd.ui.views.components.display_qrcode.DisplayQRCodeView;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountModel;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountView;
-import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.wallet_detail.WalletDetail;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -72,9 +71,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
    */
   public ReceiveBitcoinEnterAmountPanelView(AbstractWizard<ReceiveBitcoinWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), panelName, MessageKey.RECEIVE_BITCOIN_TITLE);
-
-    PanelDecorator.addFinish(this, wizard);
+    super(wizard, panelName, MessageKey.RECEIVE_BITCOIN_TITLE, AwesomeIcon.CLOUD_DOWNLOAD);
 
   }
 
@@ -125,28 +122,32 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void initialiseContent(JPanel contentPanel) {
 
-    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.CLOUD_DOWNLOAD);
-
-    panel.setLayout(new MigLayout(
+    contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[][][]", // Column constraints
       "[]10[]" // Row constraints
     ));
 
-    panel.add(enterAmountMaV.getView().newComponentPanel(), "span 3,wrap");
-    panel.add(Labels.newRecipient());
-    panel.add(displayBitcoinAddressMaV.getView().newComponentPanel(), "growx,push");
-    panel.add(showQRCode, "wrap");
-    panel.add(Labels.newBlankLabel());
-    panel.add( addressCommentLabel, "wrap");
-    panel.add(Labels.newQRCodeLabelLabel());
-    panel.add(label, "span 2,wrap");
-    panel.add(Labels.newNotes());
-    panel.add(notesTextArea, "span 3,push,wrap");
+    contentPanel.add(enterAmountMaV.getView().newComponentPanel(), "span 3,wrap");
+    contentPanel.add(Labels.newRecipient());
+    contentPanel.add(displayBitcoinAddressMaV.getView().newComponentPanel(), "growx,push");
+    contentPanel.add(showQRCode, "wrap");
+    contentPanel.add(Labels.newBlankLabel());
+    contentPanel.add(addressCommentLabel, "wrap");
+    contentPanel.add(Labels.newQRCodeLabelLabel());
+    contentPanel.add(label, "span 2,wrap");
+    contentPanel.add(Labels.newNotes());
+    contentPanel.add(notesTextArea, "span 3,push,wrap");
 
-    return panel;
+  }
+
+  @Override
+  protected void initialiseButtons(AbstractWizard<ReceiveBitcoinWizardModel> wizard) {
+
+    PanelDecorator.addFinish(this, wizard);
+
   }
 
   @Override

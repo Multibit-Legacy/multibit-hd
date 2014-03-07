@@ -60,7 +60,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
   }
 
   @Override
-  public JPanel newScreenViewPanel() {
+  public JPanel initialiseScreenViewPanel() {
 
     MigLayout layout = new MigLayout(
       Panels.migLayout("fill,insets 10 5 0 0"),

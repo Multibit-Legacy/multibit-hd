@@ -36,7 +36,7 @@ public class ExitScreenView extends AbstractScreenView<ExitScreenModel>  {
   }
 
   @Override
-  public JPanel newScreenViewPanel() {
+  public JPanel initialiseScreenViewPanel() {
 
     CoreServices.uiEventBus.register(this);
 

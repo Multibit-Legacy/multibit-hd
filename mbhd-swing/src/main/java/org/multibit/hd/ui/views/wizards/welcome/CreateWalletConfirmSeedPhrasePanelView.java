@@ -6,11 +6,10 @@ import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.i18n.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.ModelAndView;
-import org.multibit.hd.ui.views.components.panels.BackgroundPanel;
-import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseView;
+import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
@@ -41,9 +40,7 @@ public class CreateWalletConfirmSeedPhrasePanelView extends AbstractWizardPanelV
    */
   public CreateWalletConfirmSeedPhrasePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard.getWizardModel(), panelName, MessageKey.CONFIRM_WALLET_SEED_PHRASE_TITLE);
-
-    PanelDecorator.addExitCancelNext(this, wizard);
+    super(wizard, panelName, MessageKey.CONFIRM_WALLET_SEED_PHRASE_TITLE, AwesomeIcon.KEY);
 
   }
 
@@ -58,20 +55,24 @@ public class CreateWalletConfirmSeedPhrasePanelView extends AbstractWizardPanelV
   }
 
   @Override
-  public JPanel newWizardViewPanel() {
+  public void initialiseContent(JPanel contentPanel) {
 
-    BackgroundPanel panel = Panels.newDetailBackgroundPanel(AwesomeIcon.KEY);
-
-    panel.setLayout(new MigLayout(
+    contentPanel.setLayout(new MigLayout(
       Panels.migLayout("fill,insets 0,hidemode 1"),
       "[]", // Column constraints
       "[][]" // Row constraints
     ));
 
-    panel.add(Panels.newConfirmSeedPhrase(), "wrap");
-    panel.add(enterSeedPhraseMaV.getView().newComponentPanel(), "wrap");
+    contentPanel.add(Panels.newConfirmSeedPhrase(), "wrap");
+    contentPanel.add(enterSeedPhraseMaV.getView().newComponentPanel(), "wrap");
 
-    return panel;
+  }
+
+  @Override
+  protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
+
+    PanelDecorator.addExitCancelNext(this, wizard);
+
   }
 
   @Override

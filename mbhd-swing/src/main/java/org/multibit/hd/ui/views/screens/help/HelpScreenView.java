@@ -74,7 +74,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
   }
 
   @Override
-  public JPanel newScreenViewPanel() {
+  public JPanel initialiseScreenViewPanel() {
 
     MigLayout layout = new MigLayout(
       Panels.migLayout("fillx,insets 10 5 0 0"),
