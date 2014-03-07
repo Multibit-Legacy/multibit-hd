@@ -89,6 +89,11 @@ public class WalletService {
   private WalletId walletId;
 
   /**
+   * The undo stack for undeleting payment requests
+   */
+  private final Stack<PaymentRequestData> undoDeletePaymentRequestStack = new Stack<>();
+
+  /**
    * Initialise the wallet service with a user data directory and a wallet id so that it knows where to put files etc
    *
    * @param walletId the walletId to use for this WalletService
@@ -435,6 +440,26 @@ public class WalletService {
       } else {
         return walletDataOptional.get().getWallet().getKeys().get(0).toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
       }
+    }
+  }
+
+  /**
+   * Delete a payment request
+   */
+  public void deletePaymentRequest(PaymentRequestData paymentRequestData) {
+    undoDeletePaymentRequestStack.push(paymentRequestData);
+    paymentRequestMap.remove(paymentRequestData.getAddress());
+    writePayments();
+  }
+
+  /**
+   * Undo the deletion of a payment request
+   */
+  public void undoDeletePaymentRequest() {
+    if (!undoDeletePaymentRequestStack.isEmpty()) {
+      PaymentRequestData deletedPaymentRequestData = undoDeletePaymentRequestStack.pop();
+      addPaymentRequest(deletedPaymentRequestData);
+      writePayments();
     }
   }
 }

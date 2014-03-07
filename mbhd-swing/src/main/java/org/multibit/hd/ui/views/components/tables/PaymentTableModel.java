@@ -36,7 +36,7 @@ public class PaymentTableModel extends AbstractTableModel {
           "Status",
           "Type",
           "Description",
-          "Amount",
+          "Amount ",
           "Amount " + Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencySymbol()
   };
 

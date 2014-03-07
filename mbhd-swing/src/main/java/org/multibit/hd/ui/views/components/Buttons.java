@@ -144,6 +144,37 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "Export" button with icon
+   */
+  public static JButton newExportButton(Action action) {
+
+    JButton button = newButton(action, MessageKey.EXPORT);
+    button.setAction(action);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.SHARE_SQUARE_ALT, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
+
+  }
+  /**
+   * @param action The click action
+   *
+   * @return A new "Deete Payment Request" button with icon
+   */
+  public static JButton newDeletePaymentRequestButton(Action action) {
+
+    JButton button = newButton(action, MessageKey.DELETE_PAYMENT_REQUEST);
+    button.setAction(action);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.TRASH_ALT, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
+
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "Cancel" button with icon
    */
   public static JButton newCancelButton(Action action) {
@@ -469,6 +500,20 @@ public class Buttons {
   }
 
   /**
+    * @param action The click action
+    *
+    * @return A new "details" button with icon
+    */
+   public static JButton newDetailsButton(Action action) {
+
+     JButton button = newButton(action, MessageKey.DETAILS);
+
+     AwesomeDecorator.applyIcon(AwesomeIcon.FILE_TEXT_ALT, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+
+     return button;
+   }
+
+   /**
    * @param action The click action
    *
    * @return A new "delete" button with icon

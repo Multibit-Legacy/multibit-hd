@@ -261,7 +261,12 @@ public enum MessageKey {
   // Wallet detail panel
   SUMMARY("summary"),
   APPLICATION_DIRECTORY("application_directory"),
-  WALLET_DIRECTORY("wallet_directory")
+  WALLET_DIRECTORY("wallet_directory"),
+
+  // Payments panel
+  DETAILS("details"),
+  EXPORT("export"),
+  DELETE_PAYMENT_REQUEST("delete_payment_request")
 
   // End of enum
   ;
