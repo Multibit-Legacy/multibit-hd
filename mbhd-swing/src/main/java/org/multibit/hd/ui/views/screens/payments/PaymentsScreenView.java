@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.PaymentData;
+import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
 import org.multibit.hd.core.events.TransactionSeenEvent;
@@ -96,7 +97,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     JScrollPane scrollPane = new JScrollPane(paymentsTable);
     scrollPane.setViewportBorder(null);
 
-    // Add to the panelontact
+    // Add to the panel
     contentPanel.add(enterSearchMaV.getView().newComponentPanel(), "span 6,growx,push,wrap");
     contentPanel.add(detailsButton, "shrink");
     contentPanel.add(exportButton, "shrink");
@@ -178,18 +179,14 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
      return new AbstractAction() {
        @Override
        public void actionPerformed(ActionEvent e) {
+         int selectedTableRow = paymentsTable.getSelectedRow();
 
-         int selectedRow = paymentsTable.getSelectedRow();
-         log.debug("getDetailsAction : selectedRow = " + selectedRow);
-
-         // Ensure we have at least one contact to work with
-//         if (!historyEntries.isEmpty()) {
-//
-//             // Fire up a wizard in single mode
-//             Panels.showLightBox(Wizards.newEditHistoryWizard(historyEntries, EnterHistoryDetailsMode.EDIT_SINGLE).getWizardPanel());
-//
-//         }
-
+         if (selectedTableRow == -1) {
+           // No row selected
+           return;
+         }
+         int selectedModelRow = paymentsTable.convertRowIndexToModel(selectedTableRow);
+         log.debug("getDetailsAction : selectedTableRow = " + selectedTableRow + ", selectedModelRow = " + selectedModelRow);
        }
      };
    }
@@ -202,8 +199,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
       return new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent e) {
-          int selectedRow = paymentsTable.getSelectedRow();
-          log.debug("getExportAction : selectedRow = " + selectedRow);
+          log.debug("getExportAction called");
         }
       };
     }
@@ -216,8 +212,8 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
       return new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent e) {
-          int selectedRow = paymentsTable.getSelectedRow();
-          log.debug("getUndoAction : selectedRow = " + selectedRow);
+          MultiBitHD.getWalletService().undoDeletePaymentRequest();
+          update();
         }
       };
     }
@@ -230,8 +226,21 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
       return new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent e) {
-          int selectedRow = paymentsTable.getSelectedRow();
-          log.debug("getExportAction : selectedRow = " + selectedRow);
+          int selectedTableRow = paymentsTable.getSelectedRow();
+          if (selectedTableRow == -1) {
+            // No row selected
+            return;
+          }
+          int selectedModelRow = paymentsTable.convertRowIndexToModel(selectedTableRow);
+          log.debug("getExportAction : selectedTableRow = " + selectedTableRow + ", selectedModelRow = " + selectedModelRow);
+
+          PaymentData paymentData = ((PaymentTableModel)paymentsTable.getModel()).getPaymentData().get(selectedModelRow);
+
+          if (paymentData instanceof PaymentRequestData) {
+            // we can delete this
+            MultiBitHD.getWalletService().deletePaymentRequest((PaymentRequestData)paymentData);
+            update();
+          }
         }
       };
     }

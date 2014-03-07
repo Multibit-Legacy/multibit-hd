@@ -129,12 +129,6 @@ public class Tables {
     resizeColumn(table, PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX, 120, 180);
 
    // Amount Fiat column
-    TableColumn fiatColumn = table.getColumnModel().getColumn(PaymentTableModel.AMOUNT_FIAT_COLUMN_INDEX);
-//    fiatColumn.setHeaderRenderer(new AmountBTCTableHeaderRenderer(
-//      table.getTableHeader().getDefaultRenderer(),
-//      new int[] {PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX}
-//    ));
-
     TableColumn amountFiatTableColumn = table.getColumnModel().getColumn(PaymentTableModel.AMOUNT_FIAT_COLUMN_INDEX);
     amountFiatTableColumn.setCellRenderer(Renderers.newTrailingJustifiedFiatRenderer());
     resizeColumn(table, PaymentTableModel.AMOUNT_FIAT_COLUMN_INDEX, 120, 180);
