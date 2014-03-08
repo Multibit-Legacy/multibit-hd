@@ -46,10 +46,10 @@ public class AmountFiatTableCellRenderer extends DefaultTableCellRenderer {
       if (!(fiatPayment.getAmount() == null)) {
         BigMoney amountAsBigMoney = fiatPayment.getAmount();
         try {
-          I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration();
+          LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguageConfiguration();
           BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
 
-          String balance = Formats.formatLocalAmount(amountAsBigMoney, i18nConfiguration.getLocale(), bitcoinConfiguration);
+          String balance = Formats.formatLocalAmount(amountAsBigMoney, languageConfiguration.getLocale(), bitcoinConfiguration);
 
           label.setText(balance + TrailingJustifiedDateTableCellRenderer.SPACER);
 
