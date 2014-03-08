@@ -21,6 +21,7 @@ import org.multibit.hd.ui.views.components.enter_search.EnterSearchView;
 import org.multibit.hd.ui.views.components.tables.PaymentTableModel;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
+import org.multibit.hd.ui.views.wizards.Wizards;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -187,6 +188,9 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
          }
          int selectedModelRow = paymentsTable.convertRowIndexToModel(selectedTableRow);
          log.debug("getDetailsAction : selectedTableRow = " + selectedTableRow + ", selectedModelRow = " + selectedModelRow);
+
+         Panels.showLightBox(Wizards.newPaymentsWizard().getWizardScreenHolder());
+
        }
      };
    }

@@ -28,6 +28,9 @@ import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsWizard
 import org.multibit.hd.ui.views.wizards.password.PasswordState;
 import org.multibit.hd.ui.views.wizards.password.PasswordWizard;
 import org.multibit.hd.ui.views.wizards.password.PasswordWizardModel;
+import org.multibit.hd.ui.views.wizards.payments.PaymentsState;
+import org.multibit.hd.ui.views.wizards.payments.PaymentsWizard;
+import org.multibit.hd.ui.views.wizards.payments.PaymentsWizardModel;
 import org.multibit.hd.ui.views.wizards.receive_bitcoin.ReceiveBitcoinState;
 import org.multibit.hd.ui.views.wizards.receive_bitcoin.ReceiveBitcoinWizard;
 import org.multibit.hd.ui.views.wizards.receive_bitcoin.ReceiveBitcoinWizardModel;
@@ -200,4 +203,11 @@ public class Wizards {
     return new ExchangeSettingsWizard(new ExchangeSettingsWizardModel(ExchangeSettingsState.EXCHANGE_ENTER_DETAILS, configuration));
   }
 
+  /**
+    * @return A new "payments" wizard
+    */
+   public static PaymentsWizard newPaymentsWizard() {
+
+     return new PaymentsWizard(new PaymentsWizardModel(PaymentsState.TRANSACTION_OVERVIEW), false);
+   }
 }
