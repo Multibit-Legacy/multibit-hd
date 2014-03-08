@@ -1,6 +1,8 @@
 package org.multibit.hd.core.store;
 
 import com.google.common.collect.Lists;
+import org.joda.money.BigMoney;
+import org.joda.money.CurrencyUnit;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +14,7 @@ import org.multibit.hd.core.services.WalletService;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Iterator;
@@ -66,8 +69,7 @@ public class PaymentsProtobufSerializerTest {
 
     FiatPayment fiatPayment1 = new FiatPayment();
     paymentRequestData1.setAmountFiat(fiatPayment1);
-    fiatPayment1.setAmount("12345.6");
-    fiatPayment1.setCurrency("USD");
+    fiatPayment1.setAmount(BigMoney.of(CurrencyUnit.USD, new BigDecimal("12345.6")));
     fiatPayment1.setRate("10.0");
     fiatPayment1.setExchange("Bitstamp");
 
@@ -81,8 +83,7 @@ public class PaymentsProtobufSerializerTest {
 
     FiatPayment fiatPayment2 = new FiatPayment();
     paymentRequestData2.setAmountFiat(fiatPayment2);
-    fiatPayment2.setAmount("12345.678");
-    fiatPayment2.setCurrency("GBP");
+    fiatPayment2.setAmount(BigMoney.of(CurrencyUnit.GBP, new BigDecimal("12345.678")));
     fiatPayment2.setRate("20.0");
     fiatPayment2.setExchange("OER");
 
@@ -115,7 +116,6 @@ public class PaymentsProtobufSerializerTest {
     FiatPayment fiatPayment = other.getAmountFiat();
     FiatPayment otherFiatPayment = paymentRequestData.getAmountFiat();
     assertThat(fiatPayment.getAmount()).isEqualTo(otherFiatPayment.getAmount());
-    assertThat(fiatPayment.getCurrency()).isEqualTo(otherFiatPayment.getCurrency());
     assertThat(fiatPayment.getRate()).isEqualTo(otherFiatPayment.getRate());
     assertThat(fiatPayment.getExchange()).isEqualTo(otherFiatPayment.getExchange());
   }
@@ -138,8 +138,7 @@ public class PaymentsProtobufSerializerTest {
 
     FiatPayment fiatPayment1 = new FiatPayment();
     transactionInfo1.setAmountFiat(fiatPayment1);
-    fiatPayment1.setAmount("99.9");
-    fiatPayment1.setCurrency("EUR");
+    fiatPayment1.setAmount(BigMoney.of(CurrencyUnit.EUR, new BigDecimal("99.9")));
     fiatPayment1.setRate("30.0");
     fiatPayment1.setExchange("Bitstamp");
 
@@ -157,8 +156,7 @@ public class PaymentsProtobufSerializerTest {
 
     FiatPayment fiatPayment2 = new FiatPayment();
     transactionInfo2.setAmountFiat(fiatPayment2);
-    fiatPayment2.setAmount("11.1");
-    fiatPayment2.setCurrency("JPY");
+    fiatPayment2.setAmount(BigMoney.of(CurrencyUnit.JPY, new BigDecimal("11.1")));
     fiatPayment2.setRate("50.0");
     fiatPayment2.setExchange("BitstampJunior");
 
@@ -202,7 +200,6 @@ public class PaymentsProtobufSerializerTest {
     FiatPayment fiatPayment = other.getAmountFiat();
     FiatPayment otherFiatPayment = transactionInfo.getAmountFiat();
     assertThat(fiatPayment.getAmount()).isEqualTo(otherFiatPayment.getAmount());
-    assertThat(fiatPayment.getCurrency()).isEqualTo(otherFiatPayment.getCurrency());
     assertThat(fiatPayment.getRate()).isEqualTo(otherFiatPayment.getRate());
     assertThat(fiatPayment.getExchange()).isEqualTo(otherFiatPayment.getExchange());
   }

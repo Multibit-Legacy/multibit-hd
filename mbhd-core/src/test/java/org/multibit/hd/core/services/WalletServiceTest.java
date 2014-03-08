@@ -2,6 +2,8 @@ package org.multibit.hd.core.services;
 
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.common.base.Optional;
+import org.joda.money.BigMoney;
+import org.joda.money.CurrencyUnit;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
 
@@ -68,8 +71,7 @@ public class WalletServiceTest {
 
     FiatPayment fiatPayment1 = new FiatPayment();
     paymentRequestData1.setAmountFiat(fiatPayment1);
-    fiatPayment1.setAmount("12345.6");
-    fiatPayment1.setCurrency("USD");
+    fiatPayment1.setAmount(BigMoney.of(CurrencyUnit.USD, new BigDecimal("12345.6")));
     fiatPayment1.setRate("10.0");
     fiatPayment1.setExchange("Bitstamp");
 
@@ -98,7 +100,6 @@ public class WalletServiceTest {
      FiatPayment fiatPayment = other.getAmountFiat();
      FiatPayment otherFiatPayment = paymentRequestData.getAmountFiat();
      assertThat(fiatPayment.getAmount()).isEqualTo(otherFiatPayment.getAmount());
-     assertThat(fiatPayment.getCurrency()).isEqualTo(otherFiatPayment.getCurrency());
      assertThat(fiatPayment.getRate()).isEqualTo(otherFiatPayment.getRate());
      assertThat(fiatPayment.getExchange()).isEqualTo(otherFiatPayment.getExchange());
    }

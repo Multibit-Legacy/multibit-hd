@@ -2,10 +2,7 @@ package org.multibit.hd.ui.views.components;
 
 import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
-import org.multibit.hd.core.dto.Contact;
-import org.multibit.hd.core.dto.HistoryEntry;
-import org.multibit.hd.core.dto.PaymentData;
-import org.multibit.hd.core.dto.PaymentType;
+import org.multibit.hd.core.dto.*;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.views.components.renderers.AmountBTCTableHeaderRenderer;
@@ -133,12 +130,12 @@ public class Tables {
     amountBTCTableColumn.setCellRenderer(Renderers.newTrailingJustifiedNumericRenderer());
     resizeColumn(table, PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX, 120, 180);
 
-   // Amount Fiat column
+    // Amount Fiat column
     TableColumn amountFiatTableColumn = table.getColumnModel().getColumn(PaymentTableModel.AMOUNT_FIAT_COLUMN_INDEX);
     amountFiatTableColumn.setCellRenderer(Renderers.newTrailingJustifiedFiatRenderer());
     resizeColumn(table, PaymentTableModel.AMOUNT_FIAT_COLUMN_INDEX, 120, 180);
 
-   // Row sorter for date
+    // Row sorter for date
     TableRowSorter<TableModel> rowSorter = new TableRowSorter<>(table.getModel());
     table.setRowSorter(rowSorter);
 
@@ -148,18 +145,27 @@ public class Tables {
     rowSorter.setSortKeys(sortKeys);
 
     // Comparator for date
-    Comparator<DateTime> comparator = newDateTimeComparator();
-    rowSorter.setComparator(PaymentTableModel.DATE_COLUMN_INDEX, comparator);
+    Comparator<DateTime> comparatorDate = newDateTimeComparator();
+    rowSorter.setComparator(PaymentTableModel.DATE_COLUMN_INDEX, comparatorDate);
+
+    // Comparator for status
+    // TODO not comparing depth
+    Comparator<RAGStatus> comparatorStatus = newStatusComparator();
+    rowSorter.setComparator(PaymentTableModel.STATUS_COLUMN_INDEX, comparatorStatus);
+
+     // Comparator for payment type
+    Comparator<PaymentType> comparatorPaymentType = newPaymentTypeComparator();
+    rowSorter.setComparator(PaymentTableModel.TYPE_COLUMN_INDEX, comparatorPaymentType);
 
     // Comparator for amount BTC
     Comparator<BigInteger> comparatorBigInteger = newBigIntegerComparator();
     rowSorter.setComparator(PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX, comparatorBigInteger);
 
-   // Comparator for payment type
-    Comparator<PaymentType> comparatorPaymentType = newPaymentTypeComparator();
-    rowSorter.setComparator(PaymentTableModel.TYPE_COLUMN_INDEX, comparatorPaymentType);
+    // Comparator for amount fiat
+    Comparator<FiatPayment> comparatorFiatPayment = newFiatPaymentComparator();
+    rowSorter.setComparator(PaymentTableModel.AMOUNT_FIAT_COLUMN_INDEX, comparatorFiatPayment);
 
-    justifyColumnHeaders(table);
+     justifyColumnHeaders(table);
 
     return table;
   }
@@ -237,6 +243,27 @@ public class Tables {
       }
     };
   }
+  /**
+    * @return A new status comparator for use with a TableRowSorter
+    */
+   private static Comparator<RAGStatus> newStatusComparator() {
+
+     return new Comparator<RAGStatus>() {
+
+
+
+       @Override
+       public int compare(RAGStatus o1, RAGStatus o2) {
+
+         if (o1 != null && o2 == null) {
+           return 1;
+         }
+
+         return o1 != null ? o1.compareTo(o2) : 0;
+
+       }
+     };
+   }
 
   /**
     * @return A new BigInteger comparator for use with a TableRowSorter
@@ -259,6 +286,26 @@ public class Tables {
    }
 
   /**
+     * @return A new FiatPayment comparator for use with a TableRowSorter
+     */
+    private static Comparator<FiatPayment> newFiatPaymentComparator() {
+
+      return new Comparator<FiatPayment>() {
+
+        @Override
+        public int compare(FiatPayment o1, FiatPayment o2) {
+
+          if (o1 != null && o2 == null) {
+            return 1;
+          }
+
+          return o1 != null ? o1.compareTo(o2) : 0;
+
+        }
+      };
+    }
+
+   /**
     * @return A new PaymentType comparator for use with a TableRowSorter
     */
    private static Comparator<PaymentType> newPaymentTypeComparator() {

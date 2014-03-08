@@ -32,7 +32,6 @@ public class RAGStatusTableCellRenderer extends DefaultTableCellRenderer {
   public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                                                  int column) {
 
-    // Prepare the primary icon (used always), and an extra icon and containing panel for use as required.
     label.setHorizontalAlignment(SwingConstants.CENTER);
     label.setVerticalAlignment(SwingConstants.CENTER);
     label.setOpaque(true);
