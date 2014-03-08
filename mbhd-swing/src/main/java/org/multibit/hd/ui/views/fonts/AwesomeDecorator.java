@@ -3,7 +3,7 @@ package org.multibit.hd.ui.views.fonts;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.exceptions.UIException;
-import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.languages.Languages;
 
 import javax.swing.*;
 import java.awt.*;

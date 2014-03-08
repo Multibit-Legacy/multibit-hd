@@ -35,8 +35,8 @@ public class ConfigurationWriteAdapter {
     // Bitcoin
     adaptBitcoin();
 
-    // Internationalisation
-    adaptI18N();
+    // Language
+    adaptLanguageN();
 
     // Logging
     adaptLogging();
@@ -55,11 +55,11 @@ public class ConfigurationWriteAdapter {
 
   }
 
-  private void adaptI18N() {
+  private void adaptLanguageN() {
 
-    I18NConfiguration i18n = configuration.getI18NConfiguration();
+    LanguageConfiguration language = configuration.getLanguageConfiguration();
 
-    properties.put(I18N_LOCALE, i18n.getLocale().toString());
+    properties.put(LANGUAGE_LOCALE, language.getLocale().toString());
   }
 
   private void adaptLogging() {

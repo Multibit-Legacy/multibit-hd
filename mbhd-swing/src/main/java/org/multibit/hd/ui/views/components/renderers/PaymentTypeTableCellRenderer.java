@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.components.renderers;
 
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.PaymentType;
-import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.tables.StripedTable;
 

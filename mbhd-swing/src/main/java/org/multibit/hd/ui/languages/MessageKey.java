@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.i18n;
+package org.multibit.hd.ui.languages;
 
 /**
  * <p>Enum to provide the following to application:</p>
@@ -177,7 +177,7 @@ public enum MessageKey {
   SHOW_BITCOIN_WIZARD("show_bitcoin_wizard"),
   SHOW_EXCHANGE_WIZARD("show_exchange_wizard"),
   SHOW_APPLICATION_WIZARD("show_application_wizard"),
-  SHOW_I18N_WIZARD("show_i18n_wizard"),
+  SHOW_LANGUAGE_WIZARD("show_language_wizard"),
 
   SHOW_ALERT("show_alert"),
   HIDE_ALERT("hide_alert"),

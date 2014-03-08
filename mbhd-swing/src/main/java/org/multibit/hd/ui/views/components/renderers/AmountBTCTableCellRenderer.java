@@ -2,8 +2,8 @@ package org.multibit.hd.ui.views.components.renderers;
 
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.config.I18NConfiguration;
-import org.multibit.hd.ui.i18n.Formats;
+import org.multibit.hd.core.config.LanguageConfiguration;
+import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.tables.StripedTable;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -39,10 +39,10 @@ public class AmountBTCTableCellRenderer extends DefaultTableCellRenderer {
       // Do the Bitcoin processing
 
       BigInteger valueBigInteger = (BigInteger) value;
-      I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration();
+      LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguageConfiguration();
       BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
 
-      String[] balanceArray = Formats.formatSatoshisAsSymbolic(valueBigInteger, i18nConfiguration, bitcoinConfiguration);
+      String[] balanceArray = Formats.formatSatoshisAsSymbolic(valueBigInteger, languageConfiguration, bitcoinConfiguration);
       String balanceString = balanceArray[0] + balanceArray[1];
 
       label.setText(balanceString + TrailingJustifiedDateTableCellRenderer.SPACER);

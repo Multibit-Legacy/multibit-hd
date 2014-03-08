@@ -6,8 +6,8 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.ui.MultiBitUI;
-import org.multibit.hd.ui.i18n.Languages;
-import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.utils.HtmlUtils;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
@@ -42,7 +42,7 @@ public class Labels {
 
 
   /**
-   * @param key    The resource key for the i18n message text
+   * @param key    The resource key for the language message text
    * @param values The data values for token replacement in the message text
    *
    * @return A new label with default styling

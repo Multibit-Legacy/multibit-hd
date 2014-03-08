@@ -1,15 +1,15 @@
-package org.multibit.hd.ui.views.wizards.i18n_settings;
+package org.multibit.hd.ui.views.wizards.language_settings;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.config.I18NConfiguration;
+import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.i18n.LanguageKey;
-import org.multibit.hd.ui.i18n.Languages;
-import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.languages.LanguageKey;
+import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.ComboBoxes;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
@@ -34,7 +34,7 @@ import java.util.Locale;
  *  
  */
 
-public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsWizardModel, I18NSettingsPanelModel> implements ActionListener {
+public class LanguageSettingsPanelView extends AbstractWizardPanelView<LanguageSettingsWizardModel, LanguageSettingsPanelModel> implements ActionListener {
 
   // Panel specific components
   private JComboBox<String> languagesComboBox;
@@ -43,9 +43,9 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
    * @param wizard    The wizard managing the states
    * @param panelName The panel name
    */
-  public I18NSettingsPanelView(AbstractWizard<I18NSettingsWizardModel> wizard, String panelName) {
+  public LanguageSettingsPanelView(AbstractWizard<LanguageSettingsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.SHOW_I18N_WIZARD, AwesomeIcon.GLOBE);
+    super(wizard, panelName, MessageKey.SHOW_LANGUAGE_WIZARD, AwesomeIcon.GLOBE);
 
   }
 
@@ -56,7 +56,7 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
 
     // Configure the panel model
-    setPanelModel(new I18NSettingsPanelModel(
+    setPanelModel(new LanguageSettingsPanelModel(
       getPanelName(),
       configuration
     ));
@@ -72,8 +72,8 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
       "[][]" // Row constraints
     ));
 
-    I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration().deepCopy();
-    Locale locale = i18nConfiguration.getLocale();
+    LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguageConfiguration().deepCopy();
+    Locale locale = languageConfiguration.getLocale();
 
     Preconditions.checkNotNull(locale, "'locale' cannot be empty");
 
@@ -87,7 +87,7 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<I18NSettingsWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<LanguageSettingsWizardModel> wizard) {
 
     PanelDecorator.addCancelApply(this, wizard);
 
@@ -153,8 +153,8 @@ public class I18NSettingsPanelView extends AbstractWizardPanelView<I18NSettingsW
 
     // Create a new configuration to reset the separators
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
-    I18NConfiguration i18NConfiguration = new I18NConfiguration(newLocale);
-    configuration.setI18NConfiguration(i18NConfiguration);
+    LanguageConfiguration languageConfiguration = new LanguageConfiguration(newLocale);
+    configuration.setLanguageConfiguration(languageConfiguration);
 
     // Update the model
     getWizardModel().setConfiguration(configuration);

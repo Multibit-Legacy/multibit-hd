@@ -25,8 +25,8 @@ import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;
 import org.multibit.hd.ui.events.view.ThemeChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.i18n.Languages;
-import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.Models;
 import org.multibit.hd.ui.views.FooterView;
 import org.multibit.hd.ui.views.HeaderView;
@@ -211,9 +211,9 @@ public class ComponentTestBed {
       @Override
       public void actionPerformed(ActionEvent e) {
         if (Languages.currentLocale().getLanguage().startsWith("ar")) {
-          Configurations.currentConfiguration.getI18NConfiguration().setLocale(Locale.UK);
+          Configurations.currentConfiguration.getLanguageConfiguration().setLocale(Locale.UK);
         } else {
-          Configurations.currentConfiguration.getI18NConfiguration().setLocale(new Locale("ar"));
+          Configurations.currentConfiguration.getLanguageConfiguration().setLocale(new Locale("ar"));
         }
 
         JButton button = (JButton) e.getSource();

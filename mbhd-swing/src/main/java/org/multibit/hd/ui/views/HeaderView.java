@@ -9,7 +9,7 @@ import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
 import org.multibit.hd.ui.events.view.AlertAddedEvent;
 import org.multibit.hd.ui.events.view.BalanceChangedEvent;
 import org.multibit.hd.ui.events.view.ThemeChangedEvent;
-import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.Labels;

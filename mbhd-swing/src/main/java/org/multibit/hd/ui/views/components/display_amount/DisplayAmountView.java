@@ -4,10 +4,10 @@ import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configuration;
-import org.multibit.hd.core.config.I18NConfiguration;
-import org.multibit.hd.ui.i18n.Formats;
-import org.multibit.hd.ui.i18n.Languages;
-import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.core.config.LanguageConfiguration;
+import org.multibit.hd.ui.languages.Formats;
+import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.AbstractComponentView;
 import org.multibit.hd.ui.views.components.LabelDecorator;
 import org.multibit.hd.ui.views.components.Labels;
@@ -102,12 +102,12 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
 
     Preconditions.checkNotNull(configuration, "'configuration' must be present");
 
-    I18NConfiguration i18nConfiguration = configuration.getI18NConfiguration();
+    LanguageConfiguration languageConfiguration = configuration.getLanguageConfiguration();
     BitcoinConfiguration bitcoinConfiguration = configuration.getBitcoinConfiguration();
     BigInteger satoshis = getModel().get().getSatoshis();
 
     // Display using the symbolic amount
-    String[] bitcoinDisplay = Formats.formatSatoshisAsSymbolic(satoshis, i18nConfiguration, bitcoinConfiguration);
+    String[] bitcoinDisplay = Formats.formatSatoshisAsSymbolic(satoshis, languageConfiguration, bitcoinConfiguration);
 
     if (bitcoinConfiguration.isCurrencySymbolLeading()) {
       handleLeadingSymbol(bitcoinConfiguration);
@@ -122,7 +122,7 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
 
     secondaryBalanceLabel.setText(bitcoinDisplay[1]);
 
-    Locale locale = i18nConfiguration.getLocale();
+    Locale locale = languageConfiguration.getLocale();
     String localSymbol = bitcoinConfiguration.getLocalCurrencySymbol();
 
     if (getModel().get().isLocalAmountVisible()) {

@@ -7,7 +7,7 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ComponentChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardButtonEnabledEvent;
-import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
@@ -115,7 +115,7 @@ public abstract class AbstractWizardPanelView<M extends WizardModel, P> {
   /**
    * <p>Called when the wizard is first created to initialise the panel model.</p>
    *
-   * <p>This is called before {@link AbstractWizardPanelView#initialiseTitle(javax.swing.JPanel, org.multibit.hd.ui.i18n.MessageKey)} ()}</p>
+   * <p>This is called before {@link AbstractWizardPanelView#initialiseTitle(javax.swing.JPanel, org.multibit.hd.ui.languages.MessageKey)} ()}</p>
    *
    * <p>Implementers must create a new panel model and bind it to the overall wizard</p>
    */

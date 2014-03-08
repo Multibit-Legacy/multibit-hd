@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.components;
 
-import org.multibit.hd.ui.i18n.MessageKey;
-import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
@@ -26,7 +26,7 @@ public class RadioButtons {
   }
 
   /**
-   * @param key    The resource key for the i18n string
+   * @param key    The resource key for the language string
    * @param values The values to apply to the string (can be null)
    *
    * @return A new JButton with default styling
@@ -49,7 +49,7 @@ public class RadioButtons {
   }
 
   /**
-   * @param key    The resource key for the i18n string
+   * @param key    The resource key for the language string
    * @param values The values to apply to the string (can be null)
    *
    * @return A new JButton with default styling

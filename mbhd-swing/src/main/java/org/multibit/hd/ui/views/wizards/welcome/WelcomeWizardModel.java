@@ -16,7 +16,7 @@ import org.multibit.hd.core.seed_phrase.SeedPhraseSize;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;

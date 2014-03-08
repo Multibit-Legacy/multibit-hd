@@ -1,8 +1,8 @@
 package org.multibit.hd.ui.views.components;
 
 import org.multibit.hd.ui.MultiBitUI;
-import org.multibit.hd.ui.i18n.Languages;
-import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.NimbusDecorator;
@@ -52,7 +52,7 @@ public class Buttons {
   }
 
   /**
-   * @param key    The resource key for the i18n string
+   * @param key    The resource key for the language string
    * @param values The values to apply to the string (can be null)
    *
    * @return A new JButton with default styling
@@ -70,7 +70,7 @@ public class Buttons {
   }
 
   /**
-   * @param key    The resource key for the i18n string
+   * @param key    The resource key for the language string
    * @param values The values to apply to the string (can be null)
    *
    * @return A new JButton with default styling and text arranged below the icon
@@ -653,11 +653,11 @@ public class Buttons {
   /**
    * @param action The click action
    *
-   * @return A new "internationalisation settings" wizard button with icon
+   * @return A new "language settings" wizard button with icon
    */
-  public static JButton newShowI18NSettingsWizardButton(Action action) {
+  public static JButton newShowLanguageSettingsWizardButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.SHOW_I18N_WIZARD);
+    JButton button = newLargeButton(action, MessageKey.SHOW_LANGUAGE_WIZARD);
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.GLOBE,

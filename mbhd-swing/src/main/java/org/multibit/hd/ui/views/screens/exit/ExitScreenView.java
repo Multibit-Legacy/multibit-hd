@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.screens.exit;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;

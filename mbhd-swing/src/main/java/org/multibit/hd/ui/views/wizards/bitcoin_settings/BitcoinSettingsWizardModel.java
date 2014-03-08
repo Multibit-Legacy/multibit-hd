@@ -19,7 +19,7 @@ public class BitcoinSettingsWizardModel extends AbstractWizardModel<BitcoinSetti
 
   /**
    * @param state         The state object
-   * @param configuration The new configuration (require both Bitcoin and I18N details)
+   * @param configuration The new configuration (require both Bitcoin and language details)
    */
   public BitcoinSettingsWizardModel(BitcoinSettingsState state, Configuration configuration) {
     super(state);

@@ -3,7 +3,7 @@ package org.multibit.hd.ui.views.screens.settings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
-import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
@@ -24,7 +24,7 @@ import java.awt.event.ActionEvent;
  */
 public class SettingsScreenView extends AbstractScreenView<SettingsScreenModel>  {
 
-  private JButton showI18NSettingsWizardButton;
+  private JButton showLanguageSettingsWizardButton;
 
   /**
    * @param panelModel The model backing this panel view
@@ -53,11 +53,11 @@ public class SettingsScreenView extends AbstractScreenView<SettingsScreenModel> 
 
     JPanel contentPanel = Panels.newPanel(layout);
 
-    Action showI18nAction = new AbstractAction() {
+    Action showLanguageAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        Panels.showLightBox(Wizards.newI18NSettingsWizard().getWizardScreenHolder());
+        Panels.showLightBox(Wizards.newLanguageSettingsWizard().getWizardScreenHolder());
       }
     };
     Action showBitcoinAction = new AbstractAction() {
@@ -89,9 +89,9 @@ public class SettingsScreenView extends AbstractScreenView<SettingsScreenModel> 
       }
     };
 
-    showI18NSettingsWizardButton = Buttons.newShowI18NSettingsWizardButton(showI18nAction);
+    showLanguageSettingsWizardButton = Buttons.newShowLanguageSettingsWizardButton(showLanguageAction);
 
-    contentPanel.add(showI18NSettingsWizardButton, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    contentPanel.add(showLanguageSettingsWizardButton, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowBitcoinSettingsWizardButton(showBitcoinAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push");
     contentPanel.add(Buttons.newShowExchangeSettingsWizardButton(showExchangeAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push,wrap");
 
@@ -110,7 +110,7 @@ public class SettingsScreenView extends AbstractScreenView<SettingsScreenModel> 
       @Override
       public void run() {
 
-        showI18NSettingsWizardButton.requestFocusInWindow();
+        showLanguageSettingsWizardButton.requestFocusInWindow();
 
       }
     });

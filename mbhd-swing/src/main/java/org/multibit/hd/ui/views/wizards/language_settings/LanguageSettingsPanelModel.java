@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.i18n_settings;
+package org.multibit.hd.ui.views.wizards.language_settings;
 
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
@@ -12,7 +12,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
  * @since 0.0.1
  *  
  */
-public class I18NSettingsPanelModel extends AbstractWizardPanelModel {
+public class LanguageSettingsPanelModel extends AbstractWizardPanelModel {
 
   private final Configuration configuration;
 
@@ -20,7 +20,7 @@ public class I18NSettingsPanelModel extends AbstractWizardPanelModel {
    * @param panelName     The panel name
    * @param configuration The configuration to use
    */
-  public I18NSettingsPanelModel(String panelName, Configuration configuration) {
+  public LanguageSettingsPanelModel(String panelName, Configuration configuration) {
     super(panelName);
     this.configuration = configuration;
   }

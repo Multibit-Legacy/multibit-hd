@@ -1,9 +1,8 @@
 package org.multibit.hd.ui.events.controller;
 
-import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.i18n.Languages;
-import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.screens.Screen;
 import org.slf4j.Logger;

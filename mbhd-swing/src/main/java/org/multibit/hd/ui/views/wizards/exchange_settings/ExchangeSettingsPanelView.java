@@ -8,10 +8,10 @@ import org.joda.money.CurrencyUnit;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.config.I18NConfiguration;
+import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.ComboBoxes;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
@@ -81,9 +81,9 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
       "[][][]" // Row constraints
     ));
 
-    I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration().deepCopy();
+    LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguageConfiguration().deepCopy();
     BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration().deepCopy();
-    Locale locale = i18nConfiguration.getLocale();
+    Locale locale = languageConfiguration.getLocale();
 
     Preconditions.checkNotNull(locale, "'locale' cannot be empty");
 

@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.themes;
 
 import com.google.common.base.Preconditions;
-import org.multibit.hd.ui.i18n.LanguageKey;
+import org.multibit.hd.ui.languages.LanguageKey;
 
 import javax.swing.*;
 import java.awt.*;

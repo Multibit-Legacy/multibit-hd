@@ -5,11 +5,11 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.config.I18NConfiguration;
+import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.i18n.LanguageKey;
-import org.multibit.hd.ui.i18n.Languages;
-import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.languages.LanguageKey;
+import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.ComboBoxes;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
@@ -126,12 +126,12 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
 
         // Create a new configuration to reset the separators
         Configuration configuration = Configurations.currentConfiguration.deepCopy();
-        I18NConfiguration i18NConfiguration = new I18NConfiguration(newLocale);
-        configuration.setI18NConfiguration(i18NConfiguration);
+        LanguageConfiguration languageConfiguration = new LanguageConfiguration(newLocale);
+        configuration.setLanguageConfiguration(languageConfiguration);
 
         // Update the main configuration
         Configuration newConfiguration = Configurations.currentConfiguration.deepCopy();
-        newConfiguration.getI18NConfiguration().setLocale(newLocale);
+        newConfiguration.getLanguageConfiguration().setLocale(newLocale);
 
         // Make the switch immediately
         Configurations.switchConfiguration(newConfiguration);

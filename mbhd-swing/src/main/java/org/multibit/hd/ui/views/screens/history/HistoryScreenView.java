@@ -6,7 +6,7 @@ import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.events.HistoryChangedEvent;
 import org.multibit.hd.ui.events.view.ComponentChangedEvent;
 import org.multibit.hd.ui.events.view.WizardHideEvent;
-import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.enter_search.EnterSearchModel;
 import org.multibit.hd.ui.views.components.enter_search.EnterSearchView;

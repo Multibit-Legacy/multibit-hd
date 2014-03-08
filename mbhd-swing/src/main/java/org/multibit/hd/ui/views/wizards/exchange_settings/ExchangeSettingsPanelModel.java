@@ -18,7 +18,7 @@ public class ExchangeSettingsPanelModel extends AbstractWizardPanelModel {
 
   /**
    * @param panelName     The panel name
-   * @param configuration The configuration (require both Bitcoin and I18N settings)
+   * @param configuration The configuration (require both Bitcoin and language settings)
    */
   public ExchangeSettingsPanelModel(String panelName, Configuration configuration) {
     super(panelName);

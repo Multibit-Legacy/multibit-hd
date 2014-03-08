@@ -61,7 +61,7 @@ public class ConfigurationsTest {
     assertThat(properties.get(BITCOIN_IS_CURRENCY_PREFIXED)).isEqualTo("true");
 
     // Internationalisation
-    assertThat(properties.get(I18N_LOCALE).toString()).isEqualTo("en_GB");
+    assertThat(properties.get(LANGUAGE_LOCALE).toString()).isEqualTo("en_GB");
 
     // Logging
     assertThat(properties.get(LOGGING_PACKAGE_PREFIX + "org.multibit")).isEqualTo("DEBUG");

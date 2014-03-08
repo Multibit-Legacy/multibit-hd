@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.i18n_settings;
+package org.multibit.hd.ui.views.wizards.language_settings;
 
 import com.google.common.base.Optional;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -15,9 +15,9 @@ import java.util.Map;
  * @since 0.0.1
  *  
  */
-public class I18NSettingsWizard extends AbstractWizard<I18NSettingsWizardModel> {
+public class LanguageSettingsWizard extends AbstractWizard<LanguageSettingsWizardModel> {
 
-  public I18NSettingsWizard(I18NSettingsWizardModel model) {
+  public LanguageSettingsWizard(LanguageSettingsWizardModel model) {
     super(model, false, Optional.absent());
   }
 
@@ -26,8 +26,8 @@ public class I18NSettingsWizard extends AbstractWizard<I18NSettingsWizardModel> 
 
     // Use the wizard parameter to retrieve the appropriate mode
     wizardViewMap.put(
-      I18NSettingsState.I18N_ENTER_DETAILS.name(),
-      new I18NSettingsPanelView(this,I18NSettingsState.I18N_ENTER_DETAILS.name())
+      LanguageSettingsState.LANGUAGE_ENTER_DETAILS.name(),
+      new LanguageSettingsPanelView(this, LanguageSettingsState.LANGUAGE_ENTER_DETAILS.name())
     );
 
   }

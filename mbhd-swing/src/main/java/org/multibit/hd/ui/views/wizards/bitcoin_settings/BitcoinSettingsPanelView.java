@@ -7,12 +7,12 @@ import org.joda.money.BigMoney;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.config.I18NConfiguration;
+import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.i18n.Languages;
-import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountModel;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
@@ -81,9 +81,9 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
       "[][][][][][][][]" // Row constraints
     ));
 
-    I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration().deepCopy();
+    LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguageConfiguration().deepCopy();
     BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration().deepCopy();
-    Locale locale = i18nConfiguration.getLocale();
+    Locale locale = languageConfiguration.getLocale();
 
     Preconditions.checkNotNull(locale, "'locale' cannot be empty");
 

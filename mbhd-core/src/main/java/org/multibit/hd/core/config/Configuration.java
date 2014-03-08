@@ -15,7 +15,7 @@ public class Configuration {
 
   private LoggingConfiguration loggingConfiguration = new LoggingConfiguration();
 
-  private I18NConfiguration i18nConfiguration = new I18NConfiguration();
+  private LanguageConfiguration languageConfiguration = new LanguageConfiguration();
 
   private ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration();
 
@@ -24,12 +24,12 @@ public class Configuration {
   private String propertiesVersion = "0.0.1";
 
   /**
-   * <p>Shortcut to the i18n configuration</p>
+   * <p>Shortcut to the language configuration locale</p>
    *
    * @return The current locale
    */
   public Locale getLocale() {
-    return getI18NConfiguration().getLocale();
+    return getLanguageConfiguration().getLocale();
   }
 
   /**
@@ -55,14 +55,14 @@ public class Configuration {
   }
 
   /**
-   * @return The internationalisation configuration
+   * @return The language configuration
    */
-  public I18NConfiguration getI18NConfiguration() {
-    return i18nConfiguration;
+  public LanguageConfiguration getLanguageConfiguration() {
+    return languageConfiguration;
   }
 
-  public void setI18NConfiguration(I18NConfiguration i18nConfiguration) {
-    this.i18nConfiguration = i18nConfiguration;
+  public void setLanguageConfiguration(LanguageConfiguration languageConfiguration) {
+    this.languageConfiguration = languageConfiguration;
   }
 
   /**
@@ -92,7 +92,7 @@ public class Configuration {
    */
   public Configuration deepCopy() {
 
-    I18NConfiguration i18n = getI18NConfiguration().deepCopy();
+    LanguageConfiguration language = getLanguageConfiguration().deepCopy();
     ApplicationConfiguration app = getApplicationConfiguration().deepCopy();
     BitcoinConfiguration bitcoin = getBitcoinConfiguration().deepCopy();
     LoggingConfiguration logging = getLoggingConfiguration().deepCopy();
@@ -101,7 +101,7 @@ public class Configuration {
 
     // Bind the copies
     configuration.setApplicationConfiguration(app);
-    configuration.setI18NConfiguration(i18n);
+    configuration.setLanguageConfiguration(language);
     configuration.setBitcoinConfiguration(bitcoin);
     configuration.setLoggingConfiguration(logging);
 

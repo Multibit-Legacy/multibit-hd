@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.screens;
 
-import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.screens.contacts.ContactsScreenModel;
 import org.multibit.hd.ui.views.screens.contacts.ContactsScreenView;
 import org.multibit.hd.ui.views.screens.exit.ExitScreenModel;

@@ -48,8 +48,8 @@ public class Configurations {
   public static final String BITCOIN_LOCAL_CURRENCY_UNIT = "bitcoin.local-currency-unit";
   public static final String BITCOIN_LOCAL_CURRENCY_SYMBOL = "bitcoin.local-currency-symbol";
 
-  // Internationalisation (i18n)
-  public static final String I18N_LOCALE = "i18n.locale";
+  // Language
+  public static final String LANGUAGE_LOCALE = "language.locale";
 
   // Logging
   public static final String LOGGING = "logging";
@@ -93,7 +93,7 @@ public class Configurations {
     properties.put(BITCOIN_LOCAL_CURRENCY_UNIT, "USD");
 
     // Localisation
-    properties.put(I18N_LOCALE, "en_GB");
+    properties.put(LANGUAGE_LOCALE, "en_GB");
 
     // Logging
     properties.put(LOGGING_LEVEL, "warn");

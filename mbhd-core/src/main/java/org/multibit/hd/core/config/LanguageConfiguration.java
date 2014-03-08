@@ -14,11 +14,11 @@ import java.util.Locale;
  *  
  */
 @SuppressWarnings("UnusedDeclaration")
-public class I18NConfiguration {
+public class LanguageConfiguration {
 
   private Locale locale;
 
-  public I18NConfiguration() {
+  public LanguageConfiguration() {
 
     this(Locale.getDefault());
 
@@ -27,7 +27,7 @@ public class I18NConfiguration {
   /**
    * @param locale The locale on which to set defaults
    */
-  public I18NConfiguration(Locale locale) {
+  public LanguageConfiguration(Locale locale) {
     this.locale = locale;
 
   }
@@ -35,9 +35,9 @@ public class I18NConfiguration {
   /**
    * @return A deep copy of this object
    */
-  public I18NConfiguration deepCopy() {
+  public LanguageConfiguration deepCopy() {
 
-    I18NConfiguration configuration = new I18NConfiguration();
+    LanguageConfiguration configuration = new LanguageConfiguration();
 
     configuration.setLocale(getLocale());
 

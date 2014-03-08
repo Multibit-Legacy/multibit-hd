@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.i18n_settings;
+package org.multibit.hd.ui.views.wizards.language_settings;
 
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
@@ -13,7 +13,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
  * @since 0.0.1
  *  
  */
-public class I18NSettingsWizardModel extends AbstractWizardModel<I18NSettingsState> {
+public class LanguageSettingsWizardModel extends AbstractWizardModel<LanguageSettingsState> {
 
   private Configuration configuration;
 
@@ -21,7 +21,7 @@ public class I18NSettingsWizardModel extends AbstractWizardModel<I18NSettingsSta
    * @param state         The state object
    * @param configuration The configuration to use
    */
-  public I18NSettingsWizardModel(I18NSettingsState state, Configuration configuration) {
+  public LanguageSettingsWizardModel(LanguageSettingsState state, Configuration configuration) {
     super(state);
     this.configuration = configuration;
   }

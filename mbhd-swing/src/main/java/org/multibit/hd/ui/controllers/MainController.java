@@ -13,7 +13,7 @@ import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.models.Models;
 import org.multibit.hd.ui.views.components.Panels;
 import org.slf4j.Logger;

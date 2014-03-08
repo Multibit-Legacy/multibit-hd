@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.i18n;
+package org.multibit.hd.ui.languages;
 
 import org.junit.Before;
 import org.junit.Ignore;

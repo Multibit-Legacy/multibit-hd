@@ -2,8 +2,8 @@ package org.multibit.hd.ui.models;
 
 import com.google.common.base.Optional;
 import org.multibit.hd.core.dto.RAGStatus;
-import org.multibit.hd.ui.i18n.Languages;
-import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
 
 import javax.swing.*;
 

@@ -22,9 +22,9 @@ import org.multibit.hd.ui.views.wizards.exchange_settings.ExchangeSettingsWizard
 import org.multibit.hd.ui.views.wizards.exit.ExitState;
 import org.multibit.hd.ui.views.wizards.exit.ExitWizard;
 import org.multibit.hd.ui.views.wizards.exit.ExitWizardModel;
-import org.multibit.hd.ui.views.wizards.i18n_settings.I18NSettingsState;
-import org.multibit.hd.ui.views.wizards.i18n_settings.I18NSettingsWizard;
-import org.multibit.hd.ui.views.wizards.i18n_settings.I18NSettingsWizardModel;
+import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsState;
+import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsWizard;
+import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsWizardModel;
 import org.multibit.hd.ui.views.wizards.password.PasswordState;
 import org.multibit.hd.ui.views.wizards.password.PasswordWizard;
 import org.multibit.hd.ui.views.wizards.password.PasswordWizardModel;
@@ -170,12 +170,12 @@ public class Wizards {
   /**
    * @return A new "internationalisation settings" wizard for language selection
    */
-  public static I18NSettingsWizard newI18NSettingsWizard() {
+  public static LanguageSettingsWizard newLanguageSettingsWizard() {
 
     // Ensure we work with a copy of the current configuration in case of cancellation
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
 
-    return new I18NSettingsWizard(new I18NSettingsWizardModel(I18NSettingsState.I18N_ENTER_DETAILS, configuration));
+    return new LanguageSettingsWizard(new LanguageSettingsWizardModel(LanguageSettingsState.LANGUAGE_ENTER_DETAILS, configuration));
   }
 
   /**

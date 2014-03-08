@@ -44,8 +44,8 @@ public class ConfigurationReadAdapter {
       // Bitcoin
       adaptBitcoin(key, value);
 
-      // Internationalisation
-      adaptI18N(key, value);
+      // Language
+      adaptLanguage(key, value);
 
       // Logging
       if (key.startsWith(Configurations.LOGGING)) {
@@ -91,10 +91,10 @@ public class ConfigurationReadAdapter {
     }
 
   }
-  private void adaptI18N(String key, String value) {
+  private void adaptLanguage(String key, String value) {
 
-    if (Configurations.I18N_LOCALE.equalsIgnoreCase(key)) {
-      configuration.getI18NConfiguration().setLocale(value);
+    if (Configurations.LANGUAGE_LOCALE.equalsIgnoreCase(key)) {
+      configuration.getLanguageConfiguration().setLocale(value);
     }
 
   }

@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components.renderers;
 
-import org.multibit.hd.ui.i18n.LanguageKey;
+import org.multibit.hd.ui.languages.LanguageKey;
 
 import javax.swing.*;
 import java.awt.*;

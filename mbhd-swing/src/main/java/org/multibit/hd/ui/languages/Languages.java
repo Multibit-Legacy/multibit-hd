@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.i18n;
+package org.multibit.hd.ui.languages;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
@@ -22,7 +22,7 @@ import java.util.ResourceBundle;
  */
 public class Languages {
 
-  public static final String BASE_NAME = "i18n.viewer";
+  public static final String BASE_NAME = "languages.language";
 
   /**
    * Utilities have private constructors

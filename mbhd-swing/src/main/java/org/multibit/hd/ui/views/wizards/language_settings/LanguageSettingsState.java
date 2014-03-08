@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.i18n_settings;
+package org.multibit.hd.ui.views.wizards.language_settings;
 
 /**
  * <p>Enum to provide the following to "edit contact" wizard model:</p>
@@ -9,9 +9,9 @@ package org.multibit.hd.ui.views.wizards.i18n_settings;
  * @since 0.0.1
  *  
  */
-public enum I18NSettingsState {
+public enum LanguageSettingsState {
 
-  I18N_ENTER_DETAILS,
+  LANGUAGE_ENTER_DETAILS,
 
   // End of enum
   ;

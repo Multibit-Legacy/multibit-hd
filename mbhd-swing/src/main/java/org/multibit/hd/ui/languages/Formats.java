@@ -1,9 +1,9 @@
-package org.multibit.hd.ui.i18n;
+package org.multibit.hd.ui.languages;
 
 import com.google.common.base.Preconditions;
 import org.joda.money.BigMoney;
 import org.multibit.hd.core.config.BitcoinConfiguration;
-import org.multibit.hd.core.config.I18NConfiguration;
+import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.core.utils.Satoshis;
 
@@ -15,7 +15,7 @@ import java.util.Locale;
 /**
  * <p>Utility to provide the following to controllers:</p>
  * <ul>
- * <li>Access to i18n formats for date/time and decimal data</li>
+ * <li>Access to international formats for date/time and decimal data</li>
  * </ul>
  *
  * @since 0.0.1
@@ -28,22 +28,22 @@ public class Formats {
    * <p>For example, 12345.6789 becomes "12,345.67", "89" </p>
    * <p>The amount will be adjusted by the symbolic multiplier from the current confiuration</p>
    *
-   * @param satoshis             The amount in satoshis
-   * @param i18nConfiguration    The I18NConfiguration to use as the basis for presentation
-   * @param bitcoinConfiguration The Bitcoin configuration to use as the basis for the symbol
+   * @param satoshis              The amount in satoshis
+   * @param languageConfiguration The  language configuration to use as the basis for presentation
+   * @param bitcoinConfiguration  The Bitcoin configuration to use as the basis for the symbol
    *
    * @return The left [0] and right [1] components suitable for presentation as a balance with no symbolic decoration
    */
   public static String[] formatSatoshisAsSymbolic(
     BigInteger satoshis,
-    I18NConfiguration i18nConfiguration,
+    LanguageConfiguration languageConfiguration,
     BitcoinConfiguration bitcoinConfiguration
   ) {
 
     Preconditions.checkNotNull(satoshis, "'satoshis' must be present");
-    Preconditions.checkNotNull(i18nConfiguration, "'i18nConfiguration' must be present");
+    Preconditions.checkNotNull(languageConfiguration, "'languageConfiguration' must be present");
 
-    Locale currentLocale = i18nConfiguration.getLocale();
+    Locale currentLocale = languageConfiguration.getLocale();
     BitcoinSymbol bitcoinSymbol = BitcoinSymbol.of(bitcoinConfiguration.getBitcoinSymbol());
 
     DecimalFormatSymbols dfs = configureDecimalFormatSymbols(bitcoinConfiguration, currentLocale);
@@ -83,7 +83,7 @@ public class Formats {
    *
    * @param amount               The amount as a plain number (no multipliers)
    * @param locale               The locale to use
-   * @param bitcoinConfiguration The I18NConfiguration to use as the basis for presentation
+   * @param bitcoinConfiguration The Bitcoin configuration to use as the basis for the symbol
    *
    * @return The local currency representation with no symbolic decoration
    */

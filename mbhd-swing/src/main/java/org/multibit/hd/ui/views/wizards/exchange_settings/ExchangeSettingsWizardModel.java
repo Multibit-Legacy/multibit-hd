@@ -19,7 +19,7 @@ public class ExchangeSettingsWizardModel extends AbstractWizardModel<ExchangeSet
 
   /**
    * @param state         The state object
-   * @param configuration The new configuration (require both Bitcoin and I18N details)
+   * @param configuration The new configuration (require both Bitcoin and language details)
    */
   public ExchangeSettingsWizardModel(ExchangeSettingsState state, Configuration configuration) {
     super(state);

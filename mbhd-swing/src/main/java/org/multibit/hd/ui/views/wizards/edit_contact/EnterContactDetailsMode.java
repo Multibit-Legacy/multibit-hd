@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.wizards.edit_contact;
 
-import org.multibit.hd.ui.i18n.MessageKey;
+import org.multibit.hd.ui.languages.MessageKey;
 
 /**
  * <p>Enum to provide the following to "edit contact" wizard:</p>

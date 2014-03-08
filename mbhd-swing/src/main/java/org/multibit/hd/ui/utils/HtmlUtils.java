@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.utils;
 
 import com.google.common.base.Strings;
-import org.multibit.hd.ui.i18n.Languages;
+import org.multibit.hd.ui.languages.Languages;
 
 /**
  * <p>Utilities to provide the following to application:</p>
