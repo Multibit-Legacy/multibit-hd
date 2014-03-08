@@ -168,7 +168,7 @@ public class PaymentsProtobufSerializer {
             // May need to adjust the fiat payment amount to include a decimal
             String fiatPaymentAmount = fiatPaymentProto.getAmount();
 
-            amountFiatAsBigMoney = toBigMoney(fiatCurrencyCode, fiatCurrencyUnit, fiatPaymentAmount);
+            amountFiatAsBigMoney = toBigMoney(fiatCurrencyUnit, fiatPaymentAmount);
 
             fiatPayment.setAmount(amountFiatAsBigMoney);
           }
@@ -210,7 +210,7 @@ public class PaymentsProtobufSerializer {
             // May need to adjust the fiat payment amount to include a decimal
             String fiatPaymentAmount = fiatPaymentProto.getAmount();
 
-            amountFiatAsBigMoney = toBigMoney(fiatCurrencyCode, fiatCurrencyUnit, fiatPaymentAmount);
+            amountFiatAsBigMoney = toBigMoney(fiatCurrencyUnit, fiatPaymentAmount);
 
             fiatPayment.setAmount(amountFiatAsBigMoney);
           }
@@ -230,21 +230,30 @@ public class PaymentsProtobufSerializer {
     payments.setTransactionInfos(transactionInfos);
   }
 
-  private BigMoney toBigMoney(String fiatCurrencyCode, CurrencyUnit fiatCurrencyUnit, String fiatPaymentAmount) {
+  /**
+   * TODO (JB) Remove the log entries after code review
+   *
+   * @param fiatCurrencyUnit  The fiat currency unit (e.g. "USD")
+   * @param fiatPaymentAmount The fiat payment amount (e.g. "1234.56" or "USD 1234.56")
+   *
+   * @return An appropriate BigMoney representing the amount in the given currency
+   */
+  private BigMoney toBigMoney(CurrencyUnit fiatCurrencyUnit, String fiatPaymentAmount) {
+
     BigMoney amountFiatAsBigMoney;
+
     if (Numbers.isNumeric(fiatPaymentAmount)) {
+
       // Treat as amount with fiat payment provided currency ("1234.56")
-      log.debug("Treating as amount in '{}': '{}'", fiatCurrencyCode, fiatPaymentAmount);
+      log.debug("Treating as amount in '{}': '{}'", fiatCurrencyUnit.getCode(), fiatPaymentAmount);
       amountFiatAsBigMoney = BigMoney.of(fiatCurrencyUnit, new BigDecimal(fiatPaymentAmount));
     } else {
+
       // Treat as money with currency provided in the amount itself ("USD 1234.56")
-      log.debug("Treating as money in '{}': '{}'", fiatCurrencyCode, fiatPaymentAmount);
-      if (!fiatPaymentAmount.contains(".")) {
-        fiatPaymentAmount = fiatPaymentAmount + ".00";
-        log.debug("Adjusting for decimal: '{}'", fiatPaymentAmount.substring(4));
-      }
+      log.debug("Treating as money in '{}': '{}'", fiatCurrencyUnit.getCode(), fiatPaymentAmount);
       amountFiatAsBigMoney = BigMoney.of(fiatCurrencyUnit, new BigDecimal(fiatPaymentAmount.substring(4)));
     }
+
     return amountFiatAsBigMoney;
   }
 
