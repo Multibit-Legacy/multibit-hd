@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.components;
 
 import com.google.common.base.Preconditions;
+import org.multibit.hd.core.config.ApplicationConfiguration;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.Recipient;
@@ -17,6 +18,7 @@ import org.multibit.hd.ui.views.components.renderers.BackupSummaryListCellRender
 import org.multibit.hd.ui.views.components.renderers.LanguageListCellRenderer;
 import org.multibit.hd.ui.views.components.select_contact.RecipientComboBoxEditor;
 import org.multibit.hd.ui.views.components.select_contact.RecipientListCellRenderer;
+import org.multibit.hd.ui.views.themes.ThemeKey;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
@@ -40,6 +42,10 @@ public class ComboBoxes {
    * The "languages" combo box action command
    */
   public static final String LANGUAGES_COMMAND = "languages";
+  /**
+   * The "themes" combo box action command
+   */
+  public static final String THEMES_COMMAND = "themes";
   /**
    * The "Bitcoin symbol" combo box action command
    */
@@ -156,16 +162,8 @@ public class ComboBoxes {
    */
   public static JComboBox<String> newLanguagesComboBox(ActionListener listener, Locale locale) {
 
-    // Get the language names in the order they are declared
-    String[] languageNames = new String[LanguageKey.values().length];
-    int i = 0;
-    for (LanguageKey languageKey : LanguageKey.values()) {
-      languageNames[i] = languageKey.getLanguageName();
-      i++;
-    }
-
     // Populate the combo box and declare a suitable renderer
-    JComboBox<String> comboBox = newReadOnlyComboBox(languageNames);
+    JComboBox<String> comboBox = newReadOnlyComboBox(LanguageKey.localisedNames());
     comboBox.setRenderer(new LanguageListCellRenderer());
     comboBox.setMaximumRowCount(12);
 
@@ -174,6 +172,29 @@ public class ComboBoxes {
 
     // Add the listener at the end to avoid false events
     comboBox.setActionCommand(LANGUAGES_COMMAND);
+    comboBox.addActionListener(listener);
+
+    return comboBox;
+
+  }
+
+  /**
+   * @param listener                 The action listener to alert when the selection is made
+   * @param applicationConfiguration The application configuration providing
+   *
+   * @return A new "language" combo box containing all supported languages and variants
+   */
+  public static JComboBox<String> newThemesComboBox(ActionListener listener, ApplicationConfiguration applicationConfiguration) {
+
+    // Get the current themes
+    // Populate the combo box and declare a suitable renderer
+    JComboBox<String> comboBox = newReadOnlyComboBox(ThemeKey.localisedNames());
+
+    // Can use the ordinal due to the declaration ordering
+    comboBox.setSelectedIndex(ThemeKey.fromTheme(Themes.currentTheme).ordinal());
+
+    // Add the listener at the end to avoid false events
+    comboBox.setActionCommand(THEMES_COMMAND);
     comboBox.addActionListener(listener);
 
     return comboBox;

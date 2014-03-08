@@ -5,6 +5,9 @@ import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.HistoryEntry;
+import org.multibit.hd.ui.views.wizards.application_settings.ApplicationSettingsState;
+import org.multibit.hd.ui.views.wizards.application_settings.ApplicationSettingsWizard;
+import org.multibit.hd.ui.views.wizards.application_settings.ApplicationSettingsWizardModel;
 import org.multibit.hd.ui.views.wizards.bitcoin_settings.BitcoinSettingsState;
 import org.multibit.hd.ui.views.wizards.bitcoin_settings.BitcoinSettingsWizard;
 import org.multibit.hd.ui.views.wizards.bitcoin_settings.BitcoinSettingsWizardModel;
@@ -81,7 +84,7 @@ public class Wizards {
    */
   public static ExitWizard newExitWizard() {
 
-    return new ExitWizard(new ExitWizardModel(ExitState.CONFIRM_EXIT), true);
+    return new ExitWizard(new ExitWizardModel(ExitState.EXIT_CONFIRM), true);
   }
 
   /**
@@ -89,7 +92,7 @@ public class Wizards {
    */
   public static SendBitcoinWizard newSendBitcoinWizard() {
 
-    return new SendBitcoinWizard(new SendBitcoinWizardModel(SendBitcoinState.ENTER_AMOUNT), false);
+    return new SendBitcoinWizard(new SendBitcoinWizardModel(SendBitcoinState.SEND_ENTER_AMOUNT), false);
 
   }
 
@@ -98,7 +101,7 @@ public class Wizards {
    */
   public static ReceiveBitcoinWizard newRequestBitcoinWizard() {
 
-    return new ReceiveBitcoinWizard(new ReceiveBitcoinWizardModel(ReceiveBitcoinState.ENTER_AMOUNT), false);
+    return new ReceiveBitcoinWizard(new ReceiveBitcoinWizardModel(ReceiveBitcoinState.RECEIVE_ENTER_AMOUNT), false);
 
   }
 
@@ -130,7 +133,7 @@ public class Wizards {
     Preconditions.checkState(!historyEntries.isEmpty(), "'historyEntries' cannot be empty");
 
     return new EditHistoryWizard(
-      new EditHistoryWizardModel(EditHistoryState.ENTER_DETAILS, historyEntries),
+      new EditHistoryWizardModel(EditHistoryState.HISTORY_ENTER_DETAILS, historyEntries),
       mode
     );
 
@@ -171,7 +174,7 @@ public class Wizards {
   }
 
   /**
-   * @return A new "internationalisation settings" wizard for language selection
+   * @return A new "language settings" wizard for language selection
    */
   public static LanguageSettingsWizard newLanguageSettingsWizard() {
 
@@ -179,6 +182,17 @@ public class Wizards {
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
 
     return new LanguageSettingsWizard(new LanguageSettingsWizardModel(LanguageSettingsState.LANGUAGE_ENTER_DETAILS, configuration));
+  }
+
+  /**
+   * @return A new "application settings" wizard for language selection
+   */
+  public static ApplicationSettingsWizard newApplicationSettingsWizard() {
+
+    // Ensure we work with a copy of the current configuration in case of cancellation
+    Configuration configuration = Configurations.currentConfiguration.deepCopy();
+
+    return new ApplicationSettingsWizard(new ApplicationSettingsWizardModel(ApplicationSettingsState.APPLICATION_ENTER_DETAILS, configuration));
   }
 
   /**

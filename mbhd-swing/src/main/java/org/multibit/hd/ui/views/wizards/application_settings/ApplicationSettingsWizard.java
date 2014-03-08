@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.edit_history;
+package org.multibit.hd.ui.views.wizards.application_settings;
 
 import com.google.common.base.Optional;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -15,10 +15,10 @@ import java.util.Map;
  * @since 0.0.1
  *  
  */
-public class EditHistoryWizard extends AbstractWizard<EditHistoryWizardModel> {
+public class ApplicationSettingsWizard extends AbstractWizard<ApplicationSettingsWizardModel> {
 
-  public EditHistoryWizard(EditHistoryWizardModel model, EnterHistoryDetailsMode mode) {
-    super(model, false, Optional.of(mode));
+  public ApplicationSettingsWizard(ApplicationSettingsWizardModel model) {
+    super(model, false, Optional.absent());
   }
 
   @Override
@@ -26,12 +26,8 @@ public class EditHistoryWizard extends AbstractWizard<EditHistoryWizardModel> {
 
     // Use the wizard parameter to retrieve the appropriate mode
     wizardViewMap.put(
-      EditHistoryState.HISTORY_ENTER_DETAILS.name(),
-      new EditHistoryEnterDetailsPanelView(
-        this,
-        EditHistoryState.HISTORY_ENTER_DETAILS.name(),
-        (EnterHistoryDetailsMode) wizardParameter.get()
-      )
+      ApplicationSettingsState.APPLICATION_ENTER_DETAILS.name(),
+      new ApplicationSettingsPanelView(this, ApplicationSettingsState.APPLICATION_ENTER_DETAILS.name())
     );
 
   }

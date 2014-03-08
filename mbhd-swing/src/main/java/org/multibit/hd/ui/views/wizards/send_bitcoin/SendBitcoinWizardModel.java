@@ -73,10 +73,10 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   public void showNext() {
 
     switch (state) {
-      case ENTER_AMOUNT:
-        state = CONFIRM_AMOUNT;
+      case SEND_ENTER_AMOUNT:
+        state = SEND_CONFIRM_AMOUNT;
         break;
-      case CONFIRM_AMOUNT:
+      case SEND_CONFIRM_AMOUNT:
         // The user has confirmed the send details and pressed the next button
 
         // TODO - check the password is correct
@@ -89,7 +89,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
         sendBitcoin();
 
-        state = SEND_BITCOIN_REPORT;
+        state = SEND_REPORT;
         break;
     }
   }
@@ -98,11 +98,11 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   public void showPrevious() {
 
     switch (state) {
-      case ENTER_AMOUNT:
-        state = ENTER_AMOUNT;
+      case SEND_ENTER_AMOUNT:
+        state = SEND_ENTER_AMOUNT;
         break;
-      case CONFIRM_AMOUNT:
-        state = ENTER_AMOUNT;
+      case SEND_CONFIRM_AMOUNT:
+        state = SEND_ENTER_AMOUNT;
         break;
     }
 

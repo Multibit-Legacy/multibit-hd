@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.wizards.payments;
 
 /**
- * <p>Enum to provide the following to welcome wizard model:</p>
+ * <p>Enum to provide the following to "payments" wizard model:</p>
  * <ul>
  * <li>State identification</li>
  * </ul>

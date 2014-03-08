@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.wizards.receive_bitcoin;
 
 /**
- * <p>Enum to provide the following to exit wizard model:</p>
+ * <p>Enum to provide the following to "receive bitcoin" wizard model:</p>
  * <ul>
  * <li>State identification</li>
  * </ul>
@@ -11,7 +11,7 @@ package org.multibit.hd.ui.views.wizards.receive_bitcoin;
  */
 public enum ReceiveBitcoinState {
 
-  ENTER_AMOUNT,
+  RECEIVE_ENTER_AMOUNT,
 
   // End of enum
   ;

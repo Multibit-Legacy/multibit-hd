@@ -137,7 +137,7 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
   public void onWizardHideEvent(WizardHideEvent event) {
 
     // Filter other events
-    if (!event.getPanelName().equals(EditHistoryState.ENTER_DETAILS.name())) {
+    if (!event.getPanelName().equals(EditHistoryState.HISTORY_ENTER_DETAILS.name())) {
       return;
     }
 

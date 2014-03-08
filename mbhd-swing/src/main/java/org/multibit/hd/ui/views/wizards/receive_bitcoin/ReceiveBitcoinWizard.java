@@ -24,7 +24,7 @@ public class ReceiveBitcoinWizard extends AbstractWizard<ReceiveBitcoinWizardMod
   @Override
   protected void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap) {
 
-    wizardViewMap.put(ReceiveBitcoinState.ENTER_AMOUNT.name(), new ReceiveBitcoinEnterAmountPanelView(this, ReceiveBitcoinState.ENTER_AMOUNT.name()));
+    wizardViewMap.put(ReceiveBitcoinState.RECEIVE_ENTER_AMOUNT.name(), new ReceiveBitcoinEnterAmountPanelView(this, ReceiveBitcoinState.RECEIVE_ENTER_AMOUNT.name()));
 
   }
 

@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.wizards.edit_history;
 
 /**
- * <p>Enum to provide the following to "edit contact" wizard model:</p>
+ * <p>Enum to provide the following to "edit history" wizard model:</p>
  * <ul>
  * <li>State identification</li>
  * </ul>
@@ -11,7 +11,7 @@ package org.multibit.hd.ui.views.wizards.edit_history;
  */
 public enum EditHistoryState {
 
-  ENTER_DETAILS,
+  HISTORY_ENTER_DETAILS,
 
   // End of enum
   ;

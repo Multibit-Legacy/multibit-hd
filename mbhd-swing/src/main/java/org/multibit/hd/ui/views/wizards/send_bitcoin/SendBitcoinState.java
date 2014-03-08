@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 /**
- * <p>Enum to provide the following to welcome wizard model:</p>
+ * <p>Enum to provide the following to "send bitcoin" wizard model:</p>
  * <ul>
  * <li>State identification</li>
  * </ul>
@@ -11,9 +11,9 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
  */
 public enum SendBitcoinState {
 
-  ENTER_AMOUNT,
-  CONFIRM_AMOUNT,
-  SEND_BITCOIN_REPORT,
+  SEND_ENTER_AMOUNT,
+  SEND_CONFIRM_AMOUNT,
+  SEND_REPORT,
 
   // End of enum
   ;

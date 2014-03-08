@@ -139,4 +139,20 @@ public enum LanguageKey {
     }
     throw new IllegalArgumentException("'languageName' was not matched");
   }
+
+  /**
+   * @return The localised names of the languages in the order they are declared
+   */
+  public static String[] localisedNames() {
+
+    String[] languageNames = new String[LanguageKey.values().length];
+
+    int i = 0;
+    for (LanguageKey languageKey : LanguageKey.values()) {
+      languageNames[i] = languageKey.getLanguageName();
+      i++;
+    }
+
+    return languageNames;
+  }
 }

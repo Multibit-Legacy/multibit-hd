@@ -75,6 +75,9 @@ public enum MessageKey {
   EXAMPLE("example"),
 
   DISPLAY_LANGUAGE("display_language"),
+
+  DISPLAY_THEME("display_theme"),
+
   SELECT_DECIMAL_SEPARATOR("select_decimal_separator"),
   SELECT_GROUPING_SEPARATOR("select_grouping_separator"),
   SELECT_LOCAL_SYMBOL("select_local_symbol"),
@@ -253,6 +256,8 @@ public enum MessageKey {
 
   LANGUAGE_CHANGE_NOTE_1("language_change_note_1"),
 
+  THEME_CHANGE_NOTE_1("theme_change_note_1"),
+
   RECIPIENT_SUMMARY("recipient_summary"),
   AMOUNT_SUMMARY("amount_summary"),
 
@@ -264,7 +269,11 @@ public enum MessageKey {
   // Payments panel
   DETAILS("details"),
   EXPORT("export"),
-  DELETE_PAYMENT_REQUEST("delete_payment_request")
+  DELETE_PAYMENT_REQUEST("delete_payment_request"),
+
+  // Themes
+  LIGHT_THEME("light_theme"),
+  DARK_THEME("dark_theme"),
 
   // End of enum
   ;

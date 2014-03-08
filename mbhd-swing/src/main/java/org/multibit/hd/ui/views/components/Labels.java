@@ -338,6 +338,15 @@ public class Labels {
   }
 
   /**
+   * @return A new "select theme" label
+   */
+  public static JLabel newSelectThemeLabel() {
+
+    return Labels.newLabel(MessageKey.DISPLAY_THEME);
+
+  }
+
+  /**
    * @return A new "select decimal separator" label
    */
   public static JLabel newSelectDecimalLabel() {
@@ -755,6 +764,17 @@ public class Labels {
    * @return A new "language change" note
    */
   public static JLabel newLanguageChangeNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.LANGUAGE_CHANGE_NOTE_1
+    }, new Object[][]{});
+
+  }
+
+  /**
+   * @return A new "theme change" note
+   */
+  public static JLabel newThemeChangeNote() {
 
     return newNoteLabel(new MessageKey[]{
       MessageKey.LANGUAGE_CHANGE_NOTE_1

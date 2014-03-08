@@ -62,4 +62,5 @@ public class Themes {
   public static String toHexString(Color color) {
     return Integer.toHexString(color.getRGB());
   }
+
 }

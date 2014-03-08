@@ -16,6 +16,9 @@ import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.models.Models;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.themes.Theme;
+import org.multibit.hd.ui.views.themes.ThemeKey;
+import org.multibit.hd.ui.views.themes.Themes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +57,39 @@ public class MainController {
 
     Preconditions.checkNotNull(event, "'event' must be present");
 
+    // Switch the theme before any other UI building takes place
+    handleTheme();
+
+    // Rebuild MainView contents
+    handleLocale();
+
+    // Allow time for the views to update
+    Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+
+    // Ensure the Swing thread can perform a complete refresh
+    SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+        Panels.frame.invalidate();
+      }
+    });
+
+  }
+
+  /**
+   * Handles the changes to the theme
+   */
+  private void handleTheme() {
+
+    Theme newTheme = ThemeKey.valueOf(Configurations.currentConfiguration.getApplicationConfiguration().getCurrentTheme()).theme();
+    Themes.switchTheme(newTheme);
+
+  }
+
+  /**
+   * Handles the changes to the locale (resource bundle change, frame locale, component orientation etc)
+   */
+  private void handleLocale() {
+
     Locale locale = Configurations.currentConfiguration.getLocale();
 
     // Ensure the resource bundle is reset
@@ -67,17 +103,6 @@ public class MainController {
 
     // Update the views to use the new locale (and any other relevant configuration)
     ViewEvents.fireLocaleChangedEvent();
-
-    // Allow time for the views to update
-    Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
-
-    // Ensure the Swing thread can perform a complete refresh
-    SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        Panels.frame.invalidate();
-      }
-    });
-
   }
 
   @Subscribe
