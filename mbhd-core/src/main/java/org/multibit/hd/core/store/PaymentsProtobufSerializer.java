@@ -28,6 +28,7 @@ import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.protobuf.MBHDContactsProtos;
 import org.multibit.hd.core.protobuf.MBHDPaymentsProtos;
+import org.multibit.hd.core.utils.Numbers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -153,12 +154,22 @@ public class PaymentsProtobufSerializer {
         }
 
         if (paymentRequestProto.hasAmountFiat()) {
+
           FiatPayment fiatPayment = new FiatPayment();
           paymentRequestData.setAmountFiat(fiatPayment);
           MBHDPaymentsProtos.FiatPayment fiatPaymentProto = paymentRequestProto.getAmountFiat();
+
           if (fiatPaymentProto.hasCurrency()) {
-            // TODO check parse failures
-            BigMoney amountFiatAsBigMoney = BigMoney.of(CurrencyUnit.getInstance(fiatPaymentProto.getCurrency()), new BigDecimal(fiatPaymentProto.getAmount()));
+
+            final BigMoney amountFiatAsBigMoney;
+            final String fiatCurrencyCode = fiatPaymentProto.getCurrency();
+            final CurrencyUnit fiatCurrencyUnit = CurrencyUnit.getInstance(fiatCurrencyCode);
+
+            // May need to adjust the fiat payment amount to include a decimal
+            String fiatPaymentAmount = fiatPaymentProto.getAmount();
+
+            amountFiatAsBigMoney = toBigMoney(fiatCurrencyCode, fiatCurrencyUnit, fiatPaymentAmount);
+
             fiatPayment.setAmount(amountFiatAsBigMoney);
           }
           if (fiatPaymentProto.hasExchange()) {
@@ -191,8 +202,16 @@ public class PaymentsProtobufSerializer {
           transactionInfo.setAmountFiat(fiatPayment);
           MBHDPaymentsProtos.FiatPayment fiatPaymentProto = transactionInfoProto.getAmountFiat();
           if (fiatPaymentProto.hasCurrency()) {
-            // TODO check parse failures
-            BigMoney amountFiatAsBigMoney = BigMoney.of(CurrencyUnit.getInstance(fiatPaymentProto.getCurrency()), new BigDecimal(fiatPaymentProto.getAmount()));
+
+            final BigMoney amountFiatAsBigMoney;
+            final String fiatCurrencyCode = fiatPaymentProto.getCurrency();
+            final CurrencyUnit fiatCurrencyUnit = CurrencyUnit.getInstance(fiatCurrencyCode);
+
+            // May need to adjust the fiat payment amount to include a decimal
+            String fiatPaymentAmount = fiatPaymentProto.getAmount();
+
+            amountFiatAsBigMoney = toBigMoney(fiatCurrencyCode, fiatCurrencyUnit, fiatPaymentAmount);
+
             fiatPayment.setAmount(amountFiatAsBigMoney);
           }
           if (fiatPaymentProto.hasExchange()) {
@@ -209,6 +228,24 @@ public class PaymentsProtobufSerializer {
 
     payments.setPaymentRequestDatas(paymentRequestDatas);
     payments.setTransactionInfos(transactionInfos);
+  }
+
+  private BigMoney toBigMoney(String fiatCurrencyCode, CurrencyUnit fiatCurrencyUnit, String fiatPaymentAmount) {
+    BigMoney amountFiatAsBigMoney;
+    if (Numbers.isNumeric(fiatPaymentAmount)) {
+      // Treat as amount with fiat payment provided currency ("1234.56")
+      log.debug("Treating as amount in '{}': '{}'", fiatCurrencyCode, fiatPaymentAmount);
+      amountFiatAsBigMoney = BigMoney.of(fiatCurrencyUnit, new BigDecimal(fiatPaymentAmount));
+    } else {
+      // Treat as money with currency provided in the amount itself ("USD 1234.56")
+      log.debug("Treating as money in '{}': '{}'", fiatCurrencyCode, fiatPaymentAmount);
+      if (!fiatPaymentAmount.contains(".")) {
+        fiatPaymentAmount = fiatPaymentAmount + ".00";
+        log.debug("Adjusting for decimal: '{}'", fiatPaymentAmount.substring(4));
+      }
+      amountFiatAsBigMoney = BigMoney.of(fiatCurrencyUnit, new BigDecimal(fiatPaymentAmount.substring(4)));
+    }
+    return amountFiatAsBigMoney;
   }
 
   /**
