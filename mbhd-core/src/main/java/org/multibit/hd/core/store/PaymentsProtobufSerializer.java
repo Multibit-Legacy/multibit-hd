@@ -251,7 +251,12 @@ public class PaymentsProtobufSerializer {
 
       // Treat as money with currency provided in the amount itself ("USD 1234.56")
       log.debug("Treating as money in '{}': '{}'", fiatCurrencyUnit.getCode(), fiatPaymentAmount);
-      amountFiatAsBigMoney = BigMoney.of(fiatCurrencyUnit, new BigDecimal(fiatPaymentAmount.substring(4)));
+      if  (fiatPaymentAmount.length() > 4) {
+        amountFiatAsBigMoney = BigMoney.of(fiatCurrencyUnit, new BigDecimal(fiatPaymentAmount.substring(4)));
+      } else {
+        // don't know what format this is in - no fiat amount available
+        amountFiatAsBigMoney = null;
+      }
     }
 
     return amountFiatAsBigMoney;
