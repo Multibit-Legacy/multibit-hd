@@ -71,7 +71,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     MigLayout layout = new MigLayout(
       Panels.migLayout("fill,insets 10 5 0 0"),
       "[][][][][]push[]", // Column constraints
-      "[]" // Row constraints
+      "[shrink][shrink][grow]" // Row constraints
     );
 
     // Create view components
@@ -105,7 +105,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     contentPanel.add(undoButton, "shrink");
     contentPanel.add(Labels.newBlankLabel(), "growx,push,wrap"); // Empty label to pack buttons
 
-    contentPanel.add(scrollPane, "span 6, grow");
+    contentPanel.add(scrollPane, "span 6, grow, push");
 
     return contentPanel;
   }

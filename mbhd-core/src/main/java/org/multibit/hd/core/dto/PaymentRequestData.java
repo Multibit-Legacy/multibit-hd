@@ -102,11 +102,6 @@ public class PaymentRequestData implements PaymentData {
   }
 
   @Override
-  public int getDepth() {
-    return  -1; // no depth for payment requests
-  }
-
-  @Override
   public String getDescription() {
     // TODO localise
     StringBuilder builder = new StringBuilder();
@@ -151,8 +146,8 @@ public class PaymentRequestData implements PaymentData {
   }
 
   @Override
-  public RAGStatus getStatus() {
-    return RAGStatus.PINK;
+  public RAGStatusWithOrdinal getStatus() {
+    return new RAGStatusWithOrdinal(RAGStatusWithOrdinal.PINK);
   }
 
   @Override

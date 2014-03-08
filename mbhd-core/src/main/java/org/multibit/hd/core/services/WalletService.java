@@ -198,7 +198,7 @@ public class WalletService {
       }
     }
 
-    RAGStatus status = calculateStatus(transaction);
+    RAGStatusWithOrdinal statusWithOrdinal = calculateStatus(transaction);
 
     PaymentType paymentType;
     if (amountBTC.compareTo(BigInteger.ZERO) < 0) {
@@ -283,8 +283,8 @@ public class WalletService {
     }
 
     // Create the DTO from the raw transaction info
-    TransactionData transactionData = new TransactionData(transactionHashAsString, new DateTime(updateTime), status, amountBTC, amountFiat,
-            Optional.<BigInteger>absent(), confidenceType, paymentType, depth, description, transaction.isCoinBase());
+    TransactionData transactionData = new TransactionData(transactionHashAsString, new DateTime(updateTime), statusWithOrdinal, amountBTC, amountFiat,
+            Optional.<BigInteger>absent(), confidenceType, paymentType, description, transaction.isCoinBase());
 
     // See if there is a transactionInfo for this transaction
     TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
@@ -308,7 +308,7 @@ public class WalletService {
   }
 
   /**
-   * Calculate the RAGstatus of the transaction:
+   * Calculate the RAGstatusWithOrdinal of the transaction:
    * + RED   = tx is dead, double spend, failed to be transmitted to the network
    * + AMBER = tx is unconfirmed
    * + GREEN = tx is confirmed
@@ -316,33 +316,35 @@ public class WalletService {
    * @param transaction
    * @return status of the transaction
    */
-  private static RAGStatus calculateStatus(Transaction transaction) {
+  private static RAGStatusWithOrdinal calculateStatus(Transaction transaction) {
     if (transaction.getConfidence() != null) {
       TransactionConfidence.ConfidenceType confidenceType = transaction.getConfidence().getConfidenceType();
 
       if (TransactionConfidence.ConfidenceType.BUILDING.equals(confidenceType)) {
         // Confirmed
-        return RAGStatus.GREEN;
+        RAGStatusWithOrdinal status = new RAGStatusWithOrdinal(RAGStatusWithOrdinal.GREEN);
+        status.setOrdinal(transaction.getConfidence().getDepthInBlocks());
+        return status;
       } else if (TransactionConfidence.ConfidenceType.PENDING.equals(confidenceType)) {
         if (transaction.getConfidence().numBroadcastPeers() >= 2) {
           // Seen by the network but not confirmed yet
-          return RAGStatus.AMBER;
+          return new RAGStatusWithOrdinal(RAGStatusWithOrdinal.AMBER);
         } else {
           // Not out in the network
-          return RAGStatus.RED;
+          return new RAGStatusWithOrdinal(RAGStatusWithOrdinal.RED);
         }
       } else if (TransactionConfidence.ConfidenceType.DEAD.equals(confidenceType)) {
         // Dead
-        return RAGStatus.RED;
+        return new RAGStatusWithOrdinal(RAGStatusWithOrdinal.RED);
       } else if (TransactionConfidence.ConfidenceType.UNKNOWN.equals(confidenceType)) {
         // Unknown
-        return RAGStatus.AMBER;
+        return new RAGStatusWithOrdinal(RAGStatusWithOrdinal.AMBER);
       }
     } else {
       // No transaction status - don't know
-      return RAGStatus.AMBER;
+      return new RAGStatusWithOrdinal(RAGStatusWithOrdinal.AMBER);
     }
-    return RAGStatus.AMBER;
+    return new RAGStatusWithOrdinal(RAGStatusWithOrdinal.AMBER);
   }
 
   /**

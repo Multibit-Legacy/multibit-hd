@@ -150,7 +150,7 @@ public class Tables {
 
     // Comparator for status
     // TODO not comparing depth
-    Comparator<RAGStatus> comparatorStatus = newStatusComparator();
+    Comparator<RAGStatusWithOrdinal> comparatorStatus = newStatusComparator();
     rowSorter.setComparator(PaymentTableModel.STATUS_COLUMN_INDEX, comparatorStatus);
 
      // Comparator for payment type
@@ -246,20 +246,20 @@ public class Tables {
   /**
     * @return A new status comparator for use with a TableRowSorter
     */
-   private static Comparator<RAGStatus> newStatusComparator() {
+   private static Comparator<RAGStatusWithOrdinal> newStatusComparator() {
 
-     return new Comparator<RAGStatus>() {
+     return new Comparator<RAGStatusWithOrdinal>() {
 
 
 
        @Override
-       public int compare(RAGStatus o1, RAGStatus o2) {
+       public int compare(RAGStatusWithOrdinal o1, RAGStatusWithOrdinal o2) {
 
          if (o1 != null && o2 == null) {
            return 1;
          }
 
-         return o1 != null ? o1.compareTo(o2) : 0;
+         return o1 != null ? o1.compareToWithOrdinal(o2) : 0;
 
        }
      };

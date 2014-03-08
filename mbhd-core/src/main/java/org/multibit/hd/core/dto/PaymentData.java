@@ -15,7 +15,7 @@ public interface PaymentData {
 
   public PaymentType getType();
 
-  public RAGStatus getStatus();
+  public RAGStatusWithOrdinal getStatus();
 
   public DateTime getDate();
 
@@ -31,9 +31,4 @@ public interface PaymentData {
    * @return true if transaction is a coinbase, false if not coinbase or not a transaction
    */
   public boolean isCoinBase();
-
-  /**
-   * @return number of confirmations if transaction (0,1,2,3) or -1 if not a transaction
-   */
-  public int getDepth();
 }

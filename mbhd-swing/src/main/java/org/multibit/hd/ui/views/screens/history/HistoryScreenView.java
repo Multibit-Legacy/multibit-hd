@@ -63,7 +63,7 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
 
     MigLayout layout = new MigLayout(
       Panels.migLayout("fill,insets 10 5 0 0"),
-      "[][][][][]push[]", // Column constraints
+      "[][]push[][]", // Column constraints
       "[shrink][shrink][grow]" // Row constraints
     );
 

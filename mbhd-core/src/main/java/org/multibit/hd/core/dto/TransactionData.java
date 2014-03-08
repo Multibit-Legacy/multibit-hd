@@ -17,7 +17,7 @@ import java.math.BigInteger;
 
 public class TransactionData implements PaymentData {
 
-  private final RAGStatus status;
+  private final RAGStatusWithOrdinal statusWithOrdinal;
 
   private final String transactionId;
 
@@ -26,8 +26,6 @@ public class TransactionData implements PaymentData {
   private FiatPayment amountFiat;
 
   private final Optional<BigInteger> feeOnSendBTC;
-
-  private final int depth;
 
   private final TransactionConfidence.ConfidenceType confidenceType;
 
@@ -41,18 +39,17 @@ public class TransactionData implements PaymentData {
 
   private final boolean coinBase;
 
-  public TransactionData(String transactionId, DateTime date, RAGStatus status,
+  public TransactionData(String transactionId, DateTime date, RAGStatusWithOrdinal statusWithOrdinal,
                          BigInteger amountBTC, FiatPayment amountFiat, Optional<BigInteger> feeOnSendBTC,
-                         TransactionConfidence.ConfidenceType confidenceType, PaymentType type, int depth, String description, boolean coinBase) {
+                         TransactionConfidence.ConfidenceType confidenceType, PaymentType type, String description, boolean coinBase) {
     this.transactionId = transactionId;
     this.date = date;
-    this.status = status;
+    this.statusWithOrdinal = statusWithOrdinal;
     this.amountBTC = amountBTC;
     this.amountFiat = amountFiat;
     this.feeOnSendBTC = feeOnSendBTC;
     this.confidenceType = confidenceType;
     this.type = type;
-    this.depth = depth;
     this.description = description;
     this.coinBase = coinBase;
   }
@@ -61,11 +58,10 @@ public class TransactionData implements PaymentData {
   public String toString() {
     return "TransactionData{" +
             "transactionId='" + transactionId + '\'' +
-            "status=" + status +
+            "statusWithOrdinal=" + statusWithOrdinal +
             ", amountBTC=" + amountBTC +
             ", amountFiat=" + amountFiat +
             ", feeOnSendBTC=" + feeOnSendBTC +
-            ", depth=" + depth +
             ", confidenceType=" + confidenceType +
             ", type=" + type +
             ", date=" + date +
@@ -81,8 +77,7 @@ public class TransactionData implements PaymentData {
 
     TransactionData that = (TransactionData) o;
 
-    if (depth != that.depth) return false;
-    if (status != that.status) return false;
+    if (statusWithOrdinal != that.statusWithOrdinal) return false;
     if (!amountBTC.equals(that.amountBTC)) return false;
     if (!amountFiat.equals(that.amountFiat)) return false;
     if (confidenceType != that.confidenceType) return false;
@@ -99,11 +94,10 @@ public class TransactionData implements PaymentData {
   @Override
   public int hashCode() {
     int result = transactionId.hashCode();
-    result = 31 * result + status.hashCode();
+    result = 31 * result + statusWithOrdinal.hashCode();
     result = 31 * result + amountBTC.hashCode();
     result = 31 * result + amountFiat.hashCode();
     result = 31 * result + feeOnSendBTC.hashCode();
-    result = 31 * result + depth;
     result = 31 * result + confidenceType.hashCode();
     result = 31 * result + type.hashCode();
     result = 31 * result + date.hashCode();
@@ -124,11 +118,6 @@ public class TransactionData implements PaymentData {
     return feeOnSendBTC;
   }
 
-  @Override
-  public int getDepth() {
-    return depth;
-  }
-
   public TransactionConfidence.ConfidenceType getConfidenceType() {
     return confidenceType;
   }
@@ -138,8 +127,8 @@ public class TransactionData implements PaymentData {
   }
 
   @Override
-  public RAGStatus getStatus() {
-    return status;
+  public RAGStatusWithOrdinal getStatus() {
+    return statusWithOrdinal;
   }
 
   public PaymentType getType() {
