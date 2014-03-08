@@ -50,7 +50,7 @@ public class RAGStatusWithOrdinal {
   /**
    * Order as RED < PINK < AMBER < GREEN < EMPTY and then order by the ordinal within GREEN
    *
-   * @param other
+   * @param other the RAGStatusWithOrdinal to compare to
    * @return the relative order (as per Comparable)
    */
   public int compareToWithOrdinal(RAGStatusWithOrdinal other) {
