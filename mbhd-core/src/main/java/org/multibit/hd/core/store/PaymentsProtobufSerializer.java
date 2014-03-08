@@ -20,6 +20,8 @@ package org.multibit.hd.core.store;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import org.joda.money.BigMoney;
+import org.joda.money.CurrencyUnit;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.PaymentRequestData;
@@ -32,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.List;
@@ -153,9 +156,10 @@ public class PaymentsProtobufSerializer {
           FiatPayment fiatPayment = new FiatPayment();
           paymentRequestData.setAmountFiat(fiatPayment);
           MBHDPaymentsProtos.FiatPayment fiatPaymentProto = paymentRequestProto.getAmountFiat();
-          fiatPayment.setAmount(fiatPaymentProto.getAmount());
           if (fiatPaymentProto.hasCurrency()) {
-            fiatPayment.setCurrency(fiatPaymentProto.getCurrency());
+            // TODO check parse failures
+            BigMoney amountFiatAsBigMoney = BigMoney.of(CurrencyUnit.getInstance(fiatPaymentProto.getCurrency()), new BigDecimal(fiatPaymentProto.getAmount()));
+            fiatPayment.setAmount(amountFiatAsBigMoney);
           }
           if (fiatPaymentProto.hasExchange()) {
             fiatPayment.setExchange(fiatPaymentProto.getExchange());
@@ -186,9 +190,10 @@ public class PaymentsProtobufSerializer {
           FiatPayment fiatPayment = new FiatPayment();
           transactionInfo.setAmountFiat(fiatPayment);
           MBHDPaymentsProtos.FiatPayment fiatPaymentProto = transactionInfoProto.getAmountFiat();
-          fiatPayment.setAmount(fiatPaymentProto.getAmount());
           if (fiatPaymentProto.hasCurrency()) {
-            fiatPayment.setCurrency(fiatPaymentProto.getCurrency());
+            // TODO check parse failures
+            BigMoney amountFiatAsBigMoney = BigMoney.of(CurrencyUnit.getInstance(fiatPaymentProto.getCurrency()), new BigDecimal(fiatPaymentProto.getAmount()));
+            fiatPayment.setAmount(amountFiatAsBigMoney);
           }
           if (fiatPaymentProto.hasExchange()) {
             fiatPayment.setExchange(fiatPaymentProto.getExchange());
@@ -225,8 +230,8 @@ public class PaymentsProtobufSerializer {
     FiatPayment fiatPayment = paymentRequestData.getAmountFiat();
     if (fiatPayment != null) {
       MBHDPaymentsProtos.FiatPayment.Builder fiatPaymentBuilder = MBHDPaymentsProtos.FiatPayment.newBuilder();
-      fiatPaymentBuilder.setAmount(fiatPayment.getAmount());
-      fiatPaymentBuilder.setCurrency(fiatPayment.getCurrency() == null ? "" : fiatPayment.getCurrency());
+      fiatPaymentBuilder.setAmount(fiatPayment.getAmount().getAmount().stripTrailingZeros().toPlainString());
+      fiatPaymentBuilder.setCurrency(fiatPayment.getAmount().getCurrencyUnit().toString());
       fiatPaymentBuilder.setExchange(fiatPayment.getExchange() == null ? "" : fiatPayment.getExchange());
       fiatPaymentBuilder.setRate(fiatPayment.getRate() == null ? "" : fiatPayment.getRate());
 
@@ -258,8 +263,8 @@ public class PaymentsProtobufSerializer {
     FiatPayment fiatPayment = transactionInfo.getAmountFiat();
     if (fiatPayment != null) {
       MBHDPaymentsProtos.FiatPayment.Builder fiatPaymentBuilder = MBHDPaymentsProtos.FiatPayment.newBuilder();
-      fiatPaymentBuilder.setAmount(fiatPayment.getAmount() == null ? "" : fiatPayment.getAmount());
-      fiatPaymentBuilder.setCurrency(fiatPayment.getCurrency() == null ? "" : fiatPayment.getCurrency());
+      fiatPaymentBuilder.setAmount(fiatPayment.getAmount().getAmount().stripTrailingZeros().toPlainString());
+      fiatPaymentBuilder.setCurrency(fiatPayment.getAmount().getCurrencyUnit().toString());
       fiatPaymentBuilder.setExchange(fiatPayment.getExchange() == null ? "" : fiatPayment.getExchange());
       fiatPaymentBuilder.setRate(fiatPayment.getRate() == null ? "" : fiatPayment.getRate());
 

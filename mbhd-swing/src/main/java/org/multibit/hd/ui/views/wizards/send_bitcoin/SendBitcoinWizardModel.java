@@ -144,8 +144,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     }
     transactionInfo.setNote(note);
     FiatPayment fiatPayment = new FiatPayment();
-    fiatPayment.setAmount(getLocalAmount().getAmount().stripTrailingZeros().toPlainString());
-    fiatPayment.setCurrency(Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencyUnit().getCurrencyCode());
+    fiatPayment.setAmount(getLocalAmount());
     fiatPayment.setExchange(Configurations.currentConfiguration.getBitcoinConfiguration().getExchangeName());
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
     if (exchangeRateChangedEvent.isPresent()) {

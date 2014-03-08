@@ -41,21 +41,19 @@ public class AmountFiatTableCellRenderer extends DefaultTableCellRenderer {
 
     if (value instanceof FiatPayment) {
 
-      // Do the Bitcoin processing
-
       FiatPayment fiatPayment = (FiatPayment) value;
 
-      if (!(fiatPayment.getAmount() == null) && !"".equals(fiatPayment.getAmount())) {
+      if (!(fiatPayment.getAmount() == null)) {
+        BigMoney amountAsBigMoney = fiatPayment.getAmount();
         try {
-          Double amountAsDouble = Double.parseDouble(fiatPayment.getAmount());
           I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration();
           BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
 
-          String balance = Formats.formatLocalAmount(BigMoney.of(bitcoinConfiguration.getLocalCurrencyUnit(), amountAsDouble), i18nConfiguration.getLocale(), bitcoinConfiguration);
+          String balance = Formats.formatLocalAmount(amountAsBigMoney, i18nConfiguration.getLocale(), bitcoinConfiguration);
 
           label.setText(balance + TrailingJustifiedDateTableCellRenderer.SPACER);
 
-          if (amountAsDouble < 0) {
+          if (amountAsBigMoney.isNegativeOrZero()) {
             // Debit
             if (isSelected) {
               label.setForeground(table.getSelectionForeground());

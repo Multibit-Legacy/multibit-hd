@@ -270,18 +270,16 @@ public class WalletService {
 
     // Work out the fiat equivalent of the bitcoin payment
     FiatPayment amountFiat = new FiatPayment();
-    amountFiat.setCurrency(Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencyUnit().getCurrencyCode());
     amountFiat.setExchange(Configurations.currentConfiguration.getBitcoinConfiguration().getExchangeName());
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
     if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
 
       amountFiat.setRate(exchangeRateChangedEvent.get().getRate().toString());
       BigMoney localAmount = Satoshis.toLocalAmount(amountBTC, exchangeRateChangedEvent.get().getRate());
-      // TODO check if the currency is different to that in the header.
-      amountFiat.setAmount(localAmount.getAmount().stripTrailingZeros().toPlainString());
+      amountFiat.setAmount(localAmount);
     } else {
       amountFiat.setRate("");
-      amountFiat.setAmount((""));
+      amountFiat.setAmount(null);
     }
 
     // Create the DTO from the raw transaction info
