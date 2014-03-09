@@ -149,7 +149,6 @@ public class Tables {
     rowSorter.setComparator(PaymentTableModel.DATE_COLUMN_INDEX, comparatorDate);
 
     // Comparator for status
-    // TODO not comparing depth
     Comparator<RAGStatusWithOrdinal> comparatorStatus = newStatusComparator();
     rowSorter.setComparator(PaymentTableModel.STATUS_COLUMN_INDEX, comparatorStatus);
 
@@ -165,7 +164,7 @@ public class Tables {
     Comparator<FiatPayment> comparatorFiatPayment = newFiatPaymentComparator();
     rowSorter.setComparator(PaymentTableModel.AMOUNT_FIAT_COLUMN_INDEX, comparatorFiatPayment);
 
-     justifyColumnHeaders(table);
+    justifyColumnHeaders(table);
 
     return table;
   }

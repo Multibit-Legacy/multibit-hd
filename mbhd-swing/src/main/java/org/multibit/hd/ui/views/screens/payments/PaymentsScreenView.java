@@ -187,9 +187,10 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
            return;
          }
          int selectedModelRow = paymentsTable.convertRowIndexToModel(selectedTableRow);
-         log.debug("getDetailsAction : selectedTableRow = " + selectedTableRow + ", selectedModelRow = " + selectedModelRow);
+         PaymentData paymentData = ((PaymentTableModel)paymentsTable.getModel()).getPaymentData().get(selectedModelRow);
+         log.debug("getDetailsAction : selectedTableRow = " + selectedTableRow + ", selectedModelRow = " + selectedModelRow + ", paymentData = " + paymentData.toString());
 
-         Panels.showLightBox(Wizards.newPaymentsWizard().getWizardScreenHolder());
+         Panels.showLightBox(Wizards.newPaymentsWizard(paymentData).getWizardScreenHolder());
 
        }
      };
