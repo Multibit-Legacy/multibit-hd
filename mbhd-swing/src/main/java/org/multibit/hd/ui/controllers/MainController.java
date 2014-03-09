@@ -1,8 +1,10 @@
 package org.multibit.hd.ui.controllers;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.CoreMessageKey;
@@ -10,7 +12,9 @@ import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.events.ConfigurationChangedEvent;
 import org.multibit.hd.core.events.SecurityEvent;
+import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.services.ExchangeTickerService;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
@@ -39,6 +43,8 @@ public class MainController {
 
   private static final Logger log = LoggerFactory.getLogger(MainController.class);
 
+  private Optional<ExchangeTickerService> exchangeTickerService = Optional.absent();
+
   public MainController() {
 
     CoreServices.uiEventBus.register(this);
@@ -57,6 +63,9 @@ public class MainController {
 
     Preconditions.checkNotNull(event, "'event' must be present");
 
+    // Switch the exchange ticker service
+    handleExchange();
+
     // Switch the theme before any other UI building takes place
     handleTheme();
 
@@ -70,6 +79,31 @@ public class MainController {
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {
         Panels.frame.invalidate();
+      }
+    });
+
+  }
+
+  /**
+   * Handles the changes to the exchange ticker service
+   */
+  private void handleExchange() {
+
+    // Don't hold up the UI if the exchange doesn't respond
+    SafeExecutors.newFixedThreadPool(1).execute(new Runnable() {
+      @Override
+      public void run() {
+        ExchangeKey exchangeKey = ExchangeKey.valueOf(Configurations.currentConfiguration.getBitcoinConfiguration().getExchangeKey());
+
+        // Stop (with block) any existing exchange ticker service
+        if (exchangeTickerService.isPresent()) {
+          exchangeTickerService.get().stopAndWait();
+        }
+
+        exchangeTickerService = Optional.of(CoreServices.newExchangeService(exchangeKey));
+
+        // Start up the exchange service
+        exchangeTickerService.get().start();
       }
     });
 

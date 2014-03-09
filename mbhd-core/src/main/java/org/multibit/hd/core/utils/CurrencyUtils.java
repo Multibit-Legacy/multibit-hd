@@ -3,6 +3,7 @@ package org.multibit.hd.core.utils;
 import com.google.common.collect.Maps;
 import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
+import org.multibit.hd.core.config.Configurations;
 
 import java.util.Comparator;
 import java.util.Currency;
@@ -62,11 +63,11 @@ public class CurrencyUtils {
   }
 
   /**
-   * @return The current local currency unit
+   * @return The current local currency unit from the configuration
    */
   public static CurrencyUnit currentUnit() {
 
-    return CurrencyUnit.getInstance(Locale.getDefault());
+    return Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencyUnit();
 
   }
 

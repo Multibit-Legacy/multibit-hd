@@ -3,17 +3,14 @@ package org.multibit.hd.ui;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.multibit.hd.core.concurrent.SafeExecutors;
-import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
-import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.core.services.ExchangeTickerService;
 import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.core.utils.OSUtils;
 import org.multibit.hd.ui.audio.Sounds;
@@ -185,8 +182,6 @@ public class MultiBitHD {
       @Override
       public void run() {
 
-        startExchangeService();
-
         startBitcoinNetworkService();
 
       }
@@ -236,25 +231,12 @@ public class MultiBitHD {
   }
 
   /**
-   * <p>Start the exchange service (support)</p>
-   */
-  private static void startExchangeService() {
-
-    ExchangeKey exchangeKey = ExchangeKey.valueOf(Configurations.currentConfiguration.getBitcoinConfiguration().getExchangeKey());
-    ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(ExchangeKey.BITSTAMP);
-    bitcoinNetworkService = CoreServices.newBitcoinNetworkService();
-
-    // Start up the exchange service
-    exchangeTickerService.start();
-
-  }
-
-  /**
    * <p>Start the Bitcoin network service (support)</p>
    */
   private static void startBitcoinNetworkService() {
 
     // Start the bitcoin network service
+    bitcoinNetworkService = CoreServices.newBitcoinNetworkService();
     bitcoinNetworkService.start();
 
     Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);

@@ -464,7 +464,7 @@ public class ComboBoxes {
 
     Preconditions.checkNotNull(listener, "'listener' must be present");
 
-    // Convert the names to an array
+    // Get all the exchange names
     String[] allExchangeNames = ExchangeKey.allExchangeNames();
     JComboBox<String> comboBox = newReadOnlyComboBox(allExchangeNames);
     comboBox.setMaximumRowCount(MultiBitUI.COMBOBOX_MAX_ROW_COUNT);
@@ -482,22 +482,22 @@ public class ComboBoxes {
   }
 
   /**
-   * @param listener The action listener
-   * @param names    The currency names
+   * @param listener             The action listener
+   * @param bitcoinConfiguration The Bitcoin configuration to use
    *
    * @return A new "currency code" combo box
    */
-  public static JComboBox<String> newCurrencyCodeComboBox(ActionListener listener, List<String> names, BitcoinConfiguration bitcoinConfiguration) {
+  public static JComboBox<String> newCurrencyCodeComboBox(ActionListener listener, BitcoinConfiguration bitcoinConfiguration) {
 
     Preconditions.checkNotNull(listener, "'listener' must be present");
-    Preconditions.checkNotNull(names, "'names' must be present");
+    Preconditions.checkNotNull(bitcoinConfiguration, "'bitcoinConfiguration' must be present");
 
-    // Convert the names to an array
-    String[] namesArray = new String[names.size()];
-    namesArray = names.toArray(namesArray);
+    // Get all the currencies available at the exchange
+    String[] allCurrencies = ExchangeKey.current().allCurrencies();
+    JComboBox<String> comboBox = newReadOnlyComboBox(allCurrencies);
+    comboBox.setMaximumRowCount(MultiBitUI.COMBOBOX_MAX_ROW_COUNT);
 
-    JComboBox<String> comboBox = newReadOnlyComboBox(namesArray);
-    selectFirstMatch(comboBox, namesArray, bitcoinConfiguration.getLocalCurrencyUnit().getCode());
+    selectFirstMatch(comboBox, allCurrencies, bitcoinConfiguration.getLocalCurrencyUnit().getCode());
 
     // Add the listener at the end to avoid false events
     comboBox.setActionCommand(CURRENCY_COMMAND);

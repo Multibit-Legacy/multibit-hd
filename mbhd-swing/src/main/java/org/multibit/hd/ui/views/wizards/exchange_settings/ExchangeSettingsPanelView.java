@@ -2,13 +2,13 @@ package org.multibit.hd.ui.views.wizards.exchange_settings;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import net.miginfocom.swing.MigLayout;
 import org.joda.money.CurrencyUnit;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -26,7 +26,7 @@ import org.multibit.hd.ui.views.wizards.WizardButton;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
+import java.io.IOException;
 import java.util.Locale;
 
 /**
@@ -89,10 +89,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     Preconditions.checkNotNull(locale, "'locale' cannot be empty");
 
     exchangeRateProviderComboBox = ComboBoxes.newExchangeRateProviderComboBox(this, bitcoinConfiguration);
-
-    // TODO Hook this into the exchange currencies
-    List<String> currencies = Lists.newArrayList("(No currency)", "USD", "RUB", "GBP", "EUR");
-    currencyCodeComboBox = ComboBoxes.newCurrencyCodeComboBox(this, currencies, bitcoinConfiguration);
+    currencyCodeComboBox = ComboBoxes.newCurrencyCodeComboBox(this, bitcoinConfiguration);
 
     accessCode = TextBoxes.newEnterAccessCode();
     accessCode.setVisible(false);
@@ -200,7 +197,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     int exchangeIndex = source.getSelectedIndex();
 
     // Test for Open Exchange Rates
-    if (exchangeIndex == 2) {
+    if (ExchangeKey.OPEN_EXCHANGE_RATES.ordinal() == exchangeIndex) {
       accessCodeLabel.setVisible(true);
       accessCode.setVisible(true);
     } else {
@@ -214,6 +211,10 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     // Update the model (even if in error)
     getWizardModel().getConfiguration().getBitcoinConfiguration().setExchangeKey(exchangeKey.name());
 
+    // Reset the available currencies
+    String[] allCurrencies = exchangeKey.allCurrencies();
+    currencyCodeComboBox.setModel(new DefaultComboBoxModel<>(allCurrencies));
+
   }
 
   /**
@@ -226,8 +227,21 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     JComboBox source = (JComboBox) e.getSource();
     String currencyCode = String.valueOf(source.getSelectedItem());
 
-    // TODO Validate the currency with a ticker test
-    boolean isTickerValid = "USD".equals(currencyCode);
+    // Get the current exchange key
+    ExchangeKey exchangeKey = ExchangeKey.valueOf(getWizardModel().getConfiguration().getBitcoinConfiguration().getExchangeKey());
+
+    // Get the polling ticker
+    boolean isTickerValid = true;
+    try {
+      if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
+        exchangeKey.getExchange().getPollingMarketDataService().getTicker(currencyCode,"USD");
+      } else {
+        exchangeKey.getExchange().getPollingMarketDataService().getTicker("BTC", currencyCode);
+      }
+    } catch (IOException e1) {
+      ExceptionHandler.handleThrowable(e1);
+      isTickerValid = false;
+    }
 
     if (!isTickerValid) {
       Sounds.playBeep();
@@ -245,7 +259,6 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
         true
       );
     }
-
 
     CurrencyUnit currencyUnit = CurrencyUnit.getInstance(currencyCode);
 

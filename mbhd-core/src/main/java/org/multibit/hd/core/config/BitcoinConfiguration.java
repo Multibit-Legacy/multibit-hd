@@ -1,11 +1,6 @@
 package org.multibit.hd.core.config;
 
 import org.joda.money.CurrencyUnit;
-import org.multibit.hd.core.utils.CurrencyUtils;
-
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
 
 /**
  * <p>Configuration to provide the following to application:</p>
@@ -23,46 +18,25 @@ public class BitcoinConfiguration {
    */
   private String bitcoinSymbol = "MICON";
 
-  private Character decimalSeparator;
-  private Character groupingSeparator;
+  private Character decimalSeparator = '.';
+  private Character groupingSeparator = ',';
 
   private boolean currencySymbolLeading = true;
 
-  private CurrencyUnit localCurrencyUnit;
+  private CurrencyUnit localCurrencyUnit = CurrencyUnit.USD;
 
-  private String localCurrencySymbol;
-  private int localDecimalPlaces;
+  private String localCurrencySymbol = "$";
+  private int localDecimalPlaces = 2;
 
   /**
    * Start with Bitstamp since it provides USD (the global reserve currency)
    */
-  private String exchangeKey = "BITSTAMP";
+  private String exchangeKey = "OPEN_EXCHANGE_RATES";
 
   /**
    * <p>Default constructor uses the default locale</p>
    */
   public BitcoinConfiguration() {
-    this(Locale.getDefault());
-  }
-
-  /**
-   * @param locale The locale to use
-   */
-  public BitcoinConfiguration(Locale locale) {
-
-    // Get the decimal and grouping separators for the given locale
-    DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
-    DecimalFormatSymbols symbols = decimalFormat.getDecimalFormatSymbols();
-
-    decimalSeparator = symbols.getDecimalSeparator();
-    groupingSeparator = symbols.getGroupingSeparator();
-
-    // TODO Avoid switching local currency here
-    // Fix by splitting language, currency and display configurations
-    localDecimalPlaces = decimalFormat.getMinimumFractionDigits();
-    localCurrencyUnit = CurrencyUnit.getInstance(locale);
-    localCurrencySymbol = CurrencyUtils.symbolFor(locale);
-
   }
 
   /**
