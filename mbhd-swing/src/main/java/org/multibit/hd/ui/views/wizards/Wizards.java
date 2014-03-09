@@ -5,6 +5,7 @@ import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.HistoryEntry;
+import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.ui.views.wizards.application_settings.ApplicationSettingsState;
 import org.multibit.hd.ui.views.wizards.application_settings.ApplicationSettingsWizard;
 import org.multibit.hd.ui.views.wizards.application_settings.ApplicationSettingsWizardModel;
@@ -234,8 +235,10 @@ public class Wizards {
   /**
     * @return A new "payments" wizard
     */
-   public static PaymentsWizard newPaymentsWizard() {
+   public static PaymentsWizard newPaymentsWizard(PaymentData paymentData) {
+     PaymentsWizardModel paymentsWizardModel = new PaymentsWizardModel(PaymentsState.TRANSACTION_OVERVIEW);
+     paymentsWizardModel.setPaymentData(paymentData);
 
-     return new PaymentsWizard(new PaymentsWizardModel(PaymentsState.TRANSACTION_OVERVIEW), false);
+     return new PaymentsWizard(paymentsWizardModel, false);
    }
 }

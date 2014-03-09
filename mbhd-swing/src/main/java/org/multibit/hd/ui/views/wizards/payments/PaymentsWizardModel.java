@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.payments;
 
+import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.slf4j.Logger;
@@ -19,6 +20,10 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
 
   private static final Logger log = LoggerFactory.getLogger(PaymentsWizardModel.class);
 
+  /**
+   * The payment being shown by the payment wizard
+   */
+  private PaymentData paymentData;
 
   /**
    * @param state The state object
@@ -82,4 +87,12 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
   //void setEnterAmountPanelModel(SendBitcoinEnterAmountPanelModel enterAmountPanelModel) {
   //  this.enterAmountPanelModel = enterAmountPanelModel;
   //}
+
+  public PaymentData getPaymentData() {
+    return paymentData;
+  }
+
+  public void setPaymentData(PaymentData paymentData) {
+    this.paymentData = paymentData;
+  }
 }
