@@ -1,10 +1,10 @@
-package org.multibit.hd.ui.views.wizards.application_settings;
+package org.multibit.hd.ui.views.wizards.sound_settings;
 
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 
 /**
- * <p>Model object to provide the following to "application settings" wizard:</p>
+ * <p>Model object to provide the following to "sound settings" wizard:</p>
  * <ul>
  * <li>Storage of panel data</li>
  * <li>State transition management</li>
@@ -13,7 +13,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
  * @since 0.0.1
  *  
  */
-public class ApplicationSettingsWizardModel extends AbstractWizardModel<ApplicationSettingsState> {
+public class SoundSettingsWizardModel extends AbstractWizardModel<SoundSettingsState> {
 
   private Configuration configuration;
 
@@ -21,7 +21,7 @@ public class ApplicationSettingsWizardModel extends AbstractWizardModel<Applicat
    * @param state         The state object
    * @param configuration The configuration to use
    */
-  public ApplicationSettingsWizardModel(ApplicationSettingsState state, Configuration configuration) {
+  public SoundSettingsWizardModel(SoundSettingsState state, Configuration configuration) {
     super(state);
     this.configuration = configuration;
   }

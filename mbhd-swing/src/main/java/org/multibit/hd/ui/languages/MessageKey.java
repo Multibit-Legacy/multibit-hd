@@ -88,6 +88,9 @@ public enum MessageKey {
   SELECT_LOCAL_CURRENCY("select_local_currency"),
   ENTER_ACCESS_CODE("enter_access_code"),
 
+  ALERT_SOUND("alert_sound"),
+  RECEIVE_SOUND("receive_sound"),
+
   // Sidebar
 
   CONTACTS("contacts"),
@@ -257,6 +260,8 @@ public enum MessageKey {
   LANGUAGE_CHANGE_NOTE_1("language_change_note_1"),
 
   THEME_CHANGE_NOTE_1("theme_change_note_1"),
+
+  SOUND_CHANGE_NOTE_1("sound_change_note_1"),
 
   RECIPIENT_SUMMARY("recipient_summary"),
   AMOUNT_SUMMARY("amount_summary"),

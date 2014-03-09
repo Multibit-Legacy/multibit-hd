@@ -26,6 +26,8 @@ public class ApplicationConfiguration {
 
   private String currentTheme = "LIGHT";
 
+  private String version = "0.0.0";
+
   /**
    * Wallets are stored one per directory. The name of this containing directory is called the wallet root.
    *
@@ -95,6 +97,17 @@ public class ApplicationConfiguration {
   }
 
   /**
+   * @return The current version number
+   */
+  public String getVersion() {
+    return version;
+  }
+
+  public void setVersion(String version) {
+    this.version = version;
+  }
+
+  /**
    * @return A deep copy of this object
    */
   public ApplicationConfiguration deepCopy() {
@@ -107,6 +120,7 @@ public class ApplicationConfiguration {
     app.setBitcoinUriHandling(getBitcoinUriHandling());
     app.setRestoreApplicationLayoutOnStartup(isRestoreApplicationLayoutOnStartup());
     app.setCurrentTheme(getCurrentTheme());
+    app.setVersion(getVersion());
 
     return app;
   }

@@ -1,10 +1,10 @@
-package org.multibit.hd.ui.views.wizards.application_settings;
+package org.multibit.hd.ui.views.wizards.sound_settings;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.config.ApplicationConfiguration;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.config.SoundConfiguration;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.ComboBoxes;
@@ -12,7 +12,6 @@ import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
-import org.multibit.hd.ui.views.themes.ThemeKey;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
@@ -24,25 +23,26 @@ import java.awt.event.ActionListener;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Application settings: switch theme</li>
+ * <li>Sound settings: Enter details</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
 
-public class ApplicationSettingsPanelView extends AbstractWizardPanelView<ApplicationSettingsWizardModel, ApplicationSettingsPanelModel> implements ActionListener {
+public class SoundSettingsPanelView extends AbstractWizardPanelView<SoundSettingsWizardModel, SoundSettingsPanelModel> implements ActionListener {
 
   // Panel specific components
-  private JComboBox<String> themesComboBox;
+  private JComboBox<String> alertSoundYesNoComboBox;
+  private JComboBox<String> receiveSoundYesNoComboBox;
 
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name
    */
-  public ApplicationSettingsPanelView(AbstractWizard<ApplicationSettingsWizardModel> wizard, String panelName) {
+  public SoundSettingsPanelView(AbstractWizard<SoundSettingsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.SHOW_APPLICATION_WIZARD, AwesomeIcon.WRENCH);
+    super(wizard, panelName, MessageKey.SHOW_SOUND_WIZARD, AwesomeIcon.MUSIC);
 
   }
 
@@ -53,7 +53,7 @@ public class ApplicationSettingsPanelView extends AbstractWizardPanelView<Applic
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
 
     // Configure the panel model
-    setPanelModel(new ApplicationSettingsPanelModel(
+    setPanelModel(new SoundSettingsPanelModel(
       getPanelName(),
       configuration
     ));
@@ -66,23 +66,25 @@ public class ApplicationSettingsPanelView extends AbstractWizardPanelView<Applic
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[][]", // Column constraints
-      "[][]" // Row constraints
+      "[][][]" // Row constraints
     ));
 
-    ApplicationConfiguration applicationConfiguration = Configurations.currentConfiguration.getApplicationConfiguration().deepCopy();
+    SoundConfiguration soundConfiguration = Configurations.currentConfiguration.getSoundConfiguration().deepCopy();
 
-    themesComboBox = ComboBoxes.newThemesComboBox(this, applicationConfiguration);
+    alertSoundYesNoComboBox = ComboBoxes.newAlertSoundYesNoComboBox(this, soundConfiguration.isAlertSound());
+    receiveSoundYesNoComboBox = ComboBoxes.newReceiveSoundYesNoComboBox(this, soundConfiguration.isReceiveSound());
 
-    contentPanel.add(Labels.newThemeChangeNote(), "growx,span 2,wrap");
+    contentPanel.add(Labels.newSoundChangeNote(), "growx,span 2,wrap");
 
-    contentPanel.add(Labels.newSelectThemeLabel(), "shrink");
-    contentPanel.add(themesComboBox, "growx,shrinky,width min:250:,push,wrap");
-    contentPanel.add(Labels.newBlankLabel(), "grow,span 2,push,wrap"); // Fill out the remainder
+    contentPanel.add(Labels.newSelectAlertSound(), "shrink");
+    contentPanel.add(alertSoundYesNoComboBox, "growx,push,wrap");
 
+    contentPanel.add(Labels.newSelectReceiveSound(), "shrink");
+    contentPanel.add(receiveSoundYesNoComboBox, "growx,push,wrap");
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<ApplicationSettingsWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<SoundSettingsWizardModel> wizard) {
 
     PanelDecorator.addCancelApply(this, wizard);
 
@@ -103,7 +105,7 @@ public class ApplicationSettingsPanelView extends AbstractWizardPanelView<Applic
       @Override
       public void run() {
 
-        themesComboBox.requestFocusInWindow();
+        alertSoundYesNoComboBox.requestFocusInWindow();
 
       }
     });
@@ -140,17 +142,21 @@ public class ApplicationSettingsPanelView extends AbstractWizardPanelView<Applic
   @Override
   public void actionPerformed(ActionEvent e) {
 
-    JComboBox source = (JComboBox) e.getSource();
-    String themeName = ThemeKey.values()[source.getSelectedIndex()].name();
-
-    // Create a new configuration to reset the separators
+    // Create a new configuration
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
+    SoundConfiguration soundConfiguration = new SoundConfiguration();
+    configuration.setSoundConfiguration(soundConfiguration);
 
-    ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration();
-    applicationConfiguration.setCurrentTheme(themeName);
-    configuration.setApplicationConfiguration(applicationConfiguration);
+    JComboBox source = (JComboBox) e.getSource();
+    if (ComboBoxes.ALERT_SOUND_COMMAND.equals(e.getActionCommand())) {
+      soundConfiguration.setAlertSound(source.getSelectedIndex() == 0);
+    }
+    if (ComboBoxes.RECEIVE_SOUND_COMMAND.equals(e.getActionCommand())) {
+      soundConfiguration.setReceiveSound(source.getSelectedIndex() == 0);
+    }
 
     // Update the model
+
     getWizardModel().setConfiguration(configuration);
 
   }

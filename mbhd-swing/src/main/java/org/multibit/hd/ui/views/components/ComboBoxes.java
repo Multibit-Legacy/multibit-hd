@@ -47,6 +47,14 @@ public class ComboBoxes {
    */
   public static final String THEMES_COMMAND = "themes";
   /**
+   * The "alert sound" combo box action command
+   */
+  public static final String ALERT_SOUND_COMMAND = "alertSound";
+  /**
+   * The "receive sound" combo box action command
+   */
+  public static final String RECEIVE_SOUND_COMMAND = "receiveSound";
+  /**
    * The "Bitcoin symbol" combo box action command
    */
   public static final String BITCOIN_SYMBOL_COMMAND = "bitcoinSymbol";
@@ -120,6 +128,61 @@ public class ComboBoxes {
 
     return comboBox;
 
+  }
+
+  /**
+   * @param listener  The action listener to alert when the selection is made
+   * @param selectYes True if the "yes" option [0] should be selected, otherwise "no" is selected [1]
+   *
+   * @return A new "yes/no" read only combo box
+   */
+  public static JComboBox<String> newYesNoComboBox(ActionListener listener, boolean selectYes) {
+
+    JComboBox<String> comboBox = newReadOnlyComboBox(new String[]{
+      Languages.safeText(MessageKey.YES),
+      Languages.safeText(MessageKey.NO)
+    });
+
+    comboBox.setEditable(false);
+
+    comboBox.setSelectedIndex(selectYes ? 0 : 1);
+
+    // Apply theme
+    comboBox.setBackground(Themes.currentTheme.readOnlyComboBox());
+
+    // Set the listener at the end to avoid spurious events
+    comboBox.addActionListener(listener);
+
+    return comboBox;
+
+  }
+
+  /**
+   * @param listener   The action listener to alert when the selection is made
+   * @param alertSound True if the "yes" option should be pre-selected
+   *
+   * @return A new "yes/no" combo box
+   */
+  public static JComboBox<String> newAlertSoundYesNoComboBox(ActionListener listener, boolean alertSound) {
+
+    JComboBox<String> comboBox = newYesNoComboBox(listener, alertSound);
+    comboBox.setActionCommand(ALERT_SOUND_COMMAND);
+
+    return comboBox;
+  }
+
+  /**
+   * @param listener     The action listener to alert when the selection is made
+   * @param receiveSound True if the "yes" option should be pre-selected
+   *
+   * @return A new "yes/no" combo box
+   */
+  public static JComboBox<String> newReceiveSoundYesNoComboBox(ActionListener listener, boolean receiveSound) {
+
+    JComboBox<String> comboBox = newYesNoComboBox(listener, receiveSound);
+    comboBox.setActionCommand(RECEIVE_SOUND_COMMAND);
+
+    return comboBox;
   }
 
   /**

@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.math.BigInteger;
 
 /**
- * <p>Model object to provide the following to "exit" wizard:</p>
+ * <p>Model object to provide the following to "receive Bitcoin" wizard:</p>
  * <ul>
  * <li>Storage of panel data</li>
  * <li>State transition management</li>

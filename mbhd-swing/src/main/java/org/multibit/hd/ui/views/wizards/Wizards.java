@@ -40,6 +40,9 @@ import org.multibit.hd.ui.views.wizards.receive_bitcoin.ReceiveBitcoinWizardMode
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinWizard;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinWizardModel;
+import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsState;
+import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsWizard;
+import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsWizardModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizard;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
@@ -193,6 +196,17 @@ public class Wizards {
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
 
     return new ApplicationSettingsWizard(new ApplicationSettingsWizardModel(ApplicationSettingsState.APPLICATION_ENTER_DETAILS, configuration));
+  }
+
+  /**
+   * @return A new "sound settings" wizard for language selection
+   */
+  public static SoundSettingsWizard newSoundSettingsWizard() {
+
+    // Ensure we work with a copy of the current configuration in case of cancellation
+    Configuration configuration = Configurations.currentConfiguration.deepCopy();
+
+    return new SoundSettingsWizard(new SoundSettingsWizardModel(SoundSettingsState.SOUND_ENTER_DETAILS, configuration));
   }
 
   /**

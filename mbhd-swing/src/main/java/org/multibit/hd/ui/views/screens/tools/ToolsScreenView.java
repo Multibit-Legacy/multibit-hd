@@ -71,7 +71,7 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        AlertModel alertModel = Models.newAlertModel("Demonstrate alert", RAGStatus.PINK);
+        AlertModel alertModel = Models.newAlertModel("Demonstrate alert", RAGStatus.RED);
 
         // Demonstrate a button
         AbstractAction action = new AbstractAction() {

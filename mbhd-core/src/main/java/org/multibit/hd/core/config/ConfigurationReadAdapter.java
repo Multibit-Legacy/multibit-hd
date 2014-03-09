@@ -41,6 +41,9 @@ public class ConfigurationReadAdapter {
       // Application
       adaptApplication(key, value);
 
+      // Sound
+      adaptSound(key, value);
+
       // Bitcoin
       adaptBitcoin(key, value);
 
@@ -62,7 +65,24 @@ public class ConfigurationReadAdapter {
     if (Configurations.APP_CURRENT_WALLET_FILENAME.equalsIgnoreCase(key)) {
       configuration.getApplicationConfiguration().setCurrentWalletRoot(value);
     }
+    if (Configurations.APP_CURRENT_THEME.equalsIgnoreCase(key)) {
+      configuration.getApplicationConfiguration().setCurrentTheme(value);
+    }
+    if (Configurations.APP_VERSION.equalsIgnoreCase(key)) {
+      configuration.getApplicationConfiguration().setVersion(value);
+    }
     // TODO more application fields to adapt.
+
+  }
+
+  private void adaptSound(String key, String value) {
+
+    if (Configurations.SOUND_ALERT.equalsIgnoreCase(key)) {
+      configuration.getSoundConfiguration().setAlertSound(Boolean.valueOf(value));
+    }
+    if (Configurations.SOUND_RECEIVE.equalsIgnoreCase(key)) {
+      configuration.getSoundConfiguration().setReceiveSound(Boolean.valueOf(value));
+    }
 
   }
 

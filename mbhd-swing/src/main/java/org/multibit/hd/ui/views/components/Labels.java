@@ -704,6 +704,20 @@ public class Labels {
   }
 
   /**
+   * @return a new "select alert sound" for sound settings
+   */
+  public static JLabel newSelectAlertSound() {
+    return newLabel(MessageKey.ALERT_SOUND);
+  }
+
+  /**
+   * @return a new "select receive sound" for sound settings
+   */
+  public static JLabel newSelectReceiveSound() {
+    return newLabel(MessageKey.RECEIVE_SOUND);
+  }
+
+  /**
    * @return A new "notes" message
    */
   public static JLabel newNotes() {
@@ -777,7 +791,18 @@ public class Labels {
   public static JLabel newThemeChangeNote() {
 
     return newNoteLabel(new MessageKey[]{
-      MessageKey.LANGUAGE_CHANGE_NOTE_1
+      MessageKey.THEME_CHANGE_NOTE_1
+    }, new Object[][]{});
+
+  }
+
+  /**
+   * @return A new "sound change" note
+   */
+  public static JLabel newSoundChangeNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.SOUND_CHANGE_NOTE_1
     }, new Object[][]{});
 
   }
@@ -924,5 +949,4 @@ public class Labels {
     }, new Object[][]{});
 
   }
-
 }
