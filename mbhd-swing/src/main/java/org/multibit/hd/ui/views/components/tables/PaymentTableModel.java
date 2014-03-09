@@ -5,6 +5,8 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.RAGStatus;
+import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,12 +34,12 @@ public class PaymentTableModel extends AbstractTableModel {
   private static final Logger log = LoggerFactory.getLogger(PaymentTableModel.class);
 
   private String[] columnNames = {
-          "Date",
-          "Status",
-          "Type",
-          "Description",
-          "Amount ",
-          "Amount " + Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencySymbol()
+          Languages.safeText(MessageKey.DATE),
+          Languages.safeText(MessageKey.STATUS),
+          Languages.safeText(MessageKey.TYPE).replace(" :",""),  // Old translation was suffixed with a ' :'.
+          Languages.safeText(MessageKey.DESCRIPTION),
+          Languages.safeText(MessageKey.AMOUNT) + " ", // BTC symbol added later
+          Languages.safeText(MessageKey.AMOUNT) + " " + Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencySymbol()
   };
 
   private Object[][] data;

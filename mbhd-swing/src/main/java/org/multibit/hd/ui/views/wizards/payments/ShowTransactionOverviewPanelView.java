@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.wizards.payments;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.PaymentData;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
@@ -29,7 +30,6 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
 
   private static final Logger log = LoggerFactory.getLogger(ShowTransactionOverviewPanelView.class);
 
-  private JLabel descriptionLabel;
   private JLabel descriptionValue;
 
 
@@ -68,7 +68,7 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
-    descriptionLabel = Labels.newValueLabel("Description");
+    JLabel descriptionLabel = Labels.newValueLabel(Languages.safeText(MessageKey.DESCRIPTION));
     descriptionValue = Labels.newValueLabel("");
 
     update();

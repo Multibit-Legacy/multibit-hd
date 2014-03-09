@@ -71,7 +71,6 @@ public enum MessageKey {
   BITCOIN_ADDRESS("bitcoin_address"),
   EXTENDED_PUBLIC_KEY("extended_public_key"),
   TAGS("tags"),
-  DESCRIPTION("description"),
   EXAMPLE("example"),
 
   DISPLAY_LANGUAGE("display_language"),
@@ -279,6 +278,10 @@ public enum MessageKey {
   TRANSACTION_DETAIL("transaction_detail"),
   CHOOSE_PAYMENT_REQUEST("choose_payment_request"),
   PAYMENT_REQUEST("payment_request"),
+  DATE("date"),
+  STATUS("status"),
+  TYPE("type"),
+  DESCRIPTION("description"),
 
   // Themes
   LIGHT_THEME("light_theme"),
