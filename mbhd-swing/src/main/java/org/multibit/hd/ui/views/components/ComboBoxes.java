@@ -5,6 +5,7 @@ import org.multibit.hd.core.config.ApplicationConfiguration;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.Recipient;
+import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.core.utils.CurrencyUtils;
 import org.multibit.hd.ui.MultiBitUI;
@@ -228,7 +229,7 @@ public class ComboBoxes {
     // Populate the combo box and declare a suitable renderer
     JComboBox<String> comboBox = newReadOnlyComboBox(LanguageKey.localisedNames());
     comboBox.setRenderer(new LanguageListCellRenderer());
-    comboBox.setMaximumRowCount(12);
+    comboBox.setMaximumRowCount(MultiBitUI.COMBOBOX_MAX_ROW_COUNT);
 
     // Can use the ordinal due to the declaration ordering
     comboBox.setSelectedIndex(LanguageKey.fromLocale(locale).ordinal());
@@ -456,21 +457,21 @@ public class ComboBoxes {
 
   /**
    * @param listener The action listener
-   * @param names    The exchange rate provider names
    *
    * @return A new "exchange rate provider" combo box
    */
-  public static JComboBox<String> newExchangeRateProviderComboBox(ActionListener listener, List<String> names, BitcoinConfiguration bitcoinConfiguration) {
+  public static JComboBox<String> newExchangeRateProviderComboBox(ActionListener listener, BitcoinConfiguration bitcoinConfiguration) {
 
     Preconditions.checkNotNull(listener, "'listener' must be present");
-    Preconditions.checkNotNull(names, "'names' must be present");
 
     // Convert the names to an array
-    String[] namesArray = new String[names.size()];
-    namesArray = names.toArray(namesArray);
+    String[] allExchangeNames = ExchangeKey.allExchangeNames();
+    JComboBox<String> comboBox = newReadOnlyComboBox(allExchangeNames);
+    comboBox.setMaximumRowCount(MultiBitUI.COMBOBOX_MAX_ROW_COUNT);
 
-    JComboBox<String> comboBox = newReadOnlyComboBox(namesArray);
-    selectFirstMatch(comboBox, namesArray, bitcoinConfiguration.getExchangeName());
+    // Determine the selected index
+    ExchangeKey exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getExchangeKey());
+    comboBox.setSelectedIndex(exchangeKey.ordinal());
 
     // Add the listener at the end to avoid false events
     comboBox.setActionCommand(EXCHANGE_RATE_PROVIDER_COMMAND);

@@ -5,11 +5,11 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
-import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
+import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.ContactService;
@@ -191,7 +191,10 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     paymentRequestData.setAmountBTC(enterAmountMaV.getModel().getSatoshis());
     FiatPayment fiatPayment = new FiatPayment();
     fiatPayment.setAmount(enterAmountMaV.getModel().getLocalAmount());
-    fiatPayment.setExchange(Configurations.currentConfiguration.getBitcoinConfiguration().getExchangeName());
+
+    ExchangeKey exchangeKey = ExchangeKey.current();
+    fiatPayment.setExchange(exchangeKey.getExchangeName());
+
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
     if (exchangeRateChangedEvent.isPresent()) {
       fiatPayment.setRate(exchangeRateChangedEvent.get().getRate().toString());

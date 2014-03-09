@@ -5,12 +5,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.xeiam.xchange.Exchange;
-import com.xeiam.xchange.ExchangeFactory;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.logging.LoggingFactory;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.seed_phrase.Bip39SeedPhraseGenerator;
@@ -102,22 +102,16 @@ public class CoreServices {
   }
 
   /**
-   * @param exchangeClassName The exchange class name taken from the XChange library
+   * @param exchangeKey The exchange key providing the required information
    *
    * @return A new exchange service based on the current configuration
    */
-  public static ExchangeTickerService newExchangeService(String exchangeClassName) {
+  public static ExchangeTickerService newExchangeService(ExchangeKey exchangeKey) {
 
     // Use the factory to get the exchange API using default settings
-    final Exchange exchange = ExchangeFactory.INSTANCE.createExchange(exchangeClassName);
+    final Exchange exchange = exchangeKey.getExchange();
 
-    // Update the configuration with the current exchange name
-    Configurations
-      .currentConfiguration
-      .getBitcoinConfiguration()
-      .setExchangeName(exchange.getExchangeSpecification().getExchangeName());
-
-    return new ExchangeTickerService(exchange.getExchangeSpecification().getExchangeName(), exchange.getPollingMarketDataService());
+    return new ExchangeTickerService(exchangeKey.getExchangeName(), exchange.getPollingMarketDataService());
 
   }
 

@@ -3,7 +3,6 @@ package org.multibit.hd.ui;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
-import com.xeiam.xchange.bitstamp.BitstampExchange;
 import com.xeiam.xchange.currency.MoneyUtils;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
@@ -13,6 +12,7 @@ import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.events.ConfigurationChangedEvent;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
+import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.ContactService;
@@ -110,13 +110,13 @@ public class ComponentTestBed {
     // Start the core services
     CoreServices.main(args);
 
-    Configurations.currentConfiguration.getBitcoinConfiguration().setBitcoinSymbol("icon");
+    Configurations.currentConfiguration.getBitcoinConfiguration().setBitcoinSymbol("MICON");
 
     // Register for events
     CoreServices.uiEventBus.register(this);
 
     // Standard support services
-    CoreServices.newExchangeService(BitstampExchange.class.getName()).start();
+    CoreServices.newExchangeService(ExchangeKey.BITSTAMP).start();
     CoreServices.newBitcoinNetworkService().start();
 
     // Initialise the wallet manager, which will loadContacts the current wallet if available

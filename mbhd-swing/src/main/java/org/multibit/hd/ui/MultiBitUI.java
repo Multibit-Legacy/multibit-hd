@@ -152,4 +152,10 @@ public interface MultiBitUI {
    * Anything below 1.0 is too faded on some monitors
    */
   float DETAIL_PANEL_BACKGROUND_ALPHA = 0.1f;
+
+  /**
+   * The maximum number of rows to show before a slider is introduced
+   * 12 is a good value for the standard wizard height
+   */
+  int COMBOBOX_MAX_ROW_COUNT = 12;
 }

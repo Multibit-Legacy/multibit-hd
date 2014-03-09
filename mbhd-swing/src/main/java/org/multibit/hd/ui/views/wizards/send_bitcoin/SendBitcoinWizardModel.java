@@ -4,11 +4,11 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import org.joda.money.BigMoney;
-import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.events.TransactionCreationEvent;
+import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.store.TransactionInfo;
@@ -145,7 +145,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     transactionInfo.setNote(note);
     FiatPayment fiatPayment = new FiatPayment();
     fiatPayment.setAmount(getLocalAmount());
-    fiatPayment.setExchange(Configurations.currentConfiguration.getBitcoinConfiguration().getExchangeName());
+    fiatPayment.setExchange(ExchangeKey.current().getExchangeName());
+
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
     if (exchangeRateChangedEvent.isPresent()) {
       fiatPayment.setRate(exchangeRateChangedEvent.get().getRate().toString());

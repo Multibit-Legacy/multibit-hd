@@ -13,6 +13,7 @@ import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.exceptions.PaymentsSaveException;
+import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.store.Payments;
 import org.multibit.hd.core.store.PaymentsProtobufSerializer;
@@ -269,8 +270,9 @@ public class WalletService {
     }
 
     // Work out the fiat equivalent of the bitcoin payment
+    ExchangeKey exchangeKey = ExchangeKey.valueOf(Configurations.currentConfiguration.getBitcoinConfiguration().getExchangeKey());
     FiatPayment amountFiat = new FiatPayment();
-    amountFiat.setExchange(Configurations.currentConfiguration.getBitcoinConfiguration().getExchangeName());
+    amountFiat.setExchange(exchangeKey.getExchangeName());
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
     if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
 

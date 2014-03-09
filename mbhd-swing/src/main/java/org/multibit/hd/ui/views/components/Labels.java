@@ -2,9 +2,9 @@ package org.multibit.hd.ui.views.components;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.Recipient;
+import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -563,10 +563,7 @@ public class Labels {
    */
   public static JLabel newCurrentExchangeName() {
 
-    String exchangeName = Configurations
-      .currentConfiguration
-      .getBitcoinConfiguration()
-      .getExchangeName();
+    String exchangeName = ExchangeKey.current().getExchangeName();
 
     return newLabel(MessageKey.EXCHANGE_RATE_PROVIDER, exchangeName);
   }

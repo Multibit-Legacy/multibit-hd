@@ -9,6 +9,7 @@ import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
+import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -87,11 +88,10 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
     Preconditions.checkNotNull(locale, "'locale' cannot be empty");
 
-    // TODO Hook this into the configuration/exchange service
-    List<String> names = Lists.newArrayList("(No exchange)","Bitstamp", "BTC-e", "Open Exchange Rates", "Coinbase", "Cavirtex");
-    List<String> currencies = Lists.newArrayList("(No currency)", "USD", "RUB", "GBP", "EUR");
+    exchangeRateProviderComboBox = ComboBoxes.newExchangeRateProviderComboBox(this, bitcoinConfiguration);
 
-    exchangeRateProviderComboBox = ComboBoxes.newExchangeRateProviderComboBox(this, names, bitcoinConfiguration);
+    // TODO Hook this into the exchange currencies
+    List<String> currencies = Lists.newArrayList("(No currency)", "USD", "RUB", "GBP", "EUR");
     currencyCodeComboBox = ComboBoxes.newCurrencyCodeComboBox(this, currencies, bitcoinConfiguration);
 
     accessCode = TextBoxes.newEnterAccessCode();
@@ -200,7 +200,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     int exchangeIndex = source.getSelectedIndex();
 
     // Test for Open Exchange Rates
-    if (exchangeIndex==2) {
+    if (exchangeIndex == 2) {
       accessCodeLabel.setVisible(true);
       accessCode.setVisible(true);
     } else {
@@ -208,8 +208,11 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
       accessCode.setVisible(false);
     }
 
+    // Exchanges are presented in the same order as they are declared in the enum
+    ExchangeKey exchangeKey = ExchangeKey.values()[exchangeIndex];
+
     // Update the model (even if in error)
-    getWizardModel().getConfiguration().getBitcoinConfiguration().setExchangeName((String) source.getSelectedItem());
+    getWizardModel().getConfiguration().getBitcoinConfiguration().setExchangeKey(exchangeKey.name());
 
   }
 

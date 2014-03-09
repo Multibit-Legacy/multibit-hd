@@ -18,9 +18,10 @@ import java.util.Locale;
  */
 public class BitcoinConfiguration {
 
+  /**
+   * Start with MICON since it provides pleasing amounts and iconography
+   */
   private String bitcoinSymbol = "MICON";
-  private String exchangeClassName = "";
-  private String exchangeName = "Bitstamp";
 
   private Character decimalSeparator;
   private Character groupingSeparator;
@@ -31,6 +32,11 @@ public class BitcoinConfiguration {
 
   private String localCurrencySymbol;
   private int localDecimalPlaces;
+
+  /**
+   * Start with Bitstamp since it provides USD (the global reserve currency)
+   */
+  private String exchangeKey = "BITSTAMP";
 
   /**
    * <p>Default constructor uses the default locale</p>
@@ -88,23 +94,15 @@ public class BitcoinConfiguration {
     this.bitcoinSymbol = bitcoinSymbol;
   }
 
-  public String getExchangeClassName() {
-    return exchangeClassName;
-  }
-
-  public void setExchangeClassName(String exchangeClassName) {
-    this.exchangeClassName = exchangeClassName;
-  }
-
   /**
-   * @return The friendly exchange name (e.g. "Bitstamp" etc)
+   * @return The exchange key (e.g. "BITSTAMP") providing access to the current exchange rate provider
    */
-  public String getExchangeName() {
-    return exchangeName;
+  public String getExchangeKey() {
+    return exchangeKey;
   }
 
-  public void setExchangeName(String exchangeName) {
-    this.exchangeName = exchangeName;
+  public void setExchangeKey(String exchangeKey) {
+    this.exchangeKey = exchangeKey;
   }
 
   /**
