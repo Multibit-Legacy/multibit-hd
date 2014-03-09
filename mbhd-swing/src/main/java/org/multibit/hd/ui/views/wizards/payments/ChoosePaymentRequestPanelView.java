@@ -41,7 +41,7 @@ public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<Payme
    */
   public ChoosePaymentRequestPanelView(AbstractWizard<PaymentsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.SEND_PROGRESS_TITLE, AwesomeIcon.CLOUD_UPLOAD);
+    super(wizard, panelName, MessageKey.CHOOSE_PAYMENT_REQUEST, AwesomeIcon.FILE_TEXT_ALT);
 
   }
 
@@ -89,7 +89,7 @@ public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<Payme
   @Override
   protected void initialiseButtons(AbstractWizard<PaymentsWizardModel> wizard) {
 
-    PanelDecorator.addFinish(this, wizard);
+    PanelDecorator.addExitCancelPreviousNext(this, wizard);
 
   }
 
@@ -99,7 +99,8 @@ public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<Payme
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        getFinishButton().requestFocusInWindow();
+        getNextButton().requestFocusInWindow();
+        getNextButton().setEnabled(true);
       }
     });
 

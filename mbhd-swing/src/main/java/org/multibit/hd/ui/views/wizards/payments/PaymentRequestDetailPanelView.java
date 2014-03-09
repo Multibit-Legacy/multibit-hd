@@ -41,7 +41,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
    */
   public PaymentRequestDetailPanelView(AbstractWizard<PaymentsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.SEND_PROGRESS_TITLE, AwesomeIcon.CLOUD_UPLOAD);
+    super(wizard, panelName, MessageKey.PAYMENT_REQUEST, AwesomeIcon.FILE_TEXT_ALT);
 
   }
 
@@ -100,6 +100,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
       @Override
       public void run() {
         getFinishButton().requestFocusInWindow();
+        getFinishButton().setEnabled(true);
       }
     });
 

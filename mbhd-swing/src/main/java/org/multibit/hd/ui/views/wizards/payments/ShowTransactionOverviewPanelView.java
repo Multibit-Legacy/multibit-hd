@@ -41,7 +41,7 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
    */
   public ShowTransactionOverviewPanelView(AbstractWizard<PaymentsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.SEND_PROGRESS_TITLE, AwesomeIcon.CLOUD_UPLOAD);
+    super(wizard, panelName, MessageKey.TRANSACTION_OVERVIEW, AwesomeIcon.FILE_TEXT_ALT);
 
   }
 
@@ -88,9 +88,7 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
 
   @Override
   protected void initialiseButtons(AbstractWizard<PaymentsWizardModel> wizard) {
-
-    PanelDecorator.addFinish(this, wizard);
-
+    PanelDecorator.addExitCancelNext(this, wizard);
   }
 
   @Override
@@ -99,7 +97,8 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        getFinishButton().requestFocusInWindow();
+        getNextButton().requestFocusInWindow();
+        getNextButton().setEnabled(true);
       }
     });
 

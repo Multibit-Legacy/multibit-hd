@@ -271,14 +271,19 @@ public enum MessageKey {
   APPLICATION_DIRECTORY("application_directory"),
   WALLET_DIRECTORY("wallet_directory"),
 
-  // Payments panel
+  // Payments panel and wizard
   DETAILS("details"),
   EXPORT("export"),
   DELETE_PAYMENT_REQUEST("delete_payment_request"),
+  TRANSACTION_OVERVIEW("transaction_overview"),
+  TRANSACTION_DETAIL("transaction_detail"),
+  CHOOSE_PAYMENT_REQUEST("choose_payment_request"),
+  PAYMENT_REQUEST("payment_request"),
 
   // Themes
   LIGHT_THEME("light_theme"),
   DARK_THEME("dark_theme"),
+
 
   // End of enum
   ;
