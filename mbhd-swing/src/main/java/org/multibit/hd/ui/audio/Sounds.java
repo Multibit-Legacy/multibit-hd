@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.core.config.Configurations;
 import org.spongycastle.util.io.Streams;
 
 import java.awt.*;
@@ -22,7 +23,7 @@ import java.util.concurrent.ExecutorService;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class Sounds {
 
@@ -47,9 +48,9 @@ public class Sounds {
    */
   public static void playBeep() {
 
-    // TODO Check with configuration if this is desired
-
-    Toolkit.getDefaultToolkit().beep();
+    if (Configurations.currentConfiguration.getSoundConfiguration().isAlertSound()) {
+      Toolkit.getDefaultToolkit().beep();
+    }
   }
 
   /**
@@ -57,16 +58,16 @@ public class Sounds {
    */
   public static void playReceiveBitcoin() {
 
-    // TODO Check with configuration if this is desired
+    if (Configurations.currentConfiguration.getSoundConfiguration().isReceiveSound()) {
 
-    ExecutorService executorService = SafeExecutors.newSingleThreadExecutor();
-
-    executorService.submit(new Runnable() {
-      @Override
-      public void run() {
-        play(RECEIVE_BITCOIN);
-      }
-    });
+      ExecutorService executorService = SafeExecutors.newSingleThreadExecutor();
+      executorService.submit(new Runnable() {
+        @Override
+        public void run() {
+          play(RECEIVE_BITCOIN);
+        }
+      });
+    }
 
   }
 

@@ -6,7 +6,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import java.util.List;
 
 /**
- * <p>Model object to provide the following to "edit contact" wizard:</p>
+ * <p>Model object to provide the following to "edit history" wizard:</p>
  * <ul>
  * <li>Storage of panel data</li>
  * <li>State transition management</li>

@@ -37,7 +37,11 @@ public class Configurations {
 
   // Location of current wallet directory (may be empty)
   public static final String APP_CURRENT_WALLET_FILENAME = "app.current-wallet-filename";
+  public static final String APP_CURRENT_THEME = "app.current-theme";
 
+  // Sound
+  public static final String SOUND_ALERT = "app.alert";
+  public static final String SOUND_RECEIVE = "app.receive";
 
   // Bitcoin
   public static final String BITCOIN_SYMBOL = "bitcoin.symbol";
@@ -81,8 +85,16 @@ public class Configurations {
 
     Properties properties = new Properties();
 
+    // Language
+    properties.put(LANGUAGE_LOCALE, "en_GB");
+
     // Application
     properties.put(APP_VERSION, "0.0.1");
+    properties.put(APP_CURRENT_THEME, "LIGHT");
+
+    // Sound
+    properties.put(SOUND_ALERT, "true");
+    properties.put(SOUND_RECEIVE, "true");
 
     // Bitcoin
     properties.put(BITCOIN_SYMBOL, "MICON");
@@ -91,9 +103,6 @@ public class Configurations {
     properties.put(BITCOIN_IS_CURRENCY_PREFIXED, "true");
     properties.put(BITCOIN_LOCAL_DECIMAL_PLACES, "2");
     properties.put(BITCOIN_LOCAL_CURRENCY_UNIT, "USD");
-
-    // Localisation
-    properties.put(LANGUAGE_LOCALE, "en_GB");
 
     // Logging
     properties.put(LOGGING_LEVEL, "warn");

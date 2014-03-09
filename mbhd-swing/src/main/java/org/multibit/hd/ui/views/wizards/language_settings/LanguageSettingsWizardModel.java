@@ -4,7 +4,7 @@ import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 
 /**
- * <p>Model object to provide the following to "edit contact" wizard:</p>
+ * <p>Model object to provide the following to "language settings" wizard:</p>
  * <ul>
  * <li>Storage of panel data</li>
  * <li>State transition management</li>

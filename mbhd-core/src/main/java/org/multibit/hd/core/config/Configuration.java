@@ -21,6 +21,8 @@ public class Configuration {
 
   private BitcoinConfiguration bitcoinConfiguration = new BitcoinConfiguration();
 
+  private SoundConfiguration soundConfiguration = new SoundConfiguration();
+
   private String propertiesVersion = "0.0.1";
 
   /**
@@ -77,6 +79,17 @@ public class Configuration {
   }
 
   /**
+   * @return The sound configuration
+   */
+  public SoundConfiguration getSoundConfiguration() {
+    return soundConfiguration;
+  }
+
+  public void setSoundConfiguration(SoundConfiguration soundConfiguration) {
+    this.soundConfiguration = soundConfiguration;
+  }
+
+  /**
    * @return The properties file version
    */
   public String getPropertiesVersion() {
@@ -94,6 +107,7 @@ public class Configuration {
 
     LanguageConfiguration language = getLanguageConfiguration().deepCopy();
     ApplicationConfiguration app = getApplicationConfiguration().deepCopy();
+    SoundConfiguration sound = getSoundConfiguration().deepCopy();
     BitcoinConfiguration bitcoin = getBitcoinConfiguration().deepCopy();
     LoggingConfiguration logging = getLoggingConfiguration().deepCopy();
 
@@ -101,6 +115,7 @@ public class Configuration {
 
     // Bind the copies
     configuration.setApplicationConfiguration(app);
+    configuration.setSoundConfiguration(sound);
     configuration.setLanguageConfiguration(language);
     configuration.setBitcoinConfiguration(bitcoin);
     configuration.setLoggingConfiguration(logging);
