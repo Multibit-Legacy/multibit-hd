@@ -13,10 +13,7 @@ import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.ComboBoxes;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.components.TextBoxes;
+import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -24,9 +21,11 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Locale;
 
 /**
@@ -41,8 +40,9 @@ import java.util.Locale;
 public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeSettingsWizardModel, ExchangeSettingsPanelModel> implements ActionListener {
 
   private JComboBox<String> exchangeRateProviderComboBox;
-  private JLabel exchangeErrorStatus;
+  private JButton exchangeRateProviderBrowserButton;
 
+  private JLabel exchangeErrorStatus;
   private JComboBox<String> currencyCodeComboBox;
 
   private JLabel accessCodeLabel;
@@ -88,6 +88,8 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
     Preconditions.checkNotNull(locale, "'locale' cannot be empty");
 
+    exchangeRateProviderBrowserButton = Buttons.newLaunchBrowserButton(getExchangeRateProviderBrowserAction());
+
     exchangeRateProviderComboBox = ComboBoxes.newExchangeRateProviderComboBox(this, bitcoinConfiguration);
     currencyCodeComboBox = ComboBoxes.newCurrencyCodeComboBox(this, bitcoinConfiguration);
 
@@ -106,7 +108,8 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     contentPanel.add(Labels.newExchangeSettingsNote(), "growx,push,span 3,wrap");
 
     contentPanel.add(Labels.newSelectExchangeRateProviderLabel(), "shrink");
-    contentPanel.add(exchangeRateProviderComboBox, "growx,push,wrap");
+    contentPanel.add(exchangeRateProviderComboBox, "growx,push");
+    contentPanel.add(exchangeRateProviderBrowserButton, "shrink,wrap");
 
     contentPanel.add(Labels.newLocalCurrencyLabel(), "shrink");
     contentPanel.add(currencyCodeComboBox, "growx,push");
@@ -184,6 +187,33 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
       handleCurrencySelection(e);
     }
 
+  }
+
+  /**
+   * @return The "exchange rate provider browser" action
+   */
+  private Action getExchangeRateProviderBrowserAction() {
+
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        int selectedIndex = exchangeRateProviderComboBox.getSelectedIndex();
+        if (selectedIndex == -1) {
+          return;
+        }
+
+        ExchangeKey exchangeKey = ExchangeKey.values()[selectedIndex];
+
+        try {
+          URI exchangeUri = URI.create("http://"+exchangeKey.getExchange().getExchangeSpecification().getHost());
+          Desktop.getDesktop().browse(exchangeUri);
+        } catch (IOException ex) {
+          ExceptionHandler.handleThrowable(ex);
+        }
+
+      }
+    };
   }
 
   /**

@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.screens.help;
 import com.google.common.collect.Lists;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.RAGStatus;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.languages.Languages;
@@ -301,7 +302,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
         try {
           Desktop.getDesktop().browse(currentPage().toURI());
         } catch (IOException | URISyntaxException e1) {
-          e1.printStackTrace();
+          ExceptionHandler.handleThrowable(e1);
         }
 
       }

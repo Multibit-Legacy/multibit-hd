@@ -136,12 +136,6 @@
       <artifactId>xchange-bitcoincharts</artifactId>
       <version>${xchange.version}</version>
     </dependency>
-    <!-- XChange Blockchain.info support -->
-    <dependency>
-      <groupId>com.xeiam.xchange</groupId>
-      <artifactId>xchange-blockchain</artifactId>
-      <version>${xchange.version}</version>
-    </dependency>
     <!-- XChange Bitcoin Average support (in 2.0.0+) -->
     <!--
     <dependency>

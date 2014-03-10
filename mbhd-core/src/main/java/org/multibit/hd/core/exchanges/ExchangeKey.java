@@ -7,7 +7,6 @@ import com.xeiam.xchange.ExchangeSpecification;
 import com.xeiam.xchange.bitcoincharts.BitcoinChartsExchange;
 import com.xeiam.xchange.bitcurex.BitcurexExchange;
 import com.xeiam.xchange.bitstamp.BitstampExchange;
-import com.xeiam.xchange.blockchain.BlockchainExchange;
 import com.xeiam.xchange.btcchina.BTCChinaExchange;
 import com.xeiam.xchange.btce.BTCEExchange;
 import com.xeiam.xchange.campbx.CampBXExchange;
@@ -33,13 +32,12 @@ import java.util.SortedSet;
  */
 public enum ExchangeKey {
 
-  CAMPBX(new ExchangeSpecification(CampBXExchange.class)),
   BITCOIN_CHARTS(new ExchangeSpecification(BitcoinChartsExchange.class)),
   BITSTAMP(new ExchangeSpecification(BitstampExchange.class)),
   BITCUREX(new ExchangeSpecification(BitcurexExchange.class)),
-  BLOCKCHAIN_INFO(new ExchangeSpecification(BlockchainExchange.class)),
   BTC_CHINA(new ExchangeSpecification(BTCChinaExchange.class)),
   BTC_E(new ExchangeSpecification(BTCEExchange.class)),
+  CAMPBX(new ExchangeSpecification(CampBXExchange.class)),
   KRAKEN(new ExchangeSpecification(KrakenExchange.class)),
   OPEN_EXCHANGE_RATES(new ExchangeSpecification(OERExchange.class)),
   CA_VIRTEX(new ExchangeSpecification(VirtExExchange.class)),
