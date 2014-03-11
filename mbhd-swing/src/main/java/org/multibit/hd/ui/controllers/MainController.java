@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.CoreMessageKey;
@@ -93,7 +94,16 @@ public class MainController {
     SafeExecutors.newFixedThreadPool(1).execute(new Runnable() {
       @Override
       public void run() {
-        ExchangeKey exchangeKey = ExchangeKey.valueOf(Configurations.currentConfiguration.getBitcoinConfiguration().getExchangeKey());
+
+        BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
+        ExchangeKey exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getExchangeKey());
+
+        if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
+          if (bitcoinConfiguration.getExchangeApiKeys().isPresent()) {
+            String apiKey = Configurations.currentConfiguration.getBitcoinConfiguration().getExchangeApiKeys().get();
+            exchangeKey.getExchange().getExchangeSpecification().setApiKey(apiKey);
+          }
+        }
 
         // Stop (with block) any existing exchange ticker service
         if (exchangeTickerService.isPresent()) {

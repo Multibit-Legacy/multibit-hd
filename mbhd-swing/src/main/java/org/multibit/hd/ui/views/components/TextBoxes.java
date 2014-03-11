@@ -384,9 +384,9 @@ public class TextBoxes {
   }
 
   /**
-   * @return A new "enter access code" (API key) text field
+   * @return A new "enter API key" text field
    */
-  public static JTextField newEnterAccessCode() {
+  public static JTextField newEnterApiKey() {
 
     return newTextField(40);
 

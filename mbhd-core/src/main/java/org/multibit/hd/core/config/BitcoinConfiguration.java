@@ -1,5 +1,6 @@
 package org.multibit.hd.core.config;
 
+import com.google.common.base.Optional;
 import org.joda.money.CurrencyUnit;
 
 /**
@@ -34,6 +35,11 @@ public class BitcoinConfiguration {
   private String exchangeKey = "OPEN_EXCHANGE_RATES";
 
   /**
+   * The optinal exchange API key (required for OER etc)
+   */
+  private Optional<String> exchangeApiKeys = Optional.absent();
+
+  /**
    * <p>Default constructor uses the default locale</p>
    */
   public BitcoinConfiguration() {
@@ -48,11 +54,16 @@ public class BitcoinConfiguration {
 
     configuration.setBitcoinSymbol(getBitcoinSymbol());
     configuration.setCurrencySymbolLeading(isCurrencySymbolLeading());
+
     configuration.setDecimalSeparator(getDecimalSeparator());
     configuration.setGroupingSeparator(getGroupingSeparator());
     configuration.setLocalDecimalPlaces(getLocalDecimalPlaces());
+
     configuration.setLocalCurrencyUnit(getLocalCurrencyUnit());
     configuration.setLocalCurrencySymbol(getLocalCurrencySymbol());
+
+    configuration.setExchangeKey(getExchangeKey());
+    configuration.setExchangeApiKeys(getExchangeApiKeys().orNull());
 
     return configuration;
   }
@@ -152,4 +163,14 @@ public class BitcoinConfiguration {
     this.localCurrencySymbol = localCurrencySymbol;
   }
 
+  /**
+   * @return The exchange API keys (only OER at present, but others could be added using a "key | value" approach)
+   */
+  public Optional<String> getExchangeApiKeys() {
+    return exchangeApiKeys;
+  }
+
+  public void setExchangeApiKeys(String exchangeApiKeys) {
+    this.exchangeApiKeys = Optional.fromNullable(exchangeApiKeys);
+  }
 }

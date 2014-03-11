@@ -1,14 +1,12 @@
 package org.multibit.hd.core.utils;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
 import org.multibit.hd.core.config.Configurations;
 
-import java.util.Comparator;
-import java.util.Currency;
-import java.util.Locale;
-import java.util.SortedMap;
+import java.util.*;
 
 /**
  * <p>Utility to provide the following to low level currency operations:</p>
@@ -28,6 +26,11 @@ public class CurrencyUtils {
    */
   private final static SortedMap<Currency, Locale> currencyLocaleMap;
 
+  /**
+   * A map of all common currency names and their appropriate ISO candidates
+   */
+  private final static Map<String, List<String>> isoCandidateMap;
+
   static {
     currencyLocaleMap = Maps.newTreeMap(new Comparator<Currency>() {
 
@@ -36,6 +39,38 @@ public class CurrencyUtils {
         return c1.getCurrencyCode().compareTo(c2.getCurrencyCode());
       }
     });
+    populateCurrencyLocaleMap();
+
+    isoCandidateMap = Maps.newLinkedHashMap();
+
+    populateIsoCandidateMap();
+  }
+
+  /**
+   * Populate ISO candidate currencies and replace legacy entries
+   */
+  private static void populateIsoCandidateMap() {
+
+    // Generate the ISO code from known entries (including legacy)
+    for (Map.Entry<Currency, Locale> entry : currencyLocaleMap.entrySet()) {
+      String isoCode = entry.getKey().getCurrencyCode();
+      isoCandidateMap.put(isoCode, Lists.newArrayList(isoCode));
+    }
+
+    // Supersede legacy entries
+    isoCandidateMap.remove("RUR");
+    isoCandidateMap.put("RUB", Lists.newArrayList("RUR"));
+
+    // Add non-standard codes and their ISO candidates (usually start with "X" for private codes)
+    isoCandidateMap.put("XBT", Lists.newArrayList("BTC"));
+
+  }
+
+  /**
+   * Populate currencies over all available locales (this ensure we can get the correct
+   * symbol for the currency using its native locale)
+   */
+  private static void populateCurrencyLocaleMap() {
 
     // Iterate over all the available locales
     for (Locale locale : Locale.getAvailableLocales()) {
@@ -134,4 +169,47 @@ public class CurrencyUtils {
 
     return currency.getCurrencyCode();
   }
+
+  /**
+   * <p>Provides the ISO 4217 candidate code for the given input</p>
+   * <ul>
+   * <li>"BTC" is not ISO and its ISO candidate is "XBT"</li>
+   * <li>"RUR" is legacy ISO and its ISO replacement is "RUB"</li>
+   * <li>"USD" is ISO so no replacement occurs</li>
+   * </ul>
+   *
+   * @param currency The mixed currency code
+   *
+   * @return The ISO code (or recognised candidate)
+   */
+  public static String isoCandidateFor(String currency) {
+
+    if (isoCandidateMap.containsKey(currency)) {
+      // The currency is ISO so no searching is required
+      return currency;
+    }
+
+    // Iterate over all currencies looking for a match
+    for (Map.Entry<String, List<String>> entry : isoCandidateMap.entrySet()) {
+
+      // Search the non-standard codes
+      List<String> nonStandard = entry.getValue();
+
+      for (String nonIsoCode : nonStandard) {
+
+        if (nonIsoCode.equalsIgnoreCase(currency)) {
+
+          // Found a match so return the ISO code
+          return entry.getKey();
+        }
+
+      }
+
+    }
+
+    // Must have failed to find a match here
+    return currency;
+
+  }
+
 }

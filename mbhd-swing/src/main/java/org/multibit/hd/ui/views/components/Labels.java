@@ -381,7 +381,7 @@ public class Labels {
   /**
    * @return A new "enter access code" label (for API keys)
    */
-  public static JLabel newAccessCodeLabel() {
+  public static JLabel newApiKeyLabel() {
 
     return Labels.newLabel(MessageKey.ENTER_ACCESS_CODE);
   }

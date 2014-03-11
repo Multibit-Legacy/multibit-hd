@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.exchange_settings;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
 import org.joda.money.CurrencyUnit;
 import org.multibit.hd.core.config.BitcoinConfiguration;
@@ -45,9 +46,9 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
   private JLabel exchangeErrorStatus;
   private JComboBox<String> currencyCodeComboBox;
 
-  private JLabel accessCodeLabel;
-  private JTextField accessCode;
-  private JLabel accessCodeErrorStatus;
+  private JLabel apiKeyLabel;
+  private JTextField apiKey;
+  private JLabel apiKeyErrorStatus;
 
   /**
    * @param wizard    The wizard managing the states
@@ -85,6 +86,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguageConfiguration().deepCopy();
     BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration().deepCopy();
     Locale locale = languageConfiguration.getLocale();
+    ExchangeKey exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getExchangeKey());
 
     Preconditions.checkNotNull(locale, "'locale' cannot be empty");
 
@@ -93,17 +95,24 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     exchangeRateProviderComboBox = ComboBoxes.newExchangeRateProviderComboBox(this, bitcoinConfiguration);
     currencyCodeComboBox = ComboBoxes.newCurrencyCodeComboBox(this, bitcoinConfiguration);
 
-    accessCode = TextBoxes.newEnterAccessCode();
-    accessCode.setVisible(false);
-
     exchangeErrorStatus = Labels.newErrorStatus(false);
     exchangeErrorStatus.setVisible(false);
 
-    // Access code is initially hidden
-    accessCodeErrorStatus = Labels.newErrorStatus(false);
-    accessCodeErrorStatus.setVisible(false);
-    accessCodeLabel = Labels.newAccessCodeLabel();
-    accessCodeLabel.setVisible(false);
+    // API key
+    apiKey = TextBoxes.newEnterApiKey();
+    apiKeyErrorStatus = Labels.newErrorStatus(false);
+    apiKeyLabel = Labels.newApiKeyLabel();
+
+    // API key visibility
+    boolean apiKeyVisible =ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey);
+    apiKey.setVisible(apiKeyVisible);
+    apiKeyErrorStatus.setVisible(apiKeyVisible);
+    apiKeyLabel.setVisible(apiKeyVisible);
+
+    // API key value
+    if (bitcoinConfiguration.getExchangeApiKeys().isPresent()) {
+      apiKey.setText(bitcoinConfiguration.getExchangeApiKeys().get());
+    }
 
     contentPanel.add(Labels.newExchangeSettingsNote(), "growx,push,span 3,wrap");
 
@@ -115,9 +124,9 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     contentPanel.add(currencyCodeComboBox, "growx,push");
     contentPanel.add(exchangeErrorStatus, "grow,push,wrap");
 
-    contentPanel.add(accessCodeLabel, "shrink");
-    contentPanel.add(accessCode, "growx,push");
-    contentPanel.add(accessCodeErrorStatus, "grow,push,wrap");
+    contentPanel.add(apiKeyLabel, "shrink");
+    contentPanel.add(apiKey, "growx,push");
+    contentPanel.add(apiKeyErrorStatus, "grow,push,wrap");
 
   }
 
@@ -154,6 +163,11 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
   public boolean beforeHide(boolean isExitCancel) {
 
     if (!isExitCancel) {
+
+      // If the user has selected OER then update the API key
+      if (apiKey.isVisible() && !Strings.isNullOrEmpty(apiKey.getText())) {
+        getWizardModel().getConfiguration().getBitcoinConfiguration().setExchangeApiKeys(apiKey.getText());
+      }
 
       // Switch the main configuration over to the new one
       Configurations.switchConfiguration(getWizardModel().getConfiguration());
@@ -226,17 +240,19 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     JComboBox source = (JComboBox) e.getSource();
     int exchangeIndex = source.getSelectedIndex();
 
-    // Test for Open Exchange Rates
-    if (ExchangeKey.OPEN_EXCHANGE_RATES.ordinal() == exchangeIndex) {
-      accessCodeLabel.setVisible(true);
-      accessCode.setVisible(true);
-    } else {
-      accessCodeLabel.setVisible(false);
-      accessCode.setVisible(false);
-    }
-
     // Exchanges are presented in the same order as they are declared in the enum
     ExchangeKey exchangeKey = ExchangeKey.values()[exchangeIndex];
+
+    // Test for Open Exchange Rates
+    if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
+      apiKeyLabel.setVisible(true);
+      apiKey.setVisible(true);
+    } else {
+      apiKeyLabel.setVisible(false);
+      apiKey.setVisible(false);
+    }
+
+    exchangeErrorStatus.setVisible(false);
 
     // Update the model (even if in error)
     getWizardModel().getConfiguration().getBitcoinConfiguration().setExchangeKey(exchangeKey.name());
@@ -244,6 +260,14 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     // Reset the available currencies
     String[] allCurrencies = exchangeKey.allCurrencies();
     currencyCodeComboBox.setModel(new DefaultComboBoxModel<>(allCurrencies));
+    currencyCodeComboBox.setSelectedIndex(-1);
+
+    // Prevent application until the currency is selected (to allow ticker check)
+    ViewEvents.fireWizardButtonEnabledEvent(
+      getPanelName(),
+      WizardButton.APPLY,
+      false
+    );
 
   }
 
@@ -255,18 +279,28 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
   private void handleCurrencySelection(ActionEvent e) {
 
     JComboBox source = (JComboBox) e.getSource();
-    String currencyCode = String.valueOf(source.getSelectedItem());
+
+    // Ignore cascading events from an exchange selection
+    if (source.getSelectedIndex() == -1) {
+      return;
+    }
+
+    String isoCounterCode = String.valueOf(source.getSelectedItem()).substring(0,3);
 
     // Get the current exchange key
     ExchangeKey exchangeKey = ExchangeKey.valueOf(getWizardModel().getConfiguration().getBitcoinConfiguration().getExchangeKey());
 
     // Get the polling ticker
     boolean isTickerValid = true;
+
+    // Apply any exchange quirks to the counter code (e.g. ISO "RUB" -> legacy "RUR")
+    String exchangeCounterCode = ExchangeKey.exchangeCode(isoCounterCode, exchangeKey);
+
     try {
       if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
-        exchangeKey.getExchange().getPollingMarketDataService().getTicker(currencyCode,"USD");
+        exchangeKey.getExchange().getPollingMarketDataService().getTicker(exchangeCounterCode,"USD");
       } else {
-        exchangeKey.getExchange().getPollingMarketDataService().getTicker("BTC", currencyCode);
+        exchangeKey.getExchange().getPollingMarketDataService().getTicker("BTC", exchangeCounterCode);
       }
     } catch (IOException e1) {
       ExceptionHandler.handleThrowable(e1);
@@ -290,10 +324,10 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
       );
     }
 
-    CurrencyUnit currencyUnit = CurrencyUnit.getInstance(currencyCode);
+    CurrencyUnit currencyUnit = CurrencyUnit.getInstance(isoCounterCode);
 
     // Update the model (even if in error)
-    getWizardModel().getConfiguration().getBitcoinConfiguration().setLocalCurrencySymbol(currencyCode);
+    getWizardModel().getConfiguration().getBitcoinConfiguration().setLocalCurrencySymbol(isoCounterCode);
     getWizardModel().getConfiguration().getBitcoinConfiguration().setLocalCurrencyUnit(currencyUnit);
 
   }

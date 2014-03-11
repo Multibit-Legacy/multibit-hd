@@ -15,6 +15,7 @@ import com.xeiam.xchange.kraken.KrakenExchange;
 import com.xeiam.xchange.oer.OERExchange;
 import com.xeiam.xchange.virtex.VirtExExchange;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.utils.CurrencyUtils;
 
 import java.util.Currency;
 import java.util.List;
@@ -86,10 +87,7 @@ public enum ExchangeKey {
       String counterCode = currencyPair.counterCurrency;
 
       // Make any adjustments
-      if ("RUR".equals(counterCode)) {
-        // Exchange is offering legacy notation from 1998 so update
-        counterCode = "RUB";
-      }
+      counterCode = CurrencyUtils.isoCandidateFor(counterCode);
 
       try {
         Currency base = Currency.getInstance(baseCode);
@@ -138,4 +136,30 @@ public enum ExchangeKey {
     return allExchangeNames;
 
   }
+
+  /**
+   * <p>Provides a non-ISO code appropriate for the given exchange</p>
+   * <p>Note: This is likely to be replaced with code in XChange directly</p>
+   *
+   * @param currencyCode The currency code (could be ISO or not)
+   * @param exchangeKey  The exchange key
+   *
+   * @return The most appropriate exchange code for the offered candidate ISO code (e.g. "XBT" becomes "BTC")
+   */
+  public static String exchangeCode(String currencyCode, ExchangeKey exchangeKey) {
+
+    // All exchanges quote in BTC over XBT at this time
+    if ("XBT".equalsIgnoreCase(currencyCode)) {
+      return "BTC";
+    }
+
+    // BTC-e uses legacy "RUR" code
+    if (ExchangeKey.BTC_E.equals(exchangeKey) && "RUB".equalsIgnoreCase(currencyCode)) {
+      return "RUR";
+    }
+
+    // Default is the ISO code
+    return currencyCode;
+  }
+
 }

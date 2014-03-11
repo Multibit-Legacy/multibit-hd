@@ -3,6 +3,7 @@ package org.multibit.hd.core.utils;
 import org.joda.money.BigMoney;
 import org.junit.Before;
 import org.junit.Test;
+import org.multibit.hd.core.config.Configurations;
 
 import java.math.BigDecimal;
 import java.util.Locale;
@@ -13,6 +14,8 @@ public class CurrencyUtilsTest {
 
   @Before
   public void setUp() throws Exception {
+
+    Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
     Locale.setDefault(Locale.US);
 
@@ -90,6 +93,16 @@ public class CurrencyUtilsTest {
     assertThat((int) actual_AR[2]).isEqualTo(1587);
     assertThat((int) actual_AR[3]).isEqualTo(46);
     assertThat((int) actual_AR[4]).isEqualTo(8207);
+
+  }
+
+  @Test
+  public void testIsoCandidate() throws Exception {
+
+    assertThat(CurrencyUtils.isoCandidateFor("XBT")).isEqualTo("XBT");
+    assertThat(CurrencyUtils.isoCandidateFor("BTC")).isEqualTo("XBT");
+    assertThat(CurrencyUtils.isoCandidateFor("RUR")).isEqualTo("RUB");
+    assertThat(CurrencyUtils.isoCandidateFor("USD")).isEqualTo("USD");
 
   }
 

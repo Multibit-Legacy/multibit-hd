@@ -5,7 +5,10 @@ import com.xeiam.xchange.currency.Currencies;
 import com.xeiam.xchange.dto.marketdata.Ticker;
 import com.xeiam.xchange.service.polling.PollingMarketDataService;
 import org.joda.money.BigMoney;
+import org.multibit.hd.core.config.BitcoinConfiguration;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.utils.CurrencyUtils;
 import org.multibit.hd.core.utils.Dates;
 import org.slf4j.Logger;
@@ -70,10 +73,18 @@ public class ExchangeTickerService extends AbstractService {
 
       public void run() {
 
+        BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
+        ExchangeKey exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getExchangeKey());
+
         // Get the latest ticker data showing BTC to current currency
         Ticker ticker;
         try {
-          ticker = pollingMarketDataService.getTicker(Currencies.BTC, CurrencyUtils.currentCode());
+          if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
+            // Special handling for OER since we need to triangulate through USD
+            ticker = pollingMarketDataService.getTicker(CurrencyUtils.currentCode(), "USD");
+          } else {
+            ticker = pollingMarketDataService.getTicker(Currencies.BTC, ExchangeKey.exchangeCode(CurrencyUtils.currentCode(), exchangeKey));
+          }
 
           if (previous == null || !ticker.getLast().isEqual(previous)) {
 
