@@ -13,6 +13,7 @@ import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.WalletDetailChangedEvent;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.components.*;
@@ -90,7 +91,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     if (MultiBitHD.getWalletService() == null) {
       paymentDatas = Lists.newArrayList();
     } else {
-      paymentDatas = MultiBitHD.getWalletService().getPaymentDatas();
+      paymentDatas = MultiBitHD.getWalletService().getPaymentDataList(Languages.currentLocale());
     }
     paymentsTable = Tables.newPaymentsTable(paymentDatas);
 
@@ -166,7 +167,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
-          ((PaymentTableModel) paymentsTable.getModel()).setPaymentData(MultiBitHD.getWalletService().getPaymentDatas(), true);
+          ((PaymentTableModel) paymentsTable.getModel()).setPaymentData(MultiBitHD.getWalletService().getPaymentDataList(Languages.currentLocale()), true);
         }
       });
     }

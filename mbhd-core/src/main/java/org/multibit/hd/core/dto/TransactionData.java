@@ -17,7 +17,7 @@ import java.math.BigInteger;
 
 public class TransactionData implements PaymentData {
 
-  private final RAGStatusWithOrdinal statusWithOrdinal;
+  private final PaymentStatus statusWithOrdinal;
 
   private final String transactionId;
 
@@ -39,7 +39,7 @@ public class TransactionData implements PaymentData {
 
   private final boolean coinBase;
 
-  public TransactionData(String transactionId, DateTime date, RAGStatusWithOrdinal statusWithOrdinal,
+  public TransactionData(String transactionId, DateTime date, PaymentStatus statusWithOrdinal,
                          BigInteger amountBTC, FiatPayment amountFiat, Optional<BigInteger> feeOnSendBTC,
                          TransactionConfidence.ConfidenceType confidenceType, PaymentType type, String description, boolean coinBase) {
     this.transactionId = transactionId;
@@ -110,6 +110,7 @@ public class TransactionData implements PaymentData {
     return transactionId;
   }
 
+  @Override
   public BigInteger getAmountBTC() {
     return amountBTC;
   }
@@ -122,19 +123,22 @@ public class TransactionData implements PaymentData {
     return confidenceType;
   }
 
+  @Override
   public DateTime getDate() {
     return date;
   }
 
   @Override
-  public RAGStatusWithOrdinal getStatus() {
+  public PaymentStatus getStatus() {
     return statusWithOrdinal;
   }
 
+  @Override
   public PaymentType getType() {
     return type;
   }
 
+  @Override
   public String getDescription() {
     return description;
   }

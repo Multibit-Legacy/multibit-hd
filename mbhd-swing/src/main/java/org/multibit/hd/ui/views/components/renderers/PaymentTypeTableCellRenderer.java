@@ -1,6 +1,5 @@
 package org.multibit.hd.ui.views.components.renderers;
 
-import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.PaymentType;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.views.components.Labels;
@@ -27,27 +26,9 @@ public class PaymentTypeTableCellRenderer extends DefaultTableCellRenderer {
     if (value instanceof PaymentType) {
       PaymentType type = (PaymentType) value;
 
-      switch (type) {
-        case REQUESTED:
-          label.setText(Languages.safeText(CoreMessageKey.PAYMENT_REQUESTED));
-          break;
-        case RECEIVING:
-          label.setText(Languages.safeText(CoreMessageKey.PAYMENT_RECEIVING));
-          break;
-        case RECEIVED:
-          label.setText(Languages.safeText(CoreMessageKey.PAYMENT_RECEIVED));
-          break;
-        case SENDING:
-          label.setText(Languages.safeText(CoreMessageKey.PAYMENT_SENDING));
-          break;
-        case SENT:
-          label.setText(Languages.safeText(CoreMessageKey.PAYMENT_SENT));
-          break;
-        default:
-          // Something else
-          label.setText(Languages.safeText(type.toString()));
-      }
+      label.setText(Languages.safeText(type.getLocalisationKey()));
     }
+
 
     if (isSelected) {
       label.setBackground(table.getSelectionBackground());

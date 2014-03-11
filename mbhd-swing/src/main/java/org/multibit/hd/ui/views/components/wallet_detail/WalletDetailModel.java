@@ -11,6 +11,7 @@ import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.models.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +70,7 @@ public class WalletDetailModel implements Model<WalletDetail> {
       ContactService contactService = CoreServices.getOrCreateContactService(Optional.of(walletData.getWalletId()));
       walletDetail.setNumberOfContacts(contactService.allContacts().size());
 
-      walletDetail.setNumberOfPayments(MultiBitHD.getWalletService().getPaymentDatas().size());
+      walletDetail.setNumberOfPayments(MultiBitHD.getWalletService().getPaymentDataList(Languages.currentLocale()).size());
     }
   }
 

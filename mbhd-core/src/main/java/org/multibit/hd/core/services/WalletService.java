@@ -52,6 +52,11 @@ public class WalletService {
   public static final String PAYMENTS_DATABASE_NAME = "payments.db";
 
   /**
+   * The text separator used in localising To: and By: prefices
+   */
+  public static final String PREFIX_SEPARATOR = ": ";
+
+  /**
    * The location of the main user data directory where wallets etc are stored.
    * This is typically created from InstallationManager.getOrCreateApplicationDataDirectory() but
    * is passed in to make this service easier to test
@@ -130,8 +135,10 @@ public class WalletService {
   /**
    * Get all the payments (payments and payment requests) in the current wallet.
    * (This is a bit expensive so don't call it indiscriminately)
+   *
+   * @param locale the locale to use when localising text
    */
-  public List<PaymentData> getPaymentDatas() {
+  public List<PaymentData> getPaymentDataList(Locale locale) {
     // See if there is a current wallet
     WalletManager walletManager = WalletManager.INSTANCE;
 
@@ -182,12 +189,19 @@ public class WalletService {
    * @return TransactionData the transaction data
    */
   public TransactionData adaptTransaction(Wallet wallet, Transaction transaction) {
+
+    // tx id
     String transactionHashAsString = transaction.getHashAsString();
+
+    // updateTime
     Date updateTime = transaction.getUpdateTime();
+
+    // amount BTC
     BigInteger amountBTC = transaction.getValue(wallet);
 
     TransactionConfidence transactionConfidence = transaction.getConfidence();
 
+    // depth
     int depth = 0; // By default not in a block
     TransactionConfidence.ConfidenceType confidenceType = TransactionConfidence.ConfidenceType.UNKNOWN;
 
@@ -198,8 +212,9 @@ public class WalletService {
       }
     }
 
-    RAGStatusWithOrdinal statusWithOrdinal = calculateStatus(transaction);
+    PaymentStatus paymentStatus = calculateStatus(transaction);
 
+    // payment type
     PaymentType paymentType;
     if (amountBTC.compareTo(BigInteger.ZERO) < 0) {
       // Debit
@@ -218,6 +233,8 @@ public class WalletService {
     }
     // TODO - fee on send
 
+
+    // description
     String description;
 
     if (paymentType == PaymentType.RECEIVING || paymentType == PaymentType.RECEIVED) {
@@ -255,11 +272,13 @@ public class WalletService {
       }
 
       if (!descriptiveTextIsAvailable) {
-        description = "By: " + addresses.trim();
+        // TODO localise
+        description = "By" + PREFIX_SEPARATOR + addresses.trim();
       }
     } else {
       // Sent
-      description = "To"; // TODO localise
+      // TODO localise
+      description = "To" + PREFIX_SEPARATOR;
       if (transaction.getOutputs() != null) {
         for (TransactionOutput transactionOutput : transaction.getOutputs()) {
           // TODO Beef up description for other cases
@@ -268,7 +287,7 @@ public class WalletService {
       }
     }
 
-    // Work out the fiat equivalent of the bitcoin payment
+    // fiat amount
     FiatPayment amountFiat = new FiatPayment();
     amountFiat.setExchange(Configurations.currentConfiguration.getBitcoinConfiguration().getExchangeName());
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
@@ -283,10 +302,10 @@ public class WalletService {
     }
 
     // Create the DTO from the raw transaction info
-    TransactionData transactionData = new TransactionData(transactionHashAsString, new DateTime(updateTime), statusWithOrdinal, amountBTC, amountFiat,
+    TransactionData transactionData = new TransactionData(transactionHashAsString, new DateTime(updateTime), paymentStatus, amountBTC, amountFiat,
             Optional.<BigInteger>absent(), confidenceType, paymentType, description, transaction.isCoinBase());
 
-    // See if there is a transactionInfo for this transaction
+    // Note - from the transactionInfo (if present)
     TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
     if (transactionInfo != null) {
       String note = transactionInfo.getNote();
@@ -308,43 +327,63 @@ public class WalletService {
   }
 
   /**
-   * Calculate the RAGstatusWithOrdinal of the transaction:
+   * Calculate the PaymentStatus of the transaction:
    * + RED   = tx is dead, double spend, failed to be transmitted to the network
    * + AMBER = tx is unconfirmed
    * + GREEN = tx is confirmed
    *
-   * @param transaction
+   * @param transaction the bitcoinj transaction to use to work out the status
    * @return status of the transaction
    */
-  private static RAGStatusWithOrdinal calculateStatus(Transaction transaction) {
+  private static PaymentStatus calculateStatus(Transaction transaction) {
     if (transaction.getConfidence() != null) {
       TransactionConfidence.ConfidenceType confidenceType = transaction.getConfidence().getConfidenceType();
 
       if (TransactionConfidence.ConfidenceType.BUILDING.equals(confidenceType)) {
         // Confirmed
-        RAGStatusWithOrdinal status = new RAGStatusWithOrdinal(RAGStatusWithOrdinal.GREEN);
-        status.setOrdinal(transaction.getConfidence().getDepthInBlocks());
-        return status;
+        PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.GREEN);
+        int depth = transaction.getConfidence().getDepthInBlocks();
+        paymentStatus.setDepth(depth);
+        if (depth == 1) {
+          paymentStatus.setStatusText("Confirmed by 1 block"); // TODO localise
+        } else {
+          paymentStatus.setStatusText("Confirmed by " + depth + " blocks"); // TODO localise
+        }
+        return paymentStatus;
       } else if (TransactionConfidence.ConfidenceType.PENDING.equals(confidenceType)) {
-        if (transaction.getConfidence().numBroadcastPeers() >= 2) {
+        int numberOfPeers = transaction.getConfidence().numBroadcastPeers();
+        if (numberOfPeers >= 2) {
           // Seen by the network but not confirmed yet
-          return new RAGStatusWithOrdinal(RAGStatusWithOrdinal.AMBER);
+          PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.AMBER);
+          paymentStatus.setStatusText("Broadcast to Bitcoin network. Seen by " + numberOfPeers + " peers."); // TODO localise
+          return paymentStatus;
         } else {
           // Not out in the network
-          return new RAGStatusWithOrdinal(RAGStatusWithOrdinal.RED);
+          PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.RED);
+          paymentStatus.setStatusText("Not broadcast to the Bitcoin netowrk yet."); // TODO localise
+          return paymentStatus;
         }
       } else if (TransactionConfidence.ConfidenceType.DEAD.equals(confidenceType)) {
         // Dead
-        return new RAGStatusWithOrdinal(RAGStatusWithOrdinal.RED);
+        PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.RED);
+        paymentStatus.setStatusText("Overridden by another transaction. This transaction wil not confirm."); // TODO localise
+        return paymentStatus;
       } else if (TransactionConfidence.ConfidenceType.UNKNOWN.equals(confidenceType)) {
         // Unknown
-        return new RAGStatusWithOrdinal(RAGStatusWithOrdinal.AMBER);
+        PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.AMBER);
+        paymentStatus.setStatusText("Unknown transaction status");
+        return paymentStatus;
       }
     } else {
       // No transaction status - don't know
-      return new RAGStatusWithOrdinal(RAGStatusWithOrdinal.AMBER);
+      PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.AMBER);
+      paymentStatus.setStatusText("Unknown transaction status");
+      return paymentStatus;
     }
-    return new RAGStatusWithOrdinal(RAGStatusWithOrdinal.AMBER);
+    // Unknown
+    PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.AMBER);
+    paymentStatus.setStatusText("Unknown transaction status");
+    return paymentStatus;
   }
 
   /**

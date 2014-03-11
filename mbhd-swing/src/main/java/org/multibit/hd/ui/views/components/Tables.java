@@ -149,7 +149,7 @@ public class Tables {
     rowSorter.setComparator(PaymentTableModel.DATE_COLUMN_INDEX, comparatorDate);
 
     // Comparator for status
-    Comparator<RAGStatusWithOrdinal> comparatorStatus = newStatusComparator();
+    Comparator<PaymentStatus> comparatorStatus = newStatusComparator();
     rowSorter.setComparator(PaymentTableModel.STATUS_COLUMN_INDEX, comparatorStatus);
 
      // Comparator for payment type
@@ -245,14 +245,14 @@ public class Tables {
   /**
     * @return A new status comparator for use with a TableRowSorter
     */
-   private static Comparator<RAGStatusWithOrdinal> newStatusComparator() {
+   private static Comparator<PaymentStatus> newStatusComparator() {
 
-     return new Comparator<RAGStatusWithOrdinal>() {
+     return new Comparator<PaymentStatus>() {
 
 
 
        @Override
-       public int compare(RAGStatusWithOrdinal o1, RAGStatusWithOrdinal o2) {
+       public int compare(PaymentStatus o1, PaymentStatus o2) {
 
          if (o1 != null && o2 == null) {
            return 1;

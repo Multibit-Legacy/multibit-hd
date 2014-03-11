@@ -1,15 +1,12 @@
 package org.multibit.hd.ui.views.components.renderers;
 
 import org.multibit.hd.core.dto.PaymentData;
-import org.multibit.hd.core.dto.RAGStatusWithOrdinal;
+import org.multibit.hd.core.dto.PaymentStatus;
 import org.multibit.hd.ui.MultiBitUI;
-import org.multibit.hd.ui.views.components.Images;
+import org.multibit.hd.ui.views.components.LabelDecorator;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.tables.PaymentTableModel;
 import org.multibit.hd.ui.views.components.tables.StripedTable;
-import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
-import org.multibit.hd.ui.views.fonts.AwesomeIcon;
-import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -25,7 +22,7 @@ public class RAGStatusTableCellRenderer extends DefaultTableCellRenderer {
   private PaymentTableModel paymentTableModel;
 
   public RAGStatusTableCellRenderer(PaymentTableModel paymentTableModel) {
-      this.paymentTableModel = paymentTableModel;
+    this.paymentTableModel = paymentTableModel;
   }
 
   @Override
@@ -37,36 +34,13 @@ public class RAGStatusTableCellRenderer extends DefaultTableCellRenderer {
     label.setOpaque(true);
 
     // Get the RAG (which is in the model as a RAGStatus
-    if (value instanceof RAGStatusWithOrdinal) {
-      RAGStatusWithOrdinal status = (RAGStatusWithOrdinal) value;
+    if (value instanceof PaymentStatus) {
+      PaymentStatus status = (PaymentStatus) value;
 
-      switch (status.getStatus()) {
-        case RAGStatusWithOrdinal.RED:
-          label.setForeground(Themes.currentTheme.dangerAlertBackground());
-          AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, label, false, MultiBitUI.SMALL_ICON_SIZE);
-          break;
-        case RAGStatusWithOrdinal.AMBER:
-          label.setForeground(Themes.currentTheme.text());
-          AwesomeDecorator.bindIcon(AwesomeIcon.EXCHANGE, label, false, MultiBitUI.SMALL_ICON_SIZE);
-          break;
-        case RAGStatusWithOrdinal.GREEN:
-          label.setForeground(Themes.currentTheme.successAlertBackground());
-
-          java.util.List<PaymentData> paymentDatas = paymentTableModel.getPaymentData();
-          int modelRow = table.convertRowIndexToModel(row);
-          PaymentData rowPaymentData = paymentDatas.get(modelRow);
-          int depth = status.getOrdinal();
-          label.setIcon(Images.newConfirmationIcon(depth, rowPaymentData.isCoinBase()));
-
-          break;
-        case RAGStatusWithOrdinal.PINK:
-          label.setForeground(Themes.currentTheme.pendingAlertBackground().darker());
-          AwesomeDecorator.bindIcon(AwesomeIcon.FILE_TEXT, label, false, MultiBitUI.SMALL_ICON_SIZE);
-          break;
-        default:
-          // Unknown status
-          throw new IllegalStateException("Unknown status " + status);
-      }
+      java.util.List<PaymentData> paymentDatas = paymentTableModel.getPaymentData();
+      int modelRow = table.convertRowIndexToModel(row);
+      PaymentData rowPaymentData = paymentDatas.get(modelRow);
+      LabelDecorator.applyStatusIconAndColor(rowPaymentData, label, MultiBitUI.SMALL_ICON_SIZE);
     }
 
     if (isSelected) {
