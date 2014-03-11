@@ -1,6 +1,7 @@
 package org.multibit.hd.core.utils;
 
 import org.joda.money.BigMoney;
+import org.joda.money.CurrencyUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.config.Configurations;
@@ -15,7 +16,7 @@ public class CurrencyUtilsTest {
   @Before
   public void setUp() throws Exception {
 
-    Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
+    Configurations.switchConfiguration(Configurations.newDefaultConfiguration());
 
     Locale.setDefault(Locale.US);
 
@@ -34,14 +35,14 @@ public class CurrencyUtilsTest {
     assertThat(actual_US.getCurrencyUnit().getCode()).isEqualTo("USD");
     assertThat(actual_US.getAmount()).isEqualTo(BigDecimal.ZERO);
 
-    Locale.setDefault(Locale.UK);
+    Configurations.currentConfiguration.getBitcoinConfiguration().setLocalCurrencyUnit(CurrencyUnit.getInstance(Locale.UK));
 
     final BigMoney actual_UK = CurrencyUtils.currentZero();
 
     assertThat(actual_UK.getCurrencyUnit().getCode()).isEqualTo("GBP");
     assertThat(actual_UK.getAmount()).isEqualTo(BigDecimal.ZERO);
 
-    Locale.setDefault(new Locale("ar", "SA"));
+    Configurations.currentConfiguration.getBitcoinConfiguration().setLocalCurrencyUnit(CurrencyUnit.getInstance(new Locale("ar", "SA")));
 
     final BigMoney actual_AR = CurrencyUtils.currentZero();
 
@@ -57,13 +58,13 @@ public class CurrencyUtilsTest {
 
     assertThat(actual_US).isEqualTo("USD");
 
-    Locale.setDefault(Locale.UK);
+    Configurations.currentConfiguration.getBitcoinConfiguration().setLocalCurrencyUnit(CurrencyUnit.getInstance(Locale.UK));
 
     final String actual_UK = CurrencyUtils.currentCode();
 
     assertThat(actual_UK).isEqualTo("GBP");
 
-    Locale.setDefault(new Locale("ar", "SA"));
+    Configurations.currentConfiguration.getBitcoinConfiguration().setLocalCurrencyUnit(CurrencyUnit.getInstance(new Locale("ar", "SA")));
 
     final String actual_AR = CurrencyUtils.currentCode();
 
@@ -78,13 +79,13 @@ public class CurrencyUtilsTest {
 
     assertThat(actual_US).isEqualTo("$");
 
-    Locale.setDefault(Locale.UK);
+    Configurations.currentConfiguration.getBitcoinConfiguration().setLocalCurrencyUnit(CurrencyUnit.getInstance(Locale.UK));
 
     final String actual_UK = CurrencyUtils.currentSymbol();
 
     assertThat(actual_UK).isEqualTo("£");
 
-    Locale.setDefault(new Locale("ar", "SA"));
+    Configurations.currentConfiguration.getBitcoinConfiguration().setLocalCurrencyUnit(CurrencyUnit.getInstance(new Locale("ar", "SA")));
 
     final char[] actual_AR = CurrencyUtils.currentSymbol().toCharArray();
 

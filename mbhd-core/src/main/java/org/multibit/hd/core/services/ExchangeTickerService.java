@@ -1,6 +1,7 @@
 package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
+import com.xeiam.xchange.ExchangeSpecification;
 import com.xeiam.xchange.currency.Currencies;
 import com.xeiam.xchange.dto.marketdata.Ticker;
 import com.xeiam.xchange.service.polling.PollingMarketDataService;
@@ -9,12 +10,10 @@ import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.exchanges.ExchangeKey;
-import org.multibit.hd.core.utils.CurrencyUtils;
 import org.multibit.hd.core.utils.Dates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -77,14 +76,9 @@ public class ExchangeTickerService extends AbstractService {
         ExchangeKey exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getExchangeKey());
 
         // Get the latest ticker data showing BTC to current currency
-        Ticker ticker;
-        try {
-          if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
-            // Special handling for OER since we need to triangulate through USD
-            ticker = pollingMarketDataService.getTicker(CurrencyUtils.currentCode(), "USD");
-          } else {
-            ticker = pollingMarketDataService.getTicker(Currencies.BTC, ExchangeKey.exchangeCode(CurrencyUtils.currentCode(), exchangeKey));
-          }
+        Optional<Ticker> tickerOptional = ExchangeKey.latestTicker(Currencies.BTC, exchangeKey, Optional.<ExchangeSpecification>absent());
+        if (tickerOptional.isPresent()) {
+          Ticker ticker = tickerOptional.get();
 
           if (previous == null || !ticker.getLast().isEqual(previous)) {
 
@@ -97,15 +91,15 @@ public class ExchangeTickerService extends AbstractService {
               Dates.nowUtc().plusSeconds(TICKER_REFRESH_SECONDS + 5)
             );
 
-            log.debug("Updated {} ticker: {}", exchangeName, ticker.getLast());
+            log.debug("Updated '{}' ticker: '{}'", exchangeName, ticker.getLast());
           }
 
           previous = ticker.getLast();
 
-        } catch (IOException e) {
+        } else {
 
           // Keep the logging to a minimum
-          log.warn("Exchange rate lookup failed " + e.getMessage());
+          log.warn("Exchange rate lookup failed 'BTC' ('{}')", exchangeKey.getExchangeName());
 
         }
       }

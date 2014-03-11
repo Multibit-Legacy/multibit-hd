@@ -3,6 +3,9 @@ package org.multibit.hd.ui.views.wizards.exchange_settings;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.xeiam.xchange.ExchangeSpecification;
+import com.xeiam.xchange.currency.Currencies;
+import com.xeiam.xchange.dto.marketdata.Ticker;
 import net.miginfocom.swing.MigLayout;
 import org.joda.money.CurrencyUnit;
 import org.multibit.hd.core.config.BitcoinConfiguration;
@@ -22,6 +25,8 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -49,6 +54,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
   private JLabel apiKeyLabel;
   private JTextField apiKey;
   private JLabel apiKeyErrorStatus;
+  private DocumentListener apiKeyDocumentListener;
 
   /**
    * @param wizard    The wizard managing the states
@@ -99,19 +105,24 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     exchangeErrorStatus.setVisible(false);
 
     // API key
-    apiKey = TextBoxes.newEnterApiKey();
+    apiKey = TextBoxes.newEnterApiKey(getApiKeyDocumentListener());
     apiKeyErrorStatus = Labels.newErrorStatus(false);
     apiKeyLabel = Labels.newApiKeyLabel();
 
     // API key visibility
-    boolean apiKeyVisible =ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey);
-    apiKey.setVisible(apiKeyVisible);
-    apiKeyErrorStatus.setVisible(apiKeyVisible);
-    apiKeyLabel.setVisible(apiKeyVisible);
+    boolean isOERExchange = ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey);
+    apiKey.setVisible(isOERExchange);
+    apiKeyErrorStatus.setVisible(isOERExchange);
+    apiKeyLabel.setVisible(isOERExchange);
 
     // API key value
     if (bitcoinConfiguration.getExchangeApiKeys().isPresent()) {
       apiKey.setText(bitcoinConfiguration.getExchangeApiKeys().get());
+    }
+
+    // Hide the currency code combo if there is no API key for OER
+    if (isOERExchange && Strings.isNullOrEmpty(apiKey.getText())) {
+      currencyCodeComboBox.setVisible(false);
     }
 
     contentPanel.add(Labels.newExchangeSettingsNote(), "growx,push,span 3,wrap");
@@ -120,13 +131,13 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     contentPanel.add(exchangeRateProviderComboBox, "growx,push");
     contentPanel.add(exchangeRateProviderBrowserButton, "shrink,wrap");
 
-    contentPanel.add(Labels.newLocalCurrencyLabel(), "shrink");
-    contentPanel.add(currencyCodeComboBox, "growx,push");
-    contentPanel.add(exchangeErrorStatus, "grow,push,wrap");
-
     contentPanel.add(apiKeyLabel, "shrink");
     contentPanel.add(apiKey, "growx,push");
     contentPanel.add(apiKeyErrorStatus, "grow,push,wrap");
+
+    contentPanel.add(Labels.newLocalCurrencyLabel(), "shrink");
+    contentPanel.add(currencyCodeComboBox, "growx,push");
+    contentPanel.add(exchangeErrorStatus, "grow,push,wrap");
 
   }
 
@@ -220,7 +231,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
         ExchangeKey exchangeKey = ExchangeKey.values()[selectedIndex];
 
         try {
-          URI exchangeUri = URI.create("http://"+exchangeKey.getExchange().getExchangeSpecification().getHost());
+          URI exchangeUri = URI.create("http://" + exchangeKey.getExchange().getExchangeSpecification().getHost());
           Desktop.getDesktop().browse(exchangeUri);
         } catch (IOException ex) {
           ExceptionHandler.handleThrowable(ex);
@@ -247,9 +258,15 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
       apiKeyLabel.setVisible(true);
       apiKey.setVisible(true);
+
+      // Hide the currency combo if there is no API key
+      currencyCodeComboBox.setVisible(!Strings.isNullOrEmpty(apiKey.getText()));
     } else {
       apiKeyLabel.setVisible(false);
       apiKey.setVisible(false);
+
+      // Show the currency combo
+      currencyCodeComboBox.setVisible(true);
     }
 
     exchangeErrorStatus.setVisible(false);
@@ -285,29 +302,33 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
       return;
     }
 
-    String isoCounterCode = String.valueOf(source.getSelectedItem()).substring(0,3);
+    String isoCounterCode = String.valueOf(source.getSelectedItem()).substring(0, 3);
+
+    handleTestTicker(isoCounterCode);
+
+  }
+
+  /**
+   * <p>Handles the process of testing the currency selection against the exchange</p>
+   *
+   * @param isoCounterCode The ISO counter code (e.g. "USD", "RUB" etc)
+   */
+  private void handleTestTicker(String isoCounterCode) {
 
     // Get the current exchange key
     ExchangeKey exchangeKey = ExchangeKey.valueOf(getWizardModel().getConfiguration().getBitcoinConfiguration().getExchangeKey());
 
-    // Get the polling ticker
-    boolean isTickerValid = true;
+    // Use the wizard model to provide the exchange specification details
+    BitcoinConfiguration bitcoinConfiguration = getWizardModel().getConfiguration().getBitcoinConfiguration();
+    ExchangeSpecification currentExchangeSpecification = exchangeKey.getExchange().getExchangeSpecification();
 
-    // Apply any exchange quirks to the counter code (e.g. ISO "RUB" -> legacy "RUR")
-    String exchangeCounterCode = ExchangeKey.exchangeCode(isoCounterCode, exchangeKey);
+    ExchangeSpecification testExchangeSpecification = new ExchangeSpecification(currentExchangeSpecification.getExchangeClassName());
+    testExchangeSpecification.setApiKey(bitcoinConfiguration.getExchangeApiKeys().orNull());
 
-    try {
-      if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
-        exchangeKey.getExchange().getPollingMarketDataService().getTicker(exchangeCounterCode,"USD");
-      } else {
-        exchangeKey.getExchange().getPollingMarketDataService().getTicker("BTC", exchangeCounterCode);
-      }
-    } catch (IOException e1) {
-      ExceptionHandler.handleThrowable(e1);
-      isTickerValid = false;
-    }
+    // TODO Take this off the AWT thread
+    Optional<Ticker> tickerOptional = ExchangeKey.latestTicker(Currencies.BTC, exchangeKey, Optional.of(testExchangeSpecification));
 
-    if (!isTickerValid) {
+    if (!tickerOptional.isPresent()) {
       Sounds.playBeep();
       exchangeErrorStatus.setVisible(true);
       ViewEvents.fireWizardButtonEnabledEvent(
@@ -329,7 +350,55 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     // Update the model (even if in error)
     getWizardModel().getConfiguration().getBitcoinConfiguration().setLocalCurrencySymbol(isoCounterCode);
     getWizardModel().getConfiguration().getBitcoinConfiguration().setLocalCurrencyUnit(currencyUnit);
-
   }
 
+  /**
+   * @return A document listener for interacting with the API key field
+   */
+  public DocumentListener getApiKeyDocumentListener() {
+    return new DocumentListener() {
+      @Override
+      public void insertUpdate(DocumentEvent e) {
+        verify();
+      }
+
+      @Override
+      public void removeUpdate(DocumentEvent e) {
+        verify();
+      }
+
+      @Override
+      public void changedUpdate(DocumentEvent e) {
+        verify();
+      }
+
+      public void verify() {
+        boolean failed = apiKey.getText().length() != 32;
+
+        // Handle error status
+        apiKeyErrorStatus.setVisible(failed);
+
+        // Handle currency combo
+        currencyCodeComboBox.setVisible(!failed);
+
+        if (!failed) {
+
+          // Update the wizard model so that the ticker can be tested
+          getWizardModel().getConfiguration().getBitcoinConfiguration().setExchangeApiKeys(apiKey.getText());
+
+        }
+
+        // Handle currency code (always deselected after someone fiddles with the API key)
+        currencyCodeComboBox.setSelectedIndex(-1);
+
+        // Handle apply
+        ViewEvents.fireWizardButtonEnabledEvent(
+          getPanelName(),
+          WizardButton.APPLY,
+          false
+        );
+
+      }
+    };
+  }
 }
