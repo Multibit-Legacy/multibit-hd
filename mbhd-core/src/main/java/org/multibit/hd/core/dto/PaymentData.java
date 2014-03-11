@@ -15,7 +15,7 @@ public interface PaymentData {
 
   public PaymentType getType();
 
-  public RAGStatusWithOrdinal getStatus();
+  public PaymentStatus getStatus();
 
   public DateTime getDate();
 

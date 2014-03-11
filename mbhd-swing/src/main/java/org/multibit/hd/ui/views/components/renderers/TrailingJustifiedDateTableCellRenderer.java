@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components.renderers;
 
 import org.joda.time.DateTime;
 import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.utils.LocalisedDateUtils;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.tables.StripedTable;
 
@@ -19,9 +20,6 @@ import java.text.SimpleDateFormat;
  */
 public class TrailingJustifiedDateTableCellRenderer extends DefaultTableCellRenderer {
 
-  SimpleDateFormat longDateFormatter;
-  SimpleDateFormat shortDateFormatter;
-
   JLabel label;
 
   public static final int TABLE_BORDER = 3;
@@ -30,8 +28,8 @@ public class TrailingJustifiedDateTableCellRenderer extends DefaultTableCellRend
 
   public TrailingJustifiedDateTableCellRenderer() {
     label = Labels.newBlankLabel();
-    longDateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", Languages.currentLocale());
-    shortDateFormatter = new SimpleDateFormat("HH:mm", Languages.currentLocale());
+    LocalisedDateUtils.longDateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", Languages.currentLocale());
+    LocalisedDateUtils.shortDateFormatter = new SimpleDateFormat("HH:mm", Languages.currentLocale());
   }
 
   @Override
@@ -40,29 +38,12 @@ public class TrailingJustifiedDateTableCellRenderer extends DefaultTableCellRend
     label.setHorizontalAlignment(SwingConstants.TRAILING);
     label.setOpaque(true);
 
-    String formattedDate = "";
-    if (value != null) {
-      if (value instanceof DateTime) {
+    String formattedDate;
+    if (value != null && value instanceof DateTime) {
         DateTime date = (DateTime) value;
-        if (date.getMillis() != 0) {
-          try {
-            // TODO Localise
-            if (date.toDateMidnight().equals((DateTime.now().toDateMidnight()))) {
-              formattedDate = "Today " + shortDateFormatter.format(date.toDate());
-            } else {
-              if (date.toDateMidnight().equals((DateTime.now().minusDays(1).toDateMidnight()))) {
-                formattedDate = "Yesterday " + shortDateFormatter.format(date.toDate());
-              } else {
-                formattedDate = longDateFormatter.format(date.toDate());
-              }
-            }
-          } catch (IllegalArgumentException iae) {
-            // ok
-          }
-        }
-      } else {
-        formattedDate = value.toString();
-      }
+        formattedDate = LocalisedDateUtils.formatFriendlyDate(date);
+    } else {
+      formattedDate = "";
     }
 
     label.setText(formattedDate + SPACER);
@@ -81,4 +62,5 @@ public class TrailingJustifiedDateTableCellRenderer extends DefaultTableCellRend
 
     return label;
   }
+
 }

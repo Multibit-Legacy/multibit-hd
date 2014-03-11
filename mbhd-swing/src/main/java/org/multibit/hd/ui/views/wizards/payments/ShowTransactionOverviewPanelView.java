@@ -2,9 +2,19 @@ package org.multibit.hd.ui.views.wizards.payments;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.joda.time.DateTime;
+import org.multibit.hd.core.config.BitcoinConfiguration;
+import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.config.LanguageConfiguration;
+import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.PaymentData;
+import org.multibit.hd.core.dto.TransactionData;
+import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.utils.LocalisedDateUtils;
+import org.multibit.hd.ui.views.components.LabelDecorator;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
@@ -16,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.math.BigInteger;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -30,7 +41,12 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
 
   private static final Logger log = LoggerFactory.getLogger(ShowTransactionOverviewPanelView.class);
 
+  private JLabel dateValue;
+  private JLabel statusValue;
+  private JLabel typeValue;
   private JLabel descriptionValue;
+  private JLabel amountBTCValue;
+  private JLabel amountFiatValue;
 
 
   /**
@@ -50,10 +66,6 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
             getPanelName()
     );
     setPanelModel(panelModel);
-
-    // Bind it to the wizard model
-    //getWizardModel().setReportPanelModel(panelModel);
-
   }
 
   @Override
@@ -68,14 +80,43 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
+    JLabel dateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.DATE));
+    dateValue = Labels.newValueLabel("");
+
+    JLabel statusLabel = Labels.newValueLabel(Languages.safeText(MessageKey.STATUS));
+    statusValue = Labels.newValueLabel("");
+
+    JLabel typeLabel = Labels.newValueLabel(Languages.safeText(MessageKey.TYPE));
+    typeValue = Labels.newValueLabel("");
+
     JLabel descriptionLabel = Labels.newValueLabel(Languages.safeText(MessageKey.DESCRIPTION));
     descriptionValue = Labels.newValueLabel("");
 
+    JLabel amountBTCLabel = Labels.newValueLabel("");
+    amountBTCValue = Labels.newValueLabel("");
+    // Bitcoin column
+    LabelDecorator.applyBitcoinSymbolLabel(
+            amountBTCLabel,
+            Configurations.currentConfiguration.getBitcoinConfiguration(),
+            Languages.safeText(MessageKey.AMOUNT) + " ");
+
+    JLabel amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.AMOUNT) + " " + Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencySymbol());
+    amountFiatValue = Labels.newValueLabel("");
+
     update();
 
+    contentPanel.add(statusLabel);
+    contentPanel.add(statusValue, "wrap");
+    contentPanel.add(dateLabel);
+    contentPanel.add(dateValue, "wrap");
+    contentPanel.add(typeLabel);
+    contentPanel.add(typeValue, "wrap");
     contentPanel.add(descriptionLabel);
     contentPanel.add(descriptionValue, "wrap");
-  }
+    contentPanel.add(amountBTCLabel);
+    contentPanel.add(amountBTCValue, "wrap");
+    contentPanel.add(amountFiatLabel);
+    contentPanel.add(amountFiatValue, "wrap");  }
 
   @Override
   protected void initialiseButtons(AbstractWizard<PaymentsWizardModel> wizard) {
@@ -105,7 +146,32 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
   public void update() {
     PaymentData paymentData = getWizardModel().getPaymentData();
     if (paymentData != null) {
+      DateTime date = paymentData.getDate();
+      dateValue.setText(LocalisedDateUtils.formatFriendlyDate(date));
+
       descriptionValue.setText(paymentData.getDescription());
+
+      statusValue.setText(paymentData.getStatus().getStatusText());
+      LabelDecorator.applyStatusIconAndColor(paymentData, statusValue, MultiBitUI.SMALL_ICON_SIZE);
+
+      typeValue.setText(paymentData.getType().getLocalisationKey().getKey()); // TODO localise
+
+      BigInteger amountBTC = paymentData.getAmountBTC();
+      LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguageConfiguration();
+      BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
+
+      String[] balanceArray = Formats.formatSatoshisAsSymbolic(amountBTC, languageConfiguration, bitcoinConfiguration);
+      amountBTCValue.setText(balanceArray[0] + balanceArray[1]);
+
+      FiatPayment amountFiat = paymentData.getAmountFiat();
+      amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount(), languageConfiguration.getLocale(), bitcoinConfiguration)));
+
+      if (paymentData instanceof TransactionData) {
+        // It should be as payment requests are routed to their own screen but check all the same
+        TransactionData transactionData = (TransactionData) paymentData;
+        String transactionId = transactionData.getTransactionId();
+        Optional<BigInteger> feeOnSendBTC = transactionData.getFeeOnSendBTC();
+      }
     }
   }
 }

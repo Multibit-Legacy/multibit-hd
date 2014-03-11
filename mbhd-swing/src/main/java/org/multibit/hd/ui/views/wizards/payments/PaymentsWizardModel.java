@@ -78,16 +78,6 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
     return state.name();
   }
 
-
-  /**
-   * <p>Reduced visibility for panel models only</p>
-   *
-   * @param enterAmountPanelModel The "enter amount" panel model
-   */
-  //void setEnterAmountPanelModel(SendBitcoinEnterAmountPanelModel enterAmountPanelModel) {
-  //  this.enterAmountPanelModel = enterAmountPanelModel;
-  //}
-
   public PaymentData getPaymentData() {
     return paymentData;
   }

@@ -99,16 +99,17 @@ public class Images {
   /**
    * @param confirmationCount The confirmation count
    * @param isCoinbase        True if this transaction requires the coinbase rules (120 confirmations)
+   * @param iconSize          THe size of the icon, typically MultiBitUI.SMALL_ICON_SIZE - pie icons are 50% bigger
    *
    * @return A new "confirmation" image icon suitable for use in tables
    */
-  public static ImageIcon newConfirmationIcon(int confirmationCount, boolean isCoinbase) {
+  public static ImageIcon newConfirmationIcon(int confirmationCount, boolean isCoinbase, int iconSize) {
 
     if ((!isCoinbase && confirmationCount >= 6) || (isCoinbase && confirmationCount >= 120)) {
       return ImageDecorator.toImageIcon(AwesomeDecorator.createIcon(
               AwesomeIcon.CHECK,
               Themes.currentTheme.successAlertBackground(),
-              MultiBitUI.SMALL_ICON_SIZE));
+              iconSize));
     }
       
     BufferedImage background = new BufferedImage(MultiBitUI.NORMAL_ICON_SIZE, MultiBitUI.NORMAL_ICON_SIZE, BufferedImage.TYPE_INT_ARGB);
@@ -125,8 +126,8 @@ public class Images {
 
     }
 
-    // Have an icon size between same and normal for the pie icons
-    int iconSize = (int) ((MultiBitUI.NORMAL_ICON_SIZE + MultiBitUI.SMALL_ICON_SIZE) * 0.5);
+    // Have an icon size 50% bigger for the pie pieces
+    iconSize = (int) (iconSize * 1.5);
     g2.setColor(Themes.currentTheme.successAlertBackground());
     g2.fillArc(1, 1, iconSize - 2, iconSize - 2, 90, -angle);
 

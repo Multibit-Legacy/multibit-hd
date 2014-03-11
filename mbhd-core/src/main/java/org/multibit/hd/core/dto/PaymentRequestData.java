@@ -146,8 +146,8 @@ public class PaymentRequestData implements PaymentData {
   }
 
   @Override
-  public RAGStatusWithOrdinal getStatus() {
-    return new RAGStatusWithOrdinal(RAGStatusWithOrdinal.PINK);
+  public PaymentStatus getStatus() {
+    return new PaymentStatus(RAGStatus.PINK);
   }
 
   @Override

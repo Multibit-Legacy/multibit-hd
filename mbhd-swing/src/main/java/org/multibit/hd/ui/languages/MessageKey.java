@@ -287,6 +287,9 @@ public enum MessageKey {
   LIGHT_THEME("light_theme"),
   DARK_THEME("dark_theme"),
 
+  // Date rendering
+  TODAY("today"),
+  YESTERDAY("yesterday"),
 
   // End of enum
   ;
