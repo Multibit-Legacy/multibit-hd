@@ -314,6 +314,28 @@ public class PanelDecorator {
   }
 
   /**
+    * <p>Add a cancel, previous, finish button combination</p>
+    *
+    * @param view   The view containing the panel to decorate
+    * @param wizard The wizard providing the actions
+    * @param <M>    The wizard model type
+    * @param <P>    The wizard panel model type
+    */
+   public static <M extends WizardModel, P> void addCancelPreviousFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
+
+     Preconditions.checkNotNull(view, "'view' must be present");
+     Preconditions.checkNotNull(view, "'wizard' must be present");
+     Preconditions.checkNotNull(view.getWizardScreenPanel(false), "'wizardScreenPanel' must be present");
+
+     // Use the wizard panel
+     JPanel wizardScreenPanel = view.getWizardScreenPanel(false);
+
+     addCancel(view, wizard, wizardScreenPanel);
+     addPrevious(view, wizard, wizardScreenPanel);
+     addFinish(view, wizard, wizardScreenPanel);
+
+   }
+  /**
    * <p>Make the panel have the "danger" theme</p>
    *
    * @param panel The panel to decorate

@@ -89,7 +89,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
   @Override
   protected void initialiseButtons(AbstractWizard<PaymentsWizardModel> wizard) {
 
-    PanelDecorator.addFinish(this, wizard);
+    PanelDecorator.addCancelPreviousFinish(this, wizard);
 
   }
 
