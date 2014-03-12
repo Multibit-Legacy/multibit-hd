@@ -26,11 +26,18 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
   private PaymentData paymentData;
 
   /**
+   * Whether the prev button should be shown on the payment request screen
+   */
+  boolean showPrevOnPaymentRequest;
+
+  /**
    * @param state The state object
    */
-  public PaymentsWizardModel(PaymentsState state) {
+  public PaymentsWizardModel(PaymentsState state, PaymentData paymentData) {
     super(state);
+    this.paymentData = paymentData;
     CoreServices.uiEventBus.register(this);
+
   }
 
   @Override
@@ -82,7 +89,11 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
     return paymentData;
   }
 
-  public void setPaymentData(PaymentData paymentData) {
-    this.paymentData = paymentData;
+  public boolean isShowPrevOnPaymentRequest() {
+    return showPrevOnPaymentRequest;
+  }
+
+  public void setShowPrevOnPaymentRequest(boolean showPrevOnPaymentRequest) {
+    this.showPrevOnPaymentRequest = showPrevOnPaymentRequest;
   }
 }

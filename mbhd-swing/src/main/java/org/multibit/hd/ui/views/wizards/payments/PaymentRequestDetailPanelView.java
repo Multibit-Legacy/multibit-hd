@@ -2,7 +2,20 @@ package org.multibit.hd.ui.views.wizards.payments;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.joda.time.DateTime;
+import org.multibit.hd.core.config.BitcoinConfiguration;
+import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.config.LanguageConfiguration;
+import org.multibit.hd.core.dto.FiatPayment;
+import org.multibit.hd.core.dto.PaymentData;
+import org.multibit.hd.core.dto.PaymentRequestData;
+import org.multibit.hd.core.dto.TransactionData;
+import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.languages.Formats;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.utils.LocalisedDateUtils;
+import org.multibit.hd.ui.views.components.LabelDecorator;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
@@ -14,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.math.BigInteger;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -28,21 +42,18 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
   private static final Logger log = LoggerFactory.getLogger(PaymentRequestDetailPanelView.class);
 
-  private JLabel transactionConstructionStatusSummary;
-  private JLabel transactionConstructionStatusDetail;
-
-  private JLabel transactionBroadcastStatusSummary;
-  private JLabel transactionBroadcastStatusDetail;
-
-  private JLabel transactionConfirmationStatus;
+   private JLabel dateValue;
+   private JLabel statusValue;
+   private JLabel qrCodeLabelValue;
+   private JLabel noteValue;
+   private JLabel amountBTCValue;
+   private JLabel amountFiatValue;
 
   /**
    * @param wizard The wizard managing the states
    */
   public PaymentRequestDetailPanelView(AbstractWizard<PaymentsWizardModel> wizard, String panelName) {
-
     super(wizard, panelName, MessageKey.PAYMENT_REQUEST, AwesomeIcon.FILE_TEXT_ALT);
-
   }
 
   @Override
@@ -53,10 +64,6 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
       getPanelName()
     );
     setPanelModel(panelModel);
-
-    // Bind it to the wizard model
-    //getWizardModel().setReportPanelModel(panelModel);
-
   }
 
   @Override
@@ -71,26 +78,54 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
-    transactionConstructionStatusSummary = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
-    transactionConstructionStatusDetail = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
+    JLabel dateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.DATE));
+    dateValue = Labels.newValueLabel("");
 
-    transactionBroadcastStatusSummary = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
-    transactionBroadcastStatusDetail = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
-    transactionConfirmationStatus = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
+    JLabel statusLabel = Labels.newValueLabel(Languages.safeText(MessageKey.STATUS));
+    statusValue = Labels.newValueLabel("");
 
-    contentPanel.add(transactionConstructionStatusSummary, "wrap");
-    contentPanel.add(transactionConstructionStatusDetail, "wrap");
-    contentPanel.add(transactionBroadcastStatusSummary, "wrap");
-    contentPanel.add(transactionBroadcastStatusDetail, "wrap");
-    contentPanel.add(transactionConfirmationStatus, "wrap");
+    JLabel qrCodeLabelLabel = Labels.newValueLabel(Languages.safeText(MessageKey.QR_CODE_LABEL_LABEL));
+    qrCodeLabelValue = Labels.newValueLabel("");
+
+    JLabel noteLabel = Labels.newValueLabel(Languages.safeText(MessageKey.NOTES));
+    noteValue = Labels.newValueLabel("");
+
+    JLabel amountBTCLabel = Labels.newValueLabel("");
+    amountBTCValue = Labels.newValueLabel("");
+    // Bitcoin column
+    LabelDecorator.applyBitcoinSymbolLabel(
+            amountBTCLabel,
+            Configurations.currentConfiguration.getBitcoinConfiguration(),
+            Languages.safeText(MessageKey.AMOUNT) + " ");
+
+    JLabel amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.AMOUNT) + " " + Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencySymbol());
+    amountFiatValue = Labels.newValueLabel("");
+
+    update();
+
+    contentPanel.add(statusLabel);
+    contentPanel.add(statusValue, "wrap");
+    contentPanel.add(dateLabel);
+    contentPanel.add(dateValue, "wrap");
+    contentPanel.add(qrCodeLabelLabel);
+    contentPanel.add(qrCodeLabelValue, "wrap");
+    contentPanel.add(noteLabel);
+    contentPanel.add(noteValue, "wrap");
+    contentPanel.add(amountBTCLabel);
+    contentPanel.add(amountBTCValue, "wrap");
+    contentPanel.add(amountFiatLabel);
+    contentPanel.add(amountFiatValue, "wrap");
 
   }
 
   @Override
   protected void initialiseButtons(AbstractWizard<PaymentsWizardModel> wizard) {
 
-    PanelDecorator.addCancelPreviousFinish(this, wizard);
-
+    if (getWizardModel().isShowPrevOnPaymentRequest()) {
+      PanelDecorator.addCancelPreviousFinish(this, wizard);
+    } else {
+      PanelDecorator.addCancelFinish(this, wizard);
+    }
   }
 
   @Override
@@ -109,5 +144,39 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
   @Override
   public void updateFromComponentModels(Optional componentModel) {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
+  }
+
+  public void update() {
+    PaymentData paymentData = getWizardModel().getPaymentData();
+    if (paymentData != null) {
+      DateTime date = paymentData.getDate();
+      dateValue.setText(LocalisedDateUtils.formatFriendlyDate(date));
+
+      if (paymentData instanceof PaymentRequestData) {
+        qrCodeLabelValue.setText(((PaymentRequestData)paymentData).getLabel());
+      }
+
+      statusValue.setText(Languages.safeText(paymentData.getStatus().getStatusKey(), paymentData.getStatus().getStatusData()));
+      LabelDecorator.applyStatusIconAndColor(paymentData, statusValue, MultiBitUI.SMALL_ICON_SIZE);
+
+      noteValue.setText(paymentData.getNote());
+
+      BigInteger amountBTC = paymentData.getAmountBTC();
+      LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguageConfiguration();
+      BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
+
+      String[] balanceArray = Formats.formatSatoshisAsSymbolic(amountBTC, languageConfiguration, bitcoinConfiguration);
+      amountBTCValue.setText(balanceArray[0] + balanceArray[1]);
+
+      FiatPayment amountFiat = paymentData.getAmountFiat();
+      amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount(), languageConfiguration.getLocale(), bitcoinConfiguration)));
+
+      if (paymentData instanceof TransactionData) {
+        // It should be as payment requests are routed to their own screen but check all the same
+        TransactionData transactionData = (TransactionData) paymentData;
+        String transactionId = transactionData.getTransactionId();
+        Optional<BigInteger> feeOnSendBTC = transactionData.getFeeOnSendBTC();
+      }
+    }
   }
 }

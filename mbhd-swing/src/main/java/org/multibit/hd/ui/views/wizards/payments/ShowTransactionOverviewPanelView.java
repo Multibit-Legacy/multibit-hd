@@ -116,7 +116,8 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
     contentPanel.add(amountBTCLabel);
     contentPanel.add(amountBTCValue, "wrap");
     contentPanel.add(amountFiatLabel);
-    contentPanel.add(amountFiatValue, "wrap");  }
+    contentPanel.add(amountFiatValue, "wrap");
+  }
 
   @Override
   protected void initialiseButtons(AbstractWizard<PaymentsWizardModel> wizard) {
@@ -151,10 +152,10 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
 
       descriptionValue.setText(paymentData.getDescription());
 
-      statusValue.setText(paymentData.getStatus().getStatusText());
+      statusValue.setText(Languages.safeText(paymentData.getStatus().getStatusKey(), paymentData.getStatus().getStatusData()));
       LabelDecorator.applyStatusIconAndColor(paymentData, statusValue, MultiBitUI.SMALL_ICON_SIZE);
 
-      typeValue.setText(paymentData.getType().getLocalisationKey().getKey()); // TODO localise
+      typeValue.setText(Languages.safeText(paymentData.getType().getLocalisationKey()));
 
       BigInteger amountBTC = paymentData.getAmountBTC();
       LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguageConfiguration();
