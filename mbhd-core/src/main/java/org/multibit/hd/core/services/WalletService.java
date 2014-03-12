@@ -74,7 +74,7 @@ public class WalletService {
   private PaymentsProtobufSerializer protobufSerializer;
 
   /**
-   * The payment requests in a map, indexed by the bitcoin addressand transaction infos
+   * The payment requests in a map, indexed by the bitcoin address
    */
   private Map<String, PaymentRequestData> paymentRequestMap;
 
@@ -234,6 +234,9 @@ public class WalletService {
 
     // Note - from the transactionInfo (if present)
     calculateNote(transactionData, transactionHashAsString);
+
+    // Related payment requests - from the transactionInfo (if present)
+    copyRelatedPaymentRequests(transactionData, transactionHashAsString);
 
     return transactionData;
   }
@@ -409,6 +412,13 @@ public class WalletService {
      }
   }
 
+  private void copyRelatedPaymentRequests(TransactionData transactionData, String transactionHashAsString) {
+     TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
+      if (transactionInfo != null) {
+        transactionData.setPaymentRequestAddresses(transactionInfo.getRequestAddresses());
+      }
+   }
+
   private Optional<BigInteger> calculateFeeOnSend(PaymentType paymentType, Wallet wallet, Transaction transaction) {
     Optional<BigInteger> feeOnSend = Optional.absent();
 
@@ -483,6 +493,10 @@ public class WalletService {
 
   public Collection<PaymentRequestData> getPaymentRequests() {
     return paymentRequestMap.values();
+  }
+
+  public PaymentRequestData getPaymentRequestData(String paymentRequestAddress) {
+    return paymentRequestMap.get(paymentRequestAddress);
   }
 
   /**
