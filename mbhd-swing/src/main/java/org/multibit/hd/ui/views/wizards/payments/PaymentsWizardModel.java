@@ -1,10 +1,13 @@
 package org.multibit.hd.ui.views.wizards.payments;
 
 import org.multibit.hd.core.dto.PaymentData;
+import org.multibit.hd.core.dto.TransactionData;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
 
 /**
  * <p>Model object to provide the following to "payments wizard":</p>
@@ -48,7 +51,22 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
         state = PaymentsState.TRANSACTION_DETAIL;
         break;
       case TRANSACTION_DETAIL:
-        state = PaymentsState.CHOOSE_PAYMENT_REQUEST;
+        // If there is one payment request being paid bitcoin go directly to the payment request details
+        // If there are more one payment request go to the payment request chooser
+        if (paymentData instanceof TransactionData) {
+          TransactionData transactionData = (TransactionData)paymentData;
+          Collection<String> relatedPaymentRequestAddresses = transactionData.getPaymentRequestAddresses();
+          if (relatedPaymentRequestAddresses != null && relatedPaymentRequestAddresses.size() > 0) {
+            if (relatedPaymentRequestAddresses.size() == 1) {
+              state = PaymentsState.PAYMENT_REQUEST_DETAILS;
+            } else {
+              state = PaymentsState.CHOOSE_PAYMENT_REQUEST;
+            }
+          } else {
+            // TODO If there ae no payment requests go to a new screen saying so
+            state = PaymentsState.PAYMENT_REQUEST_DETAILS;
+          }
+        }
         break;
       case CHOOSE_PAYMENT_REQUEST:
         state = PaymentsState.PAYMENT_REQUEST_DETAILS;
@@ -62,7 +80,6 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
 
   @Override
   public void showPrevious() {
-
     switch (state) {
       case TRANSACTION_OVERVIEW:
         // Start - previous should not be enabled

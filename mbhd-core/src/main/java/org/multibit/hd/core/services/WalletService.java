@@ -74,7 +74,7 @@ public class WalletService {
   private PaymentsProtobufSerializer protobufSerializer;
 
   /**
-   * The payment requests in a map, indexed by the bitcoin addressand transaction infos
+   * The payment requests in a map, indexed by the bitcoin address
    */
   private Map<String, PaymentRequestData> paymentRequestMap;
 
@@ -190,18 +190,21 @@ public class WalletService {
    */
   public TransactionData adaptTransaction(Wallet wallet, Transaction transaction) {
 
-    // tx id
+    // Tx id
     String transactionHashAsString = transaction.getHashAsString();
 
-    // updateTime
+    // UpdateTime
     Date updateTime = transaction.getUpdateTime();
 
-    // amount BTC
+    // Amount BTC
     BigInteger amountBTC = transaction.getValue(wallet);
+
+    // Fiat amount
+    FiatPayment amountFiat = calculateFiatPayment(amountBTC);
 
     TransactionConfidence transactionConfidence = transaction.getConfidence();
 
-    // depth
+    // Depth
     int depth = 0; // By default not in a block
     TransactionConfidence.ConfidenceType confidenceType = TransactionConfidence.ConfidenceType.UNKNOWN;
 
@@ -212,116 +215,28 @@ public class WalletService {
       }
     }
 
+    // Payment status
     PaymentStatus paymentStatus = calculateStatus(transaction);
 
-    // payment type
-    PaymentType paymentType;
-    if (amountBTC.compareTo(BigInteger.ZERO) < 0) {
-      // Debit
-      if (depth == 0) {
-        paymentType = PaymentType.SENDING;
-      } else {
-        paymentType = PaymentType.SENT;
-      }
-    } else {
-      // Credit
-      if (depth == 0) {
-        paymentType = PaymentType.RECEIVING;
-      } else {
-        paymentType = PaymentType.RECEIVED;
-      }
-    }
-    // TODO - fee on send
+    // Payment type
+    PaymentType paymentType = calculatePaymentType(amountBTC, depth);
 
+    // Fee on send
+    Optional<BigInteger> feeOnSend = calculateFeeOnSend(paymentType, wallet, transaction);
 
-    // description
-    String description;
+    // Description
+    String description = calculateDescription(wallet, transaction, transactionHashAsString,paymentType, amountBTC);
 
-    if (paymentType == PaymentType.RECEIVING || paymentType == PaymentType.RECEIVED) {
-      description = "";
-      String addresses = "";
-
-      boolean descriptiveTextIsAvailable = false;
-      if (transaction.getOutputs() != null) {
-        for (TransactionOutput transactionOutput : transaction.getOutputs()) {
-          if (transactionOutput.isMine(wallet)) {
-            String receivingAddress = transactionOutput.getScriptPubKey().getToAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
-            addresses = addresses + " " + receivingAddress;
-
-            // Check if this output funds any payment requests;
-            PaymentRequestData paymentRequestData = paymentRequestMap.get(receivingAddress);
-            if (paymentRequestData != null) {
-              // Yes - this output funds a payment address
-              if (!paymentRequestData.getPayingTransactionHashes().contains(transactionHashAsString)) {
-                // We have not yet added this tx to the total paid amount
-                paymentRequestData.getPayingTransactionHashes().add(transactionHashAsString);
-                paymentRequestData.setPaidAmountBTC(paymentRequestData.getPaidAmountBTC().add(amountBTC));
-              }
-
-              if (paymentRequestData.getLabel() != null && paymentRequestData.getLabel().length() > 0) {
-                descriptiveTextIsAvailable = true;
-                description = description + paymentRequestData.getLabel() + " ";
-              }
-              if (paymentRequestData.getNote() != null && paymentRequestData.getNote().length() > 0) {
-                descriptiveTextIsAvailable = true;
-                description = description + paymentRequestData.getNote() + " ";
-              }
-            }
-          }
-        }
-      }
-
-      if (!descriptiveTextIsAvailable) {
-        // TODO localise
-        description = "By" + PREFIX_SEPARATOR + addresses.trim();
-      }
-    } else {
-      // Sent
-      // TODO localise
-      description = "To" + PREFIX_SEPARATOR;
-      if (transaction.getOutputs() != null) {
-        for (TransactionOutput transactionOutput : transaction.getOutputs()) {
-          // TODO Beef up description for other cases
-          description = description + " " + transactionOutput.getScriptPubKey().getToAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
-        }
-      }
-    }
-
-    // Fiat amount
-    FiatPayment amountFiat = new FiatPayment();
-    amountFiat.setExchange(ExchangeKey.current().getExchangeName());
-    Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
-    if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
-
-      amountFiat.setRate(exchangeRateChangedEvent.get().getRate().toString());
-      BigMoney localAmount = Satoshis.toLocalAmount(amountBTC, exchangeRateChangedEvent.get().getRate());
-      amountFiat.setAmount(localAmount);
-    } else {
-      amountFiat.setRate("");
-      amountFiat.setAmount(null);
-    }
 
     // Create the DTO from the raw transaction info
     TransactionData transactionData = new TransactionData(transactionHashAsString, new DateTime(updateTime), paymentStatus, amountBTC, amountFiat,
-            Optional.<BigInteger>absent(), confidenceType, paymentType, description, transaction.isCoinBase());
+            feeOnSend, confidenceType, paymentType, description, transaction.isCoinBase());
 
     // Note - from the transactionInfo (if present)
-    TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
-    if (transactionInfo != null) {
-      String note = transactionInfo.getNote();
-      if (note != null) {
-        transactionData.setNote(note);
-        // if there is a real note use that as the description
-        if (note.length() > 0) {
-          transactionData.setDescription(note);
-        }
-      } else {
-        transactionData.setNote("");
-      }
-      transactionData.setAmountFiat(transactionInfo.getAmountFiat());
-    } else {
-      transactionData.setNote("");
-    }
+    calculateNote(transactionData, transactionHashAsString);
+
+    // Related payment requests - from the transactionInfo (if present)
+    copyRelatedPaymentRequests(transactionData, transactionHashAsString);
 
     return transactionData;
   }
@@ -388,6 +303,132 @@ public class WalletService {
     return paymentStatus;
   }
 
+  private PaymentType calculatePaymentType(BigInteger amountBTC, int depth) {
+    PaymentType paymentType;
+    if (amountBTC.compareTo(BigInteger.ZERO) < 0) {
+      // Debit
+      if (depth == 0) {
+        paymentType = PaymentType.SENDING;
+      } else {
+        paymentType = PaymentType.SENT;
+      }
+    } else {
+      // Credit
+      if (depth == 0) {
+        paymentType = PaymentType.RECEIVING;
+      } else {
+        paymentType = PaymentType.RECEIVED;
+      }
+    }
+    return paymentType;
+  }
+
+  private String calculateDescription(Wallet wallet, Transaction transaction, String transactionHashAsString, PaymentType paymentType, BigInteger amountBTC) {
+    String description;
+    if (paymentType == PaymentType.RECEIVING || paymentType == PaymentType.RECEIVED) {
+      description = "";
+      String addresses = "";
+
+      boolean descriptiveTextIsAvailable = false;
+      if (transaction.getOutputs() != null) {
+        for (TransactionOutput transactionOutput : transaction.getOutputs()) {
+          if (transactionOutput.isMine(wallet)) {
+            String receivingAddress = transactionOutput.getScriptPubKey().getToAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
+            addresses = addresses + " " + receivingAddress;
+
+            // Check if this output funds any payment requests;
+            PaymentRequestData paymentRequestData = paymentRequestMap.get(receivingAddress);
+            if (paymentRequestData != null) {
+              // Yes - this output funds a payment address
+              if (!paymentRequestData.getPayingTransactionHashes().contains(transactionHashAsString)) {
+                // We have not yet added this tx to the total paid amount
+                paymentRequestData.getPayingTransactionHashes().add(transactionHashAsString);
+                paymentRequestData.setPaidAmountBTC(paymentRequestData.getPaidAmountBTC().add(amountBTC));
+              }
+
+              if (paymentRequestData.getLabel() != null && paymentRequestData.getLabel().length() > 0) {
+                descriptiveTextIsAvailable = true;
+                description = description + paymentRequestData.getLabel() + " ";
+              }
+              if (paymentRequestData.getNote() != null && paymentRequestData.getNote().length() > 0) {
+                descriptiveTextIsAvailable = true;
+                description = description + paymentRequestData.getNote() + " ";
+              }
+            }
+          }
+        }
+      }
+
+      if (!descriptiveTextIsAvailable) {
+        // TODO localise
+        description = "By" + PREFIX_SEPARATOR + addresses.trim();
+      }
+    } else {
+      // Sent
+      // TODO localise
+      description = "To" + PREFIX_SEPARATOR;
+      if (transaction.getOutputs() != null) {
+        for (TransactionOutput transactionOutput : transaction.getOutputs()) {
+          // TODO Beef up description for other cases
+          description = description + " " + transactionOutput.getScriptPubKey().getToAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
+        }
+      }
+    }
+    return description;
+  }
+
+  private FiatPayment calculateFiatPayment(BigInteger amountBTC) {
+    FiatPayment amountFiat = new FiatPayment();
+    amountFiat.setExchange(ExchangeKey.current().getExchangeName());
+    Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
+    if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
+
+      amountFiat.setRate(exchangeRateChangedEvent.get().getRate().toString());
+      BigMoney localAmount = Satoshis.toLocalAmount(amountBTC, exchangeRateChangedEvent.get().getRate());
+      amountFiat.setAmount(localAmount);
+    } else {
+      amountFiat.setRate("");
+      amountFiat.setAmount(null);
+    }
+    return amountFiat;
+  }
+
+  private void calculateNote(TransactionData transactionData, String transactionHashAsString) {
+    TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
+     if (transactionInfo != null) {
+       String note = transactionInfo.getNote();
+       if (note != null) {
+         transactionData.setNote(note);
+         // if there is a real note use that as the description
+         if (note.length() > 0) {
+           transactionData.setDescription(note);
+         }
+       } else {
+         transactionData.setNote("");
+       }
+       transactionData.setAmountFiat(transactionInfo.getAmountFiat());
+     } else {
+       transactionData.setNote("");
+     }
+  }
+
+  private void copyRelatedPaymentRequests(TransactionData transactionData, String transactionHashAsString) {
+     TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
+      if (transactionInfo != null) {
+        transactionData.setPaymentRequestAddresses(transactionInfo.getRequestAddresses());
+      }
+   }
+
+  private Optional<BigInteger> calculateFeeOnSend(PaymentType paymentType, Wallet wallet, Transaction transaction) {
+    Optional<BigInteger> feeOnSend = Optional.absent();
+
+    if (paymentType == PaymentType.SENDING || paymentType == PaymentType.SENT) {
+     // TODO - transaction.calculateFee(wallet) seems to have disappeared from transaction
+    }
+
+    return feeOnSend;
+  }
+
   /**
    * <p>Populate the internal cache of Payments from the backing store</p>
    */
@@ -452,6 +493,10 @@ public class WalletService {
 
   public Collection<PaymentRequestData> getPaymentRequests() {
     return paymentRequestMap.values();
+  }
+
+  public PaymentRequestData getPaymentRequestData(String paymentRequestAddress) {
+    return paymentRequestMap.get(paymentRequestAddress);
   }
 
   /**

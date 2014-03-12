@@ -10,6 +10,7 @@ import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.TransactionData;
+import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.languages.Languages;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.math.BigInteger;
+import java.util.Collection;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -42,12 +44,13 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
   private static final Logger log = LoggerFactory.getLogger(PaymentRequestDetailPanelView.class);
 
-   private JLabel dateValue;
-   private JLabel statusValue;
-   private JLabel qrCodeLabelValue;
-   private JLabel noteValue;
-   private JLabel amountBTCValue;
-   private JLabel amountFiatValue;
+  private JLabel dateValue;
+  private JLabel statusValue;
+  private JLabel addressValue;
+  private JLabel qrCodeLabelValue;
+  private JLabel noteValue;
+  private JLabel amountBTCValue;
+  private JLabel amountFiatValue;
 
   /**
    * @param wizard The wizard managing the states
@@ -61,7 +64,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
     // Configure the panel model
     PaymentRequestDetailPanelModel panelModel = new PaymentRequestDetailPanelModel(
-      getPanelName()
+            getPanelName()
     );
     setPanelModel(panelModel);
   }
@@ -70,9 +73,9 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
   public void initialiseContent(JPanel contentPanel) {
 
     contentPanel.setLayout(new MigLayout(
-      Panels.migXYLayout(),
-      "[][][]", // Column constraints
-      "[]10[]10[]" // Row constraints
+            Panels.migXYLayout(),
+            "[][][]", // Column constraints
+            "[]10[]10[]" // Row constraints
     ));
 
     // Apply the theme
@@ -83,6 +86,9 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
     JLabel statusLabel = Labels.newValueLabel(Languages.safeText(MessageKey.STATUS));
     statusValue = Labels.newValueLabel("");
+
+    JLabel addressLabel = Labels.newValueLabel(Languages.safeText(MessageKey.BITCOIN_ADDRESS));
+    addressValue = Labels.newValueLabel("");
 
     JLabel qrCodeLabelLabel = Labels.newValueLabel(Languages.safeText(MessageKey.QR_CODE_LABEL_LABEL));
     qrCodeLabelValue = Labels.newValueLabel("");
@@ -107,6 +113,8 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
     contentPanel.add(statusValue, "wrap");
     contentPanel.add(dateLabel);
     contentPanel.add(dateValue, "wrap");
+    contentPanel.add(addressLabel);
+    contentPanel.add(addressValue, "wrap");
     contentPanel.add(qrCodeLabelLabel);
     contentPanel.add(qrCodeLabelValue, "wrap");
     contentPanel.add(noteLabel);
@@ -120,7 +128,6 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
   @Override
   protected void initialiseButtons(AbstractWizard<PaymentsWizardModel> wizard) {
-
     if (getWizardModel().isShowPrevOnPaymentRequest()) {
       PanelDecorator.addCancelPreviousFinish(this, wizard);
     } else {
@@ -130,7 +137,6 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
   @Override
   public void afterShow() {
-
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
@@ -147,36 +153,49 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
   }
 
   public void update() {
+
+    // Work out the payment request to show
     PaymentData paymentData = getWizardModel().getPaymentData();
+    PaymentRequestData paymentRequestData = null;
     if (paymentData != null) {
-      DateTime date = paymentData.getDate();
-      dateValue.setText(LocalisedDateUtils.formatFriendlyDate(date));
-
-      if (paymentData instanceof PaymentRequestData) {
-        qrCodeLabelValue.setText(((PaymentRequestData)paymentData).getLabel());
+      // If the payment is a TransactionData then use the first payment request available
+      // If none then should show there is none
+      // TODO should pick up the chosen PaymentRequestData from the model as one could be chosen earlier
+      if (paymentData instanceof TransactionData) {
+        TransactionData transactionData = (TransactionData) paymentData;
+        Collection<String> relatedPaymentAddresses = transactionData.getPaymentRequestAddresses();
+        if (relatedPaymentAddresses != null && relatedPaymentAddresses.iterator().hasNext()) {
+          String paymentRequestAddress = relatedPaymentAddresses.iterator().next();
+          paymentRequestData = MultiBitHD.getWalletService().getPaymentRequestData(paymentRequestAddress);
+        }
+      } else if (paymentData instanceof PaymentRequestData) {
+        paymentRequestData = (PaymentRequestData) paymentData;
       }
+    }
 
-      statusValue.setText(Languages.safeText(paymentData.getStatus().getStatusKey(), paymentData.getStatus().getStatusData()));
-      LabelDecorator.applyStatusIconAndColor(paymentData, statusValue, MultiBitUI.SMALL_ICON_SIZE);
+    if (paymentRequestData == null) {
+      // TODO There is no matching payment request - show nothing
+    } else {
+      // Show the payment request data
+      DateTime date = paymentRequestData.getDate();
+      dateValue.setText(LocalisedDateUtils.formatFriendlyDate(date));
+      addressValue.setText(paymentRequestData.getAddress());
+      qrCodeLabelValue.setText(paymentRequestData.getLabel());
 
-      noteValue.setText(paymentData.getNote());
+      statusValue.setText(Languages.safeText(paymentRequestData.getStatus().getStatusKey(), paymentRequestData.getStatus().getStatusData()));
+      LabelDecorator.applyStatusIconAndColor(paymentRequestData, statusValue, MultiBitUI.SMALL_ICON_SIZE);
 
-      BigInteger amountBTC = paymentData.getAmountBTC();
+      noteValue.setText(paymentRequestData.getNote());
+
+      BigInteger amountBTC = paymentRequestData.getAmountBTC();
       LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguageConfiguration();
       BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
 
       String[] balanceArray = Formats.formatSatoshisAsSymbolic(amountBTC, languageConfiguration, bitcoinConfiguration);
       amountBTCValue.setText(balanceArray[0] + balanceArray[1]);
 
-      FiatPayment amountFiat = paymentData.getAmountFiat();
+      FiatPayment amountFiat = paymentRequestData.getAmountFiat();
       amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount(), languageConfiguration.getLocale(), bitcoinConfiguration)));
-
-      if (paymentData instanceof TransactionData) {
-        // It should be as payment requests are routed to their own screen but check all the same
-        TransactionData transactionData = (TransactionData) paymentData;
-        String transactionId = transactionData.getTransactionId();
-        Optional<BigInteger> feeOnSendBTC = transactionData.getFeeOnSendBTC();
-      }
     }
   }
 }
