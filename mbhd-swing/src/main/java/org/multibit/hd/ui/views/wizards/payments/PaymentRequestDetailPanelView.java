@@ -49,14 +49,11 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
    private JLabel amountBTCValue;
    private JLabel amountFiatValue;
 
-  private boolean showPrev;
-
   /**
    * @param wizard The wizard managing the states
    */
-  public PaymentRequestDetailPanelView(AbstractWizard<PaymentsWizardModel> wizard, String panelName, boolean showPrev) {
+  public PaymentRequestDetailPanelView(AbstractWizard<PaymentsWizardModel> wizard, String panelName) {
     super(wizard, panelName, MessageKey.PAYMENT_REQUEST, AwesomeIcon.FILE_TEXT_ALT);
-    this.showPrev = showPrev;
   }
 
   @Override
@@ -124,7 +121,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
   @Override
   protected void initialiseButtons(AbstractWizard<PaymentsWizardModel> wizard) {
 
-    if (showPrev) {
+    if (getWizardModel().isShowPrevOnPaymentRequest()) {
       PanelDecorator.addCancelPreviousFinish(this, wizard);
     } else {
       PanelDecorator.addCancelFinish(this, wizard);
@@ -159,7 +156,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
         qrCodeLabelValue.setText(((PaymentRequestData)paymentData).getLabel());
       }
 
-      statusValue.setText(paymentData.getStatus().getStatusText());
+      statusValue.setText(Languages.safeText(paymentData.getStatus().getStatusKey(), paymentData.getStatus().getStatusData()));
       LabelDecorator.applyStatusIconAndColor(paymentData, statusValue, MultiBitUI.SMALL_ICON_SIZE);
 
       noteValue.setText(paymentData.getNote());

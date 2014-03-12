@@ -345,9 +345,10 @@ public class WalletService {
         int depth = transaction.getConfidence().getDepthInBlocks();
         paymentStatus.setDepth(depth);
         if (depth == 1) {
-          paymentStatus.setStatusText("Confirmed by 1 block"); // TODO localise
+          paymentStatus.setStatusKey(CoreMessageKey.CONFIRMED_BY_ONE_BLOCK);
         } else {
-          paymentStatus.setStatusText("Confirmed by " + depth + " blocks"); // TODO localise
+          paymentStatus.setStatusKey(CoreMessageKey.CONFIRMED_BY_SEVERAL_BLOCKS);
+          paymentStatus.setStatusData(new Object[]{depth});
         }
         return paymentStatus;
       } else if (TransactionConfidence.ConfidenceType.PENDING.equals(confidenceType)) {
@@ -355,34 +356,35 @@ public class WalletService {
         if (numberOfPeers >= 2) {
           // Seen by the network but not confirmed yet
           PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.AMBER);
-          paymentStatus.setStatusText("Broadcast to Bitcoin network. Seen by " + numberOfPeers + " peers."); // TODO localise
+          paymentStatus.setStatusKey(CoreMessageKey.BROADCAST);
+          paymentStatus.setStatusData(new Object[]{numberOfPeers});
           return paymentStatus;
         } else {
           // Not out in the network
           PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.RED);
-          paymentStatus.setStatusText("Not broadcast to the Bitcoin netowrk yet."); // TODO localise
+          paymentStatus.setStatusKey(CoreMessageKey.NOT_BROADCAST);
           return paymentStatus;
         }
       } else if (TransactionConfidence.ConfidenceType.DEAD.equals(confidenceType)) {
         // Dead
         PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.RED);
-        paymentStatus.setStatusText("Overridden by another transaction. This transaction wil not confirm."); // TODO localise
+        paymentStatus.setStatusKey(CoreMessageKey.DEAD);
         return paymentStatus;
       } else if (TransactionConfidence.ConfidenceType.UNKNOWN.equals(confidenceType)) {
         // Unknown
         PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.AMBER);
-        paymentStatus.setStatusText("Unknown transaction status");
+        paymentStatus.setStatusKey(CoreMessageKey.UNKNOWN);
         return paymentStatus;
       }
     } else {
       // No transaction status - don't know
       PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.AMBER);
-      paymentStatus.setStatusText("Unknown transaction status");
+      paymentStatus.setStatusKey(CoreMessageKey.UNKNOWN);
       return paymentStatus;
     }
     // Unknown
     PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.AMBER);
-    paymentStatus.setStatusText("Unknown transaction status");
+    paymentStatus.setStatusKey(CoreMessageKey.UNKNOWN);
     return paymentStatus;
   }
 

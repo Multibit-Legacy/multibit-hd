@@ -12,9 +12,14 @@ public class PaymentStatus {
   private RAGStatus status;
 
   /**
-   * The localised status text for the payment. This will typically be 'Unconfirmed', "Confirmed by 2 blocks", "Dead" etc
+   * The localisation key for the status text for the payment. This will typically be the localisation key for 'Unconfirmed', "Confirmed by 2 blocks", "Dead" etc
    */
-  private String statusText;
+  private CoreMessageKey statusKey;
+
+  /**
+   * The localisation data for the status text for the payment
+   */
+  private Object[] statusData = null;
 
   public PaymentStatus(RAGStatus status) {
     this.status = status;
@@ -34,12 +39,20 @@ public class PaymentStatus {
     this.depth = depth;
   }
 
-  public String getStatusText() {
-    return statusText;
+  public CoreMessageKey getStatusKey() {
+    return statusKey;
   }
 
-  public void setStatusText(String statusText) {
-    this.statusText = statusText;
+  public void setStatusKey(CoreMessageKey statusKey) {
+    this.statusKey = statusKey;
+  }
+
+  public Object[] getStatusData() {
+    return statusData;
+  }
+
+  public void setStatusData(Object[] statusData) {
+    this.statusData = statusData;
   }
 
   /**

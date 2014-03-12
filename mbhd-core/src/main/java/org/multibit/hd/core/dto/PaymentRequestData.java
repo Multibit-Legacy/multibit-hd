@@ -148,7 +148,7 @@ public class PaymentRequestData implements PaymentData {
   @Override
   public PaymentStatus getStatus() {
     PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.PINK);
-    paymentStatus.setStatusText(CoreMessageKey.PAYMENT_REQUESTED.toString()); // TODO localise
+    paymentStatus.setStatusKey(CoreMessageKey.PAYMENT_REQUESTED);
     return paymentStatus;
   }
 

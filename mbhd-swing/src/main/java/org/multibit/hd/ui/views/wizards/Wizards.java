@@ -239,15 +239,14 @@ public class Wizards {
    public static PaymentsWizard newPaymentsWizard(PaymentData paymentData) {
 
      PaymentsWizardModel paymentsWizardModel;
-     boolean showPrevOnPaymentRequest;
      if (paymentData instanceof PaymentRequestData) {
-       showPrevOnPaymentRequest = false;
        paymentsWizardModel = new PaymentsWizardModel(PaymentsState.PAYMENT_REQUEST_DETAILS, paymentData);
+       paymentsWizardModel.setShowPrevOnPaymentRequest(false);
      } else {
-       showPrevOnPaymentRequest = true;
        paymentsWizardModel = new PaymentsWizardModel(PaymentsState.TRANSACTION_OVERVIEW, paymentData);
+       paymentsWizardModel.setShowPrevOnPaymentRequest(true);
      }
 
-     return new PaymentsWizard(paymentsWizardModel, false, showPrevOnPaymentRequest);
+     return new PaymentsWizard(paymentsWizardModel, false);
    }
 }
