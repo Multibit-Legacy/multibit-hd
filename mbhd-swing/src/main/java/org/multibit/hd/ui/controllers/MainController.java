@@ -110,9 +110,8 @@ public class MainController {
           exchangeTickerService.get().stopAndWait();
         }
 
-        exchangeTickerService = Optional.of(CoreServices.newExchangeService(exchangeKey));
-
-        // Start up the exchange service
+        // Create and start the exchange ticker service
+        exchangeTickerService = Optional.of(CoreServices.newExchangeService(bitcoinConfiguration));
         exchangeTickerService.get().start();
       }
     });

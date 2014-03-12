@@ -8,7 +8,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.joda.money.BigMoney;
 import org.joda.time.DateTime;
-import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
@@ -288,9 +287,9 @@ public class WalletService {
       }
     }
 
-    // fiat amount
+    // Fiat amount
     FiatPayment amountFiat = new FiatPayment();
-    amountFiat.setExchange(exchangeKey.getExchangeName());
+    amountFiat.setExchange(ExchangeKey.current().getExchangeName());
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
     if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
 

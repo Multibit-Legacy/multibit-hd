@@ -3,8 +3,9 @@ package org.multibit.hd.ui.views.wizards.exchange_settings;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.xeiam.xchange.ExchangeSpecification;
-import com.xeiam.xchange.currency.Currencies;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.xeiam.xchange.dto.marketdata.Ticker;
 import net.miginfocom.swing.MigLayout;
 import org.joda.money.CurrencyUnit;
@@ -14,6 +15,8 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exchanges.ExchangeKey;
+import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.services.ExchangeTickerService;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -315,36 +318,41 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
    */
   private void handleTestTicker(String isoCounterCode) {
 
-    // Get the current exchange key
-    ExchangeKey exchangeKey = ExchangeKey.valueOf(getWizardModel().getConfiguration().getBitcoinConfiguration().getExchangeKey());
-
-    // Use the wizard model to provide the exchange specification details
     BitcoinConfiguration bitcoinConfiguration = getWizardModel().getConfiguration().getBitcoinConfiguration();
-    ExchangeSpecification currentExchangeSpecification = exchangeKey.getExchange().getExchangeSpecification();
 
-    ExchangeSpecification testExchangeSpecification = new ExchangeSpecification(currentExchangeSpecification.getExchangeClassName());
-    testExchangeSpecification.setApiKey(bitcoinConfiguration.getExchangeApiKeys().orNull());
+    // Build a custom exchange ticker service from the wizard model
+    ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(bitcoinConfiguration);
+    ListenableFuture<Ticker> futureTicker = exchangeTickerService.latestTicker();
 
-    // TODO Take this off the AWT thread
-    Optional<Ticker> tickerOptional = ExchangeKey.latestTicker(Currencies.BTC, exchangeKey, Optional.of(testExchangeSpecification));
+    // Avoid freezing the UI
+    Futures.addCallback(futureTicker, new FutureCallback<Ticker>() {
+      @Override
+      public void onSuccess(Ticker ticker) {
 
-    if (!tickerOptional.isPresent()) {
-      Sounds.playBeep();
-      exchangeErrorStatus.setVisible(true);
-      ViewEvents.fireWizardButtonEnabledEvent(
-        getPanelName(),
-        WizardButton.APPLY,
-        false
-      );
-    } else {
-      exchangeErrorStatus.setVisible(false);
-      ViewEvents.fireWizardButtonEnabledEvent(
-        getPanelName(),
-        WizardButton.APPLY,
-        true
-      );
-    }
+        exchangeErrorStatus.setVisible(false);
+        ViewEvents.fireWizardButtonEnabledEvent(
+          getPanelName(),
+          WizardButton.APPLY,
+          true
+        );
 
+      }
+
+      @Override
+      public void onFailure(Throwable t) {
+
+        Sounds.playBeep();
+        exchangeErrorStatus.setVisible(true);
+        ViewEvents.fireWizardButtonEnabledEvent(
+          getPanelName(),
+          WizardButton.APPLY,
+          false
+        );
+
+      }
+    });
+
+    // Immediately update the model while we wait for the results
     CurrencyUnit currencyUnit = CurrencyUnit.getInstance(isoCounterCode);
 
     // Update the model (even if in error)

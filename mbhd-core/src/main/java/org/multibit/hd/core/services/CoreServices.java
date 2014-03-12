@@ -4,13 +4,12 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
-import com.xeiam.xchange.Exchange;
+import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.events.CoreEvents;
-import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.logging.LoggingFactory;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.seed_phrase.Bip39SeedPhraseGenerator;
@@ -102,16 +101,13 @@ public class CoreServices {
   }
 
   /**
-   * @param exchangeKey The exchange key providing the required information
+   * @param bitcoinConfiguration The Bitcoin configuration providing exchange and currency details
    *
    * @return A new exchange service based on the current configuration
    */
-  public static ExchangeTickerService newExchangeService(ExchangeKey exchangeKey) {
+  public static ExchangeTickerService newExchangeService(BitcoinConfiguration bitcoinConfiguration) {
 
-    // Use the factory to get the exchange API using default settings
-    final Exchange exchange = exchangeKey.getExchange();
-
-    return new ExchangeTickerService(exchangeKey.getExchangeName(), exchange.getPollingMarketDataService());
+    return new ExchangeTickerService(bitcoinConfiguration);
 
   }
 

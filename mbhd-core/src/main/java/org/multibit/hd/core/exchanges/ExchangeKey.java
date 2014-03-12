@@ -1,11 +1,8 @@
 package org.multibit.hd.core.exchanges;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
-import com.xeiam.xchange.ExchangeSpecification;
 import com.xeiam.xchange.bitcoincharts.BitcoinChartsExchange;
 import com.xeiam.xchange.bitcurex.BitcurexExchange;
 import com.xeiam.xchange.bitstamp.BitstampExchange;
@@ -13,14 +10,12 @@ import com.xeiam.xchange.btcchina.BTCChinaExchange;
 import com.xeiam.xchange.btce.BTCEExchange;
 import com.xeiam.xchange.campbx.CampBXExchange;
 import com.xeiam.xchange.currency.CurrencyPair;
-import com.xeiam.xchange.dto.marketdata.Ticker;
 import com.xeiam.xchange.kraken.KrakenExchange;
 import com.xeiam.xchange.oer.OERExchange;
 import com.xeiam.xchange.virtex.VirtExExchange;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.utils.CurrencyUtils;
 
-import java.io.IOException;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
@@ -58,25 +53,9 @@ public enum ExchangeKey {
   }
 
   /**
-   * @return The exchange instance (not connected) providing access to the exchange specification
+   * @return The exchange instance (not connected) providing access to the default exchange specification
    */
   public Exchange getExchange() {
-    return exchange;
-  }
-
-  /**
-   * @return The exchange instance (not connected) providing access to the exchange specification
-   */
-  public Exchange newExchange(ExchangeSpecification exchangeSpecification) {
-
-    Preconditions.checkState(
-      exchangeSpecification.getExchangeClassName().equals(exchange.getExchangeSpecification().getExchangeClassName()),
-      "'exchangeSpecification' is not for this exchange: " + exchangeSpecification.getExchangeClassName() + " not " + exchange.getExchangeSpecification().getExchangeClassName()
-    );
-
-    // Create a new exchange based on the new specification
-    exchange = ExchangeFactory.INSTANCE.createExchange(exchangeSpecification);
-
     return exchange;
   }
 
@@ -181,44 +160,6 @@ public enum ExchangeKey {
 
     // Default is the ISO code
     return currencyCode;
-  }
-
-  /**
-   * <p>Access the ticker on the exchange</p>
-   *
-   * @param currencyCode The currency code (could be ISO or not)
-   * @param exchangeKey  The exchange key
-   *
-   * @return An optional ticker (absent if an error occurs)
-   */
-  public static Optional<Ticker> latestTicker(String currencyCode, ExchangeKey exchangeKey, Optional<ExchangeSpecification> exchangeSpecification) {
-
-    // Apply any exchange quirks to the counter code (e.g. ISO "RUB" -> legacy "RUR")
-    String exchangeCounterCode = ExchangeKey.exchangeCode(currencyCode, exchangeKey);
-    String exchangeBaseCode = ExchangeKey.exchangeCode("XBT", exchangeKey);
-
-    final Exchange exchange;
-    if (exchangeSpecification.isPresent()) {
-      // Test out the new specification
-      exchange = ExchangeFactory.INSTANCE.createExchange(exchangeSpecification.get().getExchangeClassName());
-      exchange.getExchangeSpecification().setApiKey(exchangeSpecification.get().getApiKey());
-    } else {
-      // Use the configured exchange
-      exchange = exchangeKey.getExchange();
-    }
-
-    try {
-      // Check for fiat exchange
-      if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
-        return Optional.of(exchange.getPollingMarketDataService().getTicker(exchangeCounterCode, "USD"));
-      } else {
-        // Crypto-exchange is straightforward
-        return Optional.of(exchange.getPollingMarketDataService().getTicker(exchangeBaseCode, exchangeCounterCode));
-      }
-    } catch (IOException e1) {
-      return Optional.absent();
-    }
-
   }
 
 }
