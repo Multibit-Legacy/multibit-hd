@@ -126,8 +126,8 @@ public class Images {
 
     }
 
-    // Have an icon size 50% bigger for the pie pieces
-    iconSize = (int) (iconSize * 1.5);
+    // Have an icon size 20% bigger for the pie pieces
+    iconSize = (int) (iconSize * 1.2);
     g2.setColor(Themes.currentTheme.successAlertBackground());
     g2.fillArc(1, 1, iconSize - 2, iconSize - 2, 90, -angle);
 
