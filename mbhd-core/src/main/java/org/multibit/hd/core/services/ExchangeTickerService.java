@@ -1,22 +1,30 @@
 package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
+import com.xeiam.xchange.currency.CurrencyPair;
 import com.xeiam.xchange.dto.marketdata.Ticker;
 import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.exchanges.ExchangeKey;
+import org.multibit.hd.core.utils.CurrencyUtils;
 import org.multibit.hd.core.utils.Dates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Currency;
+import java.util.List;
+import java.util.Locale;
+import java.util.SortedSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -144,5 +152,67 @@ public class ExchangeTickerService extends AbstractService {
 
   }
 
+  /**
+   * @return All the currencies supported by the exchange
+   */
+  public ListenableFuture<String[]> allCurrencies() {
 
+    return SafeExecutors.newFixedThreadPool(1).submit(new Callable<String[]>() {
+      @Override
+      public String[] call() throws Exception {
+        Locale currentLocale = Configurations.currentConfiguration.getLocale();
+
+        // This may involve a call to the exchange or not
+        List<CurrencyPair> currencyPairs = exchange.getPollingMarketDataService().getExchangeSymbols();
+
+        if (currencyPairs == null || currencyPairs.isEmpty()) {
+          return new String[]{};
+        }
+
+        SortedSet<String> allCurrencies = Sets.newTreeSet();
+        for (CurrencyPair currencyPair : currencyPairs) {
+
+          // Add the currency (if non-BTC we can triangulate through USD)
+          String baseCode = currencyPair.baseCurrency;
+          String counterCode = currencyPair.counterCurrency;
+
+          // Ignore any malformed currency pairs
+          if (baseCode == null || counterCode == null ) {
+            continue;
+          }
+
+          // Make any adjustments
+          counterCode = CurrencyUtils.isoCandidateFor(counterCode);
+
+          try {
+            // Use Joda Money to determine supported currency
+            CurrencyUnit base = CurrencyUnit.getInstance(baseCode);
+            if (base != null) {
+              // Use JVM to provide translated name
+              String localName = Currency.getInstance(baseCode).getDisplayName(currentLocale);
+              allCurrencies.add(baseCode + " (" + localName + ")");
+            }
+          } catch (IllegalArgumentException e) {
+            // Base code is not in ISO 4217 so attempt to locate counter currency (e.g. BTC/RUR)
+            try {
+              // Use Joda Money to determine supported currency
+              CurrencyUnit counter = CurrencyUnit.getInstance(counterCode);
+              if (counter != null) {
+                // Use JVM to provide translated name
+                String localName = Currency.getInstance(counterCode).getDisplayName(currentLocale);
+                allCurrencies.add(counterCode + " (" + localName + ")");
+              }
+            } catch (IllegalArgumentException e1) {
+              // Neither base nor counter code is in ISO 4217 so ignore since we're only working with fiat
+            }
+          }
+        }
+
+        // Return the unique list of currencies
+        return allCurrencies.toArray(new String[allCurrencies.size()]);
+
+      }
+
+    });
+  }
 }

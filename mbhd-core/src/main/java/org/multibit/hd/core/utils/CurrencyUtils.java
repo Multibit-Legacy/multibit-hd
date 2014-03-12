@@ -1,10 +1,13 @@
 package org.multibit.hd.core.utils;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
 import org.multibit.hd.core.config.Configurations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -18,6 +21,8 @@ import java.util.*;
  *  
  */
 public class CurrencyUtils {
+
+  private static final Logger log = LoggerFactory.getLogger(CurrencyUtils.class);
 
   public static final CurrencyUnit BTC = CurrencyUnit.of("BTC");
 
@@ -183,6 +188,10 @@ public class CurrencyUtils {
    * @return The ISO code (or recognised candidate)
    */
   public static String isoCandidateFor(String currency) {
+
+    Preconditions.checkNotNull(currency, "'currency' must be present");
+
+    log.debug("Searching for ISO candidate for '{}'", currency);
 
     if (isoCandidateMap.containsKey(currency)) {
       // The currency is ISO so no searching is required

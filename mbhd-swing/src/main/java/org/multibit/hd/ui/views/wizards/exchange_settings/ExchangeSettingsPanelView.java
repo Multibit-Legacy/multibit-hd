@@ -49,15 +49,17 @@ import java.util.Locale;
 public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeSettingsWizardModel, ExchangeSettingsPanelModel> implements ActionListener {
 
   private JComboBox<String> exchangeRateProviderComboBox;
-  private JButton exchangeRateProviderBrowserButton;
-
-  private JLabel exchangeErrorStatus;
-  private JComboBox<String> currencyCodeComboBox;
 
   private JLabel apiKeyLabel;
-  private JTextField apiKey;
-  private JLabel apiKeyErrorStatus;
-  private DocumentListener apiKeyDocumentListener;
+  private JTextField apiKeyTextField;
+
+  private JLabel currencyCodeLabel;
+  private JComboBox<String> currencyCodeComboBox;
+
+  private JLabel tickerVerifiedStatus;
+
+  // Prevent early events from triggering NPEs etc
+  private boolean componentsReady = false;
 
   /**
    * @param wizard    The wizard managing the states
@@ -99,33 +101,47 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
     Preconditions.checkNotNull(locale, "'locale' cannot be empty");
 
-    exchangeRateProviderBrowserButton = Buttons.newLaunchBrowserButton(getExchangeRateProviderBrowserAction());
+    JButton exchangeRateProviderBrowserButton = Buttons.newLaunchBrowserButton(getExchangeRateProviderBrowserAction());
 
     exchangeRateProviderComboBox = ComboBoxes.newExchangeRateProviderComboBox(this, bitcoinConfiguration);
     currencyCodeComboBox = ComboBoxes.newCurrencyCodeComboBox(this, bitcoinConfiguration);
 
-    exchangeErrorStatus = Labels.newErrorStatus(false);
-    exchangeErrorStatus.setVisible(false);
-
     // API key
-    apiKey = TextBoxes.newEnterApiKey(getApiKeyDocumentListener());
-    apiKeyErrorStatus = Labels.newErrorStatus(false);
+    apiKeyTextField = TextBoxes.newEnterApiKey(getApiKeyDocumentListener());
     apiKeyLabel = Labels.newApiKeyLabel();
 
     // API key visibility
     boolean isOERExchange = ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey);
-    apiKey.setVisible(isOERExchange);
-    apiKeyErrorStatus.setVisible(isOERExchange);
-    apiKeyLabel.setVisible(isOERExchange);
 
     // API key value
     if (bitcoinConfiguration.getExchangeApiKeys().isPresent()) {
-      apiKey.setText(bitcoinConfiguration.getExchangeApiKeys().get());
+      apiKeyTextField.setText(bitcoinConfiguration.getExchangeApiKeys().get());
     }
 
-    // Hide the currency code combo if there is no API key for OER
-    if (isOERExchange && Strings.isNullOrEmpty(apiKey.getText())) {
-      currencyCodeComboBox.setVisible(false);
+    // Ticker verification status
+    tickerVerifiedStatus = Labels.newVerificationStatus(true);
+    tickerVerifiedStatus.setVisible(false);
+
+    // Local currency
+    currencyCodeLabel = Labels.newLocalCurrencyLabel();
+
+    // All components are initialised
+    componentsReady = true;
+
+    ///////////////////////////// Components ready ////////////////////////////////
+
+    // Show the API key if OER
+    setApiKeyVisibility(isOERExchange);
+
+    // Hide the currency code if OER and no API key is filled in
+    if (isOERExchange && Strings.isNullOrEmpty(apiKeyTextField.getText())) {
+      // show the API key
+      setCurrencyCodeVisibility(false);
+      // Hide the currency code
+      setCurrencyCodeVisibility(false);
+    } else {
+      // No API key so show the currency code
+      setCurrencyCodeVisibility(false);
     }
 
     contentPanel.add(Labels.newExchangeSettingsNote(), "growx,push,span 3,wrap");
@@ -135,12 +151,12 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     contentPanel.add(exchangeRateProviderBrowserButton, "shrink,wrap");
 
     contentPanel.add(apiKeyLabel, "shrink");
-    contentPanel.add(apiKey, "growx,push");
-    contentPanel.add(apiKeyErrorStatus, "grow,push,wrap");
+    contentPanel.add(apiKeyTextField, "growx,push,wrap");
 
-    contentPanel.add(Labels.newLocalCurrencyLabel(), "shrink");
-    contentPanel.add(currencyCodeComboBox, "growx,push");
-    contentPanel.add(exchangeErrorStatus, "grow,push,wrap");
+    contentPanel.add(currencyCodeLabel, "shrink");
+    contentPanel.add(currencyCodeComboBox, "growx,push,wrap");
+    contentPanel.add(tickerVerifiedStatus, "grow,cell 1 4,push,wrap");
+
 
   }
 
@@ -179,8 +195,8 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     if (!isExitCancel) {
 
       // If the user has selected OER then update the API key
-      if (apiKey.isVisible() && !Strings.isNullOrEmpty(apiKey.getText())) {
-        getWizardModel().getConfiguration().getBitcoinConfiguration().setExchangeApiKeys(apiKey.getText());
+      if (apiKeyTextField.isVisible() && !Strings.isNullOrEmpty(apiKeyTextField.getText())) {
+        getWizardModel().getConfiguration().getBitcoinConfiguration().setExchangeApiKeys(apiKeyTextField.getText());
       }
 
       // Switch the main configuration over to the new one
@@ -259,35 +275,53 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
     // Test for Open Exchange Rates
     if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
-      apiKeyLabel.setVisible(true);
-      apiKey.setVisible(true);
+      // Show the API key
+      setApiKeyVisibility(true);
 
-      // Hide the currency combo if there is no API key
-      currencyCodeComboBox.setVisible(!Strings.isNullOrEmpty(apiKey.getText()));
+      // Hide the currency code to start with
+      setCurrencyCodeVisibility(false);
+
     } else {
-      apiKeyLabel.setVisible(false);
-      apiKey.setVisible(false);
+      // Hide the API key
+      setApiKeyVisibility(false);
 
-      // Show the currency combo
-      currencyCodeComboBox.setVisible(true);
+      // Show the currency code
+      setCurrencyCodeVisibility(true);
     }
 
-    exchangeErrorStatus.setVisible(false);
+    // Hide the ticker verification
+    tickerVerifiedStatus.setVisible(false);
 
     // Update the model (even if in error)
     getWizardModel().getConfiguration().getBitcoinConfiguration().setExchangeKey(exchangeKey.name());
 
     // Reset the available currencies
-    String[] allCurrencies = exchangeKey.allCurrencies();
-    currencyCodeComboBox.setModel(new DefaultComboBoxModel<>(allCurrencies));
-    currencyCodeComboBox.setSelectedIndex(-1);
+    ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(getWizardModel().getConfiguration().getBitcoinConfiguration());
+    ListenableFuture<String[]> futureAllCurrencies = exchangeTickerService.allCurrencies();
+    Futures.addCallback(futureAllCurrencies, new FutureCallback<String[]>() {
+      @Override
+      public void onSuccess(String[] allCurrencies) {
 
-    // Prevent application until the currency is selected (to allow ticker check)
-    ViewEvents.fireWizardButtonEnabledEvent(
-      getPanelName(),
-      WizardButton.APPLY,
-      false
-    );
+        currencyCodeComboBox.setModel(new DefaultComboBoxModel<>(allCurrencies));
+        currencyCodeComboBox.setSelectedIndex(-1);
+
+        // Prevent application until the currency is selected (to allow ticker check)
+        ViewEvents.fireWizardButtonEnabledEvent(
+          getPanelName(),
+          WizardButton.APPLY,
+          false
+        );
+
+      }
+
+      @Override
+      public void onFailure(Throwable t) {
+
+        // Exchange currency look up failed
+        ExceptionHandler.handleThrowable(t);
+      }
+    });
+
 
   }
 
@@ -298,6 +332,13 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
    */
   private void handleCurrencySelection(ActionEvent e) {
 
+    // Always disable the Apply after a currency change
+    ViewEvents.fireWizardButtonEnabledEvent(
+      getPanelName(),
+      WizardButton.APPLY,
+      false
+    );
+
     JComboBox source = (JComboBox) e.getSource();
 
     // Ignore cascading events from an exchange selection
@@ -307,16 +348,25 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
     String isoCounterCode = String.valueOf(source.getSelectedItem()).substring(0, 3);
 
-    handleTestTicker(isoCounterCode);
+    // Immediately update the model while we wait for the results
+    CurrencyUnit currencyUnit = CurrencyUnit.getInstance(isoCounterCode);
+
+    // Update the model (even if in error)
+    getWizardModel().getConfiguration().getBitcoinConfiguration().setLocalCurrencySymbol(isoCounterCode);
+    getWizardModel().getConfiguration().getBitcoinConfiguration().setLocalCurrencyUnit(currencyUnit);
+
+    // Test the new settings
+    handleTestTicker();
 
   }
 
   /**
    * <p>Handles the process of testing the currency selection against the exchange</p>
-   *
-   * @param isoCounterCode The ISO counter code (e.g. "USD", "RUB" etc)
    */
-  private void handleTestTicker(String isoCounterCode) {
+  private void handleTestTicker() {
+
+    // Hide the ticker verification
+    tickerVerifiedStatus.setVisible(false);
 
     BitcoinConfiguration bitcoinConfiguration = getWizardModel().getConfiguration().getBitcoinConfiguration();
 
@@ -329,7 +379,9 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
       @Override
       public void onSuccess(Ticker ticker) {
 
-        exchangeErrorStatus.setVisible(false);
+        // Show the ticker verification
+        tickerVerifiedStatus.setVisible(true);
+
         ViewEvents.fireWizardButtonEnabledEvent(
           getPanelName(),
           WizardButton.APPLY,
@@ -342,7 +394,6 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
       public void onFailure(Throwable t) {
 
         Sounds.playBeep();
-        exchangeErrorStatus.setVisible(true);
         ViewEvents.fireWizardButtonEnabledEvent(
           getPanelName(),
           WizardButton.APPLY,
@@ -352,18 +403,13 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
       }
     });
 
-    // Immediately update the model while we wait for the results
-    CurrencyUnit currencyUnit = CurrencyUnit.getInstance(isoCounterCode);
-
-    // Update the model (even if in error)
-    getWizardModel().getConfiguration().getBitcoinConfiguration().setLocalCurrencySymbol(isoCounterCode);
-    getWizardModel().getConfiguration().getBitcoinConfiguration().setLocalCurrencyUnit(currencyUnit);
   }
 
   /**
    * @return A document listener for interacting with the API key field
    */
   public DocumentListener getApiKeyDocumentListener() {
+
     return new DocumentListener() {
       @Override
       public void insertUpdate(DocumentEvent e) {
@@ -381,25 +427,27 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
       }
 
       public void verify() {
-        boolean failed = apiKey.getText().length() != 32;
 
-        // Handle error status
-        apiKeyErrorStatus.setVisible(failed);
+        if (!componentsReady) {
+          return;
+        }
+
+        // Some exchanges will offer a variety of API key lengths so cannot verify beyond a presence
+        boolean notEmpty = apiKeyTextField.getText().length() > 0;
+
+        // Update the wizard model so that the ticker can be tested if a currency combo selection is made
+        getWizardModel().getConfiguration().getBitcoinConfiguration().setExchangeApiKeys(apiKeyTextField.getText());
 
         // Handle currency combo
-        currencyCodeComboBox.setVisible(!failed);
-
-        if (!failed) {
-
-          // Update the wizard model so that the ticker can be tested
-          getWizardModel().getConfiguration().getBitcoinConfiguration().setExchangeApiKeys(apiKey.getText());
-
-        }
+        setCurrencyCodeVisibility(notEmpty);
 
         // Handle currency code (always deselected after someone fiddles with the API key)
         currencyCodeComboBox.setSelectedIndex(-1);
 
-        // Handle apply
+        // Hide the ticker verification
+        tickerVerifiedStatus.setVisible(false);
+
+        // Apply is always disabled when the currency code combo is not selected
         ViewEvents.fireWizardButtonEnabledEvent(
           getPanelName(),
           WizardButton.APPLY,
@@ -409,4 +457,35 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
       }
     };
   }
+
+  /**
+   * @param visible True to make the label and text field visible
+   */
+  private void setApiKeyVisibility(boolean visible) {
+
+    if (!componentsReady) {
+      return;
+    }
+    if (apiKeyLabel == null || apiKeyTextField == null) {
+      return;
+    }
+    apiKeyLabel.setVisible(visible);
+    apiKeyTextField.setVisible(visible);
+
+  }
+
+  /**
+   * @param visible True to make the label and combo box visible
+   */
+  private void setCurrencyCodeVisibility(boolean visible) {
+
+    if (!componentsReady) {
+      return;
+    }
+    currencyCodeLabel.setVisible(visible);
+    currencyCodeComboBox.setVisible(visible);
+
+  }
+
+
 }

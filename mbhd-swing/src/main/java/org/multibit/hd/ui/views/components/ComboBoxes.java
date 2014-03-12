@@ -1,11 +1,17 @@
 package org.multibit.hd.ui.views.components;
 
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.multibit.hd.core.config.ApplicationConfiguration;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.Recipient;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exchanges.ExchangeKey;
+import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.services.ExchangeTickerService;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.core.utils.CurrencyUtils;
 import org.multibit.hd.ui.MultiBitUI;
@@ -482,26 +488,43 @@ public class ComboBoxes {
   }
 
   /**
+   * <p>Creates a combo that is populated asynchronously from the currency and exchange provided</p>
+   *
    * @param listener             The action listener
    * @param bitcoinConfiguration The Bitcoin configuration to use
    *
    * @return A new "currency code" combo box
    */
-  public static JComboBox<String> newCurrencyCodeComboBox(ActionListener listener, BitcoinConfiguration bitcoinConfiguration) {
+  public static JComboBox<String> newCurrencyCodeComboBox(final ActionListener listener, final BitcoinConfiguration bitcoinConfiguration) {
 
     Preconditions.checkNotNull(listener, "'listener' must be present");
     Preconditions.checkNotNull(bitcoinConfiguration, "'bitcoinConfiguration' must be present");
 
+    final JComboBox<String> comboBox = newReadOnlyComboBox(new String[] {});
+
     // Get all the currencies available at the exchange
-    String[] allCurrencies = ExchangeKey.current().allCurrencies();
-    JComboBox<String> comboBox = newReadOnlyComboBox(allCurrencies);
-    comboBox.setMaximumRowCount(MultiBitUI.COMBOBOX_MAX_ROW_COUNT);
+    ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(bitcoinConfiguration);
+    ListenableFuture<String[]> futureAllCurrencies = exchangeTickerService.allCurrencies();
+    Futures.addCallback(futureAllCurrencies, new FutureCallback<String[]>() {
+      @Override
+      public void onSuccess(String[] allCurrencies) {
 
-    selectFirstMatch(comboBox, allCurrencies, bitcoinConfiguration.getLocalCurrencyUnit().getCode());
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(allCurrencies);
+        comboBox.setModel(model);
+        comboBox.setMaximumRowCount(MultiBitUI.COMBOBOX_MAX_ROW_COUNT);
 
-    // Add the listener at the end to avoid false events
-    comboBox.setActionCommand(CURRENCY_COMMAND);
-    comboBox.addActionListener(listener);
+        selectFirstMatch(comboBox, allCurrencies, bitcoinConfiguration.getLocalCurrencyUnit().getCode());
+
+        // Add the listener at the end to avoid false events
+        comboBox.setActionCommand(CURRENCY_COMMAND);
+        comboBox.addActionListener(listener);
+      }
+
+      @Override
+      public void onFailure(Throwable t) {
+        ExceptionHandler.handleThrowable(t);
+      }
+    });
 
     return comboBox;
 
