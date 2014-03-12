@@ -99,6 +99,11 @@ public class WalletService {
   private final Stack<PaymentRequestData> undoDeletePaymentRequestStack = new Stack<>();
 
   /**
+   * A list of transaction output addresses
+   */
+  private Collection<String> outputAddresses;
+
+  /**
    * Initialise the wallet service with a user data directory and a wallet id so that it knows where to put files etc
    *
    * @param walletId the walletId to use for this WalletService
@@ -134,11 +139,9 @@ public class WalletService {
 
   /**
    * Get all the payments (payments and payment requests) in the current wallet.
-   * (This is a bit expensive so don't call it indiscriminately)
-   *
-   * @param locale the locale to use when localising text
+   * (This is moderately expensive so don't call it indiscriminately)
    */
-  public List<PaymentData> getPaymentDataList(Locale locale) {
+  public List<PaymentData> getPaymentDataList() {
     // See if there is a current wallet
     WalletManager walletManager = WalletManager.INSTANCE;
 
@@ -168,7 +171,7 @@ public class WalletService {
       }
     }
 
-    // Determine which paymentRequests have not been fully funded
+    // Determine which paymentRequests have not been fully funded (these will appear as independent entities in the UI)
     Set<PaymentRequestData> paymentRequestsNotFullyFunded = Sets.newHashSet();
     for (PaymentRequestData basePaymentRequestData : paymentRequestMap.values()) {
       if (basePaymentRequestData.getPaidAmountBTC().compareTo(basePaymentRequestData.getAmountBTC()) < 0) {
@@ -224,19 +227,19 @@ public class WalletService {
     // Fee on send
     Optional<BigInteger> feeOnSend = calculateFeeOnSend(paymentType, wallet, transaction);
 
-    // Description
-    String description = calculateDescription(wallet, transaction, transactionHashAsString,paymentType, amountBTC);
+    // Description +
+    // Ensure that any payment requests that are funded by this transaction know about it
+    // (The payment request knows about the transactions that fund it but not the reverse)
 
+    String description = calculateDescriptionAndUpdatePaymentRequests(wallet, transaction, transactionHashAsString, paymentType, amountBTC);
+    // also works out outputAddresses
 
     // Create the DTO from the raw transaction info
     TransactionData transactionData = new TransactionData(transactionHashAsString, new DateTime(updateTime), paymentStatus, amountBTC, amountFiat,
-            feeOnSend, confidenceType, paymentType, description, transaction.isCoinBase());
+            feeOnSend, confidenceType, paymentType, description, transaction.isCoinBase(), outputAddresses);
 
     // Note - from the transactionInfo (if present)
     calculateNote(transactionData, transactionHashAsString);
-
-    // Related payment requests - from the transactionInfo (if present)
-    copyRelatedPaymentRequests(transactionData, transactionHashAsString);
 
     return transactionData;
   }
@@ -323,11 +326,12 @@ public class WalletService {
     return paymentType;
   }
 
-  private String calculateDescription(Wallet wallet, Transaction transaction, String transactionHashAsString, PaymentType paymentType, BigInteger amountBTC) {
+  private String calculateDescriptionAndUpdatePaymentRequests(Wallet wallet, Transaction transaction, String transactionHashAsString, PaymentType paymentType, BigInteger amountBTC) {
     String description;
     if (paymentType == PaymentType.RECEIVING || paymentType == PaymentType.RECEIVED) {
       description = "";
       String addresses = "";
+      outputAddresses = Lists.newArrayList();
 
       boolean descriptiveTextIsAvailable = false;
       if (transaction.getOutputs() != null) {
@@ -335,6 +339,7 @@ public class WalletService {
           if (transactionOutput.isMine(wallet)) {
             String receivingAddress = transactionOutput.getScriptPubKey().getToAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
             addresses = addresses + " " + receivingAddress;
+            outputAddresses.add(receivingAddress);
 
             // Check if this output funds any payment requests;
             PaymentRequestData paymentRequestData = paymentRequestMap.get(receivingAddress);
@@ -411,13 +416,6 @@ public class WalletService {
        transactionData.setNote("");
      }
   }
-
-  private void copyRelatedPaymentRequests(TransactionData transactionData, String transactionHashAsString) {
-     TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
-      if (transactionInfo != null) {
-        transactionData.setPaymentRequestAddresses(transactionInfo.getRequestAddresses());
-      }
-   }
 
   private Optional<BigInteger> calculateFeeOnSend(PaymentType paymentType, Wallet wallet, Transaction transaction) {
     Optional<BigInteger> feeOnSend = Optional.absent();
@@ -527,6 +525,26 @@ public class WalletService {
         return walletDataOptional.get().getWallet().getKeys().get(0).toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
       }
     }
+  }
+
+  /**
+   * Find the payment requests that are either partially or fully funded by the transaction specified
+   * @return
+   */
+  public Collection<PaymentRequestData> findPaymentRequestsThisTransactionFunds(TransactionData transactionData) {
+    Collection<PaymentRequestData> paymentRequestDataCollection = Lists.newArrayList();
+
+    if (transactionData != null && transactionData.getOutputAddresses() != null) {
+      for (String address :  transactionData.getOutputAddresses()) {
+        PaymentRequestData paymentRequestData = paymentRequestMap.get(address);
+        if (paymentRequestData != null) {
+          // This transaction funds this payment address
+          paymentRequestDataCollection.add(paymentRequestData);
+        }
+      }
+    }
+
+    return paymentRequestDataCollection;
   }
 
   /**

@@ -2,7 +2,6 @@ package org.multibit.hd.core.dto;
 
 import com.google.bitcoin.core.TransactionConfidence;
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 
 import java.math.BigInteger;
@@ -42,14 +41,13 @@ public class TransactionData implements PaymentData {
   private final boolean coinBase;
 
   /**
-   * A collection of the payment requests that the transaction pays bitcoin to
+   * The bitcoin addresses in this wallet that the transaction sends bitcoin to
    */
-  private Collection<String> paymentRequestAddresses;
-
+  private Collection<String> outputAddresses;
 
   public TransactionData(String transactionId, DateTime date, PaymentStatus statusWithOrdinal,
                          BigInteger amountBTC, FiatPayment amountFiat, Optional<BigInteger> feeOnSendBTC,
-                         TransactionConfidence.ConfidenceType confidenceType, PaymentType type, String description, boolean coinBase) {
+                         TransactionConfidence.ConfidenceType confidenceType, PaymentType type, String description, boolean coinBase, Collection<String> outputAddresses) {
     this.transactionId = transactionId;
     this.date = date;
     this.statusWithOrdinal = statusWithOrdinal;
@@ -60,7 +58,7 @@ public class TransactionData implements PaymentData {
     this.type = type;
     this.description = description;
     this.coinBase = coinBase;
-    this.paymentRequestAddresses = Lists.newArrayList();
+    this.outputAddresses = outputAddresses;
   }
 
   @Override
@@ -179,11 +177,7 @@ public class TransactionData implements PaymentData {
     return coinBase;
   }
 
-  public Collection<String> getPaymentRequestAddresses() {
-    return paymentRequestAddresses;
-  }
-
-  public void setPaymentRequestAddresses(Collection<String> paymentRequestAddresses) {
-    this.paymentRequestAddresses = paymentRequestAddresses;
+  public Collection<String> getOutputAddresses() {
+    return outputAddresses;
   }
 }

@@ -18,7 +18,6 @@ import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.display_address.DisplayBitcoinAddressModel;
@@ -219,7 +218,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
       ContactService contactService = CoreServices.getOrCreateContactService(Optional.of(walletData.getWalletId()));
       walletDetail.setNumberOfContacts(contactService.allContacts().size());
 
-      walletDetail.setNumberOfPayments(MultiBitHD.getWalletService().getPaymentDataList(Languages.currentLocale()).size());
+      walletDetail.setNumberOfPayments(MultiBitHD.getWalletService().getPaymentDataList().size());
       ViewEvents.fireWalletDetailChangedEvent(walletDetail);
     }
   }

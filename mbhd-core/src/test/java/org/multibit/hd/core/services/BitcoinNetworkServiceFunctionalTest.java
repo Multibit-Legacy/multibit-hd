@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -117,7 +116,7 @@ public class BitcoinNetworkServiceFunctionalTest {
     walletService.initialise(temporaryDirectory, new WalletId(seed));
 
     // Get the current wallets payments - there should be some
-    List<PaymentData> transactions = walletService.getPaymentDataList(Locale.UK);
+    List<PaymentData> transactions = walletService.getPaymentDataList();
 
     log.debug("The payments in the wallet are:\n" + transactions);
     assertThat(transactions.size() > 0).isTrue();

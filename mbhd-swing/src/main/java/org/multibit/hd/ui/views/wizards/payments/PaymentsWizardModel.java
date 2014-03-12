@@ -1,8 +1,10 @@
 package org.multibit.hd.ui.views.wizards.payments;
 
 import org.multibit.hd.core.dto.PaymentData;
+import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.TransactionData;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,15 +57,15 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
         // If there are more one payment request go to the payment request chooser
         if (paymentData instanceof TransactionData) {
           TransactionData transactionData = (TransactionData)paymentData;
-          Collection<String> relatedPaymentRequestAddresses = transactionData.getPaymentRequestAddresses();
-          if (relatedPaymentRequestAddresses != null && relatedPaymentRequestAddresses.size() > 0) {
-            if (relatedPaymentRequestAddresses.size() == 1) {
+          Collection<PaymentRequestData> relatedPaymentRequestDataCollection = MultiBitHD.getWalletService().findPaymentRequestsThisTransactionFunds(transactionData);
+          if (relatedPaymentRequestDataCollection != null && relatedPaymentRequestDataCollection.size() > 0) {
+            if (relatedPaymentRequestDataCollection.size() <= 1) {
               state = PaymentsState.PAYMENT_REQUEST_DETAILS;
             } else {
               state = PaymentsState.CHOOSE_PAYMENT_REQUEST;
             }
           } else {
-            // TODO If there ae no payment requests go to a new screen saying so
+            // No payment requests - the single payment request screen deals with that
             state = PaymentsState.PAYMENT_REQUEST_DETAILS;
           }
         }

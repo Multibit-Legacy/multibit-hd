@@ -6,10 +6,7 @@ import org.joda.time.DateTime;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
-import org.multibit.hd.core.dto.FiatPayment;
-import org.multibit.hd.core.dto.PaymentData;
-import org.multibit.hd.core.dto.PaymentRequestData;
-import org.multibit.hd.core.dto.TransactionData;
+import org.multibit.hd.core.dto.*;
 import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Formats;
@@ -44,12 +41,26 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
   private static final Logger log = LoggerFactory.getLogger(PaymentRequestDetailPanelView.class);
 
+  private JLabel dateLabel;
   private JLabel dateValue;
+
+  private JLabel statusLabel;
   private JLabel statusValue;
+
+  private JLabel addressLabel;
   private JLabel addressValue;
+
+  private JLabel qrCodeLabelLabel;
   private JLabel qrCodeLabelValue;
+
+  private JLabel noteLabel;
   private JLabel noteValue;
+
+
+  private JLabel amountBTCLabel;
   private JLabel amountBTCValue;
+
+  private JLabel amountFiatLabel;
   private JLabel amountFiatValue;
 
   /**
@@ -81,22 +92,22 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
-    JLabel dateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.DATE));
+    dateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.DATE));
     dateValue = Labels.newValueLabel("");
 
-    JLabel statusLabel = Labels.newValueLabel(Languages.safeText(MessageKey.STATUS));
+    statusLabel = Labels.newValueLabel(Languages.safeText(MessageKey.STATUS));
     statusValue = Labels.newValueLabel("");
 
-    JLabel addressLabel = Labels.newValueLabel(Languages.safeText(MessageKey.BITCOIN_ADDRESS));
+    addressLabel = Labels.newValueLabel(Languages.safeText(MessageKey.BITCOIN_ADDRESS));
     addressValue = Labels.newValueLabel("");
 
-    JLabel qrCodeLabelLabel = Labels.newValueLabel(Languages.safeText(MessageKey.QR_CODE_LABEL_LABEL));
+    qrCodeLabelLabel = Labels.newValueLabel(Languages.safeText(MessageKey.QR_CODE_LABEL_LABEL));
     qrCodeLabelValue = Labels.newValueLabel("");
 
-    JLabel noteLabel = Labels.newValueLabel(Languages.safeText(MessageKey.NOTES));
+    noteLabel = Labels.newValueLabel(Languages.safeText(MessageKey.NOTES));
     noteValue = Labels.newValueLabel("");
 
-    JLabel amountBTCLabel = Labels.newValueLabel("");
+    amountBTCLabel = Labels.newValueLabel("");
     amountBTCValue = Labels.newValueLabel("");
     // Bitcoin column
     LabelDecorator.applyBitcoinSymbolLabel(
@@ -104,7 +115,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
             Configurations.currentConfiguration.getBitcoinConfiguration(),
             Languages.safeText(MessageKey.AMOUNT) + " ");
 
-    JLabel amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.AMOUNT) + " " + Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencySymbol());
+    amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.AMOUNT) + " " + Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencySymbol());
     amountFiatValue = Labels.newValueLabel("");
 
     update();
@@ -163,10 +174,9 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
       // TODO should pick up the chosen PaymentRequestData from the model as one could be chosen earlier
       if (paymentData instanceof TransactionData) {
         TransactionData transactionData = (TransactionData) paymentData;
-        Collection<String> relatedPaymentAddresses = transactionData.getPaymentRequestAddresses();
-        if (relatedPaymentAddresses != null && relatedPaymentAddresses.iterator().hasNext()) {
-          String paymentRequestAddress = relatedPaymentAddresses.iterator().next();
-          paymentRequestData = MultiBitHD.getWalletService().getPaymentRequestData(paymentRequestAddress);
+        Collection<PaymentRequestData> relatedPaymentRequestDataCollection = MultiBitHD.getWalletService().findPaymentRequestsThisTransactionFunds(transactionData);
+        if (relatedPaymentRequestDataCollection != null && relatedPaymentRequestDataCollection.iterator().hasNext()) {
+          paymentRequestData = relatedPaymentRequestDataCollection.iterator().next();
         }
       } else if (paymentData instanceof PaymentRequestData) {
         paymentRequestData = (PaymentRequestData) paymentData;
@@ -174,9 +184,14 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
     }
 
     if (paymentRequestData == null) {
-      // TODO There is no matching payment request - show nothing
+      // Put a message in the status label that there is no payment request and hide the rest of the labels
+      showOrHideLabels(false);
+
+      statusValue.setText(Languages.safeText(CoreMessageKey.NO_PAYMENT_REQUEST));
     } else {
       // Show the payment request data
+      showOrHideLabels(true);
+
       DateTime date = paymentRequestData.getDate();
       dateValue.setText(LocalisedDateUtils.formatFriendlyDate(date));
       addressValue.setText(paymentRequestData.getAddress());
@@ -197,5 +212,15 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
       FiatPayment amountFiat = paymentRequestData.getAmountFiat();
       amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount(), languageConfiguration.getLocale(), bitcoinConfiguration)));
     }
+  }
+
+  private void showOrHideLabels(boolean show) {
+    dateLabel.setVisible(show);
+    statusLabel.setVisible(show);
+    addressLabel.setVisible(show);
+    qrCodeLabelLabel.setVisible(show);
+    noteLabel.setVisible(show);
+    amountBTCLabel.setVisible(show);
+    amountFiatLabel.setVisible(show);
   }
 }

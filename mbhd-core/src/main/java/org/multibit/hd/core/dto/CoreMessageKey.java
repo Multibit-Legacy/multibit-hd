@@ -53,6 +53,7 @@ public enum CoreMessageKey {
   NOT_BROADCAST("core_not_broadcast"),
   DEAD("core_dead"),
   UNKNOWN("core_unknown"),
+  NO_PAYMENT_REQUEST("core_no_payment_request"),
 
   TRANSACTION_TO("core_transaction_to"),
   TRANSACTION_BY("core_transaction_by")
