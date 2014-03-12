@@ -18,7 +18,7 @@ public class CurrencyUtilsTest {
 
     Configurations.switchConfiguration(Configurations.newDefaultConfiguration());
 
-    Locale.setDefault(Locale.US);
+    Locale.setDefault(Locale.UK);
 
   }
 
@@ -74,6 +74,8 @@ public class CurrencyUtilsTest {
 
   @Test
   public void testCurrentSymbol() throws Exception {
+
+    Configurations.currentConfiguration.getBitcoinConfiguration().setLocalCurrencyUnit(CurrencyUnit.getInstance(Locale.US));
 
     final String actual_US = CurrencyUtils.currentSymbol();
 

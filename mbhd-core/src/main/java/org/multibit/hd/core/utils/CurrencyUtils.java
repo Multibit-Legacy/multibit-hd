@@ -29,7 +29,7 @@ public class CurrencyUtils {
   /**
    * A map of all available currencies for available locales
    */
-  private final static SortedMap<Currency, Locale> currencyLocaleMap;
+  private final static SortedMap<Locale, Currency> localeCurrencyMap;
 
   /**
    * A map of all common currency names and their appropriate ISO candidates
@@ -37,11 +37,11 @@ public class CurrencyUtils {
   private final static Map<String, List<String>> isoCandidateMap;
 
   static {
-    currencyLocaleMap = Maps.newTreeMap(new Comparator<Currency>() {
+    localeCurrencyMap = Maps.newTreeMap(new Comparator<Locale>() {
 
       @Override
-      public int compare(Currency c1, Currency c2) {
-        return c1.getCurrencyCode().compareTo(c2.getCurrencyCode());
+      public int compare(Locale l1, Locale l2) {
+        return l1.toString().compareTo(l2.toString());
       }
     });
     populateCurrencyLocaleMap();
@@ -57,8 +57,8 @@ public class CurrencyUtils {
   private static void populateIsoCandidateMap() {
 
     // Generate the ISO code from known entries (including legacy)
-    for (Map.Entry<Currency, Locale> entry : currencyLocaleMap.entrySet()) {
-      String isoCode = entry.getKey().getCurrencyCode();
+    for (Map.Entry<Locale, Currency> entry : localeCurrencyMap.entrySet()) {
+      String isoCode = entry.getValue().getCurrencyCode();
       isoCandidateMap.put(isoCode, Lists.newArrayList(isoCode));
     }
 
@@ -80,9 +80,9 @@ public class CurrencyUtils {
     // Iterate over all the available locales
     for (Locale locale : Locale.getAvailableLocales()) {
       try {
-        // Store the currency for each locale
+        // Key on locale to ensure uniqueness
         Currency currency = Currency.getInstance(locale);
-        currencyLocaleMap.put(currency, locale);
+        localeCurrencyMap.put(locale, currency);
       } catch (IllegalArgumentException e) {
         // Do nothing - locale is likely too general (e.g. "ar")
       }
@@ -132,21 +132,19 @@ public class CurrencyUtils {
   }
 
   /**
-   * @param currencyCode The 3 letter ISO 4217 currency code (e.g. "GBP", "USD" etc)
+   * @param isoCode The 3 letter ISO 4217 currency code (e.g. "GBP", "USD" etc)
    *
    * @return The currency symbol appropriate for the given currency code in the current locale
    */
-  public static String symbolFor(String currencyCode) {
+  public static String symbolFor(String isoCode) {
 
-    Currency currency = Currency.getInstance(currencyCode);
-
-    Locale locale = currencyLocaleMap.get(currency);
-
-    if (locale == null) {
-      return currencyCode;
+    for (Map.Entry<Locale, Currency> entry : localeCurrencyMap.entrySet()) {
+      if (entry.getValue().getCurrencyCode().equalsIgnoreCase(isoCode)) {
+        return entry.getValue().getSymbol(entry.getKey());
+      }
     }
 
-    return currency.getSymbol();
+    return isoCode;
 
   }
 
@@ -157,13 +155,12 @@ public class CurrencyUtils {
    */
   public static String symbolFor(Locale locale) {
 
-    Currency currency = Currency.getInstance(locale);
-
     // Not all currencies are known to all JVMs
-    if (currencyLocaleMap.containsKey(currency)) {
-      return currency.getSymbol(currencyLocaleMap.get(currency));
+    if (localeCurrencyMap.containsKey(locale)) {
+      return localeCurrencyMap.get(locale).getSymbol();
     } else {
       // Make best guess from JVM
+      Currency currency = Currency.getInstance(locale);
       return currency.getSymbol();
     }
 
