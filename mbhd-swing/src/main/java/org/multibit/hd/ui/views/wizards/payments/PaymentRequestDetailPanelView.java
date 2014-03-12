@@ -36,13 +36,14 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
   private JLabel transactionConfirmationStatus;
 
+  private boolean showPrev;
+
   /**
    * @param wizard The wizard managing the states
    */
-  public PaymentRequestDetailPanelView(AbstractWizard<PaymentsWizardModel> wizard, String panelName) {
-
+  public PaymentRequestDetailPanelView(AbstractWizard<PaymentsWizardModel> wizard, String panelName, boolean showPrev) {
     super(wizard, panelName, MessageKey.PAYMENT_REQUEST, AwesomeIcon.FILE_TEXT_ALT);
-
+    this.showPrev = showPrev;
   }
 
   @Override
@@ -53,10 +54,6 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
       getPanelName()
     );
     setPanelModel(panelModel);
-
-    // Bind it to the wizard model
-    //getWizardModel().setReportPanelModel(panelModel);
-
   }
 
   @Override
@@ -89,8 +86,11 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
   @Override
   protected void initialiseButtons(AbstractWizard<PaymentsWizardModel> wizard) {
 
-    PanelDecorator.addCancelPreviousFinish(this, wizard);
-
+    if (showPrev) {
+      PanelDecorator.addCancelPreviousFinish(this, wizard);
+    } else {
+      PanelDecorator.addCancelFinish(this, wizard);
+    }
   }
 
   @Override

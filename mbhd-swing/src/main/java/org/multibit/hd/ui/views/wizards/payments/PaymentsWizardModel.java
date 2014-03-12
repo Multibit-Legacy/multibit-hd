@@ -28,9 +28,11 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
   /**
    * @param state The state object
    */
-  public PaymentsWizardModel(PaymentsState state) {
+  public PaymentsWizardModel(PaymentsState state, PaymentData paymentData) {
     super(state);
+    this.paymentData = paymentData;
     CoreServices.uiEventBus.register(this);
+
   }
 
   @Override
@@ -80,9 +82,5 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
 
   public PaymentData getPaymentData() {
     return paymentData;
-  }
-
-  public void setPaymentData(PaymentData paymentData) {
-    this.paymentData = paymentData;
   }
 }

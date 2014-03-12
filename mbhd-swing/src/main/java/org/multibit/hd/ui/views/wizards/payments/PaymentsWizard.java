@@ -21,8 +21,12 @@ import java.util.Map;
  */
 public class PaymentsWizard extends AbstractWizard<PaymentsWizardModel> {
 
-  public PaymentsWizard(PaymentsWizardModel model, boolean isExiting) {
+  boolean showPrevOnPaymentRequest;
+
+  public PaymentsWizard(PaymentsWizardModel model, boolean isExiting, boolean showPrevOnPaymentRequest) {
     super(model, isExiting, Optional.absent());
+
+    this.showPrevOnPaymentRequest = showPrevOnPaymentRequest;
   }
 
   @Override
@@ -38,6 +42,6 @@ public class PaymentsWizard extends AbstractWizard<PaymentsWizardModel> {
       new ChoosePaymentRequestPanelView(this, PaymentsState.CHOOSE_PAYMENT_REQUEST.name()));
     wizardViewMap.put(
       PaymentsState.PAYMENT_REQUEST_DETAILS.name(),
-      new PaymentRequestDetailPanelView(this, PaymentsState.PAYMENT_REQUEST_DETAILS.name()));
+      new PaymentRequestDetailPanelView(this, PaymentsState.PAYMENT_REQUEST_DETAILS.name(), showPrevOnPaymentRequest));
   }
 }
