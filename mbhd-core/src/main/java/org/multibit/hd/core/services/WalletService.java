@@ -8,11 +8,11 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.joda.money.BigMoney;
 import org.joda.time.DateTime;
-import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.exceptions.PaymentsSaveException;
+import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.store.Payments;
 import org.multibit.hd.core.store.PaymentsProtobufSerializer;
@@ -376,7 +376,7 @@ public class WalletService {
 
   private FiatPayment calculateFiatPayment(BigInteger amountBTC) {
     FiatPayment amountFiat = new FiatPayment();
-    amountFiat.setExchange(Configurations.currentConfiguration.getBitcoinConfiguration().getExchangeName());
+    amountFiat.setExchange(ExchangeKey.current().getExchangeName());
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
     if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
 

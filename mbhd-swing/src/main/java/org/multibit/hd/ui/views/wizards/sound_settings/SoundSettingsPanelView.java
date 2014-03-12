@@ -77,10 +77,10 @@ public class SoundSettingsPanelView extends AbstractWizardPanelView<SoundSetting
     contentPanel.add(Labels.newSoundChangeNote(), "growx,span 2,wrap");
 
     contentPanel.add(Labels.newSelectAlertSound(), "shrink");
-    contentPanel.add(alertSoundYesNoComboBox, "growx,push,wrap");
+    contentPanel.add(alertSoundYesNoComboBox, "growx,wrap");
 
     contentPanel.add(Labels.newSelectReceiveSound(), "shrink");
-    contentPanel.add(receiveSoundYesNoComboBox, "growx,push,wrap");
+    contentPanel.add(receiveSoundYesNoComboBox, "growx,wrap");
   }
 
   @Override

@@ -3,21 +3,24 @@ package org.multibit.hd.ui;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
-import com.xeiam.xchange.bitstamp.BitstampExchange;
 import com.xeiam.xchange.currency.MoneyUtils;
 import net.miginfocom.swing.MigLayout;
+import org.joda.money.CurrencyUnit;
 import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.events.ConfigurationChangedEvent;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
+import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.HistoryService;
+import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.controllers.HeaderController;
 import org.multibit.hd.ui.controllers.MainController;
@@ -110,13 +113,18 @@ public class ComponentTestBed {
     // Start the core services
     CoreServices.main(args);
 
-    Configurations.currentConfiguration.getBitcoinConfiguration().setBitcoinSymbol("icon");
+    BitcoinConfiguration bitcoinConfiguration = new BitcoinConfiguration();
+    bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.MICON.name());
+    bitcoinConfiguration.setExchangeKey(ExchangeKey.BITSTAMP.name());
+    bitcoinConfiguration.setLocalCurrencyUnit(CurrencyUnit.USD);
+
+    Configurations.currentConfiguration.setBitcoinConfiguration(bitcoinConfiguration);
 
     // Register for events
     CoreServices.uiEventBus.register(this);
 
     // Standard support services
-    CoreServices.newExchangeService(BitstampExchange.class.getName()).start();
+    CoreServices.newExchangeService(bitcoinConfiguration).start();
     CoreServices.newBitcoinNetworkService().start();
 
     // Initialise the wallet manager, which will loadContacts the current wallet if available

@@ -9,8 +9,9 @@ import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
+import org.multibit.hd.core.exchanges.ExchangeKey;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -21,7 +22,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ExchangeTickerServiceTest {
+public class ExchangeTickerServiceFunctionalTest {
 
   private boolean receivedTickerUpdate = false;
 
@@ -29,9 +30,6 @@ public class ExchangeTickerServiceTest {
 
   @Before
   public void setUp() throws IOException {
-
-    Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
-    Configurations.currentConfiguration.getBitcoinConfiguration().setLocalCurrencyUnit(CurrencyUnit.USD);
 
     Ticker ticker = Ticker.TickerBuilder
       .newInstance()
@@ -51,13 +49,19 @@ public class ExchangeTickerServiceTest {
   @Test
   public void testStart() throws Exception {
 
-    ExchangeTickerService testObject = new ExchangeTickerService("Bitstamp", pollingMarketDataService);
+    // Use Bitstamp for functional testing
+    BitcoinConfiguration bitcoinConfiguration = new BitcoinConfiguration();
+    bitcoinConfiguration.setExchangeKey(ExchangeKey.BITSTAMP.name());
+    bitcoinConfiguration.setLocalCurrencyUnit(CurrencyUnit.USD);
+
+    ExchangeTickerService testObject = new ExchangeTickerService(bitcoinConfiguration);
 
     CoreServices.uiEventBus.register(this);
 
     testObject.start();
 
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+    // Allow time for the exchange to respond
+    Uninterruptibles.sleepUninterruptibly(5, TimeUnit.SECONDS);
 
     assertThat(receivedTickerUpdate).isTrue();
   }

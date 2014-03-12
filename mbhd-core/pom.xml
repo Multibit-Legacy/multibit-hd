@@ -14,6 +14,10 @@
   <name>MultiBit HD Core</name>
   <description>This module contains the core classes required by a HD SPV wallet. It is independent of user interface or persistence implementations.</description>
 
+  <properties>
+    <xchange.version>1.10.0</xchange.version>
+  </properties>
+
   <profiles>
     <profile>
       <id>update-protobuf</id>
@@ -59,10 +63,6 @@
     </profile>
   </profiles>
 
-  <properties>
-    <xchange.version>1.10.0</xchange.version>
-  </properties>
-
   <dependencies>
 
     <!-- BRIT for receiving payments -->
@@ -72,22 +72,18 @@
       <version>${project.parent.version}</version>
     </dependency>
 
-    <!-- XChange for accessing Bitcoin exchanges -->
+    <!-- XChange for accessing Bitcoin exchanges
+         See https://github.com/timmolter/XChange/wiki/Exchange-Support
+    -->
     <dependency>
       <groupId>com.xeiam.xchange</groupId>
       <artifactId>xchange-core</artifactId>
       <version>${xchange.version}</version>
     </dependency>
-    <!-- XChange VirtEx exchange support -->
+    <!-- XChange Canadian Virtex exchange support -->
     <dependency>
       <groupId>com.xeiam.xchange</groupId>
       <artifactId>xchange-cavirtex</artifactId>
-      <version>${xchange.version}</version>
-    </dependency>
-    <!-- XChange Open Exchange Rates exchange support -->
-    <dependency>
-      <groupId>com.xeiam.xchange</groupId>
-      <artifactId>xchange-openexchangerates</artifactId>
       <version>${xchange.version}</version>
     </dependency>
     <!-- XChange BTC-E exchange support -->
@@ -100,6 +96,12 @@
     <dependency>
       <groupId>com.xeiam.xchange</groupId>
       <artifactId>xchange-bitstamp</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+    <!-- XChange Bitcurex exchange support -->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-bitcurex</artifactId>
       <version>${xchange.version}</version>
     </dependency>
     <!-- XChange CampBX exchange support -->
@@ -120,6 +122,29 @@
       <artifactId>xchange-kraken</artifactId>
       <version>${xchange.version}</version>
     </dependency>
+
+    <!-- Exchange rate providers -->
+    <!-- XChange Open Exchange Rates support -->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-openexchangerates</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+    <!-- XChange Bitcoin Charts support -->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-bitcoincharts</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+    <!-- XChange Bitcoin Average support (in 2.0.0+) -->
+    <!--
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-bitcoinaverage</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+  -->
+
   </dependencies>
 
 </project>

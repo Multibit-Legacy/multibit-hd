@@ -4,8 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
-import com.xeiam.xchange.Exchange;
-import com.xeiam.xchange.ExchangeFactory;
+import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.dto.SecuritySummary;
@@ -102,22 +101,13 @@ public class CoreServices {
   }
 
   /**
-   * @param exchangeClassName The exchange class name taken from the XChange library
+   * @param bitcoinConfiguration The Bitcoin configuration providing exchange and currency details
    *
    * @return A new exchange service based on the current configuration
    */
-  public static ExchangeTickerService newExchangeService(String exchangeClassName) {
+  public static ExchangeTickerService newExchangeService(BitcoinConfiguration bitcoinConfiguration) {
 
-    // Use the factory to get the exchange API using default settings
-    final Exchange exchange = ExchangeFactory.INSTANCE.createExchange(exchangeClassName);
-
-    // Update the configuration with the current exchange name
-    Configurations
-      .currentConfiguration
-      .getBitcoinConfiguration()
-      .setExchangeName(exchange.getExchangeSpecification().getExchangeName());
-
-    return new ExchangeTickerService(exchange.getExchangeSpecification().getExchangeName(), exchange.getPollingMarketDataService());
+    return new ExchangeTickerService(bitcoinConfiguration);
 
   }
 

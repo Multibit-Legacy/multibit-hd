@@ -9,6 +9,7 @@ import org.multibit.hd.ui.views.components.text_fields.FormattedDecimalField;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.DefaultStyledDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -384,11 +385,16 @@ public class TextBoxes {
   }
 
   /**
-   * @return A new "enter access code" (API key) text field
+   * @param listener A document listener to detect changes
+   *
+   * @return A new "enter API key" text field
    */
-  public static JTextField newEnterAccessCode() {
+  public static JTextField newEnterApiKey(DocumentListener listener) {
 
-    return newTextField(40);
+    JTextField textField = newTextField(40);
+    textField.getDocument().addDocumentListener(listener);
+
+    return textField;
 
   }
 

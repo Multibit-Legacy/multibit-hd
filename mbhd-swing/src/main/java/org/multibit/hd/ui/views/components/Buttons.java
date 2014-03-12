@@ -135,7 +135,7 @@ public class Buttons {
     JButton button = newButton(action, MessageKey.UNDO);
     button.setAction(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.UNDO, button, true, MultiBitUI.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.UNDO, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
 
