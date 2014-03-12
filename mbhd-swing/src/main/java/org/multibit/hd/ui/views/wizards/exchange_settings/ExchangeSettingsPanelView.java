@@ -133,14 +133,12 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     // Show the API key if OER
     setApiKeyVisibility(isOERExchange);
 
+    // Show the currency code by default
+    setCurrencyCodeVisibility(true);
+
     // Hide the currency code if OER and no API key is filled in
     if (isOERExchange && Strings.isNullOrEmpty(apiKeyTextField.getText())) {
-      // show the API key
-      setCurrencyCodeVisibility(false);
-      // Hide the currency code
-      setCurrencyCodeVisibility(false);
-    } else {
-      // No API key so show the currency code
+      // No API key so hide currency code
       setCurrencyCodeVisibility(false);
     }
 
@@ -250,7 +248,14 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
         ExchangeKey exchangeKey = ExchangeKey.values()[selectedIndex];
 
         try {
-          URI exchangeUri = URI.create("http://" + exchangeKey.getExchange().getExchangeSpecification().getHost());
+          final URI exchangeUri;
+          if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
+            // Ensure MultiBit customers go straight to the free API key page with referral
+            exchangeUri = URI.create("https://openexchangerates.org/signup/free?r=multibit");
+          } else {
+            // All other exchanges go to the main host (not API root)
+            exchangeUri = URI.create("http://" + exchangeKey.getExchange().getExchangeSpecification().getHost());
+          }
           Desktop.getDesktop().browse(exchangeUri);
         } catch (IOException ex) {
           ExceptionHandler.handleThrowable(ex);

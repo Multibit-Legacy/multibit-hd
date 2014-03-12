@@ -21,6 +21,8 @@ import org.multibit.hd.core.utils.Dates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
@@ -140,9 +142,32 @@ public class ExchangeTickerService extends AbstractService {
     return SafeExecutors.newFixedThreadPool(1).submit(new Callable<Ticker>() {
       @Override
       public Ticker call() throws Exception {
-        // Check for fiat exchange
+
         if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
-          return exchange.getPollingMarketDataService().getTicker(exchangeCounterCode, "USD");
+          // Need to triangulate through USD
+          Ticker inverseLocalToUsdTicker = exchange.getPollingMarketDataService().getTicker(exchangeCounterCode, CurrencyUnit.USD.getCode());
+          Ticker inverseBitcoinToUsdTicker = exchange.getPollingMarketDataService().getTicker(exchangeBaseCode, CurrencyUnit.USD.getCode());
+
+          // OER gives inverse values to reduce number of calculations
+          BigMoney inverseLocalToUsd = inverseLocalToUsdTicker.getLast();
+          BigMoney inverseBitcoinToUsd = inverseBitcoinToUsdTicker.getLast();
+
+          // Conversion rate is inverse local divided by inverse Bitcoin
+          BigDecimal conversionRate = inverseLocalToUsd.getAmount().divide(inverseBitcoinToUsd.getAmount(), RoundingMode.HALF_EVEN);
+          BigMoney bitcoinToLocal = BigMoney.of(localCurrencyUnit, conversionRate);
+
+          // Infer the ticker
+          return Ticker.TickerBuilder.newInstance()
+            .withLast(bitcoinToLocal)
+            // All others are zero
+            .withAsk(BigMoney.zero(localCurrencyUnit))
+            .withBid(BigMoney.zero(localCurrencyUnit))
+            .withHigh(BigMoney.zero(localCurrencyUnit))
+            .withLow(BigMoney.zero(localCurrencyUnit))
+            .withTradableIdentifier(localCurrencyUnit.getCode())
+            .withVolume(BigDecimal.ZERO)
+            .build();
+
         } else {
           // Crypto-exchange is straightforward
           return exchange.getPollingMarketDataService().getTicker(exchangeBaseCode, exchangeCounterCode);

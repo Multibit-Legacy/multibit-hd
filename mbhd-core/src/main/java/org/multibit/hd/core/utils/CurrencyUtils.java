@@ -140,7 +140,13 @@ public class CurrencyUtils {
 
     Currency currency = Currency.getInstance(currencyCode);
 
-    return currency.getSymbol(currencyLocaleMap.get(currency));
+    Locale locale = currencyLocaleMap.get(currency);
+
+    if (locale == null) {
+      return currencyCode;
+    }
+
+    return currency.getSymbol();
 
   }
 
