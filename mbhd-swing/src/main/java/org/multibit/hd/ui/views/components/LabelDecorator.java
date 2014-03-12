@@ -112,11 +112,11 @@ public class LabelDecorator {
     switch (paymentData.getStatus().getStatus()) {
       case RED:
         label.setForeground(Themes.currentTheme.dangerAlertBackground());
-        AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, label, false, iconSize);
+        AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, label, true, iconSize);
         break;
       case AMBER:
         label.setForeground(Themes.currentTheme.text());
-        AwesomeDecorator.bindIcon(AwesomeIcon.EXCHANGE, label, false, iconSize);
+        AwesomeDecorator.bindIcon(AwesomeIcon.EXCHANGE, label, true, iconSize);
         break;
       case GREEN:
         label.setForeground(Themes.currentTheme.successAlertBackground());
@@ -126,7 +126,7 @@ public class LabelDecorator {
         break;
       case PINK:
         label.setForeground(Themes.currentTheme.pendingAlertBackground().darker());
-        AwesomeDecorator.bindIcon(AwesomeIcon.FILE_TEXT, label, false, iconSize);
+        AwesomeDecorator.bindIcon(AwesomeIcon.FILE_TEXT, label, true, iconSize);
         break;
       default:
         // Unknown status

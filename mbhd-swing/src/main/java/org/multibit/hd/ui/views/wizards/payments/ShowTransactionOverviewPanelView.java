@@ -116,7 +116,8 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
     contentPanel.add(amountBTCLabel);
     contentPanel.add(amountBTCValue, "wrap");
     contentPanel.add(amountFiatLabel);
-    contentPanel.add(amountFiatValue, "wrap");  }
+    contentPanel.add(amountFiatValue, "wrap");
+  }
 
   @Override
   protected void initialiseButtons(AbstractWizard<PaymentsWizardModel> wizard) {
