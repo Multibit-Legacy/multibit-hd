@@ -46,6 +46,11 @@ public class TransactionData implements PaymentData {
   private String rawTransaction;
 
   /**
+   * The size (in bytes)of the transaction
+   */
+  private int size;
+
+  /**
    * The bitcoin addresses in this wallet that the transaction sends bitcoin to
    */
   private Collection<String> outputAddresses;
@@ -53,7 +58,7 @@ public class TransactionData implements PaymentData {
   public TransactionData(String transactionId, DateTime date, PaymentStatus statusWithOrdinal,
                          BigInteger amountBTC, FiatPayment amountFiat, Optional<BigInteger> feeOnSendBTC,
                          TransactionConfidence.ConfidenceType confidenceType, PaymentType type, String description,
-                         boolean coinBase, Collection<String> outputAddresses, String rawTransaction) {
+                         boolean coinBase, Collection<String> outputAddresses, String rawTransaction, int size) {
     this.transactionId = transactionId;
     this.date = date;
     this.statusWithOrdinal = statusWithOrdinal;
@@ -66,6 +71,7 @@ public class TransactionData implements PaymentData {
     this.coinBase = coinBase;
     this.outputAddresses = outputAddresses;
     this.rawTransaction = rawTransaction;
+    this.size = size;
   }
 
   @Override
@@ -192,7 +198,7 @@ public class TransactionData implements PaymentData {
     return rawTransaction;
   }
 
-  public void setRawTransaction(String rawTransaction) {
-    this.rawTransaction = rawTransaction;
+  public int getSize() {
+    return size;
   }
 }
