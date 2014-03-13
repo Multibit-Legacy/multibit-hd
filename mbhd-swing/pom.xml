@@ -16,18 +16,18 @@
 
   <properties>
     <!-- JavaFX used for packaging (make sure to update Info.plist if changing) -->
-    <javafx.mainClass>org.multibit.hd.ui.MultiBitHD</javafx.mainClass>
+    <installer.mainClass>org.multibit.hd.ui.MultiBitHD</installer.mainClass>
     <!-- Icon names are attached to this -->
-    <javafx.appName>MultiBit HD</javafx.appName>
-    <javafx.jarName>multibit-hd</javafx.jarName>
-    <javafx.appId>MultiBitHD</javafx.appId>
+    <installer.appName>MultiBit HD</installer.appName>
+    <installer.jarName>multibit-hd</installer.jarName>
+    <installer.appId>MultiBitHD</installer.appId>
 
     <!-- JavaFX Ant JAR -->
-    <javafx.tools.ant.jar>${java.home}/../lib/ant-javafx.jar</javafx.tools.ant.jar>
+    <installer.tools.ant.jar>${java.home}/../lib/ant-javafx.jar</installer.tools.ant.jar>
 
   </properties>
 
-  <!-- To activate this, build as 'mvn -Djavafx=true clean package' -->
+  <!-- To activate this, build as 'mvn -installer=true clean package' -->
   <profiles>
     <profile>
       <id>installer</id>
@@ -61,13 +61,13 @@
                 <argument>-createjar</argument>
                 <argument>-nocss2bin</argument>
                 <argument>-appclass</argument>
-                <argument>${javafx.mainClass}</argument>
+                <argument>${installer.mainClass}</argument>
                 <argument>-srcdir</argument>
                 <argument>target/classes</argument>
                 <argument>-outdir</argument>
                 <argument>target</argument>
                 <argument>-outfile</argument>
-                <argument>${javafx.jarName}</argument>
+                <argument>${installer.jarName}</argument>
               </arguments>
             </configuration>
           </plugin>
@@ -117,18 +117,18 @@
 
                       <!-- Configure the classpath to include the current working directory
                            and the Ant JavaFX JAR -->
-                      <classpath path=".:${javafx.tools.ant.jar}"/>
+                      <classpath path=".:${installer.tools.ant.jar}"/>
 
                     </taskdef>
 
                     <echo>Define application...</echo>
-                    <fx:application id="${javafx.appId}"
-                                    name="${javafx.appName}"
-                                    mainClass="${javafx.mainClass}"/>
+                    <fx:application id="${installer.appId}"
+                                    name="${installer.appName}"
+                                    mainClass="${installer.mainClass}"/>
 
                     <echo>Creating JAR...</echo>
-                    <fx:jar destfile="target/${javafx.jarName}.jar" verbose="true">
-                      <fx:application refid="${javafx.appId}"/>
+                    <fx:jar destfile="target/${installer.jarName}.jar" verbose="true">
+                      <fx:application refid="${installer.appId}"/>
                       <fx:fileset dir="target/classes"/>
                       <fx:resources>
                         <fx:fileset dir="target" includes="libs/*.jar"/>
@@ -138,11 +138,11 @@
                     <fx:deploy width="600" height="400"
                                outdir="target/packaged"
                                embedJNLP="true" verbose="true"
-                               outfile="${javafx.appName}"
+                               outfile="${installer.appName}"
                                nativeBundles="all">
-                      <fx:application refid="${javafx.appId}"/>
+                      <fx:application refid="${installer.appId}"/>
                       <fx:resources>
-                        <fx:fileset dir="target" includes="${javafx.jarName}.jar"/>
+                        <fx:fileset dir="target" includes="${installer.jarName}.jar"/>
                         <fx:fileset dir="target" includes="libs/*.jar"/>
                       </fx:resources>
                       <fx:permissions/>
