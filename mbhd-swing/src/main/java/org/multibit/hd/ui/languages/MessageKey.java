@@ -284,6 +284,8 @@ public enum MessageKey {
   DESCRIPTION("description"),
   TRANSACTION_HASH("transaction_hash"),
   RAW_TRANSACTION("raw_transaction"),
+  VIEW_IN_BLOCKCHAIN_INFO("view_in_blockchain_info"),
+
 
   // Themes
   LIGHT_THEME("light_theme"),
