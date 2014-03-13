@@ -79,6 +79,26 @@ Using Nimbus ensures that we don't have this or similar problems.
 
 [Technical details on the default colours](http://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/_nimbusDefaults.html#primary)
 
+#### Where's the Trezor support ?
+
+Due to the complexity of getting MultiBit HD working with a "soft" wallet we've moved the Trezor support into a
+different branch (`mbhd-trezor`) which is periodically updated from `develop`. Once the main MBHD code has finalised
+then we will be integrating Trezor into the main branch.
+
+#### I want an installer not this IDE
+
+The code is changing too rapidly and is too unstable to justify a long-lived installer. If you want to create one for demo purposes
+you need to run the following Maven command:
+
+```
+mvn -Dinstaller=true clean package
+```
+
+The installers will be found in the `target/bundles` directory ready for code signing.
+
+If you want to try out a JWrapper build then the `mbhd-jwrapper` branch is available for this purpose. You will need to update it
+by periodically merging in from `develop`.
+
 #### Is there a developer wiki ?
 
 Yes. [The wiki pages](https://github.com/bitcoin-solutions/multibit-hd/wiki/_pages) provide comprehensive instructions for
