@@ -16,6 +16,16 @@ public enum PaymentType {
   REQUESTED(CoreMessageKey.PAYMENT_REQUESTED),
 
   /**
+   * The payment has been partly paid - some bitcoin has been received but less than the amount requested
+   */
+  PART_PAID(CoreMessageKey.PAYMENT_PART_PAID),
+
+  /**
+   * The payment has been fully paid
+   */
+  PAID(CoreMessageKey.PAYMENT_PAID),
+
+  /**
    * The transaction is currently being received to the wallet i.e. zero confirmation
    */
   RECEIVING(CoreMessageKey.PAYMENT_RECEIVING),
