@@ -277,6 +277,7 @@ public enum MessageKey {
   TRANSACTION_OVERVIEW("transaction_overview"),
   TRANSACTION_DETAIL("transaction_detail"),
   CHOOSE_PAYMENT_REQUEST("choose_payment_request"),
+  MATCHING_PAYMENT_REQUEST("matching_payment_request"),
   PAYMENT_REQUEST("payment_request"),
   DATE("date"),
   STATUS("status"),

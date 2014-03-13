@@ -53,10 +53,6 @@ public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<Payme
       getPanelName()
     );
     setPanelModel(panelModel);
-
-    // Bind it to the wizard model
-    //getWizardModel().setReportPanelModel(panelModel);
-
   }
 
   @Override
