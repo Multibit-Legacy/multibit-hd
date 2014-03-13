@@ -45,6 +45,8 @@ public class ShowTransactionDetailPanelView extends AbstractWizardPanelView<Paym
 
   private JTextArea rawTransactionValue;
 
+  private JLabel sizeValue;
+
   /**
    * @param wizard The wizard managing the states
    */
@@ -82,6 +84,9 @@ public class ShowTransactionDetailPanelView extends AbstractWizardPanelView<Paym
     rawTransactionValue = new JTextArea(5, 60);
     JScrollPane scrollPane = new JScrollPane(rawTransactionValue, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
+    JLabel sizeLabel = Labels.newValueLabel(Languages.safeText(MessageKey.SIZE));
+    sizeValue = Labels.newValueLabel("");
+
     JButton blockchainInfoBrowserButton = Buttons.newLaunchBrowserButton(getBlockchainInfoBrowserAction());
     blockchainInfoBrowserButton.setText(Languages.safeText(MessageKey.VIEW_IN_BLOCKCHAIN_INFO));
 
@@ -90,10 +95,12 @@ public class ShowTransactionDetailPanelView extends AbstractWizardPanelView<Paym
 
     contentPanel.add( Labels.newValueLabel(""));
     contentPanel.add(blockchainInfoBrowserButton, "wrap");
-    
+
     contentPanel.add(rawTransactionLabel);
     contentPanel.add(scrollPane, "grow, push, wrap");
 
+    contentPanel.add(sizeLabel);
+    contentPanel.add(sizeValue, "wrap");
   }
 
   @Override
@@ -124,10 +131,12 @@ public class ShowTransactionDetailPanelView extends AbstractWizardPanelView<Paym
   public void update() {
     PaymentData paymentData = getWizardModel().getPaymentData();
     if (paymentData != null && paymentData instanceof TransactionData) {
-      TransactionData transactionData = (TransactionData) paymentData;
+      final TransactionData transactionData = (TransactionData) paymentData;
 
       transactionHashValue.setText(transactionData.getTransactionId());
       rawTransactionValue.setText(transactionData.getRawTransaction());
+      int size = transactionData.getSize();
+      sizeValue.setText(Languages.safeText(MessageKey.SIZE_VALUE, size));
     }
   }
 

@@ -22,10 +22,7 @@ import org.multibit.hd.core.utils.Satoshis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
 
@@ -236,9 +233,18 @@ public class WalletService {
 
     String rawTransaction = transaction.toString();
 
+    int size = -1;
+    ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
+    try {
+        transaction.bitcoinSerialize(byteOutputStream);
+        size = byteOutputStream.size();
+    } catch (IOException e1) {
+        e1.printStackTrace();
+    }
+
     // Create the DTO from the raw transaction info
     TransactionData transactionData = new TransactionData(transactionHashAsString, new DateTime(updateTime), paymentStatus, amountBTC, amountFiat,
-            feeOnSend, confidenceType, paymentType, description, transaction.isCoinBase(), outputAddresses, rawTransaction);
+            feeOnSend, confidenceType, paymentType, description, transaction.isCoinBase(), outputAddresses, rawTransaction, size);
 
     // Note - from the transactionInfo (if present)
     calculateNote(transactionData, transactionHashAsString);
