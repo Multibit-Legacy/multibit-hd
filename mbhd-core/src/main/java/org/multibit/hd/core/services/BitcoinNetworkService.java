@@ -295,7 +295,7 @@ public class BitcoinNetworkService extends AbstractService {
         null
       ));
 
-    } catch (KeyCrypterException | InsufficientMoneyException | VerificationException e) {
+    } catch (KeyCrypterException | InsufficientMoneyException | IllegalArgumentException  | VerificationException e) {
 
       log.error(e.getMessage(), e);
 

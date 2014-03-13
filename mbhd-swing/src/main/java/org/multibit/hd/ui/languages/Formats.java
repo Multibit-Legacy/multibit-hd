@@ -119,6 +119,8 @@ public class Formats {
 
     format.setDecimalSeparatorAlwaysShown(false);
 
+    format.setNegativePrefix("-");
+
     return format;
   }
 

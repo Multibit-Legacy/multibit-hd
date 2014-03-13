@@ -53,7 +53,7 @@ public class AmountFiatTableCellRenderer extends DefaultTableCellRenderer {
 
           label.setText(balance + TrailingJustifiedDateTableCellRenderer.SPACER);
 
-          if (amountAsBigMoney.isNegativeOrZero()) {
+          if (amountAsBigMoney.isNegative()) {
             // Debit
             if (isSelected) {
               label.setForeground(table.getSelectionForeground());
