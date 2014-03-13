@@ -19,7 +19,10 @@
   </properties>
 
   <profiles>
+
     <profile>
+
+      <!-- To activate this use 'mvn -DupdateProtobuf=true clean compile' -->
       <id>update-protobuf</id>
       <activation>
         <property>

@@ -27,9 +27,11 @@
 
   </properties>
 
-  <!-- To activate this, build as 'mvn -installer=true clean package' -->
   <profiles>
+
     <profile>
+
+      <!-- To activate this, build as 'mvn -Dinstaller=true clean package' -->
       <id>installer</id>
       <activation>
         <property>
@@ -97,7 +99,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
-            <version>1.6</version>
+            <version>${maven-antrun.version}</version>
             <executions>
               <execution>
                 <id>create-javafx-packages</id>
