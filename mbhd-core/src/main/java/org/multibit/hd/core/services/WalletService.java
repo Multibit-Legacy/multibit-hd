@@ -234,9 +234,11 @@ public class WalletService {
     String description = calculateDescriptionAndUpdatePaymentRequests(wallet, transaction, transactionHashAsString, paymentType, amountBTC);
     // also works out outputAddresses
 
+    String rawTransaction = transaction.toString();
+
     // Create the DTO from the raw transaction info
     TransactionData transactionData = new TransactionData(transactionHashAsString, new DateTime(updateTime), paymentStatus, amountBTC, amountFiat,
-            feeOnSend, confidenceType, paymentType, description, transaction.isCoinBase(), outputAddresses);
+            feeOnSend, confidenceType, paymentType, description, transaction.isCoinBase(), outputAddresses, rawTransaction);
 
     // Note - from the transactionInfo (if present)
     calculateNote(transactionData, transactionHashAsString);

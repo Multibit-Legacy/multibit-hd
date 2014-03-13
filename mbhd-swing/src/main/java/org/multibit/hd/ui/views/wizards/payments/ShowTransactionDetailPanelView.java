@@ -2,6 +2,9 @@ package org.multibit.hd.ui.views.wizards.payments;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.dto.PaymentData;
+import org.multibit.hd.core.dto.TransactionData;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
@@ -28,13 +31,9 @@ public class ShowTransactionDetailPanelView extends AbstractWizardPanelView<Paym
 
   private static final Logger log = LoggerFactory.getLogger(ShowTransactionDetailPanelView.class);
 
-  private JLabel transactionConstructionStatusSummary;
-  private JLabel transactionConstructionStatusDetail;
+  private JLabel transactionHashValue;
 
-  private JLabel transactionBroadcastStatusSummary;
-  private JLabel transactionBroadcastStatusDetail;
-
-  private JLabel transactionConfirmationStatus;
+  private JTextArea rawTransactionValue;
 
   /**
    * @param wizard The wizard managing the states
@@ -53,10 +52,6 @@ public class ShowTransactionDetailPanelView extends AbstractWizardPanelView<Paym
       getPanelName()
     );
     setPanelModel(panelModel);
-
-    // Bind it to the wizard model
-    //getWizardModel().setReportPanelModel(panelModel);
-
   }
 
   @Override
@@ -71,19 +66,19 @@ public class ShowTransactionDetailPanelView extends AbstractWizardPanelView<Paym
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
-    transactionConstructionStatusSummary = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
-    transactionConstructionStatusDetail = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
+    JLabel transactionHashLabel = Labels.newValueLabel(Languages.safeText(MessageKey.TRANSACTION_HASH));
+    transactionHashValue = Labels.newValueLabel("");
 
-    transactionBroadcastStatusSummary = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
-    transactionBroadcastStatusDetail = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
-    transactionConfirmationStatus = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
+    JLabel rawTransactionLabel = Labels.newValueLabel(Languages.safeText(MessageKey.RAW_TRANSACTION));
+    rawTransactionValue = new JTextArea(5, 80);
+    JScrollPane scrollPane = new JScrollPane(rawTransactionValue, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
-    contentPanel.add(transactionConstructionStatusSummary, "wrap");
-    contentPanel.add(transactionConstructionStatusDetail, "wrap");
-    contentPanel.add(transactionBroadcastStatusSummary, "wrap");
-    contentPanel.add(transactionBroadcastStatusDetail, "wrap");
-    contentPanel.add(transactionConfirmationStatus, "wrap");
 
+    contentPanel.add(transactionHashLabel);
+    contentPanel.add(transactionHashValue, "wrap");
+
+    contentPanel.add(rawTransactionLabel);
+    contentPanel.add(scrollPane, "grow, push, wrap");
   }
 
   @Override
@@ -102,10 +97,22 @@ public class ShowTransactionDetailPanelView extends AbstractWizardPanelView<Paym
       }
     });
 
+    update();
+
   }
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
+  }
+
+  public void update() {
+    PaymentData paymentData = getWizardModel().getPaymentData();
+    if (paymentData != null && paymentData instanceof TransactionData) {
+      TransactionData transactionData = (TransactionData)paymentData;
+
+      transactionHashValue.setText(transactionData.getTransactionId());
+      rawTransactionValue.setText(transactionData.getRawTransaction());
+    }
   }
 }

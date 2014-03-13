@@ -282,6 +282,8 @@ public enum MessageKey {
   STATUS("status"),
   TYPE("type"),
   DESCRIPTION("description"),
+  TRANSACTION_HASH("transaction_hash"),
+  RAW_TRANSACTION("raw_transaction"),
 
   // Themes
   LIGHT_THEME("light_theme"),
