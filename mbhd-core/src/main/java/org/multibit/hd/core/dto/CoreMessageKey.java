@@ -47,6 +47,8 @@ public enum CoreMessageKey {
   PAYMENT_RECEIVING("core_payment_receiving"),
   PAYMENT_SENT("core_payment_sent"),
   PAYMENT_SENDING("core_payment_sending"),
+  PAYMENT_PAID("core_payment_paid"),
+  PAYMENT_PART_PAID("core_payment_part_paid"),
   CONFIRMED_BY_ONE_BLOCK("core_confirmed_by_one_block"),
   CONFIRMED_BY_SEVERAL_BLOCKS("core_confirmed_by_several_blocks"),
   BROADCAST("core_broadcast"),
