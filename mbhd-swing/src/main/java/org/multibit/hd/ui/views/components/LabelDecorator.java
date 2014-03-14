@@ -3,7 +3,7 @@ package org.multibit.hd.ui.views.components;
 import com.google.common.base.Strings;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.dto.PaymentData;
+import org.multibit.hd.core.dto.PaymentStatus;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
@@ -101,15 +101,16 @@ public class LabelDecorator {
   }
 
   /**
-   * Apply the paymentdata status icon and color to a label
+   * Apply the status icon and color to a label
    *
-   * @param paymentData The payment data to derive the status icon and color from
+   * @param paymentStatus The payment status to derive the status icon and color from
    * @param label       The label to apply the icon and color to
+   * @param isCoinbase  True if the transaction is a coinbase
    * @param iconSize    THe size of the icon to use, typically MultiBitUI.SMALL_ICON_SIZE
    *
    */
-  public static void applyStatusIconAndColor(PaymentData paymentData, JLabel label, int iconSize) {
-    switch (paymentData.getStatus().getStatus()) {
+  public static void applyStatusIconAndColor(PaymentStatus paymentStatus, JLabel label, boolean isCoinbase, int iconSize) {
+    switch (paymentStatus.getStatus()) {
       case RED:
         label.setForeground(Themes.currentTheme.dangerAlertBackground());
         AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, label, true, iconSize);
@@ -120,8 +121,8 @@ public class LabelDecorator {
         break;
       case GREEN:
         label.setForeground(Themes.currentTheme.successAlertBackground());
-        int depth = paymentData.getStatus().getDepth();
-        label.setIcon(Images.newConfirmationIcon(depth, paymentData.isCoinBase(), iconSize));
+        int depth = paymentStatus.getDepth();
+        label.setIcon(Images.newConfirmationIcon(depth, isCoinbase, iconSize));
 
         break;
       case PINK:
@@ -130,7 +131,7 @@ public class LabelDecorator {
         break;
       default:
         // Unknown status
-        throw new IllegalStateException("Unknown status " + paymentData.getStatus());
+        throw new IllegalStateException("Unknown status " + paymentStatus.getStatus());
     }
   }
 }

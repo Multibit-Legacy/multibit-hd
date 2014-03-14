@@ -18,6 +18,10 @@ public class TransactionSeenEvent implements CoreEvent {
   private final TransactionConfidence.ConfidenceType confidenceType;
   private final int depthInBlocks;
 
+  private final int numberOfPeers;
+
+  private final boolean coinbase;
+
   private BigInteger value;
 
   /**
@@ -39,6 +43,10 @@ public class TransactionSeenEvent implements CoreEvent {
     } else {
       depthInBlocks = DEPTH_IN_BLOCKS_IS_UNDEFINED;
     }
+
+    coinbase = transactionSeen.isCoinBase();
+
+    numberOfPeers = confidence.numBroadcastPeers();
 
   }
 
@@ -77,5 +85,13 @@ public class TransactionSeenEvent implements CoreEvent {
       ", confidenceType=" + confidenceType +
       ", depthInBlocks=" + depthInBlocks +
       '}';
+  }
+
+  public boolean isCoinbase() {
+    return coinbase;
+  }
+
+  public int getNumberOfPeers() {
+    return numberOfPeers;
   }
 }

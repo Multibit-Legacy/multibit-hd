@@ -40,7 +40,7 @@ public class RAGStatusTableCellRenderer extends DefaultTableCellRenderer {
       java.util.List<PaymentData> paymentDatas = paymentTableModel.getPaymentData();
       int modelRow = table.convertRowIndexToModel(row);
       PaymentData rowPaymentData = paymentDatas.get(modelRow);
-      LabelDecorator.applyStatusIconAndColor(rowPaymentData, label, MultiBitUI.SMALL_ICON_SIZE);
+      LabelDecorator.applyStatusIconAndColor(rowPaymentData.getStatus(), label, rowPaymentData.isCoinBase(), MultiBitUI.SMALL_ICON_SIZE);
     }
 
     if (isSelected) {

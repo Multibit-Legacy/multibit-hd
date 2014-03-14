@@ -216,7 +216,7 @@ public class WalletService {
     }
 
     // Payment status
-    PaymentStatus paymentStatus = calculateStatus(transaction);
+    PaymentStatus paymentStatus = calculateStatus(transaction.getConfidence().getConfidenceType(), depth, transaction.getConfidence().numBroadcastPeers());
 
     // Payment type
     PaymentType paymentType = calculatePaymentType(amountBTC, depth);
@@ -258,17 +258,17 @@ public class WalletService {
    * + AMBER = tx is unconfirmed
    * + GREEN = tx is confirmed
    *
-   * @param transaction the bitcoinj transaction to use to work out the status
+   * @param confidenceType the bitcoinj confidenceType  to use to work out the status
+   * @param depth depth in blocks of the transaction
    * @return status of the transaction
    */
-  private static PaymentStatus calculateStatus(Transaction transaction) {
-    if (transaction.getConfidence() != null) {
-      TransactionConfidence.ConfidenceType confidenceType = transaction.getConfidence().getConfidenceType();
+  public static PaymentStatus calculateStatus(TransactionConfidence.ConfidenceType confidenceType, int depth, int numberOfPeers) {
+    if (confidenceType != null) {
 
       if (TransactionConfidence.ConfidenceType.BUILDING.equals(confidenceType)) {
         // Confirmed
         PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.GREEN);
-        int depth = transaction.getConfidence().getDepthInBlocks();
+
         paymentStatus.setDepth(depth);
         if (depth == 1) {
           paymentStatus.setStatusKey(CoreMessageKey.CONFIRMED_BY_ONE_BLOCK);
@@ -278,7 +278,6 @@ public class WalletService {
         }
         return paymentStatus;
       } else if (TransactionConfidence.ConfidenceType.PENDING.equals(confidenceType)) {
-        int numberOfPeers = transaction.getConfidence().numBroadcastPeers();
         if (numberOfPeers >= 2) {
           // Seen by the network but not confirmed yet
           PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.AMBER);

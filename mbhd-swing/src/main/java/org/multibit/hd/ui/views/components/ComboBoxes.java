@@ -289,7 +289,9 @@ public class ComboBoxes {
     JComboBox<PaymentRequestData> comboBox = newReadOnlyComboBox(paymentRequestDataList.toArray(new PaymentRequestData[paymentRequestDataList.size()]));
 
     // Can use the ordinal due to the declaration ordering
-    comboBox.setSelectedIndex(0);
+    if (paymentRequestDataList.size() > 0) {
+      comboBox.setSelectedIndex(0);
+    }
 
     // Add the listener at the end to avoid false events
     comboBox.setActionCommand(PAYMENT_REQUESTS_COMMAND);

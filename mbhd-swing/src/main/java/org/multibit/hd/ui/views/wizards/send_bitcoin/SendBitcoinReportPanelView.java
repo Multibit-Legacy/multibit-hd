@@ -4,11 +4,15 @@ import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.CoreMessageKey;
+import org.multibit.hd.core.dto.PaymentStatus;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.events.TransactionCreationEvent;
 import org.multibit.hd.core.events.TransactionSeenEvent;
+import org.multibit.hd.core.services.WalletService;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.components.LabelDecorator;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
@@ -42,6 +46,12 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
   private JLabel transactionConfirmationStatus;
 
+  private TransactionCreationEvent lastTransactionCreationEvent;
+  private BitcoinSentEvent lastBitcoinSentEvent;
+  private TransactionSeenEvent lastTransactionSeenEvent;
+
+  private boolean initialised = false;
+
   /**
    * @param wizard The wizard managing the states
    */
@@ -62,6 +72,10 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
     // Bind it to the wizard model
     getWizardModel().setReportPanelModel(panelModel);
+
+    lastTransactionCreationEvent = null;
+    lastBitcoinSentEvent = null;
+    lastTransactionSeenEvent = null;
 
   }
 
@@ -90,6 +104,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     contentPanel.add(transactionBroadcastStatusDetail, "wrap");
     contentPanel.add(transactionConfirmationStatus, "wrap");
 
+    initialised = true;
   }
 
   @Override
@@ -106,6 +121,15 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
       @Override
       public void run() {
         getFinishButton().requestFocusInWindow();
+        if (lastTransactionCreationEvent != null) {
+          onTransactionCreationEvent(lastTransactionCreationEvent);
+        }
+        if (lastBitcoinSentEvent != null) {
+          onBitcoinSentEvent(lastBitcoinSentEvent);
+        }
+        if (lastTransactionSeenEvent != null) {
+          onTransactionSeenEvent(lastTransactionSeenEvent);
+        }
       }
     });
 
@@ -119,6 +143,13 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   @Subscribe
   public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
     log.debug("Received the TransactionCreationEvent: " + transactionCreationEvent.toString());
+    lastTransactionCreationEvent = transactionCreationEvent;
+
+    // The event may be fired before the UI has initialised
+    if (!initialised) {
+      return;
+    }
+
     if (transactionCreationEvent.isTransactionCreationWasSuccessful()) {
       // We now have a transactionId so keep that in the panel model for filtering TransactionSeenEvents later
       getPanelModel().get().setTransactionId(transactionCreationEvent.getTransactionId());
@@ -138,6 +169,12 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   @Subscribe
   public void onBitcoinSentEvent(BitcoinSentEvent bitcoinSentEvent) {
     log.debug("Received the BitcoinSentEvent: " + bitcoinSentEvent.toString());
+    lastBitcoinSentEvent = bitcoinSentEvent;
+    // The event may be fired before the UI has initialised
+    if (!initialised) {
+      return;
+    }
+
     if (bitcoinSentEvent.isSendWasSuccessful()) {
       transactionBroadcastStatusSummary.setText(Languages.safeText(CoreMessageKey.BITCOIN_SENT_OK));
       Labels.decorateStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.TRUE));
@@ -153,13 +190,20 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   @Subscribe
   public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
     log.debug("Received the TransactionSeenEvent: " + transactionSeenEvent.toString());
+    lastTransactionSeenEvent = transactionSeenEvent;
+    // The event may be fired before the UI has initialised
+    if (!initialised) {
+      return;
+    }
 
     // Is this an event about the transaction that was just sent ?
     // If so, update the UI
     if (getPanelModel().get() != null) {
       String currentTransactionId = getPanelModel().get().getTransactionId();
       if (transactionSeenEvent.getTransactionId().equals(currentTransactionId)) {
-        transactionConfirmationStatus.setText("Transaction id = " + transactionSeenEvent.getTransactionId());
+        PaymentStatus paymentStatus = WalletService.calculateStatus(transactionSeenEvent.getConfidenceType(), transactionSeenEvent.getDepthInBlocks(), transactionSeenEvent.getNumberOfPeers());
+        transactionConfirmationStatus.setText(Languages.safeText(paymentStatus.getStatusKey(), transactionSeenEvent.getNumberOfPeers() ));
+        LabelDecorator.applyStatusIconAndColor(paymentStatus, transactionConfirmationStatus, transactionSeenEvent.isCoinbase(), MultiBitUI.NORMAL_ICON_SIZE);
       }
     }
   }
