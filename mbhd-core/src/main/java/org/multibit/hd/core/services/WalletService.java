@@ -539,20 +539,20 @@ public class WalletService {
    * Find the payment requests that are either partially or fully funded by the transaction specified
    * @return
    */
-  public Collection<PaymentRequestData> findPaymentRequestsThisTransactionFunds(TransactionData transactionData) {
-    Collection<PaymentRequestData> paymentRequestDataCollection = Lists.newArrayList();
+  public List<PaymentRequestData> findPaymentRequestsThisTransactionFunds(TransactionData transactionData) {
+    List<PaymentRequestData> paymentRequestDataList = Lists.newArrayList();
 
     if (transactionData != null && transactionData.getOutputAddresses() != null) {
       for (String address :  transactionData.getOutputAddresses()) {
         PaymentRequestData paymentRequestData = paymentRequestMap.get(address);
         if (paymentRequestData != null) {
           // This transaction funds this payment address
-          paymentRequestDataCollection.add(paymentRequestData);
+          paymentRequestDataList.add(paymentRequestData);
         }
       }
     }
 
-    return paymentRequestDataCollection;
+    return paymentRequestDataList;
   }
 
   /**

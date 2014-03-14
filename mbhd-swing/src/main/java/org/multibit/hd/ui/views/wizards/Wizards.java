@@ -237,14 +237,14 @@ public class Wizards {
     * @return A new "payments" wizard
     */
    public static PaymentsWizard newPaymentsWizard(PaymentData paymentData) {
-
      PaymentsWizardModel paymentsWizardModel;
      if (paymentData instanceof PaymentRequestData) {
        paymentsWizardModel = new PaymentsWizardModel(PaymentsState.PAYMENT_REQUEST_DETAILS, paymentData);
-       paymentsWizardModel.setShowPrevOnPaymentRequest(false);
+       paymentsWizardModel.setPaymentRequestData((PaymentRequestData)paymentData);
+       paymentsWizardModel.setShowPrevOnPaymentRequestDetailScreen(false);
      } else {
        paymentsWizardModel = new PaymentsWizardModel(PaymentsState.TRANSACTION_OVERVIEW, paymentData);
-       paymentsWizardModel.setShowPrevOnPaymentRequest(true);
+       paymentsWizardModel.setShowPrevOnPaymentRequestDetailScreen(true);
      }
 
      return new PaymentsWizard(paymentsWizardModel, false);

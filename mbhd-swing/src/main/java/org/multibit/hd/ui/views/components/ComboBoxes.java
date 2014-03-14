@@ -7,6 +7,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import org.multibit.hd.core.config.ApplicationConfiguration;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.dto.BackupSummary;
+import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exchanges.ExchangeKey;
@@ -53,6 +54,11 @@ public class ComboBoxes {
    * The "themes" combo box action command
    */
   public static final String THEMES_COMMAND = "themes";
+  /**
+   * The "paymentRequests" combo box action command
+   */
+  public static final String PAYMENT_REQUESTS_COMMAND = "paymentRequests";
+
   /**
    * The "alert sound" combo box action command
    */
@@ -265,6 +271,28 @@ public class ComboBoxes {
 
     // Add the listener at the end to avoid false events
     comboBox.setActionCommand(THEMES_COMMAND);
+    comboBox.addActionListener(listener);
+
+    return comboBox;
+
+  }
+
+  /**
+   * @param listener                 The action listener to alert when the selection is made
+   * @param paymentRequestDataList   The list of paymentRequestData to put in the combo box
+   *
+   * @return A new "payment requests" combo box containing all supported languages and variants
+   */
+  public static JComboBox<PaymentRequestData> newPaymentRequestsComboBox(ActionListener listener, List<PaymentRequestData> paymentRequestDataList) {
+
+    // Populate the combo box and declare a suitable renderer
+    JComboBox<PaymentRequestData> comboBox = newReadOnlyComboBox(paymentRequestDataList.toArray(new PaymentRequestData[paymentRequestDataList.size()]));
+
+    // Can use the ordinal due to the declaration ordering
+    comboBox.setSelectedIndex(0);
+
+    // Add the listener at the end to avoid false events
+    comboBox.setActionCommand(PAYMENT_REQUESTS_COMMAND);
     comboBox.addActionListener(listener);
 
     return comboBox;

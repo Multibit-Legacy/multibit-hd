@@ -6,8 +6,9 @@ import org.joda.time.DateTime;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
-import org.multibit.hd.core.dto.*;
-import org.multibit.hd.ui.MultiBitHD;
+import org.multibit.hd.core.dto.CoreMessageKey;
+import org.multibit.hd.core.dto.FiatPayment;
+import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.languages.Languages;
@@ -26,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.math.BigInteger;
-import java.util.Collection;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -139,7 +139,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
   @Override
   protected void initialiseButtons(AbstractWizard<PaymentsWizardModel> wizard) {
-    if (getWizardModel().isShowPrevOnPaymentRequest()) {
+    if (getWizardModel().isShowPrevOnPaymentRequestDetailScreen()) {
       PanelDecorator.addCancelPreviousFinish(this, wizard);
     } else {
       PanelDecorator.addCancelFinish(this, wizard);
@@ -166,31 +166,12 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
   public void update() {
 
     // Work out the payment request to show
-    PaymentData paymentData = getWizardModel().getPaymentData();
-    PaymentRequestData paymentRequestData = null;
-    if (paymentData != null) {
-      // If the payment is a TransactionData then use the first payment request available
-      // If none then should show there is none
-      // TODO should pick up the chosen PaymentRequestData from the model as one could be chosen earlier
-      if (paymentData instanceof TransactionData) {
-        TransactionData transactionData = (TransactionData) paymentData;
-        Collection<PaymentRequestData> relatedPaymentRequestDataCollection = MultiBitHD.getWalletService().findPaymentRequestsThisTransactionFunds(transactionData);
-        if (relatedPaymentRequestDataCollection != null && relatedPaymentRequestDataCollection.iterator().hasNext()) {
-          paymentRequestData = relatedPaymentRequestDataCollection.iterator().next();
-        }
-      } else if (paymentData instanceof PaymentRequestData) {
-        paymentRequestData = (PaymentRequestData) paymentData;
-      }
-    }
+    PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData();
 
     if (paymentRequestData == null) {
-      // Put a message in the status label that there is no payment request and hide the rest of the labels
-      showOrHideLabels(false);
-
+      // Shouldn't happen but put a message on the UI all the same
       statusValue.setText(Languages.safeText(CoreMessageKey.NO_PAYMENT_REQUEST));
     } else {
-      // Show the payment request data
-      showOrHideLabels(true);
 
       DateTime date = paymentRequestData.getDate();
       dateValue.setText(LocalisedDateUtils.formatFriendlyDate(date));
@@ -212,15 +193,5 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
       FiatPayment amountFiat = paymentRequestData.getAmountFiat();
       amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount(), languageConfiguration.getLocale(), bitcoinConfiguration)));
     }
-  }
-
-  private void showOrHideLabels(boolean show) {
-    dateLabel.setVisible(show);
-    statusLabel.setVisible(show);
-    addressLabel.setVisible(show);
-    qrCodeLabelLabel.setVisible(show);
-    noteLabel.setVisible(show);
-    amountBTCLabel.setVisible(show);
-    amountFiatLabel.setVisible(show);
   }
 }

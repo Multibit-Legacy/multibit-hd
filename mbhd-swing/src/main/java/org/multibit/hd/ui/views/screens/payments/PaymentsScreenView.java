@@ -6,6 +6,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.RAGStatus;
+import org.multibit.hd.core.dto.TransactionData;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
 import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.services.CoreServices;
@@ -22,6 +23,7 @@ import org.multibit.hd.ui.views.components.tables.PaymentTableModel;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.payments.PaymentsWizard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -188,10 +190,15 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
          }
          int selectedModelRow = paymentsTable.convertRowIndexToModel(selectedTableRow);
          PaymentData paymentData = ((PaymentTableModel)paymentsTable.getModel()).getPaymentData().get(selectedModelRow);
-         log.debug("getDetailsAction : selectedTableRow = " + selectedTableRow + ", selectedModelRow = " + selectedModelRow + ", paymentData = " + paymentData.toString());
+         //log.debug("getDetailsAction : selectedTableRow = " + selectedTableRow + ", selectedModelRow = " + selectedModelRow + ", paymentData = " + paymentData.toString());
 
-         Panels.showLightBox(Wizards.newPaymentsWizard(paymentData).getWizardScreenHolder());
-
+         PaymentsWizard wizard = Wizards.newPaymentsWizard(paymentData);
+         // If the payment is a transaction, then fetch the matching payment request data and put them in the model
+         if (paymentData instanceof TransactionData) {
+           wizard.getWizardModel().setMatchingPaymentRequestList(
+                   MultiBitHD.getWalletService().findPaymentRequestsThisTransactionFunds((TransactionData) paymentData));
+         }
+         Panels.showLightBox(wizard.getWizardScreenHolder());
        }
      };
    }

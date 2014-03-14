@@ -40,5 +40,4 @@ public class Renderers {
   public static DefaultTableCellRenderer newPaymentTypeRenderer() {
      return new PaymentTypeTableCellRenderer();
   }
-
 }

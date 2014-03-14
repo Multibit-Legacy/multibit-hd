@@ -1,15 +1,14 @@
 package org.multibit.hd.ui.views.wizards.payments;
 
+import com.google.common.collect.Lists;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.PaymentRequestData;
-import org.multibit.hd.core.dto.TransactionData;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * <p>Model object to provide the following to "payments wizard":</p>
@@ -31,9 +30,21 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
   private PaymentData paymentData;
 
   /**
-   * Whether the prev button should be shown on the payment request screen
+   * The matching payment requests for a transactionData
+   * (may be empty
    */
-  boolean showPrevOnPaymentRequest;
+  List<PaymentRequestData> matchingPaymentRequestList = Lists.newArrayList();
+
+  /**
+   * The payment request to show in the payment request details screen
+   */
+  PaymentRequestData paymentRequestData;
+
+  /**
+   * Whether to show the prev button on the payment request detail screen
+   */
+  boolean showPrevOnPaymentRequestDetailScreen = false;
+
 
   /**
    * @param state The state object
@@ -42,7 +53,6 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
     super(state);
     this.paymentData = paymentData;
     CoreServices.uiEventBus.register(this);
-
   }
 
   @Override
@@ -53,22 +63,7 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
         state = PaymentsState.TRANSACTION_DETAIL;
         break;
       case TRANSACTION_DETAIL:
-        // If there is one payment request being paid bitcoin go directly to the payment request details
-        // If there are more one payment request go to the payment request chooser
-        if (paymentData instanceof TransactionData) {
-          TransactionData transactionData = (TransactionData)paymentData;
-          Collection<PaymentRequestData> relatedPaymentRequestDataCollection = MultiBitHD.getWalletService().findPaymentRequestsThisTransactionFunds(transactionData);
-          if (relatedPaymentRequestDataCollection != null && relatedPaymentRequestDataCollection.size() > 0) {
-            if (relatedPaymentRequestDataCollection.size() <= 1) {
-              state = PaymentsState.PAYMENT_REQUEST_DETAILS;
-            } else {
-              state = PaymentsState.CHOOSE_PAYMENT_REQUEST;
-            }
-          } else {
-            // No payment requests - the single payment request screen deals with that
-            state = PaymentsState.PAYMENT_REQUEST_DETAILS;
-          }
-        }
+        state = PaymentsState.CHOOSE_PAYMENT_REQUEST;
         break;
       case CHOOSE_PAYMENT_REQUEST:
         state = PaymentsState.PAYMENT_REQUEST_DETAILS;
@@ -108,11 +103,27 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
     return paymentData;
   }
 
-  public boolean isShowPrevOnPaymentRequest() {
-    return showPrevOnPaymentRequest;
+  public List<PaymentRequestData> getMatchingPaymentRequestList() {
+    return matchingPaymentRequestList;
   }
 
-  public void setShowPrevOnPaymentRequest(boolean showPrevOnPaymentRequest) {
-    this.showPrevOnPaymentRequest = showPrevOnPaymentRequest;
+  public void setMatchingPaymentRequestList(List<PaymentRequestData> matchingPaymentRequestList) {
+    this.matchingPaymentRequestList = matchingPaymentRequestList;
+  }
+
+  public PaymentRequestData getPaymentRequestData() {
+    return paymentRequestData;
+  }
+
+  public void setPaymentRequestData(PaymentRequestData paymentRequestData) {
+    this.paymentRequestData = paymentRequestData;
+  }
+
+  public boolean isShowPrevOnPaymentRequestDetailScreen() {
+    return showPrevOnPaymentRequestDetailScreen;
+  }
+
+  public void setShowPrevOnPaymentRequestDetailScreen(boolean showPrevOnPaymentRequestDetailScreen) {
+    this.showPrevOnPaymentRequestDetailScreen = showPrevOnPaymentRequestDetailScreen;
   }
 }

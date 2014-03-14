@@ -2,10 +2,16 @@ package org.multibit.hd.ui.views.wizards.payments;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.dto.PaymentRequestData;
+import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.components.ComboBoxes;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
+import org.multibit.hd.ui.views.components.renderers.PaymentRequestDataListCellRenderer;
+import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -14,6 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -24,17 +33,12 @@ import javax.swing.*;
  * @since 0.0.1
  *  
  */
-public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<PaymentsWizardModel, ChoosePaymentRequestPanelModel> {
+public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<PaymentsWizardModel, ChoosePaymentRequestPanelModel> implements ActionListener {
 
   private static final Logger log = LoggerFactory.getLogger(ChoosePaymentRequestPanelView.class);
 
-  private JLabel transactionConstructionStatusSummary;
-  private JLabel transactionConstructionStatusDetail;
-
-  private JLabel transactionBroadcastStatusSummary;
-  private JLabel transactionBroadcastStatusDetail;
-
-  private JLabel transactionConfirmationStatus;
+  private JComboBox<PaymentRequestData> paymentRequestDataJComboBox;
+  private JLabel paymentRequestInfoLabel;
 
   /**
    * @param wizard The wizard managing the states
@@ -42,7 +46,6 @@ public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<Payme
   public ChoosePaymentRequestPanelView(AbstractWizard<PaymentsWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, MessageKey.CHOOSE_PAYMENT_REQUEST, AwesomeIcon.FILE_TEXT_ALT);
-
   }
 
   @Override
@@ -50,7 +53,7 @@ public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<Payme
 
     // Configure the panel model
     ChoosePaymentRequestPanelModel panelModel = new ChoosePaymentRequestPanelModel(
-      getPanelName()
+            getPanelName()
     );
     setPanelModel(panelModel);
   }
@@ -59,51 +62,75 @@ public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<Payme
   public void initialiseContent(JPanel contentPanel) {
 
     contentPanel.setLayout(new MigLayout(
-      Panels.migXYLayout(),
-      "[][][]", // Column constraints
-      "[]10[]10[]" // Row constraints
+            Panels.migXYLayout(),
+            "[][][]", // Column constraints
+            "[]30[]30[]" // Row constraints
     ));
 
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
-    transactionConstructionStatusSummary = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
-    transactionConstructionStatusDetail = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
+    List<PaymentRequestData> matchingPaymentRequestDataList = getWizardModel().getMatchingPaymentRequestList();
+    paymentRequestDataJComboBox = ComboBoxes.newPaymentRequestsComboBox(this, matchingPaymentRequestDataList);
+    paymentRequestDataJComboBox.setRenderer(new PaymentRequestDataListCellRenderer());
+        // initialise model to first payment request in case the user uses the initial setting
+    if (matchingPaymentRequestDataList.size() > 0) {
+      getWizardModel().setPaymentRequestData(matchingPaymentRequestDataList.get(0));
+    }
 
-    transactionBroadcastStatusSummary = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
-    transactionBroadcastStatusDetail = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
-    transactionConfirmationStatus = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
+    paymentRequestInfoLabel = Labels.newBlankLabel();
+    JLabel paymentRequestSelectLabel = Labels.newLabel(MessageKey.CHOOSE_PAYMENT_REQUEST_LABEL);
+    AwesomeDecorator.bindIcon(AwesomeIcon.FILE_TEXT_ALT, paymentRequestSelectLabel, true, MultiBitUI.NORMAL_ICON_SIZE + 12);
+    contentPanel.add(paymentRequestInfoLabel, "growx,span 2,wrap");
 
-    contentPanel.add(transactionConstructionStatusSummary, "wrap");
-    contentPanel.add(transactionConstructionStatusDetail, "wrap");
-    contentPanel.add(transactionBroadcastStatusSummary, "wrap");
-    contentPanel.add(transactionBroadcastStatusDetail, "wrap");
-    contentPanel.add(transactionConfirmationStatus, "wrap");
-
+    contentPanel.add(paymentRequestSelectLabel, "shrink,aligny top");
+    contentPanel.add(paymentRequestDataJComboBox, "growx,width min:350:,push,aligny top,wrap");
   }
 
   @Override
   protected void initialiseButtons(AbstractWizard<PaymentsWizardModel> wizard) {
 
     PanelDecorator.addExitCancelPreviousNext(this, wizard);
-
   }
 
   @Override
   public void afterShow() {
-
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        getNextButton().requestFocusInWindow();
+        paymentRequestDataJComboBox.requestFocusInWindow();
         getNextButton().setEnabled(true);
       }
     });
+  }
 
+  @Override
+  public boolean beforeShow() {
+    SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          int size = getWizardModel().getMatchingPaymentRequestList().size();
+          if ( size == 1) {
+            paymentRequestInfoLabel.setText(Languages.safeText(MessageKey.PAYMENT_REQUEST_INFO_SINGULAR));
+          } else {
+            paymentRequestInfoLabel.setText(Languages.safeText(MessageKey.PAYMENT_REQUEST_INFO_PLURAL, size));
+          }
+        }
+      });
+    return true;
   }
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
+  }
+
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    JComboBox<PaymentRequestData> source = (JComboBox<PaymentRequestData>) e.getSource();
+    PaymentRequestData paymentRequestData = (PaymentRequestData) source.getSelectedItem();
+
+    // Update the model
+    getWizardModel().setPaymentRequestData(paymentRequestData);
   }
 }
