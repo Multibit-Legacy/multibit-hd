@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.wizards.payments;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.config.BitcoinConfiguration;
@@ -47,7 +48,7 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
   private JLabel descriptionValue;
   private JLabel amountBTCValue;
   private JLabel amountFiatValue;
-
+  private JLabel exchangeRateValue;
 
   /**
    * @param wizard The wizard managing the states
@@ -103,6 +104,9 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
     JLabel amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.AMOUNT) + " " + Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencySymbol());
     amountFiatValue = Labels.newValueLabel("");
 
+    JLabel exchangeRateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL));
+    exchangeRateValue = Labels.newValueLabel("");
+
     update();
 
     contentPanel.add(statusLabel);
@@ -117,6 +121,8 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
     contentPanel.add(amountBTCValue, "wrap");
     contentPanel.add(amountFiatLabel);
     contentPanel.add(amountFiatValue, "wrap");
+    contentPanel.add(exchangeRateLabel);
+    contentPanel.add(exchangeRateValue, "wrap");
   }
 
   @Override
@@ -167,11 +173,17 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
       FiatPayment amountFiat = paymentData.getAmountFiat();
       amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount(), languageConfiguration.getLocale(), bitcoinConfiguration)));
 
+      String exchangeRateText;
+      if (Strings.isNullOrEmpty(paymentData.getAmountFiat().getRate()) || Strings.isNullOrEmpty(paymentData.getAmountFiat().getExchange() )) {
+        exchangeRateText = Languages.safeText(MessageKey.NOT_AVAILABLE);
+      } else {
+        exchangeRateText = paymentData.getAmountFiat().getRate() + " (" + paymentData.getAmountFiat().getExchange() + ")";
+      }
+      exchangeRateValue.setText(exchangeRateText);
       if (paymentData instanceof TransactionData) {
         // It should be as payment requests are routed to their own screen but check all the same
         TransactionData transactionData = (TransactionData) paymentData;
-        String transactionId = transactionData.getTransactionId();
-        Optional<BigInteger> feeOnSendBTC = transactionData.getFeeOnSendBTC();
+        Optional<BigInteger> feeOnSendBTC = transactionData.getFeeOnSendBTC(); // TODO not currently being remembered when tx is sent hence not available
       }
     }
   }

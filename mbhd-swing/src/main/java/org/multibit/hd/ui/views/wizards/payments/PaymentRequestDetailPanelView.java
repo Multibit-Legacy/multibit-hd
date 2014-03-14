@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.wizards.payments;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.config.BitcoinConfiguration;
@@ -41,27 +42,22 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
   private static final Logger log = LoggerFactory.getLogger(PaymentRequestDetailPanelView.class);
 
-  private JLabel dateLabel;
   private JLabel dateValue;
 
-  private JLabel statusLabel;
   private JLabel statusValue;
 
-  private JLabel addressLabel;
   private JLabel addressValue;
 
-  private JLabel qrCodeLabelLabel;
   private JLabel qrCodeLabelValue;
 
-  private JLabel noteLabel;
   private JLabel noteValue;
 
 
-  private JLabel amountBTCLabel;
   private JLabel amountBTCValue;
 
-  private JLabel amountFiatLabel;
   private JLabel amountFiatValue;
+
+  private JLabel exchangeRateValue;
 
   /**
    * @param wizard The wizard managing the states
@@ -92,22 +88,22 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
-    dateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.DATE));
+    JLabel dateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.DATE));
     dateValue = Labels.newValueLabel("");
 
-    statusLabel = Labels.newValueLabel(Languages.safeText(MessageKey.STATUS));
+    JLabel statusLabel = Labels.newValueLabel(Languages.safeText(MessageKey.STATUS));
     statusValue = Labels.newValueLabel("");
 
-    addressLabel = Labels.newValueLabel(Languages.safeText(MessageKey.BITCOIN_ADDRESS));
+    JLabel addressLabel = Labels.newValueLabel(Languages.safeText(MessageKey.BITCOIN_ADDRESS));
     addressValue = Labels.newValueLabel("");
 
-    qrCodeLabelLabel = Labels.newValueLabel(Languages.safeText(MessageKey.QR_CODE_LABEL_LABEL));
+    JLabel qrCodeLabelLabel = Labels.newValueLabel(Languages.safeText(MessageKey.QR_CODE_LABEL_LABEL));
     qrCodeLabelValue = Labels.newValueLabel("");
 
-    noteLabel = Labels.newValueLabel(Languages.safeText(MessageKey.NOTES));
+    JLabel noteLabel = Labels.newValueLabel(Languages.safeText(MessageKey.NOTES));
     noteValue = Labels.newValueLabel("");
 
-    amountBTCLabel = Labels.newValueLabel("");
+    JLabel amountBTCLabel = Labels.newValueLabel("");
     amountBTCValue = Labels.newValueLabel("");
     // Bitcoin column
     LabelDecorator.applyBitcoinSymbolLabel(
@@ -115,8 +111,11 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
             Configurations.currentConfiguration.getBitcoinConfiguration(),
             Languages.safeText(MessageKey.AMOUNT) + " ");
 
-    amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.AMOUNT) + " " + Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencySymbol());
+    JLabel amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.AMOUNT) + " " + Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencySymbol());
     amountFiatValue = Labels.newValueLabel("");
+
+    JLabel exchangeRateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL));
+    exchangeRateValue = Labels.newValueLabel("");
 
     update();
 
@@ -134,7 +133,8 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
     contentPanel.add(amountBTCValue, "wrap");
     contentPanel.add(amountFiatLabel);
     contentPanel.add(amountFiatValue, "wrap");
-
+    contentPanel.add(exchangeRateLabel);
+    contentPanel.add(exchangeRateValue, "wrap");
   }
 
   @Override
@@ -192,6 +192,14 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
       FiatPayment amountFiat = paymentRequestData.getAmountFiat();
       amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount(), languageConfiguration.getLocale(), bitcoinConfiguration)));
+
+      String exchangeRateText;
+      if (Strings.isNullOrEmpty(paymentRequestData.getAmountFiat().getRate()) || Strings.isNullOrEmpty(paymentRequestData.getAmountFiat().getExchange())) {
+        exchangeRateText = Languages.safeText(MessageKey.NOT_AVAILABLE);
+      } else {
+        exchangeRateText = paymentRequestData.getAmountFiat().getRate() + " (" + paymentRequestData.getAmountFiat().getExchange() + ")";
+      }
+      exchangeRateValue.setText(exchangeRateText);
     }
   }
 }

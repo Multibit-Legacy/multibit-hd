@@ -86,6 +86,8 @@ public enum MessageKey {
   SELECT_EXCHANGE_RATE_PROVIDER("select_exchange_rate_provider"),
   SELECT_LOCAL_CURRENCY("select_local_currency"),
   ENTER_ACCESS_CODE("enter_access_code"),
+  EXCHANGE_RATE_LABEL("exchange_rate_label"),
+  NOT_AVAILABLE("not_available"),
 
   ALERT_SOUND("alert_sound"),
   RECEIVE_SOUND("receive_sound"),

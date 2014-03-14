@@ -39,6 +39,7 @@ public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<Payme
 
   private JComboBox<PaymentRequestData> paymentRequestDataJComboBox;
   private JLabel paymentRequestInfoLabel;
+  private JLabel paymentRequestSelectLabel;
 
   /**
    * @param wizard The wizard managing the states
@@ -73,13 +74,13 @@ public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<Payme
     List<PaymentRequestData> matchingPaymentRequestDataList = getWizardModel().getMatchingPaymentRequestList();
     paymentRequestDataJComboBox = ComboBoxes.newPaymentRequestsComboBox(this, matchingPaymentRequestDataList);
     paymentRequestDataJComboBox.setRenderer(new PaymentRequestDataListCellRenderer());
-        // initialise model to first payment request in case the user uses the initial setting
+    // initialise model to first payment request in case the user uses the initial setting
     if (matchingPaymentRequestDataList.size() > 0) {
       getWizardModel().setPaymentRequestData(matchingPaymentRequestDataList.get(0));
     }
 
     paymentRequestInfoLabel = Labels.newBlankLabel();
-    JLabel paymentRequestSelectLabel = Labels.newLabel(MessageKey.CHOOSE_PAYMENT_REQUEST_LABEL);
+    paymentRequestSelectLabel = Labels.newLabel(MessageKey.CHOOSE_PAYMENT_REQUEST_LABEL);
     AwesomeDecorator.bindIcon(AwesomeIcon.FILE_TEXT_ALT, paymentRequestSelectLabel, true, MultiBitUI.NORMAL_ICON_SIZE + 12);
     contentPanel.add(paymentRequestInfoLabel, "growx,span 2,wrap");
 
@@ -107,16 +108,20 @@ public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<Payme
   @Override
   public boolean beforeShow() {
     SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          int size = getWizardModel().getMatchingPaymentRequestList().size();
-          if ( size == 1) {
-            paymentRequestInfoLabel.setText(Languages.safeText(MessageKey.PAYMENT_REQUEST_INFO_SINGULAR));
-          } else {
-            paymentRequestInfoLabel.setText(Languages.safeText(MessageKey.PAYMENT_REQUEST_INFO_PLURAL, size));
-          }
+      @Override
+      public void run() {
+        int size = getWizardModel().getMatchingPaymentRequestList().size();
+        if (size == 1) {
+          paymentRequestInfoLabel.setText(Languages.safeText(MessageKey.PAYMENT_REQUEST_INFO_SINGULAR));
+        } else {
+          paymentRequestInfoLabel.setText(Languages.safeText(MessageKey.PAYMENT_REQUEST_INFO_PLURAL, size));
         }
-      });
+
+        boolean showComboBox = (size != 0);
+        paymentRequestSelectLabel.setVisible(showComboBox);
+        paymentRequestDataJComboBox.setVisible(showComboBox);
+      }
+    });
     return true;
   }
 
