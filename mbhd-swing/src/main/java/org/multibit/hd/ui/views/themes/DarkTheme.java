@@ -54,12 +54,12 @@ public class DarkTheme implements Theme {
 
   @Override
   public Color dataEntryBackground() {
-    return new Color(193, 133, 61);
+    return new Color(240, 211, 85);
   }
 
   @Override
   public Color dataEntryBorder() {
-    return new Color(98, 80, 58);
+    return new Color(240, 240, 128);
   }
 
   @Override
