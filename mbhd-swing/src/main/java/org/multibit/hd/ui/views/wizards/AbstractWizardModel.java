@@ -32,14 +32,23 @@ public abstract class AbstractWizardModel<S> {
 
   }
 
+  /**
+   * Handles state transition to next panel (if applicable)
+   */
   public void showNext() {
     // Do nothing
   }
 
+  /**
+   * Handles state transition to previous panel (if applicable)
+   */
   public void showPrevious() {
     // Do nothing
   }
 
+  /**
+   * @return The panel name (usually the wizard state name)
+   */
   public String getPanelName() {
 
     // Enums are commonly used for state and toString is equivalent to name()
