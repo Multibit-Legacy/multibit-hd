@@ -41,7 +41,7 @@ public class LocalisedDateUtils {
           formattedDate = Languages.safeText(MessageKey.TODAY) + " " + shortDateFormatter.format(date.toDate());
         } else {
           if (date.toDateMidnight().equals((DateTime.now().minusDays(1).toDateMidnight()))) {
-            formattedDate = Languages.safeText(MessageKey.TODAY) + " " + shortDateFormatter.format(date.toDate());
+            formattedDate = Languages.safeText(MessageKey.YESTERDAY) + " " + shortDateFormatter.format(date.toDate());
           } else {
             formattedDate = longDateFormatter.format(date.toDate());
           }
