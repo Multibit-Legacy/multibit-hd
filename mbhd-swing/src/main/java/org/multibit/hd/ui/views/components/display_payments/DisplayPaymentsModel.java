@@ -25,17 +25,9 @@ public class DisplayPaymentsModel implements Model<List<PaymentData>> {
     this.panelName = panelName;
   }
 
-  /**
-   * @return The payment data list
-   */
-  public List<PaymentData> getPaymentDataList() {
-    return paymentDataList;
-  }
-
-
   @Override
   public List<PaymentData> getValue() {
-    return getPaymentDataList();
+    return paymentDataList;
   }
 
   @Override

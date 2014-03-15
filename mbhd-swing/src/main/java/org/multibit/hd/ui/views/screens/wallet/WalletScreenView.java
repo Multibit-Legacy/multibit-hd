@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.screens.wallet;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Buttons;
@@ -14,6 +15,7 @@ import org.multibit.hd.ui.views.components.wallet_detail.WalletDetailModel;
 import org.multibit.hd.ui.views.components.wallet_detail.WalletDetailView;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
+import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
 
 import javax.swing.*;
@@ -87,14 +89,28 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
     JButton requestBitcoin = Buttons.newRequestBitcoinWizardButton(showRequestBitcoinWizardAction);
 
     displaySendingPaymentsMaV = Components.newDisplayPaymentsMaV(PANEL_NAME);
+    displaySendingPaymentsMaV.getModel().setValue(MultiBitHD.getWalletService().getPaymentDataList());
+    JScrollPane sendingPaymentsScrollPane = new JScrollPane(displaySendingPaymentsMaV.getView().newComponentPanel(),
+            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        // Theme
+    sendingPaymentsScrollPane.setBackground(Themes.currentTheme.detailPanelBackground());
+    sendingPaymentsScrollPane.getViewport().setBackground(Themes.currentTheme.detailPanelBackground());
+    sendingPaymentsScrollPane.setOpaque(true);
+    sendingPaymentsScrollPane.setBorder(BorderFactory.createEmptyBorder());
+
     displayReceivingPaymentsMaV = Components.newDisplayPaymentsMaV(PANEL_NAME);
+    JScrollPane receivingPaymentsScrollPane = new JScrollPane(displayReceivingPaymentsMaV.getView().newComponentPanel(),
+            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    receivingPaymentsScrollPane.getViewport().setBackground(Themes.currentTheme.detailPanelBackground());
+    receivingPaymentsScrollPane.setOpaque(true);
+    receivingPaymentsScrollPane.setBorder(BorderFactory.createEmptyBorder());
 
     walletDetailMaV = Components.newWalletDetailMaV(PANEL_NAME);
     contentPanel.add(sendBitcoin, MultiBitUI.LARGE_BUTTON_MIG + ",align center");
     contentPanel.add(Panels.newVerticalDashedSeparator(), "growy, spany 2");
     contentPanel.add(requestBitcoin, MultiBitUI.LARGE_BUTTON_MIG + ",align center, wrap");
-    contentPanel.add(displaySendingPaymentsMaV.getView().newComponentPanel(), "grow, push");
-    contentPanel.add(displayReceivingPaymentsMaV.getView().newComponentPanel(), "grow, push, wrap");
+    contentPanel.add(sendingPaymentsScrollPane, "grow, push");
+    contentPanel.add(receivingPaymentsScrollPane, "grow, push, wrap");
     contentPanel.add(Panels.newHorizontalDashedSeparator(), "span 3, growx, wrap");
     contentPanel.add(walletDetailMaV.getView().newComponentPanel(), "span 3");
 
