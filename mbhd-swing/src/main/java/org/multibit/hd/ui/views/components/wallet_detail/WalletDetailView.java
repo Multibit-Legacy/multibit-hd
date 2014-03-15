@@ -46,10 +46,10 @@ public class WalletDetailView extends AbstractComponentView<WalletDetailModel> {
     panel = Panels.newPanel(new MigLayout(
       Panels.migXLayout(),
       "10[]10[grow]", // Columns
-      "[][][][][]5"  // Rows
+      "[][][][]5"  // Rows
     ));
 
-    panel.add(Labels.newLabel(MessageKey.SUMMARY), "wrap");
+    //panel.add(Labels.newLabel(MessageKey.SUMMARY), "wrap");
 
     // TODO Consider Labels.newFieldLabel with a MessageKey.COLON
 
