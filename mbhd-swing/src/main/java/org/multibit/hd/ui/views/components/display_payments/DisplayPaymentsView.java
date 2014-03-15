@@ -1,10 +1,12 @@
 package org.multibit.hd.ui.views.components.display_payments;
 
 import com.google.common.collect.Lists;
+import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.events.view.BalanceChangedEvent;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.utils.LocalisedDateUtils;
 import org.multibit.hd.ui.views.components.*;
@@ -27,15 +29,14 @@ import java.util.List;
 public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsModel> {
 
   // View components
-  private List<JLabel> paymentLabelList;
-
-  private List<ModelAndView<DisplayAmountModel, DisplayAmountView>> displayAmountMaVList;
+  private List<ModelAndView<DisplayAmountModel, DisplayAmountView>> displayAmountMaVList = Lists.newArrayList();
 
   /**
    * @param model The model backing this view
    */
   public DisplayPaymentsView(DisplayPaymentsModel model) {
     super(model);
+
   }
 
   @Override
@@ -48,13 +49,11 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
     ));
 
     // Populate components
-    paymentLabelList = Lists.newArrayList();
 
-    // TODO order by reverse age
+    // TODO filter and order by reverse age
     if (getModel().isPresent()) {
-      List<ModelAndView<DisplayAmountModel, DisplayAmountView>> displayAmountMaVList = Lists.newArrayList();
-
       List<PaymentData> paymentDataList = getModel().get().getValue();
+
       for (PaymentData paymentData : paymentDataList) {
         JLabel timeLabel = Labels.newBlankLabel();
         timeLabel.setText(LocalisedDateUtils.formatShortDate(paymentData.getDate()));
@@ -70,19 +69,29 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
 
         panel.add(timeLabel, "shrink");
         panel.add(paymentDataLabel);
-        panel.add(paymentAmountMaV.getView().newComponentPanel(), "gapbefore push, wrap");
+        panel.add(paymentAmountMaV.getView().newComponentPanel(), "grow, wrap");
       }
     }
-
     return panel;
-
   }
 
-  public boolean beforeShow() {
-    for ( ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV : displayAmountMaVList) {
-      paymentAmountMaV.getView().updateView(Configurations.currentConfiguration);
+  public boolean afterShow() {
+    if (displayAmountMaVList != null) {
+      for (ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV : displayAmountMaVList) {
+        paymentAmountMaV.getView().updateView(Configurations.currentConfiguration);
+      }
     }
     return true;
+  }
+
+  @Subscribe
+  public void onBalanceChangedEvent(BalanceChangedEvent event) {
+    if (displayAmountMaVList != null) {
+      for (ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV : displayAmountMaVList) {
+        paymentAmountMaV.getModel().setRateProvider(event.getRateProvider());
+      }
+    }
+    afterShow();
   }
 
 
@@ -93,6 +102,18 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
   @Override
   public void updateModelFromView() {
     // Do nothing - the model is driving the view
+  }
+
+  /**
+   * <p>Called when the model has changed and the view components need to update</p>
+   * <p>Default implementation is to do nothing since most components are pulling data</p>
+   */
+  @Override
+  public void updateViewFromModel() {
+
+    // Do nothing
+    System.out.println("DisplayPaymentsView#updateViewFromModel");
+
   }
 
   public List<ModelAndView<DisplayAmountModel, DisplayAmountView>> getDisplayAmountMaVList() {

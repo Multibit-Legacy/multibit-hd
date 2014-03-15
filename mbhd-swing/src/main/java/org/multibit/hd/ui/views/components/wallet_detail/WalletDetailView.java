@@ -92,7 +92,6 @@ public class WalletDetailView extends AbstractComponentView<WalletDetailModel> {
     numberOfContactsLabel.setText(String.valueOf(walletDetail.getNumberOfContacts()));
     numberOfTransactionsLabel.setText(String.valueOf(walletDetail.getNumberOfPayments()));
   }
-
 }
 
 
