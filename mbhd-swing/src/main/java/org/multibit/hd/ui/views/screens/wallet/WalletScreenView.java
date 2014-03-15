@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.views.screens.wallet;
 
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.dto.PaymentType;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -9,15 +8,15 @@ import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.display_payments.DisplayPaymentsModel;
+import org.multibit.hd.ui.views.components.display_payments.DisplayPaymentsView;
 import org.multibit.hd.ui.views.components.wallet_detail.WalletDetailModel;
 import org.multibit.hd.ui.views.components.wallet_detail.WalletDetailView;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
-import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 
 /**
@@ -32,17 +31,13 @@ import java.awt.event.ActionEvent;
 public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
 
   private JButton sendBitcoin;
-  private JButton requestBitcoin;
-
-  private JPanel recentSendsPanel;
-  private JPanel recentReceivesPanel;
-
-  private JPanel dashedVerticalSeparator;
-  private JPanel dashedHorizontalSeparator;
 
   private final static String PANEL_NAME = "walletDetail";
 
   private ModelAndView<WalletDetailModel, WalletDetailView> walletDetailMaV;
+  private ModelAndView<DisplayPaymentsModel, DisplayPaymentsView> displaySendingPaymentsMaV;
+  private ModelAndView<DisplayPaymentsModel, DisplayPaymentsView> displayReceivingPaymentsMaV;
+
 
   /**
    * @param panelModel The model backing this panel view
@@ -89,28 +84,18 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
     };
 
     sendBitcoin = Buttons.newSendBitcoinWizardButton(showSendBitcoinWizardAction);
-    requestBitcoin = Buttons.newRequestBitcoinWizardButton(showRequestBitcoinWizardAction);
+    JButton requestBitcoin = Buttons.newRequestBitcoinWizardButton(showRequestBitcoinWizardAction);
 
-    recentReceivesPanel = Components.newRecenPaymentsPanel(PaymentType.RECEIVING);
-    recentSendsPanel = Components.newRecenPaymentsPanel(PaymentType.SENDING);
+    displaySendingPaymentsMaV = Components.newDisplayPaymentsMaV(PANEL_NAME);
+    displayReceivingPaymentsMaV = Components.newDisplayPaymentsMaV(PANEL_NAME);
 
-    dashedVerticalSeparator = new JPanel();
-    dashedVerticalSeparator.setMaximumSize(new Dimension(1, 10000));
-    Paint paint = new GradientPaint(0, 0, Themes.currentTheme.detailPanelBackground(),
-            30, 30, Themes.currentTheme.fadedText().brighter(), true);
-    dashedVerticalSeparator.setBorder(BorderFactory.createDashedBorder(paint, 4, 0));
-
-    dashedHorizontalSeparator = new JPanel();
-    dashedHorizontalSeparator.setMaximumSize(new Dimension(10000, 1));
-    dashedHorizontalSeparator.setBorder(BorderFactory.createDashedBorder(paint, 4, 0));
-
-     walletDetailMaV = Components.newWalletDetailMaV(PANEL_NAME);
+    walletDetailMaV = Components.newWalletDetailMaV(PANEL_NAME);
     contentPanel.add(sendBitcoin, MultiBitUI.LARGE_BUTTON_MIG + ",align center");
-    contentPanel.add(dashedVerticalSeparator, "growy, spany 2");
+    contentPanel.add(Panels.newVerticalDashedSeparator(), "growy, spany 2");
     contentPanel.add(requestBitcoin, MultiBitUI.LARGE_BUTTON_MIG + ",align center, wrap");
-    contentPanel.add(recentSendsPanel, "grow, push");
-    contentPanel.add(recentReceivesPanel, "grow, push, wrap");
-    contentPanel.add(dashedHorizontalSeparator, "span 3, growx, wrap");
+    contentPanel.add(displaySendingPaymentsMaV.getView().newComponentPanel(), "grow, push");
+    contentPanel.add(displayReceivingPaymentsMaV.getView().newComponentPanel(), "grow, push, wrap");
+    contentPanel.add(Panels.newHorizontalDashedSeparator(), "span 3, growx, wrap");
     contentPanel.add(walletDetailMaV.getView().newComponentPanel(), "span 3");
 
     return contentPanel;

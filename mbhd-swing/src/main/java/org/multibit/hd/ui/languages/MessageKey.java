@@ -268,7 +268,6 @@ public enum MessageKey {
   AMOUNT_SUMMARY("amount_summary"),
 
   // Wallet detail panel
-  SUMMARY("summary"),
   APPLICATION_DIRECTORY("application_directory"),
   WALLET_DIRECTORY("wallet_directory"),
 

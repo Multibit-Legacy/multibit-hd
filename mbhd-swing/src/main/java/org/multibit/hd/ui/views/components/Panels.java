@@ -433,6 +433,34 @@ public class Panels {
   }
 
   /**
+   * New vertical dashed separator
+   */
+  public static JPanel newVerticalDashedSeparator() {
+    Paint paint = new GradientPaint(0, 0, Themes.currentTheme.detailPanelBackground(),
+            30, 30, Themes.currentTheme.fadedText().brighter(), true);
+
+    JPanel dashedVerticalSeparator = new JPanel();
+    dashedVerticalSeparator.setMaximumSize(new Dimension(1, 10000));
+    dashedVerticalSeparator.setBorder(BorderFactory.createDashedBorder(paint, 4, 0));
+
+    return dashedVerticalSeparator;
+  }
+
+  /**
+    * New horizontal dashed separator
+    */
+   public static JPanel newHorizontalDashedSeparator() {
+     Paint paint = new GradientPaint(0, 0, Themes.currentTheme.detailPanelBackground(),
+             30, 30, Themes.currentTheme.fadedText().brighter(), true);
+
+     JPanel dashedHorizontalSeparator = new JPanel();
+     dashedHorizontalSeparator.setMaximumSize(new Dimension(10000, 1));
+     dashedHorizontalSeparator.setBorder(BorderFactory.createDashedBorder(paint, 4, 0));
+
+     return dashedHorizontalSeparator;
+   }
+
+  /**
    * <p>Invalidate a panel so that Swing will later redraw it properly with layout changes (normally as a result of a locale change)</p>
    *
    * @param panel The panel to invalidate

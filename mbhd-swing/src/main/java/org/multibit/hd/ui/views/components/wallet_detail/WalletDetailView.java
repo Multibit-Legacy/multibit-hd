@@ -49,8 +49,6 @@ public class WalletDetailView extends AbstractComponentView<WalletDetailModel> {
       "[][][][]5"  // Rows
     ));
 
-    //panel.add(Labels.newLabel(MessageKey.SUMMARY), "wrap");
-
     // TODO Consider Labels.newFieldLabel with a MessageKey.COLON
 
     panel.add(Labels.newLabel(MessageKey.APPLICATION_DIRECTORY));

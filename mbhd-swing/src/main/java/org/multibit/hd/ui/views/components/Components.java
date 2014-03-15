@@ -12,6 +12,8 @@ import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountView;
 import org.multibit.hd.ui.views.components.display_message.DisplayInfoMessageModel;
 import org.multibit.hd.ui.views.components.display_message.DisplayInfoMessageView;
+import org.multibit.hd.ui.views.components.display_payments.DisplayPaymentsModel;
+import org.multibit.hd.ui.views.components.display_payments.DisplayPaymentsView;
 import org.multibit.hd.ui.views.components.display_qrcode.DisplayQRCodeModel;
 import org.multibit.hd.ui.views.components.display_qrcode.DisplayQRCodeView;
 import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertModel;
@@ -62,6 +64,18 @@ public class Components {
 
     return new ModelAndView<>(model, view);
   }
+
+  /**
+    * <p>A "display payments" panel provides summary details of the current wallet</p>
+    *
+    * @return A new "walletDetail" panel
+    */
+   public static ModelAndView<DisplayPaymentsModel, DisplayPaymentsView> newDisplayPaymentsMaV(String panelName) {
+     DisplayPaymentsModel model = new DisplayPaymentsModel(panelName);
+     DisplayPaymentsView view = new DisplayPaymentsView(model);
+
+     return new ModelAndView<>(model, view);
+   }
 
   /**
    * <p>A "recipient" panel provides a means of finding a recipient either by their contact name or a direct Bitcoin address</p>
