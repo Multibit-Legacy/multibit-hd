@@ -147,6 +147,9 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
     if (!event.getPanelName().equals(EditContactState.EDIT_CONTACT_ENTER_DETAILS.name())) {
       return;
     }
+    if (event.isExitCancel()) {
+      return;
+    }
 
     // Transfer the data from the wizard model back into the table model (we may have a new contact)
     List<Contact> contacts = ((EditContactWizardModel) event.getWizardModel()).getContacts();

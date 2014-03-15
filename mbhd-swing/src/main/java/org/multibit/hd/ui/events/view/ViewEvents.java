@@ -134,12 +134,13 @@ public class ViewEvents {
   /**
    * <p>Broadcast a new "wizard hide" event</p>
    *
-   * @param panelName   The unique panel name to which this applies (use screen name for detail screens)
-   * @param wizardModel The wizard model containing all the user data
+   * @param panelName    The unique panel name to which this applies (use screen name for detail screens)
+   * @param wizardModel  The wizard model containing all the user data
+   * @param isExitCancel True if this hide event comes as a result of an exit or cancel
    */
-  public static void fireWizardHideEvent(String panelName, WizardModel wizardModel) {
+  public static void fireWizardHideEvent(String panelName, WizardModel wizardModel, boolean isExitCancel) {
     log.trace("Firing 'wizard hide' event");
-    CoreServices.uiEventBus.post(new WizardHideEvent(panelName, wizardModel));
+    CoreServices.uiEventBus.post(new WizardHideEvent(panelName, wizardModel, isExitCancel));
   }
 
   /**

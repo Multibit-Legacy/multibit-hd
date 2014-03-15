@@ -17,14 +17,21 @@ public class WizardHideEvent implements ViewEvent {
 
   private final String panelName;
   private final WizardModel wizardModel;
+  private final boolean isExitCancel;
 
-  public WizardHideEvent(String panelName, WizardModel wizardModel) {
+  /**
+   * @param panelName    The panel name (usually taken from the state enum)
+   * @param wizardModel  The wizard model
+   * @param isExitCancel True if the hide event comes from an exit or cancel
+   */
+  public WizardHideEvent(String panelName, WizardModel wizardModel, boolean isExitCancel) {
 
     Preconditions.checkNotNull(panelName, "'panelName' must be present");
     Preconditions.checkNotNull(wizardModel, "'wizardModel' must be present");
 
     this.panelName = panelName;
     this.wizardModel = wizardModel;
+    this.isExitCancel = isExitCancel;
   }
 
   /**
@@ -40,6 +47,14 @@ public class WizardHideEvent implements ViewEvent {
   public WizardModel getWizardModel() {
     return wizardModel;
   }
+
+  /**
+   * @return True if the hide event comes from an exit or cancel
+   */
+  public boolean isExitCancel() {
+    return isExitCancel;
+  }
+
 }
 
 

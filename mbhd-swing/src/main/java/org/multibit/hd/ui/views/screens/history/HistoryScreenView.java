@@ -140,6 +140,9 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
     if (!event.getPanelName().equals(EditHistoryState.HISTORY_ENTER_DETAILS.name())) {
       return;
     }
+    if (event.isExitCancel()) {
+      return;
+    }
 
     // Transfer the data from the wizard model back into the table model
     List<HistoryEntry> historyEntries = ((EditHistoryWizardModel) event.getWizardModel()).getHistoryEntries();

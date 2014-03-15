@@ -126,8 +126,8 @@ public abstract class AbstractWizard<M extends WizardModel> {
   /**
    * <p>Hide the wizard</p>
    *
-   * @param isExitCancel True if this hide operation comes from an exit or cancel
    * @param name         The panel name
+   * @param isExitCancel True if this hide operation comes from an exit or cancel
    */
   public void hide(String name, boolean isExitCancel) {
 
@@ -145,7 +145,7 @@ public abstract class AbstractWizard<M extends WizardModel> {
       Panels.hideLightBox();
 
       // Issue the wizard hide event
-      ViewEvents.fireWizardHideEvent(name, wizardModel);
+      ViewEvents.fireWizardHideEvent(name, wizardModel, isExitCancel);
 
     }
 
