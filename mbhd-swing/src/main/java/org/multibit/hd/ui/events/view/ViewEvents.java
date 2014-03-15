@@ -6,8 +6,8 @@ import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.components.wallet_detail.WalletDetail;
+import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.multibit.hd.ui.views.wizards.WizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -138,7 +138,7 @@ public class ViewEvents {
    * @param wizardModel  The wizard model containing all the user data
    * @param isExitCancel True if this hide event comes as a result of an exit or cancel
    */
-  public static void fireWizardHideEvent(String panelName, WizardModel wizardModel, boolean isExitCancel) {
+  public static void fireWizardHideEvent(String panelName, AbstractWizardModel wizardModel, boolean isExitCancel) {
     log.trace("Firing 'wizard hide' event");
     CoreServices.uiEventBus.post(new WizardHideEvent(panelName, wizardModel, isExitCancel));
   }

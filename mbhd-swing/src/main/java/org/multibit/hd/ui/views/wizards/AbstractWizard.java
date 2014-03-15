@@ -26,7 +26,7 @@ import java.util.Map;
  *
  * @since 0.0.1
  */
-public abstract class AbstractWizard<M extends WizardModel> {
+public abstract class AbstractWizard<M extends AbstractWizardModel> {
 
   /**
    * The wizard screen holder card layout to which each wizard screen panel is added

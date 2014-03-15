@@ -10,7 +10,7 @@ import org.multibit.hd.ui.views.components.borders.TextBubbleBorder;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
-import org.multibit.hd.ui.views.wizards.WizardModel;
+import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -89,7 +89,7 @@ public class PanelDecorator {
    * @param <M>    The wizard model type
    * @param <P>    The wizard panel model type
    */
-  public static <M extends WizardModel, P> void addExitCancel(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
+  public static <M extends AbstractWizardModel, P> void addExitCancel(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
 
     Preconditions.checkNotNull(view, "'view' must be present");
     Preconditions.checkNotNull(view, "'wizard' must be present");
@@ -111,7 +111,7 @@ public class PanelDecorator {
    * @param <M>    The wizard model type
    * @param <P>    The wizard panel model type
    */
-  public static <M extends WizardModel, P> void addFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
+  public static <M extends AbstractWizardModel, P> void addFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
 
     Preconditions.checkNotNull(view, "'view' must be present");
     Preconditions.checkNotNull(view, "'wizard' must be present");
@@ -139,7 +139,7 @@ public class PanelDecorator {
    * @param <M>    The wizard model type
    * @param <P>    The wizard panel model type
    */
-  public static <M extends WizardModel, P> void addCancelFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
+  public static <M extends AbstractWizardModel, P> void addCancelFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
 
     Preconditions.checkNotNull(view, "'view' must be present");
     Preconditions.checkNotNull(view, "'wizard' must be present");
@@ -160,7 +160,7 @@ public class PanelDecorator {
    * @param <M>    The wizard model type
    * @param <P>    The wizard panel model type
    */
-  public static <M extends WizardModel, P> void addCancelApply(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
+  public static <M extends AbstractWizardModel, P> void addCancelApply(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
 
     Preconditions.checkNotNull(view, "'view' must be present");
     Preconditions.checkNotNull(view, "'wizard' must be present");
@@ -181,7 +181,7 @@ public class PanelDecorator {
    * @param <M>    The wizard model type
    * @param <P>    The wizard panel model type
    */
-  public static <M extends WizardModel, P> void addExitCancelNext(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
+  public static <M extends AbstractWizardModel, P> void addExitCancelNext(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
 
     Preconditions.checkNotNull(view, "'view' must be present");
     Preconditions.checkNotNull(view, "'wizard' must be present");
@@ -203,7 +203,7 @@ public class PanelDecorator {
    * @param <M>    The wizard model type
    * @param <P>    The wizard panel model type
    */
-  public static <M extends WizardModel, P> void addExitCancelPreviousNext(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
+  public static <M extends AbstractWizardModel, P> void addExitCancelPreviousNext(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
 
     Preconditions.checkNotNull(view, "'view' must be present");
     Preconditions.checkNotNull(view, "'wizard' must be present");
@@ -226,7 +226,7 @@ public class PanelDecorator {
    * @param <M>    The wizard model type
    * @param <P>    The wizard panel model type
    */
-  public static <M extends WizardModel, P> void addExitCancelPreviousFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
+  public static <M extends AbstractWizardModel, P> void addExitCancelPreviousFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
 
     Preconditions.checkNotNull(view, "'view' must be present");
     Preconditions.checkNotNull(view, "'wizard' must be present");
@@ -249,7 +249,7 @@ public class PanelDecorator {
    * @param <M>    The wizard model type
    * @param <P>    The wizard panel model type
    */
-  public static <M extends WizardModel, P> void addExitCancelRestoreUnlock(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
+  public static <M extends AbstractWizardModel, P> void addExitCancelRestoreUnlock(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
 
     Preconditions.checkNotNull(view, "'view' must be present");
     Preconditions.checkNotNull(view, "'wizard' must be present");
@@ -272,7 +272,7 @@ public class PanelDecorator {
    * @param <M>    The wizard model type
    * @param <P>    The wizard panel model type
    */
-  public static <M extends WizardModel, P> void addCancelPreviousSend(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
+  public static <M extends AbstractWizardModel, P> void addCancelPreviousSend(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
 
     Preconditions.checkNotNull(view, "'view' must be present");
     Preconditions.checkNotNull(view, "'wizard' must be present");
@@ -298,7 +298,7 @@ public class PanelDecorator {
    * @param <M>    The wizard model type
    * @param <P>    The wizard panel model type
    */
-  public static <M extends WizardModel, P> void addCancelPreviousNext(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
+  public static <M extends AbstractWizardModel, P> void addCancelPreviousNext(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
 
     Preconditions.checkNotNull(view, "'view' must be present");
     Preconditions.checkNotNull(view, "'wizard' must be present");
@@ -321,7 +321,7 @@ public class PanelDecorator {
     * @param <M>    The wizard model type
     * @param <P>    The wizard panel model type
     */
-   public static <M extends WizardModel, P> void addCancelPreviousFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
+   public static <M extends AbstractWizardModel, P> void addCancelPreviousFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
 
      Preconditions.checkNotNull(view, "'view' must be present");
      Preconditions.checkNotNull(view, "'wizard' must be present");
@@ -475,7 +475,7 @@ public class PanelDecorator {
    * @param <M>               The wizard model type
    * @param <P>               The wizard panel model type
    */
-  private static <M extends WizardModel, P> void addNext(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard, JPanel wizardScreenPanel) {
+  private static <M extends AbstractWizardModel, P> void addNext(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard, JPanel wizardScreenPanel) {
 
     Preconditions.checkNotNull(view, "'view' must be present");
     Preconditions.checkNotNull(view, "'wizard' must be present");
@@ -494,7 +494,7 @@ public class PanelDecorator {
    * @param <M>               The wizard model type
    * @param <P>               The wizard panel model type
    */
-  private static <M extends WizardModel, P> void addPrevious(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard, JPanel wizardScreenPanel) {
+  private static <M extends AbstractWizardModel, P> void addPrevious(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard, JPanel wizardScreenPanel) {
 
     Preconditions.checkNotNull(view, "'view' must be present");
     Preconditions.checkNotNull(view, "'wizard' must be present");
@@ -513,7 +513,7 @@ public class PanelDecorator {
    * @param <M>               The wizard model type
    * @param <P>               The wizard panel model type
    */
-  private static <M extends WizardModel, P> void addRestore(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard, JPanel wizardScreenPanel) {
+  private static <M extends AbstractWizardModel, P> void addRestore(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard, JPanel wizardScreenPanel) {
 
     Preconditions.checkNotNull(view, "'view' must be present");
     Preconditions.checkNotNull(view, "'wizard' must be present");
@@ -532,7 +532,7 @@ public class PanelDecorator {
    * @param <M>               The wizard model type
    * @param <P>               The wizard panel model type
    */
-  private static <M extends WizardModel, P> void addExitCancel(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard, JPanel wizardScreenPanel) {
+  private static <M extends AbstractWizardModel, P> void addExitCancel(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard, JPanel wizardScreenPanel) {
 
     Preconditions.checkNotNull(view, "'view' must be present");
     Preconditions.checkNotNull(view, "'wizard' must be present");
@@ -560,7 +560,7 @@ public class PanelDecorator {
    * @param <M>               The wizard model type
    * @param <P>               The wizard panel model type
    */
-  private static <M extends WizardModel, P> void addExit(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard, JPanel wizardScreenPanel) {
+  private static <M extends AbstractWizardModel, P> void addExit(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard, JPanel wizardScreenPanel) {
 
     Preconditions.checkNotNull(view, "'view' must be present");
     Preconditions.checkNotNull(view, "'wizard' must be present");
@@ -579,7 +579,7 @@ public class PanelDecorator {
    * @param <M>               The wizard model type
    * @param <P>               The wizard panel model type
    */
-  private static <M extends WizardModel, P> void addCancel(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard, JPanel wizardScreenPanel) {
+  private static <M extends AbstractWizardModel, P> void addCancel(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard, JPanel wizardScreenPanel) {
 
     Preconditions.checkNotNull(view, "'view' must be present");
     Preconditions.checkNotNull(view, "'wizard' must be present");
@@ -607,7 +607,7 @@ public class PanelDecorator {
    * @param <M>               The wizard model type
    * @param <P>               The wizard panel model type
    */
-  private static <M extends WizardModel, P> void addFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard, JPanel wizardScreenPanel) {
+  private static <M extends AbstractWizardModel, P> void addFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard, JPanel wizardScreenPanel) {
 
     Preconditions.checkNotNull(view, "'view' must be present");
     Preconditions.checkNotNull(view, "'wizard' must be present");
@@ -625,7 +625,7 @@ public class PanelDecorator {
    * @param <M>               The wizard model type
    * @param <P>               The wizard panel model type
    */
-  private static <M extends WizardModel, P> void addUnlock(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard, JPanel wizardScreenPanel) {
+  private static <M extends AbstractWizardModel, P> void addUnlock(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard, JPanel wizardScreenPanel) {
 
     Preconditions.checkNotNull(view, "'view' must be present");
     Preconditions.checkNotNull(view, "'wizard' must be present");
@@ -643,7 +643,7 @@ public class PanelDecorator {
    * @param <M>               The wizard model type
    * @param <P>               The wizard panel model type
    */
-  private static <M extends WizardModel, P> void addApply(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard, JPanel wizardScreenPanel) {
+  private static <M extends AbstractWizardModel, P> void addApply(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard, JPanel wizardScreenPanel) {
 
     Preconditions.checkNotNull(view, "'view' must be present");
     Preconditions.checkNotNull(view, "'wizard' must be present");

@@ -130,6 +130,7 @@ public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<Payme
     // Do nothing - panel model is updated via an action and wizard model is not applicable
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public void actionPerformed(ActionEvent e) {
     JComboBox<PaymentRequestData> source = (JComboBox<PaymentRequestData>) e.getSource();

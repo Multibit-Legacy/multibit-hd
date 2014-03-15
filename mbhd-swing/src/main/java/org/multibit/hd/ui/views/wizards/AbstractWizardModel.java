@@ -14,7 +14,7 @@ import org.multibit.hd.core.services.CoreServices;
  * @since 0.0.1
  *  
  */
-public abstract class AbstractWizardModel<S> implements WizardModel {
+public abstract class AbstractWizardModel<S> {
 
   /**
    * The current state
@@ -32,17 +32,14 @@ public abstract class AbstractWizardModel<S> implements WizardModel {
 
   }
 
-  @Override
   public void showNext() {
     // Do nothing
   }
 
-  @Override
   public void showPrevious() {
     // Do nothing
   }
 
-  @Override
   public String getPanelName() {
 
     // Enums are commonly used for state and toString is equivalent to name()

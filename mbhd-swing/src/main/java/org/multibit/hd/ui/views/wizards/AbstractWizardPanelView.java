@@ -30,7 +30,7 @@ import javax.swing.*;
  * @since 0.0.1
  *  
  */
-public abstract class AbstractWizardPanelView<M extends WizardModel, P> {
+public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> {
 
   /**
    * The overall wizard model
