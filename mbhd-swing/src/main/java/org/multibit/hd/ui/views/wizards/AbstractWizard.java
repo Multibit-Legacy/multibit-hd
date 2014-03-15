@@ -8,6 +8,7 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.Popovers;
 import org.multibit.hd.ui.views.layouts.WizardCardLayout;
 
 import javax.swing.*;
@@ -193,6 +194,13 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
+
+        if (getWizardModel().isDirty()) {
+
+          // Check with the user about throwing away their data
+          Panels.showLightBoxPopover(Popovers.newDisplayQRCodePopoverMaV().getView().newComponentPanel());
+
+        }
 
         hide(wizardModel.getPanelName(), true);
       }

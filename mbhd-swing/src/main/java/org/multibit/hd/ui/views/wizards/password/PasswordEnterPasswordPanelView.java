@@ -10,10 +10,7 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.Components;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.ModelAndView;
-import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertModel;
 import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertView;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
@@ -39,7 +36,7 @@ import javax.swing.*;
 public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<PasswordWizardModel, PasswordEnterPasswordPanelModel> {
 
   // Panel specific components
-  private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityAlertMaV;
+  private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV;
   private ModelAndView<EnterPasswordModel, EnterPasswordView> enterPasswordMaV;
 
   /**
@@ -54,7 +51,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
   @Override
   public void newPanelModel() {
 
-    displaySecurityAlertMaV = Components.newDisplaySecurityAlertMaV();
+    displaySecurityPopoverMaV = Popovers.newDisplaySecurityPopoverMaV();
     enterPasswordMaV = Components.newEnterPasswordMaV(getPanelName());
 
     // Configure the panel model
@@ -118,10 +115,10 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
         Optional<SecurityEvent> securityEvent = CoreServices.applicationEventService.getLatestSecurityEvent();
         if (securityEvent.isPresent()) {
 
-          displaySecurityAlertMaV.getModel().setValue(securityEvent.get());
+          displaySecurityPopoverMaV.getModel().setValue(securityEvent.get());
 
           // Show the security alert as a popover
-          Panels.showLightBoxPopover(displaySecurityAlertMaV.getView().newComponentPanel());
+          Panels.showLightBoxPopover(displaySecurityPopoverMaV.getView().newComponentPanel());
 
         }
 

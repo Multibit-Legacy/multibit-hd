@@ -21,6 +21,11 @@ public abstract class AbstractWizardModel<S> {
    */
   protected S state;
 
+  /**
+   * Flags if the model data has changed from when the wizard was shown
+   */
+  private boolean isDirty;
+
   protected AbstractWizardModel(S state) {
 
     Preconditions.checkNotNull(state, "'state' must be present");
@@ -56,4 +61,17 @@ public abstract class AbstractWizardModel<S> {
 
   }
 
+  /**
+   * @return True if the model has changed from when the wizard was shown
+   */
+  public boolean isDirty() {
+    return isDirty;
+  }
+
+  /**
+   * @param isDirty True if the model has changed from when the wizard was shown
+   */
+  public void setDirty(boolean isDirty) {
+    this.isDirty = isDirty;
+  }
 }

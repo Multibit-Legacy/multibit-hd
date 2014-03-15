@@ -59,7 +59,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
 
   private ModelAndView<EnterAmountModel, EnterAmountView> enterAmountMaV;
   private ModelAndView<DisplayBitcoinAddressModel, DisplayBitcoinAddressView> displayBitcoinAddressMaV;
-  private ModelAndView<DisplayQRCodeModel, DisplayQRCodeView> displayQRCodeMaV;
+  private ModelAndView<DisplayQRCodeModel, DisplayQRCodeView> displayQRCodePopoverMaV;
 
   private JTextField label;
   private JLabel addressCommentLabel;
@@ -100,7 +100,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     displayBitcoinAddressMaV = Components.newDisplayBitcoinAddressMaV(nextAddress);
 
     // Create the QR code display
-    displayQRCodeMaV = Components.newDisplayQRCodeMaV();
+    displayQRCodePopoverMaV = Popovers.newDisplayQRCodePopoverMaV();
 
     label = TextBoxes.newEnterLabel();
     showQRCode = Buttons.newQRCodeButton(getShowQRCodePopoverAction());
@@ -255,11 +255,11 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
           null
         );
 
-        displayQRCodeMaV.getModel().setValue(bitcoinUri);
-        displayQRCodeMaV.getModel().setLabel(label.getText());
+        displayQRCodePopoverMaV.getModel().setValue(bitcoinUri);
+        displayQRCodePopoverMaV.getModel().setLabel(label.getText());
 
         // Show the QR code as a popover
-        Panels.showLightBoxPopover(displayQRCodeMaV.getView().newComponentPanel());
+        Panels.showLightBoxPopover(displayQRCodePopoverMaV.getView().newComponentPanel());
       }
 
     };
