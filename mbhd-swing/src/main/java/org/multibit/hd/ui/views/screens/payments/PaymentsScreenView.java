@@ -1,18 +1,20 @@
 package org.multibit.hd.ui.views.screens.payments;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.dto.PaymentData;
-import org.multibit.hd.core.dto.PaymentRequestData;
-import org.multibit.hd.core.dto.RAGStatus;
-import org.multibit.hd.core.dto.TransactionData;
+import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
 import org.multibit.hd.core.events.TransactionSeenEvent;
+import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WalletDetailChangedEvent;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.AlertModel;
@@ -20,6 +22,7 @@ import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.enter_search.EnterSearchModel;
 import org.multibit.hd.ui.views.components.enter_search.EnterSearchView;
 import org.multibit.hd.ui.views.components.tables.PaymentTableModel;
+import org.multibit.hd.ui.views.components.wallet_detail.WalletDetail;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.wizards.Wizards;
@@ -29,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.util.List;
 
 /**
@@ -46,7 +50,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
 
   private JTable paymentsTable;
 
-   // View components
+  // View components
   private ModelAndView<EnterSearchModel, EnterSearchView> enterSearchMaV;
 
   /**
@@ -72,15 +76,15 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     CoreServices.uiEventBus.register(this);
 
     MigLayout layout = new MigLayout(
-      Panels.migLayout("fill,insets 10 5 0 0"),
-      "[][][][][]push[]", // Column constraints
-      "[shrink][shrink][grow]" // Row constraints
+            Panels.migLayout("fill,insets 10 5 0 0"),
+            "[][][][][]push[]", // Column constraints
+            "[shrink][shrink][grow]" // Row constraints
     );
 
     // Create view components
     JPanel contentPanel = Panels.newPanel(layout);
 
-      // Create view components
+    // Create view components
     enterSearchMaV = Components.newEnterSearchMaV(getScreen().name());
 
     JButton detailsButton = Buttons.newDetailsButton(getDetailsAction());
@@ -175,85 +179,103 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
   }
 
   /**
-    * @return The show transaction details action
-    */
-   private Action getDetailsAction() {
+   * @return The show transaction details action
+   */
+  private Action getDetailsAction() {
 
-     return new AbstractAction() {
-       @Override
-       public void actionPerformed(ActionEvent e) {
-         int selectedTableRow = paymentsTable.getSelectedRow();
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        int selectedTableRow = paymentsTable.getSelectedRow();
 
-         if (selectedTableRow == -1) {
-           // No row selected
-           return;
-         }
-         int selectedModelRow = paymentsTable.convertRowIndexToModel(selectedTableRow);
-         PaymentData paymentData = ((PaymentTableModel)paymentsTable.getModel()).getPaymentData().get(selectedModelRow);
-         //log.debug("getDetailsAction : selectedTableRow = " + selectedTableRow + ", selectedModelRow = " + selectedModelRow + ", paymentData = " + paymentData.toString());
+        if (selectedTableRow == -1) {
+          // No row selected
+          return;
+        }
+        int selectedModelRow = paymentsTable.convertRowIndexToModel(selectedTableRow);
+        PaymentData paymentData = ((PaymentTableModel) paymentsTable.getModel()).getPaymentData().get(selectedModelRow);
+        //log.debug("getDetailsAction : selectedTableRow = " + selectedTableRow + ", selectedModelRow = " + selectedModelRow + ", paymentData = " + paymentData.toString());
 
-         PaymentsWizard wizard = Wizards.newPaymentsWizard(paymentData);
-         // If the payment is a transaction, then fetch the matching payment request data and put them in the model
-         if (paymentData instanceof TransactionData) {
-           wizard.getWizardModel().setMatchingPaymentRequestList(
-                   MultiBitHD.getWalletService().findPaymentRequestsThisTransactionFunds((TransactionData) paymentData));
-         }
-         Panels.showLightBox(wizard.getWizardScreenHolder());
-       }
-     };
-   }
+        PaymentsWizard wizard = Wizards.newPaymentsWizard(paymentData);
+        // If the payment is a transaction, then fetch the matching payment request data and put them in the model
+        if (paymentData instanceof TransactionData) {
+          wizard.getWizardModel().setMatchingPaymentRequestList(
+                  MultiBitHD.getWalletService().findPaymentRequestsThisTransactionFunds((TransactionData) paymentData));
+        }
+        Panels.showLightBox(wizard.getWizardScreenHolder());
+      }
+    };
+  }
 
   /**
-     * @return The export transaction details action
-     */
-    private Action getExportAction() {
+   * @return The export transaction details action
+   */
+  private Action getExportAction() {
 
-      return new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          log.debug("getExportAction called");
-        }
-      };
-    }
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        log.debug("getExportAction called");
+      }
+    };
+  }
 
   /**
-     * @return The undo details action
-     */
-    private Action getUndoAction() {
+   * @return The undo details action
+   */
+  private Action getUndoAction() {
 
-      return new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          MultiBitHD.getWalletService().undoDeletePaymentRequest();
-          update();
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        MultiBitHD.getWalletService().undoDeletePaymentRequest();
+        fireWalletDetailsChanged();
+      }
+    };
+  }
+
+  /**
+   * @return The delete payment request  action
+   */
+  private Action getDeletePaymentRequestAction() {
+
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        int selectedTableRow = paymentsTable.getSelectedRow();
+        if (selectedTableRow == -1) {
+          // No row selected
+          return;
         }
-      };
-    }
+        int selectedModelRow = paymentsTable.convertRowIndexToModel(selectedTableRow);
+        log.debug("getExportAction : selectedTableRow = " + selectedTableRow + ", selectedModelRow = " + selectedModelRow);
 
-   /**
-     * @return The delete payment request  action
-     */
-    private Action getDeletePaymentRequestAction() {
+        PaymentData paymentData = ((PaymentTableModel) paymentsTable.getModel()).getPaymentData().get(selectedModelRow);
 
-      return new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          int selectedTableRow = paymentsTable.getSelectedRow();
-          if (selectedTableRow == -1) {
-            // No row selected
-            return;
-          }
-          int selectedModelRow = paymentsTable.convertRowIndexToModel(selectedTableRow);
-          log.debug("getExportAction : selectedTableRow = " + selectedTableRow + ", selectedModelRow = " + selectedModelRow);
-
-          PaymentData paymentData = ((PaymentTableModel)paymentsTable.getModel()).getPaymentData().get(selectedModelRow);
-
-          if (paymentData instanceof PaymentRequestData) {
-            // We can delete this
-            MultiBitHD.getWalletService().deletePaymentRequest((PaymentRequestData)paymentData);
-            update();
-          }
+        if (paymentData instanceof PaymentRequestData) {
+          // We can delete this
+          MultiBitHD.getWalletService().deletePaymentRequest((PaymentRequestData) paymentData);
+          fireWalletDetailsChanged();
         }
-      };
+      }
+    };
+  }
+
+  private void fireWalletDetailsChanged() {
+    // Ensure the views that display payments update
+    WalletDetail walletDetail = new WalletDetail();
+    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
+      WalletData walletData = WalletManager.INSTANCE.getCurrentWalletData().get();
+      walletDetail.setApplicationDirectory(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath());
+
+      File walletFile = WalletManager.INSTANCE.getCurrentWalletFilename().get();
+      walletDetail.setWalletDirectory(walletFile.getParentFile().getName());
+
+      ContactService contactService = CoreServices.getOrCreateContactService(Optional.of(walletData.getWalletId()));
+      walletDetail.setNumberOfContacts(contactService.allContacts().size());
+
+      walletDetail.setNumberOfPayments(MultiBitHD.getWalletService().getPaymentDataList().size());
+      ViewEvents.fireWalletDetailChangedEvent(walletDetail);
     }
+  }
 }

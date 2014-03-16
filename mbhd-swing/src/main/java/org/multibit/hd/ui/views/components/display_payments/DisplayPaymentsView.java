@@ -84,6 +84,10 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
   }
 
   public void updateView() {
+    if (!initialised) {
+      return;
+    }
+
     if (displayAmountMaVList != null) {
       for (ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV : displayAmountMaVList) {
         paymentAmountMaV.getView().updateView(Configurations.currentConfiguration);
