@@ -1,6 +1,8 @@
 package org.multibit.hd.ui.views.screens.wallet;
 
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.dto.PaymentData;
+import org.multibit.hd.core.dto.PaymentType;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.MultiBitUI;
@@ -20,6 +22,7 @@ import org.multibit.hd.ui.views.wizards.Wizards;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.List;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -65,7 +68,7 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
 
     MigLayout layout = new MigLayout(
       Panels.migXYLayout(),
-      "[]10[]", // Column constraints
+      "10[]10[]", // Column constraints
       "10[]10[]" // Row constraints
     );
 
@@ -90,8 +93,10 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
     sendBitcoin = Buttons.newSendBitcoinWizardButton(showSendBitcoinWizardAction);
     JButton requestBitcoin = Buttons.newRequestBitcoinWizardButton(showRequestBitcoinWizardAction);
 
+    // Find the 'Sending' transactions for today
+    List<PaymentData> todaysSendingPayments = MultiBitHD.getWalletService().getPaymentDataList(PaymentType.SENDING);
     displaySendingPaymentsMaV = Components.newDisplayPaymentsMaV(PANEL_NAME);
-    displaySendingPaymentsMaV.getModel().setValue(MultiBitHD.getWalletService().getPaymentDataList());
+    displaySendingPaymentsMaV.getModel().setValue(todaysSendingPayments);
     JScrollPane sendingPaymentsScrollPane = new JScrollPane(displaySendingPaymentsMaV.getView().newComponentPanel(),
             JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     sendingPaymentsScrollPane.setBackground(Themes.currentTheme.detailPanelBackground());
@@ -99,8 +104,11 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
     sendingPaymentsScrollPane.setOpaque(true);
     sendingPaymentsScrollPane.setBorder(BorderFactory.createEmptyBorder());
 
+
+    // Find the 'Receiving' (+ requested)transactions for today
+    List<PaymentData> todaysReceivingPayments = MultiBitHD.getWalletService().getPaymentDataList(PaymentType.RECEIVING);
     displayReceivingPaymentsMaV = Components.newDisplayPaymentsMaV(PANEL_NAME);
-    displayReceivingPaymentsMaV.getModel().setValue(MultiBitHD.getWalletService().getPaymentDataList());
+    displayReceivingPaymentsMaV.getModel().setValue(todaysReceivingPayments);
     JScrollPane receivingPaymentsScrollPane = new JScrollPane(displayReceivingPaymentsMaV.getView().newComponentPanel(),
             JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     receivingPaymentsScrollPane.getViewport().setBackground(Themes.currentTheme.detailPanelBackground());

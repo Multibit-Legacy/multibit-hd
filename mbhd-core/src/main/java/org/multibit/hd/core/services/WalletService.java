@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.joda.money.BigMoney;
+import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
@@ -22,6 +23,7 @@ import org.multibit.hd.core.utils.Satoshis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
@@ -139,6 +141,18 @@ public class WalletService {
    * (This is moderately expensive so don't call it indiscriminately)
    */
   public List<PaymentData> getPaymentDataList() {
+    return getPaymentDataList(null);
+  }
+
+  /**
+   * Get all the payments (payments and payment requests) in the current wallet.
+   * (This is moderately expensive so don't call it indiscriminately)
+   *
+   * @param paymentType if null, return all payments.
+   *                    if PaymentType.SENDING return all sending payments for today
+   *                    if PaymentType.RECSIVING return all requesting and receiving payments for today
+   */
+  public List<PaymentData> getPaymentDataList(@Nullable PaymentType paymentType) {
     // See if there is a current wallet
     WalletManager walletManager = WalletManager.INSTANCE;
 
@@ -155,7 +169,7 @@ public class WalletService {
     // There should be a wallet
     Preconditions.checkNotNull(wallet, "There is no wallet to process");
 
-    // Get and adapt all the payments in the wallet
+    // Get all the transactions in the wallet
     Set<Transaction> transactions = wallet.getTransactions(true);
 
     // Adapted transaction data to return
@@ -176,7 +190,32 @@ public class WalletService {
       }
     }
     // Union all the transactionDatas and paymentDatas
-    return Lists.newArrayList(Sets.union(transactionDatas, paymentRequestsNotFullyFunded));
+    List<PaymentData> combinedPaymentDataList =  Lists.newArrayList(Sets.union(transactionDatas, paymentRequestsNotFullyFunded));
+
+    // Subset to the required type of transaction
+    // (would be better to do this before adapting but don't have payment type
+    if (paymentType != null) {
+      List<PaymentData> subsetPaymentDataList = Lists.newArrayList();
+      DateMidnight now = DateTime.now().toDateMidnight();
+      for (PaymentData paymentData : combinedPaymentDataList) {
+        if (paymentType == PaymentType.SENDING) {
+          if (paymentData.getType() == PaymentType.SENDING) {
+            if (paymentData.getDate().toDateMidnight().equals(now)) {
+              subsetPaymentDataList.add(paymentData);
+            }
+          }
+        } else if (paymentType == PaymentType.RECEIVING) {
+          if (paymentData.getType() == PaymentType.REQUESTED || paymentData.getType() == PaymentType.RECEIVING) {
+            if (paymentData.getDate().toDateMidnight().equals(now)) {
+              subsetPaymentDataList.add(paymentData);
+            }
+          }
+        }
+      }
+      combinedPaymentDataList = subsetPaymentDataList;
+    }
+
+    return combinedPaymentDataList;
   }
 
   /**
@@ -236,10 +275,10 @@ public class WalletService {
     int size = -1;
     ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
     try {
-        transaction.bitcoinSerialize(byteOutputStream);
-        size = byteOutputStream.size();
+      transaction.bitcoinSerialize(byteOutputStream);
+      size = byteOutputStream.size();
     } catch (IOException e1) {
-        e1.printStackTrace();
+      e1.printStackTrace();
     }
 
     // Create the DTO from the raw transaction info
@@ -259,7 +298,7 @@ public class WalletService {
    * + GREEN = tx is confirmed
    *
    * @param confidenceType the bitcoinj confidenceType  to use to work out the status
-   * @param depth depth in blocks of the transaction
+   * @param depth          depth in blocks of the transaction
    * @return status of the transaction
    */
   public static PaymentStatus calculateStatus(TransactionConfidence.ConfidenceType confidenceType, int depth, int numberOfPeers) {
@@ -407,28 +446,28 @@ public class WalletService {
 
   private void calculateNote(TransactionData transactionData, String transactionHashAsString) {
     TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
-     if (transactionInfo != null) {
-       String note = transactionInfo.getNote();
-       if (note != null) {
-         transactionData.setNote(note);
-         // if there is a real note use that as the description
-         if (note.length() > 0) {
-           transactionData.setDescription(note);
-         }
-       } else {
-         transactionData.setNote("");
-       }
-       transactionData.setAmountFiat(transactionInfo.getAmountFiat());
-     } else {
-       transactionData.setNote("");
-     }
+    if (transactionInfo != null) {
+      String note = transactionInfo.getNote();
+      if (note != null) {
+        transactionData.setNote(note);
+        // if there is a real note use that as the description
+        if (note.length() > 0) {
+          transactionData.setDescription(note);
+        }
+      } else {
+        transactionData.setNote("");
+      }
+      transactionData.setAmountFiat(transactionInfo.getAmountFiat());
+    } else {
+      transactionData.setNote("");
+    }
   }
 
   private Optional<BigInteger> calculateFeeOnSend(PaymentType paymentType, Wallet wallet, Transaction transaction) {
     Optional<BigInteger> feeOnSend = Optional.absent();
 
     if (paymentType == PaymentType.SENDING || paymentType == PaymentType.SENT) {
-     // TODO - transaction.calculateFee(wallet) seems to have disappeared from transaction
+      // TODO - transaction.calculateFee(wallet) seems to have disappeared from transaction
     }
 
     return feeOnSend;
@@ -536,13 +575,14 @@ public class WalletService {
 
   /**
    * Find the payment requests that are either partially or fully funded by the transaction specified
+   *
    * @return
    */
   public List<PaymentRequestData> findPaymentRequestsThisTransactionFunds(TransactionData transactionData) {
     List<PaymentRequestData> paymentRequestDataList = Lists.newArrayList();
 
     if (transactionData != null && transactionData.getOutputAddresses() != null) {
-      for (String address :  transactionData.getOutputAddresses()) {
+      for (String address : transactionData.getOutputAddresses()) {
         PaymentRequestData paymentRequestData = paymentRequestMap.get(address);
         if (paymentRequestData != null) {
           // This transaction funds this payment address

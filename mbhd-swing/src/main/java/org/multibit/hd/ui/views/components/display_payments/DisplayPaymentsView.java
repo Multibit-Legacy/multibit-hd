@@ -49,8 +49,6 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
     ));
 
     // Populate components
-
-    // TODO filter and order by reverse age
     if (getModel().isPresent()) {
       List<PaymentData> paymentDataList = getModel().get().getValue();
 
