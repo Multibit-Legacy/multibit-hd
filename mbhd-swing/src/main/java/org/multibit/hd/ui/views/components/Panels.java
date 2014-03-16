@@ -436,29 +436,25 @@ public class Panels {
    * New vertical dashed separator
    */
   public static JPanel newVerticalDashedSeparator() {
-    Paint paint = new GradientPaint(0, 0, Themes.currentTheme.detailPanelBackground(),
-            30, 30, Themes.currentTheme.fadedText().brighter(), true);
 
-    JPanel dashedVerticalSeparator = new JPanel();
-    dashedVerticalSeparator.setMaximumSize(new Dimension(1, 10000));
-    dashedVerticalSeparator.setBorder(BorderFactory.createDashedBorder(paint, 4, 0));
+    JPanel panel = new JPanel();
+    panel.setMaximumSize(new Dimension(1, 10000));
+    panel.setBorder(BorderFactory.createDashedBorder(Themes.currentTheme.headerPanelBackground(), 5, 5));
 
-    return dashedVerticalSeparator;
+    return panel;
   }
 
   /**
-    * New horizontal dashed separator
-    */
-   public static JPanel newHorizontalDashedSeparator() {
-     Paint paint = new GradientPaint(0, 0, Themes.currentTheme.detailPanelBackground(),
-             30, 30, Themes.currentTheme.fadedText().brighter(), true);
+   * New horizontal dashed separator
+   */
+  public static JPanel newHorizontalDashedSeparator() {
 
-     JPanel dashedHorizontalSeparator = new JPanel();
-     dashedHorizontalSeparator.setMaximumSize(new Dimension(10000, 1));
-     dashedHorizontalSeparator.setBorder(BorderFactory.createDashedBorder(paint, 4, 0));
+    JPanel panel = new JPanel();
+    panel.setMaximumSize(new Dimension(10000, 1));
+    panel.setBorder(BorderFactory.createDashedBorder(Themes.currentTheme.headerPanelBackground(), 5, 5));
 
-     return dashedHorizontalSeparator;
-   }
+    return panel;
+  }
 
   /**
    * <p>Invalidate a panel so that Swing will later redraw it properly with layout changes (normally as a result of a locale change)</p>
