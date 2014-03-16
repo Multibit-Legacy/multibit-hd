@@ -35,6 +35,7 @@
     <module>mbhd-core</module>
     <module>mbhd-brit</module>
     <module>mbhd-swing</module>
+    <module>mbhd-install</module>
   </modules>
 
   <url>http://github.com/bitcoin-solutions/multibit-hd</url>
