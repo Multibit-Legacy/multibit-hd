@@ -181,12 +181,12 @@ public class WalletService {
   }
 
   /**
-   * Subset the supplied payments.
+   * Subset the supplied payments and sort by date, decending
    *
    * @param paymentType if PaymentType.SENDING return all sending payments for today
    *                    if PaymentType.RECSIVING return all requesting and receiving payments for today
    */
-  public List<PaymentData> subsetPayments(List<PaymentData> paymentDataList, PaymentType paymentType) {
+  public List<PaymentData> subsetPaymentsAndSort(List<PaymentData> paymentDataList, PaymentType paymentType) {
     // Subset to the required type of payment
     List<PaymentData> subsetPaymentDataList = Lists.newArrayList();
     if (paymentType != null) {
@@ -208,6 +208,13 @@ public class WalletService {
       }
     }
 
+    Collections.sort(subsetPaymentDataList, new Comparator<PaymentData>() {
+
+      @Override
+      public int compare(PaymentData o1, PaymentData o2) {
+        return - o1.getDate().compareTo(o2.getDate()); // note inverse sort
+      }
+    });
     return subsetPaymentDataList;
   }
 

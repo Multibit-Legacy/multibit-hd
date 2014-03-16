@@ -22,6 +22,10 @@ public enum DisplayAmountStyle {
   /**
    * Iconography and fonts for a discreet presentation (e.g. fees)
    */
-  FEE_AMOUNT
+  FEE_AMOUNT,
+  /**
+   * Iconography and fonts for inclusion with very plain style
+   */
+  PLAIN
 
 }
