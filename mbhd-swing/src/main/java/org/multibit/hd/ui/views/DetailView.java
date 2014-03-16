@@ -106,6 +106,8 @@ public class DetailView {
 
     cardLayout.show(screenPanel, event.getScreen().name());
 
+    view.afterShow();
+
   }
 
 }

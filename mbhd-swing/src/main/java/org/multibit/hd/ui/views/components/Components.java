@@ -1,8 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
-import org.multibit.hd.core.dto.PaymentType;
 import org.multibit.hd.core.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordView;
 import org.multibit.hd.ui.views.components.display_address.DisplayBitcoinAddressModel;
@@ -33,7 +31,6 @@ import org.multibit.hd.ui.views.components.select_file.SelectFileView;
 import org.multibit.hd.ui.views.components.wallet_detail.WalletDetailModel;
 import org.multibit.hd.ui.views.components.wallet_detail.WalletDetailView;
 
-import javax.swing.*;
 import java.util.List;
 
 /**
@@ -265,13 +262,4 @@ public class Components {
     return new ModelAndView<>(model, view);
 
   }
-
-  public static JPanel newRecenPaymentsPanel(PaymentType paymentType) {
-    JPanel recentPayments = new JPanel();
-    recentPayments.setToolTipText(Languages.safeText(paymentType.getLocalisationKey()));
-    recentPayments.setOpaque(false);
-    //recentPayments.setBorder(BorderFactory.createLineBorder(Color.CYAN));
-    return recentPayments;
-  }
-
 }

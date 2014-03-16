@@ -20,7 +20,7 @@ import java.text.SimpleDateFormat;
 public class LocalisedDateUtils {
 
   public static SimpleDateFormat longDateFormatter;
-  public static SimpleDateFormat shortDateFormatter;
+  public static SimpleDateFormat shortDateFormatter = new SimpleDateFormat("HH:mm");
 
   private LocalisedDateUtils() {
 
@@ -33,7 +33,7 @@ public class LocalisedDateUtils {
    * @return Localised date string using today and yesterday as appropriate
    */
   public static String formatFriendlyDate(DateTime date) {
-     String formattedDate = "";
+    String formattedDate = "";
 
     if (date.getMillis() != 0) {
       try {
@@ -46,6 +46,25 @@ public class LocalisedDateUtils {
             formattedDate = longDateFormatter.format(date.toDate());
           }
         }
+      } catch (IllegalArgumentException iae) {
+        // ok
+      }
+    }
+    return formattedDate;
+  }
+
+  /**
+   * Format a datetime into a String where just the time part is used
+   *
+   * @param date The date to convert to a string format
+   * @return The time part of the date
+   */
+  public static String formatShortDate(DateTime date) {
+    String formattedDate = "";
+
+    if (date != null && date.getMillis() != 0) {
+      try {
+        formattedDate = shortDateFormatter.format(date.toDate());
       } catch (IllegalArgumentException iae) {
         // ok
       }
