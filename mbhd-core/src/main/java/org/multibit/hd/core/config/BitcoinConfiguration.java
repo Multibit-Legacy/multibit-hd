@@ -32,7 +32,7 @@ public class BitcoinConfiguration {
   /**
    * Start with Bitstamp since it provides USD (the global reserve currency)
    */
-  private String exchangeKey = "OPEN_EXCHANGE_RATES";
+  private String exchangeKey = "BITSTAMP";
 
   /**
    * The optinal exchange API key (required for OER etc)
