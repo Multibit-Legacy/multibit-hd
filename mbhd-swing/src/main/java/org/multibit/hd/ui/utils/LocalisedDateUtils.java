@@ -15,7 +15,7 @@ import java.text.SimpleDateFormat;
  *  <pre>
  *  </pre>
  *  </p>
- *  
+ *  TODO Pull this into Dates and avoid static use of SimpleDateFormat (not thread safe)
  */
 public class LocalisedDateUtils {
 

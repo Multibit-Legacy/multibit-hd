@@ -3,10 +3,12 @@ package org.multibit.hd.ui.views.wizards;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.events.view.WizardPopoverHideEvent;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.Popovers;
 import org.multibit.hd.ui.views.layouts.WizardCardLayout;
@@ -197,12 +199,20 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
 
         if (getWizardModel().isDirty()) {
 
-          // Check with the user about throwing away their data
-          Panels.showLightBoxPopover(Popovers.newDisplayQRCodePopoverMaV().getView().newComponentPanel());
+          // Check with the user about throwing away their data (handle the outcome with a WizardPopoverHideEvent)
+          Panels.showLightBoxPopover(
+            Popovers.newEnterYesNoPopoverMaV(getWizardModel().getPanelName())
+              .getView()
+              .newComponentPanel()
+          );
+
+        } else {
+
+          // Can immediately close since no data will be lost
+          hide(wizardModel.getPanelName(), true);
 
         }
 
-        hide(wizardModel.getPanelName(), true);
       }
     };
 
@@ -321,5 +331,22 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
       }
     };
   }
+
+  @Subscribe
+  public void onWizardPopoverHideEvent(WizardPopoverHideEvent event) {
+
+    if (getWizardModel().getPanelName().equals(event.getPanelName())) {
+
+      if (getWizardModel().isDirty() && !event.isExitCancel()) {
+
+        // User has authorised the underlying panel to be closed
+        hide(wizardModel.getPanelName(), true);
+
+      }
+
+    }
+
+  }
+
 
 }

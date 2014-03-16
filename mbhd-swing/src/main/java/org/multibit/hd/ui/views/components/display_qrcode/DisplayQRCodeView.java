@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.components.display_qrcode;
 import com.google.common.base.Optional;
 import org.multibit.hd.core.utils.OSUtils;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.utils.ClipboardUtils;
 import org.multibit.hd.ui.utils.QRCodes;
 import org.multibit.hd.ui.views.components.AbstractComponentView;
@@ -102,6 +103,9 @@ public class DisplayQRCodeView extends AbstractComponentView<DisplayQRCodeModel>
       public void actionPerformed(ActionEvent e) {
 
         Panels.hideLightBoxPopover();
+
+        // Issue the wizard popover hide event
+        ViewEvents.fireWizardPopoverHideEvent(getModel().get().getPanelName(),true);
 
       }
 

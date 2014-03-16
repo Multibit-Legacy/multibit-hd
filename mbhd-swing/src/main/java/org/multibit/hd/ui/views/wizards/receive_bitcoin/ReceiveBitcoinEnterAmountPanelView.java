@@ -100,7 +100,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     displayBitcoinAddressMaV = Components.newDisplayBitcoinAddressMaV(nextAddress);
 
     // Create the QR code display
-    displayQRCodePopoverMaV = Popovers.newDisplayQRCodePopoverMaV();
+    displayQRCodePopoverMaV = Popovers.newDisplayQRCodePopoverMaV(getPanelName());
 
     label = TextBoxes.newEnterLabel();
     showQRCode = Buttons.newQRCodeButton(getShowQRCodePopoverAction());

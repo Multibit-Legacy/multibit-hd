@@ -144,6 +144,17 @@ public class ViewEvents {
   }
 
   /**
+   * <p>Broadcast a new "wizard popover hide" event</p>
+   *
+   * @param panelName    The unique panel name to which this applies (use screen name for detail screens)
+   * @param isExitCancel True if this hide event comes as a result of an exit or cancel
+   */
+  public static void fireWizardPopoverHideEvent(String panelName, boolean isExitCancel) {
+    log.trace("Firing 'wizard popover hide' event");
+    CoreServices.uiEventBus.post(new WizardPopoverHideEvent(panelName, isExitCancel));
+  }
+
+  /**
    * <p>Broadcast a new "component changed" event</p>
    *
    * @param panelName      The unique panel name to which this applies (use screen name for detail screens)

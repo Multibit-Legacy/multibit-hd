@@ -3,6 +3,9 @@ package org.multibit.hd.ui.views.wizards;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.services.CoreServices;
 
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
 /**
  * <p>Abstract base class wizard models:</p>
  * <ul>
@@ -14,7 +17,7 @@ import org.multibit.hd.core.services.CoreServices;
  * @since 0.0.1
  *  
  */
-public abstract class AbstractWizardModel<S> {
+public abstract class AbstractWizardModel<S> implements DocumentListener {
 
   /**
    * The current state
@@ -74,4 +77,21 @@ public abstract class AbstractWizardModel<S> {
   public void setDirty(boolean isDirty) {
     this.isDirty = isDirty;
   }
+
+  @Override
+  public void insertUpdate(DocumentEvent e) {
+    setDirty(true);
+  }
+
+  @Override
+  public void removeUpdate(DocumentEvent e) {
+    setDirty(true);
+  }
+
+  @Override
+  public void changedUpdate(DocumentEvent e) {
+    setDirty(true);
+  }
+
+
 }

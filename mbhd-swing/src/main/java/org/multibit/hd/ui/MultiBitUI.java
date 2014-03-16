@@ -32,6 +32,14 @@ public interface MultiBitUI {
   int WIZARD_MIN_HEIGHT = 450;
 
   /**
+   * The minimum width for a wizard popover (must be less than the PREF defined below)
+   */
+  int POPOVER_MIN_WIDTH = 300;
+  /**
+   * The minimum height for a wizard popover (must be less than the PREF defined below)
+   */
+  int POPOVER_MIN_HEIGHT = 250;
+  /**
    * The preferred width for a wizard popover (must be less than the MAX defined below)
    */
   int POPOVER_PREF_WIDTH = 500;

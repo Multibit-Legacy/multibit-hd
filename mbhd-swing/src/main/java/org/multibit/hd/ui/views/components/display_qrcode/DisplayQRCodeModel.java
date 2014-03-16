@@ -13,17 +13,24 @@ import org.multibit.hd.ui.models.Model;
  */
 public class DisplayQRCodeModel implements Model<String> {
 
-  private String content;
+  private String value;
+
+  // Supporting data
+  private final String panelName;
   private String label;
+
+  public DisplayQRCodeModel(String panelName) {
+    this.panelName = panelName;
+  }
 
   @Override
   public String getValue() {
-    return content;
+    return value;
   }
 
   @Override
   public void setValue(String value) {
-    this.content = value;
+    this.value = value;
   }
 
   public void setLabel(String label) {
@@ -32,6 +39,13 @@ public class DisplayQRCodeModel implements Model<String> {
 
   public String getLabel() {
     return label;
+  }
+
+  /**
+   * @return The panel name over which this popover is being displayed
+   */
+  public String getPanelName() {
+    return panelName;
   }
 
 }

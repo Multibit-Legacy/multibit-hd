@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.components.display_message;
 
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.components.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
@@ -64,6 +65,10 @@ public class DisplayInfoMessageView extends AbstractComponentView<DisplayInfoMes
       public void actionPerformed(ActionEvent e) {
 
         Panels.hideLightBoxPopover();
+
+        // Issue the wizard popover hide event
+        ViewEvents.fireWizardPopoverHideEvent(getModel().get().getPanelName(), true);
+
 
       }
 

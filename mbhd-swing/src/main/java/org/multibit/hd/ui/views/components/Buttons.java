@@ -111,6 +111,22 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "Yes" button with icon
+   */
+  public static JButton newYesButton(Action action) {
+
+    JButton button = newButton(action, MessageKey.YES);
+    button.setAction(action);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, button, true, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
+
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "No" button with icon
    */
   public static JButton newNoButton(Action action) {

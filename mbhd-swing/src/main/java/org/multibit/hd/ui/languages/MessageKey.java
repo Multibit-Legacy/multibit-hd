@@ -264,6 +264,9 @@ public enum MessageKey {
 
   SOUND_CHANGE_NOTE_1("sound_change_note_1"),
 
+  DATA_ENTERED_NOTE_1("data_entered_note_1"),
+  DATA_ENTERED_NOTE_2("data_entered_note_2"),
+
   RECIPIENT_SUMMARY("recipient_summary"),
   AMOUNT_SUMMARY("amount_summary"),
 

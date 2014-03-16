@@ -68,7 +68,7 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
 
     MigLayout layout = new MigLayout(
       Panels.migXYLayout(),
-      "10[]10[]", // Column constraints
+      "10[]10[]10", // Column constraints
       "10[]10[]" // Row constraints
     );
 
@@ -109,6 +109,7 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
     List<PaymentData> todaysReceivingPayments = MultiBitHD.getWalletService().getPaymentDataList(PaymentType.RECEIVING);
     displayReceivingPaymentsMaV = Components.newDisplayPaymentsMaV(PANEL_NAME);
     displayReceivingPaymentsMaV.getModel().setValue(todaysReceivingPayments);
+
     JScrollPane receivingPaymentsScrollPane = new JScrollPane(displayReceivingPaymentsMaV.getView().newComponentPanel(),
             JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     receivingPaymentsScrollPane.getViewport().setBackground(Themes.currentTheme.detailPanelBackground());
@@ -119,8 +120,10 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
     contentPanel.add(sendBitcoin, MultiBitUI.LARGE_BUTTON_MIG + ",align center");
     contentPanel.add(Panels.newVerticalDashedSeparator(), "growy, spany 2");
     contentPanel.add(requestBitcoin, MultiBitUI.LARGE_BUTTON_MIG + ",align center, wrap");
+
     contentPanel.add(sendingPaymentsScrollPane, "grow, push");
     contentPanel.add(receivingPaymentsScrollPane, "grow, push, wrap");
+
     contentPanel.add(Panels.newHorizontalDashedSeparator(), "span 3, growx, wrap");
     contentPanel.add(walletDetailMaV.getView().newComponentPanel(), "span 3");
 

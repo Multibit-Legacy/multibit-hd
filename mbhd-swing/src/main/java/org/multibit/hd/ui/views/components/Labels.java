@@ -42,6 +42,8 @@ public class Labels {
 
 
   /**
+   * TODO make this package private and create specialised labels
+   *
    * @param key    The resource key for the language message text
    * @param values The data values for token replacement in the message text
    *
@@ -73,6 +75,7 @@ public class Labels {
   }
 
   /**
+   * TODO Make this package private and create specialised methods to reduce key leaks
    * <p>A convenience method for creating a themed label with direct text. This is not internationalised.</p>
    *
    * @return A new value label with default styling for placing direct text
@@ -116,7 +119,7 @@ public class Labels {
    *
    * @return A new label with HTML formatting to correctly render the line break and contents
    */
-  public static JLabel newNoteLabel(CoreMessageKey[] keys, Object[][] values) {
+  static JLabel newNoteLabel(CoreMessageKey[] keys, Object[][] values) {
 
     String[] lines = new String[keys.length];
     for (int i = 0; i < keys.length; i++) {
@@ -147,7 +150,7 @@ public class Labels {
    *
    * @return A new label with HTML formatting to correctly render the line break and contents
    */
-  public static JLabel newNoteLabel(MessageKey[] keys, Object[][] values) {
+  static JLabel newNoteLabel(MessageKey[] keys, Object[][] values) {
 
     String[] lines = new String[keys.length];
     for (int i = 0; i < keys.length; i++) {
@@ -179,7 +182,7 @@ public class Labels {
    *
    * @return A new label with icon binding to allow the AwesomeDecorator to update it
    */
-  public static JLabel newStatusLabel(MessageKey key, Object[] values, boolean status) {
+  static JLabel newStatusLabel(MessageKey key, Object[] values, boolean status) {
     return newStatusLabel(Optional.of(key), values, Optional.of(status));
   }
 
@@ -946,4 +949,17 @@ public class Labels {
     }, new Object[][]{});
 
   }
+
+  /**
+   * @return A new "data entered" note
+   */
+  public static JLabel newDataEnteredNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.DATA_ENTERED_NOTE_1,
+      MessageKey.DATA_ENTERED_NOTE_2
+    }, new Object[][]{});
+
+  }
+
 }

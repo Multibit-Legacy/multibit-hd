@@ -118,15 +118,26 @@ public class Panels {
   }
 
   /**
-   * @return A simple panel with rounded corners and a single cell MigLayout
+   * @return A simple panel with rounded corners and a single column MigLayout
    */
   public static JPanel newRoundedPanel() {
 
-    JPanel panel = new RoundedPanel(new MigLayout(
+    return newRoundedPanel(new MigLayout(
       Panels.migXLayout(),
       "[]", // Columns
       "[]" // Rows
     ));
+
+  }
+
+  /**
+   * @param layout The MiGLayout to use
+   *
+   * @return A simple panel with rounded corners
+   */
+  public static JPanel newRoundedPanel(LayoutManager2 layout) {
+
+    JPanel panel = new RoundedPanel(layout);
 
     // Theme
     panel.setBackground(Themes.currentTheme.detailPanelBackground());

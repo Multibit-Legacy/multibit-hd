@@ -89,7 +89,11 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
     Contact firstContact = getWizardModel().getContacts().get(0);
 
     name = TextBoxes.newEnterName(multiEdit);
+    name.getDocument().addDocumentListener(getWizardModel());
+
     emailAddress = TextBoxes.newEnterEmailAddress(multiEdit);
+    emailAddress.getDocument().addDocumentListener(getWizardModel());
+
     bitcoinAddress = TextBoxes.newEnterBitcoinAddress(multiEdit);
     extendedPublicKey = TextBoxes.newEnterExtendedPublicKey(multiEdit);
 

@@ -51,7 +51,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
   @Override
   public void newPanelModel() {
 
-    displaySecurityPopoverMaV = Popovers.newDisplaySecurityPopoverMaV();
+    displaySecurityPopoverMaV = Popovers.newDisplaySecurityPopoverMaV(getPanelName());
     enterPasswordMaV = Components.newEnterPasswordMaV(getPanelName());
 
     // Configure the panel model

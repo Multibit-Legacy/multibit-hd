@@ -15,6 +15,13 @@ public class DisplayInfoMessageModel implements Model<String> {
 
   private String message;
 
+  // Supporting values
+  private final String panelName;
+
+  public DisplayInfoMessageModel(String panelName) {
+    this.panelName = panelName;
+  }
+
   @Override
   public String getValue() {
     return message;
@@ -23,6 +30,13 @@ public class DisplayInfoMessageModel implements Model<String> {
   @Override
   public void setValue(String value) {
     this.message = value;
+  }
+
+  /**
+   * @return The underlying panel name (to identify the correct subscriber)
+   */
+  public String getPanelName() {
+    return panelName;
   }
 
 }

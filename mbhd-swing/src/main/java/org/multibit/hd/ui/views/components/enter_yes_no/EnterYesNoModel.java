@@ -1,20 +1,19 @@
-package org.multibit.hd.ui.views.components.display_security_alert;
+package org.multibit.hd.ui.views.components.enter_yes_no;
 
-import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.ui.models.Model;
 
 /**
  * <p>Model to provide the following to view:</p>
  * <ul>
- * <li>Store the security alert text</li>
+ * <li>Store the yes/no response</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class DisplaySecurityAlertModel implements Model<SecurityEvent> {
+public class EnterYesNoModel implements Model<Boolean> {
 
-  private SecurityEvent securityEvent;
+  private Boolean value;
 
   // Supporting values
   private final String panelName;
@@ -22,18 +21,21 @@ public class DisplaySecurityAlertModel implements Model<SecurityEvent> {
   /**
    * @param panelName The underlying panel name (to identify the correct subscriber)
    */
-  public DisplaySecurityAlertModel(String panelName) {
+  public EnterYesNoModel(String panelName) {
     this.panelName = panelName;
   }
 
+  /**
+   * @return True if the answer is Yes, false otherwise
+   */
   @Override
-  public SecurityEvent getValue() {
-    return securityEvent;
+  public Boolean getValue() {
+    return value;
   }
 
   @Override
-  public void setValue(SecurityEvent value) {
-    this.securityEvent = value;
+  public void setValue(Boolean value) {
+    this.value = value;
   }
 
   /**
