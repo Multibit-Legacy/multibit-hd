@@ -23,7 +23,6 @@ import org.multibit.hd.core.utils.Satoshis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
@@ -141,18 +140,6 @@ public class WalletService {
    * (This is moderately expensive so don't call it indiscriminately)
    */
   public List<PaymentData> getPaymentDataList() {
-    return getPaymentDataList(null);
-  }
-
-  /**
-   * Get all the payments (payments and payment requests) in the current wallet.
-   * (This is moderately expensive so don't call it indiscriminately)
-   *
-   * @param paymentType if null, return all payments.
-   *                    if PaymentType.SENDING return all sending payments for today
-   *                    if PaymentType.RECSIVING return all requesting and receiving payments for today
-   */
-  public List<PaymentData> getPaymentDataList(@Nullable PaymentType paymentType) {
     // See if there is a current wallet
     WalletManager walletManager = WalletManager.INSTANCE;
 
@@ -190,14 +177,21 @@ public class WalletService {
       }
     }
     // Union all the transactionDatas and paymentDatas
-    List<PaymentData> combinedPaymentDataList =  Lists.newArrayList(Sets.union(transactionDatas, paymentRequestsNotFullyFunded));
+    return Lists.newArrayList(Sets.union(transactionDatas, paymentRequestsNotFullyFunded));
+  }
 
-    // Subset to the required type of transaction
-    // (would be better to do this before adapting but don't have payment type
+  /**
+   * Subset the supplied payments.
+   *
+   * @param paymentType if PaymentType.SENDING return all sending payments for today
+   *                    if PaymentType.RECSIVING return all requesting and receiving payments for today
+   */
+  public List<PaymentData> subsetPayments(List<PaymentData> paymentDataList, PaymentType paymentType) {
+    // Subset to the required type of payment
+    List<PaymentData> subsetPaymentDataList = Lists.newArrayList();
     if (paymentType != null) {
-      List<PaymentData> subsetPaymentDataList = Lists.newArrayList();
       DateMidnight now = DateTime.now().toDateMidnight();
-      for (PaymentData paymentData : combinedPaymentDataList) {
+      for (PaymentData paymentData : paymentDataList) {
         if (paymentType == PaymentType.SENDING) {
           if (paymentData.getType() == PaymentType.SENDING) {
             if (paymentData.getDate().toDateMidnight().equals(now)) {
@@ -212,10 +206,9 @@ public class WalletService {
           }
         }
       }
-      combinedPaymentDataList = subsetPaymentDataList;
     }
 
-    return combinedPaymentDataList;
+    return subsetPaymentDataList;
   }
 
   /**
