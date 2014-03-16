@@ -107,7 +107,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     addressCommentLabel = Labels.newLabel(MessageKey.ONE_OF_YOUR_ADDRESSES);
 
     // User entered text
-    notesTextArea = TextBoxes.newEnterNotes(MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH);
+    notesTextArea = TextBoxes.newEnterNotes(getWizardModel(), MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH);
 
     // Configure the panel model
     setPanelModel(new ReceiveBitcoinEnterAmountPanelModel(

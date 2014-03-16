@@ -38,7 +38,7 @@ public class EnterYesNoView extends AbstractComponentView<EnterYesNoModel> {
   public JPanel newComponentPanel() {
 
     panel = Panels.newRoundedPanel(new MigLayout(
-      Panels.migXYLayout(),
+      "fill,insets 10",
       "[][]",
       "[]"
     ));

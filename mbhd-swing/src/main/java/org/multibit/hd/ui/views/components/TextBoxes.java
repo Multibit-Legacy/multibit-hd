@@ -121,46 +121,62 @@ public class TextBoxes {
   }
 
   /**
+   * @param listener The document listener for detecting changes to the content
    * @param readOnly True if the field should be read only (i.e. in multi-edit mode)
    *
    * @return A new "enter name" text field
    */
-  public static JTextField newEnterName(boolean readOnly) {
+  public static JTextField newEnterName(DocumentListener listener, boolean readOnly) {
 
-    return readOnly ? newReadOnlyTextField(40) : newTextField(40);
+    JTextField textField = readOnly ? newReadOnlyTextField(40) : newTextField(40);
+    textField.getDocument().addDocumentListener(listener);
+
+    return textField;
 
   }
 
   /**
+   * @param listener The document listener for detecting changes to the content
    * @param readOnly True if the field should be read only (i.e. in multi-edit mode)
    *
    * @return A new "enter email address" text field
    */
-  public static JTextField newEnterEmailAddress(boolean readOnly) {
+  public static JTextField newEnterEmailAddress(DocumentListener listener, boolean readOnly) {
 
-    return readOnly ? newReadOnlyTextField(40) : newTextField(40);
+    JTextField textField = readOnly ? newReadOnlyTextField(40) : newTextField(40);
+    textField.getDocument().addDocumentListener(listener);
+
+    return textField;
 
   }
 
   /**
+   * @param listener The document listener for detecting changes to the content
    * @param readOnly True if the field should be read only (i.e. in multi-edit mode)
    *
    * @return A new "enter Bitcoin address" text field
    */
-  public static JTextField newEnterBitcoinAddress(boolean readOnly) {
+  public static JTextField newEnterBitcoinAddress(DocumentListener listener, boolean readOnly) {
 
-    return readOnly ? newReadOnlyTextField(40) : newTextField(40);
+    JTextField textField = readOnly ? newReadOnlyTextField(40) : newTextField(40);
+    textField.getDocument().addDocumentListener(listener);
+
+    return textField;
 
   }
 
   /**
+   * @param listener The document listener for detecting changes to the content
    * @param readOnly True if the field should be read only (i.e. in multi-edit mode)
    *
    * @return A new "enter extended public key" text field
    */
-  public static JTextField newEnterExtendedPublicKey(boolean readOnly) {
+  public static JTextField newEnterExtendedPublicKey(DocumentListener listener, boolean readOnly) {
 
-    return readOnly ? newReadOnlyTextField(40) : newTextField(40);
+    JTextField textField = readOnly ? newReadOnlyTextField(40) : newTextField(40);
+    textField.getDocument().addDocumentListener(listener);
+
+    return textField;
 
   }
 
@@ -263,17 +279,20 @@ public class TextBoxes {
   }
 
   /**
+   * @param listener The document listener for detecting changes to the content
+   *
    * @return A new "notes" text area
    */
-  public static JTextArea newEnterNotes() {
-    return TextBoxes.newEnterNotes(MultiBitUI.PASSWORD_LENGTH);
+  public static JTextArea newEnterNotes(DocumentListener listener) {
+    return TextBoxes.newEnterNotes(listener, MultiBitUI.PASSWORD_LENGTH);
   }
 
 
   /**
+   * @param listener The document listener for detecting changes to the content
    * @return A new "Notes" text area
    */
-  public static JTextArea newEnterNotes(int width) {
+  public static JTextArea newEnterNotes(DocumentListener listener, int width) {
 
     JTextArea textArea = new JTextArea(6, width);
 
@@ -281,6 +300,9 @@ public class TextBoxes {
     DefaultStyledDocument doc = new DefaultStyledDocument();
     doc.setDocumentFilter(new DocumentMaxLengthFilter(MultiBitUI.SEED_PHRASE_LENGTH));
     textArea.setDocument(doc);
+
+    // Ensure we monitor changes
+    doc.addDocumentListener(listener);
 
     // Ensure line wrapping occurs correctly
     textArea.setLineWrap(true);

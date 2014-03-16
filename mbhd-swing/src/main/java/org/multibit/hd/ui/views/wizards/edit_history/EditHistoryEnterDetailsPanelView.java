@@ -85,7 +85,7 @@ public class EditHistoryEnterDetailsPanelView extends AbstractWizardPanelView<Ed
     HistoryEntry firstEntry = getWizardModel().getHistoryEntries().get(0);
 
     // Always allow non-unique fields
-    notes = TextBoxes.newEnterNotes();
+    notes = TextBoxes.newEnterNotes(getWizardModel());
 
     Set<String> allDescriptions = Sets.newHashSet();
 

@@ -186,6 +186,9 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
 
         setInitialised(true);
 
+        // At this point the user cannot have made changes
+        getWizardModel().setDirty(false);
+
       }
     }
 
