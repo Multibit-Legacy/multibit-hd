@@ -164,7 +164,6 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
   }
 
   public void update() {
-
     // Work out the payment request to show
     PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData();
 

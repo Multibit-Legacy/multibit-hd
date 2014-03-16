@@ -31,6 +31,7 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
   // View components
   private List<ModelAndView<DisplayAmountModel, DisplayAmountView>> displayAmountMaVList = Lists.newArrayList();
 
+  private boolean initialised = false;
   /**
    * @param model The model backing this view
    */
@@ -49,8 +50,16 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
     ));
 
     // Populate components
+    createView();
+
+    return panel;
+  }
+
+  public void createView() {
     if (getModel().isPresent()) {
       List<PaymentData> paymentDataList = getModel().get().getValue();
+      panel.removeAll();
+      displayAmountMaVList = Lists.newArrayList();
 
       for (PaymentData paymentData : paymentDataList) {
         JLabel timeLabel = Labels.newBlankLabel();
@@ -69,27 +78,31 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
         panel.add(paymentDataLabel);
         panel.add(paymentAmountMaV.getView().newComponentPanel(), "grow, wrap");
       }
+
+      initialised = true;
     }
-    return panel;
   }
 
-  public boolean afterShow() {
+  public void updateView() {
     if (displayAmountMaVList != null) {
       for (ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV : displayAmountMaVList) {
         paymentAmountMaV.getView().updateView(Configurations.currentConfiguration);
       }
     }
-    return true;
   }
 
   @Subscribe
   public void onBalanceChangedEvent(BalanceChangedEvent event) {
+    if (!initialised) {
+      return;
+    }
+
     if (displayAmountMaVList != null) {
       for (ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV : displayAmountMaVList) {
         paymentAmountMaV.getModel().setRateProvider(event.getRateProvider());
       }
     }
-    afterShow();
+    updateView();
   }
 
 
