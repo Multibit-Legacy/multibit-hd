@@ -1,5 +1,6 @@
 package org.multibit.hd.core.store;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
@@ -129,36 +130,28 @@ public class PaymentsProtobufSerializerTest {
     transactionInfo1.setHash("010203");
     transactionInfo1.setNote("notes1");
 
-    Collection<String> requestAddresses1 = Lists.newArrayList();
-    requestAddresses1.add("1abc");
-    requestAddresses1.add("1def");
-    requestAddresses1.add("1ghi");
-
-    transactionInfo1.setRequestAddresses(requestAddresses1);
-
     FiatPayment fiatPayment1 = new FiatPayment();
     transactionInfo1.setAmountFiat(fiatPayment1);
     fiatPayment1.setAmount(BigMoney.of(CurrencyUnit.EUR, new BigDecimal("99.9")));
     fiatPayment1.setRate("30.0");
     fiatPayment1.setExchange("Bitstamp");
 
+    transactionInfo1.setClientFee(Optional.of(BigInteger.ZERO));
+    transactionInfo1.setMinerFee(Optional.of(BigInteger.valueOf(123)));
+
     TransactionInfo transactionInfo2 = new TransactionInfo();
     transactionInfos.add(transactionInfo2);
     transactionInfo2.setHash("010203");
     transactionInfo2.setNote("notes1");
-
-    Collection<String> requestAddresses2 = Lists.newArrayList();
-    requestAddresses2.add("1abcdef");
-    requestAddresses2.add("1defghi");
-    requestAddresses2.add("1ghijkl");
-
-    transactionInfo2.setRequestAddresses(requestAddresses2);
 
     FiatPayment fiatPayment2 = new FiatPayment();
     transactionInfo2.setAmountFiat(fiatPayment2);
     fiatPayment2.setAmount(BigMoney.of(CurrencyUnit.JPY, new BigDecimal("11.1")));
     fiatPayment2.setRate("50.0");
     fiatPayment2.setExchange("BitstampJunior");
+
+    transactionInfo2.setClientFee(Optional.of(BigInteger.valueOf(456)));
+    transactionInfo2.setMinerFee(Optional.of(BigInteger.ZERO));
 
     Payments payments = new Payments(1);
     payments.setTransactionInfos(transactionInfos);
@@ -180,21 +173,6 @@ public class PaymentsProtobufSerializerTest {
   private void checkTransactionInfo(TransactionInfo transactionInfo, TransactionInfo other) throws Exception {
     assertThat(other.getHash().equals(transactionInfo.getHash())).isTrue();
 
-    Collection<String> requestAddresses = transactionInfo.getRequestAddresses();
-    Collection<String> otherRequestAddresses = other.getRequestAddresses();
-
-    if (requestAddresses != null) {
-      assertThat(otherRequestAddresses).isNotNull();
-      Iterator iterator = requestAddresses.iterator();
-      Iterator otherIterator = otherRequestAddresses.iterator();
-
-      assertThat(otherIterator.next()).isEqualTo(iterator.next());
-      assertThat(otherIterator.next()).isEqualTo(iterator.next());
-      assertThat(otherIterator.next()).isEqualTo(iterator.next());
-    } else {
-      assertThat(otherRequestAddresses).isNull();
-    }
-
     assertThat(other.getNote()).isEqualTo(transactionInfo.getNote());
 
     FiatPayment fiatPayment = other.getAmountFiat();
@@ -202,10 +180,13 @@ public class PaymentsProtobufSerializerTest {
     assertThat(fiatPayment.getAmount()).isEqualTo(otherFiatPayment.getAmount());
     assertThat(fiatPayment.getRate()).isEqualTo(otherFiatPayment.getRate());
     assertThat(fiatPayment.getExchange()).isEqualTo(otherFiatPayment.getExchange());
+
+    assertThat(transactionInfo.getClientFee()).isEqualTo(other.getClientFee());
+    assertThat(transactionInfo.getMinerFee()).isEqualTo(other.getMinerFee());
   }
 
   /**
-   * Round trip the payments i.e. writeContacts to disk and read back in
+   * Round trip the payments i.e. writePayments to disk and read back in
    *
    * @throws Exception
    */

@@ -510,7 +510,7 @@ public class WalletService {
     Optional<BigInteger> feeOnSend = Optional.absent();
 
     if (paymentType == PaymentType.SENDING || paymentType == PaymentType.SENT) {
-      // TODO - transaction.calculateFee(wallet) seems to have disappeared from transaction
+      // TODO - transaction.calculateFee(wallet) seems to have disappeared from transaction - save it when tx is created from SendRequest
     }
 
     return feeOnSend;

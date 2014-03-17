@@ -62,11 +62,11 @@ message TransactionInfo {
   required string hash = 1;                 // The transaction hash (i.e. the transaction id as per the wallet Transaction.hash.toString)
                                             // The corresponding transaction is expected to be in the wallet.
 
-  repeated string request_address = 2;      // The Request.address(es) related to this transaction.
-                                            // If a transaction output sends bitcoin to a request.address then it will appear in this list
-                                            // There can be zero, one or more request_address for a single transaction.
+  // id = 2 was used by request_address - removed
   optional FiatPayment amount_fiat = 3;     // The fiat amount of the transaction at the time it was first sent or received.
   optional string note = 4;                 // The note added when the transaction is sent
+  optional int64 miner_fee = 5;             // On a send transaction, the miner fee in satoshi. On any other type of transaction : 0 or missing
+  optional int64 client_fee = 6;            // On a send transaction, he MultiBit/ client fee in satoshi. On any other type of transaction : 0 or missing
 }
 
 
