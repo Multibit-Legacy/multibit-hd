@@ -1,0 +1,38 @@
+<JWrapper>
+
+  <!-- This is what the end user will see as their ".app" and DMG name -->
+  <BundleName>MultiBit HD</BundleName>
+
+  <!-- The specification for one app within the bundle -->
+  <App>
+    <Name>MultiBit HD</Name>
+    <LogoPNG>src/main/deploy/package/linux/logo.png</LogoPNG>
+    <MainClass>org.multibit.hd.ui.MultiBitHD</MainClass>
+  </App>
+
+  <!-- The support installer languages -->
+  <SupportedLanguages>en</SupportedLanguages>
+
+  <!-- App is a per-user app, it won't elevate and install for all users and the shared config folder will be per-user -->
+  <InstallType>CurrentUser</InstallType>
+
+  <!-- Splash and Logo -->
+  <SplashPNG>src/main/deploy/package/linux/logo.png</SplashPNG>
+  <BundleLogoPNG>src/main/deploy/package/linux/logo.png</BundleLogoPNG>
+
+  <!-- JVM options (e.g. extra memory) -->
+  <JvmOptions>
+    <JvmOption>-Xmx256m</JvmOption>
+  </JvmOptions>
+
+  <!-- The JREs JWrapper should use -->
+  <Windows32JRE>JRE-1.7/win32/jre1.7.0_05</Windows32JRE>
+  <Windows64JRE>JRE-1.7/win32/jre1.7.0_05</Windows64JRE>
+  <Linux32JRE>JRE-1.7/linux32/jre1.7.0_13</Linux32JRE>
+  <Linux64JRE>JRE-1.7/linux64/jre1.7.0_13</Linux64JRE>
+  <Mac64JRE>JRE-1.7/macos64/jre1.7.0_45.jre</Mac64JRE>
+
+  <!-- The final executable JAR -->
+  <File classpath='yes'>target/multibit-hd.jar</File>
+
+</JWrapper>

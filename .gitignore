@@ -18,8 +18,16 @@
 # Maven
 target/
 
-# JavaFx
-target-mac
+# JWrapper
+mbhd-install/JRE-1.7/
+mbhd-install/jwrapper/
+mbhd-install/wrappers/
+mbhd-install/utils/
+mbhd-install/lib/
+mbhd-install/gu_version
+mbhd-install/LastExtractedJWrapperVersion
+mbhd-install/JWrapperLaunchTemp
+mbhd-install/build
 
 # MultiBit HD
 

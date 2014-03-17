@@ -14,6 +14,99 @@
   <name>MultiBit HD Installer</name>
   <description>Build the installers and perform any code signing.</description>
 
+  <profiles>
+
+    <profile>
+
+      <!-- To activate this, build as 'mvn -Dinstaller=true clean package' -->
+      <id>installer</id>
+      <activation>
+        <property>
+          <name>installer</name>
+          <value>true</value>
+        </property>
+      </activation>
+
+      <!-- Only use these plugins if building the final JavaFx installer -->
+      <build>
+        <plugins>
+
+          <!-- Shade plugin is required to make a "slim" JAR -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <version>2.2</version>
+            <configuration>
+              <createDependencyReducedPom>true</createDependencyReducedPom>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                    <exclude>META-INF/*.less</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
+            <executions>
+              <execution>
+                <id>1-make-slim-jar</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>shade</goal>
+                </goals>
+                <configuration>
+                  <transformers>
+                    <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                    <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                      <mainClass>org.multibit.hd.ui.MultiBitHD</mainClass>
+                    </transformer>
+                  </transformers>
+                  <!-- This entry links to the JWrapper configurations -->
+                  <finalName>multibit-hd</finalName>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <!-- AntRun plugin for JWrapper -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>${maven-antrun.version}</version>
+            <executions>
+              <execution>
+                <id>2-make-native-installers</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <property name="compile_classpath" refid="maven.compile.classpath"/>
+                    <property name="runtime_classpath" refid="maven.runtime.classpath"/>
+                    <property name="test_classpath" refid="maven.test.classpath"/>
+                    <property name="plugin_classpath" refid="maven.plugin.classpath"/>
+
+                    <ant antfile="${basedir}/build.xml">
+                      <target name="release-macos64"/>
+                    </ant>
+                  </target>
+
+                </configuration>
+              </execution>
+            </executions>
+
+          </plugin>
+
+        </plugins>
+      </build>
+
+    </profile>
+  </profiles>
+
   <dependencies>
 
     <!-- MultiBit HD dependencies to ensure build order -->

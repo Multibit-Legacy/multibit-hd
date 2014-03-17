@@ -142,6 +142,18 @@
   </profiles>
 
   <build>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>com.zenjava</groupId>
+          <artifactId>javafx-maven-plugin</artifactId>
+          <version>2.0</version>
+
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
     <plugins>
       <!-- Ensure compilation is done under Java 7 in all environments -->
       <plugin>
@@ -205,7 +217,7 @@
               <target>
                 <!-- The deterministic date is arbitrary so Bitcoin genesis seems appropriate -->
                 <touch millis="1231006500000">
-                  <fileset dir="target/classes" erroronmissingdir="false" />
+                  <fileset dir="target/classes" erroronmissingdir="false"/>
                 </touch>
               </target>
             </configuration>
@@ -227,7 +239,7 @@
                       failonerror="false"
                   />
                 <!-- The deterministic date is arbitrary so Bitcoin genesis seems appropriate -->
-                <touch millis="1231006500000" file="target/${project.artifactId}-${project.version}.jar" />
+                <touch millis="1231006500000" file="target/${project.artifactId}-${project.version}.jar"/>
               </target>
             </configuration>
             <goals>
