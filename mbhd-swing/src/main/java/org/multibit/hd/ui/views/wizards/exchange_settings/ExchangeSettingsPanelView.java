@@ -57,6 +57,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
   private JComboBox<String> currencyCodeComboBox;
 
   private JLabel tickerVerifiedStatus;
+  private JLabel tickerSpinner;
 
   // Prevent early events from triggering NPEs etc
   private boolean componentsReady = false;
@@ -122,6 +123,10 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     tickerVerifiedStatus = Labels.newVerificationStatus(true);
     tickerVerifiedStatus.setVisible(false);
 
+    // Ticker spinner
+    tickerSpinner = Labels.newSpinner();
+    tickerSpinner.setVisible(false);
+
     // Local currency
     currencyCodeLabel = Labels.newLocalCurrencyLabel();
 
@@ -152,9 +157,9 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     contentPanel.add(apiKeyTextField, "growx,push,wrap");
 
     contentPanel.add(currencyCodeLabel, "shrink");
-    contentPanel.add(currencyCodeComboBox, "growx,push,wrap");
+    contentPanel.add(currencyCodeComboBox, "growx,push");
+    contentPanel.add(tickerSpinner, "grow,wrap");
     contentPanel.add(tickerVerifiedStatus, "grow,cell 1 4,push,wrap");
-
 
   }
 
@@ -324,6 +329,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
         // Exchange currency look up failed
         ExceptionHandler.handleThrowable(t);
+
       }
     });
 
@@ -373,6 +379,8 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     // Hide the ticker verification
     tickerVerifiedStatus.setVisible(false);
 
+    tickerSpinner.setVisible(true);
+
     BitcoinConfiguration bitcoinConfiguration = getWizardModel().getConfiguration().getBitcoinConfiguration();
 
     // Build a custom exchange ticker service from the wizard model
@@ -393,6 +401,8 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
           true
         );
 
+        tickerSpinner.setVisible(false);
+
       }
 
       @Override
@@ -404,6 +414,8 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
           WizardButton.APPLY,
           false
         );
+
+        tickerSpinner.setVisible(false);
 
       }
     });
