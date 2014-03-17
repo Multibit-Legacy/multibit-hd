@@ -18,6 +18,7 @@
 
 package org.multibit.hd.core.store;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.joda.money.BigMoney;
@@ -39,6 +40,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * <p>
@@ -153,6 +155,7 @@ public class PaymentsProtobufSerializer {
           paymentRequestData.setAmountBTC(BigInteger.valueOf(paymentRequestProto.getAmountBTC()));
         }
 
+
         if (paymentRequestProto.hasAmountFiat()) {
 
           FiatPayment fiatPayment = new FiatPayment();
@@ -195,7 +198,17 @@ public class PaymentsProtobufSerializer {
           transactionInfo.setNote(transactionInfoProto.getNote());
         }
 
-        transactionInfo.setRequestAddresses(transactionInfoProto.getRequestAddressList());
+        if (transactionInfoProto.hasClientFee()) {
+          transactionInfo.setClientFee(Optional.of(BigInteger.valueOf(transactionInfoProto.getClientFee())));
+        } else {
+          transactionInfo.setClientFee(Optional.<BigInteger>absent());
+        }
+
+        if (transactionInfoProto.hasMinerFee()) {
+          transactionInfo.setMinerFee(Optional.of(BigInteger.valueOf(transactionInfoProto.getMinerFee())));
+        } else {
+          transactionInfo.setMinerFee(Optional.<BigInteger>absent());
+        }
 
         if (transactionInfoProto.hasAmountFiat()) {
           FiatPayment fiatPayment = new FiatPayment();
@@ -242,7 +255,8 @@ public class PaymentsProtobufSerializer {
 
     BigMoney amountFiatAsBigMoney;
 
-    if (Numbers.isNumeric(fiatPaymentAmount)) {
+    // Check if string is a number - amount is always persisted in UK locale
+    if (Numbers.isNumeric(fiatPaymentAmount, Locale.UK)) {
 
       // Treat as amount with fiat payment provided currency ("1234.56")
       log.debug("Treating as amount in '{}': '{}'", fiatCurrencyUnit.getCode(), fiatPaymentAmount);
@@ -303,13 +317,9 @@ public class PaymentsProtobufSerializer {
 
     transactionInfoBuilder.setHash(transactionInfo.getHash());
     transactionInfoBuilder.setNote(transactionInfo.getNote());
-    Collection<String> requestAddresses = transactionInfo.getRequestAddresses();
 
-    if (requestAddresses != null) {
-      for (String requestAddress : requestAddresses) {
-        transactionInfoBuilder.addRequestAddress(requestAddress);
-      }
-    }
+    transactionInfoBuilder.setClientFee(transactionInfo.getClientFee().or(BigInteger.ZERO).longValue());
+    transactionInfoBuilder.setMinerFee(transactionInfo.getMinerFee().or(BigInteger.ZERO).longValue());
 
     FiatPayment fiatPayment = transactionInfo.getAmountFiat();
     if (fiatPayment != null) {
