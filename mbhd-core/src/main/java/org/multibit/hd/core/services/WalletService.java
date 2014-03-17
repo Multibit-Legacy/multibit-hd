@@ -198,7 +198,7 @@ public class WalletService {
             }
           }
         } else if (paymentType == PaymentType.RECEIVING) {
-          if (paymentData.getType() == PaymentType.REQUESTED || paymentData.getType() == PaymentType.RECEIVING) {
+          if (paymentData.getType() == PaymentType.REQUESTED || paymentData.getType() == PaymentType.RECEIVING || paymentData.getType() == PaymentType.PART_PAID) {
             if (paymentData.getDate().toDateMidnight().equals(now)) {
               subsetPaymentDataList.add(paymentData);
             }
