@@ -14,6 +14,7 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
+import org.multibit.hd.ui.events.view.ComponentChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WalletDetailChangedEvent;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -154,7 +155,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
   public void onSlowTransactionSeenEvent(SlowTransactionSeenEvent slowTransactionSeenEvent) {
     log.trace("Received a SlowTransactionSeenEvent.");
 
-    update();
+    update(true);
   }
 
   /**
@@ -164,15 +165,22 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
   public void onWalletDetailChangedEvent(WalletDetailChangedEvent walletDetailChangedEvent) {
     log.trace("Received a WalletDetailsChangedEvent.");
 
-    update();
+    update(true);
   }
 
-  private void update() {
+  private void update(final boolean refreshData) {
     if (paymentsTable != null) {
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
-          ((PaymentTableModel) paymentsTable.getModel()).setPaymentData(MultiBitHD.getWalletService().getPaymentDataList(), true);
+          // Refresh the wallet payment list if asked
+          if (refreshData) {
+            MultiBitHD.getWalletService().getPaymentDataList();
+          }
+          // Check the search MaV model for a query and apply it
+          List<PaymentData> filteredPaymentDataList = MultiBitHD.getWalletService().filterPaymentsByContent(enterSearchMaV.getModel().getValue());
+
+          ((PaymentTableModel) paymentsTable.getModel()).setPaymentData(filteredPaymentDataList, true);
         }
       });
     }
@@ -276,6 +284,19 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
 
       walletDetail.setNumberOfPayments(MultiBitHD.getWalletService().getPaymentDataList().size());
       ViewEvents.fireWalletDetailChangedEvent(walletDetail);
+    }
+  }
+
+  /**
+   * <p>Called when the search box is updated</p>
+   *
+   * @param event The "component changed" event
+   */
+  @Subscribe
+  public void onComponentChangedEvent(ComponentChangedEvent event) {
+    // Check if this event applies to us
+    if (event.getPanelName().equals(getScreen().name())) {
+      update(false);
     }
   }
 }

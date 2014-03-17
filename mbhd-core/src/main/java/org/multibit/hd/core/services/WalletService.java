@@ -1,6 +1,7 @@
 package org.multibit.hd.core.services;
 
 import com.google.bitcoin.core.*;
+import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -55,13 +56,6 @@ public class WalletService {
   public static final String PREFIX_SEPARATOR = ": ";
 
   /**
-   * The location of the main user data directory where wallets etc are stored.
-   * This is typically created from InstallationManager.getOrCreateApplicationDataDirectory() but
-   * is passed in to make this service easier to test
-   */
-  private File applicationDataDirectory;
-
-  /**
    * The location of the backing writeContacts for the payments
    */
   private File backingStoreFile;
@@ -102,6 +96,11 @@ public class WalletService {
   private Collection<String> outputAddresses;
 
   /**
+   * The last seen payments data
+   */
+  private List<PaymentData> lastSeenPaymentDataList = Lists.newArrayList();
+
+  /**
    * Initialise the wallet service with a user data directory and a wallet id so that it knows where to put files etc
    *
    * @param walletId the walletId to use for this WalletService
@@ -110,7 +109,6 @@ public class WalletService {
     Preconditions.checkNotNull(applicationDataDirectory, "'applicationDataDirectory' must be present");
     Preconditions.checkNotNull(walletId, "'walletId' must be present");
 
-    this.applicationDataDirectory = applicationDataDirectory;
     this.walletId = walletId;
 
     // Work out where to writeContacts the contacts for this wallet id.
@@ -177,14 +175,15 @@ public class WalletService {
       }
     }
     // Union all the transactionDatas and paymentDatas
-    return Lists.newArrayList(Sets.union(transactionDatas, paymentRequestsNotFullyFunded));
+    lastSeenPaymentDataList =  Lists.newArrayList(Sets.union(transactionDatas, paymentRequestsNotFullyFunded));
+    return lastSeenPaymentDataList;
   }
 
   /**
    * Subset the supplied payments and sort by date, decending
    *
    * @param paymentType if PaymentType.SENDING return all sending payments for today
-   *                    if PaymentType.RECSIVING return all requesting and receiving payments for today
+   *                    if PaymentType.RECEIVING return all requesting and receiving payments for today
    */
   public List<PaymentData> subsetPaymentsAndSort(List<PaymentData> paymentDataList, PaymentType paymentType) {
     // Subset to the required type of payment
@@ -217,6 +216,50 @@ public class WalletService {
     });
     return subsetPaymentDataList;
   }
+
+  /**
+    * @param query The text fragment to match (case-insensitive, anywhere in the name)
+    *
+    * @return A filtered set of Payments for the given query
+    */
+   public List<PaymentData> filterPaymentsByContent(String query) {
+
+     String lowerQuery = query.toLowerCase();
+
+     List<PaymentData> filteredPayments = Lists.newArrayList();
+
+     for (PaymentData paymentData : lastSeenPaymentDataList) {
+
+       boolean isDescriptionMatched = paymentData.getDescription().toLowerCase().contains(lowerQuery);
+       boolean isNoteMatched = paymentData.getNote().toLowerCase().contains(lowerQuery);
+
+       boolean isQrCodeLabelMatched = false;
+       boolean isPaymentAddressMatched = false;
+       boolean isOutputAddressMatched = false;
+       boolean isRawTransactionMatched = false;
+
+       if (paymentData instanceof PaymentRequestData) {
+         PaymentRequestData paymentRequestData = (PaymentRequestData)paymentData;
+         isQrCodeLabelMatched = paymentRequestData.getLabel().toLowerCase().contains(lowerQuery);
+         isPaymentAddressMatched = paymentRequestData.getAddress().toLowerCase().contains(lowerQuery);
+       } else if (paymentData instanceof TransactionData) {
+         TransactionData transactionData = (TransactionData)paymentData;
+         isOutputAddressMatched = Joiner.on(" ").join(transactionData.getOutputAddresses()).toLowerCase().contains(lowerQuery);
+         isRawTransactionMatched = transactionData.getRawTransaction().toLowerCase().contains(lowerQuery);
+       }
+       if (isDescriptionMatched
+               || isNoteMatched
+               || isQrCodeLabelMatched
+               || isPaymentAddressMatched
+               || isOutputAddressMatched
+               || isRawTransactionMatched
+         ) {
+         filteredPayments.add(paymentData);
+       }
+     }
+
+     return filteredPayments;
+   }
 
   /**
    * Adapt a bitcoinj transaction to a TransactionData DTO.
@@ -537,10 +580,6 @@ public class WalletService {
 
   public Collection<PaymentRequestData> getPaymentRequests() {
     return paymentRequestMap.values();
-  }
-
-  public PaymentRequestData getPaymentRequestData(String paymentRequestAddress) {
-    return paymentRequestMap.get(paymentRequestAddress);
   }
 
   /**
