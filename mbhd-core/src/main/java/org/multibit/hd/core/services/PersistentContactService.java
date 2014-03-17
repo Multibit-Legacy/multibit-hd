@@ -130,7 +130,7 @@ public class PersistentContactService implements ContactService {
   /**
    * @param query The text fragment to match (case-insensitive, anywhere in the name)
    *
-   * @return A filtered set of Contacts for the given page and query
+   * @return A filtered set of Contacts for the given query
    */
   @Override
   public List<Contact> filterContactsByContent(String query) {
