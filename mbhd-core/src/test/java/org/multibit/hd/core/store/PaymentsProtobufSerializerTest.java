@@ -136,7 +136,7 @@ public class PaymentsProtobufSerializerTest {
     fiatPayment1.setRate("30.0");
     fiatPayment1.setExchange("Bitstamp");
 
-    transactionInfo1.setClientFee(Optional.of(BigInteger.ZERO));
+    transactionInfo1.setClientFee(Optional.<BigInteger>absent());
     transactionInfo1.setMinerFee(Optional.of(BigInteger.valueOf(123)));
 
     TransactionInfo transactionInfo2 = new TransactionInfo();
@@ -151,7 +151,7 @@ public class PaymentsProtobufSerializerTest {
     fiatPayment2.setExchange("BitstampJunior");
 
     transactionInfo2.setClientFee(Optional.of(BigInteger.valueOf(456)));
-    transactionInfo2.setMinerFee(Optional.of(BigInteger.ZERO));
+    transactionInfo2.setMinerFee(Optional.<BigInteger>absent());
 
     Payments payments = new Payments(1);
     payments.setTransactionInfos(transactionInfos);
