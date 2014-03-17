@@ -62,6 +62,8 @@ import java.util.Locale;
  */
 public class PaymentsProtobufSerializer {
 
+  private static final long ABSENT_VALUE = -1;
+
   private static final Logger log = LoggerFactory.getLogger(PaymentsProtobufSerializer.class);
 
   public PaymentsProtobufSerializer() {
@@ -199,13 +201,23 @@ public class PaymentsProtobufSerializer {
         }
 
         if (transactionInfoProto.hasClientFee()) {
-          transactionInfo.setClientFee(Optional.of(BigInteger.valueOf(transactionInfoProto.getClientFee())));
+          long clientFee = transactionInfoProto.getClientFee();
+          if (clientFee == ABSENT_VALUE) {
+            transactionInfo.setClientFee(Optional.<BigInteger>absent());
+          } else {
+            transactionInfo.setClientFee(Optional.of(BigInteger.valueOf(clientFee)));
+          }
         } else {
           transactionInfo.setClientFee(Optional.<BigInteger>absent());
         }
 
         if (transactionInfoProto.hasMinerFee()) {
-          transactionInfo.setMinerFee(Optional.of(BigInteger.valueOf(transactionInfoProto.getMinerFee())));
+          long minerFee = transactionInfoProto.getMinerFee();
+          if (minerFee == ABSENT_VALUE) {
+            transactionInfo.setMinerFee(Optional.<BigInteger>absent());
+          } else {
+            transactionInfo.setMinerFee(Optional.of(BigInteger.valueOf(minerFee)));
+          }
         } else {
           transactionInfo.setMinerFee(Optional.<BigInteger>absent());
         }
@@ -252,7 +264,6 @@ public class PaymentsProtobufSerializer {
    * @return An appropriate BigMoney representing the amount in the given currency
    */
   private BigMoney toBigMoney(CurrencyUnit fiatCurrencyUnit, String fiatPaymentAmount) {
-
     BigMoney amountFiatAsBigMoney;
 
     // Check if string is a number - amount is always persisted in UK locale
@@ -318,8 +329,19 @@ public class PaymentsProtobufSerializer {
     transactionInfoBuilder.setHash(transactionInfo.getHash());
     transactionInfoBuilder.setNote(transactionInfo.getNote());
 
-    transactionInfoBuilder.setClientFee(transactionInfo.getClientFee().or(BigInteger.ZERO).longValue());
-    transactionInfoBuilder.setMinerFee(transactionInfo.getMinerFee().or(BigInteger.ZERO).longValue());
+    Optional<BigInteger> clientFee = transactionInfo.getClientFee();
+    if (clientFee.isPresent()) {
+      transactionInfoBuilder.setClientFee(transactionInfo.getClientFee().get().longValue());
+    } else {
+      transactionInfoBuilder.setClientFee(ABSENT_VALUE);
+    }
+
+    Optional<BigInteger> minerFee = transactionInfo.getMinerFee();
+    if (minerFee.isPresent()) {
+      transactionInfoBuilder.setMinerFee(minerFee.get().longValue());
+    } else {
+      transactionInfoBuilder.setMinerFee(ABSENT_VALUE);
+    }
 
     FiatPayment fiatPayment = transactionInfo.getAmountFiat();
     if (fiatPayment != null) {
