@@ -17,6 +17,4 @@ public class PaymentsScreenModel extends AbstractScreenModel {
   public PaymentsScreenModel(Screen screen) {
     super(screen);
   }
-
-
 }

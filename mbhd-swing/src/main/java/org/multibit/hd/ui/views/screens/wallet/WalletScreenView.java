@@ -98,7 +98,7 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
 
     List<PaymentData> allPayments = MultiBitHD.getWalletService().getPaymentDataList();
     // Find the 'Sending' transactions for today
-    List<PaymentData> todaysSendingPayments = MultiBitHD.getWalletService().subsetPayments(allPayments, PaymentType.SENDING);
+    List<PaymentData> todaysSendingPayments = MultiBitHD.getWalletService().subsetPaymentsAndSort(allPayments, PaymentType.SENDING);
     displaySendingPaymentsMaV = Components.newDisplayPaymentsMaV(PANEL_NAME);
     displaySendingPaymentsMaV.getModel().setValue(todaysSendingPayments);
     JScrollPane sendingPaymentsScrollPane = new JScrollPane(displaySendingPaymentsMaV.getView().newComponentPanel(),
@@ -110,7 +110,7 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
 
 
     // Find the 'Receiving' (+ requested) transactions for today
-    List<PaymentData> todaysReceivingPayments = MultiBitHD.getWalletService().subsetPayments(allPayments, PaymentType.RECEIVING);
+    List<PaymentData> todaysReceivingPayments = MultiBitHD.getWalletService().subsetPaymentsAndSort(allPayments, PaymentType.RECEIVING);
     displayReceivingPaymentsMaV = Components.newDisplayPaymentsMaV(PANEL_NAME);
     displayReceivingPaymentsMaV.getModel().setValue(todaysReceivingPayments);
 
@@ -159,18 +159,23 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
   }
 
   private void update(final boolean refreshData) {
+    final boolean finalInitialised = isInitialised();
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
         if (refreshData) {
           List<PaymentData> allPayments = MultiBitHD.getWalletService().getPaymentDataList();
           // Find the 'Sending' transactions for today
-          List<PaymentData> todaysSendingPayments = MultiBitHD.getWalletService().subsetPayments(allPayments, PaymentType.SENDING);
+          List<PaymentData> todaysSendingPayments = MultiBitHD.getWalletService().subsetPaymentsAndSort(allPayments, PaymentType.SENDING);
           displaySendingPaymentsMaV.getModel().setValue(todaysSendingPayments);
 
-          List<PaymentData> todaysReceivingPayments = MultiBitHD.getWalletService().subsetPayments(allPayments, PaymentType.RECEIVING);
+          List<PaymentData> todaysReceivingPayments = MultiBitHD.getWalletService().subsetPaymentsAndSort(allPayments, PaymentType.RECEIVING);
           displayReceivingPaymentsMaV.getModel().setValue(todaysReceivingPayments);
 
+        }
+
+        if (!finalInitialised) {
+          return;
         }
         displaySendingPaymentsMaV.getView().createView();
         displaySendingPaymentsMaV.getView().updateView();

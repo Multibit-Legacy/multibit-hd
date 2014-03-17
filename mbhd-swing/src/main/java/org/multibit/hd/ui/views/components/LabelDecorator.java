@@ -110,28 +110,54 @@ public class LabelDecorator {
    *
    */
   public static void applyStatusIconAndColor(PaymentStatus paymentStatus, JLabel label, boolean isCoinbase, int iconSize) {
+    applyStatusIcon(paymentStatus, label, isCoinbase, iconSize);
     switch (paymentStatus.getStatus()) {
       case RED:
         label.setForeground(Themes.currentTheme.dangerAlertBackground());
-        AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, label, true, iconSize);
         break;
       case AMBER:
         label.setForeground(Themes.currentTheme.text());
-        AwesomeDecorator.bindIcon(AwesomeIcon.EXCHANGE, label, true, iconSize);
         break;
       case GREEN:
         label.setForeground(Themes.currentTheme.successAlertBackground());
-        int depth = paymentStatus.getDepth();
-        label.setIcon(Images.newConfirmationIcon(depth, isCoinbase, iconSize));
-
         break;
       case PINK:
         label.setForeground(Themes.currentTheme.pendingAlertBackground().darker());
-        AwesomeDecorator.bindIcon(AwesomeIcon.FILE_TEXT, label, true, iconSize);
         break;
       default:
         // Unknown status
         throw new IllegalStateException("Unknown status " + paymentStatus.getStatus());
     }
   }
+
+  /**
+    * Apply the status icon to a label
+    *
+    * @param paymentStatus The payment status to derive the status icon and color from
+    * @param label       The label to apply the icon and color to
+    * @param isCoinbase  True if the transaction is a coinbase
+    * @param iconSize    THe size of the icon to use, typically MultiBitUI.SMALL_ICON_SIZE
+    *
+    */
+   public static void applyStatusIcon(PaymentStatus paymentStatus, JLabel label, boolean isCoinbase, int iconSize) {
+     switch (paymentStatus.getStatus()) {
+       case RED:
+         AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, label, true, iconSize);
+         break;
+       case AMBER:
+         AwesomeDecorator.bindIcon(AwesomeIcon.EXCHANGE, label, true, iconSize);
+         break;
+       case GREEN:
+         int depth = paymentStatus.getDepth();
+         label.setIcon(Images.newConfirmationIcon(depth, isCoinbase, iconSize));
+
+         break;
+       case PINK:
+         AwesomeDecorator.bindIcon(AwesomeIcon.FILE_TEXT, label, true, iconSize);
+         break;
+       default:
+         // Unknown status
+         throw new IllegalStateException("Unknown status " + paymentStatus.getStatus());
+     }
+   }
 }

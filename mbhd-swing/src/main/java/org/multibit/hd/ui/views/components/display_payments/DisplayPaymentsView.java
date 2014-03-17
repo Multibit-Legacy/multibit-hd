@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.PaymentData;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.BalanceChangedEvent;
 import org.multibit.hd.ui.languages.Languages;
@@ -67,16 +68,21 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
 
         JLabel paymentDataLabel = Labels.newBlankLabel();
         paymentDataLabel.setText(Languages.safeText(paymentData.getType().getLocalisationKey()));
-        LabelDecorator.applyStatusIconAndColor(paymentData.getStatus(), paymentDataLabel, paymentData.isCoinBase(), MultiBitUI.NORMAL_ICON_SIZE);
+        LabelDecorator.applyStatusIcon(paymentData.getStatus(), paymentDataLabel, paymentData.isCoinBase(), MultiBitUI.NORMAL_ICON_SIZE);
 
-        ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT);
+        ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.PLAIN);
+        if (CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().isPresent()) {
+          paymentAmountMaV.getModel().setRateProvider(CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().get().getRateProvider());
+        }
         displayAmountMaVList.add(paymentAmountMaV);
         paymentAmountMaV.getModel().setSatoshis(paymentData.getAmountBTC());
         paymentAmountMaV.getModel().setLocalAmount(paymentData.getAmountFiat().getAmount());
 
         panel.add(timeLabel, "shrink");
-        panel.add(paymentDataLabel);
-        panel.add(paymentAmountMaV.getView().newComponentPanel(), "grow, wrap");
+        panel.add(paymentDataLabel, "shrink");
+        JPanel amountPanel = paymentAmountMaV.getView().newComponentPanel();
+        amountPanel.setBorder(BorderFactory.createEmptyBorder(5,0,0,0));
+        panel.add(amountPanel, "shrink, wrap");
       }
 
       initialised = true;
@@ -84,6 +90,10 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
   }
 
   public void updateView() {
+    if (!initialised) {
+      return;
+    }
+
     if (displayAmountMaVList != null) {
       for (ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV : displayAmountMaVList) {
         paymentAmountMaV.getView().updateView(Configurations.currentConfiguration);
@@ -97,6 +107,7 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
       return;
     }
 
+    createView();
     if (displayAmountMaVList != null) {
       for (ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV : displayAmountMaVList) {
         paymentAmountMaV.getModel().setRateProvider(event.getRateProvider());
@@ -121,13 +132,5 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
    */
   @Override
   public void updateViewFromModel() {
-
-    // Do nothing
-    System.out.println("DisplayPaymentsView#updateViewFromModel");
-
-  }
-
-  public List<ModelAndView<DisplayAmountModel, DisplayAmountView>> getDisplayAmountMaVList() {
-    return displayAmountMaVList;
   }
 }

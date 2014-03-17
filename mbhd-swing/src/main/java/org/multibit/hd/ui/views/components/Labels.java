@@ -481,6 +481,10 @@ public class Labels {
         largeFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, MultiBitUI.BALANCE_FEE_NORMAL_FONT_SIZE);
         normalFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, MultiBitUI.BALANCE_FEE_NORMAL_FONT_SIZE);
         break;
+      case PLAIN:
+         largeFont = primaryBalanceLabel.getFont().deriveFont(Font.PLAIN, MultiBitUI.BALANCE_FEE_NORMAL_FONT_SIZE);
+         normalFont = primaryBalanceLabel.getFont().deriveFont(Font.PLAIN, MultiBitUI.BALANCE_FEE_NORMAL_FONT_SIZE);
+         break;
       default:
         throw new IllegalStateException("Unknown style:" + style.name());
     }
@@ -496,7 +500,9 @@ public class Labels {
     exchangeLabel.setFont(normalFont);
 
     // Theme
-    secondaryBalanceLabel.setForeground(Themes.currentTheme.fadedText());
+    if (style != DisplayAmountStyle.PLAIN) {
+      secondaryBalanceLabel.setForeground(Themes.currentTheme.fadedText());
+    }
 
     return new JLabel[]{
 
