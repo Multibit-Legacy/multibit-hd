@@ -207,7 +207,7 @@ public class ImageDecorator {
    *
    * @param theta The number of radians to rotate (-PI rotates 180 degrees clockwise)
    *
-   * @return The image rotated by the required amount
+   * @return A copy of the original image rotated by the required amount
    */
   public static BufferedImage rotate(BufferedImage image, double theta) {
 
@@ -215,8 +215,11 @@ public class ImageDecorator {
     double x = image.getWidth() / 2;
     double y = image.getHeight() / 2;
 
+    // Copy the image
+    BufferedImage copy = image.getSubimage(0,0, image.getWidth(), image.getHeight());
+
     // Get the graphics context
-    Graphics2D g2 = image.createGraphics();
+    Graphics2D g2 = copy.createGraphics();
 
     // Blend images smoothly
     g2.setRenderingHints(smoothRenderingHints());
@@ -225,12 +228,12 @@ public class ImageDecorator {
     g2.rotate(theta, x, y);
 
     // Draw the image
-    g2.drawImage(image, 0, 0, null);
+    g2.drawImage(copy, 0, 0, null);
 
     // Tidy up
     g2.dispose();
 
-    return image;
+    return copy;
   }
 
 }

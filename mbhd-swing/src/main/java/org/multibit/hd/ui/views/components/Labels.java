@@ -9,6 +9,7 @@ import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.utils.HtmlUtils;
+import org.multibit.hd.ui.views.animations.RotatingIcon;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -321,6 +322,26 @@ public class Labels {
    */
   public static JLabel newBackupLocationStatus(boolean status) {
     return newStatusLabel(MessageKey.BACKUP_LOCATION_STATUS, null, status);
+  }
+
+  /**
+   * @return A new "spinner" label (indicates that something is happening asynchronously)
+   */
+  public static JLabel newSpinner() {
+
+    JLabel label = newBlankLabel();
+
+    Icon icon = new RotatingIcon(AwesomeDecorator.createIcon(
+      AwesomeIcon.SPINNER,
+      Themes.currentTheme.text(),
+      MultiBitUI.NORMAL_PLUS_ICON_SIZE
+    ), label);
+
+    label.setIcon(icon);
+
+    label.setSize(icon.getIconWidth() + 20, icon.getIconHeight() + 20);
+
+    return label;
   }
 
   /**
