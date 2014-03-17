@@ -1,26 +1,37 @@
 package org.multibit.hd.core.store;
 
+import com.google.common.base.Optional;
 import org.multibit.hd.core.dto.FiatPayment;
 
-import java.util.Collection;
+import java.math.BigInteger;
 
 /**
  *  <p>DTOto provide the following to WalletService:<br>
  *  <ul>
- *  <li>Additional information related to a transaction</li>
+ *  <li>Additional information related to a transaction that is not stored in the bitcoinj transaction</li>
  *  </ul>
  *  </p>
  *  
  */
 public class TransactionInfo {
   private String hash;
-  private Collection<String> requestAddresses;
   private FiatPayment amountFiat;
   private String note;
 
+  // TODO add miner fee and client fee for sends
+  /**
+   * On a send, the miner's fee added in satoshi, otherwise Optional.absent()
+   */
+  private Optional<BigInteger> minerFee;
+
+  /**
+   * On a send, the MultiBit/ client fee added in satoshi, otherwise Optional.absent()
+   */
+  private Optional<BigInteger> clientFee;
+
   /**
    * The transaction hash as a String (commonly referred to as transaction id but don't forget about malleability!)
-   * @return
+   * @return String transactionHash aka transaction id
    */
   public String getHash() {
     return hash;
@@ -28,14 +39,6 @@ public class TransactionInfo {
 
   public void setHash(String hash) {
     this.hash = hash;
-  }
-
-  public Collection<String> getRequestAddresses() {
-    return requestAddresses;
-  }
-
-  public void setRequestAddresses(Collection<String> requestAddresses) {
-    this.requestAddresses = requestAddresses;
   }
 
   public FiatPayment getAmountFiat() {
@@ -54,6 +57,22 @@ public class TransactionInfo {
     this.note = note;
   }
 
+  public Optional<BigInteger> getMinerFee() {
+    return minerFee;
+  }
+
+  public void setMinerFee(Optional<BigInteger> minerFee) {
+    this.minerFee = minerFee;
+  }
+
+  public Optional<BigInteger> getClientFee() {
+    return clientFee;
+  }
+
+  public void setClientFee(Optional<BigInteger> clientFee) {
+    this.clientFee = clientFee;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -62,10 +81,10 @@ public class TransactionInfo {
     TransactionInfo that = (TransactionInfo) o;
 
     if (amountFiat != null ? !amountFiat.equals(that.amountFiat) : that.amountFiat != null) return false;
-    if (hash != null ? !hash.equals(that.hash) : that.hash != null) return false;
+    if (clientFee != null ? !clientFee.equals(that.clientFee) : that.clientFee != null) return false;
+    if (!hash.equals(that.hash)) return false;
+    if (minerFee != null ? !minerFee.equals(that.minerFee) : that.minerFee != null) return false;
     if (note != null ? !note.equals(that.note) : that.note != null) return false;
-    if (requestAddresses != null ? !requestAddresses.equals(that.requestAddresses) : that.requestAddresses != null)
-      return false;
 
     return true;
   }
@@ -73,9 +92,10 @@ public class TransactionInfo {
   @Override
   public int hashCode() {
     int result = hash.hashCode();
-    result = 31 * result + (requestAddresses != null ? requestAddresses.hashCode() : 0);
     result = 31 * result + (amountFiat != null ? amountFiat.hashCode() : 0);
     result = 31 * result + (note != null ? note.hashCode() : 0);
+    result = 31 * result + (minerFee != null ? minerFee.hashCode() : 0);
+    result = 31 * result + (clientFee != null ? clientFee.hashCode() : 0);
     return result;
   }
 }

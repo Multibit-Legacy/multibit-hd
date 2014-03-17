@@ -26,16 +26,26 @@ public class Numbers {
   }
 
   /**
-   * <p>Locale aware method of validating numbers</p>
+   * <p>Locale aware method of validating numbers - uses the currentConfiguration locale </p>
    *
    * @param text The text representing a number (null or empty is not a number)
    *
    * @return True if the text can be converted into a number
    */
   public static boolean isNumeric(String text) {
+    return isNumeric(text, Configurations.currentConfiguration.getLocale());
 
-    Locale locale = Configurations.currentConfiguration.getLocale();
+  }
 
+  /**
+   * <p>Locale aware method of validating numbers</p>
+   *
+   * @param text The text representing a number (null or empty is not a number)
+   * @param locale Locale to use for number conversion
+   *
+   * @return True if the text can be converted into a number
+   */
+  public static boolean isNumeric(String text, Locale locale) {
     if (!Strings.isNullOrEmpty(text)) {
 
       // Ensure spaces are converted to non-breaking spaces (ASCII 160)
