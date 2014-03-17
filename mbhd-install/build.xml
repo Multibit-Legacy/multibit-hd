@@ -11,10 +11,11 @@
 
   <!-- All JARs have this name -->
   <property name="jars.prefix" value="mbhd"/>
+  <property name="jars.version" value="0.0.1-alpha"/>
 
   <property name="jars.win32" value="${jars.prefix}-win.jar"/>
   <property name="jars.win64" value="${jars.prefix}-win-64.jar"/>
-  <property name="jars.macos64" value="${jars.prefix}-osx-64.jar"/>
+  <property name="jars.macosx" value="${jars.prefix}-osx.jar"/>
   <property name="jars.linux32" value="${jars.prefix}-linux.jar"/>
   <property name="jars.linux64" value="${jars.prefix}-linux-64.jar"/>
 
@@ -27,7 +28,7 @@
   <property name="JWrapperJAR" refid="jwrapper.jar.path"/>
 
   <!-- Default target to build all native installers -->
-  <target name="release-all" depends="release-win64,release-win32,release-macos64,release-linux64,release-linux32">
+  <target name="release-all" depends="release-win64,release-win32,release-macosx,release-linux64,release-linux32">
   </target>
 
   <target name="release-win32" depends="download">
@@ -37,7 +38,7 @@
       <arg value="jwrapper-win32.xml"/>
     </java>
 
-    <move file="build/${app.name}-windows32-offline.exe" tofile="bin/${jars.prefix}-win32.exe"/>
+    <move file="build/${app.name}-windows32-offline.exe" tofile="bin/${jars.prefix}-${build_version}-win32.exe"/>
 
   </target>
 
@@ -48,18 +49,19 @@
       <arg value="jwrapper-win64.xml"/>
     </java>
 
-    <move file="build/${app.name}-windows64-offline.exe" tofile="bin/${jars.prefix}-win64.exe"/>
+    <move file="build/${app.name}-windows64-offline.exe" tofile="bin/${jars.prefix}-${build_version}-win64.exe"/>
 
   </target>
 
-  <target name="release-macos64">
+  <target name="release-macosx">
 
     <java jar="${JWrapperJAR}" failonerror="true" fork="true">
       <jvmarg value="-Xmx512m"/>
-      <arg value="src/main/jwrapper/jwrapper-macos64.xml"/>
+      <arg value="src/main/jwrapper/jwrapper-macosx.xml"/>
     </java>
 
-    <move file="build/${app.name}-macos64-offline.dmg" tofile="target/${jars.prefix}-macos64.dmg"/>
+    <!-- This name is from JWrapper -->
+    <move file="build/${app.name}-macos64-offline.dmg" tofile="target/${jars.prefix}-${build_version}-macosx.dmg"/>
   </target>
 
   <target name="release-linux32" depends="download">
@@ -70,7 +72,7 @@
     </java>
 
     <untar src="build/${app.name}-linux32-offline.tar" dest="build/"/>
-    <move file="build/${app.name}-linux32-offline" tofile="bin/${jars.prefix}-linux"/>
+    <move file="build/${app.name}-linux32-offline" tofile="bin/${jars.prefix}-${build_version}-linux"/>
 
   </target>
 
@@ -82,7 +84,7 @@
     </java>
 
     <untar src="build/${app.name}-linux64-offline.tar" dest="build/"/>
-    <move file="build/${app.name}-linux64-offline" tofile="bin/${jars.prefix}-linux64"/>
+    <move file="build/${app.name}-linux64-offline" tofile="bin/${jars.prefix}-${build_version}-linux64"/>
 
   </target>
 
@@ -92,13 +94,13 @@
     <!-- Not required at the moment
     <get src="${jars.location}${jars.win32}" dest="jars" verbose="true"/>
     <get src="${jars.location}${jars.win64}" dest="jars" verbose="true"/>
-    <get src="${jars.location}${jars.macos64}" dest="jars" verbose="true"/>
+    <get src="${jars.location}${jars.macosx}" dest="jars" verbose="true"/>
     <get src="${jars.location}${jars.linux32}" dest="jars" verbose="true"/>
     <get src="${jars.location}${jars.linux64}" dest="jars" verbose="true"/>
 
     <move file="jars/${jars.win32}" tofile="jars/win32.jar"/>
     <move file="jars/${jars.win64}" tofile="jars/win64.jar"/>
-    <move file="jars/${jars.macos64}" tofile="jars/macos64.jar"/>
+    <move file="jars/${jars.macosx}" tofile="jars/macosx.jar"/>
     <move file="jars/${jars.linux32}" tofile="jars/linux32.jar"/>
     <move file="jars/${jars.linux64}" tofile="jars/linux64.jar"/>
     -->

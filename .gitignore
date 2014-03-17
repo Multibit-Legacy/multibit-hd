@@ -29,6 +29,9 @@ mbhd-install/LastExtractedJWrapperVersion
 mbhd-install/JWrapperLaunchTemp
 mbhd-install/build
 
+# Shade plugin
+mbhd-install/dependency-reduced-pom.xml
+
 # MultiBit HD
 
 

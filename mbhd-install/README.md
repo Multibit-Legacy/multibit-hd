@@ -1,28 +1,10 @@
-# Notes on various installers
+## Notes on various installers
 
 The choice of a robust installer has been a difficult one. Here are the notes that lead to the current situation.
 
-## IzPack with JSmooth
+### JWrapper (the winner)
 
-This is the installer solution in place for MultiBit Classic. It works, but has a few problems:
-
-### Pros
-
-* Proven solution across Windows, OSX and Linux
-* Allows one-off registration script
-* Works well with ProGuard and code signing
-
-### Cons
-
-* Very complex scripts
-* Doesn't appear to be actively maintained
-* Requires JSmooth to build the executable
-* Uninstall is not guaranteed
-* Missing JRE causes the horrible Oracle JRE installation process to trigger
-
-## Notes on JWrapper
-
-### Pros
+#### Pros
 
 * Seamless installation targeting all platforms natively
 * Free and unrestricted use
@@ -31,43 +13,63 @@ This is the installer solution in place for MultiBit Classic. It works, but has 
 * MultiBit can control the JVM that is downloaded
 * Potential for multi-OS support libraries allowing better integration (e.g. registry, icon decoration etc)
 
-### Cons
+#### Cons
 
 * Splash screen is JWrapper branded possibly requiring a fee to remove
 * OSX builds are troublesome (expert help may fix this)
 * Difficult to get build environment working smoothly (no Maven integration)
 * Lots of quirks in the XML configuration file to locate files (might be due to manual build)
 
-### How to build
+#### How to build
 
-There is a bit of one-off set up to do first:
+At the moment it is necessary to manually copy JRE-1.7 JREs into `mbhd-install/JRE-1.7` (it is git ignored).
+Later these JREs will be automatically downloaded over HTTPS from the main site.
 
-1. Ensure you include `mbhd-install/JRE-1.7` manually (it is git ignored)
-2. Ensure that the jwrapper JAR is the latest available one
-
-The usual native build process then becomes
+Once the JREs are in place, the build command is
 
 ```
-java -Xmx512m -jar jwrapper-000something.jar ../multibit-hd/mbhd-jwrapper.xml
+mvn -Dinstaller=true clean install
 ```
 
-5. Wait while JREs are updated and compressed
-6. Final artifacts are placed in `jwrapper/build` directory for all major platforms
+The first time this process is run it will take ages (typically 20mins) as pack200 compresses large artifacts.
+Subsequent builds are a lot faster.
+
+The final installers are available in `mbhd-install/target` for subsequent upload to the main site.
 
 ## Graveyard
 
-These installers never even made it to a code spike.
+### IzPack with JSmooth
 
-## JavaFX Maven plugin
+This is the installer solution in place for MultiBit Classic. It works, but has a few problems:
+
+#### Pros
+
+* Proven solution across Windows, OSX and Linux
+* Allows one-off registration script
+* Works well with ProGuard and code signing
+
+#### Cons
+
+* Very complex scripts
+* Doesn't appear to be actively maintained
+* Requires JSmooth to build the executable
+* Uninstall is not guaranteed
+* Missing JRE causes the horrible Oracle JRE installation process to trigger
+
+With a heavy heart, we have to say goodbye to IzPack/JSmooth for MultiBit HD. It served us well
+and we thank the original developers for their efforts.
+
+The following installers never even made it to a code spike.
+
+### JavaFX Maven plugin
 
 The ZenJava people have created a Maven plugin for wrapping the JavaFX packager.
 
-### Pros
+#### Pros
 
 * Very easy configuration within Maven
-*
 
-### Cons
+#### Cons
 
 * Targets JavaFX applications rather than Swing
 * No support for auto-update
@@ -83,9 +85,12 @@ a standard JRE leaving it to developers to package their own.
 
 ### Launch4j
 
+
+
 ### JavaFX packager
 
 The JavaFX packager from Oracle has been hailed as the correct way to deploy a JavaFX application,
 but our experience has shown that it is very tricky to configure within a Maven build. Packaging a
-JRE with it leads to a huge download size
+JRE with it leads to a huge download size and there are no facilities for OS-specific scripts.
+
 
