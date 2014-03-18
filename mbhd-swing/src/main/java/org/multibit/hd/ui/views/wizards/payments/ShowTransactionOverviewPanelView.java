@@ -7,9 +7,10 @@ import org.joda.time.DateTime;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
-import org.multibit.hd.core.dto.FiatPayment;
-import org.multibit.hd.core.dto.PaymentData;
-import org.multibit.hd.core.dto.TransactionData;
+import org.multibit.hd.core.dto.*;
+import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.ContactService;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.languages.Languages;
@@ -28,6 +29,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.math.BigInteger;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -46,6 +49,7 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
   private JLabel statusValue;
   private JLabel typeValue;
   private JLabel descriptionValue;
+  private JLabel recipientValue;
   private JLabel amountBTCValue;
   private JLabel amountFiatValue;
   private JLabel minerFeePaidValue;
@@ -94,6 +98,9 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
     JLabel descriptionLabel = Labels.newValueLabel(Languages.safeText(MessageKey.DESCRIPTION));
     descriptionValue = Labels.newValueLabel("");
 
+    JLabel recipientLabel = Labels.newValueLabel(Languages.safeText(MessageKey.RECIPIENT));
+    recipientValue = Labels.newValueLabel("");
+
     JLabel amountBTCLabel = Labels.newValueLabel("");
     amountBTCValue = Labels.newValueLabel("");
     // Bitcoin column
@@ -121,6 +128,8 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
     contentPanel.add(typeValue, "wrap");
     contentPanel.add(descriptionLabel);
     contentPanel.add(descriptionValue, "wrap");
+    contentPanel.add(recipientLabel);
+    contentPanel.add(recipientValue, "wrap");
     contentPanel.add(amountBTCLabel);
     contentPanel.add(amountBTCValue, "wrap");
     contentPanel.add(amountFiatLabel);
@@ -180,12 +189,44 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
       amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount(), languageConfiguration.getLocale(), bitcoinConfiguration)));
 
       if (paymentData instanceof TransactionData) {
-        Optional<BigInteger> feeOnSend = ((TransactionData)paymentData).getFeeOnSendBTC();
+        TransactionData transactionData = (TransactionData)paymentData;
+        // Miner's fee
+        Optional<BigInteger> feeOnSend = transactionData.getFeeOnSendBTC();
         if (feeOnSend.isPresent()) {
           String[] minerFeePaidArray = Formats.formatSatoshisAsSymbolic(feeOnSend.get(), languageConfiguration, bitcoinConfiguration);
           minerFeePaidValue.setText(minerFeePaidArray[0] + minerFeePaidArray[1]);
         } else {
           minerFeePaidValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
+        }
+
+        // Contact may be one of the output addresses
+        Collection<String> addressList = transactionData.getOutputAddresses();
+        // This is a bit inefficient - could have a hashmap of Contacts, keyed by address
+        // Or store the address sent to
+        ContactService contactService = CoreServices.getOrCreateContactService(Optional.of(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()));
+        List<Contact> allContacts = contactService.allContacts();
+        Contact matchedContact = null;
+
+        if (allContacts != null) {
+          for (Contact contact : allContacts) {
+            if (addressList != null) {
+              for (String address : addressList) {
+                if (contact.getBitcoinAddress().isPresent() && contact.getBitcoinAddress().get().equals(address)) {
+                  // This is a contact for this address
+                  // Keep show the first
+                  recipientValue.setText(contact.getName());
+                  // TODO would also be nice to show contact icon
+                  Recipient matchedRecipient = new Recipient(address);
+                  matchedRecipient.setContact(contact);
+                  matchedContact = contact;
+                  break;
+                }
+              }
+            }
+          }
+        }
+        if (matchedContact == null) {
+          recipientValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
         }
       }
 

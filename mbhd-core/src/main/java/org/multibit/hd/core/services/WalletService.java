@@ -91,11 +91,6 @@ public class WalletService {
   private final Stack<PaymentRequestData> undoDeletePaymentRequestStack = new Stack<>();
 
   /**
-   * A list of transaction output addresses
-   */
-  private Collection<String> outputAddresses;
-
-  /**
    * The last seen payments data
    */
   private List<PaymentData> lastSeenPaymentDataList = Lists.newArrayList();
@@ -175,7 +170,7 @@ public class WalletService {
       }
     }
     // Union all the transactionDatas and paymentDatas
-    lastSeenPaymentDataList =  Lists.newArrayList(Sets.union(transactionDatas, paymentRequestsNotFullyFunded));
+    lastSeenPaymentDataList = Lists.newArrayList(Sets.union(transactionDatas, paymentRequestsNotFullyFunded));
     return lastSeenPaymentDataList;
   }
 
@@ -211,55 +206,54 @@ public class WalletService {
 
       @Override
       public int compare(PaymentData o1, PaymentData o2) {
-        return - o1.getDate().compareTo(o2.getDate()); // note inverse sort
+        return -o1.getDate().compareTo(o2.getDate()); // note inverse sort
       }
     });
     return subsetPaymentDataList;
   }
 
   /**
-    * @param query The text fragment to match (case-insensitive, anywhere in the name)
-    *
-    * @return A filtered set of Payments for the given query
-    */
-   public List<PaymentData> filterPaymentsByContent(String query) {
+   * @param query The text fragment to match (case-insensitive, anywhere in the name)
+   * @return A filtered set of Payments for the given query
+   */
+  public List<PaymentData> filterPaymentsByContent(String query) {
 
-     String lowerQuery = query.toLowerCase();
+    String lowerQuery = query.toLowerCase();
 
-     List<PaymentData> filteredPayments = Lists.newArrayList();
+    List<PaymentData> filteredPayments = Lists.newArrayList();
 
-     for (PaymentData paymentData : lastSeenPaymentDataList) {
+    for (PaymentData paymentData : lastSeenPaymentDataList) {
 
-       boolean isDescriptionMatched = paymentData.getDescription().toLowerCase().contains(lowerQuery);
-       boolean isNoteMatched = paymentData.getNote().toLowerCase().contains(lowerQuery);
+      boolean isDescriptionMatched = paymentData.getDescription().toLowerCase().contains(lowerQuery);
+      boolean isNoteMatched = paymentData.getNote().toLowerCase().contains(lowerQuery);
 
-       boolean isQrCodeLabelMatched = false;
-       boolean isPaymentAddressMatched = false;
-       boolean isOutputAddressMatched = false;
-       boolean isRawTransactionMatched = false;
+      boolean isQrCodeLabelMatched = false;
+      boolean isPaymentAddressMatched = false;
+      boolean isOutputAddressMatched = false;
+      boolean isRawTransactionMatched = false;
 
-       if (paymentData instanceof PaymentRequestData) {
-         PaymentRequestData paymentRequestData = (PaymentRequestData)paymentData;
-         isQrCodeLabelMatched = paymentRequestData.getLabel().toLowerCase().contains(lowerQuery);
-         isPaymentAddressMatched = paymentRequestData.getAddress().toLowerCase().contains(lowerQuery);
-       } else if (paymentData instanceof TransactionData) {
-         TransactionData transactionData = (TransactionData)paymentData;
-         isOutputAddressMatched = Joiner.on(" ").join(transactionData.getOutputAddresses()).toLowerCase().contains(lowerQuery);
-         isRawTransactionMatched = transactionData.getRawTransaction().toLowerCase().contains(lowerQuery);
-       }
-       if (isDescriptionMatched
-               || isNoteMatched
-               || isQrCodeLabelMatched
-               || isPaymentAddressMatched
-               || isOutputAddressMatched
-               || isRawTransactionMatched
-         ) {
-         filteredPayments.add(paymentData);
-       }
-     }
+      if (paymentData instanceof PaymentRequestData) {
+        PaymentRequestData paymentRequestData = (PaymentRequestData) paymentData;
+        isQrCodeLabelMatched = paymentRequestData.getLabel().toLowerCase().contains(lowerQuery);
+        isPaymentAddressMatched = paymentRequestData.getAddress().toLowerCase().contains(lowerQuery);
+      } else if (paymentData instanceof TransactionData) {
+        TransactionData transactionData = (TransactionData) paymentData;
+        isOutputAddressMatched = Joiner.on(" ").join(transactionData.getOutputAddresses()).toLowerCase().contains(lowerQuery);
+        isRawTransactionMatched = transactionData.getRawTransaction().toLowerCase().contains(lowerQuery);
+      }
+      if (isDescriptionMatched
+              || isNoteMatched
+              || isQrCodeLabelMatched
+              || isPaymentAddressMatched
+              || isOutputAddressMatched
+              || isRawTransactionMatched
+              ) {
+        filteredPayments.add(paymentData);
+      }
+    }
 
-     return filteredPayments;
-   }
+    return filteredPayments;
+  }
 
   /**
    * Adapt a bitcoinj transaction to a TransactionData DTO.
@@ -323,6 +317,8 @@ public class WalletService {
     } catch (IOException e1) {
       e1.printStackTrace();
     }
+
+    List<String> outputAddresses = calculateOutputAddresses(wallet, transaction);
 
     // Create the DTO from the raw transaction info
     TransactionData transactionData = new TransactionData(transactionHashAsString, new DateTime(updateTime), paymentStatus, amountBTC, amountFiat,
@@ -421,7 +417,6 @@ public class WalletService {
     if (paymentType == PaymentType.RECEIVING || paymentType == PaymentType.RECEIVED) {
       description = "";
       String addresses = "";
-      outputAddresses = Lists.newArrayList();
 
       boolean descriptiveTextIsAvailable = false;
       if (transaction.getOutputs() != null) {
@@ -429,7 +424,6 @@ public class WalletService {
           if (transactionOutput.isMine(wallet)) {
             String receivingAddress = transactionOutput.getScriptPubKey().getToAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
             addresses = addresses + " " + receivingAddress;
-            outputAddresses.add(receivingAddress);
 
             // Check if this output funds any payment requests;
             PaymentRequestData paymentRequestData = paymentRequestMap.get(receivingAddress);
@@ -470,6 +464,18 @@ public class WalletService {
       }
     }
     return description;
+  }
+
+  private List<String> calculateOutputAddresses(Wallet wallet, Transaction transaction) {
+    List<String> outputAddresses = Lists.newArrayList();
+
+    if (transaction.getOutputs() != null) {
+      for (TransactionOutput transactionOutput : transaction.getOutputs()) {
+          String outputAddress = transactionOutput.getScriptPubKey().getToAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
+          outputAddresses.add(outputAddress);
+      }
+    }
+    return outputAddresses;
   }
 
   private FiatPayment calculateFiatPayment(BigInteger amountBTC) {
@@ -513,10 +519,10 @@ public class WalletService {
     Optional<BigInteger> feeOnSend = Optional.absent();
 
     if (paymentType == PaymentType.SENDING || paymentType == PaymentType.SENT) {
-       TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
-       if (transactionInfo != null) {
-         feeOnSend = transactionInfo.getMinerFee();
-       }
+      TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
+      if (transactionInfo != null) {
+        feeOnSend = transactionInfo.getMinerFee();
+      }
     }
 
     return feeOnSend;
