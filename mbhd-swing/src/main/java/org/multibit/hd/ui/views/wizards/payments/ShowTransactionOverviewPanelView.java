@@ -48,6 +48,7 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
   private JLabel descriptionValue;
   private JLabel amountBTCValue;
   private JLabel amountFiatValue;
+  private JLabel minerFeePaidValue;
   private JLabel exchangeRateValue;
 
   /**
@@ -104,6 +105,9 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
     JLabel amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.AMOUNT) + " " + Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencySymbol());
     amountFiatValue = Labels.newValueLabel("");
 
+    JLabel minerFeePaidLabel = Labels.newValueLabel(Languages.safeText(MessageKey.TRANSACTION_FEE));
+    minerFeePaidValue = Labels.newValueLabel("");
+
     JLabel exchangeRateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL));
     exchangeRateValue = Labels.newValueLabel("");
 
@@ -121,6 +125,8 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
     contentPanel.add(amountBTCValue, "wrap");
     contentPanel.add(amountFiatLabel);
     contentPanel.add(amountFiatValue, "wrap");
+    contentPanel.add(minerFeePaidLabel);
+    contentPanel.add(minerFeePaidValue, "wrap");
     contentPanel.add(exchangeRateLabel);
     contentPanel.add(exchangeRateValue, "wrap");
   }
@@ -173,6 +179,16 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
       FiatPayment amountFiat = paymentData.getAmountFiat();
       amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount(), languageConfiguration.getLocale(), bitcoinConfiguration)));
 
+      if (paymentData instanceof TransactionData) {
+        Optional<BigInteger> feeOnSend = ((TransactionData)paymentData).getFeeOnSendBTC();
+        if (feeOnSend.isPresent()) {
+          String[] minerFeePaidArray = Formats.formatSatoshisAsSymbolic(feeOnSend.get(), languageConfiguration, bitcoinConfiguration);
+          minerFeePaidValue.setText(minerFeePaidArray[0] + minerFeePaidArray[1]);
+        } else {
+          minerFeePaidValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
+        }
+      }
+
       String exchangeRateText;
       if (Strings.isNullOrEmpty(paymentData.getAmountFiat().getRate()) || Strings.isNullOrEmpty(paymentData.getAmountFiat().getExchange() )) {
         exchangeRateText = Languages.safeText(MessageKey.NOT_AVAILABLE);
@@ -180,11 +196,6 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
         exchangeRateText = paymentData.getAmountFiat().getRate() + " (" + paymentData.getAmountFiat().getExchange() + ")";
       }
       exchangeRateValue.setText(exchangeRateText);
-      if (paymentData instanceof TransactionData) {
-        // It should be as payment requests are routed to their own screen but check all the same
-        TransactionData transactionData = (TransactionData) paymentData;
-        Optional<BigInteger> feeOnSendBTC = transactionData.getFeeOnSendBTC(); // TODO not currently being remembered when tx is sent hence not available
-      }
     }
   }
 }

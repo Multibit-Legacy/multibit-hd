@@ -1,7 +1,6 @@
 package org.multibit.hd.core.services;
 
 import com.google.bitcoin.core.*;
-import com.google.bitcoin.crypto.KeyCrypterException;
 import com.google.bitcoin.net.discovery.DnsDiscovery;
 import com.google.bitcoin.params.MainNetParams;
 import com.google.bitcoin.store.BlockStore;
@@ -287,7 +286,7 @@ public class BitcoinNetworkService extends AbstractService {
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
         sendRequest.tx.getHashAsString(),
         amount,
-        BigInteger.ZERO,
+        sendRequest.fee /* the actual fee paid */ ,
         destinationAddress,
         changeAddress,
         true,
@@ -295,7 +294,7 @@ public class BitcoinNetworkService extends AbstractService {
         null
       ));
 
-    } catch (KeyCrypterException | InsufficientMoneyException | IllegalArgumentException  | VerificationException e) {
+    } catch (Exception e) {
 
       log.error(e.getMessage(), e);
 

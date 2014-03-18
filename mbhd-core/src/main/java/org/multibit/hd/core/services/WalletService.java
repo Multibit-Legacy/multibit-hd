@@ -304,7 +304,7 @@ public class WalletService {
     PaymentType paymentType = calculatePaymentType(amountBTC, depth);
 
     // Fee on send
-    Optional<BigInteger> feeOnSend = calculateFeeOnSend(paymentType, wallet, transaction);
+    Optional<BigInteger> feeOnSend = calculateFeeOnSend(paymentType, transactionHashAsString);
 
     // Description +
     // Ensure that any payment requests that are funded by this transaction know about it
@@ -329,7 +329,8 @@ public class WalletService {
             feeOnSend, confidenceType, paymentType, description, transaction.isCoinBase(), outputAddresses, rawTransaction, size);
 
     // Note - from the transactionInfo (if present)
-    calculateNote(transactionData, transactionHashAsString);
+    String note = calculateNote(transactionData, transactionHashAsString);
+    transactionData.setNote(note);
 
     return transactionData;
   }
@@ -487,10 +488,11 @@ public class WalletService {
     return amountFiat;
   }
 
-  private void calculateNote(TransactionData transactionData, String transactionHashAsString) {
+  private String calculateNote(TransactionData transactionData, String transactionHashAsString) {
+    String note = "";
     TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
     if (transactionInfo != null) {
-      String note = transactionInfo.getNote();
+      note = transactionInfo.getNote();
       if (note != null) {
         transactionData.setNote(note);
         // if there is a real note use that as the description
@@ -504,13 +506,17 @@ public class WalletService {
     } else {
       transactionData.setNote("");
     }
+    return note;
   }
 
-  private Optional<BigInteger> calculateFeeOnSend(PaymentType paymentType, Wallet wallet, Transaction transaction) {
+  private Optional<BigInteger> calculateFeeOnSend(PaymentType paymentType, String transactionHashAsString) {
     Optional<BigInteger> feeOnSend = Optional.absent();
 
     if (paymentType == PaymentType.SENDING || paymentType == PaymentType.SENT) {
-      // TODO - transaction.calculateFee(wallet) seems to have disappeared from transaction - save it when tx is created from SendRequest
+       TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
+       if (transactionInfo != null) {
+         feeOnSend = transactionInfo.getMinerFee();
+       }
     }
 
     return feeOnSend;
