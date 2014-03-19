@@ -155,8 +155,8 @@ public class Formats {
 
     DecimalFormatSymbols dfs = new DecimalFormatSymbols(currentLocale);
 
-    dfs.setDecimalSeparator(bitcoinConfiguration.getDecimalSeparator());
-    dfs.setGroupingSeparator(bitcoinConfiguration.getGroupingSeparator());
+    dfs.setDecimalSeparator(bitcoinConfiguration.getDecimalSeparator().charAt(0));
+    dfs.setGroupingSeparator(bitcoinConfiguration.getGroupingSeparator().charAt(0));
 
     return dfs;
 

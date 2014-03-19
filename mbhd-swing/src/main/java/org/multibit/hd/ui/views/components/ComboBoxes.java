@@ -506,7 +506,7 @@ public class ComboBoxes {
     comboBox.setMaximumRowCount(MultiBitUI.COMBOBOX_MAX_ROW_COUNT);
 
     // Determine the selected index
-    ExchangeKey exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getExchangeKey());
+    ExchangeKey exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getCurrentExchange());
     comboBox.setSelectedIndex(exchangeKey.ordinal());
 
     // Add the listener at the end to avoid false events

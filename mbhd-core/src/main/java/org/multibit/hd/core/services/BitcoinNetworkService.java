@@ -76,7 +76,7 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Check if there is a wallet - if there is no wallet the network will not start (there's nowhere to put the blockchain)
       if (!WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
-        log.debug("Not starting bitcoin network service as there is currently no wallet.");
+        log.warn("Not starting bitcoin network service as there is currently no wallet.");
         return;
       }
       String walletRoot = WalletManager.INSTANCE.getCurrentWalletFilename().get().getParentFile().getAbsolutePath();
@@ -436,7 +436,8 @@ public class BitcoinNetworkService extends AbstractService {
 
     peerGroup = new PeerGroup(NETWORK_PARAMETERS, blockChain);
     peerGroup.setFastCatchupTimeSecs(0); // genesis block
-    peerGroup.setUserAgent(InstallationManager.MBHD_APP_NAME, Configurations.APP_VERSION);
+    peerGroup.setUserAgent(InstallationManager.MBHD_APP_NAME,
+      Configurations.currentConfiguration.getApplicationConfiguration().getVersion());
     peerGroup.setMaxConnections(MAXIMUM_NUMBER_OF_PEERS);
 
     peerGroup.addPeerDiscovery(new DnsDiscovery(NETWORK_PARAMETERS));
@@ -496,13 +497,18 @@ public class BitcoinNetworkService extends AbstractService {
 
   private boolean isNetworkPresent() {
 
-    final String dnsSeed = MainNetParams.get().getDnsSeeds()[0];
+    final String[] dnsSeeds = MainNetParams.get().getDnsSeeds();
 
-    // Attempt to lookup the address
-    try {
-      return InetAddress.getAllByName(dnsSeed) != null;
-    } catch (UnknownHostException e) {
-      return false;
+    // Attempt to lookup each address - first success indicates working network
+    for (String dnsSeed: dnsSeeds) {
+      try {
+        return InetAddress.getAllByName(dnsSeed) != null;
+      } catch (UnknownHostException e) {
+        log.warn("Could not resolve '{}'", dnsSeed);
+      }
     }
+
+    // All DNS seeds failed
+    return false;
   }
 }

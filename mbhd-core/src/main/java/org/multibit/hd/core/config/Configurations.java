@@ -17,6 +17,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.multibit.hd.core.config.ConfigurationKey.*;
+
 /**
  * <p>Utility to provide the following to configuration:</p>
  * <ul>
@@ -31,36 +33,6 @@ import java.util.Properties;
 public class Configurations {
 
   private static final Logger log = LoggerFactory.getLogger(Configurations.class);
-
-  // Application
-  public static final String APP_VERSION = "app.version";
-
-  // Location of current wallet directory (may be empty)
-  public static final String APP_CURRENT_WALLET_FILENAME = "app.current-wallet-filename";
-  public static final String APP_CURRENT_THEME = "app.current-theme";
-
-  // Sound
-  public static final String SOUND_ALERT = "app.alert";
-  public static final String SOUND_RECEIVE = "app.receive";
-
-  // Bitcoin
-  public static final String BITCOIN_SYMBOL = "bitcoin.symbol";
-  public static final String BITCOIN_DECIMAL_SEPARATOR = "bitcoin.decimal-separator";
-  public static final String BITCOIN_GROUPING_SEPARATOR = "bitcoin.grouping-separator";
-  public static final String BITCOIN_IS_CURRENCY_PREFIXED = "bitcoin.is-prefixed";
-  public static final String BITCOIN_LOCAL_DECIMAL_PLACES = "bitcoin.local-decimal-places";
-  public static final String BITCOIN_LOCAL_CURRENCY_UNIT = "bitcoin.local-currency-unit";
-  public static final String BITCOIN_LOCAL_CURRENCY_SYMBOL = "bitcoin.local-currency-symbol";
-
-  // Language
-  public static final String LANGUAGE_LOCALE = "language.locale";
-
-  // Logging
-  public static final String LOGGING = "logging";
-  public static final String LOGGING_LEVEL = LOGGING + ".level";
-  public static final String LOGGING_FILE = LOGGING + ".file";
-  public static final String LOGGING_ARCHIVE = LOGGING + ".archive";
-  public static final String LOGGING_PACKAGE_PREFIX = LOGGING + ".package.";
 
   /**
    * The current runtime configuration (preserved across soft restarts)
@@ -86,30 +58,30 @@ public class Configurations {
     Properties properties = new Properties();
 
     // Language
-    properties.put(LANGUAGE_LOCALE, "en_GB");
+    properties.put(LANGUAGE_LOCALE.getKey(), "en_GB");
 
     // Application
-    properties.put(APP_VERSION, "0.0.1");
-    properties.put(APP_CURRENT_THEME, "LIGHT");
+    properties.put(APP_VERSION.getKey(), "0.0.1");
+    properties.put(APP_CURRENT_THEME.getKey(), "LIGHT");
 
     // Sound
-    properties.put(SOUND_ALERT, "true");
-    properties.put(SOUND_RECEIVE, "true");
+    properties.put(SOUND_ALERT.getKey(), "true");
+    properties.put(SOUND_RECEIVE.getKey(), "true");
 
     // Bitcoin
-    properties.put(BITCOIN_SYMBOL, "MICON");
-    properties.put(BITCOIN_DECIMAL_SEPARATOR, ".");
-    properties.put(BITCOIN_GROUPING_SEPARATOR, ",");
-    properties.put(BITCOIN_IS_CURRENCY_PREFIXED, "true");
-    properties.put(BITCOIN_LOCAL_DECIMAL_PLACES, "2");
-    properties.put(BITCOIN_LOCAL_CURRENCY_UNIT, "USD");
+    properties.put(BITCOIN_SYMBOL.getKey(), "MICON");
+    properties.put(BITCOIN_DECIMAL_SEPARATOR.getKey(), ".");
+    properties.put(BITCOIN_GROUPING_SEPARATOR.getKey(), ",");
+    properties.put(BITCOIN_IS_CURRENCY_LEADING.getKey(), "true");
+    properties.put(BITCOIN_LOCAL_DECIMAL_PLACES.getKey(), "2");
+    properties.put(BITCOIN_LOCAL_CURRENCY_CODE.getKey(), "USD");
 
     // Logging
-    properties.put(LOGGING_LEVEL, "warn");
-    properties.put(LOGGING_FILE, "log/multibit-hd.log");
-    properties.put(LOGGING_ARCHIVE, "log/multibit-hd-%d.log.gz");
-    properties.put(LOGGING_PACKAGE_PREFIX + "com.google.bitcoinj", "warn");
-    properties.put(LOGGING_PACKAGE_PREFIX + "org.multibit", "debug");
+    properties.put(LOGGING_LEVEL.getKey(), "warn");
+    properties.put(LOGGING_FILE.getKey(), "log/multibit-hd.log");
+    properties.put(LOGGING_ARCHIVE.getKey(), "log/multibit-hd-%d.log.gz");
+    properties.put(LOGGING_PACKAGE_PREFIX.getKey() + "com.google.bitcoinj", "warn");
+    properties.put(LOGGING_PACKAGE_PREFIX.getKey() + "org.multibit", "debug");
 
     return new ConfigurationReadAdapter(properties).adapt();
 
@@ -127,6 +99,9 @@ public class Configurations {
 
     // Set the replacement
     currentConfiguration = newConfiguration;
+
+    // Persist the new configuration
+    Configurations.writeCurrentConfiguration();
 
     // Update any JVM classes
     Locale.setDefault(currentConfiguration.getLocale());
@@ -248,7 +223,7 @@ public class Configurations {
     for (Map.Entry<Object, Object> entry : subset.entrySet()) {
 
       String key = (String) entry.getKey();
-      String value = (String) entry.getValue();
+      String value = String.valueOf(entry.getValue());
 
       superset.put(key, value);
 

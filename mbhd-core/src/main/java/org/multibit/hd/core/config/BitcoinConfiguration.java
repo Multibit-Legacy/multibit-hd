@@ -19,8 +19,8 @@ public class BitcoinConfiguration {
    */
   private String bitcoinSymbol = "MICON";
 
-  private Character decimalSeparator = '.';
-  private Character groupingSeparator = ',';
+  private String decimalSeparator = ".";
+  private String groupingSeparator = ",";
 
   private boolean currencySymbolLeading = true;
 
@@ -32,10 +32,10 @@ public class BitcoinConfiguration {
   /**
    * Start with Bitstamp since it provides USD (the global reserve currency)
    */
-  private String exchangeKey = "BITSTAMP";
+  private String currentExchange = "BITSTAMP";
 
   /**
-   * The optinal exchange API key (required for OER etc)
+   * The optional exchange API key (required for OER etc)
    */
   private Optional<String> exchangeApiKeys = Optional.absent();
 
@@ -62,7 +62,7 @@ public class BitcoinConfiguration {
     configuration.setLocalCurrencyUnit(getLocalCurrencyUnit());
     configuration.setLocalCurrencySymbol(getLocalCurrencySymbol());
 
-    configuration.setExchangeKey(getExchangeKey());
+    configuration.setCurrentExchange(getCurrentExchange());
     configuration.setExchangeApiKeys(getExchangeApiKeys().orNull());
 
     return configuration;
@@ -80,35 +80,35 @@ public class BitcoinConfiguration {
   }
 
   /**
-   * @return The exchange key (e.g. "BITSTAMP") providing access to the current exchange rate provider
+   * @return The current exchange (e.g. "BITSTAMP" from <code>ExchangeKey</code>) providing access to the current exchange rate provider
    */
-  public String getExchangeKey() {
-    return exchangeKey;
+  public String getCurrentExchange() {
+    return currentExchange;
   }
 
-  public void setExchangeKey(String exchangeKey) {
-    this.exchangeKey = exchangeKey;
+  public void setCurrentExchange(String currentExchange) {
+    this.currentExchange = currentExchange;
   }
 
   /**
    * @return The decimal separator
    */
-  public Character getDecimalSeparator() {
+  public String getDecimalSeparator() {
     return decimalSeparator;
   }
 
-  public void setDecimalSeparator(Character separator) {
+  public void setDecimalSeparator(String separator) {
     this.decimalSeparator = separator;
   }
 
   /**
    * @return The grouping separator
    */
-  public Character getGroupingSeparator() {
+  public String getGroupingSeparator() {
     return groupingSeparator;
   }
 
-  public void setGroupingSeparator(Character groupingSeparator) {
+  public void setGroupingSeparator(String groupingSeparator) {
     this.groupingSeparator = groupingSeparator;
   }
 

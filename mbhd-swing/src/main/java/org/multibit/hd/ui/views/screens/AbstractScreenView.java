@@ -168,7 +168,7 @@ public abstract class AbstractScreenView<M extends ScreenModel> {
   }
 
   /**
-   * @return True if the implementer has configured all the components for display
+   * @return True if the implementer has configured all the components for display (screen can be shown)
    */
   public boolean isInitialised() {
     return initialised;

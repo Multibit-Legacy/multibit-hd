@@ -70,9 +70,9 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
     CoreServices.uiEventBus.register(this);
 
     MigLayout layout = new MigLayout(
-            Panels.migXYLayout(),
-            "10[]10[]", // Column constraints
-            "20[]10[]" // Row constraints
+      Panels.migXYLayout(),
+      "10[]10[]", // Column constraints
+      "20[]10[]" // Row constraints
     );
 
     JPanel contentPanel = Panels.newPanel(layout);
@@ -102,7 +102,7 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
     displaySendingPaymentsMaV = Components.newDisplayPaymentsMaV(PANEL_NAME);
     displaySendingPaymentsMaV.getModel().setValue(todaysSendingPayments);
     JScrollPane sendingPaymentsScrollPane = new JScrollPane(displaySendingPaymentsMaV.getView().newComponentPanel(),
-            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+      JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     sendingPaymentsScrollPane.setBackground(Themes.currentTheme.detailPanelBackground());
     sendingPaymentsScrollPane.getViewport().setBackground(Themes.currentTheme.detailPanelBackground());
     sendingPaymentsScrollPane.setOpaque(true);
@@ -115,7 +115,7 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
     displayReceivingPaymentsMaV.getModel().setValue(todaysReceivingPayments);
 
     JScrollPane receivingPaymentsScrollPane = new JScrollPane(displayReceivingPaymentsMaV.getView().newComponentPanel(),
-            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+      JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     receivingPaymentsScrollPane.getViewport().setBackground(Themes.currentTheme.detailPanelBackground());
     receivingPaymentsScrollPane.setOpaque(true);
     receivingPaymentsScrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -159,31 +159,31 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
   }
 
   private void update(final boolean refreshData) {
-    final boolean finalInitialised = isInitialised();
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        if (refreshData) {
-          List<PaymentData> allPayments = MultiBitHD.getWalletService().getPaymentDataList();
-          // Find the 'Sending' transactions for today
-          List<PaymentData> todaysSendingPayments = MultiBitHD.getWalletService().subsetPaymentsAndSort(allPayments, PaymentType.SENDING);
-          displaySendingPaymentsMaV.getModel().setValue(todaysSendingPayments);
 
-          List<PaymentData> todaysReceivingPayments = MultiBitHD.getWalletService().subsetPaymentsAndSort(allPayments, PaymentType.RECEIVING);
-          displayReceivingPaymentsMaV.getModel().setValue(todaysReceivingPayments);
+    if (isInitialised()) {
 
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          if (refreshData) {
+            List<PaymentData> allPayments = MultiBitHD.getWalletService().getPaymentDataList();
+            // Find the 'Sending' transactions for today
+            List<PaymentData> todaysSendingPayments = MultiBitHD.getWalletService().subsetPaymentsAndSort(allPayments, PaymentType.SENDING);
+            displaySendingPaymentsMaV.getModel().setValue(todaysSendingPayments);
+
+            List<PaymentData> todaysReceivingPayments = MultiBitHD.getWalletService().subsetPaymentsAndSort(allPayments, PaymentType.RECEIVING);
+            displayReceivingPaymentsMaV.getModel().setValue(todaysReceivingPayments);
+
+          }
+
+          displaySendingPaymentsMaV.getView().createView();
+          displaySendingPaymentsMaV.getView().updateView();
+
+          displayReceivingPaymentsMaV.getView().createView();
+          displayReceivingPaymentsMaV.getView().updateView();
+          sendBitcoin.requestFocusInWindow();
         }
-
-        if (!finalInitialised) {
-          return;
-        }
-        displaySendingPaymentsMaV.getView().createView();
-        displaySendingPaymentsMaV.getView().updateView();
-
-        displayReceivingPaymentsMaV.getView().createView();
-        displayReceivingPaymentsMaV.getView().updateView();
-        sendBitcoin.requestFocusInWindow();
-      }
-    });
+      });
+    }
   }
 }

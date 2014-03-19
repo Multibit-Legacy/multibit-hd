@@ -58,6 +58,11 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
   private JPanel contentPanel;
 
   /**
+   * True if the components making up this screen have been created
+   */
+  private boolean hasComponents = false;
+
+  /**
    * True if the contents making up this screen have been populated
    */
   private boolean initialised = false;
@@ -391,7 +396,7 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
   }
 
   /**
-   * @return True if this wizard panel has been initialised
+   * @return True if this wizard panel has been initialised (lazy loading needs this)
    */
   public boolean isInitialised() {
     return initialised;
@@ -399,6 +404,17 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
 
   public void setInitialised(boolean initialised) {
     this.initialised = initialised;
+  }
+
+  /**
+   * @return True if the components are all non-null (early events against uninitialised views need this to filter)
+   */
+  public boolean isHasComponents() {
+    return hasComponents;
+  }
+
+  public void setHasComponents(boolean hasComponents) {
+    this.hasComponents = hasComponents;
   }
 
   /**
