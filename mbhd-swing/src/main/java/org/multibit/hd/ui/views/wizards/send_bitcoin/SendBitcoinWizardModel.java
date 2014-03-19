@@ -143,6 +143,12 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
       note = "";
     }
     transactionInfo.setNote(note);
+    BigInteger minerFeePaid = transactionCreationEvent.getFeePaid();
+    if (minerFeePaid == null) {
+      transactionInfo.setMinerFee(Optional.<BigInteger>absent());
+    } else {
+      transactionInfo.setMinerFee(Optional.of(minerFeePaid));
+    }
     FiatPayment fiatPayment = new FiatPayment();
     fiatPayment.setAmount(getLocalAmount());
     fiatPayment.setExchange(ExchangeKey.current().getExchangeName());

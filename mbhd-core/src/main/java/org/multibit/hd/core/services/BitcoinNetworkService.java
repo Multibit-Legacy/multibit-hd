@@ -1,7 +1,6 @@
 package org.multibit.hd.core.services;
 
 import com.google.bitcoin.core.*;
-import com.google.bitcoin.crypto.KeyCrypterException;
 import com.google.bitcoin.net.discovery.DnsDiscovery;
 import com.google.bitcoin.params.MainNetParams;
 import com.google.bitcoin.store.BlockStore;
@@ -76,7 +75,7 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Check if there is a wallet - if there is no wallet the network will not start (there's nowhere to put the blockchain)
       if (!WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
-        log.warn("Not starting bitcoin network service as there is currently no wallet.");
+        log.debug("Not starting bitcoin network service as there is currently no wallet.");
         return;
       }
       String walletRoot = WalletManager.INSTANCE.getCurrentWalletFilename().get().getParentFile().getAbsolutePath();
@@ -111,7 +110,6 @@ public class BitcoinNetworkService extends AbstractService {
 
     requireSingleThreadExecutor();
 
-    // Check if there is a network connection
     if (!isNetworkPresent()) {
       return;
     }
@@ -140,9 +138,7 @@ public class BitcoinNetworkService extends AbstractService {
 
   @Override
   public void stopAndWait() {
-
     startedOk = false;
-
     stopPeerGroupAndCloseBlockstore();
 
     // Save the current wallet immediately
@@ -161,21 +157,15 @@ public class BitcoinNetworkService extends AbstractService {
         log.error("Could not write wallet and backups for wallet with id '" + walletId + "' successfully. The error was '" + ioe.getMessage() + "'");
       }
     }
-
-    // Hand over to the superclass to finalise executors
-    super.stopAndWait();
-
   }
 
   public void recalculateFastCatchupAndFilter() {
-
     if (peerGroup != null) {
       peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.FORCE_SEND);
     }
   }
 
   private void stopPeerGroupAndCloseBlockstore() {
-
     if (peerGroup != null) {
       log.debug("Stopping peerGroup service...");
       peerGroup.removeEventListener(peerEventListener);
@@ -296,7 +286,7 @@ public class BitcoinNetworkService extends AbstractService {
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
         sendRequest.tx.getHashAsString(),
         amount,
-        BigInteger.ZERO,
+        sendRequest.fee /* the actual fee paid */ ,
         destinationAddress,
         changeAddress,
         true,
@@ -304,7 +294,7 @@ public class BitcoinNetworkService extends AbstractService {
         null
       ));
 
-    } catch (KeyCrypterException | InsufficientMoneyException | IllegalArgumentException | VerificationException e) {
+    } catch (Exception e) {
 
       log.error(e.getMessage(), e);
 

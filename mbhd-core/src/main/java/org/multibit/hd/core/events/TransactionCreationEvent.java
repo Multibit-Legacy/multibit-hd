@@ -54,6 +54,7 @@ public class TransactionCreationEvent implements CoreEvent {
     return amount;
   }
 
+
   public BigInteger getFeePaid() {
     return feePaid;
   }
