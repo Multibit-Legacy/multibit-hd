@@ -56,6 +56,11 @@ public class WalletService {
   public static final String PREFIX_SEPARATOR = ": ";
 
   /**
+   * The suffix for the CSV files
+   */
+  public static final String CSV_SUFFIX = ".csv";
+
+  /**
    * The location of the backing writeContacts for the payments
    */
   private File backingStoreFile;
@@ -663,5 +668,17 @@ public class WalletService {
       addPaymentRequest(deletedPaymentRequestData);
       writePayments();
     }
+  }
+
+  /**
+   * Export the payments to two CSV files - one for transactions, one for payment requests.
+   * Sends a ExportPaymentsReportEvent with the results.
+   * @param exportDirectory The directory to export to
+   * @param transactionFileStem The stem of the export file for the transactions (will be suffixed with a file suffix and possibly a bracketed number for uniqueness)
+   * @param paymentRequestFileStem The stem of the export file for the payment requests (will be suffixed with a file suffix and possibly a bracketed number for uniqueness)
+   */
+  public void exportPayments(File exportDirectory, String transactionFileStem, String paymentRequestFileStem) {
+    log.debug("Creating transactions export to file '" + exportDirectory + File.separator + transactionFileStem + "'");
+    log.debug("Creating payment requests export to file '" + exportDirectory + File.separator + paymentRequestFileStem + "'");
   }
 }

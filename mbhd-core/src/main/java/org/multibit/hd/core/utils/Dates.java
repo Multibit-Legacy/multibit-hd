@@ -54,6 +54,12 @@ public class Dates {
   private static final DateTimeFormatter utcIso8601 = ISODateTimeFormat.dateTimeNoMillis().withZoneUTC();
 
   /**
+    * Produces "2000-04-01" for simplified short user date
+    */
+   private static final DateTimeFormatter shortDateWithHyphensFormatter = DateTimeFormat.forPattern("yyyy-mm-dd").withZoneUTC();
+
+
+  /**
    * @return The current midnight in UTC
    */
   public static DateTime midnightUtc() {
@@ -96,6 +102,17 @@ public class Dates {
     }
     return ISODateTimeFormat.basicDate().withZoneUTC().print(when);
   }
+
+  /**
+    * @param when The instant
+    * @return The instant formatted as "yyyy-MM-dd"
+    */
+   public static String formatBasicDateWithHyphens(ReadableInstant when) {
+     if (when == null) {
+       return "";
+     }
+     return shortDateWithHyphensFormatter.print(when);
+   }
 
   /**
    * @param when   The instant
