@@ -3,7 +3,12 @@ package org.multibit.hd.ui.views.wizards.export_payments;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
+import org.joda.time.DateTime;
+import org.multibit.hd.core.services.WalletService;
+import org.multibit.hd.core.utils.Dates;
+import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
@@ -15,6 +20,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
+import java.io.File;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -33,9 +39,13 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
   private JLabel backupLocationStatusLabel;
   private JLabel walletCreatedStatusLabel;
 
+  private static final String SEPARATOR = "-";
+  private static final String OPEN_BRACKET = "(";
+  private static final String CLOSE_BRACKET = ")";
+
   /**
-   * @param wizard The wizard managing the states
-   * @param panelName   The panel name to filter events from components
+   * @param wizard    The wizard managing the states
+   * @param panelName The panel name to filter events from components
    */
   public ExportPaymentsReportPanelView(AbstractWizard<ExportPaymentsWizardModel> wizard, String panelName) {
 
@@ -57,9 +67,9 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
   public void initialiseContent(JPanel contentPanel) {
 
     contentPanel.setLayout(new MigLayout(
-      Panels.migXYLayout(),
-      "[][][]", // Column constraints
-      "[]10[]10[]10[]" // Row constraints
+            Panels.migXYLayout(),
+            "[][][]", // Column constraints
+            "[]10[]10[]10[]" // Row constraints
     ));
 
     // Apply the theme
@@ -107,58 +117,73 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
 
   @Override
   public boolean beforeShow() {
-
     ExportPaymentsWizardModel model = getWizardModel();
 
-    String backupLocation = model.getExportPaymentsLocation();
+    String exportPaymentsLocation = model.getExportPaymentsLocation();
 
-    Preconditions.checkNotNull(backupLocation, "'exportPaymentsLocation' must be present");
+    Preconditions.checkNotNull(exportPaymentsLocation, "'exportPaymentsLocation' must be present");
 
-    // TODO Actually perform the export
-//    boolean walletCreatedStatus = false;
-//    byte[] seed;
-//    try {
-//      // Attempt to create the wallet (the manager will track the ID etc)
-//      WalletManager walletManager = WalletManager.INSTANCE;
-//      seed = seedPhraseGenerator.convertToSeed(seedPhrase);
-//      walletManager.createWallet(seed, password);
-//
-//      // Must be OK to be here
-//      walletCreatedStatus = true;
-//    } catch (IOException ioe) {
-//      ExceptionHandler.handleThrowable(ioe);
-//    }
-//
-//    File backupLocationFile = new File(backupLocation);
-//
-//    // Seed phrase and password are always OK
-//    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, seedPhraseCreatedStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
-//    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, walletPasswordCreatedStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
-//
-//    // Determine if the backup location is valid
-//    boolean exists = backupLocationFile.exists();
-//    boolean isDirectory =  backupLocationFile.isDirectory();
-//    boolean canRead = backupLocationFile.canRead();
-//    boolean canWrite = backupLocationFile.canWrite();
-//    boolean backupLocationStatus = exists && isDirectory && canRead && canWrite;
-//
-//    if (backupLocationStatus) {
-//      AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, backupLocationStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
-//    } else {
-//      AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, backupLocationStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
-//    }
-//
-//    // Determine if the create wallet status is valid
-//    if (walletCreatedStatus) {
-//      AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, walletCreatedStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
-//    } else {
-//      AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, walletCreatedStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
-//    }
-//
-//    // Enable the finish button on the report page
+    // Determine if the backup location is valid
+    File exportPaymentsLocationFile = new File(exportPaymentsLocation);
+    boolean exists = exportPaymentsLocationFile.exists();
+    boolean isDirectory = exportPaymentsLocationFile.isDirectory();
+    boolean canRead = exportPaymentsLocationFile.canRead();
+    boolean canWrite = exportPaymentsLocationFile.canWrite();
+    boolean exportPaymentsLocationStatus = exists && isDirectory && canRead && canWrite;
+
+    if (exportPaymentsLocationStatus) {
+      // Create the stems for the output files. These are localised and (in English) : exportedTransactions-20140314.csv
+      // Where there is a file name collision they are called , say: exportedTransactions-20140312(2).csv
+      String[] stems = createStems(exportPaymentsLocationFile);
+
+      // Perform the export
+      MultiBitHD.getWalletService().exportPayments(exportPaymentsLocationFile, stems[0], stems[1]);
+      // Results of export are sent by an event
+    } else {
+      // TO DO report that export directory is no good
+    }
+
+    // AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, walletCreatedStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
+
+    // Enable the finish button on the report page
     ViewEvents.fireWizardButtonEnabledEvent(ExportPaymentsWizardState.EXPORT_PAYMENTS_REPORT.name(), WizardButton.FINISH, true);
 
     return true;
   }
 
+  /**
+   * Create localised filename stems to be used by the Wallet Service export
+   * @return String[1] String[0] is the transactionExport stem, String[1] is the paymentRequestExport stem
+   */
+  private String[] createStems(File exportPaymentsLocationFile) {
+    DateTime now = Dates.nowUtc();
+    String nowAsString = Dates.formatBasicDateWithHyphens(now);
+
+    String stem0= Languages.safeText(MessageKey.EXPORT_TRANSACTIONS_STEM);
+    String stem1 = Languages.safeText(MessageKey.EXPORT_PAYMENT_REQUESTS_STEM);
+
+    String candidate0 = stem0 + SEPARATOR + nowAsString + WalletService.CSV_SUFFIX;
+    String candidate1 = stem1 + SEPARATOR + nowAsString + WalletService.CSV_SUFFIX;
+
+    // If these files don't exist we are done
+    if (!((new File(exportPaymentsLocationFile.getAbsolutePath() + File.separator + candidate0)).exists()) &&
+            !((new File(exportPaymentsLocationFile.getAbsolutePath() + File.separator + candidate0)).exists())) {
+      return new String[]{candidate0, candidate1};
+    } else {
+      int count = 2;
+      // Arbitrary limit just to stop infinite loops
+      while(count < 1000) {
+        candidate0 = stem0 + SEPARATOR + nowAsString + OPEN_BRACKET + count + CLOSE_BRACKET + WalletService.CSV_SUFFIX;
+        candidate1 = stem1 + SEPARATOR + nowAsString + OPEN_BRACKET + count + CLOSE_BRACKET + WalletService.CSV_SUFFIX;
+        if (!((new File(exportPaymentsLocationFile.getAbsolutePath() + File.separator + candidate0)).exists()) &&
+                !((new File(exportPaymentsLocationFile.getAbsolutePath() + File.separator + candidate0)).exists())) {
+          return new String[]{candidate0, candidate1};
+        }
+        count++;
+      }
+    }
+    // Should not happen except when arbitrary limit hit
+    // TODO throw exception
+    return null;
+  }
 }
