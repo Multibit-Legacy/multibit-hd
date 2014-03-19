@@ -305,6 +305,13 @@ public enum MessageKey {
   TODAY("today"),
   YESTERDAY("yesterday"),
 
+  // Export payments
+  SELECT_EXPORT_PAYMENTS_LOCATION("select_export_payments_location"),
+  EXPORT_PAYMENTS_REPORT("export_payments_report"),
+  SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_1("select_export_payments_location_note_1"),
+  SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_2("select_export_payments_location_note_2"),
+  SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_3("select_export_payments_location_note_3"),
+
   // End of enum
   ;
 

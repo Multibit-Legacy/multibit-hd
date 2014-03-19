@@ -920,6 +920,17 @@ public class Labels {
   }
 
   /**
+    * @return A new "export payments location" status label
+    */
+   public static JLabel newSelectExportPaymentsLocationNote() {
+
+     return newNoteLabel(new MessageKey[]{
+             MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_1,
+             MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_2,
+             MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_3,
+     }, new Object[][]{});
+   }
+  /**
    * @return A new "restore from backup" note
    */
   public static JLabel newRestoreFromBackupNote() {
