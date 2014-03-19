@@ -151,7 +151,7 @@ public class MultiBitHD {
 
           // There is a wallet present - warm start
           WalletData walletData = WalletManager.INSTANCE.getCurrentWalletData().get();
-          log.debug("The current wallet is:\nWallet id = '" + walletData.getWalletId().toString() + "\n" + walletData.getWallet().toString());
+          log.debug("The current wallet is:\nWallet id = '" + walletData.getWalletId().toString() + "\n" + walletData.getWallet().toString(false, false, false, null));
 
           mainView.setShowExitingPasswordWizard(true);
 

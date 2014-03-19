@@ -27,6 +27,7 @@ import org.multibit.hd.ui.views.components.wallet_detail.WalletDetail;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.export_payments.ExportPaymentsWizardState;
 import org.multibit.hd.ui.views.wizards.payments.PaymentsWizard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -224,6 +225,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
       @Override
       public void actionPerformed(ActionEvent e) {
         log.debug("getExportAction called");
+        Panels.showLightBox(Wizards.newExportPaymentsWizard(ExportPaymentsWizardState.SELECT_EXPORT_LOCATION).getWizardScreenHolder());
       }
     };
   }
