@@ -37,7 +37,7 @@ The protocol now waits for a Redeemer.
 
 #### 2. Redeemer prepares keys
 
-The redeemer uses an offline machine to create:
+The Redeemer uses an offline machine to create:
 
  * a GPG private key (`redeemer.GPG.private`)
  * the corresponding GPG public key (`redeemer.GPG.public`)
@@ -90,8 +90,8 @@ The Matcher generates an 256-bit AES key `matcher.AES.sessionKey` and encrypts i
 ```
 matcher.AES.sessionKey = Scrypt-encrypt(payer.sessionKey)
 ```
-The purpose of this session key is to encrypt the information returned to the payer and validates the matcher is actually
-the BRIT matcher as only it has the `matcher.GPG.private` key.
+The purpose of this session key is to encrypt the information returned to the Payer and validates the Matcher is actually
+the BRIT Matcher as only it has the `matcher.GPG.private` key.
 
 #### 8. Matcher selects Redeemer
 
