@@ -96,7 +96,8 @@ public class BitcoinNetworkService extends AbstractService {
         BitcoinNetworkSummary.newNetworkStartupFailed(
           CoreMessageKey.START_NETWORK_CONNECTION_ERROR,
           Optional.of(new Object[]{})
-        ));
+        )
+      );
     }
   }
 
@@ -139,7 +140,9 @@ public class BitcoinNetworkService extends AbstractService {
 
   @Override
   public void stopAndWait() {
+
     startedOk = false;
+
     stopPeerGroupAndCloseBlockstore();
 
     // Save the current wallet immediately
@@ -158,15 +161,21 @@ public class BitcoinNetworkService extends AbstractService {
         log.error("Could not write wallet and backups for wallet with id '" + walletId + "' successfully. The error was '" + ioe.getMessage() + "'");
       }
     }
+
+    // Hand over to the superclass to finalise executors
+    super.stopAndWait();
+
   }
 
   public void recalculateFastCatchupAndFilter() {
+
     if (peerGroup != null) {
       peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.FORCE_SEND);
     }
   }
 
   private void stopPeerGroupAndCloseBlockstore() {
+
     if (peerGroup != null) {
       log.debug("Stopping peerGroup service...");
       peerGroup.removeEventListener(peerEventListener);
@@ -295,7 +304,7 @@ public class BitcoinNetworkService extends AbstractService {
         null
       ));
 
-    } catch (KeyCrypterException | InsufficientMoneyException | IllegalArgumentException  | VerificationException e) {
+    } catch (KeyCrypterException | InsufficientMoneyException | IllegalArgumentException | VerificationException e) {
 
       log.error(e.getMessage(), e);
 
@@ -495,12 +504,15 @@ public class BitcoinNetworkService extends AbstractService {
     return atLeastOnePingWorked;
   }
 
+  /**
+   * @return True if at least one of the MainNet DNS seeds can be reached without error
+   */
   private boolean isNetworkPresent() {
 
     final String[] dnsSeeds = MainNetParams.get().getDnsSeeds();
 
     // Attempt to lookup each address - first success indicates working network
-    for (String dnsSeed: dnsSeeds) {
+    for (String dnsSeed : dnsSeeds) {
       try {
         return InetAddress.getAllByName(dnsSeed) != null;
       } catch (UnknownHostException e) {
