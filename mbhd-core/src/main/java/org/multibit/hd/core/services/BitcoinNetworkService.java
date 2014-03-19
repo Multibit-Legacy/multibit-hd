@@ -109,10 +109,11 @@ public class BitcoinNetworkService extends AbstractService {
 
     requireSingleThreadExecutor();
 
+    // TODO this check fails if the first DNS seed is unavailable so is too narrow.
     // Check if there is a network connection
-    if (!isNetworkPresent()) {
-      return;
-    }
+//    if (!isNetworkPresent()) {
+//      return;
+//    }
 
     log.debug("Creating blockchain ...");
     blockChain = new BlockChain(NETWORK_PARAMETERS, blockStore);
