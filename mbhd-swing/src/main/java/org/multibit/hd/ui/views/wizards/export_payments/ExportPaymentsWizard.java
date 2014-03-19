@@ -36,7 +36,5 @@ public class ExportPaymentsWizard extends AbstractWizard<ExportPaymentsWizardMod
     wizardViewMap.put(
             EXPORT_PAYMENTS_REPORT.name(),
       new ExportPaymentsReportPanelView(this, EXPORT_PAYMENTS_REPORT.name()));
-
   }
-
 }

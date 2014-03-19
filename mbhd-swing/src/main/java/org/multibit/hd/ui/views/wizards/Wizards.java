@@ -257,8 +257,7 @@ public class Wizards {
     * @return A new "export payments" wizard
     */
    public static ExportPaymentsWizard newExportPaymentsWizard(ExportPaymentsWizardState initialState) {
-
-     return new ExportPaymentsWizard(new ExportPaymentsWizardModel(initialState), true);
+     return new ExportPaymentsWizard(new ExportPaymentsWizardModel(initialState), false);
    }
 
 }

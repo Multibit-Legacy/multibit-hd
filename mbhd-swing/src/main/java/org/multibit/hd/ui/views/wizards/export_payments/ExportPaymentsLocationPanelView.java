@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.wizards.export_payments;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -36,7 +37,7 @@ public class ExportPaymentsLocationPanelView extends AbstractWizardPanelView<Exp
    */
   public ExportPaymentsLocationPanelView(AbstractWizard<ExportPaymentsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.SELECT_BACKUP_LOCATION_TITLE, AwesomeIcon.FOLDER_OPEN);
+    super(wizard, panelName, MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION, AwesomeIcon.FOLDER_OPEN);
 
   }
 
@@ -59,7 +60,7 @@ public class ExportPaymentsLocationPanelView extends AbstractWizardPanelView<Exp
       "[]10[]" // Row constraints
     ));
 
-    contentPanel.add(Panels.newSelectBackupDirectory(), "wrap");
+    contentPanel.add(Panels.newSelectExportPaymentsDirectory(), "wrap");
     contentPanel.add(selectFileMaV.getView().newComponentPanel(), "wrap");
 
   }
@@ -83,17 +84,29 @@ public class ExportPaymentsLocationPanelView extends AbstractWizardPanelView<Exp
 
   }
 
-  @Override
-  public void updateFromComponentModels(Optional componentModel) {
-
-    // Do nothing we have a direct reference
-
-  }
-
   public void fireInitialStateViewEvents() {
 
     // Enable the Next button - user can skip entering a cloud backup location
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, false);
   }
+
+  @Override
+   public void updateFromComponentModels(Optional componentModel) {
+     // No need to update the wizard it has the references
+
+     // Determine any events
+     ViewEvents.fireWizardButtonEnabledEvent(
+       getPanelName(),
+       WizardButton.NEXT,
+       isNextEnabled()
+     );
+   }
+
+   /**
+    * @return True if the "next" button should be enabled
+    */
+   private boolean isNextEnabled() {
+     return !Strings.isNullOrEmpty(getPanelModel().get().getValue());
+   }
 
 }

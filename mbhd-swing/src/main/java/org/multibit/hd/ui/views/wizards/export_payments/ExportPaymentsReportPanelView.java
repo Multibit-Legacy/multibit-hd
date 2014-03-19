@@ -39,7 +39,7 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
    */
   public ExportPaymentsReportPanelView(AbstractWizard<ExportPaymentsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.CREATE_WALLET_REPORT_TITLE, AwesomeIcon.FILE_TEXT);
+    super(wizard, panelName, MessageKey.EXPORT_PAYMENTS_REPORT, AwesomeIcon.FILE_TEXT);
 
   }
 
