@@ -39,8 +39,6 @@ public class ShowTransactionDetailPanelView extends AbstractWizardPanelView<Paym
 
   private static final String BLOCKCHAIN_INFO_PREFIX = "http://blockchain.info/tx-index/";
 
-  private static final String BLOCKEXPLORER_TRANSACTION_PREFIX = "http://blockexplorer.com/tx/";
-
   private JLabel transactionHashValue;
 
   private JTextArea rawTransactionValue;

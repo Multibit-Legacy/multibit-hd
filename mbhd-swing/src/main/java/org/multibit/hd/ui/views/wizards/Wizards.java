@@ -27,6 +27,9 @@ import org.multibit.hd.ui.views.wizards.exchange_settings.ExchangeSettingsWizard
 import org.multibit.hd.ui.views.wizards.exit.ExitState;
 import org.multibit.hd.ui.views.wizards.exit.ExitWizard;
 import org.multibit.hd.ui.views.wizards.exit.ExitWizardModel;
+import org.multibit.hd.ui.views.wizards.export_payments.ExportPaymentsWizard;
+import org.multibit.hd.ui.views.wizards.export_payments.ExportPaymentsWizardModel;
+import org.multibit.hd.ui.views.wizards.export_payments.ExportPaymentsWizardState;
 import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsState;
 import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsWizard;
 import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsWizardModel;
@@ -249,4 +252,12 @@ public class Wizards {
 
      return new PaymentsWizard(paymentsWizardModel, false);
    }
+
+  /**
+    * @return A new "export payments" wizard
+    */
+   public static ExportPaymentsWizard newExportPaymentsWizard(ExportPaymentsWizardState initialState) {
+     return new ExportPaymentsWizard(new ExportPaymentsWizardModel(initialState), false);
+   }
+
 }
