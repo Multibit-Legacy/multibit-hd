@@ -1,8 +1,8 @@
 package org.multibit.hd.ui;
 
 import com.google.common.base.Optional;
-import com.google.common.util.concurrent.Uninterruptibles;
 import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
@@ -21,13 +21,14 @@ import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.platform.GenericApplication;
 import org.multibit.hd.ui.views.MainView;
+import org.multibit.hd.ui.views.themes.ThemeKey;
+import org.multibit.hd.ui.views.themes.Themes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import java.io.File;
-import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Main entry point to the application</p>
@@ -38,6 +39,8 @@ public class MultiBitHD {
 
   // TODO Implement this
   private static GenericApplication genericApplication = null;
+
+  private static File applicationDataDirectory;
 
   private static BitcoinNetworkService bitcoinNetworkService;
 
@@ -56,14 +59,14 @@ public class MultiBitHD {
     // Prepare the JVM (Nimbus etc)
     initialiseJVM();
 
-    // Start core services (wallet manager, security alerts, configuration etc)
+    // Start core services (security alerts, configuration etc)
     initialiseCore(args);
 
     // Create a new UI based on the configuration
     initialiseUI();
 
     // Start supporting services (wizards, exchange, wallet access etc)
-    initialiseSupport();
+    //initialiseSupport();
 
   }
 
@@ -123,7 +126,11 @@ public class MultiBitHD {
       System.getProperties().setProperty("com.apple.mrj.application.apple.menu.about.name", Languages.safeText(MessageKey.APPLICATION_TITLE));
     }
 
-    startWalletService();
+    // Locate the application data directory
+    applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+
+    // Start the wallet service
+    startWalletService(applicationDataDirectory);
 
   }
 
@@ -137,6 +144,10 @@ public class MultiBitHD {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
+
+        // Ensure that we are using the configured theme
+        ThemeKey themeKey = ThemeKey.valueOf(Configurations.currentConfiguration.getApplicationConfiguration().getCurrentTheme());
+        Themes.switchTheme(themeKey.theme());
 
         // Build the main view
         mainView = new MainView();
@@ -167,6 +178,8 @@ public class MultiBitHD {
 
         overlaySecurityAlerts();
 
+        initialiseSupport();
+
       }
 
     });
@@ -182,7 +195,11 @@ public class MultiBitHD {
       @Override
       public void run() {
 
+        // Start the Bitcoin network service
         startBitcoinNetworkService();
+
+        // Initialise backup
+        BackupManager.INSTANCE.initialise(applicationDataDirectory, null);
 
       }
     });
@@ -192,13 +209,9 @@ public class MultiBitHD {
   /**
    * <p>Start the wallet service (core)</p>
    */
-  private static void startWalletService() {
-
-    // Initialise the wallet manager, which will load the current wallet if available
-    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+  private static void startWalletService(File applicationDataDirectory) {
 
     WalletManager.INSTANCE.initialise(applicationDataDirectory);
-    BackupManager.INSTANCE.initialise(applicationDataDirectory, null);
 
     if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
 
@@ -217,6 +230,25 @@ public class MultiBitHD {
   }
 
   /**
+   * <p>Start the Bitcoin network service (support)</p>
+   * <p>Requires the wallet manager and UI to be initialised</p>
+   */
+  private static void startBitcoinNetworkService() {
+
+    // Start the bitcoin network service
+    bitcoinNetworkService = CoreServices.newBitcoinNetworkService();
+    bitcoinNetworkService.start();
+
+    //Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
+
+    // If the network starts ok start downloading blocks to catch up with the current blockchain
+    if (bitcoinNetworkService.isStartedOk()) {
+      bitcoinNetworkService.downloadBlockChain();
+    }
+
+  }
+
+  /**
    * <p>Show any security alerts (UI)</p>
    */
   private static void overlaySecurityAlerts() {
@@ -226,24 +258,6 @@ public class MultiBitHD {
 
     if (securityEvent.isPresent()) {
       mainController.onSecurityEvent(securityEvent.get());
-    }
-
-  }
-
-  /**
-   * <p>Start the Bitcoin network service (support)</p>
-   */
-  private static void startBitcoinNetworkService() {
-
-    // Start the bitcoin network service
-    bitcoinNetworkService = CoreServices.newBitcoinNetworkService();
-    bitcoinNetworkService.start();
-
-    Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
-
-    // If the network starts ok start downloading blocks to catch up with the current blockchain
-    if (bitcoinNetworkService.isStartedOk()) {
-      bitcoinNetworkService.downloadBlockChain();
     }
 
   }

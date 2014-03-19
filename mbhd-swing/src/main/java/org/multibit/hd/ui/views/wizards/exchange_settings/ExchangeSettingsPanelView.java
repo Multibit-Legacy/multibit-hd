@@ -59,9 +59,6 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
   private JLabel tickerVerifiedStatus;
   private JLabel tickerSpinner;
 
-  // Prevent early events from triggering NPEs etc
-  private boolean componentsReady = false;
-
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name
@@ -98,7 +95,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguageConfiguration().deepCopy();
     BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration().deepCopy();
     Locale locale = languageConfiguration.getLocale();
-    ExchangeKey exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getExchangeKey());
+    ExchangeKey exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getCurrentExchange());
 
     Preconditions.checkNotNull(locale, "'locale' cannot be empty");
 
@@ -131,7 +128,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     currencyCodeLabel = Labels.newLocalCurrencyLabel();
 
     // All components are initialised
-    componentsReady = true;
+    setHasComponents(true);
 
     ///////////////////////////// Components ready ////////////////////////////////
 
@@ -303,7 +300,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     tickerVerifiedStatus.setVisible(false);
 
     // Update the model (even if in error)
-    getWizardModel().getConfiguration().getBitcoinConfiguration().setExchangeKey(exchangeKey.name());
+    getWizardModel().getConfiguration().getBitcoinConfiguration().setCurrentExchange(exchangeKey.name());
 
     // Reset the available currencies
     ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(getWizardModel().getConfiguration().getBitcoinConfiguration());
@@ -445,7 +442,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
       public void verify() {
 
-        if (!componentsReady) {
+        if (!isHasComponents()) {
           return;
         }
 
@@ -480,7 +477,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
    */
   private void setApiKeyVisibility(boolean visible) {
 
-    if (!componentsReady) {
+    if (!isHasComponents()) {
       return;
     }
     if (apiKeyLabel == null || apiKeyTextField == null) {
@@ -496,7 +493,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
    */
   private void setCurrencyCodeVisibility(boolean visible) {
 
-    if (!componentsReady) {
+    if (!isHasComponents()) {
       return;
     }
     currencyCodeLabel.setVisible(visible);

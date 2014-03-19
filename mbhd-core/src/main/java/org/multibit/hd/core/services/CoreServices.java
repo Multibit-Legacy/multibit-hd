@@ -82,7 +82,7 @@ public class CoreServices {
     // Start the logging factory
     LoggingFactory.bootstrap();
 
-    // Load configuration
+    // Load configuration (providing a default if none exists)
     Configurations.currentConfiguration = Configurations.readConfiguration();
 
     // Configure logging

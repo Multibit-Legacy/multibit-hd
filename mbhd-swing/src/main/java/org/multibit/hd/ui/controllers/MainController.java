@@ -96,7 +96,7 @@ public class MainController {
       public void run() {
 
         BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
-        ExchangeKey exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getExchangeKey());
+        ExchangeKey exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getCurrentExchange());
 
         if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
           if (bitcoinConfiguration.getExchangeApiKeys().isPresent()) {

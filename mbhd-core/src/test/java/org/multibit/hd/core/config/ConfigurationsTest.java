@@ -1,6 +1,5 @@
 package org.multibit.hd.core.config;
 
-import ch.qos.logback.classic.Level;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,7 +8,6 @@ import java.io.File;
 import java.util.Properties;
 
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.multibit.hd.core.config.Configurations.*;
 
 public class ConfigurationsTest {
 
@@ -25,46 +23,6 @@ public class ConfigurationsTest {
     if (propertiesFile.exists()) {
       assertThat(propertiesFile.delete()).isTrue();
     }
-
-  }
-
-  @Test
-  public void testDefaultConfiguration() throws Exception {
-
-    Configuration configuration = Configurations.newDefaultConfiguration();
-
-    // Bitcoin
-    assertThat(configuration.getBitcoinConfiguration().getBitcoinSymbol()).isEqualTo("MICON");
-    assertThat(configuration.getBitcoinConfiguration().getDecimalSeparator()).isEqualTo('.');
-    assertThat(configuration.getBitcoinConfiguration().getGroupingSeparator()).isEqualTo(',');
-    assertThat(configuration.getBitcoinConfiguration().isCurrencySymbolLeading()).isTrue();
-
-    // Internationalisation
-    assertThat(configuration.getLocale().getLanguage()).isEqualTo("en");
-
-    // Logging
-    assertThat(configuration.getLoggingConfiguration().getLoggers().get("org.multibit")).isEqualTo(Level.DEBUG);
-
-  }
-
-  @Test
-  public void testDefaultProperties() throws Exception {
-
-    Configuration configuration = Configurations.newDefaultConfiguration();
-
-    Properties properties = new ConfigurationWriteAdapter(configuration).adapt();
-
-    // Bitcoin
-    assertThat(properties.get(BITCOIN_SYMBOL)).isEqualTo("MICON");
-    assertThat(properties.get(BITCOIN_DECIMAL_SEPARATOR)).isEqualTo('.');
-    assertThat(properties.get(BITCOIN_GROUPING_SEPARATOR)).isEqualTo(',');
-    assertThat(properties.get(BITCOIN_IS_CURRENCY_PREFIXED)).isEqualTo("true");
-
-    // Internationalisation
-    assertThat(properties.get(LANGUAGE_LOCALE).toString()).isEqualTo("en_GB");
-
-    // Logging
-    assertThat(properties.get(LOGGING_PACKAGE_PREFIX + "org.multibit")).isEqualTo("DEBUG");
 
   }
 

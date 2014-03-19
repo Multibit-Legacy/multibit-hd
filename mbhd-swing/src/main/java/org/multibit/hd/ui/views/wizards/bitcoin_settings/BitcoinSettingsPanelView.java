@@ -216,7 +216,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
   private void handleGroupingSelection(ActionEvent e) {
 
     JComboBox source = (JComboBox) e.getSource();
-    Character grouping = String.valueOf(source.getSelectedItem()).charAt(0);
+    String grouping = String.valueOf(source.getSelectedItem()).substring(0,1);
 
     // Validate the combination
     if (grouping.equals(getWizardModel().getConfiguration().getBitcoinConfiguration().getDecimalSeparator())) {
@@ -253,7 +253,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
   private void handleDecimalSelection(ActionEvent e) {
 
     JComboBox source = (JComboBox) e.getSource();
-    Character decimal = String.valueOf(source.getSelectedItem()).charAt(0);
+    String decimal = String.valueOf(source.getSelectedItem()).substring(0,1);
 
     // Validate the combination
     if (decimal.equals(getWizardModel().getConfiguration().getBitcoinConfiguration().getGroupingSeparator())) {

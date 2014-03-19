@@ -115,7 +115,7 @@ public class ComponentTestBed {
 
     BitcoinConfiguration bitcoinConfiguration = new BitcoinConfiguration();
     bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.MICON.name());
-    bitcoinConfiguration.setExchangeKey(ExchangeKey.BITSTAMP.name());
+    bitcoinConfiguration.setCurrentExchange(ExchangeKey.BITSTAMP.name());
     bitcoinConfiguration.setLocalCurrencyUnit(CurrencyUnit.USD);
 
     Configurations.currentConfiguration.setBitcoinConfiguration(bitcoinConfiguration);

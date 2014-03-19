@@ -1,7 +1,5 @@
 package org.multibit.hd.core.config;
 
-import com.google.common.base.Optional;
-
 /**
  * <p>Configuration to provide the following to application:</p>
  * <ul>
@@ -14,7 +12,7 @@ import com.google.common.base.Optional;
  */
 public class ApplicationConfiguration {
 
-  private Optional<String> currentScreen = Optional.absent();
+  private String currentScreen = "HELP";
 
   private boolean restoreApplicationLayoutOnStartup = false;
 
@@ -69,12 +67,12 @@ public class ApplicationConfiguration {
   /**
    * @return The current screen to show
    */
-  public Optional<String> getCurrentScreen() {
+  public String getCurrentScreen() {
     return currentScreen;
   }
 
   public void setCurrentScreen(String currentScreen) {
-    this.currentScreen = Optional.fromNullable(currentScreen);
+    this.currentScreen = currentScreen;
   }
 
   /**
@@ -114,7 +112,7 @@ public class ApplicationConfiguration {
 
     ApplicationConfiguration app = new ApplicationConfiguration();
 
-    app.setCurrentScreen(getCurrentScreen().orNull());
+    app.setCurrentScreen(getCurrentScreen());
     app.setCurrentWalletRoot((getCurrentWalletRoot()));
     app.setApplicationDirectory(getApplicationDirectory());
     app.setBitcoinUriHandling(getBitcoinUriHandling());

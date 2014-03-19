@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.controller.ShowScreenEvent;
@@ -60,9 +61,9 @@ public class DetailView {
     // Add the screen holder to the overall content panel
     contentPanel.add(screenPanel, "grow");
 
-    // TODO Bind this into the configuration for last selected screen
     // Show the initial screen
-    ControllerEvents.fireShowDetailScreenEvent(Screen.WALLET);
+    Screen screen = Screen.valueOf(Configurations.currentConfiguration.getApplicationConfiguration().getCurrentScreen());
+    ControllerEvents.fireShowDetailScreenEvent(screen);
 
   }
 

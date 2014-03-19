@@ -1,6 +1,7 @@
 package org.multibit.hd.core.config;
 
 import ch.qos.logback.classic.Level;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.joda.money.CurrencyUnit;
 
@@ -14,7 +15,7 @@ import java.util.Properties;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class ConfigurationReadAdapter {
 
@@ -38,108 +39,92 @@ public class ConfigurationReadAdapter {
       Preconditions.checkNotNull(key, "'key' must be present");
       Preconditions.checkNotNull(value, "'value' must be present");
 
-      // Application
-      adaptApplication(key, value);
+      Optional<ConfigurationKey> configurationKey = ConfigurationKey.fromKey(key);
 
-      // Sound
-      adaptSound(key, value);
+      if (configurationKey.isPresent()) {
 
-      // Bitcoin
-      adaptBitcoin(key, value);
+        switch (configurationKey.get()) {
+          case APP_VERSION:
+            configuration.getApplicationConfiguration().setVersion(value);
+            break;
+          case APP_CURRENT_WALLET_FILENAME:
+            configuration.getApplicationConfiguration().setCurrentWalletRoot(value);
+            break;
+          case APP_CURRENT_THEME:
+            configuration.getApplicationConfiguration().setCurrentTheme(value);
+            break;
+          case APP_CURRENT_APP_DIRECTORY:
+            configuration.getApplicationConfiguration().setApplicationDirectory(value);
+            break;
+          case APP_BITCOIN_URI_HANDLING:
+            configuration.getApplicationConfiguration().setBitcoinUriHandling(value);
+            break;
+          case APP_RESTORE_LAYOUT:
+            configuration.getApplicationConfiguration().setRestoreApplicationLayoutOnStartup(Boolean.valueOf(value));
+            break;
+          case APP_CURRENT_SCREEN:
+            configuration.getApplicationConfiguration().setCurrentScreen(value);
+            break;
+          case BITCOIN_SYMBOL:
+            configuration.getBitcoinConfiguration().setBitcoinSymbol(value);
+            break;
+          case BITCOIN_DECIMAL_SEPARATOR:
+            configuration.getBitcoinConfiguration().setDecimalSeparator(value.substring(0, 1));
+            break;
+          case BITCOIN_GROUPING_SEPARATOR:
+            configuration.getBitcoinConfiguration().setGroupingSeparator(value.substring(0, 1));
+            break;
+          case BITCOIN_IS_CURRENCY_LEADING:
+            configuration.getBitcoinConfiguration().setCurrencySymbolLeading(Boolean.valueOf(value));
+            break;
+          case BITCOIN_LOCAL_DECIMAL_PLACES:
+            configuration.getBitcoinConfiguration().setLocalDecimalPlaces(Integer.valueOf(value));
+            break;
+          case BITCOIN_LOCAL_CURRENCY_CODE:
+            configuration.getBitcoinConfiguration().setLocalCurrencyUnit(CurrencyUnit.of(value));
+            break;
+          case BITCOIN_LOCAL_CURRENCY_SYMBOL:
+            configuration.getBitcoinConfiguration().setLocalCurrencySymbol(value);
+            break;
+          case SOUND_ALERT:
+            configuration.getSoundConfiguration().setAlertSound(Boolean.valueOf(value));
+            break;
+          case SOUND_RECEIVE:
+            configuration.getSoundConfiguration().setReceiveSound(Boolean.valueOf(value));
+            break;
+          case LANGUAGE_LOCALE:
+            configuration.getLanguageConfiguration().setLocale(value);
+            break;
+          case LOGGING_LEVEL:
+            configuration.getLoggingConfiguration().setLevel(Level.valueOf(value));
+            break;
+          case LOGGING_FILE:
+            configuration.getLoggingConfiguration().getFileConfiguration().setCurrentLogFilename(value);
+            break;
+          case LOGGING_ARCHIVE:
+            configuration.getLoggingConfiguration().getFileConfiguration().setArchivedLogFilenamePattern(value);
+            break;
+          default:
+            // Fail silently to allow the next item in the chain to complete
 
-      // Language
-      adaptLanguage(key, value);
+        }
 
-      // Logging
-      if (key.startsWith(Configurations.LOGGING)) {
-        adaptLogging(key, value);
+      }
+
+      // Logging (special case)
+      if (key.startsWith("logging")) {
+
+        // Loose matches first
+        if (key.startsWith(ConfigurationKey.LOGGING_PACKAGE_PREFIX.getKey())) {
+          String packageName = key.substring(ConfigurationKey.LOGGING_PACKAGE_PREFIX.getKey().length());
+          configuration.getLoggingConfiguration().getLoggers().put(packageName, Level.valueOf(value));
+        }
+
       }
 
     }
 
     return configuration;
-  }
-
-  private void adaptApplication(String key, String value) {
-
-    if (Configurations.APP_CURRENT_WALLET_FILENAME.equalsIgnoreCase(key)) {
-      configuration.getApplicationConfiguration().setCurrentWalletRoot(value);
-    }
-    if (Configurations.APP_CURRENT_THEME.equalsIgnoreCase(key)) {
-      configuration.getApplicationConfiguration().setCurrentTheme(value);
-    }
-    if (Configurations.APP_VERSION.equalsIgnoreCase(key)) {
-      configuration.getApplicationConfiguration().setVersion(value);
-    }
-    // TODO more application fields to adapt.
-
-  }
-
-  private void adaptSound(String key, String value) {
-
-    if (Configurations.SOUND_ALERT.equalsIgnoreCase(key)) {
-      configuration.getSoundConfiguration().setAlertSound(Boolean.valueOf(value));
-    }
-    if (Configurations.SOUND_RECEIVE.equalsIgnoreCase(key)) {
-      configuration.getSoundConfiguration().setReceiveSound(Boolean.valueOf(value));
-    }
-
-  }
-
-  private void adaptBitcoin(String key, String value) {
-
-    if (Configurations.BITCOIN_SYMBOL.equalsIgnoreCase(key)) {
-      configuration.getBitcoinConfiguration().setBitcoinSymbol(value);
-    }
-    if (Configurations.BITCOIN_DECIMAL_SEPARATOR.equalsIgnoreCase(key)) {
-      configuration.getBitcoinConfiguration().setDecimalSeparator(value.charAt(0));
-    }
-    if (Configurations.BITCOIN_GROUPING_SEPARATOR.equalsIgnoreCase(key)) {
-      configuration.getBitcoinConfiguration().setGroupingSeparator(value.charAt(0));
-    }
-    if (Configurations.BITCOIN_IS_CURRENCY_PREFIXED.equalsIgnoreCase(key)) {
-      configuration.getBitcoinConfiguration().setCurrencySymbolLeading(Boolean.valueOf(value));
-    }
-    if (Configurations.BITCOIN_LOCAL_DECIMAL_PLACES.equalsIgnoreCase(key)) {
-      configuration.getBitcoinConfiguration().setLocalDecimalPlaces(Integer.valueOf(value));
-    }
-    if (Configurations.BITCOIN_LOCAL_CURRENCY_UNIT.equalsIgnoreCase(key)) {
-      configuration.getBitcoinConfiguration().setLocalCurrencyUnit(CurrencyUnit.of(value));
-    }
-    if (Configurations.BITCOIN_LOCAL_CURRENCY_SYMBOL.equalsIgnoreCase(key)) {
-      configuration.getBitcoinConfiguration().setLocalCurrencySymbol(value);
-    }
-
-  }
-  private void adaptLanguage(String key, String value) {
-
-    if (Configurations.LANGUAGE_LOCALE.equalsIgnoreCase(key)) {
-      configuration.getLanguageConfiguration().setLocale(value);
-    }
-
-  }
-
-  /**
-   * @param key The key
-   * @param value The value
-   */
-  private void adaptLogging(String key, String value) {
-
-    LoggingConfiguration logging = configuration.getLoggingConfiguration();
-
-    if (Configurations.LOGGING_LEVEL.equalsIgnoreCase(key)) {
-      logging.setLevel(Level.valueOf(value));
-    }
-    if (Configurations.LOGGING_FILE.equalsIgnoreCase(key)) {
-      logging.getFileConfiguration().setCurrentLogFilename(value);
-    }
-    if (Configurations.LOGGING_ARCHIVE.equalsIgnoreCase(key)) {
-      logging.getFileConfiguration().setArchivedLogFilenamePattern(value);
-    }
-    if (key.startsWith(Configurations.LOGGING_PACKAGE_PREFIX)) {
-      String packageName = key.substring(Configurations.LOGGING_PACKAGE_PREFIX.length());
-      logging.getLoggers().put(packageName, Level.valueOf(value));
-    }
   }
 
 }

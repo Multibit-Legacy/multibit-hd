@@ -64,14 +64,14 @@ public class FormattedDecimalField extends JFormattedTextField {
       editPattern = editPattern.substring(0, decimalEditIndex);
     }
     // Adjust edit/display formats to the current configuration
-    char groupingSeparator = Configurations.currentConfiguration.getBitcoinConfiguration().getGroupingSeparator();
-    char decimalSeparator = Configurations.currentConfiguration.getBitcoinConfiguration().getDecimalSeparator();
+    String groupingSeparator = Configurations.currentConfiguration.getBitcoinConfiguration().getGroupingSeparator();
+    String decimalSeparator = Configurations.currentConfiguration.getBitcoinConfiguration().getDecimalSeparator();
 
     // Use locale decimal formatting then override with current configuration
     DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-    symbols.setDecimalSeparator(decimalSeparator);
-    symbols.setGroupingSeparator(groupingSeparator);
-    symbols.setMonetaryDecimalSeparator(decimalSeparator);
+    symbols.setDecimalSeparator(decimalSeparator.charAt(0));
+    symbols.setGroupingSeparator(groupingSeparator.charAt(0));
+    symbols.setMonetaryDecimalSeparator(decimalSeparator.charAt(0));
 
     // Create a decimal format using the configured symbols for edit/display
     DecimalFormat displayDecimalFormat = new DecimalFormat(displayPattern, symbols);
