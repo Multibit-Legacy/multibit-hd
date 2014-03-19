@@ -598,7 +598,7 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.LAPTOP, button, true, MultiBitUI.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.EXTERNAL_LINK, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
   }
