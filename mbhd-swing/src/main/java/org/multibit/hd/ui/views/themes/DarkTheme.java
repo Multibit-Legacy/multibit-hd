@@ -48,8 +48,12 @@ public class DarkTheme implements Theme {
 
   @Override
   public Color readOnlyComboBox() {
-    //return new Color(25, 81, 130);
     return new Color(25, 81, 130);
+  }
+
+  @Override
+  public Color sidebarSelectedText() {
+    return new Color(240, 211, 85);
   }
 
   @Override

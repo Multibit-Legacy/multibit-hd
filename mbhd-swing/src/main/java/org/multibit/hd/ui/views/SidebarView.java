@@ -43,7 +43,7 @@ public class SidebarView {
    */
   private DateTime lastSelectionDateTime = Dates.nowUtc();
   /**
-   * The detail screen that was selected
+   * The detail screen that was selected (provide a sensible default)
    */
   private Screen lastSelectedScreen = Screen.WALLET;
 
@@ -97,12 +97,29 @@ public class SidebarView {
     sidebarTree.setVisibleRowCount(10);
 
     // Require 2 clicks to toggle to make UX smoother when simply selecting wallet
+    // Collapsing should be a rare event in normal use
     sidebarTree.setToggleClickCount(2);
 
     // Ensure we always have the soft wallet open
     TreePath walletPath = sidebarTree.getPathForRow(0);
     sidebarTree.getSelectionModel().setSelectionPath(walletPath);
     sidebarTree.expandPath(walletPath);
+
+    // Ensure we use the previous selection
+    Screen startingScreen = Screen.valueOf(Configurations.currentConfiguration.getApplicationConfiguration().getCurrentScreen());
+    for (int row = 0; row < sidebarTree.getRowCount(); row++) {
+      TreePath screenPath = sidebarTree.getPathForRow(row);
+      if (screenPath != null) {
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) screenPath.getLastPathComponent();
+
+        SidebarNodeInfo nodeInfo = (SidebarNodeInfo) node.getUserObject();
+        Screen detailScreen = nodeInfo.getDetailScreen();
+        if (detailScreen.equals(startingScreen)) {
+          sidebarTree.setSelectionRow(row);
+        }
+
+      }
+    }
 
     // Get the tree cell renderer to handle the row height
     sidebarTree.setRowHeight(0);

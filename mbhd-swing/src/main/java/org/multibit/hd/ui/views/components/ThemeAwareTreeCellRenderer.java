@@ -64,8 +64,7 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
     ret.setBorder(border);
     final Color iconColor;
     if (sel) {
-      // The sidebar is read only
-      iconColor = Themes.currentTheme.readOnlyComboBox();
+      iconColor = Themes.currentTheme.sidebarSelectedText();
     } else {
       iconColor = Themes.currentTheme.text();
     }

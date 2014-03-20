@@ -39,10 +39,14 @@ public interface Theme {
   Color readOnlyBorder();
 
   /**
-   *
    * @return The background color for read only combo box (Nimbus mangles this value considerably)
    */
   Color readOnlyComboBox();
+
+  /**
+   * @return The text of a selected sidebar node (usually high contrast and saturation version of "read only")
+   */
+  Color sidebarSelectedText();
 
   /**
    * @return The background colour for data handling elements (like text areas, tree views etc)
@@ -180,13 +184,11 @@ public interface Theme {
   Color pendingAlertText();
 
   /**
-   *
    * @return The text of a credit entry in a payment screen (usually green or black)
    */
   Color creditText();
 
   /**
-   *
    * @return The text of a debit entry in a payment screen (usually red)
    */
   Color debitText();

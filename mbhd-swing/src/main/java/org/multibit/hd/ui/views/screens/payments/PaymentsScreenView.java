@@ -125,12 +125,11 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        // TODO Set the search as the focus;
+        enterSearchMaV.getView().requestInitialFocus();
       }
     });
 
   }
-
 
   @Subscribe
   public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
