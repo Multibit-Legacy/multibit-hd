@@ -24,15 +24,18 @@ public class BlockStoreManager {
   private static final Logger log = LoggerFactory.getLogger(BitcoinNetworkService.class);
 
   /**
-   * @param blockchainFilename
-   * @param checkpointsFilename
+   * @param blockchainFilename  The filename to use for the blockchain
+   * @param checkpointsFilename The filename to use for the checkpoints
    * @param checkpointDate      Date to checkpoint the blockstore from
    * @param createNew           if true then create a new block writeContacts
+   *
    * @return The created blockStore
+   *
    * @throws BlockStoreException
    * @throws IOException
    */
   public static BlockStore createBlockStore(String blockchainFilename, String checkpointsFilename, Date checkpointDate, boolean createNew) throws BlockStoreException, IOException {
+
     Preconditions.checkState((new File(checkpointsFilename)).exists());
     BlockStore blockStore;
 
@@ -80,7 +83,7 @@ public class BlockStoreManager {
     }
 
     // Load the existing checkpoint file and checkpoint from today.
-    if (blockStore != null && checkpointsFile.exists()) {
+    if (checkpointsFile.exists()) {
       try (FileInputStream stream = new FileInputStream(checkpointsFile)) {
         if (checkpointDate == null) {
           if (blockStoreCreatedNew) {

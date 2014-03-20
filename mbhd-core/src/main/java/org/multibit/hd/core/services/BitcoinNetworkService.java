@@ -108,7 +108,7 @@ public class BitcoinNetworkService extends AbstractService {
    */
   private void restartNetwork() throws BlockStoreException, IOException {
 
-    requireSingleThreadExecutor();
+    requireFixedThreadPoolExecutor(1);
 
     // Check if there is a network connection
     if (!isNetworkPresent()) {
@@ -161,7 +161,7 @@ public class BitcoinNetworkService extends AbstractService {
       }
     }
 
-    // Hand over to the superclass to finalise executors
+    // Hand over to the superclass to finalise service executors
     super.stopAndWait();
 
   }
@@ -189,7 +189,7 @@ public class BitcoinNetworkService extends AbstractService {
 
     // Shutdown any executor running a download
     if (getExecutorServiceOptional().isPresent()) {
-      getExecutorService().shutdown();
+      getExecutorService().shutdownNow();
     }
 
     // Remove the wallet from the blockChain
@@ -441,6 +441,8 @@ public class BitcoinNetworkService extends AbstractService {
    * <p>Create a new peer group</p>
    */
   private void createNewPeerGroup() {
+
+    log.info("Creating new peer group");
 
     peerGroup = new PeerGroup(NETWORK_PARAMETERS, blockChain);
     peerGroup.setFastCatchupTimeSecs(0); // genesis block

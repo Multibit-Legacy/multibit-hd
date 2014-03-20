@@ -50,6 +50,7 @@ public class Components {
    * @return A new "walletDetail" panel
    */
   public static ModelAndView<WalletDetailModel, WalletDetailView> newWalletDetailMaV(String panelName) {
+
     WalletDetailModel model = new WalletDetailModel(panelName);
     WalletDetailView view = new WalletDetailView(model);
 
@@ -62,6 +63,7 @@ public class Components {
     * @return A new "walletDetail" panel
     */
    public static ModelAndView<DisplayPaymentsModel, DisplayPaymentsView> newDisplayPaymentsMaV(String panelName) {
+
      DisplayPaymentsModel model = new DisplayPaymentsModel(panelName);
      DisplayPaymentsView view = new DisplayPaymentsView(model);
 

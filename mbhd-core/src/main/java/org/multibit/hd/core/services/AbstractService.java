@@ -62,6 +62,13 @@ public abstract class AbstractService implements ManagedService {
   }
 
   /**
+   * <p>Provide a fixed thread pool executor</p>
+   */
+  protected void requireFixedThreadPoolExecutor(int threadCount) {
+    service = Optional.of(SafeExecutors.newFixedThreadPool(threadCount));
+  }
+
+  /**
    * @return The executor service
    */
   protected ListeningExecutorService getExecutorService() {

@@ -16,8 +16,6 @@ import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.display_payments.DisplayPaymentsModel;
 import org.multibit.hd.ui.views.components.display_payments.DisplayPaymentsView;
-import org.multibit.hd.ui.views.components.wallet_detail.WalletDetailModel;
-import org.multibit.hd.ui.views.components.wallet_detail.WalletDetailView;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -39,10 +37,6 @@ import java.util.List;
 public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
 
   private JButton sendBitcoin;
-
-  private final static String PANEL_NAME = "walletDetail";
-
-  private ModelAndView<WalletDetailModel, WalletDetailView> walletDetailMaV;
 
   private ModelAndView<DisplayPaymentsModel, DisplayPaymentsView> displaySendingPaymentsMaV;
 
@@ -99,7 +93,7 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
     List<PaymentData> allPayments = MultiBitHD.getWalletService().getPaymentDataList();
     // Find the 'Sending' transactions for today
     List<PaymentData> todaysSendingPayments = MultiBitHD.getWalletService().subsetPaymentsAndSort(allPayments, PaymentType.SENDING);
-    displaySendingPaymentsMaV = Components.newDisplayPaymentsMaV(PANEL_NAME);
+    displaySendingPaymentsMaV = Components.newDisplayPaymentsMaV(getScreen().name());
     displaySendingPaymentsMaV.getModel().setValue(todaysSendingPayments);
     JScrollPane sendingPaymentsScrollPane = new JScrollPane(displaySendingPaymentsMaV.getView().newComponentPanel(),
       JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -111,7 +105,7 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
 
     // Find the 'Receiving' (+ requested) transactions for today
     List<PaymentData> todaysReceivingPayments = MultiBitHD.getWalletService().subsetPaymentsAndSort(allPayments, PaymentType.RECEIVING);
-    displayReceivingPaymentsMaV = Components.newDisplayPaymentsMaV(PANEL_NAME);
+    displayReceivingPaymentsMaV = Components.newDisplayPaymentsMaV(getScreen().name());
     displayReceivingPaymentsMaV.getModel().setValue(todaysReceivingPayments);
 
     JScrollPane receivingPaymentsScrollPane = new JScrollPane(displayReceivingPaymentsMaV.getView().newComponentPanel(),
@@ -120,16 +114,12 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
     receivingPaymentsScrollPane.setOpaque(true);
     receivingPaymentsScrollPane.setBorder(BorderFactory.createEmptyBorder());
 
-    walletDetailMaV = Components.newWalletDetailMaV(PANEL_NAME);
     contentPanel.add(sendBitcoin, MultiBitUI.LARGE_BUTTON_MIG + ",align center");
     contentPanel.add(Panels.newVerticalDashedSeparator(), "growy, spany 2");
     contentPanel.add(requestBitcoin, MultiBitUI.LARGE_BUTTON_MIG + ",align center, wrap");
 
     contentPanel.add(sendingPaymentsScrollPane, "grow, push");
     contentPanel.add(receivingPaymentsScrollPane, "grow, push, wrap");
-
-    contentPanel.add(Panels.newHorizontalDashedSeparator(), "span 3, growx, wrap");
-    contentPanel.add(walletDetailMaV.getView().newComponentPanel(), "span 3");
 
     return contentPanel;
   }
@@ -165,6 +155,7 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
+
           if (refreshData) {
             List<PaymentData> allPayments = MultiBitHD.getWalletService().getPaymentDataList();
             // Find the 'Sending' transactions for today
@@ -182,6 +173,7 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
           displayReceivingPaymentsMaV.getView().createView();
           displayReceivingPaymentsMaV.getView().updateView();
           sendBitcoin.requestFocusInWindow();
+          
         }
       });
     }
