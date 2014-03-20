@@ -10,8 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.Writer;
 import java.util.Locale;
 import java.util.Map;
@@ -145,8 +145,10 @@ public class Configurations {
 
     if (propertiesFile.exists()) {
       log.debug("Loading properties from '{}'", propertiesFile.getAbsolutePath());
-      try (FileInputStream fis = new FileInputStream(propertiesFile)) {
-        properties.load(fis);
+
+      // Use a UTF-8 reader
+      try (Reader reader = Files.newReader(propertiesFile, Charsets.UTF_8)) {
+        properties.load(reader);
         log.debug("Properties loaded");
       } catch (IOException e) {
         throw new CoreException(e);
@@ -154,6 +156,34 @@ public class Configurations {
     }
 
     return properties;
+  }
+
+  /**
+   * <p>Writes the given properties to the given file location, deleting any existing file.</p>
+   *
+   * @param propertiesFile The file for writing the properties
+   * @param properties     The properties that will replace
+   */
+  /* package for testing */
+  static void writeProperties(File propertiesFile, Properties properties) {
+
+    Preconditions.checkNotNull(propertiesFile, "'propertiesFile' must be present");
+    Preconditions.checkNotNull(properties, "'properties' must be present");
+
+    // Remove the old properties file to make way for the new
+    if (propertiesFile.exists()) {
+      if (!propertiesFile.delete()) {
+        throw new CoreException("Unable to delete '" + propertiesFile.getAbsolutePath() + "'");
+      }
+    }
+
+    // Use a UTF-8 writer
+    try (Writer writer = Files.newWriter(propertiesFile, Charsets.UTF_8)) {
+      properties.store(writer, "MultiBit HD Information");
+      writer.flush();
+    } catch (IOException e) {
+      throw new CoreException(e);
+    }
   }
 
   /**
@@ -176,33 +206,6 @@ public class Configurations {
     // Write the properties
     writeProperties(configurationFile, newProperties);
 
-  }
-
-  /**
-   * <p>Writes the given properties to the given file location, deleting any existing file.</p>
-   *
-   * @param propertiesFile The file for writing the properties
-   * @param properties     The properties that will replace
-   */
-  /* package for testing */
-  static void writeProperties(File propertiesFile, Properties properties) {
-
-    Preconditions.checkNotNull(propertiesFile, "'propertiesFile' must be present");
-    Preconditions.checkNotNull(properties, "'properties' must be present");
-
-    // Remove the old properties file to make way for the new
-    if (propertiesFile.exists()) {
-      if (!propertiesFile.delete()) {
-        throw new CoreException("Unable to delete '" + propertiesFile.getAbsolutePath() + "'");
-      }
-    }
-
-    try (Writer writer = Files.newWriter(propertiesFile, Charsets.UTF_8)) {
-      properties.store(writer, "MultiBit HD Information");
-      writer.flush();
-    } catch (IOException e) {
-      throw new CoreException(e);
-    }
   }
 
   /**

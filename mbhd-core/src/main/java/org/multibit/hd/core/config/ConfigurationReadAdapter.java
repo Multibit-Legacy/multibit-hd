@@ -86,6 +86,12 @@ public class ConfigurationReadAdapter {
           case BITCOIN_LOCAL_CURRENCY_SYMBOL:
             configuration.getBitcoinConfiguration().setLocalCurrencySymbol(value);
             break;
+          case BITCOIN_CURRENT_EXCHANGE:
+            configuration.getBitcoinConfiguration().setCurrentExchange(value);
+            break;
+          case BITCOIN_EXCHANGE_PUBLIC_KEYS:
+            configuration.getBitcoinConfiguration().setExchangeApiKeys(value);
+            break;
           case SOUND_ALERT:
             configuration.getSoundConfiguration().setAlertSound(Boolean.valueOf(value));
             break;
@@ -106,7 +112,6 @@ public class ConfigurationReadAdapter {
             break;
           default:
             // Fail silently to allow the next item in the chain to complete
-
         }
 
       }

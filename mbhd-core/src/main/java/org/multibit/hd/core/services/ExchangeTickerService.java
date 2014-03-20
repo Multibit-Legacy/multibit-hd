@@ -1,6 +1,7 @@
 package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -92,8 +93,11 @@ public class ExchangeTickerService extends AbstractService {
         ListenableFuture<Ticker> futureTicker = latestTicker();
 
         Futures.addCallback(futureTicker, new FutureCallback<Ticker>() {
+
           @Override
           public void onSuccess(Ticker ticker) {
+
+            Preconditions.checkNotNull(ticker,"'ticker' must be present");
 
             if (previous == null || !ticker.getLast().isEqual(previous)) {
 

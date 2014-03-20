@@ -66,7 +66,7 @@ public class MultiBitHD {
     initialiseUI();
 
     // Start supporting services (wizards, exchange, wallet access etc)
-    //initialiseSupport();
+    initialiseSupport();
 
   }
 
@@ -177,8 +177,6 @@ public class MultiBitHD {
         mainView.refresh();
 
         overlaySecurityAlerts();
-
-        initialiseSupport();
 
       }
 
