@@ -121,7 +121,7 @@ This is sent to the machine running the Matcher using a convenient transport mec
 
 The Matcher decodes the message using `matcher.GPG.private`.
 
-The Matcher generates an 256-bit AES key `matcher.AES.sessionKey` and encrypts it as follows:
+The Matcher generates an AES-256 key `matcher.AES.sessionKey` and encrypts it as follows:
 
 ```
 matcher.AES.sessionKey = AES-encrypt(payer.sessionKey)    (3)
@@ -159,10 +159,10 @@ The Redeemer's EC public key is required to ensure the resulting address generat
 The Redeemer-Payer linking information is stored as follows:
 
 ```
-RIPE160(SHA256(payer.britWalletId)) | redeemer.identifier | GPG-encrypt(payer.britWalletId , redeemer.GPG.public)    (6)
+uniqueId | redeemer.identifier | GPG-encrypt(payer.britWalletId , redeemer.GPG.public)    (6)
 ```
 
-The resulting hash of `payer.britWalletId` is stored in plaintext to allow fast lookup in large data sets.
+The `uniqueId` is stored in plaintext to allow fast lookup in large data sets.
 
 The Redeemer's GPG key is used to encrypt the `payer.walletId` to hide it from the Matcher and protect the Redeemer from a
 compromise of the Matcher database.
@@ -200,7 +200,11 @@ strategies available to further obfuscate the information being leaked that are 
 #### 13. Redeemer synchronizes with Matcher
 
 From time to time the Redeemer will synchronize with the Matcher store to obtain fresh `payer.britWalletId` values for each
-of their uploaded `redeemer.GPG.public` keys.
+of their uploaded `redeemer.GPG.public` keys. They will provide their `redeemer.identifier` to allow the Matcher to perform
+the lookup.
+
+If an attacker guesses `redeemer.identifier`, or is able to clone the Matcher database, this will not assist them
+in either identifying the Redeemer or the address generator for any Redeemer-Payer relationship.
 
 #### 14. Redeemer derives private key
 
