@@ -1,3 +1,5 @@
+![BRIT Overview](brit-overview.png)
+
 ## Description of the Burton-Rowe Income Technique (BRIT)
 
 ### Executive summary
@@ -74,9 +76,11 @@ The Redeemer uses an offline machine to create:
  * the corresponding EC public key (`redeemer.EC.public`)
 
 It should be noted that at this point
+
 ```
 redeemer.EC.public = G(redeemer.EC.private)    (1)
 ```
+
 where `G()` is the EC generator function.
 
 Redeemers are encouraged to generate significant numbers of keys for use in BRIT to obfuscate ongoing income.
@@ -106,9 +110,11 @@ not used as part of a wallet persistence mechanism.
 #### 6. Payer encrypts message for Matcher
 
 The Payer securely obtains the Matcher's GPG public key (`matcher.GPG.public`) and generates an encrypted message as follows:
+
 ```
 GPG-encrypt(matcher.britVersion | payer.britWalletId | payer.sessionKey,  matcher.GPG.public)     (2)
 ```
+
 This is sent to the machine running the Matcher using a convenient transport mechanism.
 
 #### 7. Matcher decrypts message and derives AES session key
@@ -116,18 +122,22 @@ This is sent to the machine running the Matcher using a convenient transport mec
 The Matcher decodes the message using `matcher.GPG.private`.
 
 The Matcher generates an 256-bit AES key `matcher.AES.sessionKey` and encrypts it as follows:
+
 ```
 matcher.AES.sessionKey = AES-encrypt(payer.sessionKey)    (3)
 ```
+
 The purpose of this session key is to encrypt the information returned to the Payer and validates the Matcher is actually
 the BRIT Matcher as only it has the `matcher.GPG.private` key.
 
 #### 8. Matcher selects Redeemer
 
 The Matcher calculates a unique ID using
+
 ```
 uniqueID = RIPE160(SHA256(payer.britWalletId))    (4)
 ```
+
 and attempts to locate an existing Redeemer-Payer link using this identifier. If this operation does not yield a Redeemer
 then one is chosen at random.
 
@@ -137,17 +147,21 @@ restoration to a different machine, then the same Redeemer will be selected to p
 #### 9. Matcher derives an address generator (seed)
 
 The Matcher derives an EC address generator (or seed) as follows:
+
 ```
 addressGenerator = redeemer.EC.public + G(payer.britWalletId)    (5)
 ```
+
 The Redeemer's EC public key is required to ensure the resulting address generator lies on the correct curve.
 
 #### 10. Matcher stores the Redeemer-Payer link
 
 The Redeemer-Payer linking information is stored as follows:
+
 ```
 RIPE160(SHA256(payer.britWalletId)) | redeemer.identifier | GPG-encrypt(payer.britWalletId , redeemer.GPG.public)    (6)
 ```
+
 The resulting hash of `payer.britWalletId` is stored in plaintext to allow fast lookup in large data sets.
 
 The Redeemer's GPG key is used to encrypt the `payer.walletId` to hide it from the Matcher and protect the Redeemer from a
@@ -156,21 +170,27 @@ compromise of the Matcher database.
 #### 11. Matcher sends the address generator to the Payer
 
 The Matcher encrypts `addressGenerator` as follows:
+
 ```
 AES-encrypt(addressGenerator, matcher.AES.sessionKey)    (7)
 ```
+
 The resulting message is sent to the Payer who can decrypt it since they know how `matcher.AES.sessionKey` was derived.
 
 #### 12. Payer creates payment Bitcoin address
 
 Any time the Payer has to make a payment they choose an index `i`, typically in an agreed sequence:
+
 ```
 payer.EC.public(i) = redeemer.EC.public + G(payer.britWalletId) + G(i)    (8)
 ```
+
 which then leads to a Bitcoin address as follows:
+
 ```
 payer.bitcoinAddress(i) = RIPE160(SHA256(payer.EC.public(i)))    (9)
 ```
+
 The Payer then creates a Bitcoin transaction with an output spending to this address. It is expected that this output
 would be included in a transaction that the Payer would be making for another purpose to minimise inconvenience.
 
@@ -185,14 +205,18 @@ of their uploaded `redeemer.GPG.public` keys.
 #### 14. Redeemer derives private key
 
 Whenever a Redeemer wishes to redeem a payment they can do so because of the following relationship:
+
 ```
 payer.EC.public(i) = G(redeemer.EC.private) + G(payer.britWalletId) + G(i)    (10)
 				           = G(redeemer.EC.private + payer.britWalletId + i)    (11)
 ```
+
 Hence the redeeming private key is:
+
 ```
 payer.EC.private(i) = redeemer.EC.private + payer.britWalletId + i    (12)
 ```
+
 So long as the Redeemer is able to obtain `payer.britWalletId` and infer `i` then they can create the necessary private
 key to spend.
 
