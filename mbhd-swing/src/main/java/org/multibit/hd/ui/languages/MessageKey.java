@@ -311,6 +311,7 @@ public enum MessageKey {
   SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_1("select_export_payments_location_note_1"),
   SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_2("select_export_payments_location_note_2"),
   SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_3("select_export_payments_location_note_3"),
+  SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_4("select_export_payments_location_note_4"),
   EXPORT_TRANSACTIONS_STEM("export_transactions_stem"),
   EXPORT_PAYMENT_REQUESTS_STEM("export_payment_requests_stem"),
   EXPORT_WAS_SUCCESSFUL("export_was_successful"),

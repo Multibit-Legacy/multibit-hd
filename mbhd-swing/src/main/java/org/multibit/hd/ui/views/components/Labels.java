@@ -928,6 +928,7 @@ public class Labels {
              MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_1,
              MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_2,
              MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_3,
+             MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_4,
      }, new Object[][]{});
    }
   /**
