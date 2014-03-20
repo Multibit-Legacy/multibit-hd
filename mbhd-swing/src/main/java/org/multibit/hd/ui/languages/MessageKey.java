@@ -101,7 +101,7 @@ public enum MessageKey {
   PREFERENCES("preferences"),
   TOOLS("tools"),
 
-  // Placeholde_ru
+  // Placeholders
   APPROXIMATELY("approximately"),
   PARANTHESES("parantheses"),
   LIST_COMMA("list_comma"),
