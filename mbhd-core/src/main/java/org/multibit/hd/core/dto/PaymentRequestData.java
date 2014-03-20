@@ -11,16 +11,13 @@ import java.util.Set;
  *  <ul>
  *  <li>Additional payment request info</li>
  *  </ul>
- *  Example:<br>
- *  <pre>
- *  </pre>
- *  </p>
  *  
  */
 public class PaymentRequestData implements PaymentData {
 
   private String address;
   private String label;
+  // TODO (JB) Consider changing this to getSatoshis() for consistency and disambiguation
   private BigInteger amountBTC;
   private FiatPayment amountFiat;
   private String note;

@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.payments;
 
+import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
@@ -15,18 +16,17 @@ import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.utils.LocalisedDateUtils;
-import org.multibit.hd.ui.views.components.LabelDecorator;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.*;
+import org.multibit.hd.ui.views.components.display_qrcode.DisplayQRCodeModel;
+import org.multibit.hd.ui.views.components.display_qrcode.DisplayQRCodeView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.math.BigInteger;
 
 /**
@@ -40,8 +40,6 @@ import java.math.BigInteger;
  */
 public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<PaymentsWizardModel, PaymentRequestDetailPanelModel> {
 
-  private static final Logger log = LoggerFactory.getLogger(PaymentRequestDetailPanelView.class);
-
   private JLabel dateValue;
 
   private JLabel statusValue;
@@ -52,12 +50,16 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
   private JLabel noteValue;
 
-
   private JLabel amountBTCValue;
 
   private JLabel amountFiatValue;
 
   private JLabel exchangeRateValue;
+
+  // Support QR code popover
+  private ModelAndView<DisplayQRCodeModel, DisplayQRCodeView> displayQRCodePopoverMaV;
+  private JButton showQRCode;
+
 
   /**
    * @param wizard The wizard managing the states
@@ -89,22 +91,26 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
     JLabel dateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.DATE));
-    dateValue = Labels.newValueLabel("");
+    dateValue = Labels.newBlankLabel();
 
     JLabel statusLabel = Labels.newValueLabel(Languages.safeText(MessageKey.STATUS));
-    statusValue = Labels.newValueLabel("");
+    statusValue = Labels.newBlankLabel();
 
     JLabel addressLabel = Labels.newValueLabel(Languages.safeText(MessageKey.BITCOIN_ADDRESS));
-    addressValue = Labels.newValueLabel("");
+    addressValue = Labels.newBlankLabel();
+
+    // Create the QR code display
+    displayQRCodePopoverMaV = Popovers.newDisplayQRCodePopoverMaV(getPanelName());
+    showQRCode = Buttons.newQRCodeButton(getShowQRCodePopoverAction());
 
     JLabel qrCodeLabelLabel = Labels.newValueLabel(Languages.safeText(MessageKey.QR_CODE_LABEL_LABEL));
-    qrCodeLabelValue = Labels.newValueLabel("");
+    qrCodeLabelValue = Labels.newBlankLabel();
 
     JLabel noteLabel = Labels.newValueLabel(Languages.safeText(MessageKey.NOTES));
-    noteValue = Labels.newValueLabel("");
+    noteValue = Labels.newBlankLabel();
 
-    JLabel amountBTCLabel = Labels.newValueLabel("");
-    amountBTCValue = Labels.newValueLabel("");
+    JLabel amountBTCLabel = Labels.newBlankLabel();
+    amountBTCValue = Labels.newBlankLabel();
     // Bitcoin column
     LabelDecorator.applyBitcoinSymbolLabel(
             amountBTCLabel,
@@ -112,27 +118,35 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
             Languages.safeText(MessageKey.AMOUNT) + " ");
 
     JLabel amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.AMOUNT) + " " + Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencySymbol());
-    amountFiatValue = Labels.newValueLabel("");
+    amountFiatValue = Labels.newBlankLabel();
 
     JLabel exchangeRateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL));
-    exchangeRateValue = Labels.newValueLabel("");
+    exchangeRateValue = Labels.newBlankLabel();
 
     update();
 
     contentPanel.add(statusLabel);
     contentPanel.add(statusValue, "wrap");
+
     contentPanel.add(dateLabel);
     contentPanel.add(dateValue, "wrap");
+
     contentPanel.add(addressLabel);
-    contentPanel.add(addressValue, "wrap");
+    contentPanel.add(addressValue);
+    contentPanel.add(showQRCode, "wrap");
+
     contentPanel.add(qrCodeLabelLabel);
     contentPanel.add(qrCodeLabelValue, "wrap");
+
     contentPanel.add(noteLabel);
     contentPanel.add(noteValue, "wrap");
+
     contentPanel.add(amountBTCLabel);
     contentPanel.add(amountBTCValue, "wrap");
+
     contentPanel.add(amountFiatLabel);
     contentPanel.add(amountFiatValue, "wrap");
+
     contentPanel.add(exchangeRateLabel);
     contentPanel.add(exchangeRateValue, "wrap");
   }
@@ -164,6 +178,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
   }
 
   public void update() {
+
     // Work out the payment request to show
     PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData();
 
@@ -201,4 +216,40 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
       exchangeRateValue.setText(exchangeRateText);
     }
   }
+
+  /**
+   * @return A new action for showing the QR code popover
+   */
+  private Action getShowQRCodePopoverAction() {
+
+    // Show or hide the QR code
+    return new AbstractAction() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData();
+
+        String bitcoinAddress = paymentRequestData.getAddress();
+        BigInteger satoshis = paymentRequestData.getAmountBTC();
+        String label = paymentRequestData.getLabel();
+
+        // Form a Bitcoin URI from the contents
+        String bitcoinUri = BitcoinURI.convertToBitcoinURI(
+          bitcoinAddress,
+          satoshis,
+          label,
+          null
+        );
+
+        displayQRCodePopoverMaV.getModel().setValue(bitcoinUri);
+        displayQRCodePopoverMaV.getModel().setLabel(label);
+
+        // Show the QR code as a popover
+        Panels.showLightBoxPopover(displayQRCodePopoverMaV.getView().newComponentPanel());
+      }
+
+    };
+  }
+
 }

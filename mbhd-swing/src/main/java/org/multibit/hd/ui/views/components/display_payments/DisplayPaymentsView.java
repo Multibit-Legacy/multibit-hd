@@ -33,6 +33,7 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
   private List<ModelAndView<DisplayAmountModel, DisplayAmountView>> displayAmountMaVList = Lists.newArrayList();
 
   private boolean initialised = false;
+
   /**
    * @param model The model backing this view
    */
@@ -45,9 +46,9 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
   public JPanel newComponentPanel() {
 
     panel = Panels.newPanel(new MigLayout(
-            "insets 0", // Layout
-            "[]10[]10[]", // Columns
-            "[][]" // Rows
+      "insets 0", // Layout
+      "[]10[]10[]", // Columns
+      "[][]" // Rows
     ));
 
     // Populate components
@@ -57,6 +58,7 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
   }
 
   public void createView() {
+
     if (getModel().isPresent()) {
       List<PaymentData> paymentDataList = getModel().get().getValue();
       panel.removeAll();
@@ -81,7 +83,7 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
         panel.add(timeLabel, "shrink");
         panel.add(paymentDataLabel, "shrink");
         JPanel amountPanel = paymentAmountMaV.getView().newComponentPanel();
-        amountPanel.setBorder(BorderFactory.createEmptyBorder(5,0,0,0));
+        amountPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
         panel.add(amountPanel, "shrink, wrap");
       }
 
@@ -90,6 +92,7 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
   }
 
   public void updateView() {
+
     if (!initialised) {
       return;
     }
