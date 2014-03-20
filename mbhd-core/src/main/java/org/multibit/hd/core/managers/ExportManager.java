@@ -15,8 +15,6 @@ import org.multibit.hd.core.export.PaymentRequestDataEntryConverter;
 import org.multibit.hd.core.export.PaymentRequestDataHeaderEntryConverter;
 import org.multibit.hd.core.export.TransactionDataEntryConverter;
 import org.multibit.hd.core.export.TransactionDataHeaderEntryConverter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,7 +35,6 @@ import java.util.concurrent.ExecutorService;
  *  
  */
 public class ExportManager {
-  private static final Logger log = LoggerFactory.getLogger(ExportManager.class);
 
   /**
    * The suffix for the CSV files
@@ -56,7 +53,13 @@ public class ExportManager {
     executorService.submit(new Runnable() {
       @Override
       public void run() {
-        ExportManager.exportInternal(paymentDataList, paymentRequestDataList, exportDirectory, transactionFileStem, paymentRequestFileStem);
+        ExportManager.exportInternal(
+          paymentDataList,
+          paymentRequestDataList,
+          exportDirectory,
+          transactionFileStem,
+          paymentRequestFileStem
+        );
       }
     });
 
@@ -120,9 +123,9 @@ public class ExportManager {
 
     List<TransactionData> transactionDataList = Lists.newArrayList();
     if (paymentDataList != null) {
-      for (PaymentData paymentData :  paymentDataList) {
+      for (PaymentData paymentData : paymentDataList) {
         if (paymentData instanceof TransactionData) {
-          transactionDataList.add((TransactionData)paymentData);
+          transactionDataList.add((TransactionData) paymentData);
         }
       }
     }
@@ -135,14 +138,14 @@ public class ExportManager {
       // Write the header row.
       TransactionDataHeaderEntryConverter headerConverter = new TransactionDataHeaderEntryConverter();
       CSVWriter<TransactionData> csvHeaderWriter = new CSVWriterBuilder<TransactionData>(outputStreamWriter).strategy(CSVStrategy.UK_DEFAULT)
-              .entryConverter(headerConverter).build();
+        .entryConverter(headerConverter).build();
 
       csvHeaderWriter.write(new TransactionData(null, null, null, null, null, null, null, null, null, false, null, null, 0));
 
       // Write the body of the CSV file.
       TransactionDataEntryConverter converter = new TransactionDataEntryConverter();
       CSVWriter<TransactionData> csvWriter = new CSVWriterBuilder<TransactionData>(outputStreamWriter).strategy(CSVStrategy.UK_DEFAULT)
-              .entryConverter(converter).build();
+        .entryConverter(converter).build();
 
       csvWriter.writeAll(transactionDataList);
 
@@ -157,14 +160,14 @@ public class ExportManager {
       // Write the header row.
       PaymentRequestDataHeaderEntryConverter headerConverter = new PaymentRequestDataHeaderEntryConverter();
       CSVWriter<PaymentRequestData> csvHeaderWriter = new CSVWriterBuilder<PaymentRequestData>(outputStreamWriter).strategy(CSVStrategy.UK_DEFAULT)
-              .entryConverter(headerConverter).build();
+        .entryConverter(headerConverter).build();
 
       csvHeaderWriter.write(new PaymentRequestData());
 
       // Write the body of the CSV file.
       PaymentRequestDataEntryConverter converter = new PaymentRequestDataEntryConverter();
       CSVWriter<PaymentRequestData> csvWriter = new CSVWriterBuilder<PaymentRequestData>(outputStreamWriter).strategy(CSVStrategy.UK_DEFAULT)
-              .entryConverter(converter).build();
+        .entryConverter(converter).build();
 
       csvWriter.writeAll(paymentRequestDataList);
 
@@ -187,7 +190,7 @@ public class ExportManager {
 
     // If these files don't exist we are done
     if (!((new File(exportPaymentsLocationFile.getAbsolutePath() + File.separator + candidate0)).exists()) &&
-            !((new File(exportPaymentsLocationFile.getAbsolutePath() + File.separator + candidate0)).exists())) {
+      !((new File(exportPaymentsLocationFile.getAbsolutePath() + File.separator + candidate0)).exists())) {
       return new String[]{candidate0, candidate1};
     } else {
       int count = 2;
@@ -196,7 +199,7 @@ public class ExportManager {
         candidate0 = transactionFileStem + OPEN_BRACKET + count + CLOSE_BRACKET + CSV_SUFFIX;
         candidate1 = paymentRequestFileStem + OPEN_BRACKET + count + CLOSE_BRACKET + CSV_SUFFIX;
         if (!((new File(exportPaymentsLocationFile.getAbsolutePath() + File.separator + candidate0)).exists()) &&
-                !((new File(exportPaymentsLocationFile.getAbsolutePath() + File.separator + candidate0)).exists())) {
+          !((new File(exportPaymentsLocationFile.getAbsolutePath() + File.separator + candidate0)).exists())) {
           return new String[]{candidate0, candidate1};
         }
         count++;

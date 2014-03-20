@@ -50,38 +50,9 @@ public class MainController {
 
     CoreServices.uiEventBus.register(this);
 
-  }
-
-  /**
-   * <p>Update all views to use the current configuration</p>
-   *
-   * @param event The change configuration event
-   */
-  @Subscribe
-  public synchronized void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
-
-    log.trace("Received 'configuration changed' event");
-
-    Preconditions.checkNotNull(event, "'event' must be present");
-
-    // Switch the exchange ticker service
     handleExchange();
 
-    // Switch the theme before any other UI building takes place
     handleTheme();
-
-    // Rebuild MainView contents
-    handleLocale();
-
-    // Allow time for the views to update
-    Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
-
-    // Ensure the Swing thread can perform a complete refresh
-    SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        Panels.frame.invalidate();
-      }
-    });
 
   }
 
@@ -146,6 +117,39 @@ public class MainController {
 
     // Update the views to use the new locale (and any other relevant configuration)
     ViewEvents.fireLocaleChangedEvent();
+  }
+
+  /**
+   * <p>Update all views to use the current configuration</p>
+   *
+   * @param event The change configuration event
+   */
+  @Subscribe
+  public synchronized void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
+
+    log.trace("Received 'configuration changed' event");
+
+    Preconditions.checkNotNull(event, "'event' must be present");
+
+    // Switch the exchange ticker service
+    handleExchange();
+
+    // Switch the theme before any other UI building takes place
+    handleTheme();
+
+    // Rebuild MainView contents
+    handleLocale();
+
+    // Allow time for the views to update
+    Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+
+    // Ensure the Swing thread can perform a complete refresh
+    SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+        Panels.frame.invalidate();
+      }
+    });
+
   }
 
   @Subscribe
@@ -213,5 +217,4 @@ public class MainController {
         summary.getSeverity())
     );
   }
-
 }

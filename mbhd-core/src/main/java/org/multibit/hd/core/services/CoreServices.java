@@ -48,11 +48,17 @@ public class CoreServices {
    */
   public static final SecurityCheckingService securityCheckingService;
 
+  /**
+   * Keep track of shutdown events and ensure the configuration is persisted
+   */
+  public static final ConfigurationService configurationService;
+
   static {
 
     // Order is important here
     applicationEventService = new ApplicationEventService();
     securityCheckingService = new SecurityCheckingService();
+    configurationService = new ConfigurationService();
 
   }
 

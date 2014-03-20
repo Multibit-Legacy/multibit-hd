@@ -7,26 +7,27 @@ import org.multibit.hd.core.dto.TransactionData;
  * Create a CSVEntryConverter for the header values in the CSV
  */
 public class TransactionDataHeaderEntryConverter implements CSVEntryConverter<TransactionData> {
-    @Override
-    public String[] convertEntry(TransactionData transactionData) {
-        String[] columns = new String[5];
 
-        // Date.
-        columns[0] = "Date";
+  @Override
+  public String[] convertEntry(TransactionData transactionData) {
+    String[] columns = new String[5];
 
-        // Description.
-        columns[1] = "Description";
+    // Date.
+    columns[0] = "Date";
 
-        // Amount in BTC.
-        columns[2] = "Amount BTC";
+    // Description.
+    columns[1] = "Description";
 
-        // Amount in fiat
-        columns[3] = "Amount fiat";
+    // Amount in BTC.
+    columns[2] = "Amount BTC";
 
-        // Transaction hash.
-        columns[4] = "Transaction Id";
+    // Amount in fiat
+    columns[3] = "Amount fiat";
 
-        return columns;
-    }
+    // Transaction hash.
+    columns[4] = "Transaction Id";
+
+    return columns;
+  }
 }
 

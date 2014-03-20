@@ -46,17 +46,29 @@ public enum BitcoinSymbol {
    */
   UBTC("\u00b5BTC", new BigDecimal(1_000_000), 2),
   /**
-   * The only possible ISO standard name
+   * A possible ISO standard name
    */
   XBT("XBT", BigDecimal.ONE, 8),
   /**
-   * A milli in the only possible ISO standard name
+   * A milli in a possible ISO standard name
    */
   MXBT("mXBT", new BigDecimal(1_000), 5),
   /**
-   * A micro in the only possible ISO standard name
+   * A micro in a possible ISO standard name
    */
   UXBT("\u00b5XBT", new BigDecimal(1_000_000), 2),
+  /**
+   * The <a href="http://bitcoinsymbol.org">Ecogex alternative symbol</a>
+   */
+  ECO("\u0243", BigDecimal.ONE, 8),
+  /**
+   * A milli with the Ecogex alternative symbol
+   */
+  MECO("m\u0243", new BigDecimal(1_000), 5),
+  /**
+   * A micro with the Ecogex alternative symbol
+   */
+  UECO("\u00b5\u0243", new BigDecimal(1_000_000), 2),
   /**
    * Subject of much debate (see <a href="http://www.reddit.com/r/Bitcoin/comments/1rmto3/its_bits/">this Reddit article</a>)
    * However, a "bit" is already used for measuring data transmission and reusing it here would be confusing

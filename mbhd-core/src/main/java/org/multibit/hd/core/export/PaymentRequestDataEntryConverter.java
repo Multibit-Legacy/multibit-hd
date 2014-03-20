@@ -13,39 +13,39 @@ import java.util.Locale;
  */
 public class PaymentRequestDataEntryConverter implements CSVEntryConverter<PaymentRequestData> {
 
-    DateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", Locale.UK);
+  DateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", Locale.UK);
 
 
-    @Override
-    public String[] convertEntry(PaymentRequestData paymentRequestData) {
-        String[] columns = new String[4];
+  @Override
+  public String[] convertEntry(PaymentRequestData paymentRequestData) {
+    String[] columns = new String[4];
 
-        // Date.
-        String formattedDate = "";
-        if (paymentRequestData.getDate() != null) {
-            if (paymentRequestData.getDate().getMillis() != 0) {
-                try {
-                    formattedDate = dateFormatter.format(paymentRequestData.getDate());
-                } catch (IllegalArgumentException iae) {
-                    // ok
-                }
-            }
+    // Date.
+    String formattedDate = "";
+    if (paymentRequestData.getDate() != null) {
+      if (paymentRequestData.getDate().getMillis() != 0) {
+        try {
+          formattedDate = dateFormatter.format(paymentRequestData.getDate());
+        } catch (IllegalArgumentException iae) {
+          // ok
         }
-        columns[0] = formattedDate;
-
-        // Description.
-        columns[1] = paymentRequestData.getDescription() == null ? "" : paymentRequestData.getDescription();
-
-        // Amount in BTC.
-        columns[2] = paymentRequestData.getAmountBTC() == null ? "" : paymentRequestData.getAmountBTC().toString();
-
-        // Amount in fiat
-        columns[3] = "";
-        if (paymentRequestData.getAmountFiat() != null && paymentRequestData.getAmountFiat().getAmount() != null) {
-          columns[3] =  paymentRequestData.getAmountFiat().getAmount().toString();
-        }
-
-        return columns;
+      }
     }
+    columns[0] = formattedDate;
+
+    // Description.
+    columns[1] = paymentRequestData.getDescription() == null ? "" : paymentRequestData.getDescription();
+
+    // Amount in BTC.
+    columns[2] = paymentRequestData.getAmountBTC() == null ? "" : paymentRequestData.getAmountBTC().toString();
+
+    // Amount in fiat
+    columns[3] = "";
+    if (paymentRequestData.getAmountFiat() != null && paymentRequestData.getAmountFiat().getAmount() != null) {
+      columns[3] = paymentRequestData.getAmountFiat().getAmount().toString();
+    }
+
+    return columns;
+  }
 }
 

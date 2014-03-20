@@ -20,9 +20,16 @@ The choice of a robust installer has been a difficult one. Here are the notes th
 * Difficult to get build environment working smoothly (no Maven integration)
 * Lots of quirks in the XML configuration file to locate files (might be due to manual build)
 
-#### How to build
+#### How to build an installer
 
-At the moment it is necessary to manually copy JRE-1.7 JREs into `mbhd-install/JRE-1.7` (it is git ignored).
+JWrapper requires the use of a large JAR and a supporting package of JREs. Clearly these should be held under
+version control and so it is necessary to manually copy the following when making an installer:
+
+* `JRE-1.7` should contain the supported JREs under `win32`, `macos64`,`linux32`,`linux64`
+* `jwrapper-000version.jar` should be copied into `mbhd-install`
+
+All the above, and the derivative files that are produced, are git ignored.
+
 Later these JREs will be automatically downloaded over HTTPS from the main site.
 
 Once the JREs are in place, the build command is

@@ -5,7 +5,6 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.LanguageKey;
 import org.multibit.hd.ui.languages.Languages;
@@ -123,11 +122,6 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
 
         // Determine the new locale
         Locale newLocale = Languages.newLocaleFromCode(localeCode);
-
-        // Create a new configuration to reset the separators
-        Configuration configuration = Configurations.currentConfiguration.deepCopy();
-        LanguageConfiguration languageConfiguration = new LanguageConfiguration(newLocale);
-        configuration.setLanguageConfiguration(languageConfiguration);
 
         // Update the main configuration
         Configuration newConfiguration = Configurations.currentConfiguration.deepCopy();

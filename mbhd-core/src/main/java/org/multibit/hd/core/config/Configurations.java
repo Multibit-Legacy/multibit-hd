@@ -10,8 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.Writer;
 import java.util.Locale;
 import java.util.Map;
@@ -114,7 +114,7 @@ public class Configurations {
   /**
    * @return The persisted configuration
    */
-  public static Configuration readConfiguration() {
+  public static synchronized Configuration readConfiguration() {
 
     File configurationFile = InstallationManager.getConfigurationFile();
 
@@ -145,8 +145,10 @@ public class Configurations {
 
     if (propertiesFile.exists()) {
       log.debug("Loading properties from '{}'", propertiesFile.getAbsolutePath());
-      try (FileInputStream fis = new FileInputStream(propertiesFile)) {
-        properties.load(fis);
+
+      // Use a UTF-8 reader
+      try (Reader reader = Files.newReader(propertiesFile, Charsets.UTF_8)) {
+        properties.load(reader);
         log.debug("Properties loaded");
       } catch (IOException e) {
         throw new CoreException(e);
@@ -154,29 +156,6 @@ public class Configurations {
     }
 
     return properties;
-  }
-
-  /**
-   * <p>Writes the current configuration to the application directory</p>
-   */
-  /* package for testing */
-  static void writeCurrentConfiguration() {
-
-    File configurationFile = InstallationManager.getConfigurationFile();
-
-    // Read in the existing properties in case we are legacy running
-    // in a more recent version's environment
-    Properties existingProperties = readProperties(configurationFile);
-
-    // Create a properties file representation
-    Properties newProperties = new ConfigurationWriteAdapter(currentConfiguration).adapt();
-
-    // Merge the new into the existing, preserving the existing
-    mergeProperties(newProperties, existingProperties);
-
-    // Write the properties
-    writeProperties(configurationFile, newProperties);
-
   }
 
   /**
@@ -198,12 +177,35 @@ public class Configurations {
       }
     }
 
+    // Use a UTF-8 writer
     try (Writer writer = Files.newWriter(propertiesFile, Charsets.UTF_8)) {
       properties.store(writer, "MultiBit HD Information");
       writer.flush();
     } catch (IOException e) {
       throw new CoreException(e);
     }
+  }
+
+  /**
+   * <p>Writes the current configuration to the application directory</p>
+   */
+  public static synchronized void writeCurrentConfiguration() {
+
+    File configurationFile = InstallationManager.getConfigurationFile();
+
+    // Read in the existing properties in case we are legacy running
+    // in a more recent version's environment
+    Properties existingProperties = readProperties(configurationFile);
+
+    // Create a properties file representation
+    Properties newProperties = new ConfigurationWriteAdapter(currentConfiguration).adapt();
+
+    // Merge the new into the existing, preserving the existing
+    mergeProperties(newProperties, existingProperties);
+
+    // Write the properties
+    writeProperties(configurationFile, newProperties);
+
   }
 
   /**
