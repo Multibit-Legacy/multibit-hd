@@ -30,17 +30,21 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
 
   @Override
   public Color getBackgroundNonSelectionColor() {
+
     return null;
+
   }
 
   @Override
   public Color getBackgroundSelectionColor() {
-    //return Themes.currentTheme.sidebarPanelBackground();
+
     return null;
+
   }
 
   @Override
   public Color getBackground() {
+
     return null;
   }
 
@@ -58,11 +62,17 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
 
     // Theme
     ret.setBorder(border);
-    Color iconColor = Themes.currentTheme.text();
+    final Color iconColor;
+    if (sel) {
+      // The sidebar is read only
+      iconColor = Themes.currentTheme.readOnlyComboBox();
+    } else {
+      iconColor = Themes.currentTheme.text();
+    }
     ret.setForeground(iconColor);
 
-    // Minimalist focus
-    setBorderSelectionColor(UIManager.getColor("nimbusFocus"));
+    // No border selection
+    setBorderSelectionColor(Themes.currentTheme.sidebarPanelBackground());
 
     // Iconography (not all icons are created with the same size)
     if (leaf) {
@@ -107,9 +117,10 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
 
       setClosedIcon(
         AwesomeDecorator.createIcon(
-          AwesomeDecorator.select(AwesomeIcon.CARET_RIGHT,AwesomeIcon.CARET_LEFT),
+          AwesomeDecorator.select(AwesomeIcon.CARET_RIGHT, AwesomeIcon.CARET_LEFT),
           Themes.currentTheme.text(),
-          MultiBitUI.NORMAL_ICON_SIZE));
+          MultiBitUI.NORMAL_ICON_SIZE)
+      );
 
     }
 
