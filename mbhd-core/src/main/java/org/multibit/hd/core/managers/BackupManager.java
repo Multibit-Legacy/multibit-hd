@@ -24,6 +24,7 @@ import java.util.Map;
  * Class to manage creation and reading back of the wallet backups.
  */
 public enum BackupManager {
+
   INSTANCE;
 
   public static final String BACKUP_SUFFIX_FORMAT = "yyyyMMddHHmmss";
@@ -72,6 +73,7 @@ public enum BackupManager {
    * Get all the backups available in the local zip backup directory for the wallet id specified.
    */
   public List<BackupSummary> getLocalZipBackups(WalletId walletId) {
+
     // Find the wallet root directory for this wallet id
     File walletRootDirectory = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), WalletManager.createWalletRoot(walletId));
 
@@ -96,6 +98,7 @@ public enum BackupManager {
    * @return The wallet backups available
    */
   public List<BackupSummary> getWalletBackups(WalletId walletId, File directoryName) {
+
     // TODO would also be nice return them sorted by age
 
     List<BackupSummary> walletBackups = Lists.newArrayList();
@@ -105,21 +108,28 @@ public enum BackupManager {
       return walletBackups;
     }
 
-    File[] listOfFiles = directoryName.listFiles();
+    File[] files = directoryName.listFiles();
 
     // Look for filenames with format "mbhd-" + [formatted wallet id ] + "-YYYYMMDDHHMMSS.zip"
-    String backupRegex = WalletManager.WALLET_DIRECTORY_PREFIX + WalletManager.SEPARATOR + walletId.toFormattedString() +
-      WalletManager.SEPARATOR + "\\d{" + BACKUP_SUFFIX_FORMAT.length() + "}" + BACKUP_ZIP_FILE_EXTENSION_REGEX;
-    if (listOfFiles != null) {
-      for (int i = 0; i < listOfFiles.length; i++) {
-        if (listOfFiles[i].isFile()) {
-          if (listOfFiles[i].getName().matches(backupRegex)) {
-            if (listOfFiles[i].length() > 0) {
-              BackupSummary backupSummary = new BackupSummary(walletId, listOfFiles[i].getName(), listOfFiles[i]);
+    String backupRegex = WalletManager.WALLET_DIRECTORY_PREFIX
+      + WalletManager.SEPARATOR
+      + walletId.toFormattedString()
+      + WalletManager.SEPARATOR
+      + "\\d{"
+      + BACKUP_SUFFIX_FORMAT.length()
+      + "}"
+      + BACKUP_ZIP_FILE_EXTENSION_REGEX;
+
+    if (files != null) {
+      for (File file : files) {
+        if (file.isFile()) {
+          if (file.getName().matches(backupRegex)) {
+            if (file.length() > 0) {
+              BackupSummary backupSummary = new BackupSummary(walletId, file.getName(), file);
               // Work out timestamp
               int start = (WalletManager.MBHD_WALLET_PREFIX + WalletManager.SEPARATOR + WalletManager.SEPARATOR).length() + WalletId.LENGTH_OF_FORMATTED_WALLETID;
               int stop = start + BACKUP_SUFFIX_FORMAT.length();
-              String timeStampString = FileUtils.filePart(listOfFiles[i].getName().substring(start, stop));
+              String timeStampString = FileUtils.filePart(file.getName().substring(start, stop));
               try {
                 DateTime timestamp = new DateTime(getDateFormat().parse(timeStampString));
                 backupSummary.setCreated(timestamp);
@@ -145,6 +155,7 @@ public enum BackupManager {
    * @return a list of filenames of the rolling backups, oldest first
    */
   public List<File> getRollingBackups(WalletId walletId) {
+
     Preconditions.checkNotNull(walletId);
 
     // Calculate the directory the rolling backups are stored in for this wallet id
@@ -158,23 +169,23 @@ public enum BackupManager {
     }
 
     // See if there are any wallet rolling backups.
-    File[] listOfFiles = rollingBackupDirectory.listFiles();
+    File[] files = rollingBackupDirectory.listFiles();
 
     Map<Long, File> mapOfTimeToFile = Maps.newTreeMap(); // Note that this is sorted by long
 
     // Look for filenames with format "text"-YYYYMMDDHHMMSS.wallet<eol> and are not empty.
-    if (listOfFiles != null) {
-      for (int i = 0; i < listOfFiles.length; i++) {
-        if (listOfFiles[i].isFile()) {
-          if (listOfFiles[i].getName().matches(REGEX_FOR_TIMESTAMP_AND_WALLET_SUFFIX)) {
-            if (listOfFiles[i].length() > 0) {
+    if (files != null) {
+      for (File file : files) {
+        if (file.isFile()) {
+          if (file.getName().matches(REGEX_FOR_TIMESTAMP_AND_WALLET_SUFFIX)) {
+            if (file.length() > 0) {
               // Work out timestamp
               int start = (WalletManager.MBHD_WALLET_PREFIX + WalletManager.SEPARATOR).length();
               int stop = start + BACKUP_SUFFIX_FORMAT.length();
-              String timeStampString = listOfFiles[i].getName().substring(start, stop);
+              String timeStampString = file.getName().substring(start, stop);
               try {
                 long timestamp = getDateFormat().parse(timeStampString).getTime();
-                mapOfTimeToFile.put(timestamp, listOfFiles[i]);
+                mapOfTimeToFile.put(timestamp, file);
               } catch (ParseException pe) {
                 pe.printStackTrace();
               }
@@ -215,17 +226,27 @@ public enum BackupManager {
     Preconditions.checkNotNull(applicationDataDirectory, "'applicationDataDirectory' must be present. Check BackupManager has been initialised");
 
     // Find the wallet root directory for this wallet id
-    File walletRootDirectory = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), WalletManager.createWalletRoot(walletData.getWalletId()));
+    File walletRootDirectory = WalletManager.getWalletDirectory(
+      applicationDataDirectory.getAbsolutePath(),
+      WalletManager.createWalletRoot(walletData.getWalletId())
+    );
 
     if (!walletRootDirectory.exists()) {
       throw new IOException("Directory " + walletRootDirectory + " does not exist. Cannot create rolling backup.");
     }
 
-    String rollingBackupDirectoryName = walletRootDirectory + File.separator + BackupManager.ROLLING_BACKUP_DIRECTORY_NAME;
+    String rollingBackupDirectoryName = walletRootDirectory
+      + File.separator
+      + BackupManager.ROLLING_BACKUP_DIRECTORY_NAME;
     FileUtils.createDirectoryIfNecessary(new File(rollingBackupDirectoryName));
 
-    String walletBackupFilename = rollingBackupDirectoryName + File.separator + WalletManager.MBHD_WALLET_PREFIX + WalletManager.SEPARATOR
-      + getDateFormat().format(new Date()) + WalletManager.MBHD_WALLET_SUFFIX;
+    // TODO Use Dates instead
+    String walletBackupFilename = rollingBackupDirectoryName
+      + File.separator
+      + WalletManager.MBHD_WALLET_PREFIX
+      + WalletManager.SEPARATOR
+      + getDateFormat().format(new Date())
+      + WalletManager.MBHD_WALLET_SUFFIX;
 
     File walletBackupFile = new File(walletBackupFilename);
     log.debug("Creating rolling-backup '" + walletBackupFilename + "'");
@@ -257,6 +278,7 @@ public enum BackupManager {
    * @return The created local backup as a file
    */
   public File createLocalAndCloudBackup(WalletId walletId) throws IOException {
+
     Preconditions.checkNotNull(applicationDataDirectory);
     Preconditions.checkNotNull(walletId);
 
@@ -285,6 +307,7 @@ public enum BackupManager {
     } else {
       log.debug("No cloud backup made for wallet '" + walletId + "' as no cloudBackupDirectory is set.");
     }
+
     return new File(localBackupFilename);
   }
 
@@ -293,6 +316,7 @@ public enum BackupManager {
    * Load a backup file, copying all the backup files to the appropriate wallet root directory
    */
   public WalletId loadBackup(File backupFileToLoad) throws IOException {
+
     // Work out the walletId of the backup file being loaded
     String backupFilename = backupFileToLoad.getName();
 
@@ -322,11 +346,13 @@ public enum BackupManager {
   }
 
   /**
+   * TODO Use Dates factory instead
    * Get the date formatter used to create timestamps
    *
    * @return dateFormat for formatting dates to timestamps
    */
   private SimpleDateFormat getDateFormat() {
+
     if (dateFormat == null) {
       dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
     }
@@ -334,293 +360,3 @@ public enum BackupManager {
   }
 
 }
-
-//  /**
-//   * Thin the wallet backups when they reach the MAXIMUM_NUMBER_OF_BACKUPS setting.
-//   * Thinning is done by removing the most quickly replaced backup, except for the first and last few
-//   * (as they are considered to be more valuable backups).
-//   *
-//   * @param backupDirectoryName
-//   */
-//  void thinBackupDirectory(String walletFilename, String backupSuffixText) {
-//    if (walletFilename == null || backupSuffixText == null) {
-//      return;
-//    }
-//
-//    // Find out how many wallet backups there are.
-//    List<File> backupWallets = getWalletsInBackupDirectory(walletFilename, backupSuffixText);
-//
-//    if (backupWallets.size() < MAXIMUM_NUMBER_OF_BACKUPS) {
-//      // No thinning required.
-//      return;
-//    }
-//
-//    // Work out the date the backup was made for each of the wallet.
-//    // This is done using the timestamp rather than the write time of the file.
-//    Map<File, Date> mapOfFileToBackupTimes = new HashMap<File, Date>();
-//    for (int i = 0; i < backupWallets.size(); i++) {
-//      String filename = backupWallets.get(i).getName();
-//      if (filename.length() > 22) { // 22 = 1 for hyphen + 14 for timestamp + 1 for dot + 6 for wallet.
-//        int startOfTimestamp = filename.length() - 21; // 21 = 14 for timestamp + 1 for dot + 6 for wallet.
-//        String timestampText = filename.substring(startOfTimestamp, startOfTimestamp + BACKUP_SUFFIX_FORMAT.length());
-//        try {
-//          Date parsedTimestamp = dateFormat.parse(timestampText);
-//          mapOfFileToBackupTimes.put(backupWallets.get(i), parsedTimestamp);
-//        } catch (ParseException pe) {
-//          // Cannot parse text - may be some other type of file the user has put in the directory.
-//          log.debug("For wallet '" + filename + " could not parse the timestamp of '" + timestampText + "'.");
-//        }
-//      }
-//    }
-//
-//    // See which wallet is most quickly replaced by another backup - this will be thinned.
-//    int walletBackupToDeleteIndex = -1; // Not set yet.
-//    long walletBackupToDeleteReplacementTimeMillis = Integer.MAX_VALUE; // How quickly the wallet was replaced by a later one.
-//
-//    for (int i = 0; i < backupWallets.size(); i++) {
-//      if ((i < NUMBER_OF_FIRST_WALLETS_TO_ALWAYS_KEEP)
-//              || (i >= backupWallets.size() - NUMBER_OF_LAST_WALLETS_TO_ALWAYS_KEEP)) {
-//        // Keep the very first and last wallets always.
-//      } else {
-//        // If there is a data directory for the backup then it may have been opened
-//        // in MultiBit so we will skip considering it for deletion.
-//        String possibleDataDirectory = calculateTopLevelBackupDirectoryName(backupWallets.get(i));
-//        boolean theWalletHasADataDirectory = (new File(possibleDataDirectory)).exists();
-//
-//        // Work out how quickly the wallet is replaced by the next backup.
-//        Date thisWalletTimestamp = mapOfFileToBackupTimes.get(backupWallets.get(i));
-//        Date nextWalletTimestamp = mapOfFileToBackupTimes.get(backupWallets.get(i + 1));
-//        if (thisWalletTimestamp != null && nextWalletTimestamp != null) {
-//          long deltaTimeMillis = nextWalletTimestamp.getTime() - thisWalletTimestamp.getTime();
-//          if (deltaTimeMillis < walletBackupToDeleteReplacementTimeMillis && !theWalletHasADataDirectory) {
-//            // This is the best candidate for deletion so far.
-//            walletBackupToDeleteIndex = i;
-//            walletBackupToDeleteReplacementTimeMillis = deltaTimeMillis;
-//          }
-//        }
-//      }
-//    }
-//
-//    if (walletBackupToDeleteIndex > -1) {
-//      try {
-//        // Secure delete the chosen backup wallet and its info file if present.
-//        log.debug("To save space, secure deleting backup wallet '"
-//                + backupWallets.get(walletBackupToDeleteIndex).getAbsolutePath() + "'.");
-//        .secureDelete(backupWallets.get(walletBackupToDeleteIndex));
-//
-//        String walletInfoBackupFilename = backupWallets.get(walletBackupToDeleteIndex).getAbsolutePath()
-//                .replaceAll(BitcoinModel.WALLET_FILE_EXTENSION + "$", INFO_FILE_SUFFIX_STRING);
-//        File walletInfoBackup = new File(walletInfoBackupFilename);
-//        if (walletInfoBackup.exists()) {
-//          log.debug("To save space, secure deleting backup info file '" + walletInfoBackup.getAbsolutePath() + "'.");
-//          secureDelete(walletInfoBackup);
-//        }
-//      } catch (IOException ioe) {
-//        log.error(ioe.getClass().getName() + " " + ioe.getMessage());
-//      }
-//    }
-//  }
-//
-//  void copyFileAndEncrypt(File sourceFile, File destinationFile, CharSequence passwordToUse) throws IOException {
-//    if (passwordToUse == null || passwordToUse.length() == 0) {
-//      throw new IllegalArgumentException("Password cannot be blank");
-//    }
-//
-//    if (destinationFile.exists()) {
-//      throw new IllegalArgumentException("The destination file '" + destinationFile.getAbsolutePath() + "' already exists.");
-//    } else {
-//      // Attempt to create it
-//      if (!destinationFile.createNewFile()) {
-//        throw new IllegalArgumentException("The destination file '" + destinationFile.getAbsolutePath() + "' could not be created. Check permissions.");
-//      }
-//    }
-//
-//    // Read in the source file.
-//    byte[] sourceFileUnencrypted = FileHandler.read(sourceFile);
-//
-//    // Encrypt the data.
-//    byte[] salt = new byte[KeyCrypterScrypt.SALT_LENGTH];
-//    secureRandom.nextBytes(salt);
-//
-//    Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder()
-//            .setSalt(ByteString.copyFrom(salt));
-//    Protos.ScryptParameters scryptParameters = scryptParametersBuilder.build();
-//    KeyCrypterScrypt keyCrypter = new KeyCrypterScrypt(scryptParameters);
-//    EncryptedPrivateKey encryptedData = keyCrypter.encrypt(sourceFileUnencrypted, keyCrypter.deriveKey(passwordToUse));
-//
-//    // The format of the encrypted data is:
-//    // 7 magic bytes 'mendoza' in ASCII.
-//    // 1 byte version number of format - initially set to 0
-//    // 8 bytes salt
-//    // 16 bytes iv
-//    // rest of file is the encrypted byte data
-//
-//    FileOutputStream fileOutputStream = null;
-//    try {
-//      fileOutputStream = new FileOutputStream(destinationFile);
-//      fileOutputStream.write(ENCRYPTED_FILE_FORMAT_MAGIC_BYTES);
-//
-//      // file format version.
-//      fileOutputStream.write(FILE_ENCRYPTED_VERSION_NUMBER);
-//
-//      fileOutputStream.write(salt); // 8 bytes.
-//      fileOutputStream.write(encryptedData.getInitialisationVector()); // 16 bytes.
-//      System.out.println(Utils.bytesToHexString(encryptedData.getInitialisationVector()));
-//
-//      fileOutputStream.write(encryptedData.getEncryptedBytes());
-//      System.out.println(Utils.bytesToHexString(encryptedData.getEncryptedBytes()));
-//    } finally {
-//      if (fileOutputStream != null) {
-//        fileOutputStream.flush();
-//        fileOutputStream.close();
-//      }
-//    }
-//
-//    // Read in the file again and decrypt it to make sure everything was ok.
-//    byte[] phoenix = readFileAndDecrypt(destinationFile, passwordToUse);
-//
-//    if (!org.spongycastle.util.Arrays.areEqual(sourceFileUnencrypted, phoenix)) {
-//      throw new IOException("File '" + sourceFile.getAbsolutePath() + "' was not correctly encrypted to file '" + destinationFile.getAbsolutePath());
-//    }
-//  }
-//
-//  public byte[] readFileAndDecrypt(File encryptedFile, CharSequence passwordToUse) throws IOException {
-//    // Read in the encrypted file.
-//    byte[] sourceFileEncrypted = FileHandler.read(encryptedFile);
-//
-//    // Check the first bytes match the magic number.
-//    if (!org.spongycastle.util.Arrays.areEqual(ENCRYPTED_FILE_FORMAT_MAGIC_BYTES, org.spongycastle.util.Arrays.copyOfRange(sourceFileEncrypted, 0, ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length))) {
-//      throw new IOException("File '" + encryptedFile.getAbsolutePath() + "' did not start with the correct magic bytes.");
-//    }
-//
-//    // If the file is too short don't process it.
-//    if (sourceFileEncrypted.length < ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1 + KeyCrypterScrypt.SALT_LENGTH + KeyCrypterScrypt.BLOCK_LENGTH) {
-//      throw new IOException("File '" + encryptedFile.getAbsolutePath() + "' is too short to decrypt. It is " + sourceFileEncrypted.length + " bytes long.");
-//    }
-//
-//    // Check the format version.
-//    String versionNumber = "" + sourceFileEncrypted[ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length];
-//    //System.out.println("FileHandler - versionNumber = " + versionNumber);
-//    if (!("0".equals(versionNumber))) {
-//      throw new IOException("File '" + encryptedFile.getAbsolutePath() + "' did not have the expected version number of 0. It was " + versionNumber);
-//    }
-//
-//    // Extract the salt.
-//    byte[] salt = org.spongycastle.util.Arrays.copyOfRange(sourceFileEncrypted, ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1, ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1 + KeyCrypterScrypt.SALT_LENGTH);
-//    //System.out.println("FileHandler - salt = " + Utils.bytesToHexString(salt));
-//
-//    // Extract the IV.
-//    byte[] iv = org.spongycastle.util.Arrays.copyOfRange(sourceFileEncrypted, ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1 + KeyCrypterScrypt.SALT_LENGTH, ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1 + KeyCrypterScrypt.SALT_LENGTH + KeyCrypterScrypt.BLOCK_LENGTH);
-//    //System.out.println("FileHandler - iv = " + Utils.bytesToHexString(iv));
-//
-//    // Extract the encrypted bytes.
-//    byte[] encryptedBytes = org.spongycastle.util.Arrays.copyOfRange(sourceFileEncrypted, ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1 + KeyCrypterScrypt.SALT_LENGTH + KeyCrypterScrypt.BLOCK_LENGTH, sourceFileEncrypted.length);
-//    //System.out.println("FileHandler - encryptedBytes = " + Utils.bytesToHexString(encryptedBytes));
-//
-//    // Decrypt the data.
-//    Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(salt));
-//    Protos.ScryptParameters scryptParameters = scryptParametersBuilder.build();
-//    KeyCrypter keyCrypter = new KeyCrypterScrypt(scryptParameters);
-//    EncryptedPrivateKey encryptedPrivateKey = new EncryptedPrivateKey(iv, encryptedBytes);
-//    return keyCrypter.decrypt(encryptedPrivateKey, keyCrypter.deriveKey(passwordToUse));
-//  }
-//
-//  /**
-//   * Work out the best wallet backups to try to loadContacts
-//   *
-//   * @param walletFile
-//   * @return Collection<String> The best wallets to try to loadContacts, in order of goodness.
-//   */
-//  Collection<String> calculateBestWalletBackups(File walletFile, WalletInfoData walletInfo) {
-//    Collection<String> backupWalletsToTry = new ArrayList<String>();
-//
-//    // Get the name of the rolling backup file.
-//    String walletBackupFilenameLong = walletInfo.getProperty(BitcoinModel.WALLET_BACKUP_FILE);
-//    String walletBackupFilenameShort = null;
-//    if (walletBackupFilenameLong != null && !"".equals(walletBackupFilenameLong)) {
-//      File walletBackupFile = new File(walletBackupFilenameLong);
-//      walletBackupFilenameShort = walletBackupFile.getName();
-//      if (!walletBackupFile.exists()) {
-//        walletBackupFilenameLong = null;
-//        walletBackupFilenameShort = null;
-//      }
-//    } else {
-//      // No backup file was listed in the info file. Maybe it is damaged so take the most recent
-//      // file in the rolling backup directory, if there is one.
-//      Collection<File> rollingWalletBackups = getWalletsInBackupDirectory(walletFile.getAbsolutePath(),
-//              ROLLING_WALLET_BACKUP_DIRECTORY_NAME);
-//      if (rollingWalletBackups != null && !rollingWalletBackups.isEmpty()) {
-//        List<String> rollingWalletBackupFilenames = new ArrayList<String>();
-//        for (File file : rollingWalletBackups) {
-//          rollingWalletBackupFilenames.add(file.getAbsolutePath());
-//        }
-//        Collections.sort(rollingWalletBackupFilenames);
-//        walletBackupFilenameLong = rollingWalletBackupFilenames.get(rollingWalletBackupFilenames.size() - 1);
-//        walletBackupFilenameShort = (new File(walletBackupFilenameLong)).getName();
-//      }
-//    }
-//
-//    Collection<File> unencryptedWalletBackups = getWalletsInBackupDirectory(walletFile.getAbsolutePath(),
-//            UNENCRYPTED_WALLET_BACKUP_DIRECTORY_NAME);
-//    Collection<File> encryptedWalletBackups = getWalletsInBackupDirectory(walletFile.getAbsolutePath(),
-//            ENCRYPTED_WALLET_BACKUP_DIRECTORY_NAME);
-//
-//    // Make a list of ALL the unencrypted and encrypted backup names and sort them.
-//    // Because the backups have a timestamp YYYYMMDDHHMMSS sort in ascending order gives most recent - we will use this one.
-//    List<String> encryptedAndUnencryptedFilenames = new ArrayList<String>();
-//
-//    // Sorting is done by the filename, keep track of the corresponding absolute path.
-//    Map<String, String> shortNamesToLongMap = new HashMap<String, String>();
-//
-//    if (unencryptedWalletBackups != null) {
-//      for (File file : unencryptedWalletBackups) {
-//        encryptedAndUnencryptedFilenames.add(file.getName());
-//        shortNamesToLongMap.put(file.getName(), file.getAbsolutePath());
-//      }
-//    }
-//    if (encryptedWalletBackups != null) {
-//      for (File file : encryptedWalletBackups) {
-//        encryptedAndUnencryptedFilenames.add(file.getName());
-//        // If there is a duplicate, encrypted wallets are preferred.
-//        shortNamesToLongMap.put(file.getName(), file.getAbsolutePath());
-//      }
-//    }
-//
-//    Collections.sort(encryptedAndUnencryptedFilenames);
-//
-//    String bestCandidateShort = null;
-//    String bestCandidateLong = null;
-//    if (encryptedAndUnencryptedFilenames.size() > 0) {
-//      bestCandidateShort = encryptedAndUnencryptedFilenames.get(encryptedAndUnencryptedFilenames.size() - 1);
-//      if (bestCandidateShort != null) {
-//        bestCandidateLong = shortNamesToLongMap.get(bestCandidateShort);
-//      }
-//    }
-//    log.debug("For wallet '" + walletFile + "' the rolling backup file was '" + walletBackupFilenameLong + "' and the best encrypted/ unencrypted backup was '" + bestCandidateLong + "'");
-//
-//    if (walletBackupFilenameLong == null) {
-//      if (bestCandidateLong == null) {
-//        // No backups to try.
-//      } else {
-//        // bestCandidate only.
-//        backupWalletsToTry.add(bestCandidateLong);
-//      }
-//    } else {
-//      if (bestCandidateLong == null) {
-//        // WalletBackupFilename only.
-//        backupWalletsToTry.add(walletBackupFilenameLong);
-//      } else {
-//        // Have both. Try the most recent first (preferring the backups to the rolling backups if there is a tie).
-//        if (walletBackupFilenameShort.compareTo(bestCandidateShort) <= 0) {
-//          backupWalletsToTry.add(bestCandidateLong);
-//          backupWalletsToTry.add(walletBackupFilenameLong);//    return backupWalletsToTry;
-//  }
-//        } else {
-//          backupWalletsToTry.add(walletBackupFilenameLong);
-//          backupWalletsToTry.add(bestCandidateLong);
-//        }
-//      }
-//    }
-
-
-
