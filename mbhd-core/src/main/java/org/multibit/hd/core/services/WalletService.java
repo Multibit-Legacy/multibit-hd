@@ -15,6 +15,7 @@ import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.exchanges.ExchangeKey;
+import org.multibit.hd.core.managers.ExportManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.store.Payments;
 import org.multibit.hd.core.store.PaymentsProtobufSerializer;
@@ -54,11 +55,6 @@ public class WalletService {
    * The text separator used in localising To: and By: prefices
    */
   public static final String PREFIX_SEPARATOR = ": ";
-
-  /**
-   * The suffix for the CSV files
-   */
-  public static final String CSV_SUFFIX = ".csv";
 
   /**
    * The location of the backing writeContacts for the payments
@@ -595,8 +591,8 @@ public class WalletService {
     transactionInfoMap.put(transactionInfo.getHash(), transactionInfo);
   }
 
-  public Collection<PaymentRequestData> getPaymentRequests() {
-    return paymentRequestMap.values();
+  List<PaymentRequestData> getPaymentRequests() {
+    return Lists.newArrayList(paymentRequestMap.values());
   }
 
   /**
@@ -672,13 +668,14 @@ public class WalletService {
 
   /**
    * Export the payments to two CSV files - one for transactions, one for payment requests.
-   * Sends a ExportPaymentsReportEvent with the results.
+   * Sends a ExportPerformedEvent with the results.
    * @param exportDirectory The directory to export to
    * @param transactionFileStem The stem of the export file for the transactions (will be suffixed with a file suffix and possibly a bracketed number for uniqueness)
    * @param paymentRequestFileStem The stem of the export file for the payment requests (will be suffixed with a file suffix and possibly a bracketed number for uniqueness)
    */
   public void exportPayments(File exportDirectory, String transactionFileStem, String paymentRequestFileStem) {
-    log.debug("Creating transactions export to file '" + exportDirectory + File.separator + transactionFileStem + "'");
-    log.debug("Creating payment requests export to file '" + exportDirectory + File.separator + paymentRequestFileStem + "'");
+    // Refresh all payments
+    List<PaymentData> paymentDataList = getPaymentDataList();
+    ExportManager.export(paymentDataList, getPaymentRequests(), exportDirectory, transactionFileStem, paymentRequestFileStem);
   }
 }
