@@ -45,10 +45,8 @@ public class CoreEvents {
    * @param expires      The expiry timestamp of this rate
    */
   public static void fireExchangeRateChangedEvent(BigMoney rate, Optional<String> rateProvider, DateTime expires) {
-
     log.trace("Firing 'exchange rate changed' event");
     CoreServices.uiEventBus.post(new ExchangeRateChangedEvent(rate, rateProvider, expires));
-
   }
 
   /**
@@ -57,10 +55,8 @@ public class CoreEvents {
    * @param transactionCreationEvent containing transaction creation information
    */
   public static void fireTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
-
     log.trace("Firing 'transactionCreation' event");
     CoreServices.uiEventBus.post(transactionCreationEvent);
-
   }
 
   /**
@@ -69,7 +65,6 @@ public class CoreEvents {
    * @param bitcoinSentEvent containing send information
    */
   public static void fireBitcoinSentEvent(BitcoinSentEvent bitcoinSentEvent) {
-
     log.trace("Firing 'bitcoin sent' event");
     CoreServices.uiEventBus.post(bitcoinSentEvent);
   }
@@ -80,10 +75,8 @@ public class CoreEvents {
    * @param transactionSeenEvent containing transaction information
    */
   public static void fireTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
-
     CoreServices.uiEventBus.post(transactionSeenEvent);
     consolidateTransactionSeenEvents();
-
   }
 
   /**
@@ -114,7 +107,6 @@ public class CoreEvents {
    * @param bitcoinNetworkSummary The Bitcoin network summary
    */
   public static void fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary bitcoinNetworkSummary) {
-
     if (bitcoinNetworkSummary.getPercent() > 0) {
       log.trace("Firing 'Bitcoin network changed' event: {}%", bitcoinNetworkSummary.getPercent());
     } else {
@@ -130,9 +122,7 @@ public class CoreEvents {
    * @param securitySummary The security summary
    */
   public static void fireSecurityEvent(SecuritySummary securitySummary) {
-
     log.trace("Firing 'security' event");
-
     CoreServices.uiEventBus.post(new SecurityEvent(securitySummary));
   }
 
@@ -142,9 +132,7 @@ public class CoreEvents {
    * @param historyEntry The history entry from the History service
    */
   public static void fireHistoryChangedEvent(HistoryEntry historyEntry) {
-
     log.trace("Firing 'history changed' event");
-
     CoreServices.uiEventBus.post(new HistoryChangedEvent(historyEntry));
   }
 
@@ -152,20 +140,21 @@ public class CoreEvents {
    * <p>Broadcast a new "shutdown" event</p>
    */
   public static void fireShutdownEvent() {
-
     log.trace("Firing 'shutdown' event");
     CoreServices.uiEventBus.post(new ShutdownEvent());
-
   }
 
   /**
    * <p>Broadcast a new "configuration changed" event</p>
    */
   public static void fireConfigurationChangedEvent() {
-
     log.trace("Firing 'configuration changed' event");
     CoreServices.uiEventBus.post(new ConfigurationChangedEvent());
+  }
 
+  public static void fireExportPerformedEvent(ExportPerformedEvent exportPerformedEvent) {
+    log.trace("Firing 'export performed' event");
+    CoreServices.uiEventBus.post(exportPerformedEvent);
   }
 
 }

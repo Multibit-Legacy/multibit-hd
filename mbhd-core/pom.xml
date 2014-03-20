@@ -139,14 +139,11 @@
       <artifactId>xchange-bitcoincharts</artifactId>
       <version>${xchange.version}</version>
     </dependency>
-    <!-- XChange Bitcoin Average support (in 2.0.0+) -->
-    <!--
     <dependency>
-      <groupId>com.xeiam.xchange</groupId>
-      <artifactId>xchange-bitcoinaverage</artifactId>
-      <version>${xchange.version}</version>
+        <groupId>com.googlecode.jcsv</groupId>
+        <artifactId>jcsv</artifactId>
+        <version>1.4.0</version>
     </dependency>
-  -->
 
   </dependencies>
 
