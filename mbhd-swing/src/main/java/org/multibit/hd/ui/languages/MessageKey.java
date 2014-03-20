@@ -94,14 +94,14 @@ public enum MessageKey {
 
   // Sidebar
 
+  SEND_OR_REQUEST("send_or_request"),
   CONTACTS("contacts"),
   TRANSACTIONS("transactions"),
   HISTORY("history"),
   PREFERENCES("preferences"),
   TOOLS("tools"),
 
-  // Placeholders
-
+  // Placeholde_ru
   APPROXIMATELY("approximately"),
   PARANTHESES("parantheses"),
   LIST_COMMA("list_comma"),
