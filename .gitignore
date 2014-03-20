@@ -19,6 +19,7 @@
 target/
 
 # JWrapper
+mbhd-install/jwrapper-*.jar
 mbhd-install/JRE-1.7/
 mbhd-install/jwrapper/
 mbhd-install/wrappers/
