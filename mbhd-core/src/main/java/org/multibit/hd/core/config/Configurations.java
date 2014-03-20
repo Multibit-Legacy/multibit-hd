@@ -114,7 +114,7 @@ public class Configurations {
   /**
    * @return The persisted configuration
    */
-  public static Configuration readConfiguration() {
+  public static synchronized Configuration readConfiguration() {
 
     File configurationFile = InstallationManager.getConfigurationFile();
 
@@ -159,8 +159,7 @@ public class Configurations {
   /**
    * <p>Writes the current configuration to the application directory</p>
    */
-  /* package for testing */
-  static void writeCurrentConfiguration() {
+  public static synchronized void writeCurrentConfiguration() {
 
     File configurationFile = InstallationManager.getConfigurationFile();
 
