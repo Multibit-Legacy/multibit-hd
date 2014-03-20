@@ -330,14 +330,14 @@ public class PaymentsProtobufSerializer {
     transactionInfoBuilder.setNote(transactionInfo.getNote());
 
     Optional<BigInteger> clientFee = transactionInfo.getClientFee();
-    if (clientFee.isPresent()) {
+    if (clientFee.isPresent() && transactionInfo.getClientFee().get() != null) {
       transactionInfoBuilder.setClientFee(transactionInfo.getClientFee().get().longValue());
     } else {
       transactionInfoBuilder.setClientFee(ABSENT_VALUE);
     }
 
     Optional<BigInteger> minerFee = transactionInfo.getMinerFee();
-    if (minerFee.isPresent()) {
+    if (minerFee.isPresent()  && transactionInfo.getMinerFee().get() != null) {
       transactionInfoBuilder.setMinerFee(minerFee.get().longValue());
     } else {
       transactionInfoBuilder.setMinerFee(ABSENT_VALUE);
