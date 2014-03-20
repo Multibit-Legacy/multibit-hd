@@ -18,15 +18,15 @@ public class ExportPerformedEvent implements CoreEvent {
 
   private final CoreMessageKey exportFailureReasonKey;
 
-  public ExportPerformedEvent(String transactionsExportFilename, String paymentRequestsExportFilename, boolean exportWasSuccessful, CoreMessageKey sendFailureReasonKey, String[] sendFailureReasonData) {
+  public ExportPerformedEvent(String transactionsExportFilename, String paymentRequestsExportFilename, boolean exportWasSuccessful, CoreMessageKey exportFailureReasonKey, String[] exportFailureReasonData) {
     this.transactionsExportFilename = transactionsExportFilename;
     this.paymentRequestsExportFilename = paymentRequestsExportFilename;
     this.exportWasSuccessful = exportWasSuccessful;
-    this.exportFailureReasonKey = sendFailureReasonKey;
-    this.sendFailureReasonData = sendFailureReasonData;
+    this.exportFailureReasonKey = exportFailureReasonKey;
+    this.exportFailureReasonData = exportFailureReasonData;
   }
 
-  private final String[] sendFailureReasonData;
+  private final String[] exportFailureReasonData;
 
 
   public boolean isExportWasSuccessful() {
@@ -37,8 +37,8 @@ public class ExportPerformedEvent implements CoreEvent {
     return exportFailureReasonKey;
   }
 
-  public String[] getSendFailureReasonData() {
-    return sendFailureReasonData;
+  public String[] getExportFailureReasonData() {
+    return exportFailureReasonData;
   }
 
   public String getTransactionsExportFilename() {

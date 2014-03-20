@@ -67,6 +67,9 @@ public class ExportManager {
     // On completion this fires an ExportPerformedEvent that you subscribe to to find out what happened
     String[] exportFilenames = calculateExportFilenames(exportDirectory, transactionFileStem, paymentRequestFileStem);
 
+    String transactionsExportFilename = exportDirectory.getAbsolutePath() + File.separator + exportFilenames[0];
+    String paymentRequestsExportFilename = exportDirectory.getAbsolutePath() + File.separator + exportFilenames[1];
+
     // Sort payments and payment requests by date descending.
     Comparator<PaymentData> comparator = new Comparator<PaymentData>() {
       @Override
@@ -128,7 +131,7 @@ public class ExportManager {
     String errorMessage = null;
 
     // Output transactions
-    try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(exportDirectory.getAbsolutePath() + File.separator + exportFilenames[0], true), "UTF-8")) {
+    try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(transactionsExportFilename, true), "UTF-8")) {
       // Write the header row.
       TransactionDataHeaderEntryConverter headerConverter = new TransactionDataHeaderEntryConverter();
       CSVWriter<TransactionData> csvHeaderWriter = new CSVWriterBuilder<TransactionData>(outputStreamWriter).strategy(CSVStrategy.UK_DEFAULT)
@@ -150,7 +153,7 @@ public class ExportManager {
     }
 
     // Output payment requests
-    try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(exportDirectory.getAbsolutePath() + File.separator + exportFilenames[1], true), "UTF-8")) {
+    try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(paymentRequestsExportFilename, true), "UTF-8")) {
       // Write the header row.
       PaymentRequestDataHeaderEntryConverter headerConverter = new PaymentRequestDataHeaderEntryConverter();
       CSVWriter<PaymentRequestData> csvHeaderWriter = new CSVWriterBuilder<PaymentRequestData>(outputStreamWriter).strategy(CSVStrategy.UK_DEFAULT)
@@ -171,9 +174,10 @@ public class ExportManager {
     }
 
     if (exportWasSuccessful) {
-      CoreEvents.fireExportPerformedEvent(new ExportPerformedEvent(exportFilenames[0], exportFilenames[1], true, null, null));
+      CoreEvents.fireExportPerformedEvent(new ExportPerformedEvent(transactionsExportFilename,
+              paymentRequestsExportFilename, true, null, null));
     } else {
-      CoreEvents.fireExportPerformedEvent(new ExportPerformedEvent(exportFilenames[0], exportFilenames[1], false, CoreMessageKey.THE_ERROR_WAS, new String[]{errorMessage}));
+      CoreEvents.fireExportPerformedEvent(new ExportPerformedEvent(transactionsExportFilename, paymentRequestsExportFilename, false, CoreMessageKey.THE_ERROR_WAS, new String[]{errorMessage}));
     }
   }
 

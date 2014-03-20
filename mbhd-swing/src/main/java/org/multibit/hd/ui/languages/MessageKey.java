@@ -313,6 +313,10 @@ public enum MessageKey {
   SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_3("select_export_payments_location_note_3"),
   EXPORT_TRANSACTIONS_STEM("export_transactions_stem"),
   EXPORT_PAYMENT_REQUESTS_STEM("export_payment_requests_stem"),
+  EXPORT_WAS_SUCCESSFUL("export_was_successful"),
+  TRANSACTIONS_WERE_EXPORTED_TO_THE_FILE("transactions_were_exported_to_the_file"),
+  PAYMENT_REQUESTS_WERE_EXPORTED_TO_THE_FILE("payment_requests_were_exported_to_the_file"),
+  COULD_NOT_WRITE_TO_THE_DIRECTORY("could_not_write_to_the_directory"),
 
   // End of enum
   ;

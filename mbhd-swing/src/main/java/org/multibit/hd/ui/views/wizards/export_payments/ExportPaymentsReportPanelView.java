@@ -2,16 +2,23 @@ package org.multibit.hd.ui.views.wizards.export_payments;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
+import org.multibit.hd.core.dto.CoreMessageKey;
+import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.events.ExportPerformedEvent;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.MultiBitHD;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
+import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -33,10 +40,13 @@ import java.io.File;
 public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<ExportPaymentsWizardModel, String> {
 
   // View
-  private JLabel seedPhraseCreatedStatusLabel;
-  private JLabel walletPasswordCreatedStatusLabel;
-  private JLabel backupLocationStatusLabel;
-  private JLabel walletCreatedStatusLabel;
+  private JLabel exportCompletedLabel;
+
+  private JLabel transactionsExportFileLabel;
+  private JLabel transactionsExportFileValue;
+
+  private JLabel paymentRequestsExportFileLabel;
+  private JLabel paymentRequestsExportFileValue;
 
   private static final String SEPARATOR = "-";
 
@@ -65,39 +75,45 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
 
     contentPanel.setLayout(new MigLayout(
             Panels.migXYLayout(),
-            "[][][]", // Column constraints
-            "[]10[]10[]10[]" // Row constraints
+            "[]10[]", // Column constraints
+            "[]20[]0[]20[]0[]" // Row constraints
     ));
 
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
     // Initialise to failure
-    seedPhraseCreatedStatusLabel = Labels.newSeedPhraseCreatedStatus(false);
-    walletPasswordCreatedStatusLabel = Labels.newWalletPasswordCreatedStatus(false);
-    walletCreatedStatusLabel = Labels.newWalletCreatedStatus(false);
-    backupLocationStatusLabel = Labels.newBackupLocationStatus(false);
+    exportCompletedLabel = Labels.newSeedPhraseCreatedStatus(false);
+    transactionsExportFileLabel = Labels.newBlankLabel();
+    transactionsExportFileValue = Labels.newBlankLabel();
+    paymentRequestsExportFileLabel = Labels.newBlankLabel();
+    paymentRequestsExportFileValue = Labels.newBlankLabel();
 
-    contentPanel.add(backupLocationStatusLabel, "wrap");
-    contentPanel.add(seedPhraseCreatedStatusLabel, "wrap");
-    contentPanel.add(walletPasswordCreatedStatusLabel, "wrap");
-    contentPanel.add(walletCreatedStatusLabel, "wrap");
+    contentPanel.add(exportCompletedLabel, "wrap, span 2");
 
+    contentPanel.add (Labels.newBlankLabel());
+    contentPanel.add(transactionsExportFileLabel, "wrap");
+
+    contentPanel.add (Labels.newBlankLabel());
+    contentPanel.add(transactionsExportFileValue, "wrap");
+
+    contentPanel.add (Labels.newBlankLabel());
+    contentPanel.add(paymentRequestsExportFileLabel, "wrap");
+
+    contentPanel.add (Labels.newBlankLabel());
+    contentPanel.add(paymentRequestsExportFileValue, "wrap");
   }
 
   @Override
   protected void initialiseButtons(AbstractWizard<ExportPaymentsWizardModel> wizard) {
-
     PanelDecorator.addFinish(this, wizard);
 
   }
 
   @Override
   public void fireInitialStateViewEvents() {
-
     // Disable the finish button
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, false);
-
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
   }
 
   @Override
@@ -136,10 +152,9 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
       MultiBitHD.getWalletService().exportPayments(exportPaymentsLocationFile, stems[0], stems[1]);
       // Results of export are sent by an event
     } else {
-      // TODO report that export directory is no good
+      CoreEvents.fireExportPerformedEvent(new ExportPerformedEvent(null, null, false, CoreMessageKey.THE_ERROR_WAS,
+              new String[]{Languages.safeText(MessageKey.COULD_NOT_WRITE_TO_THE_DIRECTORY, exportPaymentsLocation)}));
     }
-
-    // AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, walletCreatedStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     // Enable the finish button on the report page
     ViewEvents.fireWizardButtonEnabledEvent(ExportPaymentsWizardState.EXPORT_PAYMENTS_REPORT.name(), WizardButton.FINISH, true);
@@ -150,15 +165,43 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
   /**
    * Create localised filename stems to be used by the Wallet Service export.
    * A stem is something like 'payment-request-2014-04-13', localised.
+   *
    * @return String[1] String[0] is the transactionExport stem, String[1] is the paymentRequestExport stem
    */
   private String[] createStems() {
     DateTime now = Dates.nowUtc();
     String nowAsString = Dates.formatBasicDateWithHyphens(now);
 
-    String stem0= Languages.safeText(MessageKey.EXPORT_TRANSACTIONS_STEM) + SEPARATOR + nowAsString;
-    String stem1 = Languages.safeText(MessageKey.EXPORT_PAYMENT_REQUESTS_STEM)+ SEPARATOR + nowAsString;
+    String stem0 = Languages.safeText(MessageKey.EXPORT_TRANSACTIONS_STEM) + SEPARATOR + nowAsString;
+    String stem1 = Languages.safeText(MessageKey.EXPORT_PAYMENT_REQUESTS_STEM) + SEPARATOR + nowAsString;
 
-    return new String[] {stem0, stem1};
+    return new String[]{stem0, stem1};
+  }
+
+  /**
+   * Call back after export
+   */
+  @Subscribe
+  public void onExportPerformedEvent(final ExportPerformedEvent exportPerformedEvent) {
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        if (exportPerformedEvent.isExportWasSuccessful()) {
+          AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, exportCompletedLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
+          exportCompletedLabel.setText(Languages.safeText(MessageKey.EXPORT_WAS_SUCCESSFUL));
+          if (!Strings.isNullOrEmpty(exportPerformedEvent.getTransactionsExportFilename())) {
+            transactionsExportFileLabel.setText(Languages.safeText(MessageKey.TRANSACTIONS_WERE_EXPORTED_TO_THE_FILE));
+            transactionsExportFileValue.setText(exportPerformedEvent.getTransactionsExportFilename());
+          }
+          if (!Strings.isNullOrEmpty(exportPerformedEvent.getPaymentRequestsExportFilename())) {
+            paymentRequestsExportFileLabel.setText(Languages.safeText(MessageKey.PAYMENT_REQUESTS_WERE_EXPORTED_TO_THE_FILE));
+            paymentRequestsExportFileValue.setText(exportPerformedEvent.getPaymentRequestsExportFilename());
+          }
+        } else {
+          AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, exportCompletedLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
+          exportCompletedLabel.setText(Languages.safeText(exportPerformedEvent.getExportFailureReasonKey(), exportPerformedEvent.getExportFailureReasonData()));
+        }
+      }
+    });
   }
 }
