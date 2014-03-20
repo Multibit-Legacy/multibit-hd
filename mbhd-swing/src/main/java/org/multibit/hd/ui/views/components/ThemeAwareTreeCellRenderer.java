@@ -1,6 +1,8 @@
 package org.multibit.hd.ui.views.components;
 
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -66,6 +68,11 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
     if (leaf) {
       switch (nodeInfo.getDetailScreen()) {
 
+        case WALLET:
+          if (nodeInfo.getText().equals(Languages.safeText(MessageKey.SEND_OR_REQUEST))) {
+            setIcon(AwesomeDecorator.createIcon(AwesomeIcon.EXCHANGE, iconColor, MultiBitUI.NORMAL_ICON_SIZE - 3));
+          }
+          break;
         case CONTACTS:
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.USER, iconColor, MultiBitUI.NORMAL_ICON_SIZE));
           break;
