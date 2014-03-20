@@ -139,6 +139,7 @@
       <artifactId>xchange-bitcoincharts</artifactId>
       <version>${xchange.version}</version>
     </dependency>
+    <!-- Java CSV for exporting data -->
     <dependency>
         <groupId>com.googlecode.jcsv</groupId>
         <artifactId>jcsv</artifactId>
