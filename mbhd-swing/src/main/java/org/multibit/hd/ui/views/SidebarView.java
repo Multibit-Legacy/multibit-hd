@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views;
 
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
@@ -177,6 +178,7 @@ public class SidebarView {
           Panels.showLightBox(Wizards.newExitWizard().getWizardScreenHolder());
           break;
         default:
+          Configurations.currentConfiguration.getApplicationConfiguration().setCurrentScreen(nodeInfo.getDetailScreen().name());
           ControllerEvents.fireShowDetailScreenEvent(nodeInfo.getDetailScreen());
       }
     }

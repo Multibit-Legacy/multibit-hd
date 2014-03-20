@@ -143,12 +143,9 @@ public class ApplicationSettingsPanelView extends AbstractWizardPanelView<Applic
     JComboBox source = (JComboBox) e.getSource();
     String themeName = ThemeKey.values()[source.getSelectedIndex()].name();
 
-    // Create a new configuration to reset the separators
+    // Create a new configuration to allow for cancellation
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
-
-    ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration();
-    applicationConfiguration.setCurrentTheme(themeName);
-    configuration.setApplicationConfiguration(applicationConfiguration);
+    configuration.getApplicationConfiguration().setCurrentTheme(themeName);
 
     // Update the model
     getWizardModel().setConfiguration(configuration);
