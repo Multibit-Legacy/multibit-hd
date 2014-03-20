@@ -56,7 +56,7 @@ public class Dates {
   /**
     * Produces "2000-04-01" for simplified short user date
     */
-   private static final DateTimeFormatter shortDateWithHyphensFormatter = DateTimeFormat.forPattern("yyyy-mm-dd").withZoneUTC();
+   private static final DateTimeFormatter shortDateWithHyphensFormatter = DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
 
 
   /**

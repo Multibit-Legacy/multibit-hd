@@ -4,7 +4,6 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
-import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -40,8 +39,6 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
   private JLabel walletCreatedStatusLabel;
 
   private static final String SEPARATOR = "-";
-  private static final String OPEN_BRACKET = "(";
-  private static final String CLOSE_BRACKET = ")";
 
   /**
    * @param wizard    The wizard managing the states
@@ -132,15 +129,14 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
     boolean exportPaymentsLocationStatus = exists && isDirectory && canRead && canWrite;
 
     if (exportPaymentsLocationStatus) {
-      // Create the stems for the output files. These are localised and (in English) : exportedTransactions-20140314.csv
-      // Where there is a file name collision they are called , say: exportedTransactions-20140312(2).csv
-      String[] stems = createStems(exportPaymentsLocationFile);
+      // Create the stems for the output files. These are localised and (in English) : exportedTransactions-2014-03-14
+      String[] stems = createStems();
 
       // Perform the export
       MultiBitHD.getWalletService().exportPayments(exportPaymentsLocationFile, stems[0], stems[1]);
       // Results of export are sent by an event
     } else {
-      // TO DO report that export directory is no good
+      // TODO report that export directory is no good
     }
 
     // AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, walletCreatedStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
@@ -152,38 +148,17 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
   }
 
   /**
-   * Create localised filename stems to be used by the Wallet Service export
+   * Create localised filename stems to be used by the Wallet Service export.
+   * A stem is something like 'payment-request-2014-04-13', localised.
    * @return String[1] String[0] is the transactionExport stem, String[1] is the paymentRequestExport stem
    */
-  private String[] createStems(File exportPaymentsLocationFile) {
+  private String[] createStems() {
     DateTime now = Dates.nowUtc();
     String nowAsString = Dates.formatBasicDateWithHyphens(now);
 
-    String stem0= Languages.safeText(MessageKey.EXPORT_TRANSACTIONS_STEM);
-    String stem1 = Languages.safeText(MessageKey.EXPORT_PAYMENT_REQUESTS_STEM);
+    String stem0= Languages.safeText(MessageKey.EXPORT_TRANSACTIONS_STEM) + SEPARATOR + nowAsString;
+    String stem1 = Languages.safeText(MessageKey.EXPORT_PAYMENT_REQUESTS_STEM)+ SEPARATOR + nowAsString;
 
-    String candidate0 = stem0 + SEPARATOR + nowAsString + WalletService.CSV_SUFFIX;
-    String candidate1 = stem1 + SEPARATOR + nowAsString + WalletService.CSV_SUFFIX;
-
-    // If these files don't exist we are done
-    if (!((new File(exportPaymentsLocationFile.getAbsolutePath() + File.separator + candidate0)).exists()) &&
-            !((new File(exportPaymentsLocationFile.getAbsolutePath() + File.separator + candidate0)).exists())) {
-      return new String[]{candidate0, candidate1};
-    } else {
-      int count = 2;
-      // Arbitrary limit just to stop infinite loops
-      while(count < 1000) {
-        candidate0 = stem0 + SEPARATOR + nowAsString + OPEN_BRACKET + count + CLOSE_BRACKET + WalletService.CSV_SUFFIX;
-        candidate1 = stem1 + SEPARATOR + nowAsString + OPEN_BRACKET + count + CLOSE_BRACKET + WalletService.CSV_SUFFIX;
-        if (!((new File(exportPaymentsLocationFile.getAbsolutePath() + File.separator + candidate0)).exists()) &&
-                !((new File(exportPaymentsLocationFile.getAbsolutePath() + File.separator + candidate0)).exists())) {
-          return new String[]{candidate0, candidate1};
-        }
-        count++;
-      }
-    }
-    // Should not happen except when arbitrary limit hit
-    // TODO throw exception
-    return null;
+    return new String[] {stem0, stem1};
   }
 }
