@@ -24,23 +24,33 @@ Support for external hardware wallets (such as the Trezor) is [available through
 
 MBHD is a standard Maven build, but currently relies on some snapshot builds of libraries which aren't available in Maven Central.
 
-In general you should check out the following from their respective source control repos and install them locally:
+#### Verify you have Maven 3+
 
- * [Bitcoinj](https://code.google.com/p/bitcoinj/) - use HEAD of "master" branch
+Most IDEs (such as [Intellij Community Edition](http://www.jetbrains.com/idea/download/)) come with support for Maven built in,
+but if not then you may need to [install it manually](http://maven.apache.org/download.cgi).
 
-Use the standard Maven build and install process for all projects:
+IDEs such as Eclipse may require the [m2eclipse plugin](http://www.sonatype.org/m2eclipse) to be configured.
 
+To quickly check that you have Maven 3+ installed check on the command line:
+```
+$ mvn --version
+```
+
+#### Manually build and install Bitcoinj
+
+At present it is necessary to checkout [Bitcoinj](https://code.google.com/p/bitcoinj/) and build it manually. You will need to
+use the HEAD of the `master` branch.
 ```
 $ mvn clean install
 ```
-
 With Bitcoinj you may need to build the protobuf files - in that case you will need to execute a modified Maven command:
-
 ```
 $ mvn -DupdateProtobuf=true clean install
 ```
+#### Start the application
 
-If you want to run the application within an IDE, you will need to run `MultiBitHD.main()` in the `mbhd-swing` module.
+To run the application within an IDE, simply execute `MultiBitHD.main()` in the `mbhd-swing` module. No command line parameters
+are needed, although a Bitcoin URI is accepted.
 
 ### Frequently asked questions (FAQ)
 
