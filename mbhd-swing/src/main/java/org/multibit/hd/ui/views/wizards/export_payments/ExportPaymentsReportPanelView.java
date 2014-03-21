@@ -9,6 +9,10 @@ import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ExportPerformedEvent;
+import org.multibit.hd.core.export.PaymentRequestConverter;
+import org.multibit.hd.core.export.PaymentRequestHeaderConverter;
+import org.multibit.hd.core.export.TransactionConverter;
+import org.multibit.hd.core.export.TransactionHeaderConverter;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.MultiBitUI;
@@ -149,7 +153,12 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
       String[] stems = createStems();
 
       // Perform the export
-      MultiBitHD.getWalletService().exportPayments(exportPaymentsLocationFile, stems[0], stems[1]);
+      PaymentRequestHeaderConverter paymentRequestHeaderConverter = new PaymentRequestHeaderConverter();
+      PaymentRequestConverter paymentRequestConverter = new PaymentRequestConverter();
+      TransactionHeaderConverter transactionHeaderConverter = new TransactionHeaderConverter();
+      TransactionConverter transactionConverter = new TransactionConverter();
+
+      MultiBitHD.getWalletService().exportPayments(exportPaymentsLocationFile, stems[0], stems[1], paymentRequestHeaderConverter, paymentRequestConverter, transactionHeaderConverter, transactionConverter);
       // Results of export are sent by an event
     } else {
       CoreEvents.fireExportPerformedEvent(new ExportPerformedEvent(null, null, false, CoreMessageKey.THE_ERROR_WAS,
