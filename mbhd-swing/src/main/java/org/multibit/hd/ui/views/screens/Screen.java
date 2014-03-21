@@ -43,6 +43,10 @@ public enum Screen {
    */
   HISTORY,
   /**
+   * The about screen
+   */
+  ABOUT,
+  /**
    * The exit screen
    */
   EXIT

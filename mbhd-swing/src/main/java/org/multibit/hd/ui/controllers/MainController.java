@@ -9,9 +9,11 @@ import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.CoreMessageKey;
+import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.events.ConfigurationChangedEvent;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.services.CoreServices;
@@ -20,10 +22,13 @@ import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.models.Models;
+import org.multibit.hd.ui.platform.listener.*;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.themes.Theme;
 import org.multibit.hd.ui.views.themes.ThemeKey;
 import org.multibit.hd.ui.views.themes.Themes;
+import org.multibit.hd.ui.views.wizards.Wizards;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +45,8 @@ import java.util.concurrent.TimeUnit;
  * </ul>
  * <p>To allow complete separation between Model, View and Controller all interactions are handled using application events</p>
  */
-public class MainController {
+public class MainController implements GenericOpenURIEventListener, GenericPreferencesEventListener,
+  GenericAboutEventListener, GenericQuitEventListener {
 
   private static final Logger log = LoggerFactory.getLogger(MainController.class);
 
@@ -216,5 +222,37 @@ public class MainController {
         localisedMessage + " " + Languages.safeText(CoreMessageKey.SECURITY_ADVICE),
         summary.getSeverity())
     );
+  }
+
+  @Override
+  public void onAboutEvent(GenericAboutEvent event) {
+
+    // Show the About screen
+    Panels.showLightBox(Wizards.newAboutWizard().getWizardScreenHolder());
+
+  }
+
+  @Override
+  public void onOpenURIEvent(GenericOpenURIEvent event) {
+
+    // Show a Bitcoin URI alert
+    ControllerEvents.fireAddAlertEvent(Models.newAlertModel("Bitcoin URI", RAGStatus.PINK));
+
+  }
+
+  @Override
+  public void onPreferencesEvent(GenericPreferencesEvent event) {
+
+    // Show the Preferences screen
+    ControllerEvents.fireShowDetailScreenEvent(Screen.SETTINGS);
+
+  }
+
+  @Override
+  public void onQuitEvent(GenericQuitEvent event, GenericQuitResponse response) {
+
+    // Immediately shutdown without requesting confirmation
+    CoreEvents.fireShutdownEvent();
+
   }
 }

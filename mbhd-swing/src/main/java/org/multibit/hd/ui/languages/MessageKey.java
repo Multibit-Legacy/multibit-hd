@@ -127,6 +127,8 @@ public enum MessageKey {
 
   EXIT_TITLE("exit_title"),
 
+  ABOUT_TITLE("about_title"),
+
   SECURITY_TITLE("security_title"),
 
   WELCOME_TITLE("welcome_title"),
@@ -204,6 +206,11 @@ public enum MessageKey {
   WELCOME_NOTE_2("welcome_note_2"),
   WELCOME_NOTE_3("welcome_note_3"),
   WELCOME_NOTE_4("welcome_note_4"),
+
+  ABOUT_NOTE_1("about_note_1"),
+  ABOUT_NOTE_2("about_note_2"),
+  ABOUT_NOTE_3("about_note_3"),
+  ABOUT_NOTE_4("about_note_4"),
 
   SELECT_BACKUP_LOCATION_NOTE_1("select_backup_location_note_1"),
   SELECT_BACKUP_LOCATION_NOTE_2("select_backup_location_note_2"),

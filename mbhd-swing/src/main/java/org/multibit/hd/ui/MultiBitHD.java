@@ -17,9 +17,9 @@ import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.controllers.HeaderController;
 import org.multibit.hd.ui.controllers.MainController;
 import org.multibit.hd.ui.controllers.SidebarController;
-import org.multibit.hd.ui.languages.Languages;
-import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.platform.GenericApplication;
+import org.multibit.hd.ui.platform.GenericApplicationFactory;
+import org.multibit.hd.ui.platform.GenericApplicationSpecification;
 import org.multibit.hd.ui.views.MainView;
 import org.multibit.hd.ui.views.themes.ThemeKey;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -56,8 +56,11 @@ public class MultiBitHD {
    */
   public static void main(final String[] args) throws InterruptedException, UnsupportedLookAndFeelException {
 
-    // Prepare the JVM (Nimbus, VPN bug etc)
+    // Prepare the JVM (Nimbus, system properties etc)
     initialiseJVM();
+
+    // Prepare platform-specific integration (protocol handlers, quit events etc)
+    initialiseGenericApp();
 
     // Start core services (security alerts, configuration etc)
     initialiseCore(args);
@@ -90,6 +93,7 @@ public class MultiBitHD {
 
   /**
    * <p>Initialise the JVM. This occurs before anything else is called.</p>
+   * <p>Depends on nothing - it is first</p>
    */
   private static void initialiseJVM() {
 
@@ -113,10 +117,11 @@ public class MultiBitHD {
       System.setProperty("java.net.preferIPv4Stack", "true");
 
       // Fix for version.txt not visible for Java 7
-      System.setProperty ("jsse.enableSNIExtension", "false");
+      System.setProperty("jsse.enableSNIExtension", "false");
 
+      // Ensure the correct name is displayed in the application menu
       if (OSUtils.isMac()) {
-        System.setProperty("com.apple.mrj.application.apple.menu.about.name", Languages.safeText(MessageKey.APPLICATION_TITLE));
+        System.setProperty("com.apple.mrj.application.apple.menu.about.name", "multiBit HD");
       }
 
     } catch (SecurityException se) {
@@ -126,7 +131,8 @@ public class MultiBitHD {
   }
 
   /**
-   * <p>Initialise the core services before the UI fires up</p>
+   * <p>Initialise the core services</p>
+   * <p>Depends on the JVM and generic application being in place</p>
    *
    * @param args The command line arguments
    */
@@ -190,13 +196,32 @@ public class MultiBitHD {
 
         overlaySecurityAlerts();
 
+        initialiseGenericApp();
       }
 
     });
   }
 
   /**
+   * <p>Initialise the platform-specific services</p>
+   * <p>Depends on the UI being in place</p>
+   *
+   */
+  private static void initialiseGenericApp() {
+
+    GenericApplicationSpecification specification = new GenericApplicationSpecification();
+    specification.getOpenURIEventListeners().add(mainController);
+    specification.getPreferencesEventListeners().add(mainController);
+    specification.getAboutEventListeners().add(mainController);
+    specification.getQuitEventListeners().add(mainController);
+
+    genericApplication = GenericApplicationFactory.INSTANCE.buildGenericApplication(specification);
+
+  }
+
+  /**
    * <p>Initialise the UI support services</p>
+   * <p>Depends on the Core services being in place</p>
    */
   private static void initialiseSupport() {
 

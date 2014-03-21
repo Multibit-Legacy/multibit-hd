@@ -1,6 +1,8 @@
 package org.multibit.hd.ui.views.screens;
 
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.screens.about.AboutScreenModel;
+import org.multibit.hd.ui.views.screens.about.AboutScreenView;
 import org.multibit.hd.ui.views.screens.contacts.ContactsScreenModel;
 import org.multibit.hd.ui.views.screens.contacts.ContactsScreenView;
 import org.multibit.hd.ui.views.screens.exit.ExitScreenModel;
@@ -9,12 +11,12 @@ import org.multibit.hd.ui.views.screens.help.HelpScreenModel;
 import org.multibit.hd.ui.views.screens.help.HelpScreenView;
 import org.multibit.hd.ui.views.screens.history.HistoryScreenModel;
 import org.multibit.hd.ui.views.screens.history.HistoryScreenView;
+import org.multibit.hd.ui.views.screens.payments.PaymentsScreenModel;
+import org.multibit.hd.ui.views.screens.payments.PaymentsScreenView;
 import org.multibit.hd.ui.views.screens.settings.SettingsScreenModel;
 import org.multibit.hd.ui.views.screens.settings.SettingsScreenView;
 import org.multibit.hd.ui.views.screens.tools.ToolsScreenModel;
 import org.multibit.hd.ui.views.screens.tools.ToolsScreenView;
-import org.multibit.hd.ui.views.screens.payments.PaymentsScreenModel;
-import org.multibit.hd.ui.views.screens.payments.PaymentsScreenView;
 import org.multibit.hd.ui.views.screens.wallet.WalletScreenModel;
 import org.multibit.hd.ui.views.screens.wallet.WalletScreenView;
 
@@ -78,6 +80,9 @@ public class Screens {
         break;
       case TOOLS:
         view = new ToolsScreenView(new ToolsScreenModel(screen), screen, MessageKey.CONTACTS);
+        break;
+      case ABOUT:
+        view = new AboutScreenView(new AboutScreenModel(screen), screen, MessageKey.CONTACTS);
         break;
       case EXIT:
         view = new ExitScreenView(new ExitScreenModel(screen), screen, MessageKey.CONTACTS);

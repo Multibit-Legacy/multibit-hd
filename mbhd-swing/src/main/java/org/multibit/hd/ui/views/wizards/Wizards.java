@@ -7,6 +7,9 @@ import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.PaymentRequestData;
+import org.multibit.hd.ui.views.wizards.about.exit.AboutState;
+import org.multibit.hd.ui.views.wizards.about.exit.AboutWizard;
+import org.multibit.hd.ui.views.wizards.about.exit.AboutWizardModel;
 import org.multibit.hd.ui.views.wizards.application_settings.ApplicationSettingsState;
 import org.multibit.hd.ui.views.wizards.application_settings.ApplicationSettingsWizard;
 import org.multibit.hd.ui.views.wizards.application_settings.ApplicationSettingsWizardModel;
@@ -93,6 +96,14 @@ public class Wizards {
   public static ExitWizard newExitWizard() {
 
     return new ExitWizard(new ExitWizardModel(ExitState.EXIT_CONFIRM), true);
+  }
+
+  /**
+   * @return A new "about" wizard
+   */
+  public static AboutWizard newAboutWizard() {
+
+    return new AboutWizard(new AboutWizardModel(AboutState.ABOUT_DETAILS), true);
   }
 
   /**

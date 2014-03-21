@@ -772,6 +772,19 @@ public class Labels {
   }
 
   /**
+   * @return A new "about" note
+   */
+  public static JLabel newAboutNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.ABOUT_NOTE_1,
+      MessageKey.ABOUT_NOTE_2,
+      MessageKey.ABOUT_NOTE_3,
+      MessageKey.ABOUT_NOTE_4
+    }, new Object[][]{});
+  }
+
+  /**
    * @return A new "wallet password" note
    */
   public static JLabel newWalletPasswordNote() {
