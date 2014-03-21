@@ -62,8 +62,10 @@ public enum MessageKey {
   ENTER_PASSWORD("enter_password"),
   CONFIRM_PASSWORD("confirm_password"),
   AMOUNT("amount"),
+  AMOUNT_PAID("amount_paid"),
   TRANSACTION_FEE("transaction_fee"),
   DEVELOPER_FEE("developer_fee"),
+  COINBASE("coinbase"),
 
   NAME("name"),
   NAMES("names"),

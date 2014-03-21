@@ -7,6 +7,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.googlecode.jcsv.writer.CSVEntryConverter;
 import org.joda.money.BigMoney;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
@@ -673,9 +674,12 @@ public class WalletService {
    * @param transactionFileStem The stem of the export file for the transactions (will be suffixed with a file suffix and possibly a bracketed number for uniqueness)
    * @param paymentRequestFileStem The stem of the export file for the payment requests (will be suffixed with a file suffix and possibly a bracketed number for uniqueness)
    */
-  public void exportPayments(File exportDirectory, String transactionFileStem, String paymentRequestFileStem) {
+  public void exportPayments(File exportDirectory, String transactionFileStem, String paymentRequestFileStem,
+                             CSVEntryConverter<PaymentRequestData> paymentRequestHeaderConverter, CSVEntryConverter<PaymentRequestData> paymentRequestConverter,
+                             CSVEntryConverter<TransactionData> transactionHeaderConverter, CSVEntryConverter<TransactionData> transactionConverter) {
     // Refresh all payments
     List<PaymentData> paymentDataList = getPaymentDataList();
-    ExportManager.export(paymentDataList, getPaymentRequests(), exportDirectory, transactionFileStem, paymentRequestFileStem);
+    ExportManager.export(paymentDataList, getPaymentRequests(), exportDirectory, transactionFileStem, paymentRequestFileStem,
+            paymentRequestHeaderConverter, paymentRequestConverter, transactionHeaderConverter, transactionConverter);
   }
 }
