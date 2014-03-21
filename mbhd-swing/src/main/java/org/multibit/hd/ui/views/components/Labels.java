@@ -779,8 +779,7 @@ public class Labels {
     return newNoteLabel(new MessageKey[]{
       MessageKey.ABOUT_NOTE_1,
       MessageKey.ABOUT_NOTE_2,
-      MessageKey.ABOUT_NOTE_3,
-      MessageKey.ABOUT_NOTE_4
+      MessageKey.ABOUT_NOTE_3
     }, new Object[][]{});
   }
 
