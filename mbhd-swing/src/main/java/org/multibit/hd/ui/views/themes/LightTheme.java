@@ -53,7 +53,7 @@ public class LightTheme implements Theme {
 
   @Override
   public Color sidebarSelectedText() {
-    return new Color(25,97,118);
+    return new Color(25,97,218);
   }
 
   @Override
