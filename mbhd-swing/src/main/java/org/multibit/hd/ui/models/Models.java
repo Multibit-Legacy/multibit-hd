@@ -2,6 +2,8 @@ package org.multibit.hd.ui.models;
 
 import org.multibit.hd.core.dto.RAGStatus;
 
+import javax.swing.*;
+
 /**
  * <p>Factory to provide the following to UI:</p>
  * <ul>
@@ -44,6 +46,8 @@ public class Models {
   }
 
   /**
+   * <p>A new alert model with no button</p>
+   *
    * @param message The message
    * @param status  The RAG status
    *
@@ -52,4 +56,22 @@ public class Models {
   public static AlertModel newAlertModel(String message, RAGStatus status) {
     return new AlertModel(message, status);
   }
+
+  /**
+   * <p>A new alert model with button</p>
+   *
+   * @param message The message
+   * @param status  The RAG status
+   * @param button  The button triggering an action
+   *
+   * @return A new alert model
+   */
+  public static AlertModel newAlertModel(String message, RAGStatus status, JButton button) {
+
+    AlertModel model = newAlertModel(message, status);
+    model.setButton(button);
+
+    return model;
+  }
+
 }

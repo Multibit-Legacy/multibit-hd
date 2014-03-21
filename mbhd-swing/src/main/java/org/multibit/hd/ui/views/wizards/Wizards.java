@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards;
 
+import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
@@ -112,6 +113,18 @@ public class Wizards {
   public static SendBitcoinWizard newSendBitcoinWizard() {
 
     return new SendBitcoinWizard(new SendBitcoinWizardModel(SendBitcoinState.SEND_ENTER_AMOUNT), false);
+
+  }
+
+  /**
+   * @param bitcoinURI The Bitcoin URI containing information for the send
+   *
+   * @return A new "send bitcoin" wizard
+   */
+  public static SendBitcoinWizard newSendBitcoinWizard(BitcoinURI bitcoinURI) {
+
+    // TODO Add BitcoinURI to wizard (requires refactoring of several models)
+    return newSendBitcoinWizard();
 
   }
 
@@ -248,27 +261,27 @@ public class Wizards {
   }
 
   /**
-    * @return A new "payments" wizard
-    */
-   public static PaymentsWizard newPaymentsWizard(PaymentData paymentData) {
-     PaymentsWizardModel paymentsWizardModel;
-     if (paymentData instanceof PaymentRequestData) {
-       paymentsWizardModel = new PaymentsWizardModel(PaymentsState.PAYMENT_REQUEST_DETAILS, paymentData);
-       paymentsWizardModel.setPaymentRequestData((PaymentRequestData)paymentData);
-       paymentsWizardModel.setShowPrevOnPaymentRequestDetailScreen(false);
-     } else {
-       paymentsWizardModel = new PaymentsWizardModel(PaymentsState.TRANSACTION_OVERVIEW, paymentData);
-       paymentsWizardModel.setShowPrevOnPaymentRequestDetailScreen(true);
-     }
+   * @return A new "payments" wizard
+   */
+  public static PaymentsWizard newPaymentsWizard(PaymentData paymentData) {
+    PaymentsWizardModel paymentsWizardModel;
+    if (paymentData instanceof PaymentRequestData) {
+      paymentsWizardModel = new PaymentsWizardModel(PaymentsState.PAYMENT_REQUEST_DETAILS, paymentData);
+      paymentsWizardModel.setPaymentRequestData((PaymentRequestData) paymentData);
+      paymentsWizardModel.setShowPrevOnPaymentRequestDetailScreen(false);
+    } else {
+      paymentsWizardModel = new PaymentsWizardModel(PaymentsState.TRANSACTION_OVERVIEW, paymentData);
+      paymentsWizardModel.setShowPrevOnPaymentRequestDetailScreen(true);
+    }
 
-     return new PaymentsWizard(paymentsWizardModel, false);
-   }
+    return new PaymentsWizard(paymentsWizardModel, false);
+  }
 
   /**
-    * @return A new "export payments" wizard
-    */
-   public static ExportPaymentsWizard newExportPaymentsWizard(ExportPaymentsWizardState initialState) {
-     return new ExportPaymentsWizard(new ExportPaymentsWizardModel(initialState), false);
-   }
+   * @return A new "export payments" wizard
+   */
+  public static ExportPaymentsWizard newExportPaymentsWizard(ExportPaymentsWizardState initialState) {
+    return new ExportPaymentsWizard(new ExportPaymentsWizardModel(initialState), false);
+  }
 
 }
