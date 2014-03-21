@@ -4,7 +4,6 @@ import com.google.bitcoin.core.CheckpointManager;
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
 import com.google.bitcoin.store.SPVBlockStore;
-import com.google.common.base.Preconditions;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +20,7 @@ import java.util.Date;
  *  </ul>
  */
 public class BlockStoreManager {
+
   private static final Logger log = LoggerFactory.getLogger(BitcoinNetworkService.class);
 
   /**
@@ -36,13 +36,10 @@ public class BlockStoreManager {
    */
   public static BlockStore createBlockStore(String blockchainFilename, String checkpointsFilename, Date checkpointDate, boolean createNew) throws BlockStoreException, IOException {
 
-    Preconditions.checkState((new File(checkpointsFilename)).exists());
-    BlockStore blockStore;
-
     File blockStoreFile = new File(blockchainFilename);
     boolean blockStoreCreatedNew = !blockStoreFile.exists();
 
-    // Ensure there is a checkpoints file.
+    // Ensure there is a checkpoints file
     File checkpointsFile = new File(checkpointsFilename);
     // TODO copy checkpoints file from installation directory if does not exist
     // TODO use bigger of managers files if installed version is larger
@@ -54,29 +51,30 @@ public class BlockStoreManager {
       System.gc();
       blockStoreFile.setWritable(true);
       boolean deletedOk = blockStoreFile.delete();
-      log.debug("Deleting SPV block writeContacts '{}' from disk.1", blockchainFilename + ", deletedOk = " + deletedOk);
+      log.debug("Deleting SPV block '{}' from disk.1", blockchainFilename + ", deletedOk = " + deletedOk);
       blockStoreCreatedNew = true;
     }
 
-    log.debug("Opening / Creating SPV block writeContacts '{}' from disk", blockchainFilename);
+    log.debug("Opening / Creating SPV block '{}' from disk", blockchainFilename);
+    BlockStore blockStore;
     try {
       blockStore = new SPVBlockStore(BitcoinNetworkService.NETWORK_PARAMETERS, blockStoreFile);
     } catch (BlockStoreException bse) {
       try {
-        log.error("Failed to open/ create SPV block writeContacts '{}' from disk", blockchainFilename);
-        // If the block writeContacts creation failed, delete the block writeContacts file and try again.
+        log.error("Failed to open/ create SPV block store '{}' from disk", blockchainFilename);
+        // If the block store creation failed, delete the block store file and try again.
 
-        // Garbage collect any closed references to the blockchainFile.
+        // Garbage collect any closed references to the blockchainFile (required on Windows)
         System.gc();
         blockStoreFile.setWritable(true);
         boolean deletedOk = blockStoreFile.delete();
-        log.debug("Deleting SPV block writeContacts '{}' from disk.2", blockchainFilename + ", deletedOk = " + deletedOk);
+        log.debug("Deleting SPV block store '{}' from disk.2", blockchainFilename + ", deletedOk = " + deletedOk);
         blockStoreCreatedNew = true;
 
         blockStore = new SPVBlockStore(BitcoinNetworkService.NETWORK_PARAMETERS, blockStoreFile);
       } catch (BlockStoreException bse2) {
         bse2.printStackTrace();
-        log.error("Unrecoverable failure in opening block writeContacts. This is bad.");
+        log.error("Unrecoverable failure in opening block store. This is bad.");
         // Throw the exception so that it is indicated on the UI.
         throw bse2;
       }
@@ -87,7 +85,7 @@ public class BlockStoreManager {
       try (FileInputStream stream = new FileInputStream(checkpointsFile)) {
         if (checkpointDate == null) {
           if (blockStoreCreatedNew) {
-            // Brand new block writeContacts - managers from today. This
+            // Brand new block store - managers from today. This
             // will go back to the last managers.
             CheckpointManager.checkpoint(BitcoinNetworkService.NETWORK_PARAMETERS, stream, blockStore, (new Date()).getTime() / 1000);
           }
