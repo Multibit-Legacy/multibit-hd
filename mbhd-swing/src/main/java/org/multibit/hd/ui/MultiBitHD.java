@@ -56,7 +56,7 @@ public class MultiBitHD {
    */
   public static void main(final String[] args) throws InterruptedException, UnsupportedLookAndFeelException {
 
-    // Prepare the JVM (Nimbus etc)
+    // Prepare the JVM (Nimbus, VPN bug etc)
     initialiseJVM();
 
     // Start core services (security alerts, configuration etc)
@@ -102,9 +102,25 @@ public class MultiBitHD {
       try {
         UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
       } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1) {
-        log.error("No look and feel available.", e1);
+        log.error("No look and feel available. MultiBit HD requires Java 7 or higher.", e1);
         System.exit(-1);
       }
+    }
+
+    // Set any bespoke system properties
+    try {
+      // Fix for Windows / Java 7 / VPN bug
+      System.setProperty("java.net.preferIPv4Stack", "true");
+
+      // Fix for version.txt not visible for Java 7
+      System.setProperty ("jsse.enableSNIExtension", "false");
+
+      if (OSUtils.isMac()) {
+        System.setProperty("com.apple.mrj.application.apple.menu.about.name", Languages.safeText(MessageKey.APPLICATION_TITLE));
+      }
+
+    } catch (SecurityException se) {
+      log.error(se.getClass().getName() + " " + se.getMessage());
     }
 
   }
@@ -121,10 +137,6 @@ public class MultiBitHD {
 
     // Pre-loadContacts sound library
     Sounds.initialise();
-
-    if (OSUtils.isMac()) {
-      System.getProperties().setProperty("com.apple.mrj.application.apple.menu.about.name", Languages.safeText(MessageKey.APPLICATION_TITLE));
-    }
 
     // Locate the application data directory
     applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
