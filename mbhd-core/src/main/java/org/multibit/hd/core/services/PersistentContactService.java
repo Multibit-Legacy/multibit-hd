@@ -109,11 +109,7 @@ public class PersistentContactService implements ContactService {
   @Override
   public Contact newContact(String name) {
 
-    Contact contact = new Contact(UUID.randomUUID(), name);
-
-    contacts.add(contact);
-
-    return contact;
+    return new Contact(UUID.randomUUID(), name);
 
   }
 
@@ -278,27 +274,33 @@ public class PersistentContactService implements ContactService {
     contact1.getTags().add("VIP");
     contact1.getTags().add("Family");
     contact1.setNotes("This is a really long note that should span over several lines when finally rendered to the screen. It began with Alice Capital.");
+    contacts.add(contact1);
 
     Contact contact2 = newContact("Bob Capital");
     contact2.setEmail("bob.capital@example.org");
     contact2.setNotes("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
     contact2.getTags().add("VIP");
     contact2.getTags().add("Merchandise");
+    contacts.add(contact2);
 
     Contact contact3 = newContact("Charles Capital");
     contact2.setNotes("Charles Capital's note 1\n\nCharles Capital's note 2");
     contact3.setEmail("charles.capital@example.org");
+    contacts.add(contact3);
 
     // No email for Derek
     Contact contact4 = newContact("Derek Capital");
     contact2.setNotes("Derek Capital's note 1\n\nDerek Capital's note 2");
     contact4.getTags().add("Family");
+    contacts.add(contact4);
 
     Contact contact5 = newContact("alice Lower");
     contact5.setEmail("alice.lower@example.org");
+    contacts.add(contact5);
 
     Contact contact6 = newContact("alicia Lower");
     contact6.setEmail("alicia.lower@example.org");
+    contacts.add(contact6);
 
   }
 

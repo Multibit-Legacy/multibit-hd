@@ -67,6 +67,7 @@ public class PersistentContactServiceTest {
     // Add a new contact to the contacts db and save it
     String newContactName = (UUID.randomUUID()).toString();
     Contact newContact = contactService.newContact(newContactName);
+    contactService.addAll(Lists.newArrayList(newContact));
 
     newContact.setBitcoinAddress("bippy");
     newContact.setEmail("boppy");
