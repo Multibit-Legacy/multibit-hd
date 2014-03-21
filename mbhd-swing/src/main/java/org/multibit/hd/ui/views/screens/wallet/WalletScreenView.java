@@ -1,5 +1,7 @@
 package org.multibit.hd.ui.views.screens.wallet;
 
+import com.google.bitcoin.uri.BitcoinURI;
+import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.PaymentData;
@@ -75,7 +77,7 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        Panels.showLightBox(Wizards.newSendBitcoinWizard().getWizardScreenHolder());
+        Panels.showLightBox(Wizards.newSendBitcoinWizard(Optional.<BitcoinURI>absent()).getWizardScreenHolder());
       }
     };
 

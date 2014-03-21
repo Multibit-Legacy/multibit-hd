@@ -1,5 +1,6 @@
 package org.multibit.hd.core.services;
 
+import com.google.bitcoin.core.Address;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -123,11 +124,25 @@ public class PersistentContactService implements ContactService {
 
   }
 
-  /**
-   * @param query The text fragment to match (case-insensitive, anywhere in the name)
-   *
-   * @return A filtered set of Contacts for the given query
-   */
+  @Override
+  public List<Contact> filterContactsByBitcoinAddress(Address address) {
+
+    Preconditions.checkNotNull(address,"'address' must be present");
+
+    String queryAddress = address.toString();
+
+    List<Contact> filteredContacts = Lists.newArrayList();
+
+    for (Contact contact : contacts) {
+
+      if (contact.getBitcoinAddress().or("").equals(queryAddress)) {
+        filteredContacts.add(contact);
+      }
+    }
+
+    return filteredContacts;
+  }
+
   @Override
   public List<Contact> filterContactsByContent(String query) {
 
@@ -137,6 +152,9 @@ public class PersistentContactService implements ContactService {
 
     for (Contact contact : contacts) {
 
+      // Note: Do not include a Bitcoin address or EPK in this search
+      // because vanity addresses can cause an attack vector
+      // Instead use the dedicated methods for those fields
       boolean isNameMatched = contact.getName().toLowerCase().contains(lowerQuery);
       boolean isEmailMatched = contact.getEmail().or("").toLowerCase().contains(lowerQuery);
       boolean isNoteMatched = contact.getNotes().or("").toLowerCase().contains(lowerQuery);
@@ -161,11 +179,6 @@ public class PersistentContactService implements ContactService {
     return filteredContacts;
   }
 
-  /**
-   * <p>Add the given contacts to the cache. A subsequent <code>writeContacts()</code> will add them from the backing writeContacts.</p>
-   *
-   * @param selectedContacts The selected contacts
-   */
   @Override
   public void addAll(Collection<Contact> selectedContacts) {
 
@@ -173,9 +186,6 @@ public class PersistentContactService implements ContactService {
 
   }
 
-  /**
-   * <p>Populate the internal cache of Contacts from the backing writeContacts</p>
-   */
   @Override
   public void loadContacts() throws ContactsLoadException {
 
@@ -200,11 +210,6 @@ public class PersistentContactService implements ContactService {
     contacts.clear();
   }
 
-  /**
-   * <p>Remove the given contacts from the cache. A subsequent <code>writeContacts()</code> will purge them from the backing writeContacts.</p>
-   *
-   * @param selectedContacts The selected contacts
-   */
   @Override
   public void removeAll(Collection<Contact> selectedContacts) {
 
@@ -216,11 +221,6 @@ public class PersistentContactService implements ContactService {
 
   }
 
-  /**
-   * <p>Update the contacts with any changes or additions</p>
-   *
-   * @param editedContacts The edited contacts that will be merged into the current contacts
-   */
   @Override
   public void updateContacts(Collection<Contact> editedContacts) {
 
@@ -240,9 +240,6 @@ public class PersistentContactService implements ContactService {
 
   }
 
-  /**
-   * <p>Save the contact data to the backing store</p>
-   */
   @Override
   public void writeContacts() throws ContactsSaveException {
 
@@ -257,10 +254,6 @@ public class PersistentContactService implements ContactService {
     }
   }
 
-  /**
-   * <p>Add some demo contacts to the contacts list</p>
-   * <p>Used by ComponentTestBed and tests</p>
-   */
   @Override
   public void addDemoContacts() {
 

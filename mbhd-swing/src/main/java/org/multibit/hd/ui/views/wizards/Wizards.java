@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.wizards;
 
 import com.google.bitcoin.uri.BitcoinURI;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
@@ -108,23 +109,13 @@ public class Wizards {
   }
 
   /**
-   * @return A new "send bitcoin" wizard
-   */
-  public static SendBitcoinWizard newSendBitcoinWizard() {
-
-    return new SendBitcoinWizard(new SendBitcoinWizardModel(SendBitcoinState.SEND_ENTER_AMOUNT), false);
-
-  }
-
-  /**
-   * @param bitcoinURI The Bitcoin URI containing information for the send
+   * @param bitcoinURI The optional Bitcoin URI containing information for the send
    *
    * @return A new "send bitcoin" wizard
    */
-  public static SendBitcoinWizard newSendBitcoinWizard(BitcoinURI bitcoinURI) {
+  public static SendBitcoinWizard newSendBitcoinWizard(Optional<BitcoinURI> bitcoinURI) {
 
-    // TODO Add BitcoinURI to wizard (requires refactoring of several models)
-    return newSendBitcoinWizard();
+    return new SendBitcoinWizard(new SendBitcoinWizardModel(SendBitcoinState.SEND_ENTER_AMOUNT), false, bitcoinURI);
 
   }
 

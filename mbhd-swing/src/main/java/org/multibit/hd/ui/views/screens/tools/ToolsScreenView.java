@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.screens.tools;
 
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.bitcoin.uri.BitcoinURIParseException;
+import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
@@ -88,7 +89,7 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
           public void actionPerformed(ActionEvent e) {
 
             ControllerEvents.fireRemoveAlertEvent();
-            Panels.showLightBox(Wizards.newSendBitcoinWizard(bitcoinURI).getWizardScreenHolder());
+            Panels.showLightBox(Wizards.newSendBitcoinWizard(Optional.of(bitcoinURI)).getWizardScreenHolder());
 
           }
         };

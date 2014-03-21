@@ -23,7 +23,7 @@ import java.awt.image.BufferedImage;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Presentation of a dual-purpose combobox</li>
+ * <li>Presentation of a dual-purpose combo box</li>
  * <li>Support for locating contacts by name</li>
  * <li>Support for entering recipient Bitcoin address representations (address, seed, key etc)</li>
  * </ul>
@@ -38,7 +38,6 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
   // View components
   private JComboBox<Recipient> recipientComboBox;
   private JLabel imageLabel;
-  private JButton pasteButton;
 
   /**
    * @param model The model backing this view
@@ -55,6 +54,10 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
 
     // Bind a key listener to allow instant update of UI to matched passwords
     recipientComboBox = ComboBoxes.newRecipientComboBox(filter);
+
+    if (getModel().get().getRecipient().isPresent()) {
+      recipientComboBox.getEditor().setItem(getModel().get().getRecipient().get());
+    }
     recipientComboBox.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -62,7 +65,7 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
       }
     });
 
-    pasteButton = Buttons.newPasteButton(getPasteAction());
+    JButton pasteButton = Buttons.newPasteButton(getPasteAction());
 
     JPanel panel = Panels.newPanel(new MigLayout(
       Panels.migXLayout(),
@@ -94,9 +97,6 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
 
     Object selectedItem = recipientComboBox.getSelectedItem();
     Object editedItem = recipientComboBox.getEditor().getItem();
-
-    log.debug("selectedItem = " + selectedItem);
-    log.debug("editedItem = " + selectedItem);
 
     // Use pastes in preference to selection
     if (editedItem != null) {

@@ -1,5 +1,6 @@
 package org.multibit.hd.core.services;
 
+import com.google.bitcoin.core.Address;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.exceptions.ContactsLoadException;
 import org.multibit.hd.core.exceptions.ContactsSaveException;
@@ -37,6 +38,13 @@ public interface ContactService {
    * @return All the contacts
    */
   List<Contact> allContacts();
+
+  /**
+   * @param address The Bitcoin address to query on
+   *
+   * @return A filtered set of Contacts for the given query
+   */
+  List<Contact> filterContactsByBitcoinAddress(Address address);
 
   /**
    * @param query The text to match across all fields (name, tags, notes etc)
