@@ -49,7 +49,7 @@ public class AmountFiatTableCellRenderer extends DefaultTableCellRenderer {
           LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguageConfiguration();
           BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
 
-          String balance = Formats.formatLocalAmount(amountAsBigMoney, languageConfiguration.getLocale(), bitcoinConfiguration);
+          String balance = Formats.formatLocalAmount(amountAsBigMoney, languageConfiguration.getLocale(), bitcoinConfiguration, true);
 
           label.setText(balance + TrailingJustifiedDateTableCellRenderer.SPACER);
 

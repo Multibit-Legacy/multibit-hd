@@ -34,6 +34,8 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
 
   private boolean initialised = false;
 
+  final private Object lockObject = new Object();
+
   /**
    * @param model The model backing this view
    */
@@ -46,9 +48,9 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
   public JPanel newComponentPanel() {
 
     panel = Panels.newPanel(new MigLayout(
-      "insets 0", // Layout
-      "[]10[]10[]", // Columns
-      "[][]" // Rows
+            "insets 0", // Layout
+            "[]10[]10[]", // Columns
+            "[][]" // Rows
     ));
 
     // Populate components
@@ -59,48 +61,58 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
 
   public void createView() {
 
-    if (getModel().isPresent()) {
-      List<PaymentData> paymentDataList = getModel().get().getValue();
-      panel.removeAll();
-      displayAmountMaVList = Lists.newArrayList();
+    synchronized (lockObject) {
+      if (getModel().isPresent()) {
+        List<PaymentData> paymentDataList = getModel().get().getValue();
+        panel.removeAll();
+        displayAmountMaVList = Lists.newArrayList();
 
-      for (PaymentData paymentData : paymentDataList) {
-        JLabel timeLabel = Labels.newBlankLabel();
-        timeLabel.setText(LocalisedDateUtils.formatShortDate(paymentData.getDate()));
+        for (PaymentData paymentData : paymentDataList) {
+          JLabel timeLabel = Labels.newBlankLabel();
+          timeLabel.setText(LocalisedDateUtils.formatShortDate(paymentData.getDate()));
 
-        JLabel paymentDataLabel = Labels.newBlankLabel();
-        paymentDataLabel.setText(Languages.safeText(paymentData.getType().getLocalisationKey()));
-        LabelDecorator.applyStatusIcon(paymentData.getStatus(), paymentDataLabel, paymentData.isCoinBase(), MultiBitUI.NORMAL_ICON_SIZE);
+          JLabel paymentDataLabel = Labels.newBlankLabel();
+          paymentDataLabel.setText(Languages.safeText(paymentData.getType().getLocalisationKey()));
+          LabelDecorator.applyStatusIcon(paymentData.getStatus(), paymentDataLabel, paymentData.isCoinBase(), MultiBitUI.NORMAL_ICON_SIZE);
 
-        ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.PLAIN);
-        if (CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().isPresent()) {
-          paymentAmountMaV.getModel().setRateProvider(CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().get().getRateProvider());
+          ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.PLAIN, false);
+          if (CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().isPresent()) {
+            paymentAmountMaV.getModel().setRateProvider(CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().get().getRateProvider());
+          }
+          displayAmountMaVList.add(paymentAmountMaV);
+          paymentAmountMaV.getModel().setSatoshis(paymentData.getAmountBTC());
+          paymentAmountMaV.getModel().setLocalAmount(paymentData.getAmountFiat().getAmount());
+
+          panel.add(timeLabel, "shrink");
+          panel.add(paymentDataLabel, "shrink");
+          JPanel amountPanel = paymentAmountMaV.getView().newComponentPanel();
+          amountPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+          panel.add(amountPanel, "shrink, wrap");
         }
-        displayAmountMaVList.add(paymentAmountMaV);
-        paymentAmountMaV.getModel().setSatoshis(paymentData.getAmountBTC());
-        paymentAmountMaV.getModel().setLocalAmount(paymentData.getAmountFiat().getAmount());
 
-        panel.add(timeLabel, "shrink");
-        panel.add(paymentDataLabel, "shrink");
-        JPanel amountPanel = paymentAmountMaV.getView().newComponentPanel();
-        amountPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
-        panel.add(amountPanel, "shrink, wrap");
+        panel.invalidate();
+        panel.validate();
+        panel.repaint();
+        initialised = true;
       }
-
-      initialised = true;
     }
   }
 
-  public void updateView() {
+  synchronized public void updateView() {
 
-    if (!initialised) {
-      return;
-    }
-
-    if (displayAmountMaVList != null) {
-      for (ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV : displayAmountMaVList) {
-        paymentAmountMaV.getView().updateView(Configurations.currentConfiguration);
+    synchronized (lockObject) {
+      if (!initialised) {
+        return;
       }
+
+      if (displayAmountMaVList != null) {
+        for (ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV : displayAmountMaVList) {
+          paymentAmountMaV.getView().updateView(Configurations.currentConfiguration);
+        }
+      }
+      panel.invalidate();
+      panel.validate();
+      panel.repaint();
     }
   }
 

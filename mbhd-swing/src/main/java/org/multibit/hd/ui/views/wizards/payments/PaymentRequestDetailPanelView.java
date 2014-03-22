@@ -201,11 +201,11 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
       LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguageConfiguration();
       BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
 
-      String[] balanceArray = Formats.formatSatoshisAsSymbolic(amountBTC, languageConfiguration, bitcoinConfiguration);
+      String[] balanceArray = Formats.formatSatoshisAsSymbolic(amountBTC, languageConfiguration, bitcoinConfiguration, true);
       amountBTCValue.setText(balanceArray[0] + balanceArray[1]);
 
       FiatPayment amountFiat = paymentRequestData.getAmountFiat();
-      amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount(), languageConfiguration.getLocale(), bitcoinConfiguration)));
+      amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount(), languageConfiguration.getLocale(), bitcoinConfiguration, true)));
 
       String exchangeRateText;
       if (Strings.isNullOrEmpty(paymentRequestData.getAmountFiat().getRate()) || Strings.isNullOrEmpty(paymentRequestData.getAmountFiat().getExchange())) {

@@ -107,7 +107,7 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
     BigInteger satoshis = getModel().get().getSatoshis();
 
     // Display using the symbolic amount
-    String[] bitcoinDisplay = Formats.formatSatoshisAsSymbolic(satoshis, languageConfiguration, bitcoinConfiguration);
+    String[] bitcoinDisplay = Formats.formatSatoshisAsSymbolic(satoshis, languageConfiguration, bitcoinConfiguration, getModel().get().isShowNegative());
 
     if (bitcoinConfiguration.isCurrencySymbolLeading()) {
       handleLeadingSymbol(bitcoinConfiguration);
@@ -126,7 +126,7 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
     String localSymbol = bitcoinConfiguration.getLocalCurrencySymbol();
 
     if (getModel().get().isLocalAmountVisible()) {
-      String localDisplay = Formats.formatLocalAmount(getModel().get().getLocalAmount(), locale, bitcoinConfiguration);
+      String localDisplay = Formats.formatLocalAmount(getModel().get().getLocalAmount(), locale, bitcoinConfiguration, getModel().get().isShowNegative());
       // Exchange label text is complex
       handleExchangeLabelText(bitcoinConfiguration, localSymbol, localDisplay);
       exchangeLabel.setVisible(true);

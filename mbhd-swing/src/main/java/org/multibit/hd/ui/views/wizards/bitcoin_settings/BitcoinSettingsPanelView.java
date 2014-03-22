@@ -87,7 +87,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
 
     Preconditions.checkNotNull(locale, "'locale' cannot be empty");
 
-    displayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT);
+    displayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT, true);
     displayAmountMaV.getModel().setSatoshis(BigInteger.valueOf(123_456_789_012L)); // 1.23... million bitcoins
     displayAmountMaV.getModel().setLocalAmount(BigMoney.of(bitcoinConfiguration.getLocalCurrencyUnit(), new BigDecimal("1234567.89")));
     displayAmountMaV.getModel().setRateProvider(Optional.of(Languages.safeText(MessageKey.EXAMPLE)));

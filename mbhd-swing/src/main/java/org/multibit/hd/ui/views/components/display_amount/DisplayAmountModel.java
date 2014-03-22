@@ -29,11 +29,14 @@ public class DisplayAmountModel implements Model<DisplayAmountModel> {
   
   private Optional<String> rateProvider = Optional.absent();
 
+  private boolean showNegative = true;
+
   /**
    * @param style The display amount style
    */
-  public DisplayAmountModel(DisplayAmountStyle style) {
+  public DisplayAmountModel(DisplayAmountStyle style, boolean showNegative) {
     this.style = style;
+    this.showNegative = showNegative;
   }
 
   @Override
@@ -100,5 +103,9 @@ public class DisplayAmountModel implements Model<DisplayAmountModel> {
     // Update the local amount visibility
     localAmountVisible = rateProvider.isPresent();
 
+  }
+
+  public boolean isShowNegative() {
+    return showNegative;
   }
 }

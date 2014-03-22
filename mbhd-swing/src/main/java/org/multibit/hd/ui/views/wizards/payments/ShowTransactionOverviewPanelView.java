@@ -195,18 +195,18 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
       LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguageConfiguration();
       BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
 
-      String[] balanceArray = Formats.formatSatoshisAsSymbolic(amountBTC, languageConfiguration, bitcoinConfiguration);
+      String[] balanceArray = Formats.formatSatoshisAsSymbolic(amountBTC, languageConfiguration, bitcoinConfiguration, true);
       amountBTCValue.setText(balanceArray[0] + balanceArray[1]);
 
       FiatPayment amountFiat = paymentData.getAmountFiat();
-      amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount(), languageConfiguration.getLocale(), bitcoinConfiguration)));
+      amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount(), languageConfiguration.getLocale(), bitcoinConfiguration, true)));
 
       if (paymentData instanceof TransactionData) {
         TransactionData transactionData = (TransactionData) paymentData;
         // Miner's fee
         Optional<BigInteger> feeOnSend = transactionData.getFeeOnSendBTC();
         if (feeOnSend.isPresent()) {
-          String[] minerFeePaidArray = Formats.formatSatoshisAsSymbolic(feeOnSend.get(), languageConfiguration, bitcoinConfiguration);
+          String[] minerFeePaidArray = Formats.formatSatoshisAsSymbolic(feeOnSend.get(), languageConfiguration, bitcoinConfiguration, true);
           minerFeePaidValue.setText(minerFeePaidArray[0] + minerFeePaidArray[1]);
         } else {
           minerFeePaidValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
