@@ -8,6 +8,8 @@ import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.events.TransactionCreationEvent;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
@@ -135,7 +137,11 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
   @Subscribe
   public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
-    // Create a transactionInfo to match the event created, regardless of success or failure
+    // Only store successful transactions
+    if (!transactionCreationEvent.isTransactionCreationWasSuccessful()) {
+      return;
+    }
+    // Create a transactionInfo to match the event created
     TransactionInfo transactionInfo = new TransactionInfo();
     transactionInfo.setHash(transactionCreationEvent.getTransactionId());
     String note = getNotes();
@@ -162,7 +168,11 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     transactionInfo.setAmountFiat(fiatPayment);
 
     MultiBitHD.getWalletService().addTransactionInfo(transactionInfo);
-    MultiBitHD.getWalletService().writePayments();
+    try {
+      MultiBitHD.getWalletService().writePayments();
+    } catch (PaymentsSaveException pse) {
+      ExceptionHandler.handleThrowable(pse);
+    }
   }
 
   @Override

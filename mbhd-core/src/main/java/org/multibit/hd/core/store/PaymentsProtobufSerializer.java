@@ -46,18 +46,18 @@ import java.util.Locale;
  * <p>
  * Serialize and de-serialize contacts to a byte stream containing a
  * <a href="http://code.google.com/apis/protocolbuffers/docs/overview.html">protocol buffer</a>.</p>
- *
+ * <p/>
  * <p>Protocol buffers are a data interchange format developed by Google with an efficient binary representation, a type safe specification
  * language and compilers that generate code to work with those data structures for many languages. Protocol buffers
  * can have their format evolved over time: conceptually they represent data using (tag, length, value) tuples.</p>
- *
+ * <p/>
  * <p>The format is defined by the <tt>payments.proto</tt> file in the MBHD source distribution.</p>
- *
+ * <p/>
  * <p>This class is used through its static methods. The most common operations are <code>writePayments</code> and <code>readPayments</code>, which do
  * the obvious operations on Output/InputStreams. You can use a {@link java.io.ByteArrayInputStream} and equivalent
  * {@link java.io.ByteArrayOutputStream} if byte arrays are preferred. The protocol buffer can also be manipulated
  * in its object form if you'd like to modify the flattened data structure before serialization to binary.</p>
- *
+ * <p/>
  * <p>Based on the original work by Miron Cuperman for the Bitcoinj project</p>
  */
 public class PaymentsProtobufSerializer {
@@ -157,7 +157,6 @@ public class PaymentsProtobufSerializer {
           paymentRequestData.setAmountBTC(BigInteger.valueOf(paymentRequestProto.getAmountBTC()));
         }
 
-
         if (paymentRequestProto.hasAmountFiat()) {
 
           FiatPayment fiatPayment = new FiatPayment();
@@ -165,7 +164,6 @@ public class PaymentsProtobufSerializer {
           MBHDPaymentsProtos.FiatPayment fiatPaymentProto = paymentRequestProto.getAmountFiat();
 
           if (fiatPaymentProto.hasCurrency()) {
-
             final BigMoney amountFiatAsBigMoney;
             final String fiatCurrencyCode = fiatPaymentProto.getCurrency();
             final CurrencyUnit fiatCurrencyUnit = CurrencyUnit.getInstance(fiatCurrencyCode);
@@ -256,11 +254,8 @@ public class PaymentsProtobufSerializer {
   }
 
   /**
-   * TODO (JB) Remove the log entries after code review
-   *
    * @param fiatCurrencyUnit  The fiat currency unit (e.g. "USD")
    * @param fiatPaymentAmount The fiat payment amount (e.g. "1234.56" or "USD 1234.56")
-   *
    * @return An appropriate BigMoney representing the amount in the given currency
    */
   private BigMoney toBigMoney(CurrencyUnit fiatCurrencyUnit, String fiatPaymentAmount) {
@@ -268,16 +263,17 @@ public class PaymentsProtobufSerializer {
 
     // Check if string is a number - amount is always persisted in UK locale
     if (Numbers.isNumeric(fiatPaymentAmount, Locale.UK)) {
-
       // Treat as amount with fiat payment provided currency ("1234.56")
-      log.debug("Treating as amount in '{}': '{}'", fiatCurrencyUnit.getCode(), fiatPaymentAmount);
       amountFiatAsBigMoney = BigMoney.of(fiatCurrencyUnit, new BigDecimal(fiatPaymentAmount));
     } else {
-
       // Treat as money with currency provided in the amount itself ("USD 1234.56")
-      log.debug("Treating as money in '{}': '{}'", fiatCurrencyUnit.getCode(), fiatPaymentAmount);
-      if  (fiatPaymentAmount.length() > 4) {
-        amountFiatAsBigMoney = BigMoney.of(fiatCurrencyUnit, new BigDecimal(fiatPaymentAmount.substring(4)));
+      if (fiatPaymentAmount.length() > 4) {
+        String shortMoney = fiatPaymentAmount.substring(4);
+        if (Numbers.isNumeric(shortMoney, Locale.UK)) {
+          amountFiatAsBigMoney = BigMoney.of(fiatCurrencyUnit, new BigDecimal(shortMoney));
+        } else {
+          amountFiatAsBigMoney = null;
+        }
       } else {
         // don't know what format this is in - no fiat amount available
         amountFiatAsBigMoney = null;
@@ -297,21 +293,30 @@ public class PaymentsProtobufSerializer {
 
   private static MBHDPaymentsProtos.PaymentRequest makePaymentRequestProto(PaymentRequestData paymentRequestData) {
     MBHDPaymentsProtos.PaymentRequest.Builder paymentRequestBuilder = MBHDPaymentsProtos.PaymentRequest.newBuilder();
-    paymentRequestBuilder.setAddress(paymentRequestData.getAddress());
-    paymentRequestBuilder.setNote(paymentRequestData.getNote() == null ? "" : paymentRequestData.getNote());
-    paymentRequestBuilder.setAmountBTC(paymentRequestData.getAmountBTC().longValue());
-    paymentRequestBuilder.setDate(paymentRequestData.getDate().getMillis());
-    paymentRequestBuilder.setLabel(paymentRequestData.getLabel() == null ? "" : paymentRequestData.getLabel());
 
-    FiatPayment fiatPayment = paymentRequestData.getAmountFiat();
-    if (fiatPayment != null) {
-      MBHDPaymentsProtos.FiatPayment.Builder fiatPaymentBuilder = MBHDPaymentsProtos.FiatPayment.newBuilder();
-      fiatPaymentBuilder.setAmount(fiatPayment.getAmount().getAmount().stripTrailingZeros().toPlainString());
-      fiatPaymentBuilder.setCurrency(fiatPayment.getAmount().getCurrencyUnit().toString());
-      fiatPaymentBuilder.setExchange(fiatPayment.getExchange() == null ? "" : fiatPayment.getExchange());
-      fiatPaymentBuilder.setRate(fiatPayment.getRate() == null ? "" : fiatPayment.getRate());
+    if (paymentRequestData != null) {
+      paymentRequestBuilder.setAddress(paymentRequestData.getAddress() == null ? "" : paymentRequestData.getAddress());
+      paymentRequestBuilder.setNote(paymentRequestData.getNote() == null ? "" : paymentRequestData.getNote());
+      paymentRequestBuilder.setAmountBTC(paymentRequestData.getAmountBTC() == null ? 0 : paymentRequestData.getAmountBTC().longValue());
+      if (paymentRequestData.getDate() != null) {
+        paymentRequestBuilder.setDate(paymentRequestData.getDate().getMillis());
+      }
+      paymentRequestBuilder.setLabel(paymentRequestData.getLabel() == null ? "" : paymentRequestData.getLabel());
 
-      paymentRequestBuilder.setAmountFiat(fiatPaymentBuilder);
+      FiatPayment fiatPayment = paymentRequestData.getAmountFiat();
+      if (fiatPayment != null) {
+        MBHDPaymentsProtos.FiatPayment.Builder fiatPaymentBuilder = MBHDPaymentsProtos.FiatPayment.newBuilder();
+        if (fiatPayment.getAmount() != null && fiatPayment.getAmount().getAmount() != null) {
+          fiatPaymentBuilder.setAmount(fiatPayment.getAmount().getAmount().stripTrailingZeros().toPlainString());
+        }
+        if (fiatPayment.getAmount() != null && fiatPayment.getAmount().getCurrencyUnit() != null) {
+          fiatPaymentBuilder.setCurrency(fiatPayment.getAmount().getCurrencyUnit().toString());
+        }
+        fiatPaymentBuilder.setExchange(fiatPayment.getExchange() == null ? "" : fiatPayment.getExchange());
+        fiatPaymentBuilder.setRate(fiatPayment.getRate() == null ? "" : fiatPayment.getRate());
+
+        paymentRequestBuilder.setAmountFiat(fiatPaymentBuilder);
+      }
     }
 
     return paymentRequestBuilder.build();
@@ -330,14 +335,14 @@ public class PaymentsProtobufSerializer {
     transactionInfoBuilder.setNote(transactionInfo.getNote());
 
     Optional<BigInteger> clientFee = transactionInfo.getClientFee();
-    if (clientFee.isPresent() && transactionInfo.getClientFee().get() != null) {
+    if (clientFee != null && clientFee.isPresent() && clientFee.get() != null) {
       transactionInfoBuilder.setClientFee(transactionInfo.getClientFee().get().longValue());
     } else {
       transactionInfoBuilder.setClientFee(ABSENT_VALUE);
     }
 
     Optional<BigInteger> minerFee = transactionInfo.getMinerFee();
-    if (minerFee.isPresent()  && transactionInfo.getMinerFee().get() != null) {
+    if (minerFee != null && minerFee.isPresent() && transactionInfo.getMinerFee().get() != null) {
       transactionInfoBuilder.setMinerFee(minerFee.get().longValue());
     } else {
       transactionInfoBuilder.setMinerFee(ABSENT_VALUE);
@@ -346,8 +351,12 @@ public class PaymentsProtobufSerializer {
     FiatPayment fiatPayment = transactionInfo.getAmountFiat();
     if (fiatPayment != null) {
       MBHDPaymentsProtos.FiatPayment.Builder fiatPaymentBuilder = MBHDPaymentsProtos.FiatPayment.newBuilder();
-      fiatPaymentBuilder.setAmount(fiatPayment.getAmount().getAmount().stripTrailingZeros().toPlainString());
-      fiatPaymentBuilder.setCurrency(fiatPayment.getAmount().getCurrencyUnit().toString());
+      if (fiatPayment.getAmount() != null && fiatPayment.getAmount().getAmount() != null) {
+        fiatPaymentBuilder.setAmount(fiatPayment.getAmount().getAmount().stripTrailingZeros().toPlainString());
+      }
+      if (fiatPayment.getAmount() != null && fiatPayment.getAmount().getCurrencyUnit() != null) {
+        fiatPaymentBuilder.setCurrency(fiatPayment.getAmount().getCurrencyUnit().toString());
+      }
       fiatPaymentBuilder.setExchange(fiatPayment.getExchange() == null ? "" : fiatPayment.getExchange());
       fiatPaymentBuilder.setRate(fiatPayment.getRate() == null ? "" : fiatPayment.getRate());
 

@@ -575,7 +575,7 @@ public class WalletService {
       payments.setPaymentRequestDatas(paymentRequestMap.values());
       protobufSerializer.writePayments(payments, fos);
 
-    } catch (IOException | PaymentsSaveException e) {
+    } catch (Exception e) {
       throw new PaymentsSaveException("Could not write payments db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");
     }
   }

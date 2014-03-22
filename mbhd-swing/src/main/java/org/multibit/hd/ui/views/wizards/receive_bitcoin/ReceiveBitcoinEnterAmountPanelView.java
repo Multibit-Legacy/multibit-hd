@@ -9,6 +9,8 @@ import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -204,8 +206,11 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     paymentRequestData.setAmountFiat(fiatPayment);
 
     walletService.addPaymentRequest(paymentRequestData);
-    walletService.writePayments();
-
+    try {
+      walletService.writePayments();
+    } catch (PaymentsSaveException pse) {
+      ExceptionHandler.handleThrowable(pse);
+    }
     // Ensure the views that display payments update
     WalletDetail walletDetail = new WalletDetail();
     if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
