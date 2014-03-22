@@ -205,7 +205,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
       amountBTCValue.setText(balanceArray[0] + balanceArray[1]);
 
       FiatPayment amountFiat = paymentRequestData.getAmountFiat();
-      amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount(), languageConfiguration.getLocale(), bitcoinConfiguration)));
+      amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount(), languageConfiguration.getLocale(), bitcoinConfiguration, true)));
 
       String exchangeRateText;
       if (Strings.isNullOrEmpty(paymentRequestData.getAmountFiat().getRate()) || Strings.isNullOrEmpty(paymentRequestData.getAmountFiat().getExchange())) {

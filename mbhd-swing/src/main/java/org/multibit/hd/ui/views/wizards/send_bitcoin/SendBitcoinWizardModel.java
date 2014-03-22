@@ -81,7 +81,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
       case SEND_CONFIRM_AMOUNT:
         // The user has confirmed the send details and pressed the next button
 
-        // TODO - check the password is correct
+        // TODO - check the password is correct in the UI
 
         // TODO - the transaction construction should be done BEFORE the confirm Bitcoin screen as the transaction fee should be shown
         //        this needs the separation of the completeTx and signing as the password is not known at tx completion time
@@ -156,7 +156,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
       transactionInfo.setMinerFee(Optional.of(minerFeePaid));
     }
     FiatPayment fiatPayment = new FiatPayment();
-    fiatPayment.setAmount(getLocalAmount());
+    // A send is denoted with a negative fiat amount
+    fiatPayment.setAmount(getLocalAmount().negated());
     fiatPayment.setExchange(ExchangeKey.current().getExchangeName());
 
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();

@@ -199,7 +199,7 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
       amountBTCValue.setText(balanceArray[0] + balanceArray[1]);
 
       FiatPayment amountFiat = paymentData.getAmountFiat();
-      amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount(), languageConfiguration.getLocale(), bitcoinConfiguration)));
+      amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount(), languageConfiguration.getLocale(), bitcoinConfiguration, true)));
 
       if (paymentData instanceof TransactionData) {
         TransactionData transactionData = (TransactionData) paymentData;

@@ -102,20 +102,22 @@ public class Formats {
   /**
    * <p>Provide a simple representation for a local currency amount.</p>
    *
+   *
    * @param amount               The amount as a plain number (no multipliers)
    * @param locale               The locale to use
    * @param bitcoinConfiguration The Bitcoin configuration to use as the basis for the symbol
    *
+   * @param showNegative
    * @return The local currency representation with no symbolic decoration
    */
-  public static String formatLocalAmount(BigMoney amount, Locale locale, BitcoinConfiguration bitcoinConfiguration) {
+  public static String formatLocalAmount(BigMoney amount, Locale locale, BitcoinConfiguration bitcoinConfiguration, boolean showNegative) {
 
     if (amount == null) {
       return "";
     }
 
     DecimalFormatSymbols dfs = configureDecimalFormatSymbols(bitcoinConfiguration, locale);
-    DecimalFormat localFormat = configureLocalDecimalFormat(dfs, bitcoinConfiguration);
+    DecimalFormat localFormat = configureLocalDecimalFormat(dfs, bitcoinConfiguration, showNegative);
 
     return localFormat.format(amount.getAmount());
 
@@ -150,12 +152,14 @@ public class Formats {
   }
 
   /**
+   *
    * @param dfs                  The decimal format symbols
    * @param bitcoinConfiguration The Bitcoin configuration to use
    *
+   * @param showNegative
    * @return A decimal format suitable for local currency balance representation
    */
-  private static DecimalFormat configureLocalDecimalFormat(DecimalFormatSymbols dfs, BitcoinConfiguration bitcoinConfiguration) {
+  private static DecimalFormat configureLocalDecimalFormat(DecimalFormatSymbols dfs, BitcoinConfiguration bitcoinConfiguration, boolean showNegative) {
 
     DecimalFormat format = new DecimalFormat();
 
@@ -166,6 +170,12 @@ public class Formats {
     format.setMinimumFractionDigits(bitcoinConfiguration.getLocalDecimalPlaces());
 
     format.setDecimalSeparatorAlwaysShown(true);
+
+    if (showNegative) {
+      format.setNegativePrefix("-");
+    } else {
+      format.setNegativePrefix("");
+    }
 
     return format;
   }
