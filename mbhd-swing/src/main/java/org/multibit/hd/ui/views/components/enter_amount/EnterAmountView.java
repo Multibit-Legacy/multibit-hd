@@ -77,6 +77,14 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     bitcoinAmountText = TextBoxes.newBitcoinAmount(BitcoinSymbol.maxSymbolicAmount().doubleValue());
     localAmountText = TextBoxes.newCurrencyAmount(999_999_999_999_999.9999);
 
+    // Set initial Bitcoin amount from the model (if non-zero)
+    if (!BigInteger.ZERO.equals(getModel().get().getSatoshis())) {
+      BitcoinSymbol bitcoinSymbol = BitcoinSymbol.current();
+      BigDecimal symbolicAmount = Satoshis.toSymbolicAmount(getModel().get().getSatoshis(), bitcoinSymbol);
+      bitcoinAmountText.setValue(symbolicAmount.doubleValue());
+      updateLocalAmount();
+    }
+
     approximatelyLabel = Labels.newApproximately();
 
     LabelDecorator.applyLocalCurrencySymbol(localCurrencySymbolLabel);
@@ -131,14 +139,6 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     }
 
     panel.add(exchangeRateStatusLabel, "span 4,push,wrap");
-
-    // Set initial Bitcoin amount from the model (if non-zero)
-    if (!BigInteger.ZERO.equals(getModel().get().getSatoshis())) {
-      BitcoinSymbol bitcoinSymbol = BitcoinSymbol.current();
-      BigDecimal symbolicAmount = Satoshis.toSymbolicAmount(getModel().get().getSatoshis(), bitcoinSymbol);
-      bitcoinAmountText.setValue(symbolicAmount.doubleValue());
-      updateLocalAmount();
-    }
 
     setLocalAmountVisibility();
 
