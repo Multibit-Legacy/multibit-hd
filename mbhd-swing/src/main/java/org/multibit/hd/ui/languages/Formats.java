@@ -24,6 +24,25 @@ import java.util.Locale;
 public class Formats {
 
   /**
+    * <p>Provide a split representation for the Bitcoin balance display.</p>
+    * <p>For example, 12345.6789 becomes "12,345.67", "89" </p>
+    * <p>The amount will be adjusted by the symbolic multiplier from the current confiuration</p>
+    *
+    * @param satoshis              The amount in satoshis
+    * @param languageConfiguration The  language configuration to use as the basis for presentation
+    * @param bitcoinConfiguration  The Bitcoin configuration to use as the basis for the symbol
+    *
+    * @return The left [0] and right [1] components suitable for presentation as a balance with no symbolic decoration
+    */
+   public static String[] formatSatoshisAsSymbolic(
+     BigInteger satoshis,
+     LanguageConfiguration languageConfiguration,
+     BitcoinConfiguration bitcoinConfiguration
+   ) {
+     return formatSatoshisAsSymbolic(satoshis, languageConfiguration, bitcoinConfiguration, true);
+   }
+
+  /**
    * <p>Provide a split representation for the Bitcoin balance display.</p>
    * <p>For example, 12345.6789 becomes "12,345.67", "89" </p>
    * <p>The amount will be adjusted by the symbolic multiplier from the current confiuration</p>
@@ -31,13 +50,15 @@ public class Formats {
    * @param satoshis              The amount in satoshis
    * @param languageConfiguration The  language configuration to use as the basis for presentation
    * @param bitcoinConfiguration  The Bitcoin configuration to use as the basis for the symbol
+   * @param showNegative          If true, show '-' for negative numbers
    *
    * @return The left [0] and right [1] components suitable for presentation as a balance with no symbolic decoration
    */
   public static String[] formatSatoshisAsSymbolic(
     BigInteger satoshis,
     LanguageConfiguration languageConfiguration,
-    BitcoinConfiguration bitcoinConfiguration
+    BitcoinConfiguration bitcoinConfiguration,
+    boolean showNegative
   ) {
 
     Preconditions.checkNotNull(satoshis, "'satoshis' must be present");
@@ -47,7 +68,7 @@ public class Formats {
     BitcoinSymbol bitcoinSymbol = BitcoinSymbol.of(bitcoinConfiguration.getBitcoinSymbol());
 
     DecimalFormatSymbols dfs = configureDecimalFormatSymbols(bitcoinConfiguration, currentLocale);
-    DecimalFormat localFormat = configureBitcoinDecimalFormat(dfs, bitcoinSymbol);
+    DecimalFormat localFormat = configureBitcoinDecimalFormat(dfs, bitcoinSymbol, showNegative);
 
     // Apply formatting to the symbolic amount
     String formattedAmount = localFormat.format(Satoshis.toSymbolicAmount(satoshis, bitcoinSymbol));
@@ -105,7 +126,7 @@ public class Formats {
    *
    * @return A decimal format suitable for Bitcoin balance representation
    */
-  private static DecimalFormat configureBitcoinDecimalFormat(DecimalFormatSymbols dfs, BitcoinSymbol bitcoinSymbol) {
+  private static DecimalFormat configureBitcoinDecimalFormat(DecimalFormatSymbols dfs, BitcoinSymbol bitcoinSymbol, boolean showNegative) {
 
     DecimalFormat format = new DecimalFormat();
 
@@ -119,7 +140,11 @@ public class Formats {
 
     format.setDecimalSeparatorAlwaysShown(false);
 
-    format.setNegativePrefix("-");
+    if (showNegative) {
+      format.setNegativePrefix("-");
+    } else {
+      format.setNegativePrefix("");
+    }
 
     return format;
   }

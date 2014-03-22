@@ -107,7 +107,7 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
     BigInteger satoshis = getModel().get().getSatoshis();
 
     // Display using the symbolic amount
-    String[] bitcoinDisplay = Formats.formatSatoshisAsSymbolic(satoshis, languageConfiguration, bitcoinConfiguration);
+    String[] bitcoinDisplay = Formats.formatSatoshisAsSymbolic(satoshis, languageConfiguration, bitcoinConfiguration, getModel().get().isShowNegative());
 
     if (bitcoinConfiguration.isCurrencySymbolLeading()) {
       handleLeadingSymbol(bitcoinConfiguration);

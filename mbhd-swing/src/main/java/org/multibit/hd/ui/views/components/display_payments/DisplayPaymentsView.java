@@ -72,7 +72,7 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
         paymentDataLabel.setText(Languages.safeText(paymentData.getType().getLocalisationKey()));
         LabelDecorator.applyStatusIcon(paymentData.getStatus(), paymentDataLabel, paymentData.isCoinBase(), MultiBitUI.NORMAL_ICON_SIZE);
 
-        ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.PLAIN);
+        ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.PLAIN, false);
         if (CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().isPresent()) {
           paymentAmountMaV.getModel().setRateProvider(CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().get().getRateProvider());
         }
@@ -87,6 +87,9 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
         panel.add(amountPanel, "shrink, wrap");
       }
 
+      panel.invalidate();
+      panel.validate();
+      panel.repaint();
       initialised = true;
     }
   }
@@ -102,6 +105,9 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
         paymentAmountMaV.getView().updateView(Configurations.currentConfiguration);
       }
     }
+    panel.invalidate();
+    panel.validate();
+    panel.repaint();
   }
 
   @Subscribe

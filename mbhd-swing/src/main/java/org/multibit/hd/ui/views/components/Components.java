@@ -254,11 +254,12 @@ public class Components {
    *
    * @param style The display amount style
    *
+   *
    * @return A new "display amount" model and view
    */
-  public static ModelAndView<DisplayAmountModel, DisplayAmountView> newDisplayAmountMaV(DisplayAmountStyle style) {
+  public static ModelAndView<DisplayAmountModel, DisplayAmountView> newDisplayAmountMaV(DisplayAmountStyle style, boolean showNegative) {
 
-    DisplayAmountModel model = new DisplayAmountModel(style);
+    DisplayAmountModel model = new DisplayAmountModel(style, showNegative);
     DisplayAmountView view = new DisplayAmountView(model);
 
     return new ModelAndView<>(model, view);
