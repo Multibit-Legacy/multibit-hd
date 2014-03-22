@@ -93,6 +93,7 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
       // TODO Consider moving this into a service method
       BitcoinURI uri = bitcoinUri.get();
       Optional<Address> address = Optional.fromNullable(uri.getAddress());
+      Optional<BigInteger> amount = Optional.fromNullable(uri.getAmount());
 
       if (address.isPresent()) {
 
@@ -123,6 +124,10 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
 
         enterRecipientMaV.getModel().setValue(recipient);
 
+        // Only if the address is present will an amount be entered
+        if (amount.isPresent()) {
+          enterAmountMaV.getModel().setSatoshis(amount.get());
+        }
 
       }
 
