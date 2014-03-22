@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.languages;
 
+import com.google.bitcoin.uri.BitcoinURI;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.config.BitcoinConfiguration;
@@ -220,6 +221,66 @@ public class FormatsTest {
     assertThat(balance.length).isEqualTo(2);
     assertThat(balance[0]).isEqualTo("1");
     assertThat(balance[1]).isEqualTo("");
+  }
+
+  @Test
+  public void testFormatAlertMessage_MultiBit_B() throws Exception {
+
+    bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.ICON.name());
+
+    final BitcoinURI bitcoinURI = new BitcoinURI("bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?amount=0.01&label=Please%20donate%20to%20multibit.org");
+
+    assertThat(Formats.formatAlertMessage(bitcoinURI).get()).isEqualTo("Payment labelled \"Please donate to multibit.org\" (1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty) for \"B 0.01000000\". Continue ?");
+  }
+
+  @Test
+  public void testFormatAlertMessage_MultiBit_mB() throws Exception {
+
+    bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.MICON.name());
+
+    final BitcoinURI bitcoinURI = new BitcoinURI("bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?amount=0.01&label=Please%20donate%20to%20multibit.org");
+
+    assertThat(Formats.formatAlertMessage(bitcoinURI).get()).isEqualTo("Payment labelled \"Please donate to multibit.org\" (1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty) for \"mB 10.00000\". Continue ?");
+  }
+
+  @Test
+  public void testFormatAlertMessage_MultiBit_uB() throws Exception {
+
+    bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.UICON.name());
+
+    final BitcoinURI bitcoinURI = new BitcoinURI("bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?amount=0.01&label=Please%20donate%20to%20multibit.org");
+
+    assertThat(Formats.formatAlertMessage(bitcoinURI).get()).isEqualTo("Payment labelled \"Please donate to multibit.org\" (1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty) for \"\u00b5B 10,000.00\". Continue ?");
+  }
+
+  @Test
+  public void testFormatAlertMessage_MultiBit_uXBT() throws Exception {
+
+    bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.UXBT.name());
+
+    final BitcoinURI bitcoinURI = new BitcoinURI("bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?amount=0.01&label=Please%20donate%20to%20multibit.org");
+
+    assertThat(Formats.formatAlertMessage(bitcoinURI).get()).isEqualTo("Payment labelled \"Please donate to multibit.org\" (1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty) for \"\u00b5XBT 10,000.00\". Continue ?");
+  }
+
+  @Test
+  public void testFormatAlertMessage_MultiBit_mBTC_No_Label() throws Exception {
+
+    bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.MBTC.name());
+
+    final BitcoinURI bitcoinURI = new BitcoinURI("bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?amount=0.01");
+
+    assertThat(Formats.formatAlertMessage(bitcoinURI).get()).isEqualTo("Payment labelled \"n/a\" (1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty) for \"mBTC 10.00000\". Continue ?");
+  }
+
+  @Test
+  public void testFormatAlertMessage_MultiBit_No_Amount_No_Label() throws Exception {
+
+    bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.MBTC.name());
+
+    final BitcoinURI bitcoinURI = new BitcoinURI("bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
+
+    assertThat(Formats.formatAlertMessage(bitcoinURI).get()).isEqualTo("Payment labelled \"n/a\" (1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty) for \"n/a\". Continue ?");
   }
 
 }

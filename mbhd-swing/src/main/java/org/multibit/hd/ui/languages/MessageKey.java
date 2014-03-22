@@ -112,6 +112,8 @@ public enum MessageKey {
   DECIMAL_POINT("decimal_point"),
   DECIMAL_SPACE("decimal_space"),
 
+  BITCOIN_URI_ALERT("bitcoin_uri_label"),
+
   // Panels
 
   NETWORK_CONFIGURATION_ERROR("network_configuration_error"),
