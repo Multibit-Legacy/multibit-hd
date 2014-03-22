@@ -137,7 +137,11 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
   @Subscribe
   public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
-    // Create a transactionInfo to match the event created, regardless of success or failure
+    // Only store successful transactions
+    if (!transactionCreationEvent.isTransactionCreationWasSuccessful()) {
+      return;
+    }
+    // Create a transactionInfo to match the event created
     TransactionInfo transactionInfo = new TransactionInfo();
     transactionInfo.setHash(transactionCreationEvent.getTransactionId());
     String note = getNotes();
