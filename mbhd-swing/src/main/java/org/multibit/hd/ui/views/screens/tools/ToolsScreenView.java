@@ -1,7 +1,10 @@
 package org.multibit.hd.ui.views.screens.tools;
 
+import com.google.bitcoin.uri.BitcoinURI;
+import com.google.bitcoin.uri.BitcoinURIParseException;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.RAGStatus;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
@@ -67,21 +70,34 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
       }
     };
 
-    Action fireDemoAlertAction = new AbstractAction() {
+    final BitcoinURI bitcoinURI;
+    try {
+      bitcoinURI = new BitcoinURI("bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?amount=0.01&label=Please%20donate%20to%20multibit.org");
+    } catch (BitcoinURIParseException e) {
+      ExceptionHandler.handleThrowable(e);
+      return contentPanel;
+    }
+
+    Action acceptedBitcoinUriAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-
-        AlertModel alertModel = Models.newAlertModel("Demonstrate alert", RAGStatus.RED);
 
         // Demonstrate a button
         AbstractAction action = new AbstractAction() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            System.out.println("Done something");
+
+            ControllerEvents.fireRemoveAlertEvent();
+            Panels.showLightBox(Wizards.newSendBitcoinWizard(bitcoinURI).getWizardScreenHolder());
+
           }
         };
         JButton button = Buttons.newAlertPanelButton(action, MessageKey.YES, AwesomeIcon.CHECK);
-        alertModel.setButton(button);
+
+        // Create the alert
+        AlertModel alertModel = Models.newAlertModel("Address '1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty' with label 'Please donate to multibit.org' is requesting '10mBTC'. Continue ?",
+          RAGStatus.AMBER,
+          button);
 
         ControllerEvents.fireAddAlertEvent(alertModel);
       }
@@ -90,7 +106,7 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
     welcomeWizard = Buttons.newShowWelcomeWizardButton(showWelcomeWizardAction);
 
     contentPanel.add(welcomeWizard, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
-    contentPanel.add(Buttons.newAddAlertButton(fireDemoAlertAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push,wrap");
+    contentPanel.add(Buttons.newAddAlertButton(acceptedBitcoinUriAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push,wrap");
 
 
     return contentPanel;

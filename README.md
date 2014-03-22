@@ -1,41 +1,56 @@
-Build status: [![Build Status](https://travis-ci.org/bitcoin-solutions/multibit-hd.png?branch=master)](https://travis-ci.org/bitcoin-solutions/multibit-hd)
+Project status: Late-alpha. Expect bugs and API changes. Not suitable for production, but early adopter developers and early
+testers should get on board.
 
-Project status: Alpha. Expect bugs and API changes. Not suitable for production, but early adopter developers should get on board.
+### MultiBit HD (MBHD)
 
-### MultiBit HD
+A desktop Hierarchical Deterministic Wallet (HDW) for Bitcoin using the Simplified Payment Verification (SPV) mode to provide very fast
+blockchain synchronization.
 
-A Bitcoin wallet based on the Simplified Payment Verification (SPV) mode to provide very fast blockchain synchronization.
-Public and private keys are held in a hierarchical deterministic (HD) wallet to provide much greater security than traditional
-desktop clients. Support for external hardware wallets (such as the Trezor) is available.
+The target audience is "international mainstream" which compels the user interface to remain as simple as possible while still
+retaining advanced capabilities under the covers. In general this means
+
+Support for external hardware wallets (such as the Trezor) is [available through the MultiBit Hardware project](https://github.com/bitcoin-solutions/mbhd-hardware).
 
 ### Technologies
 
+* Java 7 and Swing
 * [Bitcoinj](https://code.google.com/p/bitcoinj/) - Providing various Bitcoin protocol utilities
 * [Java HID API](https://code.google.com/p/javahidapi/) - Java library providing USB Human Interface Device (HID) native interface
-* [Google Protocol Buffers](https://code.google.com/p/protobuf/) (protobuf) - For use with communicating with the Trezor device
-* Java 7 and Swing
+* [Google Protocol Buffers](https://code.google.com/p/protobuf/) (protobuf) - For use with serialization and hardware communications
+* [Font Awesome](http://fortawesome.github.io/Font-Awesome/) - for iconography
+* [JWrapper](http://www.jwrapper.com/) - for a smooth installation and update process
 
 ### Getting started
 
 MBHD is a standard Maven build, but currently relies on some snapshot builds of libraries which aren't available in Maven Central.
 
-In general you should check out the following from their respective source control repos and install them locally:
+#### Verify you have Maven 3+
 
- * [Bitcoinj](https://code.google.com/p/bitcoinj/) - use HEAD of "master" branch
+Most IDEs (such as [Intellij Community Edition](http://www.jetbrains.com/idea/download/)) come with support for Maven built in,
+but if not then you may need to [install it manually](http://maven.apache.org/download.cgi).
 
-Use the standard Maven build and install process for all projects:
+IDEs such as Eclipse may require the [m2eclipse plugin](http://www.sonatype.org/m2eclipse) to be configured.
 
+To quickly check that you have Maven 3+ installed check on the command line:
+```
+$ mvn --version
+```
+
+#### Manually build and install Bitcoinj
+
+At present it is necessary to checkout [Bitcoinj](https://code.google.com/p/bitcoinj/) and build it manually. You will need to
+use the HEAD of the `master` branch.
 ```
 $ mvn clean install
 ```
-
 With Bitcoinj you may need to build the protobuf files - in that case you will need to execute a modified Maven command:
-
 ```
 $ mvn -DupdateProtobuf=true clean install
 ```
+#### Start the application
 
-If you want to run the application within an IDE, you will need to run `MultiBitHD.main()` in the `mbhd-swing` module.
+To run the application within an IDE, simply execute `MultiBitHD.main()` in the `mbhd-swing` module. No command line parameters
+are needed, although a Bitcoin URI is accepted.
 
 ### Frequently asked questions (FAQ)
 
@@ -88,21 +103,27 @@ then we will be integrating Trezor into the main branch.
 #### I want an installer not this IDE
 
 The code is changing too rapidly and is too unstable to justify a long-lived installer. If you want to create one for demo purposes
-you need to run the following Maven command:
+you need to [first read the installer README](mbhd-install/README.md) to do the necessary manual steps to configure JWrapper
+and then run the following Maven command:
 
 ```
 mvn -Dinstaller=true clean package
 ```
-
-The installers will be found in the `target/bundles` directory ready for code signing.
-
-If you want to try out a JWrapper build then the `mbhd-jwrapper` branch is available for this purpose. You will need to update it
-by periodically merging in from `develop`.
+The installers will be found in the `target/bundles` directory ready for installer signing.
 
 #### Is there a developer wiki ?
 
 Yes. [The wiki pages](https://github.com/bitcoin-solutions/multibit-hd/wiki/_pages) provide comprehensive instructions for
 developers that cover a variety of environments.
+
+#### What is your development roadmap ?
+
+We are currently working to the following timetable:
+
+1. BIP32/39 hierarchical deterministic wallet (HDW) support
+2. BIP70-73 payment protocol support
+3. Hardware wallet (Trezor) support
+4. Hierarchical deterministic multi-signature (HDM) support
 
 ### Use cases documentation
 

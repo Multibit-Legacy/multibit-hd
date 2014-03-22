@@ -17,9 +17,9 @@ import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.controllers.HeaderController;
 import org.multibit.hd.ui.controllers.MainController;
 import org.multibit.hd.ui.controllers.SidebarController;
-import org.multibit.hd.ui.platform.GenericApplication;
 import org.multibit.hd.ui.platform.GenericApplicationFactory;
 import org.multibit.hd.ui.platform.GenericApplicationSpecification;
+import org.multibit.hd.ui.platform.listener.GenericOpenURIEvent;
 import org.multibit.hd.ui.views.MainView;
 import org.multibit.hd.ui.views.themes.ThemeKey;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -29,6 +29,9 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
 
 /**
  * <p>Main entry point to the application</p>
@@ -36,9 +39,6 @@ import java.io.File;
 public class MultiBitHD {
 
   private static final Logger log = LoggerFactory.getLogger(MultiBitHD.class);
-
-  // TODO Implement this
-  private static GenericApplication genericApplication = null;
 
   private static File applicationDataDirectory;
 
@@ -56,6 +56,12 @@ public class MultiBitHD {
    */
   public static void main(final String[] args) throws InterruptedException, UnsupportedLookAndFeelException {
 
+    if (args != null) {
+      for (int i = 0; i < args.length; i++) {
+        log.debug("MultiBit launched with args[{}]: '{}'", i, args[i]);
+      }
+    }
+
     // Prepare the JVM (Nimbus, system properties etc)
     initialiseJVM();
 
@@ -66,7 +72,7 @@ public class MultiBitHD {
     initialiseCore(args);
 
     // Create a new UI based on the configuration
-    initialiseUI();
+    initialiseUI(args);
 
     // Start supporting services (wizards, exchange, wallet access etc)
     initialiseSupport();
@@ -157,7 +163,7 @@ public class MultiBitHD {
    * <p>This creates the singleton views and controllers that respond to configuration
    * and theme changes</p>
    */
-  private static void initialiseUI() {
+  private static void initialiseUI(final String[] args) {
 
     SwingUtilities.invokeLater(new Runnable() {
       @Override
@@ -197,6 +203,8 @@ public class MultiBitHD {
         overlaySecurityAlerts();
 
         initialiseGenericApp();
+
+        overlayBitcoinUriAlerts(args);
       }
 
     });
@@ -205,7 +213,6 @@ public class MultiBitHD {
   /**
    * <p>Initialise the platform-specific services</p>
    * <p>Depends on the UI being in place</p>
-   *
    */
   private static void initialiseGenericApp() {
 
@@ -215,7 +222,7 @@ public class MultiBitHD {
     specification.getAboutEventListeners().add(mainController);
     specification.getQuitEventListeners().add(mainController);
 
-    genericApplication = GenericApplicationFactory.INSTANCE.buildGenericApplication(specification);
+    GenericApplicationFactory.INSTANCE.buildGenericApplication(specification);
 
   }
 
@@ -298,12 +305,61 @@ public class MultiBitHD {
   }
 
   /**
-   * TODO Integrate the generic application structure for BitcoinURI support
+   * <p>Show any Bitcoin URI alerts (UI)</p>
    */
-  private void registerEventListeners() {
+  private static void overlayBitcoinUriAlerts(String[] args) {
 
-    log.info("Configuring native event handling");
+    log.debug("Checking for Bitcoin URI on command line");
 
+    // Check for a valid entry on the command line (protocol handler).
+    if (args != null && args.length > 0) {
+      processCommandLineURI(args[0]);
+    } else {
+      log.debug("No Bitcoin URI provided as an argument");
+    }
+
+  }
+
+  /**
+   * <p>Attempt to detect if the command line URI is valid.</p>
+   * <p>Note that this is largely because IE6-8 strip URL encoding when passing in URIs to a protocol handler.
+   * However, there is also the chance that anyone could hand-craft a URI and pass it in with non-ASCII character encoding present in the label.</p>
+   * <p>This a really limited approach (no consideration of "amount=10.0&label=Black & White")
+   * but should be OK for <a href="https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki">BIP21</a> use cases.</p>
+   *
+   * @param rawURI The raw URI from the command line (not validated until later)
+   */
+  private static void processCommandLineURI(String rawURI) {
+
+    try {
+
+      // Basic initial checking for URL encoding
+      int queryParamIndex = rawURI.indexOf('?');
+      if (queryParamIndex > 0 && !rawURI.contains("%")) {
+        // Possibly encoded but more likely not
+        String encodedQueryParams = URLEncoder.encode(rawURI.substring(queryParamIndex + 1), "UTF-8");
+        rawURI = rawURI.substring(0, queryParamIndex) + "?" + encodedQueryParams;
+        rawURI = rawURI.replaceAll("%3D", "=");
+        rawURI = rawURI.replaceAll("%26", "&");
+      }
+
+      log.debug("Using '{}' to create Bitcoin URI", rawURI);
+      final URI uri = URI.create(rawURI);
+
+      // Wrap this in a generic event
+      GenericOpenURIEvent event = new GenericOpenURIEvent() {
+        @Override
+        public URI getURI() {
+          return uri;
+        }
+      };
+
+      // Simulate this coming in from an external source
+      mainController.onOpenURIEvent(event);
+
+    } catch (UnsupportedEncodingException e) {
+      log.error("UTF-8 is not supported on this platform");
+    }
   }
 
 }

@@ -212,7 +212,6 @@ public enum MessageKey {
   ABOUT_NOTE_1("about_note_1"),
   ABOUT_NOTE_2("about_note_2"),
   ABOUT_NOTE_3("about_note_3"),
-  ABOUT_NOTE_4("about_note_4"),
 
   SELECT_BACKUP_LOCATION_NOTE_1("select_backup_location_note_1"),
   SELECT_BACKUP_LOCATION_NOTE_2("select_backup_location_note_2"),
