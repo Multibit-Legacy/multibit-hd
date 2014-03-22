@@ -112,6 +112,7 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
           if (!contacts.isEmpty()) {
             // Offer the first contact with the matching address
             recipient = new Recipient(contacts.get(0).getBitcoinAddress().get());
+            recipient.setContact(contacts.get(0));
           } else {
             // No matching contact, so make one up
             recipient = new Recipient(address.get().toString());
