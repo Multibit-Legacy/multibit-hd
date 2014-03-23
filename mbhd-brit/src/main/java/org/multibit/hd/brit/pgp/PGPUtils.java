@@ -72,7 +72,7 @@ public class PGPUtils {
    * @param keyIn input stream representing a key ring collection.
    * @param keyID keyID we want.
    * @param pass  passphrase to decrypt secret key with.
-   * @return
+   * @return The PGPPrivate key matching the keyID
    * @throws IOException
    * @throws PGPException
    * @throws NoSuchProviderException
@@ -92,7 +92,7 @@ public class PGPUtils {
   }
 
   /**
-   * decrypt the passed in message stream
+   * Decrypt the passed in message stream
    */
   @SuppressWarnings("unchecked")
   public static void decryptFile(InputStream in, OutputStream out, InputStream keyIn, char[] passwd)

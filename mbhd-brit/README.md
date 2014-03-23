@@ -45,7 +45,7 @@ the blockchain.
 It is envisaged that other projects will see the benefit of using BRIT and by using it in their projects will contribute
 to the overall obfuscation occurring on the blockchain.
 
-All the BRIT code - both client side and server side) open source using the MIT licence
+All the BRIT code - both client side and server side - is open source using the MIT licence.
 
 ### Actors
 
@@ -70,12 +70,14 @@ The protocol now waits for a Redeemer.
 
 #### 2. Redeemer prepares keys
 
-The Redeemer uses an offline machine to create:
+The Redeemer uses an offline machine to create multiples of the following:
 
  * a GPG private key (`redeemer.PGP.private`)
  * the corresponding GPG public key (`redeemer.PGP.public`)
  * an EC private key (`redeemer.EC.private`)
  * the corresponding EC public key (`redeemer.EC.public`)
+
+Each of these datasets is denoted a `Redeemer`.
 
 It should be noted that at this point
 
@@ -85,14 +87,20 @@ redeemer.EC.public = G(redeemer.EC.private)    (1)
 
 where `G()` is the EC generator function for the Bitcoin curve.
 
-The redeemer also produces the `redeemer.identifier`, which is the SHA256 hash of the `redeemer.PGP.public`.
+The individuals who want to redeem bitcoin creates multiple copies of this dataset.
+You might have, say, 4 separate individuals, each of which creates 25 sets of this data creating a total of
+100 Redeemers.
+
+For each set of data above redeemer also produces the `redeemer.identifier`. This is the SHA256 hash of
+the `redeemer.PGP.public`. (It is used later by the Matcher to record where payments will be sent to)
 
 
 #### 3. Redeemer distributes keys
 
-The Redeemer copies `redeemer.PGP.public` and `redeemer.EC.public` to wherever the Matcher service is running.
+The Redeemer copies the `redeemer.PGP.public` and `redeemer.EC.public` to wherever the Matcher service is running.
 
-The Matcher creates a unique `redeemer.identifier` from the `redeemer.PGP.public` using a SHA256 hash.
+The Matcher creates the `redeemer.identifier` from the `redeemer.PGP.public` using a SHA256 hash in the
+same way as the Redeemer.
 
 The protocol now waits until a Payer is introduced to the Matcher. This is done when the user first uses
 the installed client software.
@@ -107,9 +115,10 @@ that the responses from the Matcher are genuine.
 #### 5. Payer derives unique BRIT wallet identifier
 
 The Payer runs a number of one way trapdoor functions over their wallet seed phrase to deterministically generate a wallet
-identifier (`payer.britWalletId`). It is not computationally feasible to derive the seed phrase from this identifier. 
+identifier (`payer.britWalletId`). It is not computationally feasible to go backwards and derive the seed phrase from
+this identifier.
 
-The process of generating this identifier is not used for any other purpose in applications using BRIT. For example, it is
+This identifier is not used for any other purpose in the client application using BRIT. For example, it is
 not used as part of a wallet persistence mechanism.
 
 
@@ -188,18 +197,20 @@ The Matcher encrypts `addressGenerator` as follows:
 AES-256-encrypt(addressGenerator, matcher.AES.encryptionKey)    (7)
 ```
 
-The resulting message is sent to the Payer who can decrypt it since they know how `matcher.AES.encryptionKey` was derivedfrom the `payer.sessionKey`
+The resulting message is sent to the Payer who can decrypt it since they know how `matcher.AES.encryptionKey`
+was derived from the `payer.sessionKey`
 
 
 #### 12. Payer creates payment Bitcoin address
 
-Any time the Payer has to make a payment they choose an index `i`, monotonically increasing for each payment, starting at 0.
+Any time the Payer has to make a payment they choose an index `i`, monotonically increasing for each send payment
+they make with the wallet, starting at 0.
 
 ```
-payer.EC.public(i) = addressGenerator + G(i) (8)
-
+payer.EC.public(i) = addressGenerator + G(i) (                   8)
+```
 which is identical to
-
+```
 payer.EC.public(i) = redeemer.EC.public + G(payer.britWalletId) + G(i)
 ```
 
@@ -219,7 +230,7 @@ strategies available to further obfuscate the information being leaked that are 
 
 From time to time the Redeemer will synchronize with the Matcher store to obtain fresh `payer.britWalletId` values.
 To be able to check that the proportion of total installs allocated to their
-`redeemer.identifier` is correct they will typically obtain the whole list of data stored in (6) to parse.
+`redeemer.identifier` is correct they will typically obtain the whole list of data stored in (10) to parse.
 
 If an attacker guesses `redeemer.identifier`, or is able to clone the Matcher database, this will not assist them
 in either identifying the Redeemer or the address generator for any Redeemer-Payer relationship.
