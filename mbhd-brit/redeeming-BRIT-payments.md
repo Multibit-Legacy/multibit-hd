@@ -21,13 +21,13 @@ As the fees are so small, they are aggregated in steps as follows:
 1) The client bundles the client fees and attaches an extra transaction output to the user's transaction sends. To help
 obfuscate this output it is attached after a random number of sends (typically 20 to 30).
 
-With an average aggregation factor of 25 this produces transaction outputs of size of 125 microBitcoin (USD 7.5 cents).
+With an average aggregation factor of 25 this produces transaction outputs of size of 125 microBitcoin (7.5 USD cents).
 
 2) The only actor that can redeem the outputs produced in 1) is the Redeemer.
 They regularly (typically once a day) aggregate these outputs. Typically 4 outputs take 1 KB of blockchain space so
-the Redeemer may aggregate, say, 12 of the 125 microBitcoin outputs at a time.
+the Redeemer may aggregate, say, 12 of the 125 microBitcoin outputs at a time in a transaction of size 3KB.
 
-This produces outputs of size 1.5 milliBitcoin (90 cents).
+This produces outputs of size 1.5 milliBitcoin (90 USD cents).
 
 To reduce the number of unspent transaction outputs (UTXO) on the blockchain, these can be further aggregated by the
 redeemer by, say, another factor of 12 to produce transaction outputs of 18 milliBitcoin (approximately $10).
@@ -44,7 +44,7 @@ information required by the Redeemer to construct the private keys of all of the
 Typically this information will be produced daily by the Matcher and have 'thousands' of records.
 
 2. The Redeemer constructs a Bitcoin wallet with the private keys for their incoming payments. The private keys are generated
-deterministically from their EC private key, the britWalletId and an index.
+deterministically from combining their EC private key, the britWalletId and an index.
 
 3. The Redeemer synchronises with the blockchain all of their previously created wallets plus the new one. Individual wallets
 are created daily to avoid scaling issues.

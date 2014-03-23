@@ -87,5 +87,24 @@
     </plugins>
 
   </build>
+    <!-- Provide defaults for all modules to use -->
+     <dependencyManagement>
+       <dependencies>
+           <!-- Testing -->
+
+           <!-- JUnit for testing -->
+           <dependency>
+             <groupId>junit</groupId>
+             <artifactId>junit</artifactId>
+           </dependency>
+
+           <!-- FEST for fluent test assertions -->
+           <dependency>
+             <groupId>org.easytesting</groupId>
+             <artifactId>fest-assert-core</artifactId>
+           </dependency>
+
+    </dependencies>
+    </dependencyManagement>
 
 </project>
