@@ -1,5 +1,6 @@
 package org.multibit.hd.core.services;
 
+import com.google.bitcoin.core.Address;
 import com.google.common.collect.Lists;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.exceptions.ContactsLoadException;
@@ -22,6 +23,11 @@ public class EmptyContactService implements ContactService {
 
   @Override
   public List<Contact> allContacts() {
+    return Lists.newArrayList();
+  }
+
+  @Override
+  public List<Contact> filterContactsByBitcoinAddress(Address address) {
     return Lists.newArrayList();
   }
 

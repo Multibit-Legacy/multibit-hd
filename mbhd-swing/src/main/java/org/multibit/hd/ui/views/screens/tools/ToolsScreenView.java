@@ -2,12 +2,14 @@ package org.multibit.hd.ui.views.screens.tools;
 
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.bitcoin.uri.BitcoinURIParseException;
+import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
+import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.models.Models;
@@ -88,18 +90,27 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
           public void actionPerformed(ActionEvent e) {
 
             ControllerEvents.fireRemoveAlertEvent();
-            Panels.showLightBox(Wizards.newSendBitcoinWizard(bitcoinURI).getWizardScreenHolder());
+            Panels.showLightBox(Wizards.newSendBitcoinWizard(Optional.of(bitcoinURI)).getWizardScreenHolder());
 
           }
         };
         JButton button = Buttons.newAlertPanelButton(action, MessageKey.YES, AwesomeIcon.CHECK);
 
-        // Create the alert
-        AlertModel alertModel = Models.newAlertModel("Address '1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty' with label 'Please donate to multibit.org' is requesting '10mBTC'. Continue ?",
-          RAGStatus.AMBER,
-          button);
+        // Attempt to decode the Bitcoin URI
+        Optional<String> alertMessage = Formats.formatAlertMessage(bitcoinURI);
 
-        ControllerEvents.fireAddAlertEvent(alertModel);
+        // If there is sufficient information in the Bitcoin URI display it to the user as an alert
+        if (alertMessage.isPresent()) {
+
+          AlertModel alertModel = Models.newAlertModel(
+            alertMessage.get(),
+            RAGStatus.AMBER,
+            button
+          );
+
+          // Add the alert
+          ControllerEvents.fireAddAlertEvent(alertModel);
+        }
       }
     };
 

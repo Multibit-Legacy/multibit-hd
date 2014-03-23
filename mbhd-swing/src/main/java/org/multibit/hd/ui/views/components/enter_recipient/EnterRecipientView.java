@@ -23,7 +23,7 @@ import java.awt.image.BufferedImage;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Presentation of a dual-purpose combobox</li>
+ * <li>Presentation of a dual-purpose combo box</li>
  * <li>Support for locating contacts by name</li>
  * <li>Support for entering recipient Bitcoin address representations (address, seed, key etc)</li>
  * </ul>
@@ -38,7 +38,6 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
   // View components
   private JComboBox<Recipient> recipientComboBox;
   private JLabel imageLabel;
-  private JButton pasteButton;
 
   /**
    * @param model The model backing this view
@@ -51,18 +50,6 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
   @Override
   public JPanel newComponentPanel() {
 
-    AutoCompleteFilter<Recipient> filter = AutoCompleteFilters.newRecipientFilter();
-
-    // Bind a key listener to allow instant update of UI to matched passwords
-    recipientComboBox = ComboBoxes.newRecipientComboBox(filter);
-    recipientComboBox.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        updateModelFromView();
-      }
-    });
-
-    pasteButton = Buttons.newPasteButton(getPasteAction());
 
     JPanel panel = Panels.newPanel(new MigLayout(
       Panels.migXLayout(),
@@ -70,14 +57,38 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
       "[]" // Rows
     ));
 
-    // Start with an invisible label
+    // Start with an invisible gravatar image label
     imageLabel = Labels.newImageLabel(Optional.<BufferedImage>absent());
     imageLabel.setVisible(false);
+
+    AutoCompleteFilter<Recipient> filter = AutoCompleteFilters.newRecipientFilter();
+
+    recipientComboBox = ComboBoxes.newRecipientComboBox(filter);
+
+    // Set the recipient before the action listener is added
+    if (getModel().get().getRecipient().isPresent()) {
+      Recipient recipient = getModel().get().getRecipient().get();
+      recipientComboBox.getEditor().setItem(recipient);
+
+      // If the recipient is a contact with an email address, then attempt to show the gravatar
+      if (recipient.getContact().isPresent() && recipient.getContact().get().getEmail().isPresent()) {
+        displayGravatar(recipient);
+      }
+    }
+
+    // Bind a key listener to allow instant update of UI to matched passwords
+    recipientComboBox.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        updateModelFromView();
+      }
+    });
+
 
     panel.add(Labels.newRecipient());
     // Specify minimum width for consistent appearance across contact names and locales
     panel.add(recipientComboBox, "growx,width min:350:,push");
-    panel.add(pasteButton, "shrink");
+    panel.add(Buttons.newPasteButton(getPasteAction()), "shrink");
     panel.add(imageLabel, "shrink,wrap");
 
     return panel;
@@ -94,9 +105,6 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
 
     Object selectedItem = recipientComboBox.getSelectedItem();
     Object editedItem = recipientComboBox.getEditor().getItem();
-
-    log.debug("selectedItem = " + selectedItem);
-    log.debug("editedItem = " + selectedItem);
 
     // Use pastes in preference to selection
     if (editedItem != null) {
@@ -124,26 +132,7 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
       if (selectedRecipient.getContact().isPresent()) {
         if (selectedRecipient.getContact().get().getEmail().isPresent()) {
 
-          // We have an email address
-          String emailAddress = selectedRecipient.getContact().get().getEmail().get();
-
-          final ListenableFuture<Optional<BufferedImage>> imageFuture = Gravatars.retrieveGravatar(emailAddress);
-          Futures.addCallback(imageFuture, new FutureCallback<Optional<BufferedImage>>() {
-            public void onSuccess(Optional<BufferedImage> image) {
-              if (image.isPresent()) {
-
-                // Apply the rounded corners
-                ImageIcon imageIcon = new ImageIcon(ImageDecorator.applyRoundedCorners(image.get(), MultiBitUI.IMAGE_CORNER_RADIUS));
-
-                imageLabel.setIcon(imageIcon);
-                imageLabel.setVisible(true);
-              }
-            }
-
-            public void onFailure(Throwable thrown) {
-              imageLabel.setVisible(false);
-            }
-          });
+          displayGravatar(selectedRecipient);
 
         } else {
           imageLabel.setVisible(false);
@@ -158,6 +147,34 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
     // Update the model
     getModel().get().setValue(currentRecipient.get());
 
+  }
+
+  /**
+   * <p>Display the gravatar of the recipient</p>
+   *
+   * @param recipient The recipient (must have an email address)F
+   */
+  private void displayGravatar(Recipient recipient) {
+    // We have an email address
+    String emailAddress = recipient.getContact().get().getEmail().get();
+
+    final ListenableFuture<Optional<BufferedImage>> imageFuture = Gravatars.retrieveGravatar(emailAddress);
+    Futures.addCallback(imageFuture, new FutureCallback<Optional<BufferedImage>>() {
+      public void onSuccess(Optional<BufferedImage> image) {
+        if (image.isPresent()) {
+
+          // Apply the rounded corners
+          ImageIcon imageIcon = new ImageIcon(ImageDecorator.applyRoundedCorners(image.get(), MultiBitUI.IMAGE_CORNER_RADIUS));
+
+          imageLabel.setIcon(imageIcon);
+          imageLabel.setVisible(true);
+        }
+      }
+
+      public void onFailure(Throwable thrown) {
+        imageLabel.setVisible(false);
+      }
+    });
   }
 
   /**
