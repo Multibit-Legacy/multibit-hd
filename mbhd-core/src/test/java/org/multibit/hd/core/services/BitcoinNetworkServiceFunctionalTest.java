@@ -6,6 +6,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.joda.time.DateTime;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.PaymentData;
@@ -31,6 +32,10 @@ import java.util.concurrent.TimeUnit;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
+/**
+ * Enable this test if you want to manually test a wallet
+ */
+@Ignore
 public class BitcoinNetworkServiceFunctionalTest {
 
   private static final String WALLET_PASSWORD = "orinocoFlow";

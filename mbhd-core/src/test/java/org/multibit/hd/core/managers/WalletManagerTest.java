@@ -216,7 +216,7 @@ public class WalletManagerTest {
 
     List<File> walletDirectories = walletManager.findWalletDirectories(temporaryDirectory);
     assertThat(walletDirectories).isNotNull();
-    assertThat(walletDirectories.size() == 2).isTrue();
+    assertThat(walletDirectories.size()).isEqualTo(2);
     assertThat(walletDirectories.get(0).getAbsolutePath().equals(walletPath1)).isTrue();
     assertThat(walletDirectories.get(1).getAbsolutePath().equals(walletPath2)).isTrue();
 
@@ -230,13 +230,15 @@ public class WalletManagerTest {
   }
 
   public static File makeRandomTemporaryDirectory() throws IOException {
+
     File temporaryFile = File.createTempFile("nothing", "nothing");
     temporaryFile.deleteOnExit();
 
     File parentDirectory = temporaryFile.getParentFile();
 
     File temporaryDirectory = new File(parentDirectory.getAbsolutePath() + File.separator + ("" + (new Random()).nextInt(1000000)));
-    temporaryDirectory.mkdir();
+    assertThat(temporaryDirectory.mkdir()).isTrue();
+
     temporaryDirectory.deleteOnExit();
 
     return temporaryDirectory;
