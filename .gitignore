@@ -8,6 +8,9 @@
 *.iml
 *.iws
 
+# NetBeans
+nb*.xml
+
 # Sublime
 *.sublime-project
 *.sublime-workspace
