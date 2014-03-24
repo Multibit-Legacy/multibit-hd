@@ -39,6 +39,8 @@ public class PGPUtilsTest {
 
   private static final String TEST_SECRET_KEYRING_FILE = "/src/test/resources/redeemer/gpg/secring.gpg";
 
+  private static final String MBHD_BRIT_PREFIX = "mbhd-brit";
+
   /**
    * The password used in the generation of the test PGP keys
    */
@@ -53,7 +55,7 @@ public class PGPUtilsTest {
   public void testPGPEncryptDecrypt() throws Exception {
     // Read the manually created public keyring in the test directory to find a public key suitable for encryption
     // (the location varies if you run it in an IDE or via Maven)
-    File publicKeyRingFile = new File("mbhd-brit" + File.separator + TEST_PUBLIC_KEYRING_FILE);
+    File publicKeyRingFile = new File(MBHD_BRIT_PREFIX + File.separator + TEST_PUBLIC_KEYRING_FILE);
     if (!publicKeyRingFile.exists()) {
       publicKeyRingFile =  new File("." + File.separator + TEST_PUBLIC_KEYRING_FILE);
     }
@@ -83,7 +85,7 @@ public class PGPUtilsTest {
 
     // Locate the secret keyring file
     // (the location varies if you run it in an IDE or via Maven)
-    File secretKeyRingFile = new File("mbhd-brit" + File.separator + TEST_SECRET_KEYRING_FILE);
+    File secretKeyRingFile = new File(MBHD_BRIT_PREFIX + File.separator + TEST_SECRET_KEYRING_FILE);
     if (!secretKeyRingFile.exists()) {
       secretKeyRingFile =  new File("." + File.separator + TEST_SECRET_KEYRING_FILE);
     }
