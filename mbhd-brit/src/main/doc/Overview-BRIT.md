@@ -1,4 +1,4 @@
-![BRIT Overview](brit-overview.png)
+![BRIT Overview](Overview-brit.png)
 
 ## Description of the Burton-Rowe Income Technique (BRIT)
 
