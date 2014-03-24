@@ -232,6 +232,7 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
 
   }
 
+  @Subscribe
   @Override
   public void onOpenURIEvent(GenericOpenURIEvent event) {
 
