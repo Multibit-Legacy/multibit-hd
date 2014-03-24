@@ -35,6 +35,10 @@ public class PGPUtilsTest {
 
   private static final String EXAMPLE_TEXT = "The quick brown fox jumps over the lazy dog. 01234567890. !@#$%^&*(). ,.;:[]-_=+";
 
+  private static final String TEST_PUBLIC_KEYRING_FILE = "/src/test/resources/redeemer/gpg/pubring.gpg";
+
+  private static final String TEST_SECRET_KEYRING_FILE = "/src/test/resources/redeemer/gpg/secring.gpg";
+
   /**
    * The password used in the generation of the test PGP keys
    */
@@ -48,7 +52,11 @@ public class PGPUtilsTest {
   @Test
   public void testPGPEncryptDecrypt() throws Exception {
     // Read the manually created public keyring in the test directory to find a public key suitable for encryption
-    File publicKeyRingFile = new File("mbhd-brit/src/test/resources/redeemer/gpg/pubring.gpg");
+    // (the location varies if you run it in an IDE or via Maven)
+    File publicKeyRingFile = new File("mbhd-brit" + File.separator + TEST_PUBLIC_KEYRING_FILE);
+    if (!publicKeyRingFile.exists()) {
+      publicKeyRingFile =  new File("." + File.separator + TEST_PUBLIC_KEYRING_FILE);
+    }
     log.debug("Loading public keyring from '" + publicKeyRingFile.getAbsolutePath() + "'");
     FileInputStream publicKeyRingInputStream = new FileInputStream(publicKeyRingFile);
     PGPPublicKey encryptionKey = PGPUtils.readPublicKey(publicKeyRingInputStream);
@@ -57,7 +65,6 @@ public class PGPUtilsTest {
     // Make a temporary random directory
     File testDir = FileUtils.makeRandomTemporaryDirectory();
 
-
     // Write some text to the plain text.
     File inputFile = new File(testDir.getAbsolutePath() + File.separator + "plain.txt");
     try (FileOutputStream fileOutputStream = new FileOutputStream(inputFile)) {
@@ -65,21 +72,24 @@ public class PGPUtilsTest {
     }
     assertThat(inputFile.length()).isGreaterThanOrEqualTo(EXAMPLE_TEXT.length());
 
-
     // Create the file that the encrypted output will be written to
     File encryptedFile = new File(testDir.getAbsolutePath() + File.separator + "encrypted.asc");
     assertThat(encryptedFile.length()).isEqualTo(0);
     OutputStream encryptedOutputStream = new FileOutputStream(encryptedFile);
 
-
     // Encrypt the plain text
     PGPUtils.encryptFile(encryptedOutputStream, inputFile, encryptionKey);
     assertThat(encryptedFile.length()).isGreaterThanOrEqualTo(EXAMPLE_TEXT.length());
 
+    // Locate the secret keyring file
+    // (the location varies if you run it in an IDE or via Maven)
+    File secretKeyRingFile = new File("mbhd-brit" + File.separator + TEST_SECRET_KEYRING_FILE);
+    if (!secretKeyRingFile.exists()) {
+      secretKeyRingFile =  new File("." + File.separator + TEST_SECRET_KEYRING_FILE);
+    }
+    log.debug("Loading secret keyring from '" + publicKeyRingFile.getAbsolutePath() + "'");
 
     // Decrypt the encrypted file
-    File secretKeyRingFile = new File("mbhd-brit/src/test/resources/redeemer/gpg/secRing.gpg");
-    log.debug("Loading secret keyring from '" + publicKeyRingFile.getAbsolutePath() + "'");
     FileInputStream secretKeyRingInputStream = new FileInputStream(secretKeyRingFile);
     FileInputStream encryptedInputStream = new FileInputStream(encryptedFile);
     File rebornPlainTextFile = new File(testDir.getAbsolutePath() + File.separator + "reborn.txt");
