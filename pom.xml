@@ -251,6 +251,8 @@
         <artifactId>bitcoinj</artifactId>
         <version>${bitcoinj.version}</version>
       </dependency>
+
+      <!-- crypto -->
       <dependency>
         <groupId>com.madgag</groupId>
         <artifactId>sc-light-jdk15on</artifactId>
