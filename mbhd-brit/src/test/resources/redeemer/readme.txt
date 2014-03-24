@@ -1,6 +1,7 @@
 The keyring for the redeemer tests was constructed using GPG.
 
-This is the log of how it was constructed:
+This is the log of how it was constructed (on a Mac):
+The password used was 'password'.
 
 # Start the gpg-agent
 > gpg-agent --homedir "$(pwd)" --daemon

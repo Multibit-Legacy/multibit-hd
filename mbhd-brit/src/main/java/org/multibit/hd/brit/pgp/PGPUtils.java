@@ -95,13 +95,13 @@ public class PGPUtils {
    * Decrypt the passed in message stream
    */
   @SuppressWarnings("unchecked")
-  public static void decryptFile(InputStream in, OutputStream out, InputStream keyIn, char[] passwd)
+  public static void decryptFile(InputStream encryptedInputStream, OutputStream decryptedOutputStream, InputStream keyInputStream, char[] password)
           throws Exception {
     Security.addProvider(new BouncyCastleProvider());
 
-    in = org.bouncycastle.openpgp.PGPUtil.getDecoderStream(in);
+    encryptedInputStream = org.bouncycastle.openpgp.PGPUtil.getDecoderStream(encryptedInputStream);
 
-    PGPObjectFactory pgpF = new PGPObjectFactory(in);
+    PGPObjectFactory pgpF = new PGPObjectFactory(encryptedInputStream);
     PGPEncryptedDataList enc;
 
     Object o = pgpF.nextObject();
@@ -124,7 +124,7 @@ public class PGPUtils {
     while (sKey == null && it.hasNext()) {
       pbe = it.next();
 
-      sKey = findSecretKey(keyIn, pbe.getKeyID(), passwd);
+      sKey = findSecretKey(keyInputStream, pbe.getKeyID(), password);
     }
 
     if (sKey == null) {
@@ -151,7 +151,7 @@ public class PGPUtils {
       int ch;
 
       while ((ch = unc.read()) >= 0) {
-        out.write(ch);
+        decryptedOutputStream.write(ch);
       }
     } else if (message instanceof PGPOnePassSignatureList) {
       throw new PGPException("Encrypted message contains a signed message - not literal data.");
@@ -166,14 +166,17 @@ public class PGPUtils {
     }
   }
 
-  public static void encryptFile(OutputStream out, String fileName,
-                                 PGPPublicKey encKey, boolean armor, boolean withIntegrityCheck)
+  public static void encryptFile(OutputStream out, File inputFile,
+                                 PGPPublicKey encKey)
           throws IOException, NoSuchProviderException, PGPException {
+
+    // Always perform an integrity check
+    boolean withIntegrityCheck = true;
+
     Security.addProvider(new BouncyCastleProvider());
 
-    if (armor) {
-      out = new ArmoredOutputStream(out);
-    }
+    // Armor output
+    out = new ArmoredOutputStream(out);
 
     ByteArrayOutputStream bOut = new ByteArrayOutputStream();
 
@@ -181,7 +184,7 @@ public class PGPUtils {
             PGPCompressedData.ZIP);
 
     org.bouncycastle.openpgp.PGPUtil.writeFileToLiteralData(comData.open(bOut),
-            PGPLiteralData.BINARY, new File(fileName));
+            PGPLiteralData.BINARY, inputFile);
 
     comData.close();
 
