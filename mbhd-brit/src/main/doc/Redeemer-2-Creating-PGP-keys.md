@@ -1,27 +1,45 @@
-## Creation og PGP keys
+## Redeemer - 2 - Creating PGP keys
 
 ## Introduction
-This document describes how the redeemer sets up everything for BRIT.
-The steps are:
+This document describes how the redeemer creates the PGP keys used in BRIT.
 
-1) Create a MultiBit Classic wallet containing the EC private keys you need for VRIT
+PREREQUISITE: The Redeemer has performed the steps in `Redeemer-(1)-Creating-a-Bitcoin-wallet`.
+
+The steps to generate PGP keys are:
+
+1) Create a directory in which to store the GPG keypairs.
+   (The keypairs are kept separate from any other GPG keypairs the user may have).
 2) Create the PGP keys that are used to protect the Redeemer's secrets. You add the
-   EC public keys into the comment field of the PGP keys when you create them.
+   EC public keys from you Bitcoin redeemer wallet into the comment field of the PGP keys
+   when you create them.
 3) Export the PGP keys to an armored ASCII file.
-4) The armored ASCII file can then be copied to the Matcher machine and imported into
-   the Matcher's key ring.
-   
+4) The armored ASCII file can then be copied to the Matcher machine for use by the Matcher.
 
-## Details
+
+## 1. Create a GPG directory
+Create a directory called GPG alongside where your redeemer wallet is as follows:
+
+myRedeemer
+   gpg                  < GPG details
+
+   redeemer.wallet      < MultiBit wallet
+   redeemer.info        < MultiBit wallet info
+   redeemer-data        < MultiBit wallet backups
+
+
+## 2. Create the PGP keypairs.
+
+Create a terminal/ command line and cd into the gpg directory you created above.
+
 The keyring for the redeemer tests was constructed using GPG.
-
 This is the log of how it was constructed (on a Mac):
-The password used was 'password'.
+The password used to protect the keyrings was 'password' (obviously use a better password for your real
+keyring).
 
-# Start the gpg-agent
+# 2.1 Start the gpg-agent
 > gpg-agent --homedir "$(pwd)" --daemon
 
-# Generate a new keypair
+# 2.2 Generate a new keypair
 > gpg --homedir "$(pwd)" --gen-key
 gpg: WARNING: unsafe permissions on homedir `/Users/jim/ideaprojects/multibit-hd/mbhd-brit/src/test/resources/redeemer/gpg'
 gpg (GnuPG/MacGPG2) 2.0.22; Copyright (C) 2013 Free Software Foundation, Inc.
@@ -77,9 +95,12 @@ pub   2048R/8C394BFD 2014-03-24
 uid                  redeemer4 (032ce746e4fbf75c0b0b2364f054b7a917d9567509a802c27adb1dc91ab21a07c2) <redeemer4@nowhere.com>
 sub   2048R/67326E94 2014-03-24
 
-# Key pair is now created
 
-# List keypairs
+The new key pair is now created.
+Repeat steps 2.1 and 2.2 for the number of Bitcoin public keys you have.
+
+
+# 2.3 List keypairs
 > gpg --homedir "$(pwd)" -k
 gpg: WARNING: unsafe permissions on homedir `/Users/jim/ideaprojects/multibit-hd/mbhd-brit/src/test/resources/redeemer/gpg'
 /Users/jim/ideaprojects/multibit-hd/mbhd-brit/src/test/resources/redeemer/gpg/pubring.gpg
@@ -100,9 +121,18 @@ pub   2048R/8C394BFD 2014-03-24
 uid                  redeemer4 (032ce746e4fbf75c0b0b2364f054b7a917d9567509a802c27adb1dc91ab21a07c2) <redeemer4@nowhere.com>
 sub   2048R/67326E94 2014-03-24
 
-# Export the public keys to a file
+# 2.4 Export the public keys to a file
 You can export all your public keys from your keyring using:
 >gpg --homedir "$(pwd)" --armor --export > export.asc
 
 You can check the contents of the output file (making no changes) using
 >gpg --dry-run --homedir "$(pwd)" --import export.asc
+
+
+# Summary
+By performing the tasks in this document you have constructed PGP keypairs that will be used by the
+Matcher to protect your secrets. Each PGP public key has, in its `Comment` field, the EC public key that
+will be used in generating Bitcoin addresses for payment to you.
+
+You have also prepared an export file containing this information in a conveneient format for copying
+to the Matcher service, where it will be used.

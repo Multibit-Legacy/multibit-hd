@@ -1,6 +1,7 @@
-![BRIT Overview](Overview-brit.png)
+![BRIT Overview](Overview-of-BRIT.png)
 
 ## Description of the Burton-Rowe Income Technique (BRIT)
+
 
 ### Executive summary
 
@@ -11,6 +12,7 @@ BRIT provides:
 * payments via a blockchain
 * encrypted messages to avoid snooping, man-in-the-middle and replay attacks
 * income can be allocated to other parties efficiently and anonymously
+
 
 ### Background
 
@@ -30,6 +32,7 @@ To overcome this the developers create a distributed income stream that is centr
 anonymous contact. This contact occurs when the application first starts but subsequently provides an income stream
 in perpetuity without any further involvement from the central server.
 
+
 ### Introduction
 
 This document describes the technique used to receive payments in MultiBit HD.
@@ -39,13 +42,14 @@ The user pays a small amount for each transaction send they perform. These are s
 at random intervals.
 
 The fees are sent to a deterministically generated address that uses a secret that is shared between the user's copy of
-MultiBit HD and the BRIT server. This is done to increase privacy of both parties and to obfuscate the fee payments on
-the blockchain.
+MultiBit HD and the users wanting to redeem bitcoin. This is done to increase privacy of both parties and to obfuscate
+the fee payments on the blockchain.
 
 It is envisaged that other projects will see the benefit of using BRIT and by using it in their projects will contribute
 to the overall obfuscation occurring on the blockchain.
 
 All the BRIT code - both client side and server side - is open source using the MIT licence.
+
 
 ### Actors
 
@@ -55,7 +59,9 @@ There are three actors in the BRIT protocol:
 2. The entity who pays the fees, called the Payer.
 3. A service that matches up the Redeemer with the Payer, called the Matcher.
 
+
 ### The BRIT protocol
+
 
 #### 1. A Matcher service is started
 
@@ -68,9 +74,10 @@ the BRIT protocol version into signed applications that are expected to act as P
 
 The protocol now waits for a Redeemer.
 
+
 #### 2. Redeemer prepares keys
 
-The Redeemer uses an offline machine to create multiples of the following:
+The actor who wishes to redeem bitcoin using BRIT uses an offline machine to create multiples of the following:
 
  * a GPG private key (`redeemer.PGP.private`)
  * the corresponding GPG public key (`redeemer.PGP.public`)
@@ -87,39 +94,42 @@ redeemer.EC.public = G(redeemer.EC.private)    (1)
 
 where `G()` is the EC generator function for the Bitcoin curve.
 
-The individuals who want to redeem bitcoin creates multiple copies of this dataset.
-You might have, say, 4 separate individuals, each of which creates 25 sets of this data creating a total of
-100 Redeemers.
+The `redeemer.EC.public` is stored directly in the PGP public key in the `Comment` field as a hex string.
+This is done at construction time of the PGP keypair.
 
-For each set of data above redeemer also produces the `redeemer.identifier`. This is the SHA256 hash of
-the `redeemer.PGP.public`. (It is used later by the Matcher to record where payments will be sent to)
+The individuals who want to redeem bitcoin creates multiple instances of this dataset.
+You might have, say, 4 separate individuals who wish to redeem, each of which creates 5 sets of this data creating a total of
+20 Redeemers.
+
+For each set of data above redeemer also notes the `redeemer.identifier`. This is `uid` of the
+`redeemer.PGP.public` PGP keypair that will be used to encrypt the Redeemer's secrets.
 
 
 #### 3. Redeemer distributes keys
 
-The Redeemer copies the `redeemer.PGP.public` and `redeemer.EC.public` to wherever the Matcher service is running.
+The Redeemer copies the `redeemer.PGP.public` (which contains the `redeemer.EC.public` in the `Comment` field)
+to wherever the Matcher service is running.
 
-The Matcher creates the `redeemer.identifier` from the `redeemer.PGP.public` using a SHA256 hash in the
-same way as the Redeemer.
+The Matcher imports the `redeemer.PGP.public` keys into their keyring so later use.
+The Matcher notes the `redeemer.identifier` from the `redeemer.PGP.public` (This is the PGP keypair `uid` field).
 
-The protocol now waits until a Payer is introduced to the Matcher. This is done when the user first uses
+The Matcher now waits until a Payer is introduced to it. This is done when the user first uses
 the installed client software.
 
 
 #### 4. Payer creates random session key
 
-The Payer creates a random session key (`payer.sessionKey`). This is used by the Matcher so the Payer can have confidence
-that the responses from the Matcher are genuine.
+The Payer creates a random session key (`payer.sessionKey`). This is a 16 byte random number. This is used by the
+Matcher so the Payer can have confidence that the responses from the Matcher are genuine.
 
 
 #### 5. Payer derives unique BRIT wallet identifier
 
 The Payer runs a number of one way trapdoor functions over their wallet seed phrase to deterministically generate a wallet
-identifier (`payer.britWalletId`). It is not computationally feasible to go backwards and derive the seed phrase from
-this identifier.
+identifier (`payer.britWalletId`). This is 20 bytes long. It is not computationally feasible to go backwards and derive
+the seed phrase from this identifier.
 
-This identifier is not used for any other purpose in the client application using BRIT. For example, it is
-not used as part of a wallet persistence mechanism.
+This identifier is not used for any other purpose in the client application using BRIT.
 
 
 #### 6. Payer encrypts message for Matcher
@@ -137,14 +147,16 @@ This is sent to the machine running the Matcher using a convenient transport mec
 
 The Matcher decodes the message using `matcher.PGP.private`.
 
-The Matcher generates an AES-256 key `matcher.AES.encryptionKey` from the `payer.sessionKey` using
+The Matcher generates an AES-256 key `matcher.AES.encryptionKey` as follows:
 
 ```
-matcher.AES.encryptionKey = Scrypt(payer.sessionKey)    (3)
+matcher.AES.encryptionKey = payer.britWalletId          (3.1)
+matcher.AES.initialisationVector = payer.sessionKey     (3.2)
 ```
 
-The purpose of this encryption key is to encrypt the information returned to the Payer and validates the Matcher is actually
-the BRIT Matcher. Only the Matcher has the `matcher.PGP.private` key to decode the message in (2).
+The purpose of this step is to encrypt the information returned to the Payer to prevent eavesdropping.
+It also validates the Matcher is actually the BRIT Matcher and has not been man-in-the-middled.
+Only the Matcher has the `matcher.PGP.private` key to decode the message in (2).
 
 
 #### 8. Matcher selects Redeemer
@@ -155,13 +167,13 @@ The Matcher calculates a unique `shortWalletID` using
 shortWalletID = RIPE160(SHA256(payer.britWalletId))    (4)
 ```
 
-and attempts to locate an existing Redeemer-Payer link using this identifier. If this operation does not yield a Redeemer
+and attempts to locate an existing Payer-Redeemer link using this identifier. If this operation does not yield a Redeemer
 then one is chosen at random.
 
 This approach ensures that if the same `payer.britWalletId` is subsequently encountered, perhaps as a result of an upgrade or a
 restoration to a different machine, then the same Redeemer will be selected to provide continuity.
 
-The `payer.britWalletId` is hashed to avoid the raw value being stored unencrypted on the Matcher file system.
+The `payer.britWalletId` is hashed to avoid the raw value being stored in plain text on the Matcher file system.
 
 
 #### 9. Matcher derives an address generator
@@ -177,7 +189,7 @@ The Redeemer's EC public key is required to ensure the client cannot redeem thei
 
 #### 10. Matcher stores the Redeemer-Payer link
 
-The Redeemer-Payer linking information is stored as follows:
+The Payer-Redeemer linking information is stored as follows:
 
 ```
 shortWalletId | redeemer.identifier | PGP-encrypt(payer.britWalletId , redeemer.PGP.public)    (6)
@@ -188,17 +200,19 @@ The `shortWalletId` is stored in plaintext to allow fast lookup in large data se
 The Redeemer's PGP key is used to encrypt the `payer.britWalletId` to hide it from the Matcher and protect the Redeemer from a
 compromise of the Matcher database.
 
+This information can be stored on the Matcher file system or in a database - this is out of scope of this document.
+
 
 #### 11. Matcher sends the address generator to the Payer
 
 The Matcher encrypts `addressGenerator` as follows:
 
 ```
-AES-256-encrypt(addressGenerator, matcher.AES.encryptionKey)    (7)
+AES256-encrypt(addressGenerator, matcher.AES.encryptionKey, matcher.AES.initialisationVector)    (7)
 ```
 
-The resulting message is sent to the Payer who can decrypt it since they know how `matcher.AES.encryptionKey`
-was derived from the `payer.sessionKey`
+The resulting message is sent to the Payer who can decrypt it since they know how `matcher.AES.encryptionKey` and
+`matcher.AES.initialisationVector` were generated from the `payer.britWalletId` and `payer.sessionKey` (Equations 3.1 and 3.2).
 
 
 #### 12. Payer creates payment Bitcoin address
@@ -207,9 +221,9 @@ Any time the Payer has to make a payment they choose an index `i`, monotonically
 they make with the wallet, starting at 0.
 
 ```
-payer.EC.public(i) = addressGenerator + G(i) (                   8)
+payer.EC.public(i) = addressGenerator + G(i)                     (8)
 ```
-which is identical to
+This is identical by construction to
 ```
 payer.EC.public(i) = redeemer.EC.public + G(payer.britWalletId) + G(i)
 ```
@@ -226,14 +240,17 @@ would be included in a transaction that the Payer would be making for another pu
 The existence of this output could act as a marker in the overall blockchain for BRIT transactions. There are several
 strategies available to further obfuscate the information being leaked that are discussed later.
 
+
 #### 13. Redeemer synchronizes with Matcher
 
 From time to time the Redeemer will synchronize with the Matcher store to obtain fresh `payer.britWalletId` values.
 To be able to check that the proportion of total installs allocated to their
-`redeemer.identifier` is correct they will typically obtain the whole list of data stored in (10) to parse.
+`redeemer.identifier` is correct they will typically obtain the whole list of data stored in (6) to parse.
 
-If an attacker guesses `redeemer.identifier`, or is able to clone the Matcher database, this will not assist them
-in either identifying the Redeemer or the address generator for any Redeemer-Payer relationship.
+The Redeemer can PGP decrypt the Payer-Redeemer information as they have the `redeemer.PGP.private` key.
+
+If an attacker guesses `redeemer.identifier`, or is able to copy the Matcher database, this will not assist them
+in either identifying the Redeemer or the address generator for any Payer-Redeemer relationship.
 
 
 #### 14. Redeemer derives private key
@@ -254,9 +271,11 @@ payer.EC.private(i) = redeemer.EC.private + payer.britWalletId + i            (1
 So long as the Redeemer is able to obtain `payer.britWalletId` and track the incrementing values of `i` then they can
 create the necessary private key to spend.
 
+
 ### Notes
 
 There are a few alterations that could be made to the protocol described above.
+
 
 #### Decreasing the visibility of BRIT payments
 
