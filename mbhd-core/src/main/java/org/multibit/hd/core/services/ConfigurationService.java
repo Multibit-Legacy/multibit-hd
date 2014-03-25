@@ -31,8 +31,12 @@ public class ConfigurationService extends AbstractService {
 
     super.onShutdownEvent(shutdownEvent);
 
-    Configurations.writeCurrentConfiguration();
+    // We may be in a partial startup situation
+    if (Configurations.currentConfiguration != null) {
 
+      Configurations.writeCurrentConfiguration();
+
+    }
   }
 
 }

@@ -5,13 +5,14 @@ import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import org.junit.After;
 import org.junit.Test;
+import org.multibit.hd.core.events.CoreEvents;
 
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import static junit.framework.Assert.fail;
+import static junit.framework.TestCase.fail;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class BitcoinURIListeningServiceTest {
@@ -20,6 +21,8 @@ public class BitcoinURIListeningServiceTest {
   private static final String RAW_URI_ADDRESS = "bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty";
 
   private ServerSocket serverSocket = null;
+
+  private BitcoinURIListeningService testObject;
 
   @After
   public void tearDown() throws Exception {
@@ -39,13 +42,17 @@ public class BitcoinURIListeningServiceTest {
       RAW_URI_FULL
     };
 
-    BitcoinURIListeningService testObject = new BitcoinURIListeningService(args);
+    testObject = new BitcoinURIListeningService(args);
 
     Address address = testObject.getBitcoinURI().get().getAddress();
     if (address == null) {
       fail();
     }
     assertThat(address.toString()).isEqualTo("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
+
+    CoreEvents.fireShutdownEvent();
+
+    assertThat(testObject.getServerSocket().isPresent()).isFalse();
 
   }
 
@@ -56,13 +63,17 @@ public class BitcoinURIListeningServiceTest {
       RAW_URI_ADDRESS
     };
 
-    BitcoinURIListeningService testObject = new BitcoinURIListeningService(args);
+    testObject = new BitcoinURIListeningService(args);
 
     Address address = testObject.getBitcoinURI().get().getAddress();
     if (address == null) {
       fail();
     }
     assertThat(address.toString()).isEqualTo("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
+
+    CoreEvents.fireShutdownEvent();
+
+    assertThat(testObject.getServerSocket().isPresent()).isFalse();
 
   }
 
@@ -79,7 +90,7 @@ public class BitcoinURIListeningServiceTest {
       RAW_URI_FULL
     };
 
-    BitcoinURIListeningService testObject = new BitcoinURIListeningService(args);
+    testObject = new BitcoinURIListeningService(args);
     testObject.start();
 
     Socket client = serverSocket.accept();
@@ -93,6 +104,9 @@ public class BitcoinURIListeningServiceTest {
     String expectedMessage = BitcoinURIListeningService.MESSAGE_START +"bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?amount=0.01&label=Please%20donate%20to%20multibit.org"+BitcoinURIListeningService.MESSAGE_END;
     assertThat(text).isEqualTo(expectedMessage);
 
+    CoreEvents.fireShutdownEvent();
+
+    assertThat(testObject.getServerSocket().isPresent()).isFalse();
   }
 
   @Test
@@ -108,7 +122,7 @@ public class BitcoinURIListeningServiceTest {
       RAW_URI_ADDRESS
     };
 
-    BitcoinURIListeningService testObject = new BitcoinURIListeningService(args);
+    testObject = new BitcoinURIListeningService(args);
     testObject.start();
 
     Socket client = serverSocket.accept();
@@ -122,6 +136,9 @@ public class BitcoinURIListeningServiceTest {
     String expectedMessage = BitcoinURIListeningService.MESSAGE_START +"bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty"+BitcoinURIListeningService.MESSAGE_END;
     assertThat(text).isEqualTo(expectedMessage);
 
+    CoreEvents.fireShutdownEvent();
+
+    assertThat(testObject.getServerSocket().isPresent()).isFalse();
 
   }
 

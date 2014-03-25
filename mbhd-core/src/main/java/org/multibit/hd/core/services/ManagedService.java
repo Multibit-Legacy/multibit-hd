@@ -10,14 +10,16 @@ import org.multibit.hd.core.events.ShutdownEvent;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public interface ManagedService {
 
   /**
    * Start the service (events are fired)
+   *
+   * @return True if the service started sufficiently for the application to run, false if a shutdown is required
    */
-  void start();
+  boolean start();
 
   /**
    * Stop the service (blocking until terminated)

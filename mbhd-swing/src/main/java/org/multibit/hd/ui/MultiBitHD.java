@@ -200,7 +200,7 @@ public class MultiBitHD {
 
         initialiseGenericApp();
 
-        initialiseBitcoinURIListeningService(args);
+        startBitcoinURIListeningService(args);
       }
 
     });
@@ -247,7 +247,7 @@ public class MultiBitHD {
   /**
    * @param args The command line arguments
    */
-  private static void initialiseBitcoinURIListeningService(String[] args) {
+  private static void startBitcoinURIListeningService(String[] args) {
 
     BitcoinURIListeningService bitcoinURIListeningService = new BitcoinURIListeningService(args);
     bitcoinURIListeningService.start();

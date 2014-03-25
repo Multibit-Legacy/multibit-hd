@@ -67,7 +67,7 @@ public class BitcoinNetworkService extends AbstractService {
   private boolean startedOk = false;
 
   @Override
-  public void start() {
+  public boolean start() {
 
     CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkNotInitialised());
 
@@ -76,7 +76,7 @@ public class BitcoinNetworkService extends AbstractService {
       // Check if there is a wallet - if there is no wallet the network will not start (there's nowhere to put the blockchain)
       if (!WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
         log.warn("Not starting bitcoin network service as there is currently no wallet.");
-        return;
+        return true;
       }
       String walletRoot = WalletManager.INSTANCE.getCurrentWalletFilename().get().getParentFile().getAbsolutePath();
       String blockchainFilename = walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.SPV_BLOCKCHAIN_SUFFIX;
@@ -98,6 +98,9 @@ public class BitcoinNetworkService extends AbstractService {
         )
       );
     }
+
+    return true;
+    
   }
 
   /**

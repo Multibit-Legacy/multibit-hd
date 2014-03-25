@@ -1,8 +1,18 @@
 package org.multibit.hd.ui.models;
 
+import com.google.bitcoin.uri.BitcoinURI;
+import com.google.common.base.Optional;
 import org.multibit.hd.core.dto.RAGStatus;
+import org.multibit.hd.ui.events.controller.ControllerEvents;
+import org.multibit.hd.ui.languages.Formats;
+import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.components.Buttons;
+import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.wizards.Wizards;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 /**
  * <p>Factory to provide the following to UI:</p>
@@ -74,4 +84,39 @@ public class Models {
     return model;
   }
 
+  /**
+   * @param bitcoinURI A Bitcoin URI
+   *
+   * @return An alert model suitable for use for displaying the information, absent if the Bitcoin URI does not contain sufficient information
+   */
+  public static Optional<AlertModel> newBitcoinURIAlertModel(final BitcoinURI bitcoinURI) {
+
+    // Action to show the "send Bitcoin" wizard
+    AbstractAction action = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        ControllerEvents.fireRemoveAlertEvent();
+        Panels.showLightBox(Wizards.newSendBitcoinWizard(Optional.of(bitcoinURI)).getWizardScreenHolder());
+
+      }
+    };
+    JButton button = Buttons.newAlertPanelButton(action, MessageKey.YES, AwesomeIcon.CHECK);
+
+    // Attempt to decode the Bitcoin URI
+    Optional<String> alertMessage = Formats.formatAlertMessage(bitcoinURI);
+
+    // If there is sufficient information in the Bitcoin URI display it to the user as an alert
+    if (alertMessage.isPresent()) {
+
+      return Optional.of(Models.newAlertModel(
+        alertMessage.get(),
+        RAGStatus.AMBER,
+        button
+      ));
+
+    }
+
+    return Optional.absent();
+  }
 }
