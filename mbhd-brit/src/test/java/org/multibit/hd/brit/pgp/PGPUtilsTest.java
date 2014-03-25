@@ -35,9 +35,9 @@ public class PGPUtilsTest {
 
   private static final String EXAMPLE_TEXT = "The quick brown fox jumps over the lazy dog. 01234567890. !@#$%^&*(). ,.;:[]-_=+";
 
-  private static final String TEST_PUBLIC_KEYRING_FILE = "/src/test/resources/redeemer/gpg/pubring.gpg";
+  private static final String TEST_PUBLIC_KEYRING_FILE = "/src/test/resources/redeemer1/gpg/pubring.gpg";
 
-  private static final String TEST_SECRET_KEYRING_FILE = "/src/test/resources/redeemer/gpg/secring.gpg";
+  private static final String TEST_SECRET_KEYRING_FILE = "/src/test/resources/redeemer1/gpg/secring.gpg";
 
   private static final String MBHD_BRIT_PREFIX = "mbhd-brit";
 

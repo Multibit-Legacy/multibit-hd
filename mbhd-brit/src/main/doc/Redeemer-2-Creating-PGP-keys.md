@@ -129,6 +129,14 @@ You can check the contents of the output file (making no changes) using
 > gpg --dry-run --homedir "$(pwd)" --import export.asc
 
 
+# 2.5 Tidy up
+Delete the S.gpg-agent file in the gpg directory (as it causes problems in Eclipse).
+You will see a message:
+gpg-agent[4552]: can't connect my own socket: IPC connect call failed
+gpg-agent[4552]: this process is useless - shutting down
+gpg-agent[4552]: gpg-agent (GnuPG/MacGPG2) 2.0.22 stopped
+
+
 # Summary
 By performing the tasks in this document you have constructed PGP keypairs that will be used by the
 Matcher to protect your secrets. Each PGP public key has, in its `Comment` field, the EC public key that
