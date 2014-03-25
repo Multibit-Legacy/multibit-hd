@@ -78,9 +78,9 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
   public void initialiseContent(JPanel contentPanel) {
 
     contentPanel.setLayout(new MigLayout(
-            Panels.migXYLayout(),
-            "[]10[]", // Column constraints
-            "[]20[]0[]20[]0[]" // Row constraints
+      Panels.migXYLayout(),
+      "[]10[]", // Column constraints
+      "[]20[]0[]20[]0[]" // Row constraints
     ));
 
     // Apply the theme
@@ -95,16 +95,16 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
 
     contentPanel.add(exportCompletedLabel, "wrap, span 2");
 
-    contentPanel.add (Labels.newBlankLabel());
+    contentPanel.add(Labels.newBlankLabel());
     contentPanel.add(transactionsExportFileLabel, "wrap");
 
-    contentPanel.add (Labels.newBlankLabel());
+    contentPanel.add(Labels.newBlankLabel());
     contentPanel.add(transactionsExportFileValue, "wrap");
 
-    contentPanel.add (Labels.newBlankLabel());
+    contentPanel.add(Labels.newBlankLabel());
     contentPanel.add(paymentRequestsExportFileLabel, "wrap");
 
-    contentPanel.add (Labels.newBlankLabel());
+    contentPanel.add(Labels.newBlankLabel());
     contentPanel.add(paymentRequestsExportFileValue, "wrap");
   }
 
@@ -162,7 +162,7 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
       // Results of export are sent by an event
     } else {
       CoreEvents.fireExportPerformedEvent(new ExportPerformedEvent(null, null, false, CoreMessageKey.THE_ERROR_WAS,
-              new String[]{Languages.safeText(MessageKey.COULD_NOT_WRITE_TO_THE_DIRECTORY, exportPaymentsLocation)}));
+        new String[]{Languages.safeText(MessageKey.COULD_NOT_WRITE_TO_THE_DIRECTORY, exportPaymentsLocation)}));
     }
 
     // Enable the finish button on the report page
@@ -208,7 +208,14 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
           }
         } else {
           AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, exportCompletedLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
-          exportCompletedLabel.setText(Languages.safeText(exportPerformedEvent.getExportFailureReasonKey(), exportPerformedEvent.getExportFailureReasonData()));
+          // TODO (JB) Verify that the wrapping of Object[] for the failure reason data is valid
+          // Original was giving compiler warning for varargs
+          exportCompletedLabel.setText(
+            Languages.safeText(
+              exportPerformedEvent.getExportFailureReasonKey(),
+              new Object[] {exportPerformedEvent.getExportFailureReasonData()}
+            )
+          );
         }
       }
     });
