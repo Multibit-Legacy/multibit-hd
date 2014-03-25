@@ -383,14 +383,14 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
    */
   public void registerDefaultButton(JButton button) {
 
-    Panels.frame.getRootPane().setDefaultButton(button);
+    Panels.applicationFrame.getRootPane().setDefaultButton(button);
 
     // Remove the binding for pressed
-    Panels.frame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+    Panels.applicationFrame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
       .put(KeyStroke.getKeyStroke("ENTER"), "none");
 
     // Target the binding for released
-    Panels.frame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+    Panels.applicationFrame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
       .put(KeyStroke.getKeyStroke("released ENTER"), "press");
 
   }

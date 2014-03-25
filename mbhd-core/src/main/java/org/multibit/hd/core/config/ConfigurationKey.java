@@ -20,7 +20,7 @@ public enum ConfigurationKey {
   APP_CURRENT_APP_DIRECTORY("app.current-app-directory"),
   APP_BITCOIN_URI_HANDLING("app.bitcoin-uri-handling"),
   APP_RESTORE_LAYOUT("app.restore-layout"),
-  APP_FRAME_DIMENSION("app.frame-dimension"),
+  APP_FRAME_BOUNDS("app.frame-bounds"),
   APP_SIDEBAR_WIDTH("app.sidebar-width"),
   APP_CURRENT_SCREEN("app.current-screen"),
 

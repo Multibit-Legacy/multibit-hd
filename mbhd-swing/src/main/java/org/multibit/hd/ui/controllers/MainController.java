@@ -124,10 +124,10 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
     ResourceBundle.clearCache();
 
     // Update the frame to allow for LTR or RTL transition
-    Panels.frame.setLocale(locale);
+    Panels.applicationFrame.setLocale(locale);
 
     // Ensure LTR and RTL language formats are in place
-    Panels.frame.applyComponentOrientation(ComponentOrientation.getOrientation(locale));
+    Panels.applicationFrame.applyComponentOrientation(ComponentOrientation.getOrientation(locale));
 
     // Update the views to use the new locale (and any other relevant configuration)
     ViewEvents.fireLocaleChangedEvent();
@@ -160,7 +160,7 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
     // Ensure the Swing thread can perform a complete refresh
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {
-        Panels.frame.invalidate();
+        Panels.applicationFrame.invalidate();
       }
     });
 

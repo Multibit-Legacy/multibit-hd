@@ -26,7 +26,7 @@ public class ApplicationConfiguration {
 
   private String version = "0.0.0";
 
-  private String frameDimension = "0,0,1000,560";
+  private String lastFrameBounds = "0,0,1000,560";
 
   private String sidebarWidth = "180";
 
@@ -110,14 +110,14 @@ public class ApplicationConfiguration {
   }
 
   /**
-   * @return The application frame dimensions in px (x1,y1,x2,y2)
+   * @return The last frame bounds in px (x,y,w,h)
    */
-  public String getFrameDimension() {
-    return frameDimension;
+  public String getLastFrameBounds() {
+    return lastFrameBounds;
   }
 
-  public void setFrameDimension(String frameDimension) {
-    this.frameDimension = frameDimension;
+  public void setLastFrameBounds(String lastFrameBounds) {
+    this.lastFrameBounds = lastFrameBounds;
   }
 
   /**
@@ -143,7 +143,7 @@ public class ApplicationConfiguration {
     app.setApplicationDirectory(getApplicationDirectory());
     app.setBitcoinUriHandling(getBitcoinUriHandling());
     app.setRestoreApplicationLayoutOnStartup(isRestoreApplicationLayoutOnStartup());
-    app.setFrameDimension(getFrameDimension());
+    app.setLastFrameBounds(getLastFrameBounds());
     app.setSidebarWidth(getSidebarWidth());
     app.setCurrentTheme(getCurrentTheme());
     app.setVersion(getVersion());

@@ -38,23 +38,23 @@ public class LightBoxPanel extends JPanel {
     setOpaque(false);
 
     // Ensure this panel covers all the available frame area
-    setSize(Panels.frame.getWidth() + 100, Panels.frame.getHeight() + 100);
+    setSize(Panels.applicationFrame.getWidth() + 100, Panels.applicationFrame.getHeight() + 100);
 
     // Prevent mouse events reaching through the darkened border
     addMouseListener(new ModalMouseListener());
 
     // Add this panel to the frame's layered panel as the palette layer (directly above the default)
     if (JLayeredPane.MODAL_LAYER.equals(layer)) {
-      Panels.frame.getLayeredPane().add(this, JLayeredPane.PALETTE_LAYER);
+      Panels.applicationFrame.getLayeredPane().add(this, JLayeredPane.PALETTE_LAYER);
     } else {
-      Panels.frame.getLayeredPane().add(this, JLayeredPane.POPUP_LAYER);
+      Panels.applicationFrame.getLayeredPane().add(this, JLayeredPane.POPUP_LAYER);
     }
 
     // Provide a starting position
     calculatePosition();
 
     // Add the light box panel to the frame
-    Panels.frame.getLayeredPane().add(screenPanel, layer);
+    Panels.applicationFrame.getLayeredPane().add(screenPanel, layer);
 
   }
 
@@ -63,25 +63,15 @@ public class LightBoxPanel extends JPanel {
    */
   private void calculatePosition() {
 
-    int currentFrameWidth = Panels.frame.getWidth();
-    int currentFrameHeight = Panels.frame.getHeight();
-
-    int minPanelWidth = (int) screenPanel.getMinimumSize().getWidth();
-    int minPanelHeight = (int) screenPanel.getMinimumSize().getHeight();
-
-    // Use the panel's minimum size to prevent further resizing
-    int frameWidth = currentFrameWidth < minPanelWidth ? minPanelWidth : currentFrameWidth;
-    int frameHeight = currentFrameHeight < minPanelHeight ? minPanelHeight : currentFrameHeight;
-
-    // Lock in the calculated height
-    Panels.frame.setSize(frameWidth, frameHeight);
+    int currentFrameWidth = Panels.applicationFrame.getWidth();
+    int currentFrameHeight = Panels.applicationFrame.getHeight();
 
     // Ensure this panel covers all the available frame area allowing for fast dragging
-    setSize(frameWidth * 2, frameHeight * 2);
+    setSize(currentFrameWidth * 2, currentFrameHeight * 2);
 
     // Center the light box panel in the frame
-    int x = (frameWidth - screenPanel.getWidth()) / 2;
-    int y = (frameHeight - screenPanel.getHeight()) / 2;
+    int x = (currentFrameWidth - screenPanel.getWidth()) / 2;
+    int y = (currentFrameHeight - screenPanel.getHeight()) / 2;
 
     // Avoid any negative values if resizing gets cramped
     x = x < 0 ? 0 : x;
@@ -97,13 +87,13 @@ public class LightBoxPanel extends JPanel {
 
     // Tidy up the layered pane - cannot remove by reference
     // The lightbox panel is always here
-    Panels.frame.getLayeredPane().remove(1);
+    Panels.applicationFrame.getLayeredPane().remove(1);
     // The content panel is always here after the removal
-    Panels.frame.getLayeredPane().remove(0);
+    Panels.applicationFrame.getLayeredPane().remove(0);
 
     // Repaint
-    Panels.frame.validate();
-    Panels.frame.repaint();
+    Panels.applicationFrame.validate();
+    Panels.applicationFrame.repaint();
 
   }
 
@@ -122,7 +112,7 @@ public class LightBoxPanel extends JPanel {
     g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
 
     // Create the darkened border rectangle (will appear beneath the panel layer)
-    g.fillRect(0, 0, Panels.frame.getWidth(), Panels.frame.getHeight());
+    g.fillRect(0, 0, Panels.applicationFrame.getWidth(), Panels.applicationFrame.getHeight());
 
   }
 

@@ -40,7 +40,7 @@ public class ConfigurationWriteAdapterTest {
         case APP_RESTORE_LAYOUT:
           assertThat(properties.getProperty(configurationKey.getKey())).isEqualTo("false");
           break;
-        case APP_FRAME_DIMENSION:
+        case APP_FRAME_BOUNDS:
           assertThat(properties.getProperty(configurationKey.getKey())).isEqualTo("0,0,1000,560");
           break;
         case APP_SIDEBAR_WIDTH:

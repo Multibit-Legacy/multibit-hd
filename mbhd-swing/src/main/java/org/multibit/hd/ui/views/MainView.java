@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views;
 
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
@@ -18,6 +19,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -45,22 +48,77 @@ public class MainView extends JFrame {
 
     CoreServices.uiEventBus.register(this);
 
+    // Define the minimum size for the frame
+    setMinimumSize(new Dimension(MultiBitUI.UI_MIN_WIDTH, MultiBitUI.UI_MIN_HEIGHT));
+
     // Provide all panels with a reference to the main frame
-    Panels.frame = this;
+    Panels.applicationFrame = this;
 
     setTitle(Languages.safeText(MessageKey.APPLICATION_TITLE));
 
-    // Hard coded
-    setMinimumSize(new Dimension(MultiBitUI.UI_MIN_WIDTH, MultiBitUI.UI_MIN_HEIGHT));
+    // Parse the configuration
+    resizeToLastFrameBounds();
 
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+    addComponentListener(new ComponentAdapter() {
+
+      @Override
+      public void componentMoved(ComponentEvent e) {
+        updateConfiguration();
+      }
+
+      @Override
+      public void componentResized(ComponentEvent e) {
+        updateConfiguration();
+      }
+
+      /**
+       * Keep the current configuration updated
+       */
+      private void updateConfiguration() {
+        Rectangle bounds = getBounds();
+        String lastFrameBounds = String.format("%d,%d,%d,%d", bounds.x, bounds.y, bounds.width, bounds.height);
+        Configurations.currentConfiguration.getApplicationConfiguration().setLastFrameBounds(lastFrameBounds);
+      }
+    });
+
+  }
+
+  /**
+   * <p>Resize the frame to the last bounds</p>
+   */
+  private void resizeToLastFrameBounds() {
+
+    Rectangle newBounds = new Rectangle(0, 0, MultiBitUI.UI_MIN_WIDTH, MultiBitUI.UI_MIN_HEIGHT);
+
+    String frameDimension = Configurations.currentConfiguration.getApplicationConfiguration().getLastFrameBounds();
+    if (frameDimension != null) {
+      String[] lastFrameDimension = frameDimension.split(",");
+      if (lastFrameDimension.length == 4) {
+        try {
+          int x = Integer.valueOf(lastFrameDimension[0]);
+          int y = Integer.valueOf(lastFrameDimension[1]);
+          int w = Integer.valueOf(lastFrameDimension[2]);
+          int h = Integer.valueOf(lastFrameDimension[3]);
+          newBounds = new Rectangle(x, y, w, h);
+          System.out.println("Rectangle: " + newBounds.toString());
+        } catch (NumberFormatException e) {
+          log.error("Incorrect format in configuration - using defaults");
+        }
+      }
+    }
+
+    // Place the frame in the desired position (setBounds() does not work)
+    setLocation(newBounds.x, newBounds.y);
+    setPreferredSize(new Dimension(newBounds.width, newBounds.height));
 
   }
 
   @Subscribe
   public void onShutdownEvent(ShutdownEvent shutdownEvent) {
 
-    Panels.frame.dispose();
+    Panels.applicationFrame.dispose();
 
   }
 
@@ -156,7 +214,7 @@ public class MainView extends JFrame {
       splitPane.setLeftComponent(detailView.getContentPanel());
       splitPane.setRightComponent(sidebarView.getContentPanel());
       // TODO Use the configuration to provide the basis
-      splitPane.setDividerLocation(Panels.frame.getWidth() - MultiBitUI.SIDEBAR_LHS_PREF_WIDTH);
+      splitPane.setDividerLocation(Panels.applicationFrame.getWidth() - MultiBitUI.SIDEBAR_LHS_PREF_WIDTH);
     }
 
     // Sets the colouring for divider and borders

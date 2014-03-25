@@ -33,7 +33,7 @@ public class Panels {
   /**
    * A global reference to the application frame
    */
-  public static JFrame frame;
+  public static JFrame applicationFrame;
 
   private static Optional<LightBoxPanel> lightBoxPanel = Optional.absent();
 
@@ -185,7 +185,7 @@ public class Panels {
 
     Preconditions.checkState(!lightBoxPanel.isPresent(), "Light box should never be called twice");
 
-    allowFocus(Panels.frame, false);
+    allowFocus(Panels.applicationFrame, false);
 
     lightBoxPanel = Optional.of(new LightBoxPanel(panel, JLayeredPane.MODAL_LAYER));
 
@@ -200,7 +200,7 @@ public class Panels {
       lightBoxPanel.get().close();
     }
 
-    allowFocus(Panels.frame, true);
+    allowFocus(Panels.applicationFrame, true);
 
     lightBoxPanel = Optional.absent();
 
