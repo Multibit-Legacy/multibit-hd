@@ -33,7 +33,10 @@ public abstract class AbstractService implements ManagedService {
   }
 
   @Override
-  public void start() {
+  public boolean start() {
+
+    return true;
+
   }
 
   @Override

@@ -75,7 +75,7 @@ public class ExchangeTickerService extends AbstractService {
   }
 
   @Override
-  public void start() {
+  public boolean start() {
 
     log.debug("Starting service");
 
@@ -129,6 +129,8 @@ public class ExchangeTickerService extends AbstractService {
       }
 
     }, 0, TICKER_REFRESH_SECONDS, TimeUnit.SECONDS);
+
+    return true;
 
   }
 

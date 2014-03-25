@@ -1,5 +1,7 @@
 package org.multibit.hd.ui.controllers;
 
+import com.google.bitcoin.uri.BitcoinURI;
+import com.google.bitcoin.uri.BitcoinURIParseException;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
@@ -20,10 +22,15 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.ExchangeTickerService;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.models.Models;
 import org.multibit.hd.ui.platform.listener.*;
+import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.themes.Theme;
 import org.multibit.hd.ui.views.themes.ThemeKey;
@@ -34,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
@@ -232,8 +240,47 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
 
   }
 
+  @Subscribe
   @Override
   public void onOpenURIEvent(GenericOpenURIEvent event) {
+
+    // Validate the data
+    final BitcoinURI bitcoinURI;
+    try {
+      bitcoinURI = new BitcoinURI(event.getURI().toString());
+    } catch (BitcoinURIParseException e) {
+      // Quietly ignore
+      return;
+    }
+
+    // Action to show the "send Bitcoin" wizard
+    AbstractAction action = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        ControllerEvents.fireRemoveAlertEvent();
+        Panels.showLightBox(Wizards.newSendBitcoinWizard(Optional.of(bitcoinURI)).getWizardScreenHolder());
+
+      }
+    };
+    JButton button = Buttons.newAlertPanelButton(action, MessageKey.YES, AwesomeIcon.CHECK);
+
+    // Attempt to decode the Bitcoin URI
+    Optional<String> alertMessage = Formats.formatAlertMessage(bitcoinURI);
+
+    // If there is sufficient information in the Bitcoin URI display it to the user as an alert
+    if (alertMessage.isPresent()) {
+
+      AlertModel alertModel = Models.newAlertModel(
+        alertMessage.get(),
+        RAGStatus.AMBER,
+        button
+      );
+
+      // Add the alert
+      ControllerEvents.fireAddAlertEvent(alertModel);
+    }
+
 
     // Show a Bitcoin URI alert
     ControllerEvents.fireAddAlertEvent(Models.newAlertModel("Bitcoin URI", RAGStatus.PINK));

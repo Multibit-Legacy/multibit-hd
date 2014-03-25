@@ -1,9 +1,11 @@
 package org.multibit.hd.ui;
 
+import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.managers.BackupManager;
@@ -17,9 +19,11 @@ import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.controllers.HeaderController;
 import org.multibit.hd.ui.controllers.MainController;
 import org.multibit.hd.ui.controllers.SidebarController;
+import org.multibit.hd.ui.events.controller.ControllerEvents;
+import org.multibit.hd.ui.models.AlertModel;
+import org.multibit.hd.ui.models.Models;
 import org.multibit.hd.ui.platform.GenericApplicationFactory;
 import org.multibit.hd.ui.platform.GenericApplicationSpecification;
-import org.multibit.hd.ui.platform.listener.GenericOpenURIEvent;
 import org.multibit.hd.ui.views.MainView;
 import org.multibit.hd.ui.views.themes.ThemeKey;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -29,9 +33,6 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URLEncoder;
 
 /**
  * <p>Main entry point to the application</p>
@@ -42,6 +43,7 @@ public class MultiBitHD {
 
   private static File applicationDataDirectory;
 
+  private static BitcoinURIListeningService bitcoinURIListeningService;
   private static BitcoinNetworkService bitcoinNetworkService;
 
   private static WalletService walletService;
@@ -68,8 +70,12 @@ public class MultiBitHD {
     // Prepare platform-specific integration (protocol handlers, quit events etc)
     initialiseGenericApp();
 
-    // Start core services (security alerts, configuration etc)
-    initialiseCore(args);
+    // Start core services (security alerts, configuration, Bitcoin URI handling etc)
+    if (!initialiseCore(args)) {
+
+      // Required to shutdown
+      return;
+    }
 
     // Create a new UI based on the configuration
     initialiseUI(args);
@@ -142,7 +148,7 @@ public class MultiBitHD {
    *
    * @param args The command line arguments
    */
-  private static void initialiseCore(String[] args) {
+  private static boolean initialiseCore(String[] args) {
 
     // Start the core services
     CoreServices.main(args);
@@ -150,12 +156,21 @@ public class MultiBitHD {
     // Pre-loadContacts sound library
     Sounds.initialise();
 
+    // Determine if another instance is running and shutdown if this is the case
+    bitcoinURIListeningService = new BitcoinURIListeningService(args);
+    if (!bitcoinURIListeningService.start()) {
+      CoreEvents.fireShutdownEvent();
+      return false;
+    }
+
     // Locate the application data directory
     applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     // Start the wallet service
     startWalletService(applicationDataDirectory);
 
+    // Must be OK to be here
+    return true;
   }
 
   /**
@@ -204,7 +219,9 @@ public class MultiBitHD {
 
         initialiseGenericApp();
 
-        overlayBitcoinUriAlerts(args);
+        overlayBitcoinURIAlert();
+
+
       }
 
     });
@@ -281,9 +298,7 @@ public class MultiBitHD {
     bitcoinNetworkService = CoreServices.newBitcoinNetworkService();
     bitcoinNetworkService.start();
 
-    //Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
-
-    // If the network starts ok start downloading blocks to catch up with the current blockchain
+    // If the network is OK then catch up with the current blockchain
     if (bitcoinNetworkService.isStartedOk()) {
       bitcoinNetworkService.downloadBlockChain();
     }
@@ -305,60 +320,23 @@ public class MultiBitHD {
   }
 
   /**
-   * <p>Show any Bitcoin URI alerts (UI)</p>
+   * <p>Show any command line Bitcoin URI alerts (UI)</p>
    */
-  private static void overlayBitcoinUriAlerts(String[] args) {
+  private static void overlayBitcoinURIAlert() {
 
-    log.debug("Checking for Bitcoin URI on command line");
+    // Check for Bitcoin URI on the command line
+    Optional<BitcoinURI> bitcoinURI = bitcoinURIListeningService.getBitcoinURI();
 
-    // Check for a valid entry on the command line (protocol handler).
-    if (args != null && args.length > 0) {
-      processCommandLineURI(args[0]);
-    } else {
-      log.debug("No Bitcoin URI provided as an argument");
-    }
+    if (bitcoinURI.isPresent()) {
 
-  }
+      // Attempt to create an alert model from the Bitcoin URI
+      Optional<AlertModel> alertModel = Models.newBitcoinURIAlertModel(bitcoinURI.get());
 
-  /**
-   * <p>Attempt to detect if the command line URI is valid.</p>
-   * <p>Note that this is largely because IE6-8 strip URL encoding when passing in URIs to a protocol handler.
-   * However, there is also the chance that anyone could hand-craft a URI and pass it in with non-ASCII character encoding present in the label.</p>
-   * <p>This a really limited approach (no consideration of "amount=10.0&label=Black & White")
-   * but should be OK for <a href="https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki">BIP21</a> use cases.</p>
-   *
-   * @param rawURI The raw URI from the command line (not validated until later)
-   */
-  private static void processCommandLineURI(String rawURI) {
-
-    try {
-
-      // Basic initial checking for URL encoding
-      int queryParamIndex = rawURI.indexOf('?');
-      if (queryParamIndex > 0 && !rawURI.contains("%")) {
-        // Possibly encoded but more likely not
-        String encodedQueryParams = URLEncoder.encode(rawURI.substring(queryParamIndex + 1), "UTF-8");
-        rawURI = rawURI.substring(0, queryParamIndex) + "?" + encodedQueryParams;
-        rawURI = rawURI.replaceAll("%3D", "=");
-        rawURI = rawURI.replaceAll("%26", "&");
+      // If successful the fire the event
+      if (alertModel.isPresent()) {
+        ControllerEvents.fireAddAlertEvent(alertModel.get());
       }
 
-      log.debug("Using '{}' to create Bitcoin URI", rawURI);
-      final URI uri = URI.create(rawURI);
-
-      // Wrap this in a generic event
-      GenericOpenURIEvent event = new GenericOpenURIEvent() {
-        @Override
-        public URI getURI() {
-          return uri;
-        }
-      };
-
-      // Simulate this coming in from an external source
-      mainController.onOpenURIEvent(event);
-
-    } catch (UnsupportedEncodingException e) {
-      log.error("UTF-8 is not supported on this platform");
     }
   }
 

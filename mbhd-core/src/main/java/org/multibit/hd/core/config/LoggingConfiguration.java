@@ -151,7 +151,7 @@ public class LoggingConfiguration {
 
     private boolean archive = true;
 
-    private String archivedLogFilenamePattern;
+    private String archivedLogFilenamePattern="log/multibit-hd-%d.log.gz";
 
     private int archivedFileCount = 5;
 

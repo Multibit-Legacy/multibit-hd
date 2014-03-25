@@ -33,7 +33,7 @@ public class SecurityCheckingService extends AbstractService {
   }
 
   @Override
-  public void start() {
+  public boolean start() {
 
     log.debug("Starting security service");
 
@@ -59,6 +59,8 @@ public class SecurityCheckingService extends AbstractService {
       }
 
     }, 0, ENVIRONMENT_REFRESH_SECONDS, TimeUnit.SECONDS);
+
+    return true;
 
   }
 
