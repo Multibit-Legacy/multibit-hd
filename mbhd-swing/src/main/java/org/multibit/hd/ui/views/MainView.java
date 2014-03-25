@@ -21,6 +21,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -205,16 +207,21 @@ public class MainView extends JFrame {
     // Set the divider width (3 is about right for a clean look)
     splitPane.setDividerSize(3);
 
+    int sidebarWidth = MultiBitUI.SIDEBAR_LHS_PREF_WIDTH;
+    try {
+      sidebarWidth = Integer.valueOf(Configurations.currentConfiguration.getApplicationConfiguration().getSidebarWidth());
+    } catch (NumberFormatException e) {
+      log.warn("Sidebar width configuration is not a number - using default");
+    }
+
     if (Languages.isLeftToRight()) {
       splitPane.setLeftComponent(sidebarView.getContentPanel());
       splitPane.setRightComponent(detailView.getContentPanel());
-      // TODO Use the configuration to provide the basis
-      splitPane.setDividerLocation(MultiBitUI.SIDEBAR_LHS_PREF_WIDTH);
+      splitPane.setDividerLocation(sidebarWidth);
     } else {
       splitPane.setLeftComponent(detailView.getContentPanel());
       splitPane.setRightComponent(sidebarView.getContentPanel());
-      // TODO Use the configuration to provide the basis
-      splitPane.setDividerLocation(Panels.applicationFrame.getWidth() - MultiBitUI.SIDEBAR_LHS_PREF_WIDTH);
+      splitPane.setDividerLocation(Panels.applicationFrame.getWidth() - sidebarWidth);
     }
 
     // Sets the colouring for divider and borders
@@ -225,6 +232,17 @@ public class MainView extends JFrame {
     ));
 
     splitPane.applyComponentOrientation(Languages.currentComponentOrientation());
+
+    splitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY,
+      new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent pce) {
+
+          // Keep the current configuration up to date
+          Configurations.currentConfiguration.getApplicationConfiguration().setSidebarWidth(String.valueOf(pce.getNewValue()));
+
+        }
+      });
 
     // Add the supporting panels
     mainPanel.add(headerView.getContentPanel(), "growx,shrink,wrap"); // Ensure header size remains fixed
