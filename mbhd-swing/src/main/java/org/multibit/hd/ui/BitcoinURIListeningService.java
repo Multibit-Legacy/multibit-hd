@@ -200,7 +200,6 @@ public class BitcoinURIListeningService extends AbstractService {
 
         boolean socketClosed = false;
 
-        Socket client = null;
 
         while (!socketClosed) {
 
@@ -209,7 +208,8 @@ public class BitcoinURIListeningService extends AbstractService {
           } else {
 
             try {
-              client = serverSocket.accept();
+
+              Socket client = serverSocket.accept();
 
               String message;
               try (InputStreamReader reader = new InputStreamReader(client.getInputStream(), Charsets.UTF_8)) {
@@ -247,26 +247,6 @@ public class BitcoinURIListeningService extends AbstractService {
             }
           }
         } // End of while
-
-        // Server socket is now closed
-
-        if (client != null) {
-          try {
-            client.close();
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
-        }
-
-        if (serverSocket != null) {
-          try {
-            serverSocket.close();
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
-        }
-
-        log.debug("Socket is shutdown.");
 
       }
     };

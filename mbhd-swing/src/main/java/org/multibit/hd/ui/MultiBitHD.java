@@ -1,9 +1,11 @@
 package org.multibit.hd.ui;
 
+import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.managers.BackupManager;
@@ -17,6 +19,9 @@ import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.controllers.HeaderController;
 import org.multibit.hd.ui.controllers.MainController;
 import org.multibit.hd.ui.controllers.SidebarController;
+import org.multibit.hd.ui.events.controller.ControllerEvents;
+import org.multibit.hd.ui.models.AlertModel;
+import org.multibit.hd.ui.models.Models;
 import org.multibit.hd.ui.platform.GenericApplicationFactory;
 import org.multibit.hd.ui.platform.GenericApplicationSpecification;
 import org.multibit.hd.ui.views.MainView;
@@ -38,6 +43,7 @@ public class MultiBitHD {
 
   private static File applicationDataDirectory;
 
+  private static BitcoinURIListeningService bitcoinURIListeningService;
   private static BitcoinNetworkService bitcoinNetworkService;
 
   private static WalletService walletService;
@@ -65,7 +71,11 @@ public class MultiBitHD {
     initialiseGenericApp();
 
     // Start core services (security alerts, configuration, Bitcoin URI handling etc)
-    initialiseCore(args);
+    if (!initialiseCore(args)) {
+
+      // Required to shutdown
+      return;
+    }
 
     // Create a new UI based on the configuration
     initialiseUI(args);
@@ -138,7 +148,7 @@ public class MultiBitHD {
    *
    * @param args The command line arguments
    */
-  private static void initialiseCore(String[] args) {
+  private static boolean initialiseCore(String[] args) {
 
     // Start the core services
     CoreServices.main(args);
@@ -146,12 +156,21 @@ public class MultiBitHD {
     // Pre-loadContacts sound library
     Sounds.initialise();
 
+    // Determine if another instance is running and shutdown if this is the case
+    bitcoinURIListeningService = new BitcoinURIListeningService(args);
+    if (!bitcoinURIListeningService.start()) {
+      CoreEvents.fireShutdownEvent();
+      return false;
+    }
+
     // Locate the application data directory
     applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     // Start the wallet service
     startWalletService(applicationDataDirectory);
 
+    // Must be OK to be here
+    return true;
   }
 
   /**
@@ -200,7 +219,9 @@ public class MultiBitHD {
 
         initialiseGenericApp();
 
-        startBitcoinURIListeningService(args);
+        overlayBitcoinURIAlert();
+
+
       }
 
     });
@@ -242,15 +263,6 @@ public class MultiBitHD {
       }
     });
 
-  }
-
-  /**
-   * @param args The command line arguments
-   */
-  private static void startBitcoinURIListeningService(String[] args) {
-
-    BitcoinURIListeningService bitcoinURIListeningService = new BitcoinURIListeningService(args);
-    bitcoinURIListeningService.start();
   }
 
   /**
@@ -305,6 +317,27 @@ public class MultiBitHD {
       mainController.onSecurityEvent(securityEvent.get());
     }
 
+  }
+
+  /**
+   * <p>Show any command line Bitcoin URI alerts (UI)</p>
+   */
+  private static void overlayBitcoinURIAlert() {
+
+    // Check for Bitcoin URI on the command line
+    Optional<BitcoinURI> bitcoinURI = bitcoinURIListeningService.getBitcoinURI();
+
+    if (bitcoinURI.isPresent()) {
+
+      // Attempt to create an alert model from the Bitcoin URI
+      Optional<AlertModel> alertModel = Models.newBitcoinURIAlertModel(bitcoinURI.get());
+
+      // If successful the fire the event
+      if (alertModel.isPresent()) {
+        ControllerEvents.fireAddAlertEvent(alertModel.get());
+      }
+
+    }
   }
 
 }
