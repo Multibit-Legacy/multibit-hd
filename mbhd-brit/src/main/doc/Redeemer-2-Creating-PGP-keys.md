@@ -3,7 +3,9 @@
 ## Introduction
 This document describes how the redeemer creates the PGP keys used in BRIT.
 
-PREREQUISITE: The Redeemer has performed the steps in `Redeemer-(1)-Creating-a-Bitcoin-wallet`.
+PREREQUISITES:
+The Redeemer has performed the steps in `Redeemer-(1)-Creating-a-Bitcoin-wallet`.
+
 
 The steps to generate PGP keys are:
 
@@ -13,7 +15,8 @@ The steps to generate PGP keys are:
    EC public keys from you Bitcoin redeemer wallet into the comment field of the PGP keys
    when you create them.
 3) Export the PGP keys to an armored ASCII file.
-4) The armored ASCII file can then be copied to the Matcher machine for use by the Matcher.
+4) Tidy up.
+5) Copy export files to the server where the Matcher is being run.
 
 
 ## 1. Create a GPG directory
@@ -105,14 +108,6 @@ Repeat steps 2.1 and 2.2 for the number of Bitcoin public keys you have.
 gpg: WARNING: unsafe permissions on homedir `/Users/jim/ideaprojects/multibit-hd/mbhd-brit/src/test/resources/redeemer/gpg'
 /Users/jim/ideaprojects/multibit-hd/mbhd-brit/src/test/resources/redeemer/gpg/pubring.gpg
 -----------------------------------------------------------------------------------------
-pub   2048R/9200097B 2014-03-23
-uid                  redeemer1 <redeemer1@nowhere.com>    << IGNORE
-sub   2048R/822D18D2 2014-03-23
-
-pub   2048R/CFA34F33 2014-03-24
-uid                  redeemer2 <redeemer2@nowhere.com>    << IGNORE
-sub   2048R/76508849 2014-03-24
-
 pub   2048R/B3F52657 2014-03-24
 uid                  redeemer3 (03b5fcda72f7177e396ad72978985b28320050cf1ece5983d55cfb9bd6d490468d) <redeemer3@nowhere.com>
 sub   2048R/65B5A2F0 2014-03-24
@@ -121,7 +116,7 @@ pub   2048R/8C394BFD 2014-03-24
 uid                  redeemer4 (032ce746e4fbf75c0b0b2364f054b7a917d9567509a802c27adb1dc91ab21a07c2) <redeemer4@nowhere.com>
 sub   2048R/67326E94 2014-03-24
 
-# 2.4 Export the public keys to a file
+# 3 Export the public keys to a file
 You can export all your public keys from your keyring using:
 > gpg --homedir "$(pwd)" --armor --export > export.asc
 
@@ -129,12 +124,20 @@ You can check the contents of the output file (making no changes) using
 > gpg --dry-run --homedir "$(pwd)" --import export.asc
 
 
-# 2.5 Tidy up
+# 4 Tidy up
 Delete the S.gpg-agent file in the gpg directory (as it causes problems in Eclipse).
 You will see a message:
 gpg-agent[4552]: can't connect my own socket: IPC connect call failed
 gpg-agent[4552]: this process is useless - shutting down
 gpg-agent[4552]: gpg-agent (GnuPG/MacGPG2) 2.0.22 stopped
+
+This is ok.
+
+# 5 Copy export files to the server where the Matcher is being run
+Copy the export.asc to the Matcher server.
+For instance, if you are `redeemer1` copy the file to:
+
+matcher/import-from-redeemers/redeemer1-export.asc
 
 
 # Summary
@@ -142,5 +145,5 @@ By performing the tasks in this document you have constructed PGP keypairs that 
 Matcher to protect your secrets. Each PGP public key has, in its `Comment` field, the EC public key that
 will be used in generating Bitcoin addresses for payment to you.
 
-You have also prepared an export file containing this information in a conveneient format for copying
-to the Matcher service, where it will be used.
+You have prepared an export file containing this information in a convenient format and copied it
+to where the Matcher service will be run.
