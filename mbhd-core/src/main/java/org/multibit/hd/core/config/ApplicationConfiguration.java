@@ -26,6 +26,10 @@ public class ApplicationConfiguration {
 
   private String version = "0.0.0";
 
+  private String frameDimension = "0,0,1000,560";
+
+  private String sidebarWidth = "180";
+
   /**
    * Wallets are stored one per directory. The name of this containing directory is called the wallet root.
    *
@@ -106,6 +110,28 @@ public class ApplicationConfiguration {
   }
 
   /**
+   * @return The application frame dimensions in px (x1,y1,x2,y2)
+   */
+  public String getFrameDimension() {
+    return frameDimension;
+  }
+
+  public void setFrameDimension(String frameDimension) {
+    this.frameDimension = frameDimension;
+  }
+
+  /**
+   * @return The sidebar width in px
+   */
+  public String getSidebarWidth() {
+    return sidebarWidth;
+  }
+
+  public void setSidebarWidth(String sidebarWidth) {
+    this.sidebarWidth = sidebarWidth;
+  }
+
+  /**
    * @return A deep copy of this object
    */
   public ApplicationConfiguration deepCopy() {
@@ -117,6 +143,8 @@ public class ApplicationConfiguration {
     app.setApplicationDirectory(getApplicationDirectory());
     app.setBitcoinUriHandling(getBitcoinUriHandling());
     app.setRestoreApplicationLayoutOnStartup(isRestoreApplicationLayoutOnStartup());
+    app.setFrameDimension(getFrameDimension());
+    app.setSidebarWidth(getSidebarWidth());
     app.setCurrentTheme(getCurrentTheme());
     app.setVersion(getVersion());
 

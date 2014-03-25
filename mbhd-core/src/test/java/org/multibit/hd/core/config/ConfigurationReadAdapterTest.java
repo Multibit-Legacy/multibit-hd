@@ -48,6 +48,12 @@ public class ConfigurationReadAdapterTest {
         case APP_RESTORE_LAYOUT:
           assertThat(properties.getProperty(configurationKey.getKey())).isEqualTo(String.valueOf(actualApplication.isRestoreApplicationLayoutOnStartup()));
           break;
+        case APP_FRAME_DIMENSION:
+          assertThat(properties.getProperty(configurationKey.getKey())).isEqualTo(actualApplication.getFrameDimension());
+          break;
+        case APP_SIDEBAR_WIDTH:
+          assertThat(properties.getProperty(configurationKey.getKey())).isEqualTo(actualApplication.getSidebarWidth());
+          break;
         case APP_CURRENT_SCREEN:
           assertThat(properties.getProperty(configurationKey.getKey())).isEqualTo(actualApplication.getCurrentScreen());
           break;

@@ -62,6 +62,12 @@ public class ConfigurationReadAdapter {
           case APP_RESTORE_LAYOUT:
             configuration.getApplicationConfiguration().setRestoreApplicationLayoutOnStartup(Boolean.valueOf(value));
             break;
+          case APP_FRAME_DIMENSION:
+            configuration.getApplicationConfiguration().setFrameDimension(value);
+            break;
+          case APP_SIDEBAR_WIDTH:
+            configuration.getApplicationConfiguration().setSidebarWidth(value);
+            break;
           case APP_CURRENT_SCREEN:
             configuration.getApplicationConfiguration().setCurrentScreen(value);
             break;

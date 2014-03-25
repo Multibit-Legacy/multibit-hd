@@ -55,6 +55,12 @@ public class ConfigurationWriteAdapter {
         case APP_RESTORE_LAYOUT:
           properties.put(configurationKey.getKey(), String.valueOf(application.isRestoreApplicationLayoutOnStartup()));
           break;
+        case APP_FRAME_DIMENSION:
+          properties.put(configurationKey.getKey(), application.getFrameDimension());
+          break;
+        case APP_SIDEBAR_WIDTH:
+          properties.put(configurationKey.getKey(), application.getSidebarWidth());
+          break;
         case APP_CURRENT_SCREEN:
           properties.put(configurationKey.getKey(), application.getCurrentScreen());
           break;
