@@ -123,10 +123,10 @@ sub   2048R/67326E94 2014-03-24
 
 # 2.4 Export the public keys to a file
 You can export all your public keys from your keyring using:
->gpg --homedir "$(pwd)" --armor --export > export.asc
+> gpg --homedir "$(pwd)" --armor --export > export.asc
 
 You can check the contents of the output file (making no changes) using
->gpg --dry-run --homedir "$(pwd)" --import export.asc
+> gpg --dry-run --homedir "$(pwd)" --import export.asc
 
 
 # Summary
