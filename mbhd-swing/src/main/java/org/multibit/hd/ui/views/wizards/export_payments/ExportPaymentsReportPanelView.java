@@ -179,7 +179,7 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
    */
   private String[] createStems() {
     DateTime now = Dates.nowUtc();
-    String nowAsString = Dates.formatBasicDateWithHyphens(now);
+    String nowAsString = Dates.formatCompactDateWithHyphens(now);
 
     String stem0 = Languages.safeText(MessageKey.EXPORT_TRANSACTIONS_STEM) + SEPARATOR + nowAsString;
     String stem1 = Languages.safeText(MessageKey.EXPORT_PAYMENT_REQUESTS_STEM) + SEPARATOR + nowAsString;

@@ -76,8 +76,6 @@ public class Sounds {
    */
   private static void play(String name) {
 
-    // TODO Check with configuration if this is desired
-
     Preconditions.checkState(allSounds.containsKey(name), "'" + name + "' must be present (did you initialise?)");
 
     byte[] sound = allSounds.get(name);

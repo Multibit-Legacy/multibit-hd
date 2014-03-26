@@ -6,10 +6,10 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.BalanceChangedEvent;
 import org.multibit.hd.ui.languages.Languages;
-import org.multibit.hd.ui.utils.LocalisedDateUtils;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountModel;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
@@ -69,7 +69,7 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
 
         for (PaymentData paymentData : paymentDataList) {
           JLabel timeLabel = Labels.newBlankLabel();
-          timeLabel.setText(LocalisedDateUtils.formatShortDate(paymentData.getDate()));
+          timeLabel.setText(Dates.formatShortTime(paymentData.getDate()));
 
           JLabel paymentDataLabel = Labels.newBlankLabel();
           paymentDataLabel.setText(Languages.safeText(paymentData.getType().getLocalisationKey()));

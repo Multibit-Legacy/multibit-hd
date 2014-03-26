@@ -18,7 +18,7 @@ public class DatesTest {
 
     // We work in the UK locale for consistency
     Locale.setDefault(Locale.UK);
-    DateTimeUtils.setCurrentMillisFixed(new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeZone.UTC).getMillis());
+    DateTimeUtils.setCurrentMillisFixed(new DateTime(2000, 1, 1, 23, 59, 58, 999, DateTimeZone.UTC).getMillis());
 
   }
 
@@ -36,7 +36,31 @@ public class DatesTest {
 
     DateTimeUtils.setCurrentMillisFixed(new DateTime(2000, 1, 2, 3, 4, 5, 6, DateTimeZone.UTC).getMillis());
 
-    assertThat(Dates.formatISO8601(Dates.midnightUtc())).isEqualTo("2000-01-02T00:00:00Z");
+    assertThat(Dates.formatIso8601(Dates.midnightUtc())).isEqualTo("2000-01-02T00:00:00Z");
+  }
+
+  @Test
+  public void testShortTime_DefaultLocale() {
+
+    assertThat(Dates.formatShortTime(Dates.nowUtc())).isEqualTo("23:59");
+  }
+
+  @Test
+  public void testFormatTransaction_DefaultLocale() {
+
+    assertThat(Dates.formatTransactionDate(Dates.nowUtc())).isEqualTo("01 Jan 2000 23:59");
+  }
+
+  @Test
+  public void testFormatTransaction_FrenchLocale() {
+
+    assertThat(Dates.formatTransactionDate(Dates.nowUtc(), Locale.FRANCE)).isEqualTo("01 janv. 2000 23:59");
+  }
+
+  @Test
+  public void testFormatTransaction_ThaiLocale() {
+
+    assertThat(Dates.formatTransactionDate(Dates.nowUtc(), new Locale("th", "TH", "TH"))).isEqualTo("01 ม.ค. 2000 23:59");
   }
 
   @Test
@@ -78,22 +102,22 @@ public class DatesTest {
   @Test
   public void testParseISO8601_DefaultLocale() {
 
-    DateTime instant = Dates.parseISO8601("2000-01-01T12:00:00Z");
+    DateTime instant = Dates.parseIso8601("2000-01-01T12:00:00Z");
 
-    assertThat(Dates.formatISO8601(instant)).isEqualTo("2000-01-01T12:00:00Z");
+    assertThat(Dates.formatIso8601(instant)).isEqualTo("2000-01-01T12:00:00Z");
   }
 
   @Test
   public void testParseSmtpUtc_DefaultLocale() {
 
     DateTime instant = Dates.parseSmtpUtc("01 Jan 2000").withZone(DateTimeZone.UTC);
-    assertThat(Dates.formatISO8601(instant)).isEqualTo("2000-01-01T00:00:00Z");
+    assertThat(Dates.formatIso8601(instant)).isEqualTo("2000-01-01T00:00:00Z");
 
     instant = Dates.parseSmtpUtc("1 jan 2000").withZone(DateTimeZone.UTC);
-    assertThat(Dates.formatISO8601(instant)).isEqualTo("2000-01-01T00:00:00Z");
+    assertThat(Dates.formatIso8601(instant)).isEqualTo("2000-01-01T00:00:00Z");
 
     instant = Dates.parseSmtpUtc("1 january 2000").withZone(DateTimeZone.UTC);
-    assertThat(Dates.formatISO8601(instant)).isEqualTo("2000-01-01T00:00:00Z");
+    assertThat(Dates.formatIso8601(instant)).isEqualTo("2000-01-01T00:00:00Z");
 
   }
 
@@ -101,7 +125,7 @@ public class DatesTest {
   public void testParseSmtpUtc_FrenchLocale() {
 
     DateTime instant = Dates.parseSmtpUtc("01 janv. 2000", Locale.FRANCE).withZone(DateTimeZone.UTC);
-    assertThat(Dates.formatISO8601(instant)).isEqualTo("2000-01-01T00:00:00Z");
+    assertThat(Dates.formatIso8601(instant)).isEqualTo("2000-01-01T00:00:00Z");
 
   }
 
@@ -109,7 +133,7 @@ public class DatesTest {
   public void testParseSmtpUtc_ThaiLocale() {
 
     DateTime instant = Dates.parseSmtpUtc("01 ม.ค. 2000", new Locale("th", "TH", "TH")).withZone(DateTimeZone.UTC);
-    assertThat(Dates.formatISO8601(instant)).isEqualTo("2000-01-01T00:00:00Z");
+    assertThat(Dates.formatIso8601(instant)).isEqualTo("2000-01-01T00:00:00Z");
 
   }
 
