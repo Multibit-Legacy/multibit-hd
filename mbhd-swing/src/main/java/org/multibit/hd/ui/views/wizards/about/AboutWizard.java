@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.about.exit;
+package org.multibit.hd.ui.views.wizards.about;
 
 import com.google.common.base.Optional;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;

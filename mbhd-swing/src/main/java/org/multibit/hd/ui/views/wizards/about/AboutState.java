@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.about.exit;
+package org.multibit.hd.ui.views.wizards.about;
 
 /**
  * <p>Enum to provide the following to "about" wizard model:</p>

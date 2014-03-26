@@ -141,6 +141,18 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
   /**
    * <p>Initialise the content section of the wizard panel just before first showing</p>
    * <p>Implementers should set the layout and populate the components</p>
+   * <h3>Example panel creation</h3>
+   * <pre>
+   * ... initialise components ...
+   *
+   * contentPanel.setLayout(new MigLayout(
+   *   Panels.migXYLayout(),
+   *   "[][]", // Column constraints
+   *   "[]10[]10[][][]10[][]" // Row constraints
+   * ));
+   *
+   * ... populate panel ...
+   * </pre>
    *
    * @param contentPanel The empty content panel with the current theme and initial background icon
    */

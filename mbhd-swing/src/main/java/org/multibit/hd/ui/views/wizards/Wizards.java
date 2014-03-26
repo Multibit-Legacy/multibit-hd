@@ -9,9 +9,9 @@ import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.PaymentRequestData;
-import org.multibit.hd.ui.views.wizards.about.exit.AboutState;
-import org.multibit.hd.ui.views.wizards.about.exit.AboutWizard;
-import org.multibit.hd.ui.views.wizards.about.exit.AboutWizardModel;
+import org.multibit.hd.ui.views.wizards.about.AboutState;
+import org.multibit.hd.ui.views.wizards.about.AboutWizard;
+import org.multibit.hd.ui.views.wizards.about.AboutWizardModel;
 import org.multibit.hd.ui.views.wizards.application_settings.ApplicationSettingsState;
 import org.multibit.hd.ui.views.wizards.application_settings.ApplicationSettingsWizard;
 import org.multibit.hd.ui.views.wizards.application_settings.ApplicationSettingsWizardModel;
@@ -53,6 +53,9 @@ import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinWizardModel;
 import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsState;
 import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsWizard;
 import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsWizardModel;
+import org.multibit.hd.ui.views.wizards.wallet_detail.WalletDetailState;
+import org.multibit.hd.ui.views.wizards.wallet_detail.WalletDetailWizard;
+import org.multibit.hd.ui.views.wizards.wallet_detail.WalletDetailWizardModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizard;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
@@ -273,6 +276,14 @@ public class Wizards {
    */
   public static ExportPaymentsWizard newExportPaymentsWizard(ExportPaymentsWizardState initialState) {
     return new ExportPaymentsWizard(new ExportPaymentsWizardModel(initialState), false);
+  }
+
+  /**
+   * @return A new "wallet details" wizard for extended wallet information
+   */
+  public static WalletDetailWizard newWalletDetailsWizard() {
+
+    return new WalletDetailWizard(new WalletDetailWizardModel(WalletDetailState.WALLET_DETAIL), false);
   }
 
 }

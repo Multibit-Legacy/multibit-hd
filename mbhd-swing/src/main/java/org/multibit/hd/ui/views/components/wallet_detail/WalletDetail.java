@@ -2,16 +2,19 @@ package org.multibit.hd.ui.views.components.wallet_detail;
 
 /**
  *  <p>DTO to provide the following to WalletDetailModel:<br>
-
+ * <ul>
+ * <li>Wallet details in a neutral format</li>
+ * </ul>
  *  </p>
  *  
  */
 public class WalletDetail {
-  private int numberOfPayments;
-   private int numberOfContacts;
 
-   private String applicationDirectory;
-   private String walletDirectory;
+  private int numberOfPayments;
+  private int numberOfContacts;
+
+  private String applicationDirectory;
+  private String walletDirectory;
 
   public int getNumberOfPayments() {
     return numberOfPayments;
