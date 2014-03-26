@@ -16,6 +16,7 @@ package org.multibit.hd.brit.pgp;
  * limitations under the License.
  */
 
+import com.google.bitcoin.core.Utils;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,6 +40,8 @@ public class PGPUtilsTest {
 
   private static final String TEST_SECRET_KEYRING_FILE = "/src/test/resources/redeemer1/gpg/secring.gpg";
 
+  public static final String TEST_MATCHER_PUBLIC_KEY_FILE = "/src/test/resources/matcher/export-to-payer/matcher-key.asc";
+
   private static final String MBHD_BRIT_PREFIX = "mbhd-brit";
 
   /**
@@ -54,11 +57,7 @@ public class PGPUtilsTest {
   @Test
   public void testPGPEncryptDecrypt() throws Exception {
     // Read the manually created public keyring in the test directory to find a public key suitable for encryption
-    // (the location varies if you run it in an IDE or via Maven)
-    File publicKeyRingFile = new File(MBHD_BRIT_PREFIX + File.separator + TEST_PUBLIC_KEYRING_FILE);
-    if (!publicKeyRingFile.exists()) {
-      publicKeyRingFile =  new File("." + File.separator + TEST_PUBLIC_KEYRING_FILE);
-    }
+    File publicKeyRingFile = makeFile(TEST_PUBLIC_KEYRING_FILE);
     log.debug("Loading public keyring from '" + publicKeyRingFile.getAbsolutePath() + "'");
     FileInputStream publicKeyRingInputStream = new FileInputStream(publicKeyRingFile);
     PGPPublicKey encryptionKey = PGPUtils.readPublicKey(publicKeyRingInputStream);
@@ -84,11 +83,7 @@ public class PGPUtilsTest {
     assertThat(encryptedFile.length()).isGreaterThanOrEqualTo(EXAMPLE_TEXT.length());
 
     // Locate the secret keyring file
-    // (the location varies if you run it in an IDE or via Maven)
-    File secretKeyRingFile = new File(MBHD_BRIT_PREFIX + File.separator + TEST_SECRET_KEYRING_FILE);
-    if (!secretKeyRingFile.exists()) {
-      secretKeyRingFile =  new File("." + File.separator + TEST_SECRET_KEYRING_FILE);
-    }
+    File secretKeyRingFile = makeFile(TEST_SECRET_KEYRING_FILE);
     log.debug("Loading secret keyring from '" + publicKeyRingFile.getAbsolutePath() + "'");
 
     // Decrypt the encrypted file
@@ -102,5 +97,34 @@ public class PGPUtilsTest {
 
     byte[] rebornBytes = FileUtils.readFile(rebornPlainTextFile);
     assertThat(Arrays.equals( EXAMPLE_TEXT.getBytes("UTF8"), rebornBytes)).isTrue();
+  }
+
+  @Test
+  public void testLoadPGPPublicKeyFromASCIIArmoredFile() throws Exception {
+    File publicKeyFile = makeFile(TEST_MATCHER_PUBLIC_KEY_FILE);
+    log.debug("Loading public key from '" + publicKeyFile.getAbsolutePath() + "'");
+    FileInputStream publicKeyInputStream = new FileInputStream(publicKeyFile);
+    PGPPublicKey publicKey = PGPUtils.readPublicKey(publicKeyInputStream);
+    assertThat(publicKey).isNotNull();
+    log.debug("Loaded PGP public key :\nAlgorithm: " + publicKey.getAlgorithm() + ", bitStrength: "  + publicKey.getBitStrength()
+      + ", fingerprint: " + Utils.bytesToHexString(publicKey.getFingerprint()));
+  }
+
+  /**
+   * Make a file reference - a file can be referenced as, say,
+   *     brit-mbhd/src/test/resources/redeemer1/gpg/pubring.gpg
+   * or
+   *     ./src/test/resources/redeemer1/gpg/pubring.gpg
+   * depending on whether you are running via an IDE or in Maven
+   * @param rootFilename The root filename (relative to the root of the mbhd directory e.g. src/test/resources/redeemer1/gpg/pubring.gpg
+   *                     in the example above)
+   * @return File reference
+   */
+  public static File makeFile(String rootFilename) {
+    File file = new File(MBHD_BRIT_PREFIX + File.separator + rootFilename);
+    if (!file.exists()) {
+      file =  new File("." + File.separator + rootFilename);
+    }
+    return file;
   }
 }
