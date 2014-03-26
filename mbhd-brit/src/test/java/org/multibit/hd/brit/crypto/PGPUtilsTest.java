@@ -1,4 +1,4 @@
-package org.multibit.hd.brit.pgp;
+package org.multibit.hd.brit.crypto;
 
 /**
  * Copyright 2014 multibit.org

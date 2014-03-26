@@ -1,4 +1,4 @@
-package org.multibit.hd.brit.pgp;
+package org.multibit.hd.brit.crypto;
 
 /**
  *  <p>[Pattern] to provide the following to [related classes]:<br>

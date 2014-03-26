@@ -19,8 +19,8 @@ package org.multibit.hd.brit.payer;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.brit.pgp.PGPUtils;
-import org.multibit.hd.brit.pgp.PGPUtilsTest;
+import org.multibit.hd.brit.crypto.PGPUtils;
+import org.multibit.hd.brit.crypto.PGPUtilsTest;
 
 import java.io.File;
 import java.io.FileInputStream;
