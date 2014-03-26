@@ -61,12 +61,17 @@ public class Dates {
   /**
     * Produces "2000-04-01" for simplified short user date
     */
-   private static final DateTimeFormatter shortDateWithHyphensFormatter = DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
+   private static final DateTimeFormatter utcShortDateWithHyphensFormatter = DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
 
   /**
    * Produces "23:59" for simplified short user time
    */
-  private static final DateTimeFormatter shortTimeFormatter = DateTimeFormat.forPattern("HH:mm").withZoneUTC();
+  private static final DateTimeFormatter utcShortTimeFormatter = DateTimeFormat.forPattern("HH:mm").withZoneUTC();
+
+  /**
+   * Produces "20000102235958" for condensed backup suffix time format
+   */
+  private static final DateTimeFormatter utcBackupFormatter = DateTimeFormat.forPattern("yyyyMMddHHmmss").withZoneUTC();
 
   /**
    * @return The current midnight in UTC
@@ -109,7 +114,7 @@ public class Dates {
     if (when == null) {
       return "";
     }
-    return shortTimeFormatter.print(when);
+    return utcShortTimeFormatter.print(when);
   }
 
   /**
@@ -137,13 +142,24 @@ public class Dates {
 
   /**
    * @param when The instant
+   * @return The instant formatted as "yyyyMMddHHmmss"
+   */
+  public static String formatBackupDate(ReadableInstant when) {
+    if (when == null) {
+      return "";
+    }
+    return utcBackupFormatter.print(when);
+  }
+
+  /**
+   * @param when The instant
    * @return The instant formatted as "yyyy-MM-dd"
    */
   public static String formatCompactDateWithHyphens(ReadableInstant when) {
     if (when == null) {
       return "";
     }
-    return shortDateWithHyphensFormatter.print(when);
+    return utcShortDateWithHyphensFormatter.print(when);
   }
 
   /**
@@ -327,4 +343,14 @@ public class Dates {
       throw new IllegalArgumentException("'text' does not parse into 2 integers");
     }
   }
+
+  /**
+   * @param text The text representing a date and time in backup format (e.g. "20000203235958")
+   * @return The DateTime in the UTC timezone
+   * @throws IllegalArgumentException If the text cannot be parsed
+   */
+  public static DateTime parseBackupDate(String text) {
+    return utcBackupFormatter.parseDateTime(text);
+  }
+
 }

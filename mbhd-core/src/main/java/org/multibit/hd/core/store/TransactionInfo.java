@@ -14,11 +14,11 @@ import java.math.BigInteger;
  *  
  */
 public class TransactionInfo {
+
   private String hash;
   private FiatPayment amountFiat;
   private String note;
 
-  // TODO add miner fee and client fee for sends
   /**
    * On a send, the miner's fee added in satoshi, otherwise Optional.absent()
    */

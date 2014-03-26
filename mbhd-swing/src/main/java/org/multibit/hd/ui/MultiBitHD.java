@@ -300,7 +300,7 @@ public class MultiBitHD {
 
     // If the network is OK then catch up with the current blockchain
     if (bitcoinNetworkService.isStartedOk()) {
-      bitcoinNetworkService.downloadBlockChain();
+      bitcoinNetworkService.downloadBlockChainInBackground();
     }
 
   }
