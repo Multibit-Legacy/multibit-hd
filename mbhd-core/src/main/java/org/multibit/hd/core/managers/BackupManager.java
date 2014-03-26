@@ -170,7 +170,7 @@ public enum BackupManager {
 
     Map<Long, File> mapOfTimeToFile = Maps.newTreeMap(); // Note that this is sorted by long
 
-    // Look for filenames with format "text"-YYYYMMDDHHMMSS.wallet<eol> and are not empty.
+    // Look for file names with format "text"-YYYYMMDDHHMMSS.wallet<eol> and are not empty.
     if (files != null) {
       for (File file : files) {
         if (file.isFile()) {

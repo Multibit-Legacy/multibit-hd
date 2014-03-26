@@ -199,7 +199,7 @@ public class BitcoinNetworkServiceFunctionalTest {
     walletManager.setCurrentWalletData(sourceWalletData);
 
     // Start up the bitcoin network connection
-    bitcoinNetworkService = CoreServices.newBitcoinNetworkService();
+    bitcoinNetworkService = CoreServices.getBitcoinNetworkService();
     bitcoinNetworkService.start();
 
     // Wait a while for everything to start
@@ -252,7 +252,7 @@ public class BitcoinNetworkServiceFunctionalTest {
   }
 
   private void replayWallet(DateTime replayDate) throws IOException, BlockStoreException {
-    bitcoinNetworkService = CoreServices.newBitcoinNetworkService();
+    bitcoinNetworkService = CoreServices.getBitcoinNetworkService();
 
     // Clear percentage complete
     percentComplete = 0;

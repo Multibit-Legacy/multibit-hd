@@ -111,11 +111,13 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   }
 
   private void sendBitcoin() {
+
     // Actually send the bitcoin
     Preconditions.checkNotNull(enterAmountPanelModel);
     Preconditions.checkNotNull(confirmPanelModel);
 
-    BitcoinNetworkService bitcoinNetworkService = MultiBitHD.getBitcoinNetworkService();
+    BitcoinNetworkService bitcoinNetworkService = CoreServices.getBitcoinNetworkService();
+    Preconditions.checkState(bitcoinNetworkService.isStartedOk(),"'bitcoinNetworkService' should be started OK");
 
     String changeAddress = bitcoinNetworkService.getNextChangeAddress();
 

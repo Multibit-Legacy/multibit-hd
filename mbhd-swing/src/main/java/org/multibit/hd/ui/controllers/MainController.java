@@ -18,10 +18,12 @@ import org.multibit.hd.core.events.ConfigurationChangedEvent;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.exchanges.ExchangeKey;
+import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.ExchangeTickerService;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.events.view.WizardHideEvent;
 import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -53,12 +55,13 @@ import java.util.concurrent.TimeUnit;
  * </ul>
  * <p>To allow complete separation between Model, View and Controller all interactions are handled using application events</p>
  */
-public class MainController implements GenericOpenURIEventListener, GenericPreferencesEventListener,
-  GenericAboutEventListener, GenericQuitEventListener {
+public class MainController implements  GenericOpenURIEventListener, GenericPreferencesEventListener,  GenericAboutEventListener,  GenericQuitEventListener {
 
   private static final Logger log = LoggerFactory.getLogger(MainController.class);
 
   private Optional<ExchangeTickerService> exchangeTickerService = Optional.absent();
+
+  private Optional<BitcoinNetworkService> bitcoinNetworkService = Optional.absent();
 
   public MainController() {
 
@@ -76,7 +79,7 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
   private void handleExchange() {
 
     // Don't hold up the UI if the exchange doesn't respond
-    SafeExecutors.newFixedThreadPool(1).execute(new Runnable() {
+    SafeExecutors.newSingleThreadExecutor().execute(new Runnable() {
       @Override
       public void run() {
 
@@ -230,6 +233,28 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
         localisedMessage + " " + Languages.safeText(CoreMessageKey.SECURITY_ADVICE),
         summary.getSeverity())
     );
+  }
+
+  @Subscribe
+  public void onWizardHideEvent(WizardHideEvent event) {
+
+    // Only start the network once
+    if (bitcoinNetworkService.isPresent()) {
+      return;
+    }
+
+    if (!event.isExitCancel()) {
+      // Successful wizard interaction
+
+      bitcoinNetworkService = Optional.of(CoreServices.getBitcoinNetworkService());
+
+      // Start the network now that the password has been validated
+      bitcoinNetworkService.get().start();
+
+      if (bitcoinNetworkService.get().isStartedOk())
+        bitcoinNetworkService.get().downloadBlockChainInBackground();
+      }
+
   }
 
   @Override

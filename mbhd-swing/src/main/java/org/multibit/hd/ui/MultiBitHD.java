@@ -2,7 +2,6 @@ package org.multibit.hd.ui;
 
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
-import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.events.CoreEvents;
@@ -11,7 +10,6 @@ import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.core.utils.OSUtils;
@@ -44,7 +42,6 @@ public class MultiBitHD {
   private static File applicationDataDirectory;
 
   private static BitcoinURIListeningService bitcoinURIListeningService;
-  private static BitcoinNetworkService bitcoinNetworkService;
 
   private static WalletService walletService;
 
@@ -83,13 +80,6 @@ public class MultiBitHD {
     // Start supporting services (wizards, exchange, wallet access etc)
     initialiseSupport();
 
-  }
-
-  /**
-   * @return The Bitcoin network service for the UI
-   */
-  public static BitcoinNetworkService getBitcoinNetworkService() {
-    return bitcoinNetworkService;
   }
 
   /**
@@ -217,8 +207,6 @@ public class MultiBitHD {
 
         overlaySecurityAlerts();
 
-        initialiseGenericApp();
-
         overlayBitcoinURIAlert();
 
 
@@ -249,19 +237,8 @@ public class MultiBitHD {
    */
   private static void initialiseSupport() {
 
-    // Continue building the support services in the background
-    SafeExecutors.newFixedThreadPool(1).execute(new Runnable() {
-      @Override
-      public void run() {
-
-        // Start the Bitcoin network service
-        startBitcoinNetworkService();
-
-        // Initialise backup
-        BackupManager.INSTANCE.initialise(applicationDataDirectory, null);
-
-      }
-    });
+    // Initialise backup (must be before Bitcoin network starts and on the main thread)
+    BackupManager.INSTANCE.initialise(applicationDataDirectory, null);
 
   }
 
@@ -286,23 +263,6 @@ public class MultiBitHD {
       // Create the history service for this wallet to catch any system events
       CoreServices.getOrCreateHistoryService(Optional.of(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()));
     }
-  }
-
-  /**
-   * <p>Start the Bitcoin network service (support)</p>
-   * <p>Requires the wallet manager and UI to be initialised</p>
-   */
-  private static void startBitcoinNetworkService() {
-
-    // Start the bitcoin network service
-    bitcoinNetworkService = CoreServices.newBitcoinNetworkService();
-    bitcoinNetworkService.start();
-
-    // If the network is OK then catch up with the current blockchain
-    if (bitcoinNetworkService.isStartedOk()) {
-      bitcoinNetworkService.downloadBlockChainInBackground();
-    }
-
   }
 
   /**

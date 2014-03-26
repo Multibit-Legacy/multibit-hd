@@ -195,7 +195,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
         log.error("Failed to restore wallet. Error was '" + ple.getMessage() + "'.");
         return false;
       }
-      CoreServices.newBitcoinNetworkService().replayWallet(replayDate);
+      CoreServices.getBitcoinNetworkService().replayWallet(replayDate);
 
       return true;
     } catch (IOException | BlockStoreException e) {
@@ -231,7 +231,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       WalletManager.INSTANCE.loadFromFile(new File(walletFilename));
 
       // Synchronize wallet
-      CoreServices.newBitcoinNetworkService().start();
+      CoreServices.getBitcoinNetworkService().start();
 
       return true;
     } catch (IOException ioe) {

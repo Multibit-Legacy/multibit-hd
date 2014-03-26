@@ -89,16 +89,20 @@ public class BitcoinNetworkService extends AbstractService {
       blockStore = BlockStoreManager.createBlockStore(blockchainFilename, checkpointsFilename, null, false);
       log.debug("Blockstore is '{}'", blockStore);
 
+      log.debug("Starting Bitcoin network...");
       restartNetwork();
 
     } catch (Exception e) {
+
       log.error(e.getClass().getName() + " " + e.getMessage());
+
       CoreEvents.fireBitcoinNetworkChangedEvent(
         BitcoinNetworkSummary.newNetworkStartupFailed(
           CoreMessageKey.START_NETWORK_CONNECTION_ERROR,
           Optional.of(new Object[]{})
         )
       );
+
     }
 
     return true;
@@ -112,8 +116,6 @@ public class BitcoinNetworkService extends AbstractService {
    * @throws IOException
    */
   private void restartNetwork() throws BlockStoreException, IOException {
-
-    log.debug("Restarting Bitcoin network");
 
     // Check if there is a network connection
     if (!isNetworkPresent()) {
@@ -207,12 +209,12 @@ public class BitcoinNetworkService extends AbstractService {
 
         Preconditions.checkNotNull(peerGroup, "'peerGroup' must be present");
 
-        log.debug("Downloading blockchain...");
+        log.debug("Downloading block chain...");
 
         // This method blocks until completed but fires events along the way
         peerGroup.downloadBlockChain();
 
-        log.debug("Blockchain downloaded.");
+        log.debug("Block chain downloaded.");
 
         CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkReady(peerGroup.numConnectedPeers()));
 

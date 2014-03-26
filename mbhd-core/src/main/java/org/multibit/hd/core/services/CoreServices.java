@@ -53,12 +53,18 @@ public class CoreServices {
    */
   public static final ConfigurationService configurationService;
 
+  /**
+   * Keep track of the Bitcoin network
+   */
+  public static final BitcoinNetworkService bitcoinNetworkService;
+
   static {
 
     // Order is important here
     applicationEventService = new ApplicationEventService();
     securityCheckingService = new SecurityCheckingService();
     configurationService = new ConfigurationService();
+    bitcoinNetworkService = new BitcoinNetworkService();
 
   }
 
@@ -112,22 +118,16 @@ public class CoreServices {
    * @return A new exchange service based on the current configuration
    */
   public static ExchangeTickerService newExchangeService(BitcoinConfiguration bitcoinConfiguration) {
-
+    log.debug("Creating new exchange ticker service");
     return new ExchangeTickerService(bitcoinConfiguration);
 
-  }
-
-  /**
-   * @return Create a new BitcoinNetworkService for access to the Bitcoin network
-   */
-  public static BitcoinNetworkService newBitcoinNetworkService() {
-    return new BitcoinNetworkService();
   }
 
   /**
    * @return Create a new WalletService for wallet specific functionality
    */
   public static WalletService newWalletService() {
+    log.debug("Creating new wallet service");
     return new WalletService();
   }
 
@@ -135,6 +135,7 @@ public class CoreServices {
    * @return Create a new seed phrase generator
    */
   public static SeedPhraseGenerator newSeedPhraseGenerator() {
+    log.debug("Creating new BIP39 seed phrase generator");
     return new Bip39SeedPhraseGenerator();
   }
 
@@ -142,7 +143,7 @@ public class CoreServices {
    * @return The application event service singleton
    */
   public static ApplicationEventService getApplicationEventService() {
-
+    log.debug("Get application service");
     return applicationEventService;
 
   }
@@ -151,7 +152,16 @@ public class CoreServices {
    * @return The security checking service singleton
    */
   public static SecurityCheckingService getSecurityCheckingService() {
+    log.debug("Get security checking service");
     return securityCheckingService;
+  }
+
+  /**
+   * @return The Bitcoin network service
+   */
+  public static BitcoinNetworkService getBitcoinNetworkService() {
+    log.debug("Get Bitcoin network service");
+    return bitcoinNetworkService;
   }
 
   /**
@@ -160,6 +170,8 @@ public class CoreServices {
    * @return The history service for a wallet
    */
   public static HistoryService getOrCreateHistoryService(Optional<WalletId> walletIdOptional) {
+
+    log.debug("Get or create history service");
 
     Preconditions.checkNotNull(walletIdOptional, "'walletIdOptional' must be present");
 
@@ -184,6 +196,8 @@ public class CoreServices {
    * @return The contact service for a wallet
    */
   public static ContactService getOrCreateContactService(Optional<WalletId> walletIdOptional) {
+
+    log.debug("Get or create contact service");
 
     Preconditions.checkNotNull(walletIdOptional, "'walletIdOptional' must be present");
 
