@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.views.components.renderers;
 
 import org.joda.time.DateTime;
-import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.utils.LocalisedDateUtils;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.tables.StripedTable;
@@ -9,7 +8,6 @@ import org.multibit.hd.ui.views.components.tables.StripedTable;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
-import java.text.SimpleDateFormat;
 
 /**
  *  <p>Renderer to provide the following to tables:<br>
@@ -27,14 +25,15 @@ public class TrailingJustifiedDateTableCellRenderer extends DefaultTableCellRend
   public static final String SPACER = "   "; // 3 spaces
 
   public TrailingJustifiedDateTableCellRenderer() {
+
     label = Labels.newBlankLabel();
-    LocalisedDateUtils.longDateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", Languages.currentLocale());
-    LocalisedDateUtils.shortDateFormatter = new SimpleDateFormat("HH:mm", Languages.currentLocale());
+
   }
 
   @Override
   public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                                                  int column) {
+
     label.setHorizontalAlignment(SwingConstants.TRAILING);
     label.setOpaque(true);
 

@@ -95,6 +95,10 @@ public class FooterView {
   @Subscribe
   public void onSystemStatusChangeEvent(SystemStatusChangedEvent event) {
 
+    if (statusLabel == null) {
+      return;
+    }
+
     statusLabel.setText(event.getLocalisedMessage());
     switch (event.getSeverity()) {
       case RED:

@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.about.exit;
+package org.multibit.hd.ui.views.wizards.about;
 
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.slf4j.Logger;

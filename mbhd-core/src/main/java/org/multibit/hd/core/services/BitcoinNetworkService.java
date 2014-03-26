@@ -203,6 +203,7 @@ public class BitcoinNetworkService extends AbstractService {
     // Close the blockstore
     if (blockStore != null) {
       try {
+        // TODO (GR) This isn't terminating on shutdown correctly
         blockStore.close();
       } catch (BlockStoreException e) {
         log.error("Blockstore not closed successfully, error was '" + e.getClass().getName() + " " + e.getMessage() + "'");

@@ -166,6 +166,7 @@ public class Buttons {
     return button;
 
   }
+
   /**
    * @param action The click action
    *
@@ -264,19 +265,19 @@ public class Buttons {
   }
 
   /**
-    * @param action The click action
-    *
-    * @return A new "Unlock" button with icon (this is a finish button but just looks differently)
-    */
-   public static JButton newUnlockButton(Action action) {
+   * @param action The click action
+   *
+   * @return A new "Unlock" button with icon (this is a finish button but just looks differently)
+   */
+  public static JButton newUnlockButton(Action action) {
 
-     JButton button = newButton(action, MessageKey.PASSWORD_UNLOCK);
+    JButton button = newButton(action, MessageKey.PASSWORD_UNLOCK);
 
-     AwesomeDecorator.applyIcon(AwesomeIcon.UNLOCK, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.UNLOCK, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
-     return button;
+    return button;
 
-   }
+  }
 
   /**
    * @param action The click action
@@ -335,7 +336,7 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.UNDO, button, true, MultiBitUI.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.REFRESH, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -500,20 +501,20 @@ public class Buttons {
   }
 
   /**
-    * @param action The click action
-    *
-    * @return A new "details" button with icon
-    */
-   public static JButton newDetailsButton(Action action) {
+   * @param action The click action
+   *
+   * @return A new "details" button with icon
+   */
+  public static JButton newDetailsButton(Action action) {
 
-     JButton button = newButton(action, MessageKey.DETAILS);
+    JButton button = newButton(action, MessageKey.DETAILS);
 
-     AwesomeDecorator.applyIcon(AwesomeIcon.FILE_TEXT_ALT, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.FILE_TEXT_ALT, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
-     return button;
-   }
+    return button;
+  }
 
-   /**
+  /**
    * @param action The click action
    *
    * @return A new "delete" button with icon
@@ -751,6 +752,28 @@ public class Buttons {
   }
 
   /**
+   * @param action The click action
+   *
+   * @return A new "wallet details" button with icon
+   */
+  public static JButton newShowWalletDetailsButton(Action action) {
+
+    JButton button = newLargeButton(action, MessageKey.SHOW_WALLET_DETAILS_WIZARD);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.INFO_CIRCLE,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
+
+    return button;
+  }
+
+  /**
+   * TODO (GR) Remove this when alerts no longer required
+   *
    * @param action The click action
    *
    * @return A new "Alert" button with icon

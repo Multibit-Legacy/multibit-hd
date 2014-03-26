@@ -1,21 +1,11 @@
 package org.multibit.hd.ui.views.screens.tools;
 
-import com.google.bitcoin.uri.BitcoinURI;
-import com.google.bitcoin.uri.BitcoinURIParseException;
-import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.dto.RAGStatus;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
-import org.multibit.hd.ui.events.controller.ControllerEvents;
-import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.models.AlertModel;
-import org.multibit.hd.ui.models.Models;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.wizards.Wizards;
@@ -64,60 +54,11 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
 
     JPanel contentPanel = Panels.newPanel(layout);
 
-    Action showWelcomeWizardAction = new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-
-        Panels.showLightBox(Wizards.newClosingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardScreenHolder());
-      }
-    };
-
-    final BitcoinURI bitcoinURI;
-    try {
-      bitcoinURI = new BitcoinURI("bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?amount=0.01&label=Please%20donate%20to%20multibit.org");
-    } catch (BitcoinURIParseException e) {
-      ExceptionHandler.handleThrowable(e);
-      return contentPanel;
-    }
-
-    Action acceptedBitcoinUriAction = new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-
-        // Demonstrate a button
-        AbstractAction action = new AbstractAction() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-
-            ControllerEvents.fireRemoveAlertEvent();
-            Panels.showLightBox(Wizards.newSendBitcoinWizard(Optional.of(bitcoinURI)).getWizardScreenHolder());
-
-          }
-        };
-        JButton button = Buttons.newAlertPanelButton(action, MessageKey.YES, AwesomeIcon.CHECK);
-
-        // Attempt to decode the Bitcoin URI
-        Optional<String> alertMessage = Formats.formatAlertMessage(bitcoinURI);
-
-        // If there is sufficient information in the Bitcoin URI display it to the user as an alert
-        if (alertMessage.isPresent()) {
-
-          AlertModel alertModel = Models.newAlertModel(
-            alertMessage.get(),
-            RAGStatus.AMBER,
-            button
-          );
-
-          // Add the alert
-          ControllerEvents.fireAddAlertEvent(alertModel);
-        }
-      }
-    };
-
+    Action showWelcomeWizardAction = getShowWelcomeWizardAction();
     welcomeWizard = Buttons.newShowWelcomeWizardButton(showWelcomeWizardAction);
 
     contentPanel.add(welcomeWizard, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
-    contentPanel.add(Buttons.newAddAlertButton(acceptedBitcoinUriAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push,wrap");
+    contentPanel.add(Buttons.newShowWalletDetailsButton(getShowWalletDetailsAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push,wrap");
 
 
     return contentPanel;
@@ -133,6 +74,33 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
       }
     });
 
+  }
+
+  /**
+   *
+   * @return An action to show the "welcome wizard"
+   */
+  private AbstractAction getShowWelcomeWizardAction() {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        Panels.showLightBox(Wizards.newClosingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardScreenHolder());
+      }
+    };
+  }
+
+  /**
+   * @return An action to show the "wallet details"
+   */
+  private AbstractAction getShowWalletDetailsAction() {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        Panels.showLightBox(Wizards.newWalletDetailsWizard().getWizardScreenHolder());
+      }
+    };
   }
 
 }

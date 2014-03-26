@@ -162,6 +162,8 @@ public enum MessageKey {
   PASSWORD_REPORT_TITLE("password_report_title"),
   PASSWORD_UNLOCK("password_unlock"),
 
+  WALLET_DETAIL_TITLE("wallet_detail_title"),
+
   // Labels
   CONFIRM_SEND_MESSAGE("confirm_send_message"),
   EXCHANGE_RATE_PROVIDER("exchange_rate_provider"),
@@ -191,6 +193,7 @@ public enum MessageKey {
   SHOW_EXCHANGE_WIZARD("show_exchange_wizard"),
   SHOW_APPLICATION_WIZARD("show_application_wizard"),
   SHOW_LANGUAGE_WIZARD("show_language_wizard"),
+  SHOW_WALLET_DETAILS_WIZARD("show_wallet_details_wizard"),
 
   SHOW_ALERT("show_alert"),
   HIDE_ALERT("hide_alert"),

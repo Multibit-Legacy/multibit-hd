@@ -20,11 +20,6 @@ import org.multibit.hd.ui.platform.handler.GenericAboutHandler;
 import org.multibit.hd.ui.platform.handler.GenericOpenURIHandler;
 import org.multibit.hd.ui.platform.handler.GenericPreferencesHandler;
 import org.multibit.hd.ui.platform.handler.GenericQuitHandler;
-import org.multibit.hd.ui.platform.GenericApplication;
-import org.multibit.hd.ui.platform.handler.GenericAboutHandler;
-import org.multibit.hd.ui.platform.handler.GenericOpenURIHandler;
-import org.multibit.hd.ui.platform.handler.GenericPreferencesHandler;
-import org.multibit.hd.ui.platform.handler.GenericQuitHandler;
 import org.multibit.hd.ui.platform.listener.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +34,6 @@ import java.lang.reflect.Proxy;
  * <ul>
  * <li>Provision of Apple Mac specific implementations of common methods</li>
  * </ul>
- * <p>TODO Fill in more support code as and when required using the EAWT Javadocs as a reference for non-deprecated methods</p>
  *
  * @see <a href="http://developer.apple.com/library/mac/documentation/Java/Reference/JavaSE6_AppleExtensionsRef/api/index.html?com/apple/eawt/Application.html">The Apple EAWT Javadocs</a>
  * @since 0.3.0

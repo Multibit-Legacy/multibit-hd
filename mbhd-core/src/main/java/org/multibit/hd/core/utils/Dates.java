@@ -49,6 +49,11 @@ public class Dates {
   private static final DateTimeFormatter utcDeliveryDateFormatter = DateTimeFormat.forPattern("EEEE, MMMM dd").withZoneUTC();
 
   /**
+   * Produces 01 Jan 2000 23:59 for maximum clarity
+   */
+  private static final DateTimeFormatter utcTransactionDateFormatter = DateTimeFormat.forPattern("dd MMM yyyy HH:mm").withZoneUTC();
+
+  /**
    * Parses ISO8601 in UTC without milliseconds (e.g. "yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
    */
   private static final DateTimeFormatter utcIso8601 = ISODateTimeFormat.dateTimeNoMillis().withZoneUTC();
@@ -58,6 +63,10 @@ public class Dates {
     */
    private static final DateTimeFormatter shortDateWithHyphensFormatter = DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
 
+  /**
+   * Produces "23:59" for simplified short user time
+   */
+  private static final DateTimeFormatter shortTimeFormatter = DateTimeFormat.forPattern("HH:mm").withZoneUTC();
 
   /**
    * @return The current midnight in UTC
@@ -94,9 +103,20 @@ public class Dates {
 
   /**
    * @param when The instant
+   * @return The instant formatted as "HH:mm"
+   */
+  public static String formatShortTime(ReadableInstant when) {
+    if (when == null) {
+      return "";
+    }
+    return shortTimeFormatter.print(when);
+  }
+
+  /**
+   * @param when The instant
    * @return The instant formatted as "yyyyMMdd"
    */
-  public static String formatBasicDate(ReadableInstant when) {
+  public static String formatCompactDate(ReadableInstant when) {
     if (when == null) {
       return "";
     }
@@ -104,26 +124,26 @@ public class Dates {
   }
 
   /**
-    * @param when The instant
-    * @return The instant formatted as "yyyy-MM-dd"
-    */
-   public static String formatBasicDateWithHyphens(ReadableInstant when) {
-     if (when == null) {
-       return "";
-     }
-     return shortDateWithHyphensFormatter.print(when);
-   }
-
-  /**
    * @param when   The instant
    * @param locale The required locale
    * @return The instant formatted as "yyyyMMdd"
    */
-  public static String formatBasicDate(ReadableInstant when, Locale locale) {
+  public static String formatCompactDate(ReadableInstant when, Locale locale) {
     if (when == null) {
       return "";
     }
     return ISODateTimeFormat.basicDate().withZoneUTC().withLocale(locale).print(when);
+  }
+
+  /**
+   * @param when The instant
+   * @return The instant formatted as "yyyy-MM-dd"
+   */
+  public static String formatCompactDateWithHyphens(ReadableInstant when) {
+    if (when == null) {
+      return "";
+    }
+    return shortDateWithHyphensFormatter.print(when);
   }
 
   /**
@@ -147,6 +167,29 @@ public class Dates {
       return "";
     }
     return utcDeliveryDateFormatter.withLocale(locale).print(when);
+  }
+
+  /**
+   * @param when The instant
+   * @return The instant formatted as "dd MMM yyyy" (01 Jan 2000)
+   */
+  public static String formatTransactionDate(ReadableInstant when) {
+    if (when == null) {
+      return "";
+    }
+    return utcTransactionDateFormatter.print(when);
+  }
+
+  /**
+   * @param when   The instant
+   * @param locale The required locale
+   * @return The instant formatted as "ddd, MMM dd" (Saturday, January 01)
+   */
+  public static String formatTransactionDate(ReadableInstant when, Locale locale) {
+    if (when == null) {
+      return "";
+    }
+    return utcTransactionDateFormatter.withLocale(locale).print(when);
   }
 
   /**
@@ -187,7 +230,7 @@ public class Dates {
    * @param when The instant in its timezone
    * @return The instant formatted as ISO8601 e.g. "2000-01-02T03:04:05Z"
    */
-  public static String formatISO8601(ReadableInstant when) {
+  public static String formatIso8601(ReadableInstant when) {
     if (when == null) {
       return "";
     }
@@ -199,7 +242,7 @@ public class Dates {
    * @param locale The required locale
    * @return The instant formatted as ISO8601 e.g. "2000-01-02T03:04:05Z"
    */
-  public static String formatISO8601(ReadableInstant when, Locale locale) {
+  public static String formatIso8601(ReadableInstant when, Locale locale) {
     if (when == null) {
       return "";
     }
@@ -211,7 +254,7 @@ public class Dates {
    * @return The DateTime
    * @throws IllegalArgumentException If the text cannot be parsed
    */
-  public static DateTime parseISO8601(String text) {
+  public static DateTime parseIso8601(String text) {
     return utcIso8601.parseDateTime(text);
   }
 

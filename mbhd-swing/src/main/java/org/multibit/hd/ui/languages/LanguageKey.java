@@ -30,6 +30,7 @@ public enum LanguageKey {
   DE_DE("de_de"),
   EL_GR("el_gr"),
   EN_GB("en_gb"),
+  EN_US("en_us"),
   EO_ES("eo_es"),
   ES_ES("es_es"),
   FA_IR("fa_ir"),
@@ -75,7 +76,7 @@ public enum LanguageKey {
 
     this.key = key;
     this.languageCode = key.substring(0, 2);
-    this.icon = Images.newLanguageIcon(languageCode);
+    this.icon = Images.newLanguageCodeIcon(languageCode);
     this.languageName = rb.getString(key);
   }
 
@@ -84,7 +85,7 @@ public enum LanguageKey {
    */
   public static void resetIcons() {
     for (LanguageKey languageKey : values()) {
-      languageKey.icon = Images.newLanguageIcon(languageKey.languageCode);
+      languageKey.icon = Images.newLanguageCodeIcon(languageKey.languageCode);
     }
   }
 
