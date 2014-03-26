@@ -10,7 +10,6 @@ import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitHD;
-import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,7 +80,5 @@ public class WalletDetailModel implements Model<WalletDetail> {
     log.debug("Seen a slow transaction seen event in WalletDetailModel");
 
     update();
-
-    ViewEvents.fireWalletDetailChangedEvent(walletDetail);
   }
 }
