@@ -191,7 +191,7 @@ The Redeemer's EC public key is required to ensure the client cannot redeem thei
 This addition is done modulo the size of the Bitcoin EC curve group.
 
 
-#### 10. Matcher stores the Redeemer-Payer link
+#### 10. Matcher stores the Payer-Redeemer link
 
 The Payer-Redeemer linking information is stored as follows:
 
@@ -219,7 +219,7 @@ The resulting message is sent to the Payer who can decrypt it since they know ho
 `matcher.AES.initialisationVector` were generated from the `payer.britWalletId` and `payer.sessionKey` (Equations 3.1 and 3.2).
 
 
-#### 12. Payer creates payment Bitcoin address
+#### 12. Payer creates payment Bitcoin address and pays bitcoin to it
 
 Any time the Payer has to make a payment they choose an index `i`, monotonically increasing for each send payment
 they make with the wallet, starting at 0.
@@ -274,7 +274,7 @@ payer.EC.private(i) = redeemer.EC.private + payer.britWalletId + i            (1
 ```
 
 So long as the Redeemer is able to obtain `payer.britWalletId` and track the incrementing values of `i` then they can
-create the necessary private key to spend.
+create the necessary private key to redeem the bitcoin sent by the Payer.
 
 
 ### Notes

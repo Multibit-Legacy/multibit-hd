@@ -4,11 +4,15 @@
 This document describes how the person running the Matcher service sets it up.
 
 PREREQUISITES:
-The Redeemers have performed the steps in Redeemer-2-Creating-PGP-keys.md
-Specifically they have created export files containing their PGP public keys. (These
-PGP public keys also have the EC public keys in their `Comment` field).
+The Redeemers have performed the steps in:
++ Redeemer-1-Creating-a-Bitcoin-wallet.md
++ Redeemer-2-Creating-PGP-keys.md
 
-These export files have been copied to the Matcher machine.
+Specifically:
++ the Redeemers have created export files containing their PGP public keys. (These
+  PGP public keys also have the EC public keys in their `Comment` field).
++ These export files have been copied to the Matcher machine.
+
 In this document it will be assumed that there are two separate users that have prepared
 export files and copied them to the directory on the Matcher machine as follows:
 
@@ -125,7 +129,7 @@ Make a note of the public key identifier for the key you just generated.
 In the key above it is "58614CEE"
 
 Export your Payer encryption public key from your keyring using:
-> gpg --homedir "$(pwd)" --armor --export 58614CEE> matcher-key.asc
+> gpg --homedir "$(pwd)" --armor --export 58614CEE > matcher-key.asc
 (change the "58614CEE" to your key identifier).
 
 You can check the contents of the output file (making no changes) using

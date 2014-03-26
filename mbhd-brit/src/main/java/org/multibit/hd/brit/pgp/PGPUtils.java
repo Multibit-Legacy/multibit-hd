@@ -22,6 +22,7 @@ import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Iterator;
 
+
 /**
  * Taken from org.bouncycastle.openpgp.examples
  *
@@ -29,6 +30,11 @@ import java.util.Iterator;
  */
 public class PGPUtils {
 
+  /**
+   * Load a PGP public key from a public keyring or ASCII armored text file
+   *
+   * @return key the first PGP public key in the found keyring/ ASCII armored text file
+   */
   @SuppressWarnings("unchecked")
   public static PGPPublicKey readPublicKey(InputStream in) throws IOException, PGPException {
     in = org.bouncycastle.openpgp.PGPUtil.getDecoderStream(in);

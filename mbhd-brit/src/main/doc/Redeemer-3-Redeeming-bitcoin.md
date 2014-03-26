@@ -1,5 +1,5 @@
 
-## Redeeming BRIT payments
+## Redeemer - 3 - Redeeming bitcoin
 
 ### Executive summary
 
