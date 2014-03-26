@@ -75,7 +75,7 @@ public enum LanguageKey {
 
     this.key = key;
     this.languageCode = key.substring(0, 2);
-    this.icon = Images.newLanguageIcon(languageCode);
+    this.icon = Images.newLanguageCodeIcon(languageCode);
     this.languageName = rb.getString(key);
   }
 
@@ -84,7 +84,7 @@ public enum LanguageKey {
    */
   public static void resetIcons() {
     for (LanguageKey languageKey : values()) {
-      languageKey.icon = Images.newLanguageIcon(languageKey.languageCode);
+      languageKey.icon = Images.newLanguageCodeIcon(languageKey.languageCode);
     }
   }
 

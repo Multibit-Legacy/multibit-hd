@@ -57,7 +57,7 @@ public class Images {
    *
    * @return A new "language" image icon suitable for use in combo boxes etc
    */
-  public static ImageIcon newLanguageIcon(String code) {
+  public static ImageIcon newLanguageCodeIcon(String code) {
 
     BufferedImage image = new BufferedImage(26, 20, BufferedImage.TYPE_INT_RGB);
 
