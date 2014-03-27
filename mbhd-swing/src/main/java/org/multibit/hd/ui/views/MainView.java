@@ -242,7 +242,8 @@ public class MainView extends JFrame {
           Configurations.currentConfiguration.getApplicationConfiguration().setSidebarWidth(String.valueOf(pce.getNewValue()));
 
         }
-      });
+      }
+    );
 
     // Add the supporting panels
     mainPanel.add(headerView.getContentPanel(), "growx,shrink,wrap"); // Ensure header size remains fixed
@@ -257,6 +258,7 @@ public class MainView extends JFrame {
    */
   public void setShowExitingWelcomeWizard(boolean show) {
 
+    log.debug("Showing exiting welcome wizard:{}", show);
     showExitingWelcomeWizard = show;
 
   }
@@ -266,6 +268,7 @@ public class MainView extends JFrame {
    */
   public void setShowExitingPasswordWizard(boolean show) {
 
+    log.debug("Showing exiting password wizard:{}", show);
     showExitingPasswordWizard = show;
 
   }

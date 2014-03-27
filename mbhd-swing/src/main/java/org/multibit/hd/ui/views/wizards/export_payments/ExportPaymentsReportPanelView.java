@@ -9,14 +9,14 @@ import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ExportPerformedEvent;
-import org.multibit.hd.core.export.PaymentRequestConverter;
-import org.multibit.hd.core.export.PaymentRequestHeaderConverter;
-import org.multibit.hd.core.export.TransactionConverter;
-import org.multibit.hd.core.export.TransactionHeaderConverter;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
-import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.export.PaymentRequestConverter;
+import org.multibit.hd.ui.export.PaymentRequestHeaderConverter;
+import org.multibit.hd.ui.export.TransactionConverter;
+import org.multibit.hd.ui.export.TransactionHeaderConverter;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
@@ -158,7 +158,15 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
       TransactionHeaderConverter transactionHeaderConverter = new TransactionHeaderConverter();
       TransactionConverter transactionConverter = new TransactionConverter();
 
-      MultiBitHD.getWalletService().exportPayments(exportPaymentsLocationFile, stems[0], stems[1], paymentRequestHeaderConverter, paymentRequestConverter, transactionHeaderConverter, transactionConverter);
+      CoreServices.getCurrentWalletService().exportPayments(
+        exportPaymentsLocationFile,
+        stems[0],
+        stems[1],
+        paymentRequestHeaderConverter,
+        paymentRequestConverter,
+        transactionHeaderConverter,
+        transactionConverter
+      );
       // Results of export are sent by an event
     } else {
       CoreEvents.fireExportPerformedEvent(new ExportPerformedEvent(null, null, false, CoreMessageKey.THE_ERROR_WAS,

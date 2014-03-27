@@ -103,6 +103,7 @@ public class WalletService {
    * @param walletId the walletId to use for this WalletService
    */
   public void initialise(File applicationDataDirectory, WalletId walletId) {
+
     Preconditions.checkNotNull(applicationDataDirectory, "'applicationDataDirectory' must be present");
     Preconditions.checkNotNull(walletId, "'walletId' must be present");
 
@@ -135,6 +136,7 @@ public class WalletService {
    * (This is moderately expensive so don't call it indiscriminately)
    */
   public List<PaymentData> getPaymentDataList() {
+
     // See if there is a current wallet
     WalletManager walletManager = WalletManager.INSTANCE;
 
@@ -183,6 +185,7 @@ public class WalletService {
    *                    if PaymentType.RECEIVING return all requesting and receiving payments for today
    */
   public List<PaymentData> subsetPaymentsAndSort(List<PaymentData> paymentDataList, PaymentType paymentType) {
+
     // Subset to the required type of payment
     List<PaymentData> subsetPaymentDataList = Lists.newArrayList();
     if (paymentType != null) {
@@ -216,6 +219,7 @@ public class WalletService {
 
   /**
    * @param query The text fragment to match (case-insensitive, anywhere in the name)
+   *
    * @return A filtered set of Payments for the given query
    */
   public List<PaymentData> filterPaymentsByContent(String query) {
@@ -244,12 +248,12 @@ public class WalletService {
         isRawTransactionMatched = transactionData.getRawTransaction().toLowerCase().contains(lowerQuery);
       }
       if (isDescriptionMatched
-              || isNoteMatched
-              || isQrCodeLabelMatched
-              || isPaymentAddressMatched
-              || isOutputAddressMatched
-              || isRawTransactionMatched
-              ) {
+        || isNoteMatched
+        || isQrCodeLabelMatched
+        || isPaymentAddressMatched
+        || isOutputAddressMatched
+        || isRawTransactionMatched
+        ) {
         filteredPayments.add(paymentData);
       }
     }
@@ -264,6 +268,7 @@ public class WalletService {
    *
    * @param wallet      the current wallet
    * @param transaction the transaction to adapt
+   *
    * @return TransactionData the transaction data
    */
   public TransactionData adaptTransaction(Wallet wallet, Transaction transaction) {
@@ -324,7 +329,7 @@ public class WalletService {
 
     // Create the DTO from the raw transaction info
     TransactionData transactionData = new TransactionData(transactionHashAsString, new DateTime(updateTime), paymentStatus, amountBTC, amountFiat,
-            feeOnSend, confidenceType, paymentType, description, transaction.isCoinBase(), outputAddresses, rawTransaction, size);
+      feeOnSend, confidenceType, paymentType, description, transaction.isCoinBase(), outputAddresses, rawTransaction, size);
 
     // Note - from the transactionInfo (if present)
     String note = calculateNote(transactionData, transactionHashAsString);
@@ -341,6 +346,7 @@ public class WalletService {
    *
    * @param confidenceType the bitcoinj confidenceType  to use to work out the status
    * @param depth          depth in blocks of the transaction
+   *
    * @return status of the transaction
    */
   public static PaymentStatus calculateStatus(TransactionConfidence.ConfidenceType confidenceType, int depth, int numberOfPeers) {
@@ -414,7 +420,14 @@ public class WalletService {
     return paymentType;
   }
 
-  private String calculateDescriptionAndUpdatePaymentRequests(Wallet wallet, Transaction transaction, String transactionHashAsString, PaymentType paymentType, BigInteger amountBTC) {
+  private String calculateDescriptionAndUpdatePaymentRequests(
+    Wallet wallet,
+    Transaction transaction,
+    String transactionHashAsString,
+    PaymentType paymentType,
+    BigInteger amountBTC
+  ) {
+
     String description;
     if (paymentType == PaymentType.RECEIVING || paymentType == PaymentType.RECEIVED) {
       description = "";
@@ -469,21 +482,25 @@ public class WalletService {
   }
 
   private List<String> calculateOutputAddresses(Wallet wallet, Transaction transaction) {
+
     List<String> outputAddresses = Lists.newArrayList();
 
     if (transaction.getOutputs() != null) {
       for (TransactionOutput transactionOutput : transaction.getOutputs()) {
-          String outputAddress = transactionOutput.getScriptPubKey().getToAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
-          outputAddresses.add(outputAddress);
+        String outputAddress = transactionOutput.getScriptPubKey().getToAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
+        outputAddresses.add(outputAddress);
       }
     }
+
     return outputAddresses;
   }
 
   private FiatPayment calculateFiatPayment(BigInteger amountBTC) {
+
     FiatPayment amountFiat = new FiatPayment();
     amountFiat.setExchange(ExchangeKey.current().getExchangeName());
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
+
     if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
 
       amountFiat.setRate(exchangeRateChangedEvent.get().getRate().toString());
@@ -493,14 +510,18 @@ public class WalletService {
       amountFiat.setRate("");
       amountFiat.setAmount(null);
     }
+
     return amountFiat;
   }
 
   private String calculateNote(TransactionData transactionData, String transactionHashAsString) {
+
     String note = "";
+
     TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
     if (transactionInfo != null) {
       note = transactionInfo.getNote();
+
       if (note != null) {
         transactionData.setNote(note);
         // if there is a real note use that as the description
@@ -510,14 +531,18 @@ public class WalletService {
       } else {
         transactionData.setNote("");
       }
+
       transactionData.setAmountFiat(transactionInfo.getAmountFiat());
+
     } else {
       transactionData.setNote("");
     }
+
     return note;
   }
 
   private Optional<BigInteger> calculateFeeOnSend(PaymentType paymentType, String transactionHashAsString) {
+
     Optional<BigInteger> feeOnSend = Optional.absent();
 
     if (paymentType == PaymentType.SENDING || paymentType == PaymentType.SENT) {
@@ -534,7 +559,9 @@ public class WalletService {
    * <p>Populate the internal cache of Payments from the backing store</p>
    */
   public void readPayments() throws PaymentsLoadException {
+
     Preconditions.checkNotNull(backingStoreFile, "There is no backingStoreFile. Please initialise WalletService.");
+
     try (FileInputStream fis = new FileInputStream(backingStoreFile)) {
 
       Payments payments = protobufSerializer.readPayments(fis);
@@ -560,12 +587,14 @@ public class WalletService {
     } catch (IOException | PaymentsLoadException e) {
       throw new PaymentsLoadException("Could not read payments db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");
     }
+
   }
 
   /**
    * <p>Save the payments data to the backing store</p>
    */
   public void writePayments() throws PaymentsSaveException {
+
     Preconditions.checkNotNull(backingStoreFile, "There is no backingStoreFile. Please initialise WalletService.");
 
     try (FileOutputStream fos = new FileOutputStream(backingStoreFile)) {
@@ -605,9 +634,11 @@ public class WalletService {
    * TODO replace with proper HD algorithm
    *
    * @param walletPasswordOptional Either: Optional.absent() = just recycle the first address in the wallet or:  password of the wallet to which the new private key is added
+   *
    * @return Address the next generated address, as a String. The corresponding private key will be added to the wallet
    */
   public String generateNextReceivingAddress(Optional<CharSequence> walletPasswordOptional) {
+
     Optional<WalletData> walletDataOptional = WalletManager.INSTANCE.getCurrentWalletData();
     if (!walletDataOptional.isPresent()) {
       // No wallet is present
@@ -624,6 +655,7 @@ public class WalletService {
         return walletDataOptional.get().getWallet().getKeys().get(0).toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
       }
     }
+
   }
 
   /**
@@ -670,8 +702,9 @@ public class WalletService {
   /**
    * Export the payments to two CSV files - one for transactions, one for payment requests.
    * Sends a ExportPerformedEvent with the results.
-   * @param exportDirectory The directory to export to
-   * @param transactionFileStem The stem of the export file for the transactions (will be suffixed with a file suffix and possibly a bracketed number for uniqueness)
+   *
+   * @param exportDirectory        The directory to export to
+   * @param transactionFileStem    The stem of the export file for the transactions (will be suffixed with a file suffix and possibly a bracketed number for uniqueness)
    * @param paymentRequestFileStem The stem of the export file for the payment requests (will be suffixed with a file suffix and possibly a bracketed number for uniqueness)
    */
   public void exportPayments(File exportDirectory, String transactionFileStem, String paymentRequestFileStem,
@@ -680,6 +713,6 @@ public class WalletService {
     // Refresh all payments
     List<PaymentData> paymentDataList = getPaymentDataList();
     ExportManager.export(paymentDataList, getPaymentRequests(), exportDirectory, transactionFileStem, paymentRequestFileStem,
-            paymentRequestHeaderConverter, paymentRequestConverter, transactionHeaderConverter, transactionConverter);
+      paymentRequestHeaderConverter, paymentRequestConverter, transactionHeaderConverter, transactionConverter);
   }
 }

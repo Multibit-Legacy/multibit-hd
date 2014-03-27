@@ -2,10 +2,7 @@ package org.multibit.hd.ui.views.components.enter_password;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.MultiBitUI;
-import org.multibit.hd.ui.views.components.AbstractComponentView;
-import org.multibit.hd.ui.views.components.Buttons;
-import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.components.TextBoxes;
+import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
@@ -28,26 +25,31 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
 
   // View components
   private JPasswordField password;
+  private JButton showButton;
+  private JLabel spinner;
 
   /**
    * @param model The model backing this view
    */
   public EnterPasswordView(EnterPasswordModel model) {
     super(model);
-
   }
 
   @Override
   public JPanel newComponentPanel() {
 
     panel = Panels.newPanel(new MigLayout(
-      "insets 0", // Layout
-      "[][]", // Columns
+      Panels.migXLayout(), // Layout
+      "[][][]", // Columns
       "[]" // Rows
     ));
 
     // Keep track of the password fields
     password = TextBoxes.newPassword();
+
+    // Provide an invisible tar pit spinner
+    spinner = Labels.newSpinner();
+    spinner.setVisible(false);
 
     // Configure the actions
     Action toggleDisplayAction = getToggleDisplayAction();
@@ -63,9 +65,12 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
 
     });
 
+    showButton = Buttons.newShowButton(toggleDisplayAction);
+
     // Add to the panel
-    panel.add(password,"grow,push");
-    panel.add(Buttons.newShowButton(toggleDisplayAction));
+    panel.add(password, "grow,push");
+    panel.add(showButton, "shrink");
+    panel.add(spinner, "shrink,wrap");
 
     return panel;
 
@@ -127,4 +132,14 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
     };
   }
 
+  /**
+   * @param showSpinner True if the view should show the spinner and disable other components
+   */
+  public void handleTarpit(boolean showSpinner) {
+
+    spinner.setVisible(showSpinner);
+    password.setEnabled(!showSpinner);
+    showButton.setEnabled(!showSpinner);
+
+  }
 }

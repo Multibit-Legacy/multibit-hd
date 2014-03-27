@@ -3,6 +3,8 @@ package org.multibit.hd.core.concurrent;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -18,10 +20,29 @@ import java.util.concurrent.TimeUnit;
  */
 public class SafeExecutors {
 
+  private static final Logger log = LoggerFactory.getLogger(SafeExecutors.class);
+
   /**
    * The number of seconds to wait before terminating the thread during a shutdown
    */
   private static final long DURATION_BEFORE_QUIT = 5;
+
+  /**
+   * Creates an Executor that uses a single worker thread operating
+   * off an unbounded queue. (Note however that if this single
+   * thread terminates due to a failure during execution prior to
+   * shutdown, a new one will take its place if needed to execute
+   * subsequent tasks.)  Tasks are guaranteed to execute
+   * sequentially, and no more than one task will be active at any
+   * given time. Unlike the otherwise equivalent
+   * <tt>newFixedThreadPool(1)</tt> the returned executor is
+   * guaranteed not to be reconfigurable to use additional threads.
+   *
+   * @return the newly created single-threaded Executor
+   */
+  public static ListeningExecutorService newSingleThreadExecutor() {
+    return newFixedThreadPool(1);
+  }
 
   /**
    * Creates a thread pool that reuses a fixed number of threads
@@ -41,6 +62,7 @@ public class SafeExecutors {
    * @throws IllegalArgumentException if {@code nThreads <= 0}
    */
   public static ListeningExecutorService newFixedThreadPool(int nThreads) {
+    log.debug("Creating new fixed thread pool with {} threads", nThreads);
     return MoreExecutors.listeningDecorator(
       MoreExecutors.getExitingExecutorService(
         new SafeThreadPoolExecutor(
@@ -49,7 +71,7 @@ public class SafeExecutors {
           0L,
           TimeUnit.MILLISECONDS,
           new LinkedBlockingQueue<Runnable>()
-        ), 10, TimeUnit.SECONDS));
+        ), DURATION_BEFORE_QUIT, TimeUnit.SECONDS));
   }
 
   /**
@@ -74,6 +96,7 @@ public class SafeExecutors {
    * @throws IllegalArgumentException if {@code nThreads <= 0}
    */
   public static ListeningExecutorService newFixedThreadPool(int nThreads, ThreadFactory threadFactory) {
+    log.debug("Creating new factory and fixed thread pool with {} threads", nThreads);
     return MoreExecutors.listeningDecorator(
       MoreExecutors.getExitingExecutorService(
         new SafeThreadPoolExecutor(
@@ -84,23 +107,6 @@ public class SafeExecutors {
           new LinkedBlockingQueue<Runnable>(),
           threadFactory
         ), DURATION_BEFORE_QUIT, TimeUnit.SECONDS));
-  }
-
-  /**
-   * Creates an Executor that uses a single worker thread operating
-   * off an unbounded queue. (Note however that if this single
-   * thread terminates due to a failure during execution prior to
-   * shutdown, a new one will take its place if needed to execute
-   * subsequent tasks.)  Tasks are guaranteed to execute
-   * sequentially, and no more than one task will be active at any
-   * given time. Unlike the otherwise equivalent
-   * <tt>newFixedThreadPool(1)</tt> the returned executor is
-   * guaranteed not to be reconfigurable to use additional threads.
-   *
-   * @return the newly created single-threaded Executor
-   */
-  public static ListeningExecutorService newSingleThreadExecutor() {
-    return MoreExecutors.listeningDecorator(newFixedThreadPool(1));
   }
 
   /**
@@ -118,11 +124,7 @@ public class SafeExecutors {
    * @return the newly created scheduled executor
    */
   public static ListeningScheduledExecutorService newSingleThreadScheduledExecutor() {
-    return MoreExecutors.listeningDecorator(
-      MoreExecutors.getExitingScheduledExecutorService(
-        new SafeScheduledThreadPoolExecutor(1),
-        DURATION_BEFORE_QUIT, TimeUnit.SECONDS
-      ));
+    return newScheduledThreadPool(1);
   }
 
   /**

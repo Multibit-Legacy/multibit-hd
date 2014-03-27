@@ -9,10 +9,8 @@ import org.joda.money.CurrencyUnit;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.events.ConfigurationChangedEvent;
-import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -23,7 +21,6 @@ import org.multibit.hd.core.services.HistoryService;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.controllers.HeaderController;
-import org.multibit.hd.ui.controllers.MainController;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;
 import org.multibit.hd.ui.events.view.ThemeChangedEvent;
@@ -31,7 +28,6 @@ import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.Models;
-import org.multibit.hd.ui.views.FooterView;
 import org.multibit.hd.ui.views.HeaderView;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.themes.DarkTheme;
@@ -125,16 +121,16 @@ public class ComponentTestBed {
 
     // Standard support services
     CoreServices.newExchangeService(bitcoinConfiguration).start();
-    CoreServices.getBitcoinNetworkService().start();
+    CoreServices.getOrCreateBitcoinNetworkService().start();
 
     // Initialise the wallet manager, which will loadContacts the current wallet if available
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
     WalletManager.INSTANCE.initialise(applicationDataDirectory);
 
-    ContactService contactService = CoreServices.getOrCreateContactService(Optional.of(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()));
+    ContactService contactService = CoreServices.getOrCreateContactService(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId());
     contactService.addDemoContacts();
 
-    HistoryService historyService = CoreServices.getOrCreateHistoryService(Optional.of(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()));
+    HistoryService historyService = CoreServices.getOrCreateHistoryService(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId());
     historyService.addDemoHistory();
   }
 
@@ -328,41 +324,6 @@ public class ComponentTestBed {
 
             ControllerEvents.fireAddAlertEvent(Models.newAlertModel("Something happened", RAGStatus.GREEN));
             Sounds.playReceiveBitcoin();
-
-          }
-
-          i++;
-        }
-      }
-    });
-
-    return view.getContentPanel();
-  }
-
-  /**
-   * @return A new footer view with simulated events
-   */
-  private JPanel newFooterView() {
-
-    MainController controller = new MainController();
-    FooterView view = new FooterView();
-
-    SafeExecutors.newFixedThreadPool(1).execute(new Runnable() {
-
-      int i = 99;
-
-      @Override
-      public void run() {
-
-        while (i < 110) {
-
-          Uninterruptibles.sleepUninterruptibly(800, TimeUnit.MILLISECONDS);
-
-          CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(i));
-
-          if (i > 99) {
-
-            CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkReady(i % 100));
 
           }
 

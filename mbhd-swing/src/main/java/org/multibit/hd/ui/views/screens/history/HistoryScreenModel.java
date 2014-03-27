@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.screens.history;
 
 import com.google.common.base.Optional;
 import org.multibit.hd.core.dto.HistoryEntry;
-import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.HistoryService;
@@ -23,24 +22,33 @@ import java.util.List;
  */
 public class HistoryScreenModel extends AbstractScreenModel {
 
-  private final HistoryService historyService;
+  // TODO Have this injected through a WalletServices.getOrCreateHistory() method
+  private Optional<HistoryService> historyService = Optional.absent();
 
   public HistoryScreenModel(Screen screen) {
     super(screen);
 
-    // Provide an initial population of entries
-    this.historyService = CoreServices.getOrCreateHistoryService(getCurrentWalletId());
-
   }
+
 
   public List<HistoryEntry> getHistory() {
 
-    return historyService.allHistory();
+    // TODO This construct is to disappear
+    if (!historyService.isPresent()) {
+      initialiseHistory();
+    }
+
+    return historyService.get().allHistory();
   }
 
   public List<HistoryEntry> filterHistoryByContent(String query) {
 
-    return historyService.filterHistoryByContent(query);
+    // TODO This construct is to disappear
+    if (!historyService.isPresent()) {
+      initialiseHistory();
+    }
+
+    return historyService.get().filterHistoryByContent(query);
   }
 
   /**
@@ -49,18 +57,19 @@ public class HistoryScreenModel extends AbstractScreenModel {
    * @return The history service
    */
   public HistoryService getHistoryService() {
-    return historyService;
+    return historyService.get();
   }
 
-  // TODO Move this into a wallet service
-  private Optional<WalletId> getCurrentWalletId() {
+  /**
+   * <p>Defer the initialisation of the history service until a wallet ID is available</p>
+   */
+  private void initialiseHistory() {
 
-    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
-      return Optional.of(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId());
-    } else {
-      return Optional.absent();
+    if (!WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
+      throw new IllegalStateException("History should not be accessible without a wallet ID");
     }
-  }
 
+    this.historyService = Optional.of(CoreServices.getOrCreateHistoryService(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()));
+  }
 
 }

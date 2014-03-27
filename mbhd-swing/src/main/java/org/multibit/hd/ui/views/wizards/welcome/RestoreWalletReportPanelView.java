@@ -4,17 +4,15 @@ import com.google.bitcoin.store.BlockStoreException;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
+import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.dto.WalletId;
-import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
-import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.core.utils.Dates;
-import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -175,6 +173,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
    * Create a wallet from a seed phrase, timestamp and password
    */
   private boolean createWallet(List<String> seedPhrase, String timestamp, CharSequence password) {
+
     if (!checkSeedPhrase(seedPhrase)) return false;
 
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
@@ -186,28 +185,31 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       WalletManager.INSTANCE.createWallet(seed, password);
 
       // Initialise the WalletService with the newly created wallet, which provides transaction information from the wallet
+      Optional<WalletData> walletData = WalletManager.INSTANCE.getCurrentWalletData();
+      if (walletData.isPresent()) {
+        // Create a wallet service
+        CoreServices.getOrCreateWalletService(walletData.get().getWalletId());
 
-      WalletService walletService = CoreServices.newWalletService();
-      MultiBitHD.setWalletService(walletService);
-      try {
-        walletService.initialise(InstallationManager.getOrCreateApplicationDataDirectory(), new WalletId(seed));
-      } catch (PaymentsLoadException ple) {
-        log.error("Failed to restore wallet. Error was '" + ple.getMessage() + "'.");
-        return false;
+        // Start the Bitcoin network to synchronize
+        CoreServices.getOrCreateBitcoinNetworkService().replayWallet(replayDate);
+
+        return true;
       }
-      CoreServices.getBitcoinNetworkService().replayWallet(replayDate);
 
-      return true;
     } catch (IOException | BlockStoreException e) {
       log.error("Failed to restore wallet. Error was '" + e.getMessage() + "'.");
-      return false;
     }
+
+    // Must have failed to be here
+    return false;
+
   }
 
   /**
    * Create a wallet from a seed phrase and a backup summary (chosen by the user)
    */
   private boolean createWallet(List<String> seedPhrase) {
+
     if (!checkSeedPhrase(seedPhrase)) return false;
 
     // Get the model that contains the selected wallet backup to use
@@ -231,7 +233,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       WalletManager.INSTANCE.loadFromFile(new File(walletFilename));
 
       // Synchronize wallet
-      CoreServices.getBitcoinNetworkService().start();
+      CoreServices.getOrCreateBitcoinNetworkService().start();
 
       return true;
     } catch (IOException ioe) {
@@ -241,10 +243,12 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
   }
 
   private boolean checkSeedPhrase(List<String> seedPhrase) {
+
     if (seedPhrase == null || seedPhrase.size() == 0) {
       log.error("No seed phrase specified. Cannot restore wallet.");
       return false;
     }
+
     return true;
   }
 }

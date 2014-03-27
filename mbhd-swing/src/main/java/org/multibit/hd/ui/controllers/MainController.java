@@ -18,6 +18,8 @@ import org.multibit.hd.core.events.ConfigurationChangedEvent;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.exchanges.ExchangeKey;
+import org.multibit.hd.core.managers.BackupManager;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.ExchangeTickerService;
@@ -30,6 +32,7 @@ import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.models.Models;
 import org.multibit.hd.ui.platform.listener.*;
+import org.multibit.hd.ui.services.BitcoinURIListeningService;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -44,6 +47,7 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
@@ -55,7 +59,7 @@ import java.util.concurrent.TimeUnit;
  * </ul>
  * <p>To allow complete separation between Model, View and Controller all interactions are handled using application events</p>
  */
-public class MainController implements  GenericOpenURIEventListener, GenericPreferencesEventListener,  GenericAboutEventListener,  GenericQuitEventListener {
+public class MainController implements GenericOpenURIEventListener, GenericPreferencesEventListener, GenericAboutEventListener, GenericQuitEventListener {
 
   private static final Logger log = LoggerFactory.getLogger(MainController.class);
 
@@ -63,12 +67,18 @@ public class MainController implements  GenericOpenURIEventListener, GenericPref
 
   private Optional<BitcoinNetworkService> bitcoinNetworkService = Optional.absent();
 
-  public MainController() {
+  private final BitcoinURIListeningService bitcoinURIListeningService;
+
+  /**
+   * @param bitcoinURIListeningService The Bitcoin URI listening service (must be present to permit a UI)
+   */
+  public MainController(BitcoinURIListeningService bitcoinURIListeningService) {
 
     CoreServices.uiEventBus.register(this);
 
-    handleExchange();
+    this.bitcoinURIListeningService = bitcoinURIListeningService;
 
+    // Ensure we have a theme
     handleTheme();
 
   }
@@ -134,6 +144,59 @@ public class MainController implements  GenericOpenURIEventListener, GenericPref
 
     // Update the views to use the new locale (and any other relevant configuration)
     ViewEvents.fireLocaleChangedEvent();
+  }
+
+  /**
+   * <p>Start the backup manager</p>
+   */
+  private void handleBackupManager() {
+
+    // Locate the installation directory
+    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+
+    // Initialise backup (must be before Bitcoin network starts and on the main thread)
+    BackupManager.INSTANCE.initialise(applicationDataDirectory, null);
+
+  }
+
+  /**
+   * <p>Show any command line Bitcoin URI alerts (UI)</p>
+   */
+  private void handleBitcoinURIAlert() {
+
+    // Check for Bitcoin URI on the command line
+    Optional<BitcoinURI> bitcoinURI = bitcoinURIListeningService.getBitcoinURI();
+
+    if (bitcoinURI.isPresent()) {
+
+      // Attempt to create an alert model from the Bitcoin URI
+      Optional<AlertModel> alertModel = Models.newBitcoinURIAlertModel(bitcoinURI.get());
+
+      // If successful the fire the event
+      if (alertModel.isPresent()) {
+        ControllerEvents.fireAddAlertEvent(alertModel.get());
+      }
+
+    }
+  }
+
+  /**
+   * <p>Start the Bitcoin network</p>
+   */
+  private void handleBitcoinNetworkStart() {
+    // Only start the network once
+    if (bitcoinNetworkService.isPresent()) {
+      return;
+    }
+
+    bitcoinNetworkService = Optional.of(CoreServices.getOrCreateBitcoinNetworkService());
+
+    // Start the network now that the password has been validated
+    bitcoinNetworkService.get().start();
+
+    if (bitcoinNetworkService.get().isStartedOk()) {
+      bitcoinNetworkService.get().downloadBlockChainInBackground();
+    }
   }
 
   /**
@@ -238,22 +301,24 @@ public class MainController implements  GenericOpenURIEventListener, GenericPref
   @Subscribe
   public void onWizardHideEvent(WizardHideEvent event) {
 
-    // Only start the network once
-    if (bitcoinNetworkService.isPresent()) {
-      return;
-    }
-
     if (!event.isExitCancel()) {
+
       // Successful wizard interaction
+      handleExchange();
 
-      bitcoinNetworkService = Optional.of(CoreServices.getBitcoinNetworkService());
+      // Show the initial screen
+      Screen screen = Screen.valueOf(Configurations.currentConfiguration.getApplicationConfiguration().getCurrentScreen());
+      ControllerEvents.fireShowDetailScreenEvent(screen);
 
-      // Start the network now that the password has been validated
-      bitcoinNetworkService.get().start();
+      // Start the backup manager
+      handleBackupManager();
 
-      if (bitcoinNetworkService.get().isStartedOk())
-        bitcoinNetworkService.get().downloadBlockChainInBackground();
-      }
+      // Check for Bitcoin URIs
+      handleBitcoinURIAlert();
+
+      handleBitcoinNetworkStart();
+
+    }
 
   }
 
@@ -327,4 +392,5 @@ public class MainController implements  GenericOpenURIEventListener, GenericPref
     CoreEvents.fireShutdownEvent();
 
   }
+
 }

@@ -585,7 +585,7 @@ public class Labels {
    */
   public static JLabel newConfirmPassword() {
 
-    return newLabel(MessageKey.CONFIRM_PASSWORD);
+    return newLabel(MessageKey.PASSWORD_VERIFIED);
   }
 
   /**

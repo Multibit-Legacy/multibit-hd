@@ -90,6 +90,7 @@ public class BitcoinNetworkServiceFunctionalTest {
   // It creates and replays a single wallet.
   @Test
   public void testSyncSingleWallet() throws Exception {
+
     // Create a random temporary directory and use it for wallet storage
     File temporaryDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
     walletManager.initialise(temporaryDirectory);
@@ -116,7 +117,7 @@ public class BitcoinNetworkServiceFunctionalTest {
     assertThat(walletBalance.compareTo(BigInteger.ZERO) > 0).isTrue();
 
     // See if there are any payments
-    WalletService walletService = CoreServices.newWalletService();
+    WalletService walletService = new WalletService();
 
     walletService.initialise(temporaryDirectory, new WalletId(seed));
 
@@ -129,6 +130,7 @@ public class BitcoinNetworkServiceFunctionalTest {
 
   @Test
   public void testSendBetweenTwoRealWallets() throws Exception {
+
     // Create a random temporary directory to writeContacts the wallets
     File temporaryDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
     walletManager.initialise(temporaryDirectory);
@@ -138,13 +140,13 @@ public class BitcoinNetworkServiceFunctionalTest {
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_1_PROPERTY_NAME)));
     WalletData walletData1 = createWallet(temporaryDirectory, seed1);
-    String walletRoot1 = walletManager.createWalletRoot(walletData1.getWalletId());
+    String walletRoot1 = WalletManager.createWalletRoot(walletData1.getWalletId());
 
     DateTime timestamp1 = Dates.parseSeedTimestamp(seedProperties.getProperty(WALLET_TIMESTAMP_1_PROPERTY_NAME));
 
     byte[] seed2 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_2_PROPERTY_NAME)));
     WalletData walletData2 = createWallet(temporaryDirectory, seed2);
-    String walletRoot2 = walletManager.createWalletRoot(walletData2.getWalletId());
+    String walletRoot2 = WalletManager.createWalletRoot(walletData2.getWalletId());
 
     DateTime timestamp2 = Dates.parseSeedTimestamp(seedProperties.getProperty(WALLET_TIMESTAMP_2_PROPERTY_NAME));
 
@@ -199,7 +201,7 @@ public class BitcoinNetworkServiceFunctionalTest {
     walletManager.setCurrentWalletData(sourceWalletData);
 
     // Start up the bitcoin network connection
-    bitcoinNetworkService = CoreServices.getBitcoinNetworkService();
+    bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
     bitcoinNetworkService.start();
 
     // Wait a while for everything to start
@@ -252,7 +254,7 @@ public class BitcoinNetworkServiceFunctionalTest {
   }
 
   private void replayWallet(DateTime replayDate) throws IOException, BlockStoreException {
-    bitcoinNetworkService = CoreServices.getBitcoinNetworkService();
+    bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
 
     // Clear percentage complete
     percentComplete = 0;

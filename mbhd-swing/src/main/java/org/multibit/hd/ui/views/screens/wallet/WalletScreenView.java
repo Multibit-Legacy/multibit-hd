@@ -8,7 +8,7 @@ import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.PaymentType;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.MultiBitHD;
+import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.WalletDetailChangedEvent;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -44,6 +44,7 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
 
   private ModelAndView<DisplayPaymentsModel, DisplayPaymentsView> displayReceivingPaymentsMaV;
 
+  private WalletService walletService;
 
   /**
    * @param panelModel The model backing this panel view
@@ -64,6 +65,8 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
 
     // Only register when there is something to do
     CoreServices.uiEventBus.register(this);
+
+    walletService = CoreServices.getCurrentWalletService();
 
     MigLayout layout = new MigLayout(
       Panels.migXYLayout(),
@@ -92,9 +95,9 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
     sendBitcoin = Buttons.newSendBitcoinWizardButton(showSendBitcoinWizardAction);
     JButton requestBitcoin = Buttons.newRequestBitcoinWizardButton(showRequestBitcoinWizardAction);
 
-    List<PaymentData> allPayments = MultiBitHD.getWalletService().getPaymentDataList();
+    List<PaymentData> allPayments = walletService.getPaymentDataList();
     // Find the 'Sending' transactions for today
-    List<PaymentData> todaysSendingPayments = MultiBitHD.getWalletService().subsetPaymentsAndSort(allPayments, PaymentType.SENDING);
+    List<PaymentData> todaysSendingPayments = walletService.subsetPaymentsAndSort(allPayments, PaymentType.SENDING);
     displaySendingPaymentsMaV = Components.newDisplayPaymentsMaV(getScreen().name());
     displaySendingPaymentsMaV.getModel().setValue(todaysSendingPayments);
     JScrollPane sendingPaymentsScrollPane = new JScrollPane(displaySendingPaymentsMaV.getView().newComponentPanel(),
@@ -104,9 +107,8 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
     sendingPaymentsScrollPane.setOpaque(true);
     sendingPaymentsScrollPane.setBorder(BorderFactory.createEmptyBorder());
 
-
     // Find the 'Receiving' (+ requested) transactions for today
-    List<PaymentData> todaysReceivingPayments = MultiBitHD.getWalletService().subsetPaymentsAndSort(allPayments, PaymentType.RECEIVING);
+    List<PaymentData> todaysReceivingPayments = walletService.subsetPaymentsAndSort(allPayments, PaymentType.RECEIVING);
     displayReceivingPaymentsMaV = Components.newDisplayPaymentsMaV(getScreen().name());
     displayReceivingPaymentsMaV.getModel().setValue(todaysReceivingPayments);
 
@@ -159,12 +161,12 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
         public void run() {
 
           if (refreshData) {
-            List<PaymentData> allPayments = MultiBitHD.getWalletService().getPaymentDataList();
+            List<PaymentData> allPayments = walletService.getPaymentDataList();
             // Find the 'Sending' transactions for today
-            List<PaymentData> todaysSendingPayments = MultiBitHD.getWalletService().subsetPaymentsAndSort(allPayments, PaymentType.SENDING);
+            List<PaymentData> todaysSendingPayments = walletService.subsetPaymentsAndSort(allPayments, PaymentType.SENDING);
             displaySendingPaymentsMaV.getModel().setValue(todaysSendingPayments);
 
-            List<PaymentData> todaysReceivingPayments = MultiBitHD.getWalletService().subsetPaymentsAndSort(allPayments, PaymentType.RECEIVING);
+            List<PaymentData> todaysReceivingPayments = walletService.subsetPaymentsAndSort(allPayments, PaymentType.RECEIVING);
             displayReceivingPaymentsMaV.getModel().setValue(todaysReceivingPayments);
 
           }
@@ -175,7 +177,7 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
           displayReceivingPaymentsMaV.getView().createView();
           displayReceivingPaymentsMaV.getView().updateView();
           sendBitcoin.requestFocusInWindow();
-          
+
         }
       });
     }

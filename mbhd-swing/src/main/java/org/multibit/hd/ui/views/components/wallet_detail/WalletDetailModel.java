@@ -9,7 +9,7 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.MultiBitHD;
+import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.ui.models.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,13 +49,16 @@ public class WalletDetailModel implements Model<WalletDetail> {
 
   @Override
   public void setValue(WalletDetail value) {
+
     this.walletDetail = value;
 
-    //ViewEvents.fireWizardComponentModelChangedEvent(panelName, Optional.of(this));
   }
 
   public void update() {
+
     Preconditions.checkNotNull(walletDetail, "Wallet detail must be set");
+
+    WalletService walletService = CoreServices.getCurrentWalletService();
 
     // TODO Add this to a wallet service
     if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
@@ -65,10 +68,10 @@ public class WalletDetailModel implements Model<WalletDetail> {
       File walletFile = WalletManager.INSTANCE.getCurrentWalletFilename().get();
       walletDetail.setWalletDirectory(walletFile.getParentFile().getName());
 
-      ContactService contactService = CoreServices.getOrCreateContactService(Optional.of(walletData.getWalletId()));
+      ContactService contactService = CoreServices.getOrCreateContactService(walletData.getWalletId());
       walletDetail.setNumberOfContacts(contactService.allContacts().size());
 
-      walletDetail.setNumberOfPayments(MultiBitHD.getWalletService().getPaymentDataList().size());
+      walletDetail.setNumberOfPayments(walletService.getPaymentDataList().size());
     }
   }
 

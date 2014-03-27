@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.screens.contacts;
 
 import com.google.common.base.Optional;
 import org.multibit.hd.core.dto.Contact;
-import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
@@ -24,25 +23,55 @@ import java.util.Stack;
  */
 public class ContactsScreenModel extends AbstractScreenModel {
 
-  private final ContactService contactService;
+  // TODO Have this injected through a WalletServices.getOrCreateContact() method
+  private Optional<ContactService> contactService = Optional.absent();
 
   private final Stack<Collection<Contact>> undoStack = new Stack<>();
 
   public ContactsScreenModel(Screen screen) {
     super(screen);
 
-    // Provide an initial population of contacts
-    this.contactService = CoreServices.getOrCreateContactService(getCurrentWalletId());
   }
+
 
   public List<Contact> getContacts() {
 
-    return contactService.allContacts();
+    // TODO This construct is to disappear
+    if (!contactService.isPresent()) {
+      initialiseContact();
+    }
+
+    return contactService.get().allContacts();
   }
 
   public List<Contact> filterContactsByContent(String query) {
 
-    return contactService.filterContactsByContent(query);
+    // TODO This construct is to disappear
+    if (!contactService.isPresent()) {
+      initialiseContact();
+    }
+    return contactService.get().filterContactsByContent(query);
+  }
+
+  /**
+   * <p>Provide access to the contact service for the "edit contact" wizard</p>
+   *
+   * @return The contact service
+   */
+  public ContactService getContactService() {
+    return contactService.get();
+  }
+
+  /**
+   * <p>Defer the initialisation of the contact service until a wallet ID is available</p>
+   */
+  private void initialiseContact() {
+
+    if (!WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
+      throw new IllegalStateException("Contacts should not be accessible without a wallet ID");
+    }
+
+    this.contactService = Optional.of(CoreServices.getOrCreateContactService(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()));
   }
 
   /**
@@ -52,11 +81,16 @@ public class ContactsScreenModel extends AbstractScreenModel {
    */
   public void removeAll(Collection<Contact> selectedContacts) {
 
+    // TODO This construct is to disappear
+    if (!contactService.isPresent()) {
+      initialiseContact();
+    }
+
     undoStack.push(selectedContacts);
 
-    contactService.removeAll(selectedContacts);
+    contactService.get().removeAll(selectedContacts);
 
-    contactService.writeContacts();
+    contactService.get().writeContacts();
 
   }
 
@@ -65,35 +99,22 @@ public class ContactsScreenModel extends AbstractScreenModel {
    */
   public Collection<Contact> undo() {
 
+    // TODO This construct is to disappear
+    if (!contactService.isPresent()) {
+      initialiseContact();
+    }
+
     if (!undoStack.empty()) {
       Collection<Contact> contacts = undoStack.pop();
 
-      contactService.addAll(contacts);
+      contactService.get().addAll(contacts);
 
-      contactService.writeContacts();
+      contactService.get().writeContacts();
 
     }
 
-    return contactService.allContacts();
+    return contactService.get().allContacts();
 
   }
 
-  /**
-   * <p>Provide access to the contact service for the "edit contact" wizard</p>
-   *
-   * @return The contact service
-   */
-  public ContactService getContactService() {
-    return contactService;
-  }
-
-  // TODO Move this into a wallet service
-  private Optional<WalletId> getCurrentWalletId() {
-
-    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
-      return Optional.of(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId());
-    } else {
-      return Optional.absent();
-    }
-  }
 }

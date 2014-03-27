@@ -127,7 +127,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
   }
 
   /**
-   * <p>Hide the wizard</p>
+   * <p>Hide the wizard if <code>beforeHide</code> returns true</p>
    *
    * @param name         The panel name
    * @param isExitCancel True if this hide operation comes from an exit or cancel

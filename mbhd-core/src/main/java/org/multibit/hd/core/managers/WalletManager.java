@@ -115,6 +115,7 @@ public enum WalletManager implements WalletEventListener {
   private Optional<WalletData> currentWalletData = Optional.absent();
 
   /**
+   * TODO initialise() may be the wrong name here - this is more of a load wallet from configuration with password
    * Initialise enum, loadContacts up the available wallets and find the current wallet
    *
    * @param applicationDataDirectory The directory in which to writeContacts and read wallets.
@@ -130,6 +131,7 @@ public enum WalletManager implements WalletEventListener {
 
     // If a wallet directory is present try to load the wallet
     if (!walletDirectories.isEmpty()) {
+
       String walletFilename = walletDirectories.get(0) + File.separator + MBHD_WALLET_NAME;
       WalletData walletData = loadFromFile(new File(walletFilename));
       currentWalletData = Optional.of(walletData);
@@ -332,6 +334,7 @@ public enum WalletManager implements WalletEventListener {
       wallet.autosaveToFile(walletFile, AUTOSAVE_DELAY, TimeUnit.MILLISECONDS, new WalletAutoSaveListener());
 
       return walletData;
+
     } catch (WalletVersionException wve) {
       // We want this to propagate out as is
       throw wve;
@@ -427,6 +430,7 @@ public enum WalletManager implements WalletEventListener {
    * @throws IllegalStateException if wallet could not be created
    */
   public static File getWalletDirectory(String parentDirectory, String walletRoot) {
+
     String fullWalletDirectoryName = parentDirectory + File.separator + walletRoot;
     File walletDirectory = new File(fullWalletDirectoryName);
 
@@ -454,21 +458,24 @@ public enum WalletManager implements WalletEventListener {
    * @return List<File> List of files of wallet directories
    */
   public List<File> findWalletDirectories(File directoryToSearch) {
+
     Preconditions.checkNotNull(directoryToSearch);
 
-    File[] listOfFiles = directoryToSearch.listFiles();
+    File[] files = directoryToSearch.listFiles();
 
+    // Look for file names with format "mbhd"-"walletid" and are not empty.
     List<File> walletDirectories = Lists.newArrayList();
-    // Look for filenames with format "mbhd"-"walletid" and are not empty.
-    if (listOfFiles != null) {
-      for (int i = 0; i < listOfFiles.length; i++) {
-        if (listOfFiles[i].isDirectory()) {
-          String filename = listOfFiles[i].getName();
+    if (files != null) {
+      for (File file : files) {
+
+        if (file.isDirectory()) {
+          String filename = file.getName();
           if (filename.matches(REGEX_FOR_WALLET_DIRECTORY)) {
-            if (listOfFiles[i].length() > 0) {
-              walletDirectories.add(listOfFiles[i]);
+            if (file.length() > 0) {
+              walletDirectories.add(file);
             }
           }
+
         }
       }
     }
@@ -481,23 +488,30 @@ public enum WalletManager implements WalletEventListener {
   }
 
   public void setCurrentWalletData(WalletData currentWalletData) {
+
     if (currentWalletData.getWallet() != null) {
+
       // Remove the previous WalletEventListener
       currentWalletData.getWallet().removeEventListener(this);
+
+      // Add the wallet event listener
+      currentWalletData.getWallet().addEventListener(this);
     }
 
-    // Add the wallet event listener
-    currentWalletData.getWallet().addEventListener(this);
     this.currentWalletData = Optional.of(currentWalletData);
   }
 
   public Optional<File> getCurrentWalletFilename() {
+
     if (applicationDataDirectory != null && currentWalletData.isPresent()) {
+
       String walletFilename = applicationDataDirectory + File.separator + WALLET_DIRECTORY_PREFIX + SEPARATOR +
         currentWalletData.get().getWalletId().toFormattedString() + File.separator + MBHD_WALLET_NAME;
       return Optional.of(new File(walletFilename));
+
     } else {
       return Optional.absent();
     }
+
   }
 }

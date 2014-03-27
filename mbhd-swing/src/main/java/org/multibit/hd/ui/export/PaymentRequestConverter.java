@@ -1,4 +1,4 @@
-package org.multibit.hd.core.export;
+package org.multibit.hd.ui.export;
 
 import com.google.common.base.Joiner;
 import com.googlecode.jcsv.writer.CSVEntryConverter;

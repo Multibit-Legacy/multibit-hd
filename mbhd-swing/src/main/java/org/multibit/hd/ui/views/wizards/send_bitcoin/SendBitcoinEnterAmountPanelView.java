@@ -106,7 +106,7 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
 
           // Attempt to locate a contact with the address in the Bitcoin URI to reassure user
           List<Contact> contacts = CoreServices
-            .getOrCreateContactService(Optional.of(walletData.get().getWalletId()))
+            .getOrCreateContactService(walletData.get().getWalletId())
             .filterContactsByBitcoinAddress(address.get());
 
           if (!contacts.isEmpty()) {

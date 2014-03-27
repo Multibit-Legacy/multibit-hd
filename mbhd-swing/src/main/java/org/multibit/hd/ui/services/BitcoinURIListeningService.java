@@ -1,4 +1,4 @@
-package org.multibit.hd.ui;
+package org.multibit.hd.ui.services;
 
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.bitcoin.uri.BitcoinURIParseException;
@@ -72,7 +72,7 @@ public class BitcoinURIListeningService extends AbstractService {
    *
    * @return The Bitcoin URI
    */
-  Optional<BitcoinURI> getBitcoinURI() {
+  public Optional<BitcoinURI> getBitcoinURI() {
     return bitcoinURI;
   }
 

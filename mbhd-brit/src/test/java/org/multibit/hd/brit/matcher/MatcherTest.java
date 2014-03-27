@@ -50,6 +50,7 @@ public class MatcherTest {
 
   @Ignore
   public void testPayerRequestAndMatcherResponse1() throws Exception {
+
     // Create a payer
     Payer payer = createTestPayer();
 
@@ -76,8 +77,10 @@ public class MatcherTest {
     // Get the matcher to process the EncryptedPayerRequest.
     // It responds with an EncryptedMatcherResponse containing a new AddressGenerator
     PayerRequest theMatchersPaymentRequest = matcher.decryptPayerRequest(encryptedPayerRequest);
+
     MatcherResponse matcherResponse = matcher.process(theMatchersPaymentRequest);
     assertThat(matcherResponse).isNotNull();
+
     EncryptedMatcherResponse encryptedMatcherResponse = matcher.encryptMatcherResponse(matcherResponse);
     assertThat(encryptedMatcherResponse).isNotNull();
 
@@ -98,10 +101,12 @@ public class MatcherTest {
     // (This is a test facility that would not be exposed by the Matcher daemon - it checks all the encryption/ decryption/ transport is ok)
     boolean addressGenerateIsCorrect = matcher.validateAddressGenerator(britWalletId, sessionId, addressGenerator);
     assertThat(addressGenerateIsCorrect).isTrue();
+
   }
 
   private Matcher createTestMatcher() {
-        // Find the example Matcher PGP secret key ring file
+
+    // Find the example Matcher PGP secret key ring file
     File matcherSecretKeyFile = PGPUtilsTest.makeFile(PGPUtilsTest.TEST_SECRET_KEYRING_FILE);
 
     MatcherConfig matcherConfig = new MatcherConfig(matcherSecretKeyFile);
@@ -111,7 +116,8 @@ public class MatcherTest {
     return matcher;
   }
 
-  private Payer createTestPayer() throws Exception{
+  private Payer createTestPayer() throws Exception {
+
     // Load the example Matcher PGP public key
     File matcherPublicKeyFile = PGPUtilsTest.makeFile(PGPUtilsTest.TEST_MATCHER_PUBLIC_KEY_FILE);
     FileInputStream matcherPublicKeyInputStream = new FileInputStream(matcherPublicKeyFile);
@@ -121,6 +127,8 @@ public class MatcherTest {
 
     Payer payer = PayerFactory.createBasicPayer(payerConfig);
     assertThat(payer).isNotNull();
+
     return payer;
   }
+
 }

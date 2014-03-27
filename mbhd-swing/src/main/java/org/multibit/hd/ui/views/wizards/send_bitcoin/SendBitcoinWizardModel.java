@@ -13,9 +13,9 @@ import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.core.store.TransactionInfo;
 import org.multibit.hd.core.utils.Satoshis;
-import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,7 +116,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     Preconditions.checkNotNull(enterAmountPanelModel);
     Preconditions.checkNotNull(confirmPanelModel);
 
-    BitcoinNetworkService bitcoinNetworkService = CoreServices.getBitcoinNetworkService();
+    BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
     Preconditions.checkState(bitcoinNetworkService.isStartedOk(),"'bitcoinNetworkService' should be started OK");
 
     String changeAddress = bitcoinNetworkService.getNextChangeAddress();
@@ -170,9 +170,10 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     }
     transactionInfo.setAmountFiat(fiatPayment);
 
-    MultiBitHD.getWalletService().addTransactionInfo(transactionInfo);
+    WalletService walletService = CoreServices.getCurrentWalletService();
+    walletService.addTransactionInfo(transactionInfo);
     try {
-      MultiBitHD.getWalletService().writePayments();
+      walletService.writePayments();
     } catch (PaymentsSaveException pse) {
       ExceptionHandler.handleThrowable(pse);
     }

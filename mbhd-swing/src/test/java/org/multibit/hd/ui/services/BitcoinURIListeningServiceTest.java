@@ -1,4 +1,4 @@
-package org.multibit.hd.ui;
+package org.multibit.hd.ui.services;
 
 import com.google.bitcoin.core.Address;
 import com.google.common.base.Charsets;

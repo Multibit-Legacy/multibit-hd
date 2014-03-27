@@ -18,7 +18,6 @@ import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.WalletService;
-import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -94,10 +93,10 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
       }
     }
     // Get the next receiving address from the wallet service
-    String nextAddress = MultiBitHD.getWalletService().generateNextReceivingAddress(passwordParameter);
+    String nextAddress = CoreServices.getCurrentWalletService().generateNextReceivingAddress(passwordParameter);
 
     // Recreate bloom filter
-    BitcoinNetworkService bitcoinNetworkService = CoreServices.getBitcoinNetworkService();
+    BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
     Preconditions.checkState(bitcoinNetworkService.isStartedOk(),"'bitcoinNetworkService' should be started OK");
     bitcoinNetworkService.recalculateFastCatchupAndFilter();
 
@@ -183,7 +182,8 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
    * Save the displayed payment request
    */
   private void savePaymentRequest() {
-    WalletService walletService = MultiBitHD.getWalletService();
+
+    WalletService walletService = CoreServices.getCurrentWalletService();
 
     Preconditions.checkNotNull(walletService, "The wallet service was null so cannot save the payment request");
 
@@ -222,10 +222,10 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
       File walletFile = WalletManager.INSTANCE.getCurrentWalletFilename().get();
       walletDetail.setWalletDirectory(walletFile.getParentFile().getName());
 
-      ContactService contactService = CoreServices.getOrCreateContactService(Optional.of(walletData.getWalletId()));
+      ContactService contactService = CoreServices.getOrCreateContactService(walletData.getWalletId());
       walletDetail.setNumberOfContacts(contactService.allContacts().size());
 
-      walletDetail.setNumberOfPayments(MultiBitHD.getWalletService().getPaymentDataList().size());
+      walletDetail.setNumberOfPayments(walletService.getPaymentDataList().size());
       ViewEvents.fireWalletDetailChangedEvent(walletDetail);
     }
   }

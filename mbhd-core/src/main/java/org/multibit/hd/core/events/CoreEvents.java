@@ -3,6 +3,7 @@ package org.multibit.hd.core.events;
 import com.google.common.base.Optional;
 import org.joda.money.BigMoney;
 import org.joda.time.DateTime;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.dto.SecuritySummary;
@@ -11,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -87,7 +87,7 @@ public class CoreEvents {
       if (!waitingToFireSlowTransactionSeenEvent) {
         // Fire in the future
         waitingToFireSlowTransactionSeenEvent = true;
-        Executors.newSingleThreadScheduledExecutor().schedule(new Callable() {
+        SafeExecutors.newSingleThreadScheduledExecutor().schedule(new Callable() {
           @Override
           public Object call() throws Exception {
             CoreServices.uiEventBus.post(new SlowTransactionSeenEvent());
