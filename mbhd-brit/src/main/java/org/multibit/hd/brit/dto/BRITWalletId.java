@@ -28,18 +28,16 @@ public class BRITWalletId {
 
   private static final Logger log = LoggerFactory.getLogger(BRITWalletId.class);
 
-  public static final int SEPARATOR_REPEAT_PERIOD = 4;
-  public static final String SEPARATOR = "-";
-
-  private static final byte SALT_USED_IN_SCRYPT = (byte) 1;
-
-  private static final int NUMBER_OF_BYTES_IN_WALLET_ID = 20;
+  // The salt used in derivation of the BRITWalletId.
+  // This is different from the similar process of deriving a WalletId (where the salt is 1)
+  // This value is the 39,000,000th prime (http://primes.utm.edu/lists/small/millions/) which seemed like a nice number to use.
+  private static final byte[] SALT_USED_IN_SCRYPT = BigInteger.valueOf(735_632_797).toByteArray();
 
   private final byte[] BRITWalletId;
 
   /**
-   * Create a wallet id from the given seed.
-   * This produces a wallet id from the seed using various trapdoor functions.
+   * Create a BRIT wallet id from the given seed.
+   * This produces a BRIT wallet id from the seed using various trapdoor functions.
    * The seed is typically generated from the SeedPhraseGenerator#convertToSeed method.
    *
    * @param seed The seed to use in deriving the wallet id
@@ -53,8 +51,8 @@ public class BRITWalletId {
 
     // Scrypt - scrypt is run using the seedBigInteger.toString() as the 'password'.
     // This returns a byte array (normally used as an AES256 key but here passed on to more trapdoor functions).
-    // The scrypt parameters used are the default, with a salt of '1'.
-    Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(new byte[]{SALT_USED_IN_SCRYPT}));
+    // The scrypt parameters used are the default, with a salt of SALT_USED_IN_SCRYPT.
+    Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(SALT_USED_IN_SCRYPT));
     Protos.ScryptParameters scryptParameters = scryptParametersBuilder.build();
     KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(scryptParameters);
     KeyParameter keyParameter = keyCrypterScrypt.deriveKey(seedBigInteger.toString());

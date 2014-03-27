@@ -89,7 +89,6 @@
   </build>
 
   <dependencies>
-
     <!-- MultiBit HD support libraries -->
     <dependency>
       <groupId>org.multibit.hd</groupId>

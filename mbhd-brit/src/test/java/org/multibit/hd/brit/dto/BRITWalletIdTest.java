@@ -1,4 +1,4 @@
-package org.multibit.hd.core.dto;
+package org.multibit.hd.brit.dto;
 
 /**
  * Copyright 2014 multibit.org
@@ -22,23 +22,19 @@ import org.junit.Test;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 
-import java.io.File;
 import java.util.Arrays;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class WalletIdTest {
+public class BRITWalletIdTest {
   public static final String SEED_PHRASE_1 = "letter advice cage absurd amount doctor acoustic avoid letter advice cage above";
-  private static final String WALLET_ID_1 = "5c81964a030c3b659dc56fe63dbe27aef3370750";
-  private static final String WALLET_ID_FORMATTED_1 = "5c81964a-030c3b65-9dc56fe6-3dbe27ae-f3370750";
+  private static final String WALLET_ID_1 = "4bbd8a749179d65a5f1b0859684f53ba5b761714";
 
   private static final String SEED_PHRASE_2 = "require want tube elegant juice cool cup noble town poem plate harsh";
-  private static final String WALLET_ID_2 = "a0bf136f8ce97d0358b4b29a87f6662cf14e594f";
-  private static final String WALLET_ID_FORMATTED_2 = "a0bf136f-8ce97d03-58b4b29a-87f6662c-f14e594f";
+  private static final String WALLET_ID_2 = "7e5218ea0428cbd44de74567fd8af557d8715545";
 
   private static final String SEED_PHRASE_3 = "morning truly witness grass pill typical blur then notable session exact coyote word noodle dentist hurry ability dignity";
-  private static final String WALLET_ID_3= "621a029836c3d152ae62134fb8ff7618900c5f9a";
-  private static final String WALLET_ID_FORMATTED_3 = "621a0298-36c3d152-ae62134f-b8ff7618-900c5f9a";
+  private static final String WALLET_ID_3 = "b1de12bdf20f332144851da717ae32c8aebcadb7";
 
   @Before
   public void setUp() throws Exception {
@@ -49,20 +45,15 @@ public class WalletIdTest {
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(SEED_PHRASE_1));
 
-    WalletId walletId = new WalletId(seed);
+    BRITWalletId walletId = new BRITWalletId(seed);
 
     assertThat(walletId).isNotNull();
     assertThat(walletId.getBytes()).isNotNull();
     String walletIdString = Utils.bytesToHexString(walletId.getBytes());
     assertThat(walletIdString).isEqualTo(WALLET_ID_1);
-    assertThat(walletId.toFormattedString()).isEqualTo(WALLET_ID_FORMATTED_1);
-
-    WalletId walletIdPhoenix = WalletId.parseWalletFilename(File.separator + "herp" + File.separator + "derp" +
-            File.separator + "mbhd-" + walletId.toFormattedString() + File.separator + "mbhd.wallet");
-    assertThat(walletId.equals(walletIdPhoenix)).isTrue();
 
     // Generate the wallet Id again - it should get the same result.
-    WalletId walletId2 = new WalletId(seed);
+    BRITWalletId walletId2 = new BRITWalletId(seed);
     assertThat(walletId2).isNotNull();
     assertThat(walletId2.getBytes()).isNotNull();
 
@@ -74,30 +65,26 @@ public class WalletIdTest {
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(SEED_PHRASE_2));
 
-    WalletId walletId = new WalletId(seed);
+    BRITWalletId walletId = new BRITWalletId(seed);
 
     assertThat(walletId).isNotNull();
     assertThat(walletId.getBytes()).isNotNull();
     String walletIdString = Utils.bytesToHexString(walletId.getBytes());
     assertThat(walletIdString).isEqualTo(WALLET_ID_2);
-    assertThat(walletId.toFormattedString()).isEqualTo(WALLET_ID_FORMATTED_2);
-
   }
 
   @Test
-   public void testCreateWalletId3() throws Exception {
-     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(SEED_PHRASE_3));
+  public void testCreateWalletId3() throws Exception {
+    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(SEED_PHRASE_3));
 
-     WalletId walletId = new WalletId(seed);
+    BRITWalletId walletId = new BRITWalletId(seed);
 
-     assertThat(walletId).isNotNull();
-     assertThat(walletId.getBytes()).isNotNull();
-     String walletIdString = Utils.bytesToHexString(walletId.getBytes());
-     assertThat(walletIdString).isEqualTo(WALLET_ID_3);
-     assertThat(walletId.toFormattedString()).isEqualTo(WALLET_ID_FORMATTED_3);
-
-   }
+    assertThat(walletId).isNotNull();
+    assertThat(walletId.getBytes()).isNotNull();
+    String walletIdString = Utils.bytesToHexString(walletId.getBytes());
+    assertThat(walletIdString).isEqualTo(WALLET_ID_3);
+  }
 
 }
 

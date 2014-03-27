@@ -11,8 +11,8 @@ import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.managers.WalletManagerTest;
-import org.multibit.hd.core.seed_phrase.Bip39SeedPhraseGenerator;
-import org.multibit.hd.core.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

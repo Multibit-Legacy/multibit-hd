@@ -6,7 +6,7 @@ import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.common.base.Preconditions;
 import com.google.protobuf.ByteString;
 import org.bitcoinj.wallet.Protos;
-import org.multibit.hd.core.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.managers.WalletManager;
 import org.spongycastle.asn1.sec.SECNamedCurves;
 import org.spongycastle.asn1.x9.X9ECParameters;

@@ -11,16 +11,15 @@ package org.multibit.hd.brit.dto;
  *  </p>
  *  
  */
-public class MatcherResponseMessage implements Message {
+public class MatcherResponse {
   private final int version = 1;
 
   private final AddressGenerator addressGenerator;
 
-  public MatcherResponseMessage(AddressGenerator addressGenerator) {
+  public MatcherResponse(AddressGenerator addressGenerator) {
     this.addressGenerator = addressGenerator;
   }
 
-  @Override
   public int getVersion() {
     return version;
   }

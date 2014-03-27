@@ -27,8 +27,8 @@ import org.junit.Test;
 import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletIdTest;
-import org.multibit.hd.core.seed_phrase.Bip39SeedPhraseGenerator;
-import org.multibit.hd.core.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.services.CoreServices;
 
 import java.io.File;

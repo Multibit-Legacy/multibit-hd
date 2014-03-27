@@ -1,4 +1,4 @@
-package org.multibit.hd.core.exceptions;
+package org.multibit.hd.brit.exceptions;
 
 /**
  * <p>Exception to provide the following:</p>

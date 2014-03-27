@@ -1,6 +1,6 @@
-package org.multibit.hd.core.seed_phrase;
+package org.multibit.hd.brit.seed_phrase;
 
-import org.multibit.hd.core.exceptions.SeedPhraseException;
+import org.multibit.hd.brit.exceptions.SeedPhraseException;
 
 import java.util.List;
 

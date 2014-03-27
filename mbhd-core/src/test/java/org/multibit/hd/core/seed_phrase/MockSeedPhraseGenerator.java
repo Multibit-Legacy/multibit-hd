@@ -1,8 +1,8 @@
 package org.multibit.hd.core.seed_phrase;
 
-import org.multibit.hd.core.exceptions.SeedPhraseException;
-import org.multibit.hd.core.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.core.seed_phrase.SeedPhraseSize;
+import org.multibit.hd.brit.exceptions.SeedPhraseException;
+import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.brit.seed_phrase.SeedPhraseSize;
 
 import java.util.Arrays;
 import java.util.List;

@@ -1,8 +1,8 @@
-package org.multibit.hd.core.seed_phrase;
+package org.multibit.hd.brit.seed_phrase;
 
 import com.google.bitcoin.crypto.MnemonicCode;
 import com.google.bitcoin.crypto.MnemonicException;
-import org.multibit.hd.core.exceptions.SeedPhraseException;
+import org.multibit.hd.brit.exceptions.SeedPhraseException;
 
 import java.io.IOException;
 import java.security.SecureRandom;

@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.components.display_seed_phrase;
 
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.seed_phrase.SeedPhraseSize;
+import org.multibit.hd.brit.seed_phrase.SeedPhraseSize;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.utils.PrintingUtils;
 import org.multibit.hd.ui.views.components.*;

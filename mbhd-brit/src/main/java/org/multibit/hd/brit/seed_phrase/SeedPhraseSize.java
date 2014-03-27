@@ -1,4 +1,4 @@
-package org.multibit.hd.core.seed_phrase;
+package org.multibit.hd.brit.seed_phrase;
 
 /**
  * <p>Enum to provide the following to Core API:</p>

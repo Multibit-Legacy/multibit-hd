@@ -10,7 +10,7 @@ import java.math.BigInteger;
  *  </p>
  *  
  */
-public class PayerRequestMessage implements Message {
+public class PayerRequest {
 
   private final int version = 1;
 
@@ -18,12 +18,11 @@ public class PayerRequestMessage implements Message {
 
   private final BigInteger sessionKey;
 
-  public PayerRequestMessage(BigInteger BRITWalletId, BigInteger sessionKey) {
+  public PayerRequest(BigInteger BRITWalletId, BigInteger sessionKey) {
     this.BRITWalletId = BRITWalletId;
     this.sessionKey = sessionKey;
   }
 
-  @Override
   public int getVersion() {
     return version;
   }

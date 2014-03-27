@@ -32,8 +32,8 @@
   </properties>
 
   <modules>
-    <module>mbhd-core</module>
     <module>mbhd-brit</module>
+    <module>mbhd-core</module>
     <module>mbhd-swing</module>
     <module>mbhd-install</module>
   </modules>
@@ -252,7 +252,7 @@
         <version>${bitcoinj.version}</version>
       </dependency>
 
-      <!-- crypto -->
+      <!-- Crypto -->
       <dependency>
         <groupId>com.madgag</groupId>
         <artifactId>sc-light-jdk15on</artifactId>
