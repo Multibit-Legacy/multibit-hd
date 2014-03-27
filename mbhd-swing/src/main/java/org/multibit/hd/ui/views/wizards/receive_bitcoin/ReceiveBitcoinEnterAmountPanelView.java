@@ -14,6 +14,7 @@ import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.WalletService;
@@ -94,10 +95,11 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     }
     // Get the next receiving address from the wallet service
     String nextAddress = MultiBitHD.getWalletService().generateNextReceivingAddress(passwordParameter);
+
     // Recreate bloom filter
-    if (MultiBitHD.getBitcoinNetworkService() != null) {
-      MultiBitHD.getBitcoinNetworkService().recalculateFastCatchupAndFilter();
-    }
+    BitcoinNetworkService bitcoinNetworkService = CoreServices.getBitcoinNetworkService();
+    Preconditions.checkState(bitcoinNetworkService.isStartedOk(),"'bitcoinNetworkService' should be started OK");
+    bitcoinNetworkService.recalculateFastCatchupAndFilter();
 
     displayBitcoinAddressMaV = Components.newDisplayBitcoinAddressMaV(nextAddress);
 

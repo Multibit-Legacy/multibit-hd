@@ -41,10 +41,11 @@ public abstract class AbstractService implements ManagedService {
 
   @Override
   public void stopAndWait() {
-    if (scheduledService.isPresent()) {
 
+    if (scheduledService.isPresent()) {
       scheduledService.get().shutdownNow();
     }
+
     if (service.isPresent()) {
       service.get().shutdownNow();
     }

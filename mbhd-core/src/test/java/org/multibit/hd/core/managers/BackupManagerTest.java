@@ -16,7 +16,6 @@
 package org.multibit.hd.core.managers;
 
 import com.google.common.util.concurrent.Uninterruptibles;
-import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.dto.BackupSummary;
@@ -31,15 +30,17 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class BackupManagerTest extends TestCase {
+import static org.fest.assertions.api.Assertions.assertThat;
+
+public class BackupManagerTest {
+
   @Before
-  @Override
   public void setUp() throws Exception {
   }
 
-
   @Test
   public void testBackupWallet() throws IOException {
+
     // Create a random temporary directory in which to writeContacts the wallet directory
     File temporaryWalletParentDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
 
@@ -60,12 +61,13 @@ public class BackupManagerTest extends TestCase {
 
     // Check there are initially a single wallet backup for the wallet id of the created wallet
     List<BackupSummary> localBackups = BackupManager.INSTANCE.getLocalZipBackups(walletData.getWalletId());
-    assertNotNull("Null localBackups list returned", localBackups);
-    assertEquals("Wrong number of localBackups", 1, localBackups.size());
+
+    assertThat(localBackups).isNotNull();
+    assertThat(localBackups.size()).isEqualTo(1);
 
     List<BackupSummary> cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletData.getWalletId(), temporaryBackupDirectory);
-    assertNotNull("Null cloudBackups list returned", cloudBackups);
-    assertEquals("Wrong number of cloudBackups", 1, cloudBackups.size());
+    assertThat(cloudBackups).isNotNull();
+    assertThat(cloudBackups.size()).isEqualTo(1);
 
     Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
@@ -75,24 +77,27 @@ public class BackupManagerTest extends TestCase {
 
     // Check that a backup copy has been saved in the local backup directory
     localBackups = BackupManager.INSTANCE.getLocalZipBackups(walletData.getWalletId());
-    assertNotNull("Null localBackups list returned", localBackups);
-    assertEquals("Wrong number of localBackups", 2, localBackups.size());
+    assertThat(localBackups).isNotNull();
+    assertThat(localBackups.size()).isEqualTo(2);
 
     // Check that a backup copy has been saved in the cloud backup directory
     cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletData.getWalletId(), temporaryBackupDirectory);
-    assertNotNull("Null cloudBackups list returned", cloudBackups);
-    assertEquals("Wrong number of cloudBackups", 2, cloudBackups.size());
+    assertThat(cloudBackups).isNotNull();
+    assertThat(cloudBackups.size()).isEqualTo(2);
 
     // Load in the wallet backup and compare the wallets
     WalletId recreatedWalletId= BackupManager.INSTANCE.loadBackup(localBackupFile);
-
-    assertEquals("Recreated local backup wallet id not the same as original", walletData.getWalletId(), recreatedWalletId);
+    assertThat(walletData.getWalletId()).isEqualTo(recreatedWalletId);
 
     String walletFilename = WalletManager.getWalletDirectory(temporaryWalletParentDirectory.getAbsolutePath(), WalletManager.createWalletRoot(recreatedWalletId)) + File.separator + WalletManager.MBHD_WALLET_NAME;
     WalletData recreatedWalletData = walletManager.loadFromFile(new File(walletFilename));
 
     // Check there is the same key in the original wallet as in the recreated one
-    assertEquals("Wallet was not roundtripped correctly", walletData.getWallet().getKeys().get(0).toStringWithPrivate(), recreatedWalletData.getWallet().getKeys().get(0).toStringWithPrivate());
+    assertThat(localBackups).isNotNull();
+    assertThat(walletData.getWallet().getKeys().get(0).toStringWithPrivate())
+      .describedAs("Wallet was not roundtripped correctly")
+      .isEqualTo(recreatedWalletData.getWallet().getKeys().get(0).toStringWithPrivate());
+
   }
 }
 

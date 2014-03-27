@@ -7,15 +7,14 @@ import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.core.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -27,13 +26,14 @@ public enum BackupManager {
 
   INSTANCE;
 
-  public static final String BACKUP_SUFFIX_FORMAT = "yyyyMMddHHmmss";
   public static final String BACKUP_ZIP_FILE_EXTENSION = ".zip";
   public static final String BACKUP_ZIP_FILE_EXTENSION_REGEX = "\\.zip";
 
   public static final String ROLLING_BACKUP_DIRECTORY_NAME = "rolling-backup";
   public static final int MAXIMUM_NUMBER_OF_ROLLING_BACKUPS = 4;
-  public static final String REGEX_FOR_TIMESTAMP_AND_WALLET_SUFFIX = ".*-\\d{" + BACKUP_SUFFIX_FORMAT.length() + "}\\.wallet$";
+
+  // Backup suffix format is "yyyyMMddHHmmss"
+  public static final String REGEX_FOR_TIMESTAMP_AND_WALLET_SUFFIX = ".*-\\d{14}\\.wallet$";
 
   public static final String LOCAL_ZIP_BACKUP_DIRECTORY_NAME = "zip-backup";
   public static final int MAXIMUM_NUMBER_OF_ZIP_BACKUPS = 60; // Chosen so that you will have about weekly backups for a year, fortnightly over two years.
@@ -47,8 +47,6 @@ public enum BackupManager {
 
   // Where the cloud backups are stored (this is typically specified by the user and is a SpiderOak etc sync directory)
   private File cloudBackupDirectory;
-
-  private SimpleDateFormat dateFormat;
 
   /**
    * Initialise the backup manager to use the specified cloudBackupDirectory.
@@ -115,9 +113,7 @@ public enum BackupManager {
       + WalletManager.SEPARATOR
       + walletId.toFormattedString()
       + WalletManager.SEPARATOR
-      + "\\d{"
-      + BACKUP_SUFFIX_FORMAT.length()
-      + "}"
+      + "\\d{14}"
       + BACKUP_ZIP_FILE_EXTENSION_REGEX;
 
     if (files != null) {
@@ -128,13 +124,14 @@ public enum BackupManager {
               BackupSummary backupSummary = new BackupSummary(walletId, file.getName(), file);
               // Work out timestamp
               int start = (WalletManager.MBHD_WALLET_PREFIX + WalletManager.SEPARATOR + WalletManager.SEPARATOR).length() + WalletId.LENGTH_OF_FORMATTED_WALLETID;
-              int stop = start + BACKUP_SUFFIX_FORMAT.length();
+              int stop = start + 14;
               String timeStampString = FileUtils.filePart(file.getName().substring(start, stop));
               try {
-                DateTime timestamp = new DateTime(getDateFormat().parse(timeStampString));
+                DateTime timestamp = Dates.parseBackupDate(timeStampString);
                 backupSummary.setCreated(timestamp);
-              } catch (ParseException pe) {
-                pe.printStackTrace();
+              } catch (IllegalArgumentException e) {
+                // Serious problem if the backup format has failed
+                ExceptionHandler.handleThrowable(e);
               }
               walletBackups.add(backupSummary);
             }
@@ -173,7 +170,7 @@ public enum BackupManager {
 
     Map<Long, File> mapOfTimeToFile = Maps.newTreeMap(); // Note that this is sorted by long
 
-    // Look for filenames with format "text"-YYYYMMDDHHMMSS.wallet<eol> and are not empty.
+    // Look for file names with format "text"-YYYYMMDDHHMMSS.wallet<eol> and are not empty.
     if (files != null) {
       for (File file : files) {
         if (file.isFile()) {
@@ -181,13 +178,14 @@ public enum BackupManager {
             if (file.length() > 0) {
               // Work out timestamp
               int start = (WalletManager.MBHD_WALLET_PREFIX + WalletManager.SEPARATOR).length();
-              int stop = start + BACKUP_SUFFIX_FORMAT.length();
+              int stop = start + 14;
               String timeStampString = file.getName().substring(start, stop);
               try {
-                long timestamp = getDateFormat().parse(timeStampString).getTime();
+                long timestamp = Dates.parseBackupDate(timeStampString).getMillis();
                 mapOfTimeToFile.put(timestamp, file);
-              } catch (ParseException pe) {
-                pe.printStackTrace();
+              } catch (IllegalArgumentException e) {
+                // Serious problem if the backup format has failed
+                ExceptionHandler.handleThrowable(e);
               }
             }
           }
@@ -240,12 +238,11 @@ public enum BackupManager {
       + BackupManager.ROLLING_BACKUP_DIRECTORY_NAME;
     FileUtils.createDirectoryIfNecessary(new File(rollingBackupDirectoryName));
 
-    // TODO Use Dates instead
     String walletBackupFilename = rollingBackupDirectoryName
       + File.separator
       + WalletManager.MBHD_WALLET_PREFIX
       + WalletManager.SEPARATOR
-      + getDateFormat().format(new Date())
+      + Dates.formatBackupDate(Dates.nowUtc())
       + WalletManager.MBHD_WALLET_SUFFIX;
 
     File walletBackupFile = new File(walletBackupFilename);
@@ -292,7 +289,12 @@ public enum BackupManager {
     File localBackupDirectory = new File(walletRootDirectory.getAbsoluteFile() + File.separator + LOCAL_ZIP_BACKUP_DIRECTORY_NAME);
     FileUtils.createDirectoryIfNecessary(localBackupDirectory);
 
-    String backupFilename = WalletManager.WALLET_DIRECTORY_PREFIX + WalletManager.SEPARATOR + walletId.toFormattedString() + WalletManager.SEPARATOR + getDateFormat().format(new Date()) + BACKUP_ZIP_FILE_EXTENSION;
+    String backupFilename = WalletManager.WALLET_DIRECTORY_PREFIX
+      + WalletManager.SEPARATOR
+      + walletId.toFormattedString()
+      + WalletManager.SEPARATOR
+      + Dates.formatBackupDate(Dates.nowUtc())
+      + BACKUP_ZIP_FILE_EXTENSION;
     String localBackupFilename = localBackupDirectory.getAbsolutePath() + File.separator + backupFilename;
 
     log.debug("Creating local zip-backup '" + localBackupFilename + "'");
@@ -343,20 +345,6 @@ public enum BackupManager {
     FileUtils.unzip(backupFileToLoad.getAbsolutePath(), walletRootDirectory.getAbsolutePath());
 
     return walletId;
-  }
-
-  /**
-   * TODO Use Dates factory instead
-   * Get the date formatter used to create timestamps
-   *
-   * @return dateFormat for formatting dates to timestamps
-   */
-  private SimpleDateFormat getDateFormat() {
-
-    if (dateFormat == null) {
-      dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
-    }
-    return dateFormat;
   }
 
 }

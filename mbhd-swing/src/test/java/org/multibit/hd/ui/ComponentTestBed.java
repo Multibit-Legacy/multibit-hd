@@ -125,7 +125,7 @@ public class ComponentTestBed {
 
     // Standard support services
     CoreServices.newExchangeService(bitcoinConfiguration).start();
-    CoreServices.newBitcoinNetworkService().start();
+    CoreServices.getBitcoinNetworkService().start();
 
     // Initialise the wallet manager, which will loadContacts the current wallet if available
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
