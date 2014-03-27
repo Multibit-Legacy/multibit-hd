@@ -18,12 +18,16 @@ package org.multibit.hd.brit.matcher;
 
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.Ignore;
+import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.crypto.PGPUtils;
 import org.multibit.hd.brit.crypto.PGPUtilsTest;
+import org.multibit.hd.brit.dto.*;
 import org.multibit.hd.brit.payer.Payer;
 import org.multibit.hd.brit.payer.PayerConfig;
 import org.multibit.hd.brit.payer.PayerFactory;
+import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,56 +48,56 @@ public class MatcherTest {
     secureRandom = new SecureRandom();
   }
 
-  @Test
+  @Ignore
   public void testPayerRequestAndMatcherResponse1() throws Exception {
-//    // Create a payer
-//    Payer payer = createTestPayer();
-//
-//    // Create a BRITWalletId (in real life this would be using the Payer's wallet seed)
-//    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-//    byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(BRITWalletIdTest.SEED_PHRASE_1));
-//    BRITWalletId britWalletId = new BRITWalletId(seed);
-//
-//    // Create a random session id
-//    byte[] sessionId = new byte[AESUtils.BLOCK_LENGTH];
-//    secureRandom.nextBytes(sessionId);
-//
-//    // Ask the payer to create an EncryptedPayerRequest containing a BRITWalletId and a session id
-//    PayerRequest payerRequest = payer.createPayerRequest(britWalletId, sessionId);
-//    EncryptedPayerRequest encryptedPayerRequest = payer.encryptPayerRequest(payerRequest);
-//
-//    //
-//    // In real life the encryptedPayerRequest is transported from the Payer to the Matcher here
-//    //
-//
-//    // Create a matcher
-//    Matcher matcher = createTestMatcher();
-//
-//    // Get the matcher to process the EncryptedPayerRequest.
-//    // It responds with an EncryptedMatcherResponse containing a new AddressGenerator
-//    PayerRequest theMatchersPaymentRequest = matcher.decryptPayerRequest(encryptedPayerRequest);
-//    MatcherResponse matcherResponse = matcher.process(theMatchersPaymentRequest);
-//    assertThat(matcherResponse).isNotNull();
-//    EncryptedMatcherResponse encryptedMatcherResponse = matcher.encryptMatcherResponse(matcherResponse);
-//    assertThat(encryptedMatcherResponse).isNotNull();
-//
-//    //
-//    // In real life the encryptedMatcherResponse is transported from the Matcher to the Payer here
-//    //
-//
-//    // The payer can decrypt the encryptedMatcherResponse
-//    // as it knows the BRITWalletId and session id
-//    MatcherResponse thePayersMatcherResponse = payer.decryptMatcherReponse(encryptedMatcherResponse);
-//    assertThat(thePayersMatcherResponse).isNotNull();
-//
-//    // The thePayersMatcherResponse contains the addressGenerator that the payer will use to generate addresses
-//    AddressGenerator addressGenerator = thePayersMatcherResponse.getAddressGenerator();
-//    assertThat(addressGenerator).isNotNull();
-//
-//    // Ask the matcher to validate the addressGenerator
-//    // (This is a test facility that would not be exposed by the Matcher daemon - it checks all the encryption/ decryption/ transport is ok)
-//    boolean addressGenerateIsCorrect = matcher.validateAddressGenerator(britWalletId, sessionId, addressGenerator);
-//    assertThat(addressGenerateIsCorrect).isTrue();
+    // Create a payer
+    Payer payer = createTestPayer();
+
+    // Create a BRITWalletId (in real life this would be using the Payer's wallet seed)
+    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(BRITWalletIdTest.SEED_PHRASE_1));
+    BRITWalletId britWalletId = new BRITWalletId(seed);
+
+    // Create a random session id
+    byte[] sessionId = new byte[AESUtils.BLOCK_LENGTH];
+    secureRandom.nextBytes(sessionId);
+
+    // Ask the payer to create an EncryptedPayerRequest containing a BRITWalletId and a session id
+    PayerRequest payerRequest = payer.createPayerRequest(britWalletId, sessionId);
+    EncryptedPayerRequest encryptedPayerRequest = payer.encryptPayerRequest(payerRequest);
+
+    //
+    // In real life the encryptedPayerRequest is transported from the Payer to the Matcher here
+    //
+
+    // Create a matcher
+    Matcher matcher = createTestMatcher();
+
+    // Get the matcher to process the EncryptedPayerRequest.
+    // It responds with an EncryptedMatcherResponse containing a new AddressGenerator
+    PayerRequest theMatchersPaymentRequest = matcher.decryptPayerRequest(encryptedPayerRequest);
+    MatcherResponse matcherResponse = matcher.process(theMatchersPaymentRequest);
+    assertThat(matcherResponse).isNotNull();
+    EncryptedMatcherResponse encryptedMatcherResponse = matcher.encryptMatcherResponse(matcherResponse);
+    assertThat(encryptedMatcherResponse).isNotNull();
+
+    //
+    // In real life the encryptedMatcherResponse is transported from the Matcher to the Payer here
+    //
+
+    // The payer can decrypt the encryptedMatcherResponse
+    // as it knows the BRITWalletId and session id
+    MatcherResponse thePayersMatcherResponse = payer.decryptMatcherReponse(encryptedMatcherResponse);
+    assertThat(thePayersMatcherResponse).isNotNull();
+
+    // The thePayersMatcherResponse contains the addressGenerator that the payer will use to generate addresses
+    AddressGenerator addressGenerator = thePayersMatcherResponse.getAddressGenerator();
+    assertThat(addressGenerator).isNotNull();
+
+    // Ask the matcher to validate the addressGenerator
+    // (This is a test facility that would not be exposed by the Matcher daemon - it checks all the encryption/ decryption/ transport is ok)
+    boolean addressGenerateIsCorrect = matcher.validateAddressGenerator(britWalletId, sessionId, addressGenerator);
+    assertThat(addressGenerateIsCorrect).isTrue();
   }
 
   private Matcher createTestMatcher() {
