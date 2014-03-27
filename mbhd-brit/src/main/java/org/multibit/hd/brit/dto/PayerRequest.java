@@ -5,14 +5,13 @@ import java.math.BigInteger;
 /**
  *  <p>DTO to provide the following to BRIT:<br>
  *  <ul>
- *  <li>This is the message sent by the Payer to the Matcher</li>
+ *  <li>This is the unencrypted version of the message sent by the Payer to the Matcher</li>
+ *  <li>Typically 'encrypt' is called and the EncryptedPayerRequest is actually sent on the wire</li>
  *  </ul>
  *  </p>
  *  
  */
 public class PayerRequest {
-
-  private final int version = 1;
 
   private final BigInteger BRITWalletId;
 
@@ -24,7 +23,7 @@ public class PayerRequest {
   }
 
   public int getVersion() {
-    return version;
+    return 1;
   }
 
   public BigInteger getSessionKey() {

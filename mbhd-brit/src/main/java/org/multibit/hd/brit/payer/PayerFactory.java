@@ -14,7 +14,7 @@ package org.multibit.hd.brit.payer;
 public class PayerFactory {
 
   /**
-   * private constructor for utility classes
+   * Private constructor for utility classes
    */
   private PayerFactory() {
   }

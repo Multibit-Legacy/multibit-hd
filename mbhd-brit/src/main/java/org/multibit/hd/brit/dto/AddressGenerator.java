@@ -8,7 +8,7 @@ import java.math.BigInteger;
 /**
  *  <p>Class to provide the following to BRIT:<br>
  *  <ul>
- *  <li>Generation of deterministically generated Bitcoin addresses to Payer</li>
+ *  <li>Generation of deterministically generated Bitcoin addresses to Matcher</li>
  *  </ul>
  *  </p>
  *  

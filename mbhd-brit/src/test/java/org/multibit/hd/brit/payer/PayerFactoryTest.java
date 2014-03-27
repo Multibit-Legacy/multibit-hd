@@ -21,6 +21,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.brit.crypto.PGPUtils;
 import org.multibit.hd.brit.crypto.PGPUtilsTest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,6 +30,8 @@ import java.io.FileInputStream;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class PayerFactoryTest {
+
+  private static final Logger log = LoggerFactory.getLogger(PayerFactoryTest.class);
 
   @Before
   public void setUp() throws Exception {
@@ -39,6 +43,8 @@ public class PayerFactoryTest {
     File matcherPublicKeyFile = PGPUtilsTest.makeFile(PGPUtilsTest.TEST_MATCHER_PUBLIC_KEY_FILE);
     FileInputStream matcherPublicKeyInputStream = new FileInputStream(matcherPublicKeyFile);
     PGPPublicKey matcherPGPPublicKey = PGPUtils.readPublicKey(matcherPublicKeyInputStream);
+
+    log.debug("Matcher public key id = " + matcherPGPPublicKey.getKeyID());
 
     PayerConfig payerConfig = new PayerConfig(matcherPGPPublicKey);
 

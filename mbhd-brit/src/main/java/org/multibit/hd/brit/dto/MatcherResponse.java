@@ -3,7 +3,7 @@ package org.multibit.hd.brit.dto;
 /**
  *  <p>DTO to provide the following to BRIT:<br>
  *  <ul>
- *  <li>This is the response message from the Matcher to the Payer</li>
+ *  <li>This is the response message from the Matcher to the Matcher</li>
  *  </ul>
  *  Example:<br>
  *  <pre>

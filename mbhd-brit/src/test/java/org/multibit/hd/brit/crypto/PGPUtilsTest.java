@@ -31,14 +31,13 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 public class PGPUtilsTest {
 
-  private static final Logger log = LoggerFactory.getLogger(FileUtils.class);
-
+  private static final Logger log = LoggerFactory.getLogger(PGPUtilsTest.class);
 
   private static final String EXAMPLE_TEXT = "The quick brown fox jumps over the lazy dog. 01234567890. !@#$%^&*(). ,.;:[]-_=+";
 
   private static final String TEST_PUBLIC_KEYRING_FILE = "/src/test/resources/redeemer1/gpg/pubring.gpg";
 
-  private static final String TEST_SECRET_KEYRING_FILE = "/src/test/resources/redeemer1/gpg/secring.gpg";
+  public static final String TEST_SECRET_KEYRING_FILE = "/src/test/resources/redeemer1/gpg/secring.gpg";
 
   public static final String TEST_MATCHER_PUBLIC_KEY_FILE = "/src/test/resources/matcher/export-to-payer/matcher-key.asc";
 
@@ -47,7 +46,7 @@ public class PGPUtilsTest {
   /**
    * The password used in the generation of the test PGP keys
    */
-  private static final char[] TEST_DATA_PASSWORD = "password".toCharArray();
+  public static final char[] TEST_DATA_PASSWORD = "password".toCharArray();
 
 
   @Before
