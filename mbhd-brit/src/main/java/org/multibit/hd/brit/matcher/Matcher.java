@@ -1,7 +1,6 @@
 package org.multibit.hd.brit.matcher;
 
-import org.multibit.hd.brit.dto.MatcherResponse;
-import org.multibit.hd.brit.dto.PayerRequest;
+import org.multibit.hd.brit.dto.*;
 
 /**
  *  <p>Interface to provide the following to BRIT:<br>
@@ -15,5 +14,11 @@ public interface Matcher {
 
   public MatcherConfig getConfig();
 
+  public PayerRequest decryptPayerRequest(EncryptedPayerRequest encryptedPayerRequest);
+
   public MatcherResponse process(PayerRequest payerRequest);
+
+  public EncryptedMatcherResponse encryptMatcherResponse(MatcherResponse matcherResponse);
+
+  public boolean validateAddressGenerator(BRITWalletId britWalletId, byte[] sessionId, AddressGenerator addressGenerator);
 }

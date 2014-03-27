@@ -1,7 +1,5 @@
 package org.multibit.hd.brit.dto;
 
-import java.math.BigInteger;
-
 /**
  *  <p>DTO to provide the following to BRIT:<br>
  *  <ul>
@@ -13,12 +11,12 @@ import java.math.BigInteger;
  */
 public class PayerRequest {
 
-  private final BigInteger BRITWalletId;
+  private final BRITWalletId britWalletId;
 
-  private final BigInteger sessionKey;
+  private final byte[] sessionKey;
 
-  public PayerRequest(BigInteger BRITWalletId, BigInteger sessionKey) {
-    this.BRITWalletId = BRITWalletId;
+  public PayerRequest(BRITWalletId britWalletId, byte[] sessionKey) {
+    this.britWalletId = britWalletId;
     this.sessionKey = sessionKey;
   }
 
@@ -26,11 +24,11 @@ public class PayerRequest {
     return 1;
   }
 
-  public BigInteger getSessionKey() {
+  public byte[] getSessionKey() {
     return sessionKey;
   }
 
-  public BigInteger getBRITWalletId() {
-    return BRITWalletId;
+  public BRITWalletId getBRITWalletId() {
+    return britWalletId;
   }
 }

@@ -1,7 +1,6 @@
 package org.multibit.hd.brit.matcher;
 
-import org.multibit.hd.brit.dto.MatcherResponse;
-import org.multibit.hd.brit.dto.PayerRequest;
+import org.multibit.hd.brit.dto.*;
 
 /**
  *  <p>Class to provide the following to BRIT:<br>
@@ -26,7 +25,22 @@ public class BasicMatcher implements Matcher {
   }
 
   @Override
+  public PayerRequest decryptPayerRequest(EncryptedPayerRequest encryptedPayerRequest) {
+    return null;
+  }
+
+  @Override
   public MatcherResponse process(PayerRequest payerRequest) {
     return null;
+  }
+
+  @Override
+  public EncryptedMatcherResponse encryptMatcherResponse(MatcherResponse matcherResponse) {
+    return null;
+  }
+
+  @Override
+  public boolean validateAddressGenerator(BRITWalletId britWalletId, byte[] sessionId, AddressGenerator addressGenerator) {
+    return false;
   }
 }
