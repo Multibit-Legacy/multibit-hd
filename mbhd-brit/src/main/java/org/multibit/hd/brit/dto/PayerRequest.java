@@ -28,7 +28,7 @@ public class PayerRequest {
 
   private final Date firstTransactionDate;
 
-  private static final String SERIALISER_SEPARATOR = "\n";
+  public static final String SERIALISER_SEPARATOR = "\n";
 
   public PayerRequest(BRITWalletId britWalletId, byte[] sessionKey, Date firstTransactionDate) {
     this.britWalletId = britWalletId;

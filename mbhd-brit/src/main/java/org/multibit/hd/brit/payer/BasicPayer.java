@@ -70,7 +70,7 @@ public class BasicPayer implements Payer {
   }
 
   @Override
-  public MatcherResponse decryptMatcherReponse(EncryptedMatcherResponse encryptedMatcherResponse) throws NoSuchAlgorithmException {
+  public MatcherResponse decryptMatcherReponse(EncryptedMatcherResponse encryptedMatcherResponse) throws NoSuchAlgorithmException, UnsupportedEncodingException {
     // Stretch the 20 byte britWalletId to 32 bytes (256 bits)
     byte[] stretchedBritWalletId = MessageDigest.getInstance("SHA-256").digest(britWalletId.getBytes());
 

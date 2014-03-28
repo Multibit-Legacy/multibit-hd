@@ -18,7 +18,7 @@ package org.multibit.hd.brit.matcher;
 
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.Test;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.crypto.PGPUtils;
 import org.multibit.hd.brit.crypto.PGPUtilsTest;
@@ -50,7 +50,7 @@ public class MatcherTest {
     secureRandom = new SecureRandom();
   }
 
-  @Ignore
+  @Test
   public void testPayerRequestAndMatcherResponse1() throws Exception {
     // Create a payer
     Payer payer = createTestPayer();
@@ -117,7 +117,6 @@ public class MatcherTest {
   }
 
   private Matcher createTestMatcher() {
-
     // Find the example Matcher PGP secret key ring file
     File matcherSecretKeyFile = PGPUtilsTest.makeFile(PGPUtilsTest.TEST_MATCHER_SECRET_KEYRING_FILE);
 
