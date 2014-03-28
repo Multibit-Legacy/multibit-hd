@@ -48,9 +48,6 @@ public class ControllerEvents {
     log.trace("Firing 'add alert' event");
     CoreServices.uiEventBus.post(new AddAlertEvent(alertModel));
 
-    // Keep track of this
-    CoreServices.logHistory(Languages.safeText(MessageKey.SHOW_ALERT) + " " + alertModel.getLocalisedMessage());
-
   }
 
   /**

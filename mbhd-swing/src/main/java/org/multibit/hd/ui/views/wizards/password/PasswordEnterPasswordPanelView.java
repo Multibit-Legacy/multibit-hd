@@ -2,11 +2,15 @@ package org.multibit.hd.ui.views.wizards.password;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.Uninterruptibles;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.events.SecurityEvent;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
@@ -28,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -144,52 +149,99 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
       return true;
     }
 
-    // Check the password
-    if (!checkPassword()) {
+    // Start the spinner (we are deferring the hide)
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
 
-      // Tar pit (must be in a separate thread to ensure UI updates)
-      SafeExecutors.newSingleThreadExecutor().submit(new Runnable() {
+        // Ensure the view shows the spinner and disables components
+        getFinishButton().setEnabled(false);
+        getExitButton().setEnabled(false);
+        getRestoreButton().setEnabled(false);
+        enterPasswordMaV.getView().setSpinnerVisibility(true);
+
+      }
+    });
+
+    // Check the password (might take a while so do it asynchronously while showing a spinner)
+    // Tar pit (must be in a separate thread to ensure UI updates)
+    ListenableFuture<Boolean> passwordFuture = SafeExecutors.newSingleThreadExecutor().submit(new Callable<Boolean>() {
+
+      @Override
+      public Boolean call() {
+
+        // Need a very short delay here to allow the UI thread to update
+        Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+
+        return checkPassword();
+
+      }
+    });
+    Futures.addCallback(passwordFuture, new FutureCallback<Boolean>() {
+
         @Override
-        public void run() {
+        public void onSuccess(Boolean result) {
 
-          // Failed
-          Sounds.playBeep();
+          // Check the result
+          if (result) {
 
-          // Ensure the view shows the spinner and disables components
-          SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-              getFinishButton().setEnabled(false);
-              getExitButton().setEnabled(false);
-              getRestoreButton().setEnabled(false);
-              enterPasswordMaV.getView().handleTarpit(true);
-            }
-          });
+            // Maintain the spinner while the initialisation continues
 
-          // Just long enough to be annoying anything below 2 seconds is comfortable
-          Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+            // Trigger the deferred hide
+            ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
+
+          } else {
+
+            // Wait just long enough to be annoying (anything below 2 seconds is comfortable)
+            Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+
+            // Failed
+            Sounds.playBeep();
+
+            // Ensure the view hides the spinner and enables components
+            SwingUtilities.invokeLater(new Runnable() {
+              @Override
+              public void run() {
+
+                getFinishButton().setEnabled(true);
+                getExitButton().setEnabled(true);
+                getRestoreButton().setEnabled(true);
+                enterPasswordMaV.getView().setSpinnerVisibility(false);
+
+                enterPasswordMaV.getView().requestInitialFocus();
+
+              }
+            });
+
+          }
+
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
 
           // Ensure the view hides the spinner and enables components
           SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
+
               getFinishButton().setEnabled(true);
               getExitButton().setEnabled(true);
               getRestoreButton().setEnabled(true);
-              enterPasswordMaV.getView().handleTarpit(false);
+              enterPasswordMaV.getView().setSpinnerVisibility(false);
 
               enterPasswordMaV.getView().requestInitialFocus();
             }
           });
 
+          // Should not have seen an error
+          ExceptionHandler.handleThrowable(t);
         }
-      });
+      }
+    );
 
-      return false;
-    } else {
-
-      return true;
-    }
+    // Defer the hide operation
+    return false;
   }
 
   /**

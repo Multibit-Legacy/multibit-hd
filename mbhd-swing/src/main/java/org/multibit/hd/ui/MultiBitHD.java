@@ -57,7 +57,7 @@ public class MultiBitHD {
     // Prepare platform-specific integration (protocol handlers, quit events etc)
     initialiseGenericApp();
 
-    // Start core services (security alerts, configuration, Bitcoin URI handling etc)
+    // Start core services (logging, security alerts, configuration, Bitcoin URI handling etc)
     if (!initialiseCore(args)) {
 
       // Required to shutdown

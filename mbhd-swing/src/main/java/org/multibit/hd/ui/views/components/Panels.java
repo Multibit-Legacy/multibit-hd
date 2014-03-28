@@ -444,23 +444,23 @@ public class Panels {
   }
 
   /**
-    * <p>A "select export payments directory" panel displays the instructions to choose an appropriate export payments directory</p>
-    *
-    * @return A new "select export payments directory" panel
-    */
-   public static JPanel newSelectExportPaymentsDirectory() {
+   * <p>A "select export payments directory" panel displays the instructions to choose an appropriate export payments directory</p>
+   *
+   * @return A new "select export payments directory" panel
+   */
+  public static JPanel newSelectExportPaymentsDirectory() {
 
-     JPanel panel = Panels.newPanel(new MigLayout(
-       Panels.migXLayout(),
-       "[grow]", // Columns
-       "[]" // Rows
-     ));
+    JPanel panel = Panels.newPanel(new MigLayout(
+      Panels.migXLayout(),
+      "[grow]", // Columns
+      "[]" // Rows
+    ));
 
-     // Add to the panel
-     panel.add(Labels.newSelectExportPaymentsLocationNote(), "push");
+    // Add to the panel
+    panel.add(Labels.newSelectExportPaymentsLocationNote(), "push");
 
-     return panel;
-   }
+    return panel;
+  }
 
   /**
    * New vertical dashed separator

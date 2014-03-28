@@ -50,10 +50,13 @@ public class HeaderView {
 
     CoreServices.uiEventBus.register(this);
 
-    // Create the content panel
+    // Create the content panel with a background image (doesn't really work well)
+//    contentPanel = new BackgroundPanel(Images.newLogoImage(), BackgroundPanel.ACTUAL, 1.0f, 0.5f);
+//    contentPanel.getInsets(new Insets(0,6,0,6));
+
     contentPanel = Panels.newPanel(new MigLayout(
       Panels.migLayout("fillx,insets 10 10 0 10,hidemode 3"), // Layout insets ensure border is tight to sidebar
-      "[]", // Columns
+      "[][]", // Columns
       "[][shrink]" // Rows
     ));
 
