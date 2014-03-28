@@ -449,33 +449,29 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
-   * Work out what wallets are available in a directory (typically the user data directory).
-   * This is worked out by looking for directories with the name:
-   * 'multibithd' + a wallet id
+   * <p>Work out what wallets are available in a directory (typically the user data directory).
+   * This is achieved by looking for directories with a name like <code>"mbhd-walletId"</code>
    *
    * @param directoryToSearch The directory to search
    *
-   * @return List<File> List of files of wallet directories
+   * @return A list of files of wallet directories
    */
   public List<File> findWalletDirectories(File directoryToSearch) {
 
     Preconditions.checkNotNull(directoryToSearch);
 
     File[] files = directoryToSearch.listFiles();
+    List<File> walletDirectories = Lists.newArrayList();
 
     // Look for file names with format "mbhd"-"walletid" and are not empty.
-    List<File> walletDirectories = Lists.newArrayList();
     if (files != null) {
       for (File file : files) {
-
         if (file.isDirectory()) {
           String filename = file.getName();
           if (filename.matches(REGEX_FOR_WALLET_DIRECTORY)) {
-            if (file.length() > 0) {
-              walletDirectories.add(file);
-            }
+            // The name matches so add it
+            walletDirectories.add(file);
           }
-
         }
       }
     }
@@ -483,10 +479,16 @@ public enum WalletManager implements WalletEventListener {
     return walletDirectories;
   }
 
+  /**
+   * @return The current wallet data
+   */
   public Optional<WalletData> getCurrentWalletData() {
     return currentWalletData;
   }
 
+  /**
+   * @param currentWalletData The current wallet data
+   */
   public void setCurrentWalletData(WalletData currentWalletData) {
 
     if (currentWalletData.getWallet() != null) {
@@ -501,7 +503,10 @@ public enum WalletManager implements WalletEventListener {
     this.currentWalletData = Optional.of(currentWalletData);
   }
 
-  public Optional<File> getCurrentWalletFilename() {
+  /**
+   * @return The current wallet file
+   */
+  public Optional<File> getCurrentWalletFile() {
 
     if (applicationDataDirectory != null && currentWalletData.isPresent()) {
 

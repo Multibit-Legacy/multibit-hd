@@ -288,7 +288,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
       WalletData walletData = WalletManager.INSTANCE.getCurrentWalletData().get();
       walletDetail.setApplicationDirectory(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath());
 
-      File walletFile = WalletManager.INSTANCE.getCurrentWalletFilename().get();
+      File walletFile = WalletManager.INSTANCE.getCurrentWalletFile().get();
       walletDetail.setWalletDirectory(walletFile.getParentFile().getName());
 
       ContactService contactService = CoreServices.getOrCreateContactService(walletData.getWalletId());

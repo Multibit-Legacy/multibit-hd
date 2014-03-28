@@ -80,7 +80,7 @@ public class BitcoinNetworkService extends AbstractService {
         log.warn("Not starting bitcoin network service as there is currently no wallet.");
         return true;
       }
-      String walletRoot = WalletManager.INSTANCE.getCurrentWalletFilename().get().getParentFile().getAbsolutePath();
+      String walletRoot = WalletManager.INSTANCE.getCurrentWalletFile().get().getParentFile().getAbsolutePath();
       String blockchainFilename = walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.SPV_BLOCKCHAIN_SUFFIX;
       String checkpointsFilename = walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX;
 
@@ -178,7 +178,7 @@ public class BitcoinNetworkService extends AbstractService {
       log.debug("Saving wallet with id '" + walletId + "'.");
 
       try {
-        File currentWalletFile = WalletManager.INSTANCE.getCurrentWalletFilename().get();
+        File currentWalletFile = WalletManager.INSTANCE.getCurrentWalletFile().get();
         walletData.getWallet().saveToFile(currentWalletFile);
         log.debug("Wallet save completed ok. Wallet size is " + currentWalletFile.length() + " bytes.");
 
@@ -458,7 +458,7 @@ public class BitcoinNetworkService extends AbstractService {
     // TODO the current best height should be remembered and used to generate percentage complete as
     // then if the peer is replaced the percentage increases monotonically
 
-    String walletRoot = WalletManager.INSTANCE.getCurrentWalletFilename().get().getParentFile().getAbsolutePath();
+    String walletRoot = WalletManager.INSTANCE.getCurrentWalletFile().get().getParentFile().getAbsolutePath();
     String blockchainFilename = walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.SPV_BLOCKCHAIN_SUFFIX;
     String checkpointsFilename = walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX;
 

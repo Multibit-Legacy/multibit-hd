@@ -24,11 +24,11 @@ import com.google.bitcoin.params.MainNetParams;
 import org.bitcoinj.wallet.Protos;
 import org.junit.Before;
 import org.junit.Test;
+import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletIdTest;
-import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
-import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.services.CoreServices;
 
 import java.io.File;
@@ -36,11 +36,10 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
 
+import static junit.framework.TestCase.fail;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class WalletManagerTest {
-
-  private static final String TEST_CREATE_ENCRYPTED_PROTOBUF_PREFIX = "testCreateEncryptedProtobuf";
 
   private final CharSequence WALLET_PASSWORD = "horatio nelson 123";
 
@@ -54,13 +53,16 @@ public class WalletManagerTest {
 
   @Before
   public void setUp() throws Exception {
+
     // Start the core services
     CoreServices.main(null);
     walletManager = WalletManager.INSTANCE;
+
   }
 
   @Test
   public void testCreateProtobufEncryptedWallet() throws Exception {
+
     // Create a random temporary directory to writeContacts the wallets
     File temporaryDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
     walletManager.initialise(temporaryDirectory);
@@ -71,8 +73,12 @@ public class WalletManagerTest {
     byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
     WalletId walletId = new WalletId(seed1);
 
-    String walletRootDirectoryPath = temporaryDirectory.getAbsolutePath() + File.separator + WalletManager.WALLET_DIRECTORY_PREFIX + WalletManager.SEPARATOR + walletId.toFormattedString();
-    (new File(walletRootDirectoryPath)).mkdir();
+    String walletRootDirectoryPath = temporaryDirectory.getAbsolutePath()
+      + File.separator
+      + WalletManager.WALLET_DIRECTORY_PREFIX
+      + WalletManager.SEPARATOR
+      + walletId.toFormattedString();
+    assertThat((new File(walletRootDirectoryPath)).mkdir()).isTrue();
     String newWalletFilename = walletRootDirectoryPath + File.separator + WalletManager.MBHD_WALLET_NAME;
 
     KeyCrypterScrypt initialKeyCrypter = new KeyCrypterScrypt();
@@ -85,6 +91,9 @@ public class WalletManagerTest {
 
     // Copy the private key bytes for checking later.
     byte[] originalPrivateKeyBytes1 = new byte[32];
+    if (newKey.getPrivKeyBytes() == null) {
+      fail();
+    }
     System.arraycopy(newKey.getPrivKeyBytes(), 0, originalPrivateKeyBytes1, 0, 32);
     System.out.println("testCreateProtobufEncryptedWallet - Original private key 1 = " + Utils.bytesToHexString(originalPrivateKeyBytes1));
 
@@ -94,6 +103,9 @@ public class WalletManagerTest {
     newKey = new ECKey();
 
     byte[] originalPrivateKeyBytes2 = new byte[32];
+    if (newKey.getPrivKeyBytes() == null) {
+      fail();
+    }
     System.arraycopy(newKey.getPrivKeyBytes(), 0, originalPrivateKeyBytes2, 0, 32);
     System.out.println("testCreateProtobufEncryptedWallet - Original private key 2 = " + Utils.bytesToHexString(originalPrivateKeyBytes2));
 
@@ -141,6 +153,9 @@ public class WalletManagerTest {
     assertThat(!firstRebornKey.isEncrypted()).describedAs("firstRebornKey should now de decrypted but is not").isTrue();
     // The reborn unencrypted private key bytes should match the original private key.
     byte[] firstRebornPrivateKeyBytes = firstRebornKey.getPrivKeyBytes();
+    if (firstRebornPrivateKeyBytes == null) {
+      fail();
+    }
     System.out.println("FileHandlerTest - Reborn decrypted first private key = " + Utils.bytesToHexString(firstRebornPrivateKeyBytes));
 
     for (int i = 0; i < firstRebornPrivateKeyBytes.length; i++) {
@@ -151,6 +166,9 @@ public class WalletManagerTest {
     assertThat(!secondRebornKey.isEncrypted()).describedAs("secondRebornKey should now de decrypted but is not").isTrue();
     // The reborn unencrypted private key bytes should match the original private key.
     byte[] secondRebornPrivateKeyBytes = secondRebornKey.getPrivKeyBytes();
+    if (secondRebornPrivateKeyBytes == null) {
+      fail();
+    }
     System.out.println("FileHandlerTest - Reborn decrypted second private key = " + Utils.bytesToHexString(secondRebornPrivateKeyBytes));
 
     for (int i = 0; i < secondRebornPrivateKeyBytes.length; i++) {
@@ -160,6 +178,7 @@ public class WalletManagerTest {
 
   @Test
   public void testCreateWallet() throws Exception {
+
     // Create a random temporary directory
     File temporaryDirectory1 = makeRandomTemporaryDirectory();
 
@@ -196,13 +215,21 @@ public class WalletManagerTest {
 
     assertThat(Arrays.equals(key1.getPrivKeyBytes(), key2.getPrivKeyBytes())).isTrue();
 
-    assertThat(walletManager.getCurrentWalletFilename().equals(
-            new File(temporaryDirectory2.getAbsolutePath() + File.separator + "mbhd-" + walletData2.getWalletId().toFormattedString()
-                    + File.separator + WalletManager.MBHD_WALLET_NAME)));
+    File expectedFile = new File(
+      temporaryDirectory2.getAbsolutePath()
+        + File.separator
+        + "mbhd-"
+        + walletData2.getWalletId().toFormattedString()
+        + File.separator
+        + WalletManager.MBHD_WALLET_NAME
+    );
+
+    assertThat(expectedFile.exists()).isTrue();
   }
 
   @Test
   public void testSearchWalletDirectories() throws Exception {
+
     // Create a random temporary directory
     File temporaryDirectory = makeRandomTemporaryDirectory();
 
@@ -223,10 +250,13 @@ public class WalletManagerTest {
   }
 
   private String makeDirectory(File parentDirectory, String directoryName) {
+
     File directory = new File(parentDirectory.getAbsolutePath() + File.separator + directoryName);
-    directory.mkdir();
+    assertThat(directory.mkdir()).isTrue();
     directory.deleteOnExit();
+
     return directory.getAbsolutePath();
+
   }
 
   public static File makeRandomTemporaryDirectory() throws IOException {
