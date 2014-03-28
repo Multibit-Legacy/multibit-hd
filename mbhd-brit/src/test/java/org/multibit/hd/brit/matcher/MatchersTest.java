@@ -24,7 +24,7 @@ import java.io.File;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class MatcherFactoryTest {
+public class MatchersTest {
 
   @Before
   public void setUp() throws Exception {
@@ -35,9 +35,9 @@ public class MatcherFactoryTest {
     // Find the example Matcher PGP secret key ring file
     File matcherSecretKeyFile = PGPUtilsTest.makeFile(PGPUtilsTest.TEST_SECRET_KEYRING_FILE);
 
-    MatcherConfig matcherConfig = new MatcherConfig(matcherSecretKeyFile);
+    MatcherConfig matcherConfig = new MatcherConfig(matcherSecretKeyFile, PGPUtilsTest.TEST_DATA_PASSWORD);
 
-    Matcher matcher = MatcherFactory.createBasicMatcher(matcherConfig);
+    Matcher matcher = Matchers.newBasicMatcher(matcherConfig);
     assertThat(matcher).isNotNull();
 
     // Check the Matcher PGP private key is stored properly

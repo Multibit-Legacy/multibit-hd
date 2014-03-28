@@ -29,9 +29,9 @@ import java.io.FileInputStream;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class PayerFactoryTest {
+public class PayersTest {
 
-  private static final Logger log = LoggerFactory.getLogger(PayerFactoryTest.class);
+  private static final Logger log = LoggerFactory.getLogger(PayersTest.class);
 
   @Before
   public void setUp() throws Exception {
@@ -48,7 +48,7 @@ public class PayerFactoryTest {
 
     PayerConfig payerConfig = new PayerConfig(matcherPGPPublicKey);
 
-    Payer payer = PayerFactory.createBasicPayer(payerConfig);
+    Payer payer = Payers.newBasicPayer(payerConfig);
     assertThat(payer).isNotNull();
 
     // Check the Matcher PGP public key is stored properly

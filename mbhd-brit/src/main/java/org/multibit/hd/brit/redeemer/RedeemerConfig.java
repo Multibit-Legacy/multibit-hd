@@ -3,7 +3,7 @@ package org.multibit.hd.brit.redeemer;
 import com.google.bitcoin.core.ECKey;
 
 /**
- *  <p>Configuration to provide the following to RedeemerFactory:<br>
+ *  <p>Configuration to provide the following to Redeemers:<br>
  *  <ul>
  *  <li>Storage of EC and PGP private and public keys used in BRIT redemption</li>
  *  </ul>

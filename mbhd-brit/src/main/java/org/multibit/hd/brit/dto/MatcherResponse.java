@@ -1,5 +1,8 @@
 package org.multibit.hd.brit.dto;
 
+import java.util.Date;
+import java.util.List;
+
 /**
  *  <p>DTO to provide the following to BRIT:<br>
  *  <ul>
@@ -14,17 +17,40 @@ package org.multibit.hd.brit.dto;
 public class MatcherResponse {
   private final int version = 1;
 
-  private final AddressGenerator addressGenerator;
+  private final Date replayDate;
 
-  public MatcherResponse(AddressGenerator addressGenerator) {
-    this.addressGenerator = addressGenerator;
+  private final List<String> addressList;
+
+  public MatcherResponse(Date replayDate, List<String> addressList) {
+    this.replayDate = replayDate;
+    this.addressList = addressList;
   }
 
   public int getVersion() {
     return version;
   }
 
-  public AddressGenerator getAddressGenerator() {
-    return addressGenerator;
+  public List<String> getAddressList() {
+    return addressList;
+  }
+
+  public Date getReplayDate() {
+    return replayDate;
+  }
+
+  /**
+   * Serialise a MatcherResponse
+   */
+  public byte[] serialise() {
+    return null;
+  }
+
+  /**
+   * Parse a serialised MatcherResponse
+   * @param serialisedMatcherResponse te serialised MatcherResponse
+   * @return a recreated MatcherResponse
+   */
+  public static MatcherResponse parse(byte[] serialisedMatcherResponse) {
+    return null;
   }
 }

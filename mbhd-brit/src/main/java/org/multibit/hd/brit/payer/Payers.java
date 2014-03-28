@@ -11,15 +11,15 @@ package org.multibit.hd.brit.payer;
  *  </p>
  *  
  */
-public class PayerFactory {
+public class Payers {
 
   /**
    * Private constructor for utility classes
    */
-  private PayerFactory() {
+  private Payers() {
   }
 
-  public static Payer createBasicPayer(PayerConfig payerConfig) {
+  public static Payer newBasicPayer(PayerConfig payerConfig) {
     return new BasicPayer(payerConfig);
   }
 }

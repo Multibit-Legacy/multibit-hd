@@ -86,8 +86,8 @@ At the beginning of each UTC day Bitcoin addresses are selected at random from t
 all Redeemers' bitcoin addresses. The number of Bitcoin addresses selected is denoted `numberOfBitcoinAddressesPerDay`
 These are stored, with a reference to the day the selection was made, for later lookup.
 This data is denoted as:
- + `matcher.dateEncountered`
- + `matcher.bitcoinAddressList`
+ + `matcher.dateEncountered`        << The date the bitcoinAddresses were chosen
+ + `matcher.bitcoinAddressList`     << The list of bitcoinAddresses chosen that day
 
 
 #### 4. Payer creates random session key
@@ -96,7 +96,7 @@ The Payer creates a random session key (`payer.sessionKey`). This is a 16 byte r
 Matcher so that the Payer can have confidence that the responses from the Matcher are genuine.
 
 
-#### 5. Payer derives unique BRIT wallet identifier
+#### 5. Payer derives a unique BRIT wallet identifier
 
 The Payer runs a number of one way trapdoor functions over their wallet seed phrase to deterministically generate a wallet
 identifier (`payer.britWalletId`). This is 20 bytes long. It is not computationally feasible to go backwards and derive
@@ -132,9 +132,11 @@ The Matcher decodes the message using `matcher.PGP.private`.
 The Matcher generates an AES256 key `matcher.AES.encryptionKey` as follows:
 
 ```
-matcher.AES.encryptionKey = payer.britWalletId          (2)
-matcher.AES.initialisationVector = payer.sessionKey     (3)
+matcher.AES.encryptionKey = SHA256(payer.britWalletId)          (2)
+matcher.AES.initialisationVector = payer.sessionKey             (3)
 ```
+
+The SHA256 is used to stretch the britWalletId to 32 bytes, suitable for use as an AES encryption key.
 
 The purpose of this step is to encrypt the information returned to the Payer to prevent eavesdropping.
 It also validates the Matcher is actually the BRIT Matcher and has not been man-in-the-middled.
@@ -169,7 +171,7 @@ The resulting message is sent to the Payer who can decrypt it since they know ho
 `matcher.AES.initialisationVector` were generated from the `payer.britWalletId` and `payer.sessionKey` (Equations 2 and 3).
 
 
-#### 11. Payer creates payment Bitcoin address and pays bitcoin to it
+#### 11. Payer selects payment Bitcoin address and pays bitcoin to it
 
 Any time the Payer has to make a payment they randomly choose a Bitcoin address from `matcher.bitcoinAddressList`.
 
@@ -183,12 +185,12 @@ strategies available to further obfuscate the information being leaked that are 
 #### 12. Redeemer redeems bitcoin
 
 The Redeemer can monitors all the Bitcoin addresses in their `redeemer.bitcoinAddress` list. They can redeem these
-payments directly as they have the private keys for all these addresses.
+payments directly as they have the private keys for all of these addresses.
 
 
 ### Notes
 
-There are a few alterations that could be made to the protocol described above.
+There are a few additions that could be made to the protocol described above.
 
 
 #### Decreasing the visibility of BRIT payments

@@ -11,15 +11,15 @@ package org.multibit.hd.brit.redeemer;
  *  </p>
  *  
  */
-public class RedeemerFactory {
+public class Redeemers {
 
   /**
    * Private constructor for utility classes
    */
-  private RedeemerFactory() {
+  private Redeemers() {
   }
 
-  public static Redeemer createBasicRedeemer(RedeemerConfig redeemerConfig) {
+  public static Redeemer newBasicRedeemer(RedeemerConfig redeemerConfig) {
     return new BasicRedeemer(redeemerConfig);
   }
 }

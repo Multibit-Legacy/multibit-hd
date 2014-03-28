@@ -3,7 +3,7 @@ package org.multibit.hd.brit.payer;
 import org.bouncycastle.openpgp.PGPPublicKey;
 
 /**
- *  <p>Configuration to provide the following to PayerFactory:<br>
+ *  <p>Configuration to provide the following to Payers:<br>
  *  <ul>
  *  <li></li>
  *  </ul>
