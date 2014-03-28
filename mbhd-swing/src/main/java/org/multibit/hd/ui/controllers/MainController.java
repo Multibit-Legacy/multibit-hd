@@ -304,22 +304,31 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
     if (!event.isExitCancel()) {
 
       // Successful wizard interaction
-      handleExchange();
 
-      // Show the initial screen
+      // Show the initial screen as soon as possible to reassure the user
       Screen screen = Screen.valueOf(Configurations.currentConfiguration.getApplicationConfiguration().getCurrentScreen());
       ControllerEvents.fireShowDetailScreenEvent(screen);
 
-      // Start the backup manager
-      handleBackupManager();
+      // Don't hold up the UI thread with these background operations
+      SafeExecutors.newSingleThreadExecutor().submit(new Runnable() {
+        @Override
+        public void run() {
 
-      // Check for Bitcoin URIs
-      handleBitcoinURIAlert();
+          // Get a ticker going
+          handleExchange();
 
-      handleBitcoinNetworkStart();
+          // Start the backup manager
+          handleBackupManager();
 
+          // Check for Bitcoin URIs
+          handleBitcoinURIAlert();
+
+          // Lastly start the Bitcoin network
+          handleBitcoinNetworkStart();
+
+        }
+      });
     }
-
   }
 
   @Override

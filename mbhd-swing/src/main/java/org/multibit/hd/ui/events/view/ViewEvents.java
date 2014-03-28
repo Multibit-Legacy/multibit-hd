@@ -155,6 +155,17 @@ public class ViewEvents {
   }
 
   /**
+   * <p>Broadcast a new "wizard deferred hide" event</p>
+   *
+   * @param panelName    The unique panel name to which this applies (use screen name for detail screens)
+   * @param isExitCancel True if this deferred hide event comes as a result of an exit or cancel
+   */
+  public static void fireWizardDeferredHideEvent(String panelName, boolean isExitCancel) {
+    log.trace("Firing 'wizard deferred hide' event");
+    CoreServices.uiEventBus.post(new WizardDeferredHideEvent(panelName, isExitCancel));
+  }
+
+  /**
    * <p>Broadcast a new "component changed" event</p>
    *
    * @param panelName      The unique panel name to which this applies (use screen name for detail screens)

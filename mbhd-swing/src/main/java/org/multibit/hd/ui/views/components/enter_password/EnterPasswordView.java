@@ -135,7 +135,7 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
   /**
    * @param showSpinner True if the view should show the spinner and disable other components
    */
-  public void handleTarpit(boolean showSpinner) {
+  public void setSpinnerVisibility(boolean showSpinner) {
 
     spinner.setVisible(showSpinner);
     password.setEnabled(!showSpinner);

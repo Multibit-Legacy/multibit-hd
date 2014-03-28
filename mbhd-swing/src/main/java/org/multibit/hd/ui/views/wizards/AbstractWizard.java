@@ -4,20 +4,25 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.Uninterruptibles;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.events.view.WizardDeferredHideEvent;
 import org.multibit.hd.ui.events.view.WizardPopoverHideEvent;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.Popovers;
 import org.multibit.hd.ui.views.layouts.WizardCardLayout;
+import org.multibit.hd.ui.views.wizards.password.PasswordState;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Abstract base class to provide the following to UI:</p>
@@ -129,28 +134,54 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
   /**
    * <p>Hide the wizard if <code>beforeHide</code> returns true</p>
    *
-   * @param name         The panel name
+   * @param panelName    The panel name
    * @param isExitCancel True if this hide operation comes from an exit or cancel
    */
-  public void hide(String name, boolean isExitCancel) {
+  public void hide(String panelName, boolean isExitCancel) {
 
-    Preconditions.checkState(wizardViewMap.containsKey(name), "'" + name + "' is not a valid panel name");
+    Preconditions.checkState(wizardViewMap.containsKey(panelName), "'" + panelName + "' is not a valid panel name");
 
-    final AbstractWizardPanelView wizardPanelView = wizardViewMap.get(name);
+    final AbstractWizardPanelView wizardPanelView = wizardViewMap.get(panelName);
 
     // Provide warning that the panel is about to be shown
     if (wizardPanelView.beforeHide(isExitCancel)) {
 
-      // De-register
-      wizardPanelView.deregisterDefaultButton();
-
-      // No abort so hide
-      Panels.hideLightBox();
-
-      // Issue the wizard hide event
-      ViewEvents.fireWizardHideEvent(name, wizardModel, isExitCancel);
+      // No cancellation so go ahead with the hide
+      handleHide(panelName, isExitCancel, wizardPanelView);
 
     }
+
+  }
+
+  /**
+   * <p>Hide the wizard</p>
+   *
+   * @param panelName       The panel name
+   * @param isExitCancel    True if this hide operation comes from an exit or cancel
+   * @param wizardPanelView The wizard panel view from the wizard view map
+   */
+  public void handleHide(final String panelName, boolean isExitCancel, AbstractWizardPanelView wizardPanelView) {
+
+    // De-register
+    wizardPanelView.deregisterDefaultButton();
+
+    // Issue the wizard hide event before the hide takes place to give UI time to update
+    ViewEvents.fireWizardHideEvent(panelName, wizardModel, isExitCancel);
+
+    SafeExecutors.newSingleThreadExecutor().submit(new Runnable() {
+      @Override
+      public void run() {
+
+        // Require some extra time to get the rest of the UI started for password wizard
+        if (PasswordState.PASSWORD_ENTER_PASSWORD.name().equals(panelName)) {
+          Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+        }
+
+        // No abort so hide
+        Panels.hideLightBox();
+
+      }
+    });
 
   }
 
@@ -348,5 +379,20 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
 
   }
 
+  @Subscribe
+  public void onWizardDeferredHideEvent(WizardDeferredHideEvent event) {
+
+    String panelName = event.getPanelName();
+
+    if (getWizardModel().getPanelName().equals(panelName)) {
+
+      final AbstractWizardPanelView wizardPanelView = wizardViewMap.get(panelName);
+
+      // This is a deferred hide so don't call hide() again
+      handleHide(panelName, event.isExitCancel(), wizardPanelView);
+
+    }
+
+  }
 
 }

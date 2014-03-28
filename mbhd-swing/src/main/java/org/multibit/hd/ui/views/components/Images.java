@@ -53,6 +53,22 @@ public class Images {
   }
 
   /**
+   * @return A new "logo" image icon
+   */
+  public static BufferedImage newLogoImage() {
+
+    try (InputStream is = Images.class.getResourceAsStream("/assets/images/multibit128.png")) {
+
+      // Transform the mask color into the current themed text
+      return ImageIO.read(is);
+
+    } catch (IOException e) {
+      throw new IllegalStateException("The logo image is missing");
+    }
+
+  }
+
+  /**
    * @param code The 2-letter language code (e.g. "EN") - will be uppercase
    *
    * @return A new "language" image icon suitable for use in combo boxes etc
@@ -65,7 +81,7 @@ public class Images {
 
     // Fill the background
     g2.setColor(Themes.currentTheme.readOnlyComboBox());
-    g2.fillRect(0,0,26,20);
+    g2.fillRect(0, 0, 26, 20);
 
     // Write the language code (looks better with white lowercase)
     g2.setRenderingHints(ImageDecorator.smoothRenderingHints());
@@ -107,11 +123,11 @@ public class Images {
 
     if ((!isCoinbase && confirmationCount >= 6) || (isCoinbase && confirmationCount >= 120)) {
       return ImageDecorator.toImageIcon(AwesomeDecorator.createIcon(
-              AwesomeIcon.CHECK,
-              Themes.currentTheme.successAlertBackground(),
-              iconSize));
+        AwesomeIcon.CHECK,
+        Themes.currentTheme.successAlertBackground(),
+        iconSize));
     }
-      
+
     BufferedImage background = new BufferedImage(MultiBitUI.NORMAL_ICON_SIZE, MultiBitUI.NORMAL_ICON_SIZE, BufferedImage.TYPE_INT_ARGB);
 
     Graphics2D g2 = background.createGraphics();
@@ -134,7 +150,7 @@ public class Images {
     g2.setColor(Themes.currentTheme.successAlertBackground().darker());
     g2.drawArc(1, 1, iconSize - 2, iconSize - 2, 90, -angle);
     if (angle != 360) {
-      int center = (int)( iconSize * 0.5);
+      int center = (int) (iconSize * 0.5);
       int diameter = center - 1;
       // vertical stroke
       g2.drawLine(center, center, center, 1);

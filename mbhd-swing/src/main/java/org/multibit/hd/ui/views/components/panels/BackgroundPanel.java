@@ -87,6 +87,8 @@ public class BackgroundPanel extends JPanel {
 
     setLayout(new BorderLayout());
 
+    this.applyComponentOrientation(this.getComponentOrientation());
+
   }
 
   /**
@@ -174,7 +176,14 @@ public class BackgroundPanel extends JPanel {
     int width = d.width - insets.left - insets.right;
     int height = d.height - insets.top - insets.left;
 
-    float x = (width - image.get().getWidth(null)) * alignmentX;
+    // Handle left to right orientation
+    float x;
+    if (this.getComponentOrientation().isLeftToRight()) {
+      x = (width - image.get().getWidth(null)) * alignmentX;
+    } else {
+      //x = (width - image.get().getWidth(null)) * alignmentX;
+      x = (width - image.get().getWidth(null)) * (1 - alignmentX);
+    }
     float y = (height - image.get().getHeight(null)) * alignmentY;
 
     applyAlphaComposite(g2);
