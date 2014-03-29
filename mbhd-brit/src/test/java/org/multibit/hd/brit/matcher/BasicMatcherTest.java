@@ -30,6 +30,7 @@ import org.multibit.hd.brit.payer.PayerConfig;
 import org.multibit.hd.brit.payer.Payers;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.brit.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,11 +121,14 @@ public class BasicMatcherTest {
     assertThat(replayDate).isNotNull();
   }
 
-  private Matcher createTestMatcher() {
+  private Matcher createTestMatcher() throws Exception {
     // Find the example Matcher PGP secret key ring file
     File matcherSecretKeyFile = PGPUtilsTest.makeFile(PGPUtilsTest.TEST_MATCHER_SECRET_KEYRING_FILE);
 
-    MatcherConfig matcherConfig = new MatcherConfig(matcherSecretKeyFile, PGPUtilsTest.TEST_DATA_PASSWORD);
+    // Create a random temporary directory for the matcher store to use
+    String matcherStoreDirectoryLocation = FileUtils.makeRandomTemporaryDirectory().getAbsolutePath();
+
+    MatcherConfig matcherConfig = new MatcherConfig(matcherSecretKeyFile, PGPUtilsTest.TEST_DATA_PASSWORD, matcherStoreDirectoryLocation);
 
     Matcher matcher = Matchers.newBasicMatcher(matcherConfig);
     assertThat(matcher).isNotNull();

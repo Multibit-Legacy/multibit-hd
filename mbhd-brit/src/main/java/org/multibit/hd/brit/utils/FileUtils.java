@@ -1,5 +1,6 @@
 package org.multibit.hd.brit.utils;
 
+import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,59 +30,92 @@ public class FileUtils {
   }
 
   public static byte[] readFile(File file) throws IOException {
-       if (file == null) {
-           throw new IllegalArgumentException("File must be provided");
-       }
+    if (file == null) {
+      throw new IllegalArgumentException("File must be provided");
+    }
 
-       if ( file.length() > MAX_FILE_SIZE ) {
-           throw new IOException("File '" + file.getAbsolutePath() + "' is too large to input");
-       }
+    if (file.length() > MAX_FILE_SIZE) {
+      throw new IOException("File '" + file.getAbsolutePath() + "' is too large to input");
+    }
 
-       byte []buffer = new byte[(int) file.length()];
-       InputStream ios = null;
-       try {
-           ios = new FileInputStream(file);
-           if ( ios.read(buffer) == -1 ) {
-               throw new IOException("EOF reached while trying to read the whole file");
-           }
-       } finally {
-           try {
-                if ( ios != null )  {
-                     ios.close();
-                }
-           } catch ( IOException e) {
-               log.error(e.getClass().getName() + " " + e.getMessage());
-           }
-       }
+    byte[] buffer = new byte[(int) file.length()];
+    InputStream ios = null;
+    try {
+      ios = new FileInputStream(file);
+      if (ios.read(buffer) == -1) {
+        throw new IOException("EOF reached while trying to read the whole file");
+      }
+    } finally {
+      try {
+        if (ios != null) {
+          ios.close();
+        }
+      } catch (IOException e) {
+        log.error(e.getClass().getName() + " " + e.getMessage());
+      }
+    }
 
-       return buffer;
-   }
+    return buffer;
+  }
 
   /**
-    * Write a file from the inputstream to the outputstream
-    */
-   public static void writeFile(InputStream in, OutputStream out)
-           throws IOException {
-     byte[] buffer = new byte[1024];
-     int len;
+   * Write a file from the inputstream to the outputstream
+   */
+  public static void writeFile(InputStream in, OutputStream out)
+          throws IOException {
+    byte[] buffer = new byte[1024];
+    int len;
 
-     while ((len = in.read(buffer)) >= 0)
-       out.write(buffer, 0, len);
+    while ((len = in.read(buffer)) >= 0)
+      out.write(buffer, 0, len);
 
-     in.close();
-     out.close();
-   }
+    in.close();
+    out.close();
+  }
 
   public static File makeRandomTemporaryDirectory() throws IOException {
-     File temporaryFile = File.createTempFile("nothing", "nothing");
-     temporaryFile.deleteOnExit();
+    File temporaryFile = File.createTempFile("nothing", "nothing");
+    temporaryFile.deleteOnExit();
 
-     File parentDirectory = temporaryFile.getParentFile();
+    File parentDirectory = temporaryFile.getParentFile();
 
-     File temporaryDirectory = new File(parentDirectory.getAbsolutePath() + File.separator + ("" + (new Random()).nextInt(1000000)));
-     temporaryDirectory.mkdir();
-     temporaryDirectory.deleteOnExit();
+    File temporaryDirectory = new File(parentDirectory.getAbsolutePath() + File.separator + ("" + (new Random()).nextInt(1000000)));
+    temporaryDirectory.mkdir();
+    temporaryDirectory.deleteOnExit();
 
-     return temporaryDirectory;
-   }
+    return temporaryDirectory;
+  }
+
+  /**
+   * Work out the directory part of a filename
+   *
+   * @param name of file
+   * @return directory part of filename
+   */
+  public static String directoryPart(String name) {
+    int s = name.lastIndexOf(File.separatorChar);
+    return s == -1 ? null : name.substring(0, s);
+  }
+
+  /**
+   * Work out the file part of a filename
+   *
+   * @param name of file
+   * @return file part of filename
+   */
+  public static String filePart(String name) {
+    int s = name.lastIndexOf(File.separatorChar);
+    if (s == -1) {
+      return name;
+    } else {
+      return name.substring(s + 1);
+    }
+  }
+
+  public static void createDirectoryIfNecessary(File directoryToCreate) {
+    if (!directoryToCreate.exists()) {
+      Preconditions.checkState(directoryToCreate.mkdir(), "Could not create the directory of '" + directoryToCreate + "'");
+    }
+    Preconditions.checkState(directoryToCreate.isDirectory(), "Incorrectly identified the directory of '" + directoryToCreate + " as a file");
+  }
 }

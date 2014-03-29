@@ -27,9 +27,10 @@ public class MatcherConfig {
    */
   private String matcherStoreLocation;
 
-  public MatcherConfig(File matcherSecretKeyringFile, char[] password) {
+  public MatcherConfig(File matcherSecretKeyringFile, char[] password, String matcherStoreLocation) {
     this.matcherSecretKeyringFile = matcherSecretKeyringFile;
     this.password = password;
+    this.matcherStoreLocation = matcherStoreLocation;
   }
 
   public File getMatcherSecretKeyringFile() {
