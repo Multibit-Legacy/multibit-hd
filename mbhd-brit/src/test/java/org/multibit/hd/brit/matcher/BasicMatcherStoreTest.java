@@ -111,21 +111,32 @@ public class BasicMatcherStoreTest {
   public void testStoreAndLookupWalletToEncounterDateLinks() throws Exception {
     // Create a BRITWalletId (in real life this would be using the Payer's wallet seed)
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-    byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(BRITWalletIdTest.SEED_PHRASE_1));
-    BRITWalletId britWalletId = new BRITWalletId(seed);
+    byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(BRITWalletIdTest.SEED_PHRASE_1));
+    BRITWalletId britWalletId1 = new BRITWalletId(seed1);
 
-    Date encounterDate = DateTime.now().toDate();
-    Date firstTransactionDate = DateTime.now().minusDays(1).toDate();
+    Date encounterDate1 = DateTime.now().toDate();
+    Date firstTransactionDate1 = DateTime.now().minusDays(1).toDate();
 
-    // Store an encounter with this britWalletId and no lastTransactionDate
-    WalletToEncounterDateLink walletToEncounterLink = new WalletToEncounterDateLink(britWalletId, Optional.of(encounterDate), Optional.of(firstTransactionDate));
+    // Store an encounter with this britWalletId and an lastTransactionDate
+    WalletToEncounterDateLink walletToEncounterLink1 = new WalletToEncounterDateLink(britWalletId1, Optional.of(encounterDate1), Optional.of(firstTransactionDate1));
+    matcherStore.storeWalletToEncounterDateLink(walletToEncounterLink1);
 
-    matcherStore.storeWalletToEncounterDateLink(walletToEncounterLink);
+
+    // Store another one
+      byte[] seed2 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(BRITWalletIdTest.SEED_PHRASE_2));
+      BRITWalletId britWalletId2 = new BRITWalletId(seed2);
+
+      Date encounterDate2 = DateTime.now().minusDays(2).toDate();
+
+      // Store an encounter with this britWalletId and no lastTransactionDate
+      WalletToEncounterDateLink walletToEncounterLink2 = new WalletToEncounterDateLink(britWalletId2, Optional.of(encounterDate2), Optional.<Date>absent());
+      matcherStore.storeWalletToEncounterDateLink(walletToEncounterLink2);
 
     // Bounce the MatcherStore to check everything is being persisted
-    //MatcherStore rebornMatcherStore = MatcherStores.newBasicMatcherStore(matcherStoreDirectoryLocation);
+    MatcherStore rebornMatcherStore = MatcherStores.newBasicMatcherStore(matcherStoreDirectoryLocation);
 
-    // Check it has been stored ok
-    assertThat(matcherStore.lookupWalletToEncounterDateLink(britWalletId)).isEqualTo(walletToEncounterLink);
+    // Check they have been stored ok
+    assertThat(rebornMatcherStore.lookupWalletToEncounterDateLink(britWalletId1)).isEqualTo(walletToEncounterLink1);
+    assertThat(rebornMatcherStore.lookupWalletToEncounterDateLink(britWalletId2)).isEqualTo(walletToEncounterLink2);
   }
 }

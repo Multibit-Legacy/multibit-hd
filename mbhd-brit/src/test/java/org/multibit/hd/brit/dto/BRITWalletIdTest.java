@@ -30,7 +30,7 @@ public class BRITWalletIdTest {
   public static final String SEED_PHRASE_1 = "letter advice cage absurd amount doctor acoustic avoid letter advice cage above";
   private static final String WALLET_ID_1 = "4bbd8a749179d65a5f1b0859684f53ba5b761714";
 
-  private static final String SEED_PHRASE_2 = "require want tube elegant juice cool cup noble town poem plate harsh";
+  public static final String SEED_PHRASE_2 = "require want tube elegant juice cool cup noble town poem plate harsh";
   private static final String WALLET_ID_2 = "7e5218ea0428cbd44de74567fd8af557d8715545";
 
   private static final String SEED_PHRASE_3 = "morning truly witness grass pill typical blur then notable session exact coyote word noodle dentist hurry ability dignity";

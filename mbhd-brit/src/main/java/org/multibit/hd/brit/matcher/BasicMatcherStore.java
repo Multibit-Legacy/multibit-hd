@@ -12,10 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Strings;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +43,7 @@ public class BasicMatcherStore implements MatcherStore {
   public static final String NAME_OF_DIRECTORY_CONTAINING_BITCOIN_ADDRESSES_BY_DATE = "by-date";
 
   public static final String LINKS_FILENAME_SUFFIX = ".txt";
+
   /**
    * Produces "2000-04-01" for simplified short user date
    */
@@ -55,6 +53,11 @@ public class BasicMatcherStore implements MatcherStore {
    * A map containing the link from a BRITWalletId to the previous encounter of this wallet (if available)
    */
   private Map<BRITWalletId, WalletToEncounterDateLink> previousEncounterMap;
+
+  /**
+   * The file to which the wallet to encounter dates are appended
+   */
+  private File walletToEncounterDateFile;
 
   /**
    * A list of all the Bitcoin addresses in the MatcherStore
@@ -95,7 +98,6 @@ public class BasicMatcherStore implements MatcherStore {
         filePart = filePart.replace(LINKS_FILENAME_SUFFIX, "");
 
         // See if it is a yyyy-mm-dd date
-
         DateTime parsedDate = utcShortDateWithHyphensFormatter.parseDateTime(filePart);
         if (parsedDate != null) {
           // This file contains the bitcoin addresses for this date
@@ -105,7 +107,34 @@ public class BasicMatcherStore implements MatcherStore {
       }
     }
 
+    // Read in all the exisiting britWalletId to encounter date links
     previousEncounterMap = Maps.newHashMap();
+    walletToEncounterDateFile = new File(backingStoreDirectory + File.separator + NAME_OF_FILE_CONTAINING_WALLET_TO_ENCOUNTER_DATE_LINKS);
+    // If the file does not exists, then create it as we only ever append to this file later
+    try {
+      if (!walletToEncounterDateFile.exists()) {
+        if (!walletToEncounterDateFile.createNewFile()) {
+          log.debug("Could not create '" + walletToEncounterDateFile.getAbsolutePath() + "'");
+        }
+      }
+      byte[] walletToEncounterDatesAsBytes = FileUtils.readFile(walletToEncounterDateFile); // Will scale better if streaming
+      String walletToEncounterDates = new String(walletToEncounterDatesAsBytes, "UTF8");
+
+      // Split into lines - each line contains a serialised WalletToEncounterDateLink
+      String[] walletToEncounterDateArray = Strings.split(walletToEncounterDates, '\n');
+      if (walletToEncounterDateArray != null) {
+        for (String line : walletToEncounterDateArray) {
+          if (line != null && !line.equals("")) {
+            WalletToEncounterDateLink link = WalletToEncounterDateLink.parse(line);
+            if (link != null) {
+              previousEncounterMap.put(link.getBritWalletId(), link);
+            }
+          }
+        }
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   @Override
@@ -113,7 +142,16 @@ public class BasicMatcherStore implements MatcherStore {
     // Update the in memory data representation
     previousEncounterMap.put(walletToEncounterDateLink.getBritWalletId(), walletToEncounterDateLink);
 
-    // TODO also append link data to backing file
+    // Append link data to backing file
+    try {
+      // true = append file
+      FileWriter fileWriter = new FileWriter(walletToEncounterDateFile, true);
+      BufferedWriter bufferWriter = new BufferedWriter(fileWriter);
+      bufferWriter.write(walletToEncounterDateLink.serialise() + "\n");
+      bufferWriter.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   @Override

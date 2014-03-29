@@ -31,7 +31,7 @@ public class PayerRequest {
 
   private final Optional<Date> firstTransactionDate;
 
-  public static final String SERIALISER_SEPARATOR = "\n";
+  public static final char SERIALISER_SEPARATOR = '\n';
 
   public PayerRequest(BRITWalletId britWalletId, byte[] sessionKey, Optional<Date> firstTransactionDate) {
     this.britWalletId = britWalletId;
@@ -106,7 +106,7 @@ public class PayerRequest {
     String serialisedPaymentRequestAsString = new String(serialisedPaymentRequest, "UTF8");
 
     log.debug("Attempting to parse payment request:\n" + serialisedPaymentRequestAsString);
-    String[] rows = Strings.split(serialisedPaymentRequestAsString, '\n');
+    String[] rows = Strings.split(serialisedPaymentRequestAsString, SERIALISER_SEPARATOR);
     if (rows.length == 3) {
       BRITWalletId britWalletId = new BRITWalletId(rows[0]);
       byte[] sesssionKey = Utils.parseAsHexOrBase58(rows[1]);
