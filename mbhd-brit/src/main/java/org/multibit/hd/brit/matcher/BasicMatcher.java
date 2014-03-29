@@ -1,7 +1,6 @@
 package org.multibit.hd.brit.matcher;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.base.Optional;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.crypto.PGPUtils;
 import org.multibit.hd.brit.dto.*;
@@ -14,14 +13,13 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  *  <p>Class to provide the following to BRIT:<br>
  *  <ul>
  *  <li>ability to match redeemers and payers</li>
  *  </ul>
-
+ * <p/>
  *  </p>
  *  
  */
@@ -36,15 +34,16 @@ public class BasicMatcher implements Matcher {
   private PayerRequest lastPayerRequest;
 
   /**
-   * A map containing the link from a BRITWalletId to the previous encounter of this wallet (if available)
+   * The matcher store containing all the bitcoin address information
    */
-  private Map<BRITWalletId, WalletToEncounterDateLink> previousEncounterMap;
+  private MatcherStore matcherStore;
 
 
   public BasicMatcher(MatcherConfig matcherConfig) {
     this.matcherConfig = matcherConfig;
-    // TODO populate with previous data from the matcher store (location is now in the MatcherConfig)
-    previousEncounterMap = Maps.newHashMap();
+
+    // Create a new matcher store and populate it
+    matcherStore = MatcherStores.newBasicMatcherStore(matcherConfig.getMatcherStoreLocation());
   }
 
   @Override
@@ -71,7 +70,7 @@ public class BasicMatcher implements Matcher {
   public MatcherResponse process(PayerRequest payerRequest) {
     lastPayerRequest = payerRequest;
 
-    WalletToEncounterDateLink previousEncounter = getWalletToEncounterDateLink(payerRequest.getBRITWalletId());
+    WalletToEncounterDateLink previousEncounter = matcherStore.lookupWalletToEncounterDateLink(payerRequest.getBRITWalletId());
 
     // The replay date is the earliest of:
     // + the payerRequest.firstTreatmentDate in the PayerRequest (if available)
@@ -86,11 +85,18 @@ public class BasicMatcher implements Matcher {
       replayDate = previousEncounter.getFirstTransactionDate().get().before(replayDate) ? previousEncounter.getFirstTransactionDate().get() : replayDate;
     }
     if (payerRequest.getFirstTransactionDate().isPresent()) {
-       replayDate = payerRequest.getFirstTransactionDate().get().before(replayDate) ? payerRequest.getFirstTransactionDate().get() : replayDate;
-     }
+      replayDate = payerRequest.getFirstTransactionDate().get().before(replayDate) ? payerRequest.getFirstTransactionDate().get() : replayDate;
+    }
 
+    // TODO update record if replay date coming in is earleir than the one on the existing record (or if it is absent)
+    
+    // If the previousEncounter was null then store this encounter
+    if (previousEncounter == null) {
+      WalletToEncounterDateLink thisEncounter = new WalletToEncounterDateLink(payerRequest.getBRITWalletId(), Optional.of(new Date()), Optional.of(replayDate));
+      matcherStore.storeWalletToEncounterDateLink(thisEncounter);
+    }
     // Lookup the current valid set of Bitcoin addresses to return to the payer
-    List<String> currentBitcoinAddressList = getBitcoinAddressList(new Date());
+    List<String> currentBitcoinAddressList = matcherStore.getBitcoinAddressListForDate(new Date());
     return new MatcherResponse(replayDate, currentBitcoinAddressList);
   }
 
@@ -105,30 +111,4 @@ public class BasicMatcher implements Matcher {
     return new EncryptedMatcherResponse(encryptedMatcherResponsePayload);
   }
 
-  @Override
-  public List<String> getBitcoinAddressList(Date encounterDate) {
-    List<String> currentBitcoinAddresses = Lists.newArrayList();
-    // TODO - interrogate backing store and get the encounterDate's addresses, if present.
-    // TODO   Otherwise create a new set of addresses randomly, store and return them
-    currentBitcoinAddresses.add("bebop");
-    currentBitcoinAddresses.add("zang");
-
-    return currentBitcoinAddresses;
-  }
-
-  @Override
-  public WalletToEncounterDateLink getWalletToEncounterDateLink(BRITWalletId britWalletId) {
-    // See if we have already seen this WalletId before
-
-    // If this is present, return it.
-    // If this is null, return a null.
-    return previousEncounterMap.get(britWalletId);
-  }
-
-  @Override
-  public void storeWalletToEncounterDateLink(WalletToEncounterDateLink walletToEncounterDateLink) {
-    previousEncounterMap.put(walletToEncounterDateLink.getBritWalletId(), walletToEncounterDateLink);
-
-    // TODO store to backing store
-  }
 }

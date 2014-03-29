@@ -1,10 +1,11 @@
 package org.multibit.hd.brit.matcher;
 
-import org.multibit.hd.brit.dto.*;
+import org.multibit.hd.brit.dto.EncryptedMatcherResponse;
+import org.multibit.hd.brit.dto.EncryptedPayerRequest;
+import org.multibit.hd.brit.dto.MatcherResponse;
+import org.multibit.hd.brit.dto.PayerRequest;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
-import java.util.List;
 
 /**
  *  <p>Interface to provide the following to BRIT:<br>
@@ -48,26 +49,4 @@ public interface Matcher {
    */
   public EncryptedMatcherResponse encryptMatcherResponse(MatcherResponse matcherResponse) throws NoSuchAlgorithmException;
 
-  /**
-   * Get the list of Bitcoin addresses for the specified date.
-   * The first time this is called for a particular date the Bitcoin addresses will be chosen at random
-   * from the universe of Redeemer Bitcoin addresses.
-   *
-   * Subsequent calls for the same encounter date will return the same list of addresses
-   * @param encounterDate
-   * @return BitcoinAddresses a list of Strings equal to Bitcoin addresses
-   */
-  public List<String> getBitcoinAddressList(Date encounterDate);
-
-  /**
-   * For a given BRITWalletId, get matching encounter date (the first time this BRITWalletId was seen)
-   * Also return a user provided firstTransactionDate if it has been supplied in the past
-   */
-  public WalletToEncounterDateLink getWalletToEncounterDateLink(BRITWalletId britWalletId);
-
-  /**
-   * Store the provided WalletToEncounterDateLink for future use.
-   * If a WalletToEncounterDateLink exists for the BRITWalletId, overwrite the previous entry.
-   */
-  public void storeWalletToEncounterDateLink(WalletToEncounterDateLink walletToEncounterDateLink);
 }
