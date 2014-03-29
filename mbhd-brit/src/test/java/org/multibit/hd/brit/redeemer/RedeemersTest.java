@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class RedeemerFactoryTest {
+public class RedeemersTest {
 
   @Before
   public void setUp() throws Exception {
@@ -33,7 +33,7 @@ public class RedeemerFactoryTest {
     ECKey redeemerECKey = new ECKey();
     RedeemerConfig redeemerConfig = new RedeemerConfig(redeemerECKey);
 
-    Redeemer redeemer = RedeemerFactory.createBasicRedeemer(redeemerConfig);
+    Redeemer redeemer = Redeemers.newBasicRedeemer(redeemerConfig);
 
     // Check the ECKey is stored correctly
     assertThat(redeemer.getConfig().getRedeemerECKey()).isEqualTo(redeemerECKey);

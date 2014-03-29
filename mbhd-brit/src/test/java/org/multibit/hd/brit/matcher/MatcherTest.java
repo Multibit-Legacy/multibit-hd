@@ -18,14 +18,14 @@ package org.multibit.hd.brit.matcher;
 
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.Test;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.crypto.PGPUtils;
 import org.multibit.hd.brit.crypto.PGPUtilsTest;
 import org.multibit.hd.brit.dto.*;
 import org.multibit.hd.brit.payer.Payer;
 import org.multibit.hd.brit.payer.PayerConfig;
-import org.multibit.hd.brit.payer.PayerFactory;
+import org.multibit.hd.brit.payer.Payers;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.slf4j.Logger;
@@ -34,6 +34,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.security.SecureRandom;
+import java.util.Date;
+import java.util.List;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -48,9 +50,8 @@ public class MatcherTest {
     secureRandom = new SecureRandom();
   }
 
-  @Ignore
+  @Test
   public void testPayerRequestAndMatcherResponse1() throws Exception {
-
     // Create a payer
     Payer payer = createTestPayer();
 
@@ -63,9 +64,16 @@ public class MatcherTest {
     byte[] sessionId = new byte[AESUtils.BLOCK_LENGTH];
     secureRandom.nextBytes(sessionId);
 
-    // Ask the payer to create an EncryptedPayerRequest containing a BRITWalletId and a session id
-    PayerRequest payerRequest = payer.createPayerRequest(britWalletId, sessionId);
+    // Create a first transaction date (In real life this would come from a wallet
+    Date firstTransactionDate = new Date();
+
+    // Ask the payer to create an EncryptedPayerRequest containing a BRITWalletId, a session id and a firstTransactionDate
+    PayerRequest payerRequest = payer.createPayerRequest(britWalletId, sessionId, firstTransactionDate);
+    assertThat(payerRequest).isNotNull();
     EncryptedPayerRequest encryptedPayerRequest = payer.encryptPayerRequest(payerRequest);
+
+    String payloadAsString = new String(encryptedPayerRequest.getPayload(), "UTF8");
+    log.debug("payloadAsString = \n" + payloadAsString);
 
     //
     // In real life the encryptedPayerRequest is transported from the Payer to the Matcher here
@@ -75,8 +83,11 @@ public class MatcherTest {
     Matcher matcher = createTestMatcher();
 
     // Get the matcher to process the EncryptedPayerRequest.
-    // It responds with an EncryptedMatcherResponse containing a new AddressGenerator
+    // It responds with an EncryptedMatcherResponse
     PayerRequest theMatchersPaymentRequest = matcher.decryptPayerRequest(encryptedPayerRequest);
+
+    // The decrypted payment request should be the same as the original
+    assertThat(payerRequest).isEqualTo(theMatchersPaymentRequest);
 
     MatcherResponse matcherResponse = matcher.process(theMatchersPaymentRequest);
     assertThat(matcherResponse).isNotNull();
@@ -93,25 +104,25 @@ public class MatcherTest {
     MatcherResponse thePayersMatcherResponse = payer.decryptMatcherReponse(encryptedMatcherResponse);
     assertThat(thePayersMatcherResponse).isNotNull();
 
-    // The thePayersMatcherResponse contains the addressGenerator that the payer will use to generate addresses
-    AddressGenerator addressGenerator = thePayersMatcherResponse.getAddressGenerator();
-    assertThat(addressGenerator).isNotNull();
+    // The original matcher response should be the same as the decrypted version
+    assertThat(matcherResponse).isEqualTo(thePayersMatcherResponse);
 
-    // Ask the matcher to validate the addressGenerator
-    // (This is a test facility that would not be exposed by the Matcher daemon - it checks all the encryption/ decryption/ transport is ok)
-    boolean addressGenerateIsCorrect = matcher.validateAddressGenerator(britWalletId, sessionId, addressGenerator);
-    assertThat(addressGenerateIsCorrect).isTrue();
+    // The thePayersMatcherResponse contains the list of addresses the Payer will use
+    List<String> addressList = thePayersMatcherResponse.getAddressList();
+    assertThat(addressList).isNotNull();
 
+    // The thePayersMatcherResponse contains a stored replayDate for the wallet
+    Date replayDate = thePayersMatcherResponse.getReplayDate();
+    assertThat(replayDate).isNotNull();
   }
 
   private Matcher createTestMatcher() {
-
     // Find the example Matcher PGP secret key ring file
-    File matcherSecretKeyFile = PGPUtilsTest.makeFile(PGPUtilsTest.TEST_SECRET_KEYRING_FILE);
+    File matcherSecretKeyFile = PGPUtilsTest.makeFile(PGPUtilsTest.TEST_MATCHER_SECRET_KEYRING_FILE);
 
-    MatcherConfig matcherConfig = new MatcherConfig(matcherSecretKeyFile);
+    MatcherConfig matcherConfig = new MatcherConfig(matcherSecretKeyFile, PGPUtilsTest.TEST_DATA_PASSWORD);
 
-    Matcher matcher = MatcherFactory.createBasicMatcher(matcherConfig);
+    Matcher matcher = Matchers.newBasicMatcher(matcherConfig);
     assertThat(matcher).isNotNull();
     return matcher;
   }
@@ -125,7 +136,7 @@ public class MatcherTest {
 
     PayerConfig payerConfig = new PayerConfig(matcherPGPPublicKey);
 
-    Payer payer = PayerFactory.createBasicPayer(payerConfig);
+    Payer payer = Payers.newBasicPayer(payerConfig);
     assertThat(payer).isNotNull();
 
     return payer;

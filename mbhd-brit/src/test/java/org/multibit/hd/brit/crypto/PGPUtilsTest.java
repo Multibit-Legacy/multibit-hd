@@ -39,6 +39,8 @@ public class PGPUtilsTest {
 
   public static final String TEST_SECRET_KEYRING_FILE = "/src/test/resources/redeemer1/gpg/secring.gpg";
 
+  public static final String TEST_MATCHER_SECRET_KEYRING_FILE = "/src/test/resources/matcher/gpg/secring.gpg";
+
   public static final String TEST_MATCHER_PUBLIC_KEY_FILE = "/src/test/resources/matcher/export-to-payer/matcher-key.asc";
 
   private static final String MBHD_BRIT_PREFIX = "mbhd-brit";

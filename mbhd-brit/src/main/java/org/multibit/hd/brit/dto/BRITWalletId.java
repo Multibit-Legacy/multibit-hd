@@ -28,12 +28,12 @@ public class BRITWalletId {
 
   private static final Logger log = LoggerFactory.getLogger(BRITWalletId.class);
 
-  // The salt used in derivation of the BRITWalletId.
+  // The salt used in derivation of the britWalletId.
   // This is different from the similar process of deriving a WalletId (where the salt is 1)
   // This value is the 39,000,000th prime (http://primes.utm.edu/lists/small/millions/) which seemed like a nice number to use.
   private static final byte[] SALT_USED_IN_SCRYPT = BigInteger.valueOf(735_632_797).toByteArray();
 
-  private final byte[] BRITWalletId;
+  private final byte[] britWalletId;
 
   /**
    * Create a BRIT wallet id from the given seed.
@@ -75,10 +75,14 @@ public class BRITWalletId {
     byte[] publicKey = point.getEncoded();
     //log.debug("publicKey ='" + Utils.bytesToHexString(publicKey) +  "'");
 
-    // SHA256RIPE160 to generate final BRITWalletId bytes from the 'public key'
-    BRITWalletId = Utils.sha256hash160(publicKey);
+    // SHA256RIPE160 to generate final britWalletId bytes from the 'public key'
+    britWalletId = Utils.sha256hash160(publicKey);
 
-    //log.debug("BRITWalletId ='" + Utils.bytesToHexString(BRITWalletId) + "'");
+    //log.debug("britWalletId ='" + Utils.bytesToHexString(britWalletId) + "'");
+  }
+
+  public BRITWalletId(String britWalletIdInHex) {
+    britWalletId = Utils.parseAsHexOrBase58(britWalletIdInHex);
   }
 
 
@@ -86,13 +90,13 @@ public class BRITWalletId {
    * @return the raw wallet id as a byte[]
    */
   public byte[] getBytes() {
-    return BRITWalletId;
+    return britWalletId;
   }
 
 
   @Override
   public String toString() {
-    return Utils.bytesToHexString(BRITWalletId);
+    return Utils.bytesToHexString(britWalletId);
 
   }
 
@@ -103,13 +107,13 @@ public class BRITWalletId {
 
     BRITWalletId that = (BRITWalletId) o;
 
-    if (!Arrays.equals(BRITWalletId, that.BRITWalletId)) return false;
+    if (!Arrays.equals(britWalletId, that.britWalletId)) return false;
 
     return true;
   }
 
   @Override
   public int hashCode() {
-    return BRITWalletId != null ? Arrays.hashCode(BRITWalletId) : 0;
+    return britWalletId != null ? Arrays.hashCode(britWalletId) : 0;
   }
 }

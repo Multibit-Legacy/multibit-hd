@@ -8,15 +8,15 @@ package org.multibit.hd.brit.matcher;
  *  </p>
  *  
  */
-public class MatcherFactory {
+public class Matchers {
 
   /**
    * Private constructor for utility classes
    */
-  private MatcherFactory() {
+  private Matchers() {
   }
 
-  public static Matcher createBasicMatcher(MatcherConfig matcherConfig) {
+  public static Matcher newBasicMatcher(MatcherConfig matcherConfig) {
     return new BasicMatcher(matcherConfig);
   }
 }
