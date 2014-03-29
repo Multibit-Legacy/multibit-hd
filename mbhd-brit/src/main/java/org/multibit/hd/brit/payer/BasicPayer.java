@@ -57,7 +57,7 @@ public class BasicPayer implements Payer {
     ByteArrayOutputStream encryptedBytesOutputStream = new ByteArrayOutputStream(1024);
 
     // Make a temporary file containing the serialised payment request
-    File tempFile = File.createTempFile("req", "tmp" );
+    File tempFile = File.createTempFile("req", "tmp");
 
     // Write serialised payerRequest to the temporary file
     FileUtils.writeFile(new ByteArrayInputStream(serialisedPayerRequest), new FileOutputStream(tempFile));

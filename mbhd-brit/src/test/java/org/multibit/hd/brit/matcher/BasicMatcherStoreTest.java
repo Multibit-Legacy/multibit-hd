@@ -123,14 +123,14 @@ public class BasicMatcherStoreTest {
 
 
     // Store another one
-      byte[] seed2 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(BRITWalletIdTest.SEED_PHRASE_2));
-      BRITWalletId britWalletId2 = new BRITWalletId(seed2);
+    byte[] seed2 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(BRITWalletIdTest.SEED_PHRASE_2));
+    BRITWalletId britWalletId2 = new BRITWalletId(seed2);
 
-      Date encounterDate2 = DateTime.now().minusDays(2).toDate();
+    Date encounterDate2 = DateTime.now().minusDays(2).toDate();
 
-      // Store an encounter with this britWalletId and no lastTransactionDate
-      WalletToEncounterDateLink walletToEncounterLink2 = new WalletToEncounterDateLink(britWalletId2, Optional.of(encounterDate2), Optional.<Date>absent());
-      matcherStore.storeWalletToEncounterDateLink(walletToEncounterLink2);
+    // Store an encounter with this britWalletId and no lastTransactionDate
+    WalletToEncounterDateLink walletToEncounterLink2 = new WalletToEncounterDateLink(britWalletId2, Optional.of(encounterDate2), Optional.<Date>absent());
+    matcherStore.storeWalletToEncounterDateLink(walletToEncounterLink2);
 
     // Bounce the MatcherStore to check everything is being persisted
     MatcherStore rebornMatcherStore = MatcherStores.newBasicMatcherStore(matcherStoreDirectoryLocation);

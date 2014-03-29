@@ -20,12 +20,14 @@ public interface Matcher {
   /**
    * Get the configuration for the Matcher.
    * This contains the PGP configuration and location of the matcher store
+   *
    * @return MatcherConfig the matcher configuration data
    */
   public MatcherConfig getConfig();
 
   /**
    * Decrypt a PGP encrypted PayerRequest using the PGP private key in the Matcher's MatcherConfig
+   *
    * @param encryptedPayerRequest the encyptedPayerRequest to decrypt
    * @return An unencrypted PayerRequest
    * @throws Exception
@@ -43,6 +45,7 @@ public interface Matcher {
 
   /**
    * Encrypt the matcherResponse with an AES key derived from the Payer's BRITWalletId and sessionId
+   *
    * @param matcherResponse The unencrypted Matcher Response
    * @return The encrypted MatcherResponse
    * @throws NoSuchAlgorithmException

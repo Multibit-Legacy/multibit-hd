@@ -14,8 +14,8 @@ import java.util.List;
  *  <p>Generator to provide the following to UI code:<br>
  *  <ul>
  *  <li>Generation of BIP39 seed phrases</li>
- *  <li>Validation of BIP39 seed phrases</li>
- *  <li>Conversion of BIP39 seed phrases to and from seed byte value</li>
+ * <li>Validation of BIP39 seed phrases</li>
+ * <li>Conversion of BIP39 seed phrases to and from seed byte value</li>
  *  </ul>
  *  </p>
  *  
@@ -36,7 +36,7 @@ public class Bip39SeedPhraseGenerator implements SeedPhraseGenerator {
   }
 
   public static List<String> split(String words) {
-      return new ArrayList<>(Arrays.asList(words.split("\\s+")));
+    return new ArrayList<>(Arrays.asList(words.split("\\s+")));
   }
 
   @Override

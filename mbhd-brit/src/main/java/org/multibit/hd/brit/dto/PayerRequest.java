@@ -14,7 +14,7 @@ import java.util.Date;
  *  <p>DTO to provide the following to BRIT:<br>
  *  <ul>
  *  <li>This is the unencrypted version of the message sent by the Payer to the Matcher</li>
- *  <li>Typically 'encrypt' is called and the EncryptedPayerRequest is actually sent on the wire</li>
+ * <li>Typically 'encrypt' is called and the EncryptedPayerRequest is actually sent on the wire</li>
  *  </ul>
  *  </p>
  *  
@@ -81,6 +81,7 @@ public class PayerRequest {
   /**
    * Serialise the contents of the PayerRequest to a byte stream
    * (This is not very efficient but the intermediate string is human readable)
+   *
    * @return byte stream representing the PayerRequest
    */
   public byte[] serialise() {

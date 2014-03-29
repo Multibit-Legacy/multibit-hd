@@ -25,7 +25,6 @@ public interface SeedPhraseGenerator {
 
   /**
    * @param size The seed phrase size to use
-   *
    * @return A new seed phrase based on the specified size
    */
   List<String> newSeedPhrase(SeedPhraseSize size) throws SeedPhraseException;
