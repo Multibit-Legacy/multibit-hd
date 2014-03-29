@@ -49,4 +49,10 @@ public interface Matcher {
    */
   public EncryptedMatcherResponse encryptMatcherResponse(MatcherResponse matcherResponse) throws NoSuchAlgorithmException;
 
+
+  /**
+   * Get the MatcherStore used to persist the Matcher information
+   */
+  public MatcherStore getMatcherStore();
+
 }

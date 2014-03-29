@@ -17,6 +17,7 @@ package org.multibit.hd.brit.matcher;
  */
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,7 +72,7 @@ public class BasicMatcherTest {
     // Ask the payer to create an EncryptedPayerRequest containing a BRITWalletId, a session id and a firstTransactionDate
     PayerRequest payerRequest = payer.createPayerRequest(britWalletId, sessionId, firstTransactionDateOptional);
     assertThat(payerRequest).isNotNull();
-    // Encrypt the PAyerRequest with the Matcher PGP public key.
+    // Encrypt the PayerRequest with the Matcher PGP public key.
     EncryptedPayerRequest encryptedPayerRequest = payer.encryptPayerRequest(payerRequest);
 
     String payloadAsString = new String(encryptedPayerRequest.getPayload(), "UTF8");
@@ -127,6 +128,17 @@ public class BasicMatcherTest {
 
     Matcher matcher = Matchers.newBasicMatcher(matcherConfig);
     assertThat(matcher).isNotNull();
+
+    // Add some test data for today's bitcoin addresses
+    List<String> bitcoinAddressList = Lists.newArrayList();
+      bitcoinAddressList.add("cat");
+      bitcoinAddressList.add("dog");
+      bitcoinAddressList.add("elephant");
+      bitcoinAddressList.add("worm");
+
+    MatcherStore matcherStore = matcher.getMatcherStore();
+    matcherStore.storeBitcoinAddressListForDate(bitcoinAddressList, new Date());
+
     return matcher;
   }
 

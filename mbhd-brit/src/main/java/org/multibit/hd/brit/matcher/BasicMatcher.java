@@ -1,9 +1,12 @@
 package org.multibit.hd.brit.matcher;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.crypto.PGPUtils;
 import org.multibit.hd.brit.dto.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
 import java.io.ByteArrayInputStream;
@@ -24,6 +27,8 @@ import java.util.List;
  *  
  */
 public class BasicMatcher implements Matcher {
+
+  private static final Logger log = LoggerFactory.getLogger(BasicMatcher.class);
 
   private MatcherConfig matcherConfig;
 
@@ -89,14 +94,21 @@ public class BasicMatcher implements Matcher {
     }
 
     // TODO update record if replay date coming in is earleir than the one on the existing record (or if it is absent)
-    
+
     // If the previousEncounter was null then store this encounter
     if (previousEncounter == null) {
       WalletToEncounterDateLink thisEncounter = new WalletToEncounterDateLink(payerRequest.getBRITWalletId(), Optional.of(new Date()), Optional.of(replayDate));
       matcherStore.storeWalletToEncounterDateLink(thisEncounter);
     }
     // Lookup the current valid set of Bitcoin addresses to return to the payer
-    List<String> currentBitcoinAddressList = matcherStore.getBitcoinAddressListForDate(new Date());
+    Date now = new Date();
+    List<String> currentBitcoinAddressList = matcherStore.getBitcoinAddressListForDate(now);
+
+    if (currentBitcoinAddressList == null) {
+      // No bitcoin addresses have been set up for this date - log it and return an empty list
+      log.error("There is no bitcoin address list set up for the date of '" + now.toString());
+      currentBitcoinAddressList = Lists.newArrayList();
+    }
     return new MatcherResponse(replayDate, currentBitcoinAddressList);
   }
 
@@ -111,4 +123,8 @@ public class BasicMatcher implements Matcher {
     return new EncryptedMatcherResponse(encryptedMatcherResponsePayload);
   }
 
+  @Override
+  public MatcherStore getMatcherStore() {
+    return matcherStore;
+  }
 }

@@ -2,6 +2,7 @@ package org.multibit.hd.brit.matcher;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.joda.time.DateTime;
 import org.multibit.hd.brit.dto.BRITWalletId;
 import org.multibit.hd.brit.dto.WalletToEncounterDateLink;
 
@@ -48,7 +49,8 @@ public class BasicMatcherStore implements MatcherStore {
 
   /**
    * Initialise the MatchStore with the data stored at the backingStoreDirectory
-   * @param backingStoreDirectory
+   *
+   * @param backingStoreDirectory The directory the matcher store backing files are stored in
    */
   private void initialise(String backingStoreDirectory) {
     // TODO populate with the data in the backingStoreDirectory
@@ -77,12 +79,12 @@ public class BasicMatcherStore implements MatcherStore {
 
   @Override
   public List<String> getBitcoinAddressListForDate(Date encounterDate) {
-    return encounterDateToBitcoinAddressesMap.get(encounterDate);
+    return encounterDateToBitcoinAddressesMap.get(convertToMidnight(encounterDate));
   }
 
   @Override
   public void storeBitcoinAddressListForDate(List<String> bitcoinAddressList, Date encounterDate) {
-    encounterDateToBitcoinAddressesMap.put(encounterDate, bitcoinAddressList);
+    encounterDateToBitcoinAddressesMap.put(convertToMidnight(encounterDate), bitcoinAddressList);
 
     // TODO also write to a file
   }
@@ -97,5 +99,12 @@ public class BasicMatcherStore implements MatcherStore {
   @Override
   public List<String> getAllBitcoinAddress() {
     return allBitcoinAddresses;
+  }
+
+  /**
+   * Convert a compete date into a Date at midnight
+   */
+  private Date convertToMidnight(Date inputDate) {
+    return (new DateTime(inputDate)).toDateMidnight().toDate();
   }
 }
