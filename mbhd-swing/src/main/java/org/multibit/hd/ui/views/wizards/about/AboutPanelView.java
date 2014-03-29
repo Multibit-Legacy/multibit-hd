@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.about;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
@@ -50,6 +51,10 @@ public class AboutPanelView extends AbstractWizardPanelView<AboutWizardModel, St
       "[][]" // Row constraints
     ));
 
+    String version = Configurations.currentConfiguration.getVersion();
+
+    contentPanel.add(Labels.newVersionLabel(), "grow,push");
+    contentPanel.add(Labels.newValueLabel(version), "wrap");
     contentPanel.add(Labels.newAboutNote(), "grow,push,span 2,wrap");
 
   }

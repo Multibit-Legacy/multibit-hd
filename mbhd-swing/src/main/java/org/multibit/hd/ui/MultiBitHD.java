@@ -54,18 +54,51 @@ public class MultiBitHD {
     // Prepare the JVM (Nimbus, system properties etc)
     initialiseJVM();
 
+    // Create controllers so that the generic app can access listeners
+    if (!initialiseUIControllers(args)) {
+
+      // Required to shut down
+      return;
+
+    }
+
     // Prepare platform-specific integration (protocol handlers, quit events etc)
     initialiseGenericApp();
 
     // Start core services (logging, security alerts, configuration, Bitcoin URI handling etc)
-    if (!initialiseCore(args)) {
+    initialiseCore(args);
 
-      // Required to shutdown
-      return;
+    // Initialise the UI views
+    initialiseUIViews();
+
+  }
+
+  /**
+   * <p>Initialise the UI controllers once all the core services are in place</p>
+   * <p>This creates the singleton controllers that respond to generic events</p>
+   * <p>At this stage none of the following will be running:</p>
+   * <ul>
+   * <li>Themes or views</li>
+   * <li>Wallet service</li>
+   * <li>Backup service</li>
+   * <li>Bitcoin network service</li>
+   * </ul>
+   */
+  private static boolean initialiseUIControllers(String[] args) {
+
+    // Determine if another instance is running and shutdown if this is the case
+    bitcoinURIListeningService = new BitcoinURIListeningService(args);
+    if (!bitcoinURIListeningService.start()) {
+      CoreEvents.fireShutdownEvent();
+      return false;
     }
 
-    // Create a new UI based on the configuration
-    initialiseUI();
+    mainController = new MainController(bitcoinURIListeningService);
+    new HeaderController();
+    new SidebarController();
+
+    // Must be OK to be here
+    return true;
 
   }
 
@@ -127,7 +160,7 @@ public class MultiBitHD {
    *
    * @param args The command line arguments
    */
-  private static boolean initialiseCore(String[] args) {
+  private static void initialiseCore(String[] args) {
 
     // Start the core services
     CoreServices.main(args);
@@ -135,15 +168,6 @@ public class MultiBitHD {
     // Pre-loadContacts sound library
     Sounds.initialise();
 
-    // Determine if another instance is running and shutdown if this is the case
-    bitcoinURIListeningService = new BitcoinURIListeningService(args);
-    if (!bitcoinURIListeningService.start()) {
-      CoreEvents.fireShutdownEvent();
-      return false;
-    }
-
-    // Must be OK to be here
-    return true;
   }
 
   /**
@@ -159,7 +183,7 @@ public class MultiBitHD {
    * <p>Once the UI renders, control passes to the <code>MainController</code> to
    * respond to the wizard close event which will trigger ongoing initialisation.</p>
    */
-  private static void initialiseUI() {
+  private static void initialiseUIViews() {
 
     SwingUtilities.invokeLater(new Runnable() {
       @Override
@@ -171,11 +195,6 @@ public class MultiBitHD {
 
         // Build the main view
         mainView = new MainView();
-
-        // Create controllers
-        mainController = new MainController(bitcoinURIListeningService);
-        new HeaderController();
-        new SidebarController();
 
         // Check for any pre-existing wallets in the application directory
         File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();

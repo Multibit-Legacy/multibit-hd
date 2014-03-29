@@ -75,6 +75,7 @@ public enum MessageKey {
   EXTENDED_PUBLIC_KEY("extended_public_key"),
   TAGS("tags"),
   EXAMPLE("example"),
+  VERSION("version"),
 
   DISPLAY_LANGUAGE("display_language"),
 

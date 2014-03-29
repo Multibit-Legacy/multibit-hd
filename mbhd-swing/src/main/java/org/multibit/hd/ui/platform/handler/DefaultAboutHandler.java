@@ -15,6 +15,7 @@
  */
 package org.multibit.hd.ui.platform.handler;
 
+import com.google.common.base.Preconditions;
 import org.multibit.hd.ui.platform.listener.GenericAboutEvent;
 import org.multibit.hd.ui.platform.listener.GenericAboutEventListener;
 import org.multibit.hd.ui.platform.listener.GenericEventListener;
@@ -61,6 +62,7 @@ public class DefaultAboutHandler implements GenericAboutHandler, GenericEventLis
     log.debug("Event class is {}", event.getClass().getSimpleName());
     log.debug("Broadcasting to {} listener(s)", listeners.size());
     for (GenericAboutEventListener listener : listeners) {
+      Preconditions.checkNotNull(listener, "'listener must be present'");
       listener.onAboutEvent(event);
     }
   }

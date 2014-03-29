@@ -15,6 +15,7 @@
  */
 package org.multibit.hd.ui.platform.handler;
 
+import com.google.common.base.Preconditions;
 import org.multibit.hd.ui.platform.listener.GenericEventListener;
 import org.multibit.hd.ui.platform.listener.GenericOpenURIEvent;
 import org.multibit.hd.ui.platform.listener.GenericOpenURIEventListener;
@@ -57,6 +58,7 @@ public class DefaultOpenURIHandler implements GenericOpenURIHandler, GenericEven
     log.debug("Received open URI request of '{}'", event.getURI());
     log.debug("Broadcasting to {} listener(s)", listeners.size());
     for (GenericOpenURIEventListener listener : listeners) {
+      Preconditions.checkNotNull(listener, "'listener must be present'");
       listener.onOpenURIEvent(event);
     }
   }

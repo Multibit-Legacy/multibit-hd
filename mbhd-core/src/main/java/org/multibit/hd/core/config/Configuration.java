@@ -35,6 +35,15 @@ public class Configuration {
   }
 
   /**
+   * <p>Shortcut to the application version</p>
+   *
+   * @return The current version
+   */
+  public String getVersion() {
+    return getApplicationConfiguration().getVersion();
+  }
+
+  /**
    * @return The logging configuration
    */
   public LoggingConfiguration getLoggingConfiguration() {
