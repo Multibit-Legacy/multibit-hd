@@ -16,6 +16,7 @@ package org.multibit.hd.brit.matcher;
  * limitations under the License.
  */
 
+import com.google.common.base.Optional;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,9 +40,9 @@ import java.util.List;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class MatcherTest {
+public class BasicMatcherTest {
 
-  private static final Logger log = LoggerFactory.getLogger(MatcherTest.class);
+  private static final Logger log = LoggerFactory.getLogger(BasicMatcherTest.class);
 
   private SecureRandom secureRandom;
 
@@ -64,12 +65,13 @@ public class MatcherTest {
     byte[] sessionId = new byte[AESUtils.BLOCK_LENGTH];
     secureRandom.nextBytes(sessionId);
 
-    // Create a first transaction date (In real life this would come from a wallet
-    Date firstTransactionDate = new Date();
+    // Create a first transaction date (In real life this would come from a wallet)
+    Optional<Date> firstTransactionDateOptional = Optional.of(new Date());
 
     // Ask the payer to create an EncryptedPayerRequest containing a BRITWalletId, a session id and a firstTransactionDate
-    PayerRequest payerRequest = payer.createPayerRequest(britWalletId, sessionId, firstTransactionDate);
+    PayerRequest payerRequest = payer.createPayerRequest(britWalletId, sessionId, firstTransactionDateOptional);
     assertThat(payerRequest).isNotNull();
+    // Encrypt the PAyerRequest with the Matcher PGP public key.
     EncryptedPayerRequest encryptedPayerRequest = payer.encryptPayerRequest(payerRequest);
 
     String payloadAsString = new String(encryptedPayerRequest.getPayload(), "UTF8");
@@ -82,16 +84,17 @@ public class MatcherTest {
     // Create a matcher
     Matcher matcher = createTestMatcher();
 
-    // Get the matcher to process the EncryptedPayerRequest.
-    // It responds with an EncryptedMatcherResponse
+    // The Matcher can decrypt the EncryptedPaymentRequest using its PGP secret key.
     PayerRequest theMatchersPaymentRequest = matcher.decryptPayerRequest(encryptedPayerRequest);
 
     // The decrypted payment request should be the same as the original
     assertThat(payerRequest).isEqualTo(theMatchersPaymentRequest);
 
+    // Get the matcher to process the EncryptedPayerRequest.
     MatcherResponse matcherResponse = matcher.process(theMatchersPaymentRequest);
     assertThat(matcherResponse).isNotNull();
 
+    // Encrypt the MatcherResponse with the AES session key
     EncryptedMatcherResponse encryptedMatcherResponse = matcher.encryptMatcherResponse(matcherResponse);
     assertThat(encryptedMatcherResponse).isNotNull();
 
@@ -128,7 +131,6 @@ public class MatcherTest {
   }
 
   private Payer createTestPayer() throws Exception {
-
     // Load the example Matcher PGP public key
     File matcherPublicKeyFile = PGPUtilsTest.makeFile(PGPUtilsTest.TEST_MATCHER_PUBLIC_KEY_FILE);
     FileInputStream matcherPublicKeyInputStream = new FileInputStream(matcherPublicKeyFile);
@@ -141,5 +143,4 @@ public class MatcherTest {
 
     return payer;
   }
-
 }

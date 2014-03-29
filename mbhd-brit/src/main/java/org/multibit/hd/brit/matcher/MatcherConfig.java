@@ -16,7 +16,16 @@ public class MatcherConfig {
    * The location of the secret key ring containing the Matcher secret key
    */
   private File matcherSecretKeyringFile;
+
+  /**
+   * The password to use to decrypt the secret key ring
+   */
   private char[] password;
+
+  /**
+   * The location of the Matcher's store
+   */
+  private String matcherStoreLocation;
 
   public MatcherConfig(File matcherSecretKeyringFile, char[] password) {
     this.matcherSecretKeyringFile = matcherSecretKeyringFile;
@@ -29,5 +38,9 @@ public class MatcherConfig {
 
   public char[] getPassword() {
     return password;
+  }
+
+  public String getMatcherStoreLocation() {
+    return matcherStoreLocation;
   }
 }

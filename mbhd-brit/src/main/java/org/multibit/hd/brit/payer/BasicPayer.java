@@ -1,5 +1,6 @@
 package org.multibit.hd.brit.payer;
 
+import com.google.common.base.Optional;
 import org.bouncycastle.openpgp.PGPException;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.crypto.PGPUtils;
@@ -42,7 +43,7 @@ public class BasicPayer implements Payer {
   }
 
   @Override
-  public PayerRequest createPayerRequest(BRITWalletId britWalletId, byte[] sessionKey, Date firstTransactionDate) {
+  public PayerRequest createPayerRequest(BRITWalletId britWalletId, byte[] sessionKey, Optional<Date> firstTransactionDate) {
     this.britWalletId = britWalletId;
     this.sessionKey = sessionKey;
     return new PayerRequest(britWalletId, sessionKey, firstTransactionDate);

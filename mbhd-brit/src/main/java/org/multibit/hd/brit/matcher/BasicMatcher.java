@@ -1,6 +1,7 @@
 package org.multibit.hd.brit.matcher;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.crypto.PGPUtils;
 import org.multibit.hd.brit.dto.*;
@@ -13,6 +14,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  *  <p>Class to provide the following to BRIT:<br>
@@ -27,12 +29,22 @@ public class BasicMatcher implements Matcher {
 
   private MatcherConfig matcherConfig;
 
-  private byte[] sessionKey;
+  /**
+   * The last payerRequest received.
+   * (Having a single last payerRequest won't work in a multithreaded environment)
+   */
+  private PayerRequest lastPayerRequest;
 
-  private BRITWalletId britWalletId;
+  /**
+   * A map containing the link from a BRITWalletId to the previous encounter of this wallet (if available)
+   */
+  private Map<BRITWalletId, WalletToEncounterDateLink> previousEncounterMap;
+
 
   public BasicMatcher(MatcherConfig matcherConfig) {
     this.matcherConfig = matcherConfig;
+    // TODO populate with previous data from the matcher store (location is now in the MatcherConfig)
+    previousEncounterMap = Maps.newHashMap();
   }
 
   @Override
@@ -57,42 +69,66 @@ public class BasicMatcher implements Matcher {
 
   @Override
   public MatcherResponse process(PayerRequest payerRequest) {
+    lastPayerRequest = payerRequest;
 
-    sessionKey = payerRequest.getSessionKey();
-    britWalletId = payerRequest.getBRITWalletId();
+    WalletToEncounterDateLink previousEncounter = getWalletToEncounterDateLink(payerRequest.getBRITWalletId());
 
-    // The replay date is the earlier of the payerRequest.firstTreatmentDate and the previousEncounterDate for this
+    // The replay date is the earliest of:
+    // + the payerRequest.firstTreatmentDate in the PayerRequest (if available)
+    // + the firstTransactionDate in the previousEncounter (which would have been supplied in the past for this wallet)
+    // + the previousEncounterDate (the first time this wallet was seen by the Matcher
     // BRITWalletId
-    Date previousEncounterDate = lookupPreviousEncounterDate(payerRequest.getBRITWalletId());
-    Date replayDate = payerRequest.getFirstTransactionDate().before(previousEncounterDate) ? payerRequest.getFirstTransactionDate() : previousEncounterDate;
+    Date replayDate = new Date();   // If this is a brand new wallet, never used or seen before by the matcher you can replay from now.
+    if (previousEncounter != null && previousEncounter.getEncounterDateOptional().isPresent()) {
+      replayDate = previousEncounter.getEncounterDateOptional().get();
+    }
+    if (previousEncounter != null && previousEncounter.getFirstTransactionDate().isPresent()) {
+      replayDate = previousEncounter.getFirstTransactionDate().get().before(replayDate) ? previousEncounter.getFirstTransactionDate().get() : replayDate;
+    }
+    if (payerRequest.getFirstTransactionDate().isPresent()) {
+       replayDate = payerRequest.getFirstTransactionDate().get().before(replayDate) ? payerRequest.getFirstTransactionDate().get() : replayDate;
+     }
 
     // Lookup the current valid set of Bitcoin addresses to return to the payer
-    List<String> currentBitcoinAddressList = lookupCurrentBitcoinAddresses();
+    List<String> currentBitcoinAddressList = getBitcoinAddressList(new Date());
     return new MatcherResponse(replayDate, currentBitcoinAddressList);
   }
 
   @Override
   public EncryptedMatcherResponse encryptMatcherResponse(MatcherResponse matcherResponse) throws NoSuchAlgorithmException {
     // Stretch the 20 byte britWalletId to 32 bytes (256 bits)
-    byte[] stretchedBritWalletId = MessageDigest.getInstance("SHA-256").digest(britWalletId.getBytes());
+    byte[] stretchedBritWalletId = MessageDigest.getInstance("SHA-256").digest(lastPayerRequest.getBRITWalletId().getBytes());
 
     // Create an AES key from the stretchedBritWalletId and the sessionKey and decrypt the payload
-    byte[] encryptedMatcherResponsePayload = AESUtils.encrypt(matcherResponse.serialise(), new KeyParameter(stretchedBritWalletId), sessionKey);
+    byte[] encryptedMatcherResponsePayload = AESUtils.encrypt(matcherResponse.serialise(), new KeyParameter(stretchedBritWalletId), lastPayerRequest.getSessionKey());
 
     return new EncryptedMatcherResponse(encryptedMatcherResponsePayload);
   }
 
-  private Date lookupPreviousEncounterDate(BRITWalletId britWalletId) {
-    // TODO
-    return new Date();
-  }
-
-  private List<String> lookupCurrentBitcoinAddresses() {
+  @Override
+  public List<String> getBitcoinAddressList(Date encounterDate) {
     List<String> currentBitcoinAddresses = Lists.newArrayList();
-    // TODO
+    // TODO - interrogate backing store and get the encounterDate's addresses, if present.
+    // TODO   Otherwise create a new set of addresses randomly, store and return them
     currentBitcoinAddresses.add("bebop");
     currentBitcoinAddresses.add("zang");
 
     return currentBitcoinAddresses;
+  }
+
+  @Override
+  public WalletToEncounterDateLink getWalletToEncounterDateLink(BRITWalletId britWalletId) {
+    // See if we have already seen this WalletId before
+
+    // If this is present, return it.
+    // If this is null, return a null.
+    return previousEncounterMap.get(britWalletId);
+  }
+
+  @Override
+  public void storeWalletToEncounterDateLink(WalletToEncounterDateLink walletToEncounterDateLink) {
+    previousEncounterMap.put(walletToEncounterDateLink.getBritWalletId(), walletToEncounterDateLink);
+
+    // TODO store to backing store
   }
 }

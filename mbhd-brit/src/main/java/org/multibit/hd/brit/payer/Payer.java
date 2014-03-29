@@ -1,5 +1,6 @@
 package org.multibit.hd.brit.payer;
 
+import com.google.common.base.Optional;
 import org.bouncycastle.openpgp.PGPException;
 import org.multibit.hd.brit.dto.*;
 
@@ -19,9 +20,20 @@ import java.util.Date;
  */
 public interface Payer {
 
+  /**
+   * Get the PayerConfig, which contains the Matcher's public PGP key
+   * @return PayerConfig
+   */
   public PayerConfig getConfig();
 
-  public PayerRequest createPayerRequest(BRITWalletId britWalletId, byte[] sessionId, Date firstTransactionDate);
+  /**
+   * Create an unencrypted PayerRequest for transmission to the Matcher
+   * @param britWalletId The britWalletId of the Payer's wallet
+   * @param sessionKey A random sessionKey
+   * @param firstTransactionDate The date of the first transaction in the Payer's wallet, or Optional.absent() if there are none.
+   * @return PayerRequest, unencrypted
+   */
+  public PayerRequest createPayerRequest(BRITWalletId britWalletId, byte[] sessionKey, Optional<Date> firstTransactionDate);
 
   /**
    * Encrypt the PayerRequest with the Matcher public PGP key
@@ -31,6 +43,13 @@ public interface Payer {
    */
   public EncryptedPayerRequest encryptPayerRequest(PayerRequest payerRequest) throws NoSuchAlgorithmException, IOException, NoSuchProviderException, PGPException;
 
+  /**
+   * Decrypt the encryptedMatcherResponse using an AES key derived from the BRITWalletId and sessionKey
+   * @param encryptedMatcherResponse The encryptedMatcherRespnse to decrypt
+   * @return MatcherResponse, unencrypted
+   * @throws NoSuchAlgorithmException
+   * @throws UnsupportedEncodingException
+   */
   public MatcherResponse decryptMatcherReponse(EncryptedMatcherResponse encryptedMatcherResponse) throws NoSuchAlgorithmException, UnsupportedEncodingException;
 
 }

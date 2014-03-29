@@ -1,6 +1,7 @@
 package org.multibit.hd.brit.dto;
 
 import com.google.bitcoin.core.Utils;
+import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Strings;
@@ -22,15 +23,17 @@ public class PayerRequest {
 
   private static final Logger log = LoggerFactory.getLogger(PayerRequest.class);
 
+  public static final String OPTIONAL_NOT_PRESENT_TEXT = "not-present";
+
   private final BRITWalletId britWalletId;
 
   private final byte[] sessionKey;
 
-  private final Date firstTransactionDate;
+  private final Optional<Date> firstTransactionDate;
 
   public static final String SERIALISER_SEPARATOR = "\n";
 
-  public PayerRequest(BRITWalletId britWalletId, byte[] sessionKey, Date firstTransactionDate) {
+  public PayerRequest(BRITWalletId britWalletId, byte[] sessionKey, Optional<Date> firstTransactionDate) {
     this.britWalletId = britWalletId;
     this.sessionKey = sessionKey;
     this.firstTransactionDate = firstTransactionDate;
@@ -48,7 +51,7 @@ public class PayerRequest {
     return britWalletId;
   }
 
-  public Date getFirstTransactionDate() {
+  public Optional<Date> getFirstTransactionDate() {
     return firstTransactionDate;
   }
 
@@ -83,8 +86,12 @@ public class PayerRequest {
   public byte[] serialise() {
     StringBuilder builder = new StringBuilder();
     builder.append(Utils.bytesToHexString(britWalletId.getBytes())).append(SERIALISER_SEPARATOR)
-            .append(Utils.bytesToHexString(sessionKey)).append(SERIALISER_SEPARATOR)
-            .append(firstTransactionDate.getTime());
+            .append(Utils.bytesToHexString(sessionKey)).append(SERIALISER_SEPARATOR);
+    if (firstTransactionDate.isPresent()) {
+      builder.append(firstTransactionDate.get().getTime());
+    } else {
+      builder.append(OPTIONAL_NOT_PRESENT_TEXT);
+    }
     log.debug("Serialised payerRequest = \n" + builder.toString());
     try {
       return builder.toString().getBytes("UTF8");
@@ -103,9 +110,14 @@ public class PayerRequest {
     if (rows.length == 3) {
       BRITWalletId britWalletId = new BRITWalletId(rows[0]);
       byte[] sesssionKey = Utils.parseAsHexOrBase58(rows[1]);
-      long firstTransactionDateAsLong = Long.parseLong(rows[2]);
-      Date firstTransactionDate = new Date(firstTransactionDateAsLong);
-      return new PayerRequest(britWalletId, sesssionKey, firstTransactionDate);
+      Optional<Date> firstTransactionDateOptional;
+      if (OPTIONAL_NOT_PRESENT_TEXT.equals(rows[2])) {
+        firstTransactionDateOptional = Optional.absent();
+      } else {
+        firstTransactionDateOptional = Optional.of(new Date(Long.parseLong(rows[2])));
+      }
+
+      return new PayerRequest(britWalletId, sesssionKey, firstTransactionDateOptional);
 
     } else {
       // Cannot parse
