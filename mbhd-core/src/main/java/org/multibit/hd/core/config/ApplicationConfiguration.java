@@ -24,7 +24,7 @@ public class ApplicationConfiguration {
 
   private String currentTheme = "LIGHT";
 
-  private String version = "0.0.0";
+  private String version = "0.0.0 (alpha)";
 
   private String lastFrameBounds = "0,0,1000,560";
 

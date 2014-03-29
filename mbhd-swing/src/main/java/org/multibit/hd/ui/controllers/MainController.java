@@ -41,6 +41,7 @@ import org.multibit.hd.ui.views.themes.Theme;
 import org.multibit.hd.ui.views.themes.ThemeKey;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.password.PasswordState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,12 +75,11 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
    */
   public MainController(BitcoinURIListeningService bitcoinURIListeningService) {
 
+    Preconditions.checkNotNull(bitcoinURIListeningService, "'bitcoinURIListeningService' must be present");
+
     CoreServices.uiEventBus.register(this);
 
     this.bitcoinURIListeningService = bitcoinURIListeningService;
-
-    // Ensure we have a theme
-    handleTheme();
 
   }
 
@@ -199,6 +199,44 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
     }
   }
 
+  @Subscribe
+  public void onWizardHideEvent(WizardHideEvent event) {
+
+    if (!event.isExitCancel()) {
+
+      // Successful wizard interaction
+
+      // Special case for the password entry screen since it represents an
+      // incomplete initialisation of the UI
+      if (PasswordState.PASSWORD_ENTER_PASSWORD.name().equals(event.getPanelName())) {
+
+        // Show the initial screen as soon as possible to reassure the user
+        Screen screen = Screen.valueOf(Configurations.currentConfiguration.getApplicationConfiguration().getCurrentScreen());
+        ControllerEvents.fireShowDetailScreenEvent(screen);
+
+        // Don't hold up the UI thread with these background operations
+        SafeExecutors.newSingleThreadExecutor().submit(new Runnable() {
+          @Override
+          public void run() {
+
+            // Get a ticker going
+            handleExchange();
+
+            // Start the backup manager
+            handleBackupManager();
+
+            // Check for Bitcoin URIs
+            handleBitcoinURIAlert();
+
+            // Lastly start the Bitcoin network
+            handleBitcoinNetworkStart();
+
+          }
+        });
+      }
+    }
+  }
+
   /**
    * <p>Update all views to use the current configuration</p>
    *
@@ -298,41 +336,10 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
     );
   }
 
-  @Subscribe
-  public void onWizardHideEvent(WizardHideEvent event) {
-
-    if (!event.isExitCancel()) {
-
-      // Successful wizard interaction
-
-      // Show the initial screen as soon as possible to reassure the user
-      Screen screen = Screen.valueOf(Configurations.currentConfiguration.getApplicationConfiguration().getCurrentScreen());
-      ControllerEvents.fireShowDetailScreenEvent(screen);
-
-      // Don't hold up the UI thread with these background operations
-      SafeExecutors.newSingleThreadExecutor().submit(new Runnable() {
-        @Override
-        public void run() {
-
-          // Get a ticker going
-          handleExchange();
-
-          // Start the backup manager
-          handleBackupManager();
-
-          // Check for Bitcoin URIs
-          handleBitcoinURIAlert();
-
-          // Lastly start the Bitcoin network
-          handleBitcoinNetworkStart();
-
-        }
-      });
-    }
-  }
-
   @Override
   public void onAboutEvent(GenericAboutEvent event) {
+
+    log.debug("Called");
 
     // Show the About screen
     Panels.showLightBox(Wizards.newAboutWizard().getWizardScreenHolder());

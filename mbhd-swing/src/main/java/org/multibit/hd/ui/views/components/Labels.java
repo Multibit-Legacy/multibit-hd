@@ -435,6 +435,14 @@ public class Labels {
   }
 
   /**
+   * @return A new "version" label
+   */
+  public static JLabel newVersionLabel() {
+
+    return Labels.newLabel(MessageKey.VERSION);
+  }
+
+  /**
    * @return A new "select exchange rate provider" label
    */
   public static JLabel newSelectExchangeRateProviderLabel() {
