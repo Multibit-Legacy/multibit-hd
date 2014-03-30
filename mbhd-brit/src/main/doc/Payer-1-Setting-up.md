@@ -5,8 +5,7 @@ This document describes the setup the Payer needs to do.
 
 PREREQUISITES:
 The Redeemers have performed the steps in:
-+ Redeemer-1-Creating-a-Bitcoin-wallet.md
-+ Redeemer-2-Creating-PGP-keys.md
++ Redeemer-1-Creating-Bitcoin-wallets.md
 
 The Matcher needs to have performed the steps in:
 + Matcher-1-Setting-up.md
