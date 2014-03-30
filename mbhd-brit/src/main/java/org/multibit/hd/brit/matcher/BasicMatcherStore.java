@@ -3,6 +3,7 @@ package org.multibit.hd.brit.matcher;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.multibit.hd.brit.dto.BRITWalletId;
@@ -107,7 +108,7 @@ public class BasicMatcherStore implements MatcherStore {
       }
     }
 
-    // Read in all the exisiting britWalletId to encounter date links
+    // Read in all the existing britWalletId to encounter date links
     previousEncounterMap = Maps.newHashMap();
     walletToEncounterDateFile = new File(backingStoreDirectory + File.separator + NAME_OF_FILE_CONTAINING_WALLET_TO_ENCOUNTER_DATE_LINKS);
     // If the file does not exists, then create it as we only ever append to this file later
@@ -178,7 +179,7 @@ public class BasicMatcherStore implements MatcherStore {
     FileUtils.createDirectoryIfNecessary(new File(linksDirectory));
 
     String filename = linksDirectory + File.separator
-            + utcShortDateWithHyphensFormatter.print(new DateTime(encounterDate)) + LINKS_FILENAME_SUFFIX;
+            + utcShortDateWithHyphensFormatter.print(new DateTime(encounterDate, DateTimeZone.UTC)) + LINKS_FILENAME_SUFFIX;
     File file = new File(filename);
 
     if (file.exists()) {
@@ -217,7 +218,7 @@ public class BasicMatcherStore implements MatcherStore {
    * Convert a compete date into a Date at midnight
    */
   private Date convertToMidnight(Date inputDate) {
-    return (new DateTime(inputDate)).toDateMidnight().toDate();
+    return (new DateTime(inputDate, DateTimeZone.UTC)).toDateMidnight().toDate();
   }
 
   private void storeBitcoinAddressesToFile(List<String> bitcoinAddresses, String filename) throws IOException {

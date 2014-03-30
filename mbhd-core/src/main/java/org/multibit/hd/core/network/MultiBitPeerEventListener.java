@@ -20,14 +20,13 @@ public class MultiBitPeerEventListener implements PeerEventListener {
   private int downloadPercent = 0;
   private int numberOfConnectedPeers = 0;
 
-  private boolean suppressPeerCountMessages = true;
+  private boolean suppressPeerCountMessages = false;
 
   public MultiBitPeerEventListener() {
   }
 
   @Override
   public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
-
     log.trace("Number of blocks left = {}", blocksLeft);
 
     // Determine if peer count message should be suppressed
@@ -49,7 +48,6 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
   @Override
   public void onChainDownloadStarted(Peer peer, int blocksLeft) {
-
     log.debug("Chain download started with number of blocks left = {}", blocksLeft);
 
     // Reset the number of blocks at the start of the download
@@ -74,7 +72,6 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
   @Override
   public void onPeerConnected(Peer peer, int peerCount) {
-
     log.trace("(connect) Number of peers = " + peerCount + ", downloadPercent = " + downloadPercent);
 
     numberOfConnectedPeers = peerCount;
@@ -88,7 +85,6 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
   @Override
   public void onPeerDisconnected(Peer peer, int peerCount) {
-
     log.trace("(disconnect) Number of peers = " + peerCount);
     if (peerCount == numberOfConnectedPeers) {
       // Don't fire an event - not useful
