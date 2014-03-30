@@ -80,13 +80,17 @@ public class Sounds {
 
     byte[] sound = allSounds.get(name);
 
+    Player player = null;
     try {
-      Player player = new Player(new ByteArrayInputStream(sound));
+      player = new Player(new ByteArrayInputStream(sound));
       player.play();
     } catch (JavaLayerException e) {
       throw new IllegalStateException(e.getMessage());
+    } finally {
+      if (player != null) {
+        player.close();
+      }
     }
-
   }
 
   /**
