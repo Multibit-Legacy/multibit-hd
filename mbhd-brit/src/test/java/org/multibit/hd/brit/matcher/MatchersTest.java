@@ -34,7 +34,7 @@ public class MatchersTest {
   @Test
   public void testCreateMatcher() throws Exception {
     // Find the example Matcher PGP secret key ring file
-    File matcherSecretKeyFile = PGPUtilsTest.makeFile(PGPUtilsTest.TEST_SECRET_KEYRING_FILE);
+    File matcherSecretKeyFile = PGPUtilsTest.makeFile(PGPUtilsTest.TEST_MATCHER_SECRET_KEYRING_FILE);
 
     // Create a random temporary directory for the matcher store to use
     String matcherStoreDirectoryLocation = FileUtils.makeRandomTemporaryDirectory().getAbsolutePath();

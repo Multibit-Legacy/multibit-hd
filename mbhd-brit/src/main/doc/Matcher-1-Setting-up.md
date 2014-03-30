@@ -12,14 +12,12 @@ Specifically:
 + These export files have been copied to the Matcher machine
 
 In this document it will be assumed that there are two separate users that have prepared
-2 export files each and copied them to the directory on the Matcher machine as follows:
+1 export file each and copied them to the directory on the Matcher machine as follows:
 
 matcher
   import-from-redeemer
     redeemer-1-1.txt
-    redeemer-1-2.txt
     redeemer-2-1.txt
-    redeemer-2-2.txt
 
 
 The steps to set up the Matcher service are:

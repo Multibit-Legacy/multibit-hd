@@ -35,9 +35,7 @@ public class PGPUtilsTest {
 
   private static final String EXAMPLE_TEXT = "The quick brown fox jumps over the lazy dog. 01234567890. !@#$%^&*(). ,.;:[]-_=+";
 
-  private static final String TEST_PUBLIC_KEYRING_FILE = "/src/test/resources/redeemer1/gpg/pubring.gpg";
-
-  public static final String TEST_SECRET_KEYRING_FILE = "/src/test/resources/redeemer1/gpg/secring.gpg";
+  private static final String TEST_MATCHER_PUBLIC_KEYRING_FILE = "/src/test/resources/matcher/gpg/pubring.gpg";
 
   public static final String TEST_MATCHER_SECRET_KEYRING_FILE = "/src/test/resources/matcher/gpg/secring.gpg";
 
@@ -58,7 +56,7 @@ public class PGPUtilsTest {
   @Test
   public void testPGPEncryptDecrypt() throws Exception {
     // Read the manually created public keyring in the test directory to find a public key suitable for encryption
-    File publicKeyRingFile = makeFile(TEST_PUBLIC_KEYRING_FILE);
+    File publicKeyRingFile = makeFile(TEST_MATCHER_PUBLIC_KEYRING_FILE);
     log.debug("Loading public keyring from '" + publicKeyRingFile.getAbsolutePath() + "'");
     FileInputStream publicKeyRingInputStream = new FileInputStream(publicKeyRingFile);
     PGPPublicKey encryptionKey = PGPUtils.readPublicKey(publicKeyRingInputStream);
@@ -84,7 +82,7 @@ public class PGPUtilsTest {
     assertThat(encryptedFile.length()).isGreaterThanOrEqualTo(EXAMPLE_TEXT.length());
 
     // Locate the secret keyring file
-    File secretKeyRingFile = makeFile(TEST_SECRET_KEYRING_FILE);
+    File secretKeyRingFile = makeFile(TEST_MATCHER_SECRET_KEYRING_FILE);
     log.debug("Loading secret keyring from '" + publicKeyRingFile.getAbsolutePath() + "'");
 
     // Decrypt the encrypted file
