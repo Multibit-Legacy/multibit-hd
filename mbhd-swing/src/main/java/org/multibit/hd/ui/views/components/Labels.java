@@ -589,11 +589,35 @@ public class Labels {
   }
 
   /**
+   * @return A new "Enter new password" label
+   */
+  public static JLabel newEnterNewPassword() {
+
+    return newLabel(MessageKey.ENTER_NEW_PASSWORD);
+  }
+
+  /**
+   * @return A new "Retype new password" label
+   */
+  public static JLabel newRetypeNewPassword() {
+
+    return newLabel(MessageKey.RETYPE_NEW_PASSWORD);
+  }
+
+  /**
    * @return A new "Confirm password" label
    */
-  public static JLabel newConfirmPassword() {
+  public static JLabel newPasswordVerified() {
 
     return newLabel(MessageKey.PASSWORD_VERIFIED);
+  }
+
+  /**
+   * @return A new "Password failed" label
+   */
+  public static JLabel newPasswordFailed() {
+
+    return newLabel(MessageKey.PASSWORD_FAILED);
   }
 
   /**
@@ -983,6 +1007,28 @@ public class Labels {
     return newNoteLabel(new MessageKey[]{
       MessageKey.PASSWORD_NOTE_1,
       MessageKey.PASSWORD_NOTE_2
+    }, new Object[][]{});
+
+  }
+
+  /**
+   * @return A new "change password note 1" (change password wizard)
+   */
+  public static JLabel newChangePasswordNote1() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.CHANGE_PASSWORD_NOTE_1
+    }, new Object[][]{});
+
+  }
+
+  /**
+   * @return A new "change password note 2" (change password wizard)
+   */
+  public static JLabel newChangePasswordNote2() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.CHANGE_PASSWORD_NOTE_2
     }, new Object[][]{});
 
   }

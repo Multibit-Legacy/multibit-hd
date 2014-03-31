@@ -48,7 +48,7 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
 
     MigLayout layout = new MigLayout(
       Panels.migXYLayout(),
-      "[]10[]", // Column constraints
+      "[]10[]10[]", // Column constraints
       "[]50[]" // Row constraints
     );
 
@@ -58,8 +58,8 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
     welcomeWizard = Buttons.newShowWelcomeWizardButton(showWelcomeWizardAction);
 
     contentPanel.add(welcomeWizard, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
-    contentPanel.add(Buttons.newShowWalletDetailsButton(getShowWalletDetailsAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push,wrap");
-
+    contentPanel.add(Buttons.newShowWalletDetailsButton(getShowWalletDetailsAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    contentPanel.add(Buttons.newShowChangePasswordButton(getShowChangePasswordAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
 
     return contentPanel;
   }
@@ -77,7 +77,6 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
   }
 
   /**
-   *
    * @return An action to show the "welcome wizard"
    */
   private AbstractAction getShowWelcomeWizardAction() {
@@ -91,7 +90,7 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
   }
 
   /**
-   * @return An action to show the "wallet details"
+   * @return An action to show the "wallet details" tool
    */
   private AbstractAction getShowWalletDetailsAction() {
     return new AbstractAction() {
@@ -99,6 +98,19 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
       public void actionPerformed(ActionEvent e) {
 
         Panels.showLightBox(Wizards.newWalletDetailsWizard().getWizardScreenHolder());
+      }
+    };
+  }
+
+  /**
+   * @return An action to show the "change password" tool
+   */
+  private AbstractAction getShowChangePasswordAction() {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        Panels.showLightBox(Wizards.newChangePasswordWizard().getWizardScreenHolder());
       }
     };
   }

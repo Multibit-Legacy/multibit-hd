@@ -46,8 +46,8 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
   public JPanel newComponentPanel() {
 
     panel = Panels.newPanel(new MigLayout(
-      "insets 0", // Layout
-      "[][][]", // Columns
+      Panels.migXLayout(), // Layout
+      "[][][][]", // Columns (require 4 columns for alignment with EnterPasswordView)
       "[][][]" // Rows
     ));
 
@@ -82,16 +82,22 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
     verificationStatusLabel = Labels.newVerificationStatus(true);
     verificationStatusLabel.setVisible(false);
 
+    JLabel spinner = Labels.newSpinner();
+    spinner.setVisible(false);
+
     // Add to the panel
     // Cannot affect the focus traversal to be p1 -> p2 -> eye reliably
     // Tried using cell positioning, custom traversal policy etc but
     // nothing is reliable enough
-    panel.add(Labels.newEnterPassword());
+    //
+    // Also the labels must be part of the component to ensure correct layout
+    panel.add(Labels.newEnterNewPassword());
     panel.add(password1);
-    panel.add(Buttons.newShowButton(toggleDisplayAction), "spany 2,wrap");
-    panel.add(Labels.newConfirmPassword());
+    panel.add(Buttons.newShowButton(toggleDisplayAction), "spany 2");
+    panel.add(spinner, "spany 2,wrap");
+    panel.add(Labels.newRetypeNewPassword());
     panel.add(password2, "wrap");
-    panel.add(verificationStatusLabel, "span 3,grow,push");
+    panel.add(verificationStatusLabel, "span 4,grow,push");
 
     return panel;
 

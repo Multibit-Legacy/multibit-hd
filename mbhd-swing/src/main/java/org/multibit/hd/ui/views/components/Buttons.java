@@ -772,6 +772,26 @@ public class Buttons {
   }
 
   /**
+   * @param action The click action
+   *
+   * @return A new "change password" button with icon
+   */
+  public static JButton newShowChangePasswordButton(Action action) {
+
+    JButton button = newLargeButton(action, MessageKey.SHOW_CHANGE_PASSWORD_WIZARD);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.LOCK,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
+
+    return button;
+  }
+
+  /**
    * TODO (GR) Remove this when alerts no longer required
    *
    * @param action The click action
