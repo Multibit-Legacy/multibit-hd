@@ -2,122 +2,104 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <groupId>org.multibit.hd</groupId>
-        <artifactId>mbhd-parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.multibit.hd</groupId>
+    <artifactId>mbhd-parent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>mbhd-brit</artifactId>
+  <artifactId>mbhd-brit</artifactId>
 
-    <name>MultiBit HD BRIT</name>
-    <description>The Burton-Rowe Income Technique (BIRT) uses extended public keys in a hierarchical deterministic (HD)
-        wallet to implement an ongoing income stream.
-    </description>
+  <name>MultiBit HD BRIT</name>
+  <description>The Burton-Rowe Income Technique (BIRT) uses a large set of public keys to provide an ongoing income.</description>
 
-    <!-- Common build -->
-    <build>
+  <!-- Common build -->
+  <build>
 
-        <plugins>
+    <plugins>
 
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>${maven-antrun.version}</version>
-                <executions>
-                    <!-- Step 1: Set all timestamps to same value -->
-                    <execution>
-                        <id>1-touch-classes</id>
-                        <phase>prepare-package</phase>
-                        <configuration>
-                            <target>
-                                <!-- The deterministic date is arbitrary so Bitcoin genesis seems appropriate -->
-                                <touch millis="1231006500000">
-                                    <fileset dir="target/classes" erroronmissingdir="false"/>
-                                </touch>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>${maven-antrun.version}</version>
+        <executions>
+          <!-- Step 1: Set all timestamps to same value -->
+          <execution>
+            <id>1-touch-classes</id>
+            <phase>prepare-package</phase>
+            <configuration>
+              <target>
+                <!-- The deterministic date is arbitrary so Bitcoin genesis seems appropriate -->
+                <touch millis="1231006500000">
+                  <fileset dir="target/classes" erroronmissingdir="false"/>
+                </touch>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
 
-                    <!-- Step 3: Rename ZIP as JAR and set timestamp to same value -->
-                    <execution>
-                        <id>3-rename-assembly</id>
-                        <phase>package</phase>
-                        <configuration>
-                            <target>
-                                <!-- Move the deterministic ZIP into a JAR ignoring absence since we may be in a parent POM -->
-                                <!-- If Ant 1.8.3+ can be guaranteed on all build+dev environments then the quiet="true" attribute can be added -->
-                                <move file="target/${project.artifactId}-${project.version}-deterministic.zip"
-                                      tofile="target/${project.artifactId}-${project.version}.jar"
-                                      failonerror="false"
-                                        />
-                                <!-- The deterministic date is arbitrary so Bitcoin genesis seems appropriate -->
-                                <touch millis="1231006500000"
-                                       file="target/${project.artifactId}-${project.version}.jar"/>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+          <!-- Step 3: Rename ZIP as JAR and set timestamp to same value -->
+          <execution>
+            <id>3-rename-assembly</id>
+            <phase>package</phase>
+            <configuration>
+              <target>
+                <!-- Move the deterministic ZIP into a JAR ignoring absence since we may be in a parent POM -->
+                <!-- If Ant 1.8.3+ can be guaranteed on all build+dev environments then the quiet="true" attribute can be added -->
+                <move file="target/${project.artifactId}-${project.version}-deterministic.zip"
+                      tofile="target/${project.artifactId}-${project.version}.jar"
+                      failonerror="false"
+                  />
+                <!-- The deterministic date is arbitrary so Bitcoin genesis seems appropriate -->
+                <touch millis="1231006500000"
+                       file="target/${project.artifactId}-${project.version}.jar"/>
 
-            <!-- Step 2: Assemble as a ZIP to avoid MANIFEST.MF timestamp -->
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.3</version>
-                <configuration>
-                    <ignoreMissingDescriptor>true</ignoreMissingDescriptor>
-                    <descriptors>
-                        <descriptor>src/main/assembly/zip.xml</descriptor>
-                    </descriptors>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>2-make-assembly</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
 
-        </plugins>
+      <!-- Step 2: Assemble as a ZIP to avoid MANIFEST.MF timestamp -->
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.3</version>
+        <configuration>
+          <ignoreMissingDescriptor>true</ignoreMissingDescriptor>
+          <descriptors>
+            <descriptor>src/main/assembly/zip.xml</descriptor>
+          </descriptors>
+          <attach>false</attach>
+        </configuration>
+        <executions>
+          <execution>
+            <id>2-make-assembly</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
 
-    </build>
-    <!-- Provide defaults for all modules to use -->
-    <dependencyManagement>
-        <dependencies>
-            <!-- Testing -->
+    </plugins>
 
-            <!-- JUnit for testing -->
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.11</version>
-            </dependency>
+  </build>
 
-            <!-- FEST for fluent test assertions -->
-            <dependency>
-                <groupId>org.easytesting</groupId>
-                <artifactId>fest-assert-core</artifactId>
-                <version>2.0M10</version>
-            </dependency>
+  <dependencies>
 
-        </dependencies>
-    </dependencyManagement>
-    <dependencies>
-        <dependency>
-          <groupId>org.bouncycastle</groupId>
-          <artifactId>bcpg-jdk16</artifactId>
-          <version>1.46</version>
-        </dependency>
+    <!-- Bouncy Castle for PGP support -->
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcpg-jdk16</artifactId>
+      <version>1.46</version>
+    </dependency>
 
-    </dependencies>
+  </dependencies>
 
 </project>

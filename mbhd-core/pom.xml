@@ -124,6 +124,7 @@
           <descriptors>
             <descriptor>src/main/assembly/zip.xml</descriptor>
           </descriptors>
+          <attach>false</attach>
         </configuration>
         <executions>
           <execution>
