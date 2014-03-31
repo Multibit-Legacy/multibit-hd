@@ -7,7 +7,7 @@ import java.math.BigInteger;
 import java.util.Set;
 
 /**
- *  <p>DTO to provide the following to WalletService:<br>
+ *  <p>DTO to provide the following to WalletService:</p>
  *  <ul>
  *  <li>Additional payment request info</li>
  *  </ul>

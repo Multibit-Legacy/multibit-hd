@@ -1,7 +1,7 @@
 package org.multibit.hd.brit.matcher;
 
 /**
- *  <p>Factory to provide the following to BRIT:<br>
+ *  <p>Factory to provide the following to BRIT:</p>
  *  <ul>
  *  <li>Creation of new MatcherStore instances</li>
  *  </ul>

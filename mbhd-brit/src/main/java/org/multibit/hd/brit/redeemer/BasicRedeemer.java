@@ -1,11 +1,11 @@
 package org.multibit.hd.brit.redeemer;
 
 /**
- *  <p>[Pattern] to provide the following to [related classes]:<br>
+ *  <p>[Pattern] to provide the following to [related classes]:</p>
  *  <ul>
  *  <li></li>
  *  </ul>
- *  Example:<br>
+ *  Example:</p>
  *  <pre>
  *  </pre>
  *  </p>

@@ -1,17 +1,5 @@
 package org.multibit.hd.brit.crypto;
 
-/**
- *  <p>[Pattern] to provide the following to [related classes]:<br>
- *  <ul>
- *  <li></li>
- *  </ul>
- *  Example:<br>
- *  <pre>
- *  </pre>
- *  </p>
- *  
- */
-
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.*;
@@ -22,13 +10,20 @@ import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Iterator;
 
-
 /**
- * Taken from org.bouncycastle.openpgp.examples
- *
- * @author seamans
+ *  <p>Utility to provide the following to BRIT API:</p>
+ *  <ul>
+ *  <li>Access to PGP crypto functions in Bouncy Castle</li>
+ *  </ul>
+ * <p>Derived from <code>org.bouncycastle.openpgp.examples</code> by seamans</p>
  */
 public class PGPUtils {
+
+  /**
+   * Utilities have private constructors
+   */
+  private PGPUtils() {
+  }
 
   /**
    * Load a PGP public key from a public keyring or ASCII armored text file
@@ -37,22 +32,20 @@ public class PGPUtils {
    */
   @SuppressWarnings("unchecked")
   public static PGPPublicKey readPublicKey(InputStream in) throws IOException, PGPException {
+
     in = org.bouncycastle.openpgp.PGPUtil.getDecoderStream(in);
 
     PGPPublicKeyRingCollection pgpPub = new PGPPublicKeyRingCollection(in);
 
-    //
-    // we just loop through the collection till we find a key suitable for encryption, in the real
-    // world you would probably want to be a bit smarter about this.
-    //
+    // Loop through the collection until we find a key suitable for encryption
+    // (in the real world you would probably want to be a bit smarter about this)
     PGPPublicKey key = null;
 
-    //
-    // iterate through the key rings.
-    //
+    // Iterate through the key rings
     Iterator<PGPPublicKeyRing> rIt = pgpPub.getKeyRings();
 
     while (key == null && rIt.hasNext()) {
+
       PGPPublicKeyRing kRing = rIt.next();
       Iterator<PGPPublicKey> kIt = kRing.getPublicKeys();
       while (key == null && kIt.hasNext()) {
@@ -62,6 +55,7 @@ public class PGPUtils {
           key = k;
         }
       }
+
     }
 
     if (key == null) {
@@ -78,15 +72,18 @@ public class PGPUtils {
    * @param keyIn input stream representing a key ring collection.
    * @param keyID keyID we want.
    * @param pass  passphrase to decrypt secret key with.
+   *
    * @return The PGPPrivate key matching the keyID
+   *
    * @throws IOException
    * @throws PGPException
    * @throws NoSuchProviderException
    */
   public static PGPPrivateKey findSecretKey(InputStream keyIn, long keyID, char[] pass)
-          throws IOException, PGPException, NoSuchProviderException {
+    throws IOException, PGPException, NoSuchProviderException {
+
     PGPSecretKeyRingCollection pgpSec = new PGPSecretKeyRingCollection(
-            org.bouncycastle.openpgp.PGPUtil.getDecoderStream(keyIn));
+      org.bouncycastle.openpgp.PGPUtil.getDecoderStream(keyIn));
 
     PGPSecretKey pgpSecKey = pgpSec.getSecretKey(keyID);
 
@@ -99,10 +96,16 @@ public class PGPUtils {
 
   /**
    * Decrypt the passed in message stream
+   *
+   * @param encryptedInputStream  The input stream
+   * @param decryptedOutputStream The output stream
+   * @param keyInputStream        The key input stream
+   * @param password              The password
    */
   @SuppressWarnings("unchecked")
   public static void decryptFile(InputStream encryptedInputStream, OutputStream decryptedOutputStream, InputStream keyInputStream, char[] password)
-          throws Exception {
+    throws Exception {
+
     Security.addProvider(new BouncyCastleProvider());
 
     encryptedInputStream = org.bouncycastle.openpgp.PGPUtil.getDecoderStream(encryptedInputStream);
@@ -111,18 +114,15 @@ public class PGPUtils {
     PGPEncryptedDataList enc;
 
     Object o = pgpF.nextObject();
-    //
-    // the first object might be a PGP marker packet.
-    //
+
+    // The first object might be a PGP marker packet.
     if (o instanceof PGPEncryptedDataList) {
       enc = (PGPEncryptedDataList) o;
     } else {
       enc = (PGPEncryptedDataList) pgpF.nextObject();
     }
 
-    //
-    // find the secret key
-    //
+    // Find the secret key
     Iterator<PGPPublicKeyEncryptedData> it = enc.getEncryptedDataObjects();
     PGPPrivateKey sKey = null;
     PGPPublicKeyEncryptedData pbe = null;
@@ -172,12 +172,21 @@ public class PGPUtils {
     }
   }
 
-  public static void encryptFile(OutputStream out, File inputFile,
+  /**
+   * <p>Encrypt a file</p>
+   *
+   * @param out       The output stream
+   * @param inputFile The input file
+   * @param encKey    The PGP public key for encrypting
+   *
+   * @throws IOException
+   * @throws NoSuchProviderException
+   * @throws PGPException
+   */
+  public static void encryptFile(OutputStream out,
+                                 File inputFile,
                                  PGPPublicKey encKey)
-          throws IOException, NoSuchProviderException, PGPException {
-
-    // Always perform an integrity check
-    boolean withIntegrityCheck = true;
+    throws IOException, NoSuchProviderException, PGPException {
 
     Security.addProvider(new BouncyCastleProvider());
 
@@ -186,17 +195,23 @@ public class PGPUtils {
 
     ByteArrayOutputStream bOut = new ByteArrayOutputStream();
 
-    PGPCompressedDataGenerator comData = new PGPCompressedDataGenerator(
-            PGPCompressedData.ZIP);
+    PGPCompressedDataGenerator comData = new PGPCompressedDataGenerator(PGPCompressedData.ZIP);
 
-    org.bouncycastle.openpgp.PGPUtil.writeFileToLiteralData(comData.open(bOut),
-            PGPLiteralData.BINARY, inputFile);
+    PGPUtil.writeFileToLiteralData(
+      comData.open(bOut),
+      PGPLiteralData.BINARY,
+      inputFile
+    );
 
     comData.close();
 
+    // Always perform an integrity check
     PGPEncryptedDataGenerator cPk = new PGPEncryptedDataGenerator(
-            PGPEncryptedData.CAST5, withIntegrityCheck,
-            new SecureRandom(), "BC");
+      PGPEncryptedData.CAST5,
+      true,
+      new SecureRandom(),
+      "BC"
+    );
 
     cPk.addMethod(encKey);
 

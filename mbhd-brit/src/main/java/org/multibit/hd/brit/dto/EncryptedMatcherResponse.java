@@ -1,7 +1,7 @@
 package org.multibit.hd.brit.dto;
 
 /**
- *  <p>DTO to provide the following to Payer and matcher:<br>
+ *  <p>DTO to provide the following to Payer and matcher:</p>
  *  <ul>
  *  <li>PGP encrypted version of MatcherResponse</li>
  *  </ul>

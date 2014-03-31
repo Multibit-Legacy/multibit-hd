@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- *  <p>Manager to provide the following to core users:<br>
+ *  <p>Manager to provide the following to core users:</p>
  *  <ul>
  *  <li>create wallet</li>
  *  <li>save wallet wallet</li>

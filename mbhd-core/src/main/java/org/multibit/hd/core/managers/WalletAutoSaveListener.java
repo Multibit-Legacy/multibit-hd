@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- *  <p>Listener to provide the following to WalletManager:<br>
+ *  <p>Listener to provide the following to WalletManager:</p>
  *  <ul>
  *  <li>Saving of rolling wallet backups and zip backups</li>
  *  </ul>

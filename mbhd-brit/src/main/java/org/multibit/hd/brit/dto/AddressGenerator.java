@@ -6,7 +6,7 @@ import com.google.bitcoin.core.NetworkParameters;
 import java.math.BigInteger;
 
 /**
- *  <p>Class to provide the following to BRIT:<br>
+ *  <p>Class to provide the following to BRIT:</p>
  *  <ul>
  *  <li>Generation of deterministically generated Bitcoin addresses to Matcher</li>
  *  </ul>

@@ -8,7 +8,7 @@ import org.multibit.hd.brit.dto.PayerRequest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- *  <p>Interface to provide the following to BRIT:<br>
+ *  <p>Interface to provide the following to BRIT:</p>
  *  <ul>
  *  <li>encapsulation of functionality required to match BRIT payers and redeemers</li>
  *  </ul>

@@ -1,7 +1,7 @@
 package org.multibit.hd.brit.matcher;
 
 /**
- *  <p>Factory to provide the following to BRIT classes :<br>
+ *  <p>Factory to provide the following to BRIT classes :</p>
  *  <ul>
  *  <li>Create matchers</li>
  *  </ul>

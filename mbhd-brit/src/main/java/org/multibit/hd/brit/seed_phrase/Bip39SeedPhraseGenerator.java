@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- *  <p>Generator to provide the following to UI code:<br>
+ *  <p>Generator to provide the following to UI code:</p>
  *  <ul>
  *  <li>Generation of BIP39 seed phrases</li>
  * <li>Validation of BIP39 seed phrases</li>

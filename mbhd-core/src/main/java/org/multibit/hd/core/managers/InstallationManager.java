@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- *  <p>Manager to provide the following to other core classes:<br>
+ *  <p>Manager to provide the following to other core classes:</p>
  *  <ul>
  *  <li>Location of the installation directory</li>
  * <li>Utility methods eg copying checkpoint files from installation directory</li>

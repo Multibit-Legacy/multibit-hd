@@ -5,7 +5,7 @@ import org.joda.time.DateTime;
 import java.math.BigInteger;
 
 /**
- *  <p>Interface to provide the following to payments view:<br>
+ *  <p>Interface to provide the following to payments view:</p>
  *  <ul>
  *  <li>Unified common interface for TransactionData and PaymentRequestData </li>
  *  </ul>

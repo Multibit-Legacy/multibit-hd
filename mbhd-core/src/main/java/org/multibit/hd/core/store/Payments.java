@@ -6,7 +6,7 @@ import org.multibit.hd.core.dto.PaymentRequestData;
 import java.util.Collection;
 
 /**
- *  <p>DTO to provide the following to WalletService:<br>
+ *  <p>DTO to provide the following to WalletService:</p>
  *  <ul>
  *  <li>Top level encapsulating class around payment requests and transaction info</li>
  *  </p>

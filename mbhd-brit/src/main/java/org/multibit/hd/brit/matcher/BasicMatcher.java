@@ -18,7 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- *  <p>Class to provide the following to BRIT:<br>
+ *  <p>Class to provide the following to BRIT:</p>
  *  <ul>
  *  <li>ability to match redeemers and payers</li>
  *  </ul>

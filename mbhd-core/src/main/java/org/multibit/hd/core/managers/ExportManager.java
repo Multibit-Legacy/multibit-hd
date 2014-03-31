@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 /**
- *  <p>Manager to provide the following to other core classes:<br>
+ *  <p>Manager to provide the following to other core classes:</p>
  *  <ul>
  *  <li>Exporting of transactions and payment requests to CSV files </li>
  *  </ul>

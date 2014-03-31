@@ -10,14 +10,10 @@ import java.util.Date;
 import java.util.List;
 
 /**
- *  <p>DTO to provide the following to BRIT:<br>
+ *  <p>DTO to provide the following to BRIT:</p>
  *  <ul>
  *  <li>This is the response message from the Matcher to the Matcher</li>
  *  </ul>
- *  Example:<br>
- *  <pre>
- *  </pre>
- *  </p>
  *  
  */
 public class MatcherResponse {

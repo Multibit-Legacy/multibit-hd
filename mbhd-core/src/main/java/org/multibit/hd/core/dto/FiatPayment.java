@@ -5,7 +5,7 @@ import org.joda.money.BigMoney;
 import javax.annotation.Nullable;
 
 /**
- *  <p>DTO to provide the following to WalletService:<br>
+ *  <p>DTO to provide the following to WalletService:</p>
  *  <ul>
  *  <li>A fiat equivalent to a bitcoin amount</li>
  *  </ul>

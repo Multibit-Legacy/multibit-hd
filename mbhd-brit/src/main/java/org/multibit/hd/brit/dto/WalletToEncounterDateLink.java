@@ -10,7 +10,7 @@ import org.spongycastle.util.Strings;
 import java.util.Date;
 
 /**
- *  <p>DTO to provide the following to BRIT classes:<br>
+ *  <p>DTO to provide the following to BRIT classes:</p>
  *  <ul>
  *  <li>This data represents the link between a BRITWalletId and an encounter date</li>
  *  </ul>

@@ -8,7 +8,7 @@ import java.math.BigInteger;
 import java.util.Collection;
 
 /**
- *  <p>Data object to provide the following to Payments display:<br>
+ *  <p>Data object to provide the following to Payments display:</p>
  *  <ul>
  *  <li>Contains transaction relevant data</li>
  *  <li>Immutable</li>

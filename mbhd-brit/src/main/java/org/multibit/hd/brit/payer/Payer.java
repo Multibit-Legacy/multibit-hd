@@ -11,7 +11,7 @@ import java.security.NoSuchProviderException;
 import java.util.Date;
 
 /**
- *  <p>Interface to provide the following to BRIT:<br>
+ *  <p>Interface to provide the following to BRIT:</p>
  *  <ul>
  *  <li>encapsulation of functionality required to pay BRIT payments</li>
  *  </ul>

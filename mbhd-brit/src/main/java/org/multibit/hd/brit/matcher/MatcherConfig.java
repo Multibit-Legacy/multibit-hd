@@ -3,7 +3,7 @@ package org.multibit.hd.brit.matcher;
 import java.io.File;
 
 /**
- *  <p>Configuration to provide the following to Matchers:<br>
+ *  <p>Configuration to provide the following to Matchers:</p>
  *  <ul>
  *  <li></li>
  *  </ul>

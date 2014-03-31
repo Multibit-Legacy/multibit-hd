@@ -10,7 +10,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
 /**
- *  <p>Renderer to provide the following to tables:<br>
+ *  <p>Renderer to provide the following to tables:</p>
  *  <ul>
  *  <li>Renders dates</li>
  *  </ul>

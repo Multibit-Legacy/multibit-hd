@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- *  <p>Backing store to provide the following to Matcher:<br>
+ *  <p>Backing store to provide the following to Matcher:</p>
  *  <ul>
  *  <li>Load and store links between britWalletIds and encounter date</li>
  * <li>Load and store redeemer Bitcoin addresses, all of them and by day</li>

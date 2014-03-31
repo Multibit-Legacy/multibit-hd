@@ -31,7 +31,7 @@ import java.math.BigInteger;
 import java.util.*;
 
 /**
- *  <p>Service to provide the following to GUI classes:<br>
+ *  <p>Service to provide the following to GUI classes:</p>
  *  <ul>
  *  <li>list Transactions in the current wallet</li>
  *  </ul>

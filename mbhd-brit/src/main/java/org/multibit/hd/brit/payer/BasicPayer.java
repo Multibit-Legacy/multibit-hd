@@ -15,11 +15,11 @@ import java.security.NoSuchProviderException;
 import java.util.Date;
 
 /**
- *  <p>[Pattern] to provide the following to [related classes]:<br>
+ *  <p>[Pattern] to provide the following to [related classes]:</p>
  *  <ul>
  *  <li>ability to pay BRIT payments</li>
  *  </ul>
- *  Example:<br>
+ *  Example:</p>
  *  <pre>
  *  </pre>
  *  </p>

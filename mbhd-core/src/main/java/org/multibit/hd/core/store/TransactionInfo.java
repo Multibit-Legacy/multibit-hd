@@ -6,7 +6,7 @@ import org.multibit.hd.core.dto.FiatPayment;
 import java.math.BigInteger;
 
 /**
- *  <p>DTOto provide the following to WalletService:<br>
+ *  <p>DTOto provide the following to WalletService:</p>
  *  <ul>
  *  <li>Additional information related to a transaction that is not stored in the bitcoinj transaction</li>
  *  </ul>

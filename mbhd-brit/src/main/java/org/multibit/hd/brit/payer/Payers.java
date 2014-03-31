@@ -1,11 +1,11 @@
 package org.multibit.hd.brit.payer;
 
 /**
- *  <p>Factory to provide the following to BRIT classes :<br>
+ *  <p>Factory to provide the following to BRIT classes :</p>
  *  <ul>
  *  <li>Create payers</li>
  *  </ul>
- *  Example:<br>
+ *  Example:</p>
  *  <pre>
  *  </pre>
  *  </p>

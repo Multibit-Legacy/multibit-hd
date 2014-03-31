@@ -1,11 +1,11 @@
 package org.multibit.hd.brit.redeemer;
 
 /**
- *  <p>Factory to provide the following to BRIT classes :<br>
+ *  <p>Factory to provide the following to BRIT classes :</p>
  *  <ul>
  *  <li>Create redeemers</li>
  *  </ul>
- *  Example:<br>
+ *  Example:</p>
  *  <pre>
  *  </pre>
  *  </p>

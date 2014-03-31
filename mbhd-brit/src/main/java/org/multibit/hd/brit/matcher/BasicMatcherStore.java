@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *  <p>Store to provide the following to Matcher classes:<br>
+ *  <p>Store to provide the following to Matcher classes:</p>
  *  <ul>
  *  <li>File store and lookup of al bitcoin addresses. These are stored in the backingStoreDirectory/all.txt</li>
  * <li>File store and lookup of wallet to encounter date links. These are stored in a file backingStore/Directory/links.txt</li>

@@ -1,7 +1,7 @@
 package org.multibit.hd.core.dto;
 
 /**
- *  <p>DTO to provide the following to PaymentData:<br>
+ *  <p>DTO to provide the following to PaymentData:</p>
  *  <ul>
  *  <li>The type of the transaction or payment</li>
  *  </ul>

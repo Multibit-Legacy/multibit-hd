@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 /**
- *  <p>DTO to provide the following to BRIT:<br>
+ *  <p>DTO to provide the following to BRIT:</p>
  *  <ul>
  *  <li>This is the unencrypted version of the message sent by the Payer to the Matcher</li>
  * <li>Typically 'encrypt' is called and the EncryptedPayerRequest is actually sent on the wire</li>

@@ -1,7 +1,7 @@
 package org.multibit.hd.brit.redeemer;
 
 /**
- *  <p>Interface to provide the following to BRIT:<br>
+ *  <p>Interface to provide the following to BRIT:</p>
  *  <ul>
  *  <li>encapsulation of functionality required to redeem BRIT payments</li>
  *  </ul>

@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.components.wallet_detail;
 
 /**
- *  <p>DTO to provide the following to WalletDetailModel:<br>
+ *  <p>DTO to provide the following to WalletDetailModel:</p>
  * <ul>
  * <li>Wallet details in a neutral format</li>
  * </ul>

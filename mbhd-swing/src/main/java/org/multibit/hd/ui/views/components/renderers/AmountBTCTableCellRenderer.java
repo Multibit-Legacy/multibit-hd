@@ -15,7 +15,7 @@ import java.awt.*;
 import java.math.BigInteger;
 
 /**
- *  <p>Renderer to provide the following to tables:<br>
+ *  <p>Renderer to provide the following to tables:</p>
  *  <ul>
  *  <li>Renderer of numeric amount field</li>
  *  </ul>

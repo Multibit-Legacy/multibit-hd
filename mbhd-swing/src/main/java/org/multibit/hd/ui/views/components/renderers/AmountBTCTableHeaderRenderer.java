@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.components.renderers;
 
 /**
- * <p>Table header renderer to provide the following to tables:<br>
+ * <p>Table header renderer to provide the following to tables:</p>
  * <ul>
  * <li>Customised iconography for Bitcoin symbol</li>
  * </ul>
