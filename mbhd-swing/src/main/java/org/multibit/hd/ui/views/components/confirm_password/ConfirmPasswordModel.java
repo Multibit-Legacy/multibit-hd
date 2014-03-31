@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.components.confirm_password;
 
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
-import org.multibit.hd.ui.views.wizards.WizardButton;
 
 /**
  * <p>Model to provide the following to view:</p>
@@ -30,7 +29,7 @@ public class ConfirmPasswordModel implements Model<String> {
   /**
    * <p>Compares the passwords and fires a password status event</p>
    */
-  public void comparePasswords() {
+  public boolean comparePasswords() {
 
     final boolean passwordsEqual;
 
@@ -54,9 +53,11 @@ public class ConfirmPasswordModel implements Model<String> {
 
     // TODO Consider a check for whitespace characters leading or trailing
 
-    // Fire the UI events for "verification status" message and "next" button
+    // Fire the UI event for "verification status" message
     ViewEvents.fireVerificationStatusChangedEvent(panelName, passwordsEqual);
-    ViewEvents.fireWizardButtonEnabledEvent(panelName, WizardButton.NEXT, passwordsEqual);
+
+    return passwordsEqual;
+
   }
 
   /**

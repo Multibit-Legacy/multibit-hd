@@ -309,11 +309,15 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
    */
   private boolean isFinishEnabled() {
 
-    return !Strings.isNullOrEmpty(
+    boolean isPasswordCorrect = !Strings.isNullOrEmpty(
       getPanelModel().get()
         .getEnterPasswordModel()
         .getValue()
     );
+
+    boolean isNewPasswordConfirmed = confirmPasswordMaV.getModel().comparePasswords();
+
+    return isPasswordCorrect && isNewPasswordConfirmed;
 
   }
 

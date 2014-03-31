@@ -1,6 +1,10 @@
 package org.multibit.hd.ui.views.wizards.change_password;
 
+import com.google.common.eventbus.Subscribe;
+import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,6 +60,15 @@ public class ChangePasswordWizardModel extends AbstractWizardModel<ChangePasswor
    */
   void setChangePasswordPanelModel(ChangePasswordPanelModel changePasswordPanelModel) {
     this.changePasswordPanelModel = changePasswordPanelModel;
+  }
+
+  @Subscribe
+  public void onVerificationStatusChangedEvent(VerificationStatusChangedEvent event) {
+
+    if (ChangePasswordState.CHANGE_PASSWORD_ENTER_PASSWORD.name().equals(event.getPanelName())) {
+      ViewEvents.fireWizardButtonEnabledEvent(event.getPanelName(), WizardButton.FINISH, event.isOK());
+    }
+
   }
 
 }
