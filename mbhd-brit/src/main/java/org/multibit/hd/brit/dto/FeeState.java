@@ -12,11 +12,19 @@ import java.math.BigInteger;
  *  <li>the current fee per send</li>
  *  <li>the current fee deficit (the amount allowing from the BRIT Payer to the Redeemer</li>
  *  </ul>
-
  *  </p>
  *  
  */
 public class FeeState {
+  public FeeState(boolean usingHardwiredBRITAddresses, String nextFeeAddress, int currentNumberOfSends,
+                  int nextSendCount, BigInteger feeAmount, BigInteger feeOwed) {
+    this.usingHardwiredBRITAddresses = usingHardwiredBRITAddresses;
+    this.nextFeeAddress = nextFeeAddress;
+    this.currentNumberOfSends = currentNumberOfSends;
+    this.nextSendCount = nextSendCount;
+    this.feeAmount = feeAmount;
+    this.feeOwed = feeOwed;
+  }
 
   /**
    * Is the Payer using the hardwired list of BRIT payment addresses?
@@ -28,6 +36,11 @@ public class FeeState {
    * The Bitcoin address to which the next Payer fee payment should be paid to.
    */
   private String nextFeeAddress;
+
+  /**
+   * The number of sends in the Payer's wallet.
+   */
+  private int currentNumberOfSends;
 
   /**
    * The number of sends in the Payer's wallet at which to send the fee.
