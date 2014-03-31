@@ -102,9 +102,9 @@ public class BasicMatcherStoreTest {
     MatcherStore rebornMatcherStore = MatcherStores.newBasicMatcherStore(matcherStoreDirectoryLocation);
 
     // Check they have been stored ok
-    assertThat(rebornMatcherStore.getBitcoinAddressListForDate(yesterday)).isEqualTo(bitcoinAddressList1);
-    assertThat(rebornMatcherStore.getBitcoinAddressListForDate(today)).isEqualTo(bitcoinAddressList2);
-    assertThat(rebornMatcherStore.getBitcoinAddressListForDate(tomorrow)).isEqualTo(bitcoinAddressList3);
+    assertThat(rebornMatcherStore.lookupBitcoinAddressListForDate(yesterday)).isEqualTo(bitcoinAddressList1);
+    assertThat(rebornMatcherStore.lookupBitcoinAddressListForDate(today)).isEqualTo(bitcoinAddressList2);
+    assertThat(rebornMatcherStore.lookupBitcoinAddressListForDate(tomorrow)).isEqualTo(bitcoinAddressList3);
   }
 
   @Test

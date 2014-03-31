@@ -41,7 +41,7 @@ public interface MatcherStore {
    *
    * @return the Bitcoin address list for this date, or null if non has been set yet
    */
-  public List<String> getBitcoinAddressListForDate(Date encounterDate);
+  public List<String> lookupBitcoinAddressListForDate(Date encounterDate);
 
   /**
    * Store the bitcoinAddressList as the Bitcoin addresses to send back tothe payer for the encounterDate

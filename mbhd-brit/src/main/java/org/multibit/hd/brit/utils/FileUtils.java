@@ -86,18 +86,6 @@ public class FileUtils {
   }
 
   /**
-   * Work out the directory part of a filename
-   *
-   * @param name of file
-   *
-   * @return directory part of filename
-   */
-  public static String directoryPart(String name) {
-    int s = name.lastIndexOf(File.separatorChar);
-    return s == -1 ? null : name.substring(0, s);
-  }
-
-  /**
    * Work out the file part of a filename
    *
    * @param name of file

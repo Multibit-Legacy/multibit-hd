@@ -96,7 +96,7 @@ public class BasicMatcher implements Matcher {
       replayDate = payerRequest.getFirstTransactionDate().get().before(replayDate) ? payerRequest.getFirstTransactionDate().get() : replayDate;
     }
 
-    // TODO update record if replay date coming in is earleir than the one on the existing record (or if it is absent)
+    // TODO update record if replay date coming in is earlier than the one on the existing record (or if it is absent)
 
     // If the previousEncounter was null then store this encounter
     if (previousEncounter == null) {
@@ -105,7 +105,7 @@ public class BasicMatcher implements Matcher {
     }
     // Lookup the current valid set of Bitcoin addresses to return to the payer
     Date now = new Date();
-    List<String> currentBitcoinAddressList = matcherStore.getBitcoinAddressListForDate(now);
+    List<String> currentBitcoinAddressList = matcherStore.lookupBitcoinAddressListForDate(now);
 
     if (currentBitcoinAddressList == null) {
       // No bitcoin addresses have been set up for this date - log it and return an empty list

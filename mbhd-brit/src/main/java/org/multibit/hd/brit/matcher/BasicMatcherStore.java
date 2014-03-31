@@ -177,7 +177,7 @@ public class BasicMatcherStore implements MatcherStore {
   }
 
   @Override
-  public List<String> getBitcoinAddressListForDate(Date encounterDate) {
+  public List<String> lookupBitcoinAddressListForDate(Date encounterDate) {
     return encounterDateToBitcoinAddressesMap.get(convertToMidnight(encounterDate));
   }
 
