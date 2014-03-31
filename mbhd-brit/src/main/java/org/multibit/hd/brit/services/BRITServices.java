@@ -39,7 +39,7 @@ public class BRITServices {
    */
   public static FeeService newFeeService() {
     log.debug("Creating new fee service");
-    return new FeeService();
+    return new FeeService(null, null);
 
   }
 }
