@@ -19,8 +19,9 @@ public class ChangePasswordPanelModel extends AbstractWizardPanelModel {
   private final ConfirmPasswordModel confirmPasswordModel;
 
   /**
-   * @param panelName          The panel name
-   * @param enterPasswordModel The "enter password" component model
+   * @param panelName            The panel name
+   * @param enterPasswordModel   The "enter password" component model
+   * @param confirmPasswordModel The "confirm password" component model
    */
   public ChangePasswordPanelModel(
     String panelName,

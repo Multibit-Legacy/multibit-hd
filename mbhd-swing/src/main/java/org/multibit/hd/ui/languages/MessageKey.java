@@ -121,6 +121,10 @@ public enum MessageKey {
 
   BITCOIN_URI_ALERT("bitcoin_uri_label"),
 
+  PEER_COUNT("peer_count"),
+  BLOCKS_LEFT("blocks_left"),
+  LAST_TRANSACTION_ID("last_transaction_id"),
+
   // Panels
 
   NETWORK_CONFIGURATION_ERROR("network_configuration_error"),
@@ -173,6 +177,8 @@ public enum MessageKey {
 
   CHANGE_PASSWORD_TITLE("change_password_title"),
 
+  VERIFY_NETWORK_TITLE("verify_network_title"),
+
   // Labels
   CONFIRM_SEND_MESSAGE("confirm_send_message"),
   EXCHANGE_RATE_PROVIDER("exchange_rate_provider"),
@@ -204,6 +210,7 @@ public enum MessageKey {
   SHOW_LANGUAGE_WIZARD("show_language_wizard"),
   SHOW_WALLET_DETAILS_WIZARD("show_wallet_details_wizard"),
   SHOW_CHANGE_PASSWORD_WIZARD("show_change_password_wizard"),
+  SHOW_VERIFY_NETWORK_WIZARD("show_verify_network_wizard"),
 
   SHOW_ALERT("show_alert"),
   HIDE_ALERT("hide_alert"),
@@ -279,6 +286,8 @@ public enum MessageKey {
 
   CHANGE_PASSWORD_NOTE_1("change_password_note_1"),
   CHANGE_PASSWORD_NOTE_2("change_password_note_2"),
+
+  VERIFY_NETWORK_NOTE_1("verify_network_note_1"),
 
   BITCOIN_SETTINGS_NOTE_1("bitcoin_settings_note_1"),
 

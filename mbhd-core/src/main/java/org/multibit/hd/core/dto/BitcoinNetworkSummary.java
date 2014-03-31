@@ -17,12 +17,12 @@ public class BitcoinNetworkSummary {
 
   private final int peerCount;
   private final int percent;
+  private final int blocksLeft;
 
   private final RAGStatus severity;
 
   private final Optional<CoreMessageKey> messageKey;
   private final Optional<Object[]> messageData;
-
 
   /**
    * <p>The network has not initialised yet so hide the progress bar</p>
@@ -36,6 +36,7 @@ public class BitcoinNetworkSummary {
       Optional.of(CoreMessageKey.NOT_INITIALISED),
       Optional.<Object[]>absent(),
       0,
+      -1,
       -1
     );
   }
@@ -52,26 +53,31 @@ public class BitcoinNetworkSummary {
       Optional.of(CoreMessageKey.CHAIN_DOWNLOAD),
       Optional.of(new Object[]{"0"}),
       0,
-      0
+      0,
+      -1
     );
   }
 
   /**
    * <p>The network has begun to synchronize so show the progress bar</p>
    *
-   * @param percent The percentage of blocks downloaded
+   * @param percent    The percentage of blocks downloaded
+   * @param blocksLeft The number of blocks left (useful for verifying the network)
    *
    * @return A new "progress update" summary
    */
-  public static BitcoinNetworkSummary newChainDownloadProgress(int percent) {
+  public static BitcoinNetworkSummary newChainDownloadProgress(int percent, int blocksLeft) {
+
     return new BitcoinNetworkSummary(
       BitcoinNetworkStatus.DOWNLOADING_BLOCKCHAIN,
       RAGStatus.AMBER,
       Optional.of(CoreMessageKey.CHAIN_DOWNLOAD),
       Optional.of(new Object[]{percent}),
       0,
-      percent
+      percent,
+      blocksLeft
     );
+
   }
 
   /**
@@ -88,7 +94,8 @@ public class BitcoinNetworkSummary {
       Optional.of(CoreMessageKey.PEER_COUNT),
       Optional.of(new Object[]{peerCount}),
       peerCount,
-      100
+      100,
+      0
     );
   }
 
@@ -106,6 +113,7 @@ public class BitcoinNetworkSummary {
       Optional.of(messageKey),
       messageData,
       0,
+      -1,
       -1
     );
   }
@@ -116,7 +124,8 @@ public class BitcoinNetworkSummary {
    * @param messageKey  The error key to allow localisation
    * @param messageData The error data for insertion into the error message
    * @param peerCount   The current peer count
-   * @param percent     The percentage of blocks downloaded (-1 means hide, 0-99 "in progress", 100 "success")
+   * @param percent     The percentage of blocks downloaded (-1 means "hide", 0-99 "in progress", 100 "success")
+   * @param blocksLeft  The number of blocks left (-1 means "hide", 0+ "show")
    */
   public BitcoinNetworkSummary(
     BitcoinNetworkStatus status,
@@ -124,7 +133,8 @@ public class BitcoinNetworkSummary {
     Optional<CoreMessageKey> messageKey,
     Optional<Object[]> messageData,
     int peerCount,
-    int percent) {
+    int percent,
+    int blocksLeft) {
 
     this.status = status;
     this.severity = severity;
@@ -134,6 +144,7 @@ public class BitcoinNetworkSummary {
 
     this.peerCount = peerCount;
     this.percent = percent;
+    this.blocksLeft = blocksLeft;
   }
 
   public int getPeerCount() {
@@ -145,6 +156,13 @@ public class BitcoinNetworkSummary {
    */
   public int getPercent() {
     return percent;
+  }
+
+  /**
+   * @return The number of blocks left in order to synchronize (useful for verifying the network)
+   */
+  public int getBlocksLeft() {
+    return blocksLeft;
   }
 
   /**
@@ -179,6 +197,7 @@ public class BitcoinNetworkSummary {
       ", status=" + status +
       ", peerCount=" + peerCount +
       ", percent=" + percent +
+      ", blocksLeft=" + blocksLeft +
       ", severity=" + severity +
       ", errorKey=" + messageKey +
       '}';

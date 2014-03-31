@@ -56,6 +56,9 @@ import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinWizardModel;
 import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsState;
 import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsWizard;
 import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsWizardModel;
+import org.multibit.hd.ui.views.wizards.verify_network.VerifyNetworkState;
+import org.multibit.hd.ui.views.wizards.verify_network.VerifyNetworkWizard;
+import org.multibit.hd.ui.views.wizards.verify_network.VerifyNetworkWizardModel;
 import org.multibit.hd.ui.views.wizards.wallet_detail.WalletDetailState;
 import org.multibit.hd.ui.views.wizards.wallet_detail.WalletDetailWizard;
 import org.multibit.hd.ui.views.wizards.wallet_detail.WalletDetailWizardModel;
@@ -199,6 +202,15 @@ public class Wizards {
   public static ChangePasswordWizard newChangePasswordWizard() {
 
     return new ChangePasswordWizard(new ChangePasswordWizardModel(ChangePasswordState.CHANGE_PASSWORD_ENTER_PASSWORD), false);
+
+  }
+
+  /**
+   * @return A new "verify network" wizard
+   */
+  public static VerifyNetworkWizard newVerifyNetworkWizard() {
+
+    return new VerifyNetworkWizard(new VerifyNetworkWizardModel(VerifyNetworkState.VERIFY_NETWORK_SHOW_REPORT), false);
 
   }
 

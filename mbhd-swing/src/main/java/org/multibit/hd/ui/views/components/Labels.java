@@ -777,6 +777,27 @@ public class Labels {
   }
 
   /**
+   * @return a new "peer count" for verifying network
+   */
+  public static JLabel newPeerCount() {
+    return newLabel(MessageKey.PEER_COUNT);
+  }
+
+  /**
+   * @return a new "last transaction" for verifying network
+   */
+  public static JLabel newLastTransaction() {
+    return newLabel(MessageKey.LAST_TRANSACTION_ID);
+  }
+
+  /**
+   * @return a new "blocks left" for verifying network
+   */
+  public static JLabel newBlocksLeft() {
+    return newLabel(MessageKey.BLOCKS_LEFT);
+  }
+
+  /**
    * @return A new "notes" message
    */
   public static JLabel newNotes() {
@@ -1029,6 +1050,17 @@ public class Labels {
 
     return newNoteLabel(new MessageKey[]{
       MessageKey.CHANGE_PASSWORD_NOTE_2
+    }, new Object[][]{});
+
+  }
+
+  /**
+   * @return A new "verify network" note
+   */
+  public static JLabel newVerifyNetworkNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.VERIFY_NETWORK_NOTE_1
     }, new Object[][]{});
 
   }

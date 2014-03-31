@@ -37,7 +37,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     updateDownloadPercent(blocksLeft);
 
     // Fire the download percentage
-    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(downloadPercent));
+    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(downloadPercent, blocksLeft));
 
     if (!suppressPeerCountMessages) {
       // Switch to showing the peer count
@@ -62,7 +62,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
     // When the blocks are being downloaded - update the display
     if (suppressPeerCountMessages) {
-      CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(downloadPercent));
+      CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(downloadPercent, blocksLeft));
     } else {
       // Switch to showing the peer count
       CoreEvents.fireBitcoinNetworkChangedEvent(

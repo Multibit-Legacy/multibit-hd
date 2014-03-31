@@ -61,6 +61,8 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
     contentPanel.add(Buttons.newShowWalletDetailsButton(getShowWalletDetailsAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowChangePasswordButton(getShowChangePasswordAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
 
+    contentPanel.add(Buttons.newShowVerifyNetworkButton(getShowVerifyNetworkAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+
     return contentPanel;
   }
 
@@ -111,6 +113,19 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
       public void actionPerformed(ActionEvent e) {
 
         Panels.showLightBox(Wizards.newChangePasswordWizard().getWizardScreenHolder());
+      }
+    };
+  }
+
+  /**
+   * @return An action to show the "verify network" tool
+   */
+  private AbstractAction getShowVerifyNetworkAction() {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        Panels.showLightBox(Wizards.newVerifyNetworkWizard().getWizardScreenHolder());
       }
     };
   }

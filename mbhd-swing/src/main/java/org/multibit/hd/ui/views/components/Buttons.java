@@ -792,6 +792,26 @@ public class Buttons {
   }
 
   /**
+   * @param action The click action
+   *
+   * @return A new "verify network" button with icon
+   */
+  public static JButton newShowVerifyNetworkButton(Action action) {
+
+    JButton button = newLargeButton(action, MessageKey.SHOW_VERIFY_NETWORK_WIZARD);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.SITEMAP,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
+
+    return button;
+  }
+
+  /**
    * TODO (GR) Remove this when alerts no longer required
    *
    * @param action The click action
