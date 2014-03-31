@@ -18,6 +18,9 @@ import org.multibit.hd.ui.views.wizards.application_settings.ApplicationSettings
 import org.multibit.hd.ui.views.wizards.bitcoin_settings.BitcoinSettingsState;
 import org.multibit.hd.ui.views.wizards.bitcoin_settings.BitcoinSettingsWizard;
 import org.multibit.hd.ui.views.wizards.bitcoin_settings.BitcoinSettingsWizardModel;
+import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordState;
+import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordWizard;
+import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordWizardModel;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactState;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactWizard;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactWizardModel;
@@ -191,11 +194,11 @@ public class Wizards {
   }
 
   /**
-   * @return A new "password" wizard for password recovery set up
+   * @return A new "change password" wizard
    */
-  public static PasswordWizard newClosingPasswordWizard() {
+  public static ChangePasswordWizard newChangePasswordWizard() {
 
-    return new PasswordWizard(new PasswordWizardModel(PasswordState.PASSWORD_ENTER_PASSWORD), false);
+    return new ChangePasswordWizard(new ChangePasswordWizardModel(ChangePasswordState.CHANGE_PASSWORD_ENTER_PASSWORD), false);
 
   }
 

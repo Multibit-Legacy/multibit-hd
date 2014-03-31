@@ -40,7 +40,7 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
 
     panel = Panels.newPanel(new MigLayout(
       Panels.migXLayout(), // Layout
-      "[][][]", // Columns
+      "[][][][]", // Columns
       "[]" // Rows
     ));
 
@@ -68,6 +68,7 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
     showButton = Buttons.newShowButton(toggleDisplayAction);
 
     // Add to the panel
+    panel.add(Labels.newEnterPassword(), "grow,push");
     panel.add(password, "grow,push");
     panel.add(showButton, "shrink");
     panel.add(spinner, "shrink,wrap");

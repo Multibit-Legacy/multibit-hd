@@ -100,8 +100,7 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     contentPanel.add(developerFeeDisplayAmountMaV.getView().newComponentPanel(), "wrap");
     contentPanel.add(Labels.newNotes());
     contentPanel.add(notesTextArea, "growx,push,wrap");
-    contentPanel.add(Labels.newEnterPassword());
-    contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "wrap");
+    contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "span 2,push,wrap");
 
   }
 

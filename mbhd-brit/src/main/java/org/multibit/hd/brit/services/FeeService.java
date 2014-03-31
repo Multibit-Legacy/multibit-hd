@@ -19,8 +19,8 @@ import java.util.Date;
  */
 public class FeeService {
 
-  private PGPPublicKey matcherPublicKey;
-  private URL matcherURL;
+  private final PGPPublicKey matcherPublicKey;
+  private final URL matcherURL;
 
   /**
    * Construct a fee service

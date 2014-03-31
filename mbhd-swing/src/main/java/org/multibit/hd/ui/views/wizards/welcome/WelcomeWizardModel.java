@@ -213,9 +213,9 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   }
 
   @Subscribe
-  public void onPasswordStatusChangedEvent(VerificationStatusChangedEvent event) {
+  public void onVerificationStatusChangedEvent(VerificationStatusChangedEvent event) {
 
-    ViewEvents.fireWizardButtonEnabledEvent(CREATE_WALLET_CONFIRM_SEED_PHRASE.name(), WizardButton.NEXT, event.isOK());
+    ViewEvents.fireWizardButtonEnabledEvent(event.getPanelName(), WizardButton.NEXT, event.isOK());
 
   }
 

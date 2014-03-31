@@ -32,6 +32,5 @@ public class BRITServices {
   public static FeeService newFeeService(PGPPublicKey matcherPublicKey, URL matcherURL) {
     log.debug("Creating new fee service");
     return new FeeService(matcherPublicKey, matcherURL);
-
   }
 }

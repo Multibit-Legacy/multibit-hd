@@ -59,9 +59,14 @@ public enum MessageKey {
   ONE_OF_YOUR_ADDRESSES("one_of_your_addresses"),
   SELECT_FOLDER("select_folder"),
   SELECT_FILE("select_file"),
+
   ENTER_PASSWORD("enter_password"),
+  ENTER_NEW_PASSWORD("enter_new_password"),
+  RETYPE_NEW_PASSWORD("retype_new_password"),
+
   PASSWORD_VERIFIED("password_verified"),
   PASSWORD_FAILED("password_failed"),
+
   AMOUNT("amount"),
   AMOUNT_PAID("amount_paid"),
   TRANSACTION_FEE("transaction_fee"),
@@ -166,6 +171,8 @@ public enum MessageKey {
 
   WALLET_DETAIL_TITLE("wallet_detail_title"),
 
+  CHANGE_PASSWORD_TITLE("change_password_title"),
+
   // Labels
   CONFIRM_SEND_MESSAGE("confirm_send_message"),
   EXCHANGE_RATE_PROVIDER("exchange_rate_provider"),
@@ -196,6 +203,7 @@ public enum MessageKey {
   SHOW_APPLICATION_WIZARD("show_application_wizard"),
   SHOW_LANGUAGE_WIZARD("show_language_wizard"),
   SHOW_WALLET_DETAILS_WIZARD("show_wallet_details_wizard"),
+  SHOW_CHANGE_PASSWORD_WIZARD("show_change_password_wizard"),
 
   SHOW_ALERT("show_alert"),
   HIDE_ALERT("hide_alert"),
@@ -268,6 +276,9 @@ public enum MessageKey {
 
   PASSWORD_NOTE_1("password_note_1"),
   PASSWORD_NOTE_2("password_note_2"),
+
+  CHANGE_PASSWORD_NOTE_1("change_password_note_1"),
+  CHANGE_PASSWORD_NOTE_2("change_password_note_2"),
 
   BITCOIN_SETTINGS_NOTE_1("bitcoin_settings_note_1"),
 
