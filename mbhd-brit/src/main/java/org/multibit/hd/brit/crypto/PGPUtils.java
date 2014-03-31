@@ -79,7 +79,7 @@ public class PGPUtils {
    * @throws PGPException
    * @throws NoSuchProviderException
    */
-  public static PGPPrivateKey findSecretKey(InputStream keyIn, long keyID, char[] pass)
+  public static PGPPrivateKey findPrivateKey(InputStream keyIn, long keyID, char[] pass)
     throws IOException, PGPException, NoSuchProviderException {
 
     PGPSecretKeyRingCollection pgpSec = new PGPSecretKeyRingCollection(
@@ -108,38 +108,39 @@ public class PGPUtils {
 
     Security.addProvider(new BouncyCastleProvider());
 
-    encryptedInputStream = org.bouncycastle.openpgp.PGPUtil.getDecoderStream(encryptedInputStream);
+    encryptedInputStream = PGPUtil.getDecoderStream(encryptedInputStream);
 
-    PGPObjectFactory pgpF = new PGPObjectFactory(encryptedInputStream);
-    PGPEncryptedDataList enc;
+    final PGPObjectFactory pgpFactory = new PGPObjectFactory(encryptedInputStream);
 
-    Object o = pgpF.nextObject();
+    final PGPEncryptedDataList enc;
+
+    final Object o = pgpFactory.nextObject();
 
     // The first object might be a PGP marker packet.
     if (o instanceof PGPEncryptedDataList) {
       enc = (PGPEncryptedDataList) o;
     } else {
-      enc = (PGPEncryptedDataList) pgpF.nextObject();
+      enc = (PGPEncryptedDataList) pgpFactory.nextObject();
     }
 
-    // Find the secret key
-    Iterator<PGPPublicKeyEncryptedData> it = enc.getEncryptedDataObjects();
-    PGPPrivateKey sKey = null;
+    // Find the private key matching the public key in the secret key ring
+    final Iterator<PGPPublicKeyEncryptedData> it = enc.getEncryptedDataObjects();
+    PGPPrivateKey privateKey = null;
     PGPPublicKeyEncryptedData pbe = null;
 
-    while (sKey == null && it.hasNext()) {
+    while (privateKey == null && it.hasNext()) {
       pbe = it.next();
 
-      sKey = findSecretKey(keyInputStream, pbe.getKeyID(), password);
+      privateKey = findPrivateKey(keyInputStream, pbe.getKeyID(), password);
     }
 
-    if (sKey == null) {
+    if (privateKey == null) {
       throw new IllegalArgumentException("Secret key for message not found.");
     }
 
-    InputStream clear = pbe.getDataStream(sKey, "BC");
+    final InputStream clear = pbe.getDataStream(privateKey, "BC");
 
-    PGPObjectFactory plainFact = new PGPObjectFactory(clear);
+    final PGPObjectFactory plainFact = new PGPObjectFactory(clear);
 
     Object message = plainFact.nextObject();
 
@@ -175,55 +176,55 @@ public class PGPUtils {
   /**
    * <p>Encrypt a file</p>
    *
-   * @param out       The output stream
-   * @param inputFile The input file
-   * @param encKey    The PGP public key for encrypting
+   * @param armoredOut The output stream
+   * @param inputFile  The input file
+   * @param encKey     The PGP public key for encrypting
    *
    * @throws IOException
    * @throws NoSuchProviderException
    * @throws PGPException
    */
-  public static void encryptFile(OutputStream out,
+  public static void encryptFile(OutputStream armoredOut,
                                  File inputFile,
                                  PGPPublicKey encKey)
     throws IOException, NoSuchProviderException, PGPException {
 
     Security.addProvider(new BouncyCastleProvider());
 
-    // Armor output
-    out = new ArmoredOutputStream(out);
+    // Armored output
+    armoredOut = new ArmoredOutputStream(armoredOut);
 
-    ByteArrayOutputStream bOut = new ByteArrayOutputStream();
+    final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-    PGPCompressedDataGenerator comData = new PGPCompressedDataGenerator(PGPCompressedData.ZIP);
+    final PGPCompressedDataGenerator comData = new PGPCompressedDataGenerator(PGPCompressedData.ZIP);
 
     PGPUtil.writeFileToLiteralData(
-      comData.open(bOut),
+      comData.open(baos),
       PGPLiteralData.BINARY,
       inputFile
     );
 
     comData.close();
 
-    // Always perform an integrity check
-    PGPEncryptedDataGenerator cPk = new PGPEncryptedDataGenerator(
+    final PGPEncryptedDataGenerator encryptedDataGenerator = new PGPEncryptedDataGenerator(
       PGPEncryptedData.CAST5,
+      // Always perform an integrity check
       true,
       new SecureRandom(),
       "BC"
     );
 
-    cPk.addMethod(encKey);
+    encryptedDataGenerator.addMethod(encKey);
 
-    byte[] bytes = bOut.toByteArray();
+    byte[] bytes = baos.toByteArray();
 
-    OutputStream cOut = cPk.open(out, bytes.length);
+    OutputStream os = encryptedDataGenerator.open(armoredOut, bytes.length);
 
-    cOut.write(bytes);
+    os.write(bytes);
 
-    cOut.close();
+    os.close();
 
-    out.close();
+    armoredOut.close();
   }
 
 

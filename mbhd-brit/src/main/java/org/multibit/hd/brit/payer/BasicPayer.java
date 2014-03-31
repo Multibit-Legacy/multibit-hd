@@ -12,6 +12,7 @@ import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.text.ParseException;
 import java.util.Date;
 
 /**
@@ -51,12 +52,14 @@ public class BasicPayer implements Payer {
 
   @Override
   public EncryptedPayerRequest encryptPayerRequest(PayerRequest payerRequest) throws NoSuchAlgorithmException, IOException, NoSuchProviderException, PGPException {
+
     // Serialise the contents of the payerRequest
     byte[] serialisedPayerRequest = payerRequest.serialise();
 
     ByteArrayOutputStream encryptedBytesOutputStream = new ByteArrayOutputStream(1024);
 
-    // Make a temporary file containing the serialised payment request
+    // TODO Why a file here?
+    // Make a temporary file containing the serialised payer request
     File tempFile = File.createTempFile("req", "tmp");
 
     // Write serialised payerRequest to the temporary file
@@ -71,7 +74,8 @@ public class BasicPayer implements Payer {
   }
 
   @Override
-  public MatcherResponse decryptMatcherReponse(EncryptedMatcherResponse encryptedMatcherResponse) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+  public MatcherResponse decryptMatcherReponse(EncryptedMatcherResponse encryptedMatcherResponse) throws NoSuchAlgorithmException, ParseException {
+
     // Stretch the 20 byte britWalletId to 32 bytes (256 bits)
     byte[] stretchedBritWalletId = MessageDigest.getInstance("SHA-256").digest(britWalletId.getBytes());
 
@@ -80,5 +84,6 @@ public class BasicPayer implements Payer {
 
     // Parse the serialised MatcherResponse
     return MatcherResponse.parse(serialisedMatcherResponse);
+
   }
 }

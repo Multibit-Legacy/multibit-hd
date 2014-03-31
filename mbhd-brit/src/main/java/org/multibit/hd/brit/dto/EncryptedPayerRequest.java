@@ -5,7 +5,6 @@ package org.multibit.hd.brit.dto;
  *  <ul>
  *  <li>PGP encrypted version of PayerRequest</li>
  *  </ul>
- *  </p>
  *  
  */
 public class EncryptedPayerRequest {
@@ -18,6 +17,9 @@ public class EncryptedPayerRequest {
     this.payload = payload;
   }
 
+  /**
+   * @return The payload
+   */
   public byte[] getPayload() {
     return payload;
   }

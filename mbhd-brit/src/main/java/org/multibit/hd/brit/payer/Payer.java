@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.text.ParseException;
 import java.util.Date;
 
 /**
@@ -54,6 +55,6 @@ public interface Payer {
    * @throws NoSuchAlgorithmException
    * @throws UnsupportedEncodingException
    */
-  public MatcherResponse decryptMatcherReponse(EncryptedMatcherResponse encryptedMatcherResponse) throws NoSuchAlgorithmException, UnsupportedEncodingException;
+  public MatcherResponse decryptMatcherReponse(EncryptedMatcherResponse encryptedMatcherResponse) throws NoSuchAlgorithmException, UnsupportedEncodingException, ParseException;
 
 }

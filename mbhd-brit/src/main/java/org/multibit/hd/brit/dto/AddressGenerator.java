@@ -2,23 +2,22 @@ package org.multibit.hd.brit.dto;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.params.MainNetParams;
 
 import java.math.BigInteger;
 
 /**
- *  <p>Class to provide the following to BRIT:</p>
- *  <ul>
- *  <li>Generation of deterministically generated Bitcoin addresses to Matcher</li>
- *  </ul>
- *  </p>
- *  
+ * <p>Class to provide the following to BRIT:</p>
+ * <ul>
+ * <li>Deterministic generation of Bitcoin addresses for Matcher</li>
+ * </ul>
  */
 public class AddressGenerator {
 
   /**
-   * Always used main net for address generation
+   * Always use main net for address generation
    */
-  private static final NetworkParameters networkParameters = NetworkParameters.fromID(NetworkParameters.ID_MAINNET);
+  private static final NetworkParameters networkParameters = MainNetParams.get();
 
   /**
    * The seed to use in address generation

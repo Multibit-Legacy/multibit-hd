@@ -6,8 +6,6 @@ import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.common.base.Preconditions;
 import com.google.protobuf.ByteString;
 import org.bitcoinj.wallet.Protos;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.spongycastle.asn1.sec.SECNamedCurves;
 import org.spongycastle.asn1.x9.X9ECParameters;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -17,16 +15,12 @@ import java.math.BigInteger;
 import java.util.Arrays;
 
 /**
- *  <p>Data object to provide the following to BRIT wallet seed related classes<br>
- *  <ul>
- *  <li>Creation of BRIT wallet id from seed</li>
- *  </ul>
- *  </p>
- *  
+ * <p>Data object to provide the following to BRIT wallet seed related classes:</p>
+ * <ul>
+ * <li>Creation of BRIT wallet id from seed</li>
+ * </ul>
  */
 public class BRITWalletId {
-
-  private static final Logger log = LoggerFactory.getLogger(BRITWalletId.class);
 
   // The salt used in derivation of the britWalletId.
   // This is different from the similar process of deriving a WalletId (where the salt is 1)
@@ -43,6 +37,7 @@ public class BRITWalletId {
    * @param seed The seed to use in deriving the wallet id
    */
   public BRITWalletId(byte[] seed) {
+
     Preconditions.checkNotNull(seed);
 
     BigInteger seedBigInteger = new BigInteger(1, seed);
@@ -57,28 +52,22 @@ public class BRITWalletId {
     KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(scryptParameters);
     KeyParameter keyParameter = keyCrypterScrypt.deriveKey(seedBigInteger.toString());
     byte[] derivedKey = keyParameter.getKey();
-    //log.debug("derivedKey ='" + Utils.bytesToHexString(derivedKey) +  "'");
 
     // Ensure that the seed is within the Bitcoin EC group.
     X9ECParameters params = SECNamedCurves.getByName("secp256k1");
     BigInteger sizeOfGroup = params.getN();
 
     BigInteger derivedKeyBigInteger = new BigInteger(1, derivedKey);
-
-    //log.debug("derivedKeyBigInteger (before) ='" + derivedKeyBigInteger +  "'");
     derivedKeyBigInteger = derivedKeyBigInteger.mod(sizeOfGroup);
-    //log.debug("derivedKeyBigInteger (after) ='" + derivedKeyBigInteger +  "'");
 
     // EC curve generator function used to convert the key just derived (a 'private key') to a 'public key'
     ECPoint point = ECKey.CURVE.getG().multiply(derivedKeyBigInteger);
     // Note the public key is not compressed
     byte[] publicKey = point.getEncoded();
-    //log.debug("publicKey ='" + Utils.bytesToHexString(publicKey) +  "'");
 
     // SHA256RIPE160 to generate final britWalletId bytes from the 'public key'
     britWalletId = Utils.sha256hash160(publicKey);
 
-    //log.debug("britWalletId ='" + Utils.bytesToHexString(britWalletId) + "'");
   }
 
   public BRITWalletId(String britWalletIdInHex) {
