@@ -17,6 +17,7 @@ package org.multibit.hd.brit.crypto;
  */
 
 import com.google.bitcoin.core.Utils;
+import com.google.common.base.Charsets;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,7 +69,7 @@ public class PGPUtilsTest {
     // Write some text to the plain text.
     File inputFile = new File(testDir.getAbsolutePath() + File.separator + "plain.txt");
     try (FileOutputStream fileOutputStream = new FileOutputStream(inputFile)) {
-      FileUtils.writeFile(new ByteArrayInputStream(EXAMPLE_TEXT.getBytes("UTF8")), fileOutputStream);
+      FileUtils.writeFile(new ByteArrayInputStream(EXAMPLE_TEXT.getBytes(Charsets.UTF_8)), fileOutputStream);
     }
     assertThat(inputFile.length()).isGreaterThanOrEqualTo(EXAMPLE_TEXT.length());
 
@@ -95,7 +96,7 @@ public class PGPUtilsTest {
     assertThat(inputFile.length()).isEqualTo(rebornPlainTextFile.length());
 
     byte[] rebornBytes = FileUtils.readFile(rebornPlainTextFile);
-    assertThat(Arrays.equals( EXAMPLE_TEXT.getBytes("UTF8"), rebornBytes)).isTrue();
+    assertThat(Arrays.equals( EXAMPLE_TEXT.getBytes(Charsets.UTF_8), rebornBytes)).isTrue();
   }
 
   @Test

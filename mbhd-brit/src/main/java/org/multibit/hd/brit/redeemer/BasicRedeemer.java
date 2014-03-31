@@ -1,15 +1,12 @@
 package org.multibit.hd.brit.redeemer;
 
 /**
- *  <p>[Pattern] to provide the following to [related classes]:</p>
- *  <ul>
- *  <li></li>
- *  </ul>
- *  Example:</p>
- *  <pre>
- *  </pre>
- *  </p>
- *  
+ * <p>Value object to provide the following to BRIT API:</p>
+ * <ul>
+ * <li>Implementation of a basic Redeemer</li>
+ * </ul>
+ *
+ * @since 0.0.1
  */
 public class BasicRedeemer implements Redeemer {
 

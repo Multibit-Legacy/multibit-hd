@@ -16,7 +16,8 @@ import static com.google.common.base.Preconditions.checkState;
  * <ul>
  * <li>Encryption and decryption using AES</li>
  * </ul>
- * </p>
+ *
+ * @since 0.0.1
  */
 public class AESUtils {
 

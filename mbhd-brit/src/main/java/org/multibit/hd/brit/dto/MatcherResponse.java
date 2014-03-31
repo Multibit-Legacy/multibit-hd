@@ -15,6 +15,8 @@ import java.util.List;
  * <ul>
  * <li>The response message from the Matcher to the Payer</li>
  * </ul>
+ *
+ * @since 0.0.1
  */
 public class MatcherResponse {
 
@@ -47,11 +49,11 @@ public class MatcherResponse {
   public byte[] serialise() {
 
     StringBuilder builder = new StringBuilder();
-    builder.append(replayDate.getTime()).append(PayerRequest.SERIALISER_SEPARATOR);
+    builder.append(replayDate.getTime()).append(PayerRequest.SEPARATOR);
 
     if (addressList != null) {
       for (String address : addressList) {
-        builder.append(address).append(PayerRequest.SERIALISER_SEPARATOR);
+        builder.append(address).append(PayerRequest.SEPARATOR);
       }
     }
 
@@ -89,7 +91,7 @@ public class MatcherResponse {
       return new MatcherResponse(replayDate, bitcoinAddressList);
 
     } else {
-      throw new ParseException("Cannot parse the response. Require 1 or more rows.",0);
+      throw new ParseException("Cannot parse the response. Require 1 or more rows.", 0);
     }
   }
 
@@ -112,5 +114,13 @@ public class MatcherResponse {
     result = 31 * result + (addressList != null ? addressList.hashCode() : 0);
     return result;
 
+  }
+
+  @Override
+  public String toString() {
+    return "MatcherResponse{" +
+      "replayDate=" + replayDate +
+      ", addressList=" + addressList +
+      '}';
   }
 }

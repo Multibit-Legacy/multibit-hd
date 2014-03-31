@@ -15,7 +15,6 @@ import java.util.Random;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 public class FileUtils {
 
@@ -62,7 +61,7 @@ public class FileUtils {
    * Write a file from the inputstream to the outputstream
    */
   public static void writeFile(InputStream in, OutputStream out)
-          throws IOException {
+    throws IOException {
     byte[] buffer = new byte[1024];
     int len;
 
@@ -90,6 +89,7 @@ public class FileUtils {
    * Work out the directory part of a filename
    *
    * @param name of file
+   *
    * @return directory part of filename
    */
   public static String directoryPart(String name) {
@@ -101,6 +101,7 @@ public class FileUtils {
    * Work out the file part of a filename
    *
    * @param name of file
+   *
    * @return file part of filename
    */
   public static String filePart(String name) {

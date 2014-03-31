@@ -3,12 +3,12 @@ package org.multibit.hd.brit.matcher;
 import java.io.File;
 
 /**
- *  <p>Configuration to provide the following to Matchers:</p>
- *  <ul>
- *  <li></li>
- *  </ul>
- *  </p>
- *  
+ * <p>Value object to provide the following to BRIT API:</p>
+ * <ul>
+ * <li>Matcher configuration</li>
+ * </ul>
+ *
+ * @since 0.0.1
  */
 public class MatcherConfig {
 

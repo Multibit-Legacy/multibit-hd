@@ -7,7 +7,6 @@ package org.multibit.hd.brit.seed_phrase;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 public enum SeedPhraseSize {
 
@@ -55,6 +54,7 @@ public enum SeedPhraseSize {
 
   /**
    * @param ordinal The ordinal (zero-based)
+   *
    * @return A matching SeedPhraseSize
    */
   public static SeedPhraseSize fromOrdinal(int ordinal) {
@@ -74,6 +74,7 @@ public enum SeedPhraseSize {
 
   /**
    * @param size A size value
+   *
    * @return True if the size matches one of the standard values (e.g. 12, 18, 24)
    */
   public static boolean isValid(int size) {

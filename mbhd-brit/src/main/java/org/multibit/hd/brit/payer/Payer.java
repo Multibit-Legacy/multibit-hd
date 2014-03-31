@@ -12,19 +12,19 @@ import java.text.ParseException;
 import java.util.Date;
 
 /**
- *  <p>Interface to provide the following to BRIT:</p>
- *  <ul>
- *  <li>encapsulation of functionality required to pay BRIT payments</li>
- *  </ul>
- *  </p>
- *  
+ * <p>Interface to provide the following to BRIT:</p>
+ * <ul>
+ * <li>Encapsulation of functionality required to make BRIT payments</li>
+ * </ul>
+ *
+ * @since 0.0.1
  */
 public interface Payer {
 
   /**
    * Get the PayerConfig, which contains the Matcher's public PGP key
    *
-   * @return PayerConfig
+   * @return A Payer configuration
    */
   public PayerConfig getConfig();
 
@@ -34,15 +34,18 @@ public interface Payer {
    * @param britWalletId         The britWalletId of the Payer's wallet
    * @param sessionKey           A random sessionKey
    * @param firstTransactionDate The date of the first transaction in the Payer's wallet, or Optional.absent() if there are none.
-   * @return PayerRequest, unencrypted
+   *
+   * @return A new Payer request (unencrypted)
    */
-  public PayerRequest createPayerRequest(BRITWalletId britWalletId, byte[] sessionKey, Optional<Date> firstTransactionDate);
+  public PayerRequest newPayerRequest(BRITWalletId britWalletId, byte[] sessionKey, Optional<Date> firstTransactionDate);
 
   /**
    * Encrypt the PayerRequest with the Matcher public PGP key
    *
-   * @param payerRequest the PayerRequest to encrypt
+   * @param payerRequest The PayerRequest to encrypt
+   *
    * @return the EncryptedPayerRequest containing the encrypted payload
+   *
    * @throws NoSuchAlgorithmException
    */
   public EncryptedPayerRequest encryptPayerRequest(PayerRequest payerRequest) throws NoSuchAlgorithmException, IOException, NoSuchProviderException, PGPException;
@@ -50,11 +53,13 @@ public interface Payer {
   /**
    * Decrypt the encryptedMatcherResponse using an AES key derived from the BRITWalletId and sessionKey
    *
-   * @param encryptedMatcherResponse The encryptedMatcherRespnse to decrypt
-   * @return MatcherResponse, unencrypted
+   * @param encryptedMatcherResponse The encrypted Matcher response
+   *
+   * @return A Matcher response (unencrypted)
+   *
    * @throws NoSuchAlgorithmException
    * @throws UnsupportedEncodingException
    */
-  public MatcherResponse decryptMatcherReponse(EncryptedMatcherResponse encryptedMatcherResponse) throws NoSuchAlgorithmException, UnsupportedEncodingException, ParseException;
+  public MatcherResponse decryptMatcherResponse(EncryptedMatcherResponse encryptedMatcherResponse) throws NoSuchAlgorithmException, UnsupportedEncodingException, ParseException;
 
 }

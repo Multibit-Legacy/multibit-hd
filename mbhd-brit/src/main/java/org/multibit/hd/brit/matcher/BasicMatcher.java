@@ -18,13 +18,12 @@ import java.util.Date;
 import java.util.List;
 
 /**
- *  <p>Class to provide the following to BRIT:</p>
- *  <ul>
- *  <li>ability to match redeemers and payers</li>
- *  </ul>
- * <p/>
- *  </p>
- *  
+ * <p>Class to provide the following to BRIT API:</p>
+ * <ul>
+ * <li>Ability to match Redeemers and Payers</li>
+ * </ul>
+ *
+ * @since 0.0.1
  */
 public class BasicMatcher implements Matcher {
 
@@ -34,7 +33,7 @@ public class BasicMatcher implements Matcher {
 
   /**
    * The last payerRequest received.
-   * (Having a single last payerRequest won't work in a multithreaded environment)
+   * (Having a single last payerRequest won't work in a multi-threaded environment)
    */
   private PayerRequest lastPayerRequest;
 
@@ -44,6 +43,9 @@ public class BasicMatcher implements Matcher {
   private MatcherStore matcherStore;
 
 
+  /**
+   * @param matcherConfig The Matcher configuration
+   */
   public BasicMatcher(MatcherConfig matcherConfig) {
     this.matcherConfig = matcherConfig;
 
@@ -65,7 +67,7 @@ public class BasicMatcher implements Matcher {
 
     // PGP encrypt the file
     PGPUtils.decryptFile(serialisedPayerRequestEncryptedInputStream, serialisedPayerRequestOutputStream,
-            new FileInputStream(matcherConfig.getMatcherSecretKeyringFile()), matcherConfig.getPassword());
+      new FileInputStream(matcherConfig.getMatcherSecretKeyringFile()), matcherConfig.getPassword());
 
 
     return PayerRequest.parse(serialisedPayerRequestOutputStream.toByteArray());
@@ -73,6 +75,7 @@ public class BasicMatcher implements Matcher {
 
   @Override
   public MatcherResponse process(PayerRequest payerRequest) {
+
     lastPayerRequest = payerRequest;
 
     WalletToEncounterDateLink previousEncounter = matcherStore.lookupWalletToEncounterDateLink(payerRequest.getBRITWalletId());

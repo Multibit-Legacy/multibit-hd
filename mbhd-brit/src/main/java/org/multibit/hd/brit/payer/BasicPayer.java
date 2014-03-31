@@ -16,15 +16,12 @@ import java.text.ParseException;
 import java.util.Date;
 
 /**
- *  <p>[Pattern] to provide the following to [related classes]:</p>
- *  <ul>
- *  <li>ability to pay BRIT payments</li>
- *  </ul>
- *  Example:</p>
- *  <pre>
- *  </pre>
- *  </p>
- *  
+ * <p>Payer to provide the following to BRIT:</p>
+ * <ul>
+ * <li>Implementation of a basic Payer</li>
+ * </ul>
+ *
+ * @since 0.0.1
  */
 public class BasicPayer implements Payer {
 
@@ -44,10 +41,12 @@ public class BasicPayer implements Payer {
   }
 
   @Override
-  public PayerRequest createPayerRequest(BRITWalletId britWalletId, byte[] sessionKey, Optional<Date> firstTransactionDate) {
+  public PayerRequest newPayerRequest(BRITWalletId britWalletId, byte[] sessionKey, Optional<Date> firstTransactionDate) {
+
     this.britWalletId = britWalletId;
     this.sessionKey = sessionKey;
     return new PayerRequest(britWalletId, sessionKey, firstTransactionDate);
+
   }
 
   @Override
@@ -58,7 +57,7 @@ public class BasicPayer implements Payer {
 
     ByteArrayOutputStream encryptedBytesOutputStream = new ByteArrayOutputStream(1024);
 
-    // TODO Why a file here?
+    // TODO Can we change PGPUtils to accept a stream rather than a file to reduce IO vulnerability?
     // Make a temporary file containing the serialised payer request
     File tempFile = File.createTempFile("req", "tmp");
 
@@ -68,13 +67,14 @@ public class BasicPayer implements Payer {
     // PGP encrypt the file
     PGPUtils.encryptFile(encryptedBytesOutputStream, tempFile, payerConfig.getMatcherPublicKey());
 
-    tempFile.delete();  // TODO secure delete
+    // TODO Secure file delete (or avoid File altogether) and check result
+    tempFile.delete();
 
     return new EncryptedPayerRequest(encryptedBytesOutputStream.toByteArray());
   }
 
   @Override
-  public MatcherResponse decryptMatcherReponse(EncryptedMatcherResponse encryptedMatcherResponse) throws NoSuchAlgorithmException, ParseException {
+  public MatcherResponse decryptMatcherResponse(EncryptedMatcherResponse encryptedMatcherResponse) throws NoSuchAlgorithmException, ParseException {
 
     // Stretch the 20 byte britWalletId to 32 bytes (256 bits)
     byte[] stretchedBritWalletId = MessageDigest.getInstance("SHA-256").digest(britWalletId.getBytes());

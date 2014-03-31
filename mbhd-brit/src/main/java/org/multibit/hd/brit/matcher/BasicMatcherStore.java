@@ -1,5 +1,6 @@
 package org.multibit.hd.brit.matcher;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.joda.time.DateTime;
@@ -19,20 +20,21 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *  <p>Store to provide the following to Matcher classes:</p>
- *  <ul>
- *  <li>File store and lookup of al bitcoin addresses. These are stored in the backingStoreDirectory/all.txt</li>
+ * <p>Store to provide the following to Matcher classes:</p>
+ * <ul>
+ * <li>File store and lookup of al bitcoin addresses. These are stored in the backingStoreDirectory/all.txt</li>
  * <li>File store and lookup of wallet to encounter date links. These are stored in a file backingStore/Directory/links.txt</li>
- * <li>File store and lookup of bitcoin addresses by day. For each date these are stored in a file backstoreDirectory/by-date/yyyy-mm-dd.txt</li>
- *  </ul>
- *  </p>
- *  
+ * <li>File store and lookup of bitcoin addresses by day. For each date these are stored in a file backingStoreDirectory/by-date/yyyy-mm-dd.txt</li>
+ * </ul>
+ *
+ * @since 0.0.1
  */
 public class BasicMatcherStore implements MatcherStore {
 
   private static final Logger log = LoggerFactory.getLogger(BasicMatcherStore.class);
 
   /**
+   * TODO Consider using a File here
    * The directory in which the backing files reside
    */
   private String backingStoreDirectory;
@@ -70,7 +72,13 @@ public class BasicMatcherStore implements MatcherStore {
    */
   private Map<Date, List<String>> encounterDateToBitcoinAddressesMap;
 
+  /**
+   * TODO Consider making this a File
+   *
+   * @param backingStoreDirectory The directory the matcher store backing files are stored in
+   */
   public BasicMatcherStore(String backingStoreDirectory) {
+
     this.backingStoreDirectory = backingStoreDirectory;
 
     initialise(backingStoreDirectory);
@@ -82,6 +90,7 @@ public class BasicMatcherStore implements MatcherStore {
    * @param backingStoreDirectory The directory the matcher store backing files are stored in
    */
   private void initialise(String backingStoreDirectory) {
+
     // Load the file containing all the bitcoin addresses
     String allBitcoinAddressesFilename = backingStoreDirectory + File.separator + NAME_OF_FILE_CONTAINING_ALL_BITCOIN_ADDRESSES;
     allBitcoinAddresses = readBitcoinAddresses(allBitcoinAddressesFilename);
@@ -111,6 +120,7 @@ public class BasicMatcherStore implements MatcherStore {
     // Read in all the existing britWalletId to encounter date links
     previousEncounterMap = Maps.newHashMap();
     walletToEncounterDateFile = new File(backingStoreDirectory + File.separator + NAME_OF_FILE_CONTAINING_WALLET_TO_ENCOUNTER_DATE_LINKS);
+
     // If the file does not exists, then create it as we only ever append to this file later
     try {
       if (!walletToEncounterDateFile.exists()) {
@@ -119,13 +129,13 @@ public class BasicMatcherStore implements MatcherStore {
         }
       }
       byte[] walletToEncounterDatesAsBytes = FileUtils.readFile(walletToEncounterDateFile); // Will scale better if streaming
-      String walletToEncounterDates = new String(walletToEncounterDatesAsBytes, "UTF8");
+      String walletToEncounterDates = new String(walletToEncounterDatesAsBytes, Charsets.UTF_8);
 
       // Split into lines - each line contains a serialised WalletToEncounterDateLink
       String[] walletToEncounterDateArray = Strings.split(walletToEncounterDates, '\n');
       if (walletToEncounterDateArray != null) {
         for (String line : walletToEncounterDateArray) {
-          if (line != null && !line.equals("")) {
+          if (line != null && !"".equals(line)) {
             WalletToEncounterDateLink link = WalletToEncounterDateLink.parse(line);
             if (link != null) {
               previousEncounterMap.put(link.getBritWalletId(), link);
@@ -134,7 +144,8 @@ public class BasicMatcherStore implements MatcherStore {
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      // TODO Determine error handling here
+      log.error(e.getMessage(), e);
     }
   }
 
@@ -157,6 +168,7 @@ public class BasicMatcherStore implements MatcherStore {
 
   @Override
   public WalletToEncounterDateLink lookupWalletToEncounterDateLink(BRITWalletId britWalletId) {
+
     // See if we have already seen this WalletId before
 
     // If this is present, return it.
@@ -171,6 +183,7 @@ public class BasicMatcherStore implements MatcherStore {
 
   @Override
   public void storeBitcoinAddressListForDate(List<String> bitcoinAddressList, Date encounterDate) {
+
     // Update the in memory data representation
     encounterDateToBitcoinAddressesMap.put(convertToMidnight(encounterDate), bitcoinAddressList);
 
@@ -179,7 +192,7 @@ public class BasicMatcherStore implements MatcherStore {
     FileUtils.createDirectoryIfNecessary(new File(linksDirectory));
 
     String filename = linksDirectory + File.separator
-            + utcShortDateWithHyphensFormatter.print(new DateTime(encounterDate, DateTimeZone.UTC)) + LINKS_FILENAME_SUFFIX;
+      + utcShortDateWithHyphensFormatter.print(new DateTime(encounterDate, DateTimeZone.UTC)) + LINKS_FILENAME_SUFFIX;
     File file = new File(filename);
 
     if (file.exists()) {
@@ -197,6 +210,7 @@ public class BasicMatcherStore implements MatcherStore {
 
   @Override
   public void storeAllBitcoinAddresses(List<String> allBitcoinAddresses) {
+
     // Update the in memory data representation
     this.allBitcoinAddresses = allBitcoinAddresses;
 
@@ -222,6 +236,7 @@ public class BasicMatcherStore implements MatcherStore {
   }
 
   private void storeBitcoinAddressesToFile(List<String> bitcoinAddresses, String filename) throws IOException {
+
     // Convert the bitcoin addresses to a byte array
     StringBuilder builder = new StringBuilder();
     if (bitcoinAddresses != null) {
@@ -229,10 +244,11 @@ public class BasicMatcherStore implements MatcherStore {
         builder.append(address).append("\n");
       }
     }
-    byte[] bitcoinAddressesAsBytes = builder.toString().getBytes("UTF8");
+    byte[] bitcoinAddressesAsBytes = builder.toString().getBytes(Charsets.UTF_8);
 
     FileOutputStream bitcoinAddressesFileOutputStream = new FileOutputStream(filename);
     FileUtils.writeFile(new ByteArrayInputStream(bitcoinAddressesAsBytes), bitcoinAddressesFileOutputStream);
+
   }
 
   private List<String> readBitcoinAddresses(String filename) {
@@ -241,7 +257,7 @@ public class BasicMatcherStore implements MatcherStore {
     if (addressesFile.exists()) {
       try {
         byte[] bitcoinAddressesAsBytes = FileUtils.readFile(addressesFile); // Will scale better if streaming
-        String bitcoinAddresses = new String(bitcoinAddressesAsBytes, "UTF8");
+        String bitcoinAddresses = new String(bitcoinAddressesAsBytes, Charsets.UTF_8);
         // Split into lines
         String[] bitcoinAddressLines = Strings.split(bitcoinAddresses, '\n');
         if (bitcoinAddressLines != null) {

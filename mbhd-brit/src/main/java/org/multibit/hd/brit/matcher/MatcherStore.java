@@ -7,13 +7,14 @@ import java.util.Date;
 import java.util.List;
 
 /**
- *  <p>Backing store to provide the following to Matcher:</p>
- *  <ul>
- *  <li>Load and store links between britWalletIds and encounter date</li>
+ * <p>Backing store to provide the following to Matcher:</p>
+ * <ul>
+ * <li>Load and store links between britWalletIds and encounter date</li>
  * <li>Load and store redeemer Bitcoin addresses, all of them and by day</li>
- *  </ul>
- *  </p>
- *  
+ * </ul>
+ * </p>
+ *
+ * @since 0.0.1
  */
 public interface MatcherStore {
 
@@ -28,6 +29,7 @@ public interface MatcherStore {
    * Lookup the Wallet to encounter date that is previously stored, if available
    *
    * @param britWalletId the britWalletId you want to lookup
+   *
    * @return the WalletToEncounterDateLink for this britWalletId, or null if the britWalletId has never been seen before
    */
   public WalletToEncounterDateLink lookupWalletToEncounterDateLink(BRITWalletId britWalletId);
@@ -36,6 +38,7 @@ public interface MatcherStore {
    * Get the Bitcoin address list being sent back to the Payers for the day specified.
    *
    * @param encounterDate the date to look up the List of Bitcoin addresses for
+   *
    * @return the Bitcoin address list for this date, or null if non has been set yet
    */
   public List<String> getBitcoinAddressListForDate(Date encounterDate);

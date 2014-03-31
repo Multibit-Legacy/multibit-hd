@@ -11,11 +11,13 @@ import java.security.Security;
 import java.util.Iterator;
 
 /**
- *  <p>Utility to provide the following to BRIT API:</p>
- *  <ul>
- *  <li>Access to PGP crypto functions in Bouncy Castle</li>
- *  </ul>
+ * <p>Utility to provide the following to BRIT API:</p>
+ * <ul>
+ * <li>Access to PGP crypto functions in Bouncy Castle</li>
+ * </ul>
  * <p>Derived from <code>org.bouncycastle.openpgp.examples</code> by seamans</p>
+ *
+ * @since 0.0.1
  */
 public class PGPUtils {
 
@@ -101,6 +103,8 @@ public class PGPUtils {
    * @param decryptedOutputStream The output stream
    * @param keyInputStream        The key input stream
    * @param password              The password
+   *
+   * @throws Exception TODO This is too general (many exceptions wrapped up into one)
    */
   @SuppressWarnings("unchecked")
   public static void decryptFile(InputStream encryptedInputStream, OutputStream decryptedOutputStream, InputStream keyInputStream, char[] password)

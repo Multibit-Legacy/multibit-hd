@@ -11,20 +11,20 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- *  <p>Generator to provide the following to UI code:</p>
- *  <ul>
- *  <li>Generation of BIP39 seed phrases</li>
+ * <p>Generator to provide the following to UI code:</p>
+ * <ul>
+ * <li>Generation of BIP39 seed phrases</li>
  * <li>Validation of BIP39 seed phrases</li>
  * <li>Conversion of BIP39 seed phrases to and from seed byte value</li>
- *  </ul>
- *  </p>
- *  
+ * </ul>
+ * </p>
+ *
+ * @since 0.0.1
  */
 public class Bip39SeedPhraseGenerator implements SeedPhraseGenerator {
 
   private MnemonicCode mnemonicCode;
   private SecureRandom secureRandom;
-
 
   public Bip39SeedPhraseGenerator() throws SeedPhraseException {
     try {

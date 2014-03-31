@@ -19,6 +19,8 @@ import java.util.Arrays;
  * <ul>
  * <li>Creation of BRIT wallet id from seed</li>
  * </ul>
+ *
+ * @since 0.0.1
  */
 public class BRITWalletId {
 
@@ -96,13 +98,14 @@ public class BRITWalletId {
 
     BRITWalletId that = (BRITWalletId) o;
 
-    if (!Arrays.equals(britWalletId, that.britWalletId)) return false;
+    return Arrays.equals(britWalletId, that.britWalletId);
 
-    return true;
   }
 
   @Override
   public int hashCode() {
     return britWalletId != null ? Arrays.hashCode(britWalletId) : 0;
   }
+
+
 }

@@ -3,12 +3,12 @@ package org.multibit.hd.brit.payer;
 import org.bouncycastle.openpgp.PGPPublicKey;
 
 /**
- *  <p>Configuration to provide the following to Payers:</p>
- *  <ul>
- *  <li></li>
- *  </ul>
- *  </p>
- *  
+ * <p>Value object to provide the following to BRIT API:</p>
+ * <ul>
+ * <li>Configuration of Payer</li>
+ * </ul>
+ *
+ * @since 0.0.1
  */
 public class PayerConfig {
 
@@ -22,6 +22,9 @@ public class PayerConfig {
     this.matcherPublicKey = matcherPublicKey;
   }
 
+  /**
+   * @return The Matcher public key
+   */
   public PGPPublicKey getMatcherPublicKey() {
     return matcherPublicKey;
   }

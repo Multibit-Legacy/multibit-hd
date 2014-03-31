@@ -8,12 +8,12 @@ import org.multibit.hd.brit.dto.PayerRequest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- *  <p>Interface to provide the following to BRIT:</p>
- *  <ul>
- *  <li>encapsulation of functionality required to match BRIT payers and redeemers</li>
- *  </ul>
- *  </p>
- *  
+ * <p>Interface to provide the following to BRIT:</p>
+ * <ul>
+ * <li>encapsulation of functionality required to match BRIT payers and redeemers</li>
+ * </ul>
+ *
+ * @since 0.0.1
  */
 public interface Matcher {
 
@@ -29,7 +29,9 @@ public interface Matcher {
    * Decrypt a PGP encrypted PayerRequest using the PGP private key in the Matcher's MatcherConfig
    *
    * @param encryptedPayerRequest the encyptedPayerRequest to decrypt
+   *
    * @return An unencrypted PayerRequest
+   *
    * @throws Exception
    */
   public PayerRequest decryptPayerRequest(EncryptedPayerRequest encryptedPayerRequest) throws Exception;
@@ -39,6 +41,7 @@ public interface Matcher {
    * This contains the Bitcoin addresses to send payments to and a replay date
    *
    * @param payerRequest The payerRequest from the Payer
+   *
    * @return MatcherResponse the response to the request
    */
   public MatcherResponse process(PayerRequest payerRequest);
@@ -47,7 +50,9 @@ public interface Matcher {
    * Encrypt the matcherResponse with an AES key derived from the Payer's BRITWalletId and sessionId
    *
    * @param matcherResponse The unencrypted Matcher Response
+   *
    * @return The encrypted MatcherResponse
+   *
    * @throws NoSuchAlgorithmException
    */
   public EncryptedMatcherResponse encryptMatcherResponse(MatcherResponse matcherResponse) throws NoSuchAlgorithmException;

@@ -11,6 +11,8 @@ import java.math.BigInteger;
  * <ul>
  * <li>Deterministic generation of Bitcoin addresses for Matcher</li>
  * </ul>
+ *
+ * @since 0.0.1
  */
 public class AddressGenerator {
 
@@ -34,5 +36,12 @@ public class AddressGenerator {
   public Address createAddress(int index) {
     // TODO
     return null;
+  }
+
+  @Override
+  public String toString() {
+    return "AddressGenerator{" +
+      "generatorSeed=" + generatorSeed +
+      '}';
   }
 }

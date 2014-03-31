@@ -3,8 +3,10 @@ package org.multibit.hd.brit.exceptions;
 /**
  * <p>Exception to provide the following:</p>
  * <ul>
- * <li>Provision of wallet version incorrect messages</li>
+ * <li>Indication of an incorrect seed phrase</li>
  * </ul>
+ *
+ * @since 0.0.1
  */
 public class SeedPhraseException extends RuntimeException {
 
