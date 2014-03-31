@@ -12,14 +12,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 /**
- *  <p>Utility class to provide the following to mb-brit classes<br>
- *  <ul>
- *  <li>Encryption and decryption using AES</li>
- *  </ul>
- *  </p>
- *  
+ * <p>Utility class to provide the following to BRIT API:</p>
+ * <ul>
+ * <li>Encryption and decryption using AES</li>
+ * </ul>
+ * </p>
  */
 public class AESUtils {
+
   /**
    * Key length in bytes.
    */
@@ -31,6 +31,11 @@ public class AESUtils {
    */
   public static final int BLOCK_LENGTH = 16;  // = 128 bits.
 
+  /**
+   * Utilities have private constructors
+   */
+  private AESUtils() {
+  }
 
   /**
    * Password based encryption using AES - CBC 256 bits.
@@ -38,9 +43,11 @@ public class AESUtils {
    * @param plainBytes           The unencrypted bytes for encryption
    * @param aesKey               The AES key to use for encryption
    * @param initialisationVector The initialisationVector to use whilst encrypting
+   *
    * @return The encrypted bytes
    */
   public static byte[] encrypt(byte[] plainBytes, KeyParameter aesKey, byte[] initialisationVector) throws KeyCrypterException {
+
     checkNotNull(plainBytes);
     checkNotNull(aesKey);
     checkNotNull(initialisationVector);
@@ -49,7 +56,7 @@ public class AESUtils {
     try {
       ParametersWithIV keyWithIv = new ParametersWithIV(aesKey, initialisationVector);
 
-      // Encrypt using AES.
+      // Encrypt using AES
       BufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new CBCBlockCipher(new AESFastEngine()));
       cipher.init(true, keyWithIv);
       byte[] encryptedBytes = new byte[cipher.getOutputSize(plainBytes.length)];
@@ -61,6 +68,7 @@ public class AESUtils {
     } catch (Exception e) {
       throw new KeyCrypterException("Could not encrypt bytes.", e);
     }
+
   }
 
   /**
@@ -69,11 +77,14 @@ public class AESUtils {
    * @param encryptedBytes       The encrypted bytes required to decrypt
    * @param aesKey               The AES key to use for decryption
    * @param initialisationVector The initialisationVector to use whilst decrypting
+   *
    * @return The decrypted bytes
+   *
    * @throws KeyCrypterException if bytes could not be decoded to a valid key
    */
 
   public static byte[] decrypt(byte[] encryptedBytes, KeyParameter aesKey, byte[] initialisationVector) throws KeyCrypterException {
+
     checkNotNull(encryptedBytes);
     checkNotNull(aesKey);
     checkNotNull(initialisationVector);
@@ -99,4 +110,5 @@ public class AESUtils {
       throw new KeyCrypterException("Could not decrypt bytes", e);
     }
   }
+
 }

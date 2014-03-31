@@ -18,6 +18,7 @@ package org.multibit.hd.brit.crypto;
 
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.utils.BriefLogFormatter;
+import com.google.common.base.Charsets;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.brit.utils.FileUtils;
@@ -69,13 +70,14 @@ public class AESUtilsTest {
   }
 
   @Test
-  public void testEncryptGood() throws Exception {
+  public void testEncrypt_ExpectSuccess() throws Exception {
+
     // Plain text
-    byte[] plainBytes = EXAMPLE_TEXT.getBytes("UTF8");
+    byte[] plainBytes = EXAMPLE_TEXT.getBytes(Charsets.UTF_8);
     log.debug("Initial message: " + Utils.bytesToHexString(plainBytes));
 
     // Encrypt
-    byte[] encryptedBytes = AESUtils.encrypt(EXAMPLE_TEXT.getBytes("UTF8"), keyParameter, initialisationVector);
+    byte[] encryptedBytes = AESUtils.encrypt(EXAMPLE_TEXT.getBytes(Charsets.UTF_8), keyParameter, initialisationVector);
     log.debug("Encrypted message: " + Utils.bytesToHexString(encryptedBytes));
 
     // Decrypt
@@ -83,5 +85,6 @@ public class AESUtilsTest {
     log.debug("Reborn message: " + Utils.bytesToHexString(rebornBytes));
 
     assertEquals(Utils.bytesToHexString(plainBytes), Utils.bytesToHexString(rebornBytes));
+
   }
 }
