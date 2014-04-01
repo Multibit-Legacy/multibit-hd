@@ -38,6 +38,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.math.BigInteger;
 import java.net.URL;
+import java.util.List;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -69,7 +70,7 @@ public class FeeServicesTest {
     // Create the wallet 'wallet1'
     createWallet(seed, WALLET_PASSWORD);
 
-        // Read the manually created public keyring in the test directory to find a public key suitable for encryption
+    // Read the manually created public keyring in the test directory to find a public key suitable for encryption
     File publicKeyRingFile = PGPUtilsTest.makeFile(PGPUtilsTest.TEST_MATCHER_PUBLIC_KEYRING_FILE);
     log.debug("Loading public keyring from '" + publicKeyRingFile.getAbsolutePath() + "'");
     FileInputStream publicKeyRingInputStream = new FileInputStream(publicKeyRingFile);
@@ -87,9 +88,26 @@ public class FeeServicesTest {
     FeeState feeState = feeService.calculateFeeState(wallet1);
     assertThat(feeState).isNotNull();
 
+    // We are using a dummy Matcher so will always fall back to the hardwired addresses
+    List<String> possibleNextFeeAddresses = feeService.getHardwiredFeeAddresses();
 
+    checkFeeState(feeState, true, 0, BigInteger.ZERO, FeeService.DEFAULT_FEE_PER_SEND, possibleNextFeeAddresses);
 
+  }
 
+  private void checkFeeState(FeeState feeStateToCheck, boolean expectedIsUsingHardwiredBRITAddress, int expectedCurrentNumberOfSends,
+                             BigInteger expectedFeeOwed, BigInteger expectedFeePerSendSatoshi, List<String> possibleNextFeeAddresses) {
+    assertThat(feeStateToCheck.isUsingHardwiredBRITAddresses() == expectedIsUsingHardwiredBRITAddress).isTrue();
+
+    assertThat(feeStateToCheck.getCurrentNumberOfSends()).isEqualTo(expectedCurrentNumberOfSends);
+    assertThat(feeStateToCheck.getFeeOwed()).isEqualTo(expectedFeeOwed);
+    assertThat(feeStateToCheck.getFeePerSendSatoshi()).isEqualTo(expectedFeePerSendSatoshi);
+    assertThat(possibleNextFeeAddresses.contains(feeStateToCheck.getNextFeeAddress())).isTrue();
+
+    int lowerLimitOfNextFeeSendCount = feeStateToCheck.getCurrentNumberOfSends() + FeeService.NEXT_SEND_DELTA_LOWER_LIMIT;
+    int upperLimitOfNextFeeSendCount = feeStateToCheck.getCurrentNumberOfSends() + FeeService.NEXT_SEND_DELTA_UPPER_LIMIT;
+    assertThat((lowerLimitOfNextFeeSendCount <= feeStateToCheck.getNextFeeSendCount()) &&
+            feeStateToCheck.getNextFeeSendCount() <= upperLimitOfNextFeeSendCount).isTrue();
   }
 
   public void createWallet(byte[] seed, CharSequence password) throws Exception {

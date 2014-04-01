@@ -18,12 +18,12 @@ import java.math.BigInteger;
  */
 public class FeeState {
   public FeeState(boolean usingHardwiredBRITAddresses, String nextFeeAddress, int currentNumberOfSends,
-                  int nextFeeSendCount, BigInteger feeAmount, BigInteger feeOwed) {
+                  int nextFeeSendCount, BigInteger feePerSendSatoshi, BigInteger feeOwed) {
     this.usingHardwiredBRITAddresses = usingHardwiredBRITAddresses;
     this.nextFeeAddress = nextFeeAddress;
     this.currentNumberOfSends = currentNumberOfSends;
     this.nextFeeSendCount = nextFeeSendCount;
-    this.feeAmount = feeAmount;
+    this.feePerSendSatoshi = feePerSendSatoshi;
     this.feeOwed = feeOwed;
   }
 
@@ -53,7 +53,7 @@ public class FeeState {
   /**
    * The current fee per send transaction in satoshi
    */
-  private BigInteger feeAmount;
+  private BigInteger feePerSendSatoshi;
 
   /**
    * The current fee owed
@@ -61,4 +61,27 @@ public class FeeState {
    */
   private BigInteger feeOwed;
 
+  public boolean isUsingHardwiredBRITAddresses() {
+    return usingHardwiredBRITAddresses;
+  }
+
+  public String getNextFeeAddress() {
+    return nextFeeAddress;
+  }
+
+  public int getCurrentNumberOfSends() {
+    return currentNumberOfSends;
+  }
+
+  public int getNextFeeSendCount() {
+    return nextFeeSendCount;
+  }
+
+  public BigInteger getFeePerSendSatoshi() {
+    return feePerSendSatoshi;
+  }
+
+  public BigInteger getFeeOwed() {
+    return feeOwed;
+  }
 }

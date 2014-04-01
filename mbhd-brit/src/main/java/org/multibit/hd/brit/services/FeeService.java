@@ -6,8 +6,10 @@ import org.bouncycastle.openpgp.PGPPublicKey;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.brit.dto.MatcherResponse;
 
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.Date;
+import java.util.List;
 
 /**
  *  <p>Service to provide the following to Payers:<br>
@@ -21,6 +23,11 @@ public class FeeService {
 
   private final PGPPublicKey matcherPublicKey;
   private final URL matcherURL;
+
+  public final static BigInteger DEFAULT_FEE_PER_SEND = BigInteger.valueOf(500);    // In satoshi
+  public final static int NEXT_SEND_DELTA_LOWER_LIMIT = 20;
+  public final static int NEXT_SEND_DELTA_UPPER_LIMIT = 30;
+
 
   /**
    * Construct a fee service
@@ -76,6 +83,18 @@ public class FeeService {
     // Work out the count of the sends at which the next payment will be made
 
     // Work out the Bitcoin address will be sent to next and add it to the wallet
-    return new FeeState(false, null, 0, 0, null, null);
+    return new FeeState(true, getHardwiredFeeAddresses().get(0), 0, 20, DEFAULT_FEE_PER_SEND, BigInteger.ZERO);
+  }
+
+  /**
+   * Get the List of hardwired fee addresses that will be used if the BRIT Matcher exchange fails
+   * @return List of bitcoin addresses to use as hardwired fee addresses
+   */
+  public List<String> getHardwiredFeeAddresses() {
+    // Return the multibit.org donation address
+    List<String> hardwiredFeeAddresses = Lists.newArrayList();
+    hardwiredFeeAddresses.add("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
+
+    return hardwiredFeeAddresses;
   }
 }
