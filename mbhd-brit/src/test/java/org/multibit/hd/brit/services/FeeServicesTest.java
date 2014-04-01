@@ -123,7 +123,7 @@ public class FeeServicesTest {
     // We are using a dummy Matcher so will always fall back to the hardwired addresses
     List<String> possibleNextFeeAddresses = feeService.getHardwiredFeeAddresses();
 
-    checkFeeState(feeState, true, 0, BigInteger.ZERO, FeeService.DEFAULT_FEE_PER_SEND, possibleNextFeeAddresses);
+    checkFeeState(feeState, true, 0, BigInteger.ZERO, FeeService.FEE_PER_SEND, possibleNextFeeAddresses);
 
     // Receive some bitcoin to the wallet1 address
     receiveATransaction(wallet1, toAddress1);
@@ -133,7 +133,8 @@ public class FeeServicesTest {
     BigInteger v2 = toNanoCoins(0, 50);
     sendBitcoin(v2, nonFeeDestinationAddress);
 
-    //checkFeeState(feeState, true, 1, FeeService.DEFAULT_FEE_PER_SEND, FeeService.DEFAULT_FEE_PER_SEND, possibleNextFeeAddresses);
+    feeState = feeService.calculateFeeState(wallet1);
+    checkFeeState(feeState, true, 1, FeeService.FEE_PER_SEND, FeeService.FEE_PER_SEND, possibleNextFeeAddresses);
   }
 
   private void checkFeeState(FeeState feeStateToCheck, boolean expectedIsUsingHardwiredBRITAddress, int expectedCurrentNumberOfSends,
