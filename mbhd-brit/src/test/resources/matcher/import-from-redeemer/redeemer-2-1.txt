@@ -1,5 +1,5 @@
 # ----------------------------------
-# ----- Bitcoin addresses for wallet '/Users/jim/IDeaProjects/multibit-hd/mbhd-brit/src/test/resources/redeemer2/redeemer-2-1.wallet'
+# ----- Bitcoin addresses for wallet '/brit-example/redeemer2/redeemer-2-1.wallet'
 1Fxqax7Ck7Bj8dmYMRDSFE6E9twcsrVB6q
 1PzNcxAsz4UXf7rCzN7yfhaMVPJejJyvCK
 1ENEQV8edWmR6fs1XPgJVcAv9gMETeWPmH

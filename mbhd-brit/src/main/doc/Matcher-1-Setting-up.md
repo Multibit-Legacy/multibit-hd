@@ -1,19 +1,17 @@
-## Matcher - 1 - Setting up
+## Matcher: Part 1 Setting up
 
 ## Introduction
 This document describes how the person running the Matcher service sets it up.
 
-PREREQUISITES:
-The Redeemers have performed the steps in:
-+ Redeemer-1-Creating-Bitcoin-wallets.md
+## Prerequisites
 
-Specifically:
-+ the Redeemers have created export files containing their Bitcoin addresses
-+ These export files have been copied to the Matcher machine
+The Redeemers have performed the steps described in [Creating Bitcoin wallets](Redeemer-1-Creating-Bitcoin-wallets.md)
+
+This ensures that the Redeemers have created export files containing their Bitcoin addresses and that
+these export files have been copied to the Matcher machine
 
 In this document it will be assumed that there are two separate users that have prepared
-1 export file each and copied them to the directory on the Matcher machine as follows:
-
+one export file each and copied them to the directory on the Matcher machine as follows:
 
     matcher
       import-from-redeemer
@@ -30,29 +28,36 @@ The steps to set up the Matcher service are:
 4) Start the Matcher daemon that accepts requests from the Payers.
 
 
-## 1. Create a GPG directory
-Create a directory where your matcher is located as follows:
+## Step 1 Create a GPG directory
+
+Create a directory where the Matcher is located as follows:
 
     matcher
        gpg                    < GPG details for Matcher
-
        import-from-redeemer   < Directory into which Redeemers' Bitcoin addresses have been copied
 
+## Step 2 Create the PGP keypair that is used by the Payer
 
-## 2. Create the PGP keypair that is used by the Payer
-Create a terminal/ command line and cd into the gpg directory you created above.
+Open a shell and `cd` into the `gpg` directory created above.
 
-The keyring for the redeemer tests was constructed using GPG.
+The keyring for the Redeemer was constructed using GPG.
 This is the log of how it was constructed (on a Mac):
-The password used to protect the keyrings was 'password' (obviously use a better password for your real
-keyrings).
+The password used to protect the keyrings was 'password' (obviously use a better password for your real keyrings).
 
-# 2.1 Start the gpg-agent
+## Step 3 Start the gpg-agent
+
+The GPG agent is required for processing GPG commands:
+
     > gpg-agent --homedir "$(pwd)" --daemon
 
-# 2.2 Generate a new keypair
+## Step 4 Generate a new key pair
+
+Enter following command:
+
     > gpg --homedir "$(pwd)" --gen-key
-    gpg: WARNING: unsafe permissions on homedir `/Users/jim/ideaprojects/multibit-hd/mbhd-brit/src/test/resources/matcher/gpg'
+
+You will see this output
+
     gpg (GnuPG/MacGPG2) 2.0.22; Copyright (C) 2013 Free Software Foundation, Inc.
     This is free software: you are free to change and redistribute it.
     There is NO WARRANTY, to the extent permitted by law.
@@ -63,6 +68,9 @@ keyrings).
        (3) DSA (sign only)
        (4) RSA (sign only)
     Your selection? 1
+
+Selecting "1" for RSA...
+
     RSA keys may be between 1024 and 8192 bits long.
     What keysize do you want? (2048)
     Requested keysize is 2048 bits
@@ -75,27 +83,30 @@ keyrings).
     Key is valid for? (0) 0
     Key does not expire at all
     Is this correct? (y/N) y
+
+Selecting "y" for correct...
                         
     GnuPG needs to construct a user ID to identify your key.
 
     Real name: matcher
-    Email address: matcher@nowhere.com
+    Email address: matcher@example.org
     Comment:
     You selected this USER-ID:
-        "matcher <matcher@nowhere.com>"
-
+        "matcher <matcher@example.org>"
     Change (N)ame, (C)omment, (E)mail or (O)kay/(Q)uit? o
+
+Selecting "o" for Okay...
+
     You need a Passphrase to protect your secret key.
 
     We need to generate a lot of random bytes. It is a good idea to perform
     some other action (type on the keyboard, move the mouse, utilize the
     disks) during the prime generation; this gives the random number
     generator a better chance to gain enough entropy.
-    We need to generate a lot of random bytes. It is a good idea to perform
-    some other action (type on the keyboard, move the mouse, utilize the
-    disks) during the prime generation; this gives the random number
-    generator a better chance to gain enough entropy.
-    gpg: /users/jim/ideaprojects/multibit-hd/mbhd-brit/src/test/resources/matcher/gpg/trustdb.gpg: trustdb created
+
+Start wiggling the mouse and hammering the keyboard to build entropy...
+
+    gpg: /brit-example/matcher/gpg/trustdb.gpg: trustdb created
     gpg: key 58614CEE marked as ultimately trusted
     public and secret key created and signed.
 
@@ -104,34 +115,38 @@ keyrings).
     gpg: depth: 0  valid:   1  signed:   0  trust: 0-, 0q, 0n, 0m, 0f, 1u
     pub   2048R/58614CEE 2014-03-25
           Key fingerprint = 1B9E 0C6D 71ED 827B 3327  8012 E688 95DE 5861 4CEE
-    uid                  matcher <matcher@nowhere.com>
+    uid                  matcher <matcher@example.org>
     sub   2048R/64B4DEA4 2014-03-25
 
 The new key pair is now created.
 
-# 2.3 List keypairs
+## Step 5 List key pairs
+
+Verify that the key pairs are generated as expected:
 
     > gpg --homedir "$(pwd)" -k
-    gpg: WARNING: unsafe permissions on homedir `/Users/jim/ideaprojects/multibit-hd/mbhd-brit/src/test/resources/matcher/gpg'
-    /users/jim/ideaprojects/multibit-hd/mbhd-brit/src/test/resources/matcher/gpg/pubring.gpg
+    /brit-example/matcher/gpg/pubring.gpg
     ----------------------------------------------------------------------------------------
     pub   2048R/58614CEE 2014-03-25
-    uid                  matcher <matcher@nowhere.com>
+    uid                  matcher <matcher@example.org>
     sub   2048R/64B4DEA4 2014-03-25
 
-# 2.4 Export the Matcher public key to a file for use later by the Payers
+## Step 6 Export the Matcher public key to a file for use later by the Payers
+
 Make a note of the public key identifier for the key you just generated.
 In the key above it is "58614CEE"
 
 Export your Payer encryption public key from your keyring using:
+
     > gpg --homedir "$(pwd)" --armor --export 58614CEE > matcher-key.asc
     (change the "58614CEE" to your key identifier).
 
-You can check the contents of the output file (making no changes) using
+You can check the contents of the output file (making no changes) using:
+
     > gpg --dry-run --homedir "$(pwd)" --import matcher-key.asc
 
-Once you are happy with the Matcher public key, create a directory 'export-to-payers' as follows
-and copy the matcher-key.asc to it.
+Once you are happy with the Matcher public key, create a directory `export-to-payer` as follows
+and copy the `matcher-key.asc` to it.
 
 Directory structure:
 
@@ -140,23 +155,28 @@ Directory structure:
       export-to-payer        << Copy the matcher-key.asc to here
       gpg
 
-# 3 Tidy up
-Delete the S.gpg-agent file in the gpg directory (as it causes problems in Eclipse).
+## Step 7 Tidy up
+
+Delete the `S.gpg-agent` file in the `gpg` directory as it causes problems in Eclipse.
 You will see a message:
 
     gpg-agent[4552]: can't connect my own socket: IPC connect call failed
     gpg-agent[4552]: this process is useless - shutting down
     gpg-agent[4552]: gpg-agent (GnuPG/MacGPG2) 2.0.22 stopped
 
-This is ok.
+This is OK, you can ignore it.
 
-## 4. Start the Matcher daemon
+## Step 8 Start the Matcher daemon
+
 TODO - Start the Matcher daemon which:
-+ loads all the Redeemer Bitcoin addresses
-+ processes incoming Payer requests
+
+* loads all the Redeemer Bitcoin addresses
+* processes incoming Payer requests
 
 # Summary
+
 By performing the tasks in this document you have:
- + constructed a PGP keypair that will be used by the Payers to encrypt their messages to the Matcher.
- + exported the PGP keypair above for copying to the Payers.
- + started the Matcher daemon service so that it can accept incoming Payer messages.
+
+* constructed a PGP keypair that will be used by the Payers to encrypt their messages to the Matcher.
+* exported the PGP keypair above for copying to the Payers.
+* started the Matcher daemon service so that it can accept incoming Payer messages.

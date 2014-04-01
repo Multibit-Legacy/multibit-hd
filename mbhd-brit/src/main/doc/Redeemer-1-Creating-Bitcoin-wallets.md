@@ -1,4 +1,4 @@
-## Redeemer: Part 1 - Creating Bitcoin wallets
+# Redeemer: Part 1 - Creating Bitcoin wallets
 
 ## Introduction
 The Redeemer needs to generate EC keys and provide the corresponding Bitcoin addresses to the Matcher.
@@ -28,14 +28,14 @@ The directory structure will then be:
        redeemer-2-1.info        < MultiBit redeemer-2-1 wallet info
        redeemer-2-1-data        < MultiBit redeemer-2-1 wallet backups
 
-# Step 2 Create many Bitcoin addresses in the MultiBit wallet
+## Step 2 Create many Bitcoin addresses in the MultiBit wallet
 To help obscure the BRIT payments the Redeemers want to have many Bitcoin addresses that the Payers pay to.
 In MultiBit Classic this can be done by selecting the number of receiving addresses to make on the
 'Request' tab's 'New' button.
 
 In this test example we will add 100 Bitcoin addresses to each of the `redeemer-1-1` and `redeemer-2-1` wallets.
 
-# Step 3 Export the Bitcoin addresses from the Bitcoin wallets and copy to the Matcher.
+## Step 3 Export the Bitcoin addresses from the Bitcoin wallets and copy to the Matcher.
 The Redeemers export all their Bitcoin addresses to files.
 
 You can produce a list of all the Bitcoin addresses in a wallet using the Multibit test utility:
@@ -59,7 +59,8 @@ The Redeemers then copy the export files to the Matcher machine as follows:
         redeemer-1-1.txt
         redeemer-2-1.txt
 
-# Summary
-The Redeemers have created a Bitcoin wallets using MultiBit Classic.
-The Redeemers have exported the Bitcoin addresses from the wallets to files.
-The Redeemers have copied the files containing the Bitcoin addresses to the Matcher machine.
+## Summary
+
+* The Redeemers have created a Bitcoin wallets using MultiBit Classic.
+* The Redeemers have exported the Bitcoin addresses from the wallets to files.
+* The Redeemers have copied the files containing the Bitcoin addresses to the Matcher machine.
