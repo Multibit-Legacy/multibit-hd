@@ -144,7 +144,7 @@ public class FeeService {
     // If we already have more sends than that then mark the next send as a fee send
     if (currentNumberOfSends >= nextFeeSendCount) {
       nextFeeSendCount = currentNumberOfSends;
-      // Note that the candidateNextFeeSend counts from zero so if the currentNumberOfSends is, say 20 a candidateNextFeeSend of 20 will be
+      // Note that the nextFeeSendCount counts from zero so if the currentNumberOfSends is, say 20 a nextFeeSendCount of 20 will be
       // the 21st send i.e. the next one (which is as soon as possible)
     }
 
@@ -164,10 +164,10 @@ public class FeeService {
     if (lastFeePayingSendTransaction == null) {
       log.debug("No transaction in this wallet has paid any fee.");
     } else {
-      log.debug("The last send transaction that paid any fee was tx = '" + lastFeePayingSendTransaction.getHash().toString() + "'. The sendCount = " + lastFeePayingSendingCount);
+      log.debug("The last send transaction that paid any fee was tx = '" + lastFeePayingSendTransaction.getHash().toString() + "'. The sendCount was " + lastFeePayingSendingCount);
     }
     log.debug("The next send fee transaction will be at the send count of " + nextFeeSendCount);
-    log.debug("The next send fee address to send to is " + nextSendFeeAddress);
+    log.debug("The next address to send fee to is " + nextSendFeeAddress);
 
     // TODO nextFeeSendCount and nextFeeSendAddress need persisting to the wallet as extensions
 
@@ -181,6 +181,7 @@ public class FeeService {
   public List<String> getHardwiredFeeAddresses() {
     // Return the multibit.org donation address
     List<String> hardwiredFeeAddresses = Lists.newArrayList();
+    // TODO add in some very well secured addresses owned by the MultiBit devs
     hardwiredFeeAddresses.add("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
 
     return hardwiredFeeAddresses;
