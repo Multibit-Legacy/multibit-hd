@@ -18,11 +18,11 @@ import java.math.BigInteger;
  */
 public class FeeState {
   public FeeState(boolean usingHardwiredBRITAddresses, String nextFeeAddress, int currentNumberOfSends,
-                  int nextSendCount, BigInteger feeAmount, BigInteger feeOwed) {
+                  int nextFeeSendCount, BigInteger feeAmount, BigInteger feeOwed) {
     this.usingHardwiredBRITAddresses = usingHardwiredBRITAddresses;
     this.nextFeeAddress = nextFeeAddress;
     this.currentNumberOfSends = currentNumberOfSends;
-    this.nextSendCount = nextSendCount;
+    this.nextFeeSendCount = nextFeeSendCount;
     this.feeAmount = feeAmount;
     this.feeOwed = feeOwed;
   }
@@ -48,7 +48,7 @@ public class FeeState {
    * For instance, if there are 5 sends currently in the Payer's wallet and this figure is 6 then
    * the fee should be paid on the next send.
    */
-  private int nextSendCount;
+  private int nextFeeSendCount;
 
   /**
    * The current fee per send transaction in satoshi
