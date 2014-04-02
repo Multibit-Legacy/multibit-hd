@@ -140,7 +140,7 @@ public class FeeService {
     }
     log.debug("The wallet send count is " + sendCount);
 
-    // The net amount fee still to be paid if the gross amount minus the amount paid so far
+    // The net amount fee still to be paid is the gross amount minus the amount paid so far
     BigInteger netFeeToBePaid = grossFeeToBePaid.subtract(feePaid);
 
     int nextSendFeeCount;
@@ -179,7 +179,7 @@ public class FeeService {
         // the 21st send i.e. the next one (which is as soon as possible)
       }
 
-      // Work out the next fee send address - it is random but always changes
+      // Work out the next fee send address - it is random
       List<String> candidateSendFeeAddresses;
       if (matcherResponseFromWallet == null || matcherResponseFromWallet.getAddressList() == null ||
               matcherResponseFromWallet.getAddressList().size() <= 1) {
@@ -187,10 +187,8 @@ public class FeeService {
       } else {
         candidateSendFeeAddresses = matcherResponseFromWallet.getAddressList();
       }
-      do {
-        nextSendFeeAddress = candidateSendFeeAddresses.get(random.nextInt(candidateSendFeeAddresses.size()));
-      }
-      while (sendFeeDto != null && sendFeeDto.getSendFeeAddress().isPresent() && nextSendFeeAddress.equals(sendFeeDto.getSendFeeAddress().get()));
+
+      nextSendFeeAddress = candidateSendFeeAddresses.get(random.nextInt(candidateSendFeeAddresses.size()));
 
       log.debug("New next send fee transaction. It will be at the send count of " + nextSendFeeCount);
       log.debug("New next address to send fee to. It will be is " + nextSendFeeAddress);
@@ -232,14 +230,6 @@ public class FeeService {
     }
     return sendTransactions;
   }
-
-  /*
-   * Calculate the universe of Bitcoin addresses that this wallet could have sent/ be sending fees to
-   * This is the union of:
-   * + the hardwired addresses
-   * + the Bitcoin addresses in the MatcherResponse wallet extension (if available)
-   */
-
 
   private MatcherResponse getMatcherResponseFromWallet(Wallet wallet) {
     Map<String, WalletExtension> walletExtensionsMap = wallet.getExtensions();
