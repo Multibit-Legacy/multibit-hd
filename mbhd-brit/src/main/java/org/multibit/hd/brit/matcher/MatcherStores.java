@@ -1,5 +1,8 @@
 package org.multibit.hd.brit.matcher;
 
+import java.io.File;
+import java.io.IOException;
+
 /**
  * <p>Factory to provide the following to BRIT:</p>
  * <ul>
@@ -19,8 +22,9 @@ public class MatcherStores {
    * @param matcherStoreLocation The directory the matcher store backing files are stored in
    *
    * @return The Matcher store
+   * @throws java.io.IOException If the matcher backing store
    */
-  public static MatcherStore newBasicMatcherStore(String matcherStoreLocation) {
+  public static MatcherStore newBasicMatcherStore(File matcherStoreLocation) throws IOException {
     return new BasicMatcherStore(matcherStoreLocation);
   }
 }

@@ -12,6 +12,7 @@ import org.spongycastle.crypto.params.KeyParameter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
@@ -45,12 +46,15 @@ public class BasicMatcher implements Matcher {
 
   /**
    * @param matcherConfig The Matcher configuration
+   *
+   * @throws java.io.IOException If the Matcher backing store could not access the files
    */
-  public BasicMatcher(MatcherConfig matcherConfig) {
+  public BasicMatcher(MatcherConfig matcherConfig) throws IOException {
+
     this.matcherConfig = matcherConfig;
 
     // Create a new matcher store and populate it
-    matcherStore = MatcherStores.newBasicMatcherStore(matcherConfig.getMatcherStoreLocation());
+    matcherStore = MatcherStores.newBasicMatcherStore(matcherConfig.getMatcherStoreDirectory());
   }
 
   @Override

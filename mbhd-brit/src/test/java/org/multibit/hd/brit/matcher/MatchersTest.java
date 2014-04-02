@@ -37,9 +37,9 @@ public class MatchersTest {
     File matcherSecretKeyFile = PGPUtilsTest.makeFile(PGPUtilsTest.TEST_MATCHER_SECRET_KEYRING_FILE);
 
     // Create a random temporary directory for the matcher store to use
-    String matcherStoreDirectoryLocation = FileUtils.makeRandomTemporaryDirectory().getAbsolutePath();
+    File matcherStoreDirectory = FileUtils.makeRandomTemporaryDirectory();
 
-    MatcherConfig matcherConfig = new MatcherConfig(matcherSecretKeyFile, PGPUtilsTest.TEST_DATA_PASSWORD, matcherStoreDirectoryLocation);
+    MatcherConfig matcherConfig = new MatcherConfig(matcherSecretKeyFile, PGPUtilsTest.TEST_DATA_PASSWORD, matcherStoreDirectory);
 
     Matcher matcher = Matchers.newBasicMatcher(matcherConfig);
     assertThat(matcher).isNotNull();
