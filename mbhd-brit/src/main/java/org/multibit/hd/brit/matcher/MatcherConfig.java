@@ -22,15 +22,9 @@ public class MatcherConfig {
    */
   private char[] password;
 
-  /**
-   * The location of the Matcher's store
-   */
-  private String matcherStoreLocation;
-
-  public MatcherConfig(File matcherSecretKeyringFile, char[] password, String matcherStoreLocation) {
+  public MatcherConfig(File matcherSecretKeyringFile, char[] password) {
     this.matcherSecretKeyringFile = matcherSecretKeyringFile;
     this.password = password;
-    this.matcherStoreLocation = matcherStoreLocation;
   }
 
   public File getMatcherSecretKeyringFile() {
@@ -41,7 +35,4 @@ public class MatcherConfig {
     return password;
   }
 
-  public String getMatcherStoreLocation() {
-    return matcherStoreLocation;
-  }
 }

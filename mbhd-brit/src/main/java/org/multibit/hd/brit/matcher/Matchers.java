@@ -18,10 +18,12 @@ public class Matchers {
 
   /**
    * @param matcherConfig The Matcher configuration
+   * @param matcherStore The Matcher store
    *
    * @return A new basic Matcher
+   *
    */
-  public static Matcher newBasicMatcher(MatcherConfig matcherConfig) {
-    return new BasicMatcher(matcherConfig);
+  public static Matcher newBasicMatcher(MatcherConfig matcherConfig, MatcherStore matcherStore) {
+    return new BasicMatcher(matcherConfig, matcherStore);
   }
 }

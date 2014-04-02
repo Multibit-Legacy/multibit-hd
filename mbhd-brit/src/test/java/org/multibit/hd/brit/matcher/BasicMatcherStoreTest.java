@@ -30,6 +30,7 @@ import org.multibit.hd.brit.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 
@@ -41,16 +42,16 @@ public class BasicMatcherStoreTest {
 
   private MatcherStore matcherStore;
 
-  private String matcherStoreDirectoryLocation;
+  private File matcherStoreDirectory;
 
   @Before
   public void setUp() throws Exception {
-    // Create a random temporary directory in which to create the matcher store
-    matcherStoreDirectoryLocation = FileUtils.makeRandomTemporaryDirectory().getAbsolutePath();
+    // Create a random temporary directory in which to create the Matcher store
+    matcherStoreDirectory = FileUtils.makeRandomTemporaryDirectory();
 
-    log.debug("Creating a matcher store in the directory '" + matcherStoreDirectoryLocation + "'");
+    log.debug("Creating a Matcher store in the directory '" + matcherStoreDirectory + "'");
 
-    matcherStore = MatcherStores.newBasicMatcherStore(matcherStoreDirectoryLocation);
+    matcherStore = MatcherStores.newBasicMatcherStore(matcherStoreDirectory);
     assertThat(matcherStore).isNotNull();
   }
 
@@ -65,7 +66,7 @@ public class BasicMatcherStoreTest {
     matcherStore.storeAllBitcoinAddresses(allBitcoinAddresses);
 
     // Bounce the MatcherStore to check everything is being persisted
-    MatcherStore rebornMatcherStore = MatcherStores.newBasicMatcherStore(matcherStoreDirectoryLocation);
+    MatcherStore rebornMatcherStore = MatcherStores.newBasicMatcherStore(matcherStoreDirectory);
 
     // Check they have been stored ok
     assertThat(rebornMatcherStore.getAllBitcoinAddress()).isEqualTo(allBitcoinAddresses);
@@ -99,7 +100,7 @@ public class BasicMatcherStoreTest {
     matcherStore.storeBitcoinAddressListForDate(bitcoinAddressList3, tomorrow);
 
     // Bounce the MatcherStore to check everything is being persisted
-    MatcherStore rebornMatcherStore = MatcherStores.newBasicMatcherStore(matcherStoreDirectoryLocation);
+    MatcherStore rebornMatcherStore = MatcherStores.newBasicMatcherStore(matcherStoreDirectory);
 
     // Check they have been stored ok
     assertThat(rebornMatcherStore.lookupBitcoinAddressListForDate(yesterday)).isEqualTo(bitcoinAddressList1);
@@ -133,7 +134,7 @@ public class BasicMatcherStoreTest {
     matcherStore.storeWalletToEncounterDateLink(walletToEncounterLink2);
 
     // Bounce the MatcherStore to check everything is being persisted
-    MatcherStore rebornMatcherStore = MatcherStores.newBasicMatcherStore(matcherStoreDirectoryLocation);
+    MatcherStore rebornMatcherStore = MatcherStores.newBasicMatcherStore(matcherStoreDirectory);
 
     // Check they have been stored ok
     assertThat(rebornMatcherStore.lookupWalletToEncounterDateLink(britWalletId1)).isEqualTo(walletToEncounterLink1);

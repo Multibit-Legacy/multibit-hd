@@ -29,7 +29,7 @@ public class BasicMatcher implements Matcher {
 
   private static final Logger log = LoggerFactory.getLogger(BasicMatcher.class);
 
-  private MatcherConfig matcherConfig;
+  private final MatcherConfig matcherConfig;
 
   /**
    * The last payerRequest received.
@@ -40,17 +40,18 @@ public class BasicMatcher implements Matcher {
   /**
    * The matcher store containing all the bitcoin address information
    */
-  private MatcherStore matcherStore;
-
+  private final MatcherStore matcherStore;
 
   /**
    * @param matcherConfig The Matcher configuration
+   * @param matcherStore The Matcher store
+   *
    */
-  public BasicMatcher(MatcherConfig matcherConfig) {
-    this.matcherConfig = matcherConfig;
+  public BasicMatcher(MatcherConfig matcherConfig, MatcherStore matcherStore) {
 
-    // Create a new matcher store and populate it
-    matcherStore = MatcherStores.newBasicMatcherStore(matcherConfig.getMatcherStoreLocation());
+    this.matcherConfig = matcherConfig;
+    this.matcherStore = matcherStore;
+
   }
 
   @Override

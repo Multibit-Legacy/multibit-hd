@@ -33,15 +33,16 @@ public class MatchersTest {
 
   @Test
   public void testCreateMatcher() throws Exception {
+
     // Find the example Matcher PGP secret key ring file
     File matcherSecretKeyFile = PGPUtilsTest.makeFile(PGPUtilsTest.TEST_MATCHER_SECRET_KEYRING_FILE);
+    MatcherConfig matcherConfig = new MatcherConfig(matcherSecretKeyFile, PGPUtilsTest.TEST_DATA_PASSWORD);
 
     // Create a random temporary directory for the matcher store to use
-    String matcherStoreDirectoryLocation = FileUtils.makeRandomTemporaryDirectory().getAbsolutePath();
+    File matcherStoreDirectory = FileUtils.makeRandomTemporaryDirectory();
+    MatcherStore matcherStore = MatcherStores.newBasicMatcherStore(matcherStoreDirectory);
 
-    MatcherConfig matcherConfig = new MatcherConfig(matcherSecretKeyFile, PGPUtilsTest.TEST_DATA_PASSWORD, matcherStoreDirectoryLocation);
-
-    Matcher matcher = Matchers.newBasicMatcher(matcherConfig);
+    Matcher matcher = Matchers.newBasicMatcher(matcherConfig, matcherStore);
     assertThat(matcher).isNotNull();
 
     // Check the Matcher PGP private key is stored properly
