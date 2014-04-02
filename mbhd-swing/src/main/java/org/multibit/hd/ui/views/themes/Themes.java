@@ -4,7 +4,9 @@ import com.google.common.base.Preconditions;
 import org.multibit.hd.ui.languages.LanguageKey;
 
 import javax.swing.*;
+import javax.swing.plaf.FontUIResource;
 import java.awt.*;
+import java.util.Enumeration;
 
 /**
  * <p>utility to provide the following to Views:</p>
@@ -52,6 +54,9 @@ public class Themes {
     // Ensure the language icons match
     LanguageKey.resetIcons();
 
+    // Adjust the font size
+    initializeFontSize();
+
   }
 
   /**
@@ -61,6 +66,39 @@ public class Themes {
    */
   public static String toHexString(Color color) {
     return Integer.toHexString(color.getRGB());
+  }
+
+  /**
+   * <p>Apply a default font size modifier</p>
+   */
+  public static void initializeFontSize() {
+
+    // TODO Introduce a theme-aware font factory for components to use
+
+    // TODO Add this to the configuration
+    float multiplier = 1.0f;
+    UIDefaults defaults = UIManager.getDefaults();
+
+    for (Enumeration e = defaults.keys(); e.hasMoreElements(); ) {
+
+      Object key = e.nextElement();
+      Object value = defaults.get(key);
+
+      if (value instanceof Font) {
+
+        Font font = (Font) value;
+        int newSize = Math.round(font.getSize() * multiplier);
+
+        if (value instanceof FontUIResource) {
+          defaults.put(key, new FontUIResource(font.getName(), font.getStyle(), newSize));
+        } else {
+          defaults.put(key, new Font(font.getName(), font.getStyle(), newSize));
+        }
+
+      }
+
+    }
+
   }
 
 }
