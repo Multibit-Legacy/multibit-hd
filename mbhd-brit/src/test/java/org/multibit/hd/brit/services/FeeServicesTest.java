@@ -19,6 +19,7 @@ package org.multibit.hd.brit.services;
 import com.google.bitcoin.core.*;
 import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterScrypt;
+import com.google.bitcoin.params.MainNetParams;
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.MemoryBlockStore;
 import com.google.bitcoin.utils.Threading;
@@ -50,7 +51,6 @@ import java.util.List;
 import static com.google.bitcoin.core.Utils.toNanoCoins;
 import static com.google.bitcoin.utils.TestUtils.createFakeTx;
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.junit.Assert.*;
 
 public class FeeServicesTest {
 
@@ -91,6 +91,7 @@ public class FeeServicesTest {
 
   @Before
   public void setUp() throws Exception {
+
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(BRITWalletIdTest.SEED_PHRASE_1));
 
@@ -112,9 +113,13 @@ public class FeeServicesTest {
 
   @Test
   public void testCalculateFeeState() throws Exception {
+
     // Get the FeeService
     FeeService feeService = BRITServices.newFeeService(encryptionKey, new URL(DUMMY_MATCHER_URL));
     assertThat(feeService).isNotNull();
+
+    // TODO Add a loop here to test fees over multiple spends
+    int i=0;
 
     // Calculate the fee state for an empty wallet
     FeeState feeState = feeService.calculateFeeState(wallet1);
@@ -123,7 +128,7 @@ public class FeeServicesTest {
     // We are using a dummy Matcher so will always fall back to the hardwired addresses
     List<String> possibleNextFeeAddresses = feeService.getHardwiredFeeAddresses();
 
-    checkFeeState(feeState, true, 0, BigInteger.ZERO, FeeService.FEE_PER_SEND, possibleNextFeeAddresses);
+    checkFeeState(feeState, true, i, FeeService.FEE_PER_SEND.multiply(BigInteger.valueOf(i)), FeeService.FEE_PER_SEND, possibleNextFeeAddresses);
 
     // Receive some bitcoin to the wallet1 address
     receiveATransaction(wallet1, toAddress1);
@@ -134,29 +139,36 @@ public class FeeServicesTest {
     sendBitcoin(v2, nonFeeDestinationAddress);
 
     feeState = feeService.calculateFeeState(wallet1);
-    checkFeeState(feeState, true, 1, FeeService.FEE_PER_SEND, FeeService.FEE_PER_SEND, possibleNextFeeAddresses);
+    checkFeeState(feeState, true, i + 1, FeeService.FEE_PER_SEND.multiply(BigInteger.valueOf(i + 1)), FeeService.FEE_PER_SEND, possibleNextFeeAddresses);
   }
 
-  private void checkFeeState(FeeState feeStateToCheck, boolean expectedIsUsingHardwiredBRITAddress, int expectedCurrentNumberOfSends,
-                             BigInteger expectedFeeOwed, BigInteger expectedFeePerSendSatoshi, List<String> possibleNextFeeAddresses) {
-    assertThat(feeStateToCheck.isUsingHardwiredBRITAddresses() == expectedIsUsingHardwiredBRITAddress).isTrue();
+  private void checkFeeState(FeeState feeState,
+                             boolean expectedIsUsingHardwiredBRITAddress,
+                             int expectedCurrentNumberOfSends,
+                             BigInteger expectedFeeOwed,
+                             BigInteger expectedFeePerSendSatoshi,
+                             List<String> possibleNextFeeAddresses) {
 
-    assertThat(feeStateToCheck.getCurrentNumberOfSends()).isEqualTo(expectedCurrentNumberOfSends);
-    assertThat(feeStateToCheck.getFeeOwed()).isEqualTo(expectedFeeOwed);
-    assertThat(feeStateToCheck.getFeePerSendSatoshi()).isEqualTo(expectedFeePerSendSatoshi);
-    assertThat(possibleNextFeeAddresses.contains(feeStateToCheck.getNextFeeAddress())).isTrue();
+    assertThat(feeState.isUsingHardwiredBRITAddresses() == expectedIsUsingHardwiredBRITAddress).isTrue();
 
-    int lowerLimitOfNextFeeSendCount = feeStateToCheck.getCurrentNumberOfSends() + FeeService.NEXT_SEND_DELTA_LOWER_LIMIT;
-    int upperLimitOfNextFeeSendCount = feeStateToCheck.getCurrentNumberOfSends() + FeeService.NEXT_SEND_DELTA_UPPER_LIMIT;
-    assertThat((lowerLimitOfNextFeeSendCount <= feeStateToCheck.getNextFeeSendCount()) &&
-            feeStateToCheck.getNextFeeSendCount() <= upperLimitOfNextFeeSendCount).isTrue();
+    assertThat(feeState.getCurrentNumberOfSends()).isEqualTo(expectedCurrentNumberOfSends);
+    assertThat(feeState.getFeeOwed()).isEqualTo(expectedFeeOwed);
+    assertThat(feeState.getFeePerSendSatoshi()).isEqualTo(expectedFeePerSendSatoshi);
+    assertThat(possibleNextFeeAddresses.contains(feeState.getNextFeeAddress())).isTrue();
+
+    int lowerLimitOfNextFeeSendCount = feeState.getCurrentNumberOfSends() + FeeService.NEXT_SEND_DELTA_LOWER_LIMIT;
+    int upperLimitOfNextFeeSendCount = feeState.getCurrentNumberOfSends() + FeeService.NEXT_SEND_DELTA_UPPER_LIMIT;
+
+    // Verify limits
+    assertThat(lowerLimitOfNextFeeSendCount).isLessThanOrEqualTo(feeState.getNextFeeSendCount());
+    assertThat(upperLimitOfNextFeeSendCount).isGreaterThanOrEqualTo(feeState.getNextFeeSendCount());
   }
 
   public void createWallet(byte[] seed, CharSequence password) throws Exception {
     // Create a wallet with a single private key using the seed (modulo-ed), encrypted with the password
     KeyCrypter keyCrypter = new KeyCrypterScrypt();
 
-    wallet1 = new Wallet(NetworkParameters.fromID(NetworkParameters.ID_MAINNET), keyCrypter);
+    wallet1 = new Wallet(MainNetParams.get(), keyCrypter);
     wallet1.setVersion(ENCRYPTED_WALLET_VERSION);
 
     // Add the 'zero index' key into the wallet
@@ -177,29 +189,33 @@ public class FeeServicesTest {
   }
 
   private void receiveATransaction(Wallet wallet, Address toAddress) throws Exception {
+
     BigInteger v1 = Utils.toNanoCoins(1, 0);
     final ListenableFuture<BigInteger> availFuture = wallet.getBalanceFuture(v1, Wallet.BalanceType.AVAILABLE);
     final ListenableFuture<BigInteger> estimatedFuture = wallet.getBalanceFuture(v1, Wallet.BalanceType.ESTIMATED);
-    assertFalse(availFuture.isDone());
-    assertFalse(estimatedFuture.isDone());
+    assertThat(availFuture.isDone()).isFalse();
+    assertThat(estimatedFuture.isDone()).isFalse();
+
     // Send some pending coins to the wallet.
     Transaction t1 = sendMoneyToWallet(wallet, v1, toAddress);
     Threading.waitForUserCode();
     final ListenableFuture<Transaction> depthFuture = t1.getConfidence().getDepthFuture(1);
-    assertFalse(depthFuture.isDone());
-    assertEquals(v1, wallet.getBalance(Wallet.BalanceType.ESTIMATED));
+    assertThat(depthFuture.isDone()).isFalse();
+    assertThat(v1).isEqualTo(wallet.getBalance(Wallet.BalanceType.ESTIMATED));
+
     // Our estimated balance has reached the requested level.
-    assertTrue(estimatedFuture.isDone());
+    assertThat(estimatedFuture.isDone()).isTrue();
   }
 
   private Transaction sendMoneyToWallet(Wallet wallet, BigInteger value, Address toAddress) throws IOException, VerificationException {
+
     Transaction tx = createFakeTx(params, value, toAddress);
     // Mark it as coming from self as then it can be spent when pending
     tx.getConfidence().setSource(TransactionConfidence.Source.SELF);
 
     // Mark it as being seen by a couple of peers
     tx.getConfidence().markBroadcastBy(new PeerAddress(InetAddress.getByAddress(new byte[]{1, 2, 3, 4})));
-      tx.getConfidence().markBroadcastBy(new PeerAddress(InetAddress.getByAddress(new byte[]{10, 2, 3, 4})));
+    tx.getConfidence().markBroadcastBy(new PeerAddress(InetAddress.getByAddress(new byte[]{10, 2, 3, 4})));
 
     // Pending/broadcast tx.
     if (wallet.isPendingTransactionRelevant(tx)) {
@@ -210,6 +226,7 @@ public class FeeServicesTest {
   }
 
   private static void broadcastAndCommit(Wallet wallet, Transaction t) throws Exception {
+
     final LinkedList<Transaction> txns = Lists.newLinkedList();
     wallet.addEventListener(new AbstractWalletEventListener() {
       @Override
@@ -225,6 +242,7 @@ public class FeeServicesTest {
   }
 
   private void sendBitcoin(BigInteger amount, Address destinationAddress) throws Exception {
+
     Wallet.SendRequest req = Wallet.SendRequest.to(destinationAddress, amount);
     req.aesKey = aesKey;
     req.fee = toNanoCoins(0, 1);

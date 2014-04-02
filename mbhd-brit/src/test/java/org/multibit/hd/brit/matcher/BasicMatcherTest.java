@@ -123,13 +123,13 @@ public class BasicMatcherTest {
 
     // Find the example Matcher PGP secret key ring file
     File matcherSecretKeyFile = PGPUtilsTest.makeFile(PGPUtilsTest.TEST_MATCHER_SECRET_KEYRING_FILE);
+    MatcherConfig matcherConfig = new MatcherConfig(matcherSecretKeyFile, PGPUtilsTest.TEST_DATA_PASSWORD);
 
-    // Create a random temporary directory for the matcher store to use
+    // Create a random temporary directory for the Matcher store to use
     File matcherStoreDirectory = FileUtils.makeRandomTemporaryDirectory();
+    MatcherStore matcherStore = MatcherStores.newBasicMatcherStore(matcherStoreDirectory);
 
-    MatcherConfig matcherConfig = new MatcherConfig(matcherSecretKeyFile, PGPUtilsTest.TEST_DATA_PASSWORD, matcherStoreDirectory);
-
-    Matcher matcher = Matchers.newBasicMatcher(matcherConfig);
+    Matcher matcher = Matchers.newBasicMatcher(matcherConfig, matcherStore);
     assertThat(matcher).isNotNull();
 
     // Add some test data for today's bitcoin addresses
@@ -139,7 +139,6 @@ public class BasicMatcherTest {
       bitcoinAddressList.add("elephant");
       bitcoinAddressList.add("worm");
 
-    MatcherStore matcherStore = matcher.getMatcherStore();
     matcherStore.storeBitcoinAddressListForDate(bitcoinAddressList, new Date());
 
     return matcher;

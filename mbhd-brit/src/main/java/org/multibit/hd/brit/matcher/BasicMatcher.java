@@ -12,7 +12,6 @@ import org.spongycastle.crypto.params.KeyParameter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
@@ -30,7 +29,7 @@ public class BasicMatcher implements Matcher {
 
   private static final Logger log = LoggerFactory.getLogger(BasicMatcher.class);
 
-  private MatcherConfig matcherConfig;
+  private final MatcherConfig matcherConfig;
 
   /**
    * The last payerRequest received.
@@ -41,20 +40,18 @@ public class BasicMatcher implements Matcher {
   /**
    * The matcher store containing all the bitcoin address information
    */
-  private MatcherStore matcherStore;
-
+  private final MatcherStore matcherStore;
 
   /**
    * @param matcherConfig The Matcher configuration
+   * @param matcherStore The Matcher store
    *
-   * @throws java.io.IOException If the Matcher backing store could not access the files
    */
-  public BasicMatcher(MatcherConfig matcherConfig) throws IOException {
+  public BasicMatcher(MatcherConfig matcherConfig, MatcherStore matcherStore) {
 
     this.matcherConfig = matcherConfig;
+    this.matcherStore = matcherStore;
 
-    // Create a new matcher store and populate it
-    matcherStore = MatcherStores.newBasicMatcherStore(matcherConfig.getMatcherStoreDirectory());
   }
 
   @Override
