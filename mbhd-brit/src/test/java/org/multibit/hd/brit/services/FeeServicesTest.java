@@ -32,6 +32,7 @@ import org.multibit.hd.brit.crypto.PGPUtils;
 import org.multibit.hd.brit.crypto.PGPUtilsTest;
 import org.multibit.hd.brit.dto.BRITWalletIdTest;
 import org.multibit.hd.brit.dto.FeeState;
+import org.multibit.hd.brit.extensions.MatcherResponseWalletExtension;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.slf4j.Logger;
@@ -88,11 +89,12 @@ public class FeeServicesTest {
    */
   public static final int ENCRYPTED_WALLET_VERSION = 3; // TODO - need a new version when the wallet HD format is created
 
+  private byte[] seed;
 
   @Before
   public void setUp() throws Exception {
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-    byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(BRITWalletIdTest.SEED_PHRASE_1));
+    seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(BRITWalletIdTest.SEED_PHRASE_1));
 
     // Create the wallet 'wallet1'
     createWallet(seed, WALLET_PASSWORD);
@@ -107,7 +109,7 @@ public class FeeServicesTest {
     blockStore = new MemoryBlockStore(params);
     chain = new BlockChain(params, wallet1, blockStore);
 
-    nonFeeDestinationAddress = new Address(params, "1CQH7Hp9nNQVDcKtFVwbA8tqPMNWDBvqE3");
+    nonFeeDestinationAddress = new Address(params, "1CQH7Hp9nNQVDcKtFVwbA8tqPMNWDBvqE3"); // Any old address that is not a fee address
   }
 
   @Test
@@ -115,6 +117,10 @@ public class FeeServicesTest {
     // Get the FeeService
     FeeService feeService = BRITServices.newFeeService(encryptionKey, new URL(DUMMY_MATCHER_URL));
     assertThat(feeService).isNotNull();
+
+    // Perform an exchange with the BRIT Matcher to get the list of fee addresses
+    feeService.performExchangeWithMatcher(seed, wallet1);
+    assertThat(wallet1.getExtensions().get(MatcherResponseWalletExtension.MATCHER_RESPONSE_WALLET_EXTENSION_ID)).isNotNull();
 
     // Calculate the fee state for an empty wallet
     FeeState feeState = feeService.calculateFeeState(wallet1);
@@ -124,17 +130,36 @@ public class FeeServicesTest {
     List<String> possibleNextFeeAddresses = feeService.getHardwiredFeeAddresses();
 
     checkFeeState(feeState, true, 0, BigInteger.ZERO, FeeService.FEE_PER_SEND, possibleNextFeeAddresses);
+    String originalFeeAddress = feeState.getNextFeeAddress();
 
     // Receive some bitcoin to the wallet1 address
     receiveATransaction(wallet1, toAddress1);
 
     // Create a send to the non fee destination address
     // This should increment the send count and the fee owed
-    BigInteger v2 = toNanoCoins(0, 50);
-    sendBitcoin(v2, nonFeeDestinationAddress);
+    BigInteger tenMillis = toNanoCoins(0, 1);
+    sendBitcoin(tenMillis, nonFeeDestinationAddress);
 
     feeState = feeService.calculateFeeState(wallet1);
     checkFeeState(feeState, true, 1, FeeService.FEE_PER_SEND, FeeService.FEE_PER_SEND, possibleNextFeeAddresses);
+    assertThat(originalFeeAddress).isEqualTo(feeState.getNextFeeAddress());
+
+    // Create another send to the non fee destination address
+    // This should increment the send count and the fee owed
+    sendBitcoin(tenMillis, nonFeeDestinationAddress);
+
+    feeState = feeService.calculateFeeState(wallet1);
+    checkFeeState(feeState, true, 2, FeeService.FEE_PER_SEND.multiply(BigInteger.valueOf(2)), FeeService.FEE_PER_SEND, possibleNextFeeAddresses);
+    assertThat(originalFeeAddress).isEqualTo(feeState.getNextFeeAddress());
+
+    // Create another send to the FEE address
+    // Pay the feeOwed and another fee amount (to pay for this send)
+    // This should reset the amount owed and create another feeAddress
+    sendBitcoin(feeState.getFeeOwed().add(FeeService.FEE_PER_SEND), new Address(NetworkParameters.fromID(NetworkParameters.ID_MAINNET), feeState.getNextFeeAddress()));
+
+    feeState = feeService.calculateFeeState(wallet1);
+    checkFeeState(feeState, true, 3, BigInteger.ZERO, FeeService.FEE_PER_SEND, possibleNextFeeAddresses);
+    assertThat(originalFeeAddress).isNotEqualTo(feeState.getNextFeeAddress());
   }
 
   private void checkFeeState(FeeState feeStateToCheck, boolean expectedIsUsingHardwiredBRITAddress, int expectedCurrentNumberOfSends,
@@ -146,8 +171,8 @@ public class FeeServicesTest {
     assertThat(feeStateToCheck.getFeePerSendSatoshi()).isEqualTo(expectedFeePerSendSatoshi);
     assertThat(possibleNextFeeAddresses.contains(feeStateToCheck.getNextFeeAddress())).isTrue();
 
-    int lowerLimitOfNextFeeSendCount = feeStateToCheck.getCurrentNumberOfSends() + FeeService.NEXT_SEND_DELTA_LOWER_LIMIT;
-    int upperLimitOfNextFeeSendCount = feeStateToCheck.getCurrentNumberOfSends() + FeeService.NEXT_SEND_DELTA_UPPER_LIMIT;
+    int lowerLimitOfNextFeeSendCount = feeStateToCheck.getCurrentNumberOfSends() + FeeService.NEXT_SEND_DELTA_LOWER_LIMIT - 1;
+    int upperLimitOfNextFeeSendCount = feeStateToCheck.getCurrentNumberOfSends() + FeeService.NEXT_SEND_DELTA_UPPER_LIMIT - 1;
     assertThat((lowerLimitOfNextFeeSendCount <= feeStateToCheck.getNextFeeSendCount()) &&
             feeStateToCheck.getNextFeeSendCount() <= upperLimitOfNextFeeSendCount).isTrue();
   }
