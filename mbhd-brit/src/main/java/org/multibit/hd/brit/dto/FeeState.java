@@ -39,7 +39,7 @@ public class FeeState {
   private String nextFeeAddress;
 
   /**
-   * The number of sends in the Payer's wallet.
+   * The total number of sends in the Payer's wallet.
    */
   private int currentNumberOfSends;
 

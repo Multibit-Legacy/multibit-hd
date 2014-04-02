@@ -16,11 +16,14 @@ package org.multibit.hd.brit.services;
  * limitations under the License.
  */
 
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.core.*;
 import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterScrypt;
+import com.google.bitcoin.store.BlockStore;
+import com.google.bitcoin.store.MemoryBlockStore;
+import com.google.bitcoin.utils.Threading;
+import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,21 +36,45 @@ import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spongycastle.crypto.params.KeyParameter;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.math.BigInteger;
+import java.net.InetAddress;
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.List;
 
+import static com.google.bitcoin.core.Utils.toNanoCoins;
+import static com.google.bitcoin.utils.TestUtils.createFakeTx;
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.junit.Assert.*;
 
 public class FeeServicesTest {
 
   private static final Logger log = LoggerFactory.getLogger(FeeServicesTest.class);
 
+  protected static final NetworkParameters params = NetworkParameters.fromID(NetworkParameters.ID_MAINNET);
+
   private final CharSequence WALLET_PASSWORD = "horatio nelson 123";
   private Wallet wallet1;
+
+  /**
+   * An address in the test wallet1
+   */
+  private Address toAddress1;
+
+  /**
+   * An address that is not in the wallet1 and not a BRIT fee address
+   */
+  private Address nonFeeDestinationAddress;
+
+  private KeyParameter aesKey;
+
+  protected BlockChain chain;
+  protected BlockStore blockStore;
 
   private PGPPublicKey encryptionKey;
 
@@ -76,6 +103,11 @@ public class FeeServicesTest {
     FileInputStream publicKeyRingInputStream = new FileInputStream(publicKeyRingFile);
     encryptionKey = PGPUtils.readPublicKey(publicKeyRingInputStream);
     assertThat(encryptionKey).isNotNull();
+
+    blockStore = new MemoryBlockStore(params);
+    chain = new BlockChain(params, wallet1, blockStore);
+
+    nonFeeDestinationAddress = new Address(params, "1CQH7Hp9nNQVDcKtFVwbA8tqPMNWDBvqE3");
   }
 
   @Test
@@ -91,8 +123,18 @@ public class FeeServicesTest {
     // We are using a dummy Matcher so will always fall back to the hardwired addresses
     List<String> possibleNextFeeAddresses = feeService.getHardwiredFeeAddresses();
 
-    checkFeeState(feeState, true, 0, BigInteger.ZERO, FeeService.DEFAULT_FEE_PER_SEND, possibleNextFeeAddresses);
+    checkFeeState(feeState, true, 0, BigInteger.ZERO, FeeService.FEE_PER_SEND, possibleNextFeeAddresses);
 
+    // Receive some bitcoin to the wallet1 address
+    receiveATransaction(wallet1, toAddress1);
+
+    // Create a send to the non fee destination address
+    // This should increment the send count and the fee owed
+    BigInteger v2 = toNanoCoins(0, 50);
+    sendBitcoin(v2, nonFeeDestinationAddress);
+
+    feeState = feeService.calculateFeeState(wallet1);
+    checkFeeState(feeState, true, 1, FeeService.FEE_PER_SEND, FeeService.FEE_PER_SEND, possibleNextFeeAddresses);
   }
 
   private void checkFeeState(FeeState feeStateToCheck, boolean expectedIsUsingHardwiredBRITAddress, int expectedCurrentNumberOfSends,
@@ -122,13 +164,77 @@ public class FeeServicesTest {
     BigInteger privateKeyToUse = ECUtils.moduloSeedByECGroupSize(new BigInteger(1, seed));
 
     ECKey newKey = new ECKey(privateKeyToUse);
-    newKey = newKey.encrypt(wallet1.getKeyCrypter(), wallet1.getKeyCrypter().deriveKey(password));
+    toAddress1 = newKey.toAddress(params);
+
+    aesKey = wallet1.getKeyCrypter().deriveKey(password);
+    newKey = newKey.encrypt(wallet1.getKeyCrypter(), aesKey);
     wallet1.addKey(newKey);
 
     assertThat(wallet1).isNotNull();
 
     // There should be a single key
     assertThat(wallet1.getKeychainSize() == 1).isTrue();
+  }
+
+  private void receiveATransaction(Wallet wallet, Address toAddress) throws Exception {
+    BigInteger v1 = Utils.toNanoCoins(1, 0);
+    final ListenableFuture<BigInteger> availFuture = wallet.getBalanceFuture(v1, Wallet.BalanceType.AVAILABLE);
+    final ListenableFuture<BigInteger> estimatedFuture = wallet.getBalanceFuture(v1, Wallet.BalanceType.ESTIMATED);
+    assertFalse(availFuture.isDone());
+    assertFalse(estimatedFuture.isDone());
+    // Send some pending coins to the wallet.
+    Transaction t1 = sendMoneyToWallet(wallet, v1, toAddress);
+    Threading.waitForUserCode();
+    final ListenableFuture<Transaction> depthFuture = t1.getConfidence().getDepthFuture(1);
+    assertFalse(depthFuture.isDone());
+    assertEquals(v1, wallet.getBalance(Wallet.BalanceType.ESTIMATED));
+    // Our estimated balance has reached the requested level.
+    assertTrue(estimatedFuture.isDone());
+  }
+
+  private Transaction sendMoneyToWallet(Wallet wallet, BigInteger value, Address toAddress) throws IOException, VerificationException {
+    Transaction tx = createFakeTx(params, value, toAddress);
+    // Mark it as coming from self as then it can be spent when pending
+    tx.getConfidence().setSource(TransactionConfidence.Source.SELF);
+
+    // Mark it as being seen by a couple of peers
+    tx.getConfidence().markBroadcastBy(new PeerAddress(InetAddress.getByAddress(new byte[]{1, 2, 3, 4})));
+      tx.getConfidence().markBroadcastBy(new PeerAddress(InetAddress.getByAddress(new byte[]{10, 2, 3, 4})));
+
+    // Pending/broadcast tx.
+    if (wallet.isPendingTransactionRelevant(tx)) {
+      wallet.receivePending(tx, null);
+    }
+
+    return wallet.getTransaction(tx.getHash());  // Can be null if tx is a double spend that's otherwise irrelevant.
+  }
+
+  private static void broadcastAndCommit(Wallet wallet, Transaction t) throws Exception {
+    final LinkedList<Transaction> txns = Lists.newLinkedList();
+    wallet.addEventListener(new AbstractWalletEventListener() {
+      @Override
+      public void onCoinsSent(Wallet wallet, Transaction tx, BigInteger prevBalance, BigInteger newBalance) {
+        txns.add(tx);
+      }
+    });
+
+    t.getConfidence().markBroadcastBy(new PeerAddress(InetAddress.getByAddress(new byte[]{1, 2, 3, 4})));
+    t.getConfidence().markBroadcastBy(new PeerAddress(InetAddress.getByAddress(new byte[]{10, 2, 3, 4})));
+    wallet.commitTx(t);
+    Threading.waitForUserCode();
+  }
+
+  private void sendBitcoin(BigInteger amount, Address destinationAddress) throws Exception {
+    Wallet.SendRequest req = Wallet.SendRequest.to(destinationAddress, amount);
+    req.aesKey = aesKey;
+    req.fee = toNanoCoins(0, 1);
+    req.ensureMinRequiredFee = false;
+
+    // Complete the transaction successfully.
+    wallet1.completeTx(req);
+
+    // Broadcast the transaction and commit.
+    broadcastAndCommit(wallet1, req.tx);
   }
 }
 
