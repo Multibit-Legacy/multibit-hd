@@ -68,7 +68,6 @@ public class BitcoinNetworkService extends AbstractService {
 
   @Override
   public boolean start() {
-
     requireSingleThreadExecutor();
 
     CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkNotInitialised());
@@ -116,7 +115,6 @@ public class BitcoinNetworkService extends AbstractService {
    * @throws IOException
    */
   private void restartNetwork() throws BlockStoreException, IOException {
-
     // Check if there is a network connection
     if (!isNetworkPresent()) {
       return;
@@ -146,7 +144,6 @@ public class BitcoinNetworkService extends AbstractService {
 
   @Override
   public void stopAndWait() {
-
     startedOk = false;
 
     // Stop the peer group if it is running
@@ -169,7 +166,6 @@ public class BitcoinNetworkService extends AbstractService {
    * <p>Save the current wallet to application directory, create a rolling backup and a cloud backup</p>
    */
   private void saveWallet() {
-
     // Save the current wallet immediately
     if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
 
@@ -184,7 +180,6 @@ public class BitcoinNetworkService extends AbstractService {
 
         BackupManager.INSTANCE.createRollingBackup(walletData);
         BackupManager.INSTANCE.createLocalAndCloudBackup(walletId);
-
       } catch (IOException ioe) {
         log.error("Could not write wallet and backups for wallet with id '" + walletId + "' successfully. The error was '" + ioe.getMessage() + "'");
       }
@@ -192,7 +187,6 @@ public class BitcoinNetworkService extends AbstractService {
   }
 
   public void recalculateFastCatchupAndFilter() {
-
     if (peerGroup != null) {
       peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.FORCE_SEND);
     }
@@ -202,11 +196,9 @@ public class BitcoinNetworkService extends AbstractService {
    * <p>Download the block chain in a new thread</p>
    */
   public void downloadBlockChainInBackground() {
-
     getExecutorService().submit(new Runnable() {
       @Override
       public void run() {
-
         Preconditions.checkNotNull(peerGroup, "'peerGroup' must be present");
 
         log.debug("Downloading block chain...");
@@ -221,7 +213,6 @@ public class BitcoinNetworkService extends AbstractService {
         log.debug("Block chain downloaded.");
 
         CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkReady(peerGroup.numConnectedPeers()));
-
       }
     });
   }
@@ -230,7 +221,6 @@ public class BitcoinNetworkService extends AbstractService {
    * <p>Stops the current peer group blocking until complete</p>
    */
   private void stopPeerGroup() {
-
     if (peerGroup != null) {
       log.debug("Stopping peerGroup service...");
       peerGroup.removeEventListener(peerEventListener);
@@ -243,14 +233,12 @@ public class BitcoinNetworkService extends AbstractService {
       peerGroup.stopAndWait();
       log.debug("Service peerGroup stopped");
     }
-
   }
 
   /**
    * Removes the current wallet from the block chain and closes the block store
    */
   private void closeBlockstore() {
-
     // Remove the wallet from the block chain
     if (WalletManager.INSTANCE.getCurrentWalletData().isPresent() && blockChain != null) {
       blockChain.removeWallet(WalletManager.INSTANCE.getCurrentWalletData().get().getWallet());
@@ -285,7 +273,6 @@ public class BitcoinNetworkService extends AbstractService {
 
   // TODO should be in executor
   public void send(String destinationAddress, BigInteger amount, String changeAddress, BigInteger feePerKB, CharSequence password) {
-
     if (!WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
       // Declare the transaction creation a failure - no wallet
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
@@ -343,7 +330,6 @@ public class BitcoinNetworkService extends AbstractService {
     // Attempt to complete it
 
     try {
-
       // Complete it (works out fee and signs tx)
       wallet.completeTx(sendRequest);
 
@@ -363,7 +349,6 @@ public class BitcoinNetworkService extends AbstractService {
       ));
 
     } catch (Exception e) {
-
       log.error(e.getMessage(), e);
 
       String transactionId = sendRequest.tx != null ? sendRequest.tx.getHashAsString() : "?";
@@ -444,7 +429,6 @@ public class BitcoinNetworkService extends AbstractService {
    * The blockstore is deleted and created anew, checkpointed and then the blockchain is downloaded.
    */
   public void replayWallet(DateTime dateToReplayFrom) throws IOException, BlockStoreException {
-
     Preconditions.checkNotNull(dateToReplayFrom);
     Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletData().isPresent());
 
@@ -481,7 +465,6 @@ public class BitcoinNetworkService extends AbstractService {
    * <p>Create a new peer group</p>
    */
   private void createNewPeerGroup() {
-
     log.info("Creating new peer group");
 
     peerGroup = new PeerGroup(NETWORK_PARAMETERS, blockChain);
@@ -507,7 +490,6 @@ public class BitcoinNetworkService extends AbstractService {
    * @return changeAddress The next change address as a string
    */
   public String getNextChangeAddress() {
-
     Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletData().isPresent());
     Preconditions.checkNotNull(WalletManager.INSTANCE.getCurrentWalletData().get().getWallet());
     Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletData().get().getWallet().getKeychainSize() > 0);
@@ -523,7 +505,6 @@ public class BitcoinNetworkService extends AbstractService {
    * @return true is one or more peers respond to the ping
    */
   public boolean pingPeers() {
-
     List<Peer> connectedPeers = peerGroup.getConnectedPeers();
     boolean atLeastOnePingWorked = false;
     if (connectedPeers != null) {
@@ -549,13 +530,14 @@ public class BitcoinNetworkService extends AbstractService {
    * @return True if at least one of the MainNet DNS seeds can be reached without error
    */
   private boolean isNetworkPresent() {
-
     final String[] dnsSeeds = MainNetParams.get().getDnsSeeds();
 
     // Attempt to lookup each address - first success indicates working network
     for (String dnsSeed : dnsSeeds) {
       try {
-        return InetAddress.getAllByName(dnsSeed) != null;
+        if (InetAddress.getAllByName(dnsSeed) != null) {
+          return true;
+        }
       } catch (UnknownHostException e) {
         log.warn("Could not resolve '{}'", dnsSeed);
       }
