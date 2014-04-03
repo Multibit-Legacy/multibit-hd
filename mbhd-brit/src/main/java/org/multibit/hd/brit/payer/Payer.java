@@ -1,14 +1,10 @@
 package org.multibit.hd.brit.payer;
 
 import com.google.common.base.Optional;
-import org.bouncycastle.openpgp.PGPException;
 import org.multibit.hd.brit.dto.*;
+import org.multibit.hd.brit.exceptions.MatcherResponseException;
+import org.multibit.hd.brit.exceptions.PayerRequestException;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.text.ParseException;
 import java.util.Date;
 
 /**
@@ -46,9 +42,9 @@ public interface Payer {
    *
    * @return the EncryptedPayerRequest containing the encrypted payload
    *
-   * @throws NoSuchAlgorithmException
+   * @throws org.multibit.hd.brit.exceptions.PayerRequestException
    */
-  public EncryptedPayerRequest encryptPayerRequest(PayerRequest payerRequest) throws NoSuchAlgorithmException, IOException, NoSuchProviderException, PGPException;
+  public EncryptedPayerRequest encryptPayerRequest(PayerRequest payerRequest) throws PayerRequestException;
 
   /**
    * Decrypt the encryptedMatcherResponse using an AES key derived from the BRITWalletId and sessionKey
@@ -57,9 +53,8 @@ public interface Payer {
    *
    * @return A Matcher response (unencrypted)
    *
-   * @throws NoSuchAlgorithmException
-   * @throws UnsupportedEncodingException
+   * @throws org.multibit.hd.brit.exceptions.MatcherResponseException
    */
-  public MatcherResponse decryptMatcherResponse(EncryptedMatcherResponse encryptedMatcherResponse) throws NoSuchAlgorithmException, UnsupportedEncodingException, ParseException;
+  public MatcherResponse decryptMatcherResponse(EncryptedMatcherResponse encryptedMatcherResponse) throws MatcherResponseException;
 
 }

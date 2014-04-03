@@ -1,6 +1,7 @@
 package org.multibit.hd.brit.dto;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,12 +23,14 @@ public class MatcherResponse {
 
   private static final Logger log = LoggerFactory.getLogger(PayerRequest.class);
 
-  private final Date replayDate;
+  public static final String OPTIONAL_NOT_PRESENT_TEXT = "not-present";
+
+  private final Optional<Date> replayDateOptional;
 
   private final List<String> addressList;
 
-  public MatcherResponse(Date replayDate, List<String> addressList) {
-    this.replayDate = replayDate;
+  public MatcherResponse(Optional<Date> replayDateOptional, List<String> addressList) {
+    this.replayDateOptional = replayDateOptional;
     this.addressList = addressList;
   }
 
@@ -39,18 +42,20 @@ public class MatcherResponse {
     return addressList;
   }
 
-  public Date getReplayDate() {
-    return replayDate;
+  public Optional<Date> getReplayDate() {
+    return replayDateOptional;
   }
 
   /**
    * Serialise a MatcherResponse
    */
   public byte[] serialise() {
-
     StringBuilder builder = new StringBuilder();
-    builder.append(replayDate.getTime()).append(PayerRequest.SEPARATOR);
-
+    if (replayDateOptional.isPresent()) {
+      builder.append(replayDateOptional.get().getTime()).append(PayerRequest.SEPARATOR);
+    } else {
+      builder.append(OPTIONAL_NOT_PRESENT_TEXT).append(PayerRequest.SEPARATOR);
+    }
     if (addressList != null) {
       for (String address : addressList) {
         builder.append(address).append(PayerRequest.SEPARATOR);
@@ -79,7 +84,12 @@ public class MatcherResponse {
 
     if (rows.length > 0) {
 
-      Date replayDate = new Date(Long.parseLong(rows[0]));
+      Optional<Date> replayDateOptional;
+      if (OPTIONAL_NOT_PRESENT_TEXT.equals(rows[0])) {
+        replayDateOptional = Optional.absent();
+      } else {
+        replayDateOptional = Optional.of(new Date(Long.parseLong(rows[0])));
+      }
       List<String> bitcoinAddressList = Lists.newArrayList();
       if (rows.length > 1) {
         for (int i = 1; i < rows.length; i++) {
@@ -88,7 +98,7 @@ public class MatcherResponse {
           }
         }
       }
-      return new MatcherResponse(replayDate, bitcoinAddressList);
+      return new MatcherResponse(replayDateOptional, bitcoinAddressList);
 
     } else {
       throw new ParseException("Cannot parse the response. Require 1 or more rows.", 0);
@@ -97,30 +107,30 @@ public class MatcherResponse {
 
   @Override
   public boolean equals(Object o) {
-
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
     MatcherResponse that = (MatcherResponse) o;
 
-    return !(addressList != null ? !addressList.equals(that.addressList) : that.addressList != null) && !(replayDate != null ? !replayDate.equals(that.replayDate) : that.replayDate != null);
+    if (addressList != null ? !addressList.equals(that.addressList) : that.addressList != null) return false;
+    if (replayDateOptional != null ? !replayDateOptional.equals(that.replayDateOptional) : that.replayDateOptional != null)
+      return false;
 
+    return true;
   }
 
   @Override
   public int hashCode() {
-
-    int result = replayDate != null ? replayDate.hashCode() : 0;
+    int result = replayDateOptional != null ? replayDateOptional.hashCode() : 0;
     result = 31 * result + (addressList != null ? addressList.hashCode() : 0);
     return result;
-
   }
 
   @Override
   public String toString() {
     return "MatcherResponse{" +
-      "replayDate=" + replayDate +
-      ", addressList=" + addressList +
-      '}';
+            "replayDateOptional=" + replayDateOptional +
+            ", addressList=" + addressList +
+            '}';
   }
 }

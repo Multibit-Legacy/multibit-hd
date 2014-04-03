@@ -2,19 +2,27 @@ package org.multibit.hd.brit.services;
 
 import com.google.bitcoin.core.*;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.bouncycastle.openpgp.PGPPublicKey;
-import org.multibit.hd.brit.dto.FeeState;
-import org.multibit.hd.brit.dto.MatcherResponse;
-import org.multibit.hd.brit.dto.SendFeeDto;
+import org.multibit.hd.brit.crypto.AESUtils;
+import org.multibit.hd.brit.dto.*;
+import org.multibit.hd.brit.exceptions.MatcherResponseException;
+import org.multibit.hd.brit.exceptions.PayerRequestException;
 import org.multibit.hd.brit.extensions.MatcherResponseWalletExtension;
 import org.multibit.hd.brit.extensions.SendFeeDtoWalletExtension;
+import org.multibit.hd.brit.payer.Payer;
+import org.multibit.hd.brit.payer.PayerConfig;
+import org.multibit.hd.brit.payer.Payers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.*;
 import java.math.BigInteger;
 import java.net.URL;
+import java.net.URLConnection;
+import java.security.SecureRandom;
 import java.util.*;
 
 /**
@@ -49,7 +57,7 @@ public class FeeService {
    */
   public final static int NEXT_SEND_DELTA_UPPER_LIMIT = 30;
 
-  private Random random;
+  private SecureRandom secureRandom;
 
   /**
    * Construct a fee service
@@ -58,23 +66,55 @@ public class FeeService {
    * @param matcherURL       the HTTP URL to send PayerRequests to
    */
   public FeeService(PGPPublicKey matcherPublicKey, URL matcherURL) {
+    Preconditions.checkNotNull(matcherPublicKey);
+    Preconditions.checkNotNull(matcherURL);
+
     this.matcherPublicKey = matcherPublicKey;
     this.matcherURL = matcherURL;
-    this.random = new Random();
+    this.secureRandom = new SecureRandom();
   }
 
   /**
    * Perform a BRIT exchange with the Matcher to work out what addresses the Payer should pay to.
-   * <p/>
    *
    * @param seed   the seed of the Wallet (from which the britWalletId is worked out)
    * @param wallet the wallet to perform the BRIT exchange against
    */
   public void performExchangeWithMatcher(byte[] seed, Wallet wallet) {
-    // TODO Exchange with real Matcher to returns a real MatcherResponse
-    MatcherResponse matcherResponse = new MatcherResponse(new Date(), Lists.<String>newArrayList());
+    // Work out the BRITWalletId for this seed
+    BRITWalletId britWalletId = new BRITWalletId(seed);
 
-    // Add the MatcherResponse as a wallet extension to persist it
+    // Create a random session id
+    byte[] sessionId = new byte[AESUtils.BLOCK_LENGTH];
+    secureRandom.nextBytes(sessionId);
+
+    // Create a first transaction date
+    Optional<Date> firstTransactionDateOptional = calculateFirstTransactionDate(wallet);
+
+    // Create a BRIT Payer
+    Payer payer = Payers.newBasicPayer(new PayerConfig(matcherPublicKey));
+
+    // Ask the payer to create an EncryptedPayerRequest containing a BRITWalletId, a session id and a firstTransactionDate
+    PayerRequest payerRequest = payer.newPayerRequest(britWalletId, sessionId, firstTransactionDateOptional);
+
+    MatcherResponse matcherResponse;
+    try {
+      // Encrypt the PayerRequest with the Matcher PGP public key.
+      EncryptedPayerRequest encryptedPayerRequest = payer.encryptPayerRequest(payerRequest);
+
+      // Do the HTTP(S) post which, if successful, returns an EncryptedMatcherResponse as a byte array
+      EncryptedMatcherResponse encryptedMatcherResponse = new EncryptedMatcherResponse(doPost(matcherURL, encryptedPayerRequest.getPayload()));
+
+      // Decrypt the MatcherResponse - the payer does this as it knows how it was AES encrypted (by construction)
+      matcherResponse = payer.decryptMatcherResponse(encryptedMatcherResponse);
+    } catch (IOException | PayerRequestException | MatcherResponseException e) {
+      // The exchange with the matcher failed
+      log.debug("The exchange with the matcher failed. The error was " + e.getClass().getCanonicalName() + e.getMessage());
+
+      // Fall back to the list of hardwired addresses
+      matcherResponse = new MatcherResponse(Optional.<Date>absent(), getHardwiredFeeAddresses());
+    }
+    // Add the MatcherResponse as a wallet extension so that on the next wallet write it will be persisted
     wallet.addOrUpdateExtension(new MatcherResponseWalletExtension(matcherResponse));
   }
 
@@ -149,7 +189,7 @@ public class FeeService {
     boolean usePersistedData = false;
     if (sendFeeDto != null && sendFeeDto.getSendFeeCount().isPresent()) {
       if ((sendFeeDto.getSendFeeCount().get() >= sendCount) &&
-        !((lastFeePayingSendingCountOptional.isPresent()) && (sendCount - 1 == lastFeePayingSendingCountOptional.get()))) {
+              !((lastFeePayingSendingCountOptional.isPresent()) && (sendCount - 1 == lastFeePayingSendingCountOptional.get()))) {
         usePersistedData = true;
       }
     }
@@ -162,7 +202,7 @@ public class FeeService {
     } else {
       // Work out the count of the sends at which the next payment will be made
       nextSendFeeCount = (lastFeePayingSendingCountOptional.isPresent() ? lastFeePayingSendingCountOptional.get() : 0) +
-        +NEXT_SEND_DELTA_LOWER_LIMIT + random.nextInt(NEXT_SEND_DELTA_UPPER_LIMIT - NEXT_SEND_DELTA_LOWER_LIMIT);
+              +NEXT_SEND_DELTA_LOWER_LIMIT + secureRandom.nextInt(NEXT_SEND_DELTA_UPPER_LIMIT - NEXT_SEND_DELTA_LOWER_LIMIT);
       // If we already have more sends than that then mark the next send as a fee send ie send a fee ASAP
       if (currentNumberOfSends >= nextSendFeeCount) {
         nextSendFeeCount = currentNumberOfSends;
@@ -173,13 +213,13 @@ public class FeeService {
       // Work out the next fee send address - it is random
       List<String> candidateSendFeeAddresses;
       if (matcherResponseFromWallet == null || matcherResponseFromWallet.getAddressList() == null ||
-        matcherResponseFromWallet.getAddressList().size() <= 1) {
+              matcherResponseFromWallet.getAddressList().size() <= 1) {
         candidateSendFeeAddresses = getHardwiredFeeAddresses();
       } else {
         candidateSendFeeAddresses = matcherResponseFromWallet.getAddressList();
       }
 
-      nextSendFeeAddress = candidateSendFeeAddresses.get(random.nextInt(candidateSendFeeAddresses.size()));
+      nextSendFeeAddress = candidateSendFeeAddresses.get(secureRandom.nextInt(candidateSendFeeAddresses.size()));
 
       log.debug("New next send fee transaction. It will be at the send count of " + nextSendFeeCount);
       log.debug("New next address to send fee to. It will be is " + nextSendFeeAddress);
@@ -261,5 +301,77 @@ public class FeeService {
     hardwiredFeeAddresses.add("1J1nTRJJT3ghsnAEvwd8dMmoTuaAMSLf4V");
 
     return hardwiredFeeAddresses;
+  }
+
+  /**
+   * Perform a post of the specified bytes to the specified URL
+   *
+   * @param url     The URL to post to
+   * @param payload the bytes to post
+   */
+  private byte[] doPost(URL url, byte[] payload) throws IOException {
+    URLConnection urlConn;
+    DataOutputStream postOutputStream;
+    DataInputStream responseInputStream;
+    ByteArrayOutputStream responseOutputStream = new ByteArrayOutputStream(1024);
+
+    // URL connection channel.
+    urlConn = url.openConnection();
+
+    urlConn.setRequestProperty("Content-Length", String.valueOf(payload.length));
+    // Let the server know that we want input.
+    urlConn.setDoInput(true);
+    // Let the server know that we want to do output.
+    urlConn.setDoOutput(true);
+    // No caching, we want the real thing.
+    urlConn.setUseCaches(false);
+    // Specify the content type.
+    urlConn.setRequestProperty
+            ("Content-Type", "application/octet-stream");
+    // Send POST output.
+    postOutputStream = new DataOutputStream(urlConn.getOutputStream());
+    postOutputStream.write(payload);
+    postOutputStream.flush();
+    postOutputStream.close();
+    // Get response data
+    responseInputStream = new DataInputStream(urlConn.getInputStream());
+
+    byte readByte;
+
+    boolean keepGoing = true;
+    while (keepGoing) {
+      try {
+        readByte = responseInputStream.readByte();
+        responseOutputStream.write(readByte);
+      } catch (IOException ioe) {
+        // response is all read (EOFException) or has fallen over
+        keepGoing = false;
+      }
+    }
+
+    responseInputStream.close();
+    return responseOutputStream.toByteArray();
+  }
+
+  /**
+   * Calculate the date of the first transaction in the Wallet
+   *
+   * @param wallet The wallet to inspect the transactions of
+   * @return Either the date of the first transaction in the wallet, or Optional.absent() if there are no transactions
+   */
+  private Optional<Date> calculateFirstTransactionDate(Wallet wallet) {
+    ArrayList<Transaction> transactions = new ArrayList<>(wallet.getTransactions(false));
+    if (transactions.size() == 0) {
+      return Optional.absent();
+    }
+
+    // Sort the transactions by date
+    Collections.sort(transactions, new Comparator<Transaction>() {
+      public int compare(Transaction t1, Transaction t2) {
+        return t1.getUpdateTime().compareTo(t2.getUpdateTime());
+      }
+    });
+
+    return Optional.of(transactions.get(0).getUpdateTime());
   }
 }
