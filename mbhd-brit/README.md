@@ -16,7 +16,7 @@ The usual code dependencies are defined in Maven.
 
 There are two tools you will need to have available on your system as follows:
 
-+ GPG is used to generate PGP keypairs
-+ MultiBit Classic is used to generate Bitcoin ECkeypairs and a wallet.
++ GPG is used to generate a PGP keypair for the Matcher server
++ MultiBit Classic is used to generate Wallets for the Redeemers.
 
 You could use other tools but the 'how-to' documentation uses these tools as a baseline.
