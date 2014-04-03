@@ -4,8 +4,11 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
+import org.bouncycastle.openpgp.PGPPublicKey;
+import org.multibit.hd.brit.crypto.PGPUtils;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.HistoryEntry;
@@ -13,6 +16,7 @@ import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.exceptions.CoreException;
 import org.multibit.hd.core.logging.LoggingFactory;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -21,6 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Map;
 
 /**
@@ -35,6 +41,17 @@ import java.util.Map;
 public class CoreServices {
 
   private static final Logger log = LoggerFactory.getLogger(CoreServices.class);
+
+  /**
+   * The URL of the live matcher daemon
+   */
+  public static final String LIVE_MATCHER_URL = "http://localhost:9090/brit";
+
+  // TODO these should point to the multibit.org/ bitcoin-solutions URL with the real matcher key
+  /**
+   * The live matcher PGP public key file
+   */
+  public static final String LIVE_MATCHER_PUBLIC_KEY_FILE = "multibit-org-matcher-key.asc";
 
   /**
    * Send or register events to the user interface subscribers
@@ -135,7 +152,6 @@ public class CoreServices {
 
   /**
    * @param bitcoinConfiguration The Bitcoin configuration providing exchange and currency details
-   *
    * @return A new exchange service based on the current configuration
    */
   public static ExchangeTickerService newExchangeService(BitcoinConfiguration bitcoinConfiguration) {
@@ -262,7 +278,6 @@ public class CoreServices {
 
   /**
    * @param walletId The wallet ID for the wallet
-   *
    * @return The contact service for a wallet
    */
   public static ContactService getOrCreateContactService(WalletId walletId) {
@@ -278,5 +293,26 @@ public class CoreServices {
 
     // Return the existing or new contact service
     return contactServiceMap.get(walletId);
+  }
+
+
+  /**
+   * @return A BRIT fee service pointing to the live Matcher machine
+   */
+  public static FeeService createFeeService() throws CoreException {
+    log.debug("Create fee service");
+
+    ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+    InputStream pgpPublicKeyInputStream = classloader.getResourceAsStream(LIVE_MATCHER_PUBLIC_KEY_FILE);
+
+    try {
+      PGPPublicKey matcherPublicKey = PGPUtils.readPublicKey(pgpPublicKeyInputStream);
+      URL matcherURL = new URL(LIVE_MATCHER_URL);
+
+      // Return the existing or new fee service
+      return new FeeService(matcherPublicKey, matcherURL);
+    } catch (Exception e) {
+      throw new CoreException(e);
+    }
   }
 }

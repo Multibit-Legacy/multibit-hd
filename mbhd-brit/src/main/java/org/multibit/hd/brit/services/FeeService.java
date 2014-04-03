@@ -22,6 +22,7 @@ import java.util.*;
  * <ul>
  * <li>perform a lookup to the BRIT server to get the list of Bitcoin addresses fees need to be paid to</li>
  * <li>provide the details of the next fee to be paid by the Payer</li>
+ * </ul>
  *
  * @since 0.0.1
  */
@@ -44,21 +45,11 @@ public class FeeService {
   public final static int NEXT_SEND_DELTA_LOWER_LIMIT = 20;
 
   /**
-   * THe upper limit of the gap from one fee send to the next
+   * The upper limit of the gap from one fee send to the next
    */
   public final static int NEXT_SEND_DELTA_UPPER_LIMIT = 30;
 
   private Random random;
-
-  /**
-   * The count at which the next fee will be sent (TODO should be persisted in wallet)
-   */
-  //private int walletPersistedNextFeeSendCount = -1; // not set yet
-
-  /**
-   * The address the next fee will be sent (TODO should be persisted in wallet)
-   */
-  //private String walletPersistedNextFeeSendAddress;
 
   /**
    * Construct a fee service
