@@ -5,6 +5,7 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.managers.SSLManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.OSUtils;
@@ -43,7 +44,7 @@ public class MultiBitHD {
    *
    * @param args None specified
    */
-  public static void main(final String[] args) throws InterruptedException, UnsupportedLookAndFeelException {
+  public static void main(final String[] args) throws Exception {
 
     if (args != null) {
       for (int i = 0; i < args.length; i++) {
@@ -105,7 +106,7 @@ public class MultiBitHD {
   /**
    * <p>Initialise the JVM. This occurs before anything else is called.</p>
    */
-  private static void initialiseJVM() {
+  private static void initialiseJVM() throws Exception {
 
     // Although we guarantee the JVM through the packager it is possible that
     // a power user will use their own
@@ -137,6 +138,10 @@ public class MultiBitHD {
     } catch (SecurityException se) {
       log.error(se.getClass().getName() + " " + se.getMessage());
     }
+
+    // Configure SSL certificates
+    final File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+    SSLManager.INSTANCE.installMultiBitSSLCertificate(applicationDirectory, "multibit-cacerts");
 
   }
 
