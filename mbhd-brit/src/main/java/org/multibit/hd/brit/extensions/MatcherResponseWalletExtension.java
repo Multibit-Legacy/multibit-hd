@@ -5,20 +5,18 @@ import com.google.bitcoin.core.WalletExtension;
 import org.multibit.hd.brit.dto.MatcherResponse;
 
 /**
- *  <p>Walet Extension to provide the following to Wallet:<br>
- *  <ul>
- *  <li>Persistence of a MatcherResponse</li>
- *  </ul>
- *  Example:FeeService<br>
- *  <pre>
- *  </pre>
- *  </p>
- *  
+ * <p>Walet Extension to provide the following to Wallet:</p>
+ * <ul>
+ * <li>Persistence of a MatcherResponse</li>
+ * </ul>
+ *
+ * @since 0.0.1
  */
 public class MatcherResponseWalletExtension implements WalletExtension {
+
   public static final String MATCHER_RESPONSE_WALLET_EXTENSION_ID = "org.multibit.hd.brit.dto.MatcherResponse";
 
-  private MatcherResponse matcherResponse;;
+  private MatcherResponse matcherResponse;
 
   public MatcherResponseWalletExtension() {
     this.matcherResponse = null;
@@ -42,10 +40,10 @@ public class MatcherResponseWalletExtension implements WalletExtension {
   public byte[] serializeWalletExtension() {
     if (matcherResponse != null) {
       return matcherResponse.serialise();
-  } else {
-    return new byte[0];
+    } else {
+      return new byte[0];
+    }
   }
-}
 
   @Override
   public void deserializeWalletExtension(Wallet containingWallet, byte[] data) throws Exception {
