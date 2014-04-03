@@ -8,6 +8,8 @@ import org.multibit.hd.brit.dto.*;
 import org.multibit.hd.brit.exceptions.MatcherResponseException;
 import org.multibit.hd.brit.exceptions.PayerRequestException;
 import org.multibit.hd.brit.utils.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
 import java.io.*;
@@ -26,6 +28,8 @@ import java.util.Date;
  * @since 0.0.1
  */
 public class BasicPayer implements Payer {
+
+  private static final Logger log = LoggerFactory.getLogger(BasicPayer.class);
 
   private PayerConfig payerConfig;
 
@@ -73,6 +77,8 @@ public class BasicPayer implements Payer {
       if (!tempFile.delete()) {
         throw new IOException("Could not delete file + '" + tempFile.getAbsolutePath() + "'");
       }
+
+      log.debug("Payload after encryption is :\n" + new String(encryptedBytesOutputStream.toByteArray(), "UTF-8"));
 
       return new EncryptedPayerRequest(encryptedBytesOutputStream.toByteArray());
     } catch (IOException | NoSuchProviderException | PGPException e) {

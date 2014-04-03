@@ -47,7 +47,7 @@ public class CoreServices {
    */
   public static final String LIVE_MATCHER_URL = "http://localhost:9090/brit";
 
-  // TODO these should point to the multibit.org/ bitcoin-solutions URL with the real matcher key
+  // TODO these should point to the multibit.org with the real matcher key
   /**
    * The live matcher PGP public key file
    */

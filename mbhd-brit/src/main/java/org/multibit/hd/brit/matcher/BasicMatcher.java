@@ -14,6 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Date;
 import java.util.List;
 
@@ -31,6 +32,15 @@ public class BasicMatcher implements Matcher {
 
   private final MatcherConfig matcherConfig;
 
+  private static final Object lockObject = new Object();
+
+  /**
+   * The number of Bitcoin addresses to send back to the Payer per day
+   */
+  private static final int NUMBER_OF_ADDRESSES_PER_DAY = 4; // TODO Increase this
+
+  private SecureRandom secureRandom;
+
   /**
    * The last payerRequest received.
    * (Having a single last payerRequest won't work in a multi-threaded environment)
@@ -44,14 +54,14 @@ public class BasicMatcher implements Matcher {
 
   /**
    * @param matcherConfig The Matcher configuration
-   * @param matcherStore The Matcher store
-   *
+   * @param matcherStore  The Matcher store
    */
   public BasicMatcher(MatcherConfig matcherConfig, MatcherStore matcherStore) {
 
     this.matcherConfig = matcherConfig;
     this.matcherStore = matcherStore;
 
+    secureRandom = new SecureRandom();
   }
 
   @Override
@@ -61,6 +71,7 @@ public class BasicMatcher implements Matcher {
 
   @Override
   public PayerRequest decryptPayerRequest(EncryptedPayerRequest encryptedPayerRequest) throws Exception {
+    log.debug("Attempting to decrypt payload:\n" + new String(encryptedPayerRequest.getPayload(), "UTF-8"));
 
     ByteArrayInputStream serialisedPayerRequestEncryptedInputStream = new ByteArrayInputStream(encryptedPayerRequest.getPayload());
 
@@ -68,7 +79,7 @@ public class BasicMatcher implements Matcher {
 
     // PGP encrypt the file
     PGPUtils.decryptFile(serialisedPayerRequestEncryptedInputStream, serialisedPayerRequestOutputStream,
-      new FileInputStream(matcherConfig.getMatcherSecretKeyringFile()), matcherConfig.getPassword());
+            new FileInputStream(matcherConfig.getMatcherSecretKeyringFile()), matcherConfig.getPassword());
 
     return PayerRequest.parse(serialisedPayerRequestOutputStream.toByteArray());
   }
@@ -108,9 +119,24 @@ public class BasicMatcher implements Matcher {
     List<String> currentBitcoinAddressList = matcherStore.lookupBitcoinAddressListForDate(now);
 
     if (currentBitcoinAddressList == null) {
-      // No bitcoin addresses have been set up for this date - log it and return an empty list
-      log.error("There is no bitcoin address list set up for the date of '" + now.toString());
+      // No bitcoin addresses have been set up for this date - create some addresses, store it and return it
       currentBitcoinAddressList = Lists.newArrayList();
+      List<String> allAddresses = matcherStore.getAllBitcoinAddress();
+      if (allAddresses != null && allAddresses.size() > 0) {
+        for (int i = 0; i < NUMBER_OF_ADDRESSES_PER_DAY; i++) {
+          currentBitcoinAddressList.add(allAddresses.get(secureRandom.nextInt(allAddresses.size())));
+        }
+      } else {
+        log.error("Could not produce a new set of Bitcoin addresses for " + now.toString() + ". There are no Bitcoin addresses to pick from. Probably your var/matcher/store/all.txt is missing/empty.");
+      }
+
+      // On a matcher level lock, double check there is no data and write the list for today
+      synchronized (lockObject) {
+        if (matcherStore.lookupBitcoinAddressListForDate(now) == null) {
+          matcherStore.storeBitcoinAddressListForDate(currentBitcoinAddressList, now);
+        }
+      }
+      currentBitcoinAddressList = matcherStore.lookupBitcoinAddressListForDate(now);
     }
     return new MatcherResponse(Optional.of(replayDate), currentBitcoinAddressList);
   }

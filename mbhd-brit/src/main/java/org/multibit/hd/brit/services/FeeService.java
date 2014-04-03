@@ -262,7 +262,7 @@ public class FeeService {
     return sendTransactions;
   }
 
-  private MatcherResponse getMatcherResponseFromWallet(Wallet wallet) {
+  public static MatcherResponse getMatcherResponseFromWallet(Wallet wallet) {
     Map<String, WalletExtension> walletExtensionsMap = wallet.getExtensions();
 
     if (walletExtensionsMap != null && walletExtensionsMap.get(MatcherResponseWalletExtension.MATCHER_RESPONSE_WALLET_EXTENSION_ID) != null) {
@@ -272,7 +272,7 @@ public class FeeService {
     }
   }
 
-  private SendFeeDto getSendFeeDtoFromWallet(Wallet wallet) {
+  public static SendFeeDto getSendFeeDtoFromWallet(Wallet wallet) {
     Map<String, WalletExtension> walletExtensionsMap = wallet.getExtensions();
 
     if (walletExtensionsMap != null && walletExtensionsMap.get(SendFeeDtoWalletExtension.SEND_FEE_DTO_WALLET_EXTENSION_ID) != null) {
