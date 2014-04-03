@@ -1,7 +1,6 @@
 package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -24,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.UnknownHostException;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
@@ -97,7 +97,10 @@ public class ExchangeTickerService extends AbstractService {
           @Override
           public void onSuccess(Ticker ticker) {
 
-            Preconditions.checkNotNull(ticker,"'ticker' must be present");
+            // Network or exchange might be down
+            if (ticker==null) {
+              return;
+            }
 
             if (previous == null || !ticker.getLast().isEqual(previous)) {
 
@@ -145,7 +148,7 @@ public class ExchangeTickerService extends AbstractService {
     final String exchangeCounterCode = ExchangeKey.exchangeCode(localCurrencyUnit.getCurrencyCode(), exchangeKey);
     final String exchangeBaseCode = ExchangeKey.exchangeCode("XBT", exchangeKey);
 
-    return SafeExecutors.newFixedThreadPool(1).submit(new Callable<Ticker>() {
+    return SafeExecutors.newSingleThreadExecutor().submit(new Callable<Ticker>() {
       @Override
       public Ticker call() throws Exception {
 
@@ -176,7 +179,12 @@ public class ExchangeTickerService extends AbstractService {
 
         } else {
           // Crypto-exchange is straightforward
-          return exchange.getPollingMarketDataService().getTicker(exchangeBaseCode, exchangeCounterCode);
+          try {
+            return exchange.getPollingMarketDataService().getTicker(exchangeBaseCode, exchangeCounterCode);
+          } catch (UnknownHostException e) {
+            // The exchange is either down or we have no network connection
+            return null;
+          }
         }
       }
     });

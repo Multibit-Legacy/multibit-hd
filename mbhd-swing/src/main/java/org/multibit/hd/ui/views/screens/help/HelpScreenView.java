@@ -45,7 +45,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
   private static final Logger log = LoggerFactory.getLogger(HelpScreenView.class);
 
-  private static final String HELP_BASE_URL = "http://www.multibit.org/v0.5/";
+  private static final String HELP_BASE_URL = "https://www.multibit.org/v0.5/";
 
   /**
    * A primitive form of "browser history"
@@ -210,7 +210,6 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
   private void browse(URL url) {
 
     try {
-
       editorPane.setPage(url);
       launchBrowserButton.setBackground(Themes.currentTheme.buttonBackground());
 

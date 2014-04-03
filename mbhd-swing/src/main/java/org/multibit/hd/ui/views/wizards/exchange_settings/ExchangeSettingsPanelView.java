@@ -389,6 +389,13 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
       @Override
       public void onSuccess(Ticker ticker) {
 
+        // Network or exchange might be down
+        if (ticker==null) {
+          // Stop the spinner but do not allow the Apply
+          tickerSpinner.setVisible(false);
+          return;
+        }
+
         // Show the ticker verification
         tickerVerifiedStatus.setVisible(true);
 
