@@ -56,7 +56,6 @@ public class BasicMatcherTest {
 
   @Test
   public void testPayerRequestAndMatcherResponse1() throws Exception {
-
     // Create a payer
     Payer payer = createTestPayer();
 
@@ -115,12 +114,11 @@ public class BasicMatcherTest {
     assertThat(addressList).isNotNull();
 
     // The thePayersMatcherResponse contains a stored replayDate for the wallet
-    Date replayDate = thePayersMatcherResponse.getReplayDate();
+    Date replayDate = thePayersMatcherResponse.getReplayDate().get();
     assertThat(replayDate).isNotNull();
   }
 
   private Matcher createTestMatcher() throws Exception {
-
     // Find the example Matcher PGP secret key ring file
     File matcherSecretKeyFile = PGPUtilsTest.makeFile(PGPUtilsTest.TEST_MATCHER_SECRET_KEYRING_FILE);
     MatcherConfig matcherConfig = new MatcherConfig(matcherSecretKeyFile, PGPUtilsTest.TEST_DATA_PASSWORD);
@@ -145,7 +143,6 @@ public class BasicMatcherTest {
   }
 
   private Payer createTestPayer() throws Exception {
-
     // Load the example Matcher PGP public key
     File matcherPublicKeyFile = PGPUtilsTest.makeFile(PGPUtilsTest.TEST_MATCHER_PUBLIC_KEY_FILE);
     FileInputStream matcherPublicKeyInputStream = new FileInputStream(matcherPublicKeyFile);

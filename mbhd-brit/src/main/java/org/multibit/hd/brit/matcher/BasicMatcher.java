@@ -70,7 +70,6 @@ public class BasicMatcher implements Matcher {
     PGPUtils.decryptFile(serialisedPayerRequestEncryptedInputStream, serialisedPayerRequestOutputStream,
       new FileInputStream(matcherConfig.getMatcherSecretKeyringFile()), matcherConfig.getPassword());
 
-
     return PayerRequest.parse(serialisedPayerRequestOutputStream.toByteArray());
   }
 
@@ -113,7 +112,7 @@ public class BasicMatcher implements Matcher {
       log.error("There is no bitcoin address list set up for the date of '" + now.toString());
       currentBitcoinAddressList = Lists.newArrayList();
     }
-    return new MatcherResponse(replayDate, currentBitcoinAddressList);
+    return new MatcherResponse(Optional.of(replayDate), currentBitcoinAddressList);
   }
 
   @Override
