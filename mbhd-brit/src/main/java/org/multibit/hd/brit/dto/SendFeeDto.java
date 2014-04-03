@@ -3,15 +3,12 @@ package org.multibit.hd.brit.dto;
 import com.google.common.base.Optional;
 
 /**
- *  <p>DTO to provide the following to FeeService:<br>
- *  <ul>
- *  <li>The details of when to to whom the next BRITwill be sent</li>
- *  </ul>
- *  Example:<br>
- *  <pre>
- *  </pre>
- *  </p>
- *  
+ * <p>DTO to provide the following to FeeService:</p>
+ * <ul>
+ * <li>The details of when to to whom the next BRITwill be sent</li>
+ * </ul>
+ *
+ * @since 0.0.1
  */
 public class SendFeeDto {
 
@@ -75,8 +72,8 @@ public class SendFeeDto {
   @Override
   public String toString() {
     return "SendFeeDto{" +
-            "sendFeeCount=" + sendFeeCount +
-            ", sendFeeAddress=" + sendFeeAddress +
-            '}';
+      "sendFeeCount=" + sendFeeCount +
+      ", sendFeeAddress=" + sendFeeAddress +
+      '}';
   }
 }

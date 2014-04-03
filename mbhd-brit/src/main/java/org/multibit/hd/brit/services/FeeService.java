@@ -18,12 +18,12 @@ import java.net.URL;
 import java.util.*;
 
 /**
- *  <p>Service to provide the following to Payers:<br>
- *  <ul>
+ * <p>Service to provide the following to Payers:</p>
+ * <ul>
  * <li>perform a lookup to the BRIT server to get the list of Bitcoin addresses fees need to be paid to</li>
- *  <li>provide the details of the next fee to be paid by the Payer</li>
- *  </p>
- *  
+ * <li>provide the details of the next fee to be paid by the Payer</li>
+ *
+ * @since 0.0.1
  */
 public class FeeService {
 
@@ -158,7 +158,7 @@ public class FeeService {
     boolean usePersistedData = false;
     if (sendFeeDto != null && sendFeeDto.getSendFeeCount().isPresent()) {
       if ((sendFeeDto.getSendFeeCount().get() >= sendCount) &&
-              !((lastFeePayingSendingCountOptional.isPresent()) && (sendCount - 1 == lastFeePayingSendingCountOptional.get()))) {
+        !((lastFeePayingSendingCountOptional.isPresent()) && (sendCount - 1 == lastFeePayingSendingCountOptional.get()))) {
         usePersistedData = true;
       }
     }
@@ -171,7 +171,7 @@ public class FeeService {
     } else {
       // Work out the count of the sends at which the next payment will be made
       nextSendFeeCount = (lastFeePayingSendingCountOptional.isPresent() ? lastFeePayingSendingCountOptional.get() : 0) +
-              + NEXT_SEND_DELTA_LOWER_LIMIT + random.nextInt(NEXT_SEND_DELTA_UPPER_LIMIT - NEXT_SEND_DELTA_LOWER_LIMIT);
+        +NEXT_SEND_DELTA_LOWER_LIMIT + random.nextInt(NEXT_SEND_DELTA_UPPER_LIMIT - NEXT_SEND_DELTA_LOWER_LIMIT);
       // If we already have more sends than that then mark the next send as a fee send ie send a fee ASAP
       if (currentNumberOfSends >= nextSendFeeCount) {
         nextSendFeeCount = currentNumberOfSends;
@@ -182,7 +182,7 @@ public class FeeService {
       // Work out the next fee send address - it is random
       List<String> candidateSendFeeAddresses;
       if (matcherResponseFromWallet == null || matcherResponseFromWallet.getAddressList() == null ||
-              matcherResponseFromWallet.getAddressList().size() <= 1) {
+        matcherResponseFromWallet.getAddressList().size() <= 1) {
         candidateSendFeeAddresses = getHardwiredFeeAddresses();
       } else {
         candidateSendFeeAddresses = matcherResponseFromWallet.getAddressList();
@@ -261,7 +261,7 @@ public class FeeService {
     List<String> hardwiredFeeAddresses = Lists.newArrayList();
     // TODO add in some very well secured addresses owned by the MultiBit devs
 
-    // Add in some addresses ffrom the MultiBit donations wallet
+    // Add in some addresses from the MultiBit donations wallet
     hardwiredFeeAddresses.add("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
     hardwiredFeeAddresses.add("14Ru32Lb4kdLGfAMz1VAtxh3UFku62HaNH");
     hardwiredFeeAddresses.add("1KesQEF2yC2FzkJYLLozZJdbBF7zRhrdSC");
