@@ -52,8 +52,6 @@
                       tofile="target/${project.artifactId}-${project.version}.jar"
                       failonerror="false"
                   />
-                <!-- The deterministic date is arbitrary so Bitcoin genesis seems appropriate -->
-                <touch millis="1231006500000" file="target/${project.artifactId}-${project.version}.jar"/>
               </target>
             </configuration>
             <goals>
