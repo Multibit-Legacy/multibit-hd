@@ -1,9 +1,12 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
+import com.google.bitcoin.core.Wallet;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import org.joda.money.BigMoney;
+import org.multibit.hd.brit.dto.FeeState;
+import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
@@ -11,6 +14,7 @@ import org.multibit.hd.core.events.TransactionCreationEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.exchanges.ExchangeKey;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.WalletService;
@@ -56,12 +60,12 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   /**
    * Default transaction fee
    */
-  private BigInteger transactionFee = Satoshis.fromPlainAmount("0.0001");
+  private BigInteger transactionFee = Satoshis.fromPlainAmount("0.0001"); // TODO needs to be displayed from a wallet.completeTx SendRequest.fee
 
   /**
-   * Default developer fee
+   * The FeeService used to calculate the FeeState
    */
-  private BigInteger developerFee = Satoshis.fromPlainAmount("0.00005");
+  private FeeService feeService;
 
   /**
    * @param state The state object
@@ -117,7 +121,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     Preconditions.checkNotNull(confirmPanelModel);
 
     BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
-    Preconditions.checkState(bitcoinNetworkService.isStartedOk(),"'bitcoinNetworkService' should be started OK");
+    Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started OK");
 
     String changeAddress = bitcoinNetworkService.getNextChangeAddress();
 
@@ -260,9 +264,18 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   }
 
   /**
-   * @return The developer fee in satoshis
+   * @return The BRIT fee state for the current wallet
    */
-  public BigInteger getDeveloperFee() {
-    return developerFee;
+  public Optional<FeeState> calculateBRITFeeState() {
+    if (feeService == null) {
+      feeService = CoreServices.createFeeService();
+    }
+    if (WalletManager.INSTANCE.getCurrentWalletData() != null &&
+            WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
+      Wallet wallet = WalletManager.INSTANCE.getCurrentWalletData().get().getWallet();
+      return Optional.of(feeService.calculateFeeState(wallet));
+    } else {
+      return Optional.absent();
+    }
   }
 }

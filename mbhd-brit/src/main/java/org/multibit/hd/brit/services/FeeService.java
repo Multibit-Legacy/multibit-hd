@@ -43,9 +43,9 @@ public class FeeService {
 
   /**
    * BRIT fee charged per send.
-   * This is set to be 50% of the (expected drop in) miner's fee in 2014Q2 to 0.01 mBTC per KB
+   * This is set to be equal to the (expected drop in) miner's fee in 2014Q2 to 0.01 mBTC per KB
    */
-  public final static BigInteger FEE_PER_SEND = BigInteger.valueOf(500);    // In satoshi
+  public final static BigInteger FEE_PER_SEND = BigInteger.valueOf(1000);    // In satoshi
 
   /**
    * The lower limit of the gap from one fee send to the next

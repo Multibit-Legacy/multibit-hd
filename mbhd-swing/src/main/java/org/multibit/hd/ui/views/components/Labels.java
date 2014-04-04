@@ -681,7 +681,7 @@ public class Labels {
    *
    * @return A new "developer fee" message
    */
-  public static JLabel newDeveloperFee(BigInteger developerFee) {
+  public static JLabel newDeveloperFee() {
     return newLabel(MessageKey.DEVELOPER_FEE);
   }
 

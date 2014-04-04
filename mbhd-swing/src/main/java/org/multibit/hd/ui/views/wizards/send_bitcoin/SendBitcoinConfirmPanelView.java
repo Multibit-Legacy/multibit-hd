@@ -3,9 +3,11 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountModel;
@@ -42,6 +44,8 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
 
   private JLabel recipientSummaryLabel;
 
+  private JLabel clientFeeInfoLabel;
+
   private SendBitcoinConfirmPanelModel panelModel;
 
   /**
@@ -76,7 +80,6 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
 
   @Override
   public void initialiseContent(JPanel contentPanel) {
-
     // Blank labels populated from wizard model later
     recipientSummaryLabel = Labels.newBlankLabel();
 
@@ -89,18 +92,22 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
       "[]10[]10[][][]10[][]" // Row constraints
     ));
 
-    contentPanel.add(Labels.newConfirmSendAmount(), "span 2,push,wrap");
+    clientFeeInfoLabel = Labels.newBlankLabel();
+
+    contentPanel.add(Labels.newConfirmSendAmount(), "span 4,push,wrap");
     contentPanel.add(Labels.newRecipient());
-    contentPanel.add(recipientSummaryLabel, "wrap");
+    contentPanel.add(recipientSummaryLabel, "span 3,wrap");
     contentPanel.add(Labels.newAmount(), "baseline");
-    contentPanel.add(transactionDisplayAmountMaV.getView().newComponentPanel(), "wrap");
+    contentPanel.add(transactionDisplayAmountMaV.getView().newComponentPanel(), "span 3,wrap");
     contentPanel.add(Labels.newTransactionFee(getWizardModel().getTransactionFee()), "top");
-    contentPanel.add(transactionFeeDisplayAmountMaV.getView().newComponentPanel(), "wrap");
-    contentPanel.add(Labels.newDeveloperFee(getWizardModel().getDeveloperFee()), "top");
-    contentPanel.add(developerFeeDisplayAmountMaV.getView().newComponentPanel(), "wrap");
+    contentPanel.add(transactionFeeDisplayAmountMaV.getView().newComponentPanel(), "span 3,wrap");
+    contentPanel.add(Labels.newDeveloperFee(), "top");
+    contentPanel.add(developerFeeDisplayAmountMaV.getView().newComponentPanel(), "top");
+    contentPanel.add(clientFeeInfoLabel, "top");
+    contentPanel.add(Labels.newBlankLabel(), "top, growx, push,wrap");
     contentPanel.add(Labels.newNotes());
-    contentPanel.add(notesTextArea, "growx,push,wrap");
-    contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "span 2,push,wrap");
+    contentPanel.add(notesTextArea, "span 3,growx,push,wrap");
+    contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "span 4,growx,push,wrap");
 
   }
 
@@ -127,9 +134,32 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     transactionFeeDisplayAmountMaV.getView().updateView(configuration);
 
     // Update the model and view for the developer fee
-    developerFeeDisplayAmountMaV.getModel().setSatoshis(getWizardModel().getDeveloperFee());
-    developerFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
-    developerFeeDisplayAmountMaV.getView().updateView(configuration);
+    // Client fee: 10 uBTC. Payable later (8 sends from now). You currently owe 120 uBTC.
+    // Client fee: 240 uBTC. Payable now.
+    // developer_fee_later=Client fee: {0}. Payable later ({1} sends from now). You currently owe {2}.
+    // developer_fee_now=Client fee: {0}. Payable now.
+    Optional<FeeState> feeStateOptional = getWizardModel().calculateBRITFeeState();
+    String feeText;
+    if (feeStateOptional.isPresent()) {
+      FeeState feeState = feeStateOptional.get();
+
+      if (feeState.getCurrentNumberOfSends() == feeState.getNextFeeSendCount()) {
+        // The fee is due at the next send e.g. current number of sends = 20, nextFeeSendCount = 20 (the 21st send i.e. the coming one)
+        feeText = Languages.safeText(MessageKey.DEVELOPER_FEE_NOW);
+      } else {
+        // It is due later
+        feeText = Languages.safeText(MessageKey.DEVELOPER_FEE_LATER, feeState.getNextFeeSendCount() - feeState.getCurrentNumberOfSends());
+      }
+      developerFeeDisplayAmountMaV.getModel().setSatoshis(feeState.getFeeOwed());
+      developerFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
+      developerFeeDisplayAmountMaV.getView().updateView(configuration);
+
+    } else {
+      // Possibly no wallet loaded
+      feeText = "";
+    }
+
+    clientFeeInfoLabel.setText(feeText);
 
     // Update the model and view for the recipient
     recipientSummaryLabel.setText(getWizardModel().getRecipient().getSummary());
