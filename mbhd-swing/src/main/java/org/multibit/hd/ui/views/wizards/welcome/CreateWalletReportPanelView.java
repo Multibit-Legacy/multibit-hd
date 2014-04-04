@@ -1,11 +1,17 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
+import com.google.bitcoin.core.Wallet;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
-import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.brit.services.FeeService;
+import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.managers.BackupManager;
+import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -42,8 +48,8 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
   private JLabel walletCreatedStatusLabel;
 
   /**
-   * @param wizard The wizard managing the states
-   * @param panelName   The panel name to filter events from components
+   * @param wizard    The wizard managing the states
+   * @param panelName The panel name to filter events from components
    */
   public CreateWalletReportPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
@@ -65,9 +71,9 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
   public void initialiseContent(JPanel contentPanel) {
 
     contentPanel.setLayout(new MigLayout(
-      Panels.migXYLayout(),
-      "[][][]", // Column constraints
-      "[]10[]10[]10[]" // Row constraints
+            Panels.migXYLayout(),
+            "[][][]", // Column constraints
+            "[]10[]10[]10[]" // Row constraints
     ));
 
     // Apply the theme
@@ -126,14 +132,21 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
 
     Preconditions.checkNotNull(backupLocation, "'backupLocation' must be present");
 
+    // Locate the installation directory
+    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+
+    // Initialise backup (must be before Bitcoin network starts and on the main thread)
+    BackupManager.INSTANCE.initialise(applicationDataDirectory, new File(backupLocation));
+
     // Actually create the wallet
     boolean walletCreatedStatus = false;
-    byte[] seed;
+    byte[] seed = null;
+    WalletData walletData = null;
     try {
       // Attempt to create the wallet (the manager will track the ID etc)
       WalletManager walletManager = WalletManager.INSTANCE;
       seed = seedPhraseGenerator.convertToSeed(seedPhrase);
-      walletManager.createWallet(seed, password);
+      walletData = walletManager.createWallet(seed, password);
 
       // Must be OK to be here
       walletCreatedStatus = true;
@@ -149,7 +162,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
 
     // Determine if the backup location is valid
     boolean exists = backupLocationFile.exists();
-    boolean isDirectory =  backupLocationFile.isDirectory();
+    boolean isDirectory = backupLocationFile.isDirectory();
     boolean canRead = backupLocationFile.canRead();
     boolean canWrite = backupLocationFile.canWrite();
     boolean backupLocationStatus = exists && isDirectory && canRead && canWrite;
@@ -167,10 +180,23 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, walletCreatedStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
     }
 
+
+    // Once all the initial wallet creation is complete and stored to disk, perform a BRIT wallet exchange.
+    // This saves the wallet creation date/ replay date and returns a list of Bitcoin addresses to use for BRIT fee payment
+    if (walletCreatedStatus && seed != null && walletData != null && walletData.getWallet() != null) {
+      performMatcherExchange(seed, walletData.getWallet());
+    }
+
     // Enable the finish button on the report page
     ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, true);
 
     return true;
   }
 
+  private void performMatcherExchange(byte[] seed, Wallet wallet) {
+    FeeService feeService = CoreServices.createFeeService();
+
+    // Perform a BRIT exchange
+    feeService.performExchangeWithMatcher(seed, wallet);
+  }
 }

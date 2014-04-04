@@ -155,7 +155,7 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     // Initialise backup (must be before Bitcoin network starts and on the main thread)
-    BackupManager.INSTANCE.initialise(applicationDataDirectory, null);
+    BackupManager.INSTANCE.initialise(applicationDataDirectory, null); // TODO the null needs replacing with the cloud backup location
 
   }
 
