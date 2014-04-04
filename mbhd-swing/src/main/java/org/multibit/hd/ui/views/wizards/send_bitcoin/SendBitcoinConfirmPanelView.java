@@ -60,7 +60,6 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
 
   @Override
   public void newPanelModel() {
-
     transactionDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT, true);
     transactionFeeDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.FEE_AMOUNT, true);
     developerFeeDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.FEE_AMOUNT, true);
@@ -107,7 +106,7 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     contentPanel.add(Labels.newBlankLabel(), "top, growx, push,wrap");
     contentPanel.add(Labels.newNotes());
     contentPanel.add(notesTextArea, "span 3,growx,push,wrap");
-    contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "span 4,growx,push,wrap");
+    contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "span 4,align right,wrap");
 
   }
 
@@ -134,10 +133,6 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     transactionFeeDisplayAmountMaV.getView().updateView(configuration);
 
     // Update the model and view for the developer fee
-    // Client fee: 10 uBTC. Payable later (8 sends from now). You currently owe 120 uBTC.
-    // Client fee: 240 uBTC. Payable now.
-    // developer_fee_later=Client fee: {0}. Payable later ({1} sends from now). You currently owe {2}.
-    // developer_fee_now=Client fee: {0}. Payable now.
     Optional<FeeState> feeStateOptional = getWizardModel().calculateBRITFeeState();
     String feeText;
     if (feeStateOptional.isPresent()) {

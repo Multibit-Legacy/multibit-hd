@@ -3,12 +3,16 @@ package org.multibit.hd.core.services;
 import com.google.bitcoin.core.*;
 import com.google.bitcoin.store.BlockStoreException;
 import com.google.common.base.Charsets;
+import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.multibit.hd.brit.dto.FeeState;
+import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.WalletData;
@@ -18,8 +22,6 @@ import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.managers.WalletManagerTest;
-import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
-import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.utils.Dates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -213,7 +215,7 @@ public class BitcoinNetworkServiceFunctionalTest {
       bitcoinSentEvent = null;
 
       // Send the bitcoins
-      bitcoinNetworkService.send(destinationAddress.toString(), SEND_AMOUNT, sourceAddress.toString(), FEE_PER_KB, WALLET_PASSWORD);
+      bitcoinNetworkService.send(destinationAddress.toString(), SEND_AMOUNT, sourceAddress.toString(), FEE_PER_KB, WALLET_PASSWORD, Optional.<FeeState>absent());
 
       // the onBitcoinSentEvent method receives the bitcoinSentEvent once the send has completed
       // wait for a while for the send to actually be transmitted

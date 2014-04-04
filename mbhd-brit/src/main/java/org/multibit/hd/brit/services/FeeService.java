@@ -50,12 +50,12 @@ public class FeeService {
   /**
    * The lower limit of the gap from one fee send to the next
    */
-  public final static int NEXT_SEND_DELTA_LOWER_LIMIT = 20;
+  public final static int NEXT_SEND_DELTA_LOWER_LIMIT = 10;
 
   /**
    * The upper limit of the gap from one fee send to the next
    */
-  public final static int NEXT_SEND_DELTA_UPPER_LIMIT = 30;
+  public final static int NEXT_SEND_DELTA_UPPER_LIMIT = 15;
 
   private SecureRandom secureRandom;
 

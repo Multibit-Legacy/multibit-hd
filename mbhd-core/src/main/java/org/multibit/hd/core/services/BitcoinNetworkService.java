@@ -9,6 +9,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.joda.time.DateTime;
+import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.CoreMessageKey;
@@ -269,10 +270,11 @@ public class BitcoinNetworkService extends AbstractService {
    * @param changeAddress      The change address
    * @param feePerKB           The fee per Kb (in satoshis)
    * @param password           The wallet password
+   * @param feeStateOptional   The BRIT fee state
    */
 
   // TODO should be in executor
-  public void send(String destinationAddress, BigInteger amount, String changeAddress, BigInteger feePerKB, CharSequence password) {
+  public void send(String destinationAddress, BigInteger amount, String changeAddress, BigInteger feePerKB, CharSequence password, Optional<FeeState> feeStateOptional) {
     if (!WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
       // Declare the transaction creation a failure - no wallet
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
@@ -296,9 +298,15 @@ public class BitcoinNetworkService extends AbstractService {
     // Verify the destination address
     final Address destination;
     final Address change;
+
+    boolean addClientFee = false;
+    final Address feeAddress;
     try {
       destination = new Address(MAINNET, destinationAddress);
       change = new Address(MAINNET, changeAddress);
+
+      addClientFee = feeStateOptional.isPresent() && (feeStateOptional.get().getCurrentNumberOfSends() == feeStateOptional.get().getNextFeeSendCount());
+      feeAddress = new Address(MAINNET, feeStateOptional.get().getNextFeeAddress());
     } catch (NullPointerException | AddressFormatException e) {
       log.error(e.getMessage(), e);
 
@@ -326,6 +334,11 @@ public class BitcoinNetworkService extends AbstractService {
     sendRequest.fee = BigInteger.ZERO;
     sendRequest.feePerKb = feePerKB;
     sendRequest.changeAddress = change;
+
+    // TODO position of fee should be randomized
+    if (addClientFee) {
+      sendRequest.tx.addOutput(feeStateOptional.get().getFeeOwed(), feeAddress);
+    }
 
     // Attempt to complete it
 
@@ -444,7 +457,7 @@ public class BitcoinNetworkService extends AbstractService {
       + "' from date " + dateToReplayFrom);
 
     // TODO the current best height should be remembered and used to generate percentage complete as
-    // then if the peer is replaced the percentage increases monotonically
+    // TODO then if the peer is replaced the percentage increases monotonically
 
     String walletRoot = WalletManager.INSTANCE.getCurrentWalletFile().get().getParentFile().getAbsolutePath();
     String blockchainFilename = walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.SPV_BLOCKCHAIN_SUFFIX;

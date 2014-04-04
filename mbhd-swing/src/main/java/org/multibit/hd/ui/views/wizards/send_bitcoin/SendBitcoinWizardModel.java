@@ -129,13 +129,15 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     String bitcoinAddress = enterAmountPanelModel.getEnterRecipientModel().getRecipient().get().getBitcoinAddress();
     String password = confirmPanelModel.getPasswordModel().getValue();
 
-    log.debug("Just about to send bitcoin : amount = '{}', address = '{}', changeAddress = '{}'.",
+    Optional<FeeState> feeState = calculateBRITFeeState();
+    log.debug("Just about to send bitcoin : amount = '{}', address = '{}', changeAddress = '{}'. feeState = {}",
             satoshis,
             bitcoinAddress,
-            changeAddress
+            changeAddress,
+            feeState
     );
 
-    bitcoinNetworkService.send(bitcoinAddress, satoshis, changeAddress, BitcoinNetworkService.DEFAULT_FEE_PER_KB, password);
+    bitcoinNetworkService.send(bitcoinAddress, satoshis, changeAddress, BitcoinNetworkService.DEFAULT_FEE_PER_KB, password, feeState);
 
     // The send throws TransactionCreationEvents and BitcoinSentEvents to which you subscribe to to work out success and failure.
 
