@@ -69,7 +69,7 @@ public class MatcherResponse {
       }
     }
 
-    log.debug("Serialised matcherResponse = \n{}", builder.toString());
+    log.debug("Serialised matcherResponse = \n{}\n", builder.toString());
     return builder.toString().getBytes(Charsets.UTF_8);
 
   }

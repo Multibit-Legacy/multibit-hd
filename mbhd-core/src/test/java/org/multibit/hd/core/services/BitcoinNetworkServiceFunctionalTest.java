@@ -2,6 +2,7 @@ package org.multibit.hd.core.services;
 
 import com.google.bitcoin.core.*;
 import com.google.bitcoin.store.BlockStoreException;
+import com.google.common.base.Charsets;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.joda.time.DateTime;
@@ -315,7 +316,7 @@ public class BitcoinNetworkServiceFunctionalTest {
     Properties seedProperties = new Properties();
     InputStream inputStream = BitcoinNetworkServiceFunctionalTest.class.getResourceAsStream("seed.properties");
 
-    InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF8");
+    InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charsets.UTF_8);
     seedProperties.load(inputStreamReader);
 
     return seedProperties;

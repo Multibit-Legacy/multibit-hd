@@ -1,5 +1,6 @@
 package org.multibit.hd.core.managers;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.googlecode.jcsv.CSVStrategy;
 import com.googlecode.jcsv.writer.CSVEntryConverter;
@@ -136,7 +137,7 @@ public class ExportManager {
     String errorMessage = null;
 
     // Output transactions
-    try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(transactionsExportFilename, true), "UTF-8")) {
+    try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(transactionsExportFilename, true), Charsets.UTF_8)) {
       // Write the header row.
       CSVWriter<TransactionData> csvHeaderWriter = new CSVWriterBuilder<TransactionData>(outputStreamWriter).strategy(CSVStrategy.UK_DEFAULT)
         .entryConverter(transactionHeaderConverter).build();
@@ -156,7 +157,7 @@ public class ExportManager {
     }
 
     // Output payment requests
-    try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(paymentRequestsExportFilename, true), "UTF-8")) {
+    try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(paymentRequestsExportFilename, true), Charsets.UTF_8)) {
       // Write the header row.
       CSVWriter<PaymentRequestData> csvHeaderWriter = new CSVWriterBuilder<PaymentRequestData>(outputStreamWriter).strategy(CSVStrategy.UK_DEFAULT)
         .entryConverter(paymentRequestHeaderConverter).build();

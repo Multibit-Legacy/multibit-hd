@@ -1,5 +1,6 @@
 package org.multibit.hd.brit.matcher;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.multibit.hd.brit.crypto.AESUtils;
@@ -71,7 +72,7 @@ public class BasicMatcher implements Matcher {
 
   @Override
   public PayerRequest decryptPayerRequest(EncryptedPayerRequest encryptedPayerRequest) throws Exception {
-    log.debug("Attempting to decrypt payload:\n" + new String(encryptedPayerRequest.getPayload(), "UTF-8"));
+    log.debug("Attempting to decrypt payload:\n{}\n", new String(encryptedPayerRequest.getPayload(), Charsets.UTF_8));
 
     ByteArrayInputStream serialisedPayerRequestEncryptedInputStream = new ByteArrayInputStream(encryptedPayerRequest.getPayload());
 

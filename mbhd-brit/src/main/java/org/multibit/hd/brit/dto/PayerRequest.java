@@ -17,7 +17,6 @@ import java.util.Date;
  * <li>The unencrypted version of the message sent by the Payer to the Matcher</li>
  * <li>Typically 'encrypt' is called and the EncryptedPayerRequest is actually sent on the wire</li>
  * </ul>
- * </p>
  *
  * @since 0.0.1
  */
@@ -93,7 +92,7 @@ public class PayerRequest {
       builder.append(OPTIONAL_NOT_PRESENT_TEXT);
     }
 
-    log.debug("Serialised payerRequest = \n{}", builder.toString());
+    log.debug("Serialised payerRequest = \n{}\n", builder.toString());
     return builder.toString().getBytes(Charsets.UTF_8);
   }
 
@@ -107,7 +106,7 @@ public class PayerRequest {
 
     String serialisedPaymentRequestAsString = new String(serialisedPayerRequest, Charsets.UTF_8);
 
-    log.debug("Attempting to parse payment request:\n{}", serialisedPaymentRequestAsString);
+    log.debug("Attempting to parse PayerRequest:\n{}\n", serialisedPaymentRequestAsString);
     String[] rows = Strings.split(serialisedPaymentRequestAsString, SEPARATOR);
     if (rows.length == 4) {
       if (Long.parseLong(rows[0]) != 1) {
@@ -124,6 +123,7 @@ public class PayerRequest {
         firstTransactionDateOptional = Optional.of(new Date(Long.parseLong(rows[3])));
       }
 
+      log.debug("Parsed OK");
       return new PayerRequest(britWalletId, sessionKey, firstTransactionDateOptional);
 
     } else {
@@ -133,6 +133,7 @@ public class PayerRequest {
 
   @Override
   public boolean equals(Object o) {
+
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
