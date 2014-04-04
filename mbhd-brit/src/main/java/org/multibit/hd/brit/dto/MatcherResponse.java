@@ -3,11 +3,11 @@ package org.multibit.hd.brit.dto;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import org.multibit.hd.brit.exceptions.MatcherResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Strings;
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -48,9 +48,16 @@ public class MatcherResponse {
 
   /**
    * Serialise a MatcherResponse
+   * Format is:
+   * versionNumber
+   * replayDate
+   * address1
+   * ...
+   * addressN
    */
   public byte[] serialise() {
     StringBuilder builder = new StringBuilder();
+    builder.append(getVersion()).append(PayerRequest.SEPARATOR);
     if (replayDateOptional.isPresent()) {
       builder.append(replayDateOptional.get().getTime()).append(PayerRequest.SEPARATOR);
     } else {
@@ -75,7 +82,7 @@ public class MatcherResponse {
    * @return a recreated MatcherResponse
    */
   public static MatcherResponse parse(byte[] serialisedMatcherResponse)
-    throws ParseException {
+    throws MatcherResponseException {
 
     String serialisedMatcherResponseAsString = new String(serialisedMatcherResponse, Charsets.UTF_8);
 
@@ -83,16 +90,19 @@ public class MatcherResponse {
     String[] rows = Strings.split(serialisedMatcherResponseAsString, '\n');
 
     if (rows.length > 0) {
+      if (Long.parseLong(rows[0]) != 1) {
+        throw new MatcherResponseException("The serialisedMatcherResponse had a version of '" + rows[0] + "'. This code only understands a version of '1'");
+      }
 
       Optional<Date> replayDateOptional;
-      if (OPTIONAL_NOT_PRESENT_TEXT.equals(rows[0])) {
+      if (OPTIONAL_NOT_PRESENT_TEXT.equals(rows[1])) {
         replayDateOptional = Optional.absent();
       } else {
-        replayDateOptional = Optional.of(new Date(Long.parseLong(rows[0])));
+        replayDateOptional = Optional.of(new Date(Long.parseLong(rows[1])));
       }
       List<String> bitcoinAddressList = Lists.newArrayList();
-      if (rows.length > 1) {
-        for (int i = 1; i < rows.length; i++) {
+      if (rows.length > 2) {
+        for (int i = 2; i < rows.length; i++) {
           if (rows[i] != null && rows[i].length() > 0) {
             bitcoinAddressList.add(rows[i]);
           }
@@ -101,7 +111,7 @@ public class MatcherResponse {
       return new MatcherResponse(replayDateOptional, bitcoinAddressList);
 
     } else {
-      throw new ParseException("Cannot parse the response. Require 1 or more rows.", 0);
+      throw new MatcherResponseException("Cannot parse the response. Require 2 or more rows.");
     }
   }
 

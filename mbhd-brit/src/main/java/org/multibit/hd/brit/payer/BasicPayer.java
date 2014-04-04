@@ -16,7 +16,6 @@ import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.text.ParseException;
 import java.util.Date;
 
 /**
@@ -97,7 +96,7 @@ public class BasicPayer implements Payer {
 
       // Parse the serialised MatcherResponse
       return MatcherResponse.parse(serialisedMatcherResponse);
-    } catch (NoSuchAlgorithmException | ParseException e) {
+    } catch (NoSuchAlgorithmException | MatcherResponseException e) {
       throw new MatcherResponseException("Could not decrypt MatcherResponse", e);
     }
   }

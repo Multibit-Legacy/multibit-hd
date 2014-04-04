@@ -80,10 +80,12 @@ public class PayerRequest {
   public byte[] serialise() {
 
     StringBuilder builder = new StringBuilder()
-      .append(Utils.bytesToHexString(britWalletId.getBytes()))
-      .append(SEPARATOR)
-      .append(Utils.bytesToHexString(sessionKey))
-      .append(SEPARATOR);
+            .append(getVersion())
+            .append(SEPARATOR)
+            .append(Utils.bytesToHexString(britWalletId.getBytes()))
+            .append(SEPARATOR)
+            .append(Utils.bytesToHexString(sessionKey))
+            .append(SEPARATOR);
 
     if (firstTransactionDate.isPresent()) {
       builder.append(firstTransactionDate.get().getTime());
@@ -99,7 +101,6 @@ public class PayerRequest {
    * <p>Parse the serialised Payer request</p>
    *
    * @param serialisedPayerRequest The serialised payer request
-   *
    * @return The Payer request
    */
   public static PayerRequest parse(byte[] serialisedPayerRequest) {
@@ -108,22 +109,25 @@ public class PayerRequest {
 
     log.debug("Attempting to parse payment request:\n{}", serialisedPaymentRequestAsString);
     String[] rows = Strings.split(serialisedPaymentRequestAsString, SEPARATOR);
-    if (rows.length == 3) {
+    if (rows.length == 4) {
+      if (Long.parseLong(rows[0]) != 1) {
+        throw new PayerRequestException("The serialisedPayerRequest had a version of '" + rows[0] + "'. This code only understands a version of '1'");
+      }
 
-      final BRITWalletId britWalletId = new BRITWalletId(rows[0]);
-      final byte[] sessionKey = Utils.parseAsHexOrBase58(rows[1]);
+      final BRITWalletId britWalletId = new BRITWalletId(rows[1]);
+      final byte[] sessionKey = Utils.parseAsHexOrBase58(rows[2]);
       final Optional<Date> firstTransactionDateOptional;
 
-      if (OPTIONAL_NOT_PRESENT_TEXT.equals(rows[2])) {
+      if (OPTIONAL_NOT_PRESENT_TEXT.equals(rows[3])) {
         firstTransactionDateOptional = Optional.absent();
       } else {
-        firstTransactionDateOptional = Optional.of(new Date(Long.parseLong(rows[2])));
+        firstTransactionDateOptional = Optional.of(new Date(Long.parseLong(rows[3])));
       }
 
       return new PayerRequest(britWalletId, sessionKey, firstTransactionDateOptional);
 
     } else {
-      throw new PayerRequestException("Expected 3 rows of data. Found " + rows.length);
+      throw new PayerRequestException("Expected 4 rows of data. Found " + rows.length);
     }
   }
 
@@ -160,9 +164,9 @@ public class PayerRequest {
   public String toString() {
 
     return "PayerRequest{" +
-      "britWalletId=" + britWalletId +
-      ", sessionKey=" + Arrays.toString(sessionKey) +
-      ", firstTransactionDate=" + firstTransactionDate +
-      '}';
+            "britWalletId=" + britWalletId +
+            ", sessionKey=" + Arrays.toString(sessionKey) +
+            ", firstTransactionDate=" + firstTransactionDate +
+            '}';
   }
 }
