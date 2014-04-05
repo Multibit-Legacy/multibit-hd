@@ -194,7 +194,7 @@ public class FeeService {
     boolean usePersistedData = false;
     if (sendFeeDto != null && sendFeeDto.getSendFeeCount().isPresent()) {
       if ((sendFeeDto.getSendFeeCount().get() >= lastFeePayingSendCount) &&
-              !((lastFeePayingSendingCountOptional.isPresent()) && (lastFeePayingSendCount - 1 == lastFeePayingSendingCountOptional.get()))) {
+              !((lastFeePayingSendingCountOptional.isPresent()) && (lastFeePayingSendingCountOptional.get().equals(sendFeeDto.getSendFeeCount().get())))) {
         usePersistedData = true;
       }
     }
