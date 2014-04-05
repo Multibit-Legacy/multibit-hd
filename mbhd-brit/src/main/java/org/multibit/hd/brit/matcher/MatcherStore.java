@@ -63,5 +63,5 @@ public interface MatcherStore {
    *
    * @return The list of all Bitcoin addresses in the store
    */
-  public List<String> getAllBitcoinAddress();
+  public List<String> getAllBitcoinAddresses();
 }

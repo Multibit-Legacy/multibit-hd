@@ -4,6 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.io.Files;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -140,11 +141,15 @@ public class BasicMatcherStore implements MatcherStore {
         filePart = filePart.replace(LINKS_FILENAME_SUFFIX, "");
 
         // See if it is a yyyy-mm-dd date
-        DateTime parsedDate = utcShortDateWithHyphensFormatter.parseDateTime(filePart);
-        if (parsedDate != null) {
-          // This file contains the bitcoin addresses for this date
-          List<String> bitcoinaddressesForDate = readBitcoinAddresses(linkFile.getAbsolutePath());
-          encounterDateToBitcoinAddressesMap.put(parsedDate.toDate(), bitcoinaddressesForDate);
+        try {
+          DateTime parsedDate = utcShortDateWithHyphensFormatter.parseDateTime(filePart);
+          if (parsedDate != null) {
+            // This file contains the bitcoin addresses for this date
+            List<String> bitcoinAddressesForDate = readBitcoinAddresses(linkFile.getAbsolutePath());
+            encounterDateToBitcoinAddressesMap.put(parsedDate.toDate(), bitcoinAddressesForDate);
+          }
+        } catch (IllegalArgumentException e) {
+          // File name is not a valid date (could be ".DS_Store" etc)
         }
       }
     }
@@ -229,7 +234,7 @@ public class BasicMatcherStore implements MatcherStore {
   }
 
   @Override
-  public List<String> getAllBitcoinAddress() {
+  public List<String> getAllBitcoinAddresses() {
     return allBitcoinAddresses;
   }
 
@@ -257,23 +262,20 @@ public class BasicMatcherStore implements MatcherStore {
   }
 
   private List<String> readBitcoinAddresses(String filename) {
+
     List<String> addresses = Lists.newArrayList();
     File addressesFile = new File(filename);
     if (addressesFile.exists()) {
       try {
-        byte[] bitcoinAddressesAsBytes = FileUtils.readFile(addressesFile); // Will scale better if streaming
-        String bitcoinAddresses = new String(bitcoinAddressesAsBytes, Charsets.UTF_8);
-        // Split into lines
-        String[] bitcoinAddressLines = bitcoinAddresses.split("\n");
-        for (String line : bitcoinAddressLines) {
-          if (!Strings.isNullOrEmpty(line)) {
-            addresses.add(line);
-          }
-        }
+        addresses.addAll(Files.readLines(addressesFile, Charsets.UTF_8));
+        log.debug("Loaded {} addresses", addresses.size());
       } catch (IOException ioe) {
-        log.error(ioe.getClass().getCanonicalName() + " " + ioe.getMessage());
+        log.error(ioe.getMessage(), ioe);
       }
+    } else {
+      log.error("No 'all.txt' containing addresses to load.");
     }
+
     return addresses;
   }
 }
