@@ -300,13 +300,15 @@ public class BitcoinNetworkService extends AbstractService {
     final Address change;
 
     boolean addClientFee = false;
-    final Address feeAddress;
+    Address feeAddress = null;
     try {
       destination = new Address(MAINNET, destinationAddress);
       change = new Address(MAINNET, changeAddress);
 
       addClientFee = feeStateOptional.isPresent() && (feeStateOptional.get().getCurrentNumberOfSends() == feeStateOptional.get().getNextFeeSendCount());
-      feeAddress = new Address(MAINNET, feeStateOptional.get().getNextFeeAddress());
+      if (addClientFee) {
+        feeAddress = new Address(MAINNET, feeStateOptional.get().getNextFeeAddress());
+      }
     } catch (NullPointerException | AddressFormatException e) {
       log.error(e.getMessage(), e);
 

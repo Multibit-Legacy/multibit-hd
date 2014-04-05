@@ -1,9 +1,6 @@
 package org.multibit.hd.core.managers;
 
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.WalletEventListener;
+import com.google.bitcoin.core.*;
 import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.bitcoin.script.Script;
@@ -11,6 +8,9 @@ import com.google.bitcoin.store.WalletProtobufSerializer;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import org.bitcoinj.wallet.Protos;
+import org.multibit.hd.brit.extensions.MatcherResponseWalletExtension;
+import org.multibit.hd.brit.extensions.SendFeeDtoWalletExtension;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.dto.WalletId;
@@ -316,7 +316,14 @@ public enum WalletManager implements WalletEventListener {
       Wallet wallet;
 
       try (FileInputStream fileInputStream = new FileInputStream(walletFile); InputStream stream = new BufferedInputStream(fileInputStream);) {
-        wallet = Wallet.loadFromFileStream(stream);
+        Protos.Wallet walletProto = WalletProtobufSerializer.parseToProto(stream);
+
+        wallet = new Wallet(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
+        wallet.addExtension(new SendFeeDtoWalletExtension());
+        wallet.addExtension(new MatcherResponseWalletExtension());
+        new WalletProtobufSerializer().readWallet(walletProto, wallet);
+
+        log.debug("Wallet at read in from file:\n" + wallet.toString());
       } catch (WalletVersionException wve) {
         // We want this exception to propagate out.
         throw wve;

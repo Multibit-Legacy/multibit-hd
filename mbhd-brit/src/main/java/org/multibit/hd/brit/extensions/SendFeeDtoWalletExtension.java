@@ -108,4 +108,11 @@ public class SendFeeDtoWalletExtension implements WalletExtension {
   public SendFeeDto getSendFeeDto() {
     return sendFeeDto;
   }
+
+  @Override
+  public String toString() {
+    return "SendFeeDtoWalletExtension{" +
+            "sendFeeDto=" + sendFeeDto +
+            '}';
+  }
 }

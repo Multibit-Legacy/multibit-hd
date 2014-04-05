@@ -24,6 +24,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.math.BigInteger;
 
 import static org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState.*;
@@ -275,7 +276,16 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     if (WalletManager.INSTANCE.getCurrentWalletData() != null &&
             WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
       Wallet wallet = WalletManager.INSTANCE.getCurrentWalletData().get().getWallet();
-      return Optional.of(feeService.calculateFeeState(wallet));
+      Optional<File> walletFileOptional = WalletManager.INSTANCE.getCurrentWalletFile();
+      if (walletFileOptional.isPresent()) {
+        log.debug("Wallet file prior to calculateFeeState is " + walletFileOptional.get().length() + " bytes");
+      }
+      Optional<FeeState> feeStateOptional = Optional.of(feeService.calculateFeeState(wallet));
+      if (walletFileOptional.isPresent()) {
+        log.debug("Wallet file after to calculateFeeState is " +walletFileOptional.get().length() + " bytes");
+      }
+
+      return feeStateOptional;
     } else {
       return Optional.absent();
     }

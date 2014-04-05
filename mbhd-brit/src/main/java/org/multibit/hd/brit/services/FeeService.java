@@ -127,9 +127,12 @@ public class FeeService {
    * @param wallet the wallet to calculate the fee state for
    */
   public FeeState calculateFeeState(Wallet wallet) {
+    log.debug("Wallet at beginning of calculateFeeState = " + wallet.toString(false, false, true, null));
+
     // Get all the send transactions, ordered by date
     List<Transaction> sendTransactions = getSendTransactionList(wallet);
     int currentNumberOfSends = sendTransactions.size();
+    log.debug("The wallet send count is " + currentNumberOfSends);
 
     // Work out the total amount that should be paid by the Payer for this wallet
     BigInteger grossFeeToBePaid = FEE_PER_SEND.multiply(BigInteger.valueOf(currentNumberOfSends));
@@ -145,7 +148,7 @@ public class FeeService {
 
     // Work out which of the sends actually send money to a fee address.
     // Keep track of the amount sent as fees and the count of the last send to fees made
-    int sendCount = 0;
+    int lastFeePayingSendCount = 0;
     Optional<String> lastFeePayingSendAddressOptional = Optional.absent();
     Optional<Integer> lastFeePayingSendingCountOptional = Optional.absent();
     BigInteger feePaid = BigInteger.ZERO;
@@ -160,16 +163,15 @@ public class FeeService {
               // It pays some fee
               feePaid = feePaid.add(sendTransactionOutput.getValue());
               lastFeePayingSendAddressOptional = Optional.of(toAddress.toString());
-              lastFeePayingSendingCountOptional = Optional.of(sendCount);
+              lastFeePayingSendingCountOptional = Optional.of(lastFeePayingSendCount);
             }
           } catch (ScriptException se) {
             log.debug("Cannot cast script to Address for transaction : " + sendTransaction.getHash().toString());
           }
         }
       }
-      sendCount++;
+      lastFeePayingSendCount++;
     }
-    log.debug("The wallet send count is " + sendCount);
 
     // The net amount fee still to be paid is the gross amount minus the amount paid so far
     BigInteger netFeeToBePaid = grossFeeToBePaid.subtract(feePaid);
@@ -188,8 +190,8 @@ public class FeeService {
     // If the persisted next fee send count is in the future and the last send is NOT a fee payment then reuse the persisted info
     boolean usePersistedData = false;
     if (sendFeeDto != null && sendFeeDto.getSendFeeCount().isPresent()) {
-      if ((sendFeeDto.getSendFeeCount().get() >= sendCount) &&
-              !((lastFeePayingSendingCountOptional.isPresent()) && (sendCount - 1 == lastFeePayingSendingCountOptional.get()))) {
+      if ((sendFeeDto.getSendFeeCount().get() >= lastFeePayingSendCount) &&
+              !((lastFeePayingSendingCountOptional.isPresent()) && (lastFeePayingSendCount - 1 == lastFeePayingSendingCountOptional.get()))) {
         usePersistedData = true;
       }
     }
@@ -228,12 +230,15 @@ public class FeeService {
       wallet.addOrUpdateExtension(new SendFeeDtoWalletExtension(new SendFeeDto(Optional.of(nextSendFeeCount), Optional.of(nextSendFeeAddress))));
     }
 
+    log.debug("Wallet at end of calculateFeeState = " + wallet.toString(false, false, true, null));
+
+
     log.debug("The wallet has currentNumberOfSends = " + currentNumberOfSends);
     log.debug("The wallet owes a GROSS total of " + grossFeeToBePaid + " satoshi in fees");
     log.debug("The wallet had paid a total of " + feePaid + " satoshi in fees");
     log.debug("The wallet owes a NET total of " + netFeeToBePaid + " satoshi in fees");
     if (lastFeePayingSendAddressOptional.isPresent()) {
-      log.debug("The last fee address sent any fee was = '" + lastFeePayingSendAddressOptional.get() + "'. The sendCount then was " + lastFeePayingSendingCountOptional.toString());
+      log.debug("The last fee address sent any fee was = '" + lastFeePayingSendAddressOptional.get() + "'. The lastFeePayingSendCount then was " + lastFeePayingSendingCountOptional.toString());
     } else {
       log.debug("No transaction in this wallet has paid any fee.");
     }
