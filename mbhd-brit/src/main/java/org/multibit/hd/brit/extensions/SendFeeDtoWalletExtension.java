@@ -58,8 +58,8 @@ public class SendFeeDtoWalletExtension implements WalletExtension {
         builder.append(NOT_PRESENT_MARKER).append(SEPARATOR);
       }
 
-      if (sendFeeDto.getSendFeeCount().isPresent()) {
-        builder.append(sendFeeDto.getSendFeeCount().get().toString()).append(SEPARATOR);
+      if (sendFeeDto.getSendFeeAddress().isPresent()) {
+        builder.append(sendFeeDto.getSendFeeAddress().get()).append(SEPARATOR);
       } else {
         builder.append(NOT_PRESENT_MARKER).append(SEPARATOR);
       }
