@@ -69,7 +69,7 @@ public class BasicMatcherStoreTest {
     MatcherStore rebornMatcherStore = MatcherStores.newBasicMatcherStore(matcherStoreDirectory);
 
     // Check they have been stored ok
-    assertThat(rebornMatcherStore.getAllBitcoinAddress()).isEqualTo(allBitcoinAddresses);
+    assertThat(rebornMatcherStore.getAllBitcoinAddresses()).isEqualTo(allBitcoinAddresses);
   }
 
   @Test

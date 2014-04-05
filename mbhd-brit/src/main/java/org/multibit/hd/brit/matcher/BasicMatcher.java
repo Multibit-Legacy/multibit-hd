@@ -2,6 +2,7 @@ package org.multibit.hd.brit.matcher;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.crypto.PGPUtils;
@@ -119,25 +120,32 @@ public class BasicMatcher implements Matcher {
     Date now = new Date();
     List<String> currentBitcoinAddressList = matcherStore.lookupBitcoinAddressListForDate(now);
 
-    if (currentBitcoinAddressList == null) {
-      // No bitcoin addresses have been set up for this date - create some addresses, store it and return it
+    if (currentBitcoinAddressList == null || currentBitcoinAddressList.isEmpty()) {
+      // No Bitcoin addresses have been set up for this date - create some addresses, store it and return it
       currentBitcoinAddressList = Lists.newArrayList();
-      List<String> allAddresses = matcherStore.getAllBitcoinAddress();
+      List<String> allAddresses = matcherStore.getAllBitcoinAddresses();
       if (allAddresses != null && allAddresses.size() > 0) {
         for (int i = 0; i < NUMBER_OF_ADDRESSES_PER_DAY; i++) {
           currentBitcoinAddressList.add(allAddresses.get(secureRandom.nextInt(allAddresses.size())));
         }
       } else {
-        log.error("Could not produce a new set of Bitcoin addresses for " + now.toString() + ". There are no Bitcoin addresses to pick from. Probably your var/matcher/store/all.txt is missing/empty.");
+        log.error("Could not produce a new set of Bitcoin addresses for '{}'. There are no Bitcoin addresses to pick from. Check " +
+          "'var/matcher/store/all.txt' is not missing/empty.",now.toString());
       }
 
-      // On a matcher level lock, double check there is no data and write the list for today
+      // On a Matcher level lock, double check there is no data and write the list for today
       synchronized (lockObject) {
-        if (matcherStore.lookupBitcoinAddressListForDate(now) == null) {
+        List<String> doubleCheckCurrentBitcoinAddressList = matcherStore.lookupBitcoinAddressListForDate(now);
+        if (doubleCheckCurrentBitcoinAddressList == null || doubleCheckCurrentBitcoinAddressList.isEmpty()) {
+          // We're certain that new addresses need to be stored
           matcherStore.storeBitcoinAddressListForDate(currentBitcoinAddressList, now);
         }
       }
       currentBitcoinAddressList = matcherStore.lookupBitcoinAddressListForDate(now);
+
+      Preconditions.checkNotNull(currentBitcoinAddressList,"'currentBitcoinAddressList' must be present after storage.");
+      Preconditions.checkState(!currentBitcoinAddressList.isEmpty(),"'currentBitcoinAddressList' must not be empty after storage.");
+
     }
     return new MatcherResponse(Optional.of(replayDate), currentBitcoinAddressList);
   }
