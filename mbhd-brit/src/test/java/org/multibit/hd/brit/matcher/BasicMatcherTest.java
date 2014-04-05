@@ -18,7 +18,7 @@ package org.multibit.hd.brit.matcher;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +39,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.security.SecureRandom;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -103,22 +103,23 @@ public class BasicMatcherTest {
 
     // The payer can decrypt the encryptedMatcherResponse
     // as it knows the BRITWalletId and session id
-    MatcherResponse thePayersMatcherResponse = payer.decryptMatcherResponse(encryptedMatcherResponse);
-    assertThat(thePayersMatcherResponse).isNotNull();
+    MatcherResponse payersMatcherResponse = payer.decryptMatcherResponse(encryptedMatcherResponse);
+    assertThat(payersMatcherResponse).isNotNull();
 
     // The original matcher response should be the same as the decrypted version
-    assertThat(matcherResponse).isEqualTo(thePayersMatcherResponse);
+    assertThat(matcherResponse).isEqualTo(payersMatcherResponse);
 
-    // The thePayersMatcherResponse contains the list of addresses the Payer will use
-    List<String> addressList = thePayersMatcherResponse.getAddressList();
+    // The Payer's Matcher response contains the list of addresses the Payer will use
+    Set<String> addressList = payersMatcherResponse.getBitcoinAddresses();
     assertThat(addressList).isNotNull();
 
-    // The thePayersMatcherResponse contains a stored replayDate for the wallet
-    Date replayDate = thePayersMatcherResponse.getReplayDate().get();
+    // The Payer's Matcher response contains a stored replay date for the wallet
+    Date replayDate = payersMatcherResponse.getReplayDate().get();
     assertThat(replayDate).isNotNull();
   }
 
   private Matcher createTestMatcher() throws Exception {
+
     // Find the example Matcher PGP secret key ring file
     File matcherSecretKeyFile = PGPUtilsTest.makeFile(PGPUtilsTest.TEST_MATCHER_SECRET_KEYRING_FILE);
     MatcherConfig matcherConfig = new MatcherConfig(matcherSecretKeyFile, PGPUtilsTest.TEST_DATA_PASSWORD);
@@ -131,13 +132,13 @@ public class BasicMatcherTest {
     assertThat(matcher).isNotNull();
 
     // Add some test data for today's bitcoin addresses
-    List<String> bitcoinAddressList = Lists.newArrayList();
-      bitcoinAddressList.add("cat");
-      bitcoinAddressList.add("dog");
-      bitcoinAddressList.add("elephant");
-      bitcoinAddressList.add("worm");
+    Set<String> bitcoinAddresses = Sets.newHashSet();
+    bitcoinAddresses.add("cat");
+    bitcoinAddresses.add("dog");
+    bitcoinAddresses.add("elephant");
+    bitcoinAddresses.add("worm");
 
-    matcherStore.storeBitcoinAddressListForDate(bitcoinAddressList, new Date());
+    matcherStore.storeBitcoinAddressesForDate(bitcoinAddresses, new Date());
 
     return matcher;
   }

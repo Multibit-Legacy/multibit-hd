@@ -18,7 +18,10 @@ import org.multibit.hd.brit.payer.Payers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLConnection;
@@ -139,8 +142,8 @@ public class FeeService {
 
     // Calculate all the possible fee addresses
     Set<String> feeAddressesUniverse = Sets.newHashSet(getHardwiredFeeAddresses());
-    if (matcherResponseFromWallet != null && matcherResponseFromWallet.getAddressList() != null) {
-      feeAddressesUniverse.addAll(matcherResponseFromWallet.getAddressList());
+    if (matcherResponseFromWallet != null && matcherResponseFromWallet.getBitcoinAddresses() != null) {
+      feeAddressesUniverse.addAll(matcherResponseFromWallet.getBitcoinAddresses());
     }
 
     // Work out which of the sends actually send money to a fee address.
@@ -189,7 +192,7 @@ public class FeeService {
     boolean usePersistedData = false;
     if (sendFeeDto != null && sendFeeDto.getSendFeeCount().isPresent()) {
       if ((sendFeeDto.getSendFeeCount().get() >= sendCount) &&
-              !((lastFeePayingSendingCountOptional.isPresent()) && (sendCount - 1 == lastFeePayingSendingCountOptional.get()))) {
+        !((lastFeePayingSendingCountOptional.isPresent()) && (sendCount - 1 == lastFeePayingSendingCountOptional.get()))) {
         usePersistedData = true;
       }
     }
@@ -202,7 +205,7 @@ public class FeeService {
     } else {
       // Work out the count of the sends at which the next payment will be made
       nextSendFeeCount = (lastFeePayingSendingCountOptional.isPresent() ? lastFeePayingSendingCountOptional.get() : 0) +
-              +NEXT_SEND_DELTA_LOWER_LIMIT + secureRandom.nextInt(NEXT_SEND_DELTA_UPPER_LIMIT - NEXT_SEND_DELTA_LOWER_LIMIT);
+        +NEXT_SEND_DELTA_LOWER_LIMIT + secureRandom.nextInt(NEXT_SEND_DELTA_UPPER_LIMIT - NEXT_SEND_DELTA_LOWER_LIMIT);
       // If we already have more sends than that then mark the next send as a fee send ie send a fee ASAP
       if (currentNumberOfSends >= nextSendFeeCount) {
         nextSendFeeCount = currentNumberOfSends;
@@ -211,29 +214,33 @@ public class FeeService {
       }
 
       // Work out the next fee send address - it is random
-      List<String> candidateSendFeeAddresses;
-      if (matcherResponseFromWallet == null || matcherResponseFromWallet.getAddressList() == null ||
-              matcherResponseFromWallet.getAddressList().size() <= 1) {
+      Set<String> candidateSendFeeAddresses;
+      if (matcherResponseFromWallet == null
+        || matcherResponseFromWallet.getBitcoinAddresses() == null
+        || matcherResponseFromWallet.getBitcoinAddresses().isEmpty()) {
         candidateSendFeeAddresses = getHardwiredFeeAddresses();
       } else {
-        candidateSendFeeAddresses = matcherResponseFromWallet.getAddressList();
+        candidateSendFeeAddresses = matcherResponseFromWallet.getBitcoinAddresses();
       }
 
-      nextSendFeeAddress = candidateSendFeeAddresses.get(secureRandom.nextInt(candidateSendFeeAddresses.size()));
+      // Randomly select a single address from the candidates
+      int index = secureRandom.nextInt(candidateSendFeeAddresses.size());
+      String[] randomAccessCandidates = candidateSendFeeAddresses.toArray(new String[candidateSendFeeAddresses.size()]);
+      nextSendFeeAddress = randomAccessCandidates[index];
 
-      log.debug("New next send fee transaction. It will be at the send count of " + nextSendFeeCount);
-      log.debug("New next address to send fee to. It will be is " + nextSendFeeAddress);
+      log.debug("New next send fee transaction. It will be at the send count of {}", nextSendFeeCount);
+      log.debug("New next address to send fee to. It will be is {}", nextSendFeeAddress);
 
       // Persist back to wallet
       wallet.addOrUpdateExtension(new SendFeeDtoWalletExtension(new SendFeeDto(Optional.of(nextSendFeeCount), Optional.of(nextSendFeeAddress))));
     }
 
-    log.debug("The wallet has currentNumberOfSends = " + currentNumberOfSends);
-    log.debug("The wallet owes a GROSS total of " + grossFeeToBePaid + " satoshi in fees");
-    log.debug("The wallet had paid a total of " + feePaid + " satoshi in fees");
-    log.debug("The wallet owes a NET total of " + netFeeToBePaid + " satoshi in fees");
+    log.debug("The wallet has currentNumberOfSends = {}", currentNumberOfSends);
+    log.debug("The wallet owes a GROSS total of {} satoshi in fees", grossFeeToBePaid);
+    log.debug("The wallet had paid a total of {} satoshi in fees", feePaid);
+    log.debug("The wallet owes a NET total of {} satoshi in fees", netFeeToBePaid);
     if (lastFeePayingSendAddressOptional.isPresent()) {
-      log.debug("The last fee address sent any fee was = '" + lastFeePayingSendAddressOptional.get() + "'. The sendCount then was " + lastFeePayingSendingCountOptional.toString());
+      log.debug("The last fee address sent any fee was = '{}'. The sendCount then was {}.", lastFeePayingSendAddressOptional.get(), lastFeePayingSendingCountOptional.toString());
     } else {
       log.debug("No transaction in this wallet has paid any fee.");
     }
@@ -242,6 +249,7 @@ public class FeeService {
   }
 
   private List<Transaction> getSendTransactionList(Wallet wallet) {
+
     // Get all the wallets transactions and sort by date
     ArrayList<Transaction> transactions = new ArrayList<>(wallet.getTransactions(false));
     Collections.sort(transactions, new Comparator<Transaction>() {
@@ -259,10 +267,12 @@ public class FeeService {
         sendTransactions.add(transaction);
       }
     }
+
     return sendTransactions;
   }
 
   public static MatcherResponse getMatcherResponseFromWallet(Wallet wallet) {
+
     Map<String, WalletExtension> walletExtensionsMap = wallet.getExtensions();
 
     if (walletExtensionsMap != null && walletExtensionsMap.get(MatcherResponseWalletExtension.MATCHER_RESPONSE_WALLET_EXTENSION_ID) != null) {
@@ -270,9 +280,11 @@ public class FeeService {
     } else {
       return null;
     }
+
   }
 
   public static SendFeeDto getSendFeeDtoFromWallet(Wallet wallet) {
+
     Map<String, WalletExtension> walletExtensionsMap = wallet.getExtensions();
 
     if (walletExtensionsMap != null && walletExtensionsMap.get(SendFeeDtoWalletExtension.SEND_FEE_DTO_WALLET_EXTENSION_ID) != null) {
@@ -280,6 +292,7 @@ public class FeeService {
     } else {
       return null;
     }
+
   }
 
   /**
@@ -287,12 +300,11 @@ public class FeeService {
    *
    * @return List of bitcoin addresses to use as hardwired fee addresses
    */
-  public List<String> getHardwiredFeeAddresses() {
-    // Return the multibit.org donation address
-    List<String> hardwiredFeeAddresses = Lists.newArrayList();
-    // TODO add in some very well secured addresses owned by the MultiBit devs
+  public Set<String> getHardwiredFeeAddresses() {
 
-    // Add in some addresses from the MultiBit donations wallet
+    // TODO (BS) add in some very well secured addresses owned by Bitcoin Solutions Ltd
+
+    Set<String> hardwiredFeeAddresses = Sets.newHashSet();
     hardwiredFeeAddresses.add("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
     hardwiredFeeAddresses.add("14Ru32Lb4kdLGfAMz1VAtxh3UFku62HaNH");
     hardwiredFeeAddresses.add("1KesQEF2yC2FzkJYLLozZJdbBF7zRhrdSC");
@@ -310,6 +322,7 @@ public class FeeService {
    * @param payload the bytes to post
    */
   private byte[] doPost(URL url, byte[] payload) throws IOException {
+
     URLConnection urlConn;
     DataOutputStream postOutputStream;
     DataInputStream responseInputStream;
@@ -327,7 +340,7 @@ public class FeeService {
     urlConn.setUseCaches(false);
     // Specify the content type.
     urlConn.setRequestProperty
-            ("Content-Type", "application/octet-stream");
+      ("Content-Type", "application/octet-stream");
     // Send POST output.
     postOutputStream = new DataOutputStream(urlConn.getOutputStream());
     postOutputStream.write(payload);
@@ -350,6 +363,7 @@ public class FeeService {
     }
 
     responseInputStream.close();
+
     return responseOutputStream.toByteArray();
   }
 
@@ -357,9 +371,11 @@ public class FeeService {
    * Calculate the date of the first transaction in the Wallet
    *
    * @param wallet The wallet to inspect the transactions of
+   *
    * @return Either the date of the first transaction in the wallet, or Optional.absent() if there are no transactions
    */
   private Optional<Date> calculateFirstTransactionDate(Wallet wallet) {
+
     ArrayList<Transaction> transactions = new ArrayList<>(wallet.getTransactions(false));
     if (transactions.size() == 0) {
       return Optional.absent();
