@@ -47,7 +47,7 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Set;
 
 import static com.google.bitcoin.core.Utils.toNanoCoins;
 import static com.google.bitcoin.utils.TestUtils.createFakeTx;
@@ -128,7 +128,7 @@ public class FeeServicesTest {
     assertThat(feeState).isNotNull();
 
     // We are using a dummy Matcher so will always fall back to the hardwired addresses
-    List<String> possibleNextFeeAddresses = feeService.getHardwiredFeeAddresses();
+    Set<String> possibleNextFeeAddresses = feeService.getHardwiredFeeAddresses();
 
     checkFeeState(feeState, true, 0, BigInteger.ZERO, FeeService.FEE_PER_SEND, possibleNextFeeAddresses);
 
@@ -161,7 +161,7 @@ public class FeeServicesTest {
                              int expectedCurrentNumberOfSends,
                              BigInteger expectedFeeOwed,
                              BigInteger expectedFeePerSendSatoshi,
-                             List<String> possibleNextFeeAddresses) {
+                             Set<String> possibleNextFeeAddresses) {
 
     assertThat(feeState.isUsingHardwiredBRITAddresses() == expectedIsUsingHardwiredBRITAddress).isTrue();
     assertThat(feeState.getCurrentNumberOfSends()).isEqualTo(expectedCurrentNumberOfSends);

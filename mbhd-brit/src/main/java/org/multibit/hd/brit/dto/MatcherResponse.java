@@ -2,14 +2,14 @@ package org.multibit.hd.brit.dto;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.multibit.hd.brit.exceptions.MatcherResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Strings;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 /**
  * <p>DTO to provide the following to BRIT API:</p>
@@ -27,19 +27,19 @@ public class MatcherResponse {
 
   private final Optional<Date> replayDateOptional;
 
-  private final List<String> addressList;
+  private final Set<String> bitcoinAddresses;
 
-  public MatcherResponse(Optional<Date> replayDateOptional, List<String> addressList) {
+  public MatcherResponse(Optional<Date> replayDateOptional, Set<String> bitcoinAddresses) {
     this.replayDateOptional = replayDateOptional;
-    this.addressList = addressList;
+    this.bitcoinAddresses = bitcoinAddresses;
   }
 
   public int getVersion() {
     return 1;
   }
 
-  public List<String> getAddressList() {
-    return addressList;
+  public Set<String> getBitcoinAddresses() {
+    return bitcoinAddresses;
   }
 
   public Optional<Date> getReplayDate() {
@@ -63,8 +63,8 @@ public class MatcherResponse {
     } else {
       builder.append(OPTIONAL_NOT_PRESENT_TEXT).append(PayerRequest.SEPARATOR);
     }
-    if (addressList != null) {
-      for (String address : addressList) {
+    if (bitcoinAddresses != null) {
+      for (String address : bitcoinAddresses) {
         builder.append(address).append(PayerRequest.SEPARATOR);
       }
     }
@@ -100,15 +100,15 @@ public class MatcherResponse {
       } else {
         replayDateOptional = Optional.of(new Date(Long.parseLong(rows[1])));
       }
-      List<String> bitcoinAddressList = Lists.newArrayList();
+      Set<String> bitcoinAddresses = Sets.newHashSet();
       if (rows.length > 2) {
         for (int i = 2; i < rows.length; i++) {
           if (rows[i] != null && rows[i].length() > 0) {
-            bitcoinAddressList.add(rows[i]);
+            bitcoinAddresses.add(rows[i]);
           }
         }
       }
-      return new MatcherResponse(replayDateOptional, bitcoinAddressList);
+      return new MatcherResponse(replayDateOptional, bitcoinAddresses);
 
     } else {
       throw new MatcherResponseException("Cannot parse the response. Require 2 or more rows.");
@@ -122,7 +122,7 @@ public class MatcherResponse {
 
     MatcherResponse that = (MatcherResponse) o;
 
-    if (addressList != null ? !addressList.equals(that.addressList) : that.addressList != null) return false;
+    if (bitcoinAddresses != null ? !bitcoinAddresses.equals(that.bitcoinAddresses) : that.bitcoinAddresses != null) return false;
     if (replayDateOptional != null ? !replayDateOptional.equals(that.replayDateOptional) : that.replayDateOptional != null)
       return false;
 
@@ -132,7 +132,7 @@ public class MatcherResponse {
   @Override
   public int hashCode() {
     int result = replayDateOptional != null ? replayDateOptional.hashCode() : 0;
-    result = 31 * result + (addressList != null ? addressList.hashCode() : 0);
+    result = 31 * result + (bitcoinAddresses != null ? bitcoinAddresses.hashCode() : 0);
     return result;
   }
 
@@ -140,7 +140,7 @@ public class MatcherResponse {
   public String toString() {
     return "MatcherResponse{" +
             "replayDateOptional=" + replayDateOptional +
-            ", addressList=" + addressList +
+            ", addressList=" + bitcoinAddresses +
             '}';
   }
 }

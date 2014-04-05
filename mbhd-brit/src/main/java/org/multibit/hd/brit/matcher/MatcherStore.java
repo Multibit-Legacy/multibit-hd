@@ -4,7 +4,7 @@ import org.multibit.hd.brit.dto.BRITWalletId;
 import org.multibit.hd.brit.dto.WalletToEncounterDateLink;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 /**
  * <p>Backing store to provide the following to Matcher:</p>
@@ -35,33 +35,33 @@ public interface MatcherStore {
   public WalletToEncounterDateLink lookupWalletToEncounterDateLink(BRITWalletId britWalletId);
 
   /**
-   * Get the Bitcoin address list being sent back to the Payers for the day specified.
+   * Get the Bitcoin address set being sent back to the Payers for the day specified.
    *
-   * @param encounterDate the date to look up the List of Bitcoin addresses for
+   * @param encounterDate The date for which to look up the set of Bitcoin addresses
    *
-   * @return the Bitcoin address list for this date, or null if non has been set yet
+   * @return The Bitcoin address set for this date (empty if none selected yet)
    */
-  public List<String> lookupBitcoinAddressListForDate(Date encounterDate);
+  public Set<String> lookupBitcoinAddressListForDate(Date encounterDate);
 
   /**
-   * Store the bitcoinAddressList as the Bitcoin addresses to send back tothe payer for the encounterDate
+   * Store the Bitcoin address set as the Bitcoin addresses to send back to the payer for the encounter date
    *
-   * @param bitcoinAddressList the Bitcoin address list to store
-   * @param encounterDate      the date to store them against
+   * @param bitcoinAddresses The Bitcoin addresses to store
+   * @param encounterDate    The date to store them against
    */
-  public void storeBitcoinAddressListForDate(List<String> bitcoinAddressList, Date encounterDate);
+  public void storeBitcoinAddressesForDate(Set<String> bitcoinAddresses, Date encounterDate);
 
   /**
-   * Store the list of Bitcoin addresses as the 'universe' of all possible Bitcoin addresses
+   * Store the set of Bitcoin addresses as the 'universe' of all possible Bitcoin addresses
    *
-   * @param allBitcoinAddresses The list of all possible Bitcoin addresses to store
+   * @param allBitcoinAddresses The set of all possible Bitcoin addresses to store
    */
-  public void storeAllBitcoinAddresses(List<String> allBitcoinAddresses);
+  public void storeAllBitcoinAddresses(Set<String> allBitcoinAddresses);
 
   /**
-   * Get the list of all possible Bitcoin addresses in this MatcherStore
+   * Get the set of all possible Bitcoin addresses in this MatcherStore
    *
-   * @return The list of all Bitcoin addresses in the store
+   * @return The set of all Bitcoin addresses in the store
    */
-  public List<String> getAllBitcoinAddresses();
+  public Set<String> getAllBitcoinAddresses();
 }

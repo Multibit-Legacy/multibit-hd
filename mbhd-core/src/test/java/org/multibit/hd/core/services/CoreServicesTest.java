@@ -71,8 +71,8 @@ public class CoreServicesTest {
     // Should now have a MatcherResponse
     matcherResponse = FeeService.getMatcherResponseFromWallet(wallet);
     assertThat(matcherResponse).isNotNull();
-    assertThat(matcherResponse.getAddressList()).isNotNull();
-    assertThat(matcherResponse.getAddressList().size()).isGreaterThan(0);
+    assertThat(matcherResponse.getBitcoinAddresses()).isNotNull();
+    assertThat(matcherResponse.getBitcoinAddresses().size()).isGreaterThan(0);
 
     // There still should be any SendFeeDto
     sendFeeDto = FeeService.getSendFeeDtoFromWallet(wallet);

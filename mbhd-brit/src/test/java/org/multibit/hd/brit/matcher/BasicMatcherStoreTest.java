@@ -17,7 +17,7 @@ package org.multibit.hd.brit.matcher;
  */
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -57,8 +57,9 @@ public class BasicMatcherStoreTest {
 
   @Test
   public void testStoreAndGetAllBitcoinAddresses() throws Exception {
-    // Store some bitcoin addresses
-    List<String> allBitcoinAddresses = Lists.newArrayList();
+
+    // Store some unique Bitcoin addresses
+    Set<String> allBitcoinAddresses = Sets.newHashSet();
     allBitcoinAddresses.add("one");
     allBitcoinAddresses.add("two");
     allBitcoinAddresses.add("three");
@@ -74,38 +75,39 @@ public class BasicMatcherStoreTest {
 
   @Test
   public void testStoreAndGetBitcoinAddressListByDate() throws Exception {
+
     Date yesterday = DateTime.now().minusDays(1).toDate();
     Date today = DateTime.now().toDate();
     Date tomorrow = DateTime.now().plusDays(1).toDate();
 
     // Store some bitcoin address lists by date
-    List<String> bitcoinAddressList1 = Lists.newArrayList();
-    bitcoinAddressList1.add("one.cat");
-    bitcoinAddressList1.add("one.dog");
-    bitcoinAddressList1.add("one.elephant");
-    matcherStore.storeBitcoinAddressListForDate(bitcoinAddressList1, yesterday);
+    final Set<String> bitcoinAddresses1 = Sets.newHashSet();
+    bitcoinAddresses1.add("one.cat");
+    bitcoinAddresses1.add("one.dog");
+    bitcoinAddresses1.add("one.elephant");
+    matcherStore.storeBitcoinAddressesForDate(bitcoinAddresses1, yesterday);
 
-    List<String> bitcoinAddressList2 = Lists.newArrayList();
-    bitcoinAddressList2.add("two.cat");
-    bitcoinAddressList2.add("two.dog");
-    bitcoinAddressList2.add("two.elephant");
-    bitcoinAddressList2.add("two.worm");
-    matcherStore.storeBitcoinAddressListForDate(bitcoinAddressList2, today);
+    final Set<String> bitcoinAddresses2 = Sets.newHashSet();
+    bitcoinAddresses2.add("two.cat");
+    bitcoinAddresses2.add("two.dog");
+    bitcoinAddresses2.add("two.elephant");
+    bitcoinAddresses2.add("two.worm");
+    matcherStore.storeBitcoinAddressesForDate(bitcoinAddresses2, today);
 
-    List<String> bitcoinAddressList3 = Lists.newArrayList();
-    bitcoinAddressList3.add("three.cat");
-    bitcoinAddressList3.add("three.dog");
-    bitcoinAddressList3.add("three.elephant");
-    bitcoinAddressList3.add("three.wallaby");
-    matcherStore.storeBitcoinAddressListForDate(bitcoinAddressList3, tomorrow);
+    final Set<String> bitcoinAddresses3 = Sets.newHashSet();
+    bitcoinAddresses3.add("three.cat");
+    bitcoinAddresses3.add("three.dog");
+    bitcoinAddresses3.add("three.elephant");
+    bitcoinAddresses3.add("three.wallaby");
+    matcherStore.storeBitcoinAddressesForDate(bitcoinAddresses3, tomorrow);
 
     // Bounce the MatcherStore to check everything is being persisted
     MatcherStore rebornMatcherStore = MatcherStores.newBasicMatcherStore(matcherStoreDirectory);
 
     // Check they have been stored ok
-    assertThat(rebornMatcherStore.lookupBitcoinAddressListForDate(yesterday)).isEqualTo(bitcoinAddressList1);
-    assertThat(rebornMatcherStore.lookupBitcoinAddressListForDate(today)).isEqualTo(bitcoinAddressList2);
-    assertThat(rebornMatcherStore.lookupBitcoinAddressListForDate(tomorrow)).isEqualTo(bitcoinAddressList3);
+    assertThat(rebornMatcherStore.lookupBitcoinAddressListForDate(yesterday)).isEqualTo(bitcoinAddresses1);
+    assertThat(rebornMatcherStore.lookupBitcoinAddressListForDate(today)).isEqualTo(bitcoinAddresses2);
+    assertThat(rebornMatcherStore.lookupBitcoinAddressListForDate(tomorrow)).isEqualTo(bitcoinAddresses3);
   }
 
   @Test
