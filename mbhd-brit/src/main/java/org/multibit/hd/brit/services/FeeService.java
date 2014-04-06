@@ -132,8 +132,8 @@ public class FeeService {
   public FeeState calculateFeeState(Wallet wallet) {
     log.debug("Wallet at beginning of calculateFeeState = " + wallet.toString(false, false, true, null));
 
-    // Get all the send transactions, ordered by date
-    List<Transaction> sendTransactions = getSendTransactionList(wallet);
+    // Get all the send transactions sent by me, ordered by date
+    List<Transaction> sendTransactions = getSentBySelfTransactionList(wallet);
     int currentNumberOfSends = sendTransactions.size();
     log.debug("The wallet send count is " + currentNumberOfSends);
 
@@ -254,7 +254,13 @@ public class FeeService {
     return new FeeState(true, nextSendFeeAddress, currentNumberOfSends, nextSendFeeCount, FEE_PER_SEND, netFeeToBePaid);
   }
 
-  private List<Transaction> getSendTransactionList(Wallet wallet) {
+  /**
+   * Get all the send transactions in the wallet that are sent by self
+   * (Sends that originate from another copy of this HD have no client fee attached)
+   * @param wallet the wallet to look for sends for
+   * @return List of the transactions in this wallet sent by self
+   */
+  private List<Transaction> getSentBySelfTransactionList(Wallet wallet) {
 
     // Get all the wallets transactions and sort by date
     ArrayList<Transaction> transactions = new ArrayList<>(wallet.getTransactions(false));
@@ -269,8 +275,10 @@ public class FeeService {
 
     for (Transaction transaction : transactions) {
       if (transaction.getValueSentFromMe(wallet).compareTo(BigInteger.ZERO) > 0) {
-        // This transaction sends from me
-        sendTransactions.add(transaction);
+        if (transaction.getConfidence() != null && TransactionConfidence.Source.SELF.equals(transaction.getConfidence().getSource())) {
+          // This transaction sends from self
+          sendTransactions.add(transaction);
+        }
       }
     }
 
