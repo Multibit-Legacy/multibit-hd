@@ -246,6 +246,8 @@ public class FeeService {
       if ((nextSendFeeCount - currentNumberOfSends) < (numberOfFreeSends + NEXT_SEND_DELTA_LOWER_LIMIT)) {
         nextSendFeeCount = currentNumberOfSends + numberOfFreeSends + NEXT_SEND_DELTA_LOWER_LIMIT;
         log.debug("The user has overpaid and has {} free sends. Pushing out nextSendFeeCount to {}", numberOfFreeSends, nextSendFeeCount);
+        // Persist back to wallet
+        wallet.addOrUpdateExtension(new SendFeeDtoWalletExtension(new SendFeeDto(Optional.of(nextSendFeeCount), Optional.of(nextSendFeeAddress))));
       }
     }
 
