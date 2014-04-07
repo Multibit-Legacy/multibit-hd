@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.*;
 import java.io.*;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.security.KeyStore;
@@ -105,7 +106,7 @@ public enum SSLManager {
       log.info("No errors. The certificate is already trusted");
 
       isTrusted = true;
-    } catch (UnknownHostException | SocketTimeoutException e) {
+    } catch (UnknownHostException | SocketTimeoutException | SocketException e) {
       // The host is unavailable or the network is down - quit now and use JVM defaults
       return;
     } catch (SSLException e) {
