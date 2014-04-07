@@ -130,7 +130,7 @@ public class FeeService {
    * @param wallet the wallet to calculate the fee state for
    */
   public FeeState calculateFeeState(Wallet wallet) {
-    log.debug("Wallet at beginning of calculateFeeState = " + wallet.toString(false, false, true, null));
+    log.debug("Wallet at beginning of calculateFeeState = " + wallet.toString(false, true, true, null));
 
     // Get all the send transactions sent by me, ordered by date
     List<Transaction> sendTransactions = getSentBySelfTransactionList(wallet);
@@ -177,6 +177,7 @@ public class FeeService {
     }
 
     // The net amount fee still to be paid is the gross amount minus the amount paid so far
+    // This could be negative if the user has overpaid
     BigInteger netFeeToBePaid = grossFeeToBePaid.subtract(feePaid);
 
     int nextSendFeeCount;
@@ -206,8 +207,9 @@ public class FeeService {
       log.debug("Reusing the next address to send fee to. It will be is " + nextSendFeeAddress);
     } else {
       // Work out the count of the sends at which the next payment will be made
-      nextSendFeeCount = (lastFeePayingSendingCountOptional.isPresent() ? lastFeePayingSendingCountOptional.get() : 0) +
-        +NEXT_SEND_DELTA_LOWER_LIMIT + secureRandom.nextInt(NEXT_SEND_DELTA_UPPER_LIMIT - NEXT_SEND_DELTA_LOWER_LIMIT);
+      int numberOfSendCountsPaidFor = feePaid.divide(FEE_PER_SEND).intValue();
+      nextSendFeeCount = numberOfSendCountsPaidFor +
+              + NEXT_SEND_DELTA_LOWER_LIMIT + secureRandom.nextInt(NEXT_SEND_DELTA_UPPER_LIMIT - NEXT_SEND_DELTA_LOWER_LIMIT);
       // If we already have more sends than that then mark the next send as a fee send ie send a fee ASAP
       if (currentNumberOfSends >= nextSendFeeCount) {
         nextSendFeeCount = currentNumberOfSends;
@@ -218,8 +220,8 @@ public class FeeService {
       // Work out the next fee send address - it is random
       Set<String> candidateSendFeeAddresses;
       if (matcherResponseFromWallet == null
-        || matcherResponseFromWallet.getBitcoinAddresses() == null
-        || matcherResponseFromWallet.getBitcoinAddresses().isEmpty()) {
+              || matcherResponseFromWallet.getBitcoinAddresses() == null
+              || matcherResponseFromWallet.getBitcoinAddresses().isEmpty()) {
         candidateSendFeeAddresses = getHardwiredFeeAddresses();
       } else {
         candidateSendFeeAddresses = matcherResponseFromWallet.getBitcoinAddresses();
@@ -237,9 +239,17 @@ public class FeeService {
       wallet.addOrUpdateExtension(new SendFeeDtoWalletExtension(new SendFeeDto(Optional.of(nextSendFeeCount), Optional.of(nextSendFeeAddress))));
     }
 
+    // If the user has overpaid then they have amountOverpaid/ FEE_PER_SEND free sends so adjust the nextFeeSendCount accordingly
+    if (netFeeToBePaid.compareTo(BigInteger.ZERO) < 0) {
+      int numberOfFreeSends = netFeeToBePaid.negate().divide(FEE_PER_SEND).intValue();
+      // if the nextSendFeeCount is less than the numberOfFreeSendCount + NEXT_SEND_DELTA_LOWER_LIMIT then push out the nextSendFeeCount a little
+      if ((nextSendFeeCount - currentNumberOfSends) < (numberOfFreeSends + NEXT_SEND_DELTA_LOWER_LIMIT)) {
+        nextSendFeeCount = currentNumberOfSends + numberOfFreeSends + NEXT_SEND_DELTA_LOWER_LIMIT;
+        log.debug("The user has overpaid and has {} free sends. Pushing out nextSendFeeCount to {}", numberOfFreeSends, nextSendFeeCount);
+      }
+    }
 
     log.debug("Wallet at end of calculateFeeState = " + wallet.toString(false, false, true, null));
-
 
     log.debug("The wallet has currentNumberOfSends = {}", currentNumberOfSends);
     log.debug("The wallet owes a GROSS total of {} satoshi in fees", grossFeeToBePaid);
@@ -257,6 +267,7 @@ public class FeeService {
   /**
    * Get all the send transactions in the wallet that are sent by self
    * (Sends that originate from another copy of this HD have no client fee attached)
+   *
    * @param wallet the wallet to look for sends for
    * @return List of the transactions in this wallet sent by self
    */
@@ -310,9 +321,9 @@ public class FeeService {
   }
 
   /**
-   * Get the List of hardwired fee addresses that will be used if the BRIT Matcher exchange fails
+   * Get the Set of hardwired fee addresses that will be used if the BRIT Matcher exchange fails
    *
-   * @return List of bitcoin addresses to use as hardwired fee addresses
+   * @return Set of bitcoin addresses to use as hardwired fee addresses
    */
   public Set<String> getHardwiredFeeAddresses() {
 
@@ -354,7 +365,7 @@ public class FeeService {
     urlConn.setUseCaches(false);
     // Specify the content type.
     urlConn.setRequestProperty
-      ("Content-Type", "application/octet-stream");
+            ("Content-Type", "application/octet-stream");
     // Send POST output.
     postOutputStream = new DataOutputStream(urlConn.getOutputStream());
     postOutputStream.write(payload);
@@ -385,7 +396,6 @@ public class FeeService {
    * Calculate the date of the first transaction in the Wallet
    *
    * @param wallet The wallet to inspect the transactions of
-   *
    * @return Either the date of the first transaction in the wallet, or Optional.absent() if there are no transactions
    */
   private Optional<Date> calculateFirstTransactionDate(Wallet wallet) {

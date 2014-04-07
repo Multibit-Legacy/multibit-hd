@@ -189,7 +189,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
   @Subscribe
   public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
-    log.debug("Received the TransactionSeenEvent: " + transactionSeenEvent.toString());
+    //log.debug("Received the TransactionSeenEvent: " + transactionSeenEvent.toString());
     lastTransactionSeenEvent = transactionSeenEvent;
     // The event may be fired before the UI has initialised
     if (!initialised) {

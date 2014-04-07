@@ -72,7 +72,10 @@ public enum MessageKey {
   TRANSACTION_FEE("transaction_fee"),
   DEVELOPER_FEE("developer_fee"),
   DEVELOPER_FEE_NOW("developer_fee_now"),
-  DEVELOPER_FEE_LATER("developer_fee_later"),
+  DEVELOPER_FEE_LATER_PLURAL("developer_fee_later_plural"),
+  DEVELOPER_FEE_LATER_SINGULAR("developer_fee_later_singular"),
+  DEVELOPER_FEE_OVERPAID("developer_fee_overpaid"),
+
   COINBASE("coinbase"),
 
   NAME("name"),

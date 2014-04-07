@@ -172,7 +172,7 @@ public class CoreServices {
    * @return The application event service singleton
    */
   public static ApplicationEventService getApplicationEventService() {
-    log.debug("Get application service");
+    //log.debug("Get application service");
     return applicationEventService;
 
   }

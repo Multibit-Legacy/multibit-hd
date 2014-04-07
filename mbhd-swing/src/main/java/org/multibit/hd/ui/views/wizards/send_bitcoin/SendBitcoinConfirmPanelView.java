@@ -22,6 +22,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
+import java.math.BigInteger;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -67,8 +68,8 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
 
     // Configure the panel model
     panelModel = new SendBitcoinConfirmPanelModel(
-      getPanelName(),
-      enterPasswordMaV.getModel()
+            getPanelName(),
+            enterPasswordMaV.getModel()
     );
     setPanelModel(panelModel);
 
@@ -86,9 +87,9 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     notesTextArea = TextBoxes.newEnterNotes(getWizardModel());
 
     contentPanel.setLayout(new MigLayout(
-      Panels.migXYLayout(),
-      "[][]", // Column constraints
-      "[]10[]10[][][]10[][]" // Row constraints
+            Panels.migXYLayout(),
+            "[][]", // Column constraints
+            "[]10[]10[][][]10[][]" // Row constraints
     ));
 
     clientFeeInfoLabel = Labels.newBlankLabel();
@@ -141,15 +142,26 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
       if (feeState.getCurrentNumberOfSends() == feeState.getNextFeeSendCount()) {
         // The fee is due at the next send e.g. current number of sends = 20, nextFeeSendCount = 20 (the 21st send i.e. the coming one)
         feeText = Languages.safeText(MessageKey.DEVELOPER_FEE_NOW);
+      } else if (feeState.getFeeOwed().compareTo(BigInteger.ZERO) < 0) {
+        // The user has overpaid
+        feeText = Languages.safeText(MessageKey.DEVELOPER_FEE_OVERPAID);
       } else {
         // It is due later
-        feeText = Languages.safeText(MessageKey.DEVELOPER_FEE_LATER, feeState.getNextFeeSendCount() - feeState.getCurrentNumberOfSends());
+        int dueLater = feeState.getNextFeeSendCount() - feeState.getCurrentNumberOfSends();
+        if (dueLater == 1) {
+          feeText = Languages.safeText(MessageKey.DEVELOPER_FEE_LATER_SINGULAR, dueLater);
+        } else {
+          feeText = Languages.safeText(MessageKey.DEVELOPER_FEE_LATER_PLURAL, dueLater);
+        }
       }
+
       developerFeeDisplayAmountMaV.getModel().setSatoshis(feeState.getFeeOwed());
       developerFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
       developerFeeDisplayAmountMaV.getView().updateView(configuration);
 
-    } else {
+    } else
+
+    {
       // Possibly no wallet loaded
       feeText = "";
     }
@@ -157,7 +169,19 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     clientFeeInfoLabel.setText(feeText);
 
     // Update the model and view for the recipient
-    recipientSummaryLabel.setText(getWizardModel().getRecipient().getSummary());
+    recipientSummaryLabel.setText(
+
+            getWizardModel()
+
+                    .
+
+                            getRecipient()
+
+                    .
+
+                            getSummary()
+
+    );
 
     return true;
   }
