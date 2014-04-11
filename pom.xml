@@ -86,6 +86,12 @@
       <url>http://mvn-adamgent.googlecode.com/svn/maven/release</url>
       <releases/>
     </repository>
+    <!-- Define the MultiBit staging repository for snapshots -->
+    <repository>
+      <id>mbhd-maven</id>
+      <url>https://raw.githubusercontent.com/bitcoin-solutions/mbhd-maven/master/snapshots</url>
+      <snapshots/>
+    </repository>
 
   </repositories>
 
