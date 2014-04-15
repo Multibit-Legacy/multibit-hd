@@ -3,14 +3,19 @@ package org.multibit.hd.core.dto;
 import com.google.bitcoin.core.Wallet;
 
 /**
- * <p>Data object wrapping a Wallet and WalletId
- *  
+ * <p>Data object wrapping a Wallet and WalletId</p>
+ *
+ * @since 0.0.1 
  */
 public class WalletData {
 
   private final Wallet wallet;
 
   private final WalletId walletId;
+
+  private String name;
+
+  private String description;
 
   private CharSequence password;
 
@@ -36,11 +41,36 @@ public class WalletData {
     this.password = password;
   }
 
+  /**
+   * @return The wallet name (e.g. "ACME Ltd")
+   */
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  /**
+   * @return The longer description (e.g. "The ACME Ltd business wallet")
+   */
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
   @Override
   public String toString() {
     return "WalletData{" +
-            "walletId=" + walletId +
-            ", wallet=" + wallet +
-            '}';
+      "wallet=" + wallet +
+      ", walletId=" + walletId +
+      ", name='" + name + '\'' +
+      ", description='" + description + '\'' +
+      ", password=****" +
+      '}';
   }
 }
