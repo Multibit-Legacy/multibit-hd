@@ -80,7 +80,7 @@ public class ExchangeTickerService extends AbstractService {
     log.debug("Starting service");
 
     // Use the provided executor service management
-    requireSingleThreadScheduledExecutor();
+    requireSingleThreadScheduledExecutor("exchange-ticker");
 
     // Use the provided executor service management
     getScheduledExecutorService().scheduleAtFixedRate(new Runnable() {
@@ -148,7 +148,7 @@ public class ExchangeTickerService extends AbstractService {
     final String exchangeCounterCode = ExchangeKey.exchangeCode(localCurrencyUnit.getCurrencyCode(), exchangeKey);
     final String exchangeBaseCode = ExchangeKey.exchangeCode("XBT", exchangeKey);
 
-    return SafeExecutors.newSingleThreadExecutor().submit(new Callable<Ticker>() {
+    return SafeExecutors.newSingleThreadExecutor("latest-ticker").submit(new Callable<Ticker>() {
       @Override
       public Ticker call() throws Exception {
 
@@ -196,7 +196,7 @@ public class ExchangeTickerService extends AbstractService {
    */
   public ListenableFuture<String[]> allCurrencies() {
 
-    return SafeExecutors.newFixedThreadPool(1).submit(new Callable<String[]>() {
+    return SafeExecutors.newFixedThreadPool(1,"all-currencies").submit(new Callable<String[]>() {
       @Override
       public String[] call() throws Exception {
         Locale currentLocale = Configurations.currentConfiguration.getLocale();

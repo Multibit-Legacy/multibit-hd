@@ -70,7 +70,7 @@ public class BitcoinNetworkService extends AbstractService {
 
   @Override
   public boolean start() {
-    requireSingleThreadExecutor();
+    requireSingleThreadExecutor("bitcoin-network");
 
     CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkNotInitialised());
 

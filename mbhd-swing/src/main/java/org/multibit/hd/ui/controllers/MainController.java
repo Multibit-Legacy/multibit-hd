@@ -88,11 +88,11 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
    */
   private void handleExchange() {
 
-    // Don't hold up the UI if the exchange doesn't respond
-    SafeExecutors.newSingleThreadExecutor().execute(new Runnable() {
-      @Override
-      public void run() {
-
+//    // Don't hold up the UI if the exchange doesn't respond
+//    SafeExecutors.newSingleThreadExecutor().execute(new Runnable() {
+//      @Override
+//      public void run() {
+//
         BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
         ExchangeKey exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getCurrentExchange());
 
@@ -111,8 +111,8 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
         // Create and start the exchange ticker service
         exchangeTickerService = Optional.of(CoreServices.newExchangeService(bitcoinConfiguration));
         exchangeTickerService.get().start();
-      }
-    });
+//      }
+//    });
 
   }
 
@@ -215,7 +215,7 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
         ControllerEvents.fireShowDetailScreenEvent(screen);
 
         // Don't hold up the UI thread with these background operations
-        SafeExecutors.newSingleThreadExecutor().submit(new Runnable() {
+        SafeExecutors.newSingleThreadExecutor("initialise").submit(new Runnable() {
           @Override
           public void run() {
 

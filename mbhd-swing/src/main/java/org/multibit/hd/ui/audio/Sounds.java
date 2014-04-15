@@ -60,7 +60,7 @@ public class Sounds {
 
     if (Configurations.currentConfiguration.getSoundConfiguration().isReceiveSound()) {
 
-      ExecutorService executorService = SafeExecutors.newSingleThreadExecutor();
+      ExecutorService executorService = SafeExecutors.newSingleThreadExecutor("play-received");
       executorService.submit(new Runnable() {
         @Override
         public void run() {

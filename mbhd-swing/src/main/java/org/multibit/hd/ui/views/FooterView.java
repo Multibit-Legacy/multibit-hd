@@ -166,7 +166,7 @@ public class FooterView {
    */
   private ScheduledFuture<?> scheduleHideProgressBar() {
 
-    return SafeExecutors.newScheduledThreadPool(1).schedule(new Runnable() {
+    return SafeExecutors.newScheduledThreadPool(1,"progress").schedule(new Runnable() {
       @Override
       public void run() {
 

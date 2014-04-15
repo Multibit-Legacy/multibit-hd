@@ -113,7 +113,7 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
   public void actionPerformed(final ActionEvent e) {
 
     // Hand over the configuration change to a background task
-    SafeExecutors.newFixedThreadPool(1).execute(new Runnable() {
+    SafeExecutors.newFixedThreadPool(1,"locale-change").execute(new Runnable() {
       @Override
       public void run() {
 

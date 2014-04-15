@@ -4,11 +4,13 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.multibit.hd.brit.crypto.PGPUtils;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.services.FeeService;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.HistoryEntry;
@@ -28,6 +30,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Factory to provide the following to application API:</p>
@@ -136,22 +139,30 @@ public class CoreServices {
 
   }
 
-  public static void stopAndWait() {
+  /**
+   * <p>Typically called after a ShutdownEvent is broadcast, this method waits a short time and then issues
+   * the <code>System.exit()</code> call to finalise all threads.</p>
+   */
+  public static void shutdown() {
 
-    // Aggressively finalise references to ensure thread death
-    uiEventBus = null;
-    applicationEventService = null;
-    securityCheckingService = null;
-    configurationService = null;
-    bitcoinNetworkService = null;
-    contactServiceMap = null;
-    walletServiceMap = null;
-    historyServiceMap = null;
+    SafeExecutors.newFixedThreadPool(1, "shutdown").execute(new Runnable() {
+      @Override
+      public void run() {
+
+        // Provide a short delay while modules deal with the ShutdownEvent
+        Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+
+        log.info("Issuing system exit");
+        System.exit(0);
+
+      }
+    });
 
   }
 
   /**
    * @param bitcoinConfiguration The Bitcoin configuration providing exchange and currency details
+   *
    * @return A new exchange service based on the current configuration
    */
   public static ExchangeTickerService newExchangeService(BitcoinConfiguration bitcoinConfiguration) {
@@ -276,8 +287,10 @@ public class CoreServices {
 
   }
 
+
   /**
    * @param walletId The wallet ID for the wallet
+   *
    * @return The contact service for a wallet
    */
   public static ContactService getOrCreateContactService(WalletId walletId) {
@@ -294,7 +307,6 @@ public class CoreServices {
     // Return the existing or new contact service
     return contactServiceMap.get(walletId);
   }
-
 
   /**
    * @return A BRIT fee service pointing to the live Matcher machine

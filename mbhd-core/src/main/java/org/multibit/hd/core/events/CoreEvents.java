@@ -87,7 +87,7 @@ public class CoreEvents {
       if (!waitingToFireSlowTransactionSeenEvent) {
         // Fire in the future
         waitingToFireSlowTransactionSeenEvent = true;
-        SafeExecutors.newSingleThreadScheduledExecutor().schedule(new Callable() {
+        SafeExecutors.newSingleThreadScheduledExecutor("tx-seen").schedule(new Callable() {
           @Override
           public Object call() throws Exception {
             CoreServices.uiEventBus.post(new SlowTransactionSeenEvent());
@@ -140,8 +140,10 @@ public class CoreEvents {
    * <p>Broadcast a new "shutdown" event</p>
    */
   public static void fireShutdownEvent() {
-    log.trace("Firing 'shutdown' event");
+    log.info("Firing 'shutdown' event");
     CoreServices.uiEventBus.post(new ShutdownEvent());
+
+    CoreServices.shutdown();
   }
 
   /**

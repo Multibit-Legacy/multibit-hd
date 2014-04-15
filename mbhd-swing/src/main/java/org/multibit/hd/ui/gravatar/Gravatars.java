@@ -68,7 +68,7 @@ public class Gravatars {
 
     Preconditions.checkNotNull(emailAddress, "'emailAddress' must be present");
 
-    return SafeExecutors.newFixedThreadPool(1).submit(new Callable<Optional<BufferedImage>>() {
+    return SafeExecutors.newFixedThreadPool(1,"gravatar").submit(new Callable<Optional<BufferedImage>>() {
       @Override
       public Optional<BufferedImage> call() throws Exception {
 

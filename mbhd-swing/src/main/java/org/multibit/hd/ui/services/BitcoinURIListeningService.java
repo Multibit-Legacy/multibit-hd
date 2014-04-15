@@ -101,7 +101,7 @@ public class BitcoinURIListeningService extends AbstractService {
   public boolean start() {
 
     // This service will run a single background thread
-    requireFixedThreadPoolExecutor(1);
+    requireFixedThreadPoolExecutor(1,"uri-listener");
 
     try {
 

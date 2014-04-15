@@ -34,8 +34,6 @@ public class MultiBitHD {
 
   private static final Logger log = LoggerFactory.getLogger(MultiBitHD.class);
 
-  private static BitcoinURIListeningService bitcoinURIListeningService;
-
   private static MainController mainController;
   private static MainView mainView;
 
@@ -88,7 +86,7 @@ public class MultiBitHD {
   private static boolean initialiseUIControllers(String[] args) {
 
     // Determine if another instance is running and shutdown if this is the case
-    bitcoinURIListeningService = new BitcoinURIListeningService(args);
+    BitcoinURIListeningService bitcoinURIListeningService = new BitcoinURIListeningService(args);
     if (!bitcoinURIListeningService.start()) {
       CoreEvents.fireShutdownEvent();
       return false;

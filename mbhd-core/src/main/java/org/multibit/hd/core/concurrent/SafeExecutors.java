@@ -3,6 +3,7 @@ package org.multibit.hd.core.concurrent;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +17,7 @@ import java.util.concurrent.TimeUnit;
  * to the ExceptionHandler.</p>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class SafeExecutors {
 
@@ -40,8 +41,8 @@ public class SafeExecutors {
    *
    * @return the newly created single-threaded Executor
    */
-  public static ListeningExecutorService newSingleThreadExecutor() {
-    return newFixedThreadPool(1);
+  public static ListeningExecutorService newSingleThreadExecutor(String name) {
+    return newFixedThreadPool(1, name);
   }
 
   /**
@@ -55,23 +56,20 @@ public class SafeExecutors {
    * execute subsequent tasks.  The threads in the pool will exist
    * until it is explicitly {@link java.util.concurrent.ExecutorService#shutdown shutdown}.
    *
-   * @param nThreads the number of threads in the pool
+   * @param nThreads The number of threads in the pool
+   * @param poolName The name of the pool (use lowercase hyphenated)
    *
    * @return the newly created thread pool
    *
    * @throws IllegalArgumentException if {@code nThreads <= 0}
    */
-  public static ListeningExecutorService newFixedThreadPool(int nThreads) {
-    log.debug("Creating new fixed thread pool with {} threads", nThreads);
-    return MoreExecutors.listeningDecorator(
-      MoreExecutors.getExitingExecutorService(
-        new SafeThreadPoolExecutor(
-          nThreads,
-          nThreads,
-          0L,
-          TimeUnit.MILLISECONDS,
-          new LinkedBlockingQueue<Runnable>()
-        ), DURATION_BEFORE_QUIT, TimeUnit.SECONDS));
+  public static ListeningExecutorService newFixedThreadPool(int nThreads, String poolName) {
+
+    log.debug("New fixed thread pool with {} threads: '{}'", nThreads, poolName);
+
+    ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("safe-fixed-"+poolName+"-%d").build();
+
+    return newFixedThreadPool(nThreads, threadFactory);
   }
 
   /**
@@ -95,8 +93,8 @@ public class SafeExecutors {
    * @throws NullPointerException     if threadFactory is null
    * @throws IllegalArgumentException if {@code nThreads <= 0}
    */
-  public static ListeningExecutorService newFixedThreadPool(int nThreads, ThreadFactory threadFactory) {
-    log.debug("Creating new factory and fixed thread pool with {} threads", nThreads);
+  private static ListeningExecutorService newFixedThreadPool(int nThreads, ThreadFactory threadFactory) {
+
     return MoreExecutors.listeningDecorator(
       MoreExecutors.getExitingExecutorService(
         new SafeThreadPoolExecutor(
@@ -106,7 +104,9 @@ public class SafeExecutors {
           TimeUnit.MILLISECONDS,
           new LinkedBlockingQueue<Runnable>(),
           threadFactory
-        ), DURATION_BEFORE_QUIT, TimeUnit.SECONDS));
+        ), DURATION_BEFORE_QUIT, TimeUnit.SECONDS
+      )
+    );
   }
 
   /**
@@ -121,29 +121,32 @@ public class SafeExecutors {
    * <tt>newScheduledThreadPool(1)</tt> the returned executor is
    * guaranteed not to be reconfigurable to use additional threads.
    *
+   * @param name The name of the thread
+   *
    * @return the newly created scheduled executor
    */
-  public static ListeningScheduledExecutorService newSingleThreadScheduledExecutor() {
-    return newScheduledThreadPool(1);
+  public static ListeningScheduledExecutorService newSingleThreadScheduledExecutor(String name) {
+    return newScheduledThreadPool(1, name);
   }
 
   /**
    * Creates a thread pool that can schedule commands to run after a
    * given delay, or to execute periodically.
    *
-   * @param corePoolSize the number of threads to keep in the pool,
-   *                     even if they are idle.
+   * @param corePoolSize The number of threads to keep in the pool, even if they are idle.
+   * @param poolName     The name of the pool (use lowercase hyphenated)
    *
    * @return a newly created scheduled thread pool
    *
    * @throws IllegalArgumentException if {@code corePoolSize < 0}
    */
-  public static ListeningScheduledExecutorService newScheduledThreadPool(int corePoolSize) {
-    return MoreExecutors.listeningDecorator(
-      MoreExecutors.getExitingScheduledExecutorService(
-        new SafeScheduledThreadPoolExecutor(corePoolSize),
-        DURATION_BEFORE_QUIT, TimeUnit.SECONDS
-      ));
+  public static ListeningScheduledExecutorService newScheduledThreadPool(int corePoolSize, String poolName) {
+
+    log.debug("New scheduled thread pool with {} threads: '{}'", corePoolSize, poolName);
+
+    ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("safe-scheduled-"+poolName+"-%d").build();
+
+    return newScheduledThreadPool(corePoolSize, threadFactory);
   }
 
   /**
@@ -160,12 +163,14 @@ public class SafeExecutors {
    * @throws IllegalArgumentException if {@code corePoolSize < 0}
    * @throws NullPointerException     if threadFactory is null
    */
-  public static ListeningScheduledExecutorService newScheduledThreadPool(int corePoolSize, ThreadFactory threadFactory) {
+  private static ListeningScheduledExecutorService newScheduledThreadPool(int corePoolSize, ThreadFactory threadFactory) {
+
     return MoreExecutors.listeningDecorator(
       MoreExecutors.getExitingScheduledExecutorService(
         new SafeScheduledThreadPoolExecutor(corePoolSize, threadFactory),
         DURATION_BEFORE_QUIT, TimeUnit.SECONDS
-      ));
+      )
+    );
   }
 
 }

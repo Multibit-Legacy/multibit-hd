@@ -53,23 +53,27 @@ public abstract class AbstractService implements ManagedService {
 
   /**
    * <p>Provide a single thread scheduled executor</p>
+   * @param poolName The thread pool name (use lowercase hyphenated)
    */
-  protected void requireSingleThreadScheduledExecutor() {
-    scheduledService = Optional.of(SafeExecutors.newSingleThreadScheduledExecutor());
+  protected void requireSingleThreadScheduledExecutor(String poolName) {
+    scheduledService = Optional.of(SafeExecutors.newSingleThreadScheduledExecutor(poolName));
   }
 
   /**
    * <p>Provide a single thread executor</p>
+   * @param poolName The thread pool name (use lowercase hyphenated)
    */
-  protected void requireSingleThreadExecutor() {
-    service = Optional.of(SafeExecutors.newSingleThreadExecutor());
+  protected void requireSingleThreadExecutor(String poolName) {
+    service = Optional.of(SafeExecutors.newSingleThreadExecutor(poolName));
   }
 
   /**
    * <p>Provide a fixed thread pool executor</p>
+   * @param threadCount The number of threads
+   * @param poolName The thread pool name (use lowercase hyphenated)
    */
-  protected void requireFixedThreadPoolExecutor(int threadCount) {
-    service = Optional.of(SafeExecutors.newFixedThreadPool(threadCount));
+  protected void requireFixedThreadPoolExecutor(int threadCount, String poolName) {
+    service = Optional.of(SafeExecutors.newFixedThreadPool(threadCount, poolName));
   }
 
   /**

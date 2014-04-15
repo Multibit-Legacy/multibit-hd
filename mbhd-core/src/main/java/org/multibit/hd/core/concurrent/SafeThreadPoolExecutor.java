@@ -8,7 +8,7 @@ import java.util.concurrent.*;
  * <p>Wrapper to provide standard exception handling</p>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class SafeThreadPoolExecutor extends ThreadPoolExecutor {
 
@@ -35,18 +35,22 @@ public class SafeThreadPoolExecutor extends ThreadPoolExecutor {
     if (t == null && r instanceof Future<?>) {
       try {
         Future<?> future = (Future<?>) r;
-        if (future.isDone())
+        if (future.isDone()) {
           future.get();
+        }
       } catch (CancellationException ce) {
         // Do nothing - deliberately cancelled
       } catch (ExecutionException ee) {
+        // Exception generated
         t = ee.getCause();
       } catch (InterruptedException ie) {
-        Thread.currentThread().interrupt(); // ignore/reset
+        // Shutdown occurring
+        Thread.currentThread().interrupt();
       }
     }
     if (t != null) {
       ExceptionHandler.handleThrowable(t);
     }
-}
+  }
+
 }

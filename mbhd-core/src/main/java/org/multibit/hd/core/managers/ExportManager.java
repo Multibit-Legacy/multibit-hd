@@ -47,8 +47,8 @@ public class ExportManager {
 
   public static void export(final List<PaymentData> paymentDataList, final List<PaymentRequestData> paymentRequestDataList, final File exportDirectory, final String transactionFileStem, final String paymentRequestFileStem,
                             final CSVEntryConverter<PaymentRequestData> paymentRequestHeaderConverter, final CSVEntryConverter<PaymentRequestData> paymentRequestConverter,
-                            final CSVEntryConverter<TransactionData>transactionHeaderConverter, final CSVEntryConverter<TransactionData> transactionConverter) {
-    ExecutorService executorService = SafeExecutors.newSingleThreadExecutor();
+                            final CSVEntryConverter<TransactionData> transactionHeaderConverter, final CSVEntryConverter<TransactionData> transactionConverter) {
+    ExecutorService executorService = SafeExecutors.newSingleThreadExecutor("export");
     executorService.submit(new Runnable() {
       @Override
       public void run() {
@@ -58,8 +58,8 @@ public class ExportManager {
           exportDirectory,
           transactionFileStem,
           paymentRequestFileStem,
-                paymentRequestHeaderConverter, paymentRequestConverter,
-                transactionHeaderConverter, transactionConverter
+          paymentRequestHeaderConverter, paymentRequestConverter,
+          transactionHeaderConverter, transactionConverter
         );
       }
     });
@@ -68,7 +68,7 @@ public class ExportManager {
 
   public static void exportInternal(final List<PaymentData> paymentDataList, final List<PaymentRequestData> paymentRequestDataList, final File exportDirectory, final String transactionFileStem, final String paymentRequestFileStem,
                                     final CSVEntryConverter<PaymentRequestData> paymentRequestHeaderConverter, final CSVEntryConverter<PaymentRequestData> paymentRequestConverter,
-                                                               final CSVEntryConverter<TransactionData>transactionHeaderConverter, final CSVEntryConverter<TransactionData> transactionConverter) {
+                                    final CSVEntryConverter<TransactionData> transactionHeaderConverter, final CSVEntryConverter<TransactionData> transactionConverter) {
     // Perform the export.
     // On completion this fires an ExportPerformedEvent that you subscribe to to find out what happened
     String[] exportFilenames = calculateExportFilenames(exportDirectory, transactionFileStem, paymentRequestFileStem);
@@ -178,7 +178,7 @@ public class ExportManager {
 
     if (exportWasSuccessful) {
       CoreEvents.fireExportPerformedEvent(new ExportPerformedEvent(transactionsExportFilename,
-              paymentRequestsExportFilename, true, null, null));
+        paymentRequestsExportFilename, true, null, null));
     } else {
       CoreEvents.fireExportPerformedEvent(new ExportPerformedEvent(transactionsExportFilename, paymentRequestsExportFilename, false, CoreMessageKey.THE_ERROR_WAS, new String[]{errorMessage}));
     }

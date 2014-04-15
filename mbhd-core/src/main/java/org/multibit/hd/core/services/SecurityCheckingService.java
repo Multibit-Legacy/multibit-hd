@@ -38,7 +38,7 @@ public class SecurityCheckingService extends AbstractService {
     log.debug("Starting security service");
 
     // Use the provided executor service management
-    requireSingleThreadScheduledExecutor();
+    requireSingleThreadScheduledExecutor("security");
 
     // Use the provided executor service management
     getScheduledExecutorService().scheduleAtFixedRate(new Runnable() {

@@ -295,7 +295,7 @@ public class ComponentTestBed {
     HeaderController controller = new HeaderController();
     HeaderView view = new HeaderView();
 
-    SafeExecutors.newFixedThreadPool(1).execute(new Runnable() {
+    SafeExecutors.newFixedThreadPool(1,"testbed").execute(new Runnable() {
 
       int i = 0;
 

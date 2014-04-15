@@ -172,7 +172,7 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
 
     // Check the password (might take a while so do it asynchronously while showing a spinner)
     // Tar pit (must be in a separate thread to ensure UI updates)
-    ListenableFuture<Boolean> passwordFuture = SafeExecutors.newSingleThreadExecutor().submit(new Callable<Boolean>() {
+    ListenableFuture<Boolean> passwordFuture = SafeExecutors.newSingleThreadExecutor("change-password").submit(new Callable<Boolean>() {
 
       @Override
       public Boolean call() {

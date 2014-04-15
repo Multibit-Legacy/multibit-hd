@@ -168,7 +168,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
     // Issue the wizard hide event before the hide takes place to give UI time to update
     ViewEvents.fireWizardHideEvent(panelName, wizardModel, isExitCancel);
 
-    SafeExecutors.newSingleThreadExecutor().submit(new Runnable() {
+    SafeExecutors.newSingleThreadExecutor("wizard-hide").submit(new Runnable() {
       @Override
       public void run() {
 
