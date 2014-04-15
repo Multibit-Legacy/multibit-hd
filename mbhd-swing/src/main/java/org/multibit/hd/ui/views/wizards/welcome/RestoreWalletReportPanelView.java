@@ -32,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -225,12 +224,12 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     try {
       WalletId loadedWalletId = BackupManager.INSTANCE.loadBackup(selectedBackupSummaryModel.getValue().getFile());
 
-      // Load the wallet into memory that has just been copied to the wallet directory
-      File walletRootDirectory = WalletManager.getWalletDirectory(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath(), WalletManager.createWalletRoot(loadedWalletId));
-      String walletFilename = walletRootDirectory + File.separator + WalletManager.MBHD_WALLET_NAME;
-
       // TODO need to shut down everything beforehand ???
-      WalletManager.INSTANCE.loadFromFile(new File(walletFilename));
+      // TODO need to add a real password
+      WalletManager.INSTANCE.open(
+        InstallationManager.getOrCreateApplicationDataDirectory(),
+        loadedWalletId,
+        "password");
 
       // Synchronize wallet
       CoreServices.getOrCreateBitcoinNetworkService().start();

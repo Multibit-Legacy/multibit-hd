@@ -43,9 +43,10 @@ public class WalletServiceTest {
     byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
     WalletId walletId = new WalletId(seed1);
 
-    WalletManager.INSTANCE.initialise(temporaryDirectory);
+    // TODO May not be required
+    // WalletManager.INSTANCE.open(temporaryDirectory);
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
-    WalletData walletData = WalletManager.INSTANCE.createWallet(temporaryDirectory.getAbsolutePath(), seed1, PASSWORD);
+    WalletData walletData = WalletManager.INSTANCE.getOrCreateWallet(temporaryDirectory, seed1, PASSWORD);
 
     firstAddress = walletData.getWallet().getKeys().get(0).toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
 

@@ -68,7 +68,7 @@ public class PersistentContactService implements ContactService {
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
     String walletRoot = WalletManager.createWalletRoot(walletId);
 
-    File walletDirectory = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), walletRoot);
+    File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
 
     File contactsDirectory = new File(walletDirectory.getAbsolutePath() + File.separator + CONTACTS_DIRECTORY_NAME);
     FileUtils.createDirectoryIfNecessary(contactsDirectory);

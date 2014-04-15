@@ -18,6 +18,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static org.multibit.hd.core.dto.WalletId.LENGTH_OF_FORMATTED_WALLET_ID;
+import static org.multibit.hd.core.dto.WalletId.WALLET_ID_SEPARATOR;
+
 
 /**
  * Class to manage creation and reading back of the wallet backups.
@@ -52,6 +55,7 @@ public enum BackupManager {
    * Initialise the backup manager to use the specified cloudBackupDirectory.
    * All the cloud backups will be written and read from this directory.
    * Note that each wallet also have a local copy of the zip backups.
+   * TODO (GR) cloud backup must be optional
    */
   public void initialise(File applicationDataDirectory, File cloudBackupDirectory) {
     Preconditions.checkNotNull(applicationDataDirectory);
@@ -73,7 +77,7 @@ public enum BackupManager {
   public List<BackupSummary> getLocalZipBackups(WalletId walletId) {
 
     // Find the wallet root directory for this wallet id
-    File walletRootDirectory = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), WalletManager.createWalletRoot(walletId));
+    File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletId));
 
     if (!walletRootDirectory.exists()) {
       // No directory - no backups
@@ -110,9 +114,9 @@ public enum BackupManager {
 
     // Look for filenames with format "mbhd-" + [formatted wallet id ] + "-YYYYMMDDHHMMSS.zip"
     String backupRegex = WalletManager.WALLET_DIRECTORY_PREFIX
-      + WalletManager.SEPARATOR
+      + WALLET_ID_SEPARATOR
       + walletId.toFormattedString()
-      + WalletManager.SEPARATOR
+      + WALLET_ID_SEPARATOR
       + "\\d{14}"
       + BACKUP_ZIP_FILE_EXTENSION_REGEX;
 
@@ -123,7 +127,8 @@ public enum BackupManager {
             if (file.length() > 0) {
               BackupSummary backupSummary = new BackupSummary(walletId, file.getName(), file);
               // Work out timestamp
-              int start = (WalletManager.MBHD_WALLET_PREFIX + WalletManager.SEPARATOR + WalletManager.SEPARATOR).length() + WalletId.LENGTH_OF_FORMATTED_WALLET_ID;
+              // TODO (JB) Is this correct? Should it be +1 instead
+              int start = (WalletManager.MBHD_WALLET_PREFIX + WALLET_ID_SEPARATOR + WALLET_ID_SEPARATOR).length() + LENGTH_OF_FORMATTED_WALLET_ID;
               int stop = start + 14;
               String timeStampString = FileUtils.filePart(file.getName().substring(start, stop));
               try {
@@ -156,7 +161,7 @@ public enum BackupManager {
     Preconditions.checkNotNull(walletId);
 
     // Calculate the directory the rolling backups are stored in for this wallet id
-    String rollingBackupDirectoryName = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), WalletManager.createWalletRoot(walletId)) +
+    String rollingBackupDirectoryName = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletId)) +
       File.separator + ROLLING_BACKUP_DIRECTORY_NAME;
     File rollingBackupDirectory = new File(rollingBackupDirectoryName);
 
@@ -177,7 +182,7 @@ public enum BackupManager {
           if (file.getName().matches(REGEX_FOR_TIMESTAMP_AND_WALLET_SUFFIX)) {
             if (file.length() > 0) {
               // Work out timestamp
-              int start = (WalletManager.MBHD_WALLET_PREFIX + WalletManager.SEPARATOR).length();
+              int start = (WalletManager.MBHD_WALLET_PREFIX + WALLET_ID_SEPARATOR).length();
               int stop = start + 14;
               String timeStampString = file.getName().substring(start, stop);
               try {
@@ -224,9 +229,7 @@ public enum BackupManager {
     Preconditions.checkNotNull(applicationDataDirectory, "'applicationDataDirectory' must be present. Check BackupManager has been initialised");
 
     // Find the wallet root directory for this wallet id
-    File walletRootDirectory = WalletManager.getWalletDirectory(
-      applicationDataDirectory.getAbsolutePath(),
-      WalletManager.createWalletRoot(walletData.getWalletId())
+    File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletData.getWalletId())
     );
 
     if (!walletRootDirectory.exists()) {
@@ -241,7 +244,7 @@ public enum BackupManager {
     String walletBackupFilename = rollingBackupDirectoryName
       + File.separator
       + WalletManager.MBHD_WALLET_PREFIX
-      + WalletManager.SEPARATOR
+      + WALLET_ID_SEPARATOR
       + Dates.formatBackupDate(Dates.nowUtc())
       + WalletManager.MBHD_WALLET_SUFFIX;
 
@@ -280,7 +283,7 @@ public enum BackupManager {
     Preconditions.checkNotNull(walletId);
 
     // Find the wallet root directory for this wallet id
-    File walletRootDirectory = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), WalletManager.createWalletRoot(walletId));
+    File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletId));
 
     if (!walletRootDirectory.exists()) {
       throw new IOException("Directory " + walletRootDirectory + " does not exist. Cannot backup.");
@@ -290,9 +293,9 @@ public enum BackupManager {
     FileUtils.createDirectoryIfNecessary(localBackupDirectory);
 
     String backupFilename = WalletManager.WALLET_DIRECTORY_PREFIX
-      + WalletManager.SEPARATOR
+      + WALLET_ID_SEPARATOR
       + walletId.toFormattedString()
-      + WalletManager.SEPARATOR
+      + WALLET_ID_SEPARATOR
       + Dates.formatBackupDate(Dates.nowUtc())
       + BACKUP_ZIP_FILE_EXTENSION;
     String localBackupFilename = localBackupDirectory.getAbsolutePath() + File.separator + backupFilename;
@@ -323,19 +326,19 @@ public enum BackupManager {
     String backupFilename = backupFileToLoad.getName();
 
     // Remove "mbhd-" prefix
-    String walletRoot = backupFilename.replace(WalletManager.WALLET_DIRECTORY_PREFIX + WalletManager.SEPARATOR, "");
+    String walletRoot = backupFilename.replace(WalletManager.WALLET_DIRECTORY_PREFIX + WALLET_ID_SEPARATOR, "");
 
     // Remove  ".zip" suffix
     walletRoot = walletRoot.replace(BACKUP_ZIP_FILE_EXTENSION, "");
 
     // Remove the timestamp
-    if (walletRoot.length() > WalletId.LENGTH_OF_FORMATTED_WALLET_ID) {
-      walletRoot = walletRoot.substring(0, WalletId.LENGTH_OF_FORMATTED_WALLET_ID);
+    if (walletRoot.length() > LENGTH_OF_FORMATTED_WALLET_ID) {
+      walletRoot = walletRoot.substring(0, LENGTH_OF_FORMATTED_WALLET_ID);
     }
     WalletId walletId = new WalletId(walletRoot);
 
     // Make a backup of all the current file in the wallet root directory if it exists
-    File walletRootDirectory = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), WalletManager.createWalletRoot(walletId));
+    File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletId));
 
     if (walletRootDirectory.exists()) {
       createLocalAndCloudBackup(walletId);

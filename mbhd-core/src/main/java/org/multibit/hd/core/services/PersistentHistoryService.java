@@ -68,7 +68,7 @@ public class PersistentHistoryService implements HistoryService {
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
     String walletRoot = WalletManager.createWalletRoot(walletId);
 
-    File walletDirectory = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), walletRoot);
+    File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
 
     File historyDirectory = new File(walletDirectory.getAbsolutePath() + File.separator + HISTORY_DIRECTORY_NAME);
     FileUtils.createDirectoryIfNecessary(historyDirectory);

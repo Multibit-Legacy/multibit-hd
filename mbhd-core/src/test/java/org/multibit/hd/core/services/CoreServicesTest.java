@@ -52,9 +52,10 @@ public class CoreServicesTest {
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
 
-    WalletManager.INSTANCE.initialise(temporaryDirectory);
+    // TODO May not be required
+    // WalletManager.INSTANCE.open(temporaryDirectory);
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
-    WalletData walletData = WalletManager.INSTANCE.createWallet(temporaryDirectory.getAbsolutePath(), seed, PASSWORD);
+    WalletData walletData = WalletManager.INSTANCE.getOrCreateWallet(temporaryDirectory, seed, PASSWORD);
 
     Wallet wallet  = walletData.getWallet();
 

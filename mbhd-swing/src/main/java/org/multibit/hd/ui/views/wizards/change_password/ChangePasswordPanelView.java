@@ -9,6 +9,7 @@ import com.google.common.util.concurrent.Uninterruptibles;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -264,8 +265,9 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
       // TODO - remove when we have proper HD wallets  - won't need password for address generation
       // TODO should be using WalletService
 
-      // Attempt to open the current wallet
-      WalletManager.INSTANCE.initialise(InstallationManager.getOrCreateApplicationDataDirectory());
+      //String walletId = Configurations.currentConfiguration.getWalletConfiguration().getCurrentWallet();
+      WalletId walletId = new WalletId("66666666-77777777-88888888-99999999-aaaaaaaa");
+      WalletManager.INSTANCE.open(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, password);
 
       Optional<WalletData> walletDataOptional = WalletManager.INSTANCE.getCurrentWalletData();
       if (walletDataOptional.isPresent()) {

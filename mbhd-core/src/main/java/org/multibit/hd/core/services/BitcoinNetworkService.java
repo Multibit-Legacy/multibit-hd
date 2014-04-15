@@ -57,6 +57,7 @@ public class BitcoinNetworkService extends AbstractService {
   public static final BigInteger DEFAULT_FEE_PER_KB = Transaction.REFERENCE_DEFAULT_MIN_TX_FEE; // Currently 10,000 satoshi
   public static final MainNetParams NETWORK_PARAMETERS = MainNetParams.get();
   public static final int MAXIMUM_NUMBER_OF_PEERS = 6;
+
   private static final Logger log = LoggerFactory.getLogger(BitcoinNetworkService.class);
   private BlockStore blockStore;
   private PeerGroup peerGroup;  // May need to add listener as in MultiBitPeerGroup

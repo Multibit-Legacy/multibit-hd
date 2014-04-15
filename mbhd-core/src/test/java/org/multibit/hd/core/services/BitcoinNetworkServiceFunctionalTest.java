@@ -96,15 +96,16 @@ public class BitcoinNetworkServiceFunctionalTest {
 
     // Create a random temporary directory and use it for wallet storage
     File temporaryDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
-    walletManager.initialise(temporaryDirectory);
+
+    // TODO Consider if this needs to be called here
+    //walletManager.open(temporaryDirectory, walletId, "password");
+
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
 
     // Create a wallet from the WALLET_SEED_1_PROPERTY_NAME
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_1_PROPERTY_NAME)));
     WalletData walletData = createWallet(temporaryDirectory, seed);
-
-
 
     DateTime timestamp1 = Dates.parseSeedTimestamp(seedProperties.getProperty(WALLET_TIMESTAMP_1_PROPERTY_NAME));
 
@@ -136,7 +137,8 @@ public class BitcoinNetworkServiceFunctionalTest {
 
     // Create a random temporary directory to writeContacts the wallets
     File temporaryDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
-    walletManager.initialise(temporaryDirectory);
+    // TODO Is this just expecting the application data directory to be set?
+//    walletManager.open(temporaryDirectory);
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
 
     // Create two wallets from the two seeds
@@ -246,7 +248,8 @@ public class BitcoinNetworkServiceFunctionalTest {
   }
 
   private WalletData createWallet(File walletDirectory, byte[] seed) throws IOException {
-    WalletData walletData = walletManager.createWallet(walletDirectory.getAbsolutePath(), seed, WALLET_PASSWORD);
+
+    WalletData walletData = walletManager.getOrCreateWallet(walletDirectory, seed, WALLET_PASSWORD);
     assertThat(walletData).isNotNull();
     assertThat(walletData.getWallet()).isNotNull();
 

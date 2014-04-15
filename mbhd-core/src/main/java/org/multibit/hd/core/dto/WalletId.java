@@ -30,7 +30,7 @@ import java.util.Arrays;
 public class WalletId {
 
   public static final int SEPARATOR_REPEAT_PERIOD = 4;
-  public static final String SEPARATOR = "-";
+  public static final String WALLET_ID_SEPARATOR = "-";
 
   private static final byte SALT_USED_IN_SCRYPT = (byte) 1;
 
@@ -42,9 +42,10 @@ public class WalletId {
   /**
    * Create a wallet id from a formatted wallet id
    *
-   * @param formattedWalletId The formatted wallet id you want to use e.g. 66666666-77777777-88888888-99999999-aaaaaaaa
+   * @param formattedWalletId The formatted wallet id you want to use (e.g. "66666666-77777777-88888888-99999999-aaaaaaaa")
    */
   public WalletId(String formattedWalletId) {
+
     Preconditions.checkState(formattedWalletId.length() == LENGTH_OF_FORMATTED_WALLET_ID);
 
     // remove any embedded hyphens
@@ -119,7 +120,7 @@ public class WalletId {
     String walletRootName = walletRoot.getName();
 
     // Remove the prefix mbhd
-    String prefix = WalletManager.WALLET_DIRECTORY_PREFIX + WalletManager.SEPARATOR;
+    String prefix = WalletManager.WALLET_DIRECTORY_PREFIX + WALLET_ID_SEPARATOR;
     if (walletRootName.startsWith(prefix)) {
       walletRootName = walletRootName.replace(prefix, "");
 
@@ -131,14 +132,14 @@ public class WalletId {
   }
 
   /**
-   * @return the raw wallet id as a byte[]
+   * @return The raw wallet id as a byte[]
    */
   public byte[] getBytes() {
     return walletId;
   }
 
   /**
-   * @return the wallet id as a formatted string
+   * @return The wallet id as a formatted string (e.g. "66666666-77777777-88888888-99999999-aaaaaaaa")
    */
   public String toFormattedString() {
 
@@ -148,7 +149,7 @@ public class WalletId {
       buffer.append(Utils.bytesToHexString(new byte[]{walletId[i]}));
 
       if (((i + 1) % SEPARATOR_REPEAT_PERIOD == 0) && !(i == walletId.length - 1)) {
-        buffer.append(SEPARATOR);
+        buffer.append(WALLET_ID_SEPARATOR);
       }
     }
     return buffer.toString();

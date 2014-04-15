@@ -112,7 +112,7 @@ public class WalletService {
     // Work out where to writeContacts the contacts for this wallet id.
     String walletRoot = WalletManager.createWalletRoot(walletId);
 
-    File walletDirectory = WalletManager.getWalletDirectory(applicationDataDirectory.getAbsolutePath(), walletRoot);
+    File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
 
     File paymentsDirectory = new File(walletDirectory.getAbsolutePath() + File.separator + PAYMENTS_DIRECTORY_NAME);
     FileUtils.createDirectoryIfNecessary(paymentsDirectory);

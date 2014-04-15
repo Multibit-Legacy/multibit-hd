@@ -38,6 +38,7 @@ import java.util.*;
 
 import static junit.framework.TestCase.fail;
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.multibit.hd.core.dto.WalletId.*;
 
 public class WalletManagerTest {
 
@@ -65,7 +66,8 @@ public class WalletManagerTest {
 
     // Create a random temporary directory to writeContacts the wallets
     File temporaryDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
-    walletManager.initialise(temporaryDirectory);
+    // TODO May not be required
+    // WalletManager.INSTANCE.open(temporaryDirectory);
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
 
     // Create a wallet directory from a seed
@@ -73,10 +75,11 @@ public class WalletManagerTest {
     byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
     WalletId walletId = new WalletId(seed1);
 
+    // TODO Refactor into a consistent "get absolute wallet file path" from WalletManager
     String walletRootDirectoryPath = temporaryDirectory.getAbsolutePath()
       + File.separator
       + WalletManager.WALLET_DIRECTORY_PREFIX
-      + WalletManager.SEPARATOR
+      + WALLET_ID_SEPARATOR
       + walletId.toFormattedString();
     assertThat((new File(walletRootDirectoryPath)).mkdir()).isTrue();
     String newWalletFilename = walletRootDirectoryPath + File.separator + WalletManager.MBHD_WALLET_NAME;
@@ -126,7 +129,7 @@ public class WalletManagerTest {
     assertThat(newWalletFile.exists()).isTrue();
 
     // Check wallet can be loaded and is still protobuf and encrypted.
-    WalletData rebornWalletData = walletManager.loadFromFile(newWalletFile);
+    WalletData rebornWalletData = walletManager.loadFromFile(newWalletFile,"password");
     assertThat(rebornWalletData).isNotNull();
     assertThat(rebornWalletData.getWallet().getBalance()).isEqualTo(BigInteger.ZERO);
     assertThat(rebornWalletData.getWallet().getKeys().size()).isEqualTo(2);
@@ -188,7 +191,7 @@ public class WalletManagerTest {
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
 
-    WalletData walletData1 = walletManager.createWallet(temporaryDirectory1.getAbsolutePath(), seed, "password");
+    WalletData walletData1 = walletManager.getOrCreateWallet(temporaryDirectory1, seed, "password");
 
     // Uncomment this next line if you want a wallet created in your MultiBitHD user data directory.
     //walletManager.createWallet( seed, "password");
@@ -203,7 +206,7 @@ public class WalletManagerTest {
     File temporaryDirectory2 = makeRandomTemporaryDirectory();
     BackupManager.INSTANCE.initialise(temporaryDirectory2, null);
 
-    WalletData walletData2 = walletManager.createWallet(temporaryDirectory2.getAbsolutePath(), seed, "password");
+    WalletData walletData2 = walletManager.getOrCreateWallet(temporaryDirectory2, seed, "password");
 
     assertThat(walletData2).isNotNull();
 
