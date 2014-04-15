@@ -120,10 +120,11 @@ developers that cover a variety of environments.
 
 We are currently working to the following timetable:
 
-1. BIP32/39 hierarchical deterministic wallet (HDW) support
-2. BIP70-73 payment protocol support
-3. Hardware wallet (Trezor) support
-4. Hierarchical deterministic multi-signature (HDM) support
+1. Add BRIT support
+2. BIP32/39 hierarchical deterministic wallet (HDW) support
+3. BIP70-73 payment protocol support
+4. Hardware wallet (Trezor) support
+5. Hierarchical deterministic multi-signature (HDM) support
 
 ### Use cases documentation
 
