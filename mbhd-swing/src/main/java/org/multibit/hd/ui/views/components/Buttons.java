@@ -812,6 +812,26 @@ public class Buttons {
   }
 
   /**
+   * @param action The click action
+   *
+   * @return A new "repair wallet" button with icon
+   */
+  public static JButton newShowRepairWalletButton(Action action) {
+
+    JButton button = newLargeButton(action, MessageKey.SHOW_REPAIR_WALLET_WIZARD);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.FIRE_EXTINGUISHER,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
+
+    return button;
+  }
+
+  /**
    * TODO (GR) Remove this when alerts no longer required
    *
    * @param action The click action

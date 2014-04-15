@@ -62,6 +62,7 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
     contentPanel.add(Buttons.newShowChangePasswordButton(getShowChangePasswordAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
 
     contentPanel.add(Buttons.newShowVerifyNetworkButton(getShowVerifyNetworkAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    contentPanel.add(Buttons.newShowRepairWalletButton(getShowRepairWalletAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
 
     return contentPanel;
   }
@@ -126,6 +127,19 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
       public void actionPerformed(ActionEvent e) {
 
         Panels.showLightBox(Wizards.newVerifyNetworkWizard().getWizardScreenHolder());
+      }
+    };
+  }
+
+  /**
+   * @return An action to show the "repair wallet" tool
+   */
+  private AbstractAction getShowRepairWalletAction() {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        Panels.showLightBox(Wizards.newRepairWalletWizard().getWizardScreenHolder());
       }
     };
   }

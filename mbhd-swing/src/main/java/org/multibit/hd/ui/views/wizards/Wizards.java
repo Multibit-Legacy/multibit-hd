@@ -50,6 +50,9 @@ import org.multibit.hd.ui.views.wizards.payments.PaymentsWizardModel;
 import org.multibit.hd.ui.views.wizards.receive_bitcoin.ReceiveBitcoinState;
 import org.multibit.hd.ui.views.wizards.receive_bitcoin.ReceiveBitcoinWizard;
 import org.multibit.hd.ui.views.wizards.receive_bitcoin.ReceiveBitcoinWizardModel;
+import org.multibit.hd.ui.views.wizards.repair_wallet.RepairWalletState;
+import org.multibit.hd.ui.views.wizards.repair_wallet.RepairWalletWizard;
+import org.multibit.hd.ui.views.wizards.repair_wallet.RepairWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinWizard;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinWizardModel;
@@ -211,6 +214,15 @@ public class Wizards {
   public static VerifyNetworkWizard newVerifyNetworkWizard() {
 
     return new VerifyNetworkWizard(new VerifyNetworkWizardModel(VerifyNetworkState.VERIFY_NETWORK_SHOW_REPORT), false);
+
+  }
+
+  /**
+   * @return A new "repair wallet" wizard
+   */
+  public static RepairWalletWizard newRepairWalletWizard() {
+
+    return new RepairWalletWizard(new RepairWalletWizardModel(RepairWalletState.REPAIR_WALLET), false);
 
   }
 
