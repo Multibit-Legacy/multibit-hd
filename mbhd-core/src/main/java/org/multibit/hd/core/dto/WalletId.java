@@ -18,14 +18,14 @@ import java.math.BigInteger;
 import java.util.Arrays;
 
 /**
- *  <p>Data object to provide the following to wallet seed related classes<br>
- *  <ul>
- *  <li>Creation of wallet id from seed</li>
- *  <li>Creation of wallet directory name from wallet id</li>
- *  <li>Roundtripping of the above</li>
- *  </ul>
- *  </p>
- *  
+ * <p>Data object to provide the following to wallet seed related classes:</p>
+ * <ul>
+ * <li>Creation of wallet id from seed</li>
+ * <li>Creation of wallet directory name from wallet id</li>
+ * <li>Round-tripping of the above</li>
+ * </ul>
+ *
+ * @since 0.0.1
  */
 public class WalletId {
 
@@ -37,7 +37,7 @@ public class WalletId {
   private static final byte SALT_USED_IN_SCRYPT = (byte) 1;
 
   private static final int NUMBER_OF_BYTES_IN_WALLET_ID = 20;
-  public static final int LENGTH_OF_FORMATTED_WALLETID = 2 * NUMBER_OF_BYTES_IN_WALLET_ID + (NUMBER_OF_BYTES_IN_WALLET_ID / SEPARATOR_REPEAT_PERIOD) - 1;
+  public static final int LENGTH_OF_FORMATTED_WALLET_ID = 2 * NUMBER_OF_BYTES_IN_WALLET_ID + (NUMBER_OF_BYTES_IN_WALLET_ID / SEPARATOR_REPEAT_PERIOD) - 1;
 
   private final byte[] walletId;
 
@@ -47,10 +47,10 @@ public class WalletId {
    * @param formattedWalletId The formatted wallet id you want to use e.g. 66666666-77777777-88888888-99999999-aaaaaaaa
    */
   public WalletId(String formattedWalletId) {
-    Preconditions.checkState(formattedWalletId.length() == LENGTH_OF_FORMATTED_WALLETID);
+    Preconditions.checkState(formattedWalletId.length() == LENGTH_OF_FORMATTED_WALLET_ID);
 
-     // remove any embedded hyphens
-    formattedWalletId = formattedWalletId.replaceAll("-","");
+    // remove any embedded hyphens
+    formattedWalletId = formattedWalletId.replaceAll("-", "");
 
     walletId = Utils.parseAsHexOrBase58(formattedWalletId);
   }
@@ -77,7 +77,7 @@ public class WalletId {
     // Scrypt - scrypt is run using the seedBigInteger.toString() as the 'password'.
     // This returns a byte array (normally used as an AES256 key but here passed on to more trapdoor functions).
     // The scrypt parameters used are the default, with a salt of '1'.
-    Protos.ScryptParameters.Builder scryptParametersBuilder  = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(new byte[] {SALT_USED_IN_SCRYPT}));
+    Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(new byte[]{SALT_USED_IN_SCRYPT}));
     Protos.ScryptParameters scryptParameters = scryptParametersBuilder.build();
     KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(scryptParameters);
     KeyParameter keyParameter = keyCrypterScrypt.deriveKey(seedBigInteger.toString());
@@ -110,6 +110,7 @@ public class WalletId {
   /**
    * Create a WalletId from a wallet filename - the filename is parsed into a walletId byte array
    * The wallet filename should be the whole fire name e.g /herp/derp/mbhd-23bb865e-161bfefc-3020c418-66bf6f75-7fecdfcc/mbhd.wallet
+   *
    * @return WalletId
    */
   public static WalletId parseWalletFilename(String walletFilename) {
@@ -145,7 +146,7 @@ public class WalletId {
 
     StringBuilder buffer = new StringBuilder();
 
-    for (int i=0; i< walletId.length; i++) {
+    for (int i = 0; i < walletId.length; i++) {
       buffer.append(Utils.bytesToHexString(new byte[]{walletId[i]}));
 
       if (((i + 1) % SEPARATOR_REPEAT_PERIOD == 0) && !(i == walletId.length - 1)) {
@@ -166,11 +167,10 @@ public class WalletId {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    WalletId walletId1 = (WalletId) o;
+    WalletId that = (WalletId) o;
 
-    if (!Arrays.equals(walletId, walletId1.walletId)) return false;
+    return Arrays.equals(this.walletId, that.walletId);
 
-    return true;
   }
 
   @Override

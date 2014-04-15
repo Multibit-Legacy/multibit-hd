@@ -123,7 +123,7 @@ public enum BackupManager {
             if (file.length() > 0) {
               BackupSummary backupSummary = new BackupSummary(walletId, file.getName(), file);
               // Work out timestamp
-              int start = (WalletManager.MBHD_WALLET_PREFIX + WalletManager.SEPARATOR + WalletManager.SEPARATOR).length() + WalletId.LENGTH_OF_FORMATTED_WALLETID;
+              int start = (WalletManager.MBHD_WALLET_PREFIX + WalletManager.SEPARATOR + WalletManager.SEPARATOR).length() + WalletId.LENGTH_OF_FORMATTED_WALLET_ID;
               int stop = start + 14;
               String timeStampString = FileUtils.filePart(file.getName().substring(start, stop));
               try {
@@ -329,8 +329,8 @@ public enum BackupManager {
     walletRoot = walletRoot.replace(BACKUP_ZIP_FILE_EXTENSION, "");
 
     // Remove the timestamp
-    if (walletRoot.length() > WalletId.LENGTH_OF_FORMATTED_WALLETID) {
-      walletRoot = walletRoot.substring(0, WalletId.LENGTH_OF_FORMATTED_WALLETID);
+    if (walletRoot.length() > WalletId.LENGTH_OF_FORMATTED_WALLET_ID) {
+      walletRoot = walletRoot.substring(0, WalletId.LENGTH_OF_FORMATTED_WALLET_ID);
     }
     WalletId walletId = new WalletId(walletRoot);
 
