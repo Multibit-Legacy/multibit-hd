@@ -309,13 +309,19 @@ public enum WalletManager implements WalletEventListener {
     try {
       if (isWalletSerialised(walletFile)) {
         // Serialised wallets are no longer supported.
-        throw new WalletLoadException("Could not loadContacts wallet '" + walletFilename
+        throw new WalletLoadException(
+          "Could not load wallet '"
+          + walletFilename
           + "'. Serialized wallets are no longer supported.");
       }
 
-      Wallet wallet;
+      final Wallet wallet;
 
-      try (FileInputStream fileInputStream = new FileInputStream(walletFile); InputStream stream = new BufferedInputStream(fileInputStream);) {
+      try (
+        FileInputStream fileInputStream = new FileInputStream(walletFile);
+        InputStream stream = new BufferedInputStream(fileInputStream)
+      ) {
+
         Protos.Wallet walletProto = WalletProtobufSerializer.parseToProto(stream);
 
         wallet = new Wallet(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
@@ -324,6 +330,7 @@ public enum WalletManager implements WalletEventListener {
         new WalletProtobufSerializer().readWallet(walletProto, wallet);
 
         log.debug("Wallet at read in from file:\n" + wallet.toString());
+
       } catch (WalletVersionException wve) {
         // We want this exception to propagate out.
         throw wve;
@@ -335,7 +342,7 @@ public enum WalletManager implements WalletEventListener {
       WalletData walletData = new WalletData(walletId, wallet);
       setCurrentWalletData(walletData);
 
-      // Set up autosave on the wallet.
+      // Set up auto-save on the wallet.
       // This ensures the wallet is saved on modification
       // The listener has a 'post save' callback which ensures rolling backups and local/ cloud backups are also saved where necessary
       wallet.autosaveToFile(walletFile, AUTOSAVE_DELAY, TimeUnit.MILLISECONDS, new WalletAutoSaveListener());
@@ -346,7 +353,8 @@ public enum WalletManager implements WalletEventListener {
       // We want this to propagate out as is
       throw wve;
     } catch (Exception e) {
-      log.error(e.getClass().getCanonicalName() + " " + e.getMessage());
+      // TODO Consider the ExceptionHandler
+      log.error(e.getMessage(), e);
       throw new WalletLoadException(e.getMessage(), e);
     }
   }
@@ -396,8 +404,7 @@ public enum WalletManager implements WalletEventListener {
     boolean isWalletSerialised = false;
     InputStream stream = null;
     try {
-      // Determine what kind of wallet stream this is: Java Serialization
-      // or protobuf format.
+      // Determine what kind of wallet stream this is: Java serialization or protobuf format
       stream = new BufferedInputStream(new FileInputStream(walletFile));
       isWalletSerialised = stream.read() == 0xac && stream.read() == 0xed;
     } catch (IOException e) {
@@ -442,7 +449,7 @@ public enum WalletManager implements WalletEventListener {
     File walletDirectory = new File(fullWalletDirectoryName);
 
     if (!walletDirectory.exists()) {
-      // Create the wallet directory.
+      // Create the wallet directory
       if (!walletDirectory.mkdir()) {
         throw new IllegalStateException("Could not create missing wallet directory '" + walletRoot + "'");
       }
@@ -470,7 +477,7 @@ public enum WalletManager implements WalletEventListener {
     File[] files = directoryToSearch.listFiles();
     List<File> walletDirectories = Lists.newArrayList();
 
-    // Look for file names with format "mbhd"-"walletid" and are not empty.
+    // Look for file names with format "mbhd"-"walletid" and are not empty
     if (files != null) {
       for (File file : files) {
         if (file.isDirectory()) {
