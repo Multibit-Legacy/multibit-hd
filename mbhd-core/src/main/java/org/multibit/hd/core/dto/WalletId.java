@@ -29,8 +29,6 @@ import java.util.Arrays;
  */
 public class WalletId {
 
-  //private static final Logger log = LoggerFactory.getLogger(WalletId.class);
-
   public static final int SEPARATOR_REPEAT_PERIOD = 4;
   public static final String SEPARATOR = "-";
 
