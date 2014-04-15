@@ -31,10 +31,10 @@ public class TransactionHeaderConverter implements CSVEntryConverter<Transaction
     columns[4] = Languages.safeText(MessageKey.NOTES);
 
     // Amount in BTC.
-    columns[5] = Languages.safeText(MessageKey.AMOUNT) + " "  + Configurations.currentConfiguration.getBitcoinConfiguration().getBitcoinSymbol();
+    columns[5] = Languages.safeText(MessageKey.AMOUNT) + " "  + Configurations.currentConfiguration.getBitcoin().getBitcoinSymbol();
 
     // Amount in fiat
-    columns[6] = Languages.safeText(MessageKey.AMOUNT) + " " + Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencySymbol();
+    columns[6] = Languages.safeText(MessageKey.AMOUNT) + " " + Configurations.currentConfiguration.getBitcoin().getLocalCurrencySymbol();
 
     // Exchange rate
     columns[7] = Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL);

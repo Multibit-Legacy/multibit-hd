@@ -118,10 +118,10 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
     // Bitcoin column
     LabelDecorator.applyBitcoinSymbolLabel(
             amountBTCLabel,
-            Configurations.currentConfiguration.getBitcoinConfiguration(),
+            Configurations.currentConfiguration.getBitcoin(),
             Languages.safeText(MessageKey.AMOUNT) + " ");
 
-    JLabel amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.AMOUNT) + " " + Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencySymbol());
+    JLabel amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.AMOUNT) + " " + Configurations.currentConfiguration.getBitcoin().getLocalCurrencySymbol());
     amountFiatValue = Labels.newValueLabel("");
 
     JLabel minerFeePaidLabel = Labels.newValueLabel(Languages.safeText(MessageKey.TRANSACTION_FEE));
@@ -192,8 +192,8 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
       typeValue.setText(Languages.safeText(paymentData.getType().getLocalisationKey()));
 
       BigInteger amountBTC = paymentData.getAmountBTC();
-      LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguageConfiguration();
-      BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
+      LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage();
+      BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
 
       String[] balanceArray = Formats.formatSatoshisAsSymbolic(amountBTC, languageConfiguration, bitcoinConfiguration, true);
       amountBTCValue.setText(balanceArray[0] + balanceArray[1]);

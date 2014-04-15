@@ -26,8 +26,8 @@ public class FormatsTest {
   @Before
   public void setUp() {
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
-    bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
-    languageConfiguration = Configurations.currentConfiguration.getLanguageConfiguration();
+    bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
+    languageConfiguration = Configurations.currentConfiguration.getLanguage();
   }
 
   @Test

@@ -23,7 +23,7 @@ public class LoggingConfiguration {
 
   static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
-  private Level level = Level.INFO;
+  private Level level = Level.WARN;
 
   private Map<String, Level> loggers = Maps.newHashMap();
 
@@ -36,8 +36,8 @@ public class LoggingConfiguration {
   public LoggingConfiguration() {
 
     loggers.put("org.multibit", Level.DEBUG);
-    loggers.put("com.xeiam", Level.DEBUG);
-    loggers.put("com.google.bitcoinj", Level.DEBUG);
+    loggers.put("com.xeiam", Level.WARN);
+    loggers.put("com.google.bitcoinj", Level.WARN);
   }
 
   public Level getLevel() {

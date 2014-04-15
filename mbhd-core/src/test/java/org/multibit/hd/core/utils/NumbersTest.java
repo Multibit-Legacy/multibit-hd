@@ -73,6 +73,6 @@ public class NumbersTest {
   }
 
   private void setLocale(Locale locale) {
-    Configurations.currentConfiguration.getLanguageConfiguration().setLocale(locale);
+    Configurations.currentConfiguration.getLanguage().setLocale(locale);
   }
 }

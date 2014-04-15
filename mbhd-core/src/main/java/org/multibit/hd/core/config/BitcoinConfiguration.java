@@ -1,7 +1,10 @@
 package org.multibit.hd.core.config;
 
-import com.google.common.base.Optional;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.collect.Maps;
 import org.joda.money.CurrencyUnit;
+
+import java.util.Map;
 
 /**
  * <p>Configuration to provide the following to application:</p>
@@ -24,6 +27,7 @@ public class BitcoinConfiguration {
 
   private boolean currencySymbolLeading = true;
 
+  @JsonIgnore
   private CurrencyUnit localCurrencyUnit = CurrencyUnit.USD;
 
   private String localCurrencySymbol = "$";
@@ -35,9 +39,9 @@ public class BitcoinConfiguration {
   private String currentExchange = "BITSTAMP";
 
   /**
-   * The optional exchange API key (required for OER etc)
+   * The exchange API keys (required for OER and some rate-limited exchanges)
    */
-  private Optional<String> exchangeApiKeys = Optional.absent();
+  private Map<String, String> exchangeApiKeys = Maps.newHashMap();
 
   /**
    * <p>Default constructor uses the default locale</p>
@@ -63,7 +67,7 @@ public class BitcoinConfiguration {
     configuration.setLocalCurrencySymbol(getLocalCurrencySymbol());
 
     configuration.setCurrentExchange(getCurrentExchange());
-    configuration.setExchangeApiKeys(getExchangeApiKeys().orNull());
+    configuration.setExchangeApiKeys(getExchangeApiKeys());
 
     return configuration;
   }
@@ -166,11 +170,11 @@ public class BitcoinConfiguration {
   /**
    * @return The exchange API keys (only OER at present, but others could be added using a "key | value" approach)
    */
-  public Optional<String> getExchangeApiKeys() {
+  public Map<String, String> getExchangeApiKeys() {
     return exchangeApiKeys;
   }
 
-  public void setExchangeApiKeys(String exchangeApiKeys) {
-    this.exchangeApiKeys = Optional.fromNullable(exchangeApiKeys);
+  public void setExchangeApiKeys(Map<String, String> exchangeApiKeys) {
+    this.exchangeApiKeys = exchangeApiKeys;
   }
 }

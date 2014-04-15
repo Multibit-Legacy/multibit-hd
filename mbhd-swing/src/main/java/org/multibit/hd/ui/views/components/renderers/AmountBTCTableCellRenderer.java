@@ -39,8 +39,8 @@ public class AmountBTCTableCellRenderer extends DefaultTableCellRenderer {
       // Do the Bitcoin processing
 
       BigInteger valueBigInteger = (BigInteger) value;
-      LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguageConfiguration();
-      BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
+      LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage();
+      BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
 
       String[] balanceArray = Formats.formatSatoshisAsSymbolic(valueBigInteger, languageConfiguration, bitcoinConfiguration, true);
       String balanceString = balanceArray[0] + balanceArray[1];

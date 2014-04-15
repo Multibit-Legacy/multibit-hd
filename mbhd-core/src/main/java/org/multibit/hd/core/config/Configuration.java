@@ -1,6 +1,13 @@
 package org.multibit.hd.core.config;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.google.common.collect.Maps;
+
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * <p>Value object to provide the following to controllers:</p>
@@ -11,27 +18,50 @@ import java.util.Locale;
  * @since 0.0.1
  *         
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Configuration {
 
-  private LoggingConfiguration loggingConfiguration = new LoggingConfiguration();
+  private String configurationVersion = "1";
 
-  private LanguageConfiguration languageConfiguration = new LanguageConfiguration();
+  private LanguageConfiguration language = new LanguageConfiguration();
 
-  private ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration();
+  private ApplicationConfiguration application = new ApplicationConfiguration();
 
-  private BitcoinConfiguration bitcoinConfiguration = new BitcoinConfiguration();
+  private BitcoinConfiguration bitcoin = new BitcoinConfiguration();
 
-  private SoundConfiguration soundConfiguration = new SoundConfiguration();
+  private SoundConfiguration sound = new SoundConfiguration();
 
-  private String propertiesVersion = "0.0.1";
+  private WalletConfiguration wallet = new WalletConfiguration();
+
+  @JsonIgnore
+  private LoggingConfiguration logging = new LoggingConfiguration();
+
+  /**
+   * Any unknown objects in the configuration go here (preserve order of insertion)
+   */
+  private Map<String, Object> other = Maps.newLinkedHashMap();
+
+  /**
+   * @return The map of any unknown objects in the configuration
+   */
+  @JsonAnyGetter
+  public Map<String, Object> any() {
+    return other;
+  }
+
+  @JsonAnySetter
+  public void set(String name, Object value) {
+    other.put(name, value);
+  }
 
   /**
    * <p>Shortcut to the language configuration locale</p>
    *
    * @return The current locale
    */
+  @JsonIgnore
   public Locale getLocale() {
-    return getLanguageConfiguration().getLocale();
+    return getLanguage().getLocale();
   }
 
   /**
@@ -39,74 +69,86 @@ public class Configuration {
    *
    * @return The current version
    */
+  @JsonIgnore
   public String getVersion() {
-    return getApplicationConfiguration().getVersion();
+    return getApplication().getVersion();
   }
 
   /**
    * @return The logging configuration
    */
-  public LoggingConfiguration getLoggingConfiguration() {
-    return loggingConfiguration;
+  public LoggingConfiguration getLogging() {
+    return logging;
   }
 
-  public void setLoggingConfiguration(LoggingConfiguration loggingConfiguration) {
-    this.loggingConfiguration = loggingConfiguration;
+  public void setLogging(LoggingConfiguration logging) {
+    this.logging = logging;
   }
 
   /**
    * @return The Bitcoin configuration
    */
-  public BitcoinConfiguration getBitcoinConfiguration() {
-    return bitcoinConfiguration;
+  public BitcoinConfiguration getBitcoin() {
+    return bitcoin;
   }
 
-  public void setBitcoinConfiguration(BitcoinConfiguration bitcoinConfiguration) {
-    this.bitcoinConfiguration = bitcoinConfiguration;
+  public void setBitcoin(BitcoinConfiguration bitcoin) {
+    this.bitcoin = bitcoin;
   }
 
   /**
    * @return The language configuration
    */
-  public LanguageConfiguration getLanguageConfiguration() {
-    return languageConfiguration;
+  public LanguageConfiguration getLanguage() {
+    return language;
   }
 
-  public void setLanguageConfiguration(LanguageConfiguration languageConfiguration) {
-    this.languageConfiguration = languageConfiguration;
+  public void setLanguage(LanguageConfiguration language) {
+    this.language = language;
   }
 
   /**
    * @return The application configuration
    */
-  public ApplicationConfiguration getApplicationConfiguration() {
-    return applicationConfiguration;
+  public ApplicationConfiguration getApplication() {
+    return application;
   }
 
-  public void setApplicationConfiguration(ApplicationConfiguration applicationConfiguration) {
-    this.applicationConfiguration = applicationConfiguration;
+  public void setApplication(ApplicationConfiguration application) {
+    this.application = application;
   }
 
   /**
    * @return The sound configuration
    */
-  public SoundConfiguration getSoundConfiguration() {
-    return soundConfiguration;
+  public SoundConfiguration getSound() {
+    return sound;
   }
 
-  public void setSoundConfiguration(SoundConfiguration soundConfiguration) {
-    this.soundConfiguration = soundConfiguration;
+  public void setSound(SoundConfiguration sound) {
+    this.sound = sound;
+  }
+
+  /**
+   * @return The wallet configuration
+   */
+  public WalletConfiguration getWallet() {
+    return wallet;
+  }
+
+  public void setWallet(WalletConfiguration wallet) {
+    this.wallet = wallet;
   }
 
   /**
    * @return The properties file version
    */
-  public String getPropertiesVersion() {
-    return propertiesVersion;
+  public String getConfigurationVersion() {
+    return configurationVersion;
   }
 
-  public void setPropertiesVersion(String propertiesVersion) {
-    this.propertiesVersion = propertiesVersion;
+  public void setConfigurationVersion(String configurationVersion) {
+    this.configurationVersion = configurationVersion;
   }
 
   /**
@@ -114,23 +156,25 @@ public class Configuration {
    */
   public Configuration deepCopy() {
 
-    LanguageConfiguration language = getLanguageConfiguration().deepCopy();
-    ApplicationConfiguration app = getApplicationConfiguration().deepCopy();
-    SoundConfiguration sound = getSoundConfiguration().deepCopy();
-    BitcoinConfiguration bitcoin = getBitcoinConfiguration().deepCopy();
-    LoggingConfiguration logging = getLoggingConfiguration().deepCopy();
+    LanguageConfiguration language = getLanguage().deepCopy();
+    ApplicationConfiguration app = getApplication().deepCopy();
+    SoundConfiguration sound = getSound().deepCopy();
+    WalletConfiguration wallet = getWallet().deepCopy();
+    BitcoinConfiguration bitcoin = getBitcoin().deepCopy();
+    LoggingConfiguration logging = getLogging().deepCopy();
 
     Configuration configuration = new Configuration();
 
     // Bind the copies
-    configuration.setApplicationConfiguration(app);
-    configuration.setSoundConfiguration(sound);
-    configuration.setLanguageConfiguration(language);
-    configuration.setBitcoinConfiguration(bitcoin);
-    configuration.setLoggingConfiguration(logging);
+    configuration.setApplication(app);
+    configuration.setSound(sound);
+    configuration.setWallet(wallet);
+    configuration.setLanguage(language);
+    configuration.setBitcoin(bitcoin);
+    configuration.setLogging(logging);
 
     // Copy top level properties
-    configuration.setPropertiesVersion(getPropertiesVersion());
+    configuration.setConfigurationVersion(getConfigurationVersion());
 
     return configuration;
   }

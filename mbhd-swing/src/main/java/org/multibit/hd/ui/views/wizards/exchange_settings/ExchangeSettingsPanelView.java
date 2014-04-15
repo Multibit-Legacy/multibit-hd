@@ -36,6 +36,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -92,8 +93,8 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
       "[][][]" // Row constraints
     ));
 
-    LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguageConfiguration().deepCopy();
-    BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration().deepCopy();
+    LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage().deepCopy();
+    BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin().deepCopy();
     Locale locale = languageConfiguration.getLocale();
     ExchangeKey exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getCurrentExchange());
 
@@ -112,8 +113,9 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     boolean isOERExchange = ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey);
 
     // API key value
-    if (bitcoinConfiguration.getExchangeApiKeys().isPresent()) {
-      apiKeyTextField.setText(bitcoinConfiguration.getExchangeApiKeys().get());
+    Map<String, String> exchangeApiKeys = bitcoinConfiguration.getExchangeApiKeys();
+    if (exchangeApiKeys.containsKey(exchangeKey.name())) {
+      apiKeyTextField.setText(exchangeApiKeys.get(exchangeKey.name()));
     }
 
     // Ticker verification status
@@ -196,7 +198,8 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
       // If the user has selected OER then update the API key
       if (apiKeyTextField.isVisible() && !Strings.isNullOrEmpty(apiKeyTextField.getText())) {
-        getWizardModel().getConfiguration().getBitcoinConfiguration().setExchangeApiKeys(apiKeyTextField.getText());
+        // TODO Provide an exchange key
+        getWizardModel().getConfiguration().getBitcoin().getExchangeApiKeys().put(ExchangeKey.OPEN_EXCHANGE_RATES.name(), apiKeyTextField.getText());
       }
 
       // Switch the main configuration over to the new one
@@ -300,10 +303,10 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     tickerVerifiedStatus.setVisible(false);
 
     // Update the model (even if in error)
-    getWizardModel().getConfiguration().getBitcoinConfiguration().setCurrentExchange(exchangeKey.name());
+    getWizardModel().getConfiguration().getBitcoin().setCurrentExchange(exchangeKey.name());
 
     // Reset the available currencies
-    ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(getWizardModel().getConfiguration().getBitcoinConfiguration());
+    ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(getWizardModel().getConfiguration().getBitcoin());
     ListenableFuture<String[]> futureAllCurrencies = exchangeTickerService.allCurrencies();
     Futures.addCallback(futureAllCurrencies, new FutureCallback<String[]>() {
       @Override
@@ -360,8 +363,8 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     CurrencyUnit currencyUnit = CurrencyUnit.getInstance(isoCounterCode);
 
     // Update the model (even if in error)
-    getWizardModel().getConfiguration().getBitcoinConfiguration().setLocalCurrencySymbol(isoCounterCode);
-    getWizardModel().getConfiguration().getBitcoinConfiguration().setLocalCurrencyUnit(currencyUnit);
+    getWizardModel().getConfiguration().getBitcoin().setLocalCurrencySymbol(isoCounterCode);
+    getWizardModel().getConfiguration().getBitcoin().setLocalCurrencyUnit(currencyUnit);
 
     // Test the new settings
     handleTestTicker();
@@ -378,7 +381,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
     tickerSpinner.setVisible(true);
 
-    BitcoinConfiguration bitcoinConfiguration = getWizardModel().getConfiguration().getBitcoinConfiguration();
+    BitcoinConfiguration bitcoinConfiguration = getWizardModel().getConfiguration().getBitcoin();
 
     // Build a custom exchange ticker service from the wizard model
     ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(bitcoinConfiguration);
@@ -390,7 +393,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
       public void onSuccess(Ticker ticker) {
 
         // Network or exchange might be down
-        if (ticker==null) {
+        if (ticker == null) {
           // Stop the spinner but do not allow the Apply
           tickerSpinner.setVisible(false);
           return;
@@ -457,7 +460,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
         boolean notEmpty = apiKeyTextField.getText().length() > 0;
 
         // Update the wizard model so that the ticker can be tested if a currency combo selection is made
-        getWizardModel().getConfiguration().getBitcoinConfiguration().setExchangeApiKeys(apiKeyTextField.getText());
+        getWizardModel().getConfiguration().getBitcoin().getExchangeApiKeys().put(ExchangeKey.OPEN_EXCHANGE_RATES.name(), apiKeyTextField.getText());
 
         // Handle currency combo
         setCurrencyCodeVisibility(notEmpty);

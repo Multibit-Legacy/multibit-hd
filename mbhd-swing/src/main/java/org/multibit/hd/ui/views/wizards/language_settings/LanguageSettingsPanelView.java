@@ -72,7 +72,7 @@ public class LanguageSettingsPanelView extends AbstractWizardPanelView<LanguageS
       "[][]" // Row constraints
     ));
 
-    LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguageConfiguration().deepCopy();
+    LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage().deepCopy();
     Locale locale = languageConfiguration.getLocale();
 
     Preconditions.checkNotNull(locale, "'locale' cannot be empty");
@@ -154,7 +154,7 @@ public class LanguageSettingsPanelView extends AbstractWizardPanelView<LanguageS
     // Create a new configuration to reset the separators
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
     LanguageConfiguration languageConfiguration = new LanguageConfiguration(newLocale);
-    configuration.setLanguageConfiguration(languageConfiguration);
+    configuration.setLanguage(languageConfiguration);
 
     // Update the model
     getWizardModel().setConfiguration(configuration);

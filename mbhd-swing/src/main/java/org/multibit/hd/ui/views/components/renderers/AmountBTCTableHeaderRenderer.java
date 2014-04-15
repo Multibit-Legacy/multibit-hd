@@ -64,7 +64,7 @@ public class AmountBTCTableHeaderRenderer extends JLabel implements TableCellRen
 
     this.bitcoinColumns = bitcoinColumns;
 
-    this.bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration().deepCopy();
+    this.bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin().deepCopy();
   }
 
   @Override

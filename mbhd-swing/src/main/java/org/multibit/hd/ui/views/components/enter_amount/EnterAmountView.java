@@ -118,7 +118,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     // Arrange label placement according to configuration
     boolean isCurrencySymbolLeading = Configurations
       .currentConfiguration
-      .getBitcoinConfiguration()
+      .getBitcoin()
       .isCurrencySymbolLeading();
 
     // Add to the panel

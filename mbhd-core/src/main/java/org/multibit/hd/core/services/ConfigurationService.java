@@ -3,8 +3,13 @@ package org.multibit.hd.core.services;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.ShutdownEvent;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * <p>Service to provide the following to application API:</p>
@@ -34,7 +39,12 @@ public class ConfigurationService extends AbstractService {
     // We may be in a partial startup situation
     if (Configurations.currentConfiguration != null) {
 
-      Configurations.writeCurrentConfiguration();
+      try (FileOutputStream fos = new FileOutputStream(InstallationManager.getOrCreateConfigurationFile())) {
+        Configurations.writeCurrentConfiguration(fos, Configurations.currentConfiguration);
+
+      } catch (IOException e) {
+        ExceptionHandler.handleThrowable(e);
+      }
 
     }
   }

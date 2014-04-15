@@ -125,7 +125,7 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
 
         // Update the main configuration
         Configuration newConfiguration = Configurations.currentConfiguration.deepCopy();
-        newConfiguration.getLanguageConfiguration().setLocale(newLocale);
+        newConfiguration.getLanguage().setLocale(newLocale);
 
         // Make the switch immediately
         Configurations.switchConfiguration(newConfiguration);

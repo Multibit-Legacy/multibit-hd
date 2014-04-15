@@ -63,7 +63,7 @@ public enum ExchangeKey {
    */
   public static ExchangeKey current() {
 
-    return valueOf(Configurations.currentConfiguration.getBitcoinConfiguration().getCurrentExchange());
+    return valueOf(Configurations.currentConfiguration.getBitcoin().getCurrentExchange());
   }
 
   /**

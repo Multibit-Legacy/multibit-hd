@@ -28,6 +28,10 @@ public enum ConfigurationKey {
   SOUND_ALERT("sound.alert"),
   SOUND_RECEIVE("sound.receive"),
 
+  // Wallet configuration
+  WALLET_CURRENT("wallet.current"),
+  WALLET_HISTORY_PREFIX("wallet.history."),
+
   // Bitcoin configuration
   BITCOIN_SYMBOL("bitcoin.symbol"),
   BITCOIN_DECIMAL_SEPARATOR("bitcoin.decimal-separator"),

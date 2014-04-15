@@ -15,6 +15,7 @@
   <description>This module contains the core classes required by a HD SPV wallet. It is independent of user interface or persistence implementations.</description>
 
   <properties>
+    <jackson.version>2.2.2</jackson.version>
     <xchange.version>1.10.0</xchange.version>
   </properties>
 
@@ -212,11 +213,19 @@
       <artifactId>xchange-bitcoincharts</artifactId>
       <version>${xchange.version}</version>
     </dependency>
+
     <!-- Java CSV for exporting data -->
     <dependency>
         <groupId>com.googlecode.jcsv</groupId>
         <artifactId>jcsv</artifactId>
         <version>1.4.0</version>
+    </dependency>
+
+    <!-- Jackson for JSON/YAML representation -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-yaml</artifactId>
+      <version>${jackson.version}</version>
     </dependency>
 
   </dependencies>

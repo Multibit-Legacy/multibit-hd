@@ -76,7 +76,7 @@ public class EnterAmountModel implements Model<EnterAmountModel> {
    * @return The local amount (zero if not present)
    */
   public BigMoney getLocalAmount() {
-    CurrencyUnit currencyUnit = Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencyUnit();
+    CurrencyUnit currencyUnit = Configurations.currentConfiguration.getBitcoin().getLocalCurrencyUnit();
     return localAmount.or(BigMoney.zero(currencyUnit));
   }
 

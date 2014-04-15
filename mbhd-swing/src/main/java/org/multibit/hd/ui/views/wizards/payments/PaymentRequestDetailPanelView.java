@@ -114,10 +114,10 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
     // Bitcoin column
     LabelDecorator.applyBitcoinSymbolLabel(
             amountBTCLabel,
-            Configurations.currentConfiguration.getBitcoinConfiguration(),
+            Configurations.currentConfiguration.getBitcoin(),
             Languages.safeText(MessageKey.AMOUNT) + " ");
 
-    JLabel amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.AMOUNT) + " " + Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencySymbol());
+    JLabel amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.AMOUNT) + " " + Configurations.currentConfiguration.getBitcoin().getLocalCurrencySymbol());
     amountFiatValue = Labels.newBlankLabel();
 
     JLabel exchangeRateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL));
@@ -198,8 +198,8 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
       noteValue.setText(paymentRequestData.getNote());
 
       BigInteger amountBTC = paymentRequestData.getAmountBTC();
-      LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguageConfiguration();
-      BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
+      LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage();
+      BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
 
       String[] balanceArray = Formats.formatSatoshisAsSymbolic(amountBTC, languageConfiguration, bitcoinConfiguration, true);
       amountBTCValue.setText(balanceArray[0] + balanceArray[1]);

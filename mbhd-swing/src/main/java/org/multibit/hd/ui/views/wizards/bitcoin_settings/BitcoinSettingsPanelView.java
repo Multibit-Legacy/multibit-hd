@@ -81,8 +81,8 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
       "[][][][][][][][]" // Row constraints
     ));
 
-    LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguageConfiguration().deepCopy();
-    BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration().deepCopy();
+    LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage().deepCopy();
+    BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin().deepCopy();
     Locale locale = languageConfiguration.getLocale();
 
     Preconditions.checkNotNull(locale, "'locale' cannot be empty");
@@ -219,7 +219,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
     String grouping = String.valueOf(source.getSelectedItem()).substring(0,1);
 
     // Validate the combination
-    if (grouping.equals(getWizardModel().getConfiguration().getBitcoinConfiguration().getDecimalSeparator())) {
+    if (grouping.equals(getWizardModel().getConfiguration().getBitcoin().getDecimalSeparator())) {
       Sounds.playBeep();
       decimalErrorStatus.setVisible(false);
       groupingErrorStatus.setVisible(true);
@@ -239,7 +239,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
     }
 
     // Update the model (even if in error)
-    getWizardModel().getConfiguration().getBitcoinConfiguration().setGroupingSeparator(grouping);
+    getWizardModel().getConfiguration().getBitcoin().setGroupingSeparator(grouping);
 
     displayAmountMaV.getView().updateView(getWizardModel().getConfiguration());
 
@@ -256,7 +256,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
     String decimal = String.valueOf(source.getSelectedItem()).substring(0,1);
 
     // Validate the combination
-    if (decimal.equals(getWizardModel().getConfiguration().getBitcoinConfiguration().getGroupingSeparator())) {
+    if (decimal.equals(getWizardModel().getConfiguration().getBitcoin().getGroupingSeparator())) {
       Sounds.playBeep();
       groupingErrorStatus.setVisible(false);
       decimalErrorStatus.setVisible(true);
@@ -276,7 +276,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
     }
 
     // Update the model (even if in error)
-    getWizardModel().getConfiguration().getBitcoinConfiguration().setDecimalSeparator(decimal);
+    getWizardModel().getConfiguration().getBitcoin().setDecimalSeparator(decimal);
 
     displayAmountMaV.getView().updateView(getWizardModel().getConfiguration());
 
@@ -293,7 +293,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
     String localSymbol = (String) source.getSelectedItem();
 
     // Change the local symbol
-    getWizardModel().getConfiguration().getBitcoinConfiguration().setLocalCurrencySymbol(localSymbol);
+    getWizardModel().getConfiguration().getBitcoin().setLocalCurrencySymbol(localSymbol);
 
     // Update the display to match the new configuration
     displayAmountMaV.getView().updateView(getWizardModel().getConfiguration());
@@ -311,7 +311,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
     boolean isLeading = (source.getSelectedIndex() == 0);
 
     // Change the position
-    getWizardModel().getConfiguration().getBitcoinConfiguration().setCurrencySymbolLeading(isLeading);
+    getWizardModel().getConfiguration().getBitcoin().setCurrencySymbolLeading(isLeading);
 
     // Update the display to match the new configuration
     displayAmountMaV.getView().updateView(getWizardModel().getConfiguration());
@@ -331,7 +331,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
     BitcoinSymbol bitcoinSymbol = BitcoinSymbol.values()[ordinal];
 
     // Change the Bitcoin symbol
-    getWizardModel().getConfiguration().getBitcoinConfiguration().setBitcoinSymbol(bitcoinSymbol.name());
+    getWizardModel().getConfiguration().getBitcoin().setBitcoinSymbol(bitcoinSymbol.name());
 
     // Update the display to match the new configuration
     displayAmountMaV.getView().updateView(getWizardModel().getConfiguration());

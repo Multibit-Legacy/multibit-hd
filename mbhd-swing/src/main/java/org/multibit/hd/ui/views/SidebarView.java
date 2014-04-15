@@ -106,7 +106,7 @@ public class SidebarView {
     sidebarTree.expandPath(walletPath);
 
     // Ensure we use the previous selection
-    Screen startingScreen = Screen.valueOf(Configurations.currentConfiguration.getApplicationConfiguration().getCurrentScreen());
+    Screen startingScreen = Screen.valueOf(Configurations.currentConfiguration.getApplication().getCurrentScreen());
     for (int row = 0; row < sidebarTree.getRowCount(); row++) {
       TreePath screenPath = sidebarTree.getPathForRow(row);
       if (screenPath != null) {
@@ -197,7 +197,7 @@ public class SidebarView {
           Panels.showLightBox(Wizards.newExitWizard().getWizardScreenHolder());
           break;
         default:
-          Configurations.currentConfiguration.getApplicationConfiguration().setCurrentScreen(nodeInfo.getDetailScreen().name());
+          Configurations.currentConfiguration.getApplication().setCurrentScreen(nodeInfo.getDetailScreen().name());
           ControllerEvents.fireShowDetailScreenEvent(nodeInfo.getDetailScreen());
       }
     }

@@ -39,7 +39,7 @@ public class PaymentTableModel extends AbstractTableModel {
           Languages.safeText(MessageKey.TYPE).replace(" :",""),  // Old translation was suffixed with a ' :'.
           Languages.safeText(MessageKey.DESCRIPTION),
           Languages.safeText(MessageKey.AMOUNT) + " ", // BTC symbol added later
-          Languages.safeText(MessageKey.AMOUNT) + " " + Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencySymbol()
+          Languages.safeText(MessageKey.AMOUNT) + " " + Configurations.currentConfiguration.getBitcoin().getLocalCurrencySymbol()
   };
 
   private Object[][] data;

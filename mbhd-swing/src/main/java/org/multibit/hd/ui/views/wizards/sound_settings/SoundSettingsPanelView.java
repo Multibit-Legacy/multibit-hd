@@ -69,7 +69,7 @@ public class SoundSettingsPanelView extends AbstractWizardPanelView<SoundSetting
       "[][][]" // Row constraints
     ));
 
-    SoundConfiguration soundConfiguration = Configurations.currentConfiguration.getSoundConfiguration().deepCopy();
+    SoundConfiguration soundConfiguration = Configurations.currentConfiguration.getSound().deepCopy();
 
     alertSoundYesNoComboBox = ComboBoxes.newAlertSoundYesNoComboBox(this, soundConfiguration.isAlertSound());
     receiveSoundYesNoComboBox = ComboBoxes.newReceiveSoundYesNoComboBox(this, soundConfiguration.isReceiveSound());
@@ -145,7 +145,7 @@ public class SoundSettingsPanelView extends AbstractWizardPanelView<SoundSetting
     // Create a new configuration
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
     SoundConfiguration soundConfiguration = new SoundConfiguration();
-    configuration.setSoundConfiguration(soundConfiguration);
+    configuration.setSound(soundConfiguration);
 
     JComboBox source = (JComboBox) e.getSource();
     if (ComboBoxes.ALERT_SOUND_COMMAND.equals(e.getActionCommand())) {

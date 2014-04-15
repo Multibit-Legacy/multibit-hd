@@ -102,8 +102,8 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
 
     Preconditions.checkNotNull(configuration, "'configuration' must be present");
 
-    LanguageConfiguration languageConfiguration = configuration.getLanguageConfiguration();
-    BitcoinConfiguration bitcoinConfiguration = configuration.getBitcoinConfiguration();
+    LanguageConfiguration languageConfiguration = configuration.getLanguage();
+    BitcoinConfiguration bitcoinConfiguration = configuration.getBitcoin();
     BigInteger satoshis = getModel().get().getSatoshis();
 
     // Display using the symbolic amount

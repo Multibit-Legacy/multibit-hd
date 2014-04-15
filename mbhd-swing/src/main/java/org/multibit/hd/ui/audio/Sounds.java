@@ -48,7 +48,7 @@ public class Sounds {
    */
   public static void playBeep() {
 
-    if (Configurations.currentConfiguration.getSoundConfiguration().isAlertSound()) {
+    if (Configurations.currentConfiguration.getSound().isAlertSound()) {
       Toolkit.getDefaultToolkit().beep();
     }
   }
@@ -58,7 +58,7 @@ public class Sounds {
    */
   public static void playReceiveBitcoin() {
 
-    if (Configurations.currentConfiguration.getSoundConfiguration().isReceiveSound()) {
+    if (Configurations.currentConfiguration.getSound().isReceiveSound()) {
 
       ExecutorService executorService = SafeExecutors.newSingleThreadExecutor("play-received");
       executorService.submit(new Runnable() {

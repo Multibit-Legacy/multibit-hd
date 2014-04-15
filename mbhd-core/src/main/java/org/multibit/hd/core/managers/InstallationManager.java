@@ -19,19 +19,21 @@ import java.io.IOException;
  *  
  */
 public class InstallationManager {
+
   public static final String MBHD_APP_NAME = "MultiBitHD";
   public static final String MBHD_PREFIX = "mbhd";
-  public static final String MBHD_CONFIGURATION_FILE = MBHD_PREFIX + ".properties";
+  public static final String MBHD_CONFIGURATION_FILE = MBHD_PREFIX + ".yaml";
   public static final String SPV_BLOCKCHAIN_SUFFIX = ".spvchain";
   public static final String CHECKPOINTS_SUFFIX = ".checkpoints";
+
   private static final Logger log = LoggerFactory.getLogger(InstallationManager.class);
 
   /**
-   * @return A reference to the configuration file
+   * @return A reference to the configuration file (creating an empty file if necessary)
    */
-  public static File getConfigurationFile() {
+  public static File getOrCreateConfigurationFile() {
 
-    return new File(getOrCreateApplicationDataDirectory() + "/" + MBHD_CONFIGURATION_FILE);
+    return new File(getOrCreateApplicationDataDirectory(), MBHD_CONFIGURATION_FILE);
 
   }
 
@@ -102,7 +104,7 @@ public class InstallationManager {
       // If this file does not exist then see if it is where the development environment stores it (convenience when running in Intellij
       if (!sourceBlockcheckpoints.exists()) {
         sourceCheckpointsFilename = currentWorkingDirectory + File.separator + "mbhd-core" + File.separator + "src" +
-                File.separator + "main" + File.separator + "resources" + File.separator + MBHD_PREFIX + CHECKPOINTS_SUFFIX;
+          File.separator + "main" + File.separator + "resources" + File.separator + MBHD_PREFIX + CHECKPOINTS_SUFFIX;
         sourceBlockcheckpoints = new File(sourceCheckpointsFilename);
       }
       if (sourceBlockcheckpoints.exists() && !destinationCheckpointsFilename.equals(sourceCheckpointsFilename)) {
@@ -115,11 +117,11 @@ public class InstallationManager {
         long destinationLength = destinationCheckpoints.length();
         if (sourceLength != destinationLength) {
           String errorText = "Checkpoints were not copied to user's application data directory correctly.\nThe source checkpoints '"
-                  + sourceCheckpointsFilename
-                  + "' is of length "
-                  + sourceLength
-                  + "\nbut the destination checkpoints '"
-                  + destinationCheckpointsFilename + "' is of length " + destinationLength;
+            + sourceCheckpointsFilename
+            + "' is of length "
+            + sourceLength
+            + "\nbut the destination checkpoints '"
+            + destinationCheckpointsFilename + "' is of length " + destinationLength;
           log.error(errorText);
           throw new IllegalStateException(errorText);
         }

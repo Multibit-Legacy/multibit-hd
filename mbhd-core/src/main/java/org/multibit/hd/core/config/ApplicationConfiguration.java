@@ -20,8 +20,6 @@ public class ApplicationConfiguration {
 
   private String applicationDirectory = ".";
 
-  private String currentWalletRoot = "";
-
   private String currentTheme = "LIGHT";
 
   private String version = "0.0.0 (alpha)";
@@ -29,22 +27,6 @@ public class ApplicationConfiguration {
   private String lastFrameBounds = "0,0,1000,560";
 
   private String sidebarWidth = "180";
-
-  /**
-   * Wallets are stored one per directory. The name of this containing directory is called the wallet root.
-   *
-   * @return The root of the current wallet
-   */
-  public String getCurrentWalletRoot() {
-
-    return currentWalletRoot;
-
-  }
-
-  public void setCurrentWalletRoot(String currentWalletRoot) {
-
-    this.currentWalletRoot = currentWalletRoot;
-  }
 
   /**
    * @return The application directory path (e.g. ".")
@@ -139,7 +121,6 @@ public class ApplicationConfiguration {
     ApplicationConfiguration app = new ApplicationConfiguration();
 
     app.setCurrentScreen(getCurrentScreen());
-    app.setCurrentWalletRoot((getCurrentWalletRoot()));
     app.setApplicationDirectory(getApplicationDirectory());
     app.setBitcoinUriHandling(getBitcoinUriHandling());
     app.setRestoreApplicationLayoutOnStartup(isRestoreApplicationLayoutOnStartup());

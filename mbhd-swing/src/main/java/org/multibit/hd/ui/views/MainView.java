@@ -81,7 +81,7 @@ public class MainView extends JFrame {
       private void updateConfiguration() {
         Rectangle bounds = getBounds();
         String lastFrameBounds = String.format("%d,%d,%d,%d", bounds.x, bounds.y, bounds.width, bounds.height);
-        Configurations.currentConfiguration.getApplicationConfiguration().setLastFrameBounds(lastFrameBounds);
+        Configurations.currentConfiguration.getApplication().setLastFrameBounds(lastFrameBounds);
       }
     });
 
@@ -94,7 +94,7 @@ public class MainView extends JFrame {
 
     Rectangle newBounds = new Rectangle(0, 0, MultiBitUI.UI_MIN_WIDTH, MultiBitUI.UI_MIN_HEIGHT);
 
-    String frameDimension = Configurations.currentConfiguration.getApplicationConfiguration().getLastFrameBounds();
+    String frameDimension = Configurations.currentConfiguration.getApplication().getLastFrameBounds();
     if (frameDimension != null) {
       String[] lastFrameDimension = frameDimension.split(",");
       if (lastFrameDimension.length == 4) {
@@ -209,7 +209,7 @@ public class MainView extends JFrame {
 
     int sidebarWidth = MultiBitUI.SIDEBAR_LHS_PREF_WIDTH;
     try {
-      sidebarWidth = Integer.valueOf(Configurations.currentConfiguration.getApplicationConfiguration().getSidebarWidth());
+      sidebarWidth = Integer.valueOf(Configurations.currentConfiguration.getApplication().getSidebarWidth());
     } catch (NumberFormatException e) {
       log.warn("Sidebar width configuration is not a number - using default");
     }
@@ -239,7 +239,7 @@ public class MainView extends JFrame {
         public void propertyChange(PropertyChangeEvent pce) {
 
           // Keep the current configuration up to date
-          Configurations.currentConfiguration.getApplicationConfiguration().setSidebarWidth(String.valueOf(pce.getNewValue()));
+          Configurations.currentConfiguration.getApplication().setSidebarWidth(String.valueOf(pce.getNewValue()));
 
         }
       }

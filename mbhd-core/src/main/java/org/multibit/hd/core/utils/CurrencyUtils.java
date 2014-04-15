@@ -107,7 +107,7 @@ public class CurrencyUtils {
    */
   public static CurrencyUnit currentUnit() {
 
-    return Configurations.currentConfiguration.getBitcoinConfiguration().getLocalCurrencyUnit();
+    return Configurations.currentConfiguration.getBitcoin().getLocalCurrencyUnit();
 
   }
 

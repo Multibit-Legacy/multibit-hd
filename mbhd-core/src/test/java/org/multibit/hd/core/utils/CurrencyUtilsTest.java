@@ -35,14 +35,14 @@ public class CurrencyUtilsTest {
     assertThat(actual_US.getCurrencyUnit().getCode()).isEqualTo("USD");
     assertThat(actual_US.getAmount()).isEqualTo(BigDecimal.ZERO);
 
-    Configurations.currentConfiguration.getBitcoinConfiguration().setLocalCurrencyUnit(CurrencyUnit.getInstance(Locale.UK));
+    Configurations.currentConfiguration.getBitcoin().setLocalCurrencyUnit(CurrencyUnit.getInstance(Locale.UK));
 
     final BigMoney actual_UK = CurrencyUtils.currentZero();
 
     assertThat(actual_UK.getCurrencyUnit().getCode()).isEqualTo("GBP");
     assertThat(actual_UK.getAmount()).isEqualTo(BigDecimal.ZERO);
 
-    Configurations.currentConfiguration.getBitcoinConfiguration().setLocalCurrencyUnit(CurrencyUnit.getInstance(new Locale("ar", "SA")));
+    Configurations.currentConfiguration.getBitcoin().setLocalCurrencyUnit(CurrencyUnit.getInstance(new Locale("ar", "SA")));
 
     final BigMoney actual_AR = CurrencyUtils.currentZero();
 
@@ -58,13 +58,13 @@ public class CurrencyUtilsTest {
 
     assertThat(actual_US).isEqualTo("USD");
 
-    Configurations.currentConfiguration.getBitcoinConfiguration().setLocalCurrencyUnit(CurrencyUnit.getInstance(Locale.UK));
+    Configurations.currentConfiguration.getBitcoin().setLocalCurrencyUnit(CurrencyUnit.getInstance(Locale.UK));
 
     final String actual_UK = CurrencyUtils.currentCode();
 
     assertThat(actual_UK).isEqualTo("GBP");
 
-    Configurations.currentConfiguration.getBitcoinConfiguration().setLocalCurrencyUnit(CurrencyUnit.getInstance(new Locale("ar", "SA")));
+    Configurations.currentConfiguration.getBitcoin().setLocalCurrencyUnit(CurrencyUnit.getInstance(new Locale("ar", "SA")));
 
     final String actual_AR = CurrencyUtils.currentCode();
 
@@ -75,19 +75,19 @@ public class CurrencyUtilsTest {
   @Test
   public void testCurrentSymbol() throws Exception {
 
-    Configurations.currentConfiguration.getBitcoinConfiguration().setLocalCurrencyUnit(CurrencyUnit.getInstance(Locale.US));
+    Configurations.currentConfiguration.getBitcoin().setLocalCurrencyUnit(CurrencyUnit.getInstance(Locale.US));
 
     final String actual_US = CurrencyUtils.currentSymbol();
 
     assertThat(actual_US).isEqualTo("$");
 
-    Configurations.currentConfiguration.getBitcoinConfiguration().setLocalCurrencyUnit(CurrencyUnit.getInstance(Locale.UK));
+    Configurations.currentConfiguration.getBitcoin().setLocalCurrencyUnit(CurrencyUnit.getInstance(Locale.UK));
 
     final String actual_UK = CurrencyUtils.currentSymbol();
 
     assertThat(actual_UK).isEqualTo("£");
 
-    Configurations.currentConfiguration.getBitcoinConfiguration().setLocalCurrencyUnit(CurrencyUnit.getInstance(new Locale("ar", "SA")));
+    Configurations.currentConfiguration.getBitcoin().setLocalCurrencyUnit(CurrencyUnit.getInstance(new Locale("ar", "SA")));
 
     final char[] actual_AR = CurrencyUtils.currentSymbol().toCharArray();
 

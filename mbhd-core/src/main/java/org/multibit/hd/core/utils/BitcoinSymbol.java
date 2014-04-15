@@ -109,7 +109,7 @@ public enum BitcoinSymbol {
    * @return The current Bitcoin symbol
    */
   public static BitcoinSymbol current() {
-    return BitcoinSymbol.of(Configurations.currentConfiguration.getBitcoinConfiguration().getBitcoinSymbol());
+    return BitcoinSymbol.of(Configurations.currentConfiguration.getBitcoin().getBitcoinSymbol());
   }
 
   /**

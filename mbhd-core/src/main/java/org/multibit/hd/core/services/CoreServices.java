@@ -12,6 +12,7 @@ import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
+import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.dto.SecuritySummary;
@@ -27,6 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Map;
@@ -121,11 +124,24 @@ public class CoreServices {
     // Start the logging factory
     LoggingFactory.bootstrap();
 
-    // Load configuration (providing a default if none exists)
-    Configurations.currentConfiguration = Configurations.readConfiguration();
+    Optional<Configuration> configuration;
+    try (InputStream is = new FileInputStream(InstallationManager.getOrCreateConfigurationFile())) {
+      // Load configuration (providing a default if none exists)
+      configuration = Configurations.readConfiguration(is, Configuration.class);
+    } catch (IOException e) {
+      configuration = Optional.absent();
+    }
+
+    if (configuration.isPresent()) {
+      log.warn("Using current configuration");
+      Configurations.currentConfiguration = configuration.get();
+    } else {
+      log.warn("Using default configuration");
+      Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
+    }
 
     // Configure logging
-    new LoggingFactory(Configurations.currentConfiguration.getLoggingConfiguration(), "MBHD").configure();
+    new LoggingFactory(Configurations.currentConfiguration.getLogging(), "MBHD").configure();
 
     if (OSUtils.isDebuggerAttached()) {
 

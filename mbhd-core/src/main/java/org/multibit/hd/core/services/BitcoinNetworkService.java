@@ -488,7 +488,7 @@ public class BitcoinNetworkService extends AbstractService {
     peerGroup = new PeerGroup(NETWORK_PARAMETERS, blockChain);
     peerGroup.setFastCatchupTimeSecs(0); // genesis block
     peerGroup.setUserAgent(InstallationManager.MBHD_APP_NAME,
-      Configurations.currentConfiguration.getApplicationConfiguration().getVersion());
+      Configurations.currentConfiguration.getApplication().getVersion());
     peerGroup.setMaxConnections(MAXIMUM_NUMBER_OF_PEERS);
 
     peerGroup.addPeerDiscovery(new DnsDiscovery(NETWORK_PARAMETERS));

@@ -46,8 +46,8 @@ public class AmountFiatTableCellRenderer extends DefaultTableCellRenderer {
       if (!(fiatPayment.getAmount() == null)) {
         BigMoney amountAsBigMoney = fiatPayment.getAmount();
         try {
-          LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguageConfiguration();
-          BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
+          LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage();
+          BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
 
           String balance = Formats.formatLocalAmount(amountAsBigMoney, languageConfiguration.getLocale(), bitcoinConfiguration, true);
 

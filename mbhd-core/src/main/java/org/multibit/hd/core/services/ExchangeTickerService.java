@@ -24,10 +24,7 @@ import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.UnknownHostException;
-import java.util.Currency;
-import java.util.List;
-import java.util.Locale;
-import java.util.SortedSet;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -70,7 +67,10 @@ public class ExchangeTickerService extends AbstractService {
     exchange = ExchangeFactory.INSTANCE.createExchange(exchangeClassName);
 
     // Apply the Bitcoin configuration to this exchange
-    exchange.getExchangeSpecification().setApiKey(bitcoinConfiguration.getExchangeApiKeys().orNull());
+    Map<String, String> exchangeApiKeys = bitcoinConfiguration.getExchangeApiKeys();
+    if (exchangeApiKeys.containsKey(exchangeKey.name())) {
+      exchange.getExchangeSpecification().setApiKey(exchangeApiKeys.get(exchangeKey.name()));
+    }
 
   }
 

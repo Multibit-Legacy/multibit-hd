@@ -114,7 +114,7 @@ public class ComponentTestBed {
     bitcoinConfiguration.setCurrentExchange(ExchangeKey.BITSTAMP.name());
     bitcoinConfiguration.setLocalCurrencyUnit(CurrencyUnit.USD);
 
-    Configurations.currentConfiguration.setBitcoinConfiguration(bitcoinConfiguration);
+    Configurations.currentConfiguration.setBitcoin(bitcoinConfiguration);
 
     // Register for events
     CoreServices.uiEventBus.register(this);
@@ -217,9 +217,9 @@ public class ComponentTestBed {
       @Override
       public void actionPerformed(ActionEvent e) {
         if (Languages.currentLocale().getLanguage().startsWith("ar")) {
-          Configurations.currentConfiguration.getLanguageConfiguration().setLocale(Locale.UK);
+          Configurations.currentConfiguration.getLanguage().setLocale(Locale.UK);
         } else {
-          Configurations.currentConfiguration.getLanguageConfiguration().setLocale(new Locale("ar"));
+          Configurations.currentConfiguration.getLanguage().setLocale(new Locale("ar"));
         }
 
         JButton button = (JButton) e.getSource();

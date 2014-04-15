@@ -69,7 +69,7 @@ public class ApplicationSettingsPanelView extends AbstractWizardPanelView<Applic
       "[][]" // Row constraints
     ));
 
-    ApplicationConfiguration applicationConfiguration = Configurations.currentConfiguration.getApplicationConfiguration().deepCopy();
+    ApplicationConfiguration applicationConfiguration = Configurations.currentConfiguration.getApplication().deepCopy();
 
     themesComboBox = ComboBoxes.newThemesComboBox(this, applicationConfiguration);
 
@@ -145,7 +145,7 @@ public class ApplicationSettingsPanelView extends AbstractWizardPanelView<Applic
 
     // Create a new configuration to allow for cancellation
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
-    configuration.getApplicationConfiguration().setCurrentTheme(themeName);
+    configuration.getApplication().setCurrentTheme(themeName);
 
     // Update the model
     getWizardModel().setConfiguration(configuration);

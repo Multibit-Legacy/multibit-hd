@@ -93,12 +93,12 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
 //      @Override
 //      public void run() {
 //
-        BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
+        BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
         ExchangeKey exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getCurrentExchange());
 
         if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
-          if (bitcoinConfiguration.getExchangeApiKeys().isPresent()) {
-            String apiKey = Configurations.currentConfiguration.getBitcoinConfiguration().getExchangeApiKeys().get();
+          if (bitcoinConfiguration.getExchangeApiKeys().containsKey(ExchangeKey.OPEN_EXCHANGE_RATES.name())) {
+            String apiKey = Configurations.currentConfiguration.getBitcoin().getExchangeApiKeys().get(ExchangeKey.OPEN_EXCHANGE_RATES.name());
             exchangeKey.getExchange().getExchangeSpecification().setApiKey(apiKey);
           }
         }
@@ -121,7 +121,7 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
    */
   private void handleTheme() {
 
-    Theme newTheme = ThemeKey.valueOf(Configurations.currentConfiguration.getApplicationConfiguration().getCurrentTheme()).theme();
+    Theme newTheme = ThemeKey.valueOf(Configurations.currentConfiguration.getApplication().getCurrentTheme()).theme();
     Themes.switchTheme(newTheme);
 
   }
@@ -211,7 +211,7 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
       if (PasswordState.PASSWORD_ENTER_PASSWORD.name().equals(event.getPanelName())) {
 
         // Show the initial screen as soon as possible to reassure the user
-        Screen screen = Screen.valueOf(Configurations.currentConfiguration.getApplicationConfiguration().getCurrentScreen());
+        Screen screen = Screen.valueOf(Configurations.currentConfiguration.getApplication().getCurrentScreen());
         ControllerEvents.fireShowDetailScreenEvent(screen);
 
         // Don't hold up the UI thread with these background operations

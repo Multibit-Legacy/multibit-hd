@@ -225,7 +225,7 @@ public enum WalletManager implements WalletEventListener {
       // There is already a wallet created with this root - if so load it and return that
       walletDataToReturn = loadFromFile(walletFile, password);
       if (Configurations.currentConfiguration != null) {
-        Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(walletRoot);
+        Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
       }
       setCurrentWalletData(walletDataToReturn);
 
@@ -263,7 +263,7 @@ public enum WalletManager implements WalletEventListener {
     // Save it now to ensure it is on the disk
     saveWallet(walletToReturn, walletFile.getAbsolutePath());
     if (Configurations.currentConfiguration != null) {
-      Configurations.currentConfiguration.getApplicationConfiguration().setCurrentWalletRoot(walletRoot);
+      Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
     }
     walletDataToReturn = new WalletData(walletId, walletToReturn);
     walletDataToReturn.setPassword(password);

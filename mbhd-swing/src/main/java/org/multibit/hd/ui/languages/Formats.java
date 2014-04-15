@@ -256,8 +256,8 @@ public class Formats {
         // Create a suitable representation for inline text (no icon)
         messageAmount = Formats.formatSatoshisAsSymbolicText(
           amount.get(),
-          Configurations.currentConfiguration.getLanguageConfiguration(),
-          Configurations.currentConfiguration.getBitcoinConfiguration()
+          Configurations.currentConfiguration.getLanguage(),
+          Configurations.currentConfiguration.getBitcoin()
         );
       } else {
         messageAmount = Languages.safeText(MessageKey.NOT_AVAILABLE);

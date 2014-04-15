@@ -1,5 +1,7 @@
 package org.multibit.hd.core.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
 
 import java.util.Locale;
@@ -13,10 +15,13 @@ import java.util.Locale;
  * @since 0.0.1
  *  
  */
-@SuppressWarnings("UnusedDeclaration")
 public class LanguageConfiguration {
 
-  private Locale locale;
+  /**
+   * Default to US since it is the dominant locale on the Internet
+   */
+  @JsonProperty
+  private Locale locale = Locale.US;
 
   public LanguageConfiguration() {
 
@@ -52,6 +57,7 @@ public class LanguageConfiguration {
     return locale;
   }
 
+  @JsonIgnore
   public void setLocale(Locale locale) {
     this.locale = locale;
   }

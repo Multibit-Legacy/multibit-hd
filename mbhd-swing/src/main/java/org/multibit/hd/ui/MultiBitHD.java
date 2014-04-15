@@ -193,7 +193,7 @@ public class MultiBitHD {
       public void run() {
 
         // Ensure that we are using the configured theme
-        ThemeKey themeKey = ThemeKey.valueOf(Configurations.currentConfiguration.getApplicationConfiguration().getCurrentTheme());
+        ThemeKey themeKey = ThemeKey.valueOf(Configurations.currentConfiguration.getApplication().getCurrentTheme());
         Themes.switchTheme(themeKey.theme());
 
         // Build the main view
