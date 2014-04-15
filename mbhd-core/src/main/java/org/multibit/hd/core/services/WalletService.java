@@ -58,12 +58,12 @@ public class WalletService {
   public static final String PREFIX_SEPARATOR = ": ";
 
   /**
-   * The location of the backing writeContacts for the payments
+   * The location of the backing write for the payments
    */
   private File backingStoreFile;
 
   /**
-   * The serializer for the backing writeContacts
+   * The serializer for the backing write
    */
   private PaymentsProtobufSerializer protobufSerializer;
 
@@ -109,7 +109,7 @@ public class WalletService {
 
     this.walletId = walletId;
 
-    // Work out where to writeContacts the contacts for this wallet id.
+    // Work out where to write the contacts for this wallet id.
     String walletRoot = WalletManager.createWalletRoot(walletId);
 
     File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
@@ -661,9 +661,12 @@ public class WalletService {
   /**
    * Find the payment requests that are either partially or fully funded by the transaction specified
    *
-   * @return
+   * @param transactionData The transaction data
+   *
+   * @return The list of payment requests that the transaction data funds
    */
   public List<PaymentRequestData> findPaymentRequestsThisTransactionFunds(TransactionData transactionData) {
+
     List<PaymentRequestData> paymentRequestDataList = Lists.newArrayList();
 
     if (transactionData != null && transactionData.getOutputAddresses() != null) {
@@ -683,20 +686,24 @@ public class WalletService {
    * Delete a payment request
    */
   public void deletePaymentRequest(PaymentRequestData paymentRequestData) {
+
     undoDeletePaymentRequestStack.push(paymentRequestData);
     paymentRequestMap.remove(paymentRequestData.getAddress());
     writePayments();
+
   }
 
   /**
    * Undo the deletion of a payment request
    */
   public void undoDeletePaymentRequest() {
+
     if (!undoDeletePaymentRequestStack.isEmpty()) {
       PaymentRequestData deletedPaymentRequestData = undoDeletePaymentRequestStack.pop();
       addPaymentRequest(deletedPaymentRequestData);
       writePayments();
     }
+
   }
 
   /**
@@ -707,12 +714,26 @@ public class WalletService {
    * @param transactionFileStem    The stem of the export file for the transactions (will be suffixed with a file suffix and possibly a bracketed number for uniqueness)
    * @param paymentRequestFileStem The stem of the export file for the payment requests (will be suffixed with a file suffix and possibly a bracketed number for uniqueness)
    */
-  public void exportPayments(File exportDirectory, String transactionFileStem, String paymentRequestFileStem,
-                             CSVEntryConverter<PaymentRequestData> paymentRequestHeaderConverter, CSVEntryConverter<PaymentRequestData> paymentRequestConverter,
-                             CSVEntryConverter<TransactionData> transactionHeaderConverter, CSVEntryConverter<TransactionData> transactionConverter) {
+  public void exportPayments(File exportDirectory,
+                             String transactionFileStem,
+                             String paymentRequestFileStem,
+                             CSVEntryConverter<PaymentRequestData> paymentRequestHeaderConverter,
+                             CSVEntryConverter<PaymentRequestData> paymentRequestConverter,
+                             CSVEntryConverter<TransactionData> transactionHeaderConverter,
+                             CSVEntryConverter<TransactionData> transactionConverter
+  ) {
     // Refresh all payments
     List<PaymentData> paymentDataList = getPaymentDataList();
-    ExportManager.export(paymentDataList, getPaymentRequests(), exportDirectory, transactionFileStem, paymentRequestFileStem,
-      paymentRequestHeaderConverter, paymentRequestConverter, transactionHeaderConverter, transactionConverter);
+    ExportManager.export(
+      paymentDataList,
+      getPaymentRequests(),
+      exportDirectory,
+      transactionFileStem,
+      paymentRequestFileStem,
+      paymentRequestHeaderConverter,
+      paymentRequestConverter,
+      transactionHeaderConverter,
+      transactionConverter
+    );
   }
 }
