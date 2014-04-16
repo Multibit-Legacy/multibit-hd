@@ -57,8 +57,11 @@ public enum MessageKey {
   QR_CODE_LABEL_LABEL("qr_code_label_label"),
   NOTES("notes"),
   ONE_OF_YOUR_ADDRESSES("one_of_your_addresses"),
+
   SELECT_FOLDER("select_folder"),
   SELECT_FILE("select_file"),
+
+  SELECT_WALLET("select_wallet"),
 
   ENTER_PASSWORD("enter_password"),
   ENTER_NEW_PASSWORD("enter_new_password"),
@@ -291,6 +294,9 @@ public enum MessageKey {
 
   PASSWORD_NOTE_1("password_note_1"),
   PASSWORD_NOTE_2("password_note_2"),
+
+  SELECT_WALLET_NOTE_1("select_wallet_note_1"),
+  SELECT_WALLET_NOTE_2("select_wallet_note_2"),
 
   CHANGE_PASSWORD_NOTE_1("change_password_note_1"),
   CHANGE_PASSWORD_NOTE_2("change_password_note_2"),

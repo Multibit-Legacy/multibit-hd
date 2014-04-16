@@ -25,7 +25,6 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
 
   // View components
   private JComboBox<WalletData> selectedWalletComboBox;
-  private JLabel createdLabel;
   private JLabel descriptionLabel;
 
   /**
@@ -50,12 +49,11 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
     selectedWalletComboBox = ComboBoxes.newSelectWalletComboBox(this, model.getWalletList());
 
     // Create the labels
-    createdLabel = Labels.newBlankLabel();
     descriptionLabel = Labels.newBlankLabel();
 
     // Add to the panel
+    panel.add(Labels.newSelectWallet(), "shrink");
     panel.add(selectedWalletComboBox, "grow,push,w min:350:,wrap");
-    panel.add(createdLabel, "grow,push,wrap");
     panel.add(descriptionLabel, "grow,push,wrap");
 
     return panel;
@@ -106,6 +104,9 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
     if (selectedWallet != null) {
 
       getModel().get().setValue(selectedWallet);
+
+      descriptionLabel.setText(selectedWallet.getDescription());
+
     }
   }
 

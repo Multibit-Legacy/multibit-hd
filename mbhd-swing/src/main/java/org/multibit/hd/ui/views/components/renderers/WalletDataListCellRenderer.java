@@ -43,8 +43,8 @@ public class WalletDataListCellRenderer extends JLabel implements ListCellRender
 
     if (value != null) {
 
-      // Create a truncated name + description
-      String truncatedText = Languages.truncatedList(Lists.newArrayList(value.getName(), value.getDescription()), 100);
+      // Create a truncated name (description is shown outside the list)
+      String truncatedText = Languages.truncatedList(Lists.newArrayList(value.getName()), 100);
 
       setText(truncatedText);
     } else {

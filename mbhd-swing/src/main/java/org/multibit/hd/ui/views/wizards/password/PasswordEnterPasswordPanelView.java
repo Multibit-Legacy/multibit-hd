@@ -25,6 +25,8 @@ import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurit
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
+import org.multibit.hd.ui.views.components.select_wallet.SelectWalletModel;
+import org.multibit.hd.ui.views.components.select_wallet.SelectWalletView;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
@@ -39,13 +41,12 @@ import java.util.concurrent.TimeUnit;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Send bitcoin: Enter amount</li>
+ * <li>Password: Enter password</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-
 public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<PasswordWizardModel, PasswordEnterPasswordPanelModel> {
 
   private static final Logger log = LoggerFactory.getLogger(PasswordEnterPasswordPanelView.class);
@@ -53,6 +54,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
   // Panel specific components
   private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV;
   private ModelAndView<EnterPasswordModel, EnterPasswordView> enterPasswordMaV;
+  private ModelAndView<SelectWalletModel, SelectWalletView> selectWalletMaV;
 
   /**
    * @param wizard The wizard managing the states
@@ -68,11 +70,13 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
 
     displaySecurityPopoverMaV = Popovers.newDisplaySecurityPopoverMaV(getPanelName());
     enterPasswordMaV = Components.newEnterPasswordMaV(getPanelName());
+    selectWalletMaV = Components.newSelectWalletMaV(getPanelName());
 
     // Configure the panel model
     final PasswordEnterPasswordPanelModel panelModel = new PasswordEnterPasswordPanelModel(
       getPanelName(),
-      enterPasswordMaV.getModel()
+      enterPasswordMaV.getModel(),
+      selectWalletMaV.getModel()
     );
     setPanelModel(panelModel);
 
@@ -91,8 +95,10 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
     ));
 
     contentPanel.add(Labels.newPasswordNote(), "wrap");
-
     contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "wrap");
+
+    contentPanel.add(Labels.newSelectWalletNote(), "wrap");
+    contentPanel.add(selectWalletMaV.getView().newComponentPanel(), "wrap");
 
   }
 

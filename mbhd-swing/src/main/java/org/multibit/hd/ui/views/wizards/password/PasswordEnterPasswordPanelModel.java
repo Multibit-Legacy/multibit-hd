@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.wizards.password;
 
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
+import org.multibit.hd.ui.views.components.select_wallet.SelectWalletModel;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
 
 /**
@@ -15,6 +16,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
 public class PasswordEnterPasswordPanelModel extends AbstractWizardPanelModel {
 
   private final EnterPasswordModel enterPasswordModel;
+  private final SelectWalletModel selectWalletModel;
 
   /**
    * @param panelName          The panel name
@@ -22,10 +24,12 @@ public class PasswordEnterPasswordPanelModel extends AbstractWizardPanelModel {
    */
   public PasswordEnterPasswordPanelModel(
     String panelName,
-    EnterPasswordModel enterPasswordModel
+    EnterPasswordModel enterPasswordModel,
+    SelectWalletModel selectWalletModel
   ) {
     super(panelName);
     this.enterPasswordModel = enterPasswordModel;
+    this.selectWalletModel = selectWalletModel;
   }
 
   /**
@@ -35,4 +39,10 @@ public class PasswordEnterPasswordPanelModel extends AbstractWizardPanelModel {
     return enterPasswordModel;
   }
 
+  /**
+   * @return the "select wallet" model
+   */
+  public SelectWalletModel getSelectWalletModel() {
+    return selectWalletModel;
+  }
 }

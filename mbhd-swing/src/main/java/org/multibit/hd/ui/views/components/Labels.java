@@ -581,6 +581,14 @@ public class Labels {
   }
 
   /**
+   * @return A new "select wallet" label
+   */
+  public static JLabel newSelectWallet() {
+
+    return newLabel(MessageKey.SELECT_WALLET);
+  }
+
+  /**
    * @return A new "Enter password" label
    */
   public static JLabel newEnterPassword() {
@@ -1028,6 +1036,18 @@ public class Labels {
     return newNoteLabel(new MessageKey[]{
       MessageKey.PASSWORD_NOTE_1,
       MessageKey.PASSWORD_NOTE_2
+    }, new Object[][]{});
+
+  }
+
+  /**
+   * @return A new "select wallet" note (password wizard)
+   */
+  public static JLabel newSelectWalletNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.SELECT_WALLET_NOTE_1,
+      MessageKey.SELECT_WALLET_NOTE_2
     }, new Object[][]{});
 
   }
