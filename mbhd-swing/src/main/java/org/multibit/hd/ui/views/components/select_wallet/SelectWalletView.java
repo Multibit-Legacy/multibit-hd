@@ -1,7 +1,9 @@
 package org.multibit.hd.ui.views.components.select_wallet;
 
+import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.views.components.AbstractComponentView;
 import org.multibit.hd.ui.views.components.ComboBoxes;
 import org.multibit.hd.ui.views.components.Labels;
@@ -79,11 +81,24 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
     selectedWalletComboBox.removeAllItems();
 
     List<WalletData> walletList = getModel().get().getWalletList();
+    Optional<WalletData> currentWallet = WalletManager.INSTANCE.getCurrentWalletData();
 
-    // TODO the sort order should be defined better or a comparator used
-    if (walletList != null) {
-      for (int i = walletList.size() - 1; i >= 0; i--) {
-        selectedWalletComboBox.addItem(walletList.get(i));
+    if (currentWallet.isPresent()) {
+
+      // We have a current select so set that first then add more
+      WalletData current = currentWallet.get();
+      selectedWalletComboBox.addItem(currentWallet.get());
+      for (WalletData walletData : walletList) {
+        // Continue adding entries other than the current
+        if (!walletData.getWalletId().equals(current.getWalletId())) {
+          selectedWalletComboBox.addItem(walletData);
+        }
+      }
+    } else {
+
+      // We have no current selection so add anything that's available
+      for (WalletData walletData : walletList) {
+        selectedWalletComboBox.addItem(walletData);
       }
     }
     selectedWalletComboBox.addActionListener(this);

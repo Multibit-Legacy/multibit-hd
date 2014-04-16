@@ -22,7 +22,10 @@ public class ApplicationConfiguration {
 
   private String currentTheme = "LIGHT";
 
-  private String version = "0.0.0 (alpha)";
+  /**
+   * The version field cannot contain "/" or "(" or ")" since it is used in the PeerGroup of Bitcoinj
+   */
+  private String version = "0.0.1a";
 
   private String lastFrameBounds = "0,0,1000,560";
 

@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class SelectWalletModel implements Model<WalletData> {
 
-  private WalletData selectedBackup;
+  private WalletData selectedWallet;
   private List<WalletData> walletList = Lists.newArrayList();
 
   private final String panelName;
@@ -33,12 +33,12 @@ public class SelectWalletModel implements Model<WalletData> {
 
   @Override
   public WalletData getValue() {
-    return selectedBackup;
+    return selectedWallet;
   }
 
   @Override
   public void setValue(WalletData value) {
-    this.selectedBackup = value;
+    this.selectedWallet = value;
 
     ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
   }
@@ -55,7 +55,7 @@ public class SelectWalletModel implements Model<WalletData> {
 
     // Initialise the selected value to the first walletData
     if (walletList != null && !walletList.isEmpty()) {
-      selectedBackup = walletList.get(0);
+      selectedWallet = walletList.get(0);
     }
   }
 }
