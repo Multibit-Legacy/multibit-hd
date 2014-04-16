@@ -27,7 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletIdTest;
 import org.multibit.hd.core.services.CoreServices;
@@ -134,25 +134,25 @@ public class WalletManagerTest {
     assertThat(newWalletFile.exists()).isTrue();
 
     // Check wallet can be loaded and is still protobuf and encrypted.
-    WalletData rebornWalletData = walletManager.loadFromFile(newWalletFile,"password");
-    assertThat(rebornWalletData).isNotNull();
-    assertThat(rebornWalletData.getWallet().getBalance()).isEqualTo(BigInteger.ZERO);
-    assertThat(rebornWalletData.getWallet().getKeys().size()).isEqualTo(2);
-    assertThat(rebornWalletData.getWallet().getEncryptionType()).describedAs("Wallet is not of type ENCRYPTED when it should be").isEqualTo(Protos.Wallet.EncryptionType.ENCRYPTED_SCRYPT_AES);
+    WalletSummary rebornWalletSummary = walletManager.loadFromFile(newWalletFile,"password");
+    assertThat(rebornWalletSummary).isNotNull();
+    assertThat(rebornWalletSummary.getWallet().getBalance()).isEqualTo(BigInteger.ZERO);
+    assertThat(rebornWalletSummary.getWallet().getKeys().size()).isEqualTo(2);
+    assertThat(rebornWalletSummary.getWallet().getEncryptionType()).describedAs("Wallet is not of type ENCRYPTED when it should be").isEqualTo(Protos.Wallet.EncryptionType.ENCRYPTED_SCRYPT_AES);
 
     // Get the keys out the reborn wallet and check that all the keys are encrypted.
-    Collection<ECKey> rebornEncryptedKeys = rebornWalletData.getWallet().getKeys();
+    Collection<ECKey> rebornEncryptedKeys = rebornWalletSummary.getWallet().getKeys();
     for (ECKey key : rebornEncryptedKeys) {
       assertThat(key.isEncrypted()).describedAs("Key is not encrypted when it should be").isTrue();
     }
 
-    System.out.println("Reborn KeyCrypter = " + rebornWalletData.getWallet().getKeyCrypter());
+    System.out.println("Reborn KeyCrypter = " + rebornWalletSummary.getWallet().getKeyCrypter());
 
     // Decrypt the reborn wallet.
-    rebornWalletData.getWallet().decrypt(rebornWalletData.getWallet().getKeyCrypter().deriveKey(WALLET_PASSWORD));
+    rebornWalletSummary.getWallet().decrypt(rebornWalletSummary.getWallet().getKeyCrypter().deriveKey(WALLET_PASSWORD));
 
     // Get the keys out the reborn wallet and check that all the keys match.
-    Collection<ECKey> rebornKeys = rebornWalletData.getWallet().getKeys();
+    Collection<ECKey> rebornKeys = rebornWalletSummary.getWallet().getKeys();
 
     assertThat(rebornKeys.size()).describedAs("Wrong number of keys in reborn wallet").isEqualTo(2);
 
@@ -196,30 +196,30 @@ public class WalletManagerTest {
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
 
-    WalletData walletData1 = walletManager.getOrCreateWallet(temporaryDirectory1, seed, "password");
+    WalletSummary walletSummary1 = walletManager.getOrCreateWalletSummary(temporaryDirectory1, seed, "password");
 
     // Uncomment this next line if you want a wallet created in your MultiBitHD user data directory.
     //walletManager.createWallet( seed, "password");
 
-    assertThat(walletData1).isNotNull();
+    assertThat(walletSummary1).isNotNull();
 
     // There should be a single key
-    assertThat(walletData1.getWallet().getKeychainSize() == 1).isTrue();
+    assertThat(walletSummary1.getWallet().getKeychainSize() == 1).isTrue();
 
 
     // Create another wallet - it should have the same wallet id and the private key should be the same
     File temporaryDirectory2 = makeRandomTemporaryDirectory();
     BackupManager.INSTANCE.initialise(temporaryDirectory2, null);
 
-    WalletData walletData2 = walletManager.getOrCreateWallet(temporaryDirectory2, seed, "password");
+    WalletSummary walletSummary2 = walletManager.getOrCreateWalletSummary(temporaryDirectory2, seed, "password");
 
-    assertThat(walletData2).isNotNull();
+    assertThat(walletSummary2).isNotNull();
 
     // There should be a single key
-    assertThat(walletData2.getWallet().getKeychainSize() == 1).isTrue();
+    assertThat(walletSummary2.getWallet().getKeychainSize() == 1).isTrue();
 
-    ECKey key1 = walletData1.getWallet().getKeys().get(0);
-    ECKey key2 = walletData2.getWallet().getKeys().get(0);
+    ECKey key1 = walletSummary1.getWallet().getKeys().get(0);
+    ECKey key2 = walletSummary2.getWallet().getKeys().get(0);
 
     assertThat(Arrays.equals(key1.getPrivKeyBytes(), key2.getPrivKeyBytes())).isTrue();
 
@@ -227,7 +227,7 @@ public class WalletManagerTest {
       temporaryDirectory2.getAbsolutePath()
         + File.separator
         + "mbhd-"
-        + walletData2.getWalletId().toFormattedString()
+        + walletSummary2.getWalletId().toFormattedString()
         + File.separator
         + WalletManager.MBHD_WALLET_NAME
     );
@@ -271,7 +271,7 @@ public class WalletManagerTest {
     assertThat(walletDirectories.get(1).getAbsolutePath()).isEqualTo(walletPath2);
 
     // Attempt to retrieve the wallet summary
-    List<WalletData> wallets = WalletManager.findWalletData(walletDirectories, Optional.of(WALLET_DIRECTORY_2));
+    List<WalletSummary> wallets = WalletManager.findWalletSummaries(walletDirectories, Optional.of(WALLET_DIRECTORY_2));
     assertThat(wallets).isNotNull();
     assertThat(wallets.size()).isEqualTo(2);
 

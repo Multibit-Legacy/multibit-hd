@@ -13,7 +13,7 @@ import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.CoreMessageKey;
-import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.events.CoreEvents;
@@ -77,7 +77,7 @@ public class BitcoinNetworkService extends AbstractService {
     try {
 
       // Check if there is a wallet - if there is no wallet the network will not start (there's nowhere to put the blockchain)
-      if (!WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
+      if (!WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
         log.warn("Not starting bitcoin network service as there is currently no wallet.");
         return true;
       }
@@ -124,8 +124,8 @@ public class BitcoinNetworkService extends AbstractService {
 
     log.debug("Creating block chain ...");
     blockChain = new BlockChain(NETWORK_PARAMETERS, blockStore);
-    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
-      blockChain.addWallet(WalletManager.INSTANCE.getCurrentWalletData().get().getWallet());
+    if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+      blockChain.addWallet(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet());
     }
     log.debug("Created block chain '{}' with height '{}'", blockChain, blockChain.getBestChainHeight());
 
@@ -169,18 +169,18 @@ public class BitcoinNetworkService extends AbstractService {
    */
   private void saveWallet() {
     // Save the current wallet immediately
-    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
+    if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
 
-      WalletData walletData = WalletManager.INSTANCE.getCurrentWalletData().get();
-      WalletId walletId = walletData.getWalletId();
+      WalletSummary walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary().get();
+      WalletId walletId = walletSummary.getWalletId();
       log.debug("Saving wallet with id '" + walletId + "'.");
 
       try {
         File currentWalletFile = WalletManager.INSTANCE.getCurrentWalletFile().get();
-        walletData.getWallet().saveToFile(currentWalletFile);
+        walletSummary.getWallet().saveToFile(currentWalletFile);
         log.debug("Wallet save completed ok. Wallet size is " + currentWalletFile.length() + " bytes.");
 
-        BackupManager.INSTANCE.createRollingBackup(walletData);
+        BackupManager.INSTANCE.createRollingBackup(walletSummary);
         BackupManager.INSTANCE.createLocalAndCloudBackup(walletId);
       } catch (IOException ioe) {
         log.error("Could not write wallet and backups for wallet with id '" + walletId + "' successfully. The error was '" + ioe.getMessage() + "'");
@@ -228,8 +228,8 @@ public class BitcoinNetworkService extends AbstractService {
       peerGroup.removeEventListener(peerEventListener);
 
       // Remove the wallet from the peer group
-      if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
-        peerGroup.removeWallet(WalletManager.INSTANCE.getCurrentWalletData().get().getWallet());
+      if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+        peerGroup.removeWallet(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet());
       }
 
       peerGroup.stopAndWait();
@@ -242,8 +242,8 @@ public class BitcoinNetworkService extends AbstractService {
    */
   private void closeBlockstore() {
     // Remove the wallet from the block chain
-    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent() && blockChain != null) {
-      blockChain.removeWallet(WalletManager.INSTANCE.getCurrentWalletData().get().getWallet());
+    if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent() && blockChain != null) {
+      blockChain.removeWallet(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet());
     }
 
     // Close the blockstore
@@ -276,7 +276,7 @@ public class BitcoinNetworkService extends AbstractService {
 
   // TODO should be in executor
   public void send(String destinationAddress, BigInteger amount, String changeAddress, BigInteger feePerKB, CharSequence password, Optional<FeeState> feeStateOptional) {
-    if (!WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
+    if (!WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
       // Declare the transaction creation a failure - no wallet
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
         null,
@@ -293,7 +293,7 @@ public class BitcoinNetworkService extends AbstractService {
     }
 
     log.debug("Just about to create send transaction");
-    Wallet wallet = WalletManager.INSTANCE.getCurrentWalletData().get().getWallet();
+    Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
     KeyParameter aesKey = wallet.getKeyCrypter().deriveKey(password);
 
     // Verify the destination address
@@ -448,7 +448,7 @@ public class BitcoinNetworkService extends AbstractService {
    */
   public void replayWallet(DateTime dateToReplayFrom) throws IOException, BlockStoreException {
     Preconditions.checkNotNull(dateToReplayFrom);
-    Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletData().isPresent());
+    Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().isPresent());
 
     log.debug("Stopping any existing downloads");
 
@@ -458,7 +458,7 @@ public class BitcoinNetworkService extends AbstractService {
     // Close the block store
     closeBlockstore();
 
-    log.info("Starting replay of wallet with id '" + WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()
+    log.info("Starting replay of wallet with id '" + WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId()
       + "' from date " + dateToReplayFrom);
 
     // TODO the current best height should be remembered and used to generate percentage complete as
@@ -496,8 +496,8 @@ public class BitcoinNetworkService extends AbstractService {
     peerEventListener = new MultiBitPeerEventListener();
     peerGroup.addEventListener(peerEventListener);
 
-    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
-      peerGroup.addWallet(WalletManager.INSTANCE.getCurrentWalletData().get().getWallet());
+    if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+      peerGroup.addWallet(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet());
     }
   }
 
@@ -508,11 +508,11 @@ public class BitcoinNetworkService extends AbstractService {
    * @return changeAddress The next change address as a string
    */
   public String getNextChangeAddress() {
-    Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletData().isPresent());
-    Preconditions.checkNotNull(WalletManager.INSTANCE.getCurrentWalletData().get().getWallet());
-    Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletData().get().getWallet().getKeychainSize() > 0);
+    Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().isPresent());
+    Preconditions.checkNotNull(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet());
+    Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet().getKeychainSize() > 0);
 
-    Wallet wallet = WalletManager.INSTANCE.getCurrentWalletData().get().getWallet();
+    Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
     ECKey firstKey = wallet.getKeys().get(0);
     return firstKey.toAddress(MAINNET).toString();
   }

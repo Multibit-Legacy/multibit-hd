@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.components.select_wallet;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.views.components.AbstractComponentView;
 import org.multibit.hd.ui.views.components.ComboBoxes;
@@ -26,7 +26,7 @@ import java.util.List;
 public class SelectWalletView extends AbstractComponentView<SelectWalletModel> implements ActionListener {
 
   // View components
-  private JComboBox<WalletData> selectedWalletComboBox;
+  private JComboBox<WalletSummary> selectedWalletComboBox;
   private JLabel descriptionLabel;
 
   /**
@@ -80,25 +80,25 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
     selectedWalletComboBox.removeActionListener(this);
     selectedWalletComboBox.removeAllItems();
 
-    List<WalletData> walletList = getModel().get().getWalletList();
-    Optional<WalletData> currentWallet = WalletManager.INSTANCE.getCurrentWalletData();
+    List<WalletSummary> walletList = getModel().get().getWalletList();
+    Optional<WalletSummary> currentWallet = WalletManager.INSTANCE.getCurrentWalletSummary();
 
     if (currentWallet.isPresent()) {
 
       // We have a current select so set that first then add more
-      WalletData current = currentWallet.get();
+      WalletSummary current = currentWallet.get();
       selectedWalletComboBox.addItem(currentWallet.get());
-      for (WalletData walletData : walletList) {
+      for (WalletSummary walletSummary : walletList) {
         // Continue adding entries other than the current
-        if (!walletData.getWalletId().equals(current.getWalletId())) {
-          selectedWalletComboBox.addItem(walletData);
+        if (!walletSummary.getWalletId().equals(current.getWalletId())) {
+          selectedWalletComboBox.addItem(walletSummary);
         }
       }
     } else {
 
       // We have no current selection so add anything that's available
-      for (WalletData walletData : walletList) {
-        selectedWalletComboBox.addItem(walletData);
+      for (WalletSummary walletSummary : walletList) {
+        selectedWalletComboBox.addItem(walletSummary);
       }
     }
     selectedWalletComboBox.addActionListener(this);
@@ -106,7 +106,7 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
     // Update the description if there is a selection
     if (selectedWalletComboBox.getSelectedIndex() != -1) {
 
-      WalletData selectedWallet = (WalletData) selectedWalletComboBox.getSelectedItem();
+      WalletSummary selectedWallet = (WalletSummary) selectedWalletComboBox.getSelectedItem();
 
       if (selectedWallet != null) {
 
@@ -127,7 +127,7 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
   public void actionPerformed(ActionEvent e) {
 
     JComboBox source = (JComboBox) e.getSource();
-    WalletData selectedWallet = (WalletData) source.getSelectedItem();
+    WalletSummary selectedWallet = (WalletSummary) source.getSelectedItem();
 
     if (selectedWallet != null) {
 

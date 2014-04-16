@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.components.select_wallet;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
 
@@ -17,10 +17,10 @@ import java.util.List;
  * @since 0.0.1
  *  
  */
-public class SelectWalletModel implements Model<WalletData> {
+public class SelectWalletModel implements Model<WalletSummary> {
 
-  private WalletData selectedWallet;
-  private List<WalletData> walletList = Lists.newArrayList();
+  private WalletSummary selectedWallet;
+  private List<WalletSummary> walletList = Lists.newArrayList();
 
   private final String panelName;
 
@@ -32,12 +32,12 @@ public class SelectWalletModel implements Model<WalletData> {
   }
 
   @Override
-  public WalletData getValue() {
+  public WalletSummary getValue() {
     return selectedWallet;
   }
 
   @Override
-  public void setValue(WalletData value) {
+  public void setValue(WalletSummary value) {
     this.selectedWallet = value;
 
     ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
@@ -46,14 +46,15 @@ public class SelectWalletModel implements Model<WalletData> {
   /**
    * @return The wallet data summaries to be presented
    */
-  public List<WalletData> getWalletList() {
+  public List<WalletSummary> getWalletList() {
     return walletList;
   }
 
-  public void setWalletList(List<WalletData> walletList) {
+  public void setWalletList(List<WalletSummary> walletList) {
+
     this.walletList = walletList;
 
-    // Initialise the selected value to the first walletData
+    // Initialise the selected value to the first wallet summary
     if (walletList != null && !walletList.isEmpty()) {
       selectedWallet = walletList.get(0);
     }

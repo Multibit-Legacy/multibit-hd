@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.components.renderers;
 
 import com.google.common.collect.Lists;
-import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.ui.languages.Languages;
 
 import javax.swing.*;
@@ -10,15 +10,15 @@ import java.awt.*;
 /**
  * <p>List cell renderer to provide the following to combo boxes:</p>
  * <ul>
- * <li>Rendering of a wallet data DTO</li>
+ * <li>Rendering of a wallet summary DTO</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class WalletDataListCellRenderer extends JLabel implements ListCellRenderer<WalletData> {
+public class WalletSummaryListCellRenderer extends JLabel implements ListCellRenderer<WalletSummary> {
 
-  public WalletDataListCellRenderer() {
+  public WalletSummaryListCellRenderer() {
 
     setOpaque(true);
     setVerticalAlignment(CENTER);
@@ -28,7 +28,7 @@ public class WalletDataListCellRenderer extends JLabel implements ListCellRender
 
   public Component getListCellRendererComponent(
     JList list,
-    WalletData value,
+    WalletSummary value,
     int index,
     boolean isSelected,
     boolean cellHasFocus

@@ -6,7 +6,7 @@ import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -184,10 +184,10 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       WalletManager.INSTANCE.createWallet(seed, password);
 
       // Initialise the WalletService with the newly created wallet, which provides transaction information from the wallet
-      Optional<WalletData> walletData = WalletManager.INSTANCE.getCurrentWalletData();
-      if (walletData.isPresent()) {
+      Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+      if (currentWalletSummary.isPresent()) {
         // Create a wallet service
-        CoreServices.getOrCreateWalletService(walletData.get().getWalletId());
+        CoreServices.getOrCreateWalletService(currentWalletSummary.get().getWalletId());
 
         // Start the Bitcoin network to synchronize
         CoreServices.getOrCreateBitcoinNetworkService().replayWallet(replayDate);

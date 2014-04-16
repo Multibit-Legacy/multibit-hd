@@ -9,7 +9,7 @@ import com.google.common.util.concurrent.Uninterruptibles;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
@@ -130,7 +130,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
     // TODO (GR) Combine this into a single method on WalletManager
     List<File> walletDirectories = WalletManager.findWalletDirectories(InstallationManager.getOrCreateApplicationDataDirectory());
     Optional<String> walletRoot = WalletManager.INSTANCE.getCurrentWalletRoot();
-    List<WalletData> wallets = WalletManager.findWalletData(walletDirectories, walletRoot);
+    List<WalletSummary> wallets = WalletManager.findWalletSummaries(walletDirectories, walletRoot);
 
     selectWalletMaV.getModel().setWalletList(wallets);
 
@@ -291,19 +291,19 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
       WalletId walletId = selectWalletMaV.getModel().getValue().getWalletId();
       WalletManager.INSTANCE.open(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, password);
 
-      Optional<WalletData> walletDataOptional = WalletManager.INSTANCE.getCurrentWalletData();
-      if (walletDataOptional.isPresent()) {
+      Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+      if (currentWalletSummary.isPresent()) {
 
         // Store this wallet in the current configuration
         String walletRoot = WalletManager.createWalletRoot(walletId);
         Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
 
         // Update the wallet data
-        WalletData walletData = walletDataOptional.get();
-        walletData.setPassword(password);
+        WalletSummary walletSummary = currentWalletSummary.get();
+        walletSummary.setPassword(password);
 
         // Create the history service
-        CoreServices.getOrCreateHistoryService(walletData.getWalletId());
+        CoreServices.getOrCreateHistoryService(walletSummary.getWalletId());
 
         // Must have succeeded to be here
         CoreServices.logHistory(Languages.safeText(MessageKey.PASSWORD_VERIFIED));

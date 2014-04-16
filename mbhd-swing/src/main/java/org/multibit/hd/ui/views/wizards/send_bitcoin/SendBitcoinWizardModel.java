@@ -273,9 +273,9 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     if (feeService == null) {
       feeService = CoreServices.createFeeService();
     }
-    if (WalletManager.INSTANCE.getCurrentWalletData() != null &&
-            WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
-      Wallet wallet = WalletManager.INSTANCE.getCurrentWalletData().get().getWallet();
+    if (WalletManager.INSTANCE.getCurrentWalletSummary() != null &&
+            WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+      Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
       Optional<File> walletFileOptional = WalletManager.INSTANCE.getCurrentWalletFile();
       if (walletFileOptional.isPresent()) {
         log.debug("Wallet file prior to calculateFeeState is " + walletFileOptional.get().length() + " bytes");

@@ -2,7 +2,7 @@ package org.multibit.hd.core.managers;
 
 import com.google.bitcoin.wallet.WalletFiles;
 import com.google.common.base.Optional;
-import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,12 +29,12 @@ public class WalletAutoSaveListener implements WalletFiles.Listener {
   public void onAfterAutoSave(File newlySavedFile) {
     log.debug("Have just saved wallet to newlySavedFile '" + newlySavedFile.getAbsolutePath() + "'");
 
-    Optional<WalletData> walletData = WalletManager.INSTANCE.getCurrentWalletData();
-    if (walletData.isPresent()) {
+    Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+    if (walletSummary.isPresent()) {
       try {
-        BackupManager.INSTANCE.createRollingBackup(walletData.get());
+        BackupManager.INSTANCE.createRollingBackup(walletSummary.get());
 
-        BackupManager.INSTANCE.createLocalAndCloudBackup(walletData.get().getWalletId());
+        BackupManager.INSTANCE.createLocalAndCloudBackup(walletSummary.get().getWalletId());
         // TODO save the cloud backups at a slower rate than the local backups to save bandwidth - say a factor of 2 or 3
       } catch (IOException ioe) {
         log.error("No backups created. The error was '" + ioe.getMessage() + "'.");

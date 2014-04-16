@@ -216,7 +216,7 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
         Collection<String> addressList = transactionData.getOutputAddresses();
         // This is a bit inefficient - could have a hashmap of Contacts, keyed by address
         // Or store the address sent to
-        ContactService contactService = CoreServices.getOrCreateContactService(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId());
+        ContactService contactService = CoreServices.getOrCreateContactService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
         List<Contact> allContacts = contactService.allContacts();
         Contact matchedContact = null;
 

@@ -67,11 +67,11 @@ public class ContactsScreenModel extends AbstractScreenModel {
    */
   private void initialiseContact() {
 
-    if (!WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
+    if (!WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
       throw new IllegalStateException("Contacts should not be accessible without a wallet ID");
     }
 
-    this.contactService = Optional.of(CoreServices.getOrCreateContactService(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()));
+    this.contactService = Optional.of(CoreServices.getOrCreateContactService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId()));
   }
 
   /**

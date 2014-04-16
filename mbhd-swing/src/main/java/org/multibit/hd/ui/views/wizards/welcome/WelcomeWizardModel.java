@@ -9,7 +9,7 @@ import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseSize;
 import org.multibit.hd.core.dto.BackupSummary;
-import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -97,7 +97,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   private SelectBackupSummaryModel selectBackupSummaryModel;
   private EnterSeedPhraseModel restoreWalletEnterTimestampModel;
   private EnterPasswordModel restoreWalletEnterPasswordModel;
-  private List<WalletData> walletList;
+  private List<WalletSummary> walletList;
 
   /**
    * @param state The state object
@@ -235,9 +235,9 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
     backupSummaries.clear();
 
     // Get the local backups
-    Optional<WalletData> currentWalletData = WalletManager.INSTANCE.getCurrentWalletData();
-    if (currentWalletData.isPresent()) {
-      backupSummaries = BackupManager.INSTANCE.getLocalZipBackups(currentWalletData.get().getWalletId());
+    Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+    if (currentWalletSummary.isPresent()) {
+      backupSummaries = BackupManager.INSTANCE.getLocalZipBackups(currentWalletSummary.get().getWalletId());
     }
 
     return !backupSummaries.isEmpty();
@@ -267,7 +267,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
     }
   }
 
-  public List<WalletData> getWalletList() {
+  public List<WalletSummary> getWalletList() {
 
     // Ensure we start from a fresh list
     walletList.clear();
@@ -275,7 +275,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
     // TODO (GR) Combine this into a single method on WalletManager
     List<File> walletDirectories = WalletManager.findWalletDirectories(InstallationManager.getOrCreateApplicationDataDirectory());
     Optional<String> walletRoot = WalletManager.INSTANCE.getCurrentWalletRoot();
-    walletList.addAll(WalletManager.findWalletData(walletDirectories, walletRoot));
+    walletList.addAll(WalletManager.findWalletSummaries(walletDirectories, walletRoot));
 
     return walletList;
 

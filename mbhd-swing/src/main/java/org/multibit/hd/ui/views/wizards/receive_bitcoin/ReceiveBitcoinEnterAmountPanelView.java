@@ -7,7 +7,7 @@ import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.PaymentRequestData;
-import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.PaymentsSaveException;
@@ -84,10 +84,10 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
 
     // See if there is a password entered for the wallet
     // TODO - remove when HDwallets supported - won't need a password to generate the next address
-    Optional<WalletData> walletDataOptional = WalletManager.INSTANCE.getCurrentWalletData();
+    Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
     Optional<CharSequence> passwordParameter = Optional.absent();
-    CharSequence password = walletDataOptional.get().getPassword();
-    if (walletDataOptional.isPresent()) {
+    CharSequence password = currentWalletSummary.get().getPassword();
+    if (currentWalletSummary.isPresent()) {
       if (!( password == null) && !"".equals(password)) {
         passwordParameter = Optional.of(password);
       }
@@ -215,14 +215,14 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     }
     // Ensure the views that display payments update
     WalletDetail walletDetail = new WalletDetail();
-    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
-      WalletData walletData = WalletManager.INSTANCE.getCurrentWalletData().get();
+    if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+      WalletSummary walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary().get();
       walletDetail.setApplicationDirectory(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath());
 
       File walletFile = WalletManager.INSTANCE.getCurrentWalletFile().get();
       walletDetail.setWalletDirectory(walletFile.getParentFile().getName());
 
-      ContactService contactService = CoreServices.getOrCreateContactService(walletData.getWalletId());
+      ContactService contactService = CoreServices.getOrCreateContactService(walletSummary.getWalletId());
       walletDetail.setNumberOfContacts(contactService.allContacts().size());
 
       walletDetail.setNumberOfPayments(walletService.getPaymentDataList().size());

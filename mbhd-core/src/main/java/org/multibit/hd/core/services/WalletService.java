@@ -140,15 +140,15 @@ public class WalletService {
     // See if there is a current wallet
     WalletManager walletManager = WalletManager.INSTANCE;
 
-    Optional<WalletData> walletDataOptional = walletManager.getCurrentWalletData();
-    if (!walletDataOptional.isPresent()) {
+    Optional<WalletSummary> currentWalletSummary = walletManager.getCurrentWalletSummary();
+    if (!currentWalletSummary.isPresent()) {
       // No wallet is present
       return Lists.newArrayList();
     }
 
     // Wallet is present
-    WalletData walletData = walletDataOptional.get();
-    Wallet wallet = walletData.getWallet();
+    WalletSummary walletSummary = currentWalletSummary.get();
+    Wallet wallet = walletSummary.getWallet();
 
     // There should be a wallet
     Preconditions.checkNotNull(wallet, "There is no wallet to process");
@@ -639,8 +639,8 @@ public class WalletService {
    */
   public String generateNextReceivingAddress(Optional<CharSequence> walletPasswordOptional) {
 
-    Optional<WalletData> walletDataOptional = WalletManager.INSTANCE.getCurrentWalletData();
-    if (!walletDataOptional.isPresent()) {
+    Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+    if (!currentWalletSummary.isPresent()) {
       // No wallet is present
       throw new IllegalStateException("Trying to add a key to a non-existent wallet");
     } else {
@@ -649,10 +649,10 @@ public class WalletService {
         // increment the lastIndexUsed
         lastIndexUsed++;
         log.debug("The last index used has been incremented to " + lastIndexUsed);
-        ECKey newKey = WalletManager.INSTANCE.createAndAddNewWalletKey(walletDataOptional.get().getWallet(), walletPasswordOptional.get(), lastIndexUsed);
+        ECKey newKey = WalletManager.INSTANCE.createAndAddNewWalletKey(currentWalletSummary.get().getWallet(), walletPasswordOptional.get(), lastIndexUsed);
         return newKey.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
       } else {
-        return walletDataOptional.get().getWallet().getKeys().get(0).toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
+        return currentWalletSummary.get().getWallet().getKeys().get(0).toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
       }
     }
 

@@ -6,7 +6,7 @@ import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.Recipient;
-import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -100,13 +100,13 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
         final Recipient recipient;
 
         // Get the current wallet
-        Optional<WalletData> walletData = WalletManager.INSTANCE.getCurrentWalletData();
+        Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
 
-        if (walletData.isPresent()) {
+        if (currentWalletSummary.isPresent()) {
 
           // Attempt to locate a contact with the address in the Bitcoin URI to reassure user
           List<Contact> contacts = CoreServices
-            .getOrCreateContactService(walletData.get().getWalletId())
+            .getOrCreateContactService(currentWalletSummary.get().getWalletId())
             .filterContactsByBitcoinAddress(address.get());
 
           if (!contacts.isEmpty()) {

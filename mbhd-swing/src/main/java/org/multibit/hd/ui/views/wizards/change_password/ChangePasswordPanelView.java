@@ -8,7 +8,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.Uninterruptibles;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
-import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
@@ -261,21 +261,19 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
     // TODO Adjust these checks when encrypted wallets are on the scene
     if (!"".equals(password) && !"x".equals(password)) {
 
-      // If a password has been entered, put it into the WalletData (so that it is available for address generation)
+      // If a password has been entered, put it into the wallet summary (so that it is available for address generation)
       // TODO - remove when we have proper HD wallets  - won't need password for address generation
       // TODO should be using WalletService
-
-      //String walletId = Configurations.currentConfiguration.getWalletConfiguration().getCurrentWallet();
-      WalletId walletId = new WalletId("66666666-77777777-88888888-99999999-aaaaaaaa");
+      WalletId walletId = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId();
       WalletManager.INSTANCE.open(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, password);
 
-      Optional<WalletData> walletDataOptional = WalletManager.INSTANCE.getCurrentWalletData();
-      if (walletDataOptional.isPresent()) {
+      Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+      if (currentWalletSummary.isPresent()) {
 
-        WalletData walletData = walletDataOptional.get();
-        walletData.setPassword(password);
+        WalletSummary walletSummary = currentWalletSummary.get();
+        walletSummary.setPassword(password);
 
-        CoreServices.getOrCreateHistoryService(walletData.getWalletId());
+        CoreServices.getOrCreateHistoryService(walletSummary.getWalletId());
 
         // Must have succeeded to be here
         CoreServices.logHistory(Languages.safeText(MessageKey.PASSWORD_VERIFIED));

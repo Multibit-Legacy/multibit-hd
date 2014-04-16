@@ -9,7 +9,7 @@ import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.Recipient;
-import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.services.CoreServices;
@@ -25,7 +25,7 @@ import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilter;
 import org.multibit.hd.ui.views.components.display_amount.BitcoinSymbolListCellRenderer;
 import org.multibit.hd.ui.views.components.renderers.BackupSummaryListCellRenderer;
 import org.multibit.hd.ui.views.components.renderers.LanguageListCellRenderer;
-import org.multibit.hd.ui.views.components.renderers.WalletDataListCellRenderer;
+import org.multibit.hd.ui.views.components.renderers.WalletSummaryListCellRenderer;
 import org.multibit.hd.ui.views.components.select_contact.RecipientComboBoxEditor;
 import org.multibit.hd.ui.views.components.select_contact.RecipientListCellRenderer;
 import org.multibit.hd.ui.views.themes.ThemeKey;
@@ -499,18 +499,18 @@ public class ComboBoxes {
    *
    * @return A new "select wallet" combo box
    */
-  public static JComboBox<WalletData> newSelectWalletComboBox(ActionListener listener, List<WalletData> wallets) {
+  public static JComboBox<WalletSummary> newSelectWalletComboBox(ActionListener listener, List<WalletSummary> wallets) {
 
     Preconditions.checkNotNull(listener, "'listener' must be present");
     Preconditions.checkNotNull(wallets, "'wallets' must be present");
 
     // Convert the wallet data entries to an array
-    WalletData[] walletDataArray = new WalletData[wallets.size()];
+    WalletSummary[] walletSummaryArray = new WalletSummary[wallets.size()];
 
-    JComboBox<WalletData> comboBox = newReadOnlyComboBox(walletDataArray);
+    JComboBox<WalletSummary> comboBox = newReadOnlyComboBox(walletSummaryArray);
 
     // Use a wallet list cell renderer to ensure the correct fields are displayed
-    ListCellRenderer<WalletData> renderer = new WalletDataListCellRenderer();
+    ListCellRenderer<WalletSummary> renderer = new WalletSummaryListCellRenderer();
     comboBox.setRenderer(renderer);
 
     // Ensure we start with nothing selected

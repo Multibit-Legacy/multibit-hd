@@ -284,14 +284,14 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
 
     // Ensure the views that display payments update
     WalletDetail walletDetail = new WalletDetail();
-    if (WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
-      WalletData walletData = WalletManager.INSTANCE.getCurrentWalletData().get();
+    if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+      WalletSummary walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary().get();
       walletDetail.setApplicationDirectory(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath());
 
       File walletFile = WalletManager.INSTANCE.getCurrentWalletFile().get();
       walletDetail.setWalletDirectory(walletFile.getParentFile().getName());
 
-      ContactService contactService = CoreServices.getOrCreateContactService(walletData.getWalletId());
+      ContactService contactService = CoreServices.getOrCreateContactService(walletSummary.getWalletId());
       walletDetail.setNumberOfContacts(contactService.allContacts().size());
 
       walletDetail.setNumberOfPayments(CoreServices.getCurrentWalletService().getPaymentDataList().size());

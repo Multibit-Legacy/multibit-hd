@@ -5,7 +5,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import org.joda.money.BigMoney;
-import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
 import org.multibit.hd.core.managers.WalletManager;
@@ -51,10 +51,10 @@ public class HeaderController {
     // Build the exchange string
     BigInteger satoshis;
 
-    Optional<WalletData> currentWalletData = WalletManager.INSTANCE.getCurrentWalletData();
-    if (currentWalletData.isPresent()) {
+    Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+    if (currentWalletSummary.isPresent()) {
       // Use the real wallet data
-      satoshis = currentWalletData.get().getWallet().getBalance();
+      satoshis = currentWalletSummary.get().getWallet().getBalance();
     } else {
       // Unknown at this time
       satoshis = BigInteger.ZERO;

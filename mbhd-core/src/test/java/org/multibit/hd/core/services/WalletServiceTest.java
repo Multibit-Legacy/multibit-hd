@@ -46,9 +46,9 @@ public class WalletServiceTest {
     // TODO May not be required
     // WalletManager.INSTANCE.open(temporaryDirectory);
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
-    WalletData walletData = WalletManager.INSTANCE.getOrCreateWallet(temporaryDirectory, seed1, PASSWORD);
+    WalletSummary walletSummary = WalletManager.INSTANCE.getOrCreateWalletSummary(temporaryDirectory, seed1, PASSWORD);
 
-    firstAddress = walletData.getWallet().getKeys().get(0).toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
+    firstAddress = walletSummary.getWallet().getKeys().get(0).toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
 
     walletService = new WalletService();
 

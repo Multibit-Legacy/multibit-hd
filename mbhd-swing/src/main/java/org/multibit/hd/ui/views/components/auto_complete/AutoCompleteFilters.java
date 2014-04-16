@@ -75,7 +75,7 @@ public class AutoCompleteFilters {
       }
 
       private WalletId getCurrentWalletId() {
-        return WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId();
+        return WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId();
       }
     };
 

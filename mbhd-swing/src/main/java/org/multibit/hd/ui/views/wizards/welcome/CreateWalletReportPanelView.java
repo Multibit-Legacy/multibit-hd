@@ -6,7 +6,7 @@ import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.services.FeeService;
-import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -141,12 +141,12 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
     // Actually create the wallet
     boolean walletCreatedStatus = false;
     byte[] seed = null;
-    WalletData walletData = null;
+    WalletSummary walletSummary = null;
     try {
       // Attempt to create the wallet (the manager will track the ID etc)
       WalletManager walletManager = WalletManager.INSTANCE;
       seed = seedPhraseGenerator.convertToSeed(seedPhrase);
-      walletData = walletManager.createWallet(seed, password);
+      walletSummary = walletManager.createWallet(seed, password);
 
       // Must be OK to be here
       walletCreatedStatus = true;
@@ -183,8 +183,8 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
 
     // Once all the initial wallet creation is complete and stored to disk, perform a BRIT wallet exchange.
     // This saves the wallet creation date/ replay date and returns a list of Bitcoin addresses to use for BRIT fee payment
-    if (walletCreatedStatus && seed != null && walletData != null && walletData.getWallet() != null) {
-      performMatcherExchange(seed, walletData.getWallet());
+    if (walletCreatedStatus && seed != null && walletSummary != null && walletSummary.getWallet() != null) {
+      performMatcherExchange(seed, walletSummary.getWallet());
     }
 
     // Enable the finish button on the report page

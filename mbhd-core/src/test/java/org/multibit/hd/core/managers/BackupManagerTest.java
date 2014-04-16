@@ -19,7 +19,7 @@ import com.google.common.util.concurrent.Uninterruptibles;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.dto.BackupSummary;
-import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletIdTest;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
@@ -57,15 +57,15 @@ public class BackupManagerTest {
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
 
-    WalletData walletData = walletManager.getOrCreateWallet(temporaryWalletParentDirectory, seed, "password");
+    WalletSummary walletSummary = walletManager.getOrCreateWalletSummary(temporaryWalletParentDirectory, seed, "password");
 
     // Check there are initially a single wallet backup for the wallet id of the created wallet
-    List<BackupSummary> localBackups = BackupManager.INSTANCE.getLocalZipBackups(walletData.getWalletId());
+    List<BackupSummary> localBackups = BackupManager.INSTANCE.getLocalZipBackups(walletSummary.getWalletId());
 
     assertThat(localBackups).isNotNull();
     assertThat(localBackups.size()).isEqualTo(1);
 
-    List<BackupSummary> cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletData.getWalletId(), temporaryBackupDirectory);
+    List<BackupSummary> cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletSummary.getWalletId(), temporaryBackupDirectory);
     assertThat(cloudBackups).isNotNull();
     assertThat(cloudBackups.size()).isEqualTo(1);
 
@@ -73,33 +73,33 @@ public class BackupManagerTest {
 
     // Backup the wallet.
     // This zips the wallet root directory and adds a timestamp, then saves the file in both the local and cloud backup directories
-    File localBackupFile = BackupManager.INSTANCE.createLocalAndCloudBackup(walletData.getWalletId());
+    File localBackupFile = BackupManager.INSTANCE.createLocalAndCloudBackup(walletSummary.getWalletId());
 
     // Check that a backup copy has been saved in the local backup directory
-    localBackups = BackupManager.INSTANCE.getLocalZipBackups(walletData.getWalletId());
+    localBackups = BackupManager.INSTANCE.getLocalZipBackups(walletSummary.getWalletId());
     assertThat(localBackups).isNotNull();
     assertThat(localBackups.size()).isEqualTo(2);
 
     // Check that a backup copy has been saved in the cloud backup directory
-    cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletData.getWalletId(), temporaryBackupDirectory);
+    cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletSummary.getWalletId(), temporaryBackupDirectory);
     assertThat(cloudBackups).isNotNull();
     assertThat(cloudBackups.size()).isEqualTo(2);
 
     // Load in the wallet backup and compare the wallets
     WalletId recreatedWalletId= BackupManager.INSTANCE.loadBackup(localBackupFile);
-    assertThat(walletData.getWalletId()).isEqualTo(recreatedWalletId);
+    assertThat(walletSummary.getWalletId()).isEqualTo(recreatedWalletId);
 
     // Open
 
     String walletFilename = WalletManager.getOrCreateWalletDirectory(temporaryWalletParentDirectory, WalletManager.createWalletRoot(recreatedWalletId)
     ) + File.separator + WalletManager.MBHD_WALLET_NAME;
-    WalletData recreatedWalletData = walletManager.loadFromFile(new File(walletFilename), "password");
+    WalletSummary recreatedWalletSummary = walletManager.loadFromFile(new File(walletFilename), "password");
 
     // Check there is the same key in the original wallet as in the recreated one
     assertThat(localBackups).isNotNull();
-    assertThat(walletData.getWallet().getKeys().get(0).toStringWithPrivate())
+    assertThat(walletSummary.getWallet().getKeys().get(0).toStringWithPrivate())
       .describedAs("Wallet was not round-tripped correctly")
-      .isEqualTo(recreatedWalletData.getWallet().getKeys().get(0).toStringWithPrivate());
+      .isEqualTo(recreatedWalletSummary.getWallet().getKeys().get(0).toStringWithPrivate());
 
   }
 }

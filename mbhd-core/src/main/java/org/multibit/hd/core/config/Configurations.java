@@ -81,7 +81,7 @@ public class Configurations {
   }
 
     /**
-   * @return The configuration data (<code>Configuration</code>, <code>WalletData</code> etc)
+   * @return The configuration data (<code>Configuration</code>, <code>Wallet Summary</code> etc)
    */
   public static synchronized <T> Optional<T> readConfiguration(InputStream is, Class<T> clazz) {
 

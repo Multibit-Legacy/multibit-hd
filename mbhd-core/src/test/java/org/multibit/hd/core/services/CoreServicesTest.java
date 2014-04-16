@@ -9,7 +9,7 @@ import org.multibit.hd.brit.dto.SendFeeDto;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.services.FeeService;
-import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletIdTest;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -55,9 +55,9 @@ public class CoreServicesTest {
     // TODO May not be required
     // WalletManager.INSTANCE.open(temporaryDirectory);
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
-    WalletData walletData = WalletManager.INSTANCE.getOrCreateWallet(temporaryDirectory, seed, PASSWORD);
+    WalletSummary walletSummary = WalletManager.INSTANCE.getOrCreateWalletSummary(temporaryDirectory, seed, PASSWORD);
 
-    Wallet wallet  = walletData.getWallet();
+    Wallet wallet  = walletSummary.getWallet();
 
     // The wallet should not have any BRIT related data yet.
     MatcherResponse matcherResponse = FeeService.getMatcherResponseFromWallet(wallet);

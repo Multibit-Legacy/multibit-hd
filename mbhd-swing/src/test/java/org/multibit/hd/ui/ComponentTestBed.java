@@ -129,10 +129,10 @@ public class ComponentTestBed {
     // TODO Refactor this into wallet service
 //    WalletManager.INSTANCE.open(applicationDataDirectory);
 
-    ContactService contactService = CoreServices.getOrCreateContactService(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId());
+    ContactService contactService = CoreServices.getOrCreateContactService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
     contactService.addDemoContacts();
 
-    HistoryService historyService = CoreServices.getOrCreateHistoryService(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId());
+    HistoryService historyService = CoreServices.getOrCreateHistoryService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
     historyService.addDemoHistory();
   }
 

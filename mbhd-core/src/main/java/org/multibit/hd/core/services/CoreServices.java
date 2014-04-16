@@ -16,7 +16,7 @@ import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.dto.SecuritySummary;
-import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.exceptions.CoreException;
@@ -233,9 +233,9 @@ public class CoreServices {
   public static void logHistory(String localisedDescription) {
 
     // Always expect a current wallet for a history entry
-    WalletData walletData = WalletManager.INSTANCE.getCurrentWalletData().get();
+    WalletSummary walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary().get();
 
-    HistoryService historyService = CoreServices.getOrCreateHistoryService(walletData.getWalletId());
+    HistoryService historyService = CoreServices.getOrCreateHistoryService(walletSummary.getWalletId());
 
     // Create the history entry and persist it
     HistoryEntry historyEntry = historyService.newHistoryEntry(localisedDescription);
@@ -251,13 +251,13 @@ public class CoreServices {
    */
   public static WalletService getCurrentWalletService() {
 
-    log.debug("Get or create history service");
+    log.debug("Get wallet service");
 
-    Optional<WalletData> walletData = WalletManager.INSTANCE.getCurrentWalletData();
+    Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
 
-    Preconditions.checkState(walletData.isPresent(), "'walletData' must be present");
+    Preconditions.checkState(currentWalletSummary.isPresent(), "'currentWalletSummary' must be present");
 
-    WalletId walletId = walletData.get().getWalletId();
+    WalletId walletId = currentWalletSummary.get().getWalletId();
 
     return getOrCreateWalletService(walletId);
 

@@ -3,7 +3,7 @@ package org.multibit.hd.core.network;
 import com.google.bitcoin.core.*;
 import com.google.common.base.Optional;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
-import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.managers.WalletManager;
@@ -110,17 +110,17 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     // Loop through all the wallets, seeing if the transaction is relevant and adding them as pending if so.
     if (transaction != null) {
       // TODO - want to iterate over all open wallets
-      Optional<WalletData> currentWalletData = WalletManager.INSTANCE.getCurrentWalletData();
-      if (currentWalletData.isPresent()) {
-        if (currentWalletData.get() != null) {
-          Wallet currentWallet = currentWalletData.get().getWallet();
+      Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+      if (currentWalletSummary.isPresent()) {
+        if (currentWalletSummary.get() != null) {
+          Wallet currentWallet = currentWalletSummary.get().getWallet();
           if (currentWallet != null) {
             try {
               if (currentWallet.isTransactionRelevant(transaction)) {
                 if (!(transaction.isTimeLocked() && transaction.getConfidence().getSource() != TransactionConfidence.Source.SELF)) {
                   if (currentWallet.getTransaction(transaction.getHash()) == null) {
                     log.debug("MultiBitHD adding a new pending transaction for the wallet '"
-                            + currentWalletData.get().getWalletId() + "'\n" + transaction.toString());
+                            + currentWalletSummary.get().getWalletId() + "'\n" + transaction.toString());
                     // The perWalletModelData is marked as dirty.
                     // TODO - mark wallet as dirty ?
                     currentWallet.receivePending(transaction, null);

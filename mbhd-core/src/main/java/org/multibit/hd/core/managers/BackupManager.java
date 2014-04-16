@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.BackupSummary;
-import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.utils.Dates;
@@ -215,21 +215,21 @@ public enum BackupManager {
    * This is a copy of the supplied wallet file, timestamped and copied to the rolling-backup directory
    * There is a maximum number of rolling backups, removals are done using a first in - first out rule.
    *
-   * @param walletData The wallet data with the wallet to backup
+   * @param walletSummary The wallet data with the wallet to backup
    *
    * @return the File of the created rolling wallet backup
    *
    * @throws java.io.IOException if the wallet backup could not be created
    */
-  public File createRollingBackup(WalletData walletData) throws IOException {
+  public File createRollingBackup(WalletSummary walletSummary) throws IOException {
 
-    Preconditions.checkNotNull(walletData, "'walletData' must be present");
-    Preconditions.checkNotNull(walletData.getWallet(), "'wallet' must be present");
-    Preconditions.checkNotNull(walletData.getWalletId(), "'walletId' must be present");
+    Preconditions.checkNotNull(walletSummary, "'walletSummary' must be present");
+    Preconditions.checkNotNull(walletSummary.getWallet(), "'wallet' must be present");
+    Preconditions.checkNotNull(walletSummary.getWalletId(), "'walletId' must be present");
     Preconditions.checkNotNull(applicationDataDirectory, "'applicationDataDirectory' must be present. Check BackupManager has been initialised");
 
     // Find the wallet root directory for this wallet id
-    File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletData.getWalletId())
+    File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletSummary.getWalletId())
     );
 
     if (!walletRootDirectory.exists()) {
@@ -250,10 +250,10 @@ public enum BackupManager {
 
     File walletBackupFile = new File(walletBackupFilename);
     log.debug("Creating rolling-backup '" + walletBackupFilename + "'");
-    walletData.getWallet().saveToFile(walletBackupFile);
+    walletSummary.getWallet().saveToFile(walletBackupFile);
     log.debug("Created rolling-backup successfully. Size = " + walletBackupFile.length() + " bytes");
 
-    List<File> rollingBackups = getRollingBackups(walletData.getWalletId());
+    List<File> rollingBackups = getRollingBackups(walletSummary.getWalletId());
 
     // If there are more than the maximum number of rolling backups, secure delete the eldest
     if (rollingBackups.size() > MAXIMUM_NUMBER_OF_ROLLING_BACKUPS) {

@@ -65,11 +65,11 @@ public class HistoryScreenModel extends AbstractScreenModel {
    */
   private void initialiseHistory() {
 
-    if (!WalletManager.INSTANCE.getCurrentWalletData().isPresent()) {
+    if (!WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
       throw new IllegalStateException("History should not be accessible without a wallet ID");
     }
 
-    this.historyService = Optional.of(CoreServices.getOrCreateHistoryService(WalletManager.INSTANCE.getCurrentWalletData().get().getWalletId()));
+    this.historyService = Optional.of(CoreServices.getOrCreateHistoryService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId()));
   }
 
 }

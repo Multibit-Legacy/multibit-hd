@@ -15,8 +15,8 @@ import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.PaymentData;
-import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.managers.BackupManager;
@@ -105,16 +105,16 @@ public class BitcoinNetworkServiceFunctionalTest {
     // Create a wallet from the WALLET_SEED_1_PROPERTY_NAME
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_1_PROPERTY_NAME)));
-    WalletData walletData = createWallet(temporaryDirectory, seed);
+    WalletSummary walletSummary = createWallet(temporaryDirectory, seed);
 
     DateTime timestamp1 = Dates.parseSeedTimestamp(seedProperties.getProperty(WALLET_TIMESTAMP_1_PROPERTY_NAME));
 
     // Replay the single (first) wallet
     replayWallet(timestamp1);
 
-    log.debug("WalletData (after sync) = \n" + walletData.toString());
+    log.debug("WalletSummary (after sync) = \n{}", walletSummary.toString());
 
-    BigInteger walletBalance = walletData.getWallet().getBalance(Wallet.BalanceType.ESTIMATED);
+    BigInteger walletBalance = walletSummary.getWallet().getBalance(Wallet.BalanceType.ESTIMATED);
 
     // If this test fails please fund the test wallet with bitcoin as it is needed for the sending test !
     // (The wallet is logged to the console so you can see the address you need to fund).
@@ -128,7 +128,7 @@ public class BitcoinNetworkServiceFunctionalTest {
     // Get the current wallets payments - there should be some
     List<PaymentData> transactions = walletService.getPaymentDataList();
 
-    log.debug("The payments in the wallet are:\n" + transactions);
+    log.debug("The payments in the wallet are:\n{}", transactions);
     assertThat(transactions.size() > 0).isTrue();
   }
 
@@ -144,58 +144,58 @@ public class BitcoinNetworkServiceFunctionalTest {
     // Create two wallets from the two seeds
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_1_PROPERTY_NAME)));
-    WalletData walletData1 = createWallet(temporaryDirectory, seed1);
-    String walletRoot1 = WalletManager.createWalletRoot(walletData1.getWalletId());
+    WalletSummary walletSummary1 = createWallet(temporaryDirectory, seed1);
+    String walletRoot1 = WalletManager.createWalletRoot(walletSummary1.getWalletId());
 
     DateTime timestamp1 = Dates.parseSeedTimestamp(seedProperties.getProperty(WALLET_TIMESTAMP_1_PROPERTY_NAME));
 
     byte[] seed2 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_2_PROPERTY_NAME)));
-    WalletData walletData2 = createWallet(temporaryDirectory, seed2);
-    String walletRoot2 = WalletManager.createWalletRoot(walletData2.getWalletId());
+    WalletSummary walletSummary2 = createWallet(temporaryDirectory, seed2);
+    String walletRoot2 = WalletManager.createWalletRoot(walletSummary2.getWalletId());
 
     DateTime timestamp2 = Dates.parseSeedTimestamp(seedProperties.getProperty(WALLET_TIMESTAMP_2_PROPERTY_NAME));
 
     // Remember the addresses in the wallets, which will be used for the send
-    ECKey key1 = walletData1.getWallet().getKeys().get(0);
+    ECKey key1 = walletSummary1.getWallet().getKeys().get(0);
     Address address1 = key1.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
 
-    ECKey key2 = walletData2.getWallet().getKeys().get(0);
+    ECKey key2 = walletSummary2.getWallet().getKeys().get(0);
     Address address2 = key2.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
 
     // Synchronize the current wallet, which will be wallet2 as that was created last
     replayWallet(timestamp2);
 
-    BigInteger walletBalance2 = walletData2.getWallet().getBalance();
+    BigInteger walletBalance2 = walletSummary2.getWallet().getBalance();
 
     // Set the current wallet to be wallet1 and synchronize that
     Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot1);
-    walletManager.setCurrentWalletData(walletData1);
+    walletManager.setCurrentWalletSummary(walletSummary1);
     replayWallet(timestamp1);
 
-    BigInteger walletBalance1 = walletData1.getWallet().getBalance();
+    BigInteger walletBalance1 = walletSummary1.getWallet().getBalance();
 
-    log.debug("Wallet data 1 = \n" + walletData1.toString());
-    log.debug("Wallet data 2 = \n" + walletData2.toString());
+    log.debug("Wallet data 1 = \n" + walletSummary1.toString());
+    log.debug("Wallet data 2 = \n" + walletSummary2.toString());
 
 
     // Check older payments (probably from earlier runs of this test) have confirmed
-    assertThat(transactionsAreOK(walletData1)).isTrue();
-    assertThat(transactionsAreOK(walletData2)).isTrue();
+    assertThat(transactionsAreOK(walletSummary1)).isTrue();
+    assertThat(transactionsAreOK(walletSummary2)).isTrue();
 
     // Create a send from the wallet with the larger balance to the one with the smaller balance
     boolean sendFromWallet1 = walletBalance1.compareTo(walletBalance2) > 0;
 
-    WalletData sourceWalletData;
+    WalletSummary sourceWalletSummary;
     String walletRoot;
     Address sourceAddress;
     Address destinationAddress;
     if (sendFromWallet1) {
-      sourceWalletData = walletData1;
+      sourceWalletSummary = walletSummary1;
       walletRoot = walletRoot1;
       sourceAddress = address1;
       destinationAddress = address2;
     } else {
-      sourceWalletData = walletData2;
+      sourceWalletSummary = walletSummary2;
       walletRoot = walletRoot2;
       sourceAddress = address2;
       destinationAddress = address1;
@@ -203,7 +203,7 @@ public class BitcoinNetworkServiceFunctionalTest {
 
     // Ensure MBHD has the correct current wallet (which will be used for the send)
     Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
-    walletManager.setCurrentWalletData(sourceWalletData);
+    walletManager.setCurrentWalletSummary(sourceWalletSummary);
 
     // Start up the bitcoin network connection
     bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
@@ -247,16 +247,16 @@ public class BitcoinNetworkServiceFunctionalTest {
     }
   }
 
-  private WalletData createWallet(File walletDirectory, byte[] seed) throws IOException {
+  private WalletSummary createWallet(File walletDirectory, byte[] seed) throws IOException {
 
-    WalletData walletData = walletManager.getOrCreateWallet(walletDirectory, seed, WALLET_PASSWORD);
-    assertThat(walletData).isNotNull();
-    assertThat(walletData.getWallet()).isNotNull();
+    WalletSummary walletSummary = walletManager.getOrCreateWalletSummary(walletDirectory, seed, WALLET_PASSWORD);
+    assertThat(walletSummary).isNotNull();
+    assertThat(walletSummary.getWallet()).isNotNull();
 
     // There should be a single key
-    assertThat(walletData.getWallet().getKeychainSize() == 1).isTrue();
+    assertThat(walletSummary.getWallet().getKeychainSize() == 1).isTrue();
 
-    return walletData;
+    return walletSummary;
   }
 
   private void replayWallet(DateTime replayDate) throws IOException, BlockStoreException {
@@ -287,15 +287,17 @@ public class BitcoinNetworkServiceFunctionalTest {
   /**
    * Check that payments have been confirmed in a reasonable time.
    *
-   * @param walletData the walletdata whose payments you want to check
+   * @param walletSummary The wallet summary whose payments you want to check
+   *
    * @return true is payments have confirmed as expected, false otherwise
    */
-  private boolean transactionsAreOK(WalletData walletData) {
+  private boolean transactionsAreOK(WalletSummary walletSummary) {
+
     boolean transactionsAreOK = true;
 
-    if (walletData.getWallet() != null) {
-      Set<Transaction> transactions = walletData.getWallet().getTransactions(true);
-      for (Transaction transaction :transactions) {
+    if (walletSummary.getWallet() != null) {
+      Set<Transaction> transactions = walletSummary.getWallet().getTransactions(true);
+      for (Transaction transaction : transactions) {
         // If the payments is 'reasonably old' we expect it to have confirmed
         DateTime now = new org.joda.time.DateTime();
 
