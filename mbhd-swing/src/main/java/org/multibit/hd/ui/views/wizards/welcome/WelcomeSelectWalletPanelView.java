@@ -4,8 +4,12 @@ import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.components.Components;
+import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
+import org.multibit.hd.ui.views.components.select_wallet.SelectWalletModel;
+import org.multibit.hd.ui.views.components.select_wallet.SelectWalletView;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
@@ -32,6 +36,9 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
   // Model
   private WelcomeWizardState currentSelection;
 
+  // View components
+  private ModelAndView<SelectWalletModel, SelectWalletView> selectWalletMaV;
+
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
@@ -45,11 +52,14 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
   @Override
   public void newPanelModel() {
 
+    selectWalletMaV = Components.newSelectWalletMaV(getPanelName());
+
     currentSelection = CREATE_WALLET_SELECT_BACKUP_LOCATION;
     setPanelModel(currentSelection);
 
     // Bind this to the wizard model
     getWizardModel().setSelectWalletChoice(currentSelection);
+
   }
 
   @Override
@@ -69,6 +79,8 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
       SELECT_WALLET_SWITCH.name()
     ), "wrap");
 
+    contentPanel.add(selectWalletMaV.getView().newComponentPanel(),"growx,wrap");
+
   }
 
   @Override
@@ -87,10 +99,13 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
   }
 
   @Override
-  public void afterShow() {
+  public boolean beforeShow() {
 
-    // Do nothing
+    // Update the backup list with data from the wizard model
+    selectWalletMaV.getModel().setWalletList(getWizardModel().getWalletList());
+    selectWalletMaV.getView().updateViewFromModel();
 
+    return true;
   }
 
   @Override
@@ -114,6 +129,18 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
     JRadioButton source = (JRadioButton) e.getSource();
 
     currentSelection = WelcomeWizardState.valueOf(source.getActionCommand());
+
+    if (SELECT_WALLET_SWITCH.equals(currentSelection)) {
+
+      // Enable the select wallet component
+      selectWalletMaV.getView().setEnabled(true);
+
+    } else {
+
+      // Disable the select wallet component
+      selectWalletMaV.getView().setEnabled(false);
+
+    }
 
   }
 }

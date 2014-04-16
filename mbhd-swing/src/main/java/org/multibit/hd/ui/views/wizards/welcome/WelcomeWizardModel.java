@@ -9,6 +9,7 @@ import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.brit.exceptions.SeedPhraseException;
 import org.multibit.hd.core.managers.BackupManager;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
@@ -60,6 +61,11 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   private WelcomeWizardState selectWalletChoice = WelcomeWizardState.CREATE_WALLET_SEED_PHRASE;
 
   /**
+   * The optional "selected wallet ID" choice
+   */
+  private Optional<WalletId> walletId = Optional.absent();
+
+  /**
    * The "restore method" indicates if a backup location or timestamp was selected
    */
   private WelcomeWizardState restoreMethod = WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP_LOCATION;
@@ -91,6 +97,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   private SelectBackupSummaryModel selectBackupSummaryModel;
   private EnterSeedPhraseModel restoreWalletEnterTimestampModel;
   private EnterPasswordModel restoreWalletEnterPasswordModel;
+  private List<WalletData> walletList;
 
   /**
    * @param state The state object
@@ -260,6 +267,18 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
     }
   }
 
+  public List<WalletData> getWalletList() {
+
+    // Ensure we start from a fresh list
+    walletList.clear();
+
+    List<File> walletDirectories = WalletManager.findWalletDirectories(InstallationManager.getOrCreateApplicationDataDirectory());
+    List<WalletData> currentWalletData = WalletManager.findWalletData(walletDirectories);
+
+    return walletList;
+  }
+
+
   /**
    * @return The user selection for the locale
    */
@@ -281,6 +300,13 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
    */
   public WelcomeWizardState getSelectWalletChoice() {
     return selectWalletChoice;
+  }
+
+  /**
+   * @return The selected wallet ID from the list
+   */
+  public Optional<WalletId> getWalletId() {
+    return walletId;
   }
 
   /**
@@ -384,6 +410,15 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
    */
   void setSelectWalletChoice(WelcomeWizardState selectWalletChoice) {
     this.selectWalletChoice = selectWalletChoice;
+  }
+
+  /**
+   * <p>Reduced visibility for panel models</p>
+   *
+   * @param walletId The wallet ID selection from the list
+   */
+  void setWalletId(WalletId walletId) {
+    this.walletId = Optional.fromNullable(walletId);
   }
 
   /**

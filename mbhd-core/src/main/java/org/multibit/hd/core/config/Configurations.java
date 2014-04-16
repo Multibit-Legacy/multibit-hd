@@ -85,6 +85,8 @@ public class Configurations {
    */
   public static synchronized <T> Optional<T> readConfiguration(InputStream is, Class<T> clazz) {
 
+    log.debug("Reading configuration data...");
+
     Optional<T> configuration;
 
     // Read the external configuration

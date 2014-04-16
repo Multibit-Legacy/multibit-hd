@@ -42,6 +42,8 @@ import static org.multibit.hd.core.dto.WalletId.parseWalletFilename;
  *  <li>load wallet wallet</li>
  * <li>tracks the current wallet and the list of wallet directories</li>
  *  </ul>
+ *
+ * TODO (GR) Consider renaming/restructuring this to Wallets since it provides tools for multiple wallets
  */
 public enum WalletManager implements WalletEventListener {
   INSTANCE {
@@ -506,7 +508,7 @@ public enum WalletManager implements WalletEventListener {
    *
    * @return A list of files of wallet directories
    */
-  public List<File> findWalletDirectories(File directoryToSearch) {
+  public static List<File> findWalletDirectories(File directoryToSearch) {
 
     Preconditions.checkNotNull(directoryToSearch);
 
@@ -527,6 +529,41 @@ public enum WalletManager implements WalletEventListener {
     }
 
     return walletDirectories;
+  }
+
+  /**
+   * <p>Find Wallet Data entries for all the wallet directories provided</p>
+   *
+   * @param walletDirectories The candidate wallet directory references
+   *
+   * @return A list of wallet data entries
+   */
+  public static List<WalletData> findWalletData(List<File> walletDirectories) {
+
+    Preconditions.checkNotNull(walletDirectories, "'walletDirectories' must be present");
+
+
+    List<WalletData> walletList = Lists.newArrayList();
+    for (File walletDirectory : walletDirectories) {
+      if (walletDirectory.isDirectory()) {
+        String filename = walletDirectory.getName();
+        if (filename.matches(REGEX_FOR_WALLET_DIRECTORY)) {
+
+          // The name matches so process it
+          WalletId walletId = new WalletId(filename.substring(MBHD_WALLET_PREFIX.length() + 1));
+          WalletData walletData = new WalletData(walletId, null);
+
+          // TODO (GR) Read these from a per-wallet config file
+          walletData.setName("Wallet name");
+          walletData.setDescription("Wallet Description:" + filename);
+
+          walletList.add(walletData);
+        }
+      }
+
+    }
+
+    return walletList;
   }
 
   /**

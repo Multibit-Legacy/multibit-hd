@@ -43,6 +43,13 @@ public final class OSUtils {
   }
 
   /**
+   * @return The current platform name from "os.version" with "unknown" as a default
+   */
+  public static String getOsVersion() {
+    return System.getProperty("os.version", "unknown");
+  }
+
+  /**
    * @return The current platform name from "os.name" with "generic" as a default
    */
   public static String platform() {
@@ -63,6 +70,25 @@ public final class OSUtils {
    */
   public static boolean isWindows() {
     return (getOsName().toLowerCase().contains("windows"));
+  }
+
+  /**
+   * @return True if Windows XP or earlier is detected
+   */
+  public static boolean isWindowsXPOrEarlier() {
+    if (isWindows()) {
+
+      try {
+        Double version = Double.valueOf(getOsVersion());
+        if (version < 6) {
+          return true;
+        }
+      } catch (NumberFormatException e) {
+        return false;
+      }
+    }
+
+    return false;
   }
 
   /**

@@ -21,6 +21,7 @@ public abstract class AbstractComponentView<M extends Model> implements View<M> 
   private Optional<M> model = Optional.absent();
 
   protected JPanel panel;
+  private boolean enabled;
 
   /**
    * @param model The model backing this view

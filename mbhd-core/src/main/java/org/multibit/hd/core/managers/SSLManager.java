@@ -49,10 +49,11 @@ public enum SSLManager {
   /**
    * @param applicationDirectory The application directory that must be writable
    * @param localTrustStoreName  The name of the local trust store (e.g. "appname-cacerts")
+   * @param force                True if the SSL certificate should be refreshed from the main server
    *
    * @throws Exception
    */
-  public void installMultiBitSSLCertificate(File applicationDirectory, String localTrustStoreName) throws Exception {
+  public void installMultiBitSSLCertificate(File applicationDirectory, String localTrustStoreName, boolean force) throws Exception {
 
     final File appCacertsFile = new File(applicationDirectory, localTrustStoreName);
 
@@ -74,6 +75,11 @@ public enum SSLManager {
     } catch (EOFException e) {
       // Key store is empty so load from null
       ks.load(null, PASSPHRASE);
+    }
+
+    // Provide a quick startup option if the aliases are in place and we're not forcing a refresh
+    if (ks.containsAlias("multibit.org-1") && ks.containsAlias("multibit.org-2") && !force) {
+      return;
     }
 
     // Build the trust manager factory

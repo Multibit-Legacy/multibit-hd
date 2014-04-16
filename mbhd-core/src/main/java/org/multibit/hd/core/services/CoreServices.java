@@ -124,6 +124,8 @@ public class CoreServices {
     // Start the logging factory
     LoggingFactory.bootstrap();
 
+    log.debug("Loading configuration...");
+
     Optional<Configuration> configuration;
     try (InputStream is = new FileInputStream(InstallationManager.getOrCreateConfigurationFile())) {
       // Load configuration (providing a default if none exists)

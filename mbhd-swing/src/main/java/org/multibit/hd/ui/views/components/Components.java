@@ -28,6 +28,8 @@ import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSum
 import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSummaryView;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.components.select_file.SelectFileView;
+import org.multibit.hd.ui.views.components.select_wallet.SelectWalletModel;
+import org.multibit.hd.ui.views.components.select_wallet.SelectWalletView;
 import org.multibit.hd.ui.views.components.wallet_detail.WalletDetailModel;
 import org.multibit.hd.ui.views.components.wallet_detail.WalletDetailView;
 
@@ -244,6 +246,22 @@ public class Components {
 
     SelectBackupSummaryModel model = new SelectBackupSummaryModel(panelName);
     SelectBackupSummaryView view = new SelectBackupSummaryView(model);
+
+    return new ModelAndView<>(model, view);
+
+  }
+
+  /**
+   * <p>A "select wallet" model and view handles user selection of a wallet</p>
+   *
+   * @param panelName The panel name to identify "next" button
+   *
+   * @return A new "select wallet" model and view
+   */
+  public static ModelAndView<SelectWalletModel, SelectWalletView> newSelectWalletMaV(String panelName) {
+
+    SelectWalletModel model = new SelectWalletModel(panelName);
+    SelectWalletView view = new SelectWalletView(model);
 
     return new ModelAndView<>(model, view);
 

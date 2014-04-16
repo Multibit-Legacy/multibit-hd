@@ -92,6 +92,14 @@ public class MultiBitHD {
       return false;
     }
 
+    if (OSUtils.isWindowsXPOrEarlier()) {
+      log.error("Windows XP or earlier detected. Forcing shutdown.");
+      JOptionPane.showMessageDialog(null, "This version of Windows is not supported for security reasons.\nPlease upgrade.", "Error",
+        JOptionPane.ERROR_MESSAGE);
+      CoreEvents.fireShutdownEvent();
+      return false;
+    }
+
     mainController = new MainController(bitcoinURIListeningService);
     new HeaderController();
     new SidebarController();
@@ -105,6 +113,8 @@ public class MultiBitHD {
    * <p>Initialise the JVM. This occurs before anything else is called.</p>
    */
   private static void initialiseJVM() throws Exception {
+
+    log.debug("Initialising JVM...");
 
     // Although we guarantee the JVM through the packager it is possible that
     // a power user will use their own
@@ -137,9 +147,9 @@ public class MultiBitHD {
       log.error(se.getClass().getName() + " " + se.getMessage());
     }
 
-    // Configure SSL certificates
+    // Configure SSL certificates without forcing
     final File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-    SSLManager.INSTANCE.installMultiBitSSLCertificate(applicationDirectory, "multibit-cacerts");
+    SSLManager.INSTANCE.installMultiBitSSLCertificate(applicationDirectory, "multibit-cacerts", false);
 
   }
 
@@ -165,6 +175,8 @@ public class MultiBitHD {
    */
   private static void initialiseCore(String[] args) {
 
+    log.debug("Initialising Core...");
+
     // Start the core services
     CoreServices.main(args);
 
@@ -188,6 +200,8 @@ public class MultiBitHD {
    */
   private static void initialiseUIViews() {
 
+    log.debug("Initialising UI...");
+
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
@@ -201,7 +215,7 @@ public class MultiBitHD {
 
         // Check for any pre-existing wallets in the application directory
         File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-        List<File> walletDirectories = WalletManager.INSTANCE.findWalletDirectories(applicationDataDirectory);
+        List<File> walletDirectories = WalletManager.findWalletDirectories(applicationDataDirectory);
 
         if (walletDirectories.isEmpty()) {
 
