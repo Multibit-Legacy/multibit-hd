@@ -79,6 +79,10 @@ public enum SSLManager {
 
     // Provide a quick startup option if the aliases are in place and we're not forcing a refresh
     if (ks.containsAlias("multibit.org-1") && ks.containsAlias("multibit.org-2") && !force) {
+
+      // Must have finished to be here so define the cacerts file to be the one used for all SSL
+      System.setProperty("javax.net.ssl.trustStore", appCacertsFile.getAbsolutePath());
+
       return;
     }
 
