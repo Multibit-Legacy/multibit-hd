@@ -46,6 +46,10 @@ public class WalletManagerTest {
 
   private final static String WALLET_DIRECTORY_1 = "mbhd-11111111-22222222-33333333-44444444-55555555";
   private final static String WALLET_DIRECTORY_2 = "mbhd-66666666-77777777-88888888-99999999-aaaaaaaa";
+
+  private final static String EXPECTED_WALLET_ID_1 = "11111111-22222222-33333333-44444444-55555555";
+  private final static String EXPECTED_WALLET_ID_2 = "66666666-77777777-88888888-99999999-aaaaaaaa";
+
   private final static String INVALID_WALLET_DIRECTORY_1 = "not-mbhd-66666666-77777777-88888888-99999999-aaaaaaaa";
   private final static String INVALID_WALLET_DIRECTORY_2 = "mbhd-66666666-77777777-88888888-99999999-gggggggg";
   private final static String INVALID_WALLET_DIRECTORY_3 = "mbhd-1166666666-77777777-88888888-99999999-aaaaaaaa";
@@ -231,7 +235,7 @@ public class WalletManagerTest {
   }
 
   @Test
-  public void testSearchWalletDirectories() throws Exception {
+  public void testFindWalletDirectories() throws Exception {
 
     // Create a random temporary directory
     File temporaryDirectory = makeRandomTemporaryDirectory();
@@ -242,19 +246,41 @@ public class WalletManagerTest {
     makeDirectory(temporaryDirectory, INVALID_WALLET_DIRECTORY_2);
     makeDirectory(temporaryDirectory, INVALID_WALLET_DIRECTORY_3);
 
-    WalletManager walletManager = WalletManager.INSTANCE;
-
-    List<File> walletDirectories = walletManager.findWalletDirectories(temporaryDirectory);
+    List<File> walletDirectories = WalletManager.findWalletDirectories(temporaryDirectory);
     assertThat(walletDirectories).isNotNull();
     assertThat(walletDirectories.size()).isEqualTo(2);
-    assertThat(walletDirectories.get(0).getAbsolutePath().equals(walletPath1)).isTrue();
-    assertThat(walletDirectories.get(1).getAbsolutePath().equals(walletPath2)).isTrue();
+    assertThat(walletDirectories.get(0).getAbsolutePath()).isEqualTo(walletPath1);
+    assertThat(walletDirectories.get(1).getAbsolutePath()).isEqualTo(walletPath2);
+
+  }
+
+  @Test
+  public void testFindWallets() throws Exception {
+
+    // Create a random temporary directory
+    File temporaryDirectory = makeRandomTemporaryDirectory();
+
+    String walletPath1 = makeDirectory(temporaryDirectory, WALLET_DIRECTORY_1);
+    String walletPath2 = makeDirectory(temporaryDirectory, WALLET_DIRECTORY_2);
+
+    List<File> walletDirectories = WalletManager.findWalletDirectories(temporaryDirectory);
+    assertThat(walletDirectories).isNotNull();
+    assertThat(walletDirectories.size()).isEqualTo(2);
+    assertThat(walletDirectories.get(0).getAbsolutePath()).isEqualTo(walletPath1);
+    assertThat(walletDirectories.get(1).getAbsolutePath()).isEqualTo(walletPath2);
+
+    // Attempt to retrieve the wallet summary
+    List<WalletData> wallets = WalletManager.findWalletData(walletDirectories);
+    assertThat(wallets).isNotNull();
+    assertThat(wallets.size()).isEqualTo(2);
+    assertThat(wallets.get(0).getWalletId().toFormattedString()).isEqualTo(EXPECTED_WALLET_ID_1);
+    assertThat(wallets.get(1).getWalletId().toFormattedString()).isEqualTo(EXPECTED_WALLET_ID_2);
 
   }
 
   private String makeDirectory(File parentDirectory, String directoryName) {
 
-    File directory = new File(parentDirectory.getAbsolutePath() + File.separator + directoryName);
+    File directory = new File(parentDirectory, directoryName);
     assertThat(directory.mkdir()).isTrue();
     directory.deleteOnExit();
 

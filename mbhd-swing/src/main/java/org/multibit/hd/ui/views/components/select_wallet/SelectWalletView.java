@@ -41,7 +41,7 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
 
     panel = Panels.newPanel(new MigLayout(
       Panels.migXLayout(),
-      "[]", // Columns
+      "[][]", // Columns
       "[][][]" // Rows
     ));
 
@@ -52,9 +52,9 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
     descriptionLabel = Labels.newBlankLabel();
 
     // Add to the panel
-    panel.add(Labels.newSelectWallet(), "shrink");
-    panel.add(selectedWalletComboBox, "grow,push,w min:350:,wrap");
-    panel.add(descriptionLabel, "grow,push,wrap");
+    panel.add(Labels.newSelectWallet(), "grow,push, w min:90");
+    panel.add(selectedWalletComboBox, "grow,push,w min:465:,wrap");
+    panel.add(descriptionLabel, "grow,push,span 2,wrap");
 
     return panel;
 
@@ -87,6 +87,19 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
       }
     }
     selectedWalletComboBox.addActionListener(this);
+
+    // Update the description if there is a selection
+    if (selectedWalletComboBox.getSelectedIndex() != -1) {
+
+      WalletData selectedWallet = (WalletData) selectedWalletComboBox.getSelectedItem();
+
+      if (selectedWallet != null) {
+
+        getModel().get().setValue(selectedWallet);
+        descriptionLabel.setText(selectedWallet.getDescription());
+
+      }
+    }
 
   }
 

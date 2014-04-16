@@ -22,6 +22,7 @@ public class WalletDataListCellRenderer extends JLabel implements ListCellRender
 
     setOpaque(true);
     setVerticalAlignment(CENTER);
+    setBorder(BorderFactory.createEmptyBorder(0,5,0,5));
 
   }
 

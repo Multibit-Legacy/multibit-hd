@@ -35,6 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.io.File;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -122,6 +124,17 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
   }
 
   @Override
+  public boolean beforeShow() {
+
+    List<File> walletDirectories = WalletManager.findWalletDirectories(InstallationManager.getOrCreateApplicationDataDirectory());
+    List<WalletData> wallets = WalletManager.findWalletData(walletDirectories);
+
+    selectWalletMaV.getModel().setWalletList(wallets);
+
+    return true;
+  }
+
+  @Override
   public void afterShow() {
 
     registerDefaultButton(getFinishButton());
@@ -142,6 +155,8 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
           Panels.showLightBoxPopover(displaySecurityPopoverMaV.getView().newComponentPanel());
 
         }
+
+        selectWalletMaV.getView().updateViewFromModel();
 
       }
     });
@@ -165,7 +180,9 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
         getFinishButton().setEnabled(false);
         getExitButton().setEnabled(false);
         getRestoreButton().setEnabled(false);
+
         enterPasswordMaV.getView().setSpinnerVisibility(true);
+        selectWalletMaV.getView().setEnabled(false);
 
       }
     });
@@ -216,6 +233,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
                 enterPasswordMaV.getView().setSpinnerVisibility(false);
 
                 enterPasswordMaV.getView().requestInitialFocus();
+                selectWalletMaV.getView().setEnabled(true);
 
               }
             });
@@ -238,6 +256,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
               enterPasswordMaV.getView().setSpinnerVisibility(false);
 
               enterPasswordMaV.getView().requestInitialFocus();
+              selectWalletMaV.getView().setEnabled(true);
             }
           });
 
