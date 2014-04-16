@@ -8,6 +8,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.Uninterruptibles;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletData;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.events.SecurityEvent;
@@ -126,8 +127,10 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
   @Override
   public boolean beforeShow() {
 
+    // TODO (GR) Combine this into a single method on WalletManager
     List<File> walletDirectories = WalletManager.findWalletDirectories(InstallationManager.getOrCreateApplicationDataDirectory());
-    List<WalletData> wallets = WalletManager.findWalletData(walletDirectories);
+    Optional<String> walletRoot = WalletManager.INSTANCE.getCurrentWalletRoot();
+    List<WalletData> wallets = WalletManager.findWalletData(walletDirectories, walletRoot);
 
     selectWalletMaV.getModel().setWalletList(wallets);
 
@@ -291,9 +294,15 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
       Optional<WalletData> walletDataOptional = WalletManager.INSTANCE.getCurrentWalletData();
       if (walletDataOptional.isPresent()) {
 
+        // Store this wallet in the current configuration
+        String walletRoot = WalletManager.createWalletRoot(walletId);
+        Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
+
+        // Update the wallet data
         WalletData walletData = walletDataOptional.get();
         walletData.setPassword(password);
 
+        // Create the history service
         CoreServices.getOrCreateHistoryService(walletData.getWalletId());
 
         // Must have succeeded to be here

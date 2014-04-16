@@ -4,16 +4,16 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
-import org.multibit.hd.core.dto.BackupSummary;
-import org.multibit.hd.core.dto.WalletData;
-import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.brit.exceptions.SeedPhraseException;
-import org.multibit.hd.core.managers.BackupManager;
-import org.multibit.hd.core.managers.InstallationManager;
-import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseSize;
+import org.multibit.hd.core.dto.BackupSummary;
+import org.multibit.hd.core.dto.WalletData;
+import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.managers.BackupManager;
+import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -272,12 +272,14 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
     // Ensure we start from a fresh list
     walletList.clear();
 
+    // TODO (GR) Combine this into a single method on WalletManager
     List<File> walletDirectories = WalletManager.findWalletDirectories(InstallationManager.getOrCreateApplicationDataDirectory());
-    List<WalletData> currentWalletData = WalletManager.findWalletData(walletDirectories);
+    Optional<String> walletRoot = WalletManager.INSTANCE.getCurrentWalletRoot();
+    walletList.addAll(WalletManager.findWalletData(walletDirectories, walletRoot));
 
     return walletList;
-  }
 
+  }
 
   /**
    * @return The user selection for the locale

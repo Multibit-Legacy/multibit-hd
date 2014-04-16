@@ -535,29 +535,34 @@ public enum WalletManager implements WalletEventListener {
    * <p>Find Wallet Data entries for all the wallet directories provided</p>
    *
    * @param walletDirectories The candidate wallet directory references
+   * @param walletRoot        The wallet root of the first entry
    *
    * @return A list of wallet data entries
    */
-  public static List<WalletData> findWalletData(List<File> walletDirectories) {
+  public static List<WalletData> findWalletData(List<File> walletDirectories, Optional walletRoot) {
 
     Preconditions.checkNotNull(walletDirectories, "'walletDirectories' must be present");
-
 
     List<WalletData> walletList = Lists.newArrayList();
     for (File walletDirectory : walletDirectories) {
       if (walletDirectory.isDirectory()) {
-        String filename = walletDirectory.getName();
-        if (filename.matches(REGEX_FOR_WALLET_DIRECTORY)) {
+        String directoryName = walletDirectory.getName();
+        if (directoryName.matches(REGEX_FOR_WALLET_DIRECTORY)) {
 
           // The name matches so process it
-          WalletId walletId = new WalletId(filename.substring(MBHD_WALLET_PREFIX.length() + 1));
+          WalletId walletId = new WalletId(directoryName.substring(MBHD_WALLET_PREFIX.length() + 1));
           WalletData walletData = new WalletData(walletId, null);
 
           // TODO (GR) Read these from a per-wallet config file
-          walletData.setName("Wallet name");
-          walletData.setDescription("Wallet Description:" + filename);
+          walletData.setName("Name: " + directoryName);
+          walletData.setDescription("Wallet Description (temp):" + directoryName);
 
-          walletList.add(walletData);
+          // Check if the wallet root is present and matches the file name
+          if (walletRoot.isPresent() && directoryName.equals(walletRoot.get())) {
+            walletList.add(0,walletData);
+          } else {
+            walletList.add(walletData);
+          }
         }
       }
 
@@ -567,6 +572,8 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
+   * TODO (GR) Consider moving this to the same model as Configurations and Themes
+   *
    * @return The current wallet data
    */
   public Optional<WalletData> getCurrentWalletData() {
@@ -611,5 +618,12 @@ public enum WalletManager implements WalletEventListener {
       return Optional.absent();
     }
 
+  }
+
+  /**
+   * @return The current wallet root as defined in the configuration, or absent
+   */
+  public Optional<String> getCurrentWalletRoot() {
+    return Optional.fromNullable(Configurations.currentConfiguration.getWallet().getCurrentWalletRoot());
   }
 }

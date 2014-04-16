@@ -21,6 +21,7 @@ import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.bitcoin.params.MainNetParams;
+import com.google.common.base.Optional;
 import org.bitcoinj.wallet.Protos;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +39,7 @@ import java.util.*;
 
 import static junit.framework.TestCase.fail;
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.multibit.hd.core.dto.WalletId.*;
+import static org.multibit.hd.core.dto.WalletId.WALLET_ID_SEPARATOR;
 
 public class WalletManagerTest {
 
@@ -270,11 +271,13 @@ public class WalletManagerTest {
     assertThat(walletDirectories.get(1).getAbsolutePath()).isEqualTo(walletPath2);
 
     // Attempt to retrieve the wallet summary
-    List<WalletData> wallets = WalletManager.findWalletData(walletDirectories);
+    List<WalletData> wallets = WalletManager.findWalletData(walletDirectories, Optional.of(WALLET_DIRECTORY_2));
     assertThat(wallets).isNotNull();
     assertThat(wallets.size()).isEqualTo(2);
-    assertThat(wallets.get(0).getWalletId().toFormattedString()).isEqualTo(EXPECTED_WALLET_ID_1);
-    assertThat(wallets.get(1).getWalletId().toFormattedString()).isEqualTo(EXPECTED_WALLET_ID_2);
+
+    // Expect the current wallet root to be first
+    assertThat(wallets.get(0).getWalletId().toFormattedString()).isEqualTo(EXPECTED_WALLET_ID_2);
+    assertThat(wallets.get(1).getWalletId().toFormattedString()).isEqualTo(EXPECTED_WALLET_ID_1);
 
   }
 
