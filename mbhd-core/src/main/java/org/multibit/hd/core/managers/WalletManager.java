@@ -556,7 +556,7 @@ public enum WalletManager implements WalletEventListener {
 
           // TODO (GR) Read these from a per-wallet config file
           walletSummary.setName("Name: " + directoryName);
-          walletSummary.setDescription("Wallet Description (temp):" + directoryName);
+          walletSummary.setNotes("Wallet Description (temp):" + directoryName);
 
           // Check if the wallet root is present and matches the file name
           if (walletRoot.isPresent() && directoryName.equals(walletRoot.get())) {

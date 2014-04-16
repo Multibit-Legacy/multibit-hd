@@ -8,6 +8,7 @@ import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.TextBoxes;
 
 import javax.swing.*;
 
@@ -23,6 +24,9 @@ import javax.swing.*;
 public class WalletDetailView extends AbstractComponentView<WalletDetailModel> {
 
   // View components
+  JTextField nameTextField;
+  JTextArea notesTextArea;
+
   JLabel applicationDirectoryLabel;
   JLabel walletDirectoryLabel;
   JLabel numberOfContactsLabel;
@@ -49,20 +53,33 @@ public class WalletDetailView extends AbstractComponentView<WalletDetailModel> {
       "[][][][]5"  // Rows
     ));
 
-    // TODO Consider Labels.newFieldLabel with a MessageKey.COLON
+    // Name
+    panel.add(Labels.newLabel(MessageKey.NAME));
+    nameTextField = TextBoxes.newEnterName(getModel().get(), false);
+    panel.add(nameTextField, "push,wrap");
 
+    // Description
+    panel.add(Labels.newLabel(MessageKey.DESCRIPTION));
+    notesTextArea = TextBoxes.newEnterNotes(getModel().get());
+    panel.add(applicationDirectoryLabel, "push,wrap");
+
+    // Application directory
     panel.add(Labels.newLabel(MessageKey.APPLICATION_DIRECTORY));
     applicationDirectoryLabel = Labels.newValueLabel(walletDetail.getApplicationDirectory());
     panel.add(applicationDirectoryLabel, "push,wrap");
 
+    // Wallet directory
+    // TODO (GR) Consider a button with Desktop.open(new File()) to open the directory
     panel.add(Labels.newLabel(MessageKey.WALLET_DIRECTORY));
     walletDirectoryLabel = Labels.newValueLabel(walletDetail.getWalletDirectory());
     panel.add(walletDirectoryLabel, "push,wrap");
 
+    // Contacts
     panel.add(Labels.newLabel(MessageKey.CONTACTS));
     numberOfContactsLabel = Labels.newValueLabel(String.valueOf(walletDetail.getNumberOfContacts()));
     panel.add(numberOfContactsLabel, "push,wrap");
 
+    // Transactions
     panel.add(Labels.newLabel(MessageKey.TRANSACTIONS));
     numberOfTransactionsLabel = Labels.newValueLabel(String.valueOf(walletDetail.getNumberOfPayments()));
     panel.add(numberOfTransactionsLabel, "push,wrap");

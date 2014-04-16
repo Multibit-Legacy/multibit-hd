@@ -13,6 +13,8 @@ import org.multibit.hd.ui.models.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.io.File;
 
 /**
@@ -24,12 +26,17 @@ import java.io.File;
  * @since 0.0.1
  *  
  */
-public class WalletDetailModel implements Model<WalletDetail> {
+public class WalletDetailModel implements Model<WalletDetail>, DocumentListener {
 
   private static final Logger log = LoggerFactory.getLogger(WalletDetailModel.class);
 
   private WalletDetail walletDetail;
   private final String panelName;
+
+  /**
+   * Flags if the model data has changed from when the panel was shown
+   */
+  private boolean isDirty;
 
   public WalletDetailModel(String panelName) {
     this.panelName = panelName;
@@ -72,6 +79,35 @@ public class WalletDetailModel implements Model<WalletDetail> {
 
       walletDetail.setNumberOfPayments(walletService.getPaymentDataList().size());
     }
+  }
+
+  /**
+   * @return True if the model has changed from when the panel was shown
+   */
+  public boolean isDirty() {
+    return isDirty;
+  }
+
+  /**
+   * @param isDirty True if the model has changed from when the panel was shown
+   */
+  public void setDirty(boolean isDirty) {
+    this.isDirty = isDirty;
+  }
+
+  @Override
+  public void insertUpdate(DocumentEvent e) {
+    setDirty(true);
+  }
+
+  @Override
+  public void removeUpdate(DocumentEvent e) {
+    setDirty(true);
+  }
+
+  @Override
+  public void changedUpdate(DocumentEvent e) {
+    setDirty(true);
   }
 
   /**

@@ -111,7 +111,7 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
       if (selectedWallet != null) {
 
         getModel().get().setValue(selectedWallet);
-        descriptionLabel.setText(selectedWallet.getDescription());
+        descriptionLabel.setText(selectedWallet.getNotes());
 
       }
     }
@@ -133,7 +133,7 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
 
       getModel().get().setValue(selectedWallet);
 
-      descriptionLabel.setText(selectedWallet.getDescription());
+      descriptionLabel.setText(selectedWallet.getNotes());
 
     }
   }

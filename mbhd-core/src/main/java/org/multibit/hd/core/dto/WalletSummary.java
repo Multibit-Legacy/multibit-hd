@@ -8,7 +8,7 @@ import com.google.common.base.Preconditions;
  * <p>Value object to provide the following to application:</p>
  * <ul>
  * <li>Access to optional Bitcoinj Wallet and mandatory WalletId</li>
- * <li>Provision of a name and description for identifying a wallet</li>
+ * <li>Provision of a name and notes for identifying a wallet</li>
  * </ul>
  *
  * <p>A wallet summary can be built from a wallet root and an appropriate YAML file</p>
@@ -28,7 +28,7 @@ public class WalletSummary {
 
   private String name;
 
-  private String description;
+  private String notes;
 
   /**
    * Default constructor for Jackson
@@ -85,7 +85,7 @@ public class WalletSummary {
   }
 
   /**
-   * @return The wallet name (e.g. "ACME Ltd")
+   * @return The short wallet name (e.g. "ACME Ltd")
    */
   public String getName() {
     return name;
@@ -96,14 +96,14 @@ public class WalletSummary {
   }
 
   /**
-   * @return The longer description (e.g. "The ACME Ltd business wallet")
+   * @return The longer notes (e.g. "The ACME Ltd business wallet")
    */
-  public String getDescription() {
-    return description;
+  public String getNotes() {
+    return notes;
   }
 
-  public void setDescription(String description) {
-    this.description = description;
+  public void setNotes(String notes) {
+    this.notes = notes;
   }
 
   @Override
@@ -112,7 +112,7 @@ public class WalletSummary {
       "wallet=" + wallet +
       ", walletId=" + walletId +
       ", name='" + name + '\'' +
-      ", description='" + description + '\'' +
+      ", description='" + notes + '\'' +
       ", password=****" +
       '}';
   }
