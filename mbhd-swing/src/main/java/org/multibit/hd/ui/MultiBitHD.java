@@ -35,7 +35,6 @@ public class MultiBitHD {
   private static final Logger log = LoggerFactory.getLogger(MultiBitHD.class);
 
   private static MainController mainController;
-  private static MainView mainView;
 
   /**
    * <p>Main entry point to the application</p>
@@ -213,7 +212,7 @@ public class MultiBitHD {
     Themes.switchTheme(themeKey.theme());
 
     // Build the main view
-    mainView = new MainView();
+    MainView mainView = new MainView();
 
     // Check for any pre-existing wallets in the application directory
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();

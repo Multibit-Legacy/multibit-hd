@@ -54,6 +54,9 @@ public class Labels {
 
     JLabel label = new JLabel(Languages.safeText(key, values));
 
+    // Ensure FEST can find the label
+    label.setName(key.getKey());
+
     // Apply theme
     label.setForeground(Themes.currentTheme.text());
 
@@ -685,8 +688,6 @@ public class Labels {
   }
 
   /**
-   * @param developerFee The developer fee in satoshis
-   *
    * @return A new "developer fee" message
    */
   public static JLabel newDeveloperFee() {

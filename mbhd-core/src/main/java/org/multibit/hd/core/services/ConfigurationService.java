@@ -39,7 +39,7 @@ public class ConfigurationService extends AbstractService {
     // We may be in a partial startup situation
     if (Configurations.currentConfiguration != null) {
 
-      try (FileOutputStream fos = new FileOutputStream(InstallationManager.getOrCreateConfigurationFile())) {
+      try (FileOutputStream fos = new FileOutputStream(InstallationManager.getConfigurationFile())) {
         Configurations.writeCurrentConfiguration(fos, Configurations.currentConfiguration);
 
       } catch (IOException e) {

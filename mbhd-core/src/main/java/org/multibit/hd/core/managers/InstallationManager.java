@@ -13,29 +13,33 @@ import java.io.*;
  *  <p>Manager to provide the following to other core classes:</p>
  *  <ul>
  *  <li>Location of the installation directory</li>
+ *  <li>Access the configuration file</li>
  * <li>Utility methods eg copying checkpoint files from installation directory</li>
  *  </ul>
- *  </p>
  *  
  */
 public class InstallationManager {
+
+  private static final Logger log = LoggerFactory.getLogger(InstallationManager.class);
 
   public static final String MBHD_APP_NAME = "MultiBitHD";
   public static final String MBHD_PREFIX = "mbhd";
   public static final String MBHD_CONFIGURATION_FILE = MBHD_PREFIX + ".yaml";
   public static final String SPV_BLOCKCHAIN_SUFFIX = ".spvchain";
+
   public static final String CHECKPOINTS_SUFFIX = ".checkpoints";
 
-  private static final Logger log = LoggerFactory.getLogger(InstallationManager.class);
+  /**
+   * The current application data directory
+   */
+  public static File currentApplicationDataDirectory = null;
 
   /**
-   * @return A reference to the configuration file (creating an empty file if necessary)
-   *
-   * @throws java.io.IOException If the file could not be created
+   * @return A reference to where the configuration file should be located
    */
-  public static File getOrCreateConfigurationFile() throws IOException {
+  public static File getConfigurationFile() {
 
-    return SecureFiles.verifyOrCreateFile(getOrCreateApplicationDataDirectory(), MBHD_CONFIGURATION_FILE);
+    return new File(getOrCreateApplicationDataDirectory().getAbsolutePath() + "/" + MBHD_CONFIGURATION_FILE);
 
   }
 
@@ -44,6 +48,10 @@ public class InstallationManager {
    * <p>Checks a few OS-dependent locations first</p>
    */
   public static File getOrCreateApplicationDataDirectory() {
+
+    if (currentApplicationDataDirectory != null) {
+      return currentApplicationDataDirectory;
+    }
 
     // Check the current working directory for the configuration file
     File multibitPropertiesFile = new File(MBHD_CONFIGURATION_FILE);
@@ -78,6 +86,9 @@ public class InstallationManager {
     // Create the application data directory if it does not exist
     File applicationDataDirectory = new File(applicationDataDirectoryName);
     SecureFiles.verifyOrCreateDirectory(applicationDataDirectory);
+
+    // Must be OK to be here so set this as the current
+    currentApplicationDataDirectory = applicationDataDirectory;
 
     return applicationDataDirectory;
   }

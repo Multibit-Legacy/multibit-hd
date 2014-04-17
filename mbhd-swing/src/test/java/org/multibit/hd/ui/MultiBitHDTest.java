@@ -8,9 +8,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.multibit.hd.ui.fest.use_cases.RestoreButtonUseCase;
-import org.multibit.hd.ui.fest.use_cases.UnlockWalletUseCase;
+import org.multibit.hd.core.files.SecureFiles;
+import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.ui.fest.use_cases.welcome.WelcomeSelectLanguageUseCase;
 import org.multibit.hd.ui.views.MainView;
+
+import java.io.File;
 
 import static org.fest.assertions.Fail.fail;
 
@@ -34,6 +37,10 @@ public class MultiBitHDTest {
   public static void setUpOnce() throws Exception {
     FailOnThreadViolationRepaintManager.install();
 
+    // Ensure we start with an empty and disposable application data directory
+    File applicationDirectory = new File("target");
+    InstallationManager.currentApplicationDataDirectory = SecureFiles.verifyOrCreateDirectory(applicationDirectory);
+
     // Prepare the JVM (Nimbus, system properties etc)
     MultiBitHD.initialiseJVM();
 
@@ -54,8 +61,11 @@ public class MultiBitHDTest {
 
   @Before
   public void setUp() {
+
     MainView frame = GuiActionRunner.execute(new GuiQuery<MainView>() {
       protected MainView executeInEDT() {
+
+        InstallationManager.getOrCreateApplicationDataDirectory();
 
         return MultiBitHD.initialiseUIViews();
       }
@@ -71,16 +81,10 @@ public class MultiBitHDTest {
   }
 
   @Test
-  public void shouldUnlockWallet() {
+  public void welcomeWizard_createWallet() {
 
-    new UnlockWalletUseCase(window).execute();
-
-  }
-
-  @Test
-  public void shouldRestoreWallet() {
-
-    new RestoreButtonUseCase(window).execute();
+    new WelcomeSelectLanguageUseCase(window).execute();
+    //new UnlockWalletUseCase(window).execute();
 
   }
 

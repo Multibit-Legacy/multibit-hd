@@ -242,6 +242,9 @@ public class ComboBoxes {
 
     // Populate the combo box and declare a suitable renderer
     JComboBox<String> comboBox = newReadOnlyComboBox(LanguageKey.localisedNames());
+
+    comboBox.setName(MessageKey.SELECT_LANGUAGE.getKey());
+
     comboBox.setRenderer(new LanguageListCellRenderer());
     comboBox.setMaximumRowCount(MultiBitUI.COMBOBOX_MAX_ROW_COUNT);
 
