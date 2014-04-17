@@ -10,6 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.ui.fest.use_cases.welcome.WelcomeSelectBackupLocationWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome.WelcomeSelectCreateWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome.WelcomeSelectLanguageUseCase;
 import org.multibit.hd.ui.views.MainView;
@@ -86,6 +87,7 @@ public class MultiBitHDTest {
 
     new WelcomeSelectLanguageUseCase(window).execute();
     new WelcomeSelectCreateWalletUseCase(window).execute();
+    new WelcomeSelectBackupLocationWalletUseCase(window).execute();
 
   }
 

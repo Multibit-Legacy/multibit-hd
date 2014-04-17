@@ -470,6 +470,9 @@ public class Buttons {
 
     JButton button = newButton(action);
 
+    // Ensure FEST can find it
+    button.setName(MessageKey.SELECT_FOLDER.getKey());
+
     AwesomeDecorator.applyIcon(AwesomeIcon.FOLDER_OPEN, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
