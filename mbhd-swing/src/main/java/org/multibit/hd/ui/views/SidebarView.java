@@ -47,6 +47,11 @@ public class SidebarView {
    */
   private Screen lastSelectedScreen = Screen.WALLET;
 
+  /**
+   * The wallet tree node
+   */
+  private DefaultMutableTreeNode walletNode;
+
   public SidebarView() {
 
     CoreServices.uiEventBus.register(this);
@@ -74,6 +79,20 @@ public class SidebarView {
    */
   public JPanel getContentPanel() {
     return contentPanel;
+  }
+
+  /**
+   * @param name The wallet summary name
+   */
+  public void updateWalletTreeNode(String name) {
+
+    if (walletNode != null && name != null) {
+
+      SidebarNodeInfo nodeInfo = new SidebarNodeInfo(name, Screen.WALLET);
+      walletNode.setUserObject(nodeInfo);
+
+    }
+
   }
 
   /**
@@ -157,16 +176,16 @@ public class SidebarView {
     return sidebarPane;
   }
 
+
   private DefaultMutableTreeNode createSidebarTreeNodes() {
 
     DefaultMutableTreeNode root = TreeNodes.newSidebarTreeNode("", Screen.WALLET);
 
-    // TODO Integrate with Switch wallet WalletId<->Friendly name
-    DefaultMutableTreeNode wallet = TreeNodes.newSidebarTreeNode("Wallet", Screen.WALLET);
-    wallet.add(TreeNodes.newSidebarTreeNode(MessageKey.SEND_OR_REQUEST, Screen.WALLET));
-    wallet.add(TreeNodes.newSidebarTreeNode(MessageKey.TRANSACTIONS, Screen.TRANSACTIONS));
-    wallet.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, Screen.CONTACTS));
-    root.add(wallet);
+    walletNode = TreeNodes.newSidebarTreeNode("Wallet", Screen.WALLET);
+    walletNode.add(TreeNodes.newSidebarTreeNode(MessageKey.SEND_OR_REQUEST, Screen.WALLET));
+    walletNode.add(TreeNodes.newSidebarTreeNode(MessageKey.TRANSACTIONS, Screen.TRANSACTIONS));
+    walletNode.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, Screen.CONTACTS));
+    root.add(walletNode);
 
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.HELP, Screen.HELP));
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.HISTORY, Screen.HISTORY));
@@ -176,7 +195,6 @@ public class SidebarView {
 
     return root;
   }
-
 
   /**
    * @param node The selected node
@@ -205,5 +223,4 @@ public class SidebarView {
     lastSelectedScreen = detailScreen;
     lastSelectionDateTime = Dates.nowUtc();
   }
-
 }

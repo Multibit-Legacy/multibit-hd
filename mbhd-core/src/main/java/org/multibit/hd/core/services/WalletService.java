@@ -16,6 +16,7 @@ import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.exchanges.ExchangeKey;
+import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.ExportManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.store.Payments;
@@ -115,7 +116,7 @@ public class WalletService {
     File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
 
     File paymentsDirectory = new File(walletDirectory.getAbsolutePath() + File.separator + PAYMENTS_DIRECTORY_NAME);
-    FileUtils.createDirectoryIfNecessary(paymentsDirectory);
+    SecureFiles.verifyOrCreateDirectory(paymentsDirectory);
 
     this.backingStoreFile = new File(paymentsDirectory.getAbsolutePath() + File.separator + PAYMENTS_DATABASE_NAME);
 

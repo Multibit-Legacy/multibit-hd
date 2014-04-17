@@ -8,7 +8,6 @@ import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.components.TextBoxes;
 
 import javax.swing.*;
 
@@ -24,9 +23,6 @@ import javax.swing.*;
 public class WalletDetailView extends AbstractComponentView<WalletDetailModel> {
 
   // View components
-  JTextField nameTextField;
-  JTextArea notesTextArea;
-
   JLabel applicationDirectoryLabel;
   JLabel walletDirectoryLabel;
   JLabel numberOfContactsLabel;
@@ -52,16 +48,6 @@ public class WalletDetailView extends AbstractComponentView<WalletDetailModel> {
       "[]10[grow]", // Columns
       "[][][][]5"  // Rows
     ));
-
-    // Name
-    panel.add(Labels.newLabel(MessageKey.NAME));
-    nameTextField = TextBoxes.newEnterName(getModel().get(), false);
-    panel.add(nameTextField, "push,wrap");
-
-    // Description
-    panel.add(Labels.newLabel(MessageKey.DESCRIPTION));
-    notesTextArea = TextBoxes.newEnterNotes(getModel().get());
-    panel.add(applicationDirectoryLabel, "push,wrap");
 
     // Application directory
     panel.add(Labels.newLabel(MessageKey.APPLICATION_DIRECTORY));

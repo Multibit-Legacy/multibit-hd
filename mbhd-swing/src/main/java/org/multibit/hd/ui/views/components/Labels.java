@@ -809,7 +809,7 @@ public class Labels {
    * @return A new "notes" message
    */
   public static JLabel newNotes() {
-    return newLabel(MessageKey.NOTES);
+    return newLabel(MessageKey.PRIVATE_NOTES);
   }
 
   /**

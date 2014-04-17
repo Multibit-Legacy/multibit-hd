@@ -1,14 +1,20 @@
 package org.multibit.hd.ui.views.screens.tools;
 
+import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.events.view.WizardHideEvent;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletState;
+import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 
 import javax.swing.*;
@@ -25,7 +31,7 @@ import java.awt.event.ActionEvent;
  */
 public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
 
-  private JButton welcomeWizard;
+  private JButton primaryButton;
 
   /**
    * @param panelModel The model backing this panel view
@@ -54,15 +60,14 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
 
     JPanel contentPanel = Panels.newPanel(layout);
 
-    Action showWelcomeWizardAction = getShowWelcomeWizardAction();
-    welcomeWizard = Buttons.newShowWelcomeWizardButton(showWelcomeWizardAction);
+    primaryButton = Buttons.newShowEditWalletButton(getShowWalletDetailsAction());
 
-    contentPanel.add(welcomeWizard, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
-    contentPanel.add(Buttons.newShowWalletDetailsButton(getShowWalletDetailsAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    contentPanel.add(primaryButton, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowChangePasswordButton(getShowChangePasswordAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
 
     contentPanel.add(Buttons.newShowVerifyNetworkButton(getShowVerifyNetworkAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowRepairWalletButton(getShowRepairWalletAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    contentPanel.add(Buttons.newShowWelcomeWizardButton(getShowWelcomeWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
 
     return contentPanel;
   }
@@ -73,7 +78,7 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        welcomeWizard.requestFocusInWindow();
+        primaryButton.requestFocusInWindow();
       }
     });
 
@@ -100,7 +105,7 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        Panels.showLightBox(Wizards.newWalletDetailsWizard().getWizardScreenHolder());
+        Panels.showLightBox(Wizards.newEditWalletWizard().getWizardScreenHolder());
       }
     };
   }
@@ -143,5 +148,31 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
       }
     };
   }
+
+  /**
+   * <p>Handle the transfer of data from a closing wizard</p>
+   *
+   * @param event The "wizard hide" event
+   */
+  @Subscribe
+  public void onWizardHideEvent(WizardHideEvent event) {
+
+    // Filter other events
+    if (event.isExitCancel()) {
+      return;
+    }
+    if (event.getPanelName().equals(EditWalletState.EDIT_WALLET.name())) {
+
+      // Persist the data from the wizard model into wallet
+      WalletSummary walletSummary = ((EditWalletWizardModel) event.getWizardModel()).getWalletSummary();
+
+      // getScreenModel().getWalletService().updateWalletSummary(walletSummary);
+      WalletManager.updateWalletSummary(walletSummary);
+
+    }
+
+
+  }
+
 
 }

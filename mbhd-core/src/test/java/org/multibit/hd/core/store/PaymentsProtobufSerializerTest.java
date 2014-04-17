@@ -34,7 +34,7 @@ public class PaymentsProtobufSerializerTest {
   @Before
   public void setUp() throws Exception {
 
-    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
+    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
     paymentsFile = new File(temporaryDirectory.getAbsolutePath() + File.separator + WalletService.PAYMENTS_DATABASE_NAME);
 
     serializer = new PaymentsProtobufSerializer();

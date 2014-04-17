@@ -8,10 +8,10 @@ import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.exceptions.ContactsLoadException;
 import org.multibit.hd.core.exceptions.ContactsSaveException;
+import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.store.ContactsProtobufSerializer;
-import org.multibit.hd.core.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +71,7 @@ public class PersistentContactService implements ContactService {
     File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
 
     File contactsDirectory = new File(walletDirectory.getAbsolutePath() + File.separator + CONTACTS_DIRECTORY_NAME);
-    FileUtils.createDirectoryIfNecessary(contactsDirectory);
+    SecureFiles.verifyOrCreateDirectory(contactsDirectory);
 
     this.backingStoreFile = new File(contactsDirectory.getAbsolutePath() + File.separator + CONTACTS_DATABASE_NAME);
 

@@ -1,9 +1,12 @@
 package org.multibit.hd.ui.views;
 
+import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.ShutdownEvent;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;
@@ -13,6 +16,9 @@ import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletState;
+import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletWizardModel;
+import org.multibit.hd.ui.views.wizards.password.PasswordState;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -278,6 +284,32 @@ public class MainView extends JFrame {
 
     showExitingWelcomeWizard = false;
     showExitingPasswordWizard = false;
+
+    if (event.isExitCancel()) {
+      return;
+    }
+
+    String panelName = event.getPanelName();
+    if (EditWalletState.EDIT_WALLET.name().equals(panelName)) {
+
+      // Extract the wallet summary
+      WalletSummary walletSummary = ((EditWalletWizardModel) event.getWizardModel()).getWalletSummary();
+
+      sidebarView.updateWalletTreeNode(walletSummary.getName());
+
+    }
+
+    if (PasswordState.PASSWORD_ENTER_PASSWORD.name().equals(panelName)) {
+
+      // Use the current wallet summary
+      Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+      if (walletSummary.isPresent()) {
+        sidebarView.updateWalletTreeNode(walletSummary.get().getName());
+      }
+
+      // TODO Why is the wallet summary null?
+
+    }
 
   }
 

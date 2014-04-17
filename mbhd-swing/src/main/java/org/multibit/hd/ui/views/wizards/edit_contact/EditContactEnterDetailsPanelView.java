@@ -33,7 +33,6 @@ import static org.multibit.hd.ui.views.wizards.edit_contact.EnterContactDetailsM
  * @since 0.0.1
  *  
  */
-
 public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<EditContactWizardModel, EditContactEnterDetailsPanelModel> {
 
   // Panel specific components
@@ -60,8 +59,6 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
   @Override
   public void newPanelModel() {
-
-    name = TextBoxes.newEnterLabel();
 
     // Configure the panel model
     setPanelModel(new EditContactEnterDetailsPanelModel(

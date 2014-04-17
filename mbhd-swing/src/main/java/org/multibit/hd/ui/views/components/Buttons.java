@@ -754,14 +754,14 @@ public class Buttons {
   /**
    * @param action The click action
    *
-   * @return A new "wallet details" button with icon
+   * @return A new "edit wallet" button with icon
    */
-  public static JButton newShowWalletDetailsButton(Action action) {
+  public static JButton newShowEditWalletButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.SHOW_WALLET_DETAILS_WIZARD);
+    JButton button = newLargeButton(action, MessageKey.SHOW_EDIT_WALLET_WIZARD);
 
     AwesomeDecorator.applyIcon(
-      AwesomeIcon.INFO_CIRCLE,
+      AwesomeIcon.EDIT,
       button,
       true,
       JLabel.BOTTOM,

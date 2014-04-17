@@ -8,10 +8,10 @@ import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.HistoryLoadException;
 import org.multibit.hd.core.exceptions.HistorySaveException;
+import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.store.HistoryProtobufSerializer;
-import org.multibit.hd.core.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +71,7 @@ public class PersistentHistoryService implements HistoryService {
     File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
 
     File historyDirectory = new File(walletDirectory.getAbsolutePath() + File.separator + HISTORY_DIRECTORY_NAME);
-    FileUtils.createDirectoryIfNecessary(historyDirectory);
+    SecureFiles.verifyOrCreateDirectory(historyDirectory);
 
     this.backingStoreFile = new File(historyDirectory.getAbsolutePath() + File.separator + HISTORY_DATABASE_NAME);
 

@@ -113,6 +113,7 @@ public class WalletId {
    * @return WalletId
    */
   public static WalletId parseWalletFilename(String walletFilename) {
+
     File walletFile = new File(walletFilename);
 
     // Get the parent directory, in which the wallet id is embedded

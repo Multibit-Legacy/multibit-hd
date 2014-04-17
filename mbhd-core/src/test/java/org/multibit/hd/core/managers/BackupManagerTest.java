@@ -42,12 +42,12 @@ public class BackupManagerTest {
   public void testBackupWallet() throws IOException {
 
     // Create a random temporary directory in which to writeContacts the wallet directory
-    File temporaryWalletParentDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
+    File temporaryWalletParentDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
 
     WalletManager walletManager = WalletManager.INSTANCE;
 
     // Create a random temporary directory in which to story the cloudBackups
-    File temporaryBackupDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
+    File temporaryBackupDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
 
     BackupManager backupManager = BackupManager.INSTANCE;
 
@@ -93,7 +93,7 @@ public class BackupManagerTest {
 
     String walletFilename = WalletManager.getOrCreateWalletDirectory(temporaryWalletParentDirectory, WalletManager.createWalletRoot(recreatedWalletId)
     ) + File.separator + WalletManager.MBHD_WALLET_NAME;
-    WalletSummary recreatedWalletSummary = walletManager.loadFromFile(new File(walletFilename), "password");
+    WalletSummary recreatedWalletSummary = walletManager.loadFromWalletDirectory(new File(walletFilename), "password");
 
     // Check there is the same key in the original wallet as in the recreated one
     assertThat(localBackups).isNotNull();

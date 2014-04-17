@@ -18,7 +18,7 @@ public class PersistentHistoryServiceTest {
   @Before
   public void setUp() throws Exception {
 
-    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
+    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
     File contactDbFile = new File(temporaryDirectory.getAbsolutePath() + File.separator + HistoryService.HISTORY_DATABASE_NAME);
 
     historyService = new PersistentHistoryService(contactDbFile);

@@ -15,6 +15,9 @@ import java.util.Random;
  * </ul>
  *
  * @since 0.0.1
+ *
+ * TODO Consider using Guava and NIO equivalents for these operations
+ * Perhaps pull down the file utilities from mbhd-core to replace these
  */
 public class FileUtils {
 

@@ -106,7 +106,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
     JLabel qrCodeLabelLabel = Labels.newValueLabel(Languages.safeText(MessageKey.QR_CODE_LABEL_LABEL));
     qrCodeLabelValue = Labels.newBlankLabel();
 
-    JLabel noteLabel = Labels.newValueLabel(Languages.safeText(MessageKey.NOTES));
+    JLabel noteLabel = Labels.newValueLabel(Languages.safeText(MessageKey.PRIVATE_NOTES));
     noteValue = Labels.newBlankLabel();
 
     JLabel amountBTCLabel = Labels.newBlankLabel();

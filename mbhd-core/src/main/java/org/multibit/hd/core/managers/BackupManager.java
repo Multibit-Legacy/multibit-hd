@@ -5,11 +5,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.BackupSummary;
-import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.files.SecureFiles;
+import org.multibit.hd.core.files.ZipFiles;
 import org.multibit.hd.core.utils.Dates;
-import org.multibit.hd.core.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,7 +131,7 @@ public enum BackupManager {
               // TODO (JB) Is this correct? Should it be +1 instead
               int start = (WalletManager.MBHD_WALLET_PREFIX + WALLET_ID_SEPARATOR + WALLET_ID_SEPARATOR).length() + LENGTH_OF_FORMATTED_WALLET_ID;
               int stop = start + 14;
-              String timeStampString = FileUtils.filePart(file.getName().substring(start, stop));
+              String timeStampString = file.getName().substring(start, stop);
               try {
                 DateTime timestamp = Dates.parseBackupDate(timeStampString);
                 backupSummary.setCreated(timestamp);
@@ -239,7 +240,7 @@ public enum BackupManager {
     String rollingBackupDirectoryName = walletRootDirectory
       + File.separator
       + BackupManager.ROLLING_BACKUP_DIRECTORY_NAME;
-    FileUtils.createDirectoryIfNecessary(new File(rollingBackupDirectoryName));
+    SecureFiles.verifyOrCreateDirectory(new File(rollingBackupDirectoryName));
 
     String walletBackupFilename = rollingBackupDirectoryName
       + File.separator
@@ -258,13 +259,13 @@ public enum BackupManager {
     // If there are more than the maximum number of rolling backups, secure delete the eldest
     if (rollingBackups.size() > MAXIMUM_NUMBER_OF_ROLLING_BACKUPS) {
       // Delete the eldest
-      FileUtils.secureDelete(rollingBackups.get(0));
+      SecureFiles.secureDelete(rollingBackups.get(0));
     }
 
     // If there are even more than that trim off another one - over time this will gently reduce the number to the maximum
     if (rollingBackups.size() > MAXIMUM_NUMBER_OF_ROLLING_BACKUPS + 1) {
       // Delete the second eldest
-      FileUtils.secureDelete(rollingBackups.get(1));
+      SecureFiles.secureDelete(rollingBackups.get(1));
     }
     return walletBackupFile;
   }
@@ -290,7 +291,7 @@ public enum BackupManager {
     }
 
     File localBackupDirectory = new File(walletRootDirectory.getAbsoluteFile() + File.separator + LOCAL_ZIP_BACKUP_DIRECTORY_NAME);
-    FileUtils.createDirectoryIfNecessary(localBackupDirectory);
+    SecureFiles.verifyOrCreateDirectory(localBackupDirectory);
 
     String backupFilename = WalletManager.WALLET_DIRECTORY_PREFIX
       + WALLET_ID_SEPARATOR
@@ -301,13 +302,13 @@ public enum BackupManager {
     String localBackupFilename = localBackupDirectory.getAbsolutePath() + File.separator + backupFilename;
 
     log.debug("Creating local zip-backup '" + localBackupFilename + "'");
-    FileUtils.zipFolder(walletRootDirectory.getAbsolutePath(), localBackupFilename, false);
+    ZipFiles.zipFolder(walletRootDirectory.getAbsolutePath(), localBackupFilename, false);
     log.debug("Created local zip-backup successfully. Size = " + (new File(localBackupFilename)).length() + " bytes");
 
     if (cloudBackupDirectory != null && cloudBackupDirectory.exists()) {
       String cloudBackupFilename = cloudBackupDirectory.getAbsolutePath() + File.separator + backupFilename;
       log.debug("Creating cloud zip-backup '" + cloudBackupFilename + "'");
-      FileUtils.zipFolder(walletRootDirectory.getAbsolutePath(), cloudBackupFilename, false);
+      ZipFiles.zipFolder(walletRootDirectory.getAbsolutePath(), cloudBackupFilename, false);
       log.debug("Created cloud zip-backup successfully. Size = " + (new File(cloudBackupFilename)).length() + " bytes");
     } else {
       log.debug("No cloud backup made for wallet '" + walletId + "' as no cloudBackupDirectory is set.");
@@ -345,7 +346,7 @@ public enum BackupManager {
     }
 
     // Unzip the backup into the wallet root directory - this overwrites files if already present (hence the backup just done)
-    FileUtils.unzip(backupFileToLoad.getAbsolutePath(), walletRootDirectory.getAbsolutePath());
+    ZipFiles.unzip(backupFileToLoad.getAbsolutePath(), walletRootDirectory.getAbsolutePath());
 
     return walletId;
   }

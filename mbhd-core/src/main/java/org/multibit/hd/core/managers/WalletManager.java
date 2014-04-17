@@ -12,10 +12,11 @@ import org.bitcoinj.wallet.Protos;
 import org.multibit.hd.brit.extensions.MatcherResponseWalletExtension;
 import org.multibit.hd.brit.extensions.SendFeeDtoWalletExtension;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.TransactionSeenEvent;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.exceptions.WalletSaveException;
 import org.multibit.hd.core.exceptions.WalletVersionException;
@@ -121,7 +122,10 @@ public enum WalletManager implements WalletEventListener {
 
   public static final String MBHD_WALLET_PREFIX = "mbhd";
   public static final String MBHD_WALLET_SUFFIX = ".wallet";
+  public static final String MBHD_SUMMARY_SUFFIX = ".yaml";
+
   public static final String MBHD_WALLET_NAME = MBHD_WALLET_PREFIX + MBHD_WALLET_SUFFIX;
+  public static final String MBHD_SUMMARY_NAME = MBHD_WALLET_PREFIX + MBHD_SUMMARY_SUFFIX;
 
   private File applicationDataDirectory;
 
@@ -157,7 +161,7 @@ public enum WalletManager implements WalletEventListener {
         if (walletDirectoryPath.contains(walletIdPath)) {
           // Found the required wallet directory - attempt to open the wallet
           String walletFilename = walletDirectory + File.separator + MBHD_WALLET_NAME;
-          WalletSummary walletSummary = loadFromFile(new File(walletFilename), password);
+          WalletSummary walletSummary = loadFromWalletDirectory(new File(walletFilename), password);
           currentWalletSummary = Optional.of(walletSummary);
         }
 
@@ -225,7 +229,7 @@ public enum WalletManager implements WalletEventListener {
     if (walletFile.exists()) {
 
       // There is already a wallet created with this root - if so load it and return that
-      walletSummaryToReturn = loadFromFile(walletFile, password);
+      walletSummaryToReturn = loadFromWalletDirectory(walletFile, password);
       if (Configurations.currentConfiguration != null) {
         Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
       }
@@ -263,7 +267,7 @@ public enum WalletManager implements WalletEventListener {
     walletToReturn.autosaveToFile(walletFile, AUTO_SAVE_DELAY, TimeUnit.SECONDS, new WalletAutoSaveListener());
 
     // Save it now to ensure it is on the disk
-    saveWallet(walletToReturn, walletFile.getAbsolutePath());
+    saveWallet(walletToReturn, walletFile);
     if (Configurations.currentConfiguration != null) {
       Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
     }
@@ -327,25 +331,25 @@ public enum WalletManager implements WalletEventListener {
    * <p>Load up a Wallet from a specified wallet file.</p>
    * <p>Reduced visibility for testing</p>
    *
-   * @param walletFile The file containing the wallet to load
-   * @param password   The password to use to decrypt the wallet
+   * @param walletDirectory The wallet directory containing the various wallet files to load
+   * @param password        The password to use to decrypt the wallet
    *
    * @return Wallet - the loaded wallet
    *
    * @throws WalletLoadException    If the wallet could not be loaded
    * @throws WalletVersionException If the wallet has an unsupported version number
    */
-  WalletSummary loadFromFile(File walletFile, CharSequence password) throws WalletLoadException, WalletVersionException {
+  WalletSummary loadFromWalletDirectory(File walletDirectory, CharSequence password) throws WalletLoadException, WalletVersionException {
 
-    Preconditions.checkNotNull(walletFile, "'walletFile' must be present");
+    Preconditions.checkNotNull(walletDirectory, "'walletDirectory' must be present");
     Preconditions.checkNotNull(password, "'password' must be present");
 
-    String walletFilename = walletFile.getAbsolutePath();
+    String walletFilename = walletDirectory.getAbsolutePath();
 
     WalletId walletId = parseWalletFilename(walletFilename);
 
     try {
-      if (isWalletSerialised(walletFile)) {
+      if (isWalletSerialised(walletDirectory)) {
         // Serialised wallets are no longer supported.
         throw new WalletLoadException(
           "Could not load wallet '"
@@ -357,7 +361,7 @@ public enum WalletManager implements WalletEventListener {
       final Wallet wallet;
 
       try (
-        FileInputStream fileInputStream = new FileInputStream(walletFile);
+        FileInputStream fileInputStream = new FileInputStream(walletDirectory);
         InputStream stream = new BufferedInputStream(fileInputStream)
       ) {
 
@@ -367,6 +371,7 @@ public enum WalletManager implements WalletEventListener {
         wallet.addExtension(new SendFeeDtoWalletExtension());
         wallet.addExtension(new MatcherResponseWalletExtension());
         new WalletProtobufSerializer().readWallet(walletProto, wallet);
+
 
         log.debug("Wallet at read in from file:\n" + wallet.toString());
 
@@ -384,7 +389,7 @@ public enum WalletManager implements WalletEventListener {
       // Set up auto-save on the wallet.
       // This ensures the wallet is saved on modification
       // The listener has a 'post save' callback which ensures rolling backups and local/ cloud backups are also saved where necessary
-      wallet.autosaveToFile(walletFile, AUTO_SAVE_DELAY, TimeUnit.SECONDS, new WalletAutoSaveListener());
+      wallet.autosaveToFile(walletDirectory, AUTO_SAVE_DELAY, TimeUnit.SECONDS, new WalletAutoSaveListener());
 
       return walletSummary;
 
@@ -402,12 +407,11 @@ public enum WalletManager implements WalletEventListener {
    * Save the wallet
    * TODO would be nice to remove this and just use the vanilla wallet .saveFile
    *
-   * @param wallet         wallet to save
-   * @param walletFilename location to save the wallet
+   * @param wallet     The  wallet to save
+   * @param walletFile The location to save the wallet
+   *
    */
-  public void saveWallet(Wallet wallet, String walletFilename) {
-
-    File walletFile = new File(walletFilename);
+  public void saveWallet(Wallet wallet, File walletFile) {
 
     // Save the wallet file
     try (FileOutputStream fis = new FileOutputStream(walletFile)) {
@@ -419,7 +423,7 @@ public enum WalletManager implements WalletEventListener {
           // to prevent loading by older versions of multibit.
           walletProtobufSerializer.writeWallet(wallet, fis);
         } else {
-          throw new WalletVersionException("Cannot save wallet '" + walletFilename
+          throw new WalletVersionException("Cannot save wallet '" + walletFile
             + "'. Its wallet version is '" + wallet.getVersion()
             + "' but this version of MultiBit HD does not understand that format.");
         }
@@ -429,7 +433,7 @@ public enum WalletManager implements WalletEventListener {
       log.debug("Wallet file saved.");
 
     } catch (IOException | UnsupportedOperationException e) {
-      throw new WalletSaveException("Cannot save wallet '" + walletFilename, e);
+      throw new WalletSaveException("Cannot save wallet '" + walletFile, e);
     }
   }
 
@@ -463,38 +467,38 @@ public enum WalletManager implements WalletEventListener {
   /**
    * Create the name of the directory in which the wallet is stored
    *
-   * @param walletId The wallet id to use
+   * @param walletId The wallet id to use (e.g. "11111111-22222222-33333333-44444444-55555555")
    *
-   * @return directoryName in which the wallet is stored.
+   * @return A wallet root
    */
   public static String createWalletRoot(WalletId walletId) {
     return WALLET_DIRECTORY_PREFIX + WALLET_ID_SEPARATOR + walletId.toFormattedString();
   }
 
   /**
-   * Create a directory composed of the root directory and a subdirectory.
-   * The subdirectory is created if it does not exist
+   * <p>Get or create the sub-directory of the given application directory with the given wallet root</p>
    *
    * @param applicationDataDirectory The application data directory containing the wallet
-   * @param walletId                 The name of the wallet which will be used to create a subdirectory (e.g. "mbhd-11111111-22222222-33333333-44444444-55555555")
+   * @param walletRoot               The wallet root from which to make a sub-directory (e.g. "mbhd-11111111-22222222-33333333-44444444-55555555")
    *
-   * @return The directory composed of parentDirectory plus the walletRoot
+   * @return The directory composed of parent directory plus the wallet root
    *
    * @throws IllegalStateException if wallet could not be created
    */
-  public static File getOrCreateWalletDirectory(File applicationDataDirectory, String walletId) {
+  // TODO (GR) Refactor this to take a WalletId and infer the prefix to avoid info leak
+  public static File getOrCreateWalletDirectory(File applicationDataDirectory, String walletRoot) {
 
-    File walletDirectory = new File(applicationDataDirectory, walletId);
+    File walletDirectory = new File(applicationDataDirectory, walletRoot);
 
     if (!walletDirectory.exists()) {
       // Create the wallet directory
       if (!walletDirectory.mkdir()) {
-        throw new IllegalStateException("Could not create missing wallet directory '" + walletId + "'");
+        throw new IllegalStateException("Could not create missing wallet directory '" + walletRoot + "'");
       }
     }
 
     if (!walletDirectory.isDirectory()) {
-      throw new IllegalStateException("Wallet directory '" + walletId + "' is not actually a directory");
+      throw new IllegalStateException("Wallet directory '" + walletRoot + "' is not actually a directory");
     }
 
     return walletDirectory;
@@ -551,12 +555,17 @@ public enum WalletManager implements WalletEventListener {
 
           // The name matches so process it
           WalletId walletId = new WalletId(directoryName.substring(MBHD_WALLET_PREFIX.length() + 1));
-          WalletSummary walletSummary = new WalletSummary();
-          walletSummary.setWalletId(walletId);
 
-          // TODO (GR) Read these from a per-wallet config file
-          walletSummary.setName("Name: " + directoryName);
-          walletSummary.setNotes("Wallet Description (temp):" + directoryName);
+          Optional<WalletSummary> walletSummaryOptional = readWalletSummary(walletDirectory);
+          final WalletSummary walletSummary;
+          if (walletSummaryOptional.isPresent()) {
+            walletSummary = walletSummaryOptional.get();
+          } else {
+            walletSummary = new WalletSummary();
+            walletSummary.setName("Wallet");
+            walletSummary.setNotes(directoryName);
+          }
+          walletSummary.setWalletId(walletId);
 
           // Check if the wallet root is present and matches the file name
           if (walletRoot.isPresent() && directoryName.equals(walletRoot.get())) {
@@ -599,7 +608,7 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
-   * @return The current wallet file
+   * @return The current wallet file (e.g. "/User/example/Application Support/MultiBitHD/mbhd-1111-2222-3333-4444/mbhd.wallet")
    */
   public Optional<File> getCurrentWalletFile() {
 
@@ -622,9 +631,68 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
+   * @return The current wallet summary file (e.g. "/User/example/Application Support/MultiBitHD/mbhd-1111-2222-3333-4444/mbhd.yaml")
+   */
+  public Optional<File> getCurrentWalletSummaryFile() {
+
+    if (applicationDataDirectory != null && currentWalletSummary.isPresent()) {
+
+      String walletFilename =
+        applicationDataDirectory
+          + File.separator
+          + WALLET_DIRECTORY_PREFIX
+          + WALLET_ID_SEPARATOR
+          + currentWalletSummary.get().getWalletId().toFormattedString()
+          + File.separator
+          + MBHD_SUMMARY_NAME;
+      return Optional.of(new File(walletFilename));
+
+    } else {
+      return Optional.absent();
+    }
+
+  }
+
+  /**
    * @return The current wallet root as defined in the configuration, or absent
    */
   public Optional<String> getCurrentWalletRoot() {
     return Optional.fromNullable(Configurations.currentConfiguration.getWallet().getCurrentWalletRoot());
+  }
+
+  /**
+   * @param walletSummary The wallet summary to write
+   */
+  public static void updateWalletSummary(WalletSummary walletSummary) {
+
+    final File currentWalletSummaryFile = INSTANCE.getCurrentWalletSummaryFile().get();
+
+    // Persist the new configuration
+    try (FileOutputStream fos = new FileOutputStream(currentWalletSummaryFile)) {
+
+      Configurations.writeCurrentConfiguration(fos, walletSummary);
+
+    } catch (IOException e) {
+      ExceptionHandler.handleThrowable(e);
+    }
+  }
+
+  /**
+   * @param walletDirectory The wallet directory to read
+   *
+   * @return The Wallet Summary or absent
+   */
+  public static Optional<WalletSummary> readWalletSummary(File walletDirectory) {
+
+    Optional<WalletSummary> walletSummary;
+    try (InputStream is = new FileInputStream(new File(walletDirectory, MBHD_SUMMARY_NAME))) {
+      // Load configuration (providing a default if none exists)
+      walletSummary = Configurations.readConfiguration(is, WalletSummary.class);
+    } catch (IOException e) {
+      walletSummary = Optional.absent();
+    }
+
+    return walletSummary;
+
   }
 }

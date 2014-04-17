@@ -36,7 +36,7 @@ public class WalletServiceTest {
   @Before
   public void setUp() throws Exception {
     // Create a random temporary directory where the wallet directory will be written
-    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
+    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
 
     // Create a wallet from a seed
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();

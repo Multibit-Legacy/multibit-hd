@@ -1,13 +1,13 @@
 package org.multibit.hd.core.managers;
 
 import com.google.common.base.Preconditions;
-import org.multibit.hd.core.utils.FileUtils;
+import com.google.common.io.ByteStreams;
+import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.utils.OSUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 /**
  *  <p>Manager to provide the following to other core classes:</p>
@@ -75,7 +75,7 @@ public class InstallationManager {
 
     // Create the application data directory if it does not exist
     File applicationDataDirectory = new File(applicationDataDirectoryName);
-    FileUtils.createDirectoryIfNecessary(applicationDataDirectory);
+    SecureFiles.verifyOrCreateDirectory(applicationDataDirectory);
 
     return applicationDataDirectory;
   }
@@ -83,48 +83,55 @@ public class InstallationManager {
   /**
    * Copy the checkpoints file from the MultiBitHD installation to the specified filename
    *
-   * @param destinationCheckpointsFilename The file location to which to copy the checkpoints file
+   * @param sinkCheckpointsFilename The sink to receive the source checkpoints file
+   *                                TODO Refactor to use File rather than filename
    */
-  public static void copyCheckpointsTo(String destinationCheckpointsFilename) throws IOException {
-    Preconditions.checkNotNull(destinationCheckpointsFilename);
+  public static void copyCheckpointsTo(String sinkCheckpointsFilename) throws IOException {
+
+    Preconditions.checkNotNull(sinkCheckpointsFilename);
 
     // See if the checkpoints in the user's application data directory exists
-    File destinationCheckpoints = new File(destinationCheckpointsFilename);
+    File destinationCheckpointsFile = new File(sinkCheckpointsFilename);
+    FileOutputStream sinkCheckpointsStream = new FileOutputStream(destinationCheckpointsFile);
 
-    // TODO overwrite if larger/ newer.
-    if (!destinationCheckpoints.exists()) {
-      // Work out the source checkpoints (put into the program installation directory by the installer).
-      File directory = new File(".");
-      String currentWorkingDirectory = directory.getCanonicalPath();
+    // TODO overwrite if larger/ newer
+    if (!destinationCheckpointsFile.exists()) {
+      // Work out the source checkpoints (put into the program installation directory by the installer)
+      File currentWorkingDirectory = new File(".");
+      File sourceBlockCheckpointsFile = new File(currentWorkingDirectory, MBHD_PREFIX + CHECKPOINTS_SUFFIX);
 
-      String checkpointsFilename = MBHD_PREFIX + CHECKPOINTS_SUFFIX;
-      String sourceCheckpointsFilename = currentWorkingDirectory + File.separator + checkpointsFilename;
-      File sourceBlockcheckpoints = new File(sourceCheckpointsFilename);
-
-      // If this file does not exist then see if it is where the development environment stores it (convenience when running in Intellij
-      if (!sourceBlockcheckpoints.exists()) {
-        sourceCheckpointsFilename = currentWorkingDirectory + File.separator + "mbhd-core" + File.separator + "src" +
-          File.separator + "main" + File.separator + "resources" + File.separator + MBHD_PREFIX + CHECKPOINTS_SUFFIX;
-        sourceBlockcheckpoints = new File(sourceCheckpointsFilename);
+      // Prepare an input stream to the checkpoints
+      final InputStream sourceCheckpointsStream;
+      if (sourceBlockCheckpointsFile.exists()) {
+        // Use the file system
+        sourceCheckpointsStream = new FileInputStream(sourceBlockCheckpointsFile);
+      } else {
+        // Use the classpath
+        sourceCheckpointsStream = InstallationManager.class.getResourceAsStream("/mbhd.checkpoints");
       }
-      if (sourceBlockcheckpoints.exists() && !destinationCheckpointsFilename.equals(sourceCheckpointsFilename)) {
-        // It should exist since installer puts them in.
-        log.info("Copying checkpoints from '" + sourceCheckpointsFilename + "' to '" + destinationCheckpointsFilename + "'");
-        FileUtils.copyFile(sourceBlockcheckpoints, destinationCheckpoints);
 
-        // Check all the data was copied.
-        long sourceLength = sourceBlockcheckpoints.length();
-        long destinationLength = destinationCheckpoints.length();
-        if (sourceLength != destinationLength) {
-          String errorText = "Checkpoints were not copied to user's application data directory correctly.\nThe source checkpoints '"
-            + sourceCheckpointsFilename
-            + "' is of length "
-            + sourceLength
-            + "\nbut the destination checkpoints '"
-            + destinationCheckpointsFilename + "' is of length " + destinationLength;
-          log.error(errorText);
-          throw new IllegalStateException(errorText);
-        }
+      // Copy the checkpoints
+      ByteStreams.copy(sourceCheckpointsStream, sinkCheckpointsStream);
+
+      sourceCheckpointsStream.close();
+      sinkCheckpointsStream.flush();
+      sinkCheckpointsStream.close();
+
+      // Check all the data was copied.
+      long sourceLength = sourceBlockCheckpointsFile.length();
+      long destinationLength = destinationCheckpointsFile.length();
+      if (sourceLength != destinationLength) {
+        String errorText = "Checkpoints were not copied to user's application data directory correctly.\nThe source checkpoints '"
+          + sourceBlockCheckpointsFile.getAbsolutePath()
+          + "' is of length "
+          + sourceLength
+          + "\nbut the destination checkpoints '"
+          + destinationCheckpointsFile.getAbsolutePath()
+          + "' is of length "
+          + destinationLength;
+        log.error(errorText);
+
+        throw new IllegalStateException(errorText);
       }
     }
   }

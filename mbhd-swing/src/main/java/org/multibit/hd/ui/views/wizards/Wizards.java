@@ -5,10 +5,8 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.dto.Contact;
-import org.multibit.hd.core.dto.HistoryEntry;
-import org.multibit.hd.core.dto.PaymentData;
-import org.multibit.hd.core.dto.PaymentRequestData;
+import org.multibit.hd.core.dto.*;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.views.wizards.about.AboutState;
 import org.multibit.hd.ui.views.wizards.about.AboutWizard;
 import org.multibit.hd.ui.views.wizards.about.AboutWizardModel;
@@ -29,6 +27,9 @@ import org.multibit.hd.ui.views.wizards.edit_history.EditHistoryState;
 import org.multibit.hd.ui.views.wizards.edit_history.EditHistoryWizard;
 import org.multibit.hd.ui.views.wizards.edit_history.EditHistoryWizardModel;
 import org.multibit.hd.ui.views.wizards.edit_history.EnterHistoryDetailsMode;
+import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletState;
+import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletWizard;
+import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.exchange_settings.ExchangeSettingsState;
 import org.multibit.hd.ui.views.wizards.exchange_settings.ExchangeSettingsWizard;
 import org.multibit.hd.ui.views.wizards.exchange_settings.ExchangeSettingsWizardModel;
@@ -62,9 +63,6 @@ import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsWizardModel;
 import org.multibit.hd.ui.views.wizards.verify_network.VerifyNetworkState;
 import org.multibit.hd.ui.views.wizards.verify_network.VerifyNetworkWizard;
 import org.multibit.hd.ui.views.wizards.verify_network.VerifyNetworkWizardModel;
-import org.multibit.hd.ui.views.wizards.wallet_detail.WalletDetailState;
-import org.multibit.hd.ui.views.wizards.wallet_detail.WalletDetailWizard;
-import org.multibit.hd.ui.views.wizards.wallet_detail.WalletDetailWizardModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizard;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
@@ -306,11 +304,14 @@ public class Wizards {
   }
 
   /**
-   * @return A new "wallet details" wizard for extended wallet information
+   * @return A new "edit wallet" wizard for adjusted wallet details
    */
-  public static WalletDetailWizard newWalletDetailsWizard() {
+  public static EditWalletWizard newEditWalletWizard() {
 
-    return new WalletDetailWizard(new WalletDetailWizardModel(WalletDetailState.WALLET_DETAIL), false);
+    Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+    Preconditions.checkState(currentWalletSummary.isPresent(),"'currentWalletSummary' must be present");
+
+    return new EditWalletWizard(new EditWalletWizardModel(EditWalletState.EDIT_WALLET, currentWalletSummary.get()), false);
   }
 
 }

@@ -19,7 +19,7 @@ public class PersistentContactServiceTest {
   @Before
   public void setUp() throws Exception {
 
-    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
+    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
     File contactDbFile = new File(temporaryDirectory.getAbsolutePath() + File.separator + ContactService.CONTACTS_DATABASE_NAME);
 
     contactService = new PersistentContactService(contactDbFile);

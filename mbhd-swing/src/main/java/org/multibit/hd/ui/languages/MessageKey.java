@@ -55,7 +55,10 @@ public enum MessageKey {
   RECIPIENT("recipient"),
   TRANSACTION_LABEL("transaction_label"),
   QR_CODE_LABEL_LABEL("qr_code_label_label"),
+
+  PRIVATE_NOTES("private_notes"),
   NOTES("notes"),
+
   ONE_OF_YOUR_ADDRESSES("one_of_your_addresses"),
 
   SELECT_FOLDER("select_folder"),
@@ -181,7 +184,7 @@ public enum MessageKey {
   PASSWORD_REPORT_TITLE("password_report_title"),
   PASSWORD_UNLOCK("password_unlock"),
 
-  WALLET_DETAIL_TITLE("wallet_detail_title"),
+  EDIT_WALLET_TITLE("edit_wallet_title"),
 
   CHANGE_PASSWORD_TITLE("change_password_title"),
 
@@ -218,7 +221,7 @@ public enum MessageKey {
   SHOW_EXCHANGE_WIZARD("show_exchange_wizard"),
   SHOW_APPLICATION_WIZARD("show_application_wizard"),
   SHOW_LANGUAGE_WIZARD("show_language_wizard"),
-  SHOW_WALLET_DETAILS_WIZARD("show_wallet_details_wizard"),
+  SHOW_EDIT_WALLET_WIZARD("show_edit_wallet_wizard"),
   SHOW_CHANGE_PASSWORD_WIZARD("show_change_password_wizard"),
   SHOW_VERIFY_NETWORK_WIZARD("show_verify_network_wizard"),
   SHOW_REPAIR_WALLET_WIZARD("show_repair_wallet_wizard"),

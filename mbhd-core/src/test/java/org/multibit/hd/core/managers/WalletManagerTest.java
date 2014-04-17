@@ -27,9 +27,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletIdTest;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.services.CoreServices;
 
 import java.io.File;
@@ -39,7 +39,6 @@ import java.util.*;
 
 import static junit.framework.TestCase.fail;
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.multibit.hd.core.dto.WalletId.WALLET_ID_SEPARATOR;
 
 public class WalletManagerTest {
 
@@ -70,7 +69,7 @@ public class WalletManagerTest {
   public void testCreateProtobufEncryptedWallet() throws Exception {
 
     // Create a random temporary directory to writeContacts the wallets
-    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
+    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
     // TODO May not be required
     // WalletManager.INSTANCE.open(temporaryDirectory);
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
@@ -79,15 +78,10 @@ public class WalletManagerTest {
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
     WalletId walletId = new WalletId(seed1);
+    String walletRoot = WalletManager.createWalletRoot(walletId);
 
-    // TODO Refactor into a consistent "get absolute wallet file path" from WalletManager
-    String walletRootDirectoryPath = temporaryDirectory.getAbsolutePath()
-      + File.separator
-      + WalletManager.WALLET_DIRECTORY_PREFIX
-      + WALLET_ID_SEPARATOR
-      + walletId.toFormattedString();
-    assertThat((new File(walletRootDirectoryPath)).mkdir()).isTrue();
-    String newWalletFilename = walletRootDirectoryPath + File.separator + WalletManager.MBHD_WALLET_NAME;
+    File walletDirectory = WalletManager.getOrCreateWalletDirectory(temporaryDirectory, walletRoot);
+    File newWalletFile = new File(walletDirectory, WalletManager.MBHD_WALLET_NAME);
 
     KeyCrypterScrypt initialKeyCrypter = new KeyCrypterScrypt();
     System.out.println("testCreateProtobufEncryptedWallet - InitialKeyCrypter = " + initialKeyCrypter);
@@ -120,21 +114,20 @@ public class WalletManagerTest {
     newKey = newKey.encrypt(newWallet.getKeyCrypter(), newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
     newWallet.addKey(newKey);
 
-    // Get the keys of the wallet and check that all the keys are encrypted.
+    // Get the keys of the wallet and check that all the keys are encrypted
     Collection<ECKey> keys = newWallet.getKeys();
     for (ECKey key : keys) {
       assertThat(key.isEncrypted()).isTrue();
     }
 
-    // Save the wallet and read it back in again.
-    walletManager.saveWallet(newWallet, newWalletFilename);
+    // Save the wallet and read it back in again
+    walletManager.saveWallet(newWallet, newWalletFile);
 
-    // Check the wallet and wallet info file exists.
-    File newWalletFile = new File(newWalletFilename);
+    // Check the wallet and wallet info file exists
     assertThat(newWalletFile.exists()).isTrue();
 
     // Check wallet can be loaded and is still protobuf and encrypted.
-    WalletSummary rebornWalletSummary = walletManager.loadFromFile(newWalletFile,"password");
+    WalletSummary rebornWalletSummary = walletManager.loadFromWalletDirectory(newWalletFile, "password");
     assertThat(rebornWalletSummary).isNotNull();
     assertThat(rebornWalletSummary.getWallet().getBalance()).isEqualTo(BigInteger.ZERO);
     assertThat(rebornWalletSummary.getWallet().getKeys().size()).isEqualTo(2);
@@ -188,7 +181,7 @@ public class WalletManagerTest {
   public void testCreateWallet() throws Exception {
 
     // Create a random temporary directory
-    File temporaryDirectory1 = makeRandomTemporaryDirectory();
+    File temporaryDirectory1 = makeRandomTemporaryApplicationDirectory();
 
     WalletManager walletManager = WalletManager.INSTANCE;
     BackupManager.INSTANCE.initialise(temporaryDirectory1, null);
@@ -208,7 +201,7 @@ public class WalletManagerTest {
 
 
     // Create another wallet - it should have the same wallet id and the private key should be the same
-    File temporaryDirectory2 = makeRandomTemporaryDirectory();
+    File temporaryDirectory2 = makeRandomTemporaryApplicationDirectory();
     BackupManager.INSTANCE.initialise(temporaryDirectory2, null);
 
     WalletSummary walletSummary2 = walletManager.getOrCreateWalletSummary(temporaryDirectory2, seed, "password");
@@ -239,7 +232,7 @@ public class WalletManagerTest {
   public void testFindWalletDirectories() throws Exception {
 
     // Create a random temporary directory
-    File temporaryDirectory = makeRandomTemporaryDirectory();
+    File temporaryDirectory = makeRandomTemporaryApplicationDirectory();
 
     String walletPath1 = makeDirectory(temporaryDirectory, WALLET_DIRECTORY_1);
     String walletPath2 = makeDirectory(temporaryDirectory, WALLET_DIRECTORY_2);
@@ -259,7 +252,7 @@ public class WalletManagerTest {
   public void testFindWallets() throws Exception {
 
     // Create a random temporary directory
-    File temporaryDirectory = makeRandomTemporaryDirectory();
+    File temporaryDirectory = makeRandomTemporaryApplicationDirectory();
 
     String walletPath1 = makeDirectory(temporaryDirectory, WALLET_DIRECTORY_1);
     String walletPath2 = makeDirectory(temporaryDirectory, WALLET_DIRECTORY_2);
@@ -291,7 +284,13 @@ public class WalletManagerTest {
 
   }
 
-  public static File makeRandomTemporaryDirectory() throws IOException {
+  /**
+   *
+   * @return A random temporary directory suitable for use as an application directory
+   *
+   * @throws IOException If something goes wrong
+   */
+  public static File makeRandomTemporaryApplicationDirectory() throws IOException {
 
     File temporaryFile = File.createTempFile("nothing", "nothing");
     temporaryFile.deleteOnExit();

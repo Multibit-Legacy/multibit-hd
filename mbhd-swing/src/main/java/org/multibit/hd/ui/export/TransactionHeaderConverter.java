@@ -28,7 +28,7 @@ public class TransactionHeaderConverter implements CSVEntryConverter<Transaction
     columns[3] = Languages.safeText(MessageKey.DESCRIPTION);
 
    // Note.
-    columns[4] = Languages.safeText(MessageKey.NOTES);
+    columns[4] = Languages.safeText(MessageKey.PRIVATE_NOTES);
 
     // Amount in BTC.
     columns[5] = Languages.safeText(MessageKey.AMOUNT) + " "  + Configurations.currentConfiguration.getBitcoin().getBitcoinSymbol();

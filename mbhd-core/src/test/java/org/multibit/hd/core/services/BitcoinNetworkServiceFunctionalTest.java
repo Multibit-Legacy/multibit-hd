@@ -95,7 +95,7 @@ public class BitcoinNetworkServiceFunctionalTest {
   public void testSyncSingleWallet() throws Exception {
 
     // Create a random temporary directory and use it for wallet storage
-    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
+    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
 
     // TODO Consider if this needs to be called here
     //walletManager.open(temporaryDirectory, walletId, "password");
@@ -136,7 +136,7 @@ public class BitcoinNetworkServiceFunctionalTest {
   public void testSendBetweenTwoRealWallets() throws Exception {
 
     // Create a random temporary directory to writeContacts the wallets
-    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryDirectory();
+    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
     // TODO Is this just expecting the application data directory to be set?
 //    walletManager.open(temporaryDirectory);
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
