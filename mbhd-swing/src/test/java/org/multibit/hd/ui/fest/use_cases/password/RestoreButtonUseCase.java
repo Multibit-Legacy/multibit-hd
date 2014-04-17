@@ -1,6 +1,7 @@
-package org.multibit.hd.ui.fest.use_cases;
+package org.multibit.hd.ui.fest.use_cases.password;
 
 import org.fest.swing.fixture.FrameFixture;
+import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
 /**
