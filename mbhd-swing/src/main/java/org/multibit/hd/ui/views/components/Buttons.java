@@ -61,6 +61,9 @@ public class Buttons {
 
     JButton button = newButton(action);
 
+    // Ensure FEST can reference the button
+    button.setName(key.name().toLowerCase());
+
     button.setText(Languages.safeText(key, values));
 
     // TODO Accessibility API - append _ACCESSIBILITY to .name() ?

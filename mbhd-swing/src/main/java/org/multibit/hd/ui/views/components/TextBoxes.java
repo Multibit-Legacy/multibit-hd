@@ -260,6 +260,7 @@ public class TextBoxes {
   public static JPasswordField newPassword() {
 
     JPasswordField passwordField = new JPasswordField(MultiBitUI.PASSWORD_LENGTH);
+    passwordField.setName("password");
 
     // Provide a consistent echo character across all components
     passwordField.setEchoChar(getPasswordEchoChar());
