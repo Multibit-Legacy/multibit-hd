@@ -93,18 +93,73 @@ public class SecureFiles {
    * @param directory The directory to verify or create
    *
    * @return The directory
-   * TODO (GR) Replace with Guava or NIO equivalent
+   *
+   * @throws java.lang.IllegalStateException If the file could not be created
    */
   public static File verifyOrCreateDirectory(File directory) {
 
     if (!directory.exists()) {
-      Preconditions.checkState(directory.mkdir(), "Could not create the directory of '" + directory + "'");
+      Preconditions.checkState(directory.mkdirs(), "Could not create directory: '" + directory + "'");
     }
 
-    Preconditions.checkState(directory.isDirectory(), "Incorrectly identified the directory of '" + directory + " as a file");
+    Preconditions.checkState(directory.isDirectory(), "Incorrectly identified the directory of '" + directory + " as a file.");
 
     return directory;
   }
 
+  /**
+   * @param parentDirectory The parent directory
+   * @param childDirectory  The child directory (will be created if absent)
+   *
+   * @return The child directory
+   *
+   * @throws java.lang.IllegalStateException If the file could not be created
+   */
+  public static File verifyOrCreateDirectory(File parentDirectory, String childDirectory) {
 
+    File directory = new File(parentDirectory, childDirectory);
+
+    log.debug("Attempting to create directory '{}'", directory.getAbsolutePath());
+
+    if (!directory.exists()) {
+      Preconditions.checkState(directory.mkdirs(), "Could not create directory: '" + directory + "'");
+    }
+
+    Preconditions.checkState(directory.isDirectory(), "Incorrectly identified the directory of '" + directory + " as a file.");
+
+    return directory;
+  }
+
+  /**
+   * <p>Use atomic file operations to create a file with all parent directories in place</p>
+   *
+   * @param parentDirectory The parent directory
+   * @param filename        The filename
+   *
+   * @return A File referring to the existent file
+   *
+   * @throws java.lang.IllegalStateException If the file could not be created
+   */
+  public static File verifyOrCreateFile(File parentDirectory, String filename) {
+
+    Preconditions.checkNotNull(parentDirectory, "'parentDirectory' must be present");
+    Preconditions.checkState(parentDirectory.isDirectory(), "'parentDirectory' must be a directory");
+
+    Preconditions.checkNotNull(filename, "'filename' must be present");
+
+    File file = new File(parentDirectory.getAbsolutePath() + "/" + filename);
+
+    if (!file.exists()) {
+      try {
+        Preconditions.checkState(file.createNewFile(), "Could not create file: '" + file.getAbsolutePath() + "'");
+      } catch (IOException e) {
+        throw new IllegalStateException(e);
+      }
+    }
+
+    Preconditions.checkState(file.isFile(), "Incorrectly identified the file of '" + file + " as a directory.");
+
+    return file;
+
+  }
 }

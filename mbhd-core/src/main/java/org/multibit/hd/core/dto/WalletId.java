@@ -108,9 +108,9 @@ public class WalletId {
 
   /**
    * Create a WalletId from a wallet filename - the filename is parsed into a walletId byte array
-   * The wallet filename should be the whole fire name e.g /herp/derp/mbhd-23bb865e-161bfefc-3020c418-66bf6f75-7fecdfcc/mbhd.wallet
+   * The wallet filename should be the whole file name e.g /herp/derp/mbhd-23bb865e-161bfefc-3020c418-66bf6f75-7fecdfcc/mbhd.wallet
    *
-   * @return WalletId
+   * @return The wallet ID
    */
   public static WalletId parseWalletFilename(String walletFilename) {
 

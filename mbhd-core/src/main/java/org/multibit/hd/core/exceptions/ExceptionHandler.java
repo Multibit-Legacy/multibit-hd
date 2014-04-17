@@ -1,5 +1,6 @@
 package org.multibit.hd.core.exceptions;
 
+import org.multibit.hd.core.events.CoreEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +47,10 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
 
     // TODO Replace this with a full-on reporting system
     JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+
+    // Safest option at this point is to shut down
+    CoreEvents.fireShutdownEvent();
+
   }
 
   @Override

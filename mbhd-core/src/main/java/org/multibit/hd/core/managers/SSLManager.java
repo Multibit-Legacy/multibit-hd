@@ -1,6 +1,7 @@
 package org.multibit.hd.core.managers;
 
 import com.google.common.io.Files;
+import org.multibit.hd.core.files.SecureFiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +56,7 @@ public enum SSLManager {
    */
   public void installMultiBitSSLCertificate(File applicationDirectory, String localTrustStoreName, boolean force) throws Exception {
 
-    final File appCacertsFile = new File(applicationDirectory, localTrustStoreName);
+    final File appCacertsFile = SecureFiles.verifyOrCreateFile(applicationDirectory, localTrustStoreName);
 
     // Attempt to load the key store
     if (!appCacertsFile.exists()) {

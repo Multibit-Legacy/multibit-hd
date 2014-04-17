@@ -41,10 +41,8 @@ public class BackupManagerTest {
   @Test
   public void testBackupWallet() throws IOException {
 
-    // Create a random temporary directory in which to writeContacts the wallet directory
-    File temporaryWalletParentDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
-
-    WalletManager walletManager = WalletManager.INSTANCE;
+    // Create a random temporary directory to act as the application directory containing wallets
+    File temporaryApplicationDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
 
     // Create a random temporary directory in which to story the cloudBackups
     File temporaryBackupDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
@@ -52,12 +50,12 @@ public class BackupManagerTest {
     BackupManager backupManager = BackupManager.INSTANCE;
 
     // Initialise the backupManager to point at the temporaryBackupDirectory
-    backupManager.initialise(temporaryWalletParentDirectory, temporaryBackupDirectory);
+    backupManager.initialise(temporaryApplicationDirectory, temporaryBackupDirectory);
 
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
 
-    WalletSummary walletSummary = walletManager.getOrCreateWalletSummary(temporaryWalletParentDirectory, seed, "password");
+    WalletSummary walletSummary = WalletManager.INSTANCE.getOrCreateWalletSummary(temporaryApplicationDirectory, seed, "password");
 
     // Check there are initially a single wallet backup for the wallet id of the created wallet
     List<BackupSummary> localBackups = BackupManager.INSTANCE.getLocalZipBackups(walletSummary.getWalletId());
@@ -90,10 +88,9 @@ public class BackupManagerTest {
     assertThat(walletSummary.getWalletId()).isEqualTo(recreatedWalletId);
 
     // Open
-
-    String walletFilename = WalletManager.getOrCreateWalletDirectory(temporaryWalletParentDirectory, WalletManager.createWalletRoot(recreatedWalletId)
-    ) + File.separator + WalletManager.MBHD_WALLET_NAME;
-    WalletSummary recreatedWalletSummary = walletManager.loadFromWalletDirectory(new File(walletFilename), "password");
+    String walletRoot = WalletManager.createWalletRoot(recreatedWalletId);
+    File walletDirectory = WalletManager.getOrCreateWalletDirectory(temporaryApplicationDirectory, walletRoot);
+    WalletSummary recreatedWalletSummary = WalletManager.INSTANCE.loadFromWalletDirectory(walletDirectory, "password");
 
     // Check there is the same key in the original wallet as in the recreated one
     assertThat(localBackups).isNotNull();
@@ -103,4 +100,3 @@ public class BackupManagerTest {
 
   }
 }
-

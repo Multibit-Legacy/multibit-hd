@@ -56,6 +56,7 @@ public class PersistentContactService implements ContactService {
    * <p>Create a ContactService for a Wallet with the given walletId</p>
    *
    * <p>Reduced visibility constructor to prevent accidental instance creation outside of CoreServices.</p>
+   *
    */
   PersistentContactService(WalletId walletId) {
 
@@ -127,7 +128,7 @@ public class PersistentContactService implements ContactService {
   @Override
   public List<Contact> filterContactsByBitcoinAddress(Address address) {
 
-    Preconditions.checkNotNull(address,"'address' must be present");
+    Preconditions.checkNotNull(address, "'address' must be present");
 
     String queryAddress = address.toString();
 

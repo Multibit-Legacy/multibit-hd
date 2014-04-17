@@ -22,7 +22,6 @@ import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.store.Payments;
 import org.multibit.hd.core.store.PaymentsProtobufSerializer;
 import org.multibit.hd.core.store.TransactionInfo;
-import org.multibit.hd.core.utils.FileUtils;
 import org.multibit.hd.core.utils.Satoshis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -7,14 +7,12 @@ import org.joda.money.CurrencyUnit;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.managers.WalletManagerTest;
-import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
-import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -24,8 +22,6 @@ import java.util.Collection;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class WalletServiceTest {
-
-  private static final Logger log = LoggerFactory.getLogger(WalletServiceTest.class);
 
   private WalletService walletService;
 
@@ -43,8 +39,6 @@ public class WalletServiceTest {
     byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
     WalletId walletId = new WalletId(seed1);
 
-    // TODO May not be required
-    // WalletManager.INSTANCE.open(temporaryDirectory);
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
     WalletSummary walletSummary = WalletManager.INSTANCE.getOrCreateWalletSummary(temporaryDirectory, seed1, PASSWORD);
 

@@ -30,10 +30,12 @@ public class InstallationManager {
 
   /**
    * @return A reference to the configuration file (creating an empty file if necessary)
+   *
+   * @throws java.io.IOException If the file could not be created
    */
-  public static File getOrCreateConfigurationFile() {
+  public static File getOrCreateConfigurationFile() throws IOException {
 
-    return new File(getOrCreateApplicationDataDirectory(), MBHD_CONFIGURATION_FILE);
+    return SecureFiles.verifyOrCreateFile(getOrCreateApplicationDataDirectory(), MBHD_CONFIGURATION_FILE);
 
   }
 

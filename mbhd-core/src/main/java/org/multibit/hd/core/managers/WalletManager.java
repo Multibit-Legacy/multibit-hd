@@ -20,6 +20,7 @@ import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.exceptions.WalletSaveException;
 import org.multibit.hd.core.exceptions.WalletVersionException;
+import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ import java.io.*;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import static org.multibit.hd.core.dto.WalletId.WALLET_ID_SEPARATOR;
 import static org.multibit.hd.core.dto.WalletId.parseWalletFilename;
@@ -102,7 +104,7 @@ public enum WalletManager implements WalletEventListener {
 
   // The format of the wallet directories is WALLET_DIRECTORY_PREFIX + a wallet id.
   // A walletid is 5 groups of 4 bytes in lowercase hex, with a "-' separator e.g. mbhd-11111111-22222222-33333333-44444444-55555555
-  public static final String REGEX_FOR_WALLET_DIRECTORY = "^"
+  private static final String REGEX_FOR_WALLET_DIRECTORY = "^"
     + WALLET_DIRECTORY_PREFIX
     + WALLET_ID_SEPARATOR
     + "[0-9a-f]{8}"
@@ -114,6 +116,7 @@ public enum WalletManager implements WalletEventListener {
     + "[0-9a-f]{8}"
     + WALLET_ID_SEPARATOR
     + "[0-9a-f]{8}$";
+  private static final Pattern walletDirectoryPattern = Pattern.compile(REGEX_FOR_WALLET_DIRECTORY);
 
   /**
    * The wallet version number for protobuf encrypted wallets - compatible with MultiBit
@@ -157,11 +160,12 @@ public enum WalletManager implements WalletEventListener {
       // Match the wallet directory to the wallet data
       for (File walletDirectory : walletDirectories) {
 
+        checkWalletDirectory(walletDirectory);
+
         String walletDirectoryPath = walletDirectory.getAbsolutePath();
         if (walletDirectoryPath.contains(walletIdPath)) {
           // Found the required wallet directory - attempt to open the wallet
-          String walletFilename = walletDirectory + File.separator + MBHD_WALLET_NAME;
-          WalletSummary walletSummary = loadFromWalletDirectory(new File(walletFilename), password);
+          WalletSummary walletSummary = loadFromWalletDirectory(walletDirectory, password);
           currentWalletSummary = Optional.of(walletSummary);
         }
 
@@ -224,12 +228,15 @@ public enum WalletManager implements WalletEventListener {
     String walletRoot = createWalletRoot(walletId);
 
     final File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
-    final File walletFile = new File(walletDirectory, MBHD_WALLET_NAME);
+
+    checkWalletDirectory(walletDirectory);
+
+    final File walletFile = new File(walletDirectory.getAbsolutePath() + "/" + MBHD_WALLET_NAME);
 
     if (walletFile.exists()) {
 
       // There is already a wallet created with this root - if so load it and return that
-      walletSummaryToReturn = loadFromWalletDirectory(walletFile, password);
+      walletSummaryToReturn = loadFromWalletDirectory(walletDirectory, password);
       if (Configurations.currentConfiguration != null) {
         Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
       }
@@ -343,17 +350,19 @@ public enum WalletManager implements WalletEventListener {
 
     Preconditions.checkNotNull(walletDirectory, "'walletDirectory' must be present");
     Preconditions.checkNotNull(password, "'password' must be present");
-
-    String walletFilename = walletDirectory.getAbsolutePath();
-
-    WalletId walletId = parseWalletFilename(walletFilename);
+    checkWalletDirectory(walletDirectory);
 
     try {
-      if (isWalletSerialised(walletDirectory)) {
+
+      File walletFile = SecureFiles.verifyOrCreateFile(walletDirectory, MBHD_WALLET_NAME);
+
+      WalletId walletId = parseWalletFilename(walletFile.getAbsolutePath());
+
+      if (isWalletSerialised(walletFile)) {
         // Serialised wallets are no longer supported.
         throw new WalletLoadException(
           "Could not load wallet '"
-            + walletFilename
+            + walletFile
             + "'. Serialized wallets are no longer supported."
         );
       }
@@ -361,7 +370,7 @@ public enum WalletManager implements WalletEventListener {
       final Wallet wallet;
 
       try (
-        FileInputStream fileInputStream = new FileInputStream(walletDirectory);
+        FileInputStream fileInputStream = new FileInputStream(walletFile);
         InputStream stream = new BufferedInputStream(fileInputStream)
       ) {
 
@@ -371,7 +380,6 @@ public enum WalletManager implements WalletEventListener {
         wallet.addExtension(new SendFeeDtoWalletExtension());
         wallet.addExtension(new MatcherResponseWalletExtension());
         new WalletProtobufSerializer().readWallet(walletProto, wallet);
-
 
         log.debug("Wallet at read in from file:\n" + wallet.toString());
 
@@ -383,7 +391,9 @@ public enum WalletManager implements WalletEventListener {
         throw new WalletLoadException(e.getMessage(), e);
       }
 
-      WalletSummary walletSummary = new WalletSummary(walletId, wallet);
+      // Create the wallet summary with its wallet
+      WalletSummary walletSummary = getOrCreateWalletSummary(walletDirectory, walletId);
+      walletSummary.setWallet(wallet);
       setCurrentWalletSummary(walletSummary);
 
       // Set up auto-save on the wallet.
@@ -397,8 +407,6 @@ public enum WalletManager implements WalletEventListener {
       // We want this to propagate out as is
       throw wve;
     } catch (Exception e) {
-      // TODO Consider the ExceptionHandler
-      log.error(e.getMessage(), e);
       throw new WalletLoadException(e.getMessage(), e);
     }
   }
@@ -409,9 +417,11 @@ public enum WalletManager implements WalletEventListener {
    *
    * @param wallet     The  wallet to save
    * @param walletFile The location to save the wallet
-   *
    */
   public void saveWallet(Wallet wallet, File walletFile) {
+
+    Preconditions.checkNotNull(wallet, "'wallet' must be present");
+    Preconditions.checkNotNull(walletFile, "'walletFile' must be present");
 
     // Save the wallet file
     try (FileOutputStream fis = new FileOutputStream(walletFile)) {
@@ -443,6 +453,9 @@ public enum WalletManager implements WalletEventListener {
    * @return true if the wallet file specified is serialised (this format is no longer supported)
    */
   private boolean isWalletSerialised(File walletFile) {
+
+    Preconditions.checkNotNull(walletFile, "'walletFile' must be present");
+    Preconditions.checkState(walletFile.isFile(), "'walletFile' must be a file");
 
     boolean isWalletSerialised = false;
     InputStream stream = null;
@@ -488,18 +501,16 @@ public enum WalletManager implements WalletEventListener {
   // TODO (GR) Refactor this to take a WalletId and infer the prefix to avoid info leak
   public static File getOrCreateWalletDirectory(File applicationDataDirectory, String walletRoot) {
 
-    File walletDirectory = new File(applicationDataDirectory, walletRoot);
+    File walletDirectory = SecureFiles.verifyOrCreateDirectory(applicationDataDirectory, walletRoot);
+
+    checkWalletDirectory(walletDirectory);
 
     if (!walletDirectory.exists()) {
       // Create the wallet directory
-      if (!walletDirectory.mkdir()) {
-        throw new IllegalStateException("Could not create missing wallet directory '" + walletRoot + "'");
-      }
+      Preconditions.checkState(walletDirectory.mkdir(), "Could not create missing wallet directory '" + walletRoot + "'");
     }
 
-    if (!walletDirectory.isDirectory()) {
-      throw new IllegalStateException("Wallet directory '" + walletRoot + "' is not actually a directory");
-    }
+    Preconditions.checkState(walletDirectory.isDirectory(), "'walletDirectory' must be a directory");
 
     return walletDirectory;
   }
@@ -555,17 +566,7 @@ public enum WalletManager implements WalletEventListener {
 
           // The name matches so process it
           WalletId walletId = new WalletId(directoryName.substring(MBHD_WALLET_PREFIX.length() + 1));
-
-          Optional<WalletSummary> walletSummaryOptional = readWalletSummary(walletDirectory);
-          final WalletSummary walletSummary;
-          if (walletSummaryOptional.isPresent()) {
-            walletSummary = walletSummaryOptional.get();
-          } else {
-            walletSummary = new WalletSummary();
-            walletSummary.setName("Wallet");
-            walletSummary.setNotes(directoryName);
-          }
-          walletSummary.setWalletId(walletId);
+          WalletSummary walletSummary = getOrCreateWalletSummary(walletDirectory, walletId);
 
           // Check if the wallet root is present and matches the file name
           if (walletRoot.isPresent() && directoryName.equals(walletRoot.get())) {
@@ -680,19 +681,51 @@ public enum WalletManager implements WalletEventListener {
   /**
    * @param walletDirectory The wallet directory to read
    *
-   * @return The Wallet Summary or absent
+   * @return The wallet summary if present, or a default if not
    */
-  public static Optional<WalletSummary> readWalletSummary(File walletDirectory) {
+  public static WalletSummary getOrCreateWalletSummary(File walletDirectory, WalletId walletId) {
 
-    Optional<WalletSummary> walletSummary;
-    try (InputStream is = new FileInputStream(new File(walletDirectory, MBHD_SUMMARY_NAME))) {
-      // Load configuration (providing a default if none exists)
-      walletSummary = Configurations.readConfiguration(is, WalletSummary.class);
-    } catch (IOException e) {
-      walletSummary = Optional.absent();
+    checkWalletDirectory(walletDirectory);
+
+    Optional<WalletSummary> walletSummaryOptional = Optional.absent();
+
+    File walletSummaryFile = new File(walletDirectory.getAbsolutePath() + "/" + MBHD_SUMMARY_NAME);
+    if (walletSummaryFile.exists()) {
+      try (InputStream is = new FileInputStream(walletSummaryFile)) {
+        // Load configuration (providing a default if none exists)
+        walletSummaryOptional = Configurations.readConfiguration(is, WalletSummary.class);
+      } catch (IOException e) {
+        log.warn("Could not read wallet summary in '{}': {}. Creating default.", walletDirectory.getAbsolutePath(), e.getMessage());
+      }
     }
 
+    final WalletSummary walletSummary;
+    if (walletSummaryOptional.isPresent()) {
+      walletSummary = walletSummaryOptional.get();
+    } else {
+      walletSummary = new WalletSummary();
+      walletSummary.setName("Wallet");
+      walletSummary.setNotes(walletDirectory.getName());
+    }
+    walletSummary.setWalletId(walletId);
+
     return walletSummary;
+
+  }
+
+  /**
+   * @param walletDirectory The candidate wallet directory (e.g. "/User/example/Application Support/MultiBitHD/mbhd-11111111-22222222-33333333-44444444-55555555")
+   *
+   * @throws IllegalStateException If the wallet directory is malformed
+   */
+  private static void checkWalletDirectory(File walletDirectory) {
+
+    Preconditions.checkState(walletDirectory.isDirectory(), "'walletDirectory' must be a directory: '" + walletDirectory.getAbsolutePath() + "'");
+
+    // Use the pre-compiled regex
+    boolean result = walletDirectoryPattern.matcher(walletDirectory.getName()).matches();
+
+    Preconditions.checkState(result, "'walletDirectory' is not named correctly: '" + walletDirectory.getAbsolutePath() + "'");
 
   }
 }
