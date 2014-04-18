@@ -104,6 +104,9 @@ public class Labels {
 
     JLabel label = newLabel(key);
 
+    // Ensure FEST can find it
+    label.setName(key.getKey());
+
     // Font
     Font font = label.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE);
     label.setFont(font);
@@ -920,6 +923,9 @@ public class Labels {
       MessageKey.SEED_WARNING_NOTE_4,
       MessageKey.SEED_WARNING_NOTE_5,
     }, new Object[][]{});
+
+    // Allow FEST to find this
+    label.setName(MessageKey.SEED_WARNING_NOTE_1.getKey());
 
     // Allow for danger theme
     label.setForeground(Themes.currentTheme.dangerAlertText());

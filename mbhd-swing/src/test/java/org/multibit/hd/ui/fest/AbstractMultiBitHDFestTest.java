@@ -1,15 +1,16 @@
-package org.multibit.hd.ui;
+package org.multibit.hd.ui.fest;
 
 import org.fest.swing.edt.FailOnThreadViolationRepaintManager;
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiQuery;
 import org.fest.swing.fixture.FrameFixture;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.InstallationManager;
-import org.multibit.hd.ui.fest.use_cases.welcome.CreateWalletSelectBackupLocationWalletUseCase;
-import org.multibit.hd.ui.fest.use_cases.welcome.WelcomeSelectLanguageUseCase;
-import org.multibit.hd.ui.fest.use_cases.welcome.WelcomeSelectWalletUseCase;
+import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.views.MainView;
 
 import java.io.File;
@@ -17,18 +18,17 @@ import java.io.File;
 import static org.fest.assertions.Fail.fail;
 
 /**
- * <p>FEST Swing UI test to provide functional testing of application:</p>
+ * <p>Abstract base class to provide the following to functional tests:</p>
  * <ul>
- * <li></li>
+ * <li>Access to standard startup</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-@Ignore
-public class MultiBitHDTest {
+public abstract class AbstractMultiBitHDFestTest {
 
-  private FrameFixture window;
+  protected FrameFixture window;
 
   @BeforeClass
   public static void setUpOnce() throws Exception {
@@ -78,12 +78,6 @@ public class MultiBitHDTest {
   }
 
   @Test
-  public void welcomeWizard_createWallet() {
-
-    new WelcomeSelectLanguageUseCase(window).execute();
-    new WelcomeSelectWalletUseCase(window).execute();
-    new CreateWalletSelectBackupLocationWalletUseCase(window).execute();
-
-  }
+  public abstract void executeUseCases();
 
 }

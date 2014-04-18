@@ -88,7 +88,7 @@ public class MultiBitHD {
    * <li>Bitcoin network service</li>
    * </ul>
    */
-  static boolean initialiseUIControllers(String[] args) {
+  public static boolean initialiseUIControllers(String[] args) {
 
     // Determine if another instance is running and shutdown if this is the case
     BitcoinURIListeningService bitcoinURIListeningService = new BitcoinURIListeningService(args);
@@ -117,7 +117,7 @@ public class MultiBitHD {
   /**
    * <p>Initialise the JVM. This occurs before anything else is called.</p>
    */
-  static void initialiseJVM() throws Exception {
+  public static void initialiseJVM() throws Exception {
 
     log.debug("Initialising JVM...");
 
@@ -161,7 +161,7 @@ public class MultiBitHD {
   /**
    * <p>Initialise the platform-specific services</p>
    */
-  static void initialiseGenericApp() {
+  public static void initialiseGenericApp() {
 
     GenericApplicationSpecification specification = new GenericApplicationSpecification();
     specification.getOpenURIEventListeners().add(mainController);
@@ -178,7 +178,7 @@ public class MultiBitHD {
    *
    * @param args The command line arguments
    */
-  static void initialiseCore(String[] args) {
+  public static void initialiseCore(String[] args) {
 
     log.debug("Initialising Core...");
 
@@ -203,7 +203,7 @@ public class MultiBitHD {
    * <p>Once the UI renders, control passes to the <code>MainController</code> to
    * respond to the wizard close event which will trigger ongoing initialisation.</p>
    */
-  static MainView initialiseUIViews() {
+  public static MainView initialiseUIViews() {
 
     log.debug("Initialising UI...");
 

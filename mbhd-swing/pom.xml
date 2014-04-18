@@ -117,24 +117,6 @@
       <version>1.6</version>
     </dependency>
 
-    <!-- FEST for Swing UI testing -->
-    <dependency>
-      <groupId>org.easytesting</groupId>
-      <artifactId>fest-swing</artifactId>
-      <version>1.2.1</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.easytesting</groupId>
-          <artifactId>fest-assert-core</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.easytesting</groupId>
-          <artifactId>fest-util</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
   </dependencies>
 
 </project>

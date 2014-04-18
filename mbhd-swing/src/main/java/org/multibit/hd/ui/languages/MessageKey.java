@@ -34,6 +34,7 @@ public enum MessageKey {
   EDIT("edit"),
   DELETE("delete"),
   RESTORE("restore"),
+  SEARCH("search"),
 
   // Nouns
 
@@ -45,6 +46,7 @@ public enum MessageKey {
   NONE("none"),
   ERROR("error"),
   DEFAULT("default"),
+  QR_CODE("qr_code"),
 
   // Adjectives
   LEADING("leading"),
@@ -211,6 +213,7 @@ public enum MessageKey {
   EXCHANGE_FIAT_RATE_WITH_PROVIDER("exchange_fiat_rate_with_provider"),
   SELECT_LANGUAGE("select_language"),
   SEED_SIZE("seed_size"),
+  SEED_PHRASE("seed_phrase"),
   TIMESTAMP("timestamp"),
   MULTI_EDIT_NOTE("multi_edit_note"),
 

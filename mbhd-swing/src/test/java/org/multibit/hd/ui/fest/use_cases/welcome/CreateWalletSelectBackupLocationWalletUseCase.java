@@ -43,6 +43,13 @@ public class CreateWalletSelectBackupLocationWalletUseCase extends AbstractFestU
       .requireVisible()
       .cancel();
 
+    // OK to proceed
+    window
+      .button(MessageKey.NEXT.getKey())
+      .requireVisible()
+      .requireEnabled()
+      .click();
+
   }
 
 }

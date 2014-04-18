@@ -4,6 +4,7 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.borders.TextBubbleBorder;
 import org.multibit.hd.ui.views.components.text_fields.FormattedDecimalField;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -87,7 +88,12 @@ public class TextBoxes {
    */
   public static JTextField newEnterSearch() {
 
-    return newTextField(60);
+    JTextField textField = newTextField(60);
+
+    // Ensure FEST can find this
+    textField.setName(MessageKey.SEARCH.getKey());
+
+    return textField;
   }
 
   /**
@@ -95,7 +101,12 @@ public class TextBoxes {
    */
   public static JTextField newSelectFile() {
 
-    return newTextField(60);
+    JTextField textField = newTextField(60);
+
+    // Ensure FEST can find this
+    textField.setName(MessageKey.SELECT_FILE.getKey());
+
+    return textField;
   }
 
   /**
@@ -106,6 +117,10 @@ public class TextBoxes {
   public static JTextField newDisplaySeedTimestamp(String seedTimestamp) {
 
     JTextField textField = newReadOnlyTextField(20);
+
+    // Ensure FEST can find this
+    textField.setName(MessageKey.TIMESTAMP.getKey());
+
     textField.setText(seedTimestamp);
 
     return textField;
@@ -291,6 +306,7 @@ public class TextBoxes {
 
   /**
    * @param listener The document listener for detecting changes to the content
+   *
    * @return A new "Notes" text area
    */
   public static JTextArea newEnterNotes(DocumentListener listener, int width) {
@@ -360,6 +376,9 @@ public class TextBoxes {
 
     // Build off the enter seed phrase
     JTextArea textArea = newEnterSeedPhrase();
+
+    // Ensure FEST can find it
+    textArea.setName(MessageKey.SEED_PHRASE.getKey());
 
     // Prevent copy/paste operations
     textArea.setTransferHandler(null);

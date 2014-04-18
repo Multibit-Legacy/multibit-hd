@@ -339,6 +339,9 @@ public class Buttons {
 
     JButton button = newButton(action);
 
+    // Ensure FEST can find it
+    button.setName(MessageKey.REFRESH.getKey());
+
     AwesomeDecorator.applyIcon(AwesomeIcon.REFRESH, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
@@ -371,6 +374,9 @@ public class Buttons {
 
     JButton button = newButton(action);
 
+    // Ensure FEST can find it
+    button.setName(MessageKey.SHOW.getKey());
+
     AwesomeDecorator.applyIcon(AwesomeIcon.EYE, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
@@ -386,6 +392,9 @@ public class Buttons {
 
     JButton button = newButton(action);
 
+    // Ensure FEST can find it
+    button.setName(MessageKey.HIDE.getKey());
+
     AwesomeDecorator.applyIcon(AwesomeIcon.EYE_SLASH, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
@@ -400,6 +409,9 @@ public class Buttons {
   public static JButton newQRCodeButton(Action action) {
 
     JButton button = newButton(action);
+
+    // Ensure FEST can find it
+    button.setName(MessageKey.QR_CODE.getKey());
 
     // Require this background color to ensure people can find the QR code icon quickly
     NimbusDecorator.applyThemeColor(
