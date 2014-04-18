@@ -131,7 +131,12 @@ public class TextBoxes {
    */
   public static JTextField newEnterSeedTimestamp() {
 
-    return newTextField(20);
+    JTextField textField = newTextField(20);
+
+    // Ensure FEST can find it
+    textField.setName(MessageKey.TIMESTAMP.getKey());
+
+    return textField;
 
   }
 
@@ -144,6 +149,10 @@ public class TextBoxes {
   public static JTextField newEnterName(DocumentListener listener, boolean readOnly) {
 
     JTextField textField = readOnly ? newReadOnlyTextField(40) : newTextField(40);
+
+    // Ensure FEST can find it
+    textField.setName(MessageKey.NAME.getKey());
+
     textField.getDocument().addDocumentListener(listener);
 
     return textField;
@@ -403,6 +412,9 @@ public class TextBoxes {
 
     // Keep this in line with the PASSWORD_AREA constant
     JTextArea textArea = new JTextArea(doc, "", 6, MultiBitUI.PASSWORD_LENGTH);
+
+    // Ensure FEST can find it
+    textArea.setName(MessageKey.SEED_PHRASE.getKey());
 
     // Ensure TAB transfers focus
     AbstractAction transferFocus = new AbstractAction() {

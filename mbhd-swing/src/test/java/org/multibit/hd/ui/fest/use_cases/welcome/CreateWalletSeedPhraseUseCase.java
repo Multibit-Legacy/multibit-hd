@@ -5,6 +5,8 @@ import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 
+import java.util.Map;
+
 import static org.fest.assertions.Assertions.assertThat;
 
 /**
@@ -23,7 +25,9 @@ public class CreateWalletSeedPhraseUseCase extends AbstractFestUseCase {
   }
 
   @Override
-  public void execute() {
+  public void execute(Map<String, Object> parameters) {
+
+    assertThat(parameters).isNotNull();
 
     window
       .label(MessageKey.CREATE_WALLET_SEED_PHRASE_TITLE.getKey())
@@ -67,6 +71,18 @@ public class CreateWalletSeedPhraseUseCase extends AbstractFestUseCase {
     verifySeedPhraseHides();
     verifySeedPhraseRefreshes();
     verifySeedPhraseSizeChanges();
+
+    // Store data for carry over
+    parameters.put(MessageKey.SEED_PHRASE.getKey(),
+      window
+        .textBox(MessageKey.SEED_PHRASE.getKey())
+        .text()
+    );
+    parameters.put(MessageKey.TIMESTAMP.getKey(),
+      window
+        .textBox(MessageKey.TIMESTAMP.getKey())
+        .text()
+    );
 
     // OK to proceed
     window
@@ -138,7 +154,7 @@ public class CreateWalletSeedPhraseUseCase extends AbstractFestUseCase {
       .text();
 
     // Expect at least 24 extra characters (6 words * 4 minimum length)
-    assertThat(seedPhrase2.length()).isGreaterThan(seedPhrase1.length()+24);
+    assertThat(seedPhrase2.length()).isGreaterThan(seedPhrase1.length() + 24);
 
     window
       .comboBox(MessageKey.SEED_SIZE.getKey())
@@ -149,7 +165,7 @@ public class CreateWalletSeedPhraseUseCase extends AbstractFestUseCase {
       .text();
 
     // Expect at least 24 extra characters (6 words * 4 minimum length)
-    assertThat(seedPhrase3.length()).isGreaterThan(seedPhrase2.length()+24);
+    assertThat(seedPhrase3.length()).isGreaterThan(seedPhrase2.length() + 24);
 
   }
 

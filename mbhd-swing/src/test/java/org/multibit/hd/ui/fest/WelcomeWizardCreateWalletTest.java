@@ -1,10 +1,10 @@
 package org.multibit.hd.ui.fest;
 
+import com.google.common.collect.Maps;
 import org.junit.Ignore;
-import org.multibit.hd.ui.fest.use_cases.welcome.CreateWalletSeedPhraseUseCase;
-import org.multibit.hd.ui.fest.use_cases.welcome.CreateWalletSelectBackupLocationWalletUseCase;
-import org.multibit.hd.ui.fest.use_cases.welcome.WelcomeSelectLanguageUseCase;
-import org.multibit.hd.ui.fest.use_cases.welcome.WelcomeSelectWalletUseCase;
+import org.multibit.hd.ui.fest.use_cases.welcome.*;
+
+import java.util.Map;
 
 /**
  * <p>FEST Swing UI test to provide:</p>
@@ -21,10 +21,13 @@ public class WelcomeWizardCreateWalletTest extends AbstractMultiBitHDFestTest {
   @Override
   public void executeUseCases() {
 
-    new WelcomeSelectLanguageUseCase(window).execute();
-    new WelcomeSelectWalletUseCase(window).execute();
-    new CreateWalletSelectBackupLocationWalletUseCase(window).execute();
-    new CreateWalletSeedPhraseUseCase(window).execute();
+    Map<String,Object> parameters = Maps.newHashMap();
+
+    new WelcomeSelectLanguageUseCase(window).execute(parameters);
+    new WelcomeSelectWalletUseCase(window).execute(parameters);
+    new CreateWalletSelectBackupLocationWalletUseCase(window).execute(parameters);
+    new CreateWalletSeedPhraseUseCase(window).execute(parameters);
+    new CreateWalletConfirmSeedPhraseUseCase(window).execute(parameters);
 
   }
 }

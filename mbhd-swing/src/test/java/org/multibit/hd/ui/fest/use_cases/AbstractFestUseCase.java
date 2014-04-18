@@ -1,6 +1,9 @@
 package org.multibit.hd.ui.fest.use_cases;
 
+import org.fest.swing.core.matcher.JLabelMatcher;
 import org.fest.swing.fixture.FrameFixture;
+
+import java.util.Map;
 
 /**
  * <p>Abstract base class to provide the following to FEST use case testing:</p>
@@ -21,6 +24,15 @@ public abstract class AbstractFestUseCase {
 
   /**
    * Execute the use case
+   *
+   * @param parameters Any parameters that are useful to a particular use case (e.g. data carried between panels)
    */
-  public abstract void execute();
+  public abstract void execute(Map<String, Object> parameters);
+
+  public JLabelMatcher newNotShowingJLabelFixture(String name) {
+
+    return JLabelMatcher.withName(name);
+
+  }
+
 }

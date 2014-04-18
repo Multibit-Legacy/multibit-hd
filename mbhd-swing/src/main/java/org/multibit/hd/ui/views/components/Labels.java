@@ -173,6 +173,9 @@ public class Labels {
     // Wrap in HTML to ensure LTR/RTL and line breaks are respected
     JLabel label = new JLabel(HtmlUtils.localiseWithLineBreaks(lines));
 
+    // Ensure FEST can find it using the first key
+    label.setName(keys[0].getKey());
+
     // Theme
     label.setForeground(Themes.currentTheme.text());
 
@@ -517,9 +520,9 @@ public class Labels {
         normalFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, MultiBitUI.BALANCE_FEE_NORMAL_FONT_SIZE);
         break;
       case PLAIN:
-         largeFont = primaryBalanceLabel.getFont().deriveFont(Font.PLAIN, MultiBitUI.BALANCE_FEE_NORMAL_FONT_SIZE);
-         normalFont = primaryBalanceLabel.getFont().deriveFont(Font.PLAIN, MultiBitUI.BALANCE_FEE_NORMAL_FONT_SIZE);
-         break;
+        largeFont = primaryBalanceLabel.getFont().deriveFont(Font.PLAIN, MultiBitUI.BALANCE_FEE_NORMAL_FONT_SIZE);
+        normalFont = primaryBalanceLabel.getFont().deriveFont(Font.PLAIN, MultiBitUI.BALANCE_FEE_NORMAL_FONT_SIZE);
+        break;
       default:
         throw new IllegalStateException("Unknown style:" + style.name());
     }
@@ -1000,17 +1003,18 @@ public class Labels {
   }
 
   /**
-    * @return A new "export payments location" status label
-    */
-   public static JLabel newSelectExportPaymentsLocationNote() {
+   * @return A new "export payments location" status label
+   */
+  public static JLabel newSelectExportPaymentsLocationNote() {
 
-     return newNoteLabel(new MessageKey[]{
-             MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_1,
-             MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_2,
-             MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_3,
-             MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_4,
-     }, new Object[][]{});
-   }
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_1,
+      MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_2,
+      MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_3,
+      MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_4,
+    }, new Object[][]{});
+  }
+
   /**
    * @return A new "restore from backup" note
    */
