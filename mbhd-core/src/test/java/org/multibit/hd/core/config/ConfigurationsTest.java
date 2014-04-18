@@ -7,7 +7,7 @@ import org.multibit.hd.core.testing.FixtureAsserts;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class ConfigurationsTest {
 

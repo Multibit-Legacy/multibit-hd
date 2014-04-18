@@ -23,7 +23,7 @@ import org.multibit.hd.brit.utils.FileUtils;
 
 import java.io.File;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class MatchersTest {
 

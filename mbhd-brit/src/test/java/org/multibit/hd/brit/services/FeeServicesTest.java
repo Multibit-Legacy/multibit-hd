@@ -51,7 +51,7 @@ import java.util.Set;
 
 import static com.google.bitcoin.core.Utils.toNanoCoins;
 import static com.google.bitcoin.utils.TestUtils.createFakeTx;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class FeeServicesTest {
 

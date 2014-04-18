@@ -39,7 +39,7 @@ import java.math.BigInteger;
 import java.util.*;
 
 import static junit.framework.TestCase.fail;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class WalletManagerTest {
 

@@ -7,7 +7,7 @@ import com.google.common.io.Resources;
 
 import java.io.IOException;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * <p>Fixture assertions to provide the following to application:</p>

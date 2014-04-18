@@ -17,7 +17,7 @@ import org.multibit.hd.core.managers.WalletManagerTest;
 
 import java.io.File;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class CoreServicesTest {
 

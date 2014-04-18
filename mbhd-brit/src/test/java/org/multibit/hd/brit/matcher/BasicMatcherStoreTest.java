@@ -34,7 +34,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.Set;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class BasicMatcherStoreTest {
 
