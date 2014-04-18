@@ -8,15 +8,15 @@ import org.multibit.hd.ui.languages.MessageKey;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "select wallet"</li>
+ * <li>Verify the welcome wizard "select wallet" panel view</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class WelcomeSelectCreateWalletUseCase extends AbstractFestUseCase {
+public class WelcomeSelectWalletUseCase extends AbstractFestUseCase {
 
-  public WelcomeSelectCreateWalletUseCase(FrameFixture window) {
+  public WelcomeSelectWalletUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -52,9 +52,51 @@ public class WelcomeSelectCreateWalletUseCase extends AbstractFestUseCase {
       .requireVisible();
 
     window
+      .comboBox(MessageKey.SELECT_WALLET.getKey())
+      .requireDisabled()
+      .requireVisible();
+
+    // Verify interactions
+    verifySelectWalletEnabled();
+
+    // OK to proceed
+    window
       .button(MessageKey.NEXT.getKey())
       .click();
 
+  }
+
+  /**
+   * Verifies that the select wallet combo is only enabled occasionally
+   */
+  private void verifySelectWalletEnabled() {
+
+    window
+      .radioButton(MessageKey.RESTORE_WALLET.getKey())
+      .click();
+
+    window
+      .comboBox(MessageKey.SELECT_WALLET.getKey())
+      .requireDisabled()
+      .requireVisible();
+
+    window
+      .radioButton(MessageKey.SWITCH_WALLET.getKey())
+      .click();
+
+    window
+      .comboBox(MessageKey.SELECT_WALLET.getKey())
+      .requireEnabled()
+      .requireVisible();
+
+    window
+      .radioButton(MessageKey.CREATE_WALLET.getKey())
+      .click();
+
+    window
+      .comboBox(MessageKey.SELECT_WALLET.getKey())
+      .requireDisabled()
+      .requireVisible();
   }
 
 }

@@ -106,6 +106,8 @@ public class SelectBackupSummaryView extends AbstractComponentView<SelectBackupS
     if (selectedBackup != null) {
 
       getModel().get().setValue(selectedBackup);
+
+      // TODO Created and summary information
     }
   }
 

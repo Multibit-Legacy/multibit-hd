@@ -15,8 +15,6 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 
@@ -30,8 +28,6 @@ import javax.swing.*;
  *         
  */
 public class RestoreWalletSelectBackupPanelView extends AbstractWizardPanelView<WelcomeWizardModel, SelectBackupSummaryModel> {
-
-  private static final Logger log = LoggerFactory.getLogger(RestoreWalletSelectBackupPanelView.class);
 
   // Model
   private ModelAndView<SelectBackupSummaryModel, SelectBackupSummaryView> selectBackupMaV;

@@ -8,7 +8,7 @@ import org.multibit.hd.ui.languages.MessageKey;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "select language" panel</li>
+ * <li>Verify the welcome wizard "select language" panel view</li>
  * </ul>
  *
  * @since 0.0.1

@@ -95,7 +95,7 @@ public enum MessageKey {
 
   DISPLAY_LANGUAGE("display_language"),
 
-  DISPLAY_THEME("display_theme"),
+  SELECT_THEME("select_theme"),
 
   SELECT_DECIMAL_SEPARATOR("select_decimal_separator"),
   SELECT_GROUPING_SEPARATOR("select_grouping_separator"),

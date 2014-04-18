@@ -49,6 +49,7 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
 
     // Provide the initial list
     selectedWalletComboBox = ComboBoxes.newSelectWalletComboBox(this, model.getWalletList());
+    selectedWalletComboBox.setEnabled(false);
 
     // Create the labels
     descriptionLabel = Labels.newBlankLabel();

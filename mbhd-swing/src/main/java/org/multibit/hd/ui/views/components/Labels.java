@@ -369,7 +369,7 @@ public class Labels {
    */
   public static JLabel newSelectThemeLabel() {
 
-    return Labels.newLabel(MessageKey.DISPLAY_THEME);
+    return Labels.newLabel(MessageKey.SELECT_THEME);
 
   }
 

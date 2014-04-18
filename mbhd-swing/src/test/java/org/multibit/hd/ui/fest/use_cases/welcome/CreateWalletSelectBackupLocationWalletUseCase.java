@@ -8,15 +8,15 @@ import org.multibit.hd.ui.languages.MessageKey;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "select backup location"</li>
+ * <li>Verify the welcome wizard "select backup location" panel view</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class WelcomeSelectBackupLocationWalletUseCase extends AbstractFestUseCase {
+public class CreateWalletSelectBackupLocationWalletUseCase extends AbstractFestUseCase {
 
-  public WelcomeSelectBackupLocationWalletUseCase(FrameFixture window) {
+  public CreateWalletSelectBackupLocationWalletUseCase(FrameFixture window) {
     super(window);
   }
 
