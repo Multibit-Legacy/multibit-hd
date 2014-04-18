@@ -28,6 +28,7 @@ public class WelcomeWizardCreateWalletTest extends AbstractMultiBitHDFestTest {
     new CreateWalletSelectBackupLocationWalletUseCase(window).execute(parameters);
     new CreateWalletSeedPhraseUseCase(window).execute(parameters);
     new CreateWalletConfirmSeedPhraseUseCase(window).execute(parameters);
+    new CreateWalletCreatePasswordUseCase(window).execute(parameters);
 
   }
 }

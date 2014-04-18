@@ -284,7 +284,9 @@ public class TextBoxes {
   public static JPasswordField newPassword() {
 
     JPasswordField passwordField = new JPasswordField(MultiBitUI.PASSWORD_LENGTH);
-    passwordField.setName("password");
+
+    // Ensure FEST can find it
+    passwordField.setName(MessageKey.ENTER_PASSWORD.getKey());
 
     // Provide a consistent echo character across all components
     passwordField.setEchoChar(getPasswordEchoChar());
