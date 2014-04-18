@@ -4,15 +4,12 @@ import org.fest.swing.edt.FailOnThreadViolationRepaintManager;
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiQuery;
 import org.fest.swing.fixture.FrameFixture;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.ui.fest.use_cases.welcome.CreateWalletSelectBackupLocationWalletUseCase;
-import org.multibit.hd.ui.fest.use_cases.welcome.WelcomeSelectWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome.WelcomeSelectLanguageUseCase;
+import org.multibit.hd.ui.fest.use_cases.welcome.WelcomeSelectWalletUseCase;
 import org.multibit.hd.ui.views.MainView;
 
 import java.io.File;
@@ -20,17 +17,15 @@ import java.io.File;
 import static org.fest.assertions.Fail.fail;
 
 /**
- * <p>[Pattern] to provide the following to {@link Object}:</p>
+ * <p>FEST Swing UI test to provide functional testing of application:</p>
  * <ul>
  * <li></li>
  * </ul>
- * <p>Example:</p>
- * <pre>
- * </pre>
  *
  * @since 0.0.1
  *  
  */
+@Ignore
 public class MultiBitHDTest {
 
   private FrameFixture window;
