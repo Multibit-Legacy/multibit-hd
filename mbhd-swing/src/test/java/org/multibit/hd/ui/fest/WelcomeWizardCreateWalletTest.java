@@ -2,7 +2,7 @@ package org.multibit.hd.ui.fest;
 
 import com.google.common.collect.Maps;
 import org.junit.Ignore;
-import org.multibit.hd.ui.fest.use_cases.welcome.*;
+import org.multibit.hd.ui.fest.use_cases.create_wallet.*;
 
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fest.use_cases.welcome;
+package org.multibit.hd.ui.fest.use_cases.create_wallet;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
