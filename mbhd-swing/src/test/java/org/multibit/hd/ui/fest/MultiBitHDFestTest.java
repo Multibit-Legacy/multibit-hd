@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.ui.MultiBitHD;
+import org.multibit.hd.ui.fest.requirements.WelcomeWizardCreateWallet;
 import org.multibit.hd.ui.views.MainView;
 
 import java.io.File;
@@ -29,7 +30,7 @@ import static org.fest.assertions.Fail.fail;
  * @since 0.0.1
  *  
  */
-public abstract class AbstractMultiBitHDFestTest {
+public class MultiBitHDFestTest {
 
   protected FrameFixture window;
 
@@ -61,6 +62,26 @@ public abstract class AbstractMultiBitHDFestTest {
 
   }
 
+  /**
+   * @return A random temporary directory suitable for use as an application directory
+   *
+   * @throws java.io.IOException If something goes wrong
+   */
+  public static File makeRandomTemporaryApplicationDirectory() throws IOException {
+
+    File temporaryFile = File.createTempFile("nothing", "nothing");
+    temporaryFile.deleteOnExit();
+
+    File parentDirectory = temporaryFile.getParentFile();
+
+    File temporaryDirectory = new File(parentDirectory.getAbsolutePath() + File.separator + ("" + (new Random()).nextInt(1000000)));
+    assertThat(temporaryDirectory.mkdir()).isTrue();
+
+    temporaryDirectory.deleteOnExit();
+
+    return temporaryDirectory;
+  }
+
   @Before
   public void setUp() {
 
@@ -82,27 +103,19 @@ public abstract class AbstractMultiBitHDFestTest {
     window.cleanUp();
   }
 
-  @Test
-  public abstract void executeUseCases();
-
   /**
-   * @return A random temporary directory suitable for use as an application directory
-   *
-   * @throws java.io.IOException If something goes wrong
+   * The single overall test script to avoid multiple application restarts and ensure
+   * a particular order of requirements testing
    */
-  public static File makeRandomTemporaryApplicationDirectory() throws IOException {
+  @Test
+  public void verifyRequirements() {
 
-    File temporaryFile = File.createTempFile("nothing", "nothing");
-    temporaryFile.deleteOnExit();
+    // Start by creating a wallet through the welcome wizard
+    WelcomeWizardCreateWallet.verifyUsing(window);
 
-    File parentDirectory = temporaryFile.getParentFile();
+    // Explore the sidebar screens
+    //SidebarTreeScreens.verifyUsing(window);
 
-    File temporaryDirectory = new File(parentDirectory.getAbsolutePath() + File.separator + ("" + (new Random()).nextInt(1000000)));
-    assertThat(temporaryDirectory.mkdir()).isTrue();
-
-    temporaryDirectory.deleteOnExit();
-
-    return temporaryDirectory;
   }
 
 }

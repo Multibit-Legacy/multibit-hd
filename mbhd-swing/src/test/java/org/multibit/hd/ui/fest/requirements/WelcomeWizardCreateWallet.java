@@ -1,7 +1,7 @@
-package org.multibit.hd.ui.fest;
+package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
-import org.junit.Ignore;
+import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.create_wallet.*;
 
 import java.util.Map;
@@ -15,11 +15,9 @@ import java.util.Map;
  * @since 0.0.1
  *  
  */
-@Ignore
-public class WelcomeWizardCreateWalletTest extends AbstractMultiBitHDFestTest {
+public class WelcomeWizardCreateWallet {
 
-  @Override
-  public void executeUseCases() {
+  public static void verifyUsing(FrameFixture window) {
 
     Map<String,Object> parameters = Maps.newHashMap();
 
