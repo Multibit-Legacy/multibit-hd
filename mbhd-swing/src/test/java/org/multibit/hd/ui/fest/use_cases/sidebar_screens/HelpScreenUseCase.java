@@ -11,15 +11,15 @@ import static org.fest.assertions.Assertions.assertThat;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "contacts" sidebar screen</li>
+ * <li>Verify the "history" sidebar screen</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class ContactsScreenUseCase extends AbstractFestUseCase {
+public class HelpScreenUseCase extends AbstractFestUseCase {
 
-  public ContactsScreenUseCase(FrameFixture window) {
+  public HelpScreenUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -32,41 +32,26 @@ public class ContactsScreenUseCase extends AbstractFestUseCase {
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .requireVisible()
       .requireEnabled()
-      .selectRow(3);
+      .selectRow(4);
 
-    // Expect the Contacts screen to show
+    // Expect the Help screen to show
     window
-      .button(MessageKey.SEARCH.getKey())
+      .button(MessageKey.BACK.getKey())
+      .requireVisible()
+      .requireDisabled();
+
+    window
+      .button(MessageKey.FORWARD.getKey())
+      .requireVisible()
+      .requireDisabled();
+
+    window
+      .button(MessageKey.BROWSE.getKey())
       .requireVisible()
       .requireEnabled();
 
     window
-      .comboBox(MessageKey.CONTACTS.getKey())
-      .requireVisible()
-      .requireEnabled();
-
-    window
-      .button(MessageKey.ADD.getKey())
-      .requireVisible()
-      .requireEnabled();
-
-    window
-      .button(MessageKey.EDIT.getKey())
-      .requireVisible()
-      .requireEnabled();
-
-    window
-      .button(MessageKey.DELETE.getKey())
-      .requireVisible()
-      .requireEnabled();
-
-    window
-      .button(MessageKey.UNDO.getKey())
-      .requireVisible()
-      .requireEnabled();
-
-    window
-      .table(MessageKey.CONTACTS.getKey())
+      .scrollPane(MessageKey.HELP.getKey())
       .requireVisible()
       .requireEnabled();
 

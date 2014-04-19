@@ -158,6 +158,9 @@ public class ComboBoxes {
       Languages.safeText(MessageKey.NO)
     });
 
+    // Ensure FEST can find it
+    comboBox.setName(MessageKey.YES.getKey());
+
     comboBox.setEditable(false);
 
     comboBox.setSelectedIndex(selectYes ? 0 : 1);
@@ -181,6 +184,10 @@ public class ComboBoxes {
   public static JComboBox<String> newAlertSoundYesNoComboBox(ActionListener listener, boolean alertSound) {
 
     JComboBox<String> comboBox = newYesNoComboBox(listener, alertSound);
+
+    // Ensure FEST can find it
+    comboBox.setName(MessageKey.ALERT_SOUND.getKey());
+
     comboBox.setActionCommand(ALERT_SOUND_COMMAND);
 
     return comboBox;
@@ -195,6 +202,10 @@ public class ComboBoxes {
   public static JComboBox<String> newReceiveSoundYesNoComboBox(ActionListener listener, boolean receiveSound) {
 
     JComboBox<String> comboBox = newYesNoComboBox(listener, receiveSound);
+
+    // Ensure FEST can find it
+    comboBox.setName(MessageKey.RECEIVE_SOUND.getKey());
+
     comboBox.setActionCommand(RECEIVE_SOUND_COMMAND);
 
     return comboBox;
@@ -214,6 +225,9 @@ public class ComboBoxes {
 
     JComboBox<String> comboBox = newReadOnlyComboBox(items);
 
+    // Ensure FEST can find it
+    comboBox.setName(MessageKey.CONTACTS.getKey());
+
     // Add the listener at the end to avoid false events
     comboBox.addActionListener(listener);
 
@@ -228,7 +242,12 @@ public class ComboBoxes {
    */
   public static JComboBox<String> newHistoryCheckboxComboBox(ActionListener listener) {
 
-    return newContactsCheckboxComboBox(listener);
+    JComboBox<String> comboBox = newContactsCheckboxComboBox(listener);
+
+    // Ensure FEST can find it
+    comboBox.setName(MessageKey.HISTORY.getKey());
+
+    return comboBox;
 
   }
 
@@ -243,6 +262,7 @@ public class ComboBoxes {
     // Populate the combo box and declare a suitable renderer
     JComboBox<String> comboBox = newReadOnlyComboBox(LanguageKey.localisedNames());
 
+    // Ensure FEST can find it
     comboBox.setName(MessageKey.SELECT_LANGUAGE.getKey());
 
     comboBox.setRenderer(new LanguageListCellRenderer());
@@ -271,6 +291,7 @@ public class ComboBoxes {
     // Populate the combo box and declare a suitable renderer
     JComboBox<String> comboBox = newReadOnlyComboBox(ThemeKey.localisedNames());
 
+    // Ensure FEST can find it
     comboBox.setName(MessageKey.SELECT_THEME.getKey());
 
     // Can use the ordinal due to the declaration ordering
@@ -295,6 +316,7 @@ public class ComboBoxes {
     // Populate the combo box and declare a suitable renderer
     JComboBox<PaymentRequestData> comboBox = newReadOnlyComboBox(paymentRequestDataList.toArray(new PaymentRequestData[paymentRequestDataList.size()]));
 
+    // Ensure FEST can find it
     comboBox.setName(MessageKey.CHOOSE_PAYMENT_REQUEST.getKey());
 
     // Can use the ordinal due to the declaration ordering
@@ -321,6 +343,7 @@ public class ComboBoxes {
     String[] decimalSeparators = Languages.getCurrencySeparators(false);
     JComboBox<String> comboBox = newReadOnlyComboBox(decimalSeparators);
 
+    // Ensure FEST can find it
     comboBox.setName(MessageKey.SELECT_DECIMAL_SEPARATOR.getKey());
 
     // Determine the first matching separator
@@ -346,6 +369,7 @@ public class ComboBoxes {
     String[] groupingSeparators = Languages.getCurrencySeparators(true);
     JComboBox<String> comboBox = newReadOnlyComboBox(groupingSeparators);
 
+    // Ensure FEST can find it
     comboBox.setName(MessageKey.SELECT_GROUPING_SEPARATOR.getKey());
 
     // Determine the first matching separator
@@ -376,6 +400,7 @@ public class ComboBoxes {
     };
     JComboBox<String> comboBox = newReadOnlyComboBox(localSymbols);
 
+    // Ensure FEST can find it
     comboBox.setName(MessageKey.SELECT_LOCAL_SYMBOL.getKey());
 
     selectFirstMatch(comboBox, localSymbols, bitcoinConfiguration.getLocalCurrencySymbol());
@@ -401,6 +426,7 @@ public class ComboBoxes {
     // Order of insertion is important here
     JComboBox<BitcoinSymbol> comboBox = newReadOnlyComboBox(BitcoinSymbol.values());
 
+    // Ensure FEST can find it
     comboBox.setName(MessageKey.SELECT_BITCOIN_SYMBOL.getKey());
 
     comboBox.setEditable(false);
@@ -438,6 +464,7 @@ public class ComboBoxes {
     };
     JComboBox<String> comboBox = newReadOnlyComboBox(positions);
 
+    // Ensure FEST can find it
     comboBox.setName(MessageKey.SELECT_PLACEMENT.getKey());
 
     if (bitcoinConfiguration.isCurrencySymbolLeading()) {
@@ -464,6 +491,7 @@ public class ComboBoxes {
 
     JComboBox<Recipient> comboBox = newComboBox(filter.create());
 
+    // Ensure FEST can find it
     comboBox.setName(MessageKey.RECIPIENT.getKey());
 
     comboBox.setEditable(true);
@@ -500,6 +528,7 @@ public class ComboBoxes {
 
     JComboBox<BackupSummary> comboBox = newReadOnlyComboBox(backupSummaryArray);
 
+    // Ensure FEST can find it
     comboBox.setName(MessageKey.SELECT_BACKUP_NOTE_1.getKey());
 
     // Use a backup summary list cell renderer to ensure the correct fields are displayed
@@ -532,6 +561,7 @@ public class ComboBoxes {
 
     JComboBox<WalletSummary> comboBox = newReadOnlyComboBox(walletSummaryArray);
 
+    // Ensure FEST can find it
     comboBox.setName(MessageKey.SELECT_WALLET.getKey());
 
     // Use a wallet list cell renderer to ensure the correct fields are displayed
@@ -562,6 +592,7 @@ public class ComboBoxes {
     JComboBox<String> comboBox = newReadOnlyComboBox(allExchangeNames);
     comboBox.setMaximumRowCount(MultiBitUI.COMBOBOX_MAX_ROW_COUNT);
 
+    // Ensure FEST can find it
     comboBox.setName(MessageKey.EXCHANGE_RATE_PROVIDER.getKey());
 
     // Determine the selected index
@@ -591,6 +622,7 @@ public class ComboBoxes {
 
     final JComboBox<String> comboBox = newReadOnlyComboBox(new String[]{});
 
+    // Ensure FEST can find it
     comboBox.setName(MessageKey.SELECT_LOCAL_CURRENCY.getKey());
 
     // Get all the currencies available at the exchange
@@ -634,6 +666,7 @@ public class ComboBoxes {
       "24"
     });
 
+    // Ensure FEST can find it
     comboBox.setName(MessageKey.SEED_SIZE.getKey());
 
     comboBox.setSelectedIndex(0);

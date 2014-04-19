@@ -11,15 +11,15 @@ import static org.fest.assertions.Assertions.assertThat;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "contacts" sidebar screen</li>
+ * <li>Verify the "settings" sidebar screen</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class ContactsScreenUseCase extends AbstractFestUseCase {
+public class SettingsScreenUseCase extends AbstractFestUseCase {
 
-  public ContactsScreenUseCase(FrameFixture window) {
+  public SettingsScreenUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -32,41 +32,31 @@ public class ContactsScreenUseCase extends AbstractFestUseCase {
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .requireVisible()
       .requireEnabled()
-      .selectRow(3);
+      .selectRow(6);
 
-    // Expect the Contacts screen to show
+    // Expect the Settings screen to show
     window
-      .button(MessageKey.SEARCH.getKey())
+      .button(MessageKey.SHOW_LANGUAGE_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
 
     window
-      .comboBox(MessageKey.CONTACTS.getKey())
+      .button(MessageKey.SHOW_BITCOIN_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
 
     window
-      .button(MessageKey.ADD.getKey())
+      .button(MessageKey.SHOW_EXCHANGE_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
 
     window
-      .button(MessageKey.EDIT.getKey())
+      .button(MessageKey.SHOW_APPLICATION_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
 
     window
-      .button(MessageKey.DELETE.getKey())
-      .requireVisible()
-      .requireEnabled();
-
-    window
-      .button(MessageKey.UNDO.getKey())
-      .requireVisible()
-      .requireEnabled();
-
-    window
-      .table(MessageKey.CONTACTS.getKey())
+      .button(MessageKey.SHOW_SOUND_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
 

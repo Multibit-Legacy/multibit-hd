@@ -200,7 +200,12 @@ public class Panels {
       lightBoxPanel.get().close();
     }
 
-    allowFocus(Panels.applicationFrame, true);
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        allowFocus(Panels.applicationFrame, true);
+      }
+    });
 
     lightBoxPanel = Optional.absent();
 
@@ -506,7 +511,7 @@ public class Panels {
    * @param component  The component
    * @param allowFocus True if the components should be able to gain focus
    */
-  private static void allowFocus(Component component, boolean allowFocus) {
+  private static void allowFocus(final Component component, final boolean allowFocus) {
 
     // Limit the focus change to those components that could grab it
     if (component instanceof AbstractButton) {
@@ -532,6 +537,7 @@ public class Panels {
       }
 
     }
+
   }
 
 }
