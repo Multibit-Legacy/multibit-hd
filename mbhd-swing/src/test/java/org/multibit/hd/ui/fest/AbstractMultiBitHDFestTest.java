@@ -14,7 +14,10 @@ import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.views.MainView;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Random;
 
+import static org.fest.assertions.Assertions.assertThat;
 import static org.fest.assertions.Fail.fail;
 
 /**
@@ -35,8 +38,10 @@ public abstract class AbstractMultiBitHDFestTest {
     FailOnThreadViolationRepaintManager.install();
 
     // Ensure we start with an empty and disposable application data directory
-    File applicationDirectory = new File("target");
-    InstallationManager.currentApplicationDataDirectory = SecureFiles.verifyOrCreateDirectory(applicationDirectory);
+
+    // Create a random temporary directory to writeContacts the wallets
+    File temporaryDirectory = makeRandomTemporaryApplicationDirectory();
+    InstallationManager.currentApplicationDataDirectory = SecureFiles.verifyOrCreateDirectory(temporaryDirectory);
 
     // Prepare the JVM (Nimbus, system properties etc)
     MultiBitHD.initialiseJVM();
@@ -79,5 +84,25 @@ public abstract class AbstractMultiBitHDFestTest {
 
   @Test
   public abstract void executeUseCases();
+
+  /**
+   * @return A random temporary directory suitable for use as an application directory
+   *
+   * @throws java.io.IOException If something goes wrong
+   */
+  public static File makeRandomTemporaryApplicationDirectory() throws IOException {
+
+    File temporaryFile = File.createTempFile("nothing", "nothing");
+    temporaryFile.deleteOnExit();
+
+    File parentDirectory = temporaryFile.getParentFile();
+
+    File temporaryDirectory = new File(parentDirectory.getAbsolutePath() + File.separator + ("" + (new Random()).nextInt(1000000)));
+    assertThat(temporaryDirectory.mkdir()).isTrue();
+
+    temporaryDirectory.deleteOnExit();
+
+    return temporaryDirectory;
+  }
 
 }
