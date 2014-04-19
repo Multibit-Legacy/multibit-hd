@@ -176,7 +176,7 @@
         </configuration>
       </plugin>
 
-      <!-- Filter out functional tests by Maven (an IDE will run all tests including functional) -->
+      <!-- Filter out functional and FEST UI tests by Maven (an IDE will run all tests including functional) -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -184,6 +184,7 @@
         <configuration>
           <excludes>
             <exclude>**/*FunctionalTest.java</exclude>
+            <exclude>**/*MultiBitHDFestTest.java</exclude>
           </excludes>
         </configuration>
       </plugin>

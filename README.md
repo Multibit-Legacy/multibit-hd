@@ -130,3 +130,14 @@ We are currently working to the following timetable:
 
 The use cases are described here:
 https://docs.google.com/document/d/18qtE5lmRzB32Sc9Ii37GySJGLKx3VNypBkjnHbNjdik/edit?usp=drive_web
+
+### Automated requirements testing with FEST
+
+We use [Swing FEST](http://docs.codehaus.org/display/FEST/Swing+Module) to perform automated requirements testing of the user interface.
+
+This provides an ever-improving set of regression tests to ensure that new code does not break the existing work.
+
+The code is arranged as a single test that starts MultiBit HD with a random application directory. From that initial blank slate
+a wallet is created and the application is explored. You can run this manually by looking in `mbhd-swing/src/test/java/.../fest`.
+
+It is not intended to run as part of a Maven build.
