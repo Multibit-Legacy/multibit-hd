@@ -103,6 +103,10 @@ public class SidebarView {
     final JScrollPane sidebarPane = new JScrollPane();
 
     final JTree sidebarTree = new JTree(createSidebarTreeNodes());
+
+    // Ensure FEST can find it
+    sidebarTree.setName(MessageKey.SIDEBAR_TREE.getKey());
+
     sidebarTree.setShowsRootHandles(false);
     sidebarTree.setRootVisible(false);
 

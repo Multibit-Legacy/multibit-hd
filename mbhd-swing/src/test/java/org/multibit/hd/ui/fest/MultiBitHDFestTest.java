@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.ui.MultiBitHD;
+import org.multibit.hd.ui.fest.requirements.SidebarTreeScreens;
 import org.multibit.hd.ui.fest.requirements.WelcomeWizardCreateWallet;
 import org.multibit.hd.ui.views.MainView;
 
@@ -114,7 +115,7 @@ public class MultiBitHDFestTest {
     WelcomeWizardCreateWallet.verifyUsing(window);
 
     // Explore the sidebar screens
-    //SidebarTreeScreens.verifyUsing(window);
+    SidebarTreeScreens.verifyUsing(window);
 
   }
 
