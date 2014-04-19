@@ -66,7 +66,7 @@ public class WalletDetailView extends AbstractComponentView<WalletDetailModel> {
     panel.add(numberOfContactsLabel, "push,wrap");
 
     // Transactions
-    panel.add(Labels.newLabel(MessageKey.TRANSACTIONS));
+    panel.add(Labels.newLabel(MessageKey.PAYMENTS));
     numberOfTransactionsLabel = Labels.newValueLabel(String.valueOf(walletDetail.getNumberOfPayments()));
     panel.add(numberOfTransactionsLabel, "push,wrap");
 

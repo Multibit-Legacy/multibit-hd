@@ -35,6 +35,10 @@ public enum MessageKey {
   DELETE("delete"),
   RESTORE("restore"),
   SEARCH("search"),
+  BACK("back"),
+  FORWARD("forward"),
+  BROWSE("browse"),
+  PRINT("print"),
 
   // Nouns
 
@@ -119,7 +123,7 @@ public enum MessageKey {
   SIDEBAR_TREE("sidebar_tree"),
   SEND_OR_REQUEST("send_or_request"),
   CONTACTS("contacts"),
-  TRANSACTIONS("transactions"),
+  PAYMENTS("payments"),
   HISTORY("history"),
   PREFERENCES("preferences"),
   TOOLS("tools"),

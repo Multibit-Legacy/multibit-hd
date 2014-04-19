@@ -11,15 +11,15 @@ import static org.fest.assertions.Assertions.assertThat;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "send/request" sidebar screen</li>
+ * <li>Verify the "contacts" sidebar screen</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class SendRequestScreenUseCase extends AbstractFestUseCase {
+public class ContactsScreenUseCase extends AbstractFestUseCase {
 
-  public SendRequestScreenUseCase(FrameFixture window) {
+  public ContactsScreenUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -32,47 +32,36 @@ public class SendRequestScreenUseCase extends AbstractFestUseCase {
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .requireVisible()
       .requireEnabled()
-      .selectRow(0);
+      .selectRow(3);
 
-    // Expect the Send/Request screen to show
+    // Expect the Contacts screen to show
     window
-      .button(MessageKey.SEND.getKey())
+      .button(MessageKey.SEARCH.getKey())
       .requireVisible()
       .requireEnabled();
 
     window
-      .button(MessageKey.REQUEST.getKey())
-      .requireVisible()
-      .requireEnabled();
-
-    // Change the selection away from Send/Request
-    window
-      .tree(MessageKey.SIDEBAR_TREE.getKey())
-      .requireVisible()
-      .requireEnabled()
-      .selectRow(2);
-
-    // Expect the Contacts screen to show (no Send/Request showing)
-    window
-      .button(newNotShowingJButtonFixture(MessageKey.SEND.getKey()));
-
-    window
-      .button(newNotShowingJButtonFixture(MessageKey.REQUEST.getKey()));
-
-    window
-      .tree(MessageKey.SIDEBAR_TREE.getKey())
-      .requireVisible()
-      .requireEnabled()
-      .selectRow(1);
-
-    // Expect the Send/Request screen to show
-    window
-      .button(MessageKey.SEND.getKey())
+      .button(MessageKey.ADD.getKey())
       .requireVisible()
       .requireEnabled();
 
     window
-      .button(MessageKey.REQUEST.getKey())
+      .button(MessageKey.EDIT.getKey())
+      .requireVisible()
+      .requireEnabled();
+
+    window
+      .button(MessageKey.DELETE.getKey())
+      .requireVisible()
+      .requireEnabled();
+
+    window
+      .button(MessageKey.UNDO.getKey())
+      .requireVisible()
+      .requireEnabled();
+
+    window
+      .table(MessageKey.CONTACTS.getKey())
       .requireVisible()
       .requireEnabled();
 

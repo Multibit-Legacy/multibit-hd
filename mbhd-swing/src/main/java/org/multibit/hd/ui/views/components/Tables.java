@@ -5,6 +5,7 @@ import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.renderers.AmountBTCTableHeaderRenderer;
 import org.multibit.hd.ui.views.components.tables.ContactTableModel;
 import org.multibit.hd.ui.views.components.tables.HistoryTableModel;
@@ -52,6 +53,9 @@ public class Tables {
 
     StripedTable table = new StripedTable(model);
 
+    // Ensure FEST can find it
+    table.setName(MessageKey.CONTACTS.getKey());
+
     table.setFillsViewportHeight(true);
     table.setShowHorizontalLines(true);
     table.setShowVerticalLines(false);
@@ -87,6 +91,9 @@ public class Tables {
     PaymentTableModel model = new PaymentTableModel(paymentData);
 
     StripedTable table = new StripedTable(model);
+
+    // Ensure FEST can find it
+    table.setName(MessageKey.PAYMENTS.getKey());
 
     table.setFillsViewportHeight(true);
     table.setShowHorizontalLines(true);
@@ -179,6 +186,9 @@ public class Tables {
     HistoryTableModel model = new HistoryTableModel(historyEntries);
 
     StripedTable table = new StripedTable(model);
+
+    // Ensure FEST can find it
+    table.setName(MessageKey.HISTORY.getKey());
 
     table.setFillsViewportHeight(true);
     table.setShowHorizontalLines(true);
@@ -354,5 +364,3 @@ public class Tables {
 
   }
 }
-
-

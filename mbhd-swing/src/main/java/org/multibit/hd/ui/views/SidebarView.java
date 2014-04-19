@@ -187,7 +187,7 @@ public class SidebarView {
 
     walletNode = TreeNodes.newSidebarTreeNode("Wallet", Screen.WALLET);
     walletNode.add(TreeNodes.newSidebarTreeNode(MessageKey.SEND_OR_REQUEST, Screen.WALLET));
-    walletNode.add(TreeNodes.newSidebarTreeNode(MessageKey.TRANSACTIONS, Screen.TRANSACTIONS));
+    walletNode.add(TreeNodes.newSidebarTreeNode(MessageKey.PAYMENTS, Screen.TRANSACTIONS));
     walletNode.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, Screen.CONTACTS));
     root.add(walletNode);
 

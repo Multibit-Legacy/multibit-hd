@@ -173,7 +173,7 @@ public class Buttons {
   /**
    * @param action The click action
    *
-   * @return A new "Deete Payment Request" button with icon
+   * @return A new "Delete Payment Request" button with icon
    */
   public static JButton newDeletePaymentRequestButton(Action action) {
 
@@ -183,6 +183,20 @@ public class Buttons {
 
     return button;
 
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "delete" button with icon
+   */
+  public static JButton newDeleteButton(Action action) {
+
+    JButton button = newButton(action, MessageKey.DELETE);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.TRASH_ALT, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
   }
 
   /**
@@ -356,6 +370,9 @@ public class Buttons {
   public static JButton newPrintButton(Action action) {
 
     JButton button = newButton(action);
+
+    // Ensure FEST can find it
+    button.setName(MessageKey.PRINT.getKey());
 
     AwesomeDecorator.applyIcon(AwesomeIcon.PRINT, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -535,25 +552,14 @@ public class Buttons {
   /**
    * @param action The click action
    *
-   * @return A new "delete" button with icon
-   */
-  public static JButton newDeleteButton(Action action) {
-
-    JButton button = newButton(action, MessageKey.DELETE);
-
-    AwesomeDecorator.applyIcon(AwesomeIcon.TRASH_ALT, button, false, MultiBitUI.NORMAL_ICON_SIZE);
-
-    return button;
-  }
-
-  /**
-   * @param action The click action
-   *
    * @return A new "search" button with icon
    */
   public static JButton newSearchButton(Action action) {
 
     JButton button = newButton(action);
+
+    // Ensure FEST can find it
+    button.setName(MessageKey.SEARCH.getKey());
 
     AwesomeDecorator.applyIcon(AwesomeIcon.SEARCH, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -568,6 +574,9 @@ public class Buttons {
   public static JButton newBackButton(Action action) {
 
     JButton button = newButton(action);
+
+    // Ensure FEST can find it
+    button.setName(MessageKey.BACK.getKey());
 
     AwesomeIcon icon = AwesomeDecorator.select(AwesomeIcon.ARROW_LEFT, AwesomeIcon.ARROW_RIGHT);
 
@@ -585,6 +594,9 @@ public class Buttons {
 
     JButton button = newButton(action);
 
+    // Ensure FEST can find it
+    button.setName(MessageKey.FORWARD.getKey());
+
     AwesomeIcon icon = AwesomeDecorator.select(AwesomeIcon.ARROW_RIGHT, AwesomeIcon.ARROW_LEFT);
 
     AwesomeDecorator.applyIcon(icon, button, false, MultiBitUI.NORMAL_ICON_SIZE);
@@ -601,7 +613,10 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.EXTERNAL_LINK, button, true, MultiBitUI.NORMAL_ICON_SIZE);
+    // Ensure FEST can find it
+    button.setName(MessageKey.BROWSE.getKey());
+
+      AwesomeDecorator.applyIcon(AwesomeIcon.EXTERNAL_LINK, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
   }

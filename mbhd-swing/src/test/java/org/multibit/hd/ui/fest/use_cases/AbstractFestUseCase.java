@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.fest.use_cases;
 
+import org.fest.swing.core.matcher.JButtonMatcher;
 import org.fest.swing.core.matcher.JLabelMatcher;
 import org.fest.swing.fixture.FrameFixture;
 
@@ -29,9 +30,25 @@ public abstract class AbstractFestUseCase {
    */
   public abstract void execute(Map<String, Object> parameters);
 
+  /**
+   * @param name The label name
+   *
+   * @return The label if it is not showing
+   */
   public JLabelMatcher newNotShowingJLabelFixture(String name) {
 
     return JLabelMatcher.withName(name);
+
+  }
+
+  /**
+   * @param name The label name
+   *
+   * @return The button if it is not showing
+   */
+  public JButtonMatcher newNotShowingJButtonFixture(String name) {
+
+    return JButtonMatcher.withName(name);
 
   }
 

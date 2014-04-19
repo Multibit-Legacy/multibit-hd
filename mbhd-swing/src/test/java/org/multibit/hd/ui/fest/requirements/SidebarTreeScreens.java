@@ -2,6 +2,8 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
+import org.multibit.hd.ui.fest.use_cases.sidebar_screens.ContactsScreenUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar_screens.PaymentsScreenUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar_screens.SendRequestScreenUseCase;
 
 import java.util.Map;
@@ -22,6 +24,8 @@ public class SidebarTreeScreens {
     Map<String,Object> parameters = Maps.newHashMap();
 
     new SendRequestScreenUseCase(window).execute(parameters);
+    new PaymentsScreenUseCase(window).execute(parameters);
+    new ContactsScreenUseCase(window).execute(parameters);
 
   }
 }

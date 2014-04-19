@@ -93,9 +93,9 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     JButton exportButton = Buttons.newExportButton(getExportAction());
 
     WalletService walletService = CoreServices.getCurrentWalletService();
-    List<PaymentData> paymentDatas = walletService.getPaymentDataList();
+    List<PaymentData> paymentList = walletService.getPaymentDataList();
 
-    paymentsTable = Tables.newPaymentsTable(paymentDatas);
+    paymentsTable = Tables.newPaymentsTable(paymentList);
 
     // Create the scroll pane and add the table to it.
     JScrollPane scrollPane = new JScrollPane(paymentsTable);
