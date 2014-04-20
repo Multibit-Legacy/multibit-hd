@@ -2,16 +2,14 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.ui.fest.use_cases.contacts.AddAliceContactUseCase;
-import org.multibit.hd.ui.fest.use_cases.contacts.AddThenCancelContactUseCase;
-import org.multibit.hd.ui.fest.use_cases.contacts.ShowContactsScreenUseCase;
+import org.multibit.hd.ui.fest.use_cases.contacts.*;
 
 import java.util.Map;
 
 /**
  * <p>FEST Swing UI test to provide:</p>
  * <ul>
- * <li>Exercise the contact screen to verify its wizards show correctly</li>
+ * <li>Exercise the "contacts" screen to verify its wizards show correctly</li>
  * </ul>
  *
  * @since 0.0.1
@@ -32,5 +30,10 @@ public class ContactsScreen {
     // Click Add and fill in "Alice"
     new AddAliceContactUseCase(window).execute(parameters);
 
+    // Click Add and fill in "Bob"
+    new AddBobContactUseCase(window).execute(parameters);
+
+    // Click Edit and fill in Bob's extra info
+    new EditBobContactUseCase(window).execute(parameters);
   }
 }
