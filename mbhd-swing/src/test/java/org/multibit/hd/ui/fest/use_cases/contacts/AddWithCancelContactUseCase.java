@@ -11,16 +11,16 @@ import static org.fest.assertions.Assertions.assertThat;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "contacts" screen</li>
+ * <li>Verify the "contacts" screen add with cancel</li>
  * </ul>
  * <p>Requires the "contacts" screen to be showing</p>
  *
  * @since 0.0.1
  *  
  */
-public class AddContactUseCase extends AbstractFestUseCase {
+public class AddWithCancelContactUseCase extends AbstractFestUseCase {
 
-  public AddContactUseCase(FrameFixture window) {
+  public AddWithCancelContactUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -31,23 +31,6 @@ public class AddContactUseCase extends AbstractFestUseCase {
     int rowCount1 = window
       .table(MessageKey.CONTACTS.getKey())
       .contents().length;
-
-    verifyAddThenCancel();
-
-    // Get an updated row count
-    int rowCount2 = window
-      .table(MessageKey.CONTACTS.getKey())
-      .contents().length;
-
-    // Verify no change has taken place
-    assertThat(rowCount1).isEqualTo(rowCount2);
-
-  }
-
-  /**
-   * Click Add, verify wizard appears, click Cancel
-   */
-  private void verifyAddThenCancel() {
 
     // Click on Add
     window
@@ -75,6 +58,14 @@ public class AddContactUseCase extends AbstractFestUseCase {
       .button(MessageKey.ADD.getKey())
       .requireVisible()
       .requireEnabled();
+
+    // Get an updated row count
+    int rowCount2 = window
+      .table(MessageKey.CONTACTS.getKey())
+      .contents().length;
+
+    // Verify no change has taken place
+    assertThat(rowCount1).isEqualTo(rowCount2);
 
   }
 

@@ -2,7 +2,7 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.ui.fest.use_cases.contacts.AddContactUseCase;
+import org.multibit.hd.ui.fest.use_cases.contacts.AddWithCancelContactUseCase;
 import org.multibit.hd.ui.fest.use_cases.contacts.ShowContactsScreenUseCase;
 
 import java.util.Map;
@@ -26,7 +26,7 @@ public class ContactsScreen {
     new ShowContactsScreenUseCase(window).execute(parameters);
 
     // Add a new contact
-    new AddContactUseCase(window).execute(parameters);
+    new AddWithCancelContactUseCase(window).execute(parameters);
 
   }
 }
