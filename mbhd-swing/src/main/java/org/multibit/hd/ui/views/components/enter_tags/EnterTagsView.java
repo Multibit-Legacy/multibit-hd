@@ -168,7 +168,7 @@ public class EnterTagsView extends AbstractComponentView<EnterTagsModel> {
     String tag = tagsListModel.getElementAt(index);
 
     // Remove it from the model
-    getModel().get().getTags().remove(tag);
+    getModel().get().getNewTags().remove(tag);
 
     // User wants to remove this entry
     tagsListModel.remove(index);
@@ -207,7 +207,7 @@ public class EnterTagsView extends AbstractComponentView<EnterTagsModel> {
       // Must be unique to be here
 
       // Add it to the model
-      getModel().get().getTags().add(tag);
+      getModel().get().getNewTags().add(tag);
 
       // Add to the end
       tagsListModel.addElement(tag);

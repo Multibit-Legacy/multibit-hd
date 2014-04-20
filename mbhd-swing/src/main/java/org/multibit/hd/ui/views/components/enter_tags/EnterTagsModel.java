@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components.enter_tags;
 
+import com.google.common.collect.Lists;
 import org.multibit.hd.ui.models.Model;
 
 import java.util.List;
@@ -15,28 +16,30 @@ import java.util.List;
  */
 public class EnterTagsModel implements Model<List<String>> {
 
-  private final List<String> tags;
+  private final List<String> originalTags;
+  private final List<String> newTags;
 
   private final String panelName;
 
   /**
    * @param panelName The panel name to identify the "next" buttons
    */
-  public EnterTagsModel(String panelName, List<String> tags) {
+  public EnterTagsModel(String panelName, List<String> originalTags) {
     this.panelName = panelName;
-    this.tags = tags;
+    this.originalTags = Lists.newArrayList(originalTags);
+    this.newTags = Lists.newArrayList(originalTags);
   }
 
   @Override
   public List<String> getValue() {
-    return getTags();
+    return getNewTags();
   }
 
   @Override
   public void setValue(List<String> value) {
 
-    tags.clear();
-    tags.addAll(value);
+    newTags.clear();
+    newTags.addAll(value);
 
   }
 
@@ -45,11 +48,19 @@ public class EnterTagsModel implements Model<List<String>> {
   }
 
   /**
-   * @return The current tags
+   * @return The original tags
    */
-  public List<String> getTags() {
+  public List<String> getOriginalTags() {
 
-    return tags;
+    return originalTags;
 
+  }
+
+  /**
+   *
+   * @return The modified tags
+   */
+  public List<String> getNewTags() {
+    return newTags;
   }
 }

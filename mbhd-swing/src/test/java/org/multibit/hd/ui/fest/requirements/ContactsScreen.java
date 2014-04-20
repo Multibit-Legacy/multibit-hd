@@ -35,5 +35,9 @@ public class ContactsScreen {
 
     // Click Edit and fill in Bob's extra info
     new EditBobContactUseCase(window).execute(parameters);
+
+    // Select Alice and Bob then use multi-edit
+    new EditAliceAndBobContactUseCase(window).execute(parameters);
+
   }
 }
