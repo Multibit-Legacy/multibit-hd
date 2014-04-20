@@ -34,10 +34,17 @@ public class EditBobContactUseCase extends AbstractFestUseCase {
       .contents().length;
 
     // Click on Bob's table row
-    window
+    String[][] contacts =  window
       .table(MessageKey.CONTACTS.getKey())
-      .selectRows(1)
-      .click();
+      .contents();
+
+    if ("false".equals(contacts[1][0])) {
+
+      // Click on the row to activate the checkbox
+      window
+        .table(MessageKey.CONTACTS.getKey())
+        .selectRows(1);
+    }
 
     // Click on Edit
     window
