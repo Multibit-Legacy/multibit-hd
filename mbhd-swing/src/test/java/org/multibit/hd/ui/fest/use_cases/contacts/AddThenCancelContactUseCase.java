@@ -18,9 +18,9 @@ import static org.fest.assertions.Assertions.assertThat;
  * @since 0.0.1
  *  
  */
-public class AddWithCancelContactUseCase extends AbstractFestUseCase {
+public class AddThenCancelContactUseCase extends AbstractFestUseCase {
 
-  public AddWithCancelContactUseCase(FrameFixture window) {
+  public AddThenCancelContactUseCase(FrameFixture window) {
     super(window);
   }
 

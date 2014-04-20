@@ -39,6 +39,8 @@ public enum MessageKey {
   FORWARD("forward"),
   BROWSE("browse"),
   PRINT("print"),
+  PASTE("paste"),
+  COPY("copy"),
 
   // Nouns
 
@@ -79,7 +81,8 @@ public enum MessageKey {
   PASSWORD_VERIFIED("password_verified"),
   PASSWORD_FAILED("password_failed"),
 
-  AMOUNT("amount"),
+  BITCOIN_AMOUNT("bitcoin_address"),
+  LOCAL_AMOUNT("local_amount"),
   AMOUNT_PAID("amount_paid"),
   TRANSACTION_FEE("transaction_fee"),
   DEVELOPER_FEE("developer_fee"),

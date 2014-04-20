@@ -557,7 +557,7 @@ public class Labels {
    * @return A new "Amount" label
    */
   public static JLabel newAmount() {
-    return newLabel(MessageKey.AMOUNT);
+    return newLabel(MessageKey.LOCAL_AMOUNT);
   }
 
   /**

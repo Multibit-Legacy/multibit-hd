@@ -91,7 +91,7 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
     extendedPublicKey = TextBoxes.newEnterExtendedPublicKey(getWizardModel(), multiEdit);
 
     // Always allow non-unique fields
-    notes = TextBoxes.newEnterNotes(getWizardModel());
+    notes = TextBoxes.newEnterPrivateNotes(getWizardModel());
 
     List<String> allNames = Lists.newArrayList();
 

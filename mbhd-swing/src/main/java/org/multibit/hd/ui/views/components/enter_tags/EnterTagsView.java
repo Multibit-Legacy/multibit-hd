@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components.enter_tags;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.audio.Sounds;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 
 import javax.swing.*;
@@ -68,12 +69,13 @@ public class EnterTagsView extends AbstractComponentView<EnterTagsModel> {
     listScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
     addTagButton = Buttons.newAddButton(null);
+    addTagButton.setName(getModel().get().getPanelName() + "." + MessageKey.ADD.getKey());
 
     AddTagListener addTagListener = new AddTagListener();
     addTagButton.addActionListener(addTagListener);
     addTagButton.setEnabled(false);
 
-    tagText = TextBoxes.newTextField(20);
+    tagText = TextBoxes.newEnterTag();
     tagText.addActionListener(addTagListener);
     tagText.getDocument().addDocumentListener(addTagListener);
 

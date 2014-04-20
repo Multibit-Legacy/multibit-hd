@@ -454,6 +454,9 @@ public class Buttons {
 
     JButton button = newButton(action);
 
+    // Ensure FEST can find it
+    button.setName(MessageKey.COPY.getKey());
+
     AwesomeDecorator.applyIcon(AwesomeIcon.COPY, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
@@ -469,6 +472,9 @@ public class Buttons {
 
     JButton button = newButton(action);
 
+    // Ensure FEST can find it
+    button.setName(MessageKey.PASTE.getKey());
+
     AwesomeDecorator.applyIcon(AwesomeIcon.PASTE, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
@@ -483,6 +489,9 @@ public class Buttons {
   public static JButton newPanelCloseButton(Action action) {
 
     JButton button = newButton(action);
+
+    // Ensure FEST can find it
+    button.setName(MessageKey.CLOSE.getKey());
 
     AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 

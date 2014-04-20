@@ -119,9 +119,9 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
     LabelDecorator.applyBitcoinSymbolLabel(
             amountBTCLabel,
             Configurations.currentConfiguration.getBitcoin(),
-            Languages.safeText(MessageKey.AMOUNT) + " ");
+            Languages.safeText(MessageKey.LOCAL_AMOUNT) + " ");
 
-    JLabel amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.AMOUNT) + " " + Configurations.currentConfiguration.getBitcoin().getLocalCurrencySymbol());
+    JLabel amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT) + " " + Configurations.currentConfiguration.getBitcoin().getLocalCurrencySymbol());
     amountFiatValue = Labels.newValueLabel("");
 
     JLabel minerFeePaidLabel = Labels.newValueLabel(Languages.safeText(MessageKey.TRANSACTION_FEE));

@@ -75,10 +75,26 @@ public class TextBoxes {
 
     JTextField textField = newTextField(MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH);
 
+    // Ensure FEST can find it
+    textField.setName(MessageKey.TRANSACTION_LABEL.getKey());
+
     // Limit the length of the underlying document
     DefaultStyledDocument doc = new DefaultStyledDocument();
     doc.setDocumentFilter(new DocumentMaxLengthFilter(MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH));
     textField.setDocument(doc);
+
+    return textField;
+  }
+
+  /**
+   * @return A new "enter tag" text field
+   */
+  public static JTextField newEnterTag() {
+
+    JTextField textField = newTextField(20);
+
+    // Ensure FEST can find this
+    textField.setName(MessageKey.TAGS.getKey());
 
     return textField;
   }
@@ -168,6 +184,10 @@ public class TextBoxes {
   public static JTextField newEnterEmailAddress(DocumentListener listener, boolean readOnly) {
 
     JTextField textField = readOnly ? newReadOnlyTextField(40) : newTextField(40);
+
+    // Ensure FEST can find it
+    textField.setName(MessageKey.EMAIL_ADDRESS.getKey());
+
     textField.getDocument().addDocumentListener(listener);
 
     return textField;
@@ -183,6 +203,10 @@ public class TextBoxes {
   public static JTextField newEnterBitcoinAddress(DocumentListener listener, boolean readOnly) {
 
     JTextField textField = readOnly ? newReadOnlyTextField(40) : newTextField(40);
+
+    // Ensure FEST can find it
+    textField.setName(MessageKey.BITCOIN_ADDRESS.getKey());
+
     textField.getDocument().addDocumentListener(listener);
 
     return textField;
@@ -198,6 +222,10 @@ public class TextBoxes {
   public static JTextField newEnterExtendedPublicKey(DocumentListener listener, boolean readOnly) {
 
     JTextField textField = readOnly ? newReadOnlyTextField(40) : newTextField(40);
+
+    // Ensure FEST can find it
+    textField.setName(MessageKey.EXTENDED_PUBLIC_KEY.getKey());
+
     textField.getDocument().addDocumentListener(listener);
 
     return textField;
@@ -212,6 +240,10 @@ public class TextBoxes {
   public static JTextField newDisplayBitcoinAddress(String bitcoinAddress) {
 
     JTextField textField = newReadOnlyTextField(40);
+
+    // Ensure FEST can find it
+    textField.setName(MessageKey.BITCOIN_ADDRESS.getKey());
+
     textField.setText(bitcoinAddress);
 
     return textField;
@@ -232,6 +264,9 @@ public class TextBoxes {
 
     FormattedDecimalField textField = new FormattedDecimalField(0, maximum, decimalPlaces, maxEditLength);
 
+    // Ensure FEST can find it
+    textField.setName(MessageKey.BITCOIN_AMOUNT.getKey());
+
     Font font = textField.getFont().deriveFont((float) MultiBitUI.NORMAL_ICON_SIZE);
 
     textField.setFont(font);
@@ -249,9 +284,9 @@ public class TextBoxes {
   /**
    * @param maximum The largest value than can be accepted (typically the wallet local balance) - no financial calculations are performed on this value
    *
-   * @return A new text field for currency amount entry
+   * @return A new text field for local currency amount entry
    */
-  public static FormattedDecimalField newCurrencyAmount(double maximum) {
+  public static FormattedDecimalField newLocalAmount(double maximum) {
 
     // Use the current configuration to provide the decimal places
     int decimalPlaces = Configurations
@@ -263,6 +298,9 @@ public class TextBoxes {
     int maxEditLength = BitcoinSymbol.current().maxRepresentationLength() + 6;
 
     FormattedDecimalField textField = new FormattedDecimalField(0, maximum, decimalPlaces, maxEditLength);
+
+    // Ensure FEST can find it
+    textField.setName(MessageKey.LOCAL_AMOUNT.getKey());
 
     Font font = textField.getFont().deriveFont((float) MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -308,21 +346,36 @@ public class TextBoxes {
   /**
    * @param listener The document listener for detecting changes to the content
    *
-   * @return A new "notes" text area
+   * @return A new default public "notes" text area
    */
   public static JTextArea newEnterNotes(DocumentListener listener) {
-    return TextBoxes.newEnterNotes(listener, MultiBitUI.PASSWORD_LENGTH);
+    JTextArea textArea = TextBoxes.newEnterPrivateNotes(listener, MultiBitUI.PASSWORD_LENGTH);
+
+    textArea.setName(MessageKey.NOTES.getKey());
+
+    return textArea;
   }
 
+  /**
+   * @param listener The document listener for detecting changes to the content
+   *
+   * @return A new default "private notes" text area
+   */
+  public static JTextArea newEnterPrivateNotes(DocumentListener listener) {
+    return TextBoxes.newEnterPrivateNotes(listener, MultiBitUI.PASSWORD_LENGTH);
+  }
 
   /**
    * @param listener The document listener for detecting changes to the content
    *
    * @return A new "Notes" text area
    */
-  public static JTextArea newEnterNotes(DocumentListener listener, int width) {
+  public static JTextArea newEnterPrivateNotes(DocumentListener listener, int width) {
 
     JTextArea textArea = new JTextArea(6, width);
+
+    // Ensure FEST can find it
+    textArea.setName(MessageKey.PRIVATE_NOTES.getKey());
 
     // Limit the length of the underlying document
     DefaultStyledDocument doc = new DefaultStyledDocument();
@@ -448,6 +501,10 @@ public class TextBoxes {
   public static JTextField newEnterApiKey(DocumentListener listener) {
 
     JTextField textField = newTextField(40);
+
+    // Ensure FEST can find it
+    textField.setName(MessageKey.ENTER_ACCESS_CODE.getKey());
+
     textField.getDocument().addDocumentListener(listener);
 
     return textField;
