@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.components;
 
 import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.renderers.TagPillListCellRenderer;
 import org.multibit.hd.ui.views.themes.Themes;
 
@@ -34,6 +35,9 @@ public class ListBoxes {
   public static JList<String> newTagPillList(DefaultListModel<String> listModel) {
 
     final JList<String> list = new JList<>(listModel);
+
+    // Ensure FEST can find it
+    list.setName(MessageKey.TAGS.getKey());
 
     list.setCellRenderer(new TagPillListCellRenderer());
     list.setLayoutOrientation(JList.VERTICAL_WRAP);
