@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fest.use_cases.sidebar_screens;
+package org.multibit.hd.ui.fest.use_cases.tools;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
@@ -11,15 +11,15 @@ import static org.fest.assertions.Assertions.assertThat;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "contacts" sidebar screen</li>
+ * <li>Verify the "tools" sidebar screen</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class ContactsScreenUseCase extends AbstractFestUseCase {
+public class ShowToolsScreenUseCase extends AbstractFestUseCase {
 
-  public ContactsScreenUseCase(FrameFixture window) {
+  public ShowToolsScreenUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -32,41 +32,31 @@ public class ContactsScreenUseCase extends AbstractFestUseCase {
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .requireVisible()
       .requireEnabled()
-      .selectRow(3);
+      .selectRow(7);
 
-    // Expect the Contacts screen to show
+    // Expect the Tools screen to show
     window
-      .button(MessageKey.SEARCH.getKey())
+      .button(MessageKey.SHOW_EDIT_WALLET_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
 
     window
-      .comboBox(MessageKey.CONTACTS.getKey())
+      .button(MessageKey.SHOW_CHANGE_PASSWORD_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
 
     window
-      .button(MessageKey.ADD.getKey())
+      .button(MessageKey.SHOW_VERIFY_NETWORK_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
 
     window
-      .button(MessageKey.EDIT.getKey())
+      .button(MessageKey.SHOW_REPAIR_WALLET_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
 
     window
-      .button(MessageKey.DELETE.getKey())
-      .requireVisible()
-      .requireEnabled();
-
-    window
-      .button(MessageKey.UNDO.getKey())
-      .requireVisible()
-      .requireEnabled();
-
-    window
-      .table(MessageKey.CONTACTS.getKey())
+      .button(MessageKey.SHOW_WELCOME_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
 

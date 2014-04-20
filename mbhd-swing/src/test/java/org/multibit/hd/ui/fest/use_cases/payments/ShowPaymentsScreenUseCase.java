@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fest.use_cases.sidebar_screens;
+package org.multibit.hd.ui.fest.use_cases.payments;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
@@ -11,15 +11,15 @@ import static org.fest.assertions.Assertions.assertThat;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "tools" sidebar screen</li>
+ * <li>Verify the "payments" sidebar screen</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class ToolsScreenUseCase extends AbstractFestUseCase {
+public class ShowPaymentsScreenUseCase extends AbstractFestUseCase {
 
-  public ToolsScreenUseCase(FrameFixture window) {
+  public ShowPaymentsScreenUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -32,31 +32,41 @@ public class ToolsScreenUseCase extends AbstractFestUseCase {
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .requireVisible()
       .requireEnabled()
-      .selectRow(7);
+      .selectRow(2);
 
-    // Expect the Tools screen to show
+    // Expect the Payments screen to show
     window
-      .button(MessageKey.SHOW_EDIT_WALLET_WIZARD.getKey())
+      .textBox(MessageKey.SEARCH.getKey())
       .requireVisible()
       .requireEnabled();
 
     window
-      .button(MessageKey.SHOW_CHANGE_PASSWORD_WIZARD.getKey())
+      .button(MessageKey.SEARCH.getKey())
       .requireVisible()
       .requireEnabled();
 
     window
-      .button(MessageKey.SHOW_VERIFY_NETWORK_WIZARD.getKey())
+      .button(MessageKey.DETAILS.getKey())
       .requireVisible()
       .requireEnabled();
 
     window
-      .button(MessageKey.SHOW_REPAIR_WALLET_WIZARD.getKey())
+      .button(MessageKey.DELETE_PAYMENT_REQUEST.getKey())
       .requireVisible()
       .requireEnabled();
 
     window
-      .button(MessageKey.SHOW_WELCOME_WIZARD.getKey())
+      .button(MessageKey.UNDO.getKey())
+      .requireVisible()
+      .requireEnabled();
+
+    window
+      .button(MessageKey.EXPORT.getKey())
+      .requireVisible()
+      .requireEnabled();
+
+    window
+      .table(MessageKey.PAYMENTS.getKey())
       .requireVisible()
       .requireEnabled();
 

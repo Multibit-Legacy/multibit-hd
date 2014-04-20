@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fest.use_cases.sidebar_screens;
+package org.multibit.hd.ui.fest.use_cases.send_request;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
@@ -17,9 +17,9 @@ import static org.fest.assertions.Assertions.assertThat;
  * @since 0.0.1
  *  
  */
-public class SendRequestScreenUseCase extends AbstractFestUseCase {
+public class ShowSendRequestScreenUseCase extends AbstractFestUseCase {
 
-  public SendRequestScreenUseCase(FrameFixture window) {
+  public ShowSendRequestScreenUseCase(FrameFixture window) {
     super(window);
   }
 

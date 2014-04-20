@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fest.use_cases.sidebar_screens;
+package org.multibit.hd.ui.fest.use_cases.exit;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
@@ -17,9 +17,9 @@ import static org.fest.assertions.Assertions.assertThat;
  * @since 0.0.1
  *  
  */
-public class ExitScreenUseCase extends AbstractFestUseCase {
+public class ShowExitScreenUseCase extends AbstractFestUseCase {
 
-  public ExitScreenUseCase(FrameFixture window) {
+  public ShowExitScreenUseCase(FrameFixture window) {
     super(window);
   }
 

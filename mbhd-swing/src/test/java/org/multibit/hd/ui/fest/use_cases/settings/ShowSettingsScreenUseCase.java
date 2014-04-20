@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fest.use_cases.sidebar_screens;
+package org.multibit.hd.ui.fest.use_cases.settings;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
@@ -11,15 +11,15 @@ import static org.fest.assertions.Assertions.assertThat;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "history" sidebar screen</li>
+ * <li>Verify the "settings" sidebar screen</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class HelpScreenUseCase extends AbstractFestUseCase {
+public class ShowSettingsScreenUseCase extends AbstractFestUseCase {
 
-  public HelpScreenUseCase(FrameFixture window) {
+  public ShowSettingsScreenUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -32,26 +32,31 @@ public class HelpScreenUseCase extends AbstractFestUseCase {
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .requireVisible()
       .requireEnabled()
-      .selectRow(4);
+      .selectRow(6);
 
-    // Expect the Help screen to show
+    // Expect the Settings screen to show
     window
-      .button(MessageKey.BACK.getKey())
-      .requireVisible()
-      .requireDisabled();
-
-    window
-      .button(MessageKey.FORWARD.getKey())
-      .requireVisible()
-      .requireDisabled();
-
-    window
-      .button(MessageKey.BROWSE.getKey())
+      .button(MessageKey.SHOW_LANGUAGE_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
 
     window
-      .scrollPane(MessageKey.HELP.getKey())
+      .button(MessageKey.SHOW_BITCOIN_WIZARD.getKey())
+      .requireVisible()
+      .requireEnabled();
+
+    window
+      .button(MessageKey.SHOW_EXCHANGE_WIZARD.getKey())
+      .requireVisible()
+      .requireEnabled();
+
+    window
+      .button(MessageKey.SHOW_APPLICATION_WIZARD.getKey())
+      .requireVisible()
+      .requireEnabled();
+
+    window
+      .button(MessageKey.SHOW_SOUND_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
 

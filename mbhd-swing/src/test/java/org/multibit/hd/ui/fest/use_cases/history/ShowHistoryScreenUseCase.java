@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fest.use_cases.sidebar_screens;
+package org.multibit.hd.ui.fest.use_cases.history;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
@@ -11,15 +11,15 @@ import static org.fest.assertions.Assertions.assertThat;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "payments" sidebar screen</li>
+ * <li>Verify the "history" sidebar screen</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class PaymentsScreenUseCase extends AbstractFestUseCase {
+public class ShowHistoryScreenUseCase extends AbstractFestUseCase {
 
-  public PaymentsScreenUseCase(FrameFixture window) {
+  public ShowHistoryScreenUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -32,9 +32,9 @@ public class PaymentsScreenUseCase extends AbstractFestUseCase {
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .requireVisible()
       .requireEnabled()
-      .selectRow(2);
+      .selectRow(5);
 
-    // Expect the Payments screen to show
+    // Expect the History screen to show
     window
       .textBox(MessageKey.SEARCH.getKey())
       .requireVisible()
@@ -46,27 +46,17 @@ public class PaymentsScreenUseCase extends AbstractFestUseCase {
       .requireEnabled();
 
     window
-      .button(MessageKey.DETAILS.getKey())
+      .comboBox(MessageKey.HISTORY.getKey())
       .requireVisible()
       .requireEnabled();
 
     window
-      .button(MessageKey.DELETE_PAYMENT_REQUEST.getKey())
+      .button(MessageKey.EDIT.getKey())
       .requireVisible()
       .requireEnabled();
 
     window
-      .button(MessageKey.UNDO.getKey())
-      .requireVisible()
-      .requireEnabled();
-
-    window
-      .button(MessageKey.EXPORT.getKey())
-      .requireVisible()
-      .requireEnabled();
-
-    window
-      .table(MessageKey.PAYMENTS.getKey())
+      .table(MessageKey.HISTORY.getKey())
       .requireVisible()
       .requireEnabled();
 

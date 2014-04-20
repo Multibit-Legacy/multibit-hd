@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fest.use_cases.sidebar_screens;
+package org.multibit.hd.ui.fest.use_cases.contacts;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
@@ -11,15 +11,15 @@ import static org.fest.assertions.Assertions.assertThat;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "history" sidebar screen</li>
+ * <li>Verify the "contacts" screen</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class HistoryScreenUseCase extends AbstractFestUseCase {
+public class ShowContactsScreenUseCase extends AbstractFestUseCase {
 
-  public HistoryScreenUseCase(FrameFixture window) {
+  public ShowContactsScreenUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -32,21 +32,21 @@ public class HistoryScreenUseCase extends AbstractFestUseCase {
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .requireVisible()
       .requireEnabled()
-      .selectRow(5);
+      .selectRow(3);
 
-    // Expect the History screen to show
-    window
-      .textBox(MessageKey.SEARCH.getKey())
-      .requireVisible()
-      .requireEnabled();
-
+    // Expect the Contacts screen to show
     window
       .button(MessageKey.SEARCH.getKey())
       .requireVisible()
       .requireEnabled();
 
     window
-      .comboBox(MessageKey.HISTORY.getKey())
+      .comboBox(MessageKey.CONTACTS.getKey())
+      .requireVisible()
+      .requireEnabled();
+
+    window
+      .button(MessageKey.ADD.getKey())
       .requireVisible()
       .requireEnabled();
 
@@ -56,7 +56,17 @@ public class HistoryScreenUseCase extends AbstractFestUseCase {
       .requireEnabled();
 
     window
-      .table(MessageKey.HISTORY.getKey())
+      .button(MessageKey.DELETE.getKey())
+      .requireVisible()
+      .requireEnabled();
+
+    window
+      .button(MessageKey.UNDO.getKey())
+      .requireVisible()
+      .requireEnabled();
+
+    window
+      .table(MessageKey.CONTACTS.getKey())
       .requireVisible()
       .requireEnabled();
 
