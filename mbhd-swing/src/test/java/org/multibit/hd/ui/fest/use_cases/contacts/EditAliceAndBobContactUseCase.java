@@ -65,6 +65,12 @@ public class EditAliceAndBobContactUseCase extends AbstractFestUseCase {
     window
       .label(MessageKey.EDIT_CONTACTS_TITLE.getKey());
 
+    // Verify the multiple contact list is correct
+    window
+      .textBox(MessageKey.NAMES.getKey())
+      .requireVisible()
+      .requireText("Alice, Bob Cratchit");
+
     window
       .button(MessageKey.CANCEL.getKey())
       .requireVisible()

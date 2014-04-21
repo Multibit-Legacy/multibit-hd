@@ -10,6 +10,7 @@ import com.google.common.collect.Sets;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.enter_tags.EnterTagsModel;
 import org.multibit.hd.ui.views.components.enter_tags.EnterTagsView;
@@ -176,7 +177,9 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
       // Provide a short list of names with ellipsis
       contentPanel.add(Labels.newNames(), "aligny top");
-      contentPanel.add(TextBoxes.newTruncatedList(allNames, 400), "grow,push,aligny top,wrap");
+      JTextArea allNamesList = TextBoxes.newTruncatedList(allNames, 400);
+      allNamesList.setName(MessageKey.NAMES.getKey());
+      contentPanel.add(allNamesList, "grow,push,aligny top,wrap");
     }
 
     // Tags must be top aligned since it is a tall component

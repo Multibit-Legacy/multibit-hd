@@ -44,5 +44,9 @@ public class ContactsScreen {
 
     // Select Uriah and Click Delete
     new DeleteUriahContactUseCase(window).execute(parameters);
+
+    // Click Undo and restore Uriah
+    new UndoUriahContactUseCase(window).execute(parameters);
+
   }
 }
