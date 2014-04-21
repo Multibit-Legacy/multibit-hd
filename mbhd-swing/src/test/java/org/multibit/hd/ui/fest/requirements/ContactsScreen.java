@@ -39,5 +39,10 @@ public class ContactsScreen {
     // Select Alice and Bob then use multi-edit
     new EditAliceAndBobContactUseCase(window).execute(parameters);
 
+    // Click Add and fill in "Uriah"
+    new AddUriahContactUseCase(window).execute(parameters);
+
+    // Select Uriah and Click Delete
+    new DeleteUriahContactUseCase(window).execute(parameters);
   }
 }
