@@ -33,8 +33,11 @@ public class ContactsScreen {
     // Click Add and fill in "Bob"
     new AddBobContactUseCase(window).execute(parameters);
 
-    // Click Edit and fill in Bob's extra info
+    // Click Edit and update Bob's extra info
     new EditBobContactUseCase(window).execute(parameters);
+
+    // Click Edit and fill in some extra info on Bob but then Cancel
+    new EditThenCancelBobContactUseCase(window).execute(parameters);
 
     // Select Alice and Bob then use multi-edit
     new EditAliceAndBobContactUseCase(window).execute(parameters);

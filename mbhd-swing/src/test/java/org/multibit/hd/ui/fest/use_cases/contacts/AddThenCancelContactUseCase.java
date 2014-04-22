@@ -30,7 +30,7 @@ public class AddThenCancelContactUseCase extends AbstractFestUseCase {
     // Get the initial row count
     int rowCount1 = window
       .table(MessageKey.CONTACTS.getKey())
-      .contents().length;
+      .rowCount();
 
     // Click on Add
     window
@@ -62,7 +62,7 @@ public class AddThenCancelContactUseCase extends AbstractFestUseCase {
     // Get an updated row count
     int rowCount2 = window
       .table(MessageKey.CONTACTS.getKey())
-      .contents().length;
+      .rowCount();
 
     // Verify no change has taken place
     assertThat(rowCount1).isEqualTo(rowCount2);

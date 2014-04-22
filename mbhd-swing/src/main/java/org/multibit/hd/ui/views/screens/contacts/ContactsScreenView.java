@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.Contact;
+import org.multibit.hd.core.dto.comparators.ContactNameComparator;
 import org.multibit.hd.ui.events.view.ComponentChangedEvent;
 import org.multibit.hd.ui.events.view.WizardHideEvent;
 import org.multibit.hd.ui.languages.Languages;
@@ -25,6 +26,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -178,6 +180,8 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
 
         contacts.add(contact);
 
+        Collections.sort(contacts, new ContactNameComparator());
+
         // Fire up a wizard in new mode
         Panels.showLightBox(Wizards.newEditContactWizard(contacts, EnterContactDetailsMode.NEW).getWizardScreenHolder());
 
@@ -199,6 +203,8 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
 
         // Ensure we have at least one contact to work with
         if (!contacts.isEmpty()) {
+
+          Collections.sort(contacts, new ContactNameComparator());
 
           if (contacts.size() == 1) {
 

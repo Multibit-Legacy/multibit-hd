@@ -35,21 +35,14 @@ public class DeleteUriahContactUseCase extends AbstractFestUseCase {
       .contents();
 
     // Get the initial row count
-    int rowCount1 = contacts.length;
+    int rowCount1 = window
+      .table(MessageKey.CONTACTS.getKey())
+      .rowCount();
 
-    // Locate Uriah row
-    int uriahRow = -1;
-    for (int i = 0; i < contacts.length; i++) {
-
-      if ("Uriah Heep".equals(contacts[i][ContactTableModel.NAME_COLUMN_INDEX])) {
-        uriahRow = i;
-        break;
-      }
-
-    }
-
-    // Check the row is valid
-    assertThat(uriahRow).isNotEqualTo(-1);
+    // Find the Uriah Heep row
+    int uriahRow = window
+        .table(MessageKey.CONTACTS.getKey())
+        .cell("Uriah Heep").row;
 
     // Check if it is selected
     if ("false".equals(contacts[uriahRow][ContactTableModel.CHECKBOX_COLUMN_INDEX])) {
@@ -57,7 +50,7 @@ public class DeleteUriahContactUseCase extends AbstractFestUseCase {
       // Click on the row to activate the checkbox
       window
         .table(MessageKey.CONTACTS.getKey())
-        .selectRows(0);
+        .selectRows(uriahRow);
     }
 
     // Click on Delete
@@ -68,7 +61,7 @@ public class DeleteUriahContactUseCase extends AbstractFestUseCase {
     // Get an updated row count
     int rowCount2 = window
       .table(MessageKey.CONTACTS.getKey())
-      .contents().length;
+      .rowCount();
 
     // Verify the row has been deleted
     assertThat(rowCount2).isEqualTo(rowCount1 - 1);

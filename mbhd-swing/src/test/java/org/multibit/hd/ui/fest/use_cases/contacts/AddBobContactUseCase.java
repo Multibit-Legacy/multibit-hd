@@ -31,7 +31,7 @@ public class AddBobContactUseCase extends AbstractFestUseCase {
     // Get the initial row count
     int rowCount1 = window
       .table(MessageKey.CONTACTS.getKey())
-      .contents().length;
+      .rowCount();
 
     // Click on Add
     window
@@ -90,10 +90,10 @@ public class AddBobContactUseCase extends AbstractFestUseCase {
     // Get an updated row count
     int rowCount2 = window
       .table(MessageKey.CONTACTS.getKey())
-      .contents().length;
+      .rowCount();
 
     // Verify a new row has been added
-    assertThat(rowCount1 + 1).isEqualTo(rowCount2);
+    assertThat(rowCount2).isEqualTo(rowCount1 + 1);
 
   }
 

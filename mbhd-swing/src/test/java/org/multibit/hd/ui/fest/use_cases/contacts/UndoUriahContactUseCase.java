@@ -3,7 +3,6 @@ package org.multibit.hd.ui.fest.use_cases.contacts;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.tables.ContactTableModel;
 
 import java.util.Map;
 
@@ -29,13 +28,10 @@ public class UndoUriahContactUseCase extends AbstractFestUseCase {
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    // Get the contacts
-    String[][] contacts = window
-      .table(MessageKey.CONTACTS.getKey())
-      .contents();
-
     // Get the initial row count
-    int rowCount1 = contacts.length;
+    int rowCount1 = window
+      .table(MessageKey.CONTACTS.getKey())
+      .rowCount();
 
     // Click on Undo
     window
@@ -47,22 +43,13 @@ public class UndoUriahContactUseCase extends AbstractFestUseCase {
       .table(MessageKey.CONTACTS.getKey())
       .contents().length;
 
-    // Verify the row has been deleted
+    // Verify the row has been restored
     assertThat(rowCount2).isEqualTo(rowCount1 + 1);
 
-    // Locate Uriah row
-    int uriahRow = -1;
-    for (int i = 0; i < contacts.length; i++) {
-
-      if ("Uriah Heep".equals(contacts[i][ContactTableModel.NAME_COLUMN_INDEX])) {
-        uriahRow = i;
-        break;
-      }
-
-    }
-
-    // Check the row is valid
-    assertThat(uriahRow).isNotEqualTo(-1);
+    // Locate Uriah Heep
+    window
+      .table(MessageKey.CONTACTS.getKey())
+      .cell("Uriah Heep");
 
   }
 

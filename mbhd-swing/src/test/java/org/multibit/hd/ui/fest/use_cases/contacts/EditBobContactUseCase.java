@@ -3,6 +3,7 @@ package org.multibit.hd.ui.fest.use_cases.contacts;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.components.tables.ContactTableModel;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactState;
 
 import java.util.Map;
@@ -15,6 +16,7 @@ import static org.fest.assertions.Assertions.assertThat;
  * <li>Verify the "contacts" screen edit Bob contact</li>
  * </ul>
  * <p>Requires the "contacts" screen to be showing</p>
+ * <p>Requires the "Bob" contact to be present</p>
  *
  * @since 0.0.1
  *  
@@ -31,19 +33,25 @@ public class EditBobContactUseCase extends AbstractFestUseCase {
     // Get the initial row count
     int rowCount1 = window
       .table(MessageKey.CONTACTS.getKey())
-      .contents().length;
+      .rowCount();
 
-    // Click on Bob's table row
+    // Find Bob's row
+    int bobRow = window
+      .table(MessageKey.CONTACTS.getKey())
+      .cell("Bob")
+      .row;
+
+    // Get the contacts
     String[][] contacts =  window
       .table(MessageKey.CONTACTS.getKey())
       .contents();
 
-    if ("false".equals(contacts[1][0])) {
+    if ("false".equals(contacts[bobRow][ContactTableModel.CHECKBOX_COLUMN_INDEX])) {
 
       // Click on the row to activate the checkbox
       window
         .table(MessageKey.CONTACTS.getKey())
-        .selectRows(1);
+        .selectRows(bobRow);
     }
 
     // Click on Edit
@@ -63,19 +71,13 @@ public class EditBobContactUseCase extends AbstractFestUseCase {
     // Update Bob's details
     window
       .textBox(MessageKey.NAME.getKey())
+      .requireText("Bob")
       .setText("Bob Cratchit");
 
     window
       .textBox(MessageKey.EMAIL_ADDRESS.getKey())
+      .requireText("bob@example.org")
       .setText("bob.cratchit@example.org");
-
-    window
-      .textBox(MessageKey.BITCOIN_ADDRESS.getKey())
-      .setText("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
-
-    window
-      .textBox(MessageKey.EXTENDED_PUBLIC_KEY.getKey())
-      .setText("");
 
     // Ensure Add button is disabled without tag
     addTag("Scrooge Staff", 1);
@@ -101,11 +103,20 @@ public class EditBobContactUseCase extends AbstractFestUseCase {
     // Get an updated row count
     int rowCount2 = window
       .table(MessageKey.CONTACTS.getKey())
-      .contents().length;
+      .rowCount();
 
     // Verify that no new row has been added
     assertThat(rowCount2).isEqualTo(rowCount1);
 
+    // Verify that "Alice" is unaffected
+    window
+      .table(MessageKey.CONTACTS.getKey())
+      .cell("Alice");
+
+    // Verify that "Bob" is now "Bob Cratchit"
+    window
+      .table(MessageKey.CONTACTS.getKey())
+      .cell("Bob Cratchit");
   }
 
   /**

@@ -16,7 +16,7 @@ import static org.fest.assertions.Assertions.assertThat;
  * <li>Verify the "contacts" screen edit Alice and Bob contacts</li>
  * </ul>
  * <p>Requires the "contacts" screen to be showing</p>
- * <p>Requires Alice and Bob to be created</p>
+ * <p>Requires "Alice" and "Bob Cratchit" to be created</p>
  *
  * @since 0.0.1
  *  
@@ -33,27 +33,39 @@ public class EditAliceAndBobContactUseCase extends AbstractFestUseCase {
     // Get the initial row count
     int rowCount1 = window
       .table(MessageKey.CONTACTS.getKey())
-      .contents().length;
+      .rowCount();
+
+    // Find Alice's row
+    int aliceRow = window
+      .table(MessageKey.CONTACTS.getKey())
+      .cell("Alice")
+      .row;
+
+    // Find Bob's row
+    int bobRow = window
+      .table(MessageKey.CONTACTS.getKey())
+      .cell("Bob Cratchit")
+      .row;
 
     // Click on Bob's table row
     String[][] contacts = window
       .table(MessageKey.CONTACTS.getKey())
       .contents();
 
-    if ("false".equals(contacts[0][ContactTableModel.CHECKBOX_COLUMN_INDEX])) {
+    if ("false".equals(contacts[aliceRow][ContactTableModel.CHECKBOX_COLUMN_INDEX])) {
 
       // Click on the row to activate the checkbox
       window
         .table(MessageKey.CONTACTS.getKey())
-        .selectRows(0);
+        .selectRows(aliceRow);
     }
 
-    if ("false".equals(contacts[1][ContactTableModel.CHECKBOX_COLUMN_INDEX])) {
+    if ("false".equals(contacts[bobRow][ContactTableModel.CHECKBOX_COLUMN_INDEX])) {
 
       // Click on the row to activate the checkbox
       window
         .table(MessageKey.CONTACTS.getKey())
-        .selectRows(1);
+        .selectRows(bobRow);
     }
 
     // Click on Edit
@@ -102,7 +114,7 @@ public class EditAliceAndBobContactUseCase extends AbstractFestUseCase {
     // Get an updated row count
     int rowCount2 = window
       .table(MessageKey.CONTACTS.getKey())
-      .contents().length;
+      .rowCount();
 
     // Verify that no new row has been added
     assertThat(rowCount2).isEqualTo(rowCount1);
@@ -112,8 +124,17 @@ public class EditAliceAndBobContactUseCase extends AbstractFestUseCase {
       .table(MessageKey.CONTACTS.getKey())
       .contents();
 
-    assertThat(contacts[0][ContactTableModel.TAG_COLUMN_INDEX]).contains("Friends");
-    assertThat(contacts[1][ContactTableModel.TAG_COLUMN_INDEX]).contains("Friends");
+    assertThat(contacts[aliceRow][ContactTableModel.TAG_COLUMN_INDEX]).contains("Friends");
+    assertThat(contacts[bobRow][ContactTableModel.TAG_COLUMN_INDEX]).contains("Friends");
+
+    // Verify that "Alice" and "Bob Cratchit" are present
+    window
+      .table(MessageKey.CONTACTS.getKey())
+      .cell("Alice");
+
+    window
+      .table(MessageKey.CONTACTS.getKey())
+      .cell("Bob Cratchit");
 
   }
 

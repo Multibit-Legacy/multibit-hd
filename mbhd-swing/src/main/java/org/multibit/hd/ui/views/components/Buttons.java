@@ -118,7 +118,8 @@ public class Buttons {
 
     JButton button = newButton(action, MessageKey.YES);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, button, true, MultiBitUI.NORMAL_ICON_SIZE);
+    // The check mark should trail the text for visual consistency
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
 
