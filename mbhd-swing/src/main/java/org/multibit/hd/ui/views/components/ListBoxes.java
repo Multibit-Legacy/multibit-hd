@@ -1,11 +1,14 @@
 package org.multibit.hd.ui.views.components;
 
 import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.renderers.TagPillListCellRenderer;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 
@@ -27,7 +30,7 @@ public class ListBoxes {
   }
 
   /**
-   * @param listModel         The list model populated with tags
+   * @param listModel The list model populated with tags
    *
    * @return A new JList with custom cell renderer for tag pill handling
    */
@@ -35,21 +38,33 @@ public class ListBoxes {
 
     final JList<String> list = new JList<>(listModel);
 
+    // Ensure FEST can find it
+    list.setName(MessageKey.TAGS.getKey());
+
     list.setCellRenderer(new TagPillListCellRenderer());
     list.setLayoutOrientation(JList.VERTICAL_WRAP);
 
     list.setBorder(BorderFactory.createEmptyBorder());
     list.setOpaque(false);
 
-    // The maximum is 2 for good behaviour here
-    list.setVisibleRowCount(2);
+    // Ensure the wrapping is intuitive
+    list.setVisibleRowCount(-1);
 
     // Only a single selection (and nothing selected at the start)
     list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    list.setSelectedIndex(0);
 
     // Add listeners
     list.addMouseMotionListener(getHandCursorMouseMotionListener(list));
+
+    // Ensure users can see when the list gets focus for the first time
+    list.addFocusListener(new FocusAdapter() {
+      @Override
+      public void focusGained(FocusEvent e) {
+        if (list.getSelectedIndex() < 0) {
+          list.setSelectedIndex(0);
+        }
+      }
+    });
 
     // Apply the theme
     list.setBackground(Themes.currentTheme.detailPanelBackground());

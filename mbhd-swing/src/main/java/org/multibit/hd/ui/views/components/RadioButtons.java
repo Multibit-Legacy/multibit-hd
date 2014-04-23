@@ -36,6 +36,9 @@ public class RadioButtons {
     JRadioButton radio = new JRadioButton();
     radio.setText(Languages.safeText(key, values));
 
+    // Ensure FEST can find the control
+    radio.setName(key.getKey());
+
     // Apply the current theme
     radio.setForeground(Themes.currentTheme.text());
 

@@ -127,9 +127,9 @@ public class CoreServices {
     log.debug("Loading configuration...");
 
     Optional<Configuration> configuration;
-    try (InputStream is = new FileInputStream(InstallationManager.getOrCreateConfigurationFile())) {
-      // Load configuration (providing a default if none exists)
-      configuration = Configurations.readConfiguration(is, Configuration.class);
+    try (InputStream is = new FileInputStream(InstallationManager.getConfigurationFile())) {
+        // Load configuration (providing a default if none exists)
+        configuration = Configurations.readConfiguration(is, Configuration.class);
     } catch (IOException e) {
       configuration = Optional.absent();
     }

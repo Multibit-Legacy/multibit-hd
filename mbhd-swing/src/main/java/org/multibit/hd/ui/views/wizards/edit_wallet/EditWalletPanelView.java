@@ -64,7 +64,7 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
     name = TextBoxes.newEnterName(getWizardModel(), false);
     contentPanel.add(name, "push,wrap");
 
-    // Description
+    // Public notes
     contentPanel.add(Labels.newLabel(MessageKey.NOTES));
     notes = TextBoxes.newEnterNotes(getWizardModel());
     contentPanel.add(notes, "push,wrap");

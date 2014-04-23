@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.List;
 import java.util.UUID;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class PersistentContactServiceTest {
 

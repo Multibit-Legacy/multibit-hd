@@ -207,27 +207,38 @@ public class ContactTableModel extends AbstractTableModel {
       final ListenableFuture<Optional<BufferedImage>> imageFuture = Gravatars.retrieveGravatar(contact.getEmail().or("nobody@example.org"));
       Futures.addCallback(imageFuture, new FutureCallback<Optional<BufferedImage>>() {
 
-        public void onSuccess(Optional<BufferedImage> image) {
+        public void onSuccess(final Optional<BufferedImage> image) {
 
-          if (image.isPresent()) {
-            final ImageIcon gravatar = ImageDecorator.toImageIcon(
-              ImageDecorator.applyRoundedCorners(image.get(), MultiBitUI.IMAGE_CORNER_RADIUS)
-            );
-            rowData[GRAVATAR_COLUMN_INDEX] = gravatar;
-          } else {
-            rowData[GRAVATAR_COLUMN_INDEX] = Images.newUserIcon();
-          }
+          SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+              if (image.isPresent()) {
 
-          // Ensure all listeners update to the new situation
-          fireTableDataChanged();
+                final ImageIcon gravatar = ImageDecorator.toImageIcon(
+                  ImageDecorator.applyRoundedCorners(image.get(), MultiBitUI.IMAGE_CORNER_RADIUS)
+                );
+                rowData[GRAVATAR_COLUMN_INDEX] = gravatar;
+              } else {
+                rowData[GRAVATAR_COLUMN_INDEX] = Images.newUserIcon();
+              }
+
+              // Ensure all listeners update to the new situation
+              fireTableDataChanged();
+            }
+          });
         }
 
         public void onFailure(Throwable thrown) {
 
-          rowData[GRAVATAR_COLUMN_INDEX] = Images.newUserIcon();
+          SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+              rowData[GRAVATAR_COLUMN_INDEX] = Images.newUserIcon();
 
-          // Ensure all listeners update to the new situation
-          fireTableDataChanged();
+              // Ensure all listeners update to the new situation
+              fireTableDataChanged();
+            }
+          });
         }
       });
 

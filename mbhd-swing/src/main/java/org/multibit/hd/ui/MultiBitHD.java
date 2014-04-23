@@ -35,7 +35,6 @@ public class MultiBitHD {
   private static final Logger log = LoggerFactory.getLogger(MultiBitHD.class);
 
   private static MainController mainController;
-  private static MainView mainView;
 
   /**
    * <p>Main entry point to the application</p>
@@ -67,9 +66,15 @@ public class MultiBitHD {
     // Start core services (logging, security alerts, configuration, Bitcoin URI handling etc)
     initialiseCore(args);
 
-    // Initialise the UI views
-    initialiseUIViews();
+    // Initialise the UI views in the EDT
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
 
+        initialiseUIViews();
+
+      }
+    });
   }
 
   /**
@@ -83,7 +88,7 @@ public class MultiBitHD {
    * <li>Bitcoin network service</li>
    * </ul>
    */
-  private static boolean initialiseUIControllers(String[] args) {
+  public static boolean initialiseUIControllers(String[] args) {
 
     // Determine if another instance is running and shutdown if this is the case
     BitcoinURIListeningService bitcoinURIListeningService = new BitcoinURIListeningService(args);
@@ -112,7 +117,7 @@ public class MultiBitHD {
   /**
    * <p>Initialise the JVM. This occurs before anything else is called.</p>
    */
-  private static void initialiseJVM() throws Exception {
+  public static void initialiseJVM() throws Exception {
 
     log.debug("Initialising JVM...");
 
@@ -156,7 +161,7 @@ public class MultiBitHD {
   /**
    * <p>Initialise the platform-specific services</p>
    */
-  private static void initialiseGenericApp() {
+  public static void initialiseGenericApp() {
 
     GenericApplicationSpecification specification = new GenericApplicationSpecification();
     specification.getOpenURIEventListeners().add(mainController);
@@ -173,7 +178,7 @@ public class MultiBitHD {
    *
    * @param args The command line arguments
    */
-  private static void initialiseCore(String[] args) {
+  public static void initialiseCore(String[] args) {
 
     log.debug("Initialising Core...");
 
@@ -198,52 +203,47 @@ public class MultiBitHD {
    * <p>Once the UI renders, control passes to the <code>MainController</code> to
    * respond to the wizard close event which will trigger ongoing initialisation.</p>
    */
-  private static void initialiseUIViews() {
+  public static MainView initialiseUIViews() {
 
     log.debug("Initialising UI...");
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
+    // Ensure that we are using the configured theme
+    ThemeKey themeKey = ThemeKey.valueOf(Configurations.currentConfiguration.getApplication().getCurrentTheme());
+    Themes.switchTheme(themeKey.theme());
 
-        // Ensure that we are using the configured theme
-        ThemeKey themeKey = ThemeKey.valueOf(Configurations.currentConfiguration.getApplication().getCurrentTheme());
-        Themes.switchTheme(themeKey.theme());
+    // Build the main view
+    MainView mainView = new MainView();
 
-        // Build the main view
-        mainView = new MainView();
+    // Check for any pre-existing wallets in the application directory
+    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+    List<File> walletDirectories = WalletManager.findWalletDirectories(applicationDataDirectory);
 
-        // Check for any pre-existing wallets in the application directory
-        File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-        List<File> walletDirectories = WalletManager.findWalletDirectories(applicationDataDirectory);
+    if (walletDirectories.isEmpty()) {
 
-        if (walletDirectories.isEmpty()) {
+      // No wallet so need the welcome wizard
+      log.debug("No wallets in the directory - showing the 'WelcomeWizard'");
+      mainView.setShowExitingWelcomeWizard(true);
 
-          // No wallet so need the welcome wizard
-          log.debug("No wallets in the directory - showing the 'WelcomeWizard'");
-          mainView.setShowExitingWelcomeWizard(true);
+    } else {
 
-        } else {
+      // There is a wallet present so show the password wizard
+      mainView.setShowExitingPasswordWizard(true);
 
-          // There is a wallet present so show the password wizard
-          mainView.setShowExitingPasswordWizard(true);
+    }
 
-        }
+    mainView.refresh();
 
-        mainView.refresh();
+    // Catch up with any early security events
+    Optional<SecurityEvent> securityEvent = CoreServices.getApplicationEventService().getLatestSecurityEvent();
 
-        // Catch up with any early security events
-        Optional<SecurityEvent> securityEvent = CoreServices.getApplicationEventService().getLatestSecurityEvent();
+    if (securityEvent.isPresent()) {
+      mainController.onSecurityEvent(securityEvent.get());
+    }
 
-        if (securityEvent.isPresent()) {
-          mainController.onSecurityEvent(securityEvent.get());
-        }
+    // See the MainController wizard hide event for the next stage
 
-        // See the MainController wizard hide event for the next stage
+    return mainView;
 
-      }
-
-    });
   }
 
 }

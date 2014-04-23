@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.services.CoreServices;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class MultiBitPeerEventListenerTest {
   boolean test = false;

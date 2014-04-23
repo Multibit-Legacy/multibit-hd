@@ -115,9 +115,9 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
     LabelDecorator.applyBitcoinSymbolLabel(
             amountBTCLabel,
             Configurations.currentConfiguration.getBitcoin(),
-            Languages.safeText(MessageKey.AMOUNT) + " ");
+            Languages.safeText(MessageKey.LOCAL_AMOUNT) + " ");
 
-    JLabel amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.AMOUNT) + " " + Configurations.currentConfiguration.getBitcoin().getLocalCurrencySymbol());
+    JLabel amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT) + " " + Configurations.currentConfiguration.getBitcoin().getLocalCurrencySymbol());
     amountFiatValue = Labels.newBlankLabel();
 
     JLabel exchangeRateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL));

@@ -39,17 +39,23 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
 
     log.error("Uncaught exception", t);
 
-    String message = t.getMessage();
-
-    if (message == null || message.length() == 0) {
+    final String message;
+    if (t.getMessage() == null || t.getMessage().length() == 0) {
       message = "Fatal: " + t.getClass();
+    } else {
+      message = t.getMessage();
     }
 
     // TODO Replace this with a full-on reporting system
-    JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
 
-    // Safest option at this point is to shut down
-    CoreEvents.fireShutdownEvent();
+        // Safest option at this point is to shut down
+        CoreEvents.fireShutdownEvent();
+      }
+    });
 
   }
 

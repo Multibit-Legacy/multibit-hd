@@ -1,12 +1,17 @@
 package org.multibit.hd.ui.views.components.enter_tags;
 
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.audio.Sounds;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
+import java.awt.*;
 import java.awt.event.*;
 
 /**
@@ -19,6 +24,8 @@ import java.awt.event.*;
  *  
  */
 public class EnterTagsView extends AbstractComponentView<EnterTagsModel> {
+
+  private static final Logger log = LoggerFactory.getLogger(EnterTagsView.class);
 
   // View components
   private JList tagsList;
@@ -68,12 +75,13 @@ public class EnterTagsView extends AbstractComponentView<EnterTagsModel> {
     listScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
     addTagButton = Buttons.newAddButton(null);
+    addTagButton.setName(getModel().get().getPanelName() + "." + MessageKey.ADD.getKey());
 
     AddTagListener addTagListener = new AddTagListener();
     addTagButton.addActionListener(addTagListener);
     addTagButton.setEnabled(false);
 
-    tagText = TextBoxes.newTextField(20);
+    tagText = TextBoxes.newEnterTag();
     tagText.addActionListener(addTagListener);
     tagText.getDocument().addDocumentListener(addTagListener);
 
@@ -112,13 +120,25 @@ public class EnterTagsView extends AbstractComponentView<EnterTagsModel> {
           return;
         }
 
-        // Test if the mouse click was on the selected tag
-        if (tagsList.getCellBounds(tagsList.getSelectedIndex(), tagsList.getSelectedIndex()).contains(mouseEvent.getPoint())) {
+        // Test if the mouse click was on the selected tag for smooth UX
+        Rectangle cellBounds = tagsList.getCellBounds(tagsList.getSelectedIndex(), tagsList.getSelectedIndex());
+        if (cellBounds.contains(mouseEvent.getPoint())) {
 
+          // User is not randomly clicking around
           removeTag(index);
 
-        }
+          // Need to select index and scroll to maintain smooth UX
+          tagsList.setSelectedIndex(index);
+          tagsList.ensureIndexIsVisible(index);
 
+        } else {
+          log.debug("Mouse click was not on selected tag. Selected index {}, cell bounds: {}, mouse point: {}",
+            tagsList.getSelectedIndex(),
+            cellBounds,
+            mouseEvent.getPoint()
+          );
+
+        }
       }
 
     };
@@ -126,6 +146,7 @@ public class EnterTagsView extends AbstractComponentView<EnterTagsModel> {
 
   /**
    * <p>A key listener to only perform the tag removal on an action</p>
+   *
    * @return The key listener
    */
   private KeyListener getKeyListener() {
@@ -136,10 +157,10 @@ public class EnterTagsView extends AbstractComponentView<EnterTagsModel> {
       public void keyReleased(KeyEvent e) {
 
         // People have a lot of ways of making a choice to delete with the keyboard
-        if (e.getKeyCode()== KeyEvent.VK_ENTER
-          || e.getKeyCode()==KeyEvent.VK_SPACE
-          || e.getKeyCode()==KeyEvent.VK_DELETE
-          || e.getKeyCode()==KeyEvent.VK_BACK_SPACE
+        if (e.getKeyCode() == KeyEvent.VK_ENTER
+          || e.getKeyCode() == KeyEvent.VK_SPACE
+          || e.getKeyCode() == KeyEvent.VK_DELETE
+          || e.getKeyCode() == KeyEvent.VK_BACK_SPACE
           ) {
 
           // Determine the currently selected index
@@ -152,6 +173,8 @@ public class EnterTagsView extends AbstractComponentView<EnterTagsModel> {
 
           removeTag(index);
 
+        } else {
+          log.debug("Key code was not a recognised click");
         }
       }
 
@@ -165,24 +188,28 @@ public class EnterTagsView extends AbstractComponentView<EnterTagsModel> {
 
     String tag = tagsListModel.getElementAt(index);
 
+    log.debug("Removing '{}' at {}", tag, index);
+
     // Remove it from the model
-    getModel().get().getTags().remove(tag);
+    getModel().get().getNewTags().remove(tag);
 
     // User wants to remove this entry
     tagsListModel.remove(index);
 
-    int size = tagsListModel.getSize();
+    int sizeAfterRemoval = tagsListModel.getSize();
 
-    if (size != 0) {
+    // Ensure selection focus changes to follow new size for smooth UX
+    if (sizeAfterRemoval > 0) {
 
-      // Ensure selection focus changes
-      if (index == tagsListModel.getSize()) {
-        // Removed item in last position
+      if (index == sizeAfterRemoval) {
+        // Removed item at end of list
         index--;
       }
 
       tagsList.setSelectedIndex(index);
       tagsList.ensureIndexIsVisible(index);
+
+      log.debug("Set focus to tag index: {} with count: {}", index, sizeAfterRemoval);
 
     }
   }
@@ -192,20 +219,18 @@ public class EnterTagsView extends AbstractComponentView<EnterTagsModel> {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-      String tag = tagText.getText();
-
-      // Check if this has already been taken
-      if (tag.equals("") || tagsListModel.contains(tag) || tagsListModel.size() >= 8) {
-        Sounds.playBeep();
-        tagText.requestFocusInWindow();
-        tagText.selectAll();
+      // User wants to add a tag but may have relied on the keyboard method
+      if (!addTagButton.isEnabled()) {
+        // Ignore
         return;
       }
 
-      // Must be unique to be here
+      String tag = tagText.getText();
+
+      log.debug("Adding tag '{}'", tag);
 
       // Add it to the model
-      getModel().get().getTags().add(tag);
+      getModel().get().getNewTags().add(tag);
 
       // Add to the end
       tagsListModel.addElement(tag);
@@ -223,8 +248,14 @@ public class EnterTagsView extends AbstractComponentView<EnterTagsModel> {
     @Override
     public void insertUpdate(DocumentEvent e) {
 
-      // Cannot be empty
-      addTagButton.setEnabled(true);
+      // Might be white space
+
+      // Check tag list size and avoid duplications
+      if (isTagListSizeExceeded() || isPresent(e) || isEmptyTextField(e)) {
+        addTagButton.setEnabled(false);
+      } else {
+        addTagButton.setEnabled(true);
+      }
 
     }
 
@@ -232,14 +263,43 @@ public class EnterTagsView extends AbstractComponentView<EnterTagsModel> {
     public void removeUpdate(DocumentEvent e) {
 
       // Might be empty
-      addTagButton.setEnabled(!isEmptyTextField(e));
+
+      // Check tag list size and avoid empty or duplicated
+      if (isTagListSizeExceeded() || isPresent(e) || isEmptyTextField(e)) {
+        addTagButton.setEnabled(false);
+      } else {
+        addTagButton.setEnabled(true);
+      }
+
     }
 
     @Override
     public void changedUpdate(DocumentEvent e) {
 
       // Might be empty
-      addTagButton.setEnabled(!isEmptyTextField(e));
+
+      // Check tag list size and avoid empty or duplicated
+      if (isTagListSizeExceeded() || isPresent(e) || isEmptyTextField(e)) {
+        addTagButton.setEnabled(false);
+      } else {
+        addTagButton.setEnabled(true);
+      }
+
+    }
+
+    /**
+     * @param e The document event
+     *
+     * @return The document contents
+     */
+    private String getDocumentText(DocumentEvent e) {
+
+      try {
+        return e.getDocument().getText(0, e.getDocument().getLength());
+      } catch (BadLocationException e1) {
+        ExceptionHandler.handleThrowable(e1);
+        return "";
+      }
 
     }
 
@@ -250,7 +310,27 @@ public class EnterTagsView extends AbstractComponentView<EnterTagsModel> {
      */
     private boolean isEmptyTextField(DocumentEvent e) {
 
-      return e.getDocument().getLength() <= 0;
+      return getDocumentText(e).trim().length() <= 0;
+
+    }
+
+    /**
+     * @param e The document event
+     *
+     * @return True if the tags list model contains the document
+     */
+    private boolean isPresent(DocumentEvent e) {
+
+      return tagsListModel.contains(getDocumentText(e));
+
+    }
+
+    /**
+     * @return True if the tags list model has reached its maximum size
+     */
+    private boolean isTagListSizeExceeded() {
+
+      return tagsListModel.size() >= 8;
 
     }
   }

@@ -34,6 +34,13 @@ public enum MessageKey {
   EDIT("edit"),
   DELETE("delete"),
   RESTORE("restore"),
+  SEARCH("search"),
+  BACK("back"),
+  FORWARD("forward"),
+  BROWSE("browse"),
+  PRINT("print"),
+  PASTE("paste"),
+  COPY("copy"),
 
   // Nouns
 
@@ -45,6 +52,7 @@ public enum MessageKey {
   NONE("none"),
   ERROR("error"),
   DEFAULT("default"),
+  QR_CODE("qr_code"),
 
   // Adjectives
   LEADING("leading"),
@@ -73,7 +81,8 @@ public enum MessageKey {
   PASSWORD_VERIFIED("password_verified"),
   PASSWORD_FAILED("password_failed"),
 
-  AMOUNT("amount"),
+  BITCOIN_AMOUNT("bitcoin_address"),
+  LOCAL_AMOUNT("local_amount"),
   AMOUNT_PAID("amount_paid"),
   TRANSACTION_FEE("transaction_fee"),
   DEVELOPER_FEE("developer_fee"),
@@ -95,7 +104,7 @@ public enum MessageKey {
 
   DISPLAY_LANGUAGE("display_language"),
 
-  DISPLAY_THEME("display_theme"),
+  SELECT_THEME("select_theme"),
 
   SELECT_DECIMAL_SEPARATOR("select_decimal_separator"),
   SELECT_GROUPING_SEPARATOR("select_grouping_separator"),
@@ -114,9 +123,10 @@ public enum MessageKey {
 
   // Sidebar
 
+  SIDEBAR_TREE("sidebar_tree"),
   SEND_OR_REQUEST("send_or_request"),
   CONTACTS("contacts"),
-  TRANSACTIONS("transactions"),
+  PAYMENTS("payments"),
   HISTORY("history"),
   PREFERENCES("preferences"),
   TOOLS("tools"),
@@ -211,6 +221,7 @@ public enum MessageKey {
   EXCHANGE_FIAT_RATE_WITH_PROVIDER("exchange_fiat_rate_with_provider"),
   SELECT_LANGUAGE("select_language"),
   SEED_SIZE("seed_size"),
+  SEED_PHRASE("seed_phrase"),
   TIMESTAMP("timestamp"),
   MULTI_EDIT_NOTE("multi_edit_note"),
 

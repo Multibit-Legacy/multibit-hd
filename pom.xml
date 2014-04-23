@@ -29,6 +29,8 @@
     <!-- Maven plugins -->
     <maven-antrun.version>1.7</maven-antrun.version>
 
+    <!-- 2.0M10/1.2.1 -->
+    <fest.version>1.2.1</fest.version>
   </properties>
 
   <modules>
@@ -174,7 +176,7 @@
         </configuration>
       </plugin>
 
-      <!-- Filter out functional tests by Maven (an IDE will run all tests including functional) -->
+      <!-- Filter out functional and FEST UI tests by Maven (an IDE will run all tests including functional) -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -182,6 +184,7 @@
         <configuration>
           <excludes>
             <exclude>**/*FunctionalTest.java</exclude>
+            <exclude>**/*MultiBitHDFestTest.java</exclude>
           </excludes>
         </configuration>
       </plugin>
@@ -294,7 +297,14 @@
       <dependency>
         <groupId>org.easytesting</groupId>
         <artifactId>fest-assert-core</artifactId>
-        <version>2.0M10</version>
+        <version>${fest.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <!-- FEST for Swing UI testing -->
+      <dependency>
+        <groupId>org.easytesting</groupId>
+        <artifactId>fest-swing</artifactId>
+        <version>${fest.version}</version>
         <scope>test</scope>
       </dependency>
 
@@ -361,7 +371,7 @@
     <!-- FEST for fluent test assertions -->
     <dependency>
       <groupId>org.easytesting</groupId>
-      <artifactId>fest-assert-core</artifactId>
+      <artifactId>fest-swing</artifactId>
     </dependency>
 
     <!-- Mockito for mocking -->

@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class PayersTest {
 

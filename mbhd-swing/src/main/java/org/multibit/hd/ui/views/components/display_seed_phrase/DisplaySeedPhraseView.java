@@ -112,7 +112,7 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        DisplaySeedPhraseModel model = getModel().get();
+        final DisplaySeedPhraseModel model = getModel().get();
 
         JButton button = (JButton) e.getSource();
 
@@ -152,7 +152,7 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        DisplaySeedPhraseModel model = getModel().get();
+        final DisplaySeedPhraseModel model = getModel().get();
 
         model.newSeedPhrase(model.getCurrentSeedSize());
         seedPhrase.setText(model.displaySeedPhrase());

@@ -75,7 +75,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
     // Set the maximum values for the amount fields
     bitcoinAmountText = TextBoxes.newBitcoinAmount(BitcoinSymbol.maxSymbolicAmount().doubleValue());
-    localAmountText = TextBoxes.newCurrencyAmount(999_999_999_999_999.9999);
+    localAmountText = TextBoxes.newLocalAmount(999_999_999_999_999.9999);
 
     // Set initial Bitcoin amount from the model (if non-zero)
     if (!BigInteger.ZERO.equals(getModel().get().getSatoshis())) {

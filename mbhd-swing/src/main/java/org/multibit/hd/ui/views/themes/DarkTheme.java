@@ -52,6 +52,11 @@ public class DarkTheme implements Theme {
   }
 
   @Override
+  public Color focusBorder() {
+    return new Color(252,91,79);
+  }
+
+  @Override
   public Color sidebarSelectedText() {
     return new Color(240, 211, 85);
   }

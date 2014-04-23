@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class BackupManagerTest {
 

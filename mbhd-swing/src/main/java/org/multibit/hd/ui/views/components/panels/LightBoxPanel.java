@@ -85,15 +85,25 @@ public class LightBoxPanel extends JPanel {
    */
   public void close() {
 
-    // Tidy up the layered pane - cannot remove by reference
-    // The lightbox panel is always here
-    Panels.applicationFrame.getLayeredPane().remove(1);
-    // The content panel is always here after the removal
-    Panels.applicationFrame.getLayeredPane().remove(0);
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        // Tidy up the layered pane - cannot remove by reference
+        // The lightbox panel is always here
+        try {
+          Panels.applicationFrame.getLayeredPane().remove(1);
+          // The content panel is always here after the removal
+          Panels.applicationFrame.getLayeredPane().remove(0);
+        } catch (ArrayIndexOutOfBoundsException e) {
+          // Ignore
+        }
 
-    // Repaint
-    Panels.applicationFrame.validate();
-    Panels.applicationFrame.repaint();
+        // Repaint
+        Panels.applicationFrame.validate();
+        Panels.applicationFrame.repaint();
+
+      }
+    });
 
   }
 

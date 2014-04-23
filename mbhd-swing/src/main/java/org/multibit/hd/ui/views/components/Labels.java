@@ -54,6 +54,9 @@ public class Labels {
 
     JLabel label = new JLabel(Languages.safeText(key, values));
 
+    // Ensure FEST can find the label
+    label.setName(key.getKey());
+
     // Apply theme
     label.setForeground(Themes.currentTheme.text());
 
@@ -100,6 +103,9 @@ public class Labels {
   public static JLabel newTitleLabel(MessageKey key) {
 
     JLabel label = newLabel(key);
+
+    // Ensure FEST can find it
+    label.setName(key.getKey());
 
     // Font
     Font font = label.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE);
@@ -166,6 +172,9 @@ public class Labels {
 
     // Wrap in HTML to ensure LTR/RTL and line breaks are respected
     JLabel label = new JLabel(HtmlUtils.localiseWithLineBreaks(lines));
+
+    // Ensure FEST can find it using the first key
+    label.setName(keys[0].getKey());
 
     // Theme
     label.setForeground(Themes.currentTheme.text());
@@ -366,7 +375,7 @@ public class Labels {
    */
   public static JLabel newSelectThemeLabel() {
 
-    return Labels.newLabel(MessageKey.DISPLAY_THEME);
+    return Labels.newLabel(MessageKey.SELECT_THEME);
 
   }
 
@@ -511,9 +520,9 @@ public class Labels {
         normalFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, MultiBitUI.BALANCE_FEE_NORMAL_FONT_SIZE);
         break;
       case PLAIN:
-         largeFont = primaryBalanceLabel.getFont().deriveFont(Font.PLAIN, MultiBitUI.BALANCE_FEE_NORMAL_FONT_SIZE);
-         normalFont = primaryBalanceLabel.getFont().deriveFont(Font.PLAIN, MultiBitUI.BALANCE_FEE_NORMAL_FONT_SIZE);
-         break;
+        largeFont = primaryBalanceLabel.getFont().deriveFont(Font.PLAIN, MultiBitUI.BALANCE_FEE_NORMAL_FONT_SIZE);
+        normalFont = primaryBalanceLabel.getFont().deriveFont(Font.PLAIN, MultiBitUI.BALANCE_FEE_NORMAL_FONT_SIZE);
+        break;
       default:
         throw new IllegalStateException("Unknown style:" + style.name());
     }
@@ -548,7 +557,7 @@ public class Labels {
    * @return A new "Amount" label
    */
   public static JLabel newAmount() {
-    return newLabel(MessageKey.AMOUNT);
+    return newLabel(MessageKey.LOCAL_AMOUNT);
   }
 
   /**
@@ -685,8 +694,6 @@ public class Labels {
   }
 
   /**
-   * @param developerFee The developer fee in satoshis
-   *
    * @return A new "developer fee" message
    */
   public static JLabel newDeveloperFee() {
@@ -920,6 +927,9 @@ public class Labels {
       MessageKey.SEED_WARNING_NOTE_5,
     }, new Object[][]{});
 
+    // Allow FEST to find this
+    label.setName(MessageKey.SEED_WARNING_NOTE_1.getKey());
+
     // Allow for danger theme
     label.setForeground(Themes.currentTheme.dangerAlertText());
 
@@ -993,17 +1003,18 @@ public class Labels {
   }
 
   /**
-    * @return A new "export payments location" status label
-    */
-   public static JLabel newSelectExportPaymentsLocationNote() {
+   * @return A new "export payments location" status label
+   */
+  public static JLabel newSelectExportPaymentsLocationNote() {
 
-     return newNoteLabel(new MessageKey[]{
-             MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_1,
-             MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_2,
-             MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_3,
-             MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_4,
-     }, new Object[][]{});
-   }
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_1,
+      MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_2,
+      MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_3,
+      MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION_NOTE_4,
+    }, new Object[][]{});
+  }
+
   /**
    * @return A new "restore from backup" note
    */

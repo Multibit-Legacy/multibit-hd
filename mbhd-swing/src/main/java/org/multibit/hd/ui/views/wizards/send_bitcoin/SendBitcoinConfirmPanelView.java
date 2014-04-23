@@ -84,7 +84,7 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     recipientSummaryLabel = Labels.newBlankLabel();
 
     // User entered text
-    notesTextArea = TextBoxes.newEnterNotes(getWizardModel());
+    notesTextArea = TextBoxes.newEnterPrivateNotes(getWizardModel());
 
     contentPanel.setLayout(new MigLayout(
             Panels.migXYLayout(),

@@ -3,11 +3,14 @@ package org.multibit.hd.ui.views.wizards.edit_contact;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multiset;
 import com.google.common.collect.Sets;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.enter_tags.EnterTagsModel;
 import org.multibit.hd.ui.views.components.enter_tags.EnterTagsView;
@@ -37,10 +40,13 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
   // Panel specific components
   private JTextField name;
+
   private JTextField emailAddress;
   private JTextField bitcoinAddress;
   private JTextField extendedPublicKey;
+
   private JTextArea notes;
+
   private ModelAndView<EnterTagsModel, EnterTagsView> enterTagsMaV;
 
   private EnterContactDetailsMode mode;
@@ -72,7 +78,7 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
-      "[][]", // Column constraints
+      "[][][]", // Column constraints
       "[][][]" // Row constraints
     ));
 
@@ -91,7 +97,7 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
     extendedPublicKey = TextBoxes.newEnterExtendedPublicKey(getWizardModel(), multiEdit);
 
     // Always allow non-unique fields
-    notes = TextBoxes.newEnterNotes(getWizardModel());
+    notes = TextBoxes.newEnterPrivateNotes(getWizardModel());
 
     List<String> allNames = Lists.newArrayList();
 
@@ -103,15 +109,28 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
       // Notes are initially empty since concatenating from multiple contacts
       // quickly becomes unmanageable
 
-      // Combine all tags from all contacts (no duplicates)
-      Set<String> allTags = Sets.newHashSet();
+      List<String> allTags = Lists.newArrayList();
+      int contactCount = contacts.size();
+
+      // Gather the list of all tags and names of all contacts (we want duplicates)
       for (Contact contact : contacts) {
         allTags.addAll(contact.getTags());
         allNames.add(contact.getName());
       }
 
+      // Count the occurrences of each tag to identify shared tags
+      Multiset<String> tagOccurrences = HashMultiset.create(allTags);
+
+      // Extract those that are common to all contacts
+      Set<String> sharedTags = Sets.newHashSet();
+      for (String tag: allTags) {
+        if (tagOccurrences.count(tag) >= contactCount) {
+          sharedTags.add(tag);
+        }
+      }
+
       // Base the tags on all tags
-      enterTagsMaV = Components.newEnterTagsMaV(getPanelName(), Lists.newArrayList(allTags));
+      enterTagsMaV = Components.newEnterTagsMaV(getPanelName(), Lists.newArrayList(sharedTags));
 
     } else {
 
@@ -161,7 +180,9 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
       // Provide a short list of names with ellipsis
       contentPanel.add(Labels.newNames(), "aligny top");
-      contentPanel.add(TextBoxes.newTruncatedList(allNames, 400), "grow,push,aligny top,wrap");
+      JTextArea allNamesList = TextBoxes.newTruncatedList(allNames, 400);
+      allNamesList.setName(MessageKey.NAMES.getKey());
+      contentPanel.add(allNamesList, "grow,push,aligny top,wrap");
     }
 
     // Tags must be top aligned since it is a tall component
@@ -228,40 +249,86 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 
-    List<String> tags = enterTagsMaV.getModel().getValue();
+    List<String> originalTags = enterTagsMaV.getModel().getOriginalTags();
+    List<String> newTags = enterTagsMaV.getModel().getNewTags();
+
+    // Determine which tags should be added
+    List<String> addToAllTags = Lists.newArrayList();
+    for (String newTag: newTags) {
+
+      if (!originalTags.contains(newTag)) {
+        // Tag is new
+        addToAllTags.add(newTag);
+      }
+
+    }
+
+    // Determine which tags should be removed
+    List<String> removeFromAllTags = Lists.newArrayList();
+    for (String originalTag: originalTags) {
+
+      if (!newTags.contains(originalTag)) {
+        // Tag has been removed
+        removeFromAllTags.add(originalTag);
+      }
+
+    }
 
     // Update the selected contacts
     List<Contact> contacts = getWizardModel().getContacts();
     for (Contact contact : contacts) {
 
+      // Single edit mode
       if (!mode.equals(EDIT_MULTIPLE)) {
 
         // Handle the single item properties
-        contact.setName(name.getText());
-        contact.setEmail(emailAddress.getText());
-        contact.setBitcoinAddress(bitcoinAddress.getText());
-        contact.setExtendedPublicKey(extendedPublicKey.getText());
+        contact.setName(name.getText().trim());
+        contact.setEmail(emailAddress.getText().trim());
+        contact.setBitcoinAddress(bitcoinAddress.getText().trim());
+        contact.setExtendedPublicKey(extendedPublicKey.getText().trim());
 
         // Notes are not appended
         contact.setNotes(notes.getText().trim());
 
         // TODO Support image
 
+        // Overwrite existing tags
+        contact.setTags(newTags);
+
       } else {
 
         // Ignore the single item properties
 
-        // Append the given notes to the contacts
+        // Append the given notes to the contact
         String contactNotes = contact.getNotes().or("").trim();
         if (Strings.isNullOrEmpty(contactNotes)) {
           contact.setNotes(notes.getText().trim());
         } else {
           contact.setNotes(contactNotes + "\n\n" + notes.getText().trim());
         }
+
+        // Adjust the existing tags
+        List<String> existingTags = contact.getTags();
+        for (String addToAllTag: addToAllTags) {
+
+          if (!existingTags.contains(addToAllTag)) {
+            // Add the tag
+            existingTags.add(addToAllTag.trim());
+          }
+
+        }
+
+        for (String removeFromAllTag: removeFromAllTags) {
+
+          if (existingTags.contains(removeFromAllTag)) {
+            // Add the tag
+            existingTags.remove(removeFromAllTag);
+          }
+
+        }
+
       }
 
-      // Tags are treated the same
-      contact.setTags(tags);
 
     }
 

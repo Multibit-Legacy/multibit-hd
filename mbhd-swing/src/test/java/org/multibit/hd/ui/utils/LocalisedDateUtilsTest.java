@@ -10,7 +10,7 @@ import org.multibit.hd.core.config.Configurations;
 
 import java.util.Locale;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertThat;
 
 
 public class LocalisedDateUtilsTest {

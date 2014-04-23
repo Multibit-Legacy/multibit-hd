@@ -25,7 +25,7 @@ import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import java.io.File;
 import java.util.Arrays;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class WalletIdTest {
   public static final String SEED_PHRASE_1 = "letter advice cage absurd amount doctor acoustic avoid letter advice cage above";

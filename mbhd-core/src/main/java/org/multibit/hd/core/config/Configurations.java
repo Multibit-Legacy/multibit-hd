@@ -66,7 +66,7 @@ public class Configurations {
     currentConfiguration = newConfiguration;
 
     // Persist the new configuration
-    try (FileOutputStream fos = new FileOutputStream(InstallationManager.getOrCreateConfigurationFile())) {
+    try (FileOutputStream fos = new FileOutputStream(InstallationManager.getConfigurationFile())) {
       Configurations.writeCurrentConfiguration(fos, Configurations.currentConfiguration);
 
       // Update any JVM classes
@@ -95,7 +95,7 @@ public class Configurations {
     try {
       configuration = Optional.fromNullable(mapper.readValue(is, clazz));
     } catch (IOException e) {
-      log.warn(e.getMessage(), e);
+      log.warn(e.getMessage());
       configuration = Optional.absent();
     }
     if (configuration == null) {

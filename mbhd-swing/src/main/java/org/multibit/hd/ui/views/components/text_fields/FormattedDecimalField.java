@@ -84,6 +84,11 @@ public class FormattedDecimalField extends JFormattedTextField {
     NumberFormatter displayFormatter = getNumberFormatter(displayDecimalFormat, maxEditLength);
     NumberFormatter editFormatter = getNumberFormatter(editDecimalFormat, maxEditLength);
 
+    // Ensure we keep insert mode
+    defaultFormatter.setOverwriteMode(false);
+    displayFormatter.setOverwriteMode(false);
+    editFormatter.setOverwriteMode(false);
+
     setFormatterFactory(new DefaultFormatterFactory(
       defaultFormatter,
       displayFormatter,

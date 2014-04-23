@@ -33,10 +33,10 @@ public class PaymentRequestHeaderConverter implements CSVEntryConverter<PaymentR
     columns[5] = Languages.safeText(MessageKey.PRIVATE_NOTES);
 
     // Amount in BTC.
-    columns[6] = Languages.safeText(MessageKey.AMOUNT) + " "  + Configurations.currentConfiguration.getBitcoin().getBitcoinSymbol();
+    columns[6] = Languages.safeText(MessageKey.LOCAL_AMOUNT) + " "  + Configurations.currentConfiguration.getBitcoin().getBitcoinSymbol();
 
     // Amount in fiat
-    columns[7] = Languages.safeText(MessageKey.AMOUNT) + " " + Configurations.currentConfiguration.getBitcoin().getLocalCurrencySymbol();
+    columns[7] = Languages.safeText(MessageKey.LOCAL_AMOUNT) + " " + Configurations.currentConfiguration.getBitcoin().getLocalCurrencySymbol();
 
     // Exchange rate
     columns[8] = Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL);

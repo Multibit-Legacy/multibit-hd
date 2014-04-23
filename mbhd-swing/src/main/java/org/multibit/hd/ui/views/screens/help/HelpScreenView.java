@@ -94,10 +94,14 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
     launchBrowserButton.setEnabled(Desktop.isDesktopSupported());
 
     // Create the browser
-    final JEditorPane editorPane = createBrowser();
+    editorPane = createBrowser();
 
     // Create the scroll pane and add the HTML editor pane to it
     JScrollPane scrollPane = new JScrollPane(editorPane);
+
+    // Ensure FEST can find it
+    scrollPane.setName(MessageKey.HELP.getKey());
+
     scrollPane.setViewportBorder(null);
 
     // Add to the panel
@@ -112,6 +116,18 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
   @Override
   public void afterShow() {
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        // Load the current page in the history
+        try {
+          editorPane.setPage(currentPage());
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    });
 
   }
 
@@ -139,9 +155,6 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
     // TODO More robust error handling required
     try {
-      // Look up the standard MultiBit help (via HTTP)
-      URL helpBaseUrl = URI.create(HELP_BASE_URL).toURL();
-
       // Create an editor pane to wrap the HTML editor kit
       editorPane = new JEditorPane();
 
@@ -154,6 +167,9 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
       // Apply style
       editorPane.setEditorKit(kit);
 
+      // Look up the standard MultiBit help (via HTTP)
+      URL helpBaseUrl = URI.create(HELP_BASE_URL).toURL();
+
       // Create a default document to manage HTML
       HTMLDocument doc = (HTMLDocument) kit.createDefaultDocument();
       doc.setBase(helpBaseUrl);
@@ -161,9 +177,6 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
       // Create the starting page
       addPage(URI.create(HELP_BASE_URL + "help_contents.html").toURL());
-
-      // Load the current page in the history
-      editorPane.setPage(currentPage());
 
     } catch (IOException e) {
       e.printStackTrace();
@@ -199,6 +212,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
       }
     });
+
     return editorPane;
   }
 

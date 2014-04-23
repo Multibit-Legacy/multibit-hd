@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -49,7 +50,10 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
 
     // Keep track of the password fields
     password1 = TextBoxes.newPassword();
+    password1.setName(MessageKey.ENTER_NEW_PASSWORD.getKey());
+
     password2 = TextBoxes.newPassword();
+    password2.setName(MessageKey.RETYPE_NEW_PASSWORD.getKey());
 
     // Configure the actions
     Action toggleDisplayAction = getToggleDisplayAction();
@@ -74,8 +78,12 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
 
     });
 
+    // Required to support FEST testing
+    String panelName = getModel().get().getPanelName();
+
     // Create a new verification status panel (initially hidden)
     verificationStatusLabel = Labels.newVerificationStatus(true);
+    verificationStatusLabel.setName(panelName+"."+MessageKey.VERIFICATION_STATUS.getKey());
     verificationStatusLabel.setVisible(false);
 
     JLabel spinner = Labels.newSpinner();

@@ -97,7 +97,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   private SelectBackupSummaryModel selectBackupSummaryModel;
   private EnterSeedPhraseModel restoreWalletEnterTimestampModel;
   private EnterPasswordModel restoreWalletEnterPasswordModel;
-  private List<WalletSummary> walletList;
+  private List<WalletSummary> walletList= Lists.newArrayList();
 
   /**
    * @param state The state object
