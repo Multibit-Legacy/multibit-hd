@@ -79,6 +79,8 @@ public class EditBobContactUseCase extends AbstractFestUseCase {
       .requireText("bob@example.org")
       .setText("bob.cratchit@example.org");
 
+
+
     // Ensure Add button is disabled without tag
     addTag("Scrooge Staff", 1);
 

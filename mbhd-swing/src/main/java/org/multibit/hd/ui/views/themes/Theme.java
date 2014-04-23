@@ -44,6 +44,11 @@ public interface Theme {
   Color readOnlyComboBox();
 
   /**
+   * @return The border colour for attention grabbing focus display elements (like tags, list items etc)
+   */
+  Color focusBorder();
+
+  /**
    * @return The text of a selected sidebar node (usually high contrast and saturation version of "read only")
    */
   Color sidebarSelectedText();

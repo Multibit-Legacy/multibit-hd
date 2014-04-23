@@ -58,7 +58,7 @@ public class TagPillListCellRenderer extends DefaultListCellRenderer {
     Border border = new TextBubbleBorder(Themes.currentTheme.readOnlyBorder());
     if (cellHasFocus) {
       if (isSelected) {
-        border = new TextBubbleBorder(UIManager.getColor("nimbusFocus"));
+        border = new TextBubbleBorder(Themes.currentTheme.focusBorder());
       }
     }
 

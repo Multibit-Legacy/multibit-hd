@@ -40,10 +40,13 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
   // Panel specific components
   private JTextField name;
+
   private JTextField emailAddress;
   private JTextField bitcoinAddress;
   private JTextField extendedPublicKey;
+
   private JTextArea notes;
+
   private ModelAndView<EnterTagsModel, EnterTagsView> enterTagsMaV;
 
   private EnterContactDetailsMode mode;
@@ -75,7 +78,7 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
-      "[][]", // Column constraints
+      "[][][]", // Column constraints
       "[][][]" // Row constraints
     ));
 
@@ -279,10 +282,10 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
       if (!mode.equals(EDIT_MULTIPLE)) {
 
         // Handle the single item properties
-        contact.setName(name.getText());
-        contact.setEmail(emailAddress.getText());
-        contact.setBitcoinAddress(bitcoinAddress.getText());
-        contact.setExtendedPublicKey(extendedPublicKey.getText());
+        contact.setName(name.getText().trim());
+        contact.setEmail(emailAddress.getText().trim());
+        contact.setBitcoinAddress(bitcoinAddress.getText().trim());
+        contact.setExtendedPublicKey(extendedPublicKey.getText().trim());
 
         // Notes are not appended
         contact.setNotes(notes.getText().trim());
@@ -310,7 +313,7 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
           if (!existingTags.contains(addToAllTag)) {
             // Add the tag
-            existingTags.add(addToAllTag);
+            existingTags.add(addToAllTag.trim());
           }
 
         }

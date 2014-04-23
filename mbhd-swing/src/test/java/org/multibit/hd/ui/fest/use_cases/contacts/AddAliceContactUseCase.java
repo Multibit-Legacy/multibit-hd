@@ -3,6 +3,7 @@ package org.multibit.hd.ui.fest.use_cases.contacts;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactState;
 
 import java.util.Map;
@@ -56,9 +57,20 @@ public class AddAliceContactUseCase extends AbstractFestUseCase {
       .textBox(MessageKey.EMAIL_ADDRESS.getKey())
       .setText("alice@example.org");
 
-    window
-      .textBox(MessageKey.BITCOIN_ADDRESS.getKey())
-      .setText("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
+    // Use a public domain standard address
+    verifyBitcoinAddressField("", true);
+    verifyBitcoinAddressField(" ", true);
+    verifyBitcoinAddressField("AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty", false);
+    verifyBitcoinAddressField("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXht", false);
+    verifyBitcoinAddressField("1AhN6rPdrMuKBGFDKR1k9A8SCLYa", false);
+    verifyBitcoinAddressField("1AhN6rPdrMuKBGFDk9A8SCLYaNgXhty", false);
+
+    // Use a public domain P2SH address
+    verifyBitcoinAddressField("35b9vsyH1KoFT5a5KtrKusaCcPLkiSo1tU", true);
+    verifyBitcoinAddressField("35b9vsyH1KoFT5a5KtrKusaCcPLkiSo1t", false);
+
+    // Set it to the MultiBit address
+    verifyBitcoinAddressField("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty", true);
 
     window
       .textBox(MessageKey.EXTENDED_PUBLIC_KEY.getKey())
@@ -67,7 +79,7 @@ public class AddAliceContactUseCase extends AbstractFestUseCase {
     // Ensure Add button is disabled without tag
     addTag("Alice", 0);
     addTag("Bob", 1);
-    removeTag(1, 2);
+    removeTag("Bob", 2);
 
     // Private notes
     window
@@ -94,6 +106,39 @@ public class AddAliceContactUseCase extends AbstractFestUseCase {
 
     // Verify a new row has been added
     assertThat(rowCount2).isEqualTo(rowCount1 + 1);
+
+  }
+
+  /**
+   * Verifies that an incorrect Bitcoin format is detected on focus loss
+   *
+   * @param text    The text to use as a Bitcoin address
+   * @param isValid True if the validation should pass
+   */
+  private void verifyBitcoinAddressField(String text, boolean isValid) {
+
+    // Set the text
+    window
+      .textBox(MessageKey.BITCOIN_ADDRESS.getKey())
+      .setText(text);
+
+    // Lose focus to trigger validation
+    window
+      .textBox(MessageKey.EXTENDED_PUBLIC_KEY.getKey())
+      .focus();
+
+    // Verify the focus change and background color
+    if (isValid) {
+      window
+        .textBox(MessageKey.BITCOIN_ADDRESS.getKey())
+        .background()
+        .requireEqualTo(Themes.currentTheme.dataEntryBackground());
+    } else {
+      window
+        .textBox(MessageKey.BITCOIN_ADDRESS.getKey())
+        .background()
+        .requireEqualTo(Themes.currentTheme.invalidDataEntryBackground());
+    }
 
   }
 
@@ -161,7 +206,7 @@ public class AddAliceContactUseCase extends AbstractFestUseCase {
 
   }
 
-  private void removeTag(int tagIndex, int startCount) {
+  private void removeTag(String tag, int startCount) {
 
     // Count the tags
     final int tagCount1 = window
@@ -170,10 +215,10 @@ public class AddAliceContactUseCase extends AbstractFestUseCase {
 
     assertThat(tagCount1).isEqualTo(startCount);
 
-    // Click Remove on "tag"
+    // Click on tag to remove
     window
       .list(MessageKey.TAGS.getKey())
-      .selectItem(tagIndex);
+      .clickItem(tag);
 
     // Count the tags
     final int tagCount2 = window

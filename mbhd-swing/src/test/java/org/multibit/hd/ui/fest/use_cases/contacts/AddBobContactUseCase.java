@@ -5,6 +5,7 @@ import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactState;
 
+import java.awt.event.KeyEvent;
 import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -64,10 +65,38 @@ public class AddBobContactUseCase extends AbstractFestUseCase {
       .textBox(MessageKey.EXTENDED_PUBLIC_KEY.getKey())
       .setText("");
 
-    // Ensure Add button is disabled without tag
-    addTag("Bob", 0);
-    addTag("Charles", 1);
-    removeTag(1, 2);
+    // Add some tags (testing empty and duplicates)
+    addTag("Bob", 0, true);
+
+    // Blocked tags
+    addTag("Bob", 1, false);
+    addTag("", 1, false);
+    addTag(" ", 1, false);
+
+    // Accepted tags
+    addTag("VIP", 1, true);
+    addTag("Family", 2, true);
+    addTag("Entrepreneur", 3, true);
+    addTag("Programmer", 4, true);
+    addTag("❤ Artist ❤", 5, true);
+    addTag("Poet", 6, true);
+    addTag("Traveller", 7, true);
+
+    // Blocked tags
+    addTag("Author", 8,false);
+
+    // Remove the tags from positions 0 or 1 due to FEST limitations
+    removeTag(8);
+    removeTag(7);
+    removeTag(6);
+    removeTag(5);
+    removeTag(4);
+    removeTag(3);
+    removeTag(2);
+    removeTag(1);
+
+    // Add a previously deleted tag
+    addTag("Bob", 0, true);
 
     // Private notes
     window
@@ -126,42 +155,75 @@ public class AddBobContactUseCase extends AbstractFestUseCase {
       .click();
   }
 
-  private void addTag(String tag, int startCount) {
+  /**
+   * @param tag            The tag text
+   * @param startCount     The start count (1-based)
+   * @param expectAccepted True if the tag should be accepted
+   */
+  private void addTag(String tag, int startCount, boolean expectAccepted) {
 
-    window
-      .button(EditContactState.EDIT_CONTACT_ENTER_DETAILS + "." + MessageKey.ADD.getKey())
-      .requireVisible()
-      .requireDisabled();
+    if (expectAccepted) {
+      window
+        .button(EditContactState.EDIT_CONTACT_ENTER_DETAILS + "." + MessageKey.ADD.getKey())
+        .requireVisible()
+        .requireDisabled();
 
-    // Add a tag
-    window
-      .textBox(MessageKey.TAGS.getKey())
-      .setText(tag);
+      // Add a tag
+      window
+        .textBox(MessageKey.TAGS.getKey())
+        .setText(tag);
 
-    // Count the tags
-    final int tagCount1 = window
-      .list(MessageKey.TAGS.getKey())
-      .contents().length;
+      // Count the tags
+      final int tagCount1 = window
+        .list(MessageKey.TAGS.getKey())
+        .contents().length;
 
-    assertThat(tagCount1).isEqualTo(startCount);
+      assertThat(tagCount1).isEqualTo(startCount);
 
-    // Click Add tag
-    window
-      .button(EditContactState.EDIT_CONTACT_ENTER_DETAILS + "." + MessageKey.ADD.getKey())
-      .requireVisible()
-      .requireEnabled()
-      .click();
+      // Click Add tag
+      window
+        .button(EditContactState.EDIT_CONTACT_ENTER_DETAILS + "." + MessageKey.ADD.getKey())
+        .requireVisible()
+        .requireEnabled()
+        .click();
 
-    // Count the tags
-    final int tagCount2 = window
-      .list(MessageKey.TAGS.getKey())
-      .contents().length;
+      // Count the tags
+      final int tagCount2 = window
+        .list(MessageKey.TAGS.getKey())
+        .contents().length;
 
-    assertThat(tagCount2).isEqualTo(tagCount1 + 1);
+      assertThat(tagCount2).isEqualTo(tagCount1 + 1);
+
+    } else {
+
+      window
+        .button(EditContactState.EDIT_CONTACT_ENTER_DETAILS + "." + MessageKey.ADD.getKey())
+        .requireVisible()
+        .requireDisabled();
+
+      // Add a tag
+      window
+        .textBox(MessageKey.TAGS.getKey())
+        .setText(tag);
+
+      // Count the tags
+      final int tagCount1 = window
+        .list(MessageKey.TAGS.getKey())
+        .contents().length;
+
+      assertThat(tagCount1).isEqualTo(startCount);
+
+      // Expect no Add button
+      window
+        .button(EditContactState.EDIT_CONTACT_ENTER_DETAILS + "." + MessageKey.ADD.getKey())
+        .requireVisible()
+        .requireDisabled();
+
+    }
 
   }
 
-  private void removeTag(int tagIndex, int startCount) {
+  private void removeTag(int startCount) {
 
     // Count the tags
     final int tagCount1 = window
@@ -170,17 +232,17 @@ public class AddBobContactUseCase extends AbstractFestUseCase {
 
     assertThat(tagCount1).isEqualTo(startCount);
 
-    // Click Remove on "tag"
+    // Click on tag to remove
     window
       .list(MessageKey.TAGS.getKey())
-      .selectItem(tagIndex);
+      .pressAndReleaseKeys(KeyEvent.VK_DELETE);
 
     // Count the tags
     final int tagCount2 = window
       .list(MessageKey.TAGS.getKey())
       .contents().length;
 
-    assertThat(tagCount2).isEqualTo(startCount- 1);
+    assertThat(tagCount2).isEqualTo(startCount - 1);
 
   }
 

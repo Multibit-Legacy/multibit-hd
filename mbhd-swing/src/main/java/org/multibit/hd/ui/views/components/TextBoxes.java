@@ -6,6 +6,7 @@ import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.borders.TextBubbleBorder;
+import org.multibit.hd.ui.views.components.text_fields.FormattedBitcoinAddressField;
 import org.multibit.hd.ui.views.components.text_fields.FormattedDecimalField;
 import org.multibit.hd.ui.views.themes.Themes;
 
@@ -200,9 +201,9 @@ public class TextBoxes {
    *
    * @return A new "enter Bitcoin address" text field
    */
-  public static JTextField newEnterBitcoinAddress(DocumentListener listener, boolean readOnly) {
+  public static FormattedBitcoinAddressField newEnterBitcoinAddress(DocumentListener listener, boolean readOnly) {
 
-    JTextField textField = readOnly ? newReadOnlyTextField(40) : newTextField(40);
+    FormattedBitcoinAddressField textField = new FormattedBitcoinAddressField(readOnly);
 
     // Ensure FEST can find it
     textField.setName(MessageKey.BITCOIN_ADDRESS.getKey());
@@ -211,6 +212,23 @@ public class TextBoxes {
 
     return textField;
 
+  }
+
+  /**
+   * @param bitcoinAddress The Bitcoin address to display
+   *
+   * @return A new "display Bitcoin address" text field
+   */
+  public static JTextField newDisplayBitcoinAddress(String bitcoinAddress) {
+
+    JTextField textField = newReadOnlyTextField(34);
+
+    // Ensure FEST can find it
+    textField.setName(MessageKey.BITCOIN_ADDRESS.getKey());
+
+    textField.setText(bitcoinAddress);
+
+    return textField;
   }
 
   /**
@@ -230,23 +248,6 @@ public class TextBoxes {
 
     return textField;
 
-  }
-
-  /**
-   * @param bitcoinAddress The Bitcoin address to display
-   *
-   * @return A new "display Bitcoin address" text field
-   */
-  public static JTextField newDisplayBitcoinAddress(String bitcoinAddress) {
-
-    JTextField textField = newReadOnlyTextField(40);
-
-    // Ensure FEST can find it
-    textField.setName(MessageKey.BITCOIN_ADDRESS.getKey());
-
-    textField.setText(bitcoinAddress);
-
-    return textField;
   }
 
   /**
