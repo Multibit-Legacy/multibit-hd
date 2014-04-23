@@ -8,6 +8,8 @@ import org.spongycastle.crypto.paddings.PaddedBufferedBlockCipher;
 import org.spongycastle.crypto.params.KeyParameter;
 import org.spongycastle.crypto.params.ParametersWithIV;
 
+import java.util.Arrays;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
@@ -61,11 +63,10 @@ public class AESUtils {
       BufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new CBCBlockCipher(new AESFastEngine()));
       cipher.init(true, keyWithIv);
       byte[] encryptedBytes = new byte[cipher.getOutputSize(plainBytes.length)];
-      int length = cipher.processBytes(plainBytes, 0, plainBytes.length, encryptedBytes, 0);
+      final int processLength = cipher.processBytes(plainBytes, 0, plainBytes.length, encryptedBytes, 0);
+      final int doFinalLength = cipher.doFinal(encryptedBytes, processLength);
 
-      cipher.doFinal(encryptedBytes, length);
-
-      return encryptedBytes;
+      return Arrays.copyOf(encryptedBytes, processLength + doFinalLength);
     } catch (Exception e) {
       throw new KeyCrypterException("Could not encrypt bytes.", e);
     }
