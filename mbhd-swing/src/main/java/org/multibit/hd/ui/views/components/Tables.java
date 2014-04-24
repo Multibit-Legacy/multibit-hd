@@ -53,8 +53,8 @@ public class Tables {
 
     StripedTable table = new StripedTable(model);
 
-    // Ensure FEST can find it
-    table.setName(MessageKey.CONTACTS.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(table, MessageKey.CONTACTS);
 
     table.setFillsViewportHeight(true);
     table.setShowHorizontalLines(true);
@@ -92,8 +92,8 @@ public class Tables {
 
     StripedTable table = new StripedTable(model);
 
-    // Ensure FEST can find it
-    table.setName(MessageKey.PAYMENTS.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(table, MessageKey.PAYMENTS);
 
     table.setFillsViewportHeight(true);
     table.setShowHorizontalLines(true);
@@ -187,8 +187,8 @@ public class Tables {
 
     StripedTable table = new StripedTable(model);
 
-    // Ensure FEST can find it
-    table.setName(MessageKey.HISTORY.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(table, MessageKey.HISTORY);
 
     table.setFillsViewportHeight(true);
     table.setShowHorizontalLines(true);

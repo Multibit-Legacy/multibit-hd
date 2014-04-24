@@ -76,8 +76,8 @@ public class TextBoxes {
 
     JTextField textField = newTextField(MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH);
 
-    // Ensure FEST can find it
-    textField.setName(MessageKey.TRANSACTION_LABEL.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textField, MessageKey.TRANSACTION_LABEL);
 
     // Limit the length of the underlying document
     DefaultStyledDocument doc = new DefaultStyledDocument();
@@ -94,8 +94,8 @@ public class TextBoxes {
 
     JTextField textField = newTextField(20);
 
-    // Ensure FEST can find this
-    textField.setName(MessageKey.TAGS.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textField, MessageKey.TAGS);
 
     return textField;
   }
@@ -107,8 +107,8 @@ public class TextBoxes {
 
     JTextField textField = newTextField(60);
 
-    // Ensure FEST can find this
-    textField.setName(MessageKey.SEARCH.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textField, MessageKey.SEARCH);
 
     return textField;
   }
@@ -120,8 +120,8 @@ public class TextBoxes {
 
     JTextField textField = newTextField(60);
 
-    // Ensure FEST can find this
-    textField.setName(MessageKey.SELECT_FILE.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textField, MessageKey.SELECT_FILE);
 
     return textField;
   }
@@ -135,8 +135,8 @@ public class TextBoxes {
 
     JTextField textField = newReadOnlyTextField(20);
 
-    // Ensure FEST can find this
-    textField.setName(MessageKey.TIMESTAMP.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textField, MessageKey.TIMESTAMP);
 
     textField.setText(seedTimestamp);
 
@@ -150,8 +150,8 @@ public class TextBoxes {
 
     JTextField textField = newTextField(20);
 
-    // Ensure FEST can find it
-    textField.setName(MessageKey.TIMESTAMP.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textField, MessageKey.TIMESTAMP);
 
     return textField;
 
@@ -167,8 +167,8 @@ public class TextBoxes {
 
     JTextField textField = readOnly ? newReadOnlyTextField(40) : newTextField(40);
 
-    // Ensure FEST can find it
-    textField.setName(MessageKey.NAME.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textField, MessageKey.NAME);
 
     textField.getDocument().addDocumentListener(listener);
 
@@ -186,8 +186,8 @@ public class TextBoxes {
 
     JTextField textField = readOnly ? newReadOnlyTextField(40) : newTextField(40);
 
-    // Ensure FEST can find it
-    textField.setName(MessageKey.EMAIL_ADDRESS.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textField, MessageKey.EMAIL_ADDRESS);
 
     textField.getDocument().addDocumentListener(listener);
 
@@ -205,8 +205,8 @@ public class TextBoxes {
 
     FormattedBitcoinAddressField textField = new FormattedBitcoinAddressField(readOnly);
 
-    // Ensure FEST can find it
-    textField.setName(MessageKey.BITCOIN_ADDRESS.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textField, MessageKey.BITCOIN_ADDRESS);
 
     textField.getDocument().addDocumentListener(listener);
 
@@ -223,8 +223,8 @@ public class TextBoxes {
 
     JTextField textField = newReadOnlyTextField(34);
 
-    // Ensure FEST can find it
-    textField.setName(MessageKey.BITCOIN_ADDRESS.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textField, MessageKey.BITCOIN_ADDRESS);
 
     textField.setText(bitcoinAddress);
 
@@ -241,8 +241,8 @@ public class TextBoxes {
 
     JTextField textField = readOnly ? newReadOnlyTextField(40) : newTextField(40);
 
-    // Ensure FEST can find it
-    textField.setName(MessageKey.EXTENDED_PUBLIC_KEY.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textField, MessageKey.EXTENDED_PUBLIC_KEY);
 
     textField.getDocument().addDocumentListener(listener);
 
@@ -265,8 +265,8 @@ public class TextBoxes {
 
     FormattedDecimalField textField = new FormattedDecimalField(0, maximum, decimalPlaces, maxEditLength);
 
-    // Ensure FEST can find it
-    textField.setName(MessageKey.BITCOIN_AMOUNT.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textField, MessageKey.BITCOIN_AMOUNT);
 
     Font font = textField.getFont().deriveFont((float) MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -300,8 +300,8 @@ public class TextBoxes {
 
     FormattedDecimalField textField = new FormattedDecimalField(0, maximum, decimalPlaces, maxEditLength);
 
-    // Ensure FEST can find it
-    textField.setName(MessageKey.LOCAL_AMOUNT.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textField, MessageKey.LOCAL_AMOUNT);
 
     Font font = textField.getFont().deriveFont((float) MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -324,8 +324,12 @@ public class TextBoxes {
 
     JPasswordField passwordField = new JPasswordField(MultiBitUI.PASSWORD_LENGTH);
 
-    // Ensure FEST can find it
-    passwordField.setName(MessageKey.ENTER_PASSWORD.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(passwordField, MessageKey.ENTER_PASSWORD);
+
+    // Ensure Accessibility can find it
+    passwordField.getAccessibleContext().setAccessibleName(Languages.safeText(MessageKey.ENTER_PASSWORD));
+    passwordField.getAccessibleContext().setAccessibleDescription(Languages.safeText(MessageKey.ENTER_PASSWORD_TOOLTIP));
 
     // Provide a consistent echo character across all components
     passwordField.setEchoChar(getPasswordEchoChar());
@@ -350,9 +354,15 @@ public class TextBoxes {
    * @return A new default public "notes" text area
    */
   public static JTextArea newEnterNotes(DocumentListener listener) {
+
     JTextArea textArea = TextBoxes.newEnterPrivateNotes(listener, MultiBitUI.PASSWORD_LENGTH);
 
-    textArea.setName(MessageKey.NOTES.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textArea, MessageKey.NOTES);
+
+    // Ensure Accessibility can find it
+    textArea.getAccessibleContext().setAccessibleName(Languages.safeText(MessageKey.NOTES));
+    textArea.getAccessibleContext().setAccessibleDescription(Languages.safeText(MessageKey.NOTES_TOOLTIP));
 
     return textArea;
   }
@@ -375,8 +385,8 @@ public class TextBoxes {
 
     JTextArea textArea = new JTextArea(6, width);
 
-    // Ensure FEST can find it
-    textArea.setName(MessageKey.PRIVATE_NOTES.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textArea, MessageKey.PRIVATE_NOTES, MessageKey.PRIVATE_NOTES_TOOLTIP);
 
     // Limit the length of the underlying document
     DefaultStyledDocument doc = new DefaultStyledDocument();
@@ -442,8 +452,8 @@ public class TextBoxes {
     // Build off the enter seed phrase
     JTextArea textArea = newEnterSeedPhrase();
 
-    // Ensure FEST can find it
-    textArea.setName(MessageKey.SEED_PHRASE.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textArea, MessageKey.SEED_PHRASE);
 
     // Prevent copy/paste operations
     textArea.setTransferHandler(null);
@@ -469,8 +479,8 @@ public class TextBoxes {
     // Keep this in line with the PASSWORD_AREA constant
     JTextArea textArea = new JTextArea(doc, "", 6, MultiBitUI.PASSWORD_LENGTH);
 
-    // Ensure FEST can find it
-    textArea.setName(MessageKey.SEED_PHRASE.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textArea, MessageKey.SEED_PHRASE);
 
     // Ensure TAB transfers focus
     AbstractAction transferFocus = new AbstractAction() {
@@ -503,8 +513,8 @@ public class TextBoxes {
 
     JTextField textField = newTextField(40);
 
-    // Ensure FEST can find it
-    textField.setName(MessageKey.ENTER_ACCESS_CODE.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textField, MessageKey.ENTER_ACCESS_CODE);
 
     textField.getDocument().addDocumentListener(listener);
 

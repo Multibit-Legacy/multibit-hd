@@ -38,8 +38,8 @@ public class ListBoxes {
 
     final JList<String> list = new JList<>(listModel);
 
-    // Ensure FEST can find it
-    list.setName(MessageKey.TAGS.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(list, MessageKey.TAGS);
 
     list.setCellRenderer(new TagPillListCellRenderer());
     list.setLayoutOrientation(JList.VERTICAL_WRAP);

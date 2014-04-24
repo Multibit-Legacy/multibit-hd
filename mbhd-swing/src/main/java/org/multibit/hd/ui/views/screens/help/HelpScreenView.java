@@ -9,6 +9,7 @@ import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.Models;
+import org.multibit.hd.ui.views.components.AccessibilityDecorator;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
@@ -99,8 +100,8 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
     // Create the scroll pane and add the HTML editor pane to it
     JScrollPane scrollPane = new JScrollPane(editorPane);
 
-    // Ensure FEST can find it
-    scrollPane.setName(MessageKey.HELP.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(scrollPane, MessageKey.HELP);
 
     scrollPane.setViewportBorder(null);
 

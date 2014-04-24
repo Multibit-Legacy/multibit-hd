@@ -7,10 +7,7 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.components.SidebarNodeInfo;
-import org.multibit.hd.ui.views.components.ThemeAwareTreeCellRenderer;
-import org.multibit.hd.ui.views.components.TreeNodes;
+import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.themes.NimbusDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -104,8 +101,8 @@ public class SidebarView {
 
     final JTree sidebarTree = new JTree(createSidebarTreeNodes());
 
-    // Ensure FEST can find it
-    sidebarTree.setName(MessageKey.SIDEBAR_TREE.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(sidebarTree, MessageKey.SIDEBAR_TREE);
 
     sidebarTree.setShowsRootHandles(false);
     sidebarTree.setRootVisible(false);

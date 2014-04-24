@@ -65,7 +65,10 @@ public enum MessageKey {
   QR_CODE_LABEL_LABEL("qr_code_label_label"),
 
   PRIVATE_NOTES("private_notes"),
+  PRIVATE_NOTES_TOOLTIP("private_notes_tooltip"),
+
   NOTES("notes"),
+  NOTES_TOOLTIP("notes_tooltip"),
 
   ONE_OF_YOUR_ADDRESSES("one_of_your_addresses"),
 
@@ -75,7 +78,10 @@ public enum MessageKey {
   SELECT_WALLET("select_wallet"),
 
   ENTER_PASSWORD("enter_password"),
+  ENTER_PASSWORD_TOOLTIP("enter_password_tooltip"),
+
   ENTER_NEW_PASSWORD("enter_new_password"),
+
   RETYPE_NEW_PASSWORD("retype_new_password"),
 
   PASSWORD_VERIFIED("password_verified"),
