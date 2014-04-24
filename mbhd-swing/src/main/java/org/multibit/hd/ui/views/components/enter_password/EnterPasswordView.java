@@ -28,6 +28,8 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
   private JButton showButton;
   private JLabel spinner;
 
+  private boolean addLabel = true;
+
   /**
    * @param model The model backing this view
    */
@@ -68,7 +70,9 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
     showButton = Buttons.newShowButton(toggleDisplayAction);
 
     // Add to the panel
-    panel.add(Labels.newEnterPassword(), "grow,push");
+    if (isAddLabel()) {
+      panel.add(Labels.newEnterPassword(), "grow,push");
+    }
     panel.add(password, "grow,push");
     panel.add(showButton, "shrink");
     panel.add(spinner, "shrink,wrap");
@@ -142,5 +146,13 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
     password.setEnabled(!showSpinner);
     showButton.setEnabled(!showSpinner);
 
+  }
+
+  public boolean isAddLabel() {
+    return addLabel;
+  }
+
+  public void setAddLabel(boolean addLabel) {
+    this.addLabel = addLabel;
   }
 }

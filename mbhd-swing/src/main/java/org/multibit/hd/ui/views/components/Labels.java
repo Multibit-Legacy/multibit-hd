@@ -1045,8 +1045,7 @@ public class Labels {
   public static JLabel newPasswordNote() {
 
     return newNoteLabel(new MessageKey[]{
-      MessageKey.PASSWORD_NOTE_1,
-      MessageKey.PASSWORD_NOTE_2
+      MessageKey.PASSWORD_NOTE_1
     }, new Object[][]{});
 
   }
@@ -1057,8 +1056,18 @@ public class Labels {
   public static JLabel newSelectWalletNote() {
 
     return newNoteLabel(new MessageKey[]{
-      MessageKey.SELECT_WALLET_NOTE_1,
-      MessageKey.SELECT_WALLET_NOTE_2
+      MessageKey.SELECT_WALLET_NOTE_1
+    }, new Object[][]{});
+
+  }
+
+  /**
+   * @return A new "restore wallet" note (password wizard)
+   */
+  public static JLabel newRestoreWalletNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.RESTORE_WALLET_NOTE_1
     }, new Object[][]{});
 
   }

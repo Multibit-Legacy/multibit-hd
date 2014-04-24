@@ -307,10 +307,10 @@ public enum MessageKey {
   RESTORE_TIMESTAMP_NOTE_4("restore_timestamp_note_4"),
 
   PASSWORD_NOTE_1("password_note_1"),
-  PASSWORD_NOTE_2("password_note_2"),
 
   SELECT_WALLET_NOTE_1("select_wallet_note_1"),
-  SELECT_WALLET_NOTE_2("select_wallet_note_2"),
+
+  RESTORE_WALLET_NOTE_1("restore_wallet_note_1"),
 
   CHANGE_PASSWORD_NOTE_1("change_password_note_1"),
   CHANGE_PASSWORD_NOTE_2("change_password_note_2"),
