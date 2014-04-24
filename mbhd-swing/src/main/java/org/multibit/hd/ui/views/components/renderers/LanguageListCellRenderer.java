@@ -54,6 +54,9 @@ public class LanguageListCellRenderer extends JLabel implements ListCellRenderer
       setIcon(languageKey.getIcon());
       setText(languageKey.getLanguageName());
 
+      // Ensure we can access the contents
+      getAccessibleContext().setAccessibleName(languageKey.getLanguageName());
+
     } else {
       // No value means no text or icon
       setIcon(null);
