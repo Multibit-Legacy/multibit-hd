@@ -54,8 +54,8 @@ public class Labels {
 
     JLabel label = new JLabel(Languages.safeText(key, values));
 
-    // Ensure FEST can find the label
-    label.setName(key.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(label, key);
 
     // Apply theme
     label.setForeground(Themes.currentTheme.text());
@@ -104,8 +104,8 @@ public class Labels {
 
     JLabel label = newLabel(key);
 
-    // Ensure FEST can find it
-    label.setName(key.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(label, key);
 
     // Font
     Font font = label.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE);
@@ -173,8 +173,8 @@ public class Labels {
     // Wrap in HTML to ensure LTR/RTL and line breaks are respected
     JLabel label = new JLabel(HtmlUtils.localiseWithLineBreaks(lines));
 
-    // Ensure FEST can find it using the first key
-    label.setName(keys[0].getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(label, keys[0]);
 
     // Theme
     label.setForeground(Themes.currentTheme.text());

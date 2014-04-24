@@ -61,12 +61,10 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    // Ensure FEST can reference the button
-    button.setName(key.name().toLowerCase());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(button, key);
 
     button.setText(Languages.safeText(key, values));
-
-    // TODO Accessibility API - append _ACCESSIBILITY to .name() ?
 
     return button;
   }
@@ -354,8 +352,8 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    // Ensure FEST can find it
-    button.setName(MessageKey.REFRESH.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(button, MessageKey.REFRESH);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.REFRESH, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -372,8 +370,8 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    // Ensure FEST can find it
-    button.setName(MessageKey.PRINT.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(button, MessageKey.PRINT);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.PRINT, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -392,8 +390,8 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    // Ensure FEST can find it
-    button.setName(MessageKey.SHOW.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(button, MessageKey.SHOW);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.EYE, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -410,8 +408,8 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    // Ensure FEST can find it
-    button.setName(MessageKey.HIDE.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(button, MessageKey.HIDE);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.EYE_SLASH, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -428,8 +426,8 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    // Ensure FEST can find it
-    button.setName(MessageKey.QR_CODE.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(button, MessageKey.QR_CODE);
 
     // Require this background color to ensure people can find the QR code icon quickly
     NimbusDecorator.applyThemeColor(
@@ -455,8 +453,8 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    // Ensure FEST can find it
-    button.setName(MessageKey.COPY.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(button, MessageKey.COPY);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.COPY, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -473,8 +471,8 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    // Ensure FEST can find it
-    button.setName(MessageKey.PASTE.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(button, MessageKey.PASTE);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.PASTE, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -491,8 +489,8 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    // Ensure FEST can find it
-    button.setName(MessageKey.CLOSE.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(button, MessageKey.CLOSE);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -509,8 +507,8 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    // Ensure FEST can find it
-    button.setName(MessageKey.SELECT_FOLDER.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(button, MessageKey.SELECT_FOLDER);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.FOLDER_OPEN, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -568,8 +566,8 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    // Ensure FEST can find it
-    button.setName(MessageKey.SEARCH.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(button, MessageKey.SEARCH);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.SEARCH, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -585,8 +583,8 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    // Ensure FEST can find it
-    button.setName(MessageKey.BACK.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(button, MessageKey.BACK);
 
     AwesomeIcon icon = AwesomeDecorator.select(AwesomeIcon.ARROW_LEFT, AwesomeIcon.ARROW_RIGHT);
 
@@ -604,8 +602,8 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    // Ensure FEST can find it
-    button.setName(MessageKey.FORWARD.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(button, MessageKey.FORWARD);
 
     AwesomeIcon icon = AwesomeDecorator.select(AwesomeIcon.ARROW_RIGHT, AwesomeIcon.ARROW_LEFT);
 
@@ -623,8 +621,8 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    // Ensure FEST can find it
-    button.setName(MessageKey.BROWSE.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(button, MessageKey.BROWSE);
 
       AwesomeDecorator.applyIcon(AwesomeIcon.EXTERNAL_LINK, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 

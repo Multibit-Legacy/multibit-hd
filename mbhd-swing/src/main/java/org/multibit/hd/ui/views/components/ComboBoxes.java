@@ -158,8 +158,8 @@ public class ComboBoxes {
       Languages.safeText(MessageKey.NO)
     });
 
-    // Ensure FEST can find it
-    comboBox.setName(MessageKey.YES.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.YES);
 
     comboBox.setEditable(false);
 
@@ -185,8 +185,8 @@ public class ComboBoxes {
 
     JComboBox<String> comboBox = newYesNoComboBox(listener, alertSound);
 
-    // Ensure FEST can find it
-    comboBox.setName(MessageKey.ALERT_SOUND.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.ALERT_SOUND);
 
     comboBox.setActionCommand(ALERT_SOUND_COMMAND);
 
@@ -203,8 +203,8 @@ public class ComboBoxes {
 
     JComboBox<String> comboBox = newYesNoComboBox(listener, receiveSound);
 
-    // Ensure FEST can find it
-    comboBox.setName(MessageKey.RECEIVE_SOUND.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.RECEIVE_SOUND);
 
     comboBox.setActionCommand(RECEIVE_SOUND_COMMAND);
 
@@ -225,8 +225,8 @@ public class ComboBoxes {
 
     JComboBox<String> comboBox = newReadOnlyComboBox(items);
 
-    // Ensure FEST can find it
-    comboBox.setName(MessageKey.CONTACTS.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.CONTACTS);
 
     // Add the listener at the end to avoid false events
     comboBox.addActionListener(listener);
@@ -244,8 +244,8 @@ public class ComboBoxes {
 
     JComboBox<String> comboBox = newContactsCheckboxComboBox(listener);
 
-    // Ensure FEST can find it
-    comboBox.setName(MessageKey.HISTORY.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.HISTORY);
 
     return comboBox;
 
@@ -262,8 +262,8 @@ public class ComboBoxes {
     // Populate the combo box and declare a suitable renderer
     JComboBox<String> comboBox = newReadOnlyComboBox(LanguageKey.localisedNames());
 
-    // Ensure FEST can find it
-    comboBox.setName(MessageKey.SELECT_LANGUAGE.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_LANGUAGE);
 
     comboBox.setRenderer(new LanguageListCellRenderer());
     comboBox.setMaximumRowCount(MultiBitUI.COMBOBOX_MAX_ROW_COUNT);
@@ -291,8 +291,8 @@ public class ComboBoxes {
     // Populate the combo box and declare a suitable renderer
     JComboBox<String> comboBox = newReadOnlyComboBox(ThemeKey.localisedNames());
 
-    // Ensure FEST can find it
-    comboBox.setName(MessageKey.SELECT_THEME.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_THEME);
 
     // Can use the ordinal due to the declaration ordering
     comboBox.setSelectedIndex(ThemeKey.fromTheme(Themes.currentTheme).ordinal());
@@ -316,8 +316,8 @@ public class ComboBoxes {
     // Populate the combo box and declare a suitable renderer
     JComboBox<PaymentRequestData> comboBox = newReadOnlyComboBox(paymentRequestDataList.toArray(new PaymentRequestData[paymentRequestDataList.size()]));
 
-    // Ensure FEST can find it
-    comboBox.setName(MessageKey.CHOOSE_PAYMENT_REQUEST.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.CHOOSE_PAYMENT_REQUEST);
 
     // Can use the ordinal due to the declaration ordering
     if (paymentRequestDataList.size() > 0) {
@@ -343,8 +343,8 @@ public class ComboBoxes {
     String[] decimalSeparators = Languages.getCurrencySeparators(false);
     JComboBox<String> comboBox = newReadOnlyComboBox(decimalSeparators);
 
-    // Ensure FEST can find it
-    comboBox.setName(MessageKey.SELECT_DECIMAL_SEPARATOR.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_DECIMAL_SEPARATOR);
 
     // Determine the first matching separator
     String decimal = bitcoinConfiguration.getDecimalSeparator();
@@ -369,8 +369,8 @@ public class ComboBoxes {
     String[] groupingSeparators = Languages.getCurrencySeparators(true);
     JComboBox<String> comboBox = newReadOnlyComboBox(groupingSeparators);
 
-    // Ensure FEST can find it
-    comboBox.setName(MessageKey.SELECT_GROUPING_SEPARATOR.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_GROUPING_SEPARATOR);
 
     // Determine the first matching separator
     String grouping = bitcoinConfiguration.getGroupingSeparator();
@@ -400,8 +400,8 @@ public class ComboBoxes {
     };
     JComboBox<String> comboBox = newReadOnlyComboBox(localSymbols);
 
-    // Ensure FEST can find it
-    comboBox.setName(MessageKey.SELECT_LOCAL_SYMBOL.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_LOCAL_SYMBOL);
 
     selectFirstMatch(comboBox, localSymbols, bitcoinConfiguration.getLocalCurrencySymbol());
 
@@ -426,8 +426,8 @@ public class ComboBoxes {
     // Order of insertion is important here
     JComboBox<BitcoinSymbol> comboBox = newReadOnlyComboBox(BitcoinSymbol.values());
 
-    // Ensure FEST can find it
-    comboBox.setName(MessageKey.SELECT_BITCOIN_SYMBOL.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_BITCOIN_SYMBOL);
 
     comboBox.setEditable(false);
 
@@ -464,8 +464,8 @@ public class ComboBoxes {
     };
     JComboBox<String> comboBox = newReadOnlyComboBox(positions);
 
-    // Ensure FEST can find it
-    comboBox.setName(MessageKey.SELECT_PLACEMENT.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_PLACEMENT);
 
     if (bitcoinConfiguration.isCurrencySymbolLeading()) {
       comboBox.setSelectedIndex(0);
@@ -491,8 +491,8 @@ public class ComboBoxes {
 
     JComboBox<Recipient> comboBox = newComboBox(filter.create());
 
-    // Ensure FEST can find it
-    comboBox.setName(MessageKey.RECIPIENT.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.RECIPIENT);
 
     comboBox.setEditable(true);
 
@@ -528,8 +528,8 @@ public class ComboBoxes {
 
     JComboBox<BackupSummary> comboBox = newReadOnlyComboBox(backupSummaryArray);
 
-    // Ensure FEST can find it
-    comboBox.setName(MessageKey.SELECT_BACKUP_NOTE_1.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_BACKUP_NOTE_1);
 
     // Use a backup summary list cell renderer to ensure the correct fields are displayed
     ListCellRenderer<BackupSummary> renderer = new BackupSummaryListCellRenderer();
@@ -561,8 +561,8 @@ public class ComboBoxes {
 
     JComboBox<WalletSummary> comboBox = newReadOnlyComboBox(walletSummaryArray);
 
-    // Ensure FEST can find it
-    comboBox.setName(MessageKey.SELECT_WALLET.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_WALLET);
 
     // Use a wallet list cell renderer to ensure the correct fields are displayed
     ListCellRenderer<WalletSummary> renderer = new WalletSummaryListCellRenderer();
@@ -592,8 +592,8 @@ public class ComboBoxes {
     JComboBox<String> comboBox = newReadOnlyComboBox(allExchangeNames);
     comboBox.setMaximumRowCount(MultiBitUI.COMBOBOX_MAX_ROW_COUNT);
 
-    // Ensure FEST can find it
-    comboBox.setName(MessageKey.EXCHANGE_RATE_PROVIDER.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.EXCHANGE_RATE_PROVIDER);
 
     // Determine the selected index
     ExchangeKey exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getCurrentExchange());
@@ -622,8 +622,8 @@ public class ComboBoxes {
 
     final JComboBox<String> comboBox = newReadOnlyComboBox(new String[]{});
 
-    // Ensure FEST can find it
-    comboBox.setName(MessageKey.SELECT_LOCAL_CURRENCY.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_LOCAL_CURRENCY);
 
     // Get all the currencies available at the exchange
     ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(bitcoinConfiguration);
@@ -666,8 +666,8 @@ public class ComboBoxes {
       "24"
     });
 
-    // Ensure FEST can find it
-    comboBox.setName(MessageKey.SEED_SIZE.getKey());
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.SEED_SIZE);
 
     comboBox.setSelectedIndex(0);
 
