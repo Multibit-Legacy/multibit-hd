@@ -23,48 +23,49 @@ import java.util.ResourceBundle;
  */
 public enum LanguageKey {
 
-  AF_AF("af_af"),
-  AR_AR("ar_ar"),
-  CS_CZ("cs_cz"),
-  DA_DK("da_dk"),
-  DE_DE("de_de"),
-  EL_GR("el_gr"),
-  EN_GB("en_gb"),
-  EN_US("en_us"),
-  EO_ES("eo_es"),
-  ES_ES("es_es"),
-  FA_IR("fa_ir"),
-  FI_FI("fi_fi"),
-  FR_FR("fr_fr"),
-  HI_IN("hi_in"),
-  HR_HR("hr_hr"),
-  HU_HU("hu_hu"),
-  IN_ID("in_id"), // Legacy form of ID_ID
-  IW_IL("iw_il"), // Legacy form of HE_IL
-  IT_IT("it_it"),
-  JA_JP("ja_jp"),
-  KO_KR("ko_kr"),
-  LV_LV("lv_lv"),
-  NL_NL("nl_nl"),
-  NO_NO("no_no"),
-  PL_PL("pl_pl"),
-  PT_PT("pt_pt"),
-  RO_RO("ro_ro"),
-  RU_RU("ru_ru"),
-  SK_SK("sk_sk"),
-  SL_SI("sl_si"),
-  SV_SV("sv_sv"),
-  SW_KE("sw_ke"),
-  TA_LK("ta_lk"),
-  TH_TH("th_th"),
-  TL_PH("tl_ph"),
-  TR_TR("tr_tr"),
-  VI_VN("vi_vn"),
-  ZH_CN("zh_cn"),
+  AF_AF("af_AF"),
+  AR_AR("ar_AR"),
+  CS_CZ("cs_CZ"),
+  DA_DK("da_DK"),
+  DE_DE("de_DE"),
+  EL_GR("el_GR"),
+  EN_GB("en_GB"),
+  EN_US("en_US"),
+  EO("eo"), // Esperanto has no country
+  ES_ES("es_ES"),
+  FA_IR("fa_IR"),
+  FI_FI("fi_FI"),
+  FR_FR("fr_FR"),
+  HI_IN("hi_IN"),
+  HR_HR("hr_HR"),
+  HU_HU("hu_HU"),
+  IN_ID("in_ID"), // Legacy form of ID_ID
+  IW_IL("iw_IL"), // Legacy form of HE_IL
+  IT_IT("it_IT"),
+  JA_JP("ja_JP"),
+  KO_KR("ko_KR"),
+  LV_LV("lv_LV"),
+  NL_NL("nl_NL"),
+  NO_NO("no_NO"),
+  PL_PL("pl_PL"),
+  PT_PT("pt_PT"),
+  RO_RO("ro_RO"),
+  RU_RU("ru_RU"),
+  SK_SK("sk_SK"),
+  SL_SI("sl_SI"),
+  SV_SV("sv_SV"),
+  SW_KE("sw_KE"),
+  TA_LK("ta_LK"),
+  TH_TH("th_TH"),
+  TL_PH("tl_PH"),
+  TR_TR("tr_TR"),
+  VI_VN("vi_VN"),
+  ZH_CN("zh_CN"),
   // End of enum
   ;
 
   private final String key;
+  private final String countryCode;
   private final String languageCode;
   private final String languageName;
   private ImageIcon icon;
@@ -76,6 +77,13 @@ public enum LanguageKey {
 
     this.key = key;
     this.languageCode = key.substring(0, 2);
+
+    if (key.contains("_")) {
+      this.countryCode = key.substring(3, 5);
+    } else {
+      this.countryCode = languageCode;
+    }
+
     this.icon = Images.newLanguageCodeIcon(languageCode);
     this.languageName = rb.getString(key);
   }
@@ -101,6 +109,13 @@ public enum LanguageKey {
    */
   public ImageIcon getIcon() {
     return icon;
+  }
+
+  /**
+   * @return The 2-letter country code (e.g. "UK")
+   */
+  public String getCountryCode() {
+    return countryCode;
   }
 
   /**
