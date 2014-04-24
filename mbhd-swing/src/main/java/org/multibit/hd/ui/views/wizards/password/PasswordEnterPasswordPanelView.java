@@ -135,6 +135,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
     List<WalletSummary> wallets = WalletManager.findWalletSummaries(walletDirectories, walletRoot);
 
     selectWalletMaV.getModel().setWalletList(wallets);
+    selectWalletMaV.getView().setEnabled(true);
 
     return true;
   }
