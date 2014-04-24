@@ -254,7 +254,6 @@ public enum MessageKey {
   WELCOME_NOTE_1("welcome_note_1"),
   WELCOME_NOTE_2("welcome_note_2"),
   WELCOME_NOTE_3("welcome_note_3"),
-  WELCOME_NOTE_4("welcome_note_4"),
 
   ABOUT_NOTE_1("about_note_1"),
   ABOUT_NOTE_2("about_note_2"),
