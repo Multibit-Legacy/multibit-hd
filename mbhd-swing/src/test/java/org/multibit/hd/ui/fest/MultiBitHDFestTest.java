@@ -62,7 +62,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.SOFT);
 
     // Allow time for the app to terminate and be garbage collected
-    pause(5, TimeUnit.SECONDS);
+    pause(2, TimeUnit.SECONDS);
 
     window.cleanUp();
 
