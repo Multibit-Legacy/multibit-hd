@@ -1,10 +1,12 @@
 package org.multibit.hd.ui.fest.use_cases.password;
 
 import org.fest.swing.fixture.FrameFixture;
+import org.fest.swing.timing.Pause;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Use case to provide the following to FEST testing:</p>
@@ -24,8 +26,26 @@ public class UnlockWalletUseCase extends AbstractFestUseCase {
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    window.textBox("password").enterText("abc123");
-    window.button(MessageKey.PASSWORD_UNLOCK.getKey()).click();
+    // Ensure Unlock is not enabled
+    window
+      .button(MessageKey.PASSWORD_UNLOCK.getKey())
+      .requireVisible()
+      .requireDisabled();
+
+    // Enter password text
+    window
+      .textBox(MessageKey.ENTER_PASSWORD.getKey())
+      .enterText("abc123");
+
+    // Click on unlock
+    window
+      .button(MessageKey.PASSWORD_UNLOCK.getKey())
+      .requireVisible()
+      .requireEnabled()
+      .click();
+
+    // Fixed time to unlock
+    Pause.pause(2, TimeUnit.SECONDS);
 
   }
 

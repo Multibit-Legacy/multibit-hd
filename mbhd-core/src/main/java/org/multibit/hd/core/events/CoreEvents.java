@@ -138,12 +138,15 @@ public class CoreEvents {
 
   /**
    * <p>Broadcast a new "shutdown" event</p>
+   *
+   * @param shutdownType The shutdown type
    */
-  public static void fireShutdownEvent() {
-    log.info("Firing 'shutdown' event");
-    CoreServices.uiEventBus.post(new ShutdownEvent());
+  public static void fireShutdownEvent(ShutdownEvent.ShutdownType shutdownType) {
+    log.info("Firing 'shutdown' event: {}", shutdownType);
+    CoreServices.uiEventBus.post(new ShutdownEvent(shutdownType));
 
-    CoreServices.shutdown();
+    // Use Core services to handle any finalisation
+    CoreServices.shutdown(shutdownType);
   }
 
   /**

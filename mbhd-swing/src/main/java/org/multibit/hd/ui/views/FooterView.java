@@ -93,27 +93,34 @@ public class FooterView {
    * @param event The system status change event
    */
   @Subscribe
-  public void onSystemStatusChangeEvent(SystemStatusChangedEvent event) {
+  public void onSystemStatusChangeEvent(final SystemStatusChangedEvent event) {
 
     if (statusLabel == null) {
       return;
     }
 
-    statusLabel.setText(event.getLocalisedMessage());
-    switch (event.getSeverity()) {
-      case RED:
-        statusIcon.setForeground(Themes.currentTheme.dangerAlertBackground());
-        break;
-      case AMBER:
-        statusIcon.setForeground(Themes.currentTheme.warningAlertBackground());
-        break;
-      case GREEN:
-        statusIcon.setForeground(Themes.currentTheme.successAlertBackground());
-        break;
-      default:
-        // Unknown status
-        throw new IllegalStateException("Unknown event severity " + event.getSeverity());
-    }
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+
+        statusLabel.setText(event.getLocalisedMessage());
+        switch (event.getSeverity()) {
+          case RED:
+            statusIcon.setForeground(Themes.currentTheme.dangerAlertBackground());
+            break;
+          case AMBER:
+            statusIcon.setForeground(Themes.currentTheme.warningAlertBackground());
+            break;
+          case GREEN:
+            statusIcon.setForeground(Themes.currentTheme.successAlertBackground());
+            break;
+          default:
+            // Unknown status
+            throw new IllegalStateException("Unknown event severity " + event.getSeverity());
+        }
+
+      }
+    });
 
   }
 
@@ -123,41 +130,47 @@ public class FooterView {
    * @param event The progress change event
    */
   @Subscribe
-  public void onProgressChangedEvent(ProgressChangedEvent event) {
+  public void onProgressChangedEvent(final ProgressChangedEvent event) {
 
-    progressBar.setEnabled(true);
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        progressBar.setEnabled(true);
 
-    // Provide some ranges to allow different colouring
-    Range<Integer> hidden = Ranges.lessThan(0);
-    Range<Integer> amber = Ranges.closed(0, 99);
-    Range<Integer> green = Ranges.greaterThan(99);
+        // Provide some ranges to allow different colouring
+        Range<Integer> hidden = Ranges.lessThan(0);
+        Range<Integer> amber = Ranges.closed(0, 99);
+        Range<Integer> green = Ranges.greaterThan(99);
 
-    if (hidden.contains(event.getPercent())) {
-      progressBar.setVisible(false);
-    }
+        if (hidden.contains(event.getPercent())) {
+          progressBar.setVisible(false);
+        }
 
-    if (amber.contains(event.getPercent())) {
-      NimbusDecorator.applyThemeColor(Themes.currentTheme.warningAlertBackground(), progressBar);
-      progressBar.setValue(event.getPercent());
-      progressBar.setVisible(true);
-    }
+        if (amber.contains(event.getPercent())) {
+          NimbusDecorator.applyThemeColor(Themes.currentTheme.warningAlertBackground(), progressBar);
+          progressBar.setValue(event.getPercent());
+          progressBar.setVisible(true);
+        }
 
-    if (green.contains(event.getPercent())) {
-      NimbusDecorator.applyThemeColor(Themes.currentTheme.successAlertBackground(), progressBar);
-      progressBar.setValue(Math.min(100, event.getPercent()));
-      progressBar.setVisible(true);
+        if (green.contains(event.getPercent())) {
+          NimbusDecorator.applyThemeColor(Themes.currentTheme.successAlertBackground(), progressBar);
+          progressBar.setValue(Math.min(100, event.getPercent()));
+          progressBar.setVisible(true);
 
-      // Check if we are already in the process of hiding the progress bar
-      if (hideProgressBarFuture.isPresent()) {
+          // Check if we are already in the process of hiding the progress bar
+          if (hideProgressBarFuture.isPresent()) {
 
-        // Cancel the current progress bar hide
-        hideProgressBarFuture.get().cancel(true);
+            // Cancel the current progress bar hide
+            hideProgressBarFuture.get().cancel(true);
+          }
+
+          // Create a new one
+          hideProgressBarFuture = Optional.of(scheduleHideProgressBar());
+
+        }
+
       }
-
-      // Create a new one
-      hideProgressBarFuture = Optional.of(scheduleHideProgressBar());
-
-    }
+    });
 
   }
 
@@ -166,7 +179,7 @@ public class FooterView {
    */
   private ScheduledFuture<?> scheduleHideProgressBar() {
 
-    return SafeExecutors.newScheduledThreadPool(1,"progress").schedule(new Runnable() {
+    return SafeExecutors.newScheduledThreadPool(1, "progress").schedule(new Runnable() {
       @Override
       public void run() {
 

@@ -175,6 +175,9 @@ public class Languages {
    */
   public static String truncatedList(Collection<String> contents, int maxLength) {
 
+    Preconditions.checkNotNull("contents", "'contents' must be present");
+    Preconditions.checkState(maxLength > 0 && maxLength < 4096, "'maxLength' must be [1,4096]");
+
     String joinedContents = Joiner
       .on(Languages.safeText(MessageKey.LIST_COMMA) + " ")
       .join(contents);

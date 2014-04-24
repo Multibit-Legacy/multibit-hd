@@ -42,7 +42,7 @@ public class WalletSummaryListCellRenderer extends JLabel implements ListCellRen
       setForeground(list.getForeground());
     }
 
-    if (value != null) {
+    if (value != null && value.getName() != null) {
 
       // Create a truncated name (description is shown outside the list)
       String truncatedText = Languages.truncatedList(Lists.newArrayList(value.getName()), 100);

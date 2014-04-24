@@ -8,6 +8,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.io.CharStreams;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.services.AbstractService;
 import org.multibit.hd.core.services.CoreServices;
@@ -113,7 +116,20 @@ public class BitcoinURIListeningService extends AbstractService {
       ));
 
       // Successfully owned the server port so handle ongoing messages as master
-      getExecutorService().submit(getInstanceServerRunnable(serverSocket.get()));
+      ListenableFuture future = getExecutorService().submit(getInstanceServerRunnable(serverSocket.get()));
+      Futures.addCallback(future, new FutureCallback() {
+        @Override
+        public void onSuccess(Object result) {
+          log.debug("Stopping BitcoinURIListeningService executor (success)");
+          getExecutorService().shutdownNow();
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+          log.debug("Stopping BitcoinURIListeningService executor (failure)",t);
+          getExecutorService().shutdownNow();
+        }
+      });
 
       log.info("Listening for MultiBit HD instances on socket: '{}'", MULTIBIT_HD_NETWORK_SOCKET);
 
@@ -247,6 +263,8 @@ public class BitcoinURIListeningService extends AbstractService {
             }
           }
         } // End of while
+
+
 
       }
     };

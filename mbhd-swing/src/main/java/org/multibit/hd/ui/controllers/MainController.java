@@ -13,10 +13,7 @@ import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.dto.SecuritySummary;
-import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
-import org.multibit.hd.core.events.ConfigurationChangedEvent;
-import org.multibit.hd.core.events.CoreEvents;
-import org.multibit.hd.core.events.SecurityEvent;
+import org.multibit.hd.core.events.*;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -88,31 +85,24 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
    */
   private void handleExchange() {
 
-//    // Don't hold up the UI if the exchange doesn't respond
-//    SafeExecutors.newSingleThreadExecutor().execute(new Runnable() {
-//      @Override
-//      public void run() {
-//
-        BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
-        ExchangeKey exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getCurrentExchange());
+    BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
+    ExchangeKey exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getCurrentExchange());
 
-        if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
-          if (bitcoinConfiguration.getExchangeApiKeys().containsKey(ExchangeKey.OPEN_EXCHANGE_RATES.name())) {
-            String apiKey = Configurations.currentConfiguration.getBitcoin().getExchangeApiKeys().get(ExchangeKey.OPEN_EXCHANGE_RATES.name());
-            exchangeKey.getExchange().getExchangeSpecification().setApiKey(apiKey);
-          }
-        }
+    if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
+      if (bitcoinConfiguration.getExchangeApiKeys().containsKey(ExchangeKey.OPEN_EXCHANGE_RATES.name())) {
+        String apiKey = Configurations.currentConfiguration.getBitcoin().getExchangeApiKeys().get(ExchangeKey.OPEN_EXCHANGE_RATES.name());
+        exchangeKey.getExchange().getExchangeSpecification().setApiKey(apiKey);
+      }
+    }
 
-        // Stop (with block) any existing exchange ticker service
-        if (exchangeTickerService.isPresent()) {
-          exchangeTickerService.get().stopAndWait();
-        }
+    // Stop (with block) any existing exchange ticker service
+    if (exchangeTickerService.isPresent()) {
+      exchangeTickerService.get().stopAndWait();
+    }
 
-        // Create and start the exchange ticker service
-        exchangeTickerService = Optional.of(CoreServices.newExchangeService(bitcoinConfiguration));
-        exchangeTickerService.get().start();
-//      }
-//    });
+    // Create and start the exchange ticker service
+    exchangeTickerService = Optional.of(CoreServices.newExchangeService(bitcoinConfiguration));
+    exchangeTickerService.get().start();
 
   }
 
@@ -405,7 +395,7 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
   public void onQuitEvent(GenericQuitEvent event, GenericQuitResponse response) {
 
     // Immediately shutdown without requesting confirmation
-    CoreEvents.fireShutdownEvent();
+    CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.HARD);
 
   }
 

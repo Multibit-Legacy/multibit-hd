@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.SecurityEvent;
+import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.SSLManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -34,7 +35,7 @@ public class MultiBitHD {
 
   private static final Logger log = LoggerFactory.getLogger(MultiBitHD.class);
 
-  private static MainController mainController;
+  private MainController mainController;
 
   /**
    * <p>Main entry point to the application</p>
@@ -49,6 +50,41 @@ public class MultiBitHD {
       }
     }
 
+    // Hand over to an instance to simplify FEST tests
+    final MultiBitHD multiBitHD = new MultiBitHD();
+    if (!multiBitHD.start(args)) {
+
+      // Failed to start so issue a hard shutdown
+      multiBitHD.stop(ShutdownEvent.ShutdownType.HARD);
+
+    } else {
+
+      // Initialise the UI views in the EDT
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+
+          multiBitHD.initialiseUIViews();
+
+        }
+      });
+
+    }
+
+
+  }
+
+  /**
+   * <p>Start this instance of MultiBit HD</p>
+   *
+   * @param args The command line arguments
+   *
+   * @return True if the application started successfully, false if a shutdown is required
+   *
+   * @throws Exception If something goes wrong
+   */
+  public boolean start(String[] args) throws Exception {
+
     // Prepare the JVM (Nimbus, system properties etc)
     initialiseJVM();
 
@@ -56,7 +92,7 @@ public class MultiBitHD {
     if (!initialiseUIControllers(args)) {
 
       // Required to shut down
-      return;
+      return false;
 
     }
 
@@ -66,15 +102,17 @@ public class MultiBitHD {
     // Start core services (logging, security alerts, configuration, Bitcoin URI handling etc)
     initialiseCore(args);
 
-    // Initialise the UI views in the EDT
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
+    // Must be OK to be here
+    return true;
+  }
 
-        initialiseUIViews();
+  /**
+   * @param shutdownType The shutdown type to use
+   */
+  public void stop(ShutdownEvent.ShutdownType shutdownType) {
 
-      }
-    });
+    CoreEvents.fireShutdownEvent(shutdownType);
+
   }
 
   /**
@@ -88,12 +126,11 @@ public class MultiBitHD {
    * <li>Bitcoin network service</li>
    * </ul>
    */
-  public static boolean initialiseUIControllers(String[] args) {
+  public boolean initialiseUIControllers(String[] args) {
 
     // Determine if another instance is running and shutdown if this is the case
     BitcoinURIListeningService bitcoinURIListeningService = new BitcoinURIListeningService(args);
     if (!bitcoinURIListeningService.start()) {
-      CoreEvents.fireShutdownEvent();
       return false;
     }
 
@@ -101,7 +138,6 @@ public class MultiBitHD {
       log.error("Windows XP or earlier detected. Forcing shutdown.");
       JOptionPane.showMessageDialog(null, "This version of Windows is not supported for security reasons.\nPlease upgrade.", "Error",
         JOptionPane.ERROR_MESSAGE);
-      CoreEvents.fireShutdownEvent();
       return false;
     }
 
@@ -117,7 +153,7 @@ public class MultiBitHD {
   /**
    * <p>Initialise the JVM. This occurs before anything else is called.</p>
    */
-  public static void initialiseJVM() throws Exception {
+  private void initialiseJVM() throws Exception {
 
     log.debug("Initialising JVM...");
 
@@ -161,7 +197,7 @@ public class MultiBitHD {
   /**
    * <p>Initialise the platform-specific services</p>
    */
-  public static void initialiseGenericApp() {
+  private void initialiseGenericApp() {
 
     GenericApplicationSpecification specification = new GenericApplicationSpecification();
     specification.getOpenURIEventListeners().add(mainController);
@@ -178,7 +214,7 @@ public class MultiBitHD {
    *
    * @param args The command line arguments
    */
-  public static void initialiseCore(String[] args) {
+  private void initialiseCore(String[] args) {
 
     log.debug("Initialising Core...");
 
@@ -203,7 +239,7 @@ public class MultiBitHD {
    * <p>Once the UI renders, control passes to the <code>MainController</code> to
    * respond to the wizard close event which will trigger ongoing initialisation.</p>
    */
-  public static MainView initialiseUIViews() {
+  public MainView initialiseUIViews() {
 
     log.debug("Initialising UI...");
 
@@ -245,5 +281,4 @@ public class MultiBitHD {
     return mainView;
 
   }
-
 }

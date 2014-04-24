@@ -7,6 +7,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -213,7 +214,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        CoreEvents.fireShutdownEvent();
+        CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.HARD);
       }
     };
 

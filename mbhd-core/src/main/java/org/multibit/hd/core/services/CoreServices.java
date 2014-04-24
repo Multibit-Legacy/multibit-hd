@@ -16,9 +16,10 @@ import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.dto.SecuritySummary;
-import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.exceptions.CoreException;
 import org.multibit.hd.core.logging.LoggingFactory;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -128,8 +129,8 @@ public class CoreServices {
 
     Optional<Configuration> configuration;
     try (InputStream is = new FileInputStream(InstallationManager.getConfigurationFile())) {
-        // Load configuration (providing a default if none exists)
-        configuration = Configurations.readConfiguration(is, Configuration.class);
+      // Load configuration (providing a default if none exists)
+      configuration = Configurations.readConfiguration(is, Configuration.class);
     } catch (IOException e) {
       configuration = Optional.absent();
     }
@@ -158,23 +159,31 @@ public class CoreServices {
   }
 
   /**
-   * <p>Typically called after a ShutdownEvent is broadcast, this method waits a short time and then issues
-   * the <code>System.exit()</code> call to finalise all threads.</p>
+   * <p>Typically called directly after a ShutdownEvent is broadcast.</p>
+   * <p>Depending on the shutdown type this method will trigger a <code>System.exit(0)</code> to ensure graceful termination.</p></p>
+   *
+   * @param shutdownType The
    */
-  public static void shutdown() {
+  public static void shutdown(final ShutdownEvent.ShutdownType shutdownType) {
 
-    SafeExecutors.newFixedThreadPool(1, "shutdown").execute(new Runnable() {
-      @Override
-      public void run() {
+    if (ShutdownEvent.ShutdownType.HARD.equals(shutdownType)) {
 
-        // Provide a short delay while modules deal with the ShutdownEvent
-        Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+      SafeExecutors.newFixedThreadPool(1, "shutdown").execute(new Runnable() {
+        @Override
+        public void run() {
 
-        log.info("Issuing system exit");
-        System.exit(0);
+          log.info("Applying hard shutdown. Waiting for processes to clean up...");
 
-      }
-    });
+          // Provide a short delay while modules deal with the ShutdownEvent
+          Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+
+          log.info("Issuing system exit");
+          System.exit(0);
+        }
+      });
+    } else {
+
+    }
 
   }
 
@@ -201,7 +210,6 @@ public class CoreServices {
    * @return The application event service singleton
    */
   public static ApplicationEventService getApplicationEventService() {
-    //log.debug("Get application service");
     return applicationEventService;
 
   }

@@ -21,6 +21,7 @@ import org.multibit.hd.core.utils.Dates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.SSLHandshakeException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.UnknownHostException;
@@ -183,6 +184,10 @@ public class ExchangeTickerService extends AbstractService {
             return exchange.getPollingMarketDataService().getTicker(exchangeBaseCode, exchangeCounterCode);
           } catch (UnknownHostException e) {
             // The exchange is either down or we have no network connection
+            return null;
+          } catch (SSLHandshakeException e) {
+            // The exchange is not presenting a valid SSL certificate - treat as down
+            log.warn("Exchange '{}' reported an SSL error: {}",exchangeKey.getExchangeName(), e.getMessage());
             return null;
           }
         }

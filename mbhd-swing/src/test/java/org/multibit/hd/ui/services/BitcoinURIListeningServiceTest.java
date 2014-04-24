@@ -6,6 +6,7 @@ import com.google.common.io.CharStreams;
 import org.junit.After;
 import org.junit.Test;
 import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.events.ShutdownEvent;
 
 import java.io.InputStreamReader;
 import java.net.InetAddress;
@@ -50,7 +51,8 @@ public class BitcoinURIListeningServiceTest {
     }
     assertThat(address.toString()).isEqualTo("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
 
-    CoreEvents.fireShutdownEvent();
+    // Don't crash the JVM
+    CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.SOFT);
 
     assertThat(testObject.getServerSocket().isPresent()).isFalse();
 
@@ -71,7 +73,8 @@ public class BitcoinURIListeningServiceTest {
     }
     assertThat(address.toString()).isEqualTo("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
 
-    CoreEvents.fireShutdownEvent();
+    // Don't crash the JVM
+    CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.SOFT);
 
     assertThat(testObject.getServerSocket().isPresent()).isFalse();
 
@@ -104,7 +107,8 @@ public class BitcoinURIListeningServiceTest {
     String expectedMessage = BitcoinURIListeningService.MESSAGE_START +"bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?amount=0.01&label=Please%20donate%20to%20multibit.org"+BitcoinURIListeningService.MESSAGE_END;
     assertThat(text).isEqualTo(expectedMessage);
 
-    CoreEvents.fireShutdownEvent();
+    // Don't crash the JVM
+    CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.SOFT);
 
     assertThat(testObject.getServerSocket().isPresent()).isFalse();
   }
@@ -136,7 +140,8 @@ public class BitcoinURIListeningServiceTest {
     String expectedMessage = BitcoinURIListeningService.MESSAGE_START +"bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty"+BitcoinURIListeningService.MESSAGE_END;
     assertThat(text).isEqualTo(expectedMessage);
 
-    CoreEvents.fireShutdownEvent();
+    // Don't crash the JVM
+    CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.SOFT);
 
     assertThat(testObject.getServerSocket().isPresent()).isFalse();
 

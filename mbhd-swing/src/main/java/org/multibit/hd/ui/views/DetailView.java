@@ -85,23 +85,30 @@ public class DetailView {
   }
 
   @Subscribe
-  public void onShowDetailScreen(ShowScreenEvent event) {
+  public void onShowDetailScreen(final ShowScreenEvent event) {
 
     Preconditions.checkNotNull(event, "'event' must be present");
 
-    Screen screen = event.getScreen();
-    AbstractScreenView view = screenViewMap.get(screen);
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        Screen screen = event.getScreen();
+        AbstractScreenView view = screenViewMap.get(screen);
 
-    if (!view.isInitialised()) {
+        if (!view.isInitialised()) {
 
-      // Initialise the panel and add it to the card layout parent
-      screenPanel.add(view.getScreenViewPanel(), screen.name());
+          // Initialise the panel and add it to the card layout parent
+          screenPanel.add(view.getScreenViewPanel(), screen.name());
 
-    }
+        }
 
-    cardLayout.show(screenPanel, event.getScreen().name());
+        cardLayout.show(screenPanel, event.getScreen().name());
 
-    view.afterShow();
+        view.afterShow();
+
+      }
+    });
+
 
   }
 
