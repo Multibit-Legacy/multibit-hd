@@ -23,7 +23,9 @@ public class MessageKeyTest {
 
     for (MessageKey messageKey : MessageKey.values()) {
 
-      assertThat(Languages.safeText(messageKey)).isNotEqualTo(messageKey.getKey());
+      assertThat(Languages.safeText(messageKey))
+        .describedAs("MessageKey should have this entry in languages.properties")
+        .isNotEqualTo(messageKey.getKey());
 
     }
 
