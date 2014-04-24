@@ -58,7 +58,9 @@ public enum CoreMessageKey {
   NO_PAYMENT_REQUEST("core_no_payment_request"),
 
   TRANSACTION_TO("core_transaction_to"),
-  TRANSACTION_BY("core_transaction_by")
+  TRANSACTION_BY("core_transaction_by"),
+
+  DEFAULT_WALLET_NAME("core_default_wallet_name")
   // End of enum
   ;
 

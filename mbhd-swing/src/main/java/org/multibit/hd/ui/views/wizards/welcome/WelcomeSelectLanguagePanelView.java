@@ -64,7 +64,7 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[][]", // Column constraints
-      "[][]" // Row constraints
+      "[][]20[]30" // Row constraints
     ));
 
     JComboBox<String> languagesComboBox = ComboBoxes.newLanguagesComboBox(this, Languages.currentLocale());

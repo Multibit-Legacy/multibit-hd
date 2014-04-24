@@ -55,9 +55,8 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
     descriptionLabel = Labels.newBlankLabel();
 
     // Add to the panel
-    panel.add(Labels.newSelectWallet(), "grow,push, w min:90");
-    panel.add(selectedWalletComboBox, "grow,push,w min:465:,wrap");
-    panel.add(descriptionLabel, "grow,push,span 2,wrap");
+    panel.add(selectedWalletComboBox, "grow,push,w min:510:,wrap");
+    panel.add(descriptionLabel, "grow,push,wrap");
 
     return panel;
 

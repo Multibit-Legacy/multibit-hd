@@ -704,8 +704,10 @@ public enum WalletManager implements WalletEventListener {
       walletSummary = walletSummaryOptional.get();
     } else {
       walletSummary = new WalletSummary();
-      walletSummary.setName("Wallet");
-      walletSummary.setNotes(walletDirectory.getName());
+      // TODO No localiser available in core to localise core_default_wallet_name.
+      String shortWalletDirectory = walletDirectory.getName().substring(0, 13); // The mbhd and the first group of digits
+      walletSummary.setName("Wallet - in directory starting \"" + shortWalletDirectory + "\"");
+      walletSummary.setNotes("");
     }
     walletSummary.setWalletId(walletId);
 

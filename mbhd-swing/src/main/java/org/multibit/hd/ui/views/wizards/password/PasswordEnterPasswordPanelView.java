@@ -73,6 +73,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
 
     displaySecurityPopoverMaV = Popovers.newDisplaySecurityPopoverMaV(getPanelName());
     enterPasswordMaV = Components.newEnterPasswordMaV(getPanelName());
+    enterPasswordMaV.getView().setAddLabel(false);
     selectWalletMaV = Components.newSelectWalletMaV(getPanelName());
 
     // Configure the panel model
@@ -94,7 +95,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
     contentPanel.setLayout(new MigLayout(
       Panels.migXLayout(),
       "[]", // Column constraints
-      "[]10[]" // Row constraints
+      "[]0[]40[]0[]40" // Row constraints
     ));
 
     contentPanel.add(Labels.newPasswordNote(), "wrap");
@@ -103,6 +104,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
     contentPanel.add(Labels.newSelectWalletNote(), "wrap");
     contentPanel.add(selectWalletMaV.getView().newComponentPanel(), "wrap");
 
+    contentPanel.add(Labels.newRestoreWalletNote(), "wrap");
   }
 
   @Override
