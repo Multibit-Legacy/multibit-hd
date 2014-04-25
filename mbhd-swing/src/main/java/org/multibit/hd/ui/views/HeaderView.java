@@ -11,10 +11,7 @@ import org.multibit.hd.ui.events.view.BalanceChangedEvent;
 import org.multibit.hd.ui.events.view.ThemeChangedEvent;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.models.AlertModel;
-import org.multibit.hd.ui.views.components.Components;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.ModelAndView;
-import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountModel;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountView;
@@ -23,8 +20,7 @@ import org.multibit.hd.ui.views.themes.NimbusDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -41,7 +37,9 @@ public class HeaderView {
 
   private JLabel alertMessageLabel;
   private JLabel alertRemainingLabel;
+
   private JButton alertButton;
+  private JButton closeButton;
 
   private final JPanel contentPanel;
   private final JPanel alertPanel;
@@ -149,18 +147,22 @@ public class HeaderView {
       case RED:
         PanelDecorator.applyDangerTheme(alertPanel);
         NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), alertButton);
+        NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), closeButton);
         break;
       case AMBER:
         PanelDecorator.applyWarningTheme(alertPanel);
         NimbusDecorator.applyThemeColor(Themes.currentTheme.warningAlertBackground(), alertButton);
+        NimbusDecorator.applyThemeColor(Themes.currentTheme.warningAlertBackground(), closeButton);
         break;
       case GREEN:
         PanelDecorator.applySuccessTheme(alertPanel);
         NimbusDecorator.applyThemeColor(Themes.currentTheme.successAlertBackground(), alertButton);
+        NimbusDecorator.applyThemeColor(Themes.currentTheme.successAlertBackground(), closeButton);
         break;
       case PINK:
         PanelDecorator.applyPendingTheme(alertPanel);
         NimbusDecorator.applyThemeColor(Themes.currentTheme.pendingAlertBackground(), alertButton);
+        NimbusDecorator.applyThemeColor(Themes.currentTheme.pendingAlertBackground(), closeButton);
         break;
       default:
         throw new IllegalStateException("Unknown severity: " + alertModel.getSeverity().name());
@@ -193,26 +195,39 @@ public class HeaderView {
     alertButton = new JButton();
     alertButton.setVisible(false);
 
-    JLabel closeLabel = Labels.newPanelCloseLabel(new MouseAdapter() {
-      @Override
-      public void mouseClicked(MouseEvent e) {
-        ControllerEvents.fireRemoveAlertEvent();
-      }
-    });
+    closeButton = Buttons.newPanelCloseButton(getCloseAlertAction());
 
     // Determine how to add them back into the panel
     if (Languages.isLeftToRight()) {
       alertPanel.add(alertMessageLabel, "push");
       alertPanel.add(alertRemainingLabel, "shrink,right");
       alertPanel.add(alertButton, "shrink,right");
-      alertPanel.add(closeLabel);
+      alertPanel.add(closeButton);
     } else {
-      alertPanel.add(closeLabel);
+      alertPanel.add(closeButton);
       alertPanel.add(alertButton, "shrink,left");
       alertPanel.add(alertRemainingLabel, "shrink,left");
       alertPanel.add(alertMessageLabel, "push");
     }
 
   }
+
+  /**
+   * @return A new action for closing the alert panel
+   */
+  private Action getCloseAlertAction() {
+
+    return new AbstractAction() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        ControllerEvents.fireRemoveAlertEvent();
+
+      }
+
+    };
+  }
+
 
 }
