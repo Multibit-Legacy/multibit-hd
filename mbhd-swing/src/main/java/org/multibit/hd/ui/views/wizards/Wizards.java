@@ -30,6 +30,9 @@ import org.multibit.hd.ui.views.wizards.edit_history.EnterHistoryDetailsMode;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletState;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletWizard;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletWizardModel;
+import org.multibit.hd.ui.views.wizards.empty_wallet.EmptyWalletState;
+import org.multibit.hd.ui.views.wizards.empty_wallet.EmptyWalletWizard;
+import org.multibit.hd.ui.views.wizards.empty_wallet.EmptyWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.exchange_settings.ExchangeSettingsState;
 import org.multibit.hd.ui.views.wizards.exchange_settings.ExchangeSettingsWizard;
 import org.multibit.hd.ui.views.wizards.exchange_settings.ExchangeSettingsWizardModel;
@@ -250,6 +253,17 @@ public class Wizards {
     log.debug("New 'Repair wallet wizard'");
 
     return new RepairWalletWizard(new RepairWalletWizardModel(RepairWalletState.REPAIR_WALLET), false);
+
+  }
+
+  /**
+   * @return A new "empty wallet" wizard
+   */
+  public static EmptyWalletWizard newEmptyWalletWizard() {
+
+    log.debug("New 'Empty wallet wizard'");
+
+    return new EmptyWalletWizard(new EmptyWalletWizardModel(EmptyWalletState.EMPTY_WALLET), false);
 
   }
 

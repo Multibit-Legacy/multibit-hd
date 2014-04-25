@@ -208,6 +208,8 @@ public enum MessageKey {
 
   REPAIR_WALLET_TITLE("repair_wallet_title"),
 
+  EMPTY_WALLET_TITLE("empty_wallet_title"),
+
   // Labels
   CONFIRM_SEND_MESSAGE("confirm_send_message"),
   EXCHANGE_RATE_PROVIDER("exchange_rate_provider"),
@@ -242,6 +244,7 @@ public enum MessageKey {
   SHOW_CHANGE_PASSWORD_WIZARD("show_change_password_wizard"),
   SHOW_VERIFY_NETWORK_WIZARD("show_verify_network_wizard"),
   SHOW_REPAIR_WALLET_WIZARD("show_repair_wallet_wizard"),
+  SHOW_EMPTY_WALLET_WIZARD("show_empty_wallet_wizard"),
 
   SHOW_ALERT("show_alert"),
   HIDE_ALERT("hide_alert"),

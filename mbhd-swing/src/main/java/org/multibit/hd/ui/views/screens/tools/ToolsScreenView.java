@@ -65,9 +65,11 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
     contentPanel.add(primaryButton, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowChangePasswordButton(getShowChangePasswordAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
 
-    contentPanel.add(Buttons.newShowVerifyNetworkButton(getShowVerifyNetworkAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowRepairWalletButton(getShowRepairWalletAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
-    contentPanel.add(Buttons.newShowWelcomeWizardButton(getShowWelcomeWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    contentPanel.add(Buttons.newShowEmptyWalletButton(getShowEmptyWalletAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
+
+    contentPanel.add(Buttons.newShowVerifyNetworkButton(getShowVerifyNetworkAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    contentPanel.add(Buttons.newShowWelcomeWizardButton(getShowWelcomeWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
 
     return contentPanel;
   }
@@ -145,6 +147,19 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
       public void actionPerformed(ActionEvent e) {
 
         Panels.showLightBox(Wizards.newRepairWalletWizard().getWizardScreenHolder());
+      }
+    };
+  }
+
+  /**
+   * @return An action to show the "empty wallet" tool
+   */
+  private AbstractAction getShowEmptyWalletAction() {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        Panels.showLightBox(Wizards.newEmptyWalletWizard().getWizardScreenHolder());
       }
     };
   }
