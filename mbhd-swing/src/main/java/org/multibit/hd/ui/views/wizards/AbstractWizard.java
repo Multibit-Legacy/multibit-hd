@@ -17,6 +17,8 @@ import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.Popovers;
 import org.multibit.hd.ui.views.layouts.WizardCardLayout;
 import org.multibit.hd.ui.views.wizards.password.PasswordState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,6 +38,8 @@ import java.util.concurrent.TimeUnit;
  * @since 0.0.1
  */
 public abstract class AbstractWizard<M extends AbstractWizardModel> {
+
+  private static final Logger log = LoggerFactory.getLogger(AbstractWizard.class);
 
   /**
    * The wizard screen holder card layout to which each wizard screen panel is added
@@ -107,6 +111,8 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
    */
   public void show(String name) {
 
+    log.debug("Show wizard: {}", name);
+
     Preconditions.checkState(wizardViewMap.containsKey(name), "'" + name + "' is not a valid panel name");
 
     final AbstractWizardPanelView wizardPanelView = wizardViewMap.get(name);
@@ -140,11 +146,13 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
    */
   public void hide(String panelName, boolean isExitCancel) {
 
+    log.debug("Show wizard: '{}' ExitCancel: {}", panelName, isExitCancel);
+
     Preconditions.checkState(wizardViewMap.containsKey(panelName), "'" + panelName + "' is not a valid panel name");
 
     final AbstractWizardPanelView wizardPanelView = wizardViewMap.get(panelName);
 
-    // Provide warning that the panel is about to be shown
+    // Provide warning that the panel is about to be hidden
     if (wizardPanelView.beforeHide(isExitCancel)) {
 
       // No cancellation so go ahead with the hide
@@ -163,6 +171,8 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
    */
   public void handleHide(final String panelName, boolean isExitCancel, AbstractWizardPanelView wizardPanelView) {
 
+    log.debug("Handle hide: '{}' ExitCancel: {}", panelName, isExitCancel);
+
     // De-register
     wizardPanelView.deregisterDefaultButton();
 
@@ -178,8 +188,8 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
           Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
         }
 
-        // No abort so hide
-        Panels.hideLightBox();
+        // Proceed with hide
+        Panels.hideLightBoxIfPresent();
 
       }
     });

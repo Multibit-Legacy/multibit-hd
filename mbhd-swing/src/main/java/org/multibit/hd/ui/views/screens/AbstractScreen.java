@@ -72,7 +72,7 @@ public abstract class AbstractScreen<M extends ScreenModel> {
    */
   public void close() {
 
-    Panels.hideLightBox();
+    Panels.hideLightBoxIfPresent();
 
   }
 

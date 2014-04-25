@@ -249,6 +249,7 @@ public class MultiBitHD {
 
     // Build the main view
     MainView mainView = new MainView();
+    mainController.setMainView(mainView);
 
     // Check for any pre-existing wallets in the application directory
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
@@ -256,17 +257,17 @@ public class MultiBitHD {
 
     if (walletDirectories.isEmpty()) {
 
-      // No wallet so need the welcome wizard
-      log.debug("No wallets in the directory - showing the 'WelcomeWizard'");
+      log.debug("No wallets in the directory - showing the welcome wizard");
       mainView.setShowExitingWelcomeWizard(true);
 
     } else {
 
-      // There is a wallet present so show the password wizard
+      log.debug("Wallets are present - showing the password wizard");
       mainView.setShowExitingPasswordWizard(true);
 
     }
 
+    // Provide a backdrop to the user and trigger the showing of the wizard
     mainView.refresh();
 
     // Catch up with any early security events

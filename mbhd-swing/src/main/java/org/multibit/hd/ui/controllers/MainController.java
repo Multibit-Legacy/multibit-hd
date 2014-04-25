@@ -30,6 +30,7 @@ import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.models.Models;
 import org.multibit.hd.ui.platform.listener.*;
 import org.multibit.hd.ui.services.BitcoinURIListeningService;
+import org.multibit.hd.ui.views.MainView;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -39,6 +40,7 @@ import org.multibit.hd.ui.views.themes.ThemeKey;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
 import org.multibit.hd.ui.views.wizards.password.PasswordState;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +68,7 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
   private Optional<BitcoinNetworkService> bitcoinNetworkService = Optional.absent();
 
   private final BitcoinURIListeningService bitcoinURIListeningService;
+  private MainView mainView;
 
   /**
    * @param bitcoinURIListeningService The Bitcoin URI listening service (must be present to permit a UI)
@@ -81,124 +84,47 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
   }
 
   /**
-   * Handles the changes to the exchange ticker service
+   * @param mainView The current main view
    */
-  private void handleExchange() {
-
-    BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
-    ExchangeKey exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getCurrentExchange());
-
-    if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
-      if (bitcoinConfiguration.getExchangeApiKeys().containsKey(ExchangeKey.OPEN_EXCHANGE_RATES.name())) {
-        String apiKey = Configurations.currentConfiguration.getBitcoin().getExchangeApiKeys().get(ExchangeKey.OPEN_EXCHANGE_RATES.name());
-        exchangeKey.getExchange().getExchangeSpecification().setApiKey(apiKey);
-      }
-    }
-
-    // Stop (with block) any existing exchange ticker service
-    if (exchangeTickerService.isPresent()) {
-      exchangeTickerService.get().stopAndWait();
-    }
-
-    // Create and start the exchange ticker service
-    exchangeTickerService = Optional.of(CoreServices.newExchangeService(bitcoinConfiguration));
-    exchangeTickerService.get().start();
-
-  }
-
-  /**
-   * Handles the changes to the theme
-   */
-  private void handleTheme() {
-
-    Theme newTheme = ThemeKey.valueOf(Configurations.currentConfiguration.getApplication().getCurrentTheme()).theme();
-    Themes.switchTheme(newTheme);
-
-  }
-
-  /**
-   * Handles the changes to the locale (resource bundle change, frame locale, component orientation etc)
-   */
-  private void handleLocale() {
-
-    Locale locale = Configurations.currentConfiguration.getLocale();
-
-    // Ensure the resource bundle is reset
-    ResourceBundle.clearCache();
-
-    // Update the frame to allow for LTR or RTL transition
-    Panels.applicationFrame.setLocale(locale);
-
-    // Ensure LTR and RTL language formats are in place
-    Panels.applicationFrame.applyComponentOrientation(ComponentOrientation.getOrientation(locale));
-
-    // Update the views to use the new locale (and any other relevant configuration)
-    ViewEvents.fireLocaleChangedEvent();
-  }
-
-  /**
-   * <p>Start the backup manager</p>
-   */
-  private void handleBackupManager() {
-
-    // Locate the installation directory
-    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-
-    // Initialise backup (must be before Bitcoin network starts and on the main thread)
-    BackupManager.INSTANCE.initialise(applicationDataDirectory, null); // TODO the null needs replacing with the cloud backup location
-
-  }
-
-  /**
-   * <p>Show any command line Bitcoin URI alerts (UI)</p>
-   */
-  private void handleBitcoinURIAlert() {
-
-    // Check for Bitcoin URI on the command line
-    Optional<BitcoinURI> bitcoinURI = bitcoinURIListeningService.getBitcoinURI();
-
-    if (bitcoinURI.isPresent()) {
-
-      // Attempt to create an alert model from the Bitcoin URI
-      Optional<AlertModel> alertModel = Models.newBitcoinURIAlertModel(bitcoinURI.get());
-
-      // If successful the fire the event
-      if (alertModel.isPresent()) {
-        ControllerEvents.fireAddAlertEvent(alertModel.get());
-      }
-
-    }
-  }
-
-  /**
-   * <p>Start the Bitcoin network</p>
-   */
-  private void handleBitcoinNetworkStart() {
-    // Only start the network once
-    if (bitcoinNetworkService.isPresent()) {
-      return;
-    }
-
-    bitcoinNetworkService = Optional.of(CoreServices.getOrCreateBitcoinNetworkService());
-
-    // Start the network now that the password has been validated
-    bitcoinNetworkService.get().start();
-
-    if (bitcoinNetworkService.get().isStartedOk()) {
-      bitcoinNetworkService.get().downloadBlockChainInBackground();
-    }
+  public void setMainView(MainView mainView) {
+    this.mainView = mainView;
   }
 
   @Subscribe
   public void onWizardHideEvent(WizardHideEvent event) {
 
+    log.debug("Wizard hide: '{}'", event.getPanelName());
+
     if (!event.isExitCancel()) {
 
       // Successful wizard interaction
 
-      // Special case for the password entry screen since it represents an
+      if (WelcomeWizardState.CREATE_WALLET_REPORT.name().equals(event.getPanelName()) ||
+        WelcomeWizardState.RESTORE_WALLET_REPORT.name().equals(event.getPanelName())) {
+
+        log.debug("Hand over to password wizard");
+
+        SafeExecutors.newSingleThreadExecutor("password-handover").execute(new Runnable() {
+          @Override
+          public void run() {
+
+            // Wait for the welcome wizard to hide and MainView to refresh
+            Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+
+            // Hand over to the password wizard to complete access to the wallet
+            mainView.setShowExitingPasswordWizard(true);
+            mainView.refresh();
+
+          }
+        });
+
+      }
+
+      // Special case for the password wizard since it represents an
       // incomplete initialisation of the UI
       if (PasswordState.PASSWORD_ENTER_PASSWORD.name().equals(event.getPanelName())) {
+
+        log.debug("Starting wallet services");
 
         // Show the initial screen as soon as possible to reassure the user
         Screen screen = Screen.valueOf(Configurations.currentConfiguration.getApplication().getCurrentScreen());
@@ -399,4 +325,112 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
 
   }
 
+  /**
+   * Handles the changes to the exchange ticker service
+   */
+  private void handleExchange() {
+
+    BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
+    ExchangeKey exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getCurrentExchange());
+
+    if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
+      if (bitcoinConfiguration.getExchangeApiKeys().containsKey(ExchangeKey.OPEN_EXCHANGE_RATES.name())) {
+        String apiKey = Configurations.currentConfiguration.getBitcoin().getExchangeApiKeys().get(ExchangeKey.OPEN_EXCHANGE_RATES.name());
+        exchangeKey.getExchange().getExchangeSpecification().setApiKey(apiKey);
+      }
+    }
+
+    // Stop (with block) any existing exchange ticker service
+    if (exchangeTickerService.isPresent()) {
+      exchangeTickerService.get().stopAndWait();
+    }
+
+    // Create and start the exchange ticker service
+    exchangeTickerService = Optional.of(CoreServices.newExchangeService(bitcoinConfiguration));
+    exchangeTickerService.get().start();
+
+  }
+
+  /**
+   * Handles the changes to the theme
+   */
+  private void handleTheme() {
+
+    Theme newTheme = ThemeKey.valueOf(Configurations.currentConfiguration.getApplication().getCurrentTheme()).theme();
+    Themes.switchTheme(newTheme);
+
+  }
+
+  /**
+   * Handles the changes to the locale (resource bundle change, frame locale, component orientation etc)
+   */
+  private void handleLocale() {
+
+    Locale locale = Configurations.currentConfiguration.getLocale();
+
+    // Ensure the resource bundle is reset
+    ResourceBundle.clearCache();
+
+    // Update the frame to allow for LTR or RTL transition
+    Panels.applicationFrame.setLocale(locale);
+
+    // Ensure LTR and RTL language formats are in place
+    Panels.applicationFrame.applyComponentOrientation(ComponentOrientation.getOrientation(locale));
+
+    // Update the views to use the new locale (and any other relevant configuration)
+    ViewEvents.fireLocaleChangedEvent();
+  }
+
+  /**
+   * <p>Start the backup manager</p>
+   */
+  private void handleBackupManager() {
+
+    // Locate the installation directory
+    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+
+    // Initialise backup (must be before Bitcoin network starts and on the main thread)
+    BackupManager.INSTANCE.initialise(applicationDataDirectory, null); // TODO the null needs replacing with the cloud backup location
+
+  }
+
+  /**
+   * <p>Show any command line Bitcoin URI alerts (UI)</p>
+   */
+  private void handleBitcoinURIAlert() {
+
+    // Check for Bitcoin URI on the command line
+    Optional<BitcoinURI> bitcoinURI = bitcoinURIListeningService.getBitcoinURI();
+
+    if (bitcoinURI.isPresent()) {
+
+      // Attempt to create an alert model from the Bitcoin URI
+      Optional<AlertModel> alertModel = Models.newBitcoinURIAlertModel(bitcoinURI.get());
+
+      // If successful the fire the event
+      if (alertModel.isPresent()) {
+        ControllerEvents.fireAddAlertEvent(alertModel.get());
+      }
+
+    }
+  }
+
+  /**
+   * <p>Start the Bitcoin network</p>
+   */
+  private void handleBitcoinNetworkStart() {
+    // Only start the network once
+    if (bitcoinNetworkService.isPresent()) {
+      return;
+    }
+
+    bitcoinNetworkService = Optional.of(CoreServices.getOrCreateBitcoinNetworkService());
+
+    // Start the network now that the password has been validated
+    bitcoinNetworkService.get().start();
+
+    if (bitcoinNetworkService.get().isStartedOk()) {
+      bitcoinNetworkService.get().downloadBlockChainInBackground();
+    }
+  }
 }

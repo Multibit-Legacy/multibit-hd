@@ -66,6 +66,8 @@ import org.multibit.hd.ui.views.wizards.verify_network.VerifyNetworkWizardModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizard;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -102,11 +104,14 @@ import java.util.List;
  */
 public class Wizards {
 
+  private static final Logger log = LoggerFactory.getLogger(Wizards.class);
+
   /**
    * @return A new "exit" wizard
    */
   public static ExitWizard newExitWizard() {
 
+    log.debug("New 'Exit wizard'");
     return new ExitWizard(new ExitWizardModel(ExitState.EXIT_CONFIRM), true);
   }
 
@@ -115,6 +120,7 @@ public class Wizards {
    */
   public static AboutWizard newAboutWizard() {
 
+    log.debug("New 'About wizard'");
     return new AboutWizard(new AboutWizardModel(AboutState.ABOUT_DETAILS), true);
   }
 
@@ -125,15 +131,18 @@ public class Wizards {
    */
   public static SendBitcoinWizard newSendBitcoinWizard(Optional<BitcoinURI> bitcoinURI) {
 
+    log.debug("New 'Send bitcoin wizard'");
+
     return new SendBitcoinWizard(new SendBitcoinWizardModel(SendBitcoinState.SEND_ENTER_AMOUNT), false, bitcoinURI);
 
   }
 
   /**
-   * @return A new "receive bitcoin" wizard
+   * @return A new "request bitcoin" wizard
    */
   public static ReceiveBitcoinWizard newRequestBitcoinWizard() {
 
+    log.debug("New 'Request bitcoin wizard'");
     return new ReceiveBitcoinWizard(new ReceiveBitcoinWizardModel(ReceiveBitcoinState.RECEIVE_ENTER_AMOUNT), false);
 
   }
@@ -146,7 +155,10 @@ public class Wizards {
    */
   public static EditContactWizard newEditContactWizard(List<Contact> contacts, EnterContactDetailsMode mode) {
 
+    log.debug("New 'Edit contact wizard'");
+
     Preconditions.checkState(!contacts.isEmpty(), "'contacts' cannot be empty");
+    Preconditions.checkNotNull(mode,"'mode' must be present");
 
     return new EditContactWizard(
       new EditContactWizardModel(EditContactState.EDIT_CONTACT_ENTER_DETAILS, contacts),
@@ -163,7 +175,10 @@ public class Wizards {
    */
   public static EditHistoryWizard newEditHistoryWizard(List<HistoryEntry> historyEntries, EnterHistoryDetailsMode mode) {
 
+    log.debug("New 'Edit history wizard'");
+
     Preconditions.checkState(!historyEntries.isEmpty(), "'historyEntries' cannot be empty");
+    Preconditions.checkNotNull(mode,"'mode' must be present");
 
     return new EditHistoryWizard(
       new EditHistoryWizardModel(EditHistoryState.HISTORY_ENTER_DETAILS, historyEntries),
@@ -177,6 +192,10 @@ public class Wizards {
    */
   public static WelcomeWizard newExitingWelcomeWizard(WelcomeWizardState initialState) {
 
+    log.debug("New 'Exiting welcome wizard'");
+
+    Preconditions.checkNotNull(initialState,"'initialState' must be present");
+
     return new WelcomeWizard(new WelcomeWizardModel(initialState), true);
   }
 
@@ -185,6 +204,8 @@ public class Wizards {
    */
   public static WelcomeWizard newClosingWelcomeWizard(WelcomeWizardState initialState) {
 
+    log.debug("New 'Closing welcome wizard'");
+
     return new WelcomeWizard(new WelcomeWizardModel(initialState), false);
   }
 
@@ -192,6 +213,8 @@ public class Wizards {
    * @return A new "password" wizard for a warm start
    */
   public static PasswordWizard newExitingPasswordWizard() {
+
+    log.debug("New 'Password wizard'");
 
     return new PasswordWizard(new PasswordWizardModel(PasswordState.PASSWORD_ENTER_PASSWORD), true);
 
@@ -202,6 +225,8 @@ public class Wizards {
    */
   public static ChangePasswordWizard newChangePasswordWizard() {
 
+    log.debug("New 'Change password wizard'");
+
     return new ChangePasswordWizard(new ChangePasswordWizardModel(ChangePasswordState.CHANGE_PASSWORD_ENTER_PASSWORD), false);
 
   }
@@ -210,6 +235,8 @@ public class Wizards {
    * @return A new "verify network" wizard
    */
   public static VerifyNetworkWizard newVerifyNetworkWizard() {
+
+    log.debug("New 'Verify network wizard'");
 
     return new VerifyNetworkWizard(new VerifyNetworkWizardModel(VerifyNetworkState.VERIFY_NETWORK_SHOW_REPORT), false);
 
@@ -220,6 +247,8 @@ public class Wizards {
    */
   public static RepairWalletWizard newRepairWalletWizard() {
 
+    log.debug("New 'Repair wallet wizard'");
+
     return new RepairWalletWizard(new RepairWalletWizardModel(RepairWalletState.REPAIR_WALLET), false);
 
   }
@@ -228,6 +257,8 @@ public class Wizards {
    * @return A new "language settings" wizard for language selection
    */
   public static LanguageSettingsWizard newLanguageSettingsWizard() {
+
+    log.debug("New 'Language settings wizard'");
 
     // Ensure we work with a copy of the current configuration in case of cancellation
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
@@ -240,6 +271,8 @@ public class Wizards {
    */
   public static ApplicationSettingsWizard newApplicationSettingsWizard() {
 
+    log.debug("New 'Application settings wizard'");
+
     // Ensure we work with a copy of the current configuration in case of cancellation
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
 
@@ -250,6 +283,8 @@ public class Wizards {
    * @return A new "sound settings" wizard for language selection
    */
   public static SoundSettingsWizard newSoundSettingsWizard() {
+
+    log.debug("New 'Sound settings wizard'");
 
     // Ensure we work with a copy of the current configuration in case of cancellation
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
@@ -262,6 +297,8 @@ public class Wizards {
    */
   public static BitcoinSettingsWizard newBitcoinSettingsWizard() {
 
+    log.debug("New 'Bitcoin settings wizard'");
+
     // Ensure we work with a copy of the current configuration in case of cancellation
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
 
@@ -273,6 +310,8 @@ public class Wizards {
    */
   public static ExchangeSettingsWizard newExchangeSettingsWizard() {
 
+    log.debug("New 'Exchange settings wizard'");
+
     // Ensure we work with a copy of the current configuration in case of cancellation
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
 
@@ -283,6 +322,11 @@ public class Wizards {
    * @return A new "payments" wizard
    */
   public static PaymentsWizard newPaymentsWizard(PaymentData paymentData) {
+
+    log.debug("New 'Payments wizard'");
+
+    Preconditions.checkNotNull(paymentData,"'paymentData' must be present");
+
     PaymentsWizardModel paymentsWizardModel;
     if (paymentData instanceof PaymentRequestData) {
       paymentsWizardModel = new PaymentsWizardModel(PaymentsState.PAYMENT_REQUEST_DETAILS, paymentData);
@@ -300,6 +344,9 @@ public class Wizards {
    * @return A new "export payments" wizard
    */
   public static ExportPaymentsWizard newExportPaymentsWizard(ExportPaymentsWizardState initialState) {
+
+    log.debug("New 'Export payments wizard'");
+
     return new ExportPaymentsWizard(new ExportPaymentsWizardModel(initialState), false);
   }
 
@@ -307,6 +354,8 @@ public class Wizards {
    * @return A new "edit wallet" wizard for adjusted wallet details
    */
   public static EditWalletWizard newEditWalletWizard() {
+
+    log.debug("New 'Edit wallet wizard'");
 
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
     Preconditions.checkState(currentWalletSummary.isPresent(),"'currentWalletSummary' must be present");

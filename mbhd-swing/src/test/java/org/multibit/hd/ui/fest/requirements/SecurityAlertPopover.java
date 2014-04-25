@@ -1,26 +1,27 @@
 package org.multibit.hd.ui.fest.requirements;
 
+import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.ui.fest.use_cases.password.UnlockWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.security.CloseDebugSecurityPopoverUseCase;
+
+import java.util.Map;
 
 /**
  * <p>FEST Swing UI test to provide:</p>
  * <ul>
- * <li>Unlock the empty wallet fixture</li>
+ * <li>Create wallet using welcome wizard</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class UnlockEmptyWalletFixture {
+public class SecurityAlertPopover {
 
   public static void verifyUsing(FrameFixture window) {
 
-    new CloseDebugSecurityPopoverUseCase(window).execute(null);
+    Map<String,Object> parameters = Maps.newHashMap();
 
-    new UnlockWalletUseCase(window).execute(null);
-
+    new CloseDebugSecurityPopoverUseCase(window).execute(parameters);
 
   }
 }

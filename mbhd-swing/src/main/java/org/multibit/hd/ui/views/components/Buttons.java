@@ -492,7 +492,7 @@ public class Buttons {
     // Ensure it is accessible
     AccessibilityDecorator.apply(button, MessageKey.CLOSE);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, button, true, MultiBitUI.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, button, true, MultiBitUI.SMALL_ICON_SIZE);
 
     return button;
 

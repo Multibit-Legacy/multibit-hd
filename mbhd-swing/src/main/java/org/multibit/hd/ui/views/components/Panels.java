@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.components;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -13,6 +14,8 @@ import org.multibit.hd.ui.views.components.panels.RoundedPanel;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
@@ -29,6 +32,8 @@ import java.awt.event.ActionListener;
  *  
  */
 public class Panels {
+
+  private static final Logger log = LoggerFactory.getLogger(Panels.class);
 
   /**
    * A global reference to the application frame
@@ -183,10 +188,14 @@ public class Panels {
    */
   public synchronized static void showLightBox(JPanel panel) {
 
+    log.debug("Show light box");
+
     Preconditions.checkState(!lightBoxPanel.isPresent(), "Light box should never be called twice");
 
+    // Prevent focus
     allowFocus(Panels.applicationFrame, false);
 
+    // Add the light box panel
     lightBoxPanel = Optional.of(new LightBoxPanel(panel, JLayeredPane.MODAL_LAYER));
 
   }
@@ -194,20 +203,23 @@ public class Panels {
   /**
    * <p>Hides the currently showing light box panel</p>
    */
-  public synchronized static void hideLightBox() {
+  public synchronized static void hideLightBoxIfPresent() {
+
+    log.debug("Hide light box");
 
     if (lightBoxPanel.isPresent()) {
       lightBoxPanel.get().close();
     }
 
+    lightBoxPanel = Optional.absent();
+
+    // Finally allow focus in the EDT
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
         allowFocus(Panels.applicationFrame, true);
       }
     });
-
-    lightBoxPanel = Optional.absent();
 
   }
 
@@ -217,6 +229,8 @@ public class Panels {
    * @param panel The panel to act as the focus of the popover
    */
   public synchronized static void showLightBoxPopover(JPanel panel) {
+
+    log.debug("Show light box popover");
 
     Preconditions.checkState(lightBoxPanel.isPresent(), "LightBoxPopover should not be called unless a light box is showing");
     Preconditions.checkState(!lightBoxPopoverPanel.isPresent(), "LightBoxPopover should never be called twice");
@@ -229,6 +243,8 @@ public class Panels {
    * <p>Hides the currently showing light box popover panel</p>
    */
   public synchronized static void hideLightBoxPopover() {
+
+    log.debug("Hide light box popover");
 
     if (lightBoxPopoverPanel.isPresent()) {
       lightBoxPopoverPanel.get().close();
@@ -342,6 +358,9 @@ public class Panels {
       "[grow]", // Columns
       "[]" // Rows
     ));
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(panel, CoreMessageKey.DEBUGGER_ATTACHED);
 
     PanelDecorator.applyDangerFadedTheme(panel);
 

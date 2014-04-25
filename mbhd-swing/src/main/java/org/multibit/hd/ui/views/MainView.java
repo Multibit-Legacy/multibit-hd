@@ -126,7 +126,16 @@ public class MainView extends JFrame {
   @Subscribe
   public void onShutdownEvent(ShutdownEvent shutdownEvent) {
 
-    Panels.applicationFrame.dispose();
+    switch (shutdownEvent.getShutdownType()) {
+      case HARD:
+      case SOFT:
+        log.debug("Disposing of application frame.");
+        Panels.applicationFrame.dispose();
+        break;
+      case STANDBY:
+        log.debug("Keeping application frame (standby).");
+        break;
+    }
 
   }
 
@@ -135,42 +144,43 @@ public class MainView extends JFrame {
 
     log.debug("Received 'locale changed' event");
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        refresh();
-      }
-    });
+    refresh();
 
   }
 
   /**
    * <p>Rebuild the contents of the main view based on the current configuration and theme</p>
-   * <p>This should be in the Swing AWT event thread</p>
    */
   public void refresh() {
 
-    // Clear out all the old content and rebuild it from scratch
-    getContentPane().removeAll();
-    getContentPane().add(createMainContent());
+    // Must be in the EDT
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        // Clear out all the old content and rebuild it from scratch
+        getContentPane().removeAll();
+        getContentPane().add(createMainContent());
 
-    // Catch up on recent events
-    CoreServices.getApplicationEventService().repeatLatestEvents();
+        // Catch up on recent events
+        CoreServices.getApplicationEventService().repeatLatestEvents();
 
-    Panels.hideLightBox();
+        Panels.hideLightBoxIfPresent();
 
-    // Check for any wizards that were showing before the refresh occurred
-    if (showExitingWelcomeWizard) {
-      Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardScreenHolder());
-    }
-    if (showExitingPasswordWizard) {
-      // Force an exit if the user can't get through
-      Panels.showLightBox(Wizards.newExitingPasswordWizard().getWizardScreenHolder());
-    }
+        // Check for any wizards that were showing before the refresh occurred
+        if (showExitingWelcomeWizard) {
+          Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardScreenHolder());
+        }
+        if (showExitingPasswordWizard) {
+          // Force an exit if the user can't get through
+          Panels.showLightBox(Wizards.newExitingPasswordWizard().getWizardScreenHolder());
+        }
 
-    // Tidy up and show
-    pack();
-    setVisible(true);
+        // Tidy up and show
+        pack();
+        setVisible(true);
+
+      }
+    });
 
   }
 
@@ -264,8 +274,8 @@ public class MainView extends JFrame {
    */
   public void setShowExitingWelcomeWizard(boolean show) {
 
-    log.debug("Showing exiting welcome wizard:{}", show);
     showExitingWelcomeWizard = show;
+    showExitingPasswordWizard = !show;
 
   }
 
@@ -274,8 +284,8 @@ public class MainView extends JFrame {
    */
   public void setShowExitingPasswordWizard(boolean show) {
 
-    log.debug("Showing exiting password wizard:{}", show);
     showExitingPasswordWizard = show;
+    showExitingWelcomeWizard = !show;
 
   }
 
@@ -299,6 +309,7 @@ public class MainView extends JFrame {
 
     }
 
+    // Password entry successful so update the sidebar tree with the wallet name
     if (PasswordState.PASSWORD_ENTER_PASSWORD.name().equals(panelName)) {
 
       // Use the current wallet summary

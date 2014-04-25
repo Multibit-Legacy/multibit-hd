@@ -18,7 +18,6 @@ import org.multibit.hd.ui.views.themes.Themes;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -104,9 +103,6 @@ public class Labels {
 
     JLabel label = newLabel(key);
 
-    // Ensure it is accessible
-    AccessibilityDecorator.apply(label, key);
-
     // Font
     Font font = label.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE);
     label.setFont(font);
@@ -141,6 +137,9 @@ public class Labels {
 
     // Wrap in HTML to ensure LTR/RTL and line breaks are respected
     JLabel label = new JLabel(HtmlUtils.localiseWithLineBreaks(lines));
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(label, keys[0]);
 
     // Theme
     label.setForeground(Themes.currentTheme.text());
@@ -457,26 +456,6 @@ public class Labels {
   public static JLabel newSelectExchangeRateProviderLabel() {
 
     return Labels.newLabel(MessageKey.SELECT_EXCHANGE_RATE_PROVIDER);
-  }
-
-  /**
-   * @param mouseAdapter The mouse adapter that provides the event handling
-   *
-   * @return A new panel close "X" label with icon
-   */
-  public static JLabel newPanelCloseLabel(MouseAdapter mouseAdapter) {
-
-    JLabel panelCloseLabel = newBlankLabel();
-
-    // Font
-    Font panelCloseFont = panelCloseLabel.getFont().deriveFont(MultiBitUI.PANEL_CLOSE_FONT_SIZE);
-    panelCloseLabel.setFont(panelCloseFont);
-
-    AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, panelCloseLabel, true, 16);
-    panelCloseLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    panelCloseLabel.addMouseListener(mouseAdapter);
-
-    return panelCloseLabel;
   }
 
   /**

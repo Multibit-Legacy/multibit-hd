@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components.display_security_alert;
 
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
@@ -20,8 +21,6 @@ import java.awt.event.ActionEvent;
  */
 public class DisplaySecurityAlertView extends AbstractComponentView<DisplaySecurityAlertModel> {
 
-  private JLabel securityAlertMessage;
-
   private JButton panelCloseButton;
 
   /**
@@ -38,6 +37,7 @@ public class DisplaySecurityAlertView extends AbstractComponentView<DisplaySecur
     panel = Panels.newRoundedPanel();
 
     panelCloseButton = Buttons.newPanelCloseButton(getClosePopoverAction());
+    panelCloseButton.setName("security_alert."+ MessageKey.CLOSE.getKey());
 
     panel.add(panelCloseButton, "aligny top, alignx right,shrink,wrap");
     panel.add(Panels.newDebuggerWarning(), "align center,wrap");

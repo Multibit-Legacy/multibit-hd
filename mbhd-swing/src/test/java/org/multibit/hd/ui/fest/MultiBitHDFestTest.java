@@ -15,10 +15,7 @@ import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.testing.WalletFixtures;
 import org.multibit.hd.ui.MultiBitHD;
-import org.multibit.hd.ui.fest.requirements.ContactsScreen;
-import org.multibit.hd.ui.fest.requirements.SidebarTreeScreens;
-import org.multibit.hd.ui.fest.requirements.UnlockEmptyWalletFixture;
-import org.multibit.hd.ui.fest.requirements.WelcomeWizardCreateWallet;
+import org.multibit.hd.ui.fest.requirements.*;
 import org.multibit.hd.ui.views.MainView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +55,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   @After
   public void tearDown() {
 
+    log.debug("Test complete. Cleaning up.");
+
     // Don't crash the JVM
     CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.SOFT);
 
@@ -83,8 +82,11 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     // Start with a completely empty random application directory
     arrangeFresh();
 
-    // Start by creating a wallet through the welcome wizard
+    // Create a wallet through the welcome wizard
     WelcomeWizardCreateWallet.verifyUsing(window);
+
+    // Unlock the wallet
+    UnlockEmptyWalletFixture.verifyUsing(window);
 
   }
 

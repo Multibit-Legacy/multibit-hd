@@ -5,13 +5,15 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.events.SecurityEvent;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.LanguageKey;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.ComboBoxes;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.*;
+import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertModel;
+import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -37,6 +39,9 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
   // Model
   private String localeCode = Languages.currentLocale().getLanguage();
 
+  private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV;
+  private JComboBox<String> languagesComboBox;
+
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
@@ -49,6 +54,8 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
 
   @Override
   public void newPanelModel() {
+
+    displaySecurityPopoverMaV = Popovers.newDisplaySecurityPopoverMaV(getPanelName());
 
     localeCode = Languages.currentLocale().getLanguage();
     setPanelModel(localeCode);
@@ -67,7 +74,7 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
       "[][]20[]30" // Row constraints
     ));
 
-    JComboBox<String> languagesComboBox = ComboBoxes.newLanguagesComboBox(this, Languages.currentLocale());
+    languagesComboBox = ComboBoxes.newLanguagesComboBox(this, Languages.currentLocale());
 
     contentPanel.add(Labels.newSelectLanguageLabel(), "shrink");
     contentPanel.add(languagesComboBox, "growx,width min:350:,push,wrap");
@@ -93,8 +100,25 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
   @Override
   public void afterShow() {
 
-    // Do nothing
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
 
+        languagesComboBox.requestFocus();
+
+        // Check for any security alerts
+        Optional<SecurityEvent> securityEvent = CoreServices.getApplicationEventService().getLatestSecurityEvent();
+        if (securityEvent.isPresent()) {
+
+          displaySecurityPopoverMaV.getModel().setValue(securityEvent.get());
+
+          // Show the security alert as a popover
+          Panels.showLightBoxPopover(displaySecurityPopoverMaV.getView().newComponentPanel());
+
+        }
+
+      }
+    });
   }
 
   @Override
@@ -113,7 +137,7 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
   public void actionPerformed(final ActionEvent e) {
 
     // Hand over the configuration change to a background task
-    SafeExecutors.newFixedThreadPool(1,"locale-change").execute(new Runnable() {
+    SafeExecutors.newFixedThreadPool(1, "locale-change").execute(new Runnable() {
       @Override
       public void run() {
 

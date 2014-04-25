@@ -84,6 +84,8 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
       panel.add(trailingSymbolLabel, "shrink,wrap");
     }
 
+    // TODO (GR) Accessibility build plain string and add to panel?
+
     return panel;
 
   }
