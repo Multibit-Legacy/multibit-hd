@@ -14,6 +14,7 @@ import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
@@ -71,9 +72,9 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
   public void initialiseContent(JPanel contentPanel) {
 
     contentPanel.setLayout(new MigLayout(
-            Panels.migXYLayout(),
-            "[][][]", // Column constraints
-            "[]10[]10[]10[]" // Row constraints
+      Panels.migXYLayout(),
+      "[][][]", // Column constraints
+      "[]10[]10[]10[]" // Row constraints
     ));
 
     // Apply the theme
@@ -142,11 +143,17 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
     boolean walletCreatedStatus = false;
     byte[] seed = null;
     WalletSummary walletSummary = null;
+    File walletDirectory = null;
     try {
       // Attempt to create the wallet (the manager will track the ID etc)
       WalletManager walletManager = WalletManager.INSTANCE;
       seed = seedPhraseGenerator.convertToSeed(seedPhrase);
       walletSummary = walletManager.createWallet(seed, password);
+
+      Preconditions.checkNotNull(walletSummary.getWalletId(), "'walletId' must be present");
+
+      String walletRoot = WalletManager.createWalletRoot(walletSummary.getWalletId());
+      walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
 
       // Must be OK to be here
       walletCreatedStatus = true;
@@ -176,14 +183,16 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
     // Determine if the create wallet status is valid
     if (walletCreatedStatus) {
       AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, walletCreatedStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
+      if (walletDirectory != null) {
+        CoreServices.logHistory(Languages.safeText(MessageKey.HISTORY_WALLET_CREATED, walletDirectory.getAbsoluteFile()));
+      }
     } else {
       AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, walletCreatedStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
     }
 
-
     // Once all the initial wallet creation is complete and stored to disk, perform a BRIT wallet exchange.
     // This saves the wallet creation date/ replay date and returns a list of Bitcoin addresses to use for BRIT fee payment
-    if (walletCreatedStatus && seed != null && walletSummary != null && walletSummary.getWallet() != null) {
+    if (walletCreatedStatus && seed != null && walletSummary.getWallet() != null) {
       performMatcherExchange(seed, walletSummary.getWallet());
     }
 

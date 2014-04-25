@@ -8,6 +8,8 @@ import com.google.common.collect.Sets;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.components.AccessibilityDecorator;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.TextBoxes;
@@ -57,8 +59,6 @@ public class EditHistoryEnterDetailsPanelView extends AbstractWizardPanelView<Ed
   @Override
   public void newPanelModel() {
 
-    descriptionReadOnly = TextBoxes.newTruncatedList(Lists.newArrayList(""), 400);
-
     // Configure the panel model
     setPanelModel(new EditHistoryEnterDetailsPanelModel(
       getPanelName()
@@ -83,6 +83,11 @@ public class EditHistoryEnterDetailsPanelView extends AbstractWizardPanelView<Ed
     boolean multiEdit = historyEntries.size() > 1;
 
     HistoryEntry firstEntry = getWizardModel().getHistoryEntries().get(0);
+
+    descriptionReadOnly = TextBoxes.newTruncatedList(Lists.newArrayList(""), 400);
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(descriptionReadOnly, MessageKey.DESCRIPTION_READ_ONLY);
 
     // Always allow non-unique fields
     notes = TextBoxes.newEnterPrivateNotes(getWizardModel());

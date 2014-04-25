@@ -224,6 +224,10 @@ public enum MessageKey {
   BACKUP_LOCATION_STATUS("backup_location_status"),
   SELECT_BACKUP("select_backup"),
   WALLET_CREATED_STATUS("wallet_created_status"),
+
+  HISTORY_WALLET_CREATED("history_wallet_created"),
+  HISTORY_WALLET_OPENED("history_wallet_opened"),
+
   ALERT_REMAINING("alert_remaining"),
   EXCHANGE_FIAT_RATE("exchange_fiat_rate"),
   EXCHANGE_FIAT_RATE_WITH_PROVIDER("exchange_fiat_rate_with_provider"),
@@ -360,7 +364,10 @@ public enum MessageKey {
   DATE("date"),
   STATUS("status"),
   TYPE("type"),
+
   DESCRIPTION("description"),
+  DESCRIPTION_READ_ONLY("description_read_only"),
+
   TRANSACTION_HASH("transaction_hash"),
   RAW_TRANSACTION("raw_transaction"),
   VIEW_IN_BLOCKCHAIN_INFO("view_in_blockchain_info"),

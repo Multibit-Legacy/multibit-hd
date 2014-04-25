@@ -135,6 +135,30 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   }
 
   /**
+   * <p>Verify the following:</p>
+   * <ul>
+   * <li>Start with empty wallet fixture</li>
+   * <li>Unlock wallet</li>
+   * <li>Exercise the Contacts screen</li>
+   * </ul>
+   */
+  @Test
+  public void verifyHistoryScreen() throws Exception {
+
+    // Start with the empty wallet fixture
+    arrangeEmpty();
+
+    // Unlock the wallet
+    UnlockEmptyWalletFixture.verifyUsing(window);
+
+    // Examine the history after unlocking
+    HistoryScreen.verifyUsing(window);
+
+  }
+
+  ////////////////////////////////////////////////////////////////
+
+  /**
    * <p>Starts MultiBit HD with an empty application directory</p>
    *
    * @throws Exception

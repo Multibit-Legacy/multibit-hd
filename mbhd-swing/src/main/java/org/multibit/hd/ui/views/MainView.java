@@ -316,9 +316,10 @@ public class MainView extends JFrame {
       Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
       if (walletSummary.isPresent()) {
         sidebarView.updateWalletTreeNode(walletSummary.get().getName());
-      }
 
-      // TODO Why is the wallet summary null?
+        // Record this in the history
+        CoreServices.logHistory(Languages.safeText(MessageKey.HISTORY_WALLET_OPENED,walletSummary.get().getName()));
+      }
 
     }
 
