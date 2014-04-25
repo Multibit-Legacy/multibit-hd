@@ -11,7 +11,7 @@ import static org.fest.assertions.Assertions.assertThat;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "history" screen edit Opened and Password entry history</li>
+ * <li>Verify the "history" screen search</li>
  * </ul>
  * <p>Requires the "history" screen to be showing</p>
  * <p>Requires "Opened" and "Password verified" to be present</p>

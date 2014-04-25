@@ -3,6 +3,7 @@ package org.multibit.hd.ui.fest.requirements;
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.contacts.*;
+import org.multibit.hd.ui.fest.use_cases.history.SearchHistoryUseCase;
 
 import java.util.Map;
 
@@ -50,6 +51,9 @@ public class ContactsScreen {
 
     // Click Undo and restore Uriah
     new UndoUriahContactUseCase(window).execute(parameters);
+
+    // Search for some entries
+    new SearchContactUseCase(window).execute(parameters);
 
   }
 }
