@@ -32,6 +32,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.io.File;
 import java.util.List;
 
@@ -87,8 +89,8 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     // Create view components
     enterSearchMaV = Components.newEnterSearchMaV(getScreen().name());
 
-    JButton detailsButton = Buttons.newDetailsButton(getDetailsAction());
-    JButton deleteRequestButton = Buttons.newDeletePaymentRequestButton(getDeletePaymentRequestAction());
+    final JButton detailsButton = Buttons.newDetailsButton(getDetailsAction());
+    final JButton deleteRequestButton = Buttons.newDeletePaymentRequestButton(getDeletePaymentRequestAction());
     JButton undoButton = Buttons.newUndoButton(getUndoAction());
     JButton exportButton = Buttons.newExportButton(getExportAction());
 
@@ -96,6 +98,15 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     List<PaymentData> paymentList = walletService.getPaymentDataList();
 
     paymentsTable = Tables.newPaymentsTable(paymentList);
+
+    paymentsTable.addFocusListener(new FocusAdapter() {
+      @Override
+      public void focusLost(FocusEvent e) {
+        // User is most likely to want the details button after losing table focus
+        detailsButton.requestFocusInWindow();
+      }
+    });
+
 
     // Create the scroll pane and add the table to it.
     JScrollPane scrollPane = new JScrollPane(paymentsTable);
@@ -149,6 +160,21 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     log.trace("Received a WalletDetailsChangedEvent.");
 
     update(true);
+  }
+
+  /**
+   * <p>Called when the search box is updated</p>
+   *
+   * @param event The "component changed" event
+   */
+  @Subscribe
+  public void onComponentChangedEvent(ComponentChangedEvent event) {
+
+    // Check if this event applies to us
+    if (event.getPanelName().equals(getScreen().name())) {
+      update(false);
+    }
+
   }
 
   private void update(final boolean refreshData) {
@@ -286,20 +312,5 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
       ViewEvents.fireWalletDetailChangedEvent(walletDetail);
 
     }
-  }
-
-  /**
-   * <p>Called when the search box is updated</p>
-   *
-   * @param event The "component changed" event
-   */
-  @Subscribe
-  public void onComponentChangedEvent(ComponentChangedEvent event) {
-
-    // Check if this event applies to us
-    if (event.getPanelName().equals(getScreen().name())) {
-      update(false);
-    }
-
   }
 }

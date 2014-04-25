@@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.HistoryEntry;
+import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.Collection;
@@ -31,9 +33,9 @@ public class HistoryTableModel extends AbstractTableModel {
    */
   private String[] columnNames = {
     " ", // Checkbox (wider than a star icon)
-    "Date",
-    "Description",
-    "Notes",
+    Languages.safeText(MessageKey.DATE),
+    Languages.safeText(MessageKey.DESCRIPTION),
+    Languages.safeText(MessageKey.NOTES),
   };
 
   private Object[][] data;

@@ -20,10 +20,7 @@ import org.multibit.hd.ui.views.wizards.edit_history.EditHistoryWizardModel;
 import org.multibit.hd.ui.views.wizards.edit_history.EnterHistoryDetailsMode;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.List;
 
 /**
@@ -78,10 +75,18 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
     enterSearchMaV = Components.newEnterSearchMaV(getScreen().name());
     checkSelectorComboBox = ComboBoxes.newHistoryCheckboxComboBox(this);
 
-    JButton editButton = Buttons.newEditButton(getEditAction());
+    final JButton editButton = Buttons.newEditButton(getEditAction());
 
     // Detect clicks on the table
     historyTable.addMouseListener(getTableMouseListener());
+    historyTable.addKeyListener(getTableKeyListener());
+    historyTable.addFocusListener(new FocusAdapter() {
+      @Override
+      public void focusLost(FocusEvent e) {
+        // User is most likely to want the edit button after losing table focus
+        editButton.requestFocusInWindow();
+      }
+    });
 
     // Create the scroll pane and add the table to it.
     JScrollPane scrollPane = new JScrollPane(historyTable);
@@ -198,6 +203,19 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
 
   }
 
+  private void update() {
+    if (historyTable != null) {
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+
+          // Repopulate the table accordingly
+          historyTableModel.setHistoryEntries(getScreenModel().getHistory(),true);
+        }
+      });
+    }
+  }
+
   /**
    * @return The table mouse listener
    */
@@ -231,17 +249,39 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
 
   }
 
-  private void update() {
-    if (historyTable != null) {
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
+  /**
+   * @return The table key listener
+   */
+  private KeyAdapter getTableKeyListener() {
 
-          // Repopulate the table accordingly
-          historyTableModel.setHistoryEntries(getScreenModel().getHistory(),true);
+    return new KeyAdapter() {
+
+      @Override
+      public void keyReleased(KeyEvent e) {
+
+        // People have a lot of ways of making a choice to delete with the keyboard
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+
+          // Toggle the check mark
+          JTable target = (JTable) e.getSource();
+          int row = target.getSelectedRow();
+
+          if (row != -1) {
+
+            int modelRow = historyTable.convertRowIndexToModel(row);
+
+            historyTableModel.setSelectionCheckmark(
+              modelRow,
+              !(boolean) historyTableModel.getValueAt(modelRow, ContactTableModel.CHECKBOX_COLUMN_INDEX)
+            );
+          }
+
         }
-      });
-    }
+
+      }
+
+    };
+
   }
 
 }

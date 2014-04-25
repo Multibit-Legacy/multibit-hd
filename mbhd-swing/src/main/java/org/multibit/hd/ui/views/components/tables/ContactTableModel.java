@@ -10,6 +10,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.gravatar.Gravatars;
+import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.ImageDecorator;
 import org.multibit.hd.ui.views.components.Images;
 
@@ -44,10 +46,10 @@ public class ContactTableModel extends AbstractTableModel {
   private String[] columnNames = {
     " ", // Checkbox (wider than a star icon)
     "  ", // Gravatar
-    "Name",
-    "Email",
-    "Address",
-    "Tags",
+    Languages.safeText(MessageKey.NAME),
+    Languages.safeText(MessageKey.EMAIL_ADDRESS),
+    Languages.safeText(MessageKey.BITCOIN_ADDRESS),
+    Languages.safeText(MessageKey.TAGS),
   };
 
   private Object[][] data;

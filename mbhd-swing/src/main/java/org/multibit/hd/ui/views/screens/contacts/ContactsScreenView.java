@@ -21,10 +21,7 @@ import org.multibit.hd.ui.views.wizards.edit_contact.EditContactWizardModel;
 import org.multibit.hd.ui.views.wizards.edit_contact.EnterContactDetailsMode;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -81,12 +78,20 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
     enterSearchMaV = Components.newEnterSearchMaV(getScreen().name());
     checkSelectorComboBox = ComboBoxes.newContactsCheckboxComboBox(this);
     JButton addButton = Buttons.newAddButton(getAddAction());
-    JButton editButton = Buttons.newEditButton(getEditAction());
+    final JButton editButton = Buttons.newEditButton(getEditAction());
     JButton deleteButton = Buttons.newDeleteButton(getDeleteAction());
     JButton undoButton = Buttons.newUndoButton(getUndoAction());
 
-    // Detect clicks on the table
+    // Detect clicks and keyboard on the table
     contactsTable.addMouseListener(getTableMouseListener());
+    contactsTable.addKeyListener(getTableKeyListener());
+    contactsTable.addFocusListener(new FocusAdapter() {
+      @Override
+      public void focusLost(FocusEvent e) {
+        // User is most likely to want the edit button after losing table focus
+        editButton.requestFocusInWindow();
+      }
+    });
 
     // Create the scroll pane and add the table to it.
     JScrollPane scrollPane = new JScrollPane(contactsTable);
@@ -120,7 +125,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
       List<Contact> contacts = getScreenModel().filterContactsByContent(enterSearchMaV.getModel().getValue());
 
       // Repopulate the table accordingly
-      contactsTableModel.setContacts(contacts,true);
+      contactsTableModel.setContacts(contacts, true);
 
     }
   }
@@ -148,7 +153,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
     getScreenModel().getContactService().writeContacts();
 
     // Repopulate the table accordingly
-    contactsTableModel.setContacts(getScreenModel().getContacts(),true);
+    contactsTableModel.setContacts(getScreenModel().getContacts(), true);
 
   }
 
@@ -251,7 +256,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
         enterSearchMaV.getView().clear();
 
         // Repopulate
-        contactsTableModel.setContacts(contacts,true);
+        contactsTableModel.setContacts(contacts, true);
 
       }
     };
@@ -277,6 +282,41 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
       public void mousePressed(MouseEvent e) {
 
         if (e.getClickCount() == 1) {
+
+          // Toggle the check mark
+          JTable target = (JTable) e.getSource();
+          int row = target.getSelectedRow();
+
+          if (row != -1) {
+
+            int modelRow = contactsTable.convertRowIndexToModel(row);
+
+            contactsTableModel.setSelectionCheckmark(
+              modelRow,
+              !(boolean) contactsTableModel.getValueAt(modelRow, ContactTableModel.CHECKBOX_COLUMN_INDEX)
+            );
+          }
+
+        }
+
+      }
+
+    };
+
+  }
+
+  /**
+   * @return The table key listener
+   */
+  private KeyAdapter getTableKeyListener() {
+
+    return new KeyAdapter() {
+
+      @Override
+      public void keyReleased(KeyEvent e) {
+
+        // People have a lot of ways of making a choice to delete with the keyboard
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 
           // Toggle the check mark
           JTable target = (JTable) e.getSource();
