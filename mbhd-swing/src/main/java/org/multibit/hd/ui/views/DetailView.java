@@ -92,6 +92,7 @@ public class DetailView {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
+
         Screen screen = event.getScreen();
         AbstractScreenView view = screenViewMap.get(screen);
 

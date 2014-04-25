@@ -71,13 +71,9 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
 
     CoreServices.uiEventBus.register(this);
 
-    // Bind the ESC key to a Cancel/Exit event
+    // Always bind the ESC key to a Cancel event (escape to safety)
     wizardScreenHolder.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "quit");
-    if (isExiting) {
-      wizardScreenHolder.getActionMap().put("quit", getExitAction());
-    } else {
-      wizardScreenHolder.getActionMap().put("quit", getCancelAction());
-    }
+    wizardScreenHolder.getActionMap().put("quit", getCancelAction());
 
     // TODO Bind the ENTER key to a Next/Finish/Apply event to speed up data entry through keyboard
     //wizardPanel.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "next");
@@ -146,7 +142,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
    */
   public void hide(String panelName, boolean isExitCancel) {
 
-    log.debug("Show wizard: '{}' ExitCancel: {}", panelName, isExitCancel);
+    log.debug("Hide wizard: '{}' ExitCancel: {}", panelName, isExitCancel);
 
     Preconditions.checkState(wizardViewMap.containsKey(panelName), "'" + panelName + "' is not a valid panel name");
 

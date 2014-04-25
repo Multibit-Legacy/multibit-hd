@@ -128,17 +128,6 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
     return contentPanel;
   }
 
-  @Override
-  public void afterShow() {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        update(false);
-        sendBitcoin.requestFocusInWindow();
-      }
-    });
-  }
-
   @Subscribe
   public void onSlowTransactionSeenEvent(SlowTransactionSeenEvent slowTransactionSeenEvent) {
     update(true);

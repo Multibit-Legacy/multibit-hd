@@ -40,12 +40,17 @@ public class ShowExitScreenUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled();
 
+    // Click cancel to escape
     window
       .button(MessageKey.CANCEL.getKey())
       .requireVisible()
       .requireEnabled()
       .click();
 
+    // Expect the sidebar to grab focus
+    window
+      .tree(MessageKey.SIDEBAR_TREE.getKey())
+      .requireFocused();
   }
 
 }

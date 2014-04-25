@@ -102,18 +102,4 @@ public class SettingsScreenView extends AbstractScreenView<SettingsScreenModel> 
     return contentPanel;
   }
 
-  @Override
-  public void afterShow() {
-
-    SwingUtilities.invokeLater(
-      new Runnable() {
-      @Override
-      public void run() {
-
-        showLanguageSettingsWizardButton.requestFocusInWindow();
-
-      }
-    });
-
-  }
 }

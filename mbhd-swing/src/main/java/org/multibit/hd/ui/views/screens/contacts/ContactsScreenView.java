@@ -105,18 +105,6 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
     return contentPanel;
   }
 
-  @Override
-  public void afterShow() {
-
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        enterSearchMaV.getView().requestInitialFocus();
-      }
-    });
-
-  }
-
   /**
    * <p>Called when the search box is updated</p>
    *

@@ -74,18 +74,6 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
     return contentPanel;
   }
 
-  @Override
-  public void afterShow() {
-
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        primaryButton.requestFocusInWindow();
-      }
-    });
-
-  }
-
   /**
    * @return An action to show the "welcome wizard"
    */

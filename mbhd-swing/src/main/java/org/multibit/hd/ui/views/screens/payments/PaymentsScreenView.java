@@ -114,18 +114,6 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     return contentPanel;
   }
 
-  @Override
-  public void afterShow() {
-
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        enterSearchMaV.getView().requestInitialFocus();
-      }
-    });
-
-  }
-
   @Subscribe
   public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
     log.trace("Received the TransactionSeenEvent: " + transactionSeenEvent.toString());

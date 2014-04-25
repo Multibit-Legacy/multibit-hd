@@ -14,11 +14,11 @@ import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
 
 import javax.swing.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -34,6 +34,8 @@ import java.awt.event.MouseEvent;
 public class SidebarView {
 
   private final JPanel contentPanel;
+
+  private JTree sidebarTree;
 
   /**
    * When the last selection was made
@@ -99,7 +101,7 @@ public class SidebarView {
 
     final JScrollPane sidebarPane = new JScrollPane();
 
-    final JTree sidebarTree = new JTree(createSidebarTreeNodes());
+    sidebarTree = new JTree(createSidebarTreeNodes());
 
     // Ensure it is accessible
     AccessibilityDecorator.apply(sidebarTree, MessageKey.SIDEBAR_TREE);
@@ -160,13 +162,15 @@ public class SidebarView {
       }
     });
 
-    sidebarTree.addTreeSelectionListener(new TreeSelectionListener() {
+    sidebarTree.addKeyListener(new KeyAdapter() {
+      @Override
+      public void keyReleased(KeyEvent e) {
 
-      public void valueChanged(TreeSelectionEvent e) {
+        TreePath path = sidebarTree.getSelectionPath();
 
-        DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
-
-        handleTreeSelection(node);
+        if (path != null) {
+          handleTreeSelection((DefaultMutableTreeNode) path.getLastPathComponent());
+        }
 
       }
     });
@@ -223,5 +227,18 @@ public class SidebarView {
 
     lastSelectedScreen = detailScreen;
     lastSelectionDateTime = Dates.nowUtc();
+  }
+
+  /**
+   * Do everything to grab the focus without triggering a selection event
+   * This is necessary to ensure keyboard navigation of the sidebar is retained after
+   * a cancelled Exit operation
+   */
+  public void requestFocus() {
+
+    lastSelectionDateTime = Dates.nowUtc();
+    sidebarTree.setFocusable(true);
+    sidebarTree.requestFocusInWindow();
+
   }
 }

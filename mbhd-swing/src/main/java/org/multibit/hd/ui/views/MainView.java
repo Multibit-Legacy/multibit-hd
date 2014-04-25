@@ -18,6 +18,7 @@ import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletState;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletWizardModel;
+import org.multibit.hd.ui.views.wizards.exit.ExitState;
 import org.multibit.hd.ui.views.wizards.password.PasswordState;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
@@ -292,14 +293,22 @@ public class MainView extends JFrame {
   @Subscribe
   public void onWizardHideEvent(WizardHideEvent event) {
 
+    String panelName = event.getPanelName();
+
     showExitingWelcomeWizard = false;
     showExitingPasswordWizard = false;
 
     if (event.isExitCancel()) {
+
+      if (ExitState.EXIT_CONFIRM.name().equals(panelName)) {
+
+        sidebarView.requestFocus();
+
+      }
+
       return;
     }
 
-    String panelName = event.getPanelName();
     if (EditWalletState.EDIT_WALLET.name().equals(panelName)) {
 
       // Extract the wallet summary
