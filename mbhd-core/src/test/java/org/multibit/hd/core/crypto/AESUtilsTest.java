@@ -1,4 +1,4 @@
-package org.multibit.hd.brit.crypto;
+package org.multibit.hd.core.crypto;
 
 /**
  * Copyright 2014 multibit.org
@@ -16,19 +16,20 @@ package org.multibit.hd.brit.crypto;
  * limitations under the License.
  */
 
-import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.utils.BriefLogFormatter;
-import com.google.common.base.Charsets;
 import org.junit.Before;
 import org.junit.Test;
+import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.utils.FileUtils;
+import org.multibit.hd.core.dto.WalletIdTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
 import java.security.SecureRandom;
 
-import static org.junit.Assert.assertEquals;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class AESUtilsTest {
 
@@ -51,50 +52,30 @@ public class AESUtilsTest {
     secureRandom = new SecureRandom();
 
     // Create a random initialisationVector
-    initialisationVector = new byte[AESUtils.BLOCK_LENGTH];
+    initialisationVector = new byte[org.multibit.hd.brit.crypto.AESUtils.BLOCK_LENGTH];
     secureRandom.nextBytes(initialisationVector);
 
     // Create a random key
     secureRandom.nextBytes(initialisationVector);
-    keyBytes = new byte[AESUtils.KEY_LENGTH];
+    keyBytes = new byte[org.multibit.hd.brit.crypto.AESUtils.KEY_LENGTH];
     keyParameter = new KeyParameter(keyBytes);
 
     BriefLogFormatter.init();
   }
 
+
   @Test
-  public void testEncrypt_ExpectSuccess1() throws Exception {
-    // Plain text
-    byte[] plainBytes = EXAMPLE_TEXT.getBytes(Charsets.UTF_8);
-    log.debug("Initial message: " + Utils.bytesToHexString(plainBytes));
+  public void testCreateAESKey() throws Exception {
+    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_3));
 
-    // Encrypt
-    byte[] encryptedBytes = AESUtils.encrypt(plainBytes, keyParameter, initialisationVector);
-    log.debug("Encrypted message: " + Utils.bytesToHexString(encryptedBytes));
+    KeyParameter aesKey1 = AESUtils.createAESKey(seed, AESUtils.BACKUP_AES_KEY_SALT_USED_IN_SCRYPT);
 
-    // Decrypt
-    byte[] rebornBytes = AESUtils.decrypt(encryptedBytes, keyParameter, initialisationVector);
-    log.debug("Reborn message: " + Utils.bytesToHexString(rebornBytes));
-
-    assertEquals(Utils.bytesToHexString(plainBytes), Utils.bytesToHexString(rebornBytes));
+    assertThat(aesKey1).isNotNull();
+    assertThat(aesKey1.getKey()).isNotNull();
+    assertThat(aesKey1.getKey().length).isEqualTo(org.multibit.hd.brit.crypto.AESUtils.KEY_LENGTH);
 
   }
 
-  @Test
-   public void testEncrypt_ExpectSuccess2() throws Exception {
-     // Plain text
-     byte[] plainBytes = TEST_BYTES;
-     log.debug("Initial message: " + Utils.bytesToHexString(plainBytes));
 
-     // Encrypt
-     byte[] encryptedBytes = AESUtils.encrypt(plainBytes, keyParameter, initialisationVector);
-     log.debug("Encrypted message: " + Utils.bytesToHexString(encryptedBytes));
-
-     // Decrypt
-     byte[] rebornBytes = AESUtils.decrypt(encryptedBytes, keyParameter, initialisationVector);
-     log.debug("Reborn message: " + Utils.bytesToHexString(rebornBytes));
-
-     assertEquals(Utils.bytesToHexString(plainBytes), Utils.bytesToHexString(rebornBytes));
-
-   }
 }
