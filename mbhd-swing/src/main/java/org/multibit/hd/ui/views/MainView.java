@@ -300,11 +300,13 @@ public class MainView extends JFrame {
 
     if (event.isExitCancel()) {
 
+      // The exit dialog has no detail screen so focus defers to the sidebar
       if (ExitState.EXIT_CONFIRM.name().equals(panelName)) {
-
         sidebarView.requestFocus();
-
       }
+
+      // The detail screens do not have an intuitive way to capture focus
+      // we rely on CTRL+TAB to relocate the focus with keyboard
 
       return;
     }
