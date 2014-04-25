@@ -57,7 +57,7 @@ public class ContactTableModel extends AbstractTableModel {
 
     Preconditions.checkNotNull(contacts, "'contacts' must be present");
 
-    populateTableData(contacts);
+    setContacts(contacts, false);
 
   }
 
@@ -177,16 +177,17 @@ public class ContactTableModel extends AbstractTableModel {
 
     contacts.removeAll(list);
 
-    populateTableData(contacts);
+    setContacts(contacts, true);
 
   }
 
   /**
    * <p>Populate the table data from the current contacts</p>
    *
-   * @param contacts The contacts that will form the basis of the table model in the same order as presented
+   * @param contacts             The contacts that will form the basis of the table model in the same order as presented
+   * @param fireTableDataChanged True if the table data changed Swing event should be fired
    */
-  public void populateTableData(Collection<Contact> contacts) {
+  public void setContacts(Collection<Contact> contacts, boolean fireTableDataChanged) {
 
     this.contacts = Lists.newArrayList(contacts);
 
@@ -247,6 +248,11 @@ public class ContactTableModel extends AbstractTableModel {
       row++;
 
     }
+
+    if (fireTableDataChanged) {
+      fireTableDataChanged();
+    }
+
 
   }
 

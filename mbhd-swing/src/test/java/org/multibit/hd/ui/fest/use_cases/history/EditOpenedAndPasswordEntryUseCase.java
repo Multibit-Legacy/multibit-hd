@@ -17,7 +17,7 @@ import static org.fest.assertions.Assertions.assertThat;
  * <li>Verify the "history" screen edit Opened and Password entry history</li>
  * </ul>
  * <p>Requires the "history" screen to be showing</p>
- * <p>Requires "Alice" and "Bob Cratchit" to be created</p>
+ * <p>Requires "Opened" and "Password Verified" to be created</p>
  *
  * @since 0.0.1
  *  

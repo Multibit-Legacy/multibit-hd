@@ -186,7 +186,6 @@ public class HistoryTableModel extends AbstractTableModel {
       fireTableDataChanged();
     }
 
-
   }
 
 }

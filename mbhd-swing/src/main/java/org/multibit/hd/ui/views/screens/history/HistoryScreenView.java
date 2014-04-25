@@ -123,7 +123,8 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
       // Check the search MaV model for a query and apply it
       List<HistoryEntry> historyEntries = getScreenModel().filterHistoryByContent(enterSearchMaV.getModel().getValue());
 
-      update();
+      // Repopulate the table accordingly
+      historyTableModel.setHistoryEntries(historyEntries, true);
 
     }
   }
@@ -249,7 +250,7 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
         public void run() {
 
           // Repopulate the table accordingly
-          historyTableModel.setHistoryEntries(getScreenModel().getHistory(), true);
+          historyTableModel.setHistoryEntries(getScreenModel().getHistory(),true);
         }
       });
     }

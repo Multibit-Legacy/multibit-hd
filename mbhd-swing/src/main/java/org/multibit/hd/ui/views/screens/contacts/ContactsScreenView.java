@@ -132,7 +132,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
       List<Contact> contacts = getScreenModel().filterContactsByContent(enterSearchMaV.getModel().getValue());
 
       // Repopulate the table accordingly
-      contactsTableModel.populateTableData(contacts);
+      contactsTableModel.setContacts(contacts,true);
 
     }
   }
@@ -160,7 +160,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
     getScreenModel().getContactService().writeContacts();
 
     // Repopulate the table accordingly
-    contactsTableModel.populateTableData(getScreenModel().getContacts());
+    contactsTableModel.setContacts(getScreenModel().getContacts(),true);
 
   }
 
@@ -263,7 +263,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
         enterSearchMaV.getView().clear();
 
         // Repopulate
-        contactsTableModel.populateTableData(contacts);
+        contactsTableModel.setContacts(contacts,true);
 
       }
     };

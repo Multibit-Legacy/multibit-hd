@@ -2,10 +2,7 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.ui.fest.use_cases.history.EditOpenedAndPasswordEntryUseCase;
-import org.multibit.hd.ui.fest.use_cases.history.EditPasswordEntryUseCase;
-import org.multibit.hd.ui.fest.use_cases.history.EditThenCancelPasswordEntryUseCase;
-import org.multibit.hd.ui.fest.use_cases.history.ShowHistoryScreenUseCase;
+import org.multibit.hd.ui.fest.use_cases.history.*;
 
 import java.util.Map;
 
@@ -36,5 +33,7 @@ public class HistoryScreen {
     // Select wallet created and password then use multi-edit
     new EditOpenedAndPasswordEntryUseCase(window).execute(parameters);
 
+    // Search for the first entry
+    new SearchHistoryUseCase(window).execute(parameters);
   }
 }

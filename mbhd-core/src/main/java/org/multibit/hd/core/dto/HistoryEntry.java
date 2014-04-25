@@ -98,10 +98,10 @@ public class HistoryEntry {
 
   @Override
   public String toString() {
-    return "Contact{" +
-      "id=" + id +
-      ", description='" + description + '\'' +
+    return "HistoryEntry{" +
+      "description='" + description + '\'' +
+      ", notes=" + notes +
+      ", created=" + created +
       '}';
   }
-
 }
