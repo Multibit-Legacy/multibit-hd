@@ -6,6 +6,7 @@ import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.services.FeeService;
+import org.multibit.hd.core.crypto.AESUtils;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.managers.BackupManager;
@@ -25,10 +26,12 @@ import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.spongycastle.crypto.params.KeyParameter;
 
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 /**
@@ -125,16 +128,16 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
 
     WelcomeWizardModel model = getWizardModel();
 
-    // TODO Check all required data is valid
+    // Locate the installation directory
+    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+
+    // Work out the seed
     List<String> seedPhrase = model.getCreateWalletSeedPhrase();
     String password = model.getCreateWalletUserPassword();
     String backupLocation = model.getBackupLocation();
     SeedPhraseGenerator seedPhraseGenerator = getWizardModel().getSeedPhraseGenerator();
 
     Preconditions.checkNotNull(backupLocation, "'backupLocation' must be present");
-
-    // Locate the installation directory
-    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     // Initialise backup (must be before Bitcoin network starts and on the main thread)
     BackupManager.INSTANCE.initialise(applicationDataDirectory, new File(backupLocation));
@@ -155,9 +158,15 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       String walletRoot = WalletManager.createWalletRoot(walletSummary.getWalletId());
       walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
 
+      // Save the wallet password, AES encrypted with a key derived from the wallet seed
+      KeyParameter backupAESkey = AESUtils.createAESKey(seed, AESUtils.BACKUP_AES_KEY_SALT_USED_IN_SCRYPT);
+      byte[] encryptedWalletPassword = org.multibit.hd.brit.crypto.AESUtils.encrypt(password.getBytes("UTF8"), backupAESkey, AESUtils.BACKUP_AES_INITIALISATION_VECTOR);
+      walletSummary.setEncryptedPassword(encryptedWalletPassword);
+      WalletManager.updateWalletSummary(walletSummary);
+
       // Must be OK to be here
       walletCreatedStatus = true;
-    } catch (IOException ioe) {
+    } catch (IOException | NoSuchAlgorithmException ioe) {
       ExceptionHandler.handleThrowable(ioe);
     }
 

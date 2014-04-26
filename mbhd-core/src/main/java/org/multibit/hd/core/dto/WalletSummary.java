@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.bitcoin.core.Wallet;
 import com.google.common.base.Preconditions;
 
+import javax.annotation.Nullable;
+import java.util.Arrays;
+
 /**
  * <p>Value object to provide the following to application:</p>
  * <ul>
@@ -31,6 +34,16 @@ public class WalletSummary {
   private String notes;
 
   /**
+   * The wallet password, encrypted with an AES key derived from the wallet seed
+   */
+  private byte[] encryptedPassword;
+
+  /**
+   * The backup AES key, encrypted with an AES key derived from the wallet password
+   */
+  private byte[] encryptedBackupKey;
+
+  /**
    * Default constructor for Jackson
    */
   public WalletSummary() {
@@ -42,10 +55,9 @@ public class WalletSummary {
    * @param walletId The wallet ID
    * @param wallet   The Bitcoinj wallet
    */
-  public WalletSummary(WalletId walletId, Wallet wallet) {
+  public WalletSummary(WalletId walletId, @Nullable Wallet wallet) {
 
     Preconditions.checkNotNull(walletId, "'walletId' must be present");
-    Preconditions.checkNotNull(wallet, "'wallet' must be present");
 
     this.wallet = wallet;
     this.walletId = walletId;
@@ -106,14 +118,32 @@ public class WalletSummary {
     this.notes = notes;
   }
 
+  public byte[] getEncryptedPassword() {
+    return encryptedPassword;
+  }
+
+  public void setEncryptedPassword(byte[] encryptedPassword) {
+    this.encryptedPassword = encryptedPassword;
+  }
+
+  public byte[] getEncryptedBackupKey() {
+    return encryptedBackupKey;
+  }
+
+  public void setEncryptedBackupKey(byte[] encryptedBackupKey) {
+    this.encryptedBackupKey = encryptedBackupKey;
+  }
+
   @Override
   public String toString() {
     return "WalletSummary{" +
-      "wallet=" + wallet +
-      ", walletId=" + walletId +
-      ", name='" + name + '\'' +
-      ", description='" + notes + '\'' +
-      ", password=****" +
-      '}';
+            "wallet=" + wallet +
+            ", walletId=" + walletId +
+            ", password=" + password +
+            ", name='" + name + '\'' +
+            ", notes='" + notes + '\'' +
+            ", encryptedPassword=" + Arrays.toString(encryptedPassword) +
+            ", encryptedBackupKey=" + Arrays.toString(encryptedBackupKey) +
+            '}';
   }
 }

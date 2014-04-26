@@ -1,20 +1,11 @@
 package org.multibit.hd.core.dto;
 
-import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Utils;
-import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.common.base.Preconditions;
-import com.google.protobuf.ByteString;
-import org.bitcoinj.wallet.Protos;
-import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.crypto.AESUtils;
 import org.multibit.hd.core.managers.WalletManager;
-import org.spongycastle.asn1.sec.SECNamedCurves;
-import org.spongycastle.asn1.x9.X9ECParameters;
-import org.spongycastle.crypto.params.KeyParameter;
-import org.spongycastle.math.ec.ECPoint;
 
 import java.io.File;
-import java.math.BigInteger;
 import java.util.Arrays;
 
 /**
@@ -32,7 +23,10 @@ public class WalletId {
   public static final int SEPARATOR_REPEAT_PERIOD = 4;
   public static final String WALLET_ID_SEPARATOR = "-";
 
-  private static final byte SALT_USED_IN_SCRYPT = (byte) 1;
+  /**
+   * The salt used in converting seed bytes to a wallet id
+   */
+  public static final byte[] WALLET_ID_SALT_USED_IN_SCRYPT = new byte[]{(byte) 1};
 
   private static final int NUMBER_OF_BYTES_IN_WALLET_ID = 20;
   public static final int LENGTH_OF_FORMATTED_WALLET_ID = 2 * NUMBER_OF_BYTES_IN_WALLET_ID + (NUMBER_OF_BYTES_IN_WALLET_ID / SEPARATOR_REPEAT_PERIOD) - 1;
@@ -62,49 +56,9 @@ public class WalletId {
    * @param seed The seed to use in deriving the wallet id
    */
   public WalletId(byte[] seed) {
-    Preconditions.checkNotNull(seed);
-    Preconditions.checkState(seed.length == SeedPhraseGenerator.EXPECTED_SEED_LENGTH_IN_BYTES);
-
-    //log.debug("seed ='" + Utils.bytesToHexString(seed) + "'");
-
-    BigInteger seedBigInteger = new BigInteger(1, seed);
-    //log.debug("seedBigInteger ='" + seedBigInteger.toString() + "'");
-
-
-    // Convert the seed to a wallet id using various trapdoor functions.
-
-    // Scrypt - scrypt is run using the seedBigInteger.toString() as the 'password'.
-    // This returns a byte array (normally used as an AES256 key but here passed on to more trapdoor functions).
-    // The scrypt parameters used are the default, with a salt of '1'.
-    Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(new byte[]{SALT_USED_IN_SCRYPT}));
-    Protos.ScryptParameters scryptParameters = scryptParametersBuilder.build();
-    KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(scryptParameters);
-    KeyParameter keyParameter = keyCrypterScrypt.deriveKey(seedBigInteger.toString());
-    byte[] derivedKey = keyParameter.getKey();
-    //log.debug("derivedKey ='" + Utils.bytesToHexString(derivedKey) +  "'");
-
-
-    // Ensure that the seed is within the Bitcoin EC group.
-    X9ECParameters params = SECNamedCurves.getByName("secp256k1");
-    BigInteger sizeOfGroup = params.getN();
-
-    BigInteger derivedKeyBigInteger = new BigInteger(1, derivedKey);
-
-    //log.debug("derivedKeyBigInteger (before) ='" + derivedKeyBigInteger +  "'");
-    derivedKeyBigInteger = derivedKeyBigInteger.mod(sizeOfGroup);
-    //log.debug("derivedKeyBigInteger (after) ='" + derivedKeyBigInteger +  "'");
-
-    // EC curve generator function used to convert the key just derived (a 'private key') to a 'public key'
-    ECPoint point = ECKey.CURVE.getG().multiply(derivedKeyBigInteger);
-    // Note the public key is not compressed
-    byte[] publicKey = point.getEncoded();
-    //log.debug("publicKey ='" + Utils.bytesToHexString(publicKey) +  "'");
-
-    // SHA256RIPE160 to generate final walletId bytes from the 'public key'
-    walletId = Utils.sha256hash160(publicKey);
-
-    //log.debug("walletId ='" + Utils.bytesToHexString(walletId) + "'");
+    walletId = AESUtils.generate160BitsOfEntropy(seed, WALLET_ID_SALT_USED_IN_SCRYPT);
   }
+
 
   /**
    * Create a WalletId from a wallet filename - the filename is parsed into a walletId byte array
