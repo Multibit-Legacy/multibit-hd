@@ -45,6 +45,19 @@ public class DetailView {
     // Apply opacity
     contentPanel.setOpaque(true);
 
+    // Add the screen holder to the overall content panel
+    contentPanel.add(screenPanel, "grow");
+
+  }
+
+  /**
+   * Perform final initialisation operations after the wallet is open
+   */
+  public void afterWalletOpen() {
+
+    // Verify the wallet is available
+    CoreServices.getCurrentWalletService();
+
     // Populate based on the current locale
     populateScreenViewMap();
 
@@ -55,9 +68,6 @@ public class DetailView {
       entry.getValue().fireInitialStateViewEvents();
 
     }
-
-    // Add the screen holder to the overall content panel
-    contentPanel.add(screenPanel, "grow");
 
   }
 

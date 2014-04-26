@@ -1,9 +1,7 @@
 package org.multibit.hd.ui.views.screens.history;
 
-import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.multibit.hd.core.dto.HistoryEntry;
-import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.HistoryService;
 import org.multibit.hd.ui.views.screens.AbstractScreenModel;
 import org.multibit.hd.ui.views.screens.Screen;
@@ -22,33 +20,23 @@ import java.util.List;
  */
 public class HistoryScreenModel extends AbstractScreenModel {
 
-  // TODO Have this injected through a WalletServices.getOrCreateHistory() method
-  private Optional<HistoryService> historyService = Optional.absent();
+  private final HistoryService historyService;
 
-  public HistoryScreenModel(Screen screen) {
+  public HistoryScreenModel(HistoryService historyService, Screen screen) {
     super(screen);
+
+    Preconditions.checkNotNull(historyService, "'historyService' must be present");
+
+    this.historyService = historyService;
 
   }
 
-
   public List<HistoryEntry> getHistory() {
-
-    // TODO This construct is to disappear
-    if (!historyService.isPresent()) {
-      initialiseHistory();
-    }
-
-    return historyService.get().allHistory();
+    return historyService.allHistory();
   }
 
   public List<HistoryEntry> filterHistoryByContent(String query) {
-
-    // TODO This construct is to disappear
-    if (!historyService.isPresent()) {
-      initialiseHistory();
-    }
-
-    return historyService.get().filterHistoryByContent(query);
+    return historyService.filterHistoryByContent(query);
   }
 
   /**
@@ -57,19 +45,7 @@ public class HistoryScreenModel extends AbstractScreenModel {
    * @return The history service
    */
   public HistoryService getHistoryService() {
-    return historyService.get();
-  }
-
-  /**
-   * <p>Defer the initialisation of the history service until a wallet ID is available</p>
-   */
-  private void initialiseHistory() {
-
-    if (!WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-      throw new IllegalStateException("History should not be accessible without a wallet ID");
-    }
-
-    this.historyService = Optional.of(CoreServices.getOrCreateHistoryService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId()));
+    return historyService;
   }
 
 }

@@ -320,8 +320,11 @@ public class MainView extends JFrame {
 
     }
 
-    // Password entry successful so update the sidebar tree with the wallet name
+    // Password entry successful so perform initialisations
     if (PasswordState.PASSWORD_ENTER_PASSWORD.name().equals(panelName)) {
+
+      // Finish off the detail view initialisation
+      detailView.afterWalletOpen();
 
       // Use the current wallet summary
       Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();

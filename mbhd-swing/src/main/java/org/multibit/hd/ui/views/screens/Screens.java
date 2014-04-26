@@ -1,5 +1,8 @@
 package org.multibit.hd.ui.views.screens;
 
+import org.multibit.hd.core.services.ContactService;
+import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.services.HistoryService;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.screens.about.AboutScreenModel;
 import org.multibit.hd.ui.views.screens.about.AboutScreenView;
@@ -64,7 +67,9 @@ public class Screens {
         view = new WalletScreenView(new WalletScreenModel(screen), screen, MessageKey.CONTACTS);
         break;
       case CONTACTS:
-        view = new ContactsScreenView(new ContactsScreenModel(screen), screen, MessageKey.CONTACTS);
+        // Expect a current contact service
+        ContactService contactService = CoreServices.getCurrentContactService();
+        view = new ContactsScreenView(new ContactsScreenModel(contactService, screen), screen, MessageKey.CONTACTS);
         break;
       case TRANSACTIONS:
         view = new PaymentsScreenView(new PaymentsScreenModel(screen), screen, MessageKey.CONTACTS);
@@ -73,7 +78,9 @@ public class Screens {
         view = new HelpScreenView(new HelpScreenModel(screen), screen, MessageKey.CONTACTS);
         break;
       case HISTORY:
-        view = new HistoryScreenView(new HistoryScreenModel(screen), screen, MessageKey.CONTACTS);
+        // Expect a current history service
+        HistoryService historyService = CoreServices.getCurrentHistoryService();
+        view = new HistoryScreenView(new HistoryScreenModel(historyService, screen), screen, MessageKey.CONTACTS);
         break;
       case SETTINGS:
         view = new SettingsScreenView(new SettingsScreenModel(screen), screen, MessageKey.CONTACTS);

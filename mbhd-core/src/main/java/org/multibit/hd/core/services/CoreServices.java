@@ -265,7 +265,7 @@ public class CoreServices {
 
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
 
-    Preconditions.checkState(currentWalletSummary.isPresent(), "'currentWalletSummary' must be present");
+    Preconditions.checkState(currentWalletSummary.isPresent(), "'currentWalletSummary' must be present. No wallet is open.");
 
     WalletId walletId = currentWalletSummary.get().getWalletId();
 
@@ -282,7 +282,7 @@ public class CoreServices {
 
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
 
-    Preconditions.checkState(currentWalletSummary.isPresent(), "'currentWalletSummary' must be present");
+    Preconditions.checkState(currentWalletSummary.isPresent(), "'currentWalletSummary' must be present. No wallet is open.");
 
     WalletId walletId = currentWalletSummary.get().getWalletId();
 
@@ -298,7 +298,7 @@ public class CoreServices {
 
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
 
-    Preconditions.checkState(currentWalletSummary.isPresent(), "'currentWalletSummary' must be present");
+    Preconditions.checkState(currentWalletSummary.isPresent(), "'currentWalletSummary' must be present. No wallet is open.");
 
     WalletId walletId = currentWalletSummary.get().getWalletId();
 
