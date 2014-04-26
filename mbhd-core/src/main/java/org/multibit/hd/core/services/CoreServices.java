@@ -109,6 +109,8 @@ public class CoreServices {
 
   }
 
+  private static ContactService currentContactService;
+
   /**
    * Utilities have a private constructor
    */
@@ -259,7 +261,7 @@ public class CoreServices {
    */
   public static WalletService getCurrentWalletService() {
 
-    log.debug("Get wallet service");
+    log.debug("Get current wallet service");
 
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
 
@@ -269,6 +271,38 @@ public class CoreServices {
 
     return getOrCreateWalletService(walletId);
 
+  }
+
+  /**
+   * @return The contact service for the current wallet
+   */
+  public static ContactService getCurrentContactService() {
+
+    log.debug("Get current contact service");
+
+    Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+
+    Preconditions.checkState(currentWalletSummary.isPresent(), "'currentWalletSummary' must be present");
+
+    WalletId walletId = currentWalletSummary.get().getWalletId();
+
+    return getOrCreateContactService(walletId);
+  }
+
+  /**
+   * @return The history service for the current wallet
+   */
+  public static HistoryService getCurrentHistoryService() {
+
+    log.debug("Get current history service");
+
+    Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+
+    Preconditions.checkState(currentWalletSummary.isPresent(), "'currentWalletSummary' must be present");
+
+    WalletId walletId = currentWalletSummary.get().getWalletId();
+
+    return getOrCreateHistoryService(walletId);
   }
 
   /**
@@ -294,6 +328,7 @@ public class CoreServices {
 
   }
 
+
   /**
    * @return The history service for a wallet (single soft, multiple hard)
    */
@@ -312,7 +347,6 @@ public class CoreServices {
     return historyServiceMap.get(walletId);
 
   }
-
 
   /**
    * @param walletId The wallet ID for the wallet

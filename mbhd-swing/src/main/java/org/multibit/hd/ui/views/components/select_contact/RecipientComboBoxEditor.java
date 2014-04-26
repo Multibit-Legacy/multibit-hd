@@ -50,14 +50,17 @@ public class RecipientComboBoxEditor implements ComboBoxEditor {
     String editorText;
 
     if (anObject instanceof String) {
+
       // User is typing or has pasted in the editor
       editorText = (String) anObject;
       recipient = null;
+
     } else {
+
       // User has selected from the list
       Recipient recipient = (Recipient) anObject;
 
-      if (recipient != null) {
+      if (recipient != null && recipient.getBitcoinAddress() != null) {
         // Choose either the contact name or a Bitcoin address
         if (recipient.getContact().isPresent()) {
           editorText = recipient.getContact().get().getName();
@@ -66,30 +69,36 @@ public class RecipientComboBoxEditor implements ComboBoxEditor {
         }
         this.recipient = recipient;
       } else {
-        // No recipient so clear the editor
+        // Recipient does not have a Bitcoin address so clear the editor
+        this.recipient = null;
         editorText = "";
       }
     }
 
-    // workaround for 4530952
+    // Workaround for Java Bug #4530952
     if (!editorText.equals(editor.getText())) {
       editor.setText(editorText);
     }
+
   }
 
   public Object getItem() {
-    if (recipient != null &&recipient.getContact().isPresent()) {
+
+    if (recipient != null && recipient.getContact().isPresent()) {
       // There is a hit on a contact
       return recipient;
     } else {
-      // return the editor contents, which may be a pasted address
+      // Return the editor contents, which may be a pasted address
       return editor.getText();
     }
+
   }
 
   public void selectAll() {
+
     editor.selectAll();
     editor.requestFocus();
+
   }
 
   public void addActionListener(ActionListener l) {
@@ -106,7 +115,7 @@ public class RecipientComboBoxEditor implements ComboBoxEditor {
       super(value, n);
     }
 
-    // workaround for 4530952
+    // Workaround for Java Bug #4530952
     public void setText(String s) {
       if (getText().equals(s)) {
         return;

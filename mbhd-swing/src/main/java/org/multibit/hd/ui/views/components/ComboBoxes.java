@@ -12,6 +12,7 @@ import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exchanges.ExchangeKey;
+import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.ExchangeTickerService;
 import org.multibit.hd.core.utils.BitcoinSymbol;
@@ -28,6 +29,7 @@ import org.multibit.hd.ui.views.components.renderers.LanguageListCellRenderer;
 import org.multibit.hd.ui.views.components.renderers.WalletSummaryListCellRenderer;
 import org.multibit.hd.ui.views.components.select_contact.RecipientComboBoxEditor;
 import org.multibit.hd.ui.views.components.select_contact.RecipientListCellRenderer;
+import org.multibit.hd.ui.views.components.text_fields.ThemeAwareRecipientInputVerifier;
 import org.multibit.hd.ui.views.themes.ThemeKey;
 import org.multibit.hd.ui.views.themes.Themes;
 
@@ -502,6 +504,8 @@ public class ComboBoxes {
     // Use a contact list cell renderer to ensure thumbnails are maintained
     ListCellRenderer<Recipient> renderer = new RecipientListCellRenderer((JTextField) comboBox.getEditor().getEditorComponent());
     comboBox.setRenderer(renderer);
+
+    comboBox.setInputVerifier(new ThemeAwareRecipientInputVerifier());
 
     // Ensure we start with nothing selected
     comboBox.setSelectedIndex(-1);

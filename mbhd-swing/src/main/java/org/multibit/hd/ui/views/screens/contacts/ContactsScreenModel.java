@@ -33,7 +33,6 @@ public class ContactsScreenModel extends AbstractScreenModel {
 
   }
 
-
   public List<Contact> getContacts() {
 
     // TODO This construct is to disappear
@@ -50,7 +49,9 @@ public class ContactsScreenModel extends AbstractScreenModel {
     if (!contactService.isPresent()) {
       initialiseContact();
     }
-    return contactService.get().filterContactsByContent(query);
+
+    // Include all contacts
+    return contactService.get().filterContactsByContent(query, false);
   }
 
   /**

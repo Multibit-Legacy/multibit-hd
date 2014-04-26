@@ -47,11 +47,12 @@ public interface ContactService {
   List<Contact> filterContactsByBitcoinAddress(Address address);
 
   /**
-   * @param query The text to match across all fields (name, tags, notes etc)
+   * @param query             The text to match across all fields (name, tags, notes etc)
+   * @param excludeNotPayable True if contacts with no Bitcoin address or EPK should be excluded
    *
    * @return Any matching contacts
    */
-  List<Contact> filterContactsByContent(String query);
+  List<Contact> filterContactsByContent(String query, boolean excludeNotPayable);
 
   /**
    * @param selectedContacts The selected contacts to add to the store

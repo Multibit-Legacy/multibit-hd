@@ -55,7 +55,7 @@ public class PersistentContactServiceTest {
   @Test
   public void testFilterContactsByName() throws Exception {
 
-    List<Contact> filteredContacts = contactService.filterContactsByContent("Alice");
+    List<Contact> filteredContacts = contactService.filterContactsByContent("Alice",false);
 
     assertThat(filteredContacts.size()).isEqualTo(2);
 
@@ -98,7 +98,7 @@ public class PersistentContactServiceTest {
 
     assertThat(allContacts.size()).isEqualTo(numberOfContacts);
 
-    List<Contact> reloadedContacts = contactService.filterContactsByContent(newContactName);
+    List<Contact> reloadedContacts = contactService.filterContactsByContent(newContactName,false);
     Contact reloadedContact = reloadedContacts.iterator().next();
 
     // Check everything round-tripped OK

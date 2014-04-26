@@ -6,6 +6,8 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.Recipient;
+import org.multibit.hd.core.services.ContactService;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.gravatar.Gravatars;
 import org.multibit.hd.ui.utils.ClipboardUtils;
@@ -61,7 +63,10 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
     imageLabel = Labels.newImageLabel(Optional.<BufferedImage>absent());
     imageLabel.setVisible(false);
 
-    AutoCompleteFilter<Recipient> filter = AutoCompleteFilters.newRecipientFilter();
+    // Look up the contact service
+    ContactService contactService = CoreServices.getCurrentContactService();
+
+    AutoCompleteFilter<Recipient> filter = AutoCompleteFilters.newRecipientFilter(contactService);
 
     recipientComboBox = ComboBoxes.newRecipientComboBox(filter);
 

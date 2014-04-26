@@ -145,13 +145,20 @@ public class PersistentContactService implements ContactService {
   }
 
   @Override
-  public List<Contact> filterContactsByContent(String query) {
+  public List<Contact> filterContactsByContent(String query, boolean excludeNotPayable) {
 
     String lowerQuery = query.toLowerCase();
 
     List<Contact> filteredContacts = Lists.newArrayList();
 
     for (Contact contact : contacts) {
+
+      // No Bitcoin address and excluding not payable
+      if (!contact.getBitcoinAddress().isPresent() && excludeNotPayable) {
+        continue;
+      }
+
+      // TODO Add support for EPK in later releases
 
       // Note: Do not include a Bitcoin address or EPK in this search
       // because vanity addresses can cause an attack vector

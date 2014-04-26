@@ -3,9 +3,7 @@ package org.multibit.hd.ui.views.components.auto_complete;
 import com.google.common.base.Strings;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.Recipient;
-import org.multibit.hd.core.dto.WalletId;
-import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.services.ContactService;
 
 import java.util.List;
 
@@ -27,16 +25,18 @@ public class AutoCompleteFilters {
   }
 
   /**
+   * @param contactService The contact service to use for queries
+   *
    * @return An auto-complete filter linked to the Contact API
    */
-  public static AutoCompleteFilter<Recipient> newRecipientFilter() {
+  public static AutoCompleteFilter<Recipient> newRecipientFilter(final ContactService contactService) {
 
     return new AutoCompleteFilter<Recipient>() {
 
       @Override
       public Recipient[] create() {
 
-        List<Contact> contacts = CoreServices.getOrCreateContactService(getCurrentWalletId()).allContacts();
+        List<Contact> contacts = contactService.allContacts();
 
         return populateRecipients(contacts);
 
@@ -49,7 +49,8 @@ public class AutoCompleteFilters {
           return new Recipient[]{};
         }
 
-        List<Contact> contacts = CoreServices.getOrCreateContactService(getCurrentWalletId()).filterContactsByContent(fragment);
+        // Only require recipients that can be paid
+        List<Contact> contacts = contactService.filterContactsByContent(fragment, true);
 
         return populateRecipients(contacts);
       }
@@ -74,9 +75,6 @@ public class AutoCompleteFilters {
         return recipients;
       }
 
-      private WalletId getCurrentWalletId() {
-        return WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId();
-      }
     };
 
   }
