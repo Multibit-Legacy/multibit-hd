@@ -892,26 +892,4 @@ public class Buttons {
     return button;
   }
 
-  /**
-   * TODO (GR) Remove this when alerts no longer required
-   *
-   * @param action The click action
-   *
-   * @return A new "Alert" button with icon
-   */
-  public static JButton newAddAlertButton(Action action) {
-
-    JButton button = newLargeButton(action, MessageKey.SHOW_ALERT);
-
-    AwesomeDecorator.applyIcon(
-      AwesomeIcon.EXCLAMATION_CIRCLE,
-      button,
-      true,
-      JLabel.BOTTOM,
-      MultiBitUI.LARGE_ICON_SIZE
-    );
-
-    return button;
-  }
-
 }
