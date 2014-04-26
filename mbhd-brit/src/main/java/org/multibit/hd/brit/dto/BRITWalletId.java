@@ -27,7 +27,7 @@ public class BRITWalletId {
   // The salt used in derivation of the britWalletId.
   // This is different from the similar process of deriving a WalletId (where the salt is 1)
   // This value is the 39,000,000th prime (http://primes.utm.edu/lists/small/millions/) which seemed like a nice number to use.
-  private static final byte[] SALT_USED_IN_SCRYPT = BigInteger.valueOf(735_632_797).toByteArray();
+  private static final byte[] BRIT_WALLET_ID_SALT_USED_IN_SCRYPT = BigInteger.valueOf(735_632_797).toByteArray();
 
   private final byte[] britWalletId;
 
@@ -48,8 +48,8 @@ public class BRITWalletId {
 
     // Scrypt - scrypt is run using the seedBigInteger.toString() as the 'password'.
     // This returns a byte array (normally used as an AES256 key but here passed on to more trapdoor functions).
-    // The scrypt parameters used are the default, with a salt of SALT_USED_IN_SCRYPT.
-    Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(SALT_USED_IN_SCRYPT));
+    // The scrypt parameters used are the default, with a salt of BRIT_WALLET_ID_SALT_USED_IN_SCRYPT.
+    Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(BRIT_WALLET_ID_SALT_USED_IN_SCRYPT));
     Protos.ScryptParameters scryptParameters = scryptParametersBuilder.build();
     KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(scryptParameters);
     KeyParameter keyParameter = keyCrypterScrypt.deriveKey(seedBigInteger.toString());

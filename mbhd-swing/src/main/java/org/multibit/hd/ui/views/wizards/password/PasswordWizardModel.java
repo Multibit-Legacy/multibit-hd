@@ -66,7 +66,7 @@ public class PasswordWizardModel extends AbstractWizardModel<PasswordState> {
         state = PASSWORD_ENTER_PASSWORD;
         break;
       case PASSWORD_REPORT:
-        state = PASSWORD_ENTER_PASSWORD;
+        state = PASSWORD_ENTER_SEED_PHRASE;
         break;
       default:
         throw new IllegalStateException("Unexpected state for 'previous': "+state.name());
@@ -103,6 +103,11 @@ public class PasswordWizardModel extends AbstractWizardModel<PasswordState> {
   void setEnterSeedPhrasePanelModel(PasswordEnterSeedPhrasePanelModel enterSeedPhrasePanelModel) {
     this.enterSeedPhrasePanelModel = enterSeedPhrasePanelModel;
   }
+
+  public PasswordEnterSeedPhrasePanelModel getEnterSeedPhrasePanelModel() {
+    return enterSeedPhrasePanelModel;
+  }
+
 
   /**
    * <p>Reduced visibility for panel models only</p>
