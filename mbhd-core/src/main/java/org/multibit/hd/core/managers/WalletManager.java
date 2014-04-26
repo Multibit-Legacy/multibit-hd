@@ -211,7 +211,7 @@ public enum WalletManager implements WalletEventListener {
    *
    * @param applicationDataDirectory The application data directory containing the wallet
    * @param seed                     The seed phrase to initialise the wallet
-   * @param password                 The password to use to encrypt the wallet
+   * @param password                 The password to use to encrypt the wallet - if mull then the wallet is not loaded
    *
    * @return Wallet summary containing the wallet object and the walletId (used in storage etc)
    *
@@ -254,6 +254,7 @@ public enum WalletManager implements WalletEventListener {
         throw new IllegalStateException("The directory for the wallet '" + walletDirectory.getAbsoluteFile() + "' could not be created");
       }
     }
+
     // Create a wallet with a single private key using the seed (modulo-ed), encrypted with the password
     KeyCrypter keyCrypter = new KeyCrypterScrypt();
 

@@ -198,6 +198,8 @@ public enum MessageKey {
   PASSWORD_TITLE("password_title"),
   PASSWORD_ENTER_SEED_PHRASE_TITLE("password_enter_seed_phrase_title"),
   PASSWORD_REPORT_TITLE("password_report_title"),
+  PASSWORD_REPORT_MESSAGE("password_report_message"),
+  PASSWORD_REPORT_MESSAGE_FAIL("password_report_message_fail"),
   PASSWORD_UNLOCK("password_unlock"),
 
   EDIT_WALLET_TITLE("edit_wallet_title"),

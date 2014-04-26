@@ -35,6 +35,9 @@ public class AESUtils {
   // This value is the 35,000,000th prime (http://primes.utm.edu/lists/small/millions/) which seemed like a nice number to use.
   public static final byte[] BACKUP_AES_KEY_SALT_USED_IN_SCRYPT = BigInteger.valueOf(573_259_433).toByteArray();
 
+  // Constant bytes used as the initialisation vector for encryption/ decryption using the BACKUP_AES_KEY
+  public static final byte[] BACKUP_AES_INITIALISATION_VECTOR = {-101, 2, 103, -4, 105, 8, -109, -12, 113, 14, -115, 16, 117, -18, 119, 20};
+
   /**
    * Utilities have private constructors
    */
