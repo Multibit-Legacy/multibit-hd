@@ -50,8 +50,9 @@ public class SendNoFundsContactUseCase extends AbstractFestUseCase {
       .requireEnabled();
 
     // Use a public domain standard address
-    verifyBitcoinAddressField("", true);
-    verifyBitcoinAddressField(" ", true);
+    verifyBitcoinAddressField("", false);
+    verifyBitcoinAddressField(" ", false);
+    verifyBitcoinAddressField("AhN", false);
     verifyBitcoinAddressField("AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty", false);
     verifyBitcoinAddressField("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXht", false);
     verifyBitcoinAddressField("1AhN6rPdrMuKBGFDKR1k9A8SCLYa", false);
@@ -74,25 +75,25 @@ public class SendNoFundsContactUseCase extends AbstractFestUseCase {
    */
   private void verifyBitcoinAddressField(String text, boolean isValid) {
 
-    // Set the text
+    // Set the text directly on the combo box editor
     window
-      .comboBox(MessageKey.BITCOIN_ADDRESS.getKey())
-      .enterText(text);
+      .textBox(MessageKey.RECIPIENT.getKey())
+      .setText(text);
 
     // Lose focus to trigger validation
     window
-      .textBox(MessageKey.PASTE.getKey())
+      .button(MessageKey.PASTE.getKey())
       .focus();
 
-    // Verify the focus change and background color
+    // Verify the focus change and background color of the editor
     if (isValid) {
       window
-        .textBox(MessageKey.BITCOIN_ADDRESS.getKey())
+        .textBox(MessageKey.RECIPIENT.getKey())
         .background()
         .requireEqualTo(Themes.currentTheme.dataEntryBackground());
     } else {
       window
-        .textBox(MessageKey.BITCOIN_ADDRESS.getKey())
+        .textBox(MessageKey.RECIPIENT.getKey())
         .background()
         .requireEqualTo(Themes.currentTheme.invalidDataEntryBackground());
     }

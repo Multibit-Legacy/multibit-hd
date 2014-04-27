@@ -1,7 +1,9 @@
 package org.multibit.hd.ui.views.components.select_contact;
 
 import org.multibit.hd.core.dto.Recipient;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.borders.TextBubbleBorder;
+import org.multibit.hd.ui.views.components.text_fields.ThemeAwareRecipientInputVerifier;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
@@ -27,12 +29,16 @@ public class RecipientComboBoxEditor implements ComboBoxEditor {
 
     // Use a modified text field with a workaround
     editor = new ComboBoxTextField("", 0);
+    editor.setName(MessageKey.RECIPIENT.getKey());
 
     // Apply theme
     editor.setBackground(Themes.currentTheme.dataEntryBackground());
 
     // Apply rounded corners for consistent LaF
     editor.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
+
+    // Validate as a Contact with Bitcoin address, or a direct Bitcoin address
+    editor.setInputVerifier(new ThemeAwareRecipientInputVerifier());
 
   }
 

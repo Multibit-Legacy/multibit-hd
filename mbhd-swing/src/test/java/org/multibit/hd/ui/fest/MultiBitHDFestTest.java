@@ -118,6 +118,28 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <ul>
    * <li>Start with empty wallet fixture</li>
    * <li>Unlock wallet</li>
+   * <li>Exercise the Send/Request screen</li>
+   * </ul>
+   */
+  @Test
+  public void verifySendRequestScreen() throws Exception {
+
+    // Start with the empty wallet fixture
+    arrangeEmpty();
+
+    // Unlock the wallet
+    UnlockEmptyWalletFixture.verifyUsing(window);
+
+    // Examine the history after unlocking
+    SendRequestScreen.verifyUsing(window);
+
+  }
+
+  /**
+   * <p>Verify the following:</p>
+   * <ul>
+   * <li>Start with empty wallet fixture</li>
+   * <li>Unlock wallet</li>
    * <li>Exercise the Contacts screen</li>
    * </ul>
    */
