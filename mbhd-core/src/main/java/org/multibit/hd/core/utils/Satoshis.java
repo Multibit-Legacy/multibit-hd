@@ -24,6 +24,7 @@ public class Satoshis {
    * The exchange rate between bitcoin and satoshi is fixed at 1 bitcoin = 100 000 000 satoshis
    */
   public static final BigDecimal BTC_SAT = new BigDecimal("100000000");
+  private static final int BITCOIN_SCALE = 12;
 
   /**
    * @param satoshis     The Bitcoin amount in satoshis
@@ -37,7 +38,9 @@ public class Satoshis {
     Preconditions.checkNotNull(exchangeRate, "'exchangeRate' must be present");
 
     // Convert satoshis to bitcoins
-    BigDecimal bitcoins = new BigDecimal(satoshis).divide(BTC_SAT, 12, RoundingMode.HALF_EVEN);
+    BigDecimal bitcoins = new BigDecimal(satoshis)
+      .setScale(BITCOIN_SCALE)
+      .divide(BTC_SAT, BITCOIN_SCALE, RoundingMode.HALF_EVEN);
 
     return exchangeRate.multipliedBy(bitcoins);
 
@@ -56,7 +59,10 @@ public class Satoshis {
 
     Preconditions.checkState(localAmount.getCurrencyUnit().equals(exchangeRate.getCurrencyUnit()), "'localAmount' has a different currency unit to 'exchangeRate': " + localAmount.getCurrencyUnit().getCode() + " vs " + exchangeRate.getCurrencyUnit().getCode());
 
-    BigDecimal bitcoinAmount = localAmount.getAmount().setScale(8).divide(exchangeRate.getAmount(), 8, RoundingMode.HALF_EVEN);
+    BigDecimal bitcoinAmount = localAmount
+      .getAmount()
+      .setScale(BITCOIN_SCALE)
+      .divide(exchangeRate.getAmount(), BITCOIN_SCALE, RoundingMode.HALF_EVEN);
 
     return Utils.toNanoCoins(bitcoinAmount.toPlainString());
 
@@ -108,8 +114,10 @@ public class Satoshis {
 
     Preconditions.checkNotNull(symbolicAmount, "'symbolicAmount' must be present");
 
-    // Convert to plain amount
-    BigDecimal plainAmount = symbolicAmount.divide(bitcoinSymbol.multiplier(), 12, RoundingMode.HALF_EVEN);
+    // Convert to plain amount ensuring Bitcoin scale
+    BigDecimal plainAmount = symbolicAmount
+      .setScale(BITCOIN_SCALE)
+      .divide(bitcoinSymbol.multiplier(), BITCOIN_SCALE, RoundingMode.HALF_EVEN);
 
     // Convert to satoshis
     return fromPlainAmount(plainAmount);
@@ -132,7 +140,9 @@ public class Satoshis {
     String plainString = Utils.bitcoinValueToPlainString(satoshis);
 
     // Apply the current symbolic multiplier
-    BigDecimal symbolicAmount = new BigDecimal(plainString).multiply(bitcoinSymbol.multiplier());
+    BigDecimal symbolicAmount = new BigDecimal(plainString)
+      .setScale(BITCOIN_SCALE)
+      .multiply(bitcoinSymbol.multiplier());
 
     // Reduce the scale to match the multiplier
     return symbolicAmount.setScale(bitcoinSymbol.decimalPlaces());

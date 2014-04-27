@@ -44,7 +44,7 @@ public enum BitcoinSymbol {
   /**
    * A micro in the current de facto standard
    */
-  UBTC("\u00b5BTC","\u00b5BTC", new BigDecimal(1_000_000), 2),
+  UBTC("\u00b5BTC", "\u00b5BTC", new BigDecimal(1_000_000), 2),
   /**
    * A possible ISO standard name
    */
@@ -68,7 +68,7 @@ public enum BitcoinSymbol {
   /**
    * A micro with the Ecogex alternative symbol
    */
-  UECO("\u00b5\u0243", "\u00b5\u0243",new BigDecimal(1_000_000), 2),
+  UECO("\u00b5\u0243", "\u00b5\u0243", new BigDecimal(1_000_000), 2),
   /**
    * Subject of much debate (see <a href="http://www.reddit.com/r/Bitcoin/comments/1rmto3/its_bits/">this Reddit article</a>)
    * However, a "bit" is already used for measuring data transmission and reusing it here would be confusing
@@ -167,14 +167,32 @@ public enum BitcoinSymbol {
   }
 
   /**
-   * @return The max input length for data entry without grouping symbols
+   * @return The max input length for data entry with grouping symbols
    */
   public int maxRepresentationLength() {
-    if (this.equals(SATOSHI)) {
-      return "210000000000000000000".length();
-    } else {
-      return "2100000000000.00000000".length();
+
+    switch (this) {
+      case ICON:
+      case BTC:
+      case XBT:
+      case ECO:
+        return "21,000,000.00000000".length();
+      case MICON:
+      case MBTC:
+      case MXBT:
+      case MECO:
+        return "21,000,000,000.00000".length();
+      case UICON:
+      case UBTC:
+      case UXBT:
+      case UECO:
+        return "21,000,000,000,000.00".length();
+      case SATOSHI:
+        return "210,000,000,000,000,000,000".length();
+      default:
+        throw new IllegalStateException("Unknown Bitcoin Symbol length: "+this.name());
     }
+
   }
 
 }

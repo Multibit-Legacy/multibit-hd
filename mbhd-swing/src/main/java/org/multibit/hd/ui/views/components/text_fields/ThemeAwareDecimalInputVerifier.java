@@ -58,16 +58,22 @@ public class ThemeAwareDecimalInputVerifier extends InputVerifier {
 
     if (value.isPresent()) {
 
-      if (value.get().compareTo(minValue) == -1 || value.get().compareTo(maxValue) == 1) {
+      Double amount = value.get();
+
+      if (amount.compareTo(minValue) == -1 || amount.compareTo(maxValue) == 1) {
+        // Not in range
         component.setBackground(invalidColor);
         return false;
+      } else {
+        // Must be in range
+        component.setBackground(validColor);
+        return true;
       }
+    } else {
+      // Not a number
+      component.setBackground(invalidColor);
+      return false;
     }
-
-    // Must be OK to be here
-    component.setBackground(validColor);
-
-    return true;
   }
 
 }

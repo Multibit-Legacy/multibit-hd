@@ -205,7 +205,7 @@ public class Panels {
    */
   public synchronized static void hideLightBoxIfPresent() {
 
-    log.debug("Hide light box");
+    log.debug("Hide light box (if present)");
 
     if (lightBoxPanel.isPresent()) {
       lightBoxPanel.get().close();

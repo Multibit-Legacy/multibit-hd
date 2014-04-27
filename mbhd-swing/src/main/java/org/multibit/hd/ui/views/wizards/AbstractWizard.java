@@ -181,7 +181,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
 
         // Require some extra time to get the rest of the UI started for password wizard
         if (PasswordState.PASSWORD_ENTER_PASSWORD.name().equals(panelName)) {
-          Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+          Uninterruptibles.sleepUninterruptibly(1500, TimeUnit.MILLISECONDS);
         }
 
         // Proceed with hide

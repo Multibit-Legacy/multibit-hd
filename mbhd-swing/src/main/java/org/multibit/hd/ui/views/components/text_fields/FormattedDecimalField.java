@@ -49,7 +49,7 @@ public class FormattedDecimalField extends JFormattedTextField {
 
     // Set the edit/display patterns (not localised)
     String displayPattern = "#,##0.000000000000000";
-    String editPattern = "#.###############";
+    String editPattern = "#,###.###############";
 
     // Identify the location of the decimal in the template before locale adjustments
     int decimalDisplayIndex = displayPattern.indexOf('.');
