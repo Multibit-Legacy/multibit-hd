@@ -8,8 +8,7 @@ import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.ui.views.components.ComboBoxes;
-import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilter;
-import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilters;
+import org.multibit.hd.ui.views.components.select_contact.RecipientComboBoxEditor;
 
 import javax.swing.*;
 import java.util.List;
@@ -27,7 +26,7 @@ public class ThemeAwareRecipientInputVerifierTest {
 
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
-    contactService= mock(ContactService.class);
+    contactService = mock(ContactService.class);
 
   }
 
@@ -39,39 +38,40 @@ public class ThemeAwareRecipientInputVerifierTest {
     // Arrange
     when(contactService.allContacts()).thenReturn(allContacts);
 
-    AutoCompleteFilter<Recipient> filter = AutoCompleteFilters.newRecipientFilter(contactService);
-    JComboBox<Recipient> comboBox = ComboBoxes.newRecipientComboBox(filter);
+    JComboBox<Recipient> comboBox = ComboBoxes.newRecipientComboBox(contactService);
 
-    ThemeAwareRecipientInputVerifier testObject = new ThemeAwareRecipientInputVerifier();
+    ThemeAwareRecipientInputVerifier testObject = new ThemeAwareRecipientInputVerifier(contactService);
+
+    RecipientComboBoxEditor.ComboBoxTextField comboEditor = ((RecipientComboBoxEditor.ComboBoxTextField) comboBox.getEditor().getEditorComponent());
 
     // Act
     comboBox.setSelectedItem("");
-    assertThat(testObject.verify(comboBox)).isFalse();
+    assertThat(testObject.verify(comboEditor)).isFalse();
 
     comboBox.setSelectedItem(" ");
-    assertThat(testObject.verify(comboBox)).isFalse();
+    assertThat(testObject.verify(comboEditor)).isFalse();
 
     comboBox.setSelectedItem("AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
-    assertThat(testObject.verify(comboBox)).isFalse();
+    assertThat(testObject.verify(comboEditor)).isFalse();
 
     comboBox.setSelectedItem("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgdfjkt");
-    assertThat(testObject.verify(comboBox)).isFalse();
+    assertThat(testObject.verify(comboEditor)).isFalse();
 
     comboBox.setSelectedItem("1AhN6rPdrMuKBGFDKR1k9A8SCLYa");
-    assertThat(testObject.verify(comboBox)).isFalse();
+    assertThat(testObject.verify(comboEditor)).isFalse();
 
     comboBox.setSelectedItem("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
-    assertThat(testObject.verify(comboBox)).isTrue();
+    assertThat(testObject.verify(comboEditor)).isTrue();
 
     // Use a public domain P2SH address
     comboBox.setSelectedItem("35b9vsyH1KoFT5a5KtrKusaCcPLkiSo1t");
-    assertThat(testObject.verify(comboBox)).isFalse();
+    assertThat(testObject.verify(comboEditor)).isFalse();
 
     comboBox.setSelectedItem("35b9vsyH1KoFT5a5KtrKusaCcPLkiSo1tUB");
-    assertThat(testObject.verify(comboBox)).isFalse();
+    assertThat(testObject.verify(comboEditor)).isFalse();
 
     comboBox.setSelectedItem("35b9vsyH1KoFT5a5KtrKusaCcPLkiSo1tU");
-    assertThat(testObject.verify(comboBox)).isTrue();
+    assertThat(testObject.verify(comboEditor)).isTrue();
 
 
   }
@@ -84,39 +84,40 @@ public class ThemeAwareRecipientInputVerifierTest {
     // Arrange
     when(contactService.allContacts()).thenReturn(allContacts);
 
-    AutoCompleteFilter<Recipient> filter = AutoCompleteFilters.newRecipientFilter(contactService);
-    JComboBox<Recipient> comboBox = ComboBoxes.newRecipientComboBox(filter);
+    JComboBox<Recipient> comboBox = ComboBoxes.newRecipientComboBox(contactService);
 
-    ThemeAwareRecipientInputVerifier testObject = new ThemeAwareRecipientInputVerifier();
+    ThemeAwareRecipientInputVerifier testObject = new ThemeAwareRecipientInputVerifier(contactService);
+
+    RecipientComboBoxEditor.ComboBoxTextField comboEditor = ((RecipientComboBoxEditor.ComboBoxTextField) comboBox.getEditor().getEditorComponent());
 
     // Act
     comboBox.setSelectedItem(new Recipient("AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty"));
-    assertThat(testObject.verify(comboBox)).isFalse();
+    assertThat(testObject.verify(comboEditor)).isFalse();
 
     comboBox.setSelectedItem(new Recipient(" "));
-    assertThat(testObject.verify(comboBox)).isFalse();
+    assertThat(testObject.verify(comboEditor)).isFalse();
 
     comboBox.setSelectedItem(new Recipient("AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty"));
-    assertThat(testObject.verify(comboBox)).isFalse();
+    assertThat(testObject.verify(comboEditor)).isFalse();
 
     comboBox.setSelectedItem(new Recipient("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgdfjkt"));
-    assertThat(testObject.verify(comboBox)).isFalse();
+    assertThat(testObject.verify(comboEditor)).isFalse();
 
     comboBox.setSelectedItem(new Recipient("1AhN6rPdrMuKBGFDKR1k9A8SCLYa"));
-    assertThat(testObject.verify(comboBox)).isFalse();
+    assertThat(testObject.verify(comboEditor)).isFalse();
 
     comboBox.setSelectedItem(new Recipient("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty"));
-    assertThat(testObject.verify(comboBox)).isTrue();
+    assertThat(testObject.verify(comboEditor)).isTrue();
 
     // Use a public domain P2SH address
     comboBox.setSelectedItem(new Recipient("35b9vsyH1KoFT5a5KtrKusaCcPLkiSo1t"));
-    assertThat(testObject.verify(comboBox)).isFalse();
+    assertThat(testObject.verify(comboEditor)).isFalse();
 
     comboBox.setSelectedItem(new Recipient("35b9vsyH1KoFT5a5KtrKusaCcPLkiSo1tUB"));
-    assertThat(testObject.verify(comboBox)).isFalse();
+    assertThat(testObject.verify(comboEditor)).isFalse();
 
     comboBox.setSelectedItem(new Recipient("35b9vsyH1KoFT5a5KtrKusaCcPLkiSo1tU"));
-    assertThat(testObject.verify(comboBox)).isTrue();
+    assertThat(testObject.verify(comboEditor)).isTrue();
 
   }
 

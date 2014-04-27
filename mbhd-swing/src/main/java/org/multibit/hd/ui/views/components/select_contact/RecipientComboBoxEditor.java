@@ -1,6 +1,8 @@
 package org.multibit.hd.ui.views.components.select_contact;
 
+import com.google.common.base.Preconditions;
 import org.multibit.hd.core.dto.Recipient;
+import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.borders.TextBubbleBorder;
 import org.multibit.hd.ui.views.components.text_fields.ThemeAwareRecipientInputVerifier;
@@ -25,7 +27,12 @@ public class RecipientComboBoxEditor implements ComboBoxEditor {
   protected JTextField editor;
   private Recipient recipient;
 
-  public RecipientComboBoxEditor() {
+  /**
+   * @param contactService The contact service for the current wallet
+   */
+  public RecipientComboBoxEditor(ContactService contactService) {
+
+    Preconditions.checkNotNull(contactService, "'contactService' must be present");
 
     // Use a modified text field with a workaround
     editor = new ComboBoxTextField("", 0);
@@ -38,7 +45,7 @@ public class RecipientComboBoxEditor implements ComboBoxEditor {
     editor.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
 
     // Validate as a Contact with Bitcoin address, or a direct Bitcoin address
-    editor.setInputVerifier(new ThemeAwareRecipientInputVerifier());
+    editor.setInputVerifier(new ThemeAwareRecipientInputVerifier(contactService));
 
   }
 
@@ -115,7 +122,7 @@ public class RecipientComboBoxEditor implements ComboBoxEditor {
     editor.removeActionListener(l);
   }
 
-  static class ComboBoxTextField extends JTextField {
+  public static class ComboBoxTextField extends JTextField {
 
     public ComboBoxTextField(String value, int n) {
       super(value, n);

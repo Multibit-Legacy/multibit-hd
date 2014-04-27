@@ -66,9 +66,7 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
     // Look up the contact service
     ContactService contactService = CoreServices.getCurrentContactService();
 
-    AutoCompleteFilter<Recipient> filter = AutoCompleteFilters.newRecipientFilter(contactService);
-
-    recipientComboBox = ComboBoxes.newRecipientComboBox(filter);
+    recipientComboBox = ComboBoxes.newRecipientComboBox(contactService);
 
     // Set the recipient before the action listener is added
     if (getModel().get().getRecipient().isPresent()) {

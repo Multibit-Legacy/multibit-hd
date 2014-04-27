@@ -22,6 +22,7 @@ import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.bitcoin.params.MainNetParams;
 import com.google.common.base.Optional;
+import com.google.common.io.Files;
 import org.bitcoinj.wallet.Protos;
 import org.junit.Before;
 import org.junit.Test;
@@ -287,14 +288,7 @@ public class WalletManagerTest {
    */
   public static File makeRandomTemporaryApplicationDirectory() throws IOException {
 
-    File temporaryFile = File.createTempFile("nothing", "nothing");
-    temporaryFile.deleteOnExit();
-
-    File parentDirectory = temporaryFile.getParentFile();
-
-    File temporaryDirectory = new File(parentDirectory.getAbsolutePath() + File.separator + ("" + (new Random()).nextInt(1000000)));
-    assertThat(temporaryDirectory.mkdir()).isTrue();
-
+    File temporaryDirectory = Files.createTempDir();
     temporaryDirectory.deleteOnExit();
 
     return temporaryDirectory;

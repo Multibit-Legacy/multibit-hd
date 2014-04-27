@@ -4,9 +4,9 @@ import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.params.MainNetParams;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.services.ContactService;
-import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
@@ -30,7 +30,18 @@ public class ThemeAwareRecipientInputVerifier extends InputVerifier {
   private final Color invalidColor = Themes.currentTheme.invalidDataEntryBackground();
   private final Color validColor = Themes.currentTheme.dataEntryBackground();
 
-  private final ContactService contactService = CoreServices.getCurrentContactService();
+  private final ContactService contactService;
+
+  /**
+   * @param contactService The contact service for the current wallet
+   */
+  public ThemeAwareRecipientInputVerifier(ContactService contactService) {
+
+    Preconditions.checkNotNull(contactService, "'contactService' must be present");
+
+    this.contactService = contactService;
+
+  }
 
   @Override
   public boolean verify(JComponent component) {

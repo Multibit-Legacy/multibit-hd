@@ -12,6 +12,7 @@ import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exchanges.ExchangeKey;
+import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.ExchangeTickerService;
 import org.multibit.hd.core.utils.BitcoinSymbol;
@@ -22,6 +23,7 @@ import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteDecorator;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilter;
+import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilters;
 import org.multibit.hd.ui.views.components.display_amount.BitcoinSymbolListCellRenderer;
 import org.multibit.hd.ui.views.components.renderers.BackupSummaryListCellRenderer;
 import org.multibit.hd.ui.views.components.renderers.LanguageListCellRenderer;
@@ -485,9 +487,11 @@ public class ComboBoxes {
    *
    * @return A new "recipient" combo box with auto-complete functionality
    */
-  public static JComboBox<Recipient> newRecipientComboBox(AutoCompleteFilter<Recipient> filter) {
+  public static JComboBox<Recipient> newRecipientComboBox(ContactService contactService) {
 
-    Preconditions.checkNotNull(filter, "'filter' must be present");
+    Preconditions.checkNotNull(contactService, "'contactService' must be present");
+
+    AutoCompleteFilter<Recipient> filter = AutoCompleteFilters.newRecipientFilter(contactService);
 
     JComboBox<Recipient> comboBox = newComboBox(filter.create());
 
@@ -497,7 +501,7 @@ public class ComboBoxes {
     comboBox.setEditable(true);
 
     // Use a contact editor to force use of the name field
-    comboBox.setEditor(new RecipientComboBoxEditor());
+    comboBox.setEditor(new RecipientComboBoxEditor(contactService));
 
     // Use a contact list cell renderer to ensure thumbnails are maintained
     ListCellRenderer<Recipient> renderer = new RecipientListCellRenderer((JTextField) comboBox.getEditor().getEditorComponent());
