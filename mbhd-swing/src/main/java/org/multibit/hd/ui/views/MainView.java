@@ -1,25 +1,16 @@
 package org.multibit.hd.ui.views;
 
-import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.dto.WalletSummary;
-import org.multibit.hd.core.events.ShutdownEvent;
-import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.LocaleChangedEvent;
-import org.multibit.hd.ui.events.view.WizardHideEvent;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
-import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletState;
-import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletWizardModel;
-import org.multibit.hd.ui.views.wizards.exit.ExitState;
-import org.multibit.hd.ui.views.wizards.password.PasswordState;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,22 +112,6 @@ public class MainView extends JFrame {
     // Place the frame in the desired position (setBounds() does not work)
     setLocation(newBounds.x, newBounds.y);
     setPreferredSize(new Dimension(newBounds.width, newBounds.height));
-
-  }
-
-  @Subscribe
-  public void onShutdownEvent(ShutdownEvent shutdownEvent) {
-
-    switch (shutdownEvent.getShutdownType()) {
-      case HARD:
-      case SOFT:
-        log.debug("Disposing of application frame.");
-        Panels.applicationFrame.dispose();
-        break;
-      case STANDBY:
-        log.debug("Keeping application frame (standby).");
-        break;
-    }
 
   }
 
@@ -276,7 +251,6 @@ public class MainView extends JFrame {
   public void setShowExitingWelcomeWizard(boolean show) {
 
     showExitingWelcomeWizard = show;
-    showExitingPasswordWizard = !show;
 
   }
 
@@ -286,57 +260,34 @@ public class MainView extends JFrame {
   public void setShowExitingPasswordWizard(boolean show) {
 
     showExitingPasswordWizard = show;
-    showExitingWelcomeWizard = !show;
 
   }
 
-  @Subscribe
-  public void onWizardHideEvent(WizardHideEvent event) {
+  /**
+   * Attempt to get focus to the sidebar
+   */
+  public void sidebarRequestFocus() {
 
-    String panelName = event.getPanelName();
+    sidebarView.requestFocus();
+  }
 
-    showExitingWelcomeWizard = false;
-    showExitingPasswordWizard = false;
+  /**
+   * Update the sidebar wallet name tree node
+   *
+   * @param walletName The wallet name
+   */
+  public void sidebarWalletName(String walletName) {
 
-    if (event.isExitCancel()) {
+    sidebarView.updateWalletTreeNode(walletName);
 
-      // The exit dialog has no detail screen so focus defers to the sidebar
-      if (ExitState.EXIT_CONFIRM.name().equals(panelName)) {
-        sidebarView.requestFocus();
-      }
+  }
 
-      // The detail screens do not have an intuitive way to capture focus
-      // we rely on CTRL+TAB to relocate the focus with keyboard
+  /**
+   * Update the detail view to reflect the new wallet
+   */
+  public void detailViewAfterWalletOpened() {
 
-      return;
-    }
-
-    if (EditWalletState.EDIT_WALLET.name().equals(panelName)) {
-
-      // Extract the wallet summary
-      WalletSummary walletSummary = ((EditWalletWizardModel) event.getWizardModel()).getWalletSummary();
-
-      sidebarView.updateWalletTreeNode(walletSummary.getName());
-
-    }
-
-    // Password entry successful so perform initialisations
-    if (PasswordState.PASSWORD_ENTER_PASSWORD.name().equals(panelName)) {
-
-      // Finish off the detail view initialisation
-      detailView.afterWalletOpen();
-
-      // Use the current wallet summary
-      Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
-      if (walletSummary.isPresent()) {
-        sidebarView.updateWalletTreeNode(walletSummary.get().getName());
-
-        // Record this in the history
-        CoreServices.logHistory(Languages.safeText(MessageKey.HISTORY_WALLET_OPENED,walletSummary.get().getName()));
-      }
-
-    }
-
+    detailView.afterWalletOpened();
   }
 
 }

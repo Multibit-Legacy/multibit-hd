@@ -7,6 +7,7 @@ import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.files.ZipFiles;
@@ -63,6 +64,17 @@ public enum BackupManager {
 
     this.applicationDataDirectory = applicationDataDirectory;
     this.cloudBackupDirectory = cloudBackupDirectory;
+  }
+
+  /**
+   *
+   * @param shutdownEvent The shutdown event
+   */
+  public void onShutdownEvent(ShutdownEvent shutdownEvent) {
+
+    this.applicationDataDirectory = null;
+    this.cloudBackupDirectory = null;
+
   }
 
   /**

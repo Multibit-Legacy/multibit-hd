@@ -259,11 +259,13 @@ public class MultiBitHD {
 
       log.debug("No wallets in the directory - showing the welcome wizard");
       mainView.setShowExitingWelcomeWizard(true);
+      mainView.setShowExitingPasswordWizard(false);
 
     } else {
 
       log.debug("Wallets are present - showing the password wizard");
       mainView.setShowExitingPasswordWizard(true);
+      mainView.setShowExitingWelcomeWizard(false);
 
     }
 

@@ -15,6 +15,7 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.WalletLoadException;
@@ -95,13 +96,11 @@ public enum WalletManager implements WalletEventListener {
 
   static {
     walletProtobufSerializer = new WalletProtobufSerializer();
-    // TODO was originally multibit protobuf serializer - ok ?
   }
 
   private static final Logger log = LoggerFactory.getLogger(WalletManager.class);
 
   public static final String WALLET_DIRECTORY_PREFIX = "mbhd";
-
   // The format of the wallet directories is WALLET_DIRECTORY_PREFIX + a wallet id.
   // A walletid is 5 groups of 4 bytes in lowercase hex, with a "-' separator e.g. mbhd-11111111-22222222-33333333-44444444-55555555
   private static final String REGEX_FOR_WALLET_DIRECTORY = "^"
@@ -116,26 +115,25 @@ public enum WalletManager implements WalletEventListener {
     + "[0-9a-f]{8}"
     + WALLET_ID_SEPARATOR
     + "[0-9a-f]{8}$";
+
   private static final Pattern walletDirectoryPattern = Pattern.compile(REGEX_FOR_WALLET_DIRECTORY);
 
   /**
    * The wallet version number for protobuf encrypted wallets - compatible with MultiBit
    */
   public static final int ENCRYPTED_WALLET_VERSION = 3; // TODO - need a new version when the wallet HD format is created
-
   public static final String MBHD_WALLET_PREFIX = "mbhd";
   public static final String MBHD_WALLET_SUFFIX = ".wallet";
+
   public static final String MBHD_SUMMARY_SUFFIX = ".yaml";
-
   public static final String MBHD_WALLET_NAME = MBHD_WALLET_PREFIX + MBHD_WALLET_SUFFIX;
-  public static final String MBHD_SUMMARY_NAME = MBHD_WALLET_PREFIX + MBHD_SUMMARY_SUFFIX;
 
-  private File applicationDataDirectory;
+  public static final String MBHD_SUMMARY_NAME = MBHD_WALLET_PREFIX + MBHD_SUMMARY_SUFFIX;
 
   private Optional<WalletSummary> currentWalletSummary = Optional.absent();
 
   /**
-   * Initialise enum, load up the available wallets and find the current wallet
+   * Open the given wallet
    *
    * @param applicationDataDirectory The application data directory
    * @param walletId                 The wallet ID to locate the wallet
@@ -146,7 +144,6 @@ public enum WalletManager implements WalletEventListener {
     Preconditions.checkNotNull(walletId, "'walletId' must be present");
     Preconditions.checkNotNull(password, "'password' must be present");
 
-    this.applicationDataDirectory = applicationDataDirectory;
     this.currentWalletSummary = Optional.absent();
 
     // Work out the list of available wallets in the application data directory
@@ -179,6 +176,15 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
+   * @param shutdownEvent The shutdown event
+   */
+  public void onShutdownEvent(ShutdownEvent shutdownEvent) {
+
+    currentWalletSummary = Optional.absent();
+
+  }
+
+  /**
    * Create a wallet that contains only a single, random private key.
    * This is stored in the MultiBitHD application data directory
    * The name of the wallet file is derived from the seed.
@@ -193,7 +199,7 @@ public enum WalletManager implements WalletEventListener {
    * @throws WalletLoadException    if there is already a simple wallet created but it could not be loaded
    * @throws WalletVersionException if there is already a simple wallet but the wallet version cannot be understood
    */
-  public WalletSummary createWallet(byte[] seed, CharSequence password) throws WalletLoadException, WalletVersionException, IOException {
+  public WalletSummary createWalletSummary(byte[] seed, CharSequence password) throws WalletLoadException, WalletVersionException, IOException {
 
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
     return getOrCreateWalletSummary(applicationDataDirectory, seed, password);
@@ -382,13 +388,14 @@ public enum WalletManager implements WalletEventListener {
         wallet.addExtension(new MatcherResponseWalletExtension());
         new WalletProtobufSerializer().readWallet(walletProto, wallet);
 
-        log.debug("Wallet at read in from file:\n" + wallet.toString());
+        log.debug("Wallet read in from file:{}\n{}", walletFile.getAbsolutePath(), wallet.toString());
 
       } catch (WalletVersionException wve) {
         // We want this exception to propagate out.
         throw wve;
       } catch (Exception e) {
-        log.error(e.getClass().getCanonicalName() + " " + e.getMessage());
+        // Log the full stack trace of the error
+        log.error(e.getMessage(), e);
         throw new WalletLoadException(e.getMessage(), e);
       }
 
@@ -397,7 +404,7 @@ public enum WalletManager implements WalletEventListener {
       walletSummary.setWallet(wallet);
       setCurrentWalletSummary(walletSummary);
 
-      // Set up auto-save on the wallet.
+      // Set up auto-save on the wallet
       // This ensures the wallet is saved on modification
       // The listener has a 'post save' callback which ensures rolling backups and local/ cloud backups are also saved where necessary
       wallet.autosaveToFile(walletDirectory, AUTO_SAVE_DELAY, TimeUnit.SECONDS, new WalletAutoSaveListener());
@@ -612,7 +619,7 @@ public enum WalletManager implements WalletEventListener {
   /**
    * @return The current wallet file (e.g. "/User/example/Application Support/MultiBitHD/mbhd-1111-2222-3333-4444/mbhd.wallet")
    */
-  public Optional<File> getCurrentWalletFile() {
+  public Optional<File> getCurrentWalletFile(File applicationDataDirectory) {
 
     if (applicationDataDirectory != null && currentWalletSummary.isPresent()) {
 
@@ -635,7 +642,7 @@ public enum WalletManager implements WalletEventListener {
   /**
    * @return The current wallet summary file (e.g. "/User/example/Application Support/MultiBitHD/mbhd-1111-2222-3333-4444/mbhd.yaml")
    */
-  public Optional<File> getCurrentWalletSummaryFile() {
+  public Optional<File> getCurrentWalletSummaryFile(File applicationDataDirectory) {
 
     if (applicationDataDirectory != null && currentWalletSummary.isPresent()) {
 
@@ -656,6 +663,15 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
+   * @param walletDirectory The wallet directory containing the various wallet files
+   *
+   * @return A wallet summary file
+   */
+  public static File getOrCreateWalletSummaryFile(File walletDirectory) {
+    return SecureFiles.verifyOrCreateFile(walletDirectory, MBHD_WALLET_NAME);
+  }
+
+  /**
    * @return The current wallet root as defined in the configuration, or absent
    */
   public Optional<String> getCurrentWalletRoot() {
@@ -665,12 +681,10 @@ public enum WalletManager implements WalletEventListener {
   /**
    * @param walletSummary The wallet summary to write
    */
-  public static void updateWalletSummary(WalletSummary walletSummary) {
-
-    final File currentWalletSummaryFile = INSTANCE.getCurrentWalletSummaryFile().get();
+  public static void updateWalletSummary(File walletSummaryFile, WalletSummary walletSummary) {
 
     // Persist the new configuration
-    try (FileOutputStream fos = new FileOutputStream(currentWalletSummaryFile)) {
+    try (FileOutputStream fos = new FileOutputStream(walletSummaryFile)) {
 
       Configurations.writeCurrentConfiguration(fos, walletSummary);
 

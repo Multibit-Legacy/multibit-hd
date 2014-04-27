@@ -219,7 +219,8 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
       WalletSummary walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary().get();
       walletDetail.setApplicationDirectory(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath());
 
-      File walletFile = WalletManager.INSTANCE.getCurrentWalletFile().get();
+      File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+      File walletFile = WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory).get();
       walletDetail.setWalletDirectory(walletFile.getParentFile().getName());
 
       ContactService contactService = CoreServices.getOrCreateContactService(walletSummary.getWalletId());

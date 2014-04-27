@@ -181,7 +181,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     try {
       DateTime replayDate = Dates.parseSeedTimestamp(timestamp);
       // TODO necessary to backup any existing wallet with the same seed before creation/ overwrite ?
-      WalletManager.INSTANCE.createWallet(seed, password);
+      WalletManager.INSTANCE.createWalletSummary(seed, password);
 
       // Initialise the WalletService with the newly created wallet, which provides transaction information from the wallet
       Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();

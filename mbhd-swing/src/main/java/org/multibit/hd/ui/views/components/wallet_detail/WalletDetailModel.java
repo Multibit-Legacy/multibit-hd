@@ -62,9 +62,11 @@ public class WalletDetailModel implements Model<WalletDetail> {
     // TODO Add this to a wallet service
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
       WalletSummary walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary().get();
-      walletDetail.setApplicationDirectory(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath());
 
-      File walletFile = WalletManager.INSTANCE.getCurrentWalletFile().get();
+      File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+      File walletFile = WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory).get();
+
+      walletDetail.setApplicationDirectory(applicationDataDirectory.getAbsolutePath());
       walletDetail.setWalletDirectory(walletFile.getParentFile().getName());
 
       ContactService contactService = CoreServices.getOrCreateContactService(walletSummary.getWalletId());

@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.screens.tools;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
@@ -19,6 +20,7 @@ import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.io.File;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -169,8 +171,9 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
       // Persist the data from the wizard model into wallet
       WalletSummary walletSummary = ((EditWalletWizardModel) event.getWizardModel()).getWalletSummary();
 
-      // getScreenModel().getWalletService().updateWalletSummary(walletSummary);
-      WalletManager.updateWalletSummary(walletSummary);
+      File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+      final File currentWalletSummaryFile = WalletManager.INSTANCE.getCurrentWalletSummaryFile(applicationDataDirectory).get();
+      WalletManager.updateWalletSummary(currentWalletSummaryFile, walletSummary);
 
     }
 

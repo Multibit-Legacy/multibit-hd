@@ -14,6 +14,7 @@ import org.multibit.hd.core.events.TransactionCreationEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.exchanges.ExchangeKey;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
@@ -276,7 +277,9 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     if (WalletManager.INSTANCE.getCurrentWalletSummary() != null &&
             WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
       Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
-      Optional<File> walletFileOptional = WalletManager.INSTANCE.getCurrentWalletFile();
+
+      File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+      Optional<File> walletFileOptional = WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory);
       if (walletFileOptional.isPresent()) {
         log.debug("Wallet file prior to calculateFeeState is " + walletFileOptional.get().length() + " bytes");
       }

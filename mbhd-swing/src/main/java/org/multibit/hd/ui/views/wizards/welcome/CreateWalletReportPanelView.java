@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.bitcoin.core.Wallet;
+import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
@@ -151,7 +152,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       // Attempt to create the wallet (the manager will track the ID etc)
       WalletManager walletManager = WalletManager.INSTANCE;
       seed = seedPhraseGenerator.convertToSeed(seedPhrase);
-      walletSummary = walletManager.createWallet(seed, password);
+      walletSummary = walletManager.createWalletSummary(seed, password);
 
       Preconditions.checkNotNull(walletSummary.getWalletId(), "'walletId' must be present");
 
@@ -159,13 +160,16 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
 
       // Save the wallet password, AES encrypted with a key derived from the wallet seed
-      KeyParameter backupAESkey = AESUtils.createAESKey(seed, AESUtils.BACKUP_AES_KEY_SALT_USED_IN_SCRYPT);
-      byte[] encryptedWalletPassword = org.multibit.hd.brit.crypto.AESUtils.encrypt(password.getBytes("UTF8"), backupAESkey, AESUtils.BACKUP_AES_INITIALISATION_VECTOR);
+      KeyParameter backupAESKey = AESUtils.createAESKey(seed, AESUtils.BACKUP_AES_KEY_SALT_USED_IN_SCRYPT);
+      byte[] encryptedWalletPassword = org.multibit.hd.brit.crypto.AESUtils.encrypt(password.getBytes(Charsets.UTF_8), backupAESKey, AESUtils.BACKUP_AES_INITIALISATION_VECTOR);
       walletSummary.setEncryptedPassword(encryptedWalletPassword);
-      WalletManager.updateWalletSummary(walletSummary);
+
+      File walletSummaryFile = WalletManager.getOrCreateWalletSummaryFile(walletDirectory);
+      WalletManager.updateWalletSummary(walletSummaryFile, walletSummary);
 
       // Must be OK to be here
       walletCreatedStatus = true;
+
     } catch (IOException | NoSuchAlgorithmException ioe) {
       ExceptionHandler.handleThrowable(ioe);
     }

@@ -222,20 +222,26 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
    *
    * @param url The URL to render
    */
-  private void browse(URL url) {
+  private void browse(final URL url) {
 
-    try {
-      editorPane.setPage(url);
-      launchBrowserButton.setBackground(Themes.currentTheme.buttonBackground());
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          editorPane.setPage(url);
+          launchBrowserButton.setBackground(Themes.currentTheme.buttonBackground());
 
-    } catch (IOException e) {
-      // Log the error and report a failure to the user via the alerts
-      log.error(e.getMessage(), e);
-      ControllerEvents.fireAddAlertEvent(Models.newAlertModel(
-        Languages.safeText(MessageKey.NETWORK_CONFIGURATION_ERROR),
-        RAGStatus.AMBER
-      ));
-    }
+        } catch (IOException e) {
+          // Log the error and report a failure to the user via the alerts
+          log.error(e.getMessage(), e);
+          ControllerEvents.fireAddAlertEvent(Models.newAlertModel(
+            Languages.safeText(MessageKey.NETWORK_CONFIGURATION_ERROR),
+            RAGStatus.AMBER
+          ));
+        }
+
+      }
+    });
   }
 
   /**

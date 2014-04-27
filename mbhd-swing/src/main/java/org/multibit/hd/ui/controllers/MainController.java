@@ -9,14 +9,12 @@ import com.google.common.util.concurrent.Uninterruptibles;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.dto.BitcoinNetworkSummary;
-import org.multibit.hd.core.dto.CoreMessageKey;
-import org.multibit.hd.core.dto.RAGStatus;
-import org.multibit.hd.core.dto.SecuritySummary;
+import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.*;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.ExchangeTickerService;
@@ -39,6 +37,9 @@ import org.multibit.hd.ui.views.themes.Theme;
 import org.multibit.hd.ui.views.themes.ThemeKey;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletState;
+import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletWizardModel;
+import org.multibit.hd.ui.views.wizards.exit.ExitState;
 import org.multibit.hd.ui.views.wizards.password.PasswordState;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
@@ -91,6 +92,28 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
   }
 
   @Subscribe
+  public void onShutdownEvent(ShutdownEvent shutdownEvent) {
+
+    switch (shutdownEvent.getShutdownType()) {
+      case HARD:
+      case SOFT:
+        log.debug("Disposing of application frame.");
+        Panels.applicationFrame.dispose();
+        WalletManager.INSTANCE.onShutdownEvent(shutdownEvent);
+        BackupManager.INSTANCE.onShutdownEvent(shutdownEvent);
+        InstallationManager.onShutdownEvent(shutdownEvent);
+        // Dispose of the main view and all its attendant references
+        mainView = null;
+        System.gc();
+        break;
+      case STANDBY:
+        log.debug("Keeping application frame (standby).");
+        break;
+    }
+
+  }
+
+  @Subscribe
   public void onWizardHideEvent(WizardHideEvent event) {
 
     log.debug("Wizard hide: '{}'", event.getPanelName());
@@ -102,54 +125,31 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
       if (WelcomeWizardState.CREATE_WALLET_REPORT.name().equals(event.getPanelName()) ||
         WelcomeWizardState.RESTORE_WALLET_REPORT.name().equals(event.getPanelName())) {
 
-        log.debug("Hand over to password wizard");
-
-        SafeExecutors.newSingleThreadExecutor("password-handover").execute(new Runnable() {
-          @Override
-          public void run() {
-
-            // Wait for the welcome wizard to hide and MainView to refresh
-            Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
-
-            // Hand over to the password wizard to complete access to the wallet
-            mainView.setShowExitingPasswordWizard(true);
-            mainView.refresh();
-
-          }
-        });
+        // Need to hand over to the password wizard
+        handlePasswordWizardHandover();
 
       }
 
-      // Special case for the password wizard since it represents an
-      // incomplete initialisation of the UI
       if (PasswordState.PASSWORD_ENTER_PASSWORD.name().equals(event.getPanelName())) {
 
-        log.debug("Starting wallet services");
+        // Perform final initialisation
+        handlePasswordWizardHide();
 
-        // Show the initial screen as soon as possible to reassure the user
-        Screen screen = Screen.valueOf(Configurations.currentConfiguration.getApplication().getCurrentScreen());
-        ControllerEvents.fireShowDetailScreenEvent(screen);
-
-        // Don't hold up the UI thread with these background operations
-        SafeExecutors.newSingleThreadExecutor("initialise").submit(new Runnable() {
-          @Override
-          public void run() {
-
-            // Get a ticker going
-            handleExchange();
-
-            // Start the backup manager
-            handleBackupManager();
-
-            // Check for Bitcoin URIs
-            handleBitcoinURIAlert();
-
-            // Lastly start the Bitcoin network
-            handleBitcoinNetworkStart();
-
-          }
-        });
       }
+
+      if (EditWalletState.EDIT_WALLET.name().equals(event.getPanelName())) {
+
+        // Update the sidebar name
+        String walletName = ((EditWalletWizardModel) event.getWizardModel()).getWalletSummary().getName();
+        handleEditWalletHide(walletName);
+
+      }
+
+    } else {
+
+      // Shift focus depending on what was cancelled
+      handleExitCancelHide(event.getPanelName());
+
     }
   }
 
@@ -432,5 +432,97 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
     if (bitcoinNetworkService.get().isStartedOk()) {
       bitcoinNetworkService.get().downloadBlockChainInBackground();
     }
+  }
+
+  private void handleExitCancelHide(String panelName) {
+
+    // The exit dialog has no detail screen so focus defers to the sidebar
+    if (ExitState.EXIT_CONFIRM.name().equals(panelName)) {
+      mainView.sidebarRequestFocus();
+    }
+
+    // The detail screens do not have an intuitive way to capture focus
+    // we rely on CTRL+TAB to relocate the focus with keyboard
+
+  }
+
+  private void handleEditWalletHide(String walletName) {
+
+    mainView.sidebarWalletName(walletName);
+
+  }
+
+  /**
+   * Password wizard has hidden
+   */
+  private void handlePasswordWizardHide() {
+
+    log.debug("Starting wallet services");
+
+    // No handover
+    mainView.setShowExitingWelcomeWizard(false);
+    mainView.setShowExitingPasswordWizard(false);
+
+    mainView.detailViewAfterWalletOpened();
+
+    // Give time for detail view to initialise
+    Uninterruptibles.sleepUninterruptibly(250, TimeUnit.MILLISECONDS);
+
+    // Use the current wallet summary
+    Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+    mainView.sidebarWalletName(walletSummary.get().getName());
+
+    // Record this in the history
+    CoreServices.logHistory(Languages.safeText(MessageKey.HISTORY_WALLET_OPENED, walletSummary.get().getName()));
+
+    // Show the initial detail screen
+    Screen screen = Screen.valueOf(Configurations.currentConfiguration.getApplication().getCurrentScreen());
+    ControllerEvents.fireShowDetailScreenEvent(screen);
+
+    // Don't hold up the UI thread with these background operations
+    SafeExecutors.newSingleThreadExecutor("wallet-services").submit(new Runnable() {
+      @Override
+      public void run() {
+
+        // Get a ticker going
+        handleExchange();
+
+        // Start the backup manager
+        handleBackupManager();
+
+        // Check for Bitcoin URIs
+        handleBitcoinURIAlert();
+
+        // Lastly start the Bitcoin network
+        handleBitcoinNetworkStart();
+
+      }
+    });
+  }
+
+  /**
+   * Welcome wizard has created a new wallet so hand over to the password wizard for access
+   */
+  private void handlePasswordWizardHandover() {
+
+    log.debug("Hand over to password wizard");
+
+    SafeExecutors.newSingleThreadExecutor("password-handover").execute(new Runnable() {
+      @Override
+      public void run() {
+
+        // Wait for the welcome wizard to hide and MainView to refresh
+        Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+
+        // Hand over to the password wizard to complete access to the wallet
+        mainView.setShowExitingWelcomeWizard(false);
+        mainView.setShowExitingPasswordWizard(true);
+
+        // Trigger the redraw to show the wizard
+        mainView.refresh();
+
+      }
+    });
+
   }
 }

@@ -137,6 +137,9 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
     if (event.isExitCancel()) {
       return;
     }
+    if (historyTableModel==null) {
+      return;
+    }
 
     // Transfer the data from the wizard model back into the table model
     List<HistoryEntry> historyEntries = ((EditHistoryWizardModel) event.getWizardModel()).getHistoryEntries();
@@ -204,6 +207,7 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
   }
 
   private void update() {
+
     if (historyTable != null) {
       SwingUtilities.invokeLater(new Runnable() {
         @Override
@@ -214,6 +218,7 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
         }
       });
     }
+
   }
 
   /**

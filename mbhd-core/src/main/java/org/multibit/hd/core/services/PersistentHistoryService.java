@@ -61,6 +61,8 @@ public class PersistentHistoryService implements HistoryService {
 
     Preconditions.checkNotNull(walletId, "'walletId' must be present");
 
+    log.debug("Providing history for wallet ID: '{}'", walletId.toFormattedString());
+
     // Register for events
     CoreServices.uiEventBus.register(this);
 
@@ -83,6 +85,8 @@ public class PersistentHistoryService implements HistoryService {
    * <p>Reduced visibility constructor to prevent accidental instance creation outside of CoreServices.</p>
    */
   PersistentHistoryService(File backingStoreFile) {
+
+    log.debug("Providing history for file: '{}'", backingStoreFile.getAbsolutePath());
 
     this.backingStoreFile = backingStoreFile;
 

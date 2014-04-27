@@ -2,6 +2,7 @@ package org.multibit.hd.core.managers;
 
 import com.google.common.base.Preconditions;
 import com.google.common.io.ByteStreams;
+import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.utils.OSUtils;
 import org.slf4j.Logger;
@@ -33,6 +34,16 @@ public class InstallationManager {
    * The current application data directory
    */
   public static File currentApplicationDataDirectory = null;
+
+  /**
+   *
+   * @param shutdownEvent The shutdown event
+   */
+  public static void onShutdownEvent(ShutdownEvent shutdownEvent) {
+
+    currentApplicationDataDirectory= null;
+
+  }
 
   /**
    * @return A reference to where the configuration file should be located
@@ -148,4 +159,5 @@ public class InstallationManager {
       }
     }
   }
+
 }

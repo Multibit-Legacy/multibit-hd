@@ -61,7 +61,8 @@ public class SecureFiles {
    *
    * @throws java.io.IOException if the operation fails for any reason
    */
-  public static void secureDelete(File file) throws IOException {
+  public static synchronized void secureDelete(File file) throws IOException {
+
     log.debug("Start of secureDelete");
 
     if (file != null && file.exists()) {
@@ -98,6 +99,8 @@ public class SecureFiles {
    */
   public static File verifyOrCreateDirectory(File directory) {
 
+    log.debug("Verify or create directory: '{}'", directory.getAbsolutePath());
+
     if (!directory.exists()) {
       Preconditions.checkState(directory.mkdirs(), "Could not create directory: '" + directory + "'");
     }
@@ -119,7 +122,7 @@ public class SecureFiles {
 
     File directory = new File(parentDirectory, childDirectory);
 
-    log.debug("Attempting to create directory '{}'", directory.getAbsolutePath());
+    log.debug("Verify or create directory: '{}'", directory.getAbsolutePath());
 
     if (!directory.exists()) {
       Preconditions.checkState(directory.mkdirs(), "Could not create directory: '" + directory + "'");
@@ -148,6 +151,8 @@ public class SecureFiles {
     Preconditions.checkNotNull(filename, "'filename' must be present");
 
     File file = new File(parentDirectory.getAbsolutePath() + "/" + filename);
+
+    log.debug("Verify or create file: '{}'", file.getAbsolutePath());
 
     if (!file.exists()) {
       try {

@@ -20,7 +20,7 @@ import java.util.UUID;
 
 /**
  * <p>
- * Serialize and de-serialize historys to a byte stream containing a
+ * Serialize and de-serialize history entries to a byte stream containing a
  * <a href="http://code.google.com/apis/protocolbuffers/docs/overview.html">protocol buffer</a>.</p>
  *
  * <p>Protocol buffers are a data interchange format developed by Google with an efficient binary representation, a type safe specification
@@ -40,16 +40,13 @@ public class HistoryProtobufSerializer {
 
   private static final Logger log = LoggerFactory.getLogger(HistoryProtobufSerializer.class);
 
-  public HistoryProtobufSerializer() {
-  }
-
   /**
    * Formats the given history entries to the given output stream in protocol buffer format.<p>
    */
   public void writeHistoryEntries(Set<HistoryEntry> historyEntries, OutputStream output) throws IOException {
 
-    MBHDHistoryProtos.History historysProto = historyEntriesToProto(historyEntries);
-    historysProto.writeTo(output);
+    MBHDHistoryProtos.History historyProto = historyEntriesToProto(historyEntries);
+    historyProto.writeTo(output);
 
   }
 

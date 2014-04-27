@@ -166,26 +166,54 @@ public class CoreServices {
    *
    * @param shutdownType The
    */
-  public static void shutdown(final ShutdownEvent.ShutdownType shutdownType) {
+  public static synchronized void shutdown(final ShutdownEvent.ShutdownType shutdownType) {
 
-    if (ShutdownEvent.ShutdownType.HARD.equals(shutdownType)) {
+    switch (shutdownType) {
+      case HARD:
+        SafeExecutors.newFixedThreadPool(1, "hard-shutdown").execute(new Runnable() {
+          @Override
+          public void run() {
 
-      SafeExecutors.newFixedThreadPool(1, "shutdown").execute(new Runnable() {
-        @Override
-        public void run() {
+            log.info("Applying hard shutdown. Waiting for processes to clean up...");
 
-          log.info("Applying hard shutdown. Waiting for processes to clean up...");
+            // Provide a short delay while modules deal with the ShutdownEvent
+            Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
 
-          // Provide a short delay while modules deal with the ShutdownEvent
-          Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+            log.info("Issuing system exit");
+            System.exit(0);
+          }
+        });
+        break;
+      case SOFT:
+        SafeExecutors.newFixedThreadPool(1, "soft-shutdown").execute(new Runnable() {
+          @Override
+          public void run() {
 
-          log.info("Issuing system exit");
-          System.exit(0);
-        }
-      });
-    } else {
+            log.info("Applying soft shutdown. Waiting for processes to clean up...");
 
+            // Provide a short delay while modules deal with the ShutdownEvent
+            Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+
+            log.info("Resetting services and events");
+
+            // Reset the existing services
+            bitcoinNetworkService = null;
+            contactServiceMap = Maps.newHashMap();
+            walletServiceMap = Maps.newHashMap();
+            historyServiceMap = Maps.newHashMap();
+
+            // Reset the event handler
+            uiEventBus = new EventBus();
+
+            // Suggest a garbage collection
+            System.gc();
+          }
+        });
+        break;
+      case STANDBY:
+        break;
     }
+
 
   }
 
@@ -242,10 +270,8 @@ public class CoreServices {
    */
   public static void logHistory(String localisedDescription) {
 
-    // Always expect a current wallet for a history entry
-    WalletSummary walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary().get();
-
-    HistoryService historyService = CoreServices.getOrCreateHistoryService(walletSummary.getWalletId());
+    // Get the current history service
+    HistoryService historyService = CoreServices.getCurrentHistoryService();
 
     // Create the history entry and persist it
     HistoryEntry historyEntry = historyService.newHistoryEntry(localisedDescription);

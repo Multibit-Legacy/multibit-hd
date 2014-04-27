@@ -35,7 +35,7 @@ public class WalletFixtures {
     byte[] seed = seedPhraseGenerator.convertToSeed(seedPhrase);
     CharSequence password = "abc123";
 
-    return walletManager.createWallet(seed, password);
+    return walletManager.createWalletSummary(seed, password);
 
 
   }

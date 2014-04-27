@@ -33,8 +33,10 @@ public class SearchHistoryUseCase extends AbstractFestUseCase {
       .table(MessageKey.HISTORY.getKey())
       .rowCount();
 
-    // Verify that 2 rows are present
-    assertThat(rowCount1).isEqualTo(2);
+    // Verify that rows are present (Password verified, Opened)
+    assertThat(rowCount1)
+      .describedAs("History from another wallet is being referenced")
+      .isEqualTo(2);
 
     // Enter some search text
     window

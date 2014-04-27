@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.fest;
 
+import com.google.common.io.Files;
 import org.fest.swing.edt.FailOnThreadViolationRepaintManager;
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiQuery;
@@ -22,10 +23,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import static org.fest.assertions.Assertions.assertThat;
 import static org.fest.swing.timing.Pause.pause;
 
 /**
@@ -55,13 +54,15 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   @After
   public void tearDown() {
 
-    log.debug("Test complete. Cleaning up.");
+    log.debug("FEST: Test complete. Firing 'SOFT' shutdown.");
 
     // Don't crash the JVM
     CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.SOFT);
 
     // Allow time for the app to terminate and be garbage collected
-    pause(2, TimeUnit.SECONDS);
+    pause(3, TimeUnit.SECONDS);
+
+    log.debug("FEST: Application cleanup should have finished. Performing final cleanup.");
 
     window.cleanUp();
 
@@ -234,17 +235,11 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    */
   private File makeRandomTemporaryApplicationDirectory() throws IOException {
 
-    File temporaryFile = File.createTempFile("nothing", "nothing");
-    temporaryFile.deleteOnExit();
-
-    File parentDirectory = temporaryFile.getParentFile();
-
-    File temporaryDirectory = new File(parentDirectory.getAbsolutePath() + File.separator + ("" + (new Random()).nextInt(1000000)));
-    assertThat(temporaryDirectory.mkdir()).isTrue();
-
+    File temporaryDirectory = Files.createTempDir();
     temporaryDirectory.deleteOnExit();
 
     return temporaryDirectory;
+
   }
 
 }

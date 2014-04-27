@@ -118,6 +118,10 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
   @Subscribe
   public void onComponentChangedEvent(ComponentChangedEvent event) {
 
+    if (!isInitialised()) {
+      return;
+    }
+
     // Check if this event applies to us
     if (event.getPanelName().equals(getScreen().name())) {
 
@@ -143,6 +147,9 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
       return;
     }
     if (event.isExitCancel()) {
+      return;
+    }
+    if (contactsTableModel==null) {
       return;
     }
 
