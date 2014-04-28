@@ -463,10 +463,11 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
     mainView.setShowExitingWelcomeWizard(false);
     mainView.setShowExitingPasswordWizard(false);
 
+    // Continue initialising the detail view in EDT
     mainView.detailViewAfterWalletOpened();
 
-    // Give time for detail view to initialise
-    Uninterruptibles.sleepUninterruptibly(250, TimeUnit.MILLISECONDS);
+    // Give time for detail view to initialise the screens
+    Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
 
     // Use the current wallet summary
     Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
