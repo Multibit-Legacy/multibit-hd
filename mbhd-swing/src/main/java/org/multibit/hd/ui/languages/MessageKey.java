@@ -130,6 +130,7 @@ public enum MessageKey {
   // Sidebar
 
   SIDEBAR_TREE("sidebar_tree"),
+  WALLET("wallet"),
   SEND_OR_REQUEST("send_or_request"),
   CONTACTS("contacts"),
   PAYMENTS("payments"),

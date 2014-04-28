@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLHandshakeException;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.UnknownHostException;
@@ -154,34 +155,28 @@ public class ExchangeTickerService extends AbstractService {
       public Ticker call() throws Exception {
 
         if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
-          // Need to triangulate through USD
-          Ticker inverseLocalToUsdTicker = exchange.getPollingMarketDataService().getTicker(exchangeCounterCode, CurrencyUnit.USD.getCode());
-          Ticker inverseBitcoinToUsdTicker = exchange.getPollingMarketDataService().getTicker(exchangeBaseCode, CurrencyUnit.USD.getCode());
 
-          // OER gives inverse values to reduce number of calculations
-          BigMoney inverseLocalToUsd = inverseLocalToUsdTicker.getLast();
-          BigMoney inverseBitcoinToUsd = inverseBitcoinToUsdTicker.getLast();
+          try {
 
-          // Conversion rate is inverse local divided by inverse Bitcoin
-          BigDecimal conversionRate = inverseLocalToUsd.getAmount().divide(inverseBitcoinToUsd.getAmount(), RoundingMode.HALF_EVEN);
-          BigMoney bitcoinToLocal = BigMoney.of(localCurrencyUnit, conversionRate);
+            // Triangulate through USD to reach exchange rate
+            return getTriangulatedTicker();
 
-          // Infer the ticker
-          return Ticker.TickerBuilder.newInstance()
-            .withLast(bitcoinToLocal)
-            // All others are zero
-            .withAsk(BigMoney.zero(localCurrencyUnit))
-            .withBid(BigMoney.zero(localCurrencyUnit))
-            .withHigh(BigMoney.zero(localCurrencyUnit))
-            .withLow(BigMoney.zero(localCurrencyUnit))
-            .withTradableIdentifier(localCurrencyUnit.getCode())
-            .withVolume(BigDecimal.ZERO)
-            .build();
+          } catch (UnknownHostException e) {
+            // The exchange is either down or we have no network connection
+            return null;
+          } catch (SSLHandshakeException e) {
+            // The exchange is not presenting a valid SSL certificate - treat as down
+            log.warn("Exchange '{}' reported an SSL error: {}",exchangeKey.getExchangeName(), e.getMessage());
+            return null;
+          }
 
         } else {
-          // Crypto-exchange is straightforward
+
           try {
-            return exchange.getPollingMarketDataService().getTicker(exchangeBaseCode, exchangeCounterCode);
+
+            // Crypto-exchange is straightforward
+            return getDirectTicker();
+
           } catch (UnknownHostException e) {
             // The exchange is either down or we have no network connection
             return null;
@@ -191,6 +186,38 @@ public class ExchangeTickerService extends AbstractService {
             return null;
           }
         }
+      }
+
+      private Ticker getDirectTicker() throws IOException {
+
+        return exchange.getPollingMarketDataService().getTicker(exchangeBaseCode, exchangeCounterCode);
+      }
+
+      private Ticker getTriangulatedTicker() throws IOException {
+
+        // Need to triangulate through USD
+        Ticker inverseLocalToUsdTicker = exchange.getPollingMarketDataService().getTicker(exchangeCounterCode, CurrencyUnit.USD.getCode());
+        Ticker inverseBitcoinToUsdTicker = exchange.getPollingMarketDataService().getTicker(exchangeBaseCode, CurrencyUnit.USD.getCode());
+
+        // OER gives inverse values to reduce number of calculations
+        BigMoney inverseLocalToUsd = inverseLocalToUsdTicker.getLast();
+        BigMoney inverseBitcoinToUsd = inverseBitcoinToUsdTicker.getLast();
+
+        // Conversion rate is inverse local divided by inverse Bitcoin
+        BigDecimal conversionRate = inverseLocalToUsd.getAmount().divide(inverseBitcoinToUsd.getAmount(), RoundingMode.HALF_EVEN);
+        BigMoney bitcoinToLocal = BigMoney.of(localCurrencyUnit, conversionRate);
+
+        // Infer the ticker
+        return Ticker.TickerBuilder.newInstance()
+          .withLast(bitcoinToLocal)
+          // All others are zero
+          .withAsk(BigMoney.zero(localCurrencyUnit))
+          .withBid(BigMoney.zero(localCurrencyUnit))
+          .withHigh(BigMoney.zero(localCurrencyUnit))
+          .withLow(BigMoney.zero(localCurrencyUnit))
+          .withTradableIdentifier(localCurrencyUnit.getCode())
+          .withVolume(BigDecimal.ZERO)
+          .build();
       }
     });
 

@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.fest;
 
+import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 import org.fest.swing.edt.FailOnThreadViolationRepaintManager;
 import org.fest.swing.edt.GuiActionRunner;
@@ -21,8 +22,7 @@ import org.multibit.hd.ui.views.MainView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.concurrent.TimeUnit;
 
 import static org.fest.swing.timing.Pause.pause;
@@ -211,6 +211,11 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     // Create a random temporary directory to write the wallets
     File temporaryDirectory = makeRandomTemporaryApplicationDirectory();
     InstallationManager.currentApplicationDataDirectory = SecureFiles.verifyOrCreateDirectory(temporaryDirectory);
+
+    // Copy the default cacerts
+    InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/fixtures/multibit-cacerts");
+    OutputStream target = new FileOutputStream(new File(temporaryDirectory + "/multibit-cacerts"));
+    ByteStreams.copy(cacerts, target);
 
     // Initialise the backup manager
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);

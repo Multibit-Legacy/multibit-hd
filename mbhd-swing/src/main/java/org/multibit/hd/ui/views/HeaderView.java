@@ -48,10 +48,6 @@ public class HeaderView {
 
     CoreServices.uiEventBus.register(this);
 
-    // Create the content panel with a background image (doesn't really work well)
-//    contentPanel = new BackgroundPanel(Images.newLogoImage(), BackgroundPanel.ACTUAL, 1.0f, 0.5f);
-//    contentPanel.getInsets(new Insets(0,6,0,6));
-
     contentPanel = Panels.newPanel(new MigLayout(
       Panels.migLayout("fillx,insets 10 10 0 10,hidemode 3"), // Layout insets ensure border is tight to sidebar
       "[][]", // Columns
@@ -98,7 +94,13 @@ public class HeaderView {
   @Subscribe
   public void onThemeChangedEvent(ThemeChangedEvent event) {
 
-    populateAlertPanel();
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        populateAlertPanel();
+
+      }
+    });
 
   }
 
@@ -108,14 +110,20 @@ public class HeaderView {
    * @param event The balance change event
    */
   @Subscribe
-  public void onBalanceChangedEvent(BalanceChangedEvent event) {
+  public void onBalanceChangedEvent(final BalanceChangedEvent event) {
 
-    // Handle the update
-    balanceDisplayMaV.getModel().setLocalAmount(event.getLocalBalance());
-    balanceDisplayMaV.getModel().setSatoshis(event.getSatoshis());
-    balanceDisplayMaV.getModel().setRateProvider(event.getRateProvider());
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        // Handle the update
+        balanceDisplayMaV.getModel().setLocalAmount(event.getLocalBalance());
+        balanceDisplayMaV.getModel().setSatoshis(event.getSatoshis());
+        balanceDisplayMaV.getModel().setRateProvider(event.getRateProvider());
 
-    balanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
+        balanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
+      }
+    });
+
   }
 
   /**
@@ -124,51 +132,57 @@ public class HeaderView {
    * @param event The show alert event
    */
   @Subscribe
-  public void onAlertAddedEvent(AlertAddedEvent event) {
+  public void onAlertAddedEvent(final AlertAddedEvent event) {
 
-    AlertModel alertModel = event.getAlertModel();
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        AlertModel alertModel = event.getAlertModel();
 
-    // Update the text according to the model
-    alertMessageLabel.setText(alertModel.getLocalisedMessage());
-    alertRemainingLabel.setText(alertModel.getRemainingText());
+        // Update the text according to the model
+        alertMessageLabel.setText(alertModel.getLocalisedMessage());
+        alertRemainingLabel.setText(alertModel.getRemainingText());
 
-    if (alertModel.getButton().isPresent()) {
+        if (alertModel.getButton().isPresent()) {
 
-      JButton button = alertModel.getButton().get();
-      alertButton.setAction(button.getAction());
-      alertButton.setText(button.getText());
-      alertButton.setIcon(button.getIcon());
+          JButton button = alertModel.getButton().get();
+          alertButton.setAction(button.getAction());
+          alertButton.setText(button.getText());
+          alertButton.setIcon(button.getIcon());
 
-      alertButton.setVisible(true);
-    }
+          alertButton.setVisible(true);
+        }
 
-    // Don't play sounds here since this will be called each time an alert is dismissed
-    switch (alertModel.getSeverity()) {
-      case RED:
-        PanelDecorator.applyDangerTheme(alertPanel);
-        NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), alertButton);
-        NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), closeButton);
-        break;
-      case AMBER:
-        PanelDecorator.applyWarningTheme(alertPanel);
-        NimbusDecorator.applyThemeColor(Themes.currentTheme.warningAlertBackground(), alertButton);
-        NimbusDecorator.applyThemeColor(Themes.currentTheme.warningAlertBackground(), closeButton);
-        break;
-      case GREEN:
-        PanelDecorator.applySuccessTheme(alertPanel);
-        NimbusDecorator.applyThemeColor(Themes.currentTheme.successAlertBackground(), alertButton);
-        NimbusDecorator.applyThemeColor(Themes.currentTheme.successAlertBackground(), closeButton);
-        break;
-      case PINK:
-        PanelDecorator.applyPendingTheme(alertPanel);
-        NimbusDecorator.applyThemeColor(Themes.currentTheme.pendingAlertBackground(), alertButton);
-        NimbusDecorator.applyThemeColor(Themes.currentTheme.pendingAlertBackground(), closeButton);
-        break;
-      default:
-        throw new IllegalStateException("Unknown severity: " + alertModel.getSeverity().name());
-    }
+        // Don't play sounds here since this will be called each time an alert is dismissed
+        switch (alertModel.getSeverity()) {
+          case RED:
+            PanelDecorator.applyDangerTheme(alertPanel);
+            NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), alertButton);
+            NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), closeButton);
+            break;
+          case AMBER:
+            PanelDecorator.applyWarningTheme(alertPanel);
+            NimbusDecorator.applyThemeColor(Themes.currentTheme.warningAlertBackground(), alertButton);
+            NimbusDecorator.applyThemeColor(Themes.currentTheme.warningAlertBackground(), closeButton);
+            break;
+          case GREEN:
+            PanelDecorator.applySuccessTheme(alertPanel);
+            NimbusDecorator.applyThemeColor(Themes.currentTheme.successAlertBackground(), alertButton);
+            NimbusDecorator.applyThemeColor(Themes.currentTheme.successAlertBackground(), closeButton);
+            break;
+          case PINK:
+            PanelDecorator.applyPendingTheme(alertPanel);
+            NimbusDecorator.applyThemeColor(Themes.currentTheme.pendingAlertBackground(), alertButton);
+            NimbusDecorator.applyThemeColor(Themes.currentTheme.pendingAlertBackground(), closeButton);
+            break;
+          default:
+            throw new IllegalStateException("Unknown severity: " + alertModel.getSeverity().name());
+        }
 
-    alertPanel.setVisible(true);
+        alertPanel.setVisible(true);
+
+      }
+    });
 
   }
 
@@ -180,8 +194,13 @@ public class HeaderView {
   @Subscribe
   public void onAlertRemovedEvent(RemoveAlertEvent event) {
 
-    // Hide the alert panel
-    alertPanel.setVisible(false);
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        // Hide the alert panel
+        alertPanel.setVisible(false);
+      }
+    });
 
   }
 

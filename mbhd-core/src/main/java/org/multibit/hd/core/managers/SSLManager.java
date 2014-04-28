@@ -1,6 +1,6 @@
 package org.multibit.hd.core.managers;
 
-import com.google.common.io.Files;
+import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.files.SecureFiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +9,7 @@ import javax.net.ssl.*;
 import java.io.*;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.net.URI;
 import java.net.UnknownHostException;
 import java.security.KeyStore;
 import java.security.MessageDigest;
@@ -35,11 +36,6 @@ public enum SSLManager {
   private static final Logger log = LoggerFactory.getLogger(SSLManager.class);
 
   /**
-   * The host providing information over SSL
-   */
-  public final String HOST = "multibit.org";
-
-  /**
    * The certificates are only used to verify hard-coded hosts which are protected
    * by a digital signature on the JAR therefore this password is meaningless
    *
@@ -56,18 +52,8 @@ public enum SSLManager {
    */
   public void installMultiBitSSLCertificate(File applicationDirectory, String localTrustStoreName, boolean force) throws Exception {
 
+    // Create an empty blank file if required
     final File appCacertsFile = SecureFiles.verifyOrCreateFile(applicationDirectory, localTrustStoreName);
-
-    // Attempt to load the key store
-    if (!appCacertsFile.exists()) {
-
-      // Copy the existing "cacerts" from the JDK into the application directory
-      // This gives us all the standard certificates
-      File jreCacertsDirectory = new File(System.getProperty("java.home") + "/lib/security");
-      File jreCacertsFile = new File(jreCacertsDirectory, "cacerts");
-      Files.copy(jreCacertsFile, appCacertsFile);
-
-    }
 
     // Load the key store (could be empty)
     final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -106,52 +92,74 @@ public enum SSLManager {
 
     boolean isTrusted = false;
 
-    log.info("Opening connection to '{}:443'...", HOST);
-    try {
-      final SSLSocket socket = (SSLSocket) factory.createSocket(HOST, 443);
-      socket.setSoTimeout(5000);
-
-      log.info("Starting SSL handshake...");
-      socket.startHandshake();
-      socket.close();
-      log.info("No errors. The certificate is already trusted");
-
-      isTrusted = true;
-    } catch (UnknownHostException | SocketTimeoutException | SocketException e) {
-      // The host is unavailable or the network is down - quit now and use JVM defaults
-      return;
-    } catch (SSLException e) {
-      // Need to import the certificate
+    // Allocate space based on full population
+    String[] hosts = new String[ExchangeKey.values().length + 1];
+    int i = 0;
+    hosts[i] = "multibit.org";
+    i++;
+    for (ExchangeKey exchangeKey : ExchangeKey.values()) {
+      String sslUri = exchangeKey.getExchange().getExchangeSpecification().getSslUri();
+      if (sslUri != null && sslUri.startsWith("https://")) {
+        hosts[i] = URI.create(sslUri).getHost();
+        log.debug("Added {}' to SSL hosts", hosts[i]);
+        i++;
+      }
     }
 
-    if (!isTrusted) {
+    for (String host : hosts) {
 
-      final X509Certificate[] chain = tm.chain;
-      if (chain == null) {
-        log.info("Could not obtain server certificate chain");
-        return;
+      // There may be gaps in the hosts
+      if (host == null) {
+        continue;
       }
 
-      log.info("Server sent " + chain.length + " certificate(s) which you can now add to the trust store:");
-      final MessageDigest sha1 = MessageDigest.getInstance("SHA1");
-      final MessageDigest md5 = MessageDigest.getInstance("MD5");
-      for (int i = 0; i < chain.length; i++) {
+      log.info("Opening connection to '{}:443'...", host);
+      try {
+        final SSLSocket socket = (SSLSocket) factory.createSocket(host, 443);
+        socket.setSoTimeout(5000);
 
-        X509Certificate cert = chain[i];
-        sha1.update(cert.getEncoded());
-        md5.update(cert.getEncoded());
-        String alias = HOST + "-" + (i + 1);
-        ks.setCertificateEntry(alias, cert);
+        log.info("Starting SSL handshake...");
+        socket.startHandshake();
+        socket.close();
+        log.info("No errors. The certificate is already trusted");
 
-        log.info("-> {}: Subject '{}'", (i + 1), cert.getSubjectDN());
-        log.info("->   : Issuer '{}'", cert.getIssuerDN());
-        log.info("->   : SHA1 '{}'", toHexString(sha1.digest()));
-        log.info("->   : MD5 '{}'", toHexString(md5.digest()));
-        log.info("->   : Alias '{}'", alias);
-        try (OutputStream out = new FileOutputStream(appCacertsFile)) {
-          ks.store(out, PASSPHRASE);
+        isTrusted = true;
+      } catch (UnknownHostException | SocketTimeoutException | SocketException e) {
+        // The host is unavailable or the network is down - quit now and use JVM defaults
+        return;
+      } catch (SSLException e) {
+        // Need to import the certificate
+      }
+
+      if (!isTrusted) {
+
+        final X509Certificate[] chain = tm.chain;
+        if (chain == null) {
+          log.info("Could not obtain server certificate chain");
+          return;
         }
 
+        log.info("Server sent " + chain.length + " certificate(s) which you can now add to the trust store:");
+        final MessageDigest sha1 = MessageDigest.getInstance("SHA1");
+        final MessageDigest md5 = MessageDigest.getInstance("MD5");
+        for (int index = 0; index < chain.length; index++) {
+
+          X509Certificate cert = chain[index];
+          sha1.update(cert.getEncoded());
+          md5.update(cert.getEncoded());
+          String alias = host + "-" + (index + 1);
+          ks.setCertificateEntry(alias, cert);
+
+          log.info("-> {}: Subject '{}'", (index + 1), cert.getSubjectDN());
+          log.info("->   : Issuer '{}'", cert.getIssuerDN());
+          log.info("->   : SHA1 '{}'", toHexString(sha1.digest()));
+          log.info("->   : MD5 '{}'", toHexString(md5.digest()));
+          log.info("->   : Alias '{}'", alias);
+          try (OutputStream out = new FileOutputStream(appCacertsFile)) {
+            ks.store(out, PASSPHRASE);
+          }
+
+        }
       }
     }
 
@@ -167,6 +175,7 @@ public enum SSLManager {
    *
    * @return The hex representation
    */
+
   private String toHexString(byte[] bytes) {
 
     final char[] HEXDIGITS = "0123456789abcdef".toCharArray();

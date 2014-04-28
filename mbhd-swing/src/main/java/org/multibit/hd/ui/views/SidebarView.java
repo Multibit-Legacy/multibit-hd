@@ -12,6 +12,8 @@ import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.themes.NimbusDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -33,6 +35,8 @@ import java.awt.event.MouseEvent;
  *  
  */
 public class SidebarView {
+
+  private static final Logger log = LoggerFactory.getLogger(SidebarView.class);
 
   private final JPanel contentPanel;
 
@@ -194,12 +198,16 @@ public class SidebarView {
 
     DefaultMutableTreeNode root = TreeNodes.newSidebarTreeNode("", Screen.WALLET);
 
-    walletNode = TreeNodes.newSidebarTreeNode("Wallet", Screen.WALLET);
+    // This node gets overwritten by WalletSummary.getName()
+    walletNode = TreeNodes.newSidebarTreeNode(MessageKey.WALLET, Screen.WALLET);
+
+    // Add standard wallet nodes
     walletNode.add(TreeNodes.newSidebarTreeNode(MessageKey.SEND_OR_REQUEST, Screen.WALLET));
     walletNode.add(TreeNodes.newSidebarTreeNode(MessageKey.PAYMENTS, Screen.TRANSACTIONS));
     walletNode.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, Screen.CONTACTS));
     root.add(walletNode);
 
+    // Add application nodes
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.HELP, Screen.HELP));
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.HISTORY, Screen.HISTORY));
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.SETTINGS, Screen.SETTINGS));
@@ -231,6 +239,8 @@ public class SidebarView {
           Configurations.currentConfiguration.getApplication().setCurrentScreen(nodeInfo.getDetailScreen().name());
           ControllerEvents.fireShowDetailScreenEvent(nodeInfo.getDetailScreen());
       }
+    } else {
+      log.debug("Ignoring selection: '{}'",detailScreen);
     }
 
     lastSelectedScreen = detailScreen;

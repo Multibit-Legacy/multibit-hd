@@ -28,11 +28,13 @@ public class ShowSendRequestScreenUseCase extends AbstractFestUseCase {
 
     assertThat(parameters).isNotNull();
 
+    // Selecting mutated row 0 does not trigger detail view in FEST but works fine in app
+
     window
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .requireVisible()
       .requireEnabled()
-      .selectRow(0);
+      .selectRow(1);
 
     // Expect the Send/Request screen to show
     window
