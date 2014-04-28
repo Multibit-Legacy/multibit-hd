@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.components.enter_yes_no;
+package org.multibit.hd.ui.views.components.enter_confirm_cancel;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.MultiBitUI;
@@ -7,6 +7,7 @@ import org.multibit.hd.ui.views.components.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -14,23 +15,30 @@ import java.awt.event.ActionEvent;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Simple Yes/No dialog</li>
+ * <li>Simple Confirm/Cancel dialog</li>
  * </ul>
- * <p>This popover is normally in the context of "Do you wish to proceed?" with No meaning stop
- * and take me back to safety with no changes.</p>
+ * <p>This popover is normally in the context of "Do you wish to proceed?"
+ * with Cancel meaning stop and take me back to safety with no changes.</p>
  *
  * @since 0.0.1
  *  
  */
-public class EnterYesNoView extends AbstractComponentView<EnterYesNoModel> {
+public class EnterConfirmCancelView extends AbstractComponentView<EnterConfirmCancelModel> {
+
+  private final AwesomeIcon confirmIcon;
+  private final boolean isConfirmDangerous;
 
   private JButton panelCloseButton;
 
   /**
-   * @param model The model backing this view
+   * @param model              The model backing this view
+   * @param isConfirmDangerous True if clicking confirm will discard or delete data without undo
    */
-  public EnterYesNoView(EnterYesNoModel model) {
+  public EnterConfirmCancelView(EnterConfirmCancelModel model, AwesomeIcon confirmIcon, boolean isConfirmDangerous) {
     super(model);
+
+    this.confirmIcon = confirmIcon;
+    this.isConfirmDangerous = isConfirmDangerous;
 
   }
 
@@ -48,8 +56,8 @@ public class EnterYesNoView extends AbstractComponentView<EnterYesNoModel> {
     panel.add(panelCloseButton, "span 2,align right,shrink,wrap");
     panel.add(Labels.newDataEnteredNote(), "grow,push,span 2,wrap");
 
-    panel.add(Buttons.newNoButton(getNoAction()), "align left,push");
-    panel.add(Buttons.newYesButton(getYesAction()), "align right,push");
+    panel.add(Buttons.newCancelButton(getCancelAction()), "align left,push");
+    panel.add(Buttons.newConfirmButton(getConfirmAction(), confirmIcon, isConfirmDangerous), "align right,push");
 
     // Set minimum size
     panel.setSize(MultiBitUI.POPOVER_MIN_WIDTH, MultiBitUI.POPOVER_MIN_HEIGHT);
@@ -66,7 +74,7 @@ public class EnterYesNoView extends AbstractComponentView<EnterYesNoModel> {
   /**
    * @return A new action to indicate a Yes response
    */
-  private Action getYesAction() {
+  private Action getConfirmAction() {
 
     return new AbstractAction() {
 
@@ -88,7 +96,7 @@ public class EnterYesNoView extends AbstractComponentView<EnterYesNoModel> {
   /**
    * @return A new action to indicate a No response
    */
-  private Action getNoAction() {
+  private Action getCancelAction() {
 
     return new AbstractAction() {
 

@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.components.enter_yes_no;
+package org.multibit.hd.ui.views.components.enter_confirm_cancel;
 
 import org.multibit.hd.ui.models.Model;
 
@@ -11,7 +11,7 @@ import org.multibit.hd.ui.models.Model;
  * @since 0.0.1
  *  
  */
-public class EnterYesNoModel implements Model<Boolean> {
+public class EnterConfirmCancelModel implements Model<Boolean> {
 
   private Boolean value;
 
@@ -21,7 +21,7 @@ public class EnterYesNoModel implements Model<Boolean> {
   /**
    * @param panelName The underlying panel name (to identify the correct subscriber)
    */
-  public EnterYesNoModel(String panelName) {
+  public EnterConfirmCancelModel(String panelName) {
     this.panelName = panelName;
   }
 

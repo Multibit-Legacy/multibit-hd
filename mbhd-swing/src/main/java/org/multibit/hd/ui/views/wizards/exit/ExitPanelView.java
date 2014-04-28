@@ -12,8 +12,9 @@ import javax.swing.*;
 /**
  * <p>Wizard to provide the following to UI:</p>
  * <ul>
- * <li>Send bitcoin: Enter amount</li>
+ * <li>Exit: Confirm</li>
  * </ul>
+ * <p>For UI consistency the cancel button must lead the action button (exit)</p>
  *
  * @since 0.0.1
  *  

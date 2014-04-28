@@ -10,16 +10,16 @@ import java.util.Map;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "contacts" screen add Alice contact</li>
+ * <li>Verify the "send/receive" screen amount fields</li>
  * </ul>
- * <p>Requires the "contacts" screen to be showing</p>
+ * <p>Requires the "send/receive" screen to be showing</p>
  *
  * @since 0.0.1
  *  
  */
-public class SendNoFundsContactUseCase extends AbstractFestUseCase {
+public class VerifyAmountAndCancelContactUseCase extends AbstractFestUseCase {
 
-  public SendNoFundsContactUseCase(FrameFixture window) {
+  public VerifyAmountAndCancelContactUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -46,23 +46,10 @@ public class SendNoFundsContactUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled();
 
-    // Use a public domain standard address
-    verifyBitcoinAddressField("", false);
-    verifyBitcoinAddressField(" ", false);
-    verifyBitcoinAddressField("AhN", false);
-    verifyBitcoinAddressField("AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty", false);
-    verifyBitcoinAddressField("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXht", false);
-    verifyBitcoinAddressField("1AhN6rPdrMuKBGFDKR1k9A8SCLYa", false);
-    verifyBitcoinAddressField("1AhN6rPdrMuKBGFDk9A8SCLYaNgXhty", false);
-
-    // Use a public domain P2SH address
-    verifyBitcoinAddressField("35b9vsyH1KoFT5a5KtrKusaCcPLkiSo1tU", true);
-    verifyBitcoinAddressField("35b9vsyH1KoFT5a5KtrKusaCcPLkiSo1t", false);
-
     // Set it to the MultiBit address
-    verifyBitcoinAddressField("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty", true);
-
-    // TODO Verify cancelling
+    window
+      .textBox(MessageKey.BITCOIN_AMOUNT.getKey())
+      .setText("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
 
     window
       .button(MessageKey.NEXT.getKey())
@@ -100,8 +87,10 @@ public class SendNoFundsContactUseCase extends AbstractFestUseCase {
     verifyBitcoinAmountField("21,000,000,000", true); // 21,000,000 BTC
     verifyBitcoinAmountField("20,000,000,000.12345", true); // 20,000,000,000.12345 mBTC
 
-    // Cancel from wizard
 
+    verifyCancel();
+
+    // Cancel from wizard
     window
       .button(MessageKey.CANCEL.getKey())
       .click();
@@ -123,9 +112,7 @@ public class SendNoFundsContactUseCase extends AbstractFestUseCase {
   private void verifyBitcoinAmountField(String text, boolean isValid) {
 
     // Set the text directly on the combo box editor
-    window
-      .textBox(MessageKey.BITCOIN_AMOUNT.getKey())
-      .setText(text);
+
 
     // Lose focus to trigger validation
     window
@@ -141,39 +128,6 @@ public class SendNoFundsContactUseCase extends AbstractFestUseCase {
     } else {
       window
         .textBox(MessageKey.BITCOIN_AMOUNT.getKey())
-        .background()
-        .requireEqualTo(Themes.currentTheme.invalidDataEntryBackground());
-    }
-
-  }
-
-  /**
-   * Verifies that an incorrect Bitcoin format is detected on focus loss
-   *
-   * @param text    The text to use as a Bitcoin address
-   * @param isValid True if the validation should pass
-   */
-  private void verifyBitcoinAddressField(String text, boolean isValid) {
-
-    // Set the text directly on the combo box editor
-    window
-      .textBox(MessageKey.RECIPIENT.getKey())
-      .setText(text);
-
-    // Lose focus to trigger validation
-    window
-      .button(MessageKey.PASTE.getKey())
-      .focus();
-
-    // Verify the focus change and background color of the editor
-    if (isValid) {
-      window
-        .textBox(MessageKey.RECIPIENT.getKey())
-        .background()
-        .requireEqualTo(Themes.currentTheme.dataEntryBackground());
-    } else {
-      window
-        .textBox(MessageKey.RECIPIENT.getKey())
         .background()
         .requireEqualTo(Themes.currentTheme.invalidDataEntryBackground());
     }

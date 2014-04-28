@@ -108,36 +108,26 @@ public class Buttons {
   }
 
   /**
-   * @param action The click action
+   * @param action             The click action
+   * @param confirmIcon        The icon to place on the confirm button to hint at what will happen
+   * @param isConfirmDangerous True if the confirm action will result in data loss without undo
    *
-   * @return A new "Yes" button with icon
+   * @return A new "Confirm" button with icon
    */
-  public static JButton newYesButton(Action action) {
+  public static JButton newConfirmButton(Action action, AwesomeIcon confirmIcon, boolean isConfirmDangerous) {
 
     JButton button = newButton(action, MessageKey.YES);
 
-    // The check mark should trail the text for visual consistency
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+    // The icon should trail the text for visual consistency
+    AwesomeDecorator.applyIcon(confirmIcon, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+
+    if (isConfirmDangerous) {
+      NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), button);
+    }
 
     return button;
 
   }
-
-  /**
-   * @param action The click action
-   *
-   * @return A new "No" button with icon
-   */
-  public static JButton newNoButton(Action action) {
-
-    JButton button = newButton(action, MessageKey.NO);
-
-    AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, button, true, MultiBitUI.NORMAL_ICON_SIZE);
-
-    return button;
-
-  }
-
 
   /**
    * @param action The click action
@@ -214,15 +204,16 @@ public class Buttons {
   }
 
   /**
-   * @param action The click action
+   * @param action  The click action
+   * @param leading True if the icon should lead the text
    *
    * @return A new "Exit" button with icon
    */
-  public static JButton newExitButton(Action action) {
+  public static JButton newExitButton(Action action, boolean leading) {
 
     JButton button = newButton(action, MessageKey.EXIT);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.SIGN_OUT, button, true, MultiBitUI.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.SIGN_OUT, button, leading, MultiBitUI.NORMAL_ICON_SIZE);
 
     NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), button);
 
@@ -624,7 +615,7 @@ public class Buttons {
     // Ensure it is accessible
     AccessibilityDecorator.apply(button, MessageKey.BROWSE);
 
-      AwesomeDecorator.applyIcon(AwesomeIcon.EXTERNAL_LINK, button, true, MultiBitUI.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.EXTERNAL_LINK, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
   }

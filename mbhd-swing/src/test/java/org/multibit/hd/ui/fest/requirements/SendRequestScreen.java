@@ -2,9 +2,10 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.ui.fest.use_cases.send_request.SendNoFundsContactUseCase;
+import org.multibit.hd.ui.fest.use_cases.send_request.SendNoFundsAmountScreenUseCase;
 import org.multibit.hd.ui.fest.use_cases.send_request.SendThenCancelSendUseCase;
 import org.multibit.hd.ui.fest.use_cases.send_request.ShowSendRequestScreenUseCase;
+import org.multibit.hd.ui.fest.use_cases.send_request.VerifyRecipientAndCancelContactUseCase;
 
 import java.util.Map;
 
@@ -29,8 +30,14 @@ public class SendRequestScreen {
     // Click Send then immediately Cancel
     new SendThenCancelSendUseCase(window).execute(parameters);
 
-    // Click Send and fill in the fields
-    new SendNoFundsContactUseCase(window).execute(parameters);
+    // Verify the recipient field
+    new VerifyRecipientAndCancelContactUseCase(window).execute(parameters);
+
+    // Verify the amount fields
+    new VerifyRecipientAndCancelContactUseCase(window).execute(parameters);
+
+    // Click Send and fill in the first panel
+    new SendNoFundsAmountScreenUseCase(window).execute(parameters);
 
   }
 }

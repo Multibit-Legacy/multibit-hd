@@ -98,8 +98,9 @@ public class PanelDecorator {
     // Use the wizard panel
     JPanel wizardScreenPanel = view.getWizardScreenPanel(false);
 
-    addExit(view, wizard, wizardScreenPanel);
+    // Cancel always leads
     addCancel(view, wizard, wizardScreenPanel);
+    addExit(view, wizard, wizardScreenPanel);
 
   }
 
@@ -120,7 +121,7 @@ public class PanelDecorator {
     JPanel wizardScreenPanel = view.getWizardScreenPanel(false);
 
     // Add an invisible button to push the finish
-    JButton empty = Buttons.newExitButton(null);
+    JButton empty = Buttons.newExitButton(null, false);
     empty.setVisible(false);
 
     wizardScreenPanel.add(empty, "cell 0 2,push");
@@ -147,6 +148,7 @@ public class PanelDecorator {
     // Use the wizard panel
     JPanel wizardScreenPanel = view.getWizardScreenPanel(false);
 
+    // Cancel always leads
     addCancel(view, wizard, wizardScreenPanel);
     addFinish(view, wizard, wizardScreenPanel);
 
@@ -168,6 +170,7 @@ public class PanelDecorator {
     // Use the wizard panel
     JPanel wizardScreenPanel = view.getWizardScreenPanel(false);
 
+    // Cancel always leads
     addCancel(view, wizard, wizardScreenPanel);
     addApply(view, wizard, wizardScreenPanel);
 
@@ -190,6 +193,7 @@ public class PanelDecorator {
     // Use the wizard panel
     JPanel wizardScreenPanel = view.getWizardScreenPanel(false);
 
+    // Cancel always leads
     addExitCancel(view, wizard, wizardScreenPanel);
     addNext(view, wizard, wizardScreenPanel);
 
@@ -212,6 +216,7 @@ public class PanelDecorator {
     // Use the current panel
     JPanel wizardScreenPanel = view.getWizardScreenPanel(false);
 
+    // Cancel always leads
     addExitCancel(view, wizard, wizardScreenPanel);
     addPrevious(view, wizard, wizardScreenPanel);
     addNext(view, wizard, wizardScreenPanel);
@@ -235,6 +240,7 @@ public class PanelDecorator {
     // Use the current panel
     JPanel wizardScreenPanel = view.getWizardScreenPanel(false);
 
+    // Cancel always leads
     addExitCancel(view, wizard, wizardScreenPanel);
     addPrevious(view, wizard, wizardScreenPanel);
     addFinish(view, wizard, wizardScreenPanel);
@@ -258,6 +264,7 @@ public class PanelDecorator {
     // Use the current panel
     JPanel wizardScreenPanel = view.getWizardScreenPanel(false);
 
+    // Cancel always leads
     addExitCancel(view, wizard, wizardScreenPanel);
     addRestore(view, wizard, wizardScreenPanel);
     addUnlock(view, wizard, wizardScreenPanel);
@@ -281,6 +288,7 @@ public class PanelDecorator {
     // Use the current panel
     JPanel wizardScreenPanel = view.getWizardScreenPanel(false);
 
+    // Cancel always leads
     addCancel(view, wizard, wizardScreenPanel);
     addPrevious(view, wizard, wizardScreenPanel);
 
@@ -307,6 +315,7 @@ public class PanelDecorator {
     // Use the wizard panel
     JPanel wizardScreenPanel = view.getWizardScreenPanel(false);
 
+    // Cancel always leads
     addCancel(view, wizard, wizardScreenPanel);
     addPrevious(view, wizard, wizardScreenPanel);
     addNext(view, wizard, wizardScreenPanel);
@@ -330,6 +339,7 @@ public class PanelDecorator {
      // Use the wizard panel
      JPanel wizardScreenPanel = view.getWizardScreenPanel(false);
 
+     // Cancel always leads
      addCancel(view, wizard, wizardScreenPanel);
      addPrevious(view, wizard, wizardScreenPanel);
      addFinish(view, wizard, wizardScreenPanel);
@@ -537,9 +547,10 @@ public class PanelDecorator {
     Preconditions.checkNotNull(view, "'view' must be present");
     Preconditions.checkNotNull(view, "'wizard' must be present");
 
+    // Cancel always leads
     if (wizard.isExiting()) {
 
-      view.setExitButton(Buttons.newExitButton(wizard.getExitAction()));
+      view.setExitButton(Buttons.newExitButton(wizard.getExitAction(), true));
       wizardScreenPanel.add(view.getExitButton(), "cell 0 2,push");
 
     } else {
@@ -565,8 +576,8 @@ public class PanelDecorator {
     Preconditions.checkNotNull(view, "'view' must be present");
     Preconditions.checkNotNull(view, "'wizard' must be present");
 
-    view.setExitButton(Buttons.newExitButton(wizard.getExitAction()));
-    wizardScreenPanel.add(view.getExitButton(), "cell 0 2,push");
+    view.setExitButton(Buttons.newExitButton(wizard.getExitAction(), false));
+    wizardScreenPanel.add(view.getExitButton(), "cell 3 2");
 
   }
 
@@ -584,15 +595,16 @@ public class PanelDecorator {
     Preconditions.checkNotNull(view, "'view' must be present");
     Preconditions.checkNotNull(view, "'wizard' must be present");
 
+    // Cancel always leads
     if (wizard.isExiting()) {
 
       view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
-      wizardScreenPanel.add(view.getCancelButton(), "cell 3 2");
+      wizardScreenPanel.add(view.getCancelButton(), "cell 0 2,push");
 
     } else {
 
       view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
-      wizardScreenPanel.add(view.getCancelButton(), "cell 0 2,push");
+      wizardScreenPanel.add(view.getCancelButton(), "cell 3 2");
 
     }
 
