@@ -72,6 +72,9 @@ public class ThemeAwareRecipientInputVerifier extends InputVerifier {
             Optional<String> bitcoinAddress = contacts.get(0).getBitcoinAddress();
             if (bitcoinAddress.isPresent()) {
               isValid = verifyBitcoinAddress(bitcoinAddress.get());
+              if (isValid) {
+                textField.setText(contacts.get(0).getName());
+              }
             }
           }
 

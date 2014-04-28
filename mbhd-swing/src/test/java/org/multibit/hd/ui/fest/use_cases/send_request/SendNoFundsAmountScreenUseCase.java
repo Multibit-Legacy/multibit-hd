@@ -1,17 +1,19 @@
 package org.multibit.hd.ui.fest.use_cases.send_request;
 
 import org.fest.swing.fixture.FrameFixture;
+import org.fest.swing.timing.Timeout;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "contacts" screen add Alice contact</li>
+ * <li>Verify the "send/request" amount screen with no funds</li>
  * </ul>
- * <p>Requires the "contacts" screen to be showing</p>
+ * <p>Requires the "send/request" screen to be showing</p>
  *
  * @since 0.0.1
  *  
@@ -25,9 +27,11 @@ public class SendNoFundsAmountScreenUseCase extends AbstractFestUseCase {
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    // Click on Send
+    // Click on Send allowing for network initialisation
     window
-      .button(MessageKey.SEND.getKey())
+      .button(MessageKey.SHOW_SEND_WIZARD.getKey())
+      // Allow time for the Bitcoin network to initialise
+      .requireEnabled(Timeout.timeout(5, TimeUnit.SECONDS))
       .click();
 
     // Verify the wizard appears
@@ -45,24 +49,32 @@ public class SendNoFundsAmountScreenUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled();
 
+    // Set the recipient editor text box to the MultiBit address
     window
-      .textBox(MessageKey.BITCOIN_AMOUNT.getKey())
+      .textBox(MessageKey.RECIPIENT.getKey())
       .setText("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
+
+    // Change focus to trigger validation
+    window
+      .button(MessageKey.PASTE.getKey())
+      .focus();
 
     window
       .button(MessageKey.NEXT.getKey())
       .requireVisible()
       .requireDisabled();
 
+    // Set a nominal amount for sending
     window
       .textBox(MessageKey.BITCOIN_AMOUNT.getKey())
-      .setText("10.0"); // 1 mBTC
+      .enterText("10.0"); // 1 mBTC
 
+    // Change focus to trigger validation
     window
-      .button(MessageKey.NEXT.getKey())
-      .requireVisible()
-      .requireEnabled()
-      .click();
+      .textBox(MessageKey.LOCAL_AMOUNT.getKey())
+      .focus();
+
+    // Leave amount screen showing
 
   }
 

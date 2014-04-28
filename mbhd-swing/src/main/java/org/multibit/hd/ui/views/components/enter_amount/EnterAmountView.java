@@ -332,7 +332,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
           getModel().get().setLocalAmount(localAmount);
 
           // Use double for display formatting
-          localAmountText.setValue(localAmount.getAmount().toPlainString());
+          localAmountText.setText(localAmount.getAmount().toPlainString());
 
           // Give feedback to the user
           bitcoinAmountText.setBackground(Themes.currentTheme.dataEntryBackground());

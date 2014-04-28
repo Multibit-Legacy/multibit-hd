@@ -54,10 +54,13 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
 
     // Create the balance panel - forcing a LTR layout to ensure correct placement of labels
     panel = Panels.newPanel(new MigLayout(
-            "fillx,insets 0,hidemode 2,ltr", // Layout requires LTR
-            "[]0[]5[]5[]5[]5[]", // Columns require careful padding for leading/trailing symbols
-            "[]" // Rows
+      "fillx,insets 0,hidemode 2,ltr", // Layout requires LTR
+      "[]0[]5[]5[]5[]5[]", // Columns require careful padding for leading/trailing symbols
+      "[]" // Rows
     ));
+
+    // Ensure FEST can find it
+    panel.setName(getModel().get().getFestName());
 
     // Create the balance labels (normal size)
     JLabel[] balanceLabels = Labels.newBalanceLabels(getModel().get().getStyle());
@@ -83,8 +86,6 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
       panel.add(secondaryBalanceLabel, "shrink");
       panel.add(trailingSymbolLabel, "shrink,wrap");
     }
-
-    // TODO (GR) Accessibility build plain string and add to panel?
 
     return panel;
 
@@ -132,9 +133,25 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
       // Exchange label text is complex
       handleExchangeLabelText(bitcoinConfiguration, localSymbol, localDisplay);
       exchangeLabel.setVisible(true);
+
+      // Create an accessible summary
+      panel.getAccessibleContext().setAccessibleName(Languages.safeText(
+        MessageKey.AMOUNT_SUMMARY_WITH_RATE,
+        primaryBalanceLabel.getText(),
+        secondaryBalanceLabel.getText(),
+        exchangeLabel.getText()
+      ));
     } else {
       exchangeLabel.setVisible(false);
+
+      // Create an accessible summary
+      panel.getAccessibleContext().setAccessibleName(Languages.safeText(
+        MessageKey.AMOUNT_SUMMARY_NO_RATE,
+        primaryBalanceLabel.getText(),
+        secondaryBalanceLabel.getText()
+      ));
     }
+
   }
 
   /**
@@ -182,22 +199,24 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
       if (bitcoinConfiguration.isCurrencySymbolLeading()) {
         // Use leading format
         exchangeLabel.setText(
-                Languages.safeText(
-                        MessageKey.EXCHANGE_FIAT_RATE_WITH_PROVIDER,
-                        "~\u00a0" + localSymbol + "\u00a0",
-                        localDisplay,
-                        getModel().get().getRateProvider().get()
-                ));
+          Languages.safeText(
+            MessageKey.EXCHANGE_FIAT_RATE_WITH_PROVIDER,
+            "~\u00a0" + localSymbol + "\u00a0",
+            localDisplay,
+            getModel().get().getRateProvider().get()
+          )
+        );
       } else {
 
         // Use trailing format
         exchangeLabel.setText(
-                Languages.safeText(
-                        MessageKey.EXCHANGE_FIAT_RATE_WITH_PROVIDER,
-                        "~\u00a0",
-                        localDisplay + "\u00a0" + localSymbol + "\u00a0",
-                        getModel().get().getRateProvider().get()
-                ));
+          Languages.safeText(
+            MessageKey.EXCHANGE_FIAT_RATE_WITH_PROVIDER,
+            "~\u00a0",
+            localDisplay + "\u00a0" + localSymbol + "\u00a0",
+            getModel().get().getRateProvider().get()
+          )
+        );
       }
     } else {
 
@@ -205,20 +224,22 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
       if (bitcoinConfiguration.isCurrencySymbolLeading()) {
         // Use leading format
         exchangeLabel.setText(
-                Languages.safeText(
-                        MessageKey.EXCHANGE_FIAT_RATE,
-                        "~\u00a0" + localSymbol + "\u00a0",
-                        localDisplay
-                ));
+          Languages.safeText(
+            MessageKey.EXCHANGE_FIAT_RATE,
+            "~\u00a0" + localSymbol + "\u00a0",
+            localDisplay
+          )
+        );
 
       } else {
         // Use trailing format
         exchangeLabel.setText(
-                Languages.safeText(
-                        MessageKey.EXCHANGE_FIAT_RATE,
-                        "~\u00a0",
-                        localDisplay + "\u00a0" + localSymbol
-                ));
+          Languages.safeText(
+            MessageKey.EXCHANGE_FIAT_RATE,
+            "~\u00a0",
+            localDisplay + "\u00a0" + localSymbol
+          )
+        );
       }
 
     }

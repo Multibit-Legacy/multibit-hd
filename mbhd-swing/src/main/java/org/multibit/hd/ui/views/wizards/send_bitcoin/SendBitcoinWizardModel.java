@@ -123,7 +123,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     Preconditions.checkNotNull(confirmPanelModel);
 
     BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
-    Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started OK");
+    Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started");
 
     String changeAddress = bitcoinNetworkService.getNextChangeAddress();
 

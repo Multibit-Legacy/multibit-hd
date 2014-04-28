@@ -189,6 +189,7 @@ public class TextBoxes {
     // Ensure it is accessible
     AccessibilityDecorator.apply(textField, MessageKey.EMAIL_ADDRESS);
 
+    // Detect changes
     textField.getDocument().addDocumentListener(listener);
 
     return textField;
@@ -208,6 +209,7 @@ public class TextBoxes {
     // Ensure it is accessible
     AccessibilityDecorator.apply(textField, MessageKey.BITCOIN_ADDRESS);
 
+    // Detect changes
     textField.getDocument().addDocumentListener(listener);
 
     return textField;
@@ -244,6 +246,7 @@ public class TextBoxes {
     // Ensure it is accessible
     AccessibilityDecorator.apply(textField, MessageKey.EXTENDED_PUBLIC_KEY);
 
+    // Detect changes
     textField.getDocument().addDocumentListener(listener);
 
     return textField;

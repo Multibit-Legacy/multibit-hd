@@ -60,17 +60,17 @@ public class Components {
   }
 
   /**
-    * <p>A "display payments" panel provides summary details of the current wallet</p>
-    *
-    * @return A new "walletDetail" panel
-    */
-   public static ModelAndView<DisplayPaymentsModel, DisplayPaymentsView> newDisplayPaymentsMaV(String panelName) {
+   * <p>A "display payments" panel provides summary details of the current wallet</p>
+   *
+   * @return A new "walletDetail" panel
+   */
+  public static ModelAndView<DisplayPaymentsModel, DisplayPaymentsView> newDisplayPaymentsMaV(String panelName) {
 
-     DisplayPaymentsModel model = new DisplayPaymentsModel(panelName);
-     DisplayPaymentsView view = new DisplayPaymentsView(model);
+    DisplayPaymentsModel model = new DisplayPaymentsModel(panelName);
+    DisplayPaymentsView view = new DisplayPaymentsView(model);
 
-     return new ModelAndView<>(model, view);
-   }
+    return new ModelAndView<>(model, view);
+  }
 
   /**
    * <p>A "recipient" panel provides a means of finding a recipient either by their contact name or a direct Bitcoin address</p>
@@ -270,14 +270,15 @@ public class Components {
   /**
    * <p>A "display amount" model and view handles presentation of a Bitcoin and local currency amount</p>
    *
-   * @param style The display amount style
-   *
+   * @param style        The display amount style
+   * @param showNegative True if a "-" is required for negative numbers
+   * @param festName     The FEST name to identify this component during testing
    *
    * @return A new "display amount" model and view
    */
-  public static ModelAndView<DisplayAmountModel, DisplayAmountView> newDisplayAmountMaV(DisplayAmountStyle style, boolean showNegative) {
+  public static ModelAndView<DisplayAmountModel, DisplayAmountView> newDisplayAmountMaV(DisplayAmountStyle style, boolean showNegative, String festName) {
 
-    DisplayAmountModel model = new DisplayAmountModel(style, showNegative);
+    DisplayAmountModel model = new DisplayAmountModel(style, showNegative, festName);
     DisplayAmountView view = new DisplayAmountView(model);
 
     return new ModelAndView<>(model, view);

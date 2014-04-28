@@ -599,7 +599,7 @@ public class PanelDecorator {
     if (wizard.isExiting()) {
 
       view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
-      wizardScreenPanel.add(view.getCancelButton(), "cell 0 2,push");
+      wizardScreenPanel.add(view.getCancelButton(), "cell 0 2");
 
     } else {
 

@@ -70,6 +70,7 @@ public class BitcoinNetworkService extends AbstractService {
 
   @Override
   public boolean start() {
+
     requireSingleThreadExecutor("bitcoin-network");
 
     CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkNotInitialised());
@@ -83,20 +84,20 @@ public class BitcoinNetworkService extends AbstractService {
       }
       File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
       String walletRoot = WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory).get().getParentFile().getAbsolutePath();
-      String blockchainFilename = walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.SPV_BLOCKCHAIN_SUFFIX;
-      String checkpointsFilename = walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX;
+      File blockStoreFile = new File(walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.SPV_BLOCKCHAIN_SUFFIX);
+      File checkpointsFile = new File(walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX);
 
       // Load or create the blockStore..
-      log.debug("Loading/ creating blockstore ...");
-      blockStore = BlockStoreManager.createBlockStore(blockchainFilename, checkpointsFilename, null, false);
-      log.debug("Blockstore is '{}'", blockStore);
+      log.debug("Get or create block store");
+      blockStore = BlockStoreManager.createBlockStore(blockStoreFile, checkpointsFile, null, false);
+      log.debug("Success. Blockstore is '{}'", blockStore);
 
       log.debug("Starting Bitcoin network...");
       restartNetwork();
 
-    } catch (Exception e) {
+    } catch (IOException | BlockStoreException e) {
 
-      log.error(e.getClass().getName() + " " + e.getMessage());
+      log.error(e.getMessage(), e);
 
       CoreEvents.fireBitcoinNetworkChangedEvent(
         BitcoinNetworkSummary.newNetworkStartupFailed(
@@ -278,6 +279,7 @@ public class BitcoinNetworkService extends AbstractService {
 
   // TODO should be in executor
   public void send(String destinationAddress, BigInteger amount, String changeAddress, BigInteger feePerKB, CharSequence password, Optional<FeeState> feeStateOptional) {
+
     if (!WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
       // Declare the transaction creation a failure - no wallet
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
@@ -302,7 +304,7 @@ public class BitcoinNetworkService extends AbstractService {
     final Address destination;
     final Address change;
 
-    boolean addClientFee = false;
+    boolean addClientFee;
     Address feeAddress = null;
     try {
       destination = new Address(MAINNET, destinationAddress);
@@ -310,9 +312,9 @@ public class BitcoinNetworkService extends AbstractService {
 
       addClientFee = feeStateOptional.isPresent() && (feeStateOptional.get().getCurrentNumberOfSends() == feeStateOptional.get().getNextFeeSendCount());
       if (addClientFee) {
-        String feeAddresString = feeStateOptional.get().getNextFeeAddress();
-        log.debug("feeAddress = " + feeAddresString);
-        feeAddress = new Address(MAINNET, feeAddresString);
+        String feeAddressString = feeStateOptional.get().getNextFeeAddress();
+        log.debug("feeAddress = " + feeAddressString);
+        feeAddress = new Address(MAINNET, feeAddressString);
       }
     } catch (NullPointerException | AddressFormatException e) {
       log.error(e.getMessage(), e);
@@ -468,11 +470,12 @@ public class BitcoinNetworkService extends AbstractService {
 
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
     String walletRoot = WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory).get().getParentFile().getAbsolutePath();
-    String blockchainFilename = walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.SPV_BLOCKCHAIN_SUFFIX;
-    String checkpointsFilename = walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX;
+
+    File blockchainFile = new File(walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.SPV_BLOCKCHAIN_SUFFIX);
+    File checkpointsFile = new File(walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX);
 
     log.debug("Recreating blockstore with checkpoint date of " + dateToReplayFrom + " ...");
-    blockStore = BlockStoreManager.createBlockStore(blockchainFilename, checkpointsFilename, dateToReplayFrom.toDate(), true);
+    blockStore = BlockStoreManager.createBlockStore(blockchainFile, checkpointsFile, dateToReplayFrom.toDate(), true);
     log.debug("Blockstore is '{}'", blockStore);
 
     restartNetwork();
@@ -486,6 +489,7 @@ public class BitcoinNetworkService extends AbstractService {
    * <p>Create a new peer group</p>
    */
   private void createNewPeerGroup() {
+
     log.info("Creating new peer group");
 
     peerGroup = new PeerGroup(NETWORK_PARAMETERS, blockChain);
@@ -502,6 +506,7 @@ public class BitcoinNetworkService extends AbstractService {
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
       peerGroup.addWallet(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet());
     }
+
   }
 
   /**

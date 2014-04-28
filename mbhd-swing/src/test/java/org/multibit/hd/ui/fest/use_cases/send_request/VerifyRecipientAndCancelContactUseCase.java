@@ -1,11 +1,13 @@
 package org.multibit.hd.ui.fest.use_cases.send_request;
 
 import org.fest.swing.fixture.FrameFixture;
+import org.fest.swing.timing.Timeout;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Use case to provide the following to FEST testing:</p>
@@ -26,9 +28,11 @@ public class VerifyRecipientAndCancelContactUseCase extends AbstractFestUseCase 
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    // Click on Send
+    // Click on Send allowing for network initialisation
     window
-      .button(MessageKey.SEND.getKey())
+      .button(MessageKey.SHOW_SEND_WIZARD.getKey())
+        // Allow time for the Bitcoin network to initialise
+      .requireEnabled(Timeout.timeout(5, TimeUnit.SECONDS))
       .click();
 
     // Verify the wizard appears
@@ -62,8 +66,6 @@ public class VerifyRecipientAndCancelContactUseCase extends AbstractFestUseCase 
     // Set it to the MultiBit address
     verifyBitcoinAddressField("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty", true);
 
-    verifyCancel();
-
     // Cancel from wizard
 
     window
@@ -72,7 +74,7 @@ public class VerifyRecipientAndCancelContactUseCase extends AbstractFestUseCase 
 
     // Verify underlying detail screen
     window
-      .button(MessageKey.SEND.getKey())
+      .button(MessageKey.SHOW_SEND_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
 
@@ -109,35 +111,6 @@ public class VerifyRecipientAndCancelContactUseCase extends AbstractFestUseCase 
         .requireEqualTo(Themes.currentTheme.invalidDataEntryBackground());
     }
 
-  }
-
-  /**
-   * Verifies that clicking cancel with data present gives a Yes/No popover
-   */
-  private void verifyCancel() {
-
-    // Click Cancel
-    window
-      .button(MessageKey.CANCEL.getKey())
-      .click();
-
-    // Expect Yes/No popup)
-    window
-      .button(MessageKey.YES.getKey())
-      .requireVisible()
-      .requireEnabled();
-
-    window
-      .button(MessageKey.CLOSE.getKey())
-      .requireVisible()
-      .requireEnabled();
-
-    // Click No
-    window
-      .button(MessageKey.NO.getKey())
-      .requireVisible()
-      .requireEnabled()
-      .click();
   }
 
 }

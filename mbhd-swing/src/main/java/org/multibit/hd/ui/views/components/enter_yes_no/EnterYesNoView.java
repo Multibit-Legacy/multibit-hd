@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.components.enter_confirm_cancel;
+package org.multibit.hd.ui.views.components.enter_yes_no;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.MultiBitUI;
@@ -15,15 +15,15 @@ import java.awt.event.ActionEvent;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Simple Confirm/Cancel dialog</li>
+ * <li>Simple Yes/No dialog</li>
  * </ul>
  * <p>This popover is normally in the context of "Do you wish to proceed?"
- * with Cancel meaning stop and take me back to safety with no changes.</p>
+ * with No meaning stop and take me back to safety with no changes.</p>
  *
  * @since 0.0.1
  *  
  */
-public class EnterConfirmCancelView extends AbstractComponentView<EnterConfirmCancelModel> {
+public class EnterYesNoView extends AbstractComponentView<EnterYesNoModel> {
 
   private final AwesomeIcon confirmIcon;
   private final boolean isConfirmDangerous;
@@ -34,7 +34,7 @@ public class EnterConfirmCancelView extends AbstractComponentView<EnterConfirmCa
    * @param model              The model backing this view
    * @param isConfirmDangerous True if clicking confirm will discard or delete data without undo
    */
-  public EnterConfirmCancelView(EnterConfirmCancelModel model, AwesomeIcon confirmIcon, boolean isConfirmDangerous) {
+  public EnterYesNoView(EnterYesNoModel model, AwesomeIcon confirmIcon, boolean isConfirmDangerous) {
     super(model);
 
     this.confirmIcon = confirmIcon;
@@ -56,8 +56,8 @@ public class EnterConfirmCancelView extends AbstractComponentView<EnterConfirmCa
     panel.add(panelCloseButton, "span 2,align right,shrink,wrap");
     panel.add(Labels.newDataEnteredNote(), "grow,push,span 2,wrap");
 
-    panel.add(Buttons.newCancelButton(getCancelAction()), "align left,push");
-    panel.add(Buttons.newConfirmButton(getConfirmAction(), confirmIcon, isConfirmDangerous), "align right,push");
+    panel.add(Buttons.newNoButton(getCancelAction()), "align left,push");
+    panel.add(Buttons.newYesButton(getConfirmAction(), confirmIcon, isConfirmDangerous), "align right,push");
 
     // Set minimum size
     panel.setSize(MultiBitUI.POPOVER_MIN_WIDTH, MultiBitUI.POPOVER_MIN_HEIGHT);

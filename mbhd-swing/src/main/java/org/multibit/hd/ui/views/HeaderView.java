@@ -68,7 +68,7 @@ public class HeaderView {
     contentPanel.setBackground(Themes.currentTheme.headerPanelBackground());
 
     // Create the balance display
-    balanceDisplayMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.HEADER, true);
+    balanceDisplayMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.HEADER, true,"header");
 
     contentPanel.add(balanceDisplayMaV.getView().newComponentPanel(), "growx,push,wrap");
     contentPanel.add(alertPanel, "growx,aligny top,push");

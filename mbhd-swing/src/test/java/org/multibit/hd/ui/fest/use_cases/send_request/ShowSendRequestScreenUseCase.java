@@ -38,12 +38,11 @@ public class ShowSendRequestScreenUseCase extends AbstractFestUseCase {
 
     // Expect the Send/Request screen to show
     window
-      .button(MessageKey.SEND.getKey())
-      .requireVisible()
-      .requireEnabled();
+      .button(MessageKey.SHOW_SEND_WIZARD.getKey())
+      .requireVisible();
 
     window
-      .button(MessageKey.REQUEST.getKey())
+      .button(MessageKey.SHOW_REQUEST_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
 
@@ -54,12 +53,12 @@ public class ShowSendRequestScreenUseCase extends AbstractFestUseCase {
       .requireEnabled()
       .selectRow(2);
 
-    // Expect the Contacts screen to show (no Send/Request showing)
+    // Expect the Payment screen to show (no Send/Request showing)
     window
-      .button(newNotShowingJButtonFixture(MessageKey.SEND.getKey()));
+      .button(newNotShowingJButtonFixture(MessageKey.SHOW_SEND_WIZARD.getKey()));
 
     window
-      .button(newNotShowingJButtonFixture(MessageKey.REQUEST.getKey()));
+      .button(newNotShowingJButtonFixture(MessageKey.SHOW_REQUEST_WIZARD.getKey()));
 
     window
       .tree(MessageKey.SIDEBAR_TREE.getKey())
@@ -69,12 +68,11 @@ public class ShowSendRequestScreenUseCase extends AbstractFestUseCase {
 
     // Expect the Send/Request screen to show
     window
-      .button(MessageKey.SEND.getKey())
-      .requireVisible()
-      .requireEnabled();
+      .button(MessageKey.SHOW_SEND_WIZARD.getKey())
+      .requireVisible();
 
     window
-      .button(MessageKey.REQUEST.getKey())
+      .button(MessageKey.SHOW_REQUEST_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
 

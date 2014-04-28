@@ -1,11 +1,13 @@
 package org.multibit.hd.ui.fest.use_cases.send_request;
 
 import org.fest.swing.fixture.FrameFixture;
+import org.fest.swing.timing.Timeout;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Use case to provide the following to FEST testing:</p>
@@ -26,9 +28,11 @@ public class VerifyAmountAndCancelContactUseCase extends AbstractFestUseCase {
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    // Click on Send
+    // Click on Send allowing for network initialisation
     window
-      .button(MessageKey.SEND.getKey())
+      .button(MessageKey.SHOW_SEND_WIZARD.getKey())
+        // Allow time for the Bitcoin network to initialise
+      .requireEnabled(Timeout.timeout(5, TimeUnit.SECONDS))
       .click();
 
     // Verify the wizard appears
@@ -46,10 +50,15 @@ public class VerifyAmountAndCancelContactUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled();
 
-    // Set it to the MultiBit address
+    // Set the recipient editor text box to the MultiBit address
     window
-      .textBox(MessageKey.BITCOIN_AMOUNT.getKey())
+      .textBox(MessageKey.RECIPIENT.getKey())
       .setText("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
+
+    // Change focus to trigger validation
+    window
+      .button(MessageKey.PASTE.getKey())
+      .focus();
 
     window
       .button(MessageKey.NEXT.getKey())
@@ -87,9 +96,6 @@ public class VerifyAmountAndCancelContactUseCase extends AbstractFestUseCase {
     verifyBitcoinAmountField("21,000,000,000", true); // 21,000,000 BTC
     verifyBitcoinAmountField("20,000,000,000.12345", true); // 20,000,000,000.12345 mBTC
 
-
-    verifyCancel();
-
     // Cancel from wizard
     window
       .button(MessageKey.CANCEL.getKey())
@@ -97,7 +103,7 @@ public class VerifyAmountAndCancelContactUseCase extends AbstractFestUseCase {
 
     // Verify underlying detail screen
     window
-      .button(MessageKey.SEND.getKey())
+      .button(MessageKey.SHOW_SEND_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
 
@@ -112,7 +118,9 @@ public class VerifyAmountAndCancelContactUseCase extends AbstractFestUseCase {
   private void verifyBitcoinAmountField(String text, boolean isValid) {
 
     // Set the text directly on the combo box editor
-
+    window
+      .textBox(MessageKey.BITCOIN_AMOUNT.getKey())
+      .setText(text);
 
     // Lose focus to trigger validation
     window
@@ -132,35 +140,6 @@ public class VerifyAmountAndCancelContactUseCase extends AbstractFestUseCase {
         .requireEqualTo(Themes.currentTheme.invalidDataEntryBackground());
     }
 
-  }
-
-  /**
-   * Verifies that clicking cancel with data present gives a Yes/No popover
-   */
-  private void verifyCancel() {
-
-    // Click Cancel
-    window
-      .button(MessageKey.CANCEL.getKey())
-      .click();
-
-    // Expect Yes/No popup)
-    window
-      .button(MessageKey.YES.getKey())
-      .requireVisible()
-      .requireEnabled();
-
-    window
-      .button(MessageKey.CLOSE.getKey())
-      .requireVisible()
-      .requireEnabled();
-
-    // Click No
-    window
-      .button(MessageKey.NO.getKey())
-      .requireVisible()
-      .requireEnabled()
-      .click();
   }
 
 }

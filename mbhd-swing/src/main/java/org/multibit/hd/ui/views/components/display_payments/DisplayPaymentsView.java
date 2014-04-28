@@ -75,7 +75,7 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
           paymentDataLabel.setText(Languages.safeText(paymentData.getType().getLocalisationKey()));
           LabelDecorator.applyStatusIcon(paymentData.getStatus(), paymentDataLabel, paymentData.isCoinBase(), MultiBitUI.NORMAL_ICON_SIZE);
 
-          ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.PLAIN, false);
+          ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.PLAIN, false,"payment");
           if (CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().isPresent()) {
             paymentAmountMaV.getModel().setRateProvider(CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().get().getRateProvider());
           }

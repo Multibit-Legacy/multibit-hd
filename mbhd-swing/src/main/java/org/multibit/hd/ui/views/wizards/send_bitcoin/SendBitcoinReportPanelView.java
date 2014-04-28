@@ -12,6 +12,7 @@ import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.components.AccessibilityDecorator;
 import org.multibit.hd.ui.views.components.LabelDecorator;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
@@ -92,11 +93,19 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
     transactionConstructionStatusSummary = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
+    AccessibilityDecorator.apply(transactionConstructionStatusSummary, MessageKey.TRANSACTION_CONSTRUCTION_STATUS_SUMMARY);
+
     transactionConstructionStatusDetail = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
+    AccessibilityDecorator.apply(transactionConstructionStatusDetail, MessageKey.TRANSACTION_CONSTRUCTION_STATUS_DETAIL);
 
     transactionBroadcastStatusSummary = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
+    AccessibilityDecorator.apply(transactionBroadcastStatusSummary, MessageKey.TRANSACTION_BROADCAST_STATUS_SUMMARY);
+
     transactionBroadcastStatusDetail = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
+    AccessibilityDecorator.apply(transactionBroadcastStatusDetail, MessageKey.TRANSACTION_BROADCAST_STATUS_DETAIL);
+
     transactionConfirmationStatus = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
+    AccessibilityDecorator.apply(transactionConfirmationStatus, MessageKey.TRANSACTION_CONFIRMATION_STATUS);
 
     contentPanel.add(transactionConstructionStatusSummary, "wrap");
     contentPanel.add(transactionConstructionStatusDetail, "wrap");
@@ -142,7 +151,9 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
   @Subscribe
   public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
+
     log.debug("Received the TransactionCreationEvent: " + transactionCreationEvent.toString());
+
     lastTransactionCreationEvent = transactionCreationEvent;
 
     // The event may be fired before the UI has initialised
@@ -168,7 +179,9 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
   @Subscribe
   public void onBitcoinSentEvent(BitcoinSentEvent bitcoinSentEvent) {
+
     log.debug("Received the BitcoinSentEvent: " + bitcoinSentEvent.toString());
+
     lastBitcoinSentEvent = bitcoinSentEvent;
     // The event may be fired before the UI has initialised
     if (!initialised) {
@@ -189,7 +202,10 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
   @Subscribe
   public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
+
+    // Too many to log
     //log.debug("Received the TransactionSeenEvent: " + transactionSeenEvent.toString());
+
     lastTransactionSeenEvent = transactionSeenEvent;
     // The event may be fired before the UI has initialised
     if (!initialised) {

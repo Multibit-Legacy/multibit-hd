@@ -112,9 +112,9 @@ public class Buttons {
    * @param confirmIcon        The icon to place on the confirm button to hint at what will happen
    * @param isConfirmDangerous True if the confirm action will result in data loss without undo
    *
-   * @return A new "Confirm" button with icon
+   * @return A new "Yes" button with icon
    */
-  public static JButton newConfirmButton(Action action, AwesomeIcon confirmIcon, boolean isConfirmDangerous) {
+  public static JButton newYesButton(Action action, AwesomeIcon confirmIcon, boolean isConfirmDangerous) {
 
     JButton button = newButton(action, MessageKey.YES);
 
@@ -124,6 +124,22 @@ public class Buttons {
     if (isConfirmDangerous) {
       NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), button);
     }
+
+    return button;
+
+  }
+
+  /**
+   * @param action             The click action
+   *
+   * @return A new "No" button with icon
+   */
+  public static JButton newNoButton(Action action) {
+
+    JButton button = newButton(action, MessageKey.NO);
+
+    // The icon should trail the text for visual consistency
+    AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -320,23 +336,6 @@ public class Buttons {
   /**
    * @param action The click action
    *
-   * @return A new "Request" button with icon
-   */
-  public static JButton newRequestButton(Action action) {
-
-    JButton button = newButton(action, MessageKey.REQUEST);
-
-    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, true, MultiBitUI.NORMAL_ICON_SIZE);
-
-    NimbusDecorator.applyThemeColor(Themes.currentTheme.infoAlertBackground(), button);
-
-    return button;
-  }
-
-
-  /**
-   * @param action The click action
-   *
    * @return A new "Refresh" button with icon
    */
   public static JButton newRefreshButton(Action action) {
@@ -421,10 +420,7 @@ public class Buttons {
     AccessibilityDecorator.apply(button, MessageKey.QR_CODE);
 
     // Require this background color to ensure people can find the QR code icon quickly
-    NimbusDecorator.applyThemeColor(
-      Themes.currentTheme.readOnlyBackground(),
-      button
-    );
+    NimbusDecorator.applyThemeColor(Themes.currentTheme.readOnlyBackground(), button);
 
     Icon enabledIcon = Images.newQRCodeIcon();
 
@@ -641,7 +637,7 @@ public class Buttons {
    */
   public static JButton newSendBitcoinWizardButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.SEND);
+    JButton button = newLargeButton(action, MessageKey.SHOW_SEND_WIZARD);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD, button, true, JLabel.BOTTOM, MultiBitUI.LARGE_ICON_SIZE);
 
@@ -655,7 +651,7 @@ public class Buttons {
    */
   public static JButton newRequestBitcoinWizardButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.REQUEST);
+    JButton button = newLargeButton(action, MessageKey.SHOW_REQUEST_WIZARD);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, true, JLabel.BOTTOM, MultiBitUI.LARGE_ICON_SIZE);
 

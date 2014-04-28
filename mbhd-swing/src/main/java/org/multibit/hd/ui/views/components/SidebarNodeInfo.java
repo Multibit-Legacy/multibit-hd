@@ -33,4 +33,10 @@ public class SidebarNodeInfo {
   public Screen getDetailScreen() {
     return detailScreen;
   }
+
+  @Override
+  public String toString() {
+    // Provides Accessibility API with information
+    return text;
+  }
 }

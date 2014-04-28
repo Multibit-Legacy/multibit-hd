@@ -26,17 +26,21 @@ public class DisplayAmountModel implements Model<DisplayAmountModel> {
 
   // Default to Bitcoin only (exchanges are an optional feature)
   private boolean localAmountVisible = false;
-  
+
   private Optional<String> rateProvider = Optional.absent();
 
   private boolean showNegative = true;
+  private final String festName;
 
   /**
-   * @param style The display amount style
+   * @param style        The display amount style
+   * @param showNegative True if a "-" is required for negative numbers
+   * @param festName     The FEST name to identify this component during testing
    */
-  public DisplayAmountModel(DisplayAmountStyle style, boolean showNegative) {
+  public DisplayAmountModel(DisplayAmountStyle style, boolean showNegative, String festName) {
     this.style = style;
     this.showNegative = showNegative;
+    this.festName = festName;
   }
 
   @Override
@@ -47,6 +51,13 @@ public class DisplayAmountModel implements Model<DisplayAmountModel> {
   @Override
   public void setValue(DisplayAmountModel value) {
     // Do nothing
+  }
+
+  /**
+   * @return The name to use to identify the JPanel for FEST testing
+   */
+  public String getFestName() {
+    return festName;
   }
 
   /**
@@ -108,4 +119,5 @@ public class DisplayAmountModel implements Model<DisplayAmountModel> {
   public boolean isShowNegative() {
     return showNegative;
   }
+
 }

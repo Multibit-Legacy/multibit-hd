@@ -6,8 +6,8 @@ import org.multibit.hd.ui.views.components.display_qrcode.DisplayQRCodeModel;
 import org.multibit.hd.ui.views.components.display_qrcode.DisplayQRCodeView;
 import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertModel;
 import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertView;
-import org.multibit.hd.ui.views.components.enter_confirm_cancel.EnterConfirmCancelModel;
-import org.multibit.hd.ui.views.components.enter_confirm_cancel.EnterConfirmCancelView;
+import org.multibit.hd.ui.views.components.enter_yes_no.EnterYesNoModel;
+import org.multibit.hd.ui.views.components.enter_yes_no.EnterYesNoView;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
 /**
@@ -22,21 +22,21 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 public class Popovers {
 
   /**
-   * <p>A "discard Confirm/Cancel" model and view displays a popover with the following features:</p>
+   * <p>A "discard Yes/No" model and view displays a popover with the following features:</p>
    * <ul>
    * <li>Button to close the light box popover</li>
-   * <li>Label field indicating that a Discard operation will occur if confirmed</li>
-   * <li>Cancel will return to safety</li>
+   * <li>Label field indicating that a Discard operation will occur if Yes is clicked</li>
+   * <li>No will return to safety</li>
    * </ul>
    *
    * @param panelName The underlying panel name for this popover
    *
-   * @return A new "discard confirm/cancel" model and view
+   * @return A new "discard yes/no" model and view
    */
-  public static ModelAndView<EnterConfirmCancelModel, EnterConfirmCancelView> newDiscardConfirmCancelPopoverMaV(String panelName) {
+  public static ModelAndView<EnterYesNoModel, EnterYesNoView> newDiscardYesNoPopoverMaV(String panelName) {
 
-    EnterConfirmCancelModel model = new EnterConfirmCancelModel(panelName);
-    EnterConfirmCancelView view = new EnterConfirmCancelView(model, AwesomeIcon.TRASH_ALT, true);
+    EnterYesNoModel model = new EnterYesNoModel(panelName);
+    EnterYesNoView view = new EnterYesNoView(model, AwesomeIcon.TRASH_ALT, true);
 
     return new ModelAndView<>(model, view);
 

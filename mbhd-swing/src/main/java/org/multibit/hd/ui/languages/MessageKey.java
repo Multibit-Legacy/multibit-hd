@@ -91,11 +91,12 @@ public enum MessageKey {
   LOCAL_AMOUNT("local_amount"),
   AMOUNT_PAID("amount_paid"),
   TRANSACTION_FEE("transaction_fee"),
-  DEVELOPER_FEE("developer_fee"),
-  DEVELOPER_FEE_NOW("developer_fee_now"),
-  DEVELOPER_FEE_LATER_PLURAL("developer_fee_later_plural"),
-  DEVELOPER_FEE_LATER_SINGULAR("developer_fee_later_singular"),
-  DEVELOPER_FEE_OVERPAID("developer_fee_overpaid"),
+
+  CLIENT_FEE("client_fee"),
+  CLIENT_FEE_NOW("client_fee_now"),
+  CLIENT_FEE_LATER_PLURAL("client_fee_later_plural"),
+  CLIENT_FEE_LATER_SINGULAR("client_fee_later_singular"),
+  CLIENT_FEE_OVERPAID("client_fee_overpaid"),
 
   COINBASE("coinbase"),
 
@@ -240,8 +241,16 @@ public enum MessageKey {
   TIMESTAMP("timestamp"),
   MULTI_EDIT_NOTE("multi_edit_note"),
 
+  TRANSACTION_CONSTRUCTION_STATUS_SUMMARY("transaction_construction_status_summary"),
+  TRANSACTION_CONSTRUCTION_STATUS_DETAIL("transaction_construction_status_detail"),
+  TRANSACTION_BROADCAST_STATUS_SUMMARY("transaction_broadcast_status_summary"),
+  TRANSACTION_BROADCAST_STATUS_DETAIL("transaction_broadcast_status_detail"),
+  TRANSACTION_CONFIRMATION_STATUS("transaction_confirmation_status"),
+
   // Tool buttons
   SHOW_WELCOME_WIZARD("show_welcome_wizard"),
+  SHOW_SEND_WIZARD("show_send_wizard"),
+  SHOW_REQUEST_WIZARD("show_request_wizard"),
   SHOW_SOUND_WIZARD("show_sound_wizard"),
   SHOW_BITCOIN_WIZARD("show_bitcoin_wizard"),
   SHOW_EXCHANGE_WIZARD("show_exchange_wizard"),
@@ -346,7 +355,9 @@ public enum MessageKey {
   DATA_ENTERED_NOTE_2("data_entered_note_2"),
 
   RECIPIENT_SUMMARY("recipient_summary"),
-  AMOUNT_SUMMARY("amount_summary"),
+
+  AMOUNT_SUMMARY_WITH_RATE("amount_summary_with_rate"),
+  AMOUNT_SUMMARY_NO_RATE("amount_summary_no_rate"),
 
   // Wallet detail panel
   APPLICATION_DIRECTORY("application_directory"),

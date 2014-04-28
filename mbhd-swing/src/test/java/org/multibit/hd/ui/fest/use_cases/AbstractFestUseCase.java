@@ -3,6 +3,8 @@ package org.multibit.hd.ui.fest.use_cases;
 import org.fest.swing.core.matcher.JButtonMatcher;
 import org.fest.swing.core.matcher.JLabelMatcher;
 import org.fest.swing.fixture.FrameFixture;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -17,10 +19,15 @@ import java.util.Map;
  */
 public abstract class AbstractFestUseCase {
 
+  protected static final Logger log = LoggerFactory.getLogger(AbstractFestUseCase.class);
+
   protected final FrameFixture window;
 
   public AbstractFestUseCase(FrameFixture window) {
     this.window = window;
+
+    log.info("New use case: {}",this.getClass().getName());
+
   }
 
   /**

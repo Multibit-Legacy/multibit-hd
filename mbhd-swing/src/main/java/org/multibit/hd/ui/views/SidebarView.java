@@ -245,6 +245,7 @@ public class SidebarView {
 
     lastSelectedScreen = detailScreen;
     lastSelectionDateTime = Dates.nowUtc();
+
   }
 
   /**

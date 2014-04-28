@@ -10,6 +10,7 @@ import org.multibit.hd.core.events.SlowTransactionSeenEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.events.view.SystemStatusChangedEvent;
 import org.multibit.hd.ui.events.view.WalletDetailChangedEvent;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Buttons;
@@ -93,6 +94,10 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
     };
 
     sendBitcoin = Buttons.newSendBitcoinWizardButton(showSendBitcoinWizardAction);
+
+    // Start with disabled button and use Bitcoin network status to enable
+    sendBitcoin.setEnabled(false);
+
     JButton requestBitcoin = Buttons.newRequestBitcoinWizardButton(showRequestBitcoinWizardAction);
 
     List<PaymentData> allPayments = walletService.getPaymentDataList();
@@ -119,13 +124,50 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
     receivingPaymentsScrollPane.setBorder(BorderFactory.createEmptyBorder());
 
     contentPanel.add(sendBitcoin, MultiBitUI.LARGE_BUTTON_MIG + ",align center");
-    contentPanel.add(Panels.newVerticalDashedSeparator(), "growy, spany 2");
-    contentPanel.add(requestBitcoin, MultiBitUI.LARGE_BUTTON_MIG + ",align center, wrap");
+    contentPanel.add(Panels.newVerticalDashedSeparator(), "growy,spany 2");
+    contentPanel.add(requestBitcoin, MultiBitUI.LARGE_BUTTON_MIG + ",align center,wrap");
 
     contentPanel.add(sendingPaymentsScrollPane, "grow, push");
     contentPanel.add(receivingPaymentsScrollPane, "grow, push, wrap");
 
     return contentPanel;
+  }
+
+  /**
+   * <p>Handles the response to a system status change</p>
+   *
+   * @param event The system status change event
+   */
+  @Subscribe
+  public void onSystemStatusChangeEvent(final SystemStatusChangedEvent event) {
+
+    if (!isInitialised()) {
+      return;
+    }
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+
+        switch (event.getSeverity()) {
+          case RED:
+            sendBitcoin.setEnabled(false);
+            break;
+          case AMBER:
+            // We should really only permit a send when clean and green
+            sendBitcoin.setEnabled(true);
+            break;
+          case GREEN:
+            sendBitcoin.setEnabled(true);
+            break;
+          default:
+            // Unknown status
+            throw new IllegalStateException("Unknown event severity " + event.getSeverity());
+        }
+
+      }
+    });
+
   }
 
   @Subscribe

@@ -239,7 +239,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
 
           // Check with the user about throwing away their data (handle the outcome with a WizardPopoverHideEvent)
           Panels.showLightBoxPopover(
-            Popovers.newDiscardConfirmCancelPopoverMaV(getWizardModel().getPanelName())
+            Popovers.newDiscardYesNoPopoverMaV(getWizardModel().getPanelName())
               .getView()
               .newComponentPanel()
           );

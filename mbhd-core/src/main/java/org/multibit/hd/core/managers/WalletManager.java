@@ -290,8 +290,8 @@ public enum WalletManager implements WalletEventListener {
     setCurrentWalletSummary(walletSummaryToReturn);
 
     // See if there is a checkpoints file - if not then get the InstallationManager to copy one in
-    String checkpointsFilename = walletDirectory.getAbsolutePath() + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX;
-    InstallationManager.copyCheckpointsTo(checkpointsFilename);
+    File checkpointsFile = new File(walletDirectory.getAbsolutePath() + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX);
+    InstallationManager.copyCheckpointsTo(checkpointsFile);
 
     // Create an initial rolling backup and zip backup
     BackupManager.INSTANCE.createRollingBackup(currentWalletSummary.get());

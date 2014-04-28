@@ -12,8 +12,6 @@ import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.gravatar.Gravatars;
 import org.multibit.hd.ui.utils.ClipboardUtils;
 import org.multibit.hd.ui.views.components.*;
-import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilter;
-import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,7 +104,7 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
   @Override
   public void updateModelFromView() {
 
-    Object selectedItem = recipientComboBox.getSelectedItem();
+      Object selectedItem = recipientComboBox.getSelectedItem();
     Object editedItem = recipientComboBox.getEditor().getItem();
 
     // Use pastes in preference to selection

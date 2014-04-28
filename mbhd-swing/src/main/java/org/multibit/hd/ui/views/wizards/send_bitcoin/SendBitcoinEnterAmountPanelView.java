@@ -147,9 +147,15 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
   }
 
   @Override
-  public void afterShow() {
+  public void fireInitialStateViewEvents() {
 
-    registerDefaultButton(getNextButton());
+    // Next button starts off disabled
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, false);
+
+  }
+
+  @Override
+  public void afterShow() {
 
     SwingUtilities.invokeLater(new Runnable() {
       @Override

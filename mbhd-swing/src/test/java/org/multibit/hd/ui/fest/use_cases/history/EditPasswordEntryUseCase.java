@@ -127,7 +127,7 @@ public class EditPasswordEntryUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled();
 
-    // Click No
+    // Click Cancel
     window
       .button(MessageKey.NO.getKey())
       .requireVisible()
