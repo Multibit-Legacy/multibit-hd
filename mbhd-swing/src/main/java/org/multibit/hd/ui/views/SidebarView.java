@@ -15,6 +15,7 @@ import org.multibit.hd.ui.views.wizards.Wizards;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -83,14 +84,21 @@ public class SidebarView {
   /**
    * @param name The wallet summary name
    */
-  public void updateWalletTreeNode(String name) {
+  public void updateWalletTreeNode(final String name) {
 
-    if (walletNode != null && name != null) {
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        if (walletNode != null && name != null) {
 
-      SidebarNodeInfo nodeInfo = new SidebarNodeInfo(name, Screen.WALLET);
-      walletNode.setUserObject(nodeInfo);
+          SidebarNodeInfo nodeInfo = new SidebarNodeInfo(name, Screen.WALLET);
+          walletNode.setUserObject(nodeInfo);
+          // This is to ensure the tree resizes correctly
+          ((DefaultTreeModel) sidebarTree.getModel()).nodeChanged(walletNode);
+        }
 
-    }
+      }
+    });
 
   }
 
