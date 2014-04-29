@@ -11,6 +11,7 @@ import com.googlecode.jcsv.writer.CSVEntryConverter;
 import org.joda.money.BigMoney;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
+import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
@@ -56,6 +57,11 @@ public class WalletService {
    * The text separator used in localising To: and By: prefices
    */
   public static final String PREFIX_SEPARATOR = ": ";
+
+  /**
+   * The Bitcoin network parameters
+   */
+  private static final NetworkParameters NETWORK_PARAMETERS = BitcoinNetwork.current().get();
 
   /**
    * The location of the backing write for the payments
@@ -437,7 +443,7 @@ public class WalletService {
       if (transaction.getOutputs() != null) {
         for (TransactionOutput transactionOutput : transaction.getOutputs()) {
           if (transactionOutput.isMine(wallet)) {
-            String receivingAddress = transactionOutput.getScriptPubKey().getToAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
+            String receivingAddress = transactionOutput.getScriptPubKey().getToAddress(NETWORK_PARAMETERS).toString();
             addresses = addresses + " " + receivingAddress;
 
             // Check if this output funds any payment requests;
@@ -474,7 +480,7 @@ public class WalletService {
       if (transaction.getOutputs() != null) {
         for (TransactionOutput transactionOutput : transaction.getOutputs()) {
           // TODO Beef up description for other cases
-          description = description + " " + transactionOutput.getScriptPubKey().getToAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
+          description = description + " " + transactionOutput.getScriptPubKey().getToAddress(NETWORK_PARAMETERS);
         }
       }
     }
@@ -487,7 +493,7 @@ public class WalletService {
 
     if (transaction.getOutputs() != null) {
       for (TransactionOutput transactionOutput : transaction.getOutputs()) {
-        String outputAddress = transactionOutput.getScriptPubKey().getToAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
+        String outputAddress = transactionOutput.getScriptPubKey().getToAddress(NETWORK_PARAMETERS).toString();
         outputAddresses.add(outputAddress);
       }
     }
@@ -650,9 +656,9 @@ public class WalletService {
         lastIndexUsed++;
         log.debug("The last index used has been incremented to " + lastIndexUsed);
         ECKey newKey = WalletManager.INSTANCE.createAndAddNewWalletKey(currentWalletSummary.get().getWallet(), walletPasswordOptional.get(), lastIndexUsed);
-        return newKey.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
+        return newKey.toAddress(NETWORK_PARAMETERS).toString();
       } else {
-        return currentWalletSummary.get().getWallet().getKeys().get(0).toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
+        return currentWalletSummary.get().getWallet().getKeys().get(0).toAddress(NETWORK_PARAMETERS).toString();
       }
     }
 

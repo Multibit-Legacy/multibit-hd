@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.WalletId;
@@ -54,6 +55,8 @@ public class BitcoinNetworkServiceFunctionalTest {
 
   private static final int MAX_TIMEOUT = 600000; // ms
   private static final int WAIT_INTERVAL = 100; // ms
+
+  private static final NetworkParameters NETWORK_PARAMETERS = BitcoinNetwork.current().get();
 
   private Properties seedProperties;
 
@@ -157,10 +160,10 @@ public class BitcoinNetworkServiceFunctionalTest {
 
     // Remember the addresses in the wallets, which will be used for the send
     ECKey key1 = walletSummary1.getWallet().getKeys().get(0);
-    Address address1 = key1.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
+    Address address1 = key1.toAddress(NETWORK_PARAMETERS);
 
     ECKey key2 = walletSummary2.getWallet().getKeys().get(0);
-    Address address2 = key2.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
+    Address address2 = key2.toAddress(NETWORK_PARAMETERS);
 
     // Synchronize the current wallet, which will be wallet2 as that was created last
     replayWallet(timestamp2);

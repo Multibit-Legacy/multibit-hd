@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 import org.bitcoinj.wallet.Protos;
 import org.multibit.hd.brit.extensions.MatcherResponseWalletExtension;
 import org.multibit.hd.brit.extensions.SendFeeDtoWalletExtension;
+import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
@@ -22,7 +23,6 @@ import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.exceptions.WalletSaveException;
 import org.multibit.hd.core.exceptions.WalletVersionException;
 import org.multibit.hd.core.files.SecureFiles;
-import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.asn1.sec.SECNamedCurves;
@@ -91,6 +91,8 @@ public enum WalletManager implements WalletEventListener {
   };
 
   private static final int AUTO_SAVE_DELAY = 20; // Seconds
+
+  private static final NetworkParameters NETWORK_PARAMETERS = BitcoinNetwork.current().get();
 
   private static WalletProtobufSerializer walletProtobufSerializer;
 
@@ -264,7 +266,7 @@ public enum WalletManager implements WalletEventListener {
     // Create a wallet with a single private key using the seed (modulo-ed), encrypted with the password
     KeyCrypter keyCrypter = new KeyCrypterScrypt();
 
-    Wallet walletToReturn = new Wallet(BitcoinNetworkService.NETWORK_PARAMETERS, keyCrypter);
+    Wallet walletToReturn = new Wallet(NETWORK_PARAMETERS, keyCrypter);
     walletToReturn.setVersion(ENCRYPTED_WALLET_VERSION);
 
     // Add the 'zero index' key into the wallet
@@ -383,7 +385,7 @@ public enum WalletManager implements WalletEventListener {
 
         Protos.Wallet walletProto = WalletProtobufSerializer.parseToProto(stream);
 
-        wallet = new Wallet(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
+        wallet = new Wallet(NETWORK_PARAMETERS);
         wallet.addExtension(new SendFeeDtoWalletExtension());
         wallet.addExtension(new MatcherResponseWalletExtension());
         new WalletProtobufSerializer().readWallet(walletProto, wallet);

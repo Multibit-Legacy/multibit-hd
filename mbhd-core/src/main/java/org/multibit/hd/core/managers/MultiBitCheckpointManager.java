@@ -9,10 +9,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Map;
 
+// TODO (JB) This class is not used - delete it?
 public class MultiBitCheckpointManager extends CheckpointManager {
 
 
   public MultiBitCheckpointManager(NetworkParameters params, String checkpointFilename) throws IOException {
+
        // The created fileInputStream is closed in the super.
        super(params, new FileInputStream(checkpointFilename));
    }

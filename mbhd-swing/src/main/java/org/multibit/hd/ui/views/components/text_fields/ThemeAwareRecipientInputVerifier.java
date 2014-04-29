@@ -2,9 +2,9 @@ package org.multibit.hd.ui.views.components.text_fields;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
-import com.google.bitcoin.params.MainNetParams;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -57,15 +57,15 @@ public class ThemeAwareRecipientInputVerifier extends InputVerifier {
 
       if (text != null) {
 
-        // Guess the content type
-        if (text.startsWith("1") || text.startsWith("3")) {
+        // Treat as an address first
+        if (verifyBitcoinAddress(text)) {
 
-          // String is a direct Bitcoin address
-          isValid = verifyBitcoinAddress(text);
+          // Validated as a Bitcoin address
+          isValid = true;
 
         } else {
 
-          // Treat as a recipient
+          // Try again as a recipient
           List<Contact> contacts = contactService.filterContactsByContent(text, true);
           if (contacts.size() == 1) {
             // Verify that the only possibility has a valid Bitcoin address
@@ -107,7 +107,7 @@ public class ThemeAwareRecipientInputVerifier extends InputVerifier {
 
     // Parse the text as a Bitcoin address
     try {
-      new Address(MainNetParams.get(), bitcoinAddress);
+      new Address(BitcoinNetwork.current().get(), bitcoinAddress);
       return true;
 
     } catch (AddressFormatException e) {

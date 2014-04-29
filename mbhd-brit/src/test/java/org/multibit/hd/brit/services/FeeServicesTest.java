@@ -57,7 +57,10 @@ public class FeeServicesTest {
 
   private static final Logger log = LoggerFactory.getLogger(FeeServicesTest.class);
 
-  protected static final NetworkParameters params = NetworkParameters.fromID(NetworkParameters.ID_MAINNET);
+  /**
+   * Always use MainNet in BRIT
+   */
+  private static final NetworkParameters NETWORK_PARAMETERS = MainNetParams.get();
 
   private final CharSequence WALLET_PASSWORD = "horatio nelson 123";
   private Wallet wallet1;
@@ -107,10 +110,10 @@ public class FeeServicesTest {
     encryptionKey = PGPUtils.readPublicKey(publicKeyRingInputStream);
     assertThat(encryptionKey).isNotNull();
 
-    blockStore = new MemoryBlockStore(params);
-    chain = new BlockChain(params, wallet1, blockStore);
+    blockStore = new MemoryBlockStore(NETWORK_PARAMETERS);
+    chain = new BlockChain(NETWORK_PARAMETERS, wallet1, blockStore);
 
-    nonFeeDestinationAddress = new Address(params, "1CQH7Hp9nNQVDcKtFVwbA8tqPMNWDBvqE3"); // Any old address that is not a fee address
+    nonFeeDestinationAddress = new Address(NETWORK_PARAMETERS, "1CQH7Hp9nNQVDcKtFVwbA8tqPMNWDBvqE3"); // Any old address that is not a fee address
   }
 
   @Test
@@ -150,7 +153,7 @@ public class FeeServicesTest {
     // Create another send to the FEE address
     // Pay the feeOwed and another fee amount (to pay for this send)
     // This should reset the amount owed and create another feeAddress
-    sendBitcoin(feeState.getFeeOwed().add(FeeService.FEE_PER_SEND), new Address(NetworkParameters.fromID(NetworkParameters.ID_MAINNET), feeState.getNextFeeAddress()));
+    sendBitcoin(feeState.getFeeOwed().add(FeeService.FEE_PER_SEND), new Address(NETWORK_PARAMETERS, feeState.getNextFeeAddress()));
 
     feeState = feeService.calculateFeeState(wallet1);
     checkFeeState(feeState, true, NUMBER_OF_NON_FEE_SENDS + 1, BigInteger.ZERO, FeeService.FEE_PER_SEND, possibleNextFeeAddresses);
@@ -176,6 +179,7 @@ public class FeeServicesTest {
   }
 
   public void createWallet(byte[] seed, CharSequence password) throws Exception {
+
     // Create a wallet with a single private key using the seed (modulo-ed), encrypted with the password
     KeyCrypter keyCrypter = new KeyCrypterScrypt();
 
@@ -187,7 +191,7 @@ public class FeeServicesTest {
     BigInteger privateKeyToUse = ECUtils.moduloSeedByECGroupSize(new BigInteger(1, seed));
 
     ECKey newKey = new ECKey(privateKeyToUse);
-    toAddress1 = newKey.toAddress(params);
+    toAddress1 = newKey.toAddress(NETWORK_PARAMETERS);
 
     aesKey = wallet1.getKeyCrypter().deriveKey(password);
     newKey = newKey.encrypt(wallet1.getKeyCrypter(), aesKey);
@@ -197,9 +201,11 @@ public class FeeServicesTest {
 
     // There should be a single key
     assertThat(wallet1.getKeychainSize() == 1).isTrue();
+
   }
 
   private void receiveATransaction(Wallet wallet, Address toAddress) throws Exception {
+
     BigInteger v1 = Utils.toNanoCoins(1, 0);
     final ListenableFuture<BigInteger> availFuture = wallet.getBalanceFuture(v1, Wallet.BalanceType.AVAILABLE);
     final ListenableFuture<BigInteger> estimatedFuture = wallet.getBalanceFuture(v1, Wallet.BalanceType.ESTIMATED);
@@ -215,10 +221,12 @@ public class FeeServicesTest {
 
     // Our estimated balance has reached the requested level.
     assertThat(estimatedFuture.isDone()).isTrue();
+
   }
 
   private Transaction sendMoneyToWallet(Wallet wallet, BigInteger value, Address toAddress) throws IOException, VerificationException {
-    Transaction tx = createFakeTx(params, value, toAddress);
+
+    Transaction tx = createFakeTx(NETWORK_PARAMETERS, value, toAddress);
     // Mark it as coming from self as then it can be spent when pending
     tx.getConfidence().setSource(TransactionConfidence.Source.SELF);
 
@@ -235,6 +243,7 @@ public class FeeServicesTest {
   }
 
   private static void broadcastAndCommit(Wallet wallet, Transaction t) throws Exception {
+
     final LinkedList<Transaction> txns = Lists.newLinkedList();
     wallet.addEventListener(new AbstractWalletEventListener() {
       @Override
@@ -247,9 +256,11 @@ public class FeeServicesTest {
     t.getConfidence().markBroadcastBy(new PeerAddress(InetAddress.getByAddress(new byte[]{10, 2, 3, 4})));
     wallet.commitTx(t);
     Threading.waitForUserCode();
+
   }
 
   private void sendBitcoin(BigInteger amount, Address destinationAddress) throws Exception {
+
     Wallet.SendRequest req = Wallet.SendRequest.to(destinationAddress, amount);
     req.aesKey = aesKey;
     req.fee = toNanoCoins(0, 1);
@@ -260,6 +271,7 @@ public class FeeServicesTest {
 
     // Broadcast the transaction and commit.
     broadcastAndCommit(wallet1, req.tx);
+
   }
 }
 

@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -22,6 +23,8 @@ import java.util.Collection;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class WalletServiceTest {
+
+  private static final NetworkParameters NETWORK_PARAMETERS = BitcoinNetwork.current().get();
 
   private WalletService walletService;
 
@@ -42,7 +45,7 @@ public class WalletServiceTest {
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
     WalletSummary walletSummary = WalletManager.INSTANCE.getOrCreateWalletSummary(temporaryDirectory, seed1, PASSWORD);
 
-    firstAddress = walletSummary.getWallet().getKeys().get(0).toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
+    firstAddress = walletSummary.getWallet().getKeys().get(0).toAddress(NETWORK_PARAMETERS).toString();
 
     walletService = new WalletService();
 

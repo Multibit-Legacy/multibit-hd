@@ -20,7 +20,6 @@ import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.crypto.KeyCrypterScrypt;
-import com.google.bitcoin.params.MainNetParams;
 import com.google.common.base.Optional;
 import com.google.common.io.Files;
 import org.bitcoinj.wallet.Protos;
@@ -28,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletIdTest;
 import org.multibit.hd.core.dto.WalletSummary;
@@ -37,7 +37,10 @@ import org.multibit.hd.core.services.CoreServices;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 import static junit.framework.TestCase.fail;
 import static org.fest.assertions.Assertions.assertThat;
@@ -84,7 +87,7 @@ public class WalletManagerTest {
     final KeyCrypterScrypt initialKeyCrypter = new KeyCrypterScrypt();
 
     // Create a new wallet
-    final Wallet wallet = new Wallet(MainNetParams.get(), initialKeyCrypter);
+    final Wallet wallet = new Wallet(BitcoinNetwork.current().get(), initialKeyCrypter);
     wallet.setVersion(3); // PROTOBUF_ENCRYPTED
 
     // Create and add encrypted keys to the wallet

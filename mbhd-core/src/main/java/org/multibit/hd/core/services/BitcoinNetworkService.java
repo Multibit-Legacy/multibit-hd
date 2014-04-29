@@ -2,7 +2,6 @@ package org.multibit.hd.core.services;
 
 import com.google.bitcoin.core.*;
 import com.google.bitcoin.net.discovery.DnsDiscovery;
-import com.google.bitcoin.params.MainNetParams;
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
 import com.google.common.base.Optional;
@@ -10,11 +9,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.joda.time.DateTime;
 import org.multibit.hd.brit.dto.FeeState;
+import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.CoreMessageKey;
-import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.TransactionCreationEvent;
@@ -54,17 +54,17 @@ import java.util.concurrent.TimeoutException;
  */
 public class BitcoinNetworkService extends AbstractService {
 
+  private static final Logger log = LoggerFactory.getLogger(BitcoinNetworkService.class);
+
   public static final BigInteger DEFAULT_FEE_PER_KB = Transaction.REFERENCE_DEFAULT_MIN_TX_FEE; // Currently 10,000 satoshi
-  public static final MainNetParams NETWORK_PARAMETERS = MainNetParams.get();
   public static final int MAXIMUM_NUMBER_OF_PEERS = 6;
 
-  private static final Logger log = LoggerFactory.getLogger(BitcoinNetworkService.class);
   private BlockStore blockStore;
   private PeerGroup peerGroup;  // May need to add listener as in MultiBitPeerGroup
   private BlockChain blockChain;
   private MultiBitPeerEventListener peerEventListener;
 
-  private NetworkParameters MAINNET = NetworkParameters.fromID(NetworkParameters.ID_MAINNET);
+  private NetworkParameters NETWORK_PARAMETERS = BitcoinNetwork.current().get();
 
   private boolean startedOk = false;
 
@@ -307,14 +307,14 @@ public class BitcoinNetworkService extends AbstractService {
     boolean addClientFee;
     Address feeAddress = null;
     try {
-      destination = new Address(MAINNET, destinationAddress);
-      change = new Address(MAINNET, changeAddress);
+      destination = new Address(NETWORK_PARAMETERS, destinationAddress);
+      change = new Address(NETWORK_PARAMETERS, changeAddress);
 
       addClientFee = feeStateOptional.isPresent() && (feeStateOptional.get().getCurrentNumberOfSends() == feeStateOptional.get().getNextFeeSendCount());
       if (addClientFee) {
         String feeAddressString = feeStateOptional.get().getNextFeeAddress();
         log.debug("feeAddress = " + feeAddressString);
-        feeAddress = new Address(MAINNET, feeAddressString);
+        feeAddress = new Address(NETWORK_PARAMETERS, feeAddressString);
       }
     } catch (NullPointerException | AddressFormatException e) {
       log.error(e.getMessage(), e);
@@ -490,7 +490,7 @@ public class BitcoinNetworkService extends AbstractService {
    */
   private void createNewPeerGroup() {
 
-    log.info("Creating new peer group");
+    log.info("Creating new peer group for '{}'", NETWORK_PARAMETERS);
 
     peerGroup = new PeerGroup(NETWORK_PARAMETERS, blockChain);
     peerGroup.setFastCatchupTimeSecs(0); // genesis block
@@ -522,7 +522,7 @@ public class BitcoinNetworkService extends AbstractService {
 
     Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
     ECKey firstKey = wallet.getKeys().get(0);
-    return firstKey.toAddress(MAINNET).toString();
+    return firstKey.toAddress(NETWORK_PARAMETERS).toString();
   }
 
   /**
@@ -556,7 +556,8 @@ public class BitcoinNetworkService extends AbstractService {
    * @return True if at least one of the MainNet DNS seeds can be reached without error
    */
   private boolean isNetworkPresent() {
-    final String[] dnsSeeds = MainNetParams.get().getDnsSeeds();
+
+    final String[] dnsSeeds = BitcoinNetwork.current().get().getDnsSeeds();
 
     // Attempt to lookup each address - first success indicates working network
     for (String dnsSeed : dnsSeeds) {
@@ -571,5 +572,6 @@ public class BitcoinNetworkService extends AbstractService {
 
     // All DNS seeds failed
     return false;
+
   }
 }

@@ -1,6 +1,7 @@
 package org.multibit.hd.brit.services;
 
 import com.google.bitcoin.core.*;
+import com.google.bitcoin.params.MainNetParams;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -40,6 +41,11 @@ import java.util.*;
 public class FeeService {
 
   private static final Logger log = LoggerFactory.getLogger(FeeService.class);
+
+  /**
+   * Always work with MainNet in BRIT
+   */
+  private static final NetworkParameters NETWORK_PARAMETERS = MainNetParams.get();
 
   private final PGPPublicKey matcherPublicKey;
   private final URL matcherURL;
@@ -161,7 +167,7 @@ public class FeeService {
       if (sendTransactionOutputList != null) {
         for (TransactionOutput sendTransactionOutput : sendTransactionOutputList) {
           try {
-            Address toAddress = sendTransactionOutput.getScriptPubKey().getToAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
+            Address toAddress = sendTransactionOutput.getScriptPubKey().getToAddress(NETWORK_PARAMETERS);
             if (feeAddressesUniverse.contains(toAddress.toString())) {
               // It pays some fee
               feePaid = feePaid.add(sendTransactionOutput.getValue());

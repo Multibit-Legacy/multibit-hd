@@ -22,16 +22,21 @@ public class BitcoinConfiguration {
    */
   private String bitcoinSymbol = "MICON";
 
+  /**
+   * Always use MainNet unless specified otherwise
+   * Support for other networks requires a code change in BitcoinNetwork
+   */
+  private String bitcoinNetwork = "MAIN_NET";
+
   private String decimalSeparator = ".";
   private String groupingSeparator = ",";
+  private int localDecimalPlaces = 2;
 
   private boolean currencySymbolLeading = true;
-
   @JsonIgnore
   private CurrencyUnit localCurrencyUnit = CurrencyUnit.USD;
-
   private String localCurrencySymbol = "$";
-  private int localDecimalPlaces = 2;
+
 
   /**
    * Start with Bitstamp since it provides USD (the global reserve currency)
@@ -66,6 +71,8 @@ public class BitcoinConfiguration {
     configuration.setLocalCurrencyUnit(getLocalCurrencyUnit());
     configuration.setLocalCurrencySymbol(getLocalCurrencySymbol());
 
+    configuration.setBitcoinNetwork(getBitcoinNetwork());
+
     configuration.setCurrentExchange(getCurrentExchange());
     configuration.setExchangeApiKeys(getExchangeApiKeys());
 
@@ -81,6 +88,17 @@ public class BitcoinConfiguration {
 
   public void setBitcoinSymbol(String bitcoinSymbol) {
     this.bitcoinSymbol = bitcoinSymbol;
+  }
+
+  /**
+   * @return The Bitcoin network to use (compatible with BitcoinNetwork)
+   */
+  public String getBitcoinNetwork() {
+    return bitcoinNetwork;
+  }
+
+  public void setBitcoinNetwork(String bitcoinNetwork) {
+    this.bitcoinNetwork = bitcoinNetwork;
   }
 
   /**

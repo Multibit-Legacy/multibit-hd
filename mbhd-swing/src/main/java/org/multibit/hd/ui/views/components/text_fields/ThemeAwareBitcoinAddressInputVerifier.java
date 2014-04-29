@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.components.text_fields;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
-import com.google.bitcoin.params.MainNetParams;
+import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
@@ -36,7 +36,7 @@ public class ThemeAwareBitcoinAddressInputVerifier extends InputVerifier {
 
     // Parse the text as a Bitcoin address
     try {
-      new Address(MainNetParams.get(), text);
+      new Address(BitcoinNetwork.current().get(), text);
     } catch (AddressFormatException e) {
       component.setBackground(invalidColor);
       return false;
