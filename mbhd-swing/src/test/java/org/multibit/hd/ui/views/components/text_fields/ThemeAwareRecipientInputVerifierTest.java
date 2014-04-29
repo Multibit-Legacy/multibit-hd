@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.components.text_fields;
 import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
+import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.Recipient;
@@ -38,9 +39,9 @@ public class ThemeAwareRecipientInputVerifierTest {
     // Arrange
     when(contactService.allContacts()).thenReturn(allContacts);
 
-    JComboBox<Recipient> comboBox = ComboBoxes.newRecipientComboBox(contactService);
+    JComboBox<Recipient> comboBox = ComboBoxes.newRecipientComboBox(contactService, BitcoinNetwork.current().get());
 
-    ThemeAwareRecipientInputVerifier testObject = new ThemeAwareRecipientInputVerifier(contactService);
+    ThemeAwareRecipientInputVerifier testObject = new ThemeAwareRecipientInputVerifier(contactService, BitcoinNetwork.current().get());
 
     RecipientComboBoxEditor.ComboBoxTextField comboEditor = ((RecipientComboBoxEditor.ComboBoxTextField) comboBox.getEditor().getEditorComponent());
 
@@ -84,9 +85,9 @@ public class ThemeAwareRecipientInputVerifierTest {
     // Arrange
     when(contactService.allContacts()).thenReturn(allContacts);
 
-    JComboBox<Recipient> comboBox = ComboBoxes.newRecipientComboBox(contactService);
+    JComboBox<Recipient> comboBox = ComboBoxes.newRecipientComboBox(contactService, BitcoinNetwork.current().get());
 
-    ThemeAwareRecipientInputVerifier testObject = new ThemeAwareRecipientInputVerifier(contactService);
+    ThemeAwareRecipientInputVerifier testObject = new ThemeAwareRecipientInputVerifier(contactService, BitcoinNetwork.current().get());
 
     RecipientComboBoxEditor.ComboBoxTextField comboEditor = ((RecipientComboBoxEditor.ComboBoxTextField) comboBox.getEditor().getEditorComponent());
 

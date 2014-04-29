@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
+import com.google.bitcoin.core.NetworkParameters;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -483,11 +484,12 @@ public class ComboBoxes {
   }
 
   /**
-   * @param filter The contact auto-complete filter
+   * @param contactService    The contact service
+   * @param networkParameters The Bitcoin network parameters
    *
    * @return A new "recipient" combo box with auto-complete functionality
    */
-  public static JComboBox<Recipient> newRecipientComboBox(ContactService contactService) {
+  public static JComboBox<Recipient> newRecipientComboBox(ContactService contactService, NetworkParameters networkParameters) {
 
     Preconditions.checkNotNull(contactService, "'contactService' must be present");
 
@@ -501,7 +503,7 @@ public class ComboBoxes {
     comboBox.setEditable(true);
 
     // Use a contact editor to force use of the name field
-    comboBox.setEditor(new RecipientComboBoxEditor(contactService));
+    comboBox.setEditor(new RecipientComboBoxEditor(contactService, networkParameters));
 
     // Use a contact list cell renderer to ensure thumbnails are maintained
     ListCellRenderer<Recipient> renderer = new RecipientListCellRenderer((JTextField) comboBox.getEditor().getEditorComponent());

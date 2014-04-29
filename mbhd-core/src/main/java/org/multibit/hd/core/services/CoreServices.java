@@ -12,6 +12,7 @@ import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
+import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.HistoryEntry;
@@ -256,11 +257,13 @@ public class CoreServices {
    * @return The Bitcoin network service
    */
   public static synchronized BitcoinNetworkService getOrCreateBitcoinNetworkService() {
+
     log.debug("Get Bitcoin network service");
     if (bitcoinNetworkService == null) {
-      bitcoinNetworkService = new BitcoinNetworkService();
+      bitcoinNetworkService = new BitcoinNetworkService(BitcoinNetwork.current().get());
     }
     return bitcoinNetworkService;
+
   }
 
   /**
@@ -344,7 +347,7 @@ public class CoreServices {
     if (!walletServiceMap.containsKey(walletId)) {
       File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
-      WalletService walletService = new WalletService();
+      WalletService walletService = new WalletService(BitcoinNetwork.current().get());
       walletService.initialise(applicationDirectory, walletId);
       walletServiceMap.put(walletId, walletService);
     }

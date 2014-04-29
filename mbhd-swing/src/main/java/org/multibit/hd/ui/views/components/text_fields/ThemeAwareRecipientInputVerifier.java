@@ -2,9 +2,9 @@ package org.multibit.hd.ui.views.components.text_fields;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
+import com.google.bitcoin.core.NetworkParameters;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -31,15 +31,18 @@ public class ThemeAwareRecipientInputVerifier extends InputVerifier {
   private final Color validColor = Themes.currentTheme.dataEntryBackground();
 
   private final ContactService contactService;
+  private final NetworkParameters networkParameters;
 
   /**
-   * @param contactService The contact service for the current wallet
+   * @param contactService    The contact service for the current wallet
+   * @param networkParameters The network parameters
    */
-  public ThemeAwareRecipientInputVerifier(ContactService contactService) {
+  public ThemeAwareRecipientInputVerifier(ContactService contactService, NetworkParameters networkParameters) {
 
     Preconditions.checkNotNull(contactService, "'contactService' must be present");
 
     this.contactService = contactService;
+    this.networkParameters = networkParameters;
 
   }
 
@@ -107,7 +110,7 @@ public class ThemeAwareRecipientInputVerifier extends InputVerifier {
 
     // Parse the text as a Bitcoin address
     try {
-      new Address(BitcoinNetwork.current().get(), bitcoinAddress);
+      new Address(networkParameters, bitcoinAddress);
       return true;
 
     } catch (AddressFormatException e) {

@@ -1,6 +1,7 @@
 package org.multibit.hd.core.managers;
 
 import com.google.bitcoin.core.CheckpointManager;
+import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
 import com.google.bitcoin.store.SPVBlockStore;
@@ -24,6 +25,18 @@ public class BlockStoreManager {
 
   private static final Logger log = LoggerFactory.getLogger(BitcoinNetworkService.class);
 
+  private final NetworkParameters networkParameters;
+
+  /**
+   * @param networkParameters The Bitcoin network parameters
+   */
+  public BlockStoreManager(NetworkParameters networkParameters) {
+
+    Preconditions.checkNotNull(networkParameters, "'networkParameters' must be present");
+
+    this.networkParameters = networkParameters;
+  }
+
   /**
    * @param blockStoreFile  The file to use for the block store
    * @param checkpointsFile The file to use for the checkpoints
@@ -35,7 +48,7 @@ public class BlockStoreManager {
    * @throws BlockStoreException
    * @throws IOException
    */
-  public static BlockStore createBlockStore(File blockStoreFile, File checkpointsFile, Date checkpointDate, boolean createNew) throws BlockStoreException, IOException {
+  public BlockStore createBlockStore(File blockStoreFile, File checkpointsFile, Date checkpointDate, boolean createNew) throws BlockStoreException, IOException {
 
     boolean blockStoreCreatedNew = !blockStoreFile.exists();
 
@@ -61,7 +74,7 @@ public class BlockStoreManager {
     log.debug("Get or create SPV block store '{}'", blockStoreFile.getAbsolutePath());
     BlockStore blockStore;
     try {
-      blockStore = new SPVBlockStore(BitcoinNetworkService.NETWORK_PARAMETERS, blockStoreFile);
+      blockStore = new SPVBlockStore(networkParameters, blockStoreFile);
     } catch (BlockStoreException bse) {
 
       try {
@@ -75,7 +88,7 @@ public class BlockStoreManager {
         log.debug("Deleting SPV block store (second pass).\nFilename: '{}' isWritable: '{}' isDeletedOK: '{}'", blockStoreFile.getAbsolutePath(), isWritable, isDeletedOk);
         blockStoreCreatedNew = true;
 
-        blockStore = new SPVBlockStore(BitcoinNetworkService.NETWORK_PARAMETERS, blockStoreFile);
+        blockStore = new SPVBlockStore(networkParameters, blockStoreFile);
       } catch (BlockStoreException bse2) {
         log.error("Unrecoverable failure in opening block store. This is bad.");
         // Throw the exception so that it is indicated on the UI
@@ -98,11 +111,11 @@ public class BlockStoreManager {
           if (blockStoreCreatedNew) {
             // Brand new block store - managers from today. This
             // will go back to the last managers.
-            CheckpointManager.checkpoint(BitcoinNetworkService.NETWORK_PARAMETERS, checkpointsInputStream, blockStore, (new Date()).getTime() / 1000);
+            CheckpointManager.checkpoint(networkParameters, checkpointsInputStream, blockStore, (new Date()).getTime() / 1000);
           }
         } else {
           // Use managers date (block replay).
-          CheckpointManager.checkpoint(BitcoinNetworkService.NETWORK_PARAMETERS, checkpointsInputStream, blockStore, checkpointDate.getTime() / 1000);
+          CheckpointManager.checkpoint(networkParameters, checkpointsInputStream, blockStore, checkpointDate.getTime() / 1000);
         }
       }
     }

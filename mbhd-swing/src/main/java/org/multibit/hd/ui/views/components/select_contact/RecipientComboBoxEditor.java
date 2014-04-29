@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components.select_contact;
 
+import com.google.bitcoin.core.NetworkParameters;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.services.ContactService;
@@ -30,9 +31,10 @@ public class RecipientComboBoxEditor implements ComboBoxEditor {
   /**
    * @param contactService The contact service for the current wallet
    */
-  public RecipientComboBoxEditor(ContactService contactService) {
+  public RecipientComboBoxEditor(ContactService contactService, NetworkParameters networkParameters) {
 
     Preconditions.checkNotNull(contactService, "'contactService' must be present");
+    Preconditions.checkNotNull(networkParameters, "'networkParameters' must be present");
 
     // Use a modified text field with a workaround
     editor = new ComboBoxTextField("", 0);
@@ -45,7 +47,7 @@ public class RecipientComboBoxEditor implements ComboBoxEditor {
     editor.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
 
     // Validate as a Contact with Bitcoin address, or a direct Bitcoin address
-    editor.setInputVerifier(new ThemeAwareRecipientInputVerifier(contactService));
+    editor.setInputVerifier(new ThemeAwareRecipientInputVerifier(contactService, networkParameters));
 
   }
 

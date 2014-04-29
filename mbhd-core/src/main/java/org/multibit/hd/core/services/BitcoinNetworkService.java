@@ -9,7 +9,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.joda.time.DateTime;
 import org.multibit.hd.brit.dto.FeeState;
-import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.CoreMessageKey;
@@ -64,9 +63,19 @@ public class BitcoinNetworkService extends AbstractService {
   private BlockChain blockChain;
   private MultiBitPeerEventListener peerEventListener;
 
-  private NetworkParameters NETWORK_PARAMETERS = BitcoinNetwork.current().get();
+  private final NetworkParameters networkParameters;
 
   private boolean startedOk = false;
+
+  /**
+   * @param networkParameters The Bitcoin network parameters
+   */
+  public BitcoinNetworkService(NetworkParameters networkParameters) {
+
+    Preconditions.checkNotNull(networkParameters, "'networkParameters' must be present");
+
+    this.networkParameters = networkParameters;
+  }
 
   @Override
   public boolean start() {
@@ -89,7 +98,7 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Load or create the blockStore..
       log.debug("Get or create block store");
-      blockStore = BlockStoreManager.createBlockStore(blockStoreFile, checkpointsFile, null, false);
+      blockStore = new BlockStoreManager(networkParameters).createBlockStore(blockStoreFile, checkpointsFile, null, false);
       log.debug("Success. Blockstore is '{}'", blockStore);
 
       log.debug("Starting Bitcoin network...");
@@ -125,7 +134,7 @@ public class BitcoinNetworkService extends AbstractService {
     }
 
     log.debug("Creating block chain ...");
-    blockChain = new BlockChain(NETWORK_PARAMETERS, blockStore);
+    blockChain = new BlockChain(networkParameters, blockStore);
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
       blockChain.addWallet(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet());
     }
@@ -307,14 +316,14 @@ public class BitcoinNetworkService extends AbstractService {
     boolean addClientFee;
     Address feeAddress = null;
     try {
-      destination = new Address(NETWORK_PARAMETERS, destinationAddress);
-      change = new Address(NETWORK_PARAMETERS, changeAddress);
+      destination = new Address(networkParameters, destinationAddress);
+      change = new Address(networkParameters, changeAddress);
 
       addClientFee = feeStateOptional.isPresent() && (feeStateOptional.get().getCurrentNumberOfSends() == feeStateOptional.get().getNextFeeSendCount());
       if (addClientFee) {
         String feeAddressString = feeStateOptional.get().getNextFeeAddress();
         log.debug("feeAddress = " + feeAddressString);
-        feeAddress = new Address(NETWORK_PARAMETERS, feeAddressString);
+        feeAddress = new Address(networkParameters, feeAddressString);
       }
     } catch (NullPointerException | AddressFormatException e) {
       log.error(e.getMessage(), e);
@@ -475,7 +484,7 @@ public class BitcoinNetworkService extends AbstractService {
     File checkpointsFile = new File(walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX);
 
     log.debug("Recreating blockstore with checkpoint date of " + dateToReplayFrom + " ...");
-    blockStore = BlockStoreManager.createBlockStore(blockchainFile, checkpointsFile, dateToReplayFrom.toDate(), true);
+    blockStore = new BlockStoreManager(networkParameters).createBlockStore(blockchainFile, checkpointsFile, dateToReplayFrom.toDate(), true);
     log.debug("Blockstore is '{}'", blockStore);
 
     restartNetwork();
@@ -490,15 +499,15 @@ public class BitcoinNetworkService extends AbstractService {
    */
   private void createNewPeerGroup() {
 
-    log.info("Creating new peer group for '{}'", NETWORK_PARAMETERS);
+    log.info("Creating new peer group for '{}'", networkParameters);
 
-    peerGroup = new PeerGroup(NETWORK_PARAMETERS, blockChain);
+    peerGroup = new PeerGroup(networkParameters, blockChain);
     peerGroup.setFastCatchupTimeSecs(0); // genesis block
     peerGroup.setUserAgent(InstallationManager.MBHD_APP_NAME,
       Configurations.currentConfiguration.getApplication().getVersion());
     peerGroup.setMaxConnections(MAXIMUM_NUMBER_OF_PEERS);
 
-    peerGroup.addPeerDiscovery(new DnsDiscovery(NETWORK_PARAMETERS));
+    peerGroup.addPeerDiscovery(new DnsDiscovery(networkParameters));
 
     peerEventListener = new MultiBitPeerEventListener();
     peerGroup.addEventListener(peerEventListener);
@@ -522,7 +531,7 @@ public class BitcoinNetworkService extends AbstractService {
 
     Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
     ECKey firstKey = wallet.getKeys().get(0);
-    return firstKey.toAddress(NETWORK_PARAMETERS).toString();
+    return firstKey.toAddress(networkParameters).toString();
   }
 
   /**
@@ -557,7 +566,7 @@ public class BitcoinNetworkService extends AbstractService {
    */
   private boolean isNetworkPresent() {
 
-    final String[] dnsSeeds = BitcoinNetwork.current().get().getDnsSeeds();
+    final String[] dnsSeeds = networkParameters.getDnsSeeds();
 
     // Attempt to lookup each address - first success indicates working network
     for (String dnsSeed : dnsSeeds) {

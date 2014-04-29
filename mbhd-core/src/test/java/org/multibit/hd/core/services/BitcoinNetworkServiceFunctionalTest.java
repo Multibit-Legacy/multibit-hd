@@ -56,7 +56,10 @@ public class BitcoinNetworkServiceFunctionalTest {
   private static final int MAX_TIMEOUT = 600000; // ms
   private static final int WAIT_INTERVAL = 100; // ms
 
-  private static final NetworkParameters NETWORK_PARAMETERS = BitcoinNetwork.current().get();
+  /**
+   * Separate from BitcoinNetworkService since some tests do not require it to be initialised
+   */
+  private static final NetworkParameters networkParameters = BitcoinNetwork.current().get();
 
   private Properties seedProperties;
 
@@ -100,9 +103,6 @@ public class BitcoinNetworkServiceFunctionalTest {
     // Create a random temporary directory and use it for wallet storage
     File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
 
-    // TODO Consider if this needs to be called here
-    //walletManager.open(temporaryDirectory, walletId, "password");
-
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
 
     // Create a wallet from the WALLET_SEED_1_PROPERTY_NAME
@@ -124,7 +124,7 @@ public class BitcoinNetworkServiceFunctionalTest {
     assertThat(walletBalance.compareTo(BigInteger.ZERO) > 0).isTrue();
 
     // See if there are any payments
-    WalletService walletService = new WalletService();
+    WalletService walletService = new WalletService(BitcoinNetwork.current().get());
 
     walletService.initialise(temporaryDirectory, new WalletId(seed));
 
@@ -140,8 +140,6 @@ public class BitcoinNetworkServiceFunctionalTest {
 
     // Create a random temporary directory to writeContacts the wallets
     File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
-    // TODO Is this just expecting the application data directory to be set?
-//    walletManager.open(temporaryDirectory);
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
 
     // Create two wallets from the two seeds
@@ -160,10 +158,10 @@ public class BitcoinNetworkServiceFunctionalTest {
 
     // Remember the addresses in the wallets, which will be used for the send
     ECKey key1 = walletSummary1.getWallet().getKeys().get(0);
-    Address address1 = key1.toAddress(NETWORK_PARAMETERS);
+    Address address1 = key1.toAddress(networkParameters);
 
     ECKey key2 = walletSummary2.getWallet().getKeys().get(0);
-    Address address2 = key2.toAddress(NETWORK_PARAMETERS);
+    Address address2 = key2.toAddress(networkParameters);
 
     // Synchronize the current wallet, which will be wallet2 as that was created last
     replayWallet(timestamp2);
@@ -177,8 +175,8 @@ public class BitcoinNetworkServiceFunctionalTest {
 
     BigInteger walletBalance1 = walletSummary1.getWallet().getBalance();
 
-    log.debug("Wallet data 1 = \n" + walletSummary1.toString());
-    log.debug("Wallet data 2 = \n" + walletSummary2.toString());
+    log.debug("Wallet data 1 = \n{}", walletSummary1.toString());
+    log.debug("Wallet data 2 = \n{}", walletSummary2.toString());
 
 
     // Check older payments (probably from earlier runs of this test) have confirmed
@@ -236,13 +234,12 @@ public class BitcoinNetworkServiceFunctionalTest {
 
   @Subscribe
   public void onBitcoinSentEvent(BitcoinSentEvent bitcoinSentEvent) {
-    //log.debug(bitcoinSentEvent.toString());
+
     this.bitcoinSentEvent = bitcoinSentEvent;
   }
 
   @Subscribe
   public void onBitcoinNetworkChangedEvent(BitcoinNetworkChangedEvent bitcoinNetworkChangedEvent) {
-    //log.debug(bitcoinNetworkChangedEvent.toString());
 
     // Remember the percentage complete for a download
     if (bitcoinNetworkChangedEvent.getSummary().getPercent() > 0) {
@@ -263,6 +260,7 @@ public class BitcoinNetworkServiceFunctionalTest {
   }
 
   private void replayWallet(DateTime replayDate) throws IOException, BlockStoreException {
+
     bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
 
     // Clear percentage complete

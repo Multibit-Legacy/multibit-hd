@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
+import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.ui.MultiBitUI;
@@ -204,7 +205,7 @@ public class TextBoxes {
    */
   public static FormattedBitcoinAddressField newEnterBitcoinAddress(DocumentListener listener, boolean readOnly) {
 
-    FormattedBitcoinAddressField textField = new FormattedBitcoinAddressField(readOnly);
+    FormattedBitcoinAddressField textField = new FormattedBitcoinAddressField(BitcoinNetwork.current().get(), readOnly);
 
     // Ensure it is accessible
     AccessibilityDecorator.apply(textField, MessageKey.BITCOIN_ADDRESS);

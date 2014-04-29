@@ -24,7 +24,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class WalletServiceTest {
 
-  private static final NetworkParameters NETWORK_PARAMETERS = BitcoinNetwork.current().get();
+  private static final NetworkParameters networkParameters = BitcoinNetwork.current().get();
 
   private WalletService walletService;
 
@@ -45,9 +45,9 @@ public class WalletServiceTest {
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
     WalletSummary walletSummary = WalletManager.INSTANCE.getOrCreateWalletSummary(temporaryDirectory, seed1, PASSWORD);
 
-    firstAddress = walletSummary.getWallet().getKeys().get(0).toAddress(NETWORK_PARAMETERS).toString();
+    firstAddress = walletSummary.getWallet().getKeys().get(0).toAddress(networkParameters).toString();
 
-    walletService = new WalletService();
+    walletService = new WalletService(networkParameters);
 
     walletService.initialise(temporaryDirectory, walletId);
   }

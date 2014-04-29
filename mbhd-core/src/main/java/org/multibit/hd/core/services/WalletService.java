@@ -11,7 +11,6 @@ import com.googlecode.jcsv.writer.CSVEntryConverter;
 import org.joda.money.BigMoney;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
-import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
@@ -61,7 +60,7 @@ public class WalletService {
   /**
    * The Bitcoin network parameters
    */
-  private static final NetworkParameters NETWORK_PARAMETERS = BitcoinNetwork.current().get();
+  private final NetworkParameters networkParameters;
 
   /**
    * The location of the backing write for the payments
@@ -102,6 +101,13 @@ public class WalletService {
    * The last seen payments data
    */
   private List<PaymentData> lastSeenPaymentDataList = Lists.newArrayList();
+
+  public WalletService(NetworkParameters networkParameters) {
+
+    Preconditions.checkNotNull(networkParameters, "'networkParameters' must be present");
+
+    this.networkParameters = networkParameters;
+  }
 
   /**
    * Initialise the wallet service with a user data directory and a wallet id so that it knows where to put files etc
@@ -331,7 +337,7 @@ public class WalletService {
       e1.printStackTrace();
     }
 
-    List<String> outputAddresses = calculateOutputAddresses(wallet, transaction);
+    List<String> outputAddresses = calculateOutputAddresses(transaction);
 
     // Create the DTO from the raw transaction info
     TransactionData transactionData = new TransactionData(transactionHashAsString, new DateTime(updateTime), paymentStatus, amountBTC, amountFiat,
@@ -443,7 +449,7 @@ public class WalletService {
       if (transaction.getOutputs() != null) {
         for (TransactionOutput transactionOutput : transaction.getOutputs()) {
           if (transactionOutput.isMine(wallet)) {
-            String receivingAddress = transactionOutput.getScriptPubKey().getToAddress(NETWORK_PARAMETERS).toString();
+            String receivingAddress = transactionOutput.getScriptPubKey().getToAddress(networkParameters).toString();
             addresses = addresses + " " + receivingAddress;
 
             // Check if this output funds any payment requests;
@@ -480,20 +486,20 @@ public class WalletService {
       if (transaction.getOutputs() != null) {
         for (TransactionOutput transactionOutput : transaction.getOutputs()) {
           // TODO Beef up description for other cases
-          description = description + " " + transactionOutput.getScriptPubKey().getToAddress(NETWORK_PARAMETERS);
+          description = description + " " + transactionOutput.getScriptPubKey().getToAddress(networkParameters);
         }
       }
     }
     return description;
   }
 
-  private List<String> calculateOutputAddresses(Wallet wallet, Transaction transaction) {
+  private List<String> calculateOutputAddresses(Transaction transaction) {
 
     List<String> outputAddresses = Lists.newArrayList();
 
     if (transaction.getOutputs() != null) {
       for (TransactionOutput transactionOutput : transaction.getOutputs()) {
-        String outputAddress = transactionOutput.getScriptPubKey().getToAddress(NETWORK_PARAMETERS).toString();
+        String outputAddress = transactionOutput.getScriptPubKey().getToAddress(networkParameters).toString();
         outputAddresses.add(outputAddress);
       }
     }
@@ -656,9 +662,9 @@ public class WalletService {
         lastIndexUsed++;
         log.debug("The last index used has been incremented to " + lastIndexUsed);
         ECKey newKey = WalletManager.INSTANCE.createAndAddNewWalletKey(currentWalletSummary.get().getWallet(), walletPasswordOptional.get(), lastIndexUsed);
-        return newKey.toAddress(NETWORK_PARAMETERS).toString();
+        return newKey.toAddress(networkParameters).toString();
       } else {
-        return currentWalletSummary.get().getWallet().getKeys().get(0).toAddress(NETWORK_PARAMETERS).toString();
+        return currentWalletSummary.get().getWallet().getKeys().get(0).toAddress(networkParameters).toString();
       }
     }
 

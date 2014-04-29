@@ -1,5 +1,7 @@
 package org.multibit.hd.ui.views.components.text_fields;
 
+import com.google.bitcoin.core.NetworkParameters;
+import com.google.common.base.Preconditions;
 import org.multibit.hd.ui.views.components.borders.TextBubbleBorder;
 import org.multibit.hd.ui.views.themes.Themes;
 
@@ -20,11 +22,17 @@ import javax.swing.text.DefaultFormatterFactory;
  */
 public class FormattedBitcoinAddressField extends JFormattedTextField {
 
-  public FormattedBitcoinAddressField(boolean readOnly) {
+  /**
+   * @param networkParameters The network parameters
+   * @param readOnly          True if the field is read only
+   */
+  public FormattedBitcoinAddressField(NetworkParameters networkParameters, boolean readOnly) {
 
     super(34);
 
-    setInputVerifier(new ThemeAwareBitcoinAddressInputVerifier());
+    Preconditions.checkNotNull(networkParameters, "'networkParameters' must be present");
+
+    setInputVerifier(new ThemeAwareBitcoinAddressInputVerifier(networkParameters));
 
     setEditable(!readOnly);
 
@@ -46,6 +54,5 @@ public class FormattedBitcoinAddressField extends JFormattedTextField {
     setFormatterFactory(new DefaultFormatterFactory(defaultFormatter));
 
   }
-
 
 }

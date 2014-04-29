@@ -5,6 +5,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
@@ -64,7 +65,7 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
     // Look up the contact service
     ContactService contactService = CoreServices.getCurrentContactService();
 
-    recipientComboBox = ComboBoxes.newRecipientComboBox(contactService);
+    recipientComboBox = ComboBoxes.newRecipientComboBox(contactService, BitcoinNetwork.current().get());
 
     // Set the recipient before the action listener is added
     if (getModel().get().getRecipient().isPresent()) {
