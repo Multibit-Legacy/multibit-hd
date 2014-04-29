@@ -414,7 +414,7 @@ public class Buttons {
    */
   public static JButton newQRCodeButton(Action action) {
 
-    JButton button = newButton(action);
+    JButton button = newButton(action, MessageKey.QR_CODE);
 
     // Ensure it is accessible
     AccessibilityDecorator.apply(button, MessageKey.QR_CODE);
@@ -669,7 +669,7 @@ public class Buttons {
     JButton button = newLargeButton(action, MessageKey.SHOW_WELCOME_WIZARD);
 
     AwesomeDecorator.applyIcon(
-      AwesomeIcon.WRENCH,
+      AwesomeIcon.SMILE_ALT,
       button,
       true,
       JLabel.BOTTOM,
@@ -749,7 +749,7 @@ public class Buttons {
     JButton button = newLargeButton(action, MessageKey.SHOW_APPLICATION_WIZARD);
 
     AwesomeDecorator.applyIcon(
-      AwesomeIcon.WRENCH,
+      AwesomeIcon.DESKTOP,
       button,
       true,
       JLabel.BOTTOM,
@@ -849,7 +849,7 @@ public class Buttons {
     JButton button = newLargeButton(action, MessageKey.SHOW_REPAIR_WALLET_WIZARD);
 
     AwesomeDecorator.applyIcon(
-      AwesomeIcon.FIRE_EXTINGUISHER,
+      AwesomeIcon.MEDKIT,
       button,
       true,
       JLabel.BOTTOM,
@@ -869,7 +869,7 @@ public class Buttons {
     JButton button = newLargeButton(action, MessageKey.SHOW_EMPTY_WALLET_WIZARD);
 
     AwesomeDecorator.applyIcon(
-      AwesomeIcon.FLASK,
+      AwesomeIcon.FIRE,
       button,
       true,
       JLabel.BOTTOM,

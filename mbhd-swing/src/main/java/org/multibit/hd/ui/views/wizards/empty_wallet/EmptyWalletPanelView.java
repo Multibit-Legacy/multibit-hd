@@ -35,7 +35,7 @@ public class EmptyWalletPanelView extends AbstractWizardPanelView<EmptyWalletWiz
    */
   public EmptyWalletPanelView(AbstractWizard<EmptyWalletWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.EMPTY_WALLET_TITLE, AwesomeIcon.FLASK);
+    super(wizard, panelName, MessageKey.EMPTY_WALLET_TITLE, AwesomeIcon.FIRE);
 
   }
 

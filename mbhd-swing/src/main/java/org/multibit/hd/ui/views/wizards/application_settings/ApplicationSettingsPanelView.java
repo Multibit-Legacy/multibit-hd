@@ -42,7 +42,7 @@ public class ApplicationSettingsPanelView extends AbstractWizardPanelView<Applic
    */
   public ApplicationSettingsPanelView(AbstractWizard<ApplicationSettingsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.SHOW_APPLICATION_WIZARD, AwesomeIcon.WRENCH);
+    super(wizard, panelName, MessageKey.SHOW_APPLICATION_WIZARD, AwesomeIcon.DESKTOP);
 
   }
 
