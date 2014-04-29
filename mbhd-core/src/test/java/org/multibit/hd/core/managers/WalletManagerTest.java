@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.BitcoinNetwork;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletIdTest;
 import org.multibit.hd.core.dto.WalletSummary;
@@ -61,6 +62,8 @@ public class WalletManagerTest {
 
   @Before
   public void setUp() throws Exception {
+
+    Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
     // Start the core services
     CoreServices.main(null);

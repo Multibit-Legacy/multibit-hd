@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.BitcoinNetwork;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -34,6 +35,9 @@ public class WalletServiceTest {
 
   @Before
   public void setUp() throws Exception {
+
+    Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
+
     // Create a random temporary directory where the wallet directory will be written
     File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
 
@@ -89,21 +93,21 @@ public class WalletServiceTest {
   }
 
   private void checkPaymentRequest(PaymentRequestData paymentRequestData, PaymentRequestData other) {
-     assertThat(other.getAddress()).isEqualTo(paymentRequestData.getAddress());
-     assertThat(other.getLabel()).isEqualTo(paymentRequestData.getLabel());
-     assertThat(other.getNote()).isEqualTo(paymentRequestData.getNote());
-     assertThat(other.getAmountBTC()).isEqualTo(paymentRequestData.getAmountBTC());
-     assertThat(other.getDate()).isEqualTo(paymentRequestData.getDate());
+    assertThat(other.getAddress()).isEqualTo(paymentRequestData.getAddress());
+    assertThat(other.getLabel()).isEqualTo(paymentRequestData.getLabel());
+    assertThat(other.getNote()).isEqualTo(paymentRequestData.getNote());
+    assertThat(other.getAmountBTC()).isEqualTo(paymentRequestData.getAmountBTC());
+    assertThat(other.getDate()).isEqualTo(paymentRequestData.getDate());
 
-     FiatPayment fiatPayment = other.getAmountFiat();
-     FiatPayment otherFiatPayment = paymentRequestData.getAmountFiat();
-     assertThat(fiatPayment.getAmount()).isEqualTo(otherFiatPayment.getAmount());
-     assertThat(fiatPayment.getRate()).isEqualTo(otherFiatPayment.getRate());
-     assertThat(fiatPayment.getExchange()).isEqualTo(otherFiatPayment.getExchange());
-   }
+    FiatPayment fiatPayment = other.getAmountFiat();
+    FiatPayment otherFiatPayment = paymentRequestData.getAmountFiat();
+    assertThat(fiatPayment.getAmount()).isEqualTo(otherFiatPayment.getAmount());
+    assertThat(fiatPayment.getRate()).isEqualTo(otherFiatPayment.getRate());
+    assertThat(fiatPayment.getExchange()).isEqualTo(otherFiatPayment.getExchange());
+  }
 
   @Test
-   public void testGenerateNextReceivingAddress() throws Exception {
+  public void testGenerateNextReceivingAddress() throws Exception {
     // The generated addresses for indices 1, 2, 3, 4 respectively (index = 0 is added to the wallet at creation time)
     assertThat("1ELwsxsbJEWTn9RCmkViLVGehwxEk61SbY").isEqualTo(walletService.generateNextReceivingAddress(Optional.of(PASSWORD)));
     assertThat("1L8HQhmDbs2i662EgitrRnFUyzXFckK5t").isEqualTo(walletService.generateNextReceivingAddress(Optional.of(PASSWORD)));

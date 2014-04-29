@@ -9,6 +9,7 @@ import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.testing.FestSwingTestCaseTemplate;
 import org.junit.After;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
@@ -36,6 +37,7 @@ import static org.fest.swing.timing.Pause.pause;
  * @since 0.0.1
  *  
  */
+@Ignore
 public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
   private static final Logger log = LoggerFactory.getLogger(MultiBitHDFestTest.class);

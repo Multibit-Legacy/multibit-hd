@@ -18,6 +18,7 @@ package org.multibit.hd.core.managers;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.junit.Before;
 import org.junit.Test;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletId;
@@ -36,6 +37,9 @@ public class BackupManagerTest {
 
   @Before
   public void setUp() throws Exception {
+
+    Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
+
   }
 
   @Test

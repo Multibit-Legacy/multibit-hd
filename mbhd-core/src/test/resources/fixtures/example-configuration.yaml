@@ -13,11 +13,12 @@ application:
   sidebarWidth: "180"
 bitcoin:
   bitcoinSymbol: "MICON"
+  bitcoinNetwork: "MAIN_NET"
   decimalSeparator: "."
   groupingSeparator: ","
+  localDecimalPlaces: 2
   currencySymbolLeading: true
   localCurrencySymbol: "$"
-  localDecimalPlaces: 2
   currentExchange: "BITSTAMP"
   exchangeApiKeys: {}
 sound:
