@@ -36,21 +36,39 @@ To quickly check that you have Maven 3+ installed check on the command line:
 $ mvn --version
 ```
 
-#### Manually build and install Bitcoinj
+#### Manually build and install Bitcoinj (optional)
 
-At present it is necessary to checkout [Bitcoinj](https://code.google.com/p/bitcoinj/) and build it manually. You will need to
-use the HEAD of the `master` branch.
+The MultiBit Staging repository contains a Bitcoinj-0.12-SNAPSHOT that can be used for development builds but is certainly not
+suitable for production. The Bitcoinj occasionally gets updated but should not be relied upon.
+
+Ideally, developers should clone [Bitcoinj](https://code.google.com/p/bitcoinj/) and build it manually. You will need to
+use the HEAD of the `master` branch:
 ```
 $ mvn clean install
 ```
-With Bitcoinj you may need to build the protobuf files - in that case you will need to execute a modified Maven command:
+You may need to build the protobuf files - in that case you will need to execute a modified Maven command:
 ```
 $ mvn -DupdateProtobuf=true clean install
 ```
-#### Start the application
+#### Start the application (from an IDE)
 
 To run the application within an IDE, simply execute `MultiBitHD.main()` in the `mbhd-swing` module. No command line parameters
 are needed, although a Bitcoin URI is accepted.
+
+#### Start the application (from the command line)
+
+To run the application from the command line, first use the installer profile:
+```
+mvn clean package
+```
+Then start the application using the shaded JAR:
+```
+$ java -jar mbhd-install/target/multibit-hd.jar
+```
+No command line parameters are needed, although a Bitcoin URI is accepted (the quotes are required to avoid URL decoding):
+```
+$ java -jar mbhd-install/target/multibit-hd.jar "bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?amount=0.01&label=Please%20donate%20to%20multibit.org"
+```
 
 ### Frequently asked questions (FAQ)
 
@@ -58,23 +76,28 @@ Here are some common questions that developers ask when they first encounter MBH
 
 #### Why not Java 8 ?
 
-At the time MBHD was being written (Q4 2013) Java 8 was not in production release and the sheer size of the packaged download
-was coming in at 150Mb (18x MultiBit Classic and 3x the Java 7 packaged footprints). That footprint alone would be sufficient
-to dramatically increase the cost of serving the application.
+At the time MBHD was being written (Q4 2013 - Q1 2014) Java 8 was not in production release and the sheer size of the packaged download
+was coming in at 150Mb (18x MultiBit Classic and 3x the standard Java 7 packaged footprints). That footprint alone would be sufficient
+to dramatically increase the cost of serving the application and deter people from downloading.
+
+We will revisit this once we have suitable compressed JWrapper JREs available.
 
 #### Why not JavaFX ?
 
 JavaFX was only available as version 2.2 on Java 7 and the move to Java 8 was not going to happen. There were many significant
-features missing in JavaFX which would only be fixed in Java 8 (e.g. right to left languages, integration with native platform
+features missing in JavaFX 2.2 which would only be fixed in Java 8 (e.g. right to left languages, integration with native platform
 for Bitcoin URI protocol handling, reporting uncaught exceptions).
 
 This technology was not suitable for the very wide range of people using MultiBit in all corners of the globe.
 
 #### Why Swing ?
 
-Although Swing is not pretty, there is a vast amount of support for it. The code is near bullet-proof for most use cases and it
-fully supports internationalization which is a key requirement for MultiBit. Also, many of the supporting libraries for Swing
-pre-date 2009 making it much harder for [dependency chain attacks](http://gary-rowe.com/agilestack/2013/07/03/preventing-dependency-chain-attacks-in-maven/) to take place.
+There is a vast amount of support for Swing. The code is near bullet-proof for most use cases and it fully supports internationalization
+which is a key requirement for MultiBit HD. Also, many of the supporting libraries for Swing
+pre-date 2009 making it much harder for [dependency chain attacks](http://gary-rowe.com/agilestack/2013/07/03/preventing-dependency-chain-attacks-in-maven/)
+to take place.
+
+With some effort Swing can be made to look quite modern.
 
 Swing also allows us to smoothly integrate with the native platform which puts it ahead of JavaFX until at least Q4 2014.
 
@@ -102,10 +125,9 @@ then we will be integrating Trezor into the main branch.
 
 #### I want an installer not this IDE
 
-The code is changing too rapidly and is too unstable to justify a long-lived installer. If you want to create one for demo purposes
-you need to [first read the installer README](mbhd-install/README.md) to do the necessary manual steps to configure JWrapper
+The code is changing too rapidly and is too unstable to justify a long-lived installer for download. If you want to create one
+for demo purposes you need to [first read the installer README](mbhd-install/README.md) to do the necessary manual steps to configure JWrapper
 and then run the following Maven command:
-
 ```
 mvn -Dinstaller=true clean package
 ```
@@ -121,7 +143,7 @@ developers that cover a variety of environments.
 We are currently working to the following timetable:
 
 1. Add BRIT support
-2. BIP32/39 hierarchical deterministic wallet (HDW) support
+2. BIP32/39 hierarchical deterministic wallet (HDW) support following Bitcoinj + Trezor approach
 3. BIP70-73 payment protocol support
 4. Hardware wallet (Trezor) support
 5. Hierarchical deterministic multi-signature (HDM) support
@@ -137,7 +159,10 @@ We use [Swing FEST](http://docs.codehaus.org/display/FEST/Swing+Module) to perfo
 
 This provides an ever-improving set of regression tests to ensure that new code does not break the existing work.
 
-The code is arranged as a single test that starts MultiBit HD with a random application directory. From that initial blank slate
-a wallet is created and the application is explored. You can run this manually by looking in `mbhd-swing/src/test/java/.../fest`.
+The code is arranged as a single test case with multiple individual tests that are independent of each other. Each create their own temporary
+application directory and may or may not require an initial randomly created empty wallet.
 
-It is not intended to run as part of a Maven build.
+Developers are strongly encouraged to create a FEST test for any UI work they are about to undertake and use it to actually test the work
+in progress. It is far faster to run FEST than to manually run up the application and do it manually.
+
+FEST is not intended to run as part of a Maven build since not all build environments support a display.

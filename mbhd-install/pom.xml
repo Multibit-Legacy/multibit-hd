@@ -16,15 +16,12 @@
 
   <profiles>
 
+    <!-- Build a full dependency JAR using Shade as part of a standard build -->
     <profile>
 
-      <!-- To activate this, build as 'mvn -Dinstaller=true clean package' -->
-      <id>installer</id>
+      <id>shade</id>
       <activation>
-        <property>
-          <name>installer</name>
-          <value>true</value>
-        </property>
+        <activeByDefault>true</activeByDefault>
       </activation>
 
       <!-- Only use these plugins if building the final JavaFx installer -->
@@ -52,7 +49,7 @@
             </configuration>
             <executions>
               <execution>
-                <id>1-make-slim-jar</id>
+                <id>make-slim-jar</id>
                 <phase>package</phase>
                 <goals>
                   <goal>shade</goal>
@@ -71,6 +68,27 @@
             </executions>
           </plugin>
 
+        </plugins>
+      </build>
+
+    </profile>
+
+    <!-- Create JWrapper installers based on the full dependency JAR -->
+    <profile>
+
+      <!-- To activate this, build as 'mvn -Dinstaller=true clean package' -->
+      <id>installer</id>
+      <activation>
+        <property>
+          <name>installer</name>
+          <value>true</value>
+        </property>
+      </activation>
+
+      <!-- Relies on the Shade profile having executed already in package phase -->
+      <build>
+        <plugins>
+
           <!-- AntRun plugin for JWrapper -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -78,7 +96,7 @@
             <version>${maven-antrun.version}</version>
             <executions>
               <execution>
-                <id>2-make-native-installers</id>
+                <id>make-native-installers</id>
                 <phase>install</phase>
                 <goals>
                   <goal>run</goal>
@@ -108,6 +126,7 @@
       </build>
 
     </profile>
+
   </profiles>
 
   <dependencies>
