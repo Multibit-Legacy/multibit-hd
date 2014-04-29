@@ -58,29 +58,29 @@ public class RecipientComboBoxEditor implements ComboBoxEditor {
   /**
    * Sets the item that should be edited.
    *
-   * @param anObject the displayed value of the editor
+   * @param item The displayed value of the editor
    */
-  public void setItem(Object anObject) {
+  public void setItem(Object item) {
 
     String editorText;
 
-    if (anObject instanceof String) {
+    if (item instanceof String) {
 
       // User is typing or has pasted in the editor
-      editorText = (String) anObject;
+      editorText = (String) item;
       recipient = null;
 
     } else {
 
       // User has selected from the list
-      Recipient recipient = (Recipient) anObject;
+      Recipient recipient = (Recipient) item;
 
       if (recipient != null && recipient.getBitcoinAddress() != null) {
         // Choose either the contact name or a Bitcoin address
         if (recipient.getContact().isPresent()) {
           editorText = recipient.getContact().get().getName();
         } else {
-          editorText = recipient.getBitcoinAddress();
+          editorText = recipient.getBitcoinAddress().toString();
         }
         this.recipient = recipient;
       } else {

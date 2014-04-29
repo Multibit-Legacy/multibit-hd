@@ -105,7 +105,7 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
   @Override
   public void updateModelFromView() {
 
-      Object selectedItem = recipientComboBox.getSelectedItem();
+    Object selectedItem = recipientComboBox.getSelectedItem();
     Object editedItem = recipientComboBox.getEditor().getItem();
 
     // Use pastes in preference to selection
@@ -139,15 +139,17 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
         } else {
           imageLabel.setVisible(false);
         }
+
       }
+
+      // Update the model
+      getModel().get().setValue(currentRecipient.get());
+
     } else {
-      // Create a recipient based on the text entry
-      currentRecipient = Optional.of(new Recipient((String) selectedItem));
+      // Random text is not a recipient
+      getModel().get().setValue(null);
       imageLabel.setVisible(false);
     }
-
-    // Update the model
-    getModel().get().setValue(currentRecipient.get());
 
   }
 

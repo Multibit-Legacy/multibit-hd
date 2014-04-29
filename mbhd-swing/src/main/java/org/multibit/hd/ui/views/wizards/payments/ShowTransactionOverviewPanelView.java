@@ -1,5 +1,8 @@
 package org.multibit.hd.ui.views.wizards.payments;
 
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.AddressFormatException;
+import com.google.bitcoin.core.NetworkParameters;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.FutureCallback;
@@ -8,6 +11,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.config.BitcoinConfiguration;
+import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.core.dto.*;
@@ -29,8 +33,6 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.image.BufferedImage;
@@ -49,8 +51,6 @@ import java.util.List;
  */
 public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<PaymentsWizardModel, ShowTransactionOverviewPanelModel> {
 
-  private static final Logger log = LoggerFactory.getLogger(ShowTransactionOverviewPanelView.class);
-
   private JLabel dateValue;
   private JLabel statusValue;
   private JLabel typeValue;
@@ -61,6 +61,9 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
   private JLabel amountFiatValue;
   private JLabel minerFeePaidValue;
   private JLabel exchangeRateValue;
+
+  // TODO Inject this
+  private final NetworkParameters networkParameters = BitcoinNetwork.current().get();
 
   /**
    * @param wizard The wizard managing the states
@@ -76,7 +79,7 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
 
     // Configure the panel model
     ShowTransactionOverviewPanelModel panelModel = new ShowTransactionOverviewPanelModel(
-            getPanelName()
+      getPanelName()
     );
     setPanelModel(panelModel);
   }
@@ -85,9 +88,9 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
   public void initialiseContent(JPanel contentPanel) {
 
     contentPanel.setLayout(new MigLayout(
-            Panels.migXYLayout(),
-            "[][][]", // Column constraints
-            "[]10[]10[]" // Row constraints
+      Panels.migXYLayout(),
+      "[][][]", // Column constraints
+      "[]10[]10[]" // Row constraints
     ));
 
     // Apply the theme
@@ -117,9 +120,9 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
     amountBTCValue = Labels.newValueLabel("");
     // Bitcoin column
     LabelDecorator.applyBitcoinSymbolLabel(
-            amountBTCLabel,
-            Configurations.currentConfiguration.getBitcoin(),
-            Languages.safeText(MessageKey.LOCAL_AMOUNT) + " ");
+      amountBTCLabel,
+      Configurations.currentConfiguration.getBitcoin(),
+      Languages.safeText(MessageKey.LOCAL_AMOUNT) + " ");
 
     JLabel amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT) + " " + Configurations.currentConfiguration.getBitcoin().getLocalCurrencySymbol());
     amountFiatValue = Labels.newValueLabel("");
@@ -179,6 +182,7 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
   }
 
   public void update() {
+
     PaymentData paymentData = getWizardModel().getPaymentData();
     if (paymentData != null) {
       DateTime date = paymentData.getDate();
@@ -225,10 +229,19 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
             if (addressList != null) {
               for (String address : addressList) {
                 if (contact.getBitcoinAddress().isPresent() && contact.getBitcoinAddress().get().equals(address)) {
+
                   // This is a contact for this address
-                  // Keep show the first
+                  final Address bitcoinAddress;
+                  try {
+                    bitcoinAddress = new Address(networkParameters, address);
+                  } catch (AddressFormatException e) {
+                    // If this occurs we really want to know
+                    throw new IllegalArgumentException("Contact has an incorrect Bitcoin address: " + contact,e);
+                  }
+
+                  // Only show the first match
                   recipientValue.setText(contact.getName());
-                  Recipient matchedRecipient = new Recipient(address);
+                  Recipient matchedRecipient = new Recipient(bitcoinAddress);
                   matchedRecipient.setContact(contact);
                   matchedContact = contact;
 

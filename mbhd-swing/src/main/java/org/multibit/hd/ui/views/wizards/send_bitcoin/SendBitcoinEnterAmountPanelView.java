@@ -1,9 +1,12 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.AddressFormatException;
+import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.dto.WalletSummary;
@@ -45,6 +48,9 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
   private ModelAndView<EnterAmountModel, EnterAmountView> enterAmountMaV;
 
   private final Optional<BitcoinURI> bitcoinUri;
+
+  // TODO (GR) Inject this
+  private final NetworkParameters networkParameters = BitcoinNetwork.current().get();
 
   /**
    * @param wizard     The wizard managing the states
@@ -111,16 +117,22 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
 
           if (!contacts.isEmpty()) {
             // Offer the first contact with the matching address
-            recipient = new Recipient(contacts.get(0).getBitcoinAddress().get());
-            recipient.setContact(contacts.get(0));
+            try {
+              Address bitcoinAddress = new Address(networkParameters, contacts.get(0).getBitcoinAddress().get());
+              recipient = new Recipient(bitcoinAddress);
+              recipient.setContact(contacts.get(0));
+            } catch (AddressFormatException e) {
+              // This would indicate a failed filter in the ContactService
+              throw new IllegalArgumentException("Contact has an malformed Bitcoin address: " + contacts.get(0), e);
+            }
           } else {
-            // No matching contact, so make one up
-            recipient = new Recipient(address.get().toString());
+            // No matching contact so make an anonymous Recipient
+            recipient = new Recipient(address.get());
           }
 
         } else {
-          // No current wallet so make up a Recipient
-          recipient = new Recipient(address.get().toString());
+          // No current wallet so make an anonymous Recipient
+          recipient = new Recipient(address.get());
         }
 
         enterRecipientMaV.getModel().setValue(recipient);

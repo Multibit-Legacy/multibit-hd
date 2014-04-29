@@ -2,6 +2,7 @@ package org.multibit.hd.core.services;
 
 import com.google.bitcoin.core.Address;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.multibit.hd.core.dto.Contact;
@@ -147,6 +148,8 @@ public class PersistentContactService implements ContactService {
   @Override
   public List<Contact> filterContactsByContent(String query, boolean excludeNotPayable) {
 
+    Preconditions.checkNotNull(query, "'query' must be present. Use * for wildcard.");
+
     String lowerQuery = query.toLowerCase();
 
     List<Contact> filteredContacts = Lists.newArrayList();
@@ -154,18 +157,36 @@ public class PersistentContactService implements ContactService {
     for (Contact contact : contacts) {
 
       // No Bitcoin address and excluding not payable
-      if (!contact.getBitcoinAddress().isPresent() && excludeNotPayable) {
+      if (excludeNotPayable && Strings.isNullOrEmpty(contact.getBitcoinAddress().or("").trim())) {
         continue;
       }
 
       // TODO Add support for EPK in later releases
+      // TODO (GR) Consider regex matching
 
       // Note: Do not include a Bitcoin address or EPK in this search
       // because vanity addresses can cause an attack vector
       // Instead use the dedicated methods for those fields
-      boolean isNameMatched = contact.getName().toLowerCase().contains(lowerQuery);
-      boolean isEmailMatched = contact.getEmail().or("").toLowerCase().contains(lowerQuery);
-      boolean isNoteMatched = contact.getNotes().or("").toLowerCase().contains(lowerQuery);
+      final boolean isNameMatched;
+      final boolean isEmailMatched;
+      final boolean isNoteMatched;
+      if ("*".equals(query)) {
+        // Note: Do not include a Bitcoin address or EPK in this search
+        // because vanity addresses can cause an attack vector
+        // Instead use the dedicated methods for those fields
+        isNameMatched = true;
+        isEmailMatched = true;
+        isNoteMatched = true;
+
+      } else {
+        // Note: Do not include a Bitcoin address or EPK in this search
+        // because vanity addresses can cause an attack vector
+        // Instead use the dedicated methods for those fields
+        isNameMatched = contact.getName().toLowerCase().contains(lowerQuery);
+        isEmailMatched = contact.getEmail().or("").toLowerCase().contains(lowerQuery);
+        isNoteMatched = contact.getNotes().or("").toLowerCase().contains(lowerQuery);
+
+      }
 
       boolean isTagMatched = false;
       for (String tag : contact.getTags()) {

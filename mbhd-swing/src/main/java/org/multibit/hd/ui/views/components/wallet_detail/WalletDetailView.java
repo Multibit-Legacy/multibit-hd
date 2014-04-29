@@ -89,11 +89,13 @@ public class WalletDetailView extends AbstractComponentView<WalletDetailModel> {
 
   @Subscribe
   public void onWalletDetailChangedEvent(WalletDetailChangedEvent walletDetailChangedEvent) {
+
     WalletDetail walletDetail = walletDetailChangedEvent.getWalletDetail();
     applicationDirectoryLabel.setText(walletDetail.getApplicationDirectory());
     walletDirectoryLabel.setText(walletDetail.getWalletDirectory());
     numberOfContactsLabel.setText(String.valueOf(walletDetail.getNumberOfContacts()));
     numberOfTransactionsLabel.setText(String.valueOf(walletDetail.getNumberOfPayments()));
+
   }
 }
 

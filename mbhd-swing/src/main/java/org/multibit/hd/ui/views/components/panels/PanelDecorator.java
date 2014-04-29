@@ -9,8 +9,8 @@ import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.borders.TextBubbleBorder;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -323,28 +323,29 @@ public class PanelDecorator {
   }
 
   /**
-    * <p>Add a cancel, previous, finish button combination</p>
-    *
-    * @param view   The view containing the panel to decorate
-    * @param wizard The wizard providing the actions
-    * @param <M>    The wizard model type
-    * @param <P>    The wizard panel model type
-    */
-   public static <M extends AbstractWizardModel, P> void addCancelPreviousFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
+   * <p>Add a cancel, previous, finish button combination</p>
+   *
+   * @param view   The view containing the panel to decorate
+   * @param wizard The wizard providing the actions
+   * @param <M>    The wizard model type
+   * @param <P>    The wizard panel model type
+   */
+  public static <M extends AbstractWizardModel, P> void addCancelPreviousFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
 
-     Preconditions.checkNotNull(view, "'view' must be present");
-     Preconditions.checkNotNull(view, "'wizard' must be present");
-     Preconditions.checkNotNull(view.getWizardScreenPanel(false), "'wizardScreenPanel' must be present");
+    Preconditions.checkNotNull(view, "'view' must be present");
+    Preconditions.checkNotNull(view, "'wizard' must be present");
+    Preconditions.checkNotNull(view.getWizardScreenPanel(false), "'wizardScreenPanel' must be present");
 
-     // Use the wizard panel
-     JPanel wizardScreenPanel = view.getWizardScreenPanel(false);
+    // Use the wizard panel
+    JPanel wizardScreenPanel = view.getWizardScreenPanel(false);
 
-     // Cancel always leads
-     addCancel(view, wizard, wizardScreenPanel);
-     addPrevious(view, wizard, wizardScreenPanel);
-     addFinish(view, wizard, wizardScreenPanel);
+    // Cancel always leads
+    addCancel(view, wizard, wizardScreenPanel);
+    addPrevious(view, wizard, wizardScreenPanel);
+    addFinish(view, wizard, wizardScreenPanel);
 
-   }
+  }
+
   /**
    * <p>Make the panel have the "danger" theme</p>
    *
@@ -576,6 +577,7 @@ public class PanelDecorator {
     Preconditions.checkNotNull(view, "'view' must be present");
     Preconditions.checkNotNull(view, "'wizard' must be present");
 
+    // Exit trails when Cancel is present
     view.setExitButton(Buttons.newExitButton(wizard.getExitAction(), false));
     wizardScreenPanel.add(view.getExitButton(), "cell 3 2");
 
@@ -596,17 +598,8 @@ public class PanelDecorator {
     Preconditions.checkNotNull(view, "'wizard' must be present");
 
     // Cancel always leads
-    if (wizard.isExiting()) {
-
-      view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
-      wizardScreenPanel.add(view.getCancelButton(), "cell 0 2");
-
-    } else {
-
-      view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
-      wizardScreenPanel.add(view.getCancelButton(), "cell 3 2");
-
-    }
+    view.setCancelButton(Buttons.newCancelButton(wizard.getCancelAction()));
+    wizardScreenPanel.add(view.getCancelButton(), "cell 0 2,push");
 
   }
 

@@ -1,5 +1,7 @@
 package org.multibit.hd.core.events;
 
+import com.google.bitcoin.core.Address;
+
 import java.math.BigInteger;
 import java.util.Arrays;
 
@@ -17,9 +19,9 @@ public class TransactionCreationEvent implements CoreEvent {
 
   private final BigInteger feePaid;
 
-  private final String destinationAddress;
+  private final Address destinationAddress;
 
-  private final String changeAddress;
+  private final Address changeAddress;
 
   private final boolean transactionCreationWasSuccessful;
 
@@ -31,8 +33,8 @@ public class TransactionCreationEvent implements CoreEvent {
     String transactionId,
     BigInteger amount,
     BigInteger feePaid,
-    String destinationAddress,
-    String changeAddress,
+    Address destinationAddress,
+    Address changeAddress,
     boolean transactionCreationWasSuccessful,
     String transactionCreationFailureReasonKey,
     String[] transactionCreationFailureReasonData
@@ -59,7 +61,7 @@ public class TransactionCreationEvent implements CoreEvent {
     return feePaid;
   }
 
-  public String getDestinationAddress() {
+  public Address getDestinationAddress() {
     return destinationAddress;
   }
 

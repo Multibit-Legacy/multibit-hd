@@ -40,6 +40,7 @@ import java.util.List;
 public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
 
   private JButton sendBitcoin;
+  private JButton requestBitcoin;
 
   private ModelAndView<DisplayPaymentsModel, DisplayPaymentsView> displaySendingPaymentsMaV;
 
@@ -98,7 +99,10 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
     // Start with disabled button and use Bitcoin network status to enable
     sendBitcoin.setEnabled(false);
 
-    JButton requestBitcoin = Buttons.newRequestBitcoinWizardButton(showRequestBitcoinWizardAction);
+    requestBitcoin = Buttons.newRequestBitcoinWizardButton(showRequestBitcoinWizardAction);
+
+    // Start with disabled button and use Bitcoin network status to enable
+    requestBitcoin.setEnabled(false);
 
     List<PaymentData> allPayments = walletService.getPaymentDataList();
     // Find the 'Sending' transactions for today
@@ -133,6 +137,16 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
     return contentPanel;
   }
 
+  @Override
+  public void afterShow() {
+
+    boolean enabled = CoreServices.getOrCreateBitcoinNetworkService().isStartedOk();
+
+    sendBitcoin.setEnabled(enabled);
+    requestBitcoin.setEnabled(enabled);
+
+  }
+
   /**
    * <p>Handles the response to a system status change</p>
    *
@@ -149,16 +163,25 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
       @Override
       public void run() {
 
+        // NOTE: Both send and request are disabled when the network is not available
+        // because it is possible that a second wallet is generating transactions using
+        // addresses that this one has not displayed yet. This would lead to the same
+        // address being used twice.
         switch (event.getSeverity()) {
           case RED:
             sendBitcoin.setEnabled(false);
+            requestBitcoin.setEnabled(false);
             break;
           case AMBER:
-            // We should really only permit a send when clean and green
+            // We should really only permit a send when clean and green but this
+            // causes problems with the FEST tests at present
+            // TODO Introduce a "guaranteed new wallet so don't synch" feature
             sendBitcoin.setEnabled(true);
+            requestBitcoin.setEnabled(true);
             break;
           case GREEN:
             sendBitcoin.setEnabled(true);
+            requestBitcoin.setEnabled(true);
             break;
           default:
             // Unknown status

@@ -1,6 +1,8 @@
 package org.multibit.hd.core.dto;
 
+import com.google.bitcoin.core.Address;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 
 /**
  * <p>Value object to provide the following to Contact API:</p>
@@ -14,20 +16,23 @@ import com.google.common.base.Optional;
  */
 public class Recipient {
 
-  private final String bitcoinAddress;
+  private final Address bitcoinAddress;
   private Optional<Contact> contact = Optional.absent();
 
   /**
-   * @param bitcoinAddress The Bitcoin address representation (address, key, seed etc)
+   * @param bitcoinAddress A Bitcoin address is mandatory for a Recipient, optional for a Contact
    */
-  public Recipient(String bitcoinAddress) {
+  public Recipient(Address bitcoinAddress) {
+
+    Preconditions.checkNotNull(bitcoinAddress, "'bitcoinAddress' must be present");
+
     this.bitcoinAddress = bitcoinAddress;
   }
 
   /**
-   * @return The address representation (address, key, seed etc)
+   * @return The Bitcoin address
    */
-  public String getBitcoinAddress() {
+  public Address getBitcoinAddress() {
     return bitcoinAddress;
   }
 
@@ -45,13 +50,13 @@ public class Recipient {
   @Override
   public String toString() {
     return "Recipient{" +
-      "bitcoinAddress='" + bitcoinAddress + '\'' +
+      "bitcoinAddress='" + bitcoinAddress + "'" +
       ", contact=" + contact.orNull() +
       '}';
   }
 
   /**
-   * @return The Bitcoin address or the contact name if present
+   * @return The contact name if present, otherwise the Bitcoin address
    */
   public String getSummary() {
 
@@ -59,6 +64,7 @@ public class Recipient {
       return contact.get().getName();
     }
 
-    return bitcoinAddress;
+    // The Base58 representation of this address
+    return bitcoinAddress.toString();
   }
 }

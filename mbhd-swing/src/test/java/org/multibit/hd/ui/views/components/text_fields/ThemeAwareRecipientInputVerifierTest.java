@@ -1,5 +1,7 @@
 package org.multibit.hd.ui.views.components.text_fields;
 
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.NetworkParameters;
 import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +24,8 @@ public class ThemeAwareRecipientInputVerifierTest {
 
   private ContactService contactService;
 
+  private NetworkParameters networkParameters;
+
   @Before
   public void setUp() throws Exception {
 
@@ -29,6 +33,7 @@ public class ThemeAwareRecipientInputVerifierTest {
 
     contactService = mock(ContactService.class);
 
+    networkParameters = BitcoinNetwork.current().get();
   }
 
   @Test
@@ -92,32 +97,11 @@ public class ThemeAwareRecipientInputVerifierTest {
     RecipientComboBoxEditor.ComboBoxTextField comboEditor = ((RecipientComboBoxEditor.ComboBoxTextField) comboBox.getEditor().getEditorComponent());
 
     // Act
-    comboBox.setSelectedItem(new Recipient("AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty"));
-    assertThat(testObject.verify(comboEditor)).isFalse();
-
-    comboBox.setSelectedItem(new Recipient(" "));
-    assertThat(testObject.verify(comboEditor)).isFalse();
-
-    comboBox.setSelectedItem(new Recipient("AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty"));
-    assertThat(testObject.verify(comboEditor)).isFalse();
-
-    comboBox.setSelectedItem(new Recipient("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgdfjkt"));
-    assertThat(testObject.verify(comboEditor)).isFalse();
-
-    comboBox.setSelectedItem(new Recipient("1AhN6rPdrMuKBGFDKR1k9A8SCLYa"));
-    assertThat(testObject.verify(comboEditor)).isFalse();
-
-    comboBox.setSelectedItem(new Recipient("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty"));
+    comboBox.setSelectedItem(new Recipient(new Address(networkParameters, "1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty")));
     assertThat(testObject.verify(comboEditor)).isTrue();
 
-    // Use a public domain P2SH address
-    comboBox.setSelectedItem(new Recipient("35b9vsyH1KoFT5a5KtrKusaCcPLkiSo1t"));
-    assertThat(testObject.verify(comboEditor)).isFalse();
 
-    comboBox.setSelectedItem(new Recipient("35b9vsyH1KoFT5a5KtrKusaCcPLkiSo1tUB"));
-    assertThat(testObject.verify(comboEditor)).isFalse();
-
-    comboBox.setSelectedItem(new Recipient("35b9vsyH1KoFT5a5KtrKusaCcPLkiSo1tU"));
+    comboBox.setSelectedItem(new Recipient(new Address(networkParameters, "35b9vsyH1KoFT5a5KtrKusaCcPLkiSo1tU")));
     assertThat(testObject.verify(comboEditor)).isTrue();
 
   }

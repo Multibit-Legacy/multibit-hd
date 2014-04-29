@@ -40,7 +40,8 @@ public class EnterRecipientModel implements Model<Recipient> {
 
   @Override
   public void setValue(Recipient value) {
-    this.recipient = Optional.of(value);
+
+    this.recipient = Optional.fromNullable(value);
 
     // Fire a component model updated event
     ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));

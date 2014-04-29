@@ -59,7 +59,7 @@ public class RecipientListCellRenderer extends JLabel implements ListCellRendere
     if (value.getContact().isPresent()) {
       sourceText = value.getContact().get().getName();
     } else {
-      sourceText = value.getBitcoinAddress();
+      sourceText = value.getBitcoinAddress().toString();
     }
 
     // Embolden the matching fragments

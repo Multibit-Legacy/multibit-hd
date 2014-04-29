@@ -1,5 +1,8 @@
 package org.multibit.hd.ui.views.components.auto_complete;
 
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.AddressFormatException;
+import com.google.bitcoin.core.NetworkParameters;
 import com.google.common.base.Strings;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.Recipient;
@@ -25,18 +28,20 @@ public class AutoCompleteFilters {
   }
 
   /**
-   * @param contactService The contact service to use for queries
+   * @param contactService    The contact service to use for queries
+   * @param networkParameters The network parameters
    *
    * @return An auto-complete filter linked to the Contact API
    */
-  public static AutoCompleteFilter<Recipient> newRecipientFilter(final ContactService contactService) {
+  public static AutoCompleteFilter<Recipient> newRecipientFilter(final ContactService contactService, final NetworkParameters networkParameters) {
 
     return new AutoCompleteFilter<Recipient>() {
 
       @Override
       public Recipient[] create() {
 
-        List<Contact> contacts = contactService.allContacts();
+        // Only require recipients that can be paid
+        List<Contact> contacts = contactService.filterContactsByContent("*", true);
 
         return populateRecipients(contacts);
 
@@ -66,10 +71,17 @@ public class AutoCompleteFilters {
 
         int i = 0;
         for (Contact contact : contacts) {
-          Recipient recipient = new Recipient(contact.getBitcoinAddress().or(""));
-          recipient.setContact(contact);
-          recipients[i] = recipient;
-          i++;
+          String address = null;
+          try {
+            address = contact.getBitcoinAddress().orNull();
+            Address bitcoinAddress = new Address(networkParameters, address);
+            Recipient recipient = new Recipient(bitcoinAddress);
+            recipient.setContact(contact);
+            recipients[i] = recipient;
+            i++;
+          } catch (AddressFormatException e) {
+            throw new IllegalArgumentException("Recipients must have a valid Bitcoin address ('"+address+"'). Check contact filter: "+contact, e);
+          }
         }
 
         return recipients;

@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
+import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.Wallet;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -125,10 +126,14 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
     Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started");
 
-    String changeAddress = bitcoinNetworkService.getNextChangeAddress();
+    Address changeAddress = bitcoinNetworkService.getNextChangeAddress();
 
     BigInteger satoshis = enterAmountPanelModel.getEnterAmountModel().getSatoshis();
-    String bitcoinAddress = enterAmountPanelModel.getEnterRecipientModel().getRecipient().get().getBitcoinAddress();
+    Address bitcoinAddress = enterAmountPanelModel
+      .getEnterRecipientModel()
+      .getRecipient()
+      .get()
+      .getBitcoinAddress();
     String password = confirmPanelModel.getPasswordModel().getValue();
 
     Optional<FeeState> feeState = calculateBRITFeeState();
@@ -139,7 +144,14 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
             feeState
     );
 
-    bitcoinNetworkService.send(bitcoinAddress, satoshis, changeAddress, BitcoinNetworkService.DEFAULT_FEE_PER_KB, password, feeState);
+    bitcoinNetworkService.send(
+      bitcoinAddress,
+      satoshis,
+      changeAddress,
+      BitcoinNetworkService.DEFAULT_FEE_PER_KB,
+      password,
+      feeState
+    );
 
     // The send throws TransactionCreationEvents and BitcoinSentEvents to which you subscribe to to work out success and failure.
 

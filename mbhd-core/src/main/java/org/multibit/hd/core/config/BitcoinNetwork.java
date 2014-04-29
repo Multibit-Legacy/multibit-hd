@@ -12,6 +12,7 @@ import com.google.bitcoin.params.MainNetParams;
  * @since 0.0.1
  *  
  */
+// TODO (GR) Move to utils package
 public enum BitcoinNetwork {
 
   /**

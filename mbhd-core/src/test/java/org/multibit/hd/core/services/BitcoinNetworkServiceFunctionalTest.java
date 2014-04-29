@@ -188,17 +188,17 @@ public class BitcoinNetworkServiceFunctionalTest {
 
     WalletSummary sourceWalletSummary;
     String walletRoot;
-    Address sourceAddress;
+    Address changeAddress;
     Address destinationAddress;
     if (sendFromWallet1) {
       sourceWalletSummary = walletSummary1;
       walletRoot = walletRoot1;
-      sourceAddress = address1;
+      changeAddress = address1;
       destinationAddress = address2;
     } else {
       sourceWalletSummary = walletSummary2;
       walletRoot = walletRoot2;
-      sourceAddress = address2;
+      changeAddress = address2;
       destinationAddress = address1;
     }
 
@@ -218,7 +218,14 @@ public class BitcoinNetworkServiceFunctionalTest {
       bitcoinSentEvent = null;
 
       // Send the bitcoins
-      bitcoinNetworkService.send(destinationAddress.toString(), SEND_AMOUNT, sourceAddress.toString(), FEE_PER_KB, WALLET_PASSWORD, Optional.<FeeState>absent());
+      bitcoinNetworkService.send(
+        destinationAddress,
+        SEND_AMOUNT,
+        changeAddress,
+        FEE_PER_KB,
+        WALLET_PASSWORD,
+        Optional.<FeeState>absent()
+      );
 
       // the onBitcoinSentEvent method receives the bitcoinSentEvent once the send has completed
       // wait for a while for the send to actually be transmitted
