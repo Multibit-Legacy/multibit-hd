@@ -148,7 +148,7 @@ public class BitcoinNetworkService extends AbstractService {
     log.debug("Created peer group '{}'", peerGroup);
 
     log.debug("Starting peer group ...");
-    peerGroup.start();
+    peerGroup.startAsync();
     log.debug("Started peer group.");
 
     startedOk = true;
@@ -258,7 +258,7 @@ public class BitcoinNetworkService extends AbstractService {
         peerGroup.removeWallet(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet());
       }
 
-      peerGroup.stopAndWait();
+      peerGroup.stopAsync();
       log.debug("Service peerGroup stopped");
     }
 
