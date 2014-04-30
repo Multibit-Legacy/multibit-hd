@@ -50,7 +50,6 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import static com.google.bitcoin.core.Utils.toNanoCoins;
-import static com.google.bitcoin.utils.TestUtils.createFakeTx;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class FeeServicesTest {
@@ -226,7 +225,9 @@ public class FeeServicesTest {
 
   private Transaction sendMoneyToWallet(Wallet wallet, BigInteger value, Address toAddress) throws IOException, VerificationException {
 
-    Transaction tx = createFakeTx(NETWORK_PARAMETERS, value, toAddress);
+    // If the next line isn't compiling you probably need to update your bitcoinj !
+    // createFakeTx has been moved !
+    Transaction tx = com.google.bitcoin.testing.FakeTxBuilder.createFakeTx(NETWORK_PARAMETERS, value, toAddress);
     // Mark it as coming from self as then it can be spent when pending
     tx.getConfidence().setSource(TransactionConfidence.Source.SELF);
 
