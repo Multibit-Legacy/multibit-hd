@@ -1,6 +1,7 @@
 package org.multibit.hd.core.services;
 
 import com.google.bitcoin.core.Wallet;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.multibit.hd.brit.dto.FeeState;
@@ -55,7 +56,8 @@ public class CoreServicesTest {
     // TODO May not be required
     // WalletManager.INSTANCE.open(temporaryDirectory);
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
-    WalletSummary walletSummary = WalletManager.INSTANCE.getOrCreateWalletSummary(temporaryDirectory, seed, PASSWORD);
+    long nowInSeconds = (long)(DateTime.now().getMillis() * 0.001);
+    WalletSummary walletSummary = WalletManager.INSTANCE.getOrCreateWalletSummary(temporaryDirectory, seed, nowInSeconds, PASSWORD);
 
     Wallet wallet  = walletSummary.getWallet();
 

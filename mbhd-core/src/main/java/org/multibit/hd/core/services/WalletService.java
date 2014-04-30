@@ -641,9 +641,7 @@ public class WalletService {
    * Create the next receiving address for the wallet.
    * This is either the first key's address in the wallet or is
    * worked out deterministically and uses the lastIndexUsed on the Payments so that each address is unique
-   * <p/>
-   * Remember to save both the dirty wallet and the payment requests backing store after calling this method when new keys are generated
-   * TODO replace with proper HD algorithm
+   * TODO can remove 'lastIndexUsed on the Payments object now
    *
    * @param walletPasswordOptional Either: Optional.absent() = just recycle the first address in the wallet or:  password of the wallet to which the new private key is added
    *
@@ -661,10 +659,11 @@ public class WalletService {
         // increment the lastIndexUsed
         lastIndexUsed++;
         log.debug("The last index used has been incremented to " + lastIndexUsed);
-        ECKey newKey = WalletManager.INSTANCE.createAndAddNewWalletKey(currentWalletSummary.get().getWallet(), walletPasswordOptional.get(), lastIndexUsed);
+        ECKey newKey = currentWalletSummary.get().getWallet().freshReceiveKey();
         return newKey.toAddress(networkParameters).toString();
       } else {
-        return currentWalletSummary.get().getWallet().getKeys().get(0).toAddress(networkParameters).toString();
+        // A password is required as all wallets are encrypted
+        throw new IllegalStateException("No password specified");
       }
     }
 

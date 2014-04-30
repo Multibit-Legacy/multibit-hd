@@ -5,6 +5,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
+import org.joda.time.DateTime;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.crypto.AESUtils;
@@ -152,7 +153,8 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       // Attempt to create the wallet (the manager will track the ID etc)
       WalletManager walletManager = WalletManager.INSTANCE;
       seed = seedPhraseGenerator.convertToSeed(seedPhrase);
-      walletSummary = walletManager.createWalletSummary(seed, password);
+      long nowInSeconds = (long)(DateTime.now().getMillis() * 0.001);
+      walletSummary = walletManager.createWalletSummary(seed, nowInSeconds, password);
 
       Preconditions.checkNotNull(walletSummary.getWalletId(), "'walletId' must be present");
 

@@ -622,7 +622,9 @@ public class BitcoinNetworkService extends AbstractService {
     Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet().getKeychainSize() > 0);
 
     Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
-    return wallet.getKeys().get(0).toAddress(networkParameters);
+    // TODO this is the change address of the current key and won't increment
+    // TODO Change address needs tieing to the getFreshKey call
+    return wallet.getChangeAddress();
 
   }
 
