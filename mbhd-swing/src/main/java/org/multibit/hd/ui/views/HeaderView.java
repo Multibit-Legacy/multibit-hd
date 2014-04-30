@@ -1,9 +1,9 @@
 package org.multibit.hd.ui.views;
 
+import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.events.ConfigurationChangedEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
@@ -68,7 +68,7 @@ public class HeaderView {
     contentPanel.setBackground(Themes.currentTheme.headerPanelBackground());
 
     // Create the balance display
-    balanceDisplayMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.HEADER, true,"header");
+    balanceDisplayMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.HEADER, true, "header");
 
     contentPanel.add(balanceDisplayMaV.getView().newComponentPanel(), "growx,push,wrap");
     contentPanel.add(alertPanel, "growx,aligny top,push");
@@ -84,24 +84,6 @@ public class HeaderView {
    */
   public JPanel getContentPanel() {
     return contentPanel;
-  }
-
-  /**
-   * <p>Handles the representation of the header when a configuration change occurs</p>
-   *
-   * @param event The configuration change event
-   */
-  @Subscribe
-  public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
-
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        populateAlertPanel();
-
-      }
-    });
-
   }
 
   /**
@@ -134,10 +116,16 @@ public class HeaderView {
   @Subscribe
   public void onAlertAddedEvent(final AlertAddedEvent event) {
 
+
+    Preconditions.checkNotNull(event, "'event' must be present");
+
+    final AlertModel alertModel = event.getAlertModel();
+
+    Preconditions.checkNotNull(alertModel, "'alertModel' must be present");
+
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        AlertModel alertModel = event.getAlertModel();
 
         // Update the text according to the model
         alertMessageLabel.setText(alertModel.getLocalisedMessage());
@@ -204,7 +192,12 @@ public class HeaderView {
 
   }
 
+  /**
+   * <p>Populate the alert panel in preparation for any alerts</p>
+   */
   private void populateAlertPanel() {
+
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be in the EDT. Check MainController.");
 
     alertPanel.removeAll();
 

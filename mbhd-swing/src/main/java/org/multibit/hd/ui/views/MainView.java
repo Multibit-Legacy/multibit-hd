@@ -1,9 +1,8 @@
 package org.multibit.hd.ui.views;
 
-import com.google.common.eventbus.Subscribe;
+import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.events.ConfigurationChangedEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
@@ -115,52 +114,39 @@ public class MainView extends JFrame {
 
   }
 
-  @Subscribe
-  public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
-
-    log.debug("Received 'configuration changed' event");
-
-    refresh();
-
-  }
-
   /**
    * <p>Rebuild the contents of the main view based on the current configuration and theme</p>
    */
   public void refresh() {
 
-    // Must be in the EDT
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be in the EDT. Check MainController.");
 
-        // Clear out all the old content and rebuild it from scratch
-        getContentPane().removeAll();
-        getContentPane().add(createMainContent());
+    // Clear out all the old content and rebuild it from scratch
+    getContentPane().removeAll();
+    getContentPane().add(createMainContent());
 
-        // Catch up on recent events
-        CoreServices.getApplicationEventService().repeatLatestEvents();
+    // Catch up on recent events
+    CoreServices.getApplicationEventService().repeatLatestEvents();
 
-        Panels.hideLightBoxIfPresent();
+    Panels.hideLightBoxIfPresent();
 
-        // Check for any wizards that were showing before the refresh occurred
-        if (showExitingWelcomeWizard) {
-          Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardScreenHolder());
-        } else if (showExitingPasswordWizard) {
-          // Force an exit if the user can't get through
-          Panels.showLightBox(Wizards.newExitingPasswordWizard().getWizardScreenHolder());
-        } else {
-          // No wizards so this reset is a settings change
-          detailViewAfterWalletOpened();
+    // Check for any wizards that were showing before the refresh occurred
+    if (showExitingWelcomeWizard) {
+      Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardScreenHolder());
+    } else if (showExitingPasswordWizard) {
+      // Force an exit if the user can't get through
+      Panels.showLightBox(Wizards.newExitingPasswordWizard().getWizardScreenHolder());
+    } else {
+      log.debug("Showing detail view");
 
-        }
+      // No wizards so this reset is a settings change
+      detailViewAfterWalletOpened();
 
-        // Tidy up and show
-        pack();
-        setVisible(true);
+    }
 
-      }
-    });
+    // Tidy up and show
+    pack();
+    setVisible(true);
 
   }
 

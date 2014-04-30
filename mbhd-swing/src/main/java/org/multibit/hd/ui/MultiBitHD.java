@@ -250,8 +250,8 @@ public class MultiBitHD {
     ThemeKey themeKey = ThemeKey.valueOf(Configurations.currentConfiguration.getApplication().getCurrentTheme());
     Themes.switchTheme(themeKey.theme());
 
-    // Build the main view
-    MainView mainView = new MainView();
+    // Build a new MainView
+    final MainView mainView = new MainView();
     mainController.setMainView(mainView);
 
     // Check for any pre-existing wallets in the application directory
@@ -272,8 +272,13 @@ public class MultiBitHD {
 
     }
 
-    // Provide a backdrop to the user and trigger the showing of the wizard
-    mainView.refresh();
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        // Provide a backdrop to the user and trigger the showing of the wizard
+        mainView.refresh();
+      }
+    });
 
     // Catch up with any early security events
     Optional<SecurityEvent> securityEvent = CoreServices.getApplicationEventService().getLatestSecurityEvent();

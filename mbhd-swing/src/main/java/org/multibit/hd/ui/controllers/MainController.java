@@ -183,26 +183,36 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
   @Subscribe
   public synchronized void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
 
-    log.trace("Received 'configuration changed' event");
+    log.debug("Received 'configuration changed' event");
 
     Preconditions.checkNotNull(event, "'event' must be present");
 
     // Switch the exchange ticker service
     handleExchange();
 
-    // Switch the theme before any other UI building takes place
-    handleTheme();
-
-    // Rebuild MainView contents
-    handleLocale();
-
-    // Allow time for the views to update
-    Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
-
     // Ensure the Swing thread can perform a complete refresh
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {
+
+        // Switch the theme before any other UI building takes place
+        handleTheme();
+
+        // Rebuild MainView contents
+        handleLocale();
+
+        // Force a frame redraw
         Panels.applicationFrame.invalidate();
+
+        // Rebuild the detail views and alert panels
+        mainView.refresh();
+
+        // Show the current detail screen
+        Screen screen = Screen.valueOf(Configurations.currentConfiguration.getApplication().getCurrentScreen());
+        ControllerEvents.fireShowDetailScreenEvent(screen);
+
+        // Trigger the alert panels to refresh
+        headerController.refresh();
+
       }
     });
 
@@ -512,9 +522,14 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
     mainView.setShowExitingWelcomeWizard(false);
     mainView.setShowExitingPasswordWizard(false);
 
-    mainView.refresh();
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        mainView.refresh();
+      }
+    });
 
-    // Give time for detail view to initialise the screens
+    // Block to detail view to initialise the screens
     Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
 
     // Use the current wallet summary

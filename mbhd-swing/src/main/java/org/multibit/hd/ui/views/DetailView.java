@@ -68,7 +68,7 @@ public class DetailView {
   public void afterWalletOpened() {
 
     // Should be called from within the EDT by design
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "afterWalletOpened not called from EDT. Design fault.");
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be in the EDT. Check MainController.");
 
     if (screenViewMap.isEmpty()) {
 
