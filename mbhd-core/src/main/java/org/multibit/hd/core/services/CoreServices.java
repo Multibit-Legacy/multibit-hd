@@ -139,7 +139,7 @@ public class CoreServices {
     }
 
     if (configuration.isPresent()) {
-      log.warn("Using current configuration");
+      log.info("Using current configuration");
       Configurations.currentConfiguration = configuration.get();
     } else {
       log.warn("Using default configuration");

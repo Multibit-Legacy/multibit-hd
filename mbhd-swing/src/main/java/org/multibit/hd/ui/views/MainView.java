@@ -3,9 +3,9 @@ package org.multibit.hd.ui.views;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.events.ConfigurationChangedEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
-import org.multibit.hd.ui.events.view.SettingsChangedEvent;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
@@ -116,9 +116,9 @@ public class MainView extends JFrame {
   }
 
   @Subscribe
-  public void onSettingsChangedEvent(SettingsChangedEvent event) {
+  public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
 
-    log.debug("Received 'settings changed' event");
+    log.debug("Received 'configuration changed' event");
 
     refresh();
 

@@ -3,12 +3,12 @@ package org.multibit.hd.ui.views;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.events.ConfigurationChangedEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
 import org.multibit.hd.ui.events.view.AlertAddedEvent;
 import org.multibit.hd.ui.events.view.BalanceChangedEvent;
-import org.multibit.hd.ui.events.view.SettingsChangedEvent;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.components.*;
@@ -87,12 +87,12 @@ public class HeaderView {
   }
 
   /**
-   * <p>Handles the representation of the header when a settings change occurs</p>
+   * <p>Handles the representation of the header when a configuration change occurs</p>
    *
-   * @param event The settings change event
+   * @param event The configuration change event
    */
   @Subscribe
-  public void onSettingsChangedEvent(SettingsChangedEvent event) {
+  public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
 
     SwingUtilities.invokeLater(new Runnable() {
       @Override

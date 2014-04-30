@@ -35,13 +35,6 @@ public class ViewEvents {
   }
 
   /**
-   * <p>Broadcast a new "settings changed" event</p>
-   */
-  public static void fireSettingsChangedEvent() {
-    CoreServices.uiEventBus.post(new SettingsChangedEvent());
-  }
-
-  /**
    * <p>Broadcast a new "balance changed" event</p>
    *
    * @param satoshis     The current balance in satoshis

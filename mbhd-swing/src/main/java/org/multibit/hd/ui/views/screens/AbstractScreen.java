@@ -2,8 +2,8 @@ package org.multibit.hd.ui.views.screens;
 
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
+import org.multibit.hd.core.events.ConfigurationChangedEvent;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.events.view.SettingsChangedEvent;
 import org.multibit.hd.ui.views.components.Panels;
 
 import javax.swing.*;
@@ -38,12 +38,12 @@ public abstract class AbstractScreen<M extends ScreenModel> {
     detailPanel = Panels.newPanel();
 
     // Trigger a view refresh
-    onSettingsChangedEvent(new SettingsChangedEvent());
+    onConfigurationChangedEvent(null);
 
   }
 
   @Subscribe
-  public void onSettingsChangedEvent(SettingsChangedEvent event) {
+  public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
 
     // Clear out any existing components
     detailPanel.removeAll();
