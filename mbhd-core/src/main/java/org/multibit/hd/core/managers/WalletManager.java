@@ -4,7 +4,6 @@ import com.google.bitcoin.core.*;
 import com.google.bitcoin.script.Script;
 import com.google.bitcoin.store.WalletProtobufSerializer;
 import com.google.bitcoin.wallet.DeterministicSeed;
-import com.google.bitcoin.wallet.KeyChainGroup;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -268,12 +267,8 @@ public enum WalletManager implements WalletEventListener {
 
     // Create a wallet using the seed and password
     DeterministicSeed deterministicSeed = new DeterministicSeed(seed, creationTimeInSeconds);
-    KeyChainGroup keyChainGroup = new KeyChainGroup(deterministicSeed);
-
-    // KeyCrypter keyCrypter = new KeyCrypterScrypt();
-    // TODO - encryption of the wallet
-
-    Wallet walletToReturn = new Wallet(networkParameters, keyChainGroup);
+    Wallet walletToReturn = Wallet.fromSeed(networkParameters, deterministicSeed);
+    //walletToReturn.encrypt(password);
     walletToReturn.setVersion(MBHD_WALLET_VERSION);
 
 

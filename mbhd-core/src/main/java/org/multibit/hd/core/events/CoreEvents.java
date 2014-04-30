@@ -5,6 +5,7 @@ import org.joda.money.BigMoney;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
+import org.multibit.hd.core.dto.ExchangeSummary;
 import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.services.CoreServices;
@@ -47,6 +48,16 @@ public class CoreEvents {
   public static void fireExchangeRateChangedEvent(BigMoney rate, Optional<String> rateProvider, DateTime expires) {
     log.trace("Firing 'exchange rate changed' event");
     CoreServices.uiEventBus.post(new ExchangeRateChangedEvent(rate, rateProvider, expires));
+  }
+
+  /**
+   * <p>Broadcast a new "exchange status changed" event</p>
+   *
+   * @param exchangeSummary The exchange summary
+   */
+  public static void fireExchangeStatusChangedEvent(ExchangeSummary exchangeSummary) {
+    log.trace("Firing 'exchange status changed' event");
+    CoreServices.uiEventBus.post(new ExchangeStatusChangedEvent(exchangeSummary));
   }
 
   /**

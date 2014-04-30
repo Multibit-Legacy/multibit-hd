@@ -1,7 +1,5 @@
 package org.multibit.hd.core.concurrent;
 
-import org.multibit.hd.core.exceptions.ExceptionHandler;
-
 import java.util.concurrent.*;
 
 /**
@@ -48,9 +46,9 @@ public class SafeThreadPoolExecutor extends ThreadPoolExecutor {
         Thread.currentThread().interrupt();
       }
     }
-    if (t != null) {
-      ExceptionHandler.handleThrowable(t);
-    }
+
+    // We rely on ListenableFuture to handle exceptions from executors
+
   }
 
 }

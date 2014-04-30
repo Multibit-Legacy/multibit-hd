@@ -14,6 +14,7 @@ import org.joda.money.CurrencyUnit;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.ExchangeSummary;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.utils.CurrencyUtils;
@@ -96,44 +97,66 @@ public class ExchangeTickerService extends AbstractService {
 
         Futures.addCallback(futureTicker, new FutureCallback<Ticker>() {
 
-          @Override
-          public void onSuccess(Ticker ticker) {
+            @Override
+            public void onSuccess(Ticker ticker) {
 
-            // Network or exchange might be down
-            if (ticker==null) {
-              return;
+              // Network or exchange might be down
+              if (ticker == null) {
+                CoreEvents.fireExchangeStatusChangedEvent(ExchangeSummary.newExchangeDown(exchangeKey.getExchangeName(), ""));
+                return;
+              }
+
+              // Fire the event in case the exchange is restored (or a new exchange comes online from a settings change)
+              CoreEvents.fireExchangeStatusChangedEvent(ExchangeSummary.newExchangeOK(exchangeKey.getExchangeName()));
+
+              if (previous == null || !ticker.getLast().isEqual(previous)) {
+
+                BigMoney rate = ticker.getLast();
+
+                String exchangeName = exchangeKey.getExchangeName();
+
+                CoreEvents.fireExchangeRateChangedEvent(
+                  rate,
+                  Optional.of(exchangeName),
+                  // Exchange rate will expire just after the next update (with small overlap)
+                  Dates.nowUtc().plusSeconds(TICKER_REFRESH_SECONDS + 5)
+                );
+
+                log.debug("Updated '{}' ticker: '{}'", exchangeName, ticker.getLast());
+
+                previous = ticker.getLast();
+              }
             }
 
-            if (previous == null || !ticker.getLast().isEqual(previous)) {
+            @Override
+            public void onFailure(Throwable t) {
 
-              BigMoney rate = ticker.getLast();
+              if (t instanceof UnknownHostException) {
+                // The exchange is either down or we have no network connection
+                log.warn("Exchange '{}' reported an unknown host error: {}", exchangeKey.getExchangeName(), t.getMessage());
+                CoreEvents.fireExchangeStatusChangedEvent(ExchangeSummary.newExchangeDown(exchangeKey.getExchangeName(), t.getMessage()));
+              }
 
-              String exchangeName = exchangeKey.getExchangeName();
+              if (t instanceof SSLHandshakeException) {
+                // The exchange is not presenting a valid SSL certificate - treat as down
+                log.warn("Exchange '{}' reported an SSL error: {}", exchangeKey.getExchangeName(), t.getMessage());
+                CoreEvents.fireExchangeStatusChangedEvent(ExchangeSummary.newExchangeDown(exchangeKey.getExchangeName(), t.getMessage()));
+              }
 
-              CoreEvents.fireExchangeRateChangedEvent(
-                rate,
-                Optional.of(exchangeName),
-                // Exchange rate will expire just after the next update (with small overlap)
-                Dates.nowUtc().plusSeconds(TICKER_REFRESH_SECONDS + 5)
-              );
-
-              log.debug("Updated '{}' ticker: '{}'", exchangeName, ticker.getLast());
-
-              previous = ticker.getLast();
+              if (t instanceof IllegalArgumentException) {
+                // The exchange may have changed their currency offerings
+                log.warn("Exchange '{}' reported a currency error: {}", exchangeKey.getExchangeName(), t.getMessage());
+                CoreEvents.fireExchangeStatusChangedEvent(ExchangeSummary.newExchangeError(exchangeKey.getExchangeName(), t.getMessage()));
+              }
             }
           }
-
-          @Override
-          public void onFailure(Throwable t) {
-            // Keep the logging to a minimum
-            log.warn("Exchange rate lookup failed 'BTC' ('{}')", exchangeKey.getExchangeName());
-
-          }
-        });
+        );
 
       }
 
-    }, 0, TICKER_REFRESH_SECONDS, TimeUnit.SECONDS);
+    }
+
+      , 0, TICKER_REFRESH_SECONDS, TimeUnit.SECONDS);
 
     return true;
 
@@ -156,35 +179,13 @@ public class ExchangeTickerService extends AbstractService {
 
         if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
 
-          try {
-
-            // Triangulate through USD to reach exchange rate
-            return getTriangulatedTicker();
-
-          } catch (UnknownHostException e) {
-            // The exchange is either down or we have no network connection
-            return null;
-          } catch (SSLHandshakeException e) {
-            // The exchange is not presenting a valid SSL certificate - treat as down
-            log.warn("Exchange '{}' reported an SSL error: {}",exchangeKey.getExchangeName(), e.getMessage());
-            return null;
-          }
+          // Triangulate through USD to reach exchange rate
+          return getTriangulatedTicker();
 
         } else {
 
-          try {
-
-            // Crypto-exchange is straightforward
-            return getDirectTicker();
-
-          } catch (UnknownHostException e) {
-            // The exchange is either down or we have no network connection
-            return null;
-          } catch (SSLHandshakeException e) {
-            // The exchange is not presenting a valid SSL certificate - treat as down
-            log.warn("Exchange '{}' reported an SSL error: {}",exchangeKey.getExchangeName(), e.getMessage());
-            return null;
-          }
+          // Crypto-exchange is straightforward
+          return getDirectTicker();
         }
       }
 
@@ -210,7 +211,7 @@ public class ExchangeTickerService extends AbstractService {
         // Infer the ticker
         return Ticker.TickerBuilder.newInstance()
           .withLast(bitcoinToLocal)
-          // All others are zero
+            // All others are zero
           .withAsk(BigMoney.zero(localCurrencyUnit))
           .withBid(BigMoney.zero(localCurrencyUnit))
           .withHigh(BigMoney.zero(localCurrencyUnit))
@@ -228,7 +229,7 @@ public class ExchangeTickerService extends AbstractService {
    */
   public ListenableFuture<String[]> allCurrencies() {
 
-    return SafeExecutors.newFixedThreadPool(1,"all-currencies").submit(new Callable<String[]>() {
+    return SafeExecutors.newFixedThreadPool(1, "all-currencies").submit(new Callable<String[]>() {
       @Override
       public String[] call() throws Exception {
         Locale currentLocale = Configurations.currentConfiguration.getLocale();
@@ -248,7 +249,7 @@ public class ExchangeTickerService extends AbstractService {
           String counterCode = currencyPair.counterCurrency;
 
           // Ignore any malformed currency pairs
-          if (baseCode == null || counterCode == null ) {
+          if (baseCode == null || counterCode == null) {
             continue;
           }
 

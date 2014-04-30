@@ -41,6 +41,20 @@ public class HeaderController {
   }
 
   /**
+   * <p>Trigger a refresh of the header view to ensure alert panels are shown</p>
+   */
+  public void refresh() {
+
+    if (!alertModels.isEmpty()) {
+
+      // The alert structure has changed so inform the view
+      ViewEvents.fireAlertAddedEvent(alertModels.get(0));
+
+    }
+
+  }
+
+  /**
    * <p>Called when the exchange rate changes</p>
    *
    * @param event The exchange rate change event
@@ -94,7 +108,7 @@ public class HeaderController {
   }
 
   /**
-   * <p>Handles the representation of the balance based on the current configuration</p>
+   * <p>Handles the presentation of a new alert</p>
    *
    * @param event The balance change event
    */
@@ -164,5 +178,4 @@ public class HeaderController {
     }
 
   }
-
 }

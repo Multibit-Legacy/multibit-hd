@@ -67,26 +67,22 @@ public class DetailView {
    */
   public void afterWalletOpened() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
+    // Should be called from within the EDT by design
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be in the EDT. Check MainController.");
 
-        if (screenViewMap.isEmpty()) {
+    if (screenViewMap.isEmpty()) {
 
-          // Populate based on the current locale
-          populateScreenViewMap();
+      // Populate based on the current locale
+      populateScreenViewMap();
 
-          // Once all the views are created allow events to occur
-          for (Map.Entry<Screen, AbstractScreenView> entry : screenViewMap.entrySet()) {
+      // Once all the views are created allow events to occur
+      for (Map.Entry<Screen, AbstractScreenView> entry : screenViewMap.entrySet()) {
 
-            // Ensure the screen is in the correct starting state
-            entry.getValue().fireInitialStateViewEvents();
-
-          }
-        }
+        // Ensure the screen is in the correct starting state
+        entry.getValue().fireInitialStateViewEvents();
 
       }
-    });
+    }
 
   }
 
@@ -95,7 +91,7 @@ public class DetailView {
 
     Preconditions.checkNotNull(event, "'event' must be present");
 
-    Preconditions.checkState(!screenViewMap.isEmpty(),"'screenViewMap' has not been initialised. DetailView is not ready.");
+    Preconditions.checkState(!screenViewMap.isEmpty(), "'screenViewMap' has not been initialised. DetailView is not ready.");
 
     SwingUtilities.invokeLater(new Runnable() {
       @Override

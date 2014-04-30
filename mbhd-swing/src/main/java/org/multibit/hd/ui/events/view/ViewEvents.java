@@ -35,20 +35,6 @@ public class ViewEvents {
   }
 
   /**
-   * <p>Broadcast a new "locale changed" event</p>
-   */
-  public static void fireLocaleChangedEvent() {
-    CoreServices.uiEventBus.post(new LocaleChangedEvent());
-  }
-
-  /**
-   * <p>Broadcast a new "theme changed" event</p>
-   */
-  public static void fireThemeChangedEvent() {
-    CoreServices.uiEventBus.post(new ThemeChangedEvent());
-  }
-
-  /**
    * <p>Broadcast a new "balance changed" event</p>
    *
    * @param satoshis     The current balance in satoshis

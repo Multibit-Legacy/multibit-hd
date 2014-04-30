@@ -2,9 +2,8 @@ package org.multibit.hd.ui.views.screens;
 
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
+import org.multibit.hd.core.events.ConfigurationChangedEvent;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.events.view.LocaleChangedEvent;
-import org.multibit.hd.ui.events.view.ThemeChangedEvent;
 import org.multibit.hd.ui.views.components.Panels;
 
 import javax.swing.*;
@@ -38,26 +37,19 @@ public abstract class AbstractScreen<M extends ScreenModel> {
 
     detailPanel = Panels.newPanel();
 
-    // Use current locale for initial creation
-    onLocaleChangedEvent(new LocaleChangedEvent());
+    // Trigger a view refresh
+    onConfigurationChangedEvent(null);
 
   }
 
   @Subscribe
-  public void onLocaleChangedEvent(LocaleChangedEvent event) {
+  public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
 
     // Clear out any existing components
     detailPanel.removeAll();
 
     // Invalidate for new layout
     Panels.invalidate(detailPanel);
-
-  }
-
-  @Subscribe
-  public void onThemeChangedEvent(ThemeChangedEvent event) {
-
-    onLocaleChangedEvent(null);
 
   }
 
