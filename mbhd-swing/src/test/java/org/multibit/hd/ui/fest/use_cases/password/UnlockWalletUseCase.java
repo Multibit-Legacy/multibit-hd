@@ -8,6 +8,8 @@ import org.multibit.hd.ui.languages.MessageKey;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static org.fest.swing.timing.Timeout.timeout;
+
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
@@ -25,6 +27,13 @@ public class UnlockWalletUseCase extends AbstractFestUseCase {
 
   @Override
   public void execute(Map<String, Object> parameters) {
+
+    // Wait for Exit button to appear
+    window
+      .button(MessageKey.EXIT.getKey())
+      .requireVisible()
+      // Allow a short time to overcome initialisation delays
+      .requireEnabled(timeout(1, TimeUnit.SECONDS));
 
     // Ensure Unlock is not enabled
     window

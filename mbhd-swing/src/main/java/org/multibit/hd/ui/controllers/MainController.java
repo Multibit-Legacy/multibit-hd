@@ -512,13 +512,48 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
   }
 
   /**
+   * Welcome wizard has created a new wallet so hand over to the password wizard for access
+   */
+  private void handlePasswordWizardHandover() {
+
+    log.debug("Hand over to password wizard");
+
+    // Handover
+    mainView.setShowExitingWelcomeWizard(false);
+    mainView.setShowExitingPasswordWizard(true);
+
+    // Use a new thread to handle the new wizard so that the handover can complete
+    SafeExecutors.newSingleThreadExecutor("password-handover").execute(new Runnable() {
+      @Override
+      public void run() {
+
+        // Allow time for the other wizard to finish hiding (50ms is sufficient)
+        Uninterruptibles.sleepUninterruptibly(50, TimeUnit.MILLISECONDS);
+
+        // Must execute on the EDT
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+
+            Panels.showLightBox(Wizards.newExitingPasswordWizard().getWizardScreenHolder());
+
+          }
+        });
+
+      }
+    });
+
+
+  }
+
+  /**
    * Password wizard has hidden
    */
   private void handlePasswordWizardHide() {
 
     log.debug("Starting wallet services");
 
-    // No handover
+    // No wizards on further refreshes
     mainView.setShowExitingWelcomeWizard(false);
     mainView.setShowExitingPasswordWizard(false);
 
@@ -529,7 +564,7 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
       }
     });
 
-    // Block to detail view to initialise the screens
+    // Allow time for MainView to refresh
     Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
 
     // Use the current wallet summary
@@ -562,31 +597,5 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
 
       }
     });
-  }
-
-  /**
-   * Welcome wizard has created a new wallet so hand over to the password wizard for access
-   */
-  private void handlePasswordWizardHandover() {
-
-    log.debug("Hand over to password wizard");
-
-    SafeExecutors.newSingleThreadExecutor("password-handover").execute(new Runnable() {
-      @Override
-      public void run() {
-
-        // Wait for the welcome wizard to hide and MainView to refresh
-        Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
-
-        // Hand over to the password wizard to complete access to the wallet
-        mainView.setShowExitingWelcomeWizard(false);
-        mainView.setShowExitingPasswordWizard(true);
-
-        // Trigger the redraw to show the wizard
-        mainView.refresh();
-
-      }
-    });
-
   }
 }

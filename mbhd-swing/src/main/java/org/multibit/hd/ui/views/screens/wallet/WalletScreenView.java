@@ -7,6 +7,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.PaymentType;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.ui.MultiBitUI;
@@ -169,15 +170,19 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
         // address being used twice.
         switch (event.getSeverity()) {
           case RED:
+            // Always disabled on RED
             sendBitcoin.setEnabled(false);
             requestBitcoin.setEnabled(false);
             break;
           case AMBER:
-            // We should really only permit a send when clean and green but this
-            // causes problems with the FEST tests at present
-            // TODO Introduce a "guaranteed new wallet so don't synch" feature
-            sendBitcoin.setEnabled(true);
-            requestBitcoin.setEnabled(true);
+            if (InstallationManager.unrestricted) {
+              sendBitcoin.setEnabled(true);
+              requestBitcoin.setEnabled(true);
+            } else {
+              // Disable on AMBER in production
+              sendBitcoin.setEnabled(false);
+              requestBitcoin.setEnabled(false);
+            }
             break;
           case GREEN:
             sendBitcoin.setEnabled(true);

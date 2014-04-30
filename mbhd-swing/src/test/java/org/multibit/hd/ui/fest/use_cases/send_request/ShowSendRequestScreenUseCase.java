@@ -43,8 +43,7 @@ public class ShowSendRequestScreenUseCase extends AbstractFestUseCase {
 
     window
       .button(MessageKey.SHOW_REQUEST_WIZARD.getKey())
-      .requireVisible()
-      .requireEnabled();
+      .requireVisible();
 
     // Change the selection away from Send/Request
     window
