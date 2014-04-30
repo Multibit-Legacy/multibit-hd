@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Range;
-import com.google.common.collect.Ranges;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
@@ -138,9 +137,10 @@ public class FooterView {
         progressBar.setEnabled(true);
 
         // Provide some ranges to allow different colouring
-        Range<Integer> hidden = Ranges.lessThan(0);
-        Range<Integer> amber = Ranges.closed(0, 99);
-        Range<Integer> green = Ranges.greaterThan(99);
+        // If you get a compilation error here you need to be using guava 16.0.1 or above !
+        Range<Integer> hidden = Range.lessThan(0);
+        Range<Integer> amber = Range.closed(0, 99);
+        Range<Integer> green = Range.greaterThan(99);
 
         if (hidden.contains(event.getPercent())) {
           progressBar.setVisible(false);
