@@ -188,7 +188,7 @@ public class FeeServicesTest {
 //    assertThat(wallet1.getKeychainSize() == 1).isTrue();
 //
 //  }
-
+//
 //  private void receiveATransaction(Wallet wallet, Address toAddress) throws Exception {
 //
 //    BigInteger v1 = Utils.toNanoCoins(1, 0);
@@ -208,10 +208,12 @@ public class FeeServicesTest {
 //    assertThat(estimatedFuture.isDone()).isTrue();
 //
 //  }
-
+//
 //  private Transaction sendMoneyToWallet(Wallet wallet, BigInteger value, Address toAddress) throws IOException, VerificationException {
 //
-//    Transaction tx = createFakeTx(NETWORK_PARAMETERS, value, toAddress);
+//    // If the next line isn't compiling you probably need to update your bitcoinj !
+//    // createFakeTx has been moved !
+//    Transaction tx = com.google.bitcoin.testing.FakeTxBuilder.createFakeTx(NETWORK_PARAMETERS, value, toAddress);
 //    // Mark it as coming from self as then it can be spent when pending
 //    tx.getConfidence().setSource(TransactionConfidence.Source.SELF);
 //
