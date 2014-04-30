@@ -94,7 +94,7 @@ public class HeaderController {
   }
 
   /**
-   * <p>Handles the representation of the balance based on the current configuration</p>
+   * <p>Handles the presentation of a new alert</p>
    *
    * @param event The balance change event
    */

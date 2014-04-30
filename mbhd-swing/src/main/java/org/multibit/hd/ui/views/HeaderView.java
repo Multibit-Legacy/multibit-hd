@@ -8,7 +8,7 @@ import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
 import org.multibit.hd.ui.events.view.AlertAddedEvent;
 import org.multibit.hd.ui.events.view.BalanceChangedEvent;
-import org.multibit.hd.ui.events.view.ThemeChangedEvent;
+import org.multibit.hd.ui.events.view.SettingsChangedEvent;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.components.*;
@@ -87,12 +87,12 @@ public class HeaderView {
   }
 
   /**
-   * <p>Handles the representation of the header when a theme change occurs</p>
+   * <p>Handles the representation of the header when a settings change occurs</p>
    *
-   * @param event The theme change event
+   * @param event The settings change event
    */
   @Subscribe
-  public void onThemeChangedEvent(ThemeChangedEvent event) {
+  public void onSettingsChangedEvent(SettingsChangedEvent event) {
 
     SwingUtilities.invokeLater(new Runnable() {
       @Override

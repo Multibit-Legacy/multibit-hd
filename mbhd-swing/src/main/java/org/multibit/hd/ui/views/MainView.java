@@ -5,7 +5,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
-import org.multibit.hd.ui.events.view.LocaleChangedEvent;
+import org.multibit.hd.ui.events.view.SettingsChangedEvent;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
@@ -116,9 +116,9 @@ public class MainView extends JFrame {
   }
 
   @Subscribe
-  public void onLocaleChangedEvent(LocaleChangedEvent event) {
+  public void onSettingsChangedEvent(SettingsChangedEvent event) {
 
-    log.debug("Received 'locale changed' event");
+    log.debug("Received 'settings changed' event");
 
     refresh();
 
@@ -133,6 +133,7 @@ public class MainView extends JFrame {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
+
         // Clear out all the old content and rebuild it from scratch
         getContentPane().removeAll();
         getContentPane().add(createMainContent());
@@ -145,10 +146,13 @@ public class MainView extends JFrame {
         // Check for any wizards that were showing before the refresh occurred
         if (showExitingWelcomeWizard) {
           Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardScreenHolder());
-        }
-        if (showExitingPasswordWizard) {
+        } else if (showExitingPasswordWizard) {
           // Force an exit if the user can't get through
           Panels.showLightBox(Wizards.newExitingPasswordWizard().getWizardScreenHolder());
+        } else {
+          // No wizards so this reset is a settings change
+          detailViewAfterWalletOpened();
+
         }
 
         // Tidy up and show

@@ -22,8 +22,7 @@ import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.controllers.HeaderController;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
-import org.multibit.hd.ui.events.view.LocaleChangedEvent;
-import org.multibit.hd.ui.events.view.ThemeChangedEvent;
+import org.multibit.hd.ui.events.view.SettingsChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -172,7 +171,7 @@ public class ComponentTestBed {
     frame.applyComponentOrientation(ComponentOrientation.getOrientation(locale));
 
     // Update the views
-    ViewEvents.fireLocaleChangedEvent();
+    ViewEvents.fireSettingsChangedEvent();
 
     // Allow time for the views to update
     Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
@@ -187,14 +186,7 @@ public class ComponentTestBed {
   }
 
   @Subscribe
-  public void onLocaleChangedEvent(LocaleChangedEvent event) {
-
-    show();
-
-  }
-
-  @Subscribe
-  public void onThemeChangedEvent(ThemeChangedEvent event) {
+  public void onSettingsChangedEvent(SettingsChangedEvent event) {
 
     show();
 
@@ -225,7 +217,7 @@ public class ComponentTestBed {
         JButton button = (JButton) e.getSource();
         button.setText(Languages.safeText(MessageKey.SELECT_LANGUAGE));
 
-        ViewEvents.fireLocaleChangedEvent();
+        ViewEvents.fireSettingsChangedEvent();
 
       }
     };
@@ -240,7 +232,7 @@ public class ComponentTestBed {
           Themes.switchTheme(new DarkTheme());
         }
 
-        ViewEvents.fireThemeChangedEvent();
+        ViewEvents.fireSettingsChangedEvent();
 
       }
     };

@@ -111,7 +111,7 @@ public class Models {
 
       return Optional.of(Models.newAlertModel(
         alertMessage.get(),
-        RAGStatus.AMBER,
+        RAGStatus.PINK,
         button
       ));
 

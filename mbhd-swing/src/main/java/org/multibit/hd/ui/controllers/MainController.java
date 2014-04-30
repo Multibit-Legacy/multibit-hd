@@ -21,7 +21,6 @@ import org.multibit.hd.core.services.ExchangeTickerService;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardHideEvent;
-import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.AlertModel;
@@ -69,18 +68,41 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
   private Optional<BitcoinNetworkService> bitcoinNetworkService = Optional.absent();
 
   private final BitcoinURIListeningService bitcoinURIListeningService;
+
+  // Keep track of other controllers for use after a preferences change
+  private final HeaderController headerController;
+  private final SidebarController sidebarController;
+
+  // Main view may be replaced during a soft shutdown
   private MainView mainView;
+
+  // Start with the assumption that it is fine to avoid annoying "everything is OK" alert
+  private RAGStatus lastExchangeSeverity = RAGStatus.GREEN;
+
+  // Start with no security alert
+  private Optional<String> lastSecurityEvent = Optional.absent();
+
 
   /**
    * @param bitcoinURIListeningService The Bitcoin URI listening service (must be present to permit a UI)
+   * @param headerController           The header controller
+   * @param sidebarController          The sidebar controller
    */
-  public MainController(BitcoinURIListeningService bitcoinURIListeningService) {
+  public MainController(
+    BitcoinURIListeningService bitcoinURIListeningService,
+    HeaderController headerController,
+    SidebarController sidebarController
+  ) {
 
     Preconditions.checkNotNull(bitcoinURIListeningService, "'bitcoinURIListeningService' must be present");
+    Preconditions.checkNotNull(headerController, "'headerController' must be present");
+    Preconditions.checkNotNull(sidebarController, "'sidebarController' must be present");
 
     CoreServices.uiEventBus.register(this);
 
     this.bitcoinURIListeningService = bitcoinURIListeningService;
+    this.headerController= headerController;
+    this.sidebarController= sidebarController;
 
   }
 
@@ -219,6 +241,58 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
   }
 
   @Subscribe
+  public void onExchangeStatusChangeEvent(ExchangeStatusChangedEvent event) {
+
+    log.trace("Received 'Exchange status changed' event");
+
+    Preconditions.checkNotNull(event, "'event' must be present");
+    Preconditions.checkNotNull(event.getSummary(), "'summary' must be present");
+
+    ExchangeSummary summary = event.getSummary();
+
+    if (!lastExchangeSeverity.equals(summary.getSeverity())) {
+
+      log.debug("Event severity has changed");
+
+      Preconditions.checkNotNull(summary.getSeverity(), "'severity' must be present");
+      Preconditions.checkNotNull(summary.getMessageKey(), "'errorKey' must be present");
+      Preconditions.checkNotNull(summary.getMessageData(), "'errorData' must be present");
+
+      final String localisedMessage;
+      if (summary.getMessageKey().isPresent() && summary.getMessageData().isPresent()) {
+        // There is a message key with data
+        localisedMessage = Languages.safeText(summary.getMessageKey().get(), summary.getMessageData().get());
+      } else if (summary.getMessageKey().isPresent()) {
+        // There is a message key only
+        localisedMessage = Languages.safeText(summary.getMessageKey().get());
+      } else {
+        // There is no message key so use the status only
+        localisedMessage = summary.getStatus().name();
+      }
+
+      // Action to show the "exchange settings" wizard
+      AbstractAction action = new AbstractAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+
+          ControllerEvents.fireRemoveAlertEvent();
+          Panels.showLightBox(Wizards.newExchangeSettingsWizard().getWizardScreenHolder());
+
+        }
+      };
+      JButton button = Buttons.newAlertPanelButton(action, MessageKey.SETTINGS, AwesomeIcon.CHECK);
+
+      // Provide the alert
+      ControllerEvents.fireAddAlertEvent(
+        Models.newAlertModel(
+          localisedMessage,
+          summary.getSeverity(), button)
+      );
+    }
+
+  }
+
+  @Subscribe
   public void onSecurityEvent(SecurityEvent event) {
 
     log.trace("Received 'security' event");
@@ -275,37 +349,14 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
       return;
     }
 
-    // Action to show the "send Bitcoin" wizard
-    AbstractAction action = new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-
-        ControllerEvents.fireRemoveAlertEvent();
-        Panels.showLightBox(Wizards.newSendBitcoinWizard(Optional.of(bitcoinURI)).getWizardScreenHolder());
-
-      }
-    };
-    JButton button = Buttons.newAlertPanelButton(action, MessageKey.YES, AwesomeIcon.CHECK);
-
-    // Attempt to decode the Bitcoin URI
-    Optional<String> alertMessage = Formats.formatAlertMessage(bitcoinURI);
+    Optional<AlertModel> alertModel = Models.newBitcoinURIAlertModel(bitcoinURI);
 
     // If there is sufficient information in the Bitcoin URI display it to the user as an alert
-    if (alertMessage.isPresent()) {
-
-      AlertModel alertModel = Models.newAlertModel(
-        alertMessage.get(),
-        RAGStatus.AMBER,
-        button
-      );
+    if (alertModel.isPresent()) {
 
       // Add the alert
-      ControllerEvents.fireAddAlertEvent(alertModel);
+      ControllerEvents.fireAddAlertEvent(alertModel.get());
     }
-
-
-    // Show a Bitcoin URI alert
-    ControllerEvents.fireAddAlertEvent(Models.newAlertModel("Bitcoin URI", RAGStatus.PINK));
 
   }
 
@@ -377,8 +428,6 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
     // Ensure LTR and RTL language formats are in place
     Panels.applicationFrame.applyComponentOrientation(ComponentOrientation.getOrientation(locale));
 
-    // Update the views to use the new locale (and any other relevant configuration)
-    ViewEvents.fireLocaleChangedEvent();
   }
 
   /**
@@ -463,8 +512,7 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
     mainView.setShowExitingWelcomeWizard(false);
     mainView.setShowExitingPasswordWizard(false);
 
-    // Continue initialising the detail view in EDT
-    mainView.detailViewAfterWalletOpened();
+    mainView.refresh();
 
     // Give time for detail view to initialise the screens
     Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);

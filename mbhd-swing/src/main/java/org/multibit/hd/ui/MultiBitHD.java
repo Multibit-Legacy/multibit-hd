@@ -141,9 +141,12 @@ public class MultiBitHD {
       return false;
     }
 
-    mainController = new MainController(bitcoinURIListeningService);
-    new HeaderController();
-    new SidebarController();
+    // Including the other controllers avoids dangling references during a soft shutdown
+    mainController = new MainController(
+      bitcoinURIListeningService,
+      new HeaderController(),
+      new SidebarController()
+    );
 
     // Must be OK to be here
     return true;
