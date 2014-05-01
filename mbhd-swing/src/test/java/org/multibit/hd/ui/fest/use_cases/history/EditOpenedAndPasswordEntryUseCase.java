@@ -129,14 +129,14 @@ public class EditOpenedAndPasswordEntryUseCase extends AbstractFestUseCase {
       .button(MessageKey.CANCEL.getKey())
       .click();
 
-    // Expect Yes/No popup)
+    // Expect Yes/No popover
     window
       .button(MessageKey.YES.getKey())
       .requireVisible()
       .requireEnabled();
 
     window
-      .button(MessageKey.CLOSE.getKey())
+      .button("popover."+MessageKey.CLOSE.getKey())
       .requireVisible()
       .requireEnabled();
 

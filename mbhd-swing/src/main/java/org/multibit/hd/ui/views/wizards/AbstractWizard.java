@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.events.CoreEvents;
@@ -55,6 +56,12 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
 
   private final boolean exiting;
   private Map<String, AbstractWizardPanelView> wizardViewMap = Maps.newHashMap();
+
+  /**
+   * Ensures we only have a single thread managing the wizard hide operation
+   */
+  private final ListeningExecutorService wizardHideExecutorService = SafeExecutors.newSingleThreadExecutor("wizard-hide");
+
 
   /**
    * @param wizardModel     The overall wizard data model containing the aggregate information of all components in the wizard
@@ -175,7 +182,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
     // Issue the wizard hide event before the hide takes place to give UI time to update
     ViewEvents.fireWizardHideEvent(panelName, wizardModel, isExitCancel);
 
-    SafeExecutors.newSingleThreadExecutor("wizard-hide").submit(new Runnable() {
+    wizardHideExecutorService.submit(new Runnable() {
       @Override
       public void run() {
 

@@ -123,7 +123,7 @@ public class EditPasswordEntryUseCase extends AbstractFestUseCase {
       .requireEnabled();
 
     window
-      .button(MessageKey.CLOSE.getKey())
+      .button("popover."+MessageKey.CLOSE.getKey())
       .requireVisible()
       .requireEnabled();
 

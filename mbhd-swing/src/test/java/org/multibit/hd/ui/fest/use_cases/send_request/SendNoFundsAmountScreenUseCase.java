@@ -59,20 +59,27 @@ public class SendNoFundsAmountScreenUseCase extends AbstractFestUseCase {
       .button(MessageKey.PASTE.getKey())
       .focus();
 
+    // Verify the Next button is disabled (no amount)
     window
       .button(MessageKey.NEXT.getKey())
       .requireVisible()
       .requireDisabled();
 
-    // Set a nominal amount for sending
+    // Set a nominal amount for sending (the wallet is empty)
     window
       .textBox(MessageKey.BITCOIN_AMOUNT.getKey())
-      .enterText("10.0"); // 1 mBTC
+      .enterText("100.0");
 
     // Change focus to trigger validation
     window
       .textBox(MessageKey.LOCAL_AMOUNT.getKey())
       .focus();
+
+    // Verify the Next button is enabled
+    window
+      .button(MessageKey.NEXT.getKey())
+      .requireVisible()
+      .requireEnabled();
 
     // Leave amount screen showing
 

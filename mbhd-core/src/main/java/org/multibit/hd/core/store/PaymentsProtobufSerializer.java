@@ -259,6 +259,7 @@ public class PaymentsProtobufSerializer {
    * @return An appropriate BigMoney representing the amount in the given currency
    */
   private BigMoney toBigMoney(CurrencyUnit fiatCurrencyUnit, String fiatPaymentAmount) {
+
     BigMoney amountFiatAsBigMoney;
 
     // Check if string is a number - amount is always persisted in UK locale

@@ -81,7 +81,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     if (!BigInteger.ZERO.equals(getModel().get().getSatoshis())) {
       BitcoinSymbol bitcoinSymbol = BitcoinSymbol.current();
       BigDecimal symbolicAmount = Satoshis.toSymbolicAmount(getModel().get().getSatoshis(), bitcoinSymbol);
-      bitcoinAmountText.setValue(symbolicAmount.doubleValue());
+      bitcoinAmountText.setText(symbolicAmount.toPlainString());
       updateLocalAmount();
     }
 
@@ -275,7 +275,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
           // Use the symbolic amount for display formatting
           BigDecimal symbolicAmount = Satoshis.toSymbolicAmount(satoshis, bitcoinSymbol);
-          bitcoinAmountText.setValue(symbolicAmount.toPlainString());
+          bitcoinAmountText.setText(symbolicAmount.toPlainString());
 
           // Give feedback to the user
           localAmountText.setBackground(Themes.currentTheme.dataEntryBackground());

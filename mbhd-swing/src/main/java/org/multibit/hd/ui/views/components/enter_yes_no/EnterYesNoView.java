@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.components.enter_yes_no;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Labels;
@@ -53,6 +54,9 @@ public class EnterYesNoView extends AbstractComponentView<EnterYesNoModel> {
 
     panelCloseButton = Buttons.newPanelCloseButton(getClosePopoverAction());
 
+    // Ensure it is accessible
+    panelCloseButton.setName("popover."+ MessageKey.CLOSE.getKey());
+
     panel.add(panelCloseButton, "span 2,align right,shrink,wrap");
     panel.add(Labels.newDataEnteredNote(), "grow,push,span 2,wrap");
 
@@ -83,7 +87,7 @@ public class EnterYesNoView extends AbstractComponentView<EnterYesNoModel> {
 
         getModel().get().setValue(true);
 
-        Panels.hideLightBoxPopover();
+        Panels.hideLightBoxPopoverIfPresent();
 
         // Issue the wizard popover hide event
         ViewEvents.fireWizardPopoverHideEvent(getModel().get().getPanelName(), false);
@@ -105,7 +109,7 @@ public class EnterYesNoView extends AbstractComponentView<EnterYesNoModel> {
 
         getModel().get().setValue(false);
 
-        Panels.hideLightBoxPopover();
+        Panels.hideLightBoxPopoverIfPresent();
 
         // Issue the wizard popover hide event
         ViewEvents.fireWizardPopoverHideEvent(getModel().get().getPanelName(), true);
@@ -127,7 +131,7 @@ public class EnterYesNoView extends AbstractComponentView<EnterYesNoModel> {
 
         getModel().get().setValue(false);
 
-        Panels.hideLightBoxPopover();
+        Panels.hideLightBoxPopoverIfPresent();
 
         // Issue the wizard popover hide event
         ViewEvents.fireWizardPopoverHideEvent(getModel().get().getPanelName(), true);
