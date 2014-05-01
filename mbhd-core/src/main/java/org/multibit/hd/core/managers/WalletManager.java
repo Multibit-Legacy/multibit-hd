@@ -413,7 +413,7 @@ public enum WalletManager implements WalletEventListener {
       // Set up auto-save on the wallet
       // This ensures the wallet is saved on modification
       // The listener has a 'post save' callback which ensures rolling backups and local/ cloud backups are also saved where necessary
-      wallet.autosaveToFile(walletDirectory, AUTO_SAVE_DELAY, TimeUnit.SECONDS, new WalletAutoSaveListener());
+      wallet.autosaveToFile(walletFile, AUTO_SAVE_DELAY, TimeUnit.SECONDS, new WalletAutoSaveListener());
 
       return walletSummary;
 
