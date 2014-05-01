@@ -11,16 +11,16 @@ import java.util.concurrent.TimeUnit;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "send/receive" screen send with cancel</li>
+ * <li>Verify the "send" wizard with cancel</li>
  * </ul>
- * <p>Requires the "send/receive" screen to be showing</p>
+ * <p>Requires the "send" screen to be showing</p>
  *
  * @since 0.0.1
  *  
  */
-public class SendThenCancelSendUseCase extends AbstractFestUseCase {
+public class ShowSendThenCancelSendUseCase extends AbstractFestUseCase {
 
-  public SendThenCancelSendUseCase(FrameFixture window) {
+  public ShowSendThenCancelSendUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -43,6 +43,20 @@ public class SendThenCancelSendUseCase extends AbstractFestUseCase {
       .button(MessageKey.NEXT.getKey())
       .requireVisible()
       .requireDisabled();
+
+    // Verify empty fields to start
+    window
+      .comboBox(MessageKey.RECIPIENT.getKey())
+      .requireVisible()
+      .requireEnabled()
+      .requireEditable()
+      .requireNoSelection();
+
+    window
+      .textBox(MessageKey.BITCOIN_AMOUNT.getKey())
+      .requireVisible()
+      .requireEnabled()
+      .requireEmpty();
 
     // Click Cancel
     window

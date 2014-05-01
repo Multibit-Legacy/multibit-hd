@@ -29,8 +29,8 @@ import org.multibit.hd.ui.views.components.display_amount.BitcoinSymbolListCellR
 import org.multibit.hd.ui.views.components.renderers.BackupSummaryListCellRenderer;
 import org.multibit.hd.ui.views.components.renderers.LanguageListCellRenderer;
 import org.multibit.hd.ui.views.components.renderers.WalletSummaryListCellRenderer;
-import org.multibit.hd.ui.views.components.select_contact.RecipientComboBoxEditor;
-import org.multibit.hd.ui.views.components.select_contact.RecipientListCellRenderer;
+import org.multibit.hd.ui.views.components.select_recipient.RecipientComboBoxEditor;
+import org.multibit.hd.ui.views.components.select_recipient.RecipientListCellRenderer;
 import org.multibit.hd.ui.views.themes.ThemeKey;
 import org.multibit.hd.ui.views.themes.Themes;
 
@@ -501,17 +501,17 @@ public class ComboBoxes {
     // Ensure it is accessible
     AccessibilityDecorator.apply(comboBox, MessageKey.RECIPIENT);
 
+    // Ensure we start with nothing selected (must come before editor is set)
+    comboBox.setSelectedIndex(-1);
+
     comboBox.setEditable(true);
 
-    // Use a contact editor to force use of the name field
+    // Use a recipient editor to force use of the name field
     comboBox.setEditor(new RecipientComboBoxEditor(contactService, networkParameters));
 
-    // Use a contact list cell renderer to ensure thumbnails are maintained
+    // Use a recipient list cell renderer to ensure recipient is set on selection
     ListCellRenderer<Recipient> renderer = new RecipientListCellRenderer((JTextField) comboBox.getEditor().getEditorComponent());
     comboBox.setRenderer(renderer);
-
-    // Ensure we start with nothing selected
-    comboBox.setSelectedIndex(-1);
 
     AutoCompleteDecorator.apply(comboBox, filter);
 

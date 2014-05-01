@@ -11,7 +11,7 @@ import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.ui.views.components.ComboBoxes;
-import org.multibit.hd.ui.views.components.select_contact.RecipientComboBoxEditor;
+import org.multibit.hd.ui.views.components.select_recipient.RecipientComboBoxEditor;
 
 import javax.swing.*;
 import java.util.List;
@@ -48,7 +48,7 @@ public class ThemeAwareRecipientInputVerifierTest {
 
     ThemeAwareRecipientInputVerifier testObject = new ThemeAwareRecipientInputVerifier(contactService, BitcoinNetwork.current().get());
 
-    RecipientComboBoxEditor.ComboBoxTextField comboEditor = ((RecipientComboBoxEditor.ComboBoxTextField) comboBox.getEditor().getEditorComponent());
+    RecipientComboBoxEditor.RecipientComboBoxTextField comboEditor = ((RecipientComboBoxEditor.RecipientComboBoxTextField) comboBox.getEditor().getEditorComponent());
 
     // Act
     comboBox.setSelectedItem("");
@@ -94,7 +94,7 @@ public class ThemeAwareRecipientInputVerifierTest {
 
     ThemeAwareRecipientInputVerifier testObject = new ThemeAwareRecipientInputVerifier(contactService, BitcoinNetwork.current().get());
 
-    RecipientComboBoxEditor.ComboBoxTextField comboEditor = ((RecipientComboBoxEditor.ComboBoxTextField) comboBox.getEditor().getEditorComponent());
+    RecipientComboBoxEditor.RecipientComboBoxTextField comboEditor = ((RecipientComboBoxEditor.RecipientComboBoxTextField) comboBox.getEditor().getEditorComponent());
 
     // Act
     comboBox.setSelectedItem(new Recipient(new Address(networkParameters, "1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty")));

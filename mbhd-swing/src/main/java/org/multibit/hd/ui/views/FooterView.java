@@ -3,9 +3,6 @@ package org.multibit.hd.ui.views;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import com.google.common.eventbus.Subscribe;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableScheduledFuture;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
@@ -19,10 +16,7 @@ import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.NimbusDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import javax.swing.*;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -39,8 +33,6 @@ import java.util.concurrent.TimeUnit;
  *  
  */
 public class FooterView {
-
-  private static final Logger log = LoggerFactory.getLogger(FooterView.class);
 
   private final JPanel contentPanel;
   private final JProgressBar progressBar;
@@ -189,10 +181,12 @@ public class FooterView {
    * Cancel all existing pending futures
    */
   private void cancelPendingHideProgressFutures() {
+
     for (Future future : hideProgressFutures) {
       future.cancel(true);
     }
     hideProgressFutures.clear();
+
   }
 
   /**
@@ -200,9 +194,7 @@ public class FooterView {
    */
   private ScheduledFuture<?> scheduleHideProgressBar() {
 
-    log.debug("Creating deferred hide");
-
-    final ListenableScheduledFuture future = scheduledExecutorService.schedule(new Runnable() {
+    return scheduledExecutorService.schedule(new Runnable() {
       @Override
       public void run() {
 
@@ -211,8 +203,6 @@ public class FooterView {
           @Override
           public void run() {
 
-            log.debug("Executing deferred hide");
-
             progressBar.setVisible(false);
 
           }
@@ -220,23 +210,6 @@ public class FooterView {
 
       }
     }, 4, TimeUnit.SECONDS);
-
-    Futures.addCallback(future, new FutureCallback<Object>() {
-        @Override
-        public void onSuccess(@Nullable Object result) {
-
-          log.debug("Completed deferred hide");
-        }
-
-        @Override
-        public void onFailure(Throwable t) {
-
-          log.debug("Failed deferred hide: " + t.getMessage());
-        }
-      }
-    );
-
-    return future;
 
   }
 

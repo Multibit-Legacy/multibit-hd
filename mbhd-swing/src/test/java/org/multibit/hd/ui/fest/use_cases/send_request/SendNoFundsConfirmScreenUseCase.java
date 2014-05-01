@@ -5,6 +5,9 @@ import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import static org.fest.swing.timing.Timeout.timeout;
 
 /**
  * <p>Use case to provide the following to FEST testing:</p>
@@ -47,14 +50,17 @@ public class SendNoFundsConfirmScreenUseCase extends AbstractFestUseCase {
       .button(MessageKey.PREVIOUS.getKey())
       .click();
 
-    // Verify new title
+    // Verify previous title
     window
       .label(MessageKey.SEND_BITCOIN_TITLE.getKey());
 
+    // Click the next button (ensures validation is still in place)
     window
       .button(MessageKey.NEXT.getKey())
+      .requireEnabled(timeout(250, TimeUnit.MILLISECONDS))
       .click();
 
+    // Verify confirm send title
     window
       .label(MessageKey.CONFIRM_SEND_TITLE.getKey());
 
