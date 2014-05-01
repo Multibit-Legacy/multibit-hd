@@ -46,29 +46,30 @@ public class NumbersTest {
   }
 
   @Test
-  public void testParseDouble() throws Exception {
+  public void testParseBigDecimal() throws Exception {
 
     // UK representations of good numbers
     setLocale(Locale.UK);
-    assertThat(Numbers.parseDouble("1").get()).isEqualTo(1.0);
-    assertThat(Numbers.parseDouble("-1").get()).isEqualTo(-1.0);
-    assertThat(Numbers.parseDouble("01").get()).isEqualTo(1.0);
-    assertThat(Numbers.parseDouble("-01").get()).isEqualTo(-1.0);
-    assertThat(Numbers.parseDouble("1.0").get()).isEqualTo(1.0);
-    assertThat(Numbers.parseDouble("1,000.01").get()).isEqualTo(1_000.01);
-    assertThat(Numbers.parseDouble("1,00001").get()).isEqualTo(100_001);
-    assertThat(Numbers.parseDouble("1,0,0,0,0,1").get()).isEqualTo(100_001);
+    assertThat(Numbers.parseBigDecimal("1").get().toPlainString()).isEqualTo("1");
+    assertThat(Numbers.parseBigDecimal("-1").get().toPlainString()).isEqualTo("-1");
+    assertThat(Numbers.parseBigDecimal("01").get().toPlainString()).isEqualTo("1");
+    assertThat(Numbers.parseBigDecimal("-01").get().toPlainString()).isEqualTo("-1");
+    assertThat(Numbers.parseBigDecimal("1.0").get().toPlainString()).isEqualTo("1");
+    assertThat(Numbers.parseBigDecimal("1,000.01").get().toPlainString()).isEqualTo("1000.01");
+    assertThat(Numbers.parseBigDecimal("1,00001").get().toPlainString()).isEqualTo("100001");
+    assertThat(Numbers.parseBigDecimal("1,0,0,0,0,1").get().toPlainString()).isEqualTo("100001");
+    assertThat(Numbers.parseBigDecimal("1,0,0,0,0,1").get().toPlainString()).isEqualTo("100001");
 
     // Russian representations of good numbers
     setLocale(new Locale("ru"));
-    assertThat(Numbers.parseDouble("1").get()).isEqualTo(1.0);
-    assertThat(Numbers.parseDouble("-1").get()).isEqualTo(-1.0);
-    assertThat(Numbers.parseDouble("01").get()).isEqualTo(1.0);
-    assertThat(Numbers.parseDouble("-01").get()).isEqualTo(-1.0);
-    assertThat(Numbers.parseDouble("1,0").get()).isEqualTo(1.0);
-    assertThat(Numbers.parseDouble("1 000,01").get()).isEqualTo(1_000.01);
-    assertThat(Numbers.parseDouble("1 00001").get()).isEqualTo(100_001);
-    assertThat(Numbers.parseDouble("1 0 0 0 0 1").get()).isEqualTo(100_001);
+    assertThat(Numbers.parseBigDecimal("1").get().toPlainString()).isEqualTo("1");
+    assertThat(Numbers.parseBigDecimal("-1").get().toPlainString()).isEqualTo("-1");
+    assertThat(Numbers.parseBigDecimal("01").get().toPlainString()).isEqualTo("1");
+    assertThat(Numbers.parseBigDecimal("-01").get().toPlainString()).isEqualTo("-1");
+    assertThat(Numbers.parseBigDecimal("1,0").get().toPlainString()).isEqualTo("1");
+    assertThat(Numbers.parseBigDecimal("1 000,01").get().toPlainString()).isEqualTo("1000.01");
+    assertThat(Numbers.parseBigDecimal("1 00001").get().toPlainString()).isEqualTo("100001");
+    assertThat(Numbers.parseBigDecimal("1 0 0 0 0 1").get().toPlainString()).isEqualTo("100001");
 
   }
 

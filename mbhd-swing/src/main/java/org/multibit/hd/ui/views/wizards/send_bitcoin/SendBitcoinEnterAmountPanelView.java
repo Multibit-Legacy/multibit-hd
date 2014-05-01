@@ -26,6 +26,8 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.math.BigInteger;
@@ -42,6 +44,8 @@ import java.util.List;
  */
 
 public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<SendBitcoinWizardModel, SendBitcoinEnterAmountPanelModel> {
+
+  private static final Logger log = LoggerFactory.getLogger(SendBitcoinEnterAmountPanelView.class);
 
   // Panel specific components
   private ModelAndView<EnterRecipientModel, EnterRecipientView> enterRecipientMaV;
@@ -212,6 +216,8 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
       .getEnterRecipientModel()
       .getRecipient()
       .isPresent();
+
+    log.debug("Bitcoin amount: {} Recipient: {}", bitcoinAmountOK, recipientOK);
 
     return bitcoinAmountOK && recipientOK;
   }

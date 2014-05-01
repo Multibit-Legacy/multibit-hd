@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.components;
+package org.multibit.hd.core.utils;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;

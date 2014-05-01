@@ -88,7 +88,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <li>Switch wallets</li>
    * </ul>
    */
-  @Ignore
+  @Test
   public void verifyWelcomeWizard() throws Exception {
 
     // Start with a completely empty random application directory
