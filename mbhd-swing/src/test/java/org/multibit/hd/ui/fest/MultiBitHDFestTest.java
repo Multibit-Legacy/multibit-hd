@@ -7,10 +7,8 @@ import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiQuery;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.testing.FestSwingTestCaseTemplate;
-import org.junit.After;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.files.SecureFiles;
@@ -50,6 +48,17 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   public static void setUpOnce() throws Exception {
 
     FailOnThreadViolationRepaintManager.install();
+
+  }
+
+  @Before
+  public void setUp() {
+
+    // Reset the configuration
+    Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
+
+    // Allow unrestricted operation
+    InstallationManager.unrestricted = true;
 
   }
 

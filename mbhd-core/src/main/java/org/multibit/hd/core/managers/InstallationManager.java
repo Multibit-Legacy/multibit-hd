@@ -36,6 +36,11 @@ public class InstallationManager {
   public static File currentApplicationDataDirectory = null;
 
   /**
+   * A test flag to allow FEST tests to run efficiently
+   */
+  public static boolean unrestricted = false;
+
+  /**
    * @param shutdownEvent The shutdown event
    */
   public static void onShutdownEvent(ShutdownEvent shutdownEvent) {

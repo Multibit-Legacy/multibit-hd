@@ -119,6 +119,8 @@ public class MainView extends JFrame {
    */
   public void refresh() {
 
+    log.debug("Refreshing MainView");
+
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be in the EDT. Check MainController.");
 
     // Clear out all the old content and rebuild it from scratch
@@ -128,15 +130,21 @@ public class MainView extends JFrame {
     // Catch up on recent events
     CoreServices.getApplicationEventService().repeatLatestEvents();
 
+    // Ensure no light boxes are showing
     Panels.hideLightBoxIfPresent();
 
     // Check for any wizards that were showing before the refresh occurred
     if (showExitingWelcomeWizard) {
+
       Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardScreenHolder());
+
     } else if (showExitingPasswordWizard) {
+
       // Force an exit if the user can't get through
       Panels.showLightBox(Wizards.newExitingPasswordWizard().getWizardScreenHolder());
+
     } else {
+
       log.debug("Showing detail view");
 
       // No wizards so this reset is a settings change

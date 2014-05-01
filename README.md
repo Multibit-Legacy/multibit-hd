@@ -46,10 +46,6 @@ use the HEAD of the `master` branch:
 ```
 $ mvn clean install
 ```
-You may need to build the protobuf files - in that case you will need to execute a modified Maven command:
-```
-$ mvn -DupdateProtobuf=true clean install
-```
 #### Start the application (from an IDE)
 
 To run the application within an IDE, simply execute `MultiBitHD.main()` in the `mbhd-swing` module. No command line parameters
@@ -69,6 +65,12 @@ No command line parameters are needed, although a Bitcoin URI is accepted (the q
 ```
 $ java -jar mbhd-install/target/multibit-hd.jar "bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?amount=0.01&label=Please%20donate%20to%20multibit.org"
 ```
+#### Multiple instances
+
+MultiBit HD will avoid multiple instances by using port 8330 as a method of detecting another running instance. If port 8330 cannot
+be bound MultiBit HD will assume that another instance is running and hand over any Bitcoin URI arguments present when it started.
+It will then perform a hard shutdown terminating its own JVM. The other instance will react to receiving a Bitcoin URI message on
+port 8330 by displaying an alert bar requesting the user to act upon the Bitcoin URI payment request.
 
 ### Frequently asked questions (FAQ)
 
