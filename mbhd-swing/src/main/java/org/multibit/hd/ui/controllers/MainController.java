@@ -119,17 +119,20 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
     switch (shutdownEvent.getShutdownType()) {
       case HARD:
       case SOFT:
-        log.debug("Disposing of application frame.");
-        Panels.applicationFrame.dispose();
+        log.debug("Informing singletons (wallet, backup, installation)");
         WalletManager.INSTANCE.onShutdownEvent(shutdownEvent);
         BackupManager.INSTANCE.onShutdownEvent(shutdownEvent);
         InstallationManager.onShutdownEvent(shutdownEvent);
         // Dispose of the main view and all its attendant references
+        log.debug("Disposing of MainView");
+        Panels.hideLightBoxIfPresent();
+        Panels.applicationFrame.dispose();
         mainView = null;
         System.gc();
         break;
       case STANDBY:
         log.debug("Keeping application frame (standby).");
+        Panels.hideLightBoxIfPresent();
         break;
     }
 
