@@ -312,20 +312,26 @@ public class BitcoinNetworkService extends AbstractService {
     SafeExecutors.newSingleThreadExecutor("send-bitcoin").submit(new Runnable() {
       @Override
       public void run() {
+        log.debug("send-bitcoin safeExecutor has started.");
 
         // Verify the wallet summary
         if (!checkWalletSummary()) {
+          log.debug("Wallet summary check fail");
           return;
         }
 
         log.debug("Just about to create send transaction");
         Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
-        KeyParameter aesKey = wallet.getKeyCrypter().deriveKey(password);
+        KeyParameter aesKey;
+
 
         boolean addClientFee;
         Address feeAddress = null;
         try {
-
+          if (wallet.getKeyCrypter() == null) {
+            throw new IllegalStateException("No keyCrypter in wallet when one is expected.");
+          }
+          aesKey = wallet.getKeyCrypter().deriveKey(password);
           addClientFee = feeStateOptional.isPresent() && (feeStateOptional.get().getCurrentNumberOfSends() == feeStateOptional.get().getNextFeeSendCount());
           if (addClientFee) {
             String feeAddressString = feeStateOptional.get().getNextFeeAddress();
@@ -333,8 +339,7 @@ public class BitcoinNetworkService extends AbstractService {
             feeAddress = new Address(networkParameters, feeAddressString);
           }
 
-        } catch (NullPointerException | AddressFormatException e) {
-
+        } catch (Exception e) {
           log.error(e.getMessage(), e);
 
           // Declare the transaction creation a failure
@@ -352,7 +357,7 @@ public class BitcoinNetworkService extends AbstractService {
           return;
         }
 
-        // Addresses must be OK to be here
+        // Addresses and aesKey must be OK to be here
 
         // Build the send request
         final Wallet.SendRequest sendRequest = buildSendRequest(aesKey, destinationAddress, changeAddress, addClientFee, feeAddress);
@@ -370,7 +375,6 @@ public class BitcoinNetworkService extends AbstractService {
         }
 
         log.debug("Send coins has completed");
-
       }
 
       /**

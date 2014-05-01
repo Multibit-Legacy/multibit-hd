@@ -205,7 +205,7 @@ public class WalletManagerTest {
     ECKey key1 = walletSummary1.getWallet().freshReceiveKey();
     ECKey key2 = walletSummary2.getWallet().freshReceiveKey();
 
-    assertThat(Arrays.equals(key1.getPrivKeyBytes(), key2.getPrivKeyBytes())).isTrue();
+    assertThat(key1).isEqualTo(key2);
 
     File expectedFile = new File(
       temporaryDirectory2.getAbsolutePath()

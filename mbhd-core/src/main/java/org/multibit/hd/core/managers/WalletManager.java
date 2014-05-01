@@ -268,7 +268,7 @@ public enum WalletManager implements WalletEventListener {
     // Create a wallet using the seed and password
     DeterministicSeed deterministicSeed = new DeterministicSeed(seed, creationTimeInSeconds);
     Wallet walletToReturn = Wallet.fromSeed(networkParameters, deterministicSeed);
-    //walletToReturn.encrypt(password);
+    walletToReturn.encrypt(password);
     walletToReturn.setVersion(MBHD_WALLET_VERSION);
 
 
