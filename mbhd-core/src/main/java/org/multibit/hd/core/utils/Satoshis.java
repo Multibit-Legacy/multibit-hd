@@ -25,7 +25,7 @@ public class Satoshis {
    */
   public static final BigDecimal BTC_SAT = new BigDecimal("100000000");
   private static final int BITCOIN_SCALE = 12;
-  private static final int LOCAL_SCALE = 6;
+  private static final int LOCAL_SCALE = 12;
 
   /**
    * TODO (GR) Refactor to remove BigMoney dependency

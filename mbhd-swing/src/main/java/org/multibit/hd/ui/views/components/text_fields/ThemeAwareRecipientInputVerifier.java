@@ -10,8 +10,6 @@ import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.ui.views.components.select_recipient.RecipientComboBoxEditor;
 import org.multibit.hd.ui.views.themes.Themes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,8 +28,6 @@ import java.util.List;
  *  
  */
 public class ThemeAwareRecipientInputVerifier extends InputVerifier {
-
-  private static final Logger log = LoggerFactory.getLogger(ThemeAwareRecipientInputVerifier.class);
 
   private final Color invalidColor = Themes.currentTheme.invalidDataEntryBackground();
   private final Color validColor = Themes.currentTheme.dataEntryBackground();
@@ -65,8 +61,6 @@ public class ThemeAwareRecipientInputVerifier extends InputVerifier {
 
       if (text != null) {
 
-        log.debug("Verify {} as address", text);
-
         // Treat as an address first
         final Optional<Address> enteredAddress = verifyBitcoinAddress(text);
         if (enteredAddress.isPresent()) {
@@ -78,11 +72,7 @@ public class ThemeAwareRecipientInputVerifier extends InputVerifier {
           Recipient recipient = new Recipient(enteredAddress.get());
           textField.setRecipient(Optional.of(recipient));
 
-          log.debug("Set anonymous recipient on text field");
-
         } else {
-
-          log.debug("Verify {} as recipient", text);
 
           // Try again as a recipient
           List<Contact> contacts = contactService.filterContactsByContent(text, true);
@@ -103,8 +93,6 @@ public class ThemeAwareRecipientInputVerifier extends InputVerifier {
                 textField.setText(contact.getName());
                 textField.setRecipient(Optional.of(recipient));
 
-                log.debug("Set contact recipient on text field");
-
               }
             }
           }
@@ -112,8 +100,6 @@ public class ThemeAwareRecipientInputVerifier extends InputVerifier {
         }
 
       }
-
-      log.debug("Is valid: {}", isValid);
 
       // Apply the appropriate color based on the result
       component.setBackground(isValid ? validColor : invalidColor);
