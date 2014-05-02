@@ -3923,24 +3923,6 @@ public final class MBHDPaymentsProtos {
      */
     org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfoOrBuilder getTransactionInfoOrBuilder(
         int index);
-
-    // required int32 last_address_index = 3;
-    /**
-     * <code>required int32 last_address_index = 3;</code>
-     *
-     * <pre>
-     * The last (highest) address generating index that was used to create a Request.address
-     * </pre>
-     */
-    boolean hasLastAddressIndex();
-    /**
-     * <code>required int32 last_address_index = 3;</code>
-     *
-     * <pre>
-     * The last (highest) address generating index that was used to create a Request.address
-     * </pre>
-     */
-    int getLastAddressIndex();
   }
   /**
    * Protobuf type {@code Payments}
@@ -4014,11 +3996,6 @@ public final class MBHDPaymentsProtos {
               transactionInfo_.add(input.readMessage(org.multibit.hd.core.protobuf.MBHDPaymentsProtos.TransactionInfo.PARSER, extensionRegistry));
               break;
             }
-            case 24: {
-              bitField0_ |= 0x00000001;
-              lastAddressIndex_ = input.readInt32();
-              break;
-            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -4064,7 +4041,6 @@ public final class MBHDPaymentsProtos {
       return PARSER;
     }
 
-    private int bitField0_;
     // repeated .PaymentRequest payment_request = 1;
     public static final int PAYMENT_REQUEST_FIELD_NUMBER = 1;
     private java.util.List<org.multibit.hd.core.protobuf.MBHDPaymentsProtos.PaymentRequest> paymentRequest_;
@@ -4177,44 +4153,15 @@ public final class MBHDPaymentsProtos {
       return transactionInfo_.get(index);
     }
 
-    // required int32 last_address_index = 3;
-    public static final int LAST_ADDRESS_INDEX_FIELD_NUMBER = 3;
-    private int lastAddressIndex_;
-    /**
-     * <code>required int32 last_address_index = 3;</code>
-     *
-     * <pre>
-     * The last (highest) address generating index that was used to create a Request.address
-     * </pre>
-     */
-    public boolean hasLastAddressIndex() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
-    }
-    /**
-     * <code>required int32 last_address_index = 3;</code>
-     *
-     * <pre>
-     * The last (highest) address generating index that was used to create a Request.address
-     * </pre>
-     */
-    public int getLastAddressIndex() {
-      return lastAddressIndex_;
-    }
-
     private void initFields() {
       paymentRequest_ = java.util.Collections.emptyList();
       transactionInfo_ = java.util.Collections.emptyList();
-      lastAddressIndex_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
 
-      if (!hasLastAddressIndex()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
       for (int i = 0; i < getPaymentRequestCount(); i++) {
         if (!getPaymentRequest(i).isInitialized()) {
           memoizedIsInitialized = 0;
@@ -4240,9 +4187,6 @@ public final class MBHDPaymentsProtos {
       for (int i = 0; i < transactionInfo_.size(); i++) {
         output.writeMessage(2, transactionInfo_.get(i));
       }
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeInt32(3, lastAddressIndex_);
-      }
       getUnknownFields().writeTo(output);
     }
 
@@ -4259,10 +4203,6 @@ public final class MBHDPaymentsProtos {
       for (int i = 0; i < transactionInfo_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, transactionInfo_.get(i));
-      }
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(3, lastAddressIndex_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -4399,8 +4339,6 @@ public final class MBHDPaymentsProtos {
         } else {
           transactionInfoBuilder_.clear();
         }
-        lastAddressIndex_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -4428,7 +4366,6 @@ public final class MBHDPaymentsProtos {
       public org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Payments buildPartial() {
         org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Payments result = new org.multibit.hd.core.protobuf.MBHDPaymentsProtos.Payments(this);
         int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
         if (paymentRequestBuilder_ == null) {
           if (((bitField0_ & 0x00000001) == 0x00000001)) {
             paymentRequest_ = java.util.Collections.unmodifiableList(paymentRequest_);
@@ -4447,11 +4384,6 @@ public final class MBHDPaymentsProtos {
         } else {
           result.transactionInfo_ = transactionInfoBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.lastAddressIndex_ = lastAddressIndex_;
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -4519,18 +4451,11 @@ public final class MBHDPaymentsProtos {
             }
           }
         }
-        if (other.hasLastAddressIndex()) {
-          setLastAddressIndex(other.getLastAddressIndex());
-        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
 
       public final boolean isInitialized() {
-        if (!hasLastAddressIndex()) {
-          
-          return false;
-        }
         for (int i = 0; i < getPaymentRequestCount(); i++) {
           if (!getPaymentRequest(i).isInitialized()) {
             
@@ -5189,55 +5114,6 @@ public final class MBHDPaymentsProtos {
         return transactionInfoBuilder_;
       }
 
-      // required int32 last_address_index = 3;
-      private int lastAddressIndex_ ;
-      /**
-       * <code>required int32 last_address_index = 3;</code>
-       *
-       * <pre>
-       * The last (highest) address generating index that was used to create a Request.address
-       * </pre>
-       */
-      public boolean hasLastAddressIndex() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
-      }
-      /**
-       * <code>required int32 last_address_index = 3;</code>
-       *
-       * <pre>
-       * The last (highest) address generating index that was used to create a Request.address
-       * </pre>
-       */
-      public int getLastAddressIndex() {
-        return lastAddressIndex_;
-      }
-      /**
-       * <code>required int32 last_address_index = 3;</code>
-       *
-       * <pre>
-       * The last (highest) address generating index that was used to create a Request.address
-       * </pre>
-       */
-      public Builder setLastAddressIndex(int value) {
-        bitField0_ |= 0x00000004;
-        lastAddressIndex_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>required int32 last_address_index = 3;</code>
-       *
-       * <pre>
-       * The last (highest) address generating index that was used to create a Request.address
-       * </pre>
-       */
-      public Builder clearLastAddressIndex() {
-        bitField0_ = (bitField0_ & ~0x00000004);
-        lastAddressIndex_ = 0;
-        onChanged();
-        return this;
-      }
-
       // @@protoc_insertion_point(builder_scope:Payments)
     }
 
@@ -5287,11 +5163,10 @@ public final class MBHDPaymentsProtos {
       " \001(\003\"w\n\017TransactionInfo\022\014\n\004hash\030\001 \002(\t\022!\n" +
       "\013amount_fiat\030\003 \001(\0132\014.FiatPayment\022\014\n\004note" +
       "\030\004 \001(\t\022\021\n\tminer_fee\030\005 \001(\003\022\022\n\nclient_fee\030" +
-      "\006 \001(\003\"|\n\010Payments\022(\n\017payment_request\030\001 \003",
+      "\006 \001(\003\"`\n\010Payments\022(\n\017payment_request\030\001 \003",
       "(\0132\017.PaymentRequest\022*\n\020transaction_info\030" +
-      "\002 \003(\0132\020.TransactionInfo\022\032\n\022last_address_" +
-      "index\030\003 \002(\005B3\n\035org.multibit.hd.core.prot" +
-      "obufB\022MBHDPaymentsProtos"
+      "\002 \003(\0132\020.TransactionInfoB3\n\035org.multibit." +
+      "hd.core.protobufB\022MBHDPaymentsProtos"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -5321,7 +5196,7 @@ public final class MBHDPaymentsProtos {
           internal_static_Payments_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Payments_descriptor,
-              new java.lang.String[] { "PaymentRequest", "TransactionInfo", "LastAddressIndex", });
+              new java.lang.String[] { "PaymentRequest", "TransactionInfo", });
           return null;
         }
       };

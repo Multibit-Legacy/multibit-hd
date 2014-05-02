@@ -83,11 +83,6 @@ public class WalletService {
   private Map<String, TransactionInfo> transactionInfoMap;
 
   /**
-   * The last index used for address generation
-   */
-  private int lastIndexUsed;
-
-  /**
    * The wallet id that this WalletService is using
    */
   private WalletId walletId;
@@ -135,7 +130,6 @@ public class WalletService {
 
     // Load the payment request data from the backing store if it exists
     // Initial values
-    lastIndexUsed = 0;
     paymentRequestMap = Maps.newHashMap();
     transactionInfoMap = Maps.newHashMap();
     if (backingStoreFile.exists()) {
@@ -578,8 +572,6 @@ public class WalletService {
 
       Payments payments = protobufSerializer.readPayments(fis);
 
-      lastIndexUsed = payments.getLastIndexUsed();
-
       // For quick access payment requests and transaction infos are stored in maps
       Collection<PaymentRequestData> paymentRequestDatas = payments.getPaymentRequestDatas();
       if (paymentRequestDatas != null) {
@@ -611,7 +603,7 @@ public class WalletService {
 
     try (FileOutputStream fos = new FileOutputStream(backingStoreFile)) {
 
-      Payments payments = new Payments(lastIndexUsed);
+      Payments payments = new Payments();
       payments.setTransactionInfos(transactionInfoMap.values());
       payments.setPaymentRequestDatas(paymentRequestMap.values());
       protobufSerializer.writePayments(payments, fos);
@@ -641,7 +633,6 @@ public class WalletService {
    * Create the next receiving address for the wallet.
    * This is either the first key's address in the wallet or is
    * worked out deterministically and uses the lastIndexUsed on the Payments so that each address is unique
-   * TODO can remove 'lastIndexUsed on the Payments object now
    *
    * @param walletPasswordOptional Either: Optional.absent() = just recycle the first address in the wallet or:  password of the wallet to which the new private key is added
    *
@@ -656,9 +647,6 @@ public class WalletService {
     } else {
       // If there is no password then recycle the first address in the wallet
       if (walletPasswordOptional.isPresent()) {
-        // increment the lastIndexUsed
-        lastIndexUsed++;
-        log.debug("The last index used has been incremented to " + lastIndexUsed);
         ECKey newKey = currentWalletSummary.get().getWallet().freshReceiveKey();
         return newKey.toAddress(networkParameters).toString();
       } else {

@@ -42,17 +42,7 @@ public class PaymentsProtobufSerializerTest {
     random = new Random();
   }
 
-  @Test
-  public void testLastIndexUsed() throws Exception {
-    // Test you can set and get the last index used
-    int lastIndexUsed = random.nextInt();
-    Payments payments = new Payments(lastIndexUsed);
 
-    Payments newPayments = roundTrip(payments);
-
-    assertThat(lastIndexUsed == newPayments.getLastIndexUsed());
-
-  }
 
   @Test
   public void testRequests() throws Exception {
@@ -91,7 +81,7 @@ public class PaymentsProtobufSerializerTest {
     paymentRequestDatas.add(paymentRequestData1);
     paymentRequestDatas.add(paymentRequestData2);
 
-    Payments payments = new Payments(1);
+    Payments payments = new Payments();
     payments.setPaymentRequestDatas(paymentRequestDatas);
 
     Payments newPayments = roundTrip(payments);
@@ -153,7 +143,7 @@ public class PaymentsProtobufSerializerTest {
     transactionInfo2.setClientFee(Optional.of(BigInteger.valueOf(456)));
     transactionInfo2.setMinerFee(Optional.<BigInteger>absent());
 
-    Payments payments = new Payments(1);
+    Payments payments = new Payments();
     payments.setTransactionInfos(transactionInfos);
 
     Payments newPayments = roundTrip(payments);

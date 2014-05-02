@@ -27,7 +27,6 @@ import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
-import org.multibit.hd.core.protobuf.MBHDContactsProtos;
 import org.multibit.hd.core.protobuf.MBHDPaymentsProtos;
 import org.multibit.hd.core.utils.Numbers;
 import org.slf4j.Logger;
@@ -86,8 +85,6 @@ public class PaymentsProtobufSerializer {
 
     Preconditions.checkNotNull(payments, "Payments must be specified");
 
-    paymentsBuilder.setLastAddressIndex(payments.getLastIndexUsed());
-
     Collection<PaymentRequestData> paymentRequestDatas = payments.getPaymentRequestDatas();
     if (paymentRequestDatas != null) {
       for (PaymentRequestData paymentRequestData : paymentRequestDatas) {
@@ -118,7 +115,7 @@ public class PaymentsProtobufSerializer {
   public Payments readPayments(InputStream input) throws PaymentsLoadException {
     try {
       MBHDPaymentsProtos.Payments paymentsProto = parseToProto(input);
-      Payments payments = new Payments(paymentsProto.getLastAddressIndex());
+      Payments payments = new Payments();
       readPayments(paymentsProto, payments);
       return payments;
     } catch (IOException e) {
@@ -321,12 +318,6 @@ public class PaymentsProtobufSerializer {
     }
 
     return paymentRequestBuilder.build();
-  }
-
-  private static MBHDContactsProtos.Tag makeTagProto(String tag) {
-    MBHDContactsProtos.Tag.Builder tagBuilder = MBHDContactsProtos.Tag.newBuilder();
-    tagBuilder.setTagValue(tag);
-    return tagBuilder.build();
   }
 
   private static MBHDPaymentsProtos.TransactionInfo makeTransactionInfoProto(TransactionInfo transactionInfo) {

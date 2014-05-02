@@ -14,24 +14,14 @@ import java.util.Collection;
  */
 
 public class Payments {
-  private int lastIndexUsed;
 
   private Collection<PaymentRequestData> paymentRequestDatas;
 
   private Collection<TransactionInfo> transactionInfos;
 
-  public Payments(int lastIndexUsed) {
-    this.lastIndexUsed = lastIndexUsed;
+  public Payments() {
     this.paymentRequestDatas = Lists.newArrayList();
     this.transactionInfos = Lists.newArrayList();
-  }
-
-  public int getLastIndexUsed() {
-    return lastIndexUsed;
-  }
-
-  public void setLastIndexUsed(int lastIndexUsed) {
-    this.lastIndexUsed = lastIndexUsed;
   }
 
   public Collection<PaymentRequestData> getPaymentRequestDatas() {

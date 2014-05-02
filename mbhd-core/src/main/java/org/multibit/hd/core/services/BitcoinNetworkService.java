@@ -4,6 +4,7 @@ import com.google.bitcoin.core.*;
 import com.google.bitcoin.net.discovery.DnsDiscovery;
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
+import com.google.bitcoin.wallet.KeyChain;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -615,9 +616,8 @@ public class BitcoinNetworkService extends AbstractService {
 
   /**
    * Get the next available change address
-   * TODO (JB) This should be worked out deterministically but just use the first address on the current wallet for now
    *
-   * @return changeAddress The next change address as a string
+   * @return changeAddress The next change address as an Address
    */
   public Address getNextChangeAddress() {
 
@@ -626,9 +626,8 @@ public class BitcoinNetworkService extends AbstractService {
     Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet().getKeychainSize() > 0);
 
     Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
-    // TODO this is the change address of the current key and won't increment
-    // TODO Change address needs tieing to the getFreshKey call
-    return wallet.getChangeAddress();
+
+    return wallet.freshKey(KeyChain.KeyPurpose.CHANGE).toAddress(networkParameters);
 
   }
 
