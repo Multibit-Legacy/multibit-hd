@@ -26,7 +26,7 @@ public class SendRequestScreen {
     new ShowSendRequestScreenUseCase(window).execute(parameters);
 
     // Click Send then immediately Cancel
-    new SendThenCancelSendUseCase(window).execute(parameters);
+    new ShowSendThenCancelSendUseCase(window).execute(parameters);
 
     // Verify the recipient field then Cancel
     new VerifyRecipientAndCancelContactUseCase(window).execute(parameters);

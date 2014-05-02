@@ -1,6 +1,7 @@
-package org.multibit.hd.ui.views.components.select_contact;
+package org.multibit.hd.ui.views.components.select_recipient;
 
 import com.google.bitcoin.core.NetworkParameters;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.services.ContactService;
@@ -25,8 +26,7 @@ import java.awt.event.ActionListener;
  */
 public class RecipientComboBoxEditor implements ComboBoxEditor {
 
-  protected JTextField editor;
-  private Recipient recipient;
+  protected RecipientComboBoxTextField editor;
 
   /**
    * @param contactService The contact service for the current wallet
@@ -36,8 +36,8 @@ public class RecipientComboBoxEditor implements ComboBoxEditor {
     Preconditions.checkNotNull(contactService, "'contactService' must be present");
     Preconditions.checkNotNull(networkParameters, "'networkParameters' must be present");
 
-    // Use a modified text field with a workaround
-    editor = new ComboBoxTextField("", 0);
+    // Use a modified text field to store the recipient
+    editor = new RecipientComboBoxTextField("", 0);
     editor.setName(MessageKey.RECIPIENT.getKey());
 
     // Apply theme
@@ -60,50 +60,58 @@ public class RecipientComboBoxEditor implements ComboBoxEditor {
    *
    * @param item The displayed value of the editor
    */
+  @SuppressWarnings("unchecked")
   public void setItem(Object item) {
 
-    String editorText;
-
+    // User is typing or has pasted in the editor
     if (item instanceof String) {
 
-      // User is typing or has pasted in the editor
-      editorText = (String) item;
-      recipient = null;
+      editor.setText((String) item);
+      editor.setRecipient(Optional.<Recipient>absent());
 
-    } else {
+      return;
 
-      // User has selected from the list
-      Recipient recipient = (Recipient) item;
-
-      if (recipient != null && recipient.getBitcoinAddress() != null) {
-        // Choose either the contact name or a Bitcoin address
-        if (recipient.getContact().isPresent()) {
-          editorText = recipient.getContact().get().getName();
-        } else {
-          editorText = recipient.getBitcoinAddress().toString();
-        }
-        this.recipient = recipient;
-      } else {
-        // Recipient does not have a Bitcoin address so clear the editor
-        this.recipient = null;
-        editorText = "";
-      }
     }
 
-    // Workaround for Java Bug #4530952
-    if (!editorText.equals(editor.getText())) {
-      editor.setText(editorText);
+    // User has selected from drop down list or input verifier has succeeded
+    if (item instanceof Recipient) {
+
+      final Optional<Recipient> recipient = Optional.fromNullable((Recipient) item);
+
+      selectNameOrBitcoinAddress(recipient);
+
+      editor.setRecipient(recipient);
+
+      return;
+    }
+
+    // Just in case an Optional<Recipient> is passed in
+    if (item instanceof Optional) {
+
+      final Optional<Recipient> recipient = (Optional<Recipient>) item;
+
+      if (recipient.isPresent()) {
+        selectNameOrBitcoinAddress(recipient);
+      } else {
+        editor.setText("");
+      }
+
+      editor.setRecipient(recipient);
+
     }
 
   }
 
+
+  /**
+   * @return The current recipient if present, otherwise the text contents of the editor
+   */
   public Object getItem() {
 
-    if (recipient != null && recipient.getContact().isPresent()) {
-      // There is a hit on a contact
-      return recipient;
+    if (editor.getRecipient().isPresent()) {
+      return editor.getRecipient().get();
     } else {
-      // Return the editor contents, which may be a pasted address
+      // Return the editor contents, which may be invalid content
       return editor.getText();
     }
 
@@ -124,9 +132,23 @@ public class RecipientComboBoxEditor implements ComboBoxEditor {
     editor.removeActionListener(l);
   }
 
-  public static class ComboBoxTextField extends JTextField {
+  private void selectNameOrBitcoinAddress(Optional<Recipient> recipient) {
 
-    public ComboBoxTextField(String value, int n) {
+    if (recipient.get().getContact().isPresent()) {
+      editor.setText(recipient.get().getContact().get().getName());
+    } else {
+      editor.setText(recipient.get().getBitcoinAddress().toString());
+    }
+  }
+
+  /**
+   * Specialised text field for tracking text and Recipient
+   */
+  public static class RecipientComboBoxTextField extends JTextField {
+
+    private Optional<Recipient> recipient = Optional.absent();
+
+    public RecipientComboBoxTextField(String value, int n) {
       super(value, n);
     }
 
@@ -137,6 +159,21 @@ public class RecipientComboBoxEditor implements ComboBoxEditor {
       }
       super.setText(s);
     }
-  }
 
+    /**
+     * @param recipient The recipient to set
+     */
+    public void setRecipient(Optional<Recipient> recipient) {
+
+      Preconditions.checkNotNull(recipient, "'recipient' must be present");
+      this.recipient = recipient;
+    }
+
+    /**
+     * @return The recipient
+     */
+    public Optional<Recipient> getRecipient() {
+      return recipient;
+    }
+  }
 }

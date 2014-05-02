@@ -1,12 +1,15 @@
 package org.multibit.hd.ui.fest.use_cases.send_request;
 
 import org.fest.swing.fixture.FrameFixture;
-import org.fest.swing.timing.Timeout;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import static org.fest.swing.timing.Timeout.timeout;
 
 /**
  * <p>Use case to provide the following to FEST testing:</p>
@@ -20,6 +23,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class SendNoFundsAmountScreenUseCase extends AbstractFestUseCase {
 
+  private static final Logger log = LoggerFactory.getLogger(SendNoFundsAmountScreenUseCase.class);
+
   public SendNoFundsAmountScreenUseCase(FrameFixture window) {
     super(window);
   }
@@ -31,7 +36,7 @@ public class SendNoFundsAmountScreenUseCase extends AbstractFestUseCase {
     window
       .button(MessageKey.SHOW_SEND_WIZARD.getKey())
       // Allow time for the Bitcoin network to initialise
-      .requireEnabled(Timeout.timeout(5, TimeUnit.SECONDS))
+      .requireEnabled(timeout(5, TimeUnit.SECONDS))
       .click();
 
     // Verify the wizard appears
@@ -50,6 +55,7 @@ public class SendNoFundsAmountScreenUseCase extends AbstractFestUseCase {
       .requireEnabled();
 
     // Set the recipient editor text box to the MultiBit address
+    log.debug("Setting recipient");
     window
       .textBox(MessageKey.RECIPIENT.getKey())
       .setText("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
@@ -59,20 +65,29 @@ public class SendNoFundsAmountScreenUseCase extends AbstractFestUseCase {
       .button(MessageKey.PASTE.getKey())
       .focus();
 
+    // Verify the Next button is disabled (no amount)
     window
       .button(MessageKey.NEXT.getKey())
       .requireVisible()
       .requireDisabled();
 
-    // Set a nominal amount for sending
+    // Set a nominal amount for sending (the wallet is empty)
+    log.debug("Setting amount");
     window
       .textBox(MessageKey.BITCOIN_AMOUNT.getKey())
-      .enterText("10.0"); // 1 mBTC
+      .setText("")
+      .enterText("100.0");
 
     // Change focus to trigger validation
     window
-      .textBox(MessageKey.LOCAL_AMOUNT.getKey())
+      .button(MessageKey.PASTE.getKey())
       .focus();
+
+    // Verify the Next button is enabled
+    window
+      .button(MessageKey.NEXT.getKey())
+      .requireVisible()
+      .requireEnabled(timeout(1, TimeUnit.SECONDS));
 
     // Leave amount screen showing
 

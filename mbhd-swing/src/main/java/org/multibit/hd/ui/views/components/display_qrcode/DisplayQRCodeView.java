@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import org.multibit.hd.core.utils.OSUtils;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.utils.ClipboardUtils;
 import org.multibit.hd.ui.utils.QRCodes;
 import org.multibit.hd.ui.views.components.AbstractComponentView;
@@ -47,6 +48,9 @@ public class DisplayQRCodeView extends AbstractComponentView<DisplayQRCodeModel>
     qrCodeImage = QRCodes.generateQRCode(getModel().get().getValue(), 3);
 
     panelCloseButton = Buttons.newPanelCloseButton(getClosePopoverAction());
+
+    // Ensure it is accessible
+    panelCloseButton.setName("popover."+ MessageKey.CLOSE.getKey());
 
     // Add to the panel
     // Bug in JDK 1.7 on Mac prevents clipboard image copy
@@ -102,7 +106,7 @@ public class DisplayQRCodeView extends AbstractComponentView<DisplayQRCodeModel>
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        Panels.hideLightBoxPopover();
+        Panels.hideLightBoxPopoverIfPresent();
 
         // Issue the wizard popover hide event
         ViewEvents.fireWizardPopoverHideEvent(getModel().get().getPanelName(),true);

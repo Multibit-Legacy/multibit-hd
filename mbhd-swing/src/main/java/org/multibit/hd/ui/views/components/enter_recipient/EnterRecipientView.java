@@ -13,8 +13,6 @@ import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.gravatar.Gravatars;
 import org.multibit.hd.ui.utils.ClipboardUtils;
 import org.multibit.hd.ui.views.components.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -34,8 +32,6 @@ import java.awt.image.BufferedImage;
  */
 public class EnterRecipientView extends AbstractComponentView<EnterRecipientModel> {
 
-  private static final Logger log = LoggerFactory.getLogger(EnterRecipientView.class);
-
   // View components
   private JComboBox<Recipient> recipientComboBox;
   private JLabel imageLabel;
@@ -50,7 +46,6 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
 
   @Override
   public JPanel newComponentPanel() {
-
 
     JPanel panel = Panels.newPanel(new MigLayout(
       Panels.migXLayout(),
@@ -78,14 +73,13 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
       }
     }
 
-    // Bind a key listener to allow instant update of UI to matched passwords
+    // Bind an action listener to allow instant update of UI to matched contacts
     recipientComboBox.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         updateModelFromView();
       }
     });
-
 
     panel.add(Labels.newRecipient());
     // Specify minimum width for consistent appearance across contact names and locales
@@ -100,41 +94,42 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
   @Override
   public void requestInitialFocus() {
 
+    recipientComboBox.requestFocusInWindow();
+
   }
 
   @Override
   public void updateModelFromView() {
 
-    Object selectedItem = recipientComboBox.getSelectedItem();
-    Object editedItem = recipientComboBox.getEditor().getItem();
+    // The editor maintains the selected or inferred Recipient
+    Object editorItem = recipientComboBox.getEditor().getItem();
 
-    // Use pastes in preference to selection
-    if (editedItem != null) {
-      selectedItem = editedItem;
+    // No recipient if no item
+    if (editorItem == null) {
+
+      getModel().get().setValue(null);
+      return;
     }
 
-    Optional<Recipient> currentRecipient = getModel().get().getRecipient();
+    // Check for a valid Recipient
+    if (editorItem instanceof Recipient) {
 
-    if (selectedItem instanceof Recipient) {
-
-      // We have a select from the drop down
-      Recipient selectedRecipient = (Recipient) selectedItem;
+      Recipient editorRecipient = (Recipient) editorItem;
 
       // Avoid double events triggering calls
-      if (currentRecipient.isPresent() && currentRecipient.get().equals(selectedRecipient)) {
+      Optional<Recipient> currentRecipient = getModel().get().getRecipient();
+      if (currentRecipient.isPresent() && currentRecipient.get().equals(editorRecipient)) {
         return;
       }
 
-      // Update the current with the selected
-      currentRecipient = Optional.of(selectedRecipient);
-
-      getModel().get().setValue(selectedRecipient);
+      // Update the model
+      getModel().get().setValue(editorRecipient);
 
       // Display a gravatar if we have a contact
-      if (selectedRecipient.getContact().isPresent()) {
-        if (selectedRecipient.getContact().get().getEmail().isPresent()) {
+      if (editorRecipient.getContact().isPresent()) {
+        if (editorRecipient.getContact().get().getEmail().isPresent()) {
 
-          displayGravatar(selectedRecipient);
+          displayGravatar(editorRecipient);
 
         } else {
           imageLabel.setVisible(false);
@@ -142,13 +137,12 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
 
       }
 
-      // Update the model
-      getModel().get().setValue(currentRecipient.get());
-
     } else {
+
       // Random text is not a recipient
       getModel().get().setValue(null);
       imageLabel.setVisible(false);
+
     }
 
   }
@@ -159,6 +153,7 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
    * @param recipient The recipient (must have an email address)F
    */
   private void displayGravatar(Recipient recipient) {
+
     // We have an email address
     String emailAddress = recipient.getContact().get().getEmail().get();
 
@@ -185,6 +180,7 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
    * @return A new action for pasting the recipient information
    */
   private Action getPasteAction() {
+
     // Paste the recipient information
     return new AbstractAction() {
 
@@ -194,10 +190,10 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
         Optional<String> pastedText = ClipboardUtils.pasteStringFromClipboard();
 
         if (pastedText.isPresent()) {
-          log.debug("Pasted text :'" + pastedText.get());
 
           recipientComboBox.getEditor().setItem(pastedText.get());
           updateModelFromView();
+
         }
 
       }

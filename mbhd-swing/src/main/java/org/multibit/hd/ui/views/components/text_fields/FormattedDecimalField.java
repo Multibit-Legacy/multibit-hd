@@ -1,17 +1,13 @@
 package org.multibit.hd.ui.views.components.text_fields;
 
 import com.google.common.base.Preconditions;
-import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.ui.views.components.DocumentMaxLengthFilter;
+import org.multibit.hd.core.utils.Numbers;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import javax.swing.text.DefaultFormatterFactory;
-import javax.swing.text.DocumentFilter;
 import javax.swing.text.NumberFormatter;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.ParseException;
+import java.math.BigDecimal;
 
 /**
  * <p>Text field to provide the following to UI:</p>
@@ -31,9 +27,9 @@ public class FormattedDecimalField extends JFormattedTextField {
    * @param min           The minimum value
    * @param max           The maximum value
    * @param decimalPlaces The number of decimal places to show (padding as required)
-   * @param maxEditLength The maximum edit length
+   * @param maxLength     The maximum length
    */
-  public FormattedDecimalField(double min, double max, int decimalPlaces, int maxEditLength) {
+  public FormattedDecimalField(double min, double max, int decimalPlaces, int maxLength) {
 
     super();
 
@@ -47,47 +43,12 @@ public class FormattedDecimalField extends JFormattedTextField {
 
     setBackground(Themes.currentTheme.dataEntryBackground());
 
-    // Set the edit/display patterns (not localised)
-    String displayPattern = "#,##0.000000000000000";
-    String editPattern = "#,###.###############";
-
-    // Identify the location of the decimal in the template before locale adjustments
-    int decimalDisplayIndex = displayPattern.indexOf('.');
-    int decimalEditIndex = editPattern.indexOf('.');
-
-    // Adjust patterns to accommodate the required decimal places
-    if (decimalPlaces > 0) {
-      displayPattern = displayPattern.substring(0, decimalDisplayIndex + decimalPlaces + 1);
-      editPattern = editPattern.substring(0, decimalEditIndex + decimalPlaces + 1);
-    } else {
-      displayPattern = displayPattern.substring(0, decimalDisplayIndex);
-      editPattern = editPattern.substring(0, decimalEditIndex);
-    }
-    // Adjust edit/display formats to the current configuration
-    String groupingSeparator = Configurations.currentConfiguration.getBitcoin().getGroupingSeparator();
-    String decimalSeparator = Configurations.currentConfiguration.getBitcoin().getDecimalSeparator();
-
-    // Use locale decimal formatting then override with current configuration
-    DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-    symbols.setDecimalSeparator(decimalSeparator.charAt(0));
-    symbols.setGroupingSeparator(groupingSeparator.charAt(0));
-    symbols.setMonetaryDecimalSeparator(decimalSeparator.charAt(0));
-
-    // Create a decimal format using the configured symbols for edit/display
-    DecimalFormat displayDecimalFormat = new DecimalFormat(displayPattern, symbols);
-    DecimalFormat editDecimalFormat = new DecimalFormat(editPattern, symbols);
-
     // Build number formatters
     NumberFormatter defaultFormatter = new NumberFormatter();
-    defaultFormatter.setValueClass(Double.class);
+    defaultFormatter.setValueClass(BigDecimal.class);
 
-    NumberFormatter displayFormatter = getNumberFormatter(displayDecimalFormat, maxEditLength);
-    NumberFormatter editFormatter = getNumberFormatter(editDecimalFormat, maxEditLength);
-
-    // Ensure we keep insert mode
-    defaultFormatter.setOverwriteMode(false);
-    displayFormatter.setOverwriteMode(false);
-    editFormatter.setOverwriteMode(false);
+    NumberFormatter displayFormatter = Numbers.newDisplayFormatter(decimalPlaces, maxLength);
+    NumberFormatter editFormatter = Numbers.newEditFormatter(decimalPlaces, maxLength);
 
     setFormatterFactory(new DefaultFormatterFactory(
       defaultFormatter,
@@ -95,36 +56,6 @@ public class FormattedDecimalField extends JFormattedTextField {
       editFormatter
     ));
 
-  }
-
-  /**
-   * @param decimalFormat The decimal format appropriate for this locale
-   *
-   * @return A number formatter that is locale-aware and configured for doubles
-   */
-  private NumberFormatter getNumberFormatter(final DecimalFormat decimalFormat, final int maxEditLength) {
-
-    // Create the number formatter with local-sensitive adjustments
-    NumberFormatter displayFormatter = new NumberFormatter(decimalFormat) {
-
-      // The max input length for the given symbol
-      DocumentFilter documentFilter = new DocumentMaxLengthFilter(maxEditLength);
-
-      @Override
-      public Object stringToValue(String text) throws ParseException {
-        // RU locale (and others) requires a non-breaking space for a grouping separator
-        text = text.replace(' ', '\u00a0');
-        return super.stringToValue(text);
-      }
-
-      @Override
-      protected DocumentFilter getDocumentFilter() {
-        return documentFilter;
-      }
-
-    };
-    displayFormatter.setValueClass(Double.class);
-    return displayFormatter;
   }
 
 }

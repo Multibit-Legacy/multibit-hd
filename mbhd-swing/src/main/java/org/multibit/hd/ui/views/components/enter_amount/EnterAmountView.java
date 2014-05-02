@@ -20,6 +20,8 @@ import org.multibit.hd.ui.views.components.text_fields.FormattedDecimalField;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,6 +41,8 @@ import java.math.BigInteger;
  *  
  */
 public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
+
+  private static final Logger log = LoggerFactory.getLogger(EnterAmountView.class);
 
   // View components
   private FormattedDecimalField bitcoinAmountText;
@@ -81,7 +85,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     if (!BigInteger.ZERO.equals(getModel().get().getSatoshis())) {
       BitcoinSymbol bitcoinSymbol = BitcoinSymbol.current();
       BigDecimal symbolicAmount = Satoshis.toSymbolicAmount(getModel().get().getSatoshis(), bitcoinSymbol);
-      bitcoinAmountText.setValue(symbolicAmount.doubleValue());
+      bitcoinAmountText.setText(symbolicAmount.toPlainString());
       updateLocalAmount();
     }
 
@@ -252,7 +256,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
   private void updateBitcoinAmount() {
 
     String text = localAmountText.getText();
-    Optional<Double> value = Numbers.parseDouble(text);
+    Optional<BigDecimal> value = Numbers.parseBigDecimal(text);
 
     BitcoinSymbol bitcoinSymbol = BitcoinSymbol.current();
 
@@ -260,8 +264,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
       if (value.isPresent()) {
 
-        // Use the text directly into BigDecimal to avoid ambiguity
-        BigMoney localAmount = MoneyUtils.parseMoney(CurrencyUtils.currentCode(), new BigDecimal(text));
+        BigMoney localAmount = MoneyUtils.parseMoney(CurrencyUtils.currentCode(), value.get());
 
         BigMoney exchangeRate = latestExchangeRateChangedEvent.get().getRate();
 
@@ -273,9 +276,9 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
           getModel().get().setSatoshis(satoshis);
           getModel().get().setLocalAmount(localAmount);
 
-          // Use the symbolic amount for display formatting
+          // Use the symbolic amount in setValue() for display formatting
           BigDecimal symbolicAmount = Satoshis.toSymbolicAmount(satoshis, bitcoinSymbol);
-          bitcoinAmountText.setValue(symbolicAmount.toPlainString());
+          bitcoinAmountText.setValue(symbolicAmount);
 
           // Give feedback to the user
           localAmountText.setBackground(Themes.currentTheme.dataEntryBackground());
@@ -311,7 +314,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
   private void updateLocalAmount() {
 
     String text = bitcoinAmountText.getText();
-    Optional<Double> value = Numbers.parseDouble(text);
+    Optional<BigDecimal> value = Numbers.parseBigDecimal(text);
 
     BitcoinSymbol bitcoinSymbol = BitcoinSymbol.current();
 
@@ -321,8 +324,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
         try {
 
-          // Use the text directly into BigDecimal to avoid ambiguity
-          BigInteger satoshis = Satoshis.fromSymbolicAmount(new BigDecimal(text), bitcoinSymbol);
+          BigInteger satoshis = Satoshis.fromSymbolicAmount(value.get(), bitcoinSymbol);
 
           // Apply the exchange rate
           BigMoney localAmount = Satoshis.toLocalAmount(satoshis, latestExchangeRateChangedEvent.get().getRate());
@@ -331,8 +333,9 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
           getModel().get().setSatoshis(satoshis);
           getModel().get().setLocalAmount(localAmount);
 
-          // Use double for display formatting
-          localAmountText.setText(localAmount.getAmount().toPlainString());
+          // Use setValue for the local amount so that the display formatter
+          // will match the currency requirements
+          localAmountText.setValue(localAmount.getAmount());
 
           // Give feedback to the user
           bitcoinAmountText.setBackground(Themes.currentTheme.dataEntryBackground());

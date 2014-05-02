@@ -25,8 +25,11 @@ public class Satoshis {
    */
   public static final BigDecimal BTC_SAT = new BigDecimal("100000000");
   private static final int BITCOIN_SCALE = 12;
+  private static final int LOCAL_SCALE = 12;
 
   /**
+   * TODO (GR) Refactor to remove BigMoney dependency
+   *
    * @param satoshis     The Bitcoin amount in satoshis
    * @param exchangeRate The exchange rate in terms of the local currency (e.g. "USD 1000" means 1000 USD = 1 bitcoin)
    *
@@ -39,14 +42,15 @@ public class Satoshis {
 
     // Convert satoshis to bitcoins
     BigDecimal bitcoins = new BigDecimal(satoshis)
-      .setScale(BITCOIN_SCALE)
-      .divide(BTC_SAT, BITCOIN_SCALE, RoundingMode.HALF_EVEN);
+      .divide(BTC_SAT, LOCAL_SCALE, RoundingMode.HALF_EVEN);
 
     return exchangeRate.multipliedBy(bitcoins);
 
   }
 
   /**
+   * TODO (GR) Refactor to remove BigMoney dependency
+   *
    * @param localAmount  A monetary amount denominated in the local currency
    * @param exchangeRate The exchange rate in terms of the local currency (e.g. "USD 1000" means 1000 USD = 1 bitcoin)
    *
@@ -59,16 +63,19 @@ public class Satoshis {
 
     Preconditions.checkState(localAmount.getCurrencyUnit().equals(exchangeRate.getCurrencyUnit()), "'localAmount' has a different currency unit to 'exchangeRate': " + localAmount.getCurrencyUnit().getCode() + " vs " + exchangeRate.getCurrencyUnit().getCode());
 
+    // Truncate to 8 dp to ensure conversion to Satoshis can take place
     BigDecimal bitcoinAmount = localAmount
       .getAmount()
       .setScale(BITCOIN_SCALE)
-      .divide(exchangeRate.getAmount(), BITCOIN_SCALE, RoundingMode.HALF_EVEN);
+      .divide(exchangeRate.getAmount(), BITCOIN_SCALE, RoundingMode.HALF_EVEN)
+      .setScale(8, RoundingMode.HALF_EVEN);
 
     return Utils.toNanoCoins(bitcoinAmount.toPlainString());
 
   }
 
   /**
+   * TODO (GR) Refactor to remove BigMoney dependency
    * @param plainAmount A big money denominated in Bitcoin (e.g. "BTC 0.0015")
    *
    * @return The satoshi value (e.g. 150 000)

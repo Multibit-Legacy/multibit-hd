@@ -201,11 +201,13 @@ public class Panels {
   }
 
   /**
-   * <p>Hides the currently showing light box panel</p>
+   * <p>Hides the currently showing light box panel (and any popover)</p>
    */
   public synchronized static void hideLightBoxIfPresent() {
 
     log.debug("Hide light box (if present)");
+
+    hideLightBoxPopoverIfPresent();
 
     if (lightBoxPanel.isPresent()) {
       lightBoxPanel.get().close();
@@ -242,7 +244,7 @@ public class Panels {
   /**
    * <p>Hides the currently showing light box popover panel</p>
    */
-  public synchronized static void hideLightBoxPopover() {
+  public synchronized static void hideLightBoxPopoverIfPresent() {
 
     log.debug("Hide light box popover");
 

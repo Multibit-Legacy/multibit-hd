@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.components.select_contact;
+package org.multibit.hd.ui.views.components.select_recipient;
 
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.ui.utils.HtmlUtils;

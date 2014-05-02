@@ -42,22 +42,6 @@ public class SendNoFundsConfirmScreenUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled();
 
-    // Verify previous
-    window
-      .button(MessageKey.PREVIOUS.getKey())
-      .click();
-
-    // Verify new title
-    window
-      .label(MessageKey.SEND_BITCOIN_TITLE.getKey());
-
-    window
-      .button(MessageKey.NEXT.getKey())
-      .click();
-
-    window
-      .label(MessageKey.CONFIRM_SEND_TITLE.getKey());
-
     // Verify recipient summary
     window
       .label(MessageKey.RECIPIENT_SUMMARY.getKey())

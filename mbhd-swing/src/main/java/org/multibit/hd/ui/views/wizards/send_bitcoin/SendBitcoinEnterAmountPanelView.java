@@ -26,6 +26,8 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.math.BigInteger;
@@ -42,6 +44,8 @@ import java.util.List;
  */
 
 public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<SendBitcoinWizardModel, SendBitcoinEnterAmountPanelModel> {
+
+  private static final Logger log = LoggerFactory.getLogger(SendBitcoinEnterAmountPanelView.class);
 
   // Panel specific components
   private ModelAndView<EnterRecipientModel, EnterRecipientView> enterRecipientMaV;
@@ -95,60 +99,66 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
 
     // Apply any Bitcoin URI parameters
     if (bitcoinUri.isPresent()) {
-
-      // TODO Consider moving this into a service method
-      BitcoinURI uri = bitcoinUri.get();
-      Optional<Address> address = Optional.fromNullable(uri.getAddress());
-      Optional<BigInteger> amount = Optional.fromNullable(uri.getAmount());
-
-      if (address.isPresent()) {
-
-        final Recipient recipient;
-
-        // Get the current wallet
-        Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
-
-        if (currentWalletSummary.isPresent()) {
-
-          // Attempt to locate a contact with the address in the Bitcoin URI to reassure user
-          List<Contact> contacts = CoreServices
-            .getOrCreateContactService(currentWalletSummary.get().getWalletId())
-            .filterContactsByBitcoinAddress(address.get());
-
-          if (!contacts.isEmpty()) {
-            // Offer the first contact with the matching address
-            try {
-              Address bitcoinAddress = new Address(networkParameters, contacts.get(0).getBitcoinAddress().get());
-              recipient = new Recipient(bitcoinAddress);
-              recipient.setContact(contacts.get(0));
-            } catch (AddressFormatException e) {
-              // This would indicate a failed filter in the ContactService
-              throw new IllegalArgumentException("Contact has an malformed Bitcoin address: " + contacts.get(0), e);
-            }
-          } else {
-            // No matching contact so make an anonymous Recipient
-            recipient = new Recipient(address.get());
-          }
-
-        } else {
-          // No current wallet so make an anonymous Recipient
-          recipient = new Recipient(address.get());
-        }
-
-        enterRecipientMaV.getModel().setValue(recipient);
-
-        // Only if the address is present will an amount be entered
-        if (amount.isPresent()) {
-          enterAmountMaV.getModel().setSatoshis(amount.get());
-        }
-
-      }
-
+      handleBitcoinURI();
     }
 
     contentPanel.add(enterRecipientMaV.getView().newComponentPanel(), "wrap");
     contentPanel.add(enterAmountMaV.getView().newComponentPanel(), "wrap");
 
+  }
+
+  /**
+   * TODO (GR) Consider the Bitcoin URI handling response enum
+   * Fill in the Bitcoin URI details
+   */
+  private void handleBitcoinURI() {
+
+    BitcoinURI uri = bitcoinUri.get();
+    Optional<Address> address = Optional.fromNullable(uri.getAddress());
+    Optional<BigInteger> amount = Optional.fromNullable(uri.getAmount());
+
+    if (address.isPresent()) {
+
+      final Recipient recipient;
+
+      // Get the current wallet
+      Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+
+      if (currentWalletSummary.isPresent()) {
+
+        // Attempt to locate a contact with the address in the Bitcoin URI to reassure user
+        List<Contact> contacts = CoreServices
+          .getOrCreateContactService(currentWalletSummary.get().getWalletId())
+          .filterContactsByBitcoinAddress(address.get());
+
+        if (!contacts.isEmpty()) {
+          // Offer the first contact with the matching address
+          try {
+            Address bitcoinAddress = new Address(networkParameters, contacts.get(0).getBitcoinAddress().get());
+            recipient = new Recipient(bitcoinAddress);
+            recipient.setContact(contacts.get(0));
+          } catch (AddressFormatException e) {
+            // This would indicate a failed filter in the ContactService
+            throw new IllegalArgumentException("Contact has an malformed Bitcoin address: " + contacts.get(0), e);
+          }
+        } else {
+          // No matching contact so make an anonymous Recipient
+          recipient = new Recipient(address.get());
+        }
+
+      } else {
+        // No current wallet so make an anonymous Recipient
+        recipient = new Recipient(address.get());
+      }
+
+      enterRecipientMaV.getModel().setValue(recipient);
+
+      // Only if the address is present will an amount be entered
+      if (amount.isPresent()) {
+        enterAmountMaV.getModel().setSatoshis(amount.get());
+      }
+
+    }
   }
 
   @Override
@@ -202,11 +212,12 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
       .getSatoshis()
       .equals(BigInteger.ZERO);
 
-
     boolean recipientOK = getPanelModel().get()
       .getEnterRecipientModel()
       .getRecipient()
       .isPresent();
+
+    log.debug("Bitcoin amount: {} Recipient: {}", bitcoinAmountOK, recipientOK);
 
     return bitcoinAmountOK && recipientOK;
   }

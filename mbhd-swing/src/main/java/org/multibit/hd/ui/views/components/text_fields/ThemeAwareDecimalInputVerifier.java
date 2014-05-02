@@ -8,6 +8,7 @@ import org.multibit.hd.ui.views.themes.Themes;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
+import java.math.BigDecimal;
 
 /**
  * <p>Input verifier to provide the following to UI:</p>
@@ -21,15 +22,15 @@ import java.awt.*;
  */
 public class ThemeAwareDecimalInputVerifier extends InputVerifier {
 
-  private final Double minValue;
-  private final Double maxValue;
+  private final BigDecimal minValue;
+  private final BigDecimal maxValue;
 
   private final Color invalidColor = Themes.currentTheme.invalidDataEntryBackground();
   private final Color validColor = Themes.currentTheme.dataEntryBackground();
 
   public ThemeAwareDecimalInputVerifier() {
-    minValue = -Double.MAX_VALUE;
-    maxValue = Double.MAX_VALUE;
+    minValue = new BigDecimal(-Double.MAX_VALUE);
+    maxValue = new BigDecimal(Double.MAX_VALUE);
   }
 
   /**
@@ -46,19 +47,19 @@ public class ThemeAwareDecimalInputVerifier extends InputVerifier {
 
     Preconditions.checkState(min.compareTo(max) == -1, "'min' must be less than max");
 
-    minValue = min;
-    maxValue = max;
+    minValue = new BigDecimal(min);
+    maxValue = new BigDecimal(max);
   }
 
   public boolean verify(JComponent component) {
 
     String text = ((JTextComponent) component).getText();
 
-    Optional<Double> value = Numbers.parseDouble(text);
+    Optional<BigDecimal> value = Numbers.parseBigDecimal(text);
 
     if (value.isPresent()) {
 
-      Double amount = value.get();
+      BigDecimal amount = value.get();
 
       if (amount.compareTo(minValue) == -1 || amount.compareTo(maxValue) == 1) {
         // Not in range

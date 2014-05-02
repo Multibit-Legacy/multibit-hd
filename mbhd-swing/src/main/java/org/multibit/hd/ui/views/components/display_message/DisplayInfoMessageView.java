@@ -64,7 +64,7 @@ public class DisplayInfoMessageView extends AbstractComponentView<DisplayInfoMes
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        Panels.hideLightBoxPopover();
+        Panels.hideLightBoxPopoverIfPresent();
 
         // Issue the wizard popover hide event
         ViewEvents.fireWizardPopoverHideEvent(getModel().get().getPanelName(), true);

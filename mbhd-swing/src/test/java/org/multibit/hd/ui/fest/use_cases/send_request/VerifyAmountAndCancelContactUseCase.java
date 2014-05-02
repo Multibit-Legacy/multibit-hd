@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.fest.use_cases.send_request;
 
+import com.google.common.base.Strings;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.timing.Timeout;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
@@ -8,6 +9,8 @@ import org.multibit.hd.ui.views.themes.Themes;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * <p>Use case to provide the following to FEST testing:</p>
@@ -75,17 +78,21 @@ public class VerifyAmountAndCancelContactUseCase extends AbstractFestUseCase {
 
     verifyBitcoinAmountField("-1", false);
     verifyBitcoinAmountField("-0.1", false);
-    verifyBitcoinAmountField("-20,000,000,000.12345", false);
 
     verifyBitcoinAmountField("0.1", true);
+    verifyBitcoinAmountField("3.33333", true);
+    verifyBitcoinAmountField("9.99999", true);
     verifyBitcoinAmountField("0.00001", true); // 1 sat in mBTC
 
     verifyBitcoinAmountField("1", true); // 1 BTC
     verifyBitcoinAmountField("10", true);
     verifyBitcoinAmountField("100", true);
+    verifyBitcoinAmountField("100.0", true);
+    verifyBitcoinAmountField("100.00001", true);
     verifyBitcoinAmountField("1000", true); // 1 BTC
 
     verifyBitcoinAmountField("1,000", true);
+    verifyBitcoinAmountField("1,000.00001", true);
 
     verifyBitcoinAmountField("1 000", false); // 1,000 BTC
     verifyBitcoinAmountField("1 000 000 000", false); // 1,000,000 BTC
@@ -117,10 +124,12 @@ public class VerifyAmountAndCancelContactUseCase extends AbstractFestUseCase {
    */
   private void verifyBitcoinAmountField(String text, boolean isValid) {
 
-    // Set the text directly on the combo box editor
+    // Enter the text into the amount field
     window
       .textBox(MessageKey.BITCOIN_AMOUNT.getKey())
-      .setText(text);
+        // Must clear first then "type" the values to ensure the local amount updates
+      .setText("")
+      .enterText(text);
 
     // Lose focus to trigger validation
     window
@@ -133,12 +142,26 @@ public class VerifyAmountAndCancelContactUseCase extends AbstractFestUseCase {
         .textBox(MessageKey.BITCOIN_AMOUNT.getKey())
         .background()
         .requireEqualTo(Themes.currentTheme.dataEntryBackground());
+
+      // Verify the local amount has updated
+      String localAmount = window
+        .textBox(MessageKey.LOCAL_AMOUNT.getKey())
+        .text();
+
+      assertThat(Strings.isNullOrEmpty(localAmount)).isFalse();
+
+      window
+        .textBox(MessageKey.LOCAL_AMOUNT.getKey())
+        .background()
+        .requireEqualTo(Themes.currentTheme.dataEntryBackground());
+
     } else {
       window
         .textBox(MessageKey.BITCOIN_AMOUNT.getKey())
         .background()
         .requireEqualTo(Themes.currentTheme.invalidDataEntryBackground());
     }
+
 
   }
 

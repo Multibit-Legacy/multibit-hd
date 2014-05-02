@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 
+import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -22,7 +23,7 @@ public class NumbersTest {
   public void testIsNumeric() throws Exception {
 
     // UK representations of good numbers
-    setLocale(Locale.UK);
+    setConfigurationLocale(Locale.UK);
     assertThat(Numbers.isNumeric("1")).isTrue();
     assertThat(Numbers.isNumeric("-1")).isTrue();
     assertThat(Numbers.isNumeric("01")).isTrue();
@@ -33,7 +34,7 @@ public class NumbersTest {
     assertThat(Numbers.isNumeric("1,0,0,0,0,1")).isTrue();
 
     // Russian representations of good numbers
-    setLocale(new Locale("ru"));
+    setConfigurationLocale(new Locale("ru"));
     assertThat(Numbers.isNumeric("1")).isTrue();
     assertThat(Numbers.isNumeric("-1")).isTrue();
     assertThat(Numbers.isNumeric("01")).isTrue();
@@ -46,33 +47,44 @@ public class NumbersTest {
   }
 
   @Test
-  public void testParseDouble() throws Exception {
+  public void testParseBigDecimal() throws Exception {
 
     // UK representations of good numbers
-    setLocale(Locale.UK);
-    assertThat(Numbers.parseDouble("1").get()).isEqualTo(1.0);
-    assertThat(Numbers.parseDouble("-1").get()).isEqualTo(-1.0);
-    assertThat(Numbers.parseDouble("01").get()).isEqualTo(1.0);
-    assertThat(Numbers.parseDouble("-01").get()).isEqualTo(-1.0);
-    assertThat(Numbers.parseDouble("1.0").get()).isEqualTo(1.0);
-    assertThat(Numbers.parseDouble("1,000.01").get()).isEqualTo(1_000.01);
-    assertThat(Numbers.parseDouble("1,00001").get()).isEqualTo(100_001);
-    assertThat(Numbers.parseDouble("1,0,0,0,0,1").get()).isEqualTo(100_001);
+    setConfigurationLocale(Locale.UK);
+    assertThat(Numbers.parseBigDecimal("1").get().toPlainString()).isEqualTo("1");
+    assertThat(Numbers.parseBigDecimal("-1").get().toPlainString()).isEqualTo("-1");
+    assertThat(Numbers.parseBigDecimal("01").get().toPlainString()).isEqualTo("1");
+    assertThat(Numbers.parseBigDecimal("-01").get().toPlainString()).isEqualTo("-1");
+    assertThat(Numbers.parseBigDecimal("1.0").get().toPlainString()).isEqualTo("1");
+    assertThat(Numbers.parseBigDecimal("1,000.01").get().toPlainString()).isEqualTo("1000.01");
+    assertThat(Numbers.parseBigDecimal("1,00001").get().toPlainString()).isEqualTo("100001");
+    assertThat(Numbers.parseBigDecimal("1,0,0,0,0,1").get().toPlainString()).isEqualTo("100001");
+    assertThat(Numbers.parseBigDecimal("1,0,0,0,0,1").get().toPlainString()).isEqualTo("100001");
 
     // Russian representations of good numbers
-    setLocale(new Locale("ru"));
-    assertThat(Numbers.parseDouble("1").get()).isEqualTo(1.0);
-    assertThat(Numbers.parseDouble("-1").get()).isEqualTo(-1.0);
-    assertThat(Numbers.parseDouble("01").get()).isEqualTo(1.0);
-    assertThat(Numbers.parseDouble("-01").get()).isEqualTo(-1.0);
-    assertThat(Numbers.parseDouble("1,0").get()).isEqualTo(1.0);
-    assertThat(Numbers.parseDouble("1 000,01").get()).isEqualTo(1_000.01);
-    assertThat(Numbers.parseDouble("1 00001").get()).isEqualTo(100_001);
-    assertThat(Numbers.parseDouble("1 0 0 0 0 1").get()).isEqualTo(100_001);
+    setConfigurationLocale(new Locale("ru"));
+    assertThat(Numbers.parseBigDecimal("1").get().toPlainString()).isEqualTo("1");
+    assertThat(Numbers.parseBigDecimal("-1").get().toPlainString()).isEqualTo("-1");
+    assertThat(Numbers.parseBigDecimal("01").get().toPlainString()).isEqualTo("1");
+    assertThat(Numbers.parseBigDecimal("-01").get().toPlainString()).isEqualTo("-1");
+    assertThat(Numbers.parseBigDecimal("1,0").get().toPlainString()).isEqualTo("1");
+    assertThat(Numbers.parseBigDecimal("1 000,01").get().toPlainString()).isEqualTo("1000.01");
+    assertThat(Numbers.parseBigDecimal("1 00001").get().toPlainString()).isEqualTo("100001");
+    assertThat(Numbers.parseBigDecimal("1 0 0 0 0 1").get().toPlainString()).isEqualTo("100001");
 
   }
 
-  private void setLocale(Locale locale) {
+  /**
+   * @param locale The locale providing the language and decimal configuration
+   */
+  private void setConfigurationLocale(Locale locale) {
+
     Configurations.currentConfiguration.getLanguage().setLocale(locale);
+
+    DecimalFormatSymbols symbols = new DecimalFormatSymbols(locale);
+
+    Configurations.currentConfiguration.getBitcoin().setDecimalSeparator(String.valueOf(symbols.getDecimalSeparator()));
+    Configurations.currentConfiguration.getBitcoin().setGroupingSeparator(String.valueOf(symbols.getGroupingSeparator()));
+
   }
 }
