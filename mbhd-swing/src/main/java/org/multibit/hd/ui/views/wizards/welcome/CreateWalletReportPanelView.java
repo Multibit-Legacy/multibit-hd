@@ -5,7 +5,6 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
-import org.joda.time.DateTime;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.crypto.AESUtils;
@@ -15,6 +14,7 @@ import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
@@ -153,7 +153,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       // Attempt to create the wallet (the manager will track the ID etc)
       WalletManager walletManager = WalletManager.INSTANCE;
       seed = seedPhraseGenerator.convertToSeed(seedPhrase);
-      long nowInSeconds = (long)(DateTime.now().getMillis() * 0.001);
+      long nowInSeconds = Dates.nowInSeconds();
       walletSummary = walletManager.createWalletSummary(seed, nowInSeconds, password);
 
       Preconditions.checkNotNull(walletSummary.getWalletId(), "'walletId' must be present");

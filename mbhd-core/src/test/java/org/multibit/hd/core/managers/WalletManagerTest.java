@@ -21,7 +21,6 @@ import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
 import com.google.common.base.Optional;
 import com.google.common.io.Files;
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
@@ -30,6 +29,7 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletIdTest;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.utils.Dates;
 
 import java.io.File;
 import java.io.IOException;
@@ -185,7 +185,7 @@ public class WalletManagerTest {
 
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
-    long nowInSeconds = (long)(DateTime.now().getMillis() * 0.001);
+    long nowInSeconds = Dates.nowInSeconds();
 
     WalletSummary walletSummary1 = walletManager.getOrCreateWalletSummary(temporaryDirectory1, seed, nowInSeconds, "password");
 

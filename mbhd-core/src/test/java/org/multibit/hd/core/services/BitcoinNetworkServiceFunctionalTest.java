@@ -255,7 +255,7 @@ public class BitcoinNetworkServiceFunctionalTest {
   }
 
   private WalletSummary createWallet(File walletDirectory, byte[] seed) throws IOException {
-    long nowInSeconds = (long)(DateTime.now().getMillis() * 0.001);
+    long nowInSeconds = Dates.nowInSeconds();
     WalletSummary walletSummary = walletManager.getOrCreateWalletSummary(walletDirectory, seed, nowInSeconds, WALLET_PASSWORD);
     assertThat(walletSummary).isNotNull();
     assertThat(walletSummary.getWallet()).isNotNull();

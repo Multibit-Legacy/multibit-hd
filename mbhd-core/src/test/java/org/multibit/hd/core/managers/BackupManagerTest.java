@@ -16,16 +16,16 @@
 package org.multibit.hd.core.managers;
 
 import com.google.common.util.concurrent.Uninterruptibles;
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.dto.BackupSummary;
-import org.multibit.hd.core.dto.WalletSummary;
-import org.multibit.hd.core.dto.WalletId;
-import org.multibit.hd.core.dto.WalletIdTest;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.BackupSummary;
+import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.dto.WalletIdTest;
+import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.utils.Dates;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,7 +59,7 @@ public class BackupManagerTest {
 
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
-    long nowInSeconds = (long)(DateTime.now().getMillis() * 0.001);
+    long nowInSeconds = Dates.nowInSeconds();
     WalletSummary walletSummary = WalletManager.INSTANCE.getOrCreateWalletSummary(temporaryApplicationDirectory, seed, nowInSeconds, "password");
 
     // Check there are initially a single wallet backup for the wallet id of the created wallet

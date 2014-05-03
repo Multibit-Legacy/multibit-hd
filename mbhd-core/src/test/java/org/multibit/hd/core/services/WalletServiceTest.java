@@ -14,6 +14,7 @@ import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.managers.WalletManagerTest;
+import org.multibit.hd.core.utils.Dates;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -28,7 +29,7 @@ public class WalletServiceTest {
 
   private WalletService walletService;
 
-  private static final CharSequence PASSWORD = "throckSplockChockAdock";
+  public static final CharSequence PASSWORD = "throckSplockChockAdock";
 
   private String firstAddress;
 
@@ -47,7 +48,7 @@ public class WalletServiceTest {
     WalletId walletId = new WalletId(seed1);
 
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
-    long nowInSeconds = (long)(DateTime.now().getMillis() * 0.001);
+    long nowInSeconds = Dates.nowInSeconds();
     WalletSummary walletSummary = WalletManager.INSTANCE.getOrCreateWalletSummary(temporaryDirectory, seed1, nowInSeconds, PASSWORD);
 
     firstAddress = walletSummary.getWallet().freshReceiveKey().toString();

@@ -1,7 +1,6 @@
 package org.multibit.hd.core.services;
 
 import com.google.bitcoin.core.Wallet;
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.multibit.hd.brit.dto.FeeState;
@@ -10,11 +9,12 @@ import org.multibit.hd.brit.dto.SendFeeDto;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.services.FeeService;
-import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletIdTest;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.managers.WalletManagerTest;
+import org.multibit.hd.core.utils.Dates;
 
 import java.io.File;
 
@@ -56,7 +56,7 @@ public class CoreServicesTest {
     // TODO May not be required
     // WalletManager.INSTANCE.open(temporaryDirectory);
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
-    long nowInSeconds = (long)(DateTime.now().getMillis() * 0.001);
+    long nowInSeconds = Dates.nowInSeconds();
     WalletSummary walletSummary = WalletManager.INSTANCE.getOrCreateWalletSummary(temporaryDirectory, seed, nowInSeconds, PASSWORD);
 
     Wallet wallet  = walletSummary.getWallet();

@@ -23,9 +23,9 @@ public interface HistoryService {
   String HISTORY_DIRECTORY_NAME = "history";
 
   /**
-   * The name of the history database
+   * The name of the history database (AES encrypted)
    */
-  String HISTORY_DATABASE_NAME = "history.db";
+  String HISTORY_DATABASE_NAME = "history.aes";
 
   /**
    * @param description The MultiBit description of what happened
