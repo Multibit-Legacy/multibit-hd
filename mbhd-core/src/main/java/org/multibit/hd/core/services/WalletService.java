@@ -11,8 +11,11 @@ import com.googlecode.jcsv.writer.CSVEntryConverter;
 import org.joda.money.BigMoney;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
+import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
+import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.exchanges.ExchangeKey;
@@ -26,7 +29,10 @@ import org.multibit.hd.core.utils.Satoshis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
 
@@ -48,9 +54,9 @@ public class WalletService {
   public final static String PAYMENTS_DIRECTORY_NAME = "payments";
 
   /**
-   * The name of the protobuf file containing additional payments information
+   * The name of the protobuf file containing additional payments information, AES encrypted
    */
-  public static final String PAYMENTS_DATABASE_NAME = "payments.db";
+  public static final String PAYMENTS_DATABASE_NAME = "payments.aes";
 
   /**
    * The text separator used in localising To: and By: prefices
@@ -68,7 +74,7 @@ public class WalletService {
   private File backingStoreFile;
 
   /**
-   * The serializer for the backing write
+   * The serializer for the backing store
    */
   private PaymentsProtobufSerializer protobufSerializer;
 
@@ -568,9 +574,10 @@ public class WalletService {
 
     Preconditions.checkNotNull(backingStoreFile, "There is no backingStoreFile. Please initialise WalletService.");
 
-    try (FileInputStream fis = new FileInputStream(backingStoreFile)) {
-
-      Payments payments = protobufSerializer.readPayments(fis);
+    log.debug("Loading payments from '{}'", backingStoreFile.getAbsolutePath());
+    try {
+      ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(backingStoreFile, WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword());
+      Payments payments = protobufSerializer.readPayments(decryptedInputStream);
 
       // For quick access payment requests and transaction infos are stored in maps
       Collection<PaymentRequestData> paymentRequestDatas = payments.getPaymentRequestDatas();
@@ -588,10 +595,9 @@ public class WalletService {
           transactionInfoMap.put(transactionInfo.getHash(), transactionInfo);
         }
       }
-    } catch (IOException | PaymentsLoadException e) {
-      throw new PaymentsLoadException("Could not read payments db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");
+    } catch (EncryptedFileReaderWriterException e) {
+      ExceptionHandler.handleThrowable(new PaymentsLoadException("Could not load payments db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'."));
     }
-
   }
 
   /**
@@ -601,16 +607,17 @@ public class WalletService {
 
     Preconditions.checkNotNull(backingStoreFile, "There is no backingStoreFile. Please initialise WalletService.");
 
-    try (FileOutputStream fos = new FileOutputStream(backingStoreFile)) {
+    try {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
+        Payments payments = new Payments();
+        payments.setTransactionInfos(transactionInfoMap.values());
+        payments.setPaymentRequestDatas(paymentRequestMap.values());
+        protobufSerializer.writePayments(payments, byteArrayOutputStream);
+        EncryptedFileReaderWriter.encryptAndWrite(byteArrayOutputStream.toByteArray(), WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(), backingStoreFile);
 
-      Payments payments = new Payments();
-      payments.setTransactionInfos(transactionInfoMap.values());
-      payments.setPaymentRequestDatas(paymentRequestMap.values());
-      protobufSerializer.writePayments(payments, fos);
-
-    } catch (Exception e) {
-      throw new PaymentsSaveException("Could not write payments db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");
-    }
+      } catch (Exception e) {
+        throw new PaymentsSaveException("Could not write payments db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");
+      }
   }
 
   public WalletId getWalletId() {
@@ -685,24 +692,20 @@ public class WalletService {
    * Delete a payment request
    */
   public void deletePaymentRequest(PaymentRequestData paymentRequestData) {
-
     undoDeletePaymentRequestStack.push(paymentRequestData);
     paymentRequestMap.remove(paymentRequestData.getAddress());
     writePayments();
-
   }
 
   /**
    * Undo the deletion of a payment request
    */
   public void undoDeletePaymentRequest() {
-
     if (!undoDeletePaymentRequestStack.isEmpty()) {
       PaymentRequestData deletedPaymentRequestData = undoDeletePaymentRequestStack.pop();
       addPaymentRequest(deletedPaymentRequestData);
       writePayments();
     }
-
   }
 
   /**

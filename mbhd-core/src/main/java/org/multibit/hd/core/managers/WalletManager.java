@@ -101,9 +101,6 @@ public enum WalletManager implements WalletEventListener {
   private static final Logger log = LoggerFactory.getLogger(WalletManager.class);
 
   public static final String WALLET_DIRECTORY_PREFIX = "mbhd";
-
-  public static final String SEPARATOR = "-";
-
   // The format of the wallet directories is WALLET_DIRECTORY_PREFIX + a wallet id.
   // A walletid is 5 groups of 4 bytes in lowercase hex, with a "-' separator e.g. mbhd-11111111-22222222-33333333-44444444-55555555
   private static final String REGEX_FOR_WALLET_DIRECTORY = "^"
