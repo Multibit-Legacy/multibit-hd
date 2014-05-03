@@ -1,15 +1,14 @@
 package org.multibit.hd.core.crypto;
 
-import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.common.base.Preconditions;
 import com.google.protobuf.ByteString;
 import org.bitcoinj.wallet.Protos;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
+import org.multibit.hd.core.files.Files;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.files.Files;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -33,7 +32,7 @@ import java.util.Arrays;
  *  
  */
 public class EncryptedFileReaderWriter {
-  private static final Logger log = LoggerFactory.getLogger(WalletManager.class);
+  private static final Logger log = LoggerFactory.getLogger(EncryptedFileReaderWriter.class);
 
   private static final String TEMPORARY_FILE_EXTENSION = ".tmp";
 
@@ -46,7 +45,7 @@ public class EncryptedFileReaderWriter {
     try {
       // Read the encrypted file in and decrypt it.
       byte[] encryptedWalletBytes = org.multibit.hd.brit.utils.FileUtils.readFile(encryptedProtobufFile);
-      log.debug("Encrypted wallet bytes after load:\n" + Utils.bytesToHexString(encryptedWalletBytes));
+      //log.debug("Encrypted wallet bytes after load:\n" + Utils.bytesToHexString(encryptedWalletBytes));
 
       KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(makeScryptParameters());
       KeyParameter keyParameter = keyCrypterScrypt.deriveKey(password);
@@ -71,7 +70,7 @@ public class EncryptedFileReaderWriter {
       // Create an AES encoded version of the unencryptedBytes, using the password
       byte[] encryptedBytes = AESUtils.encrypt(unencryptedBytes, keyParameter, WalletManager.AES_INITIALISATION_VECTOR);
 
-      log.debug("Encrypted wallet bytes (original):\n" + Utils.bytesToHexString(encryptedBytes));
+      //log.debug("Encrypted wallet bytes (original):\n" + Utils.bytesToHexString(encryptedBytes));
 
       // Check that the encryption is reversible
       byte[] rebornBytes = AESUtils.decrypt(encryptedBytes, keyParameter, WalletManager.AES_INITIALISATION_VECTOR);
@@ -104,7 +103,7 @@ public class EncryptedFileReaderWriter {
       // Create an AES encoded version of the newlySavedFile, using the wallet password
       byte[] encryptedBytes = AESUtils.encrypt(unencryptedBytes, keyParameter, WalletManager.AES_INITIALISATION_VECTOR);
 
-      log.debug("Encrypted wallet bytes (original):\n" + Utils.bytesToHexString(encryptedBytes));
+      //log.debug("Encrypted wallet bytes (original):\n" + Utils.bytesToHexString(encryptedBytes));
 
       // Check that the encryption is reversible
       byte[] rebornBytes = AESUtils.decrypt(encryptedBytes, keyParameter, WalletManager.AES_INITIALISATION_VECTOR);

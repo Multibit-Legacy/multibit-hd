@@ -12,6 +12,7 @@ import org.joda.time.DateTime;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.WalletId;
@@ -199,15 +200,16 @@ public class BitcoinNetworkService extends AbstractService {
         File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
         File currentWalletFile = WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory).get();
         walletSummary.getWallet().saveToFile(currentWalletFile);
-        log.debug("Wallet save completed ok. Wallet size is " + currentWalletFile.length() + " bytes.");
+        File encryptedAESCopy = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(currentWalletFile, walletSummary.getPassword());
+        log.debug("Created AES encrypted wallet as file '{}', size {}", encryptedAESCopy == null ? "null" : encryptedAESCopy.getAbsolutePath(),
+                encryptedAESCopy == null ? "null" : encryptedAESCopy.length());
 
-        BackupManager.INSTANCE.createRollingBackup(walletSummary);
+        BackupManager.INSTANCE.createRollingBackup(walletSummary, walletSummary.getPassword());
         BackupManager.INSTANCE.createLocalAndCloudBackup(walletId);
       } catch (IOException ioe) {
         log.error("Could not write wallet and backups for wallet with id '" + walletId + "' successfully. The error was '" + ioe.getMessage() + "'");
       }
     }
-
   }
 
   public void recalculateFastCatchupAndFilter() {

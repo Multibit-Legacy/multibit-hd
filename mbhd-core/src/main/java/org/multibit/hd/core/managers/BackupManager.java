@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.joda.time.DateTime;
+import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
@@ -38,7 +39,7 @@ public enum BackupManager {
   public static final int MAXIMUM_NUMBER_OF_ROLLING_BACKUPS = 4;
 
   // Backup suffix format is "yyyyMMddHHmmss"
-  public static final String REGEX_FOR_TIMESTAMP_AND_WALLET_SUFFIX = ".*-\\d{14}\\.wallet$";
+  public static final String REGEX_FOR_TIMESTAMP_AND_WALLET_AND_AES_SUFFIX = ".*-\\d{14}\\.wallet\\.aes$";
 
   public static final String LOCAL_ZIP_BACKUP_DIRECTORY_NAME = "zip-backup";
   public static final int MAXIMUM_NUMBER_OF_ZIP_BACKUPS = 60; // Chosen so that you will have about weekly backups for a year, fortnightly over two years.
@@ -188,11 +189,11 @@ public enum BackupManager {
 
     Map<Long, File> mapOfTimeToFile = Maps.newTreeMap(); // Note that this is sorted by long
 
-    // Look for file names with format "text"-YYYYMMDDHHMMSS.wallet<eol> and are not empty.
+    // Look for file names with format "text"-YYYYMMDDHHMMSS.wallet.aes<eol> and are not empty.
     if (files != null) {
       for (File file : files) {
         if (file.isFile()) {
-          if (file.getName().matches(REGEX_FOR_TIMESTAMP_AND_WALLET_SUFFIX)) {
+          if (file.getName().matches(REGEX_FOR_TIMESTAMP_AND_WALLET_AND_AES_SUFFIX)) {
             if (file.length() > 0) {
               // Work out timestamp
               int start = (WalletManager.MBHD_WALLET_PREFIX + WALLET_ID_SEPARATOR).length();
@@ -234,7 +235,7 @@ public enum BackupManager {
    *
    * @throws java.io.IOException if the wallet backup could not be created
    */
-  public File createRollingBackup(WalletSummary walletSummary) throws IOException {
+  public File createRollingBackup(WalletSummary walletSummary, CharSequence password) throws IOException {
 
     Preconditions.checkNotNull(walletSummary, "'walletSummary' must be present");
     Preconditions.checkNotNull(walletSummary.getWallet(), "'wallet' must be present");
@@ -265,6 +266,9 @@ public enum BackupManager {
     log.debug("Creating rolling-backup '" + walletBackupFilename + "'");
     walletSummary.getWallet().saveToFile(walletBackupFile);
     log.debug("Created rolling-backup successfully. Size = " + walletBackupFile.length() + " bytes");
+
+    File encryptedAESCopy = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(walletBackupFile, password);
+    log.debug("Created rolling-backup AES copy successfully as file '{}'", encryptedAESCopy == null ? "null" : encryptedAESCopy.getAbsolutePath());
 
     List<File> rollingBackups = getRollingBackups(walletSummary.getWalletId());
 

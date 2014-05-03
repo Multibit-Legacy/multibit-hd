@@ -214,6 +214,7 @@ public class WalletManagerTest {
         + walletSummary2.getWalletId().toFormattedString()
         + File.separator
         + WalletManager.MBHD_WALLET_NAME
+        + WalletManager.MBHD_AES_SUFFIX
     );
 
     assertThat(expectedFile.exists()).isTrue();

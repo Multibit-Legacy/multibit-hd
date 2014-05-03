@@ -96,12 +96,7 @@ public class BackupManagerTest {
     String walletRoot = WalletManager.createWalletRoot(recreatedWalletId);
     File walletDirectory = WalletManager.getOrCreateWalletDirectory(temporaryApplicationDirectory, walletRoot);
     WalletSummary recreatedWalletSummary = WalletManager.INSTANCE.loadFromWalletDirectory(walletDirectory, "password");
-
-    // Check there is the same key in the original wallet as in the recreated one
-//    assertThat(localBackups).isNotNull();
-//    assertThat(walletSummary.getWallet().getKeys().get(0).toStringWithPrivate())
-//      .describedAs("Wallet was not round-tripped correctly")
-//      .isEqualTo(recreatedWalletSummary.getWallet().getKeys().get(0).toStringWithPrivate());
-
+    assertThat(recreatedWalletSummary).isNotNull();
+    assertThat(recreatedWalletSummary.getWallet()).isNotNull();
   }
 }

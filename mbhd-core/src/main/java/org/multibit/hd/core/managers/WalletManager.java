@@ -1,6 +1,7 @@
 package org.multibit.hd.core.managers;
 
 import com.google.bitcoin.core.*;
+import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.bitcoin.script.Script;
 import com.google.bitcoin.store.WalletProtobufSerializer;
 import com.google.bitcoin.wallet.DeterministicSeed;
@@ -8,10 +9,12 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.bitcoinj.wallet.Protos;
+import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.extensions.MatcherResponseWalletExtension;
 import org.multibit.hd.brit.extensions.SendFeeDtoWalletExtension;
 import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
@@ -19,11 +22,11 @@ import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.WalletLoadException;
-import org.multibit.hd.core.exceptions.WalletSaveException;
 import org.multibit.hd.core.exceptions.WalletVersionException;
 import org.multibit.hd.core.files.SecureFiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spongycastle.crypto.params.KeyParameter;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -252,8 +255,8 @@ public enum WalletManager implements WalletEventListener {
     checkWalletDirectory(walletDirectory);
 
     final File walletFile = new File(walletDirectory.getAbsolutePath() + "/" + MBHD_WALLET_NAME);
-
-    if (walletFile.exists()) {
+    final File walletFileWithAES = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME + MBHD_AES_SUFFIX);
+    if (walletFileWithAES.exists()) {
 
       // There is already a wallet created with this root - if so load it and return that
       walletSummaryToReturn = loadFromWalletDirectory(walletDirectory, password);
@@ -263,7 +266,6 @@ public enum WalletManager implements WalletEventListener {
       setCurrentWalletSummary(walletSummaryToReturn);
 
       return walletSummaryToReturn;
-
     }
 
     // Wallet file does not exist so create it
@@ -281,14 +283,15 @@ public enum WalletManager implements WalletEventListener {
     walletToReturn.encrypt(password);
     walletToReturn.setVersion(MBHD_WALLET_VERSION);
 
-
     // Set up auto-save on the wallet.
     // This ensures the wallet is saved on modification
     // The listener has a 'after save' callback which ensures rolling backups and local/ cloud backups are also saved where necessary
     walletToReturn.autosaveToFile(walletFile, AUTO_SAVE_DELAY, TimeUnit.SECONDS, new WalletAutoSaveListener());
 
     // Save it now to ensure it is on the disk
-    saveWallet(walletToReturn, walletFile);
+    walletToReturn.saveToFile(walletFile);
+    EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(walletFile, password);
+
     if (Configurations.currentConfiguration != null) {
       Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
     }
@@ -301,14 +304,14 @@ public enum WalletManager implements WalletEventListener {
     InstallationManager.copyCheckpointsTo(checkpointsFile);
 
     // Create an initial rolling backup and zip backup
-    BackupManager.INSTANCE.createRollingBackup(currentWalletSummary.get());
+    BackupManager.INSTANCE.createRollingBackup(currentWalletSummary.get(), password);
     BackupManager.INSTANCE.createLocalAndCloudBackup(currentWalletSummary.get().getWalletId());
 
     return walletSummaryToReturn;
   }
 
   /**
-   * <p>Load up a Wallet from a specified wallet file.</p>
+   * <p>Load up an encrypted Wallet from a specified wallet directory.</p>
    * <p>Reduced visibility for testing</p>
    *
    * @param walletDirectory The wallet directory containing the various wallet files to load
@@ -327,11 +330,13 @@ public enum WalletManager implements WalletEventListener {
 
     try {
 
-      File walletFile = SecureFiles.verifyOrCreateFile(walletDirectory, MBHD_WALLET_NAME);
+      String walletFilenameNoAESSuffix = walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME;
+      File walletFile = new File(walletFilenameNoAESSuffix + MBHD_AES_SUFFIX);
+      String walletFilename = walletFile.getAbsolutePath();
 
       WalletId walletId = parseWalletFilename(walletFile.getAbsolutePath());
 
-      if (isWalletSerialised(walletFile)) {
+      if (walletFile.exists() && isWalletSerialised(walletFile)) {
         // Serialised wallets are no longer supported.
         throw new WalletLoadException(
           "Could not load wallet '"
@@ -340,38 +345,49 @@ public enum WalletManager implements WalletEventListener {
         );
       }
 
-      final Wallet wallet;
+      Wallet wallet;
+      try {
+        InputStream inputStream;
 
-      try (
-        FileInputStream fileInputStream = new FileInputStream(walletFile);
-        InputStream stream = new BufferedInputStream(fileInputStream)
-      ) {
+        // Read the encrypted file in and decrypt it.
+        byte[] encryptedWalletBytes = org.multibit.hd.brit.utils.FileUtils.readFile(new File(walletFilename));
+        //log.debug("Encrypted wallet bytes after load:\n" + Utils.bytesToHexString(encryptedWalletBytes));
 
-        Protos.Wallet walletProto = WalletProtobufSerializer.parseToProto(stream);
+        KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(EncryptedFileReaderWriter.makeScryptParameters());
+        KeyParameter keyParameter = keyCrypterScrypt.deriveKey(password);
+
+        // Decrypt the wallet bytes
+        byte[] decryptedBytes = AESUtils.decrypt(encryptedWalletBytes, keyParameter, WalletManager.AES_INITIALISATION_VECTOR);
+
+        inputStream = new ByteArrayInputStream(decryptedBytes);
+
+        Protos.Wallet walletProto = WalletProtobufSerializer.parseToProto(inputStream);
 
         WalletExtension[] walletExtensions = new WalletExtension[] {new SendFeeDtoWalletExtension(), new MatcherResponseWalletExtension()};
         wallet = new WalletProtobufSerializer().readWallet(networkParameters, walletExtensions, walletProto);
 
-        log.debug("Wallet read in from file:{}\n{}", walletFile.getAbsolutePath(), wallet.toString());
-
+        log.debug("Wallet at read in from file:\n" + wallet.toString());
       } catch (WalletVersionException wve) {
         // We want this exception to propagate out.
         throw wve;
       } catch (Exception e) {
-        // Log the full stack trace of the error
-        log.error(e.getMessage(), e);
+        log.error(e.getClass().getCanonicalName() + " " + e.getMessage());
         throw new WalletLoadException(e.getMessage(), e);
       }
 
       // Create the wallet summary with its wallet
       WalletSummary walletSummary = getOrCreateWalletSummary(walletDirectory, walletId);
       walletSummary.setWallet(wallet);
+      walletSummary.setPassword(password);
       setCurrentWalletSummary(walletSummary);
 
-      // Set up auto-save on the wallet
+      // Set up autosave on the wallet.
       // This ensures the wallet is saved on modification
-      // The listener has a 'post save' callback which ensures rolling backups and local/ cloud backups are also saved where necessary
-      wallet.autosaveToFile(walletFile, AUTO_SAVE_DELAY, TimeUnit.SECONDS, new WalletAutoSaveListener());
+      // The listener has a 'post save' callback which:
+      // + encrypts the wallet
+      // + ensures rolling backups
+      // + local/ cloud backups are also saved where necessary
+      wallet.autosaveToFile(new File(walletFilenameNoAESSuffix), AUTO_SAVE_DELAY, TimeUnit.SECONDS, new WalletAutoSaveListener());
 
       return walletSummary;
 
@@ -380,42 +396,6 @@ public enum WalletManager implements WalletEventListener {
       throw wve;
     } catch (Exception e) {
       throw new WalletLoadException(e.getMessage(), e);
-    }
-  }
-
-  /**
-   * Save the wallet
-   * TODO would be nice to remove this and just use the vanilla wallet .saveFile
-   *
-   * @param wallet     The  wallet to save
-   * @param walletFile The location to save the wallet
-   */
-  public void saveWallet(Wallet wallet, File walletFile) {
-
-    Preconditions.checkNotNull(wallet, "'wallet' must be present");
-    Preconditions.checkNotNull(walletFile, "'walletFile' must be present");
-
-    // Save the wallet file
-    try (FileOutputStream fis = new FileOutputStream(walletFile)) {
-      if (wallet != null) {
-        log.debug("Saving wallet file '{}' ...", walletFile.getAbsolutePath());
-        if (MBHD_WALLET_VERSION == wallet.getVersion()) {
-
-          // Save as a Wallet message with a mandatory extension
-          // to prevent loading by older versions of multibit.
-          walletProtobufSerializer.writeWallet(wallet, fis);
-        } else {
-          throw new WalletVersionException("Cannot save wallet '" + walletFile
-            + "'. Its wallet version is '" + wallet.getVersion()
-            + "' but this version of MultiBit HD does not understand that format.");
-        }
-      }
-
-      // Must be OK to be here
-      log.debug("Wallet file saved.");
-
-    } catch (IOException | UnsupportedOperationException e) {
-      throw new WalletSaveException("Cannot save wallet '" + walletFile, e);
     }
   }
 
