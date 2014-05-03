@@ -101,6 +101,9 @@ public enum WalletManager implements WalletEventListener {
   private static final Logger log = LoggerFactory.getLogger(WalletManager.class);
 
   public static final String WALLET_DIRECTORY_PREFIX = "mbhd";
+
+  public static final String SEPARATOR = "-";
+
   // The format of the wallet directories is WALLET_DIRECTORY_PREFIX + a wallet id.
   // A walletid is 5 groups of 4 bytes in lowercase hex, with a "-' separator e.g. mbhd-11111111-22222222-33333333-44444444-55555555
   private static final String REGEX_FOR_WALLET_DIRECTORY = "^"
@@ -124,7 +127,7 @@ public enum WalletManager implements WalletEventListener {
   public static final int MBHD_WALLET_VERSION = 1; // TODO- check compatibility - this is the same as the old serialised MB classic wallets !
   public static final String MBHD_WALLET_PREFIX = "mbhd";
   public static final String MBHD_WALLET_SUFFIX = ".wallet";
-
+  public static final String MBHD_AES_SUFFIX = ".aes";
   public static final String MBHD_SUMMARY_SUFFIX = ".yaml";
   public static final String MBHD_WALLET_NAME = MBHD_WALLET_PREFIX + MBHD_WALLET_SUFFIX;
 
@@ -132,7 +135,17 @@ public enum WalletManager implements WalletEventListener {
 
   private Optional<WalletSummary> currentWalletSummary = Optional.absent();
 
+  /**
+   * The initialisation vector to use for AES encryption of output files (such as wallets)
+   * There is no particular significance to the value of these bytes
+   */
+  public static final byte[] AES_INITIALISATION_VECTOR = new byte[]{(byte) 0xa3, (byte) 0x44, (byte) 0x39, (byte) 0x1f, (byte) 0x53, (byte) 0x83, (byte) 0x11,
+          (byte) 0xb3, (byte) 0x29, (byte) 0x54, (byte) 0x86, (byte) 0x16, (byte) 0xc4, (byte) 0x89, (byte) 0x72, (byte) 0x3e};
 
+  /**
+   * The salt used for deriving the KeyParameter from the password in AES encryption
+   */
+  public static final byte[] SCRYPT_SALT = new byte[]{(byte) 0x35, (byte) 0x51, (byte) 0x03, (byte) 0x80, (byte) 0x75, (byte) 0xa3, (byte) 0xb0, (byte) 0xc5};
 
   /**
    * Open the given wallet
