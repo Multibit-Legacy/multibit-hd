@@ -1,13 +1,11 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.bitcoin.core.Wallet;
-import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.services.FeeService;
-import org.multibit.hd.core.crypto.AESUtils;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.managers.BackupManager;
@@ -28,12 +26,9 @@ import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.spongycastle.crypto.params.KeyParameter;
 
 import javax.swing.*;
 import java.io.File;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 /**
@@ -114,19 +109,13 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
   }
 
   @Override
-  public void afterShow() {
-
-    getFinishButton().requestFocusInWindow();
-
-  }
-
-  @Override
   public void updateFromComponentModels(Optional componentModel) {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
   }
 
   @Override
-  public boolean beforeShow() {
+  public void afterShow() {
+    getFinishButton().requestFocusInWindow();
 
     WelcomeWizardModel model = getWizardModel();
 
@@ -153,18 +142,14 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       // Attempt to create the wallet (the manager will track the ID etc)
       WalletManager walletManager = WalletManager.INSTANCE;
       seed = seedPhraseGenerator.convertToSeed(seedPhrase);
-      long nowInSeconds = Dates.nowInSeconds();
-      walletSummary = walletManager.createWalletSummary(seed, nowInSeconds, password);
+      walletSummary = walletManager.createWalletSummary(seed, Dates.nowInSeconds(), password);
 
       Preconditions.checkNotNull(walletSummary.getWalletId(), "'walletId' must be present");
 
       String walletRoot = WalletManager.createWalletRoot(walletSummary.getWalletId());
       walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
 
-      // Save the wallet password, AES encrypted with a key derived from the wallet seed
-      KeyParameter backupAESKey = AESUtils.createAESKey(seed, AESUtils.BACKUP_AES_KEY_SALT_USED_IN_SCRYPT);
-      byte[] encryptedWalletPassword = org.multibit.hd.brit.crypto.AESUtils.encrypt(password.getBytes(Charsets.UTF_8), backupAESKey, AESUtils.BACKUP_AES_INITIALISATION_VECTOR);
-      walletSummary.setEncryptedPassword(encryptedWalletPassword);
+      WalletManager.writeEncryptedPasswordAndBackupKey(walletSummary, seed, password);
 
       File walletSummaryFile = WalletManager.getOrCreateWalletSummaryFile(walletDirectory);
       WalletManager.updateWalletSummary(walletSummaryFile, walletSummary);
@@ -172,8 +157,8 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       // Must be OK to be here
       walletCreatedStatus = true;
 
-    } catch (IOException | NoSuchAlgorithmException ioe) {
-      ExceptionHandler.handleThrowable(ioe);
+    } catch (Exception e) {
+      ExceptionHandler.handleThrowable(e);
     }
 
     File backupLocationFile = new File(backupLocation);
@@ -213,8 +198,6 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
 
     // Enable the finish button on the report page
     ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, true);
-
-    return true;
   }
 
   private void performMatcherExchange(byte[] seed, Wallet wallet) {

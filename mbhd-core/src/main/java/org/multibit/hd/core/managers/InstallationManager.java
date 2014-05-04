@@ -54,7 +54,7 @@ public class InstallationManager {
    */
   public static File getConfigurationFile() {
 
-    return new File(getOrCreateApplicationDataDirectory().getAbsolutePath() + "/" + MBHD_CONFIGURATION_FILE);
+    return new File(getOrCreateApplicationDataDirectory().getAbsolutePath() + File.separator + MBHD_CONFIGURATION_FILE);
 
   }
 
@@ -124,7 +124,7 @@ public class InstallationManager {
 
       // Work out the source checkpoints (put into the program installation directory by the installer)
       File currentWorkingDirectory = new File(".");
-      File sourceBlockCheckpointsFile = new File(currentWorkingDirectory.getAbsolutePath() + "/" + MBHD_PREFIX + CHECKPOINTS_SUFFIX);
+      File sourceBlockCheckpointsFile = new File(currentWorkingDirectory.getAbsolutePath() + File.separator + MBHD_PREFIX + CHECKPOINTS_SUFFIX);
 
       // Prepare an input stream to the checkpoints
       final InputStream sourceCheckpointsStream;

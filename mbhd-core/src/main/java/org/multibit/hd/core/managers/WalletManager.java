@@ -5,6 +5,7 @@ import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.bitcoin.script.Script;
 import com.google.bitcoin.store.WalletProtobufSerializer;
 import com.google.bitcoin.wallet.DeterministicSeed;
+import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -30,6 +31,7 @@ import org.spongycastle.crypto.params.KeyParameter;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -254,7 +256,7 @@ public enum WalletManager implements WalletEventListener {
 
     checkWalletDirectory(walletDirectory);
 
-    final File walletFile = new File(walletDirectory.getAbsolutePath() + "/" + MBHD_WALLET_NAME);
+    final File walletFile = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME);
     final File walletFileWithAES = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME + MBHD_AES_SUFFIX);
     if (walletFileWithAES.exists()) {
 
@@ -612,7 +614,7 @@ public enum WalletManager implements WalletEventListener {
    * @return A wallet summary file
    */
   public static File getOrCreateWalletSummaryFile(File walletDirectory) {
-    return SecureFiles.verifyOrCreateFile(walletDirectory, MBHD_WALLET_NAME);
+    return SecureFiles.verifyOrCreateFile(walletDirectory, MBHD_SUMMARY_NAME);
   }
 
   /**
@@ -648,7 +650,7 @@ public enum WalletManager implements WalletEventListener {
 
     Optional<WalletSummary> walletSummaryOptional = Optional.absent();
 
-    File walletSummaryFile = new File(walletDirectory.getAbsolutePath() + "/" + MBHD_SUMMARY_NAME);
+    File walletSummaryFile = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_SUMMARY_NAME);
     if (walletSummaryFile.exists()) {
       try (InputStream is = new FileInputStream(walletSummaryFile)) {
         // Load configuration (providing a default if none exists)
@@ -672,6 +674,23 @@ public enum WalletManager implements WalletEventListener {
 
     return walletSummary;
 
+  }
+
+  /**
+   * Write the encrypted wallet password and backup AES key to the wallet configuration.
+   * You probably want to save it afterwards with an updateSummary
+   */
+  public static void writeEncryptedPasswordAndBackupKey(WalletSummary walletSummary, byte[] seed, String password) throws NoSuchAlgorithmException{
+    // Save the wallet password, AES encrypted with a key derived from the wallet seed
+    KeyParameter seedDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(seed, org.multibit.hd.core.crypto.AESUtils.SEED_DERIVED_AES_KEY_SALT_USED_IN_SCRYPT);
+    byte[] passwordBytes = password.getBytes(Charsets.UTF_8);
+    byte[] encryptedWalletPassword = org.multibit.hd.brit.crypto.AESUtils.encrypt(passwordBytes, seedDerivedAESKey, org.multibit.hd.core.crypto.AESUtils.SEED_DERIVED_AES_INITIALISATION_VECTOR);
+    walletSummary.setEncryptedPassword(encryptedWalletPassword);
+
+    // Save the backupAESKey, AES encrypted with a key generated from the wallet password
+    KeyParameter walletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(passwordBytes, org.multibit.hd.core.crypto.AESUtils.PASSWORD_DERIVED_AES_KEY_SALT_USED_IN_SCRYPT);
+    byte[] encryptedBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.encrypt(seedDerivedAESKey.getKey(), walletPasswordDerivedAESKey, org.multibit.hd.core.crypto.AESUtils.PASSWORD_DERIVED_AES_INITIALISATION_VECTOR);
+    walletSummary.setEncryptedBackupKey(encryptedBackupAESKey);
   }
 
   /**

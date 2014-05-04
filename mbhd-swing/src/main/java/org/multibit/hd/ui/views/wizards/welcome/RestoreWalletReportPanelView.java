@@ -1,13 +1,12 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
-import com.google.bitcoin.store.BlockStoreException;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -32,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -179,12 +179,24 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     byte[] seed = seedGenerator.convertToSeed(seedPhrase);
 
     try {
+      // Locate the installation directory
+      File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+
       DateTime replayDate = Dates.parseSeedTimestamp(timestamp);
       // TODO necessary to backup any existing wallet with the same seed before creation/ overwrite ?
-      WalletManager.INSTANCE.createWalletSummary(seed, (long)(replayDate.getMillis() * 0.001), password);
+      WalletManager.INSTANCE.createWalletSummary(seed, (long) (replayDate.getMillis() * 0.001), password);
 
       // Initialise the WalletService with the newly created wallet, which provides transaction information from the wallet
       Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+
+      WalletManager.writeEncryptedPasswordAndBackupKey(currentWalletSummary.get(), seed, (String)password);
+
+      String walletRoot = WalletManager.createWalletRoot(currentWalletSummary.get().getWalletId());
+      File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
+
+      File walletSummaryFile = WalletManager.getOrCreateWalletSummaryFile(walletDirectory);
+      WalletManager.updateWalletSummary(walletSummaryFile, currentWalletSummary.get());
+
       if (currentWalletSummary.isPresent()) {
         // Create a wallet service
         CoreServices.getOrCreateWalletService(currentWalletSummary.get().getWalletId());
@@ -195,7 +207,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
         return true;
       }
 
-    } catch (IOException | BlockStoreException e) {
+    } catch (Exception e) {
       log.error("Failed to restore wallet. Error was '" + e.getMessage() + "'.");
     }
 

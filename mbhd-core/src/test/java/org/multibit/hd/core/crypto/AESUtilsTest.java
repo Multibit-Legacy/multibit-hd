@@ -69,7 +69,7 @@ public class AESUtilsTest {
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_3));
 
-    KeyParameter aesKey1 = AESUtils.createAESKey(seed, AESUtils.BACKUP_AES_KEY_SALT_USED_IN_SCRYPT);
+    KeyParameter aesKey1 = AESUtils.createAESKey(seed, AESUtils.SEED_DERIVED_AES_KEY_SALT_USED_IN_SCRYPT);
 
     assertThat(aesKey1).isNotNull();
     assertThat(aesKey1.getKey()).isNotNull();
