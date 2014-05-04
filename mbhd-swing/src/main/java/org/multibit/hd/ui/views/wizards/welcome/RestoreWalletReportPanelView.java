@@ -237,7 +237,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       // TODO need to add a real password
       String password = "password";
 
-      WalletId loadedWalletId = BackupManager.INSTANCE.loadBackup(selectedBackupSummaryModel.getValue().getFile(), password);
+      WalletId loadedWalletId = BackupManager.INSTANCE.loadBackup(selectedBackupSummaryModel.getValue().getFile(), seedPhrase);
 
       // TODO need to shut down everything beforehand ???
       WalletManager.INSTANCE.open(

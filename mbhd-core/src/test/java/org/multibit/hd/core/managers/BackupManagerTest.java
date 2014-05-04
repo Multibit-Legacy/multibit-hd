@@ -22,6 +22,7 @@ import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.BackupSummary;
+import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletIdTest;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.utils.Dates;
@@ -89,14 +90,14 @@ public class BackupManagerTest {
     assertThat(cloudBackups.size()).isEqualTo(2);
 
     // Load in the wallet backup and compare the wallets
-//    WalletId recreatedWalletId= BackupManager.INSTANCE.loadBackup(localBackupFile, password);
-//    assertThat(walletSummary.getWalletId()).isEqualTo(recreatedWalletId);
-//
-//    // Open
-//    String walletRoot = WalletManager.createWalletRoot(recreatedWalletId);
-//    File walletDirectory = WalletManager.getOrCreateWalletDirectory(temporaryApplicationDirectory, walletRoot);
-//    WalletSummary recreatedWalletSummary = WalletManager.INSTANCE.loadFromWalletDirectory(walletDirectory, "password");
-//    assertThat(recreatedWalletSummary).isNotNull();
-//    assertThat(recreatedWalletSummary.getWallet()).isNotNull();
+    WalletId recreatedWalletId= BackupManager.INSTANCE.loadBackup(localBackupFile, Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
+    assertThat(walletSummary.getWalletId()).isEqualTo(recreatedWalletId);
+
+    // Open
+    String walletRoot = WalletManager.createWalletRoot(recreatedWalletId);
+    File walletDirectory = WalletManager.getOrCreateWalletDirectory(temporaryApplicationDirectory, walletRoot);
+    WalletSummary recreatedWalletSummary = WalletManager.INSTANCE.loadFromWalletDirectory(walletDirectory, password);
+    assertThat(recreatedWalletSummary).isNotNull();
+    assertThat(recreatedWalletSummary.getWallet()).isNotNull();
   }
 }

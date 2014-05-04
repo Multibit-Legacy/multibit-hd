@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.utils.FileUtils;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.managers.WalletManagerTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +80,7 @@ public class EncryptedFileReaderWriterTest {
     File outputFile = new File(temporaryDirectory + File.separator + "outputFile.aes");
 
     EncryptedFileReaderWriter.encryptAndWrite(TEST_BYTES1, PASSWORD1, outputFile);
-    InputStream decryptedInputstream = EncryptedFileReaderWriter.readAndDecrypt(outputFile, PASSWORD1);
+    InputStream decryptedInputstream = EncryptedFileReaderWriter.readAndDecrypt(outputFile, PASSWORD1, WalletManager.SCRYPT_SALT, WalletManager.AES_INITIALISATION_VECTOR);
 
     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 

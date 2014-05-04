@@ -576,7 +576,10 @@ public class WalletService {
 
     log.debug("Loading payments from '{}'", backingStoreFile.getAbsolutePath());
     try {
-      ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(backingStoreFile, WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword());
+      ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(backingStoreFile,
+              WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(),
+              WalletManager.SCRYPT_SALT,
+              WalletManager.AES_INITIALISATION_VECTOR);
       Payments payments = protobufSerializer.readPayments(decryptedInputStream);
 
       // For quick access payment requests and transaction infos are stored in maps

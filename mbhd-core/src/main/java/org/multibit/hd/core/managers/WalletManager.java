@@ -363,7 +363,7 @@ public enum WalletManager implements WalletEventListener {
         byte[] encryptedWalletBytes = org.multibit.hd.brit.utils.FileUtils.readFile(new File(walletFilename));
         //log.debug("Encrypted wallet bytes after load:\n" + Utils.bytesToHexString(encryptedWalletBytes));
 
-        KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(EncryptedFileReaderWriter.makeScryptParameters());
+        KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(EncryptedFileReaderWriter.makeScryptParameters(WalletManager.SCRYPT_SALT));
         KeyParameter keyParameter = keyCrypterScrypt.deriveKey(password);
 
         // Decrypt the wallet bytes
@@ -697,7 +697,8 @@ public enum WalletManager implements WalletEventListener {
 
     // Save the backupAESKey, AES encrypted with a key generated from the wallet password
     KeyParameter walletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(passwordBytes, org.multibit.hd.core.crypto.AESUtils.PASSWORD_DERIVED_AES_KEY_SALT_USED_IN_SCRYPT);
-    byte[] encryptedBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.encrypt(seedDerivedAESKey.getKey(), walletPasswordDerivedAESKey, org.multibit.hd.core.crypto.AESUtils.PASSWORD_DERIVED_AES_INITIALISATION_VECTOR);
+    byte[] encryptedBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.encrypt(seedDerivedAESKey.getKey(), walletPasswordDerivedAESKey, org.multibit.
+            hd.core.crypto.AESUtils.PASSWORD_DERIVED_AES_INITIALISATION_VECTOR);
     walletSummary.setEncryptedBackupKey(encryptedBackupAESKey);
   }
 

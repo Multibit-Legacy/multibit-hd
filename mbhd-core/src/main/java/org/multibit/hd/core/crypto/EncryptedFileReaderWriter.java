@@ -39,9 +39,9 @@ public class EncryptedFileReaderWriter {
   private static final String TEMPORARY_FILE_EXTENSION = ".tmp";
 
   /**
-   * Decrypt an AES encrypted file and return it as an input Stream
+   * Decrypt an AES encrypted file and return it as an inputStream
    */
-  public static ByteArrayInputStream readAndDecrypt(File encryptedProtobufFile, CharSequence password) throws EncryptedFileReaderWriterException {
+  public static ByteArrayInputStream readAndDecrypt(File encryptedProtobufFile, CharSequence password, byte[] salt, byte[] initialisationVector) throws EncryptedFileReaderWriterException {
     Preconditions.checkNotNull(encryptedProtobufFile);
     Preconditions.checkNotNull(password);
     try {
@@ -49,11 +49,11 @@ public class EncryptedFileReaderWriter {
       byte[] encryptedWalletBytes = org.multibit.hd.brit.utils.FileUtils.readFile(encryptedProtobufFile);
       //log.debug("Encrypted wallet bytes after load:\n" + Utils.bytesToHexString(encryptedWalletBytes));
 
-      KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(makeScryptParameters());
+      KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(makeScryptParameters(salt));
       KeyParameter keyParameter = keyCrypterScrypt.deriveKey(password);
 
       // Decrypt the wallet bytes
-      byte[] decryptedBytes = AESUtils.decrypt(encryptedWalletBytes, keyParameter, WalletManager.AES_INITIALISATION_VECTOR);
+      byte[] decryptedBytes = AESUtils.decrypt(encryptedWalletBytes, keyParameter, initialisationVector);
 
       return new ByteArrayInputStream(decryptedBytes);
     } catch (IOException ioe) {
@@ -66,7 +66,7 @@ public class EncryptedFileReaderWriter {
    */
   public static void encryptAndWrite(byte[] unencryptedBytes, CharSequence password, File outputFile) throws EncryptedFileReaderWriterException {
     try {
-      KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(makeScryptParameters());
+      KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(makeScryptParameters(WalletManager.SCRYPT_SALT));
       KeyParameter keyParameter = keyCrypterScrypt.deriveKey(password);
 
       // Create an AES encoded version of the unencryptedBytes, using the password
@@ -126,7 +126,7 @@ public class EncryptedFileReaderWriter {
     Preconditions.checkNotNull(fileToEncrypt);
     Preconditions.checkNotNull(password);
 
-    KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(makeScryptParameters());
+    KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(makeScryptParameters(WalletManager.SCRYPT_SALT));
     KeyParameter keyParameter = keyCrypterScrypt.deriveKey(password);
     return encryptAndDeleteOriginal(fileToEncrypt, keyParameter, WalletManager.AES_INITIALISATION_VECTOR);
   }
@@ -168,8 +168,8 @@ public class EncryptedFileReaderWriter {
     }
   }
 
-  public static Protos.ScryptParameters makeScryptParameters() {
-    Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(WalletManager.SCRYPT_SALT));
+  public static Protos.ScryptParameters makeScryptParameters(byte[] salt) {
+    Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(salt));
     return scryptParametersBuilder.build();
   }
 }

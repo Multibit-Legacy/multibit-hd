@@ -221,7 +221,10 @@ public class PersistentContactService implements ContactService {
     log.debug("Loading contacts from '{}'", backingStoreFile.getAbsolutePath());
 
     try {
-      ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(backingStoreFile, WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword());
+      ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(backingStoreFile,
+              WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(),
+              WalletManager.SCRYPT_SALT,
+              WalletManager.AES_INITIALISATION_VECTOR);
       Set<Contact> loadedContacts = protobufSerializer.readContacts(decryptedInputStream);
       contacts.clear();
       contacts.addAll(loadedContacts);
