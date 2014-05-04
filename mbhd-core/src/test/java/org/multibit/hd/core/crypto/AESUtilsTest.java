@@ -22,7 +22,9 @@ import org.junit.Test;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.utils.FileUtils;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletIdTest;
+import org.multibit.hd.core.managers.WalletManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -49,6 +51,8 @@ public class AESUtilsTest {
 
   @Before
   public void setUp() throws Exception {
+    Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
+
     secureRandom = new SecureRandom();
 
     // Create a random initialisationVector
@@ -69,13 +73,10 @@ public class AESUtilsTest {
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_3));
 
-    KeyParameter aesKey1 = AESUtils.createAESKey(seed, AESUtils.SEED_DERIVED_AES_KEY_SALT_USED_IN_SCRYPT);
+    KeyParameter aesKey1 = AESUtils.createAESKey(seed, WalletManager.SCRYPT_SALT);
 
     assertThat(aesKey1).isNotNull();
     assertThat(aesKey1.getKey()).isNotNull();
     assertThat(aesKey1.getKey().length).isEqualTo(org.multibit.hd.brit.crypto.AESUtils.KEY_LENGTH);
-
   }
-
-
 }

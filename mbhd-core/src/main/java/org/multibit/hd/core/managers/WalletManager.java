@@ -690,15 +690,14 @@ public enum WalletManager implements WalletEventListener {
    */
   public static void writeEncryptedPasswordAndBackupKey(WalletSummary walletSummary, byte[] seed, String password) throws NoSuchAlgorithmException{
     // Save the wallet password, AES encrypted with a key derived from the wallet seed
-    KeyParameter seedDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(seed, org.multibit.hd.core.crypto.AESUtils.SEED_DERIVED_AES_KEY_SALT_USED_IN_SCRYPT);
+    KeyParameter seedDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(seed, SCRYPT_SALT);
     byte[] passwordBytes = password.getBytes(Charsets.UTF_8);
-    byte[] encryptedWalletPassword = org.multibit.hd.brit.crypto.AESUtils.encrypt(passwordBytes, seedDerivedAESKey, org.multibit.hd.core.crypto.AESUtils.SEED_DERIVED_AES_INITIALISATION_VECTOR);
+    byte[] encryptedWalletPassword = org.multibit.hd.brit.crypto.AESUtils.encrypt(passwordBytes, seedDerivedAESKey, AES_INITIALISATION_VECTOR);
     walletSummary.setEncryptedPassword(encryptedWalletPassword);
 
     // Save the backupAESKey, AES encrypted with a key generated from the wallet password
-    KeyParameter walletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(passwordBytes, org.multibit.hd.core.crypto.AESUtils.PASSWORD_DERIVED_AES_KEY_SALT_USED_IN_SCRYPT);
-    byte[] encryptedBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.encrypt(seedDerivedAESKey.getKey(), walletPasswordDerivedAESKey, org.multibit.
-            hd.core.crypto.AESUtils.PASSWORD_DERIVED_AES_INITIALISATION_VECTOR);
+    KeyParameter walletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(passwordBytes, SCRYPT_SALT);
+    byte[] encryptedBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.encrypt(seedDerivedAESKey.getKey(), walletPasswordDerivedAESKey, AES_INITIALISATION_VECTOR);
     walletSummary.setEncryptedBackupKey(encryptedBackupAESKey);
   }
 

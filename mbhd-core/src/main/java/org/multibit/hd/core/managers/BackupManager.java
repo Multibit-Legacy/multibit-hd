@@ -379,10 +379,10 @@ public enum BackupManager {
       // Read the encrypted file in.
       byte[] encryptedBytes = org.multibit.hd.brit.utils.FileUtils.readFile(new File(backupFileToLoad.getAbsolutePath()));
 
-      KeyParameter seedDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(seed, org.multibit.hd.core.crypto.AESUtils.SEED_DERIVED_AES_KEY_SALT_USED_IN_SCRYPT);
+      KeyParameter seedDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(seed, WalletManager.SCRYPT_SALT);
 
       // Decrypt the backup bytes
-      byte[] decryptedBytes = AESUtils.decrypt(encryptedBytes, seedDerivedAESKey, org.multibit.hd.core.crypto.AESUtils.SEED_DERIVED_AES_INITIALISATION_VECTOR);
+      byte[] decryptedBytes = AESUtils.decrypt(encryptedBytes, seedDerivedAESKey, WalletManager.AES_INITIALISATION_VECTOR);
 
       File tempDirectory = FileUtils.makeRandomTemporaryDirectory();
       temporaryFile = File.createTempFile("backup", "zip", tempDirectory);
