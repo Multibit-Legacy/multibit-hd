@@ -145,7 +145,7 @@ public enum WalletManager implements WalletEventListener {
           (byte) 0xb3, (byte) 0x29, (byte) 0x54, (byte) 0x86, (byte) 0x16, (byte) 0xc4, (byte) 0x89, (byte) 0x72, (byte) 0x3e};
 
   /**
-   * The salt used for deriving the KeyParameter from the password in AES encryption
+   * The salt used for deriving the KeyParameter from the password in AES encryption for wallets
    */
   public static final byte[] SCRYPT_SALT = new byte[]{(byte) 0x35, (byte) 0x51, (byte) 0x03, (byte) 0x80, (byte) 0x75, (byte) 0xa3, (byte) 0xb0, (byte) 0xc5};
 
@@ -301,13 +301,21 @@ public enum WalletManager implements WalletEventListener {
     walletSummaryToReturn.setPassword(password);
     setCurrentWalletSummary(walletSummaryToReturn);
 
+    try {
+      WalletManager.writeEncryptedPasswordAndBackupKey(walletSummaryToReturn, seed, (String) password);
+      File walletSummaryFile = WalletManager.getOrCreateWalletSummaryFile(walletDirectory);
+      WalletManager.updateWalletSummary(walletSummaryFile, walletSummaryToReturn);
+    } catch (NoSuchAlgorithmException e) {
+      throw new WalletLoadException("could not store encrypted password and backup AES key", e);
+    }
+
     // See if there is a checkpoints file - if not then get the InstallationManager to copy one in
     File checkpointsFile = new File(walletDirectory.getAbsolutePath() + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX);
     InstallationManager.copyCheckpointsTo(checkpointsFile);
 
     // Create an initial rolling backup and zip backup
     BackupManager.INSTANCE.createRollingBackup(currentWalletSummary.get(), password);
-    BackupManager.INSTANCE.createLocalAndCloudBackup(currentWalletSummary.get().getWalletId());
+    BackupManager.INSTANCE.createLocalAndCloudBackup(currentWalletSummary.get().getWalletId(), password);
 
     return walletSummaryToReturn;
   }

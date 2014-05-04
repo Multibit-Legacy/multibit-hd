@@ -16,6 +16,7 @@ import org.multibit.hd.core.utils.Dates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -33,7 +34,8 @@ public enum BackupManager {
   INSTANCE;
 
   public static final String BACKUP_ZIP_FILE_EXTENSION = ".zip";
-  public static final String BACKUP_ZIP_FILE_EXTENSION_REGEX = "\\.zip";
+  public static final String ENCRYPTED_BACKUP_FILE_EXTENSION = ".zip.aes";
+  public static final String ENCRYPTED_BACKUP_ZIP_FILE_EXTENSION_REGEX = "\\.zip\\.aes";
 
   public static final String ROLLING_BACKUP_DIRECTORY_NAME = "rolling-backup";
   public static final int MAXIMUM_NUMBER_OF_ROLLING_BACKUPS = 4;
@@ -126,13 +128,13 @@ public enum BackupManager {
 
     File[] files = directoryName.listFiles();
 
-    // Look for filenames with format "mbhd-" + [formatted wallet id ] + "-YYYYMMDDHHMMSS.zip"
+    // Look for filenames with format "mbhd-" + [formatted wallet id ] + "-YYYYMMDDHHMMSS.aes"
     String backupRegex = WalletManager.WALLET_DIRECTORY_PREFIX
       + WALLET_ID_SEPARATOR
       + walletId.toFormattedString()
       + WALLET_ID_SEPARATOR
       + "\\d{14}"
-      + BACKUP_ZIP_FILE_EXTENSION_REGEX;
+      + ENCRYPTED_BACKUP_ZIP_FILE_EXTENSION_REGEX;
 
     if (files != null) {
       for (File file : files) {
@@ -294,7 +296,7 @@ public enum BackupManager {
    *
    * @return The created local backup as a file
    */
-  public File createLocalAndCloudBackup(WalletId walletId) throws IOException {
+  public File createLocalAndCloudBackup(WalletId walletId, CharSequence password) throws IOException {
 
     Preconditions.checkNotNull(applicationDataDirectory);
     Preconditions.checkNotNull(walletId);
@@ -305,6 +307,8 @@ public enum BackupManager {
     if (!walletRootDirectory.exists()) {
       throw new IOException("Directory " + walletRootDirectory + " does not exist. Cannot backup.");
     }
+
+    WalletSummary walletSummary = WalletManager.getOrCreateWalletSummary(walletRootDirectory, walletId);
 
     File localBackupDirectory = new File(walletRootDirectory.getAbsoluteFile() + File.separator + LOCAL_ZIP_BACKUP_DIRECTORY_NAME);
     SecureFiles.verifyOrCreateDirectory(localBackupDirectory);
@@ -319,25 +323,28 @@ public enum BackupManager {
 
     log.debug("Creating local zip-backup '" + localBackupFilename + "'");
     ZipFiles.zipFolder(walletRootDirectory.getAbsolutePath(), localBackupFilename, false);
-    log.debug("Created local zip-backup successfully. Size = " + (new File(localBackupFilename)).length() + " bytes");
+    File localBackupEncryptedFilename = EncryptedFileReaderWriter.makeBackupAESEncryptedCopyAndDeleteOriginal(new File(localBackupFilename), (String) password, walletSummary.getEncryptedBackupKey());
+    log.debug("Created encrypted local zip-backup successfully. Size = " + (localBackupEncryptedFilename).length() + " bytes");
 
     if (cloudBackupDirectory != null && cloudBackupDirectory.exists()) {
       String cloudBackupFilename = cloudBackupDirectory.getAbsolutePath() + File.separator + backupFilename;
       log.debug("Creating cloud zip-backup '" + cloudBackupFilename + "'");
       ZipFiles.zipFolder(walletRootDirectory.getAbsolutePath(), cloudBackupFilename, false);
-      log.debug("Created cloud zip-backup successfully. Size = " + (new File(cloudBackupFilename)).length() + " bytes");
+      File cloudBackupEncryptedFilename = EncryptedFileReaderWriter.makeBackupAESEncryptedCopyAndDeleteOriginal(new File(cloudBackupFilename), (String)password, walletSummary.getEncryptedBackupKey());
+
+      log.debug("Created encrypted cloud zip-backup successfully. Size = " + (cloudBackupEncryptedFilename).length() + " bytes");
     } else {
       log.debug("No cloud backup made for wallet '" + walletId + "' as no cloudBackupDirectory is set.");
     }
 
-    return new File(localBackupFilename);
+    return localBackupEncryptedFilename;
   }
 
 
   /**
    * Load a backup file, copying all the backup files to the appropriate wallet root directory
    */
-  public WalletId loadBackup(File backupFileToLoad) throws IOException {
+  public WalletId loadBackup(File backupFileToLoad, String password) throws IOException {
 
     // Work out the walletId of the backup file being loaded
     String backupFilename = backupFileToLoad.getName();
@@ -345,8 +352,8 @@ public enum BackupManager {
     // Remove "mbhd-" prefix
     String walletRoot = backupFilename.replace(WalletManager.WALLET_DIRECTORY_PREFIX + WALLET_ID_SEPARATOR, "");
 
-    // Remove  ".zip" suffix
-    walletRoot = walletRoot.replace(BACKUP_ZIP_FILE_EXTENSION, "");
+    // Remove  ".zip.aes" suffix
+    walletRoot = walletRoot.replace(ENCRYPTED_BACKUP_FILE_EXTENSION, "");
 
     // Remove the timestamp
     if (walletRoot.length() > LENGTH_OF_FORMATTED_WALLET_ID) {
@@ -358,8 +365,12 @@ public enum BackupManager {
     File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletId));
 
     if (walletRootDirectory.exists()) {
-      createLocalAndCloudBackup(walletId);
+      createLocalAndCloudBackup(walletId, password);
     }
+
+    ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(new File(backupFileToLoad.getAbsolutePath()), password);
+
+    // TODO Create a temporary file to store the decrypted data
 
     // Unzip the backup into the wallet root directory - this overwrites files if already present (hence the backup just done)
     ZipFiles.unzip(backupFileToLoad.getAbsolutePath(), walletRootDirectory.getAbsolutePath());

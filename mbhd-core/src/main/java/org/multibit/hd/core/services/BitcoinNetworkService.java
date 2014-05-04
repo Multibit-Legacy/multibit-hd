@@ -205,7 +205,7 @@ public class BitcoinNetworkService extends AbstractService {
                 encryptedAESCopy == null ? "null" : encryptedAESCopy.length());
 
         BackupManager.INSTANCE.createRollingBackup(walletSummary, walletSummary.getPassword());
-        BackupManager.INSTANCE.createLocalAndCloudBackup(walletId);
+        BackupManager.INSTANCE.createLocalAndCloudBackup(walletId, walletSummary.getPassword());
       } catch (IOException ioe) {
         log.error("Could not write wallet and backups for wallet with id '" + walletId + "' successfully. The error was '" + ioe.getMessage() + "'");
       }

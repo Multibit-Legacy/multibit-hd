@@ -44,7 +44,7 @@ public class WalletAutoSaveListener implements WalletFiles.Listener {
 
           BackupManager.INSTANCE.createRollingBackup(walletSummary.get(), password);
 
-          BackupManager.INSTANCE.createLocalAndCloudBackup(walletSummary.get().getWalletId());
+          BackupManager.INSTANCE.createLocalAndCloudBackup(walletSummary.get().getWalletId(), password);
           // TODO save the cloud backups at a slower rate than the local backups to save bandwidth - say a factor of 2 or 3
         } catch (IOException ioe) {
           log.error("No backups created. The error was '" + ioe.getMessage() + "'.");

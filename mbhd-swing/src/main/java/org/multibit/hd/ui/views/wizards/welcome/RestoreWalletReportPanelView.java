@@ -234,10 +234,12 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
     log.debug("Loading wallet backup '" + selectedBackupSummaryModel.getValue().getFile() + "'");
     try {
-      WalletId loadedWalletId = BackupManager.INSTANCE.loadBackup(selectedBackupSummaryModel.getValue().getFile());
+      // TODO need to add a real password
+      String password = "password";
+
+      WalletId loadedWalletId = BackupManager.INSTANCE.loadBackup(selectedBackupSummaryModel.getValue().getFile(), password);
 
       // TODO need to shut down everything beforehand ???
-      // TODO need to add a real password
       WalletManager.INSTANCE.open(
         InstallationManager.getOrCreateApplicationDataDirectory(),
         loadedWalletId,
