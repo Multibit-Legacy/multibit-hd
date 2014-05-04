@@ -126,7 +126,7 @@ public enum WalletManager implements WalletEventListener {
   /**
    * The wallet version number for protobuf encrypted wallets - compatible with MultiBit Classic
    */
-  public static final int MBHD_WALLET_VERSION = 1; // TODO- check compatibility - this is the same as the old serialised MB classic wallets !
+  public static final int MBHD_WALLET_VERSION = 1; // TODO- check compatibility - this is the same as the old serialised MB classic wallets
   public static final String MBHD_WALLET_PREFIX = "mbhd";
   public static final String MBHD_WALLET_SUFFIX = ".wallet";
   public static final String MBHD_AES_SUFFIX = ".aes";
@@ -134,6 +134,8 @@ public enum WalletManager implements WalletEventListener {
   public static final String MBHD_WALLET_NAME = MBHD_WALLET_PREFIX + MBHD_WALLET_SUFFIX;
 
   public static final String MBHD_SUMMARY_NAME = MBHD_WALLET_PREFIX + MBHD_SUMMARY_SUFFIX;
+
+  public static final int LOOK_AHEAD_SIZE = 50; // A smaller look ahead size than the bitcoinj default of 100 (speeds up syncing as te bloom filters are smaller)
 
   private Optional<WalletSummary> currentWalletSummary = Optional.absent();
 
@@ -282,6 +284,7 @@ public enum WalletManager implements WalletEventListener {
     // Create a wallet using the seed and password
     DeterministicSeed deterministicSeed = new DeterministicSeed(seed, creationTimeInSeconds);
     Wallet walletToReturn = Wallet.fromSeed(networkParameters, deterministicSeed);
+    walletToReturn.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
     walletToReturn.encrypt(password);
     walletToReturn.setVersion(MBHD_WALLET_VERSION);
 
@@ -375,6 +378,7 @@ public enum WalletManager implements WalletEventListener {
 
         WalletExtension[] walletExtensions = new WalletExtension[] {new SendFeeDtoWalletExtension(), new MatcherResponseWalletExtension()};
         wallet = new WalletProtobufSerializer().readWallet(networkParameters, walletExtensions, walletProto);
+        wallet.setKeychainLookaheadSize(WalletManager.LOOK_AHEAD_SIZE);
 
         log.debug("Wallet at read in from file:\n" + wallet.toString());
       } catch (WalletVersionException wve) {
