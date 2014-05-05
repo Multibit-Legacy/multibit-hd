@@ -6,6 +6,7 @@ import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.services.FeeService;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.managers.BackupManager;
@@ -126,6 +127,9 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
     List<String> seedPhrase = model.getCreateWalletSeedPhrase();
     String password = model.getCreateWalletUserPassword();
     String backupLocation = model.getBackupLocation();
+    if (Configurations.currentConfiguration != null) {
+      Configurations.currentConfiguration.getApplication().setCloudBackupLocation(backupLocation);
+    }
     SeedPhraseGenerator seedPhraseGenerator = getWizardModel().getSeedPhraseGenerator();
 
     Preconditions.checkNotNull(backupLocation, "'backupLocation' must be present");

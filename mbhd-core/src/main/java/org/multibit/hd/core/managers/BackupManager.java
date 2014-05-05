@@ -82,8 +82,6 @@ public enum BackupManager {
   public void onShutdownEvent(ShutdownEvent shutdownEvent) {
 
     this.applicationDataDirectory = null;
-    this.cloudBackupDirectory = null;
-
   }
 
   /**

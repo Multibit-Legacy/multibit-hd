@@ -11,6 +11,7 @@ application:
   version: "0.0.0 (alpha)"
   lastFrameBounds: "0,0,1000,560"
   sidebarWidth: "180"
+  cloudBackupLocation: ""
 bitcoin:
   bitcoinSymbol: "MICON"
   bitcoinNetwork: "MAIN_NET"
