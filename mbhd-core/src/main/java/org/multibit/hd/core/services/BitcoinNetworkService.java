@@ -140,8 +140,10 @@ public class BitcoinNetworkService extends AbstractService {
 
     log.debug("Creating block chain ...");
     blockChain = new BlockChain(networkParameters, blockStore);
+
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-      blockChain.addWallet(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet());
+      Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
+      blockChain.addWallet(wallet);
     }
     log.debug("Created block chain '{}' with height '{}'", blockChain, blockChain.getBestChainHeight());
 
@@ -507,7 +509,7 @@ public class BitcoinNetworkService extends AbstractService {
               BigInteger.ZERO,
               false,
               CoreMessageKey.COULD_NOT_CONNECT_TO_BITCOIN_NETWORK.getKey(),
-              new String[]{"All pings failed"} // TODO (JB) Is this meaningful to mainstream users?
+              new String[]{"Could not reach any Bitcoin nodes"}
             ));
 
             // Prevent a fall-through to success
@@ -611,9 +613,10 @@ public class BitcoinNetworkService extends AbstractService {
     peerGroup.addEventListener(peerEventListener);
 
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-      peerGroup.addWallet(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet());
+      Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
+      peerGroup.addWallet(wallet);
+      peerGroup.setFastCatchupTimeSecs(wallet.getEarliestKeyCreationTime());
     }
-
   }
 
   /**
