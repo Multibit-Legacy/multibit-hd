@@ -146,7 +146,6 @@ public enum BackupManager {
             if (file.length() > 0) {
               BackupSummary backupSummary = new BackupSummary(walletId, file.getName(), file);
               // Work out timestamp
-              // TODO (JB) Is this correct? Should it be +1 instead
               int start = (WalletManager.MBHD_WALLET_PREFIX + WALLET_ID_SEPARATOR + WALLET_ID_SEPARATOR).length() + LENGTH_OF_FORMATTED_WALLET_ID;
               int stop = start + 14;
               String timeStampString = file.getName().substring(start, stop);

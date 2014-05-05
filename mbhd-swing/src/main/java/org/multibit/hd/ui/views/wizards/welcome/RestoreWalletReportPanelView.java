@@ -5,6 +5,7 @@ import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.crypto.AESUtils;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.managers.BackupManager;
@@ -29,10 +30,10 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spongycastle.crypto.params.KeyParameter;
 
 import javax.swing.*;
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -234,23 +235,35 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
     log.debug("Loading wallet backup '" + selectedBackupSummaryModel.getValue().getFile() + "'");
     try {
-      // TODO need to add a real password
-      String password = "password";
 
       WalletId loadedWalletId = BackupManager.INSTANCE.loadBackup(selectedBackupSummaryModel.getValue().getFile(), seedPhrase);
+
+      // Locate the installation directory
+      File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+
+      // Work out what the wallet password was from the encrypted value stored in the WalletSummary
+      SeedPhraseGenerator seedPhraseGenerator = new Bip39SeedPhraseGenerator();
+      byte[] seed = seedPhraseGenerator.convertToSeed(seedPhrase);
+
+      String walletRoot = applicationDataDirectory.getAbsolutePath() + File.separator + WalletManager.createWalletRoot(loadedWalletId);
+      WalletSummary walletSummary = WalletManager.getOrCreateWalletSummary(new File(walletRoot), loadedWalletId);
+
+      KeyParameter backupAESkey = AESUtils.createAESKey(seed, WalletManager.SCRYPT_SALT);
+      byte[] decryptedWalletPasswordBytes = org.multibit.hd.brit.crypto.AESUtils.decrypt(walletSummary.getEncryptedPassword(), backupAESkey, WalletManager.AES_INITIALISATION_VECTOR);
+      String decryptedWalletPassword = new String(decryptedWalletPasswordBytes, "UTF8");
 
       // TODO need to shut down everything beforehand ???
       WalletManager.INSTANCE.open(
         InstallationManager.getOrCreateApplicationDataDirectory(),
         loadedWalletId,
-        "password");
+              decryptedWalletPassword);
 
       // Synchronize wallet
       CoreServices.getOrCreateBitcoinNetworkService().start();
 
       return true;
-    } catch (IOException ioe) {
-      log.error("Failed to restore wallet. Error was '" + ioe.getMessage() + "'.");
+    } catch (Exception e) {
+      log.error("Failed to restore wallet. Error was '" + e.getMessage() + "'.");
       return false;
     }
   }
