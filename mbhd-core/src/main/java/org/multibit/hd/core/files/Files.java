@@ -11,12 +11,10 @@ import java.nio.channels.FileChannel;
  * <p>Utility to provide the following to file system:</p>
  * <ul>
  * <li>Handling temporary files</li>
- * <li>Locating platform-specific support files (e.g. configuration)</li>
- * <li>Locating platform-specific directories</li>
  * </ul>
  *
  * @since 0.0.1
- *  
+ * TODO Consider SecureFiles and Guava's Files utility which is more robust
  */
 public class Files {
 
@@ -29,6 +27,7 @@ public class Files {
   }
 
 
+  // TODO Remove this
   public static void copyFile(File sourceFile, File destinationFile) throws IOException {
     if (!destinationFile.exists()) {
       destinationFile.createNewFile();
@@ -67,7 +66,7 @@ public class Files {
    * Write a file from the inputstream to the outputstream
    */
   public static void writeFile(InputStream in, FileOutputStream out)
-          throws IOException {
+    throws IOException {
     byte[] buffer = new byte[1024];
     int len;
 
