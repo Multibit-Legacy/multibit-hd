@@ -156,7 +156,7 @@ public class Labels {
    *
    * @return A new label with HTML formatting to correctly render the line break and contents
    */
-  static JLabel newNoteLabel(MessageKey[] keys, Object[][] values) {
+  static public JLabel newNoteLabel(MessageKey[] keys, Object[][] values) {
 
     String[] lines = new String[keys.length];
     for (int i = 0; i < keys.length; i++) {
