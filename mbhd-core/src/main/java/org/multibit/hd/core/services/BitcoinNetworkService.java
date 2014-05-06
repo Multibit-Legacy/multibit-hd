@@ -85,10 +85,6 @@ public class BitcoinNetworkService extends AbstractService {
   @Override
   public boolean start() {
 
-    requireSingleThreadExecutor("bitcoin-network");
-
-    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkNotInitialised());
-
     try {
 
       // Check if there is a wallet - if there is no wallet the network will not start (there's nowhere to put the blockchain)
@@ -133,10 +129,14 @@ public class BitcoinNetworkService extends AbstractService {
    * @throws IOException
    */
   private void restartNetwork() throws BlockStoreException, IOException {
+    requireSingleThreadExecutor("bitcoin-network");
+
     // Check if there is a network connection
     if (!isNetworkPresent()) {
       return;
     }
+
+    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkNotInitialised());
 
     log.debug("Creating block chain ...");
     blockChain = new BlockChain(networkParameters, blockStore);

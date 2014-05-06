@@ -366,7 +366,7 @@ public enum BackupManager {
     // Make a backup of all the current file in the wallet root directory if it exists
     File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletId));
 
-    // TODO backup original
+    // TODO backup original - needs password
     //if (walletRootDirectory.exists()) {
     //  createLocalAndCloudBackup(walletId, seed);
     //}

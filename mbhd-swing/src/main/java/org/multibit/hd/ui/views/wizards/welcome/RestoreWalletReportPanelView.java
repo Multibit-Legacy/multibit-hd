@@ -5,6 +5,7 @@ import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.crypto.AESUtils;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
@@ -125,6 +126,20 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     // RESTORE_WALLET_SEED_PHRASE = restore from a seed phrase and timestamp
     // RESTORE_WALLET_BACKUP = restore from a seed phrase and wallet backup
 
+    // Locate the installation directory
+    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+
+    File cloudBackupLocation = null;
+    if (Configurations.currentConfiguration != null) {
+      String cloudBackupLocationString = Configurations.currentConfiguration.getApplication().getCloudBackupLocation();
+      if (cloudBackupLocationString != null && !"".equals(cloudBackupLocationString)) {
+        cloudBackupLocation = new File(cloudBackupLocationString);
+      }
+    }
+
+    // Initialise backup (must be before Bitcoin network starts and on the main thread)
+    BackupManager.INSTANCE.initialise(applicationDataDirectory, cloudBackupLocation);
+
     if (WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP.equals(getWizardModel().getRestoreMethod())) {
       log.debug("Performing a restore from a seed phrase and a wallet backup.");
 
@@ -180,7 +195,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     byte[] seed = seedGenerator.convertToSeed(seedPhrase);
 
     try {
-      // Locate the installation directory
+      // Locate the user data directory
       File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
       DateTime replayDate = Dates.parseSeedTimestamp(timestamp);
@@ -209,6 +224,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       }
 
     } catch (Exception e) {
+      e.printStackTrace();
       log.error("Failed to restore wallet. Error was '" + e.getMessage() + "'.");
     }
 
@@ -256,7 +272,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       WalletManager.INSTANCE.open(
         InstallationManager.getOrCreateApplicationDataDirectory(),
         loadedWalletId,
-              decryptedWalletPassword);
+        decryptedWalletPassword);
 
       // Synchronize wallet
       CoreServices.getOrCreateBitcoinNetworkService().start();
