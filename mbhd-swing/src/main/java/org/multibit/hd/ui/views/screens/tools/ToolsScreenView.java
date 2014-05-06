@@ -65,11 +65,10 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
     primaryButton = Buttons.newShowEditWalletButton(getShowWalletDetailsAction());
 
     contentPanel.add(primaryButton, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
-    contentPanel.add(Buttons.newShowChangePasswordButton(getShowChangePasswordAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
+    contentPanel.add(Buttons.newShowChangePasswordButton(getShowChangePasswordAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    contentPanel.add(Buttons.newShowRepairWalletButton(getShowRepairWalletAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
 
-    contentPanel.add(Buttons.newShowRepairWalletButton(getShowRepairWalletAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
-    contentPanel.add(Buttons.newShowEmptyWalletButton(getShowEmptyWalletAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
-
+    contentPanel.add(Buttons.newShowEmptyWalletButton(getShowEmptyWalletAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowVerifyNetworkButton(getShowVerifyNetworkAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowWelcomeWizardButton(getShowWelcomeWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
 
