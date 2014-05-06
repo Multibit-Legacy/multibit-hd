@@ -14,7 +14,7 @@ Support for external hardware wallets (such as the Trezor) is [available through
 ### Technologies
 
 * Java 7 and Swing
-* [Bitcoinj](https://code.google.com/p/bitcoinj/) - Providing various Bitcoin protocol utilities
+* [Bitcoinj](https://github.com/bitcoinj/bitcoinj) - Providing various Bitcoin protocol utilities (GitHub is the reference)
 * [Java HID API](https://code.google.com/p/javahidapi/) - Java library providing USB Human Interface Device (HID) native interface
 * [Google Protocol Buffers](https://code.google.com/p/protobuf/) (protobuf) - For use with serialization and hardware communications
 * [Font Awesome](http://fortawesome.github.io/Font-Awesome/) - for iconography

@@ -111,6 +111,7 @@ public class PasswordReportPanelView extends AbstractWizardPanelView<PasswordWiz
   }
 
   /**
+   *
    * Attempt to recover the password and display it to the user
    */
   private void recoverPassword() {
@@ -140,6 +141,7 @@ public class PasswordReportPanelView extends AbstractWizardPanelView<PasswordWiz
     }
 
     byte[] decryptedWalletPasswordBytes = org.multibit.hd.brit.crypto.AESUtils.decrypt(
+      // TODO (JB) Where does this password come from?
       walletSummary.getEncryptedPassword(),
       backupAESKey,
       WalletManager.AES_INITIALISATION_VECTOR
