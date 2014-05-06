@@ -23,9 +23,9 @@ public interface ContactService {
   String CONTACTS_DIRECTORY_NAME = "contacts";
 
   /**
-   * The name of the contacts database
+   * The name of the contacts database (AES encrypted)
    */
-  String CONTACTS_DATABASE_NAME = "contacts.db";
+  String CONTACTS_DATABASE_NAME = "contacts.aes";
 
   /**
    * @param name The mandatory name of the contact

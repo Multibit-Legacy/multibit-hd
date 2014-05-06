@@ -283,13 +283,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
 
     CharSequence password = enterPasswordMaV.getModel().getValue();
 
-    // TODO Adjust these checks when encrypted wallets are on the scene
-    if (!"".equals(password) && !"x".equals(password)) {
-
-      // If a password has been entered, put it into the WalletData (so that it is available for address generation)
-      // TODO - remove when we have proper HD wallets  - won't need password for address generation
-      // TODO should be using WalletService
-
+    if (!"".equals(password)) {
       // Attempt to open the wallet
       WalletId walletId = selectWalletMaV.getModel().getValue().getWalletId();
       WalletManager.INSTANCE.open(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, password);

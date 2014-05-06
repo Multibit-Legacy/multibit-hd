@@ -76,9 +76,8 @@ message TransactionInfo {
 message Payments {
   repeated PaymentRequest payment_request = 1;        // Collection of requests
   repeated TransactionInfo transaction_info = 2;      // Collection of transactions
-  required int32 last_address_index = 3;    // The last (highest) address generating index that was used to create a Request.address
-                                            // (This will migrate into the wallet when the wallet supports HD address creation -
-                                            // currently it is simply 0,1,2,3,... )
+
+  // id=3 was used by last_used_used - removed
 
   // Next tag: 4
 }

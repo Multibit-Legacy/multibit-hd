@@ -1,13 +1,14 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
-import com.google.bitcoin.store.BlockStoreException;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.crypto.AESUtils;
 import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -30,9 +31,10 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spongycastle.crypto.params.KeyParameter;
 
 import javax.swing.*;
-import java.io.IOException;
+import java.io.File;
 import java.util.List;
 
 /**
@@ -124,6 +126,20 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     // RESTORE_WALLET_SEED_PHRASE = restore from a seed phrase and timestamp
     // RESTORE_WALLET_BACKUP = restore from a seed phrase and wallet backup
 
+    // Locate the installation directory
+    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+
+    File cloudBackupLocation = null;
+    if (Configurations.currentConfiguration != null) {
+      String cloudBackupLocationString = Configurations.currentConfiguration.getApplication().getCloudBackupLocation();
+      if (cloudBackupLocationString != null && !"".equals(cloudBackupLocationString)) {
+        cloudBackupLocation = new File(cloudBackupLocationString);
+      }
+    }
+
+    // Initialise backup (must be before Bitcoin network starts and on the main thread)
+    BackupManager.INSTANCE.initialise(applicationDataDirectory, cloudBackupLocation);
+
     if (WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP.equals(getWizardModel().getRestoreMethod())) {
       log.debug("Performing a restore from a seed phrase and a wallet backup.");
 
@@ -179,12 +195,24 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     byte[] seed = seedGenerator.convertToSeed(seedPhrase);
 
     try {
+      // Locate the user data directory
+      File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+
       DateTime replayDate = Dates.parseSeedTimestamp(timestamp);
       // TODO necessary to backup any existing wallet with the same seed before creation/ overwrite ?
-      WalletManager.INSTANCE.createWalletSummary(seed, password);
+      WalletManager.INSTANCE.createWalletSummary(seed, (long) (replayDate.getMillis() * 0.001), password);
 
       // Initialise the WalletService with the newly created wallet, which provides transaction information from the wallet
       Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+
+      WalletManager.writeEncryptedPasswordAndBackupKey(currentWalletSummary.get(), seed, (String)password);
+
+      String walletRoot = WalletManager.createWalletRoot(currentWalletSummary.get().getWalletId());
+      File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
+
+      File walletSummaryFile = WalletManager.getOrCreateWalletSummaryFile(walletDirectory);
+      WalletManager.updateWalletSummary(walletSummaryFile, currentWalletSummary.get());
+
       if (currentWalletSummary.isPresent()) {
         // Create a wallet service
         CoreServices.getOrCreateWalletService(currentWalletSummary.get().getWalletId());
@@ -195,7 +223,8 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
         return true;
       }
 
-    } catch (IOException | BlockStoreException e) {
+    } catch (Exception e) {
+      e.printStackTrace();
       log.error("Failed to restore wallet. Error was '" + e.getMessage() + "'.");
     }
 
@@ -222,21 +251,35 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
     log.debug("Loading wallet backup '" + selectedBackupSummaryModel.getValue().getFile() + "'");
     try {
-      WalletId loadedWalletId = BackupManager.INSTANCE.loadBackup(selectedBackupSummaryModel.getValue().getFile());
+
+      WalletId loadedWalletId = BackupManager.INSTANCE.loadBackup(selectedBackupSummaryModel.getValue().getFile(), seedPhrase);
+
+      // Locate the installation directory
+      File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+
+      // Work out what the wallet password was from the encrypted value stored in the WalletSummary
+      SeedPhraseGenerator seedPhraseGenerator = new Bip39SeedPhraseGenerator();
+      byte[] seed = seedPhraseGenerator.convertToSeed(seedPhrase);
+
+      String walletRoot = applicationDataDirectory.getAbsolutePath() + File.separator + WalletManager.createWalletRoot(loadedWalletId);
+      WalletSummary walletSummary = WalletManager.getOrCreateWalletSummary(new File(walletRoot), loadedWalletId);
+
+      KeyParameter backupAESkey = AESUtils.createAESKey(seed, WalletManager.SCRYPT_SALT);
+      byte[] decryptedWalletPasswordBytes = org.multibit.hd.brit.crypto.AESUtils.decrypt(walletSummary.getEncryptedPassword(), backupAESkey, WalletManager.AES_INITIALISATION_VECTOR);
+      String decryptedWalletPassword = new String(decryptedWalletPasswordBytes, "UTF8");
 
       // TODO need to shut down everything beforehand ???
-      // TODO need to add a real password
       WalletManager.INSTANCE.open(
         InstallationManager.getOrCreateApplicationDataDirectory(),
         loadedWalletId,
-        "password");
+        decryptedWalletPassword);
 
       // Synchronize wallet
       CoreServices.getOrCreateBitcoinNetworkService().start();
 
       return true;
-    } catch (IOException ioe) {
-      log.error("Failed to restore wallet. Error was '" + ioe.getMessage() + "'.");
+    } catch (Exception e) {
+      log.error("Failed to restore wallet. Error was '" + e.getMessage() + "'.");
       return false;
     }
   }

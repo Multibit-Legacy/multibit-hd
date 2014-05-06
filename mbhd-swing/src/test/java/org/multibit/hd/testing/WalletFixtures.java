@@ -3,6 +3,7 @@ package org.multibit.hd.testing;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.utils.Dates;
 
 import java.io.IOException;
 import java.util.List;
@@ -34,8 +35,9 @@ public class WalletFixtures {
     WalletManager walletManager = WalletManager.INSTANCE;
     byte[] seed = seedPhraseGenerator.convertToSeed(seedPhrase);
     CharSequence password = "abc123";
+    long nowInSeconds = Dates.nowInSeconds();
 
-    return walletManager.createWalletSummary(seed, password);
+    return walletManager.createWalletSummary(seed, nowInSeconds, password);
 
 
   }

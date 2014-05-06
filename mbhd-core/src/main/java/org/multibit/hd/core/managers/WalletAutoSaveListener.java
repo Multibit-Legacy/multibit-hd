@@ -2,6 +2,7 @@ package org.multibit.hd.core.managers;
 
 import com.google.bitcoin.wallet.WalletFiles;
 import com.google.common.base.Optional;
+import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,17 +31,26 @@ public class WalletAutoSaveListener implements WalletFiles.Listener {
     log.debug("Have just saved wallet to newlySavedFile '" + newlySavedFile.getAbsolutePath() + "'");
 
     Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
-    if (walletSummary.isPresent()) {
-      try {
-        BackupManager.INSTANCE.createRollingBackup(walletSummary.get());
+      if (walletSummary.isPresent()) {
+        try {
+          // Save an encrypted copy of the wallet
+          CharSequence password = walletSummary.get().getPassword();
+          File encryptedWalletFile = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(newlySavedFile, password);
+          if (encryptedWalletFile != null && encryptedWalletFile.exists()) {
+            log.debug("Save encrypted copy of wallet as '{}'. Size was {} bytes.", encryptedWalletFile.getAbsolutePath(), encryptedWalletFile.length());
+          } else {
+            log.debug("No encrypted copy of wallet '{}' made.", newlySavedFile.getAbsolutePath());
+          }
 
-        BackupManager.INSTANCE.createLocalAndCloudBackup(walletSummary.get().getWalletId());
-        // TODO save the cloud backups at a slower rate than the local backups to save bandwidth - say a factor of 2 or 3
-      } catch (IOException ioe) {
-        log.error("No backups created. The error was '" + ioe.getMessage() + "'.");
+          BackupManager.INSTANCE.createRollingBackup(walletSummary.get(), password);
+
+          BackupManager.INSTANCE.createLocalAndCloudBackup(walletSummary.get().getWalletId(), password);
+          // TODO save the cloud backups at a slower rate than the local backups to save bandwidth - say a factor of 2 or 3
+        } catch (IOException ioe) {
+          log.error("No backups created. The error was '" + ioe.getMessage() + "'.");
+        }
+      } else {
+        log.error("No AES wallet encryption nor backups created as there was no wallet data to backup.");
       }
-    } else {
-      log.error("No backups created as there was no wallet data to backup.");
-    }
   }
 }

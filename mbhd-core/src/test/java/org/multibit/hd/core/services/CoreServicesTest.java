@@ -9,11 +9,12 @@ import org.multibit.hd.brit.dto.SendFeeDto;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.services.FeeService;
-import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletIdTest;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.managers.WalletManagerTest;
+import org.multibit.hd.core.utils.Dates;
 
 import java.io.File;
 
@@ -55,7 +56,8 @@ public class CoreServicesTest {
     // TODO May not be required
     // WalletManager.INSTANCE.open(temporaryDirectory);
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
-    WalletSummary walletSummary = WalletManager.INSTANCE.getOrCreateWalletSummary(temporaryDirectory, seed, PASSWORD);
+    long nowInSeconds = Dates.nowInSeconds();
+    WalletSummary walletSummary = WalletManager.INSTANCE.getOrCreateWalletSummary(temporaryDirectory, seed, nowInSeconds, PASSWORD);
 
     Wallet wallet  = walletSummary.getWallet();
 

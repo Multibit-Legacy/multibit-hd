@@ -4,6 +4,7 @@ import com.google.bitcoin.core.*;
 import com.google.bitcoin.net.discovery.DnsDiscovery;
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
+import com.google.bitcoin.wallet.KeyChain;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -11,6 +12,7 @@ import org.joda.time.DateTime;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.WalletId;
@@ -83,10 +85,6 @@ public class BitcoinNetworkService extends AbstractService {
   @Override
   public boolean start() {
 
-    requireSingleThreadExecutor("bitcoin-network");
-
-    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkNotInitialised());
-
     try {
 
       // Check if there is a wallet - if there is no wallet the network will not start (there's nowhere to put the blockchain)
@@ -131,15 +129,21 @@ public class BitcoinNetworkService extends AbstractService {
    * @throws IOException
    */
   private void restartNetwork() throws BlockStoreException, IOException {
+    requireSingleThreadExecutor("bitcoin-network");
+
     // Check if there is a network connection
     if (!isNetworkPresent()) {
       return;
     }
 
+    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkNotInitialised());
+
     log.debug("Creating block chain ...");
     blockChain = new BlockChain(networkParameters, blockStore);
+
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-      blockChain.addWallet(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet());
+      Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
+      blockChain.addWallet(wallet);
     }
     log.debug("Created block chain '{}' with height '{}'", blockChain, blockChain.getBestChainHeight());
 
@@ -198,15 +202,16 @@ public class BitcoinNetworkService extends AbstractService {
         File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
         File currentWalletFile = WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory).get();
         walletSummary.getWallet().saveToFile(currentWalletFile);
-        log.debug("Wallet save completed ok. Wallet size is " + currentWalletFile.length() + " bytes.");
+        File encryptedAESCopy = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(currentWalletFile, walletSummary.getPassword());
+        log.debug("Created AES encrypted wallet as file '{}', size {}", encryptedAESCopy == null ? "null" : encryptedAESCopy.getAbsolutePath(),
+                encryptedAESCopy == null ? "null" : encryptedAESCopy.length());
 
-        BackupManager.INSTANCE.createRollingBackup(walletSummary);
-        BackupManager.INSTANCE.createLocalAndCloudBackup(walletId);
+        BackupManager.INSTANCE.createRollingBackup(walletSummary, walletSummary.getPassword());
+        BackupManager.INSTANCE.createLocalAndCloudBackup(walletId, walletSummary.getPassword());
       } catch (IOException ioe) {
         log.error("Could not write wallet and backups for wallet with id '" + walletId + "' successfully. The error was '" + ioe.getMessage() + "'");
       }
     }
-
   }
 
   public void recalculateFastCatchupAndFilter() {
@@ -312,20 +317,26 @@ public class BitcoinNetworkService extends AbstractService {
     SafeExecutors.newSingleThreadExecutor("send-bitcoin").submit(new Runnable() {
       @Override
       public void run() {
+        log.debug("send-bitcoin safeExecutor has started.");
 
         // Verify the wallet summary
         if (!checkWalletSummary()) {
+          log.debug("Wallet summary check fail");
           return;
         }
 
         log.debug("Just about to create send transaction");
         Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
-        KeyParameter aesKey = wallet.getKeyCrypter().deriveKey(password);
+        KeyParameter aesKey;
+
 
         boolean addClientFee;
         Address feeAddress = null;
         try {
-
+          if (wallet.getKeyCrypter() == null) {
+            throw new IllegalStateException("No keyCrypter in wallet when one is expected.");
+          }
+          aesKey = wallet.getKeyCrypter().deriveKey(password);
           addClientFee = feeStateOptional.isPresent() && (feeStateOptional.get().getCurrentNumberOfSends() == feeStateOptional.get().getNextFeeSendCount());
           if (addClientFee) {
             String feeAddressString = feeStateOptional.get().getNextFeeAddress();
@@ -333,8 +344,7 @@ public class BitcoinNetworkService extends AbstractService {
             feeAddress = new Address(networkParameters, feeAddressString);
           }
 
-        } catch (NullPointerException | AddressFormatException e) {
-
+        } catch (Exception e) {
           log.error(e.getMessage(), e);
 
           // Declare the transaction creation a failure
@@ -352,7 +362,7 @@ public class BitcoinNetworkService extends AbstractService {
           return;
         }
 
-        // Addresses must be OK to be here
+        // Addresses and aesKey must be OK to be here
 
         // Build the send request
         final Wallet.SendRequest sendRequest = buildSendRequest(aesKey, destinationAddress, changeAddress, addClientFee, feeAddress);
@@ -370,7 +380,6 @@ public class BitcoinNetworkService extends AbstractService {
         }
 
         log.debug("Send coins has completed");
-
       }
 
       /**
@@ -500,7 +509,7 @@ public class BitcoinNetworkService extends AbstractService {
               BigInteger.ZERO,
               false,
               CoreMessageKey.COULD_NOT_CONNECT_TO_BITCOIN_NETWORK.getKey(),
-              new String[]{"All pings failed"} // TODO (JB) Is this meaningful to mainstream users?
+              new String[]{"Could not reach any Bitcoin nodes"}
             ));
 
             // Prevent a fall-through to success
@@ -604,16 +613,16 @@ public class BitcoinNetworkService extends AbstractService {
     peerGroup.addEventListener(peerEventListener);
 
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-      peerGroup.addWallet(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet());
+      Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
+      peerGroup.addWallet(wallet);
+      peerGroup.setFastCatchupTimeSecs(wallet.getEarliestKeyCreationTime());
     }
-
   }
 
   /**
    * Get the next available change address
-   * TODO (JB) This should be worked out deterministically but just use the first address on the current wallet for now
    *
-   * @return changeAddress The next change address as a string
+   * @return changeAddress The next change address as an Address
    */
   public Address getNextChangeAddress() {
 
@@ -622,7 +631,8 @@ public class BitcoinNetworkService extends AbstractService {
     Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet().getKeychainSize() > 0);
 
     Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
-    return wallet.getKeys().get(0).toAddress(networkParameters);
+
+    return wallet.freshKey(KeyChain.KeyPurpose.CHANGE).toAddress(networkParameters);
 
   }
 

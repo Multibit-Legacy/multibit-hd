@@ -157,10 +157,10 @@ public class BitcoinNetworkServiceFunctionalTest {
     DateTime timestamp2 = Dates.parseSeedTimestamp(seedProperties.getProperty(WALLET_TIMESTAMP_2_PROPERTY_NAME));
 
     // Remember the addresses in the wallets, which will be used for the send
-    ECKey key1 = walletSummary1.getWallet().getKeys().get(0);
+    ECKey key1 = walletSummary1.getWallet().freshReceiveKey();
     Address address1 = key1.toAddress(networkParameters);
 
-    ECKey key2 = walletSummary2.getWallet().getKeys().get(0);
+    ECKey key2 = walletSummary2.getWallet().freshReceiveKey();
     Address address2 = key2.toAddress(networkParameters);
 
     // Synchronize the current wallet, which will be wallet2 as that was created last
@@ -255,8 +255,8 @@ public class BitcoinNetworkServiceFunctionalTest {
   }
 
   private WalletSummary createWallet(File walletDirectory, byte[] seed) throws IOException {
-
-    WalletSummary walletSummary = walletManager.getOrCreateWalletSummary(walletDirectory, seed, WALLET_PASSWORD);
+    long nowInSeconds = Dates.nowInSeconds();
+    WalletSummary walletSummary = walletManager.getOrCreateWalletSummary(walletDirectory, seed, nowInSeconds, WALLET_PASSWORD);
     assertThat(walletSummary).isNotNull();
     assertThat(walletSummary.getWallet()).isNotNull();
 

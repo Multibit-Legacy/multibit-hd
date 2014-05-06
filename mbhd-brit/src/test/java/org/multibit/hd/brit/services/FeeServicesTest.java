@@ -21,20 +21,23 @@ import com.google.bitcoin.params.MainNetParams;
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.utils.Threading;
 import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.ListenableFuture;
 import org.bouncycastle.openpgp.PGPPublicKey;
+import org.multibit.hd.brit.dto.FeeState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.LinkedList;
+import java.util.Set;
 
 import static com.google.bitcoin.core.Utils.toNanoCoins;
 import static org.fest.assertions.Assertions.assertThat;
 
+//import static com.google.bitcoin.utils.TestUtils.createFakeTx;
+
+// TODO - get working with HDW
 public class FeeServicesTest {
 
   private static final Logger log = LoggerFactory.getLogger(FeeServicesTest.class);
@@ -140,25 +143,25 @@ public class FeeServicesTest {
 //    feeState = feeService.calculateFeeState(wallet1);
 //    checkFeeState(feeState, true, NUMBER_OF_NON_FEE_SENDS + 1, BigInteger.ZERO, FeeService.FEE_PER_SEND, possibleNextFeeAddresses);
 //  }
-//
-//  private void checkFeeState(FeeState feeState,
-//                             boolean expectedIsUsingHardwiredBRITAddress,
-//                             int expectedCurrentNumberOfSends,
-//                             BigInteger expectedFeeOwed,
-//                             BigInteger expectedFeePerSendSatoshi,
-//                             Set<String> possibleNextFeeAddresses) {
-//
-//    assertThat(feeState.isUsingHardwiredBRITAddresses() == expectedIsUsingHardwiredBRITAddress).isTrue();
-//    assertThat(feeState.getCurrentNumberOfSends()).isEqualTo(expectedCurrentNumberOfSends);
-//    assertThat(feeState.getFeeOwed()).isEqualTo(expectedFeeOwed);
-//    assertThat(feeState.getFeePerSendSatoshi()).isEqualTo(expectedFeePerSendSatoshi);
-//    assertThat(possibleNextFeeAddresses.contains(feeState.getNextFeeAddress())).isTrue();
-//
-//    int upperLimitOfNextFeeSendCount = feeState.getCurrentNumberOfSends() + FeeService.NEXT_SEND_DELTA_UPPER_LIMIT - 1;
-//
-//    // Verify limits
-//    assertThat(upperLimitOfNextFeeSendCount).isGreaterThanOrEqualTo(feeState.getNextFeeSendCount());
-//  }
+
+  private void checkFeeState(FeeState feeState,
+                             boolean expectedIsUsingHardwiredBRITAddress,
+                             int expectedCurrentNumberOfSends,
+                             BigInteger expectedFeeOwed,
+                             BigInteger expectedFeePerSendSatoshi,
+                             Set<String> possibleNextFeeAddresses) {
+
+    assertThat(feeState.isUsingHardwiredBRITAddresses() == expectedIsUsingHardwiredBRITAddress).isTrue();
+    assertThat(feeState.getCurrentNumberOfSends()).isEqualTo(expectedCurrentNumberOfSends);
+    assertThat(feeState.getFeeOwed()).isEqualTo(expectedFeeOwed);
+    assertThat(feeState.getFeePerSendSatoshi()).isEqualTo(expectedFeePerSendSatoshi);
+    assertThat(possibleNextFeeAddresses.contains(feeState.getNextFeeAddress())).isTrue();
+
+    int upperLimitOfNextFeeSendCount = feeState.getCurrentNumberOfSends() + FeeService.NEXT_SEND_DELTA_UPPER_LIMIT - 1;
+
+    // Verify limits
+    assertThat(upperLimitOfNextFeeSendCount).isGreaterThanOrEqualTo(feeState.getNextFeeSendCount());
+  }
 
 //  public void createWallet(byte[] seed, CharSequence password) throws Exception {
 //
@@ -185,46 +188,46 @@ public class FeeServicesTest {
 //    assertThat(wallet1.getKeychainSize() == 1).isTrue();
 //
 //  }
-
-  private void receiveATransaction(Wallet wallet, Address toAddress) throws Exception {
-
-    BigInteger v1 = Utils.toNanoCoins(1, 0);
-    final ListenableFuture<BigInteger> availFuture = wallet.getBalanceFuture(v1, Wallet.BalanceType.AVAILABLE);
-    final ListenableFuture<BigInteger> estimatedFuture = wallet.getBalanceFuture(v1, Wallet.BalanceType.ESTIMATED);
-    assertThat(availFuture.isDone()).isFalse();
-    assertThat(estimatedFuture.isDone()).isFalse();
-
-    // Send some pending coins to the wallet.
-    Transaction t1 = sendMoneyToWallet(wallet, v1, toAddress);
-    Threading.waitForUserCode();
-    final ListenableFuture<Transaction> depthFuture = t1.getConfidence().getDepthFuture(1);
-    assertThat(depthFuture.isDone()).isFalse();
-    assertThat(v1).isEqualTo(wallet.getBalance(Wallet.BalanceType.ESTIMATED));
-
-    // Our estimated balance has reached the requested level.
-    assertThat(estimatedFuture.isDone()).isTrue();
-
-  }
-
-  private Transaction sendMoneyToWallet(Wallet wallet, BigInteger value, Address toAddress) throws IOException, VerificationException {
-
-    // If the next line isn't compiling you probably need to update your bitcoinj !
-    // createFakeTx has been moved !
-    Transaction tx = com.google.bitcoin.testing.FakeTxBuilder.createFakeTx(NETWORK_PARAMETERS, value, toAddress);
-    // Mark it as coming from self as then it can be spent when pending
-    tx.getConfidence().setSource(TransactionConfidence.Source.SELF);
-
-    // Mark it as being seen by a couple of peers
-    tx.getConfidence().markBroadcastBy(new PeerAddress(InetAddress.getByAddress(new byte[]{1, 2, 3, 4})));
-    tx.getConfidence().markBroadcastBy(new PeerAddress(InetAddress.getByAddress(new byte[]{10, 2, 3, 4})));
-
-    // Pending/broadcast tx.
-    if (wallet.isPendingTransactionRelevant(tx)) {
-      wallet.receivePending(tx, null);
-    }
-
-    return wallet.getTransaction(tx.getHash());  // Can be null if tx is a double spend that's otherwise irrelevant.
-  }
+//
+//  private void receiveATransaction(Wallet wallet, Address toAddress) throws Exception {
+//
+//    BigInteger v1 = Utils.toNanoCoins(1, 0);
+//    final ListenableFuture<BigInteger> availFuture = wallet.getBalanceFuture(v1, Wallet.BalanceType.AVAILABLE);
+//    final ListenableFuture<BigInteger> estimatedFuture = wallet.getBalanceFuture(v1, Wallet.BalanceType.ESTIMATED);
+//    assertThat(availFuture.isDone()).isFalse();
+//    assertThat(estimatedFuture.isDone()).isFalse();
+//
+//    // Send some pending coins to the wallet.
+//    Transaction t1 = sendMoneyToWallet(wallet, v1, toAddress);
+//    Threading.waitForUserCode();
+//    final ListenableFuture<Transaction> depthFuture = t1.getConfidence().getDepthFuture(1);
+//    assertThat(depthFuture.isDone()).isFalse();
+//    assertThat(v1).isEqualTo(wallet.getBalance(Wallet.BalanceType.ESTIMATED));
+//
+//    // Our estimated balance has reached the requested level.
+//    assertThat(estimatedFuture.isDone()).isTrue();
+//
+//  }
+//
+//  private Transaction sendMoneyToWallet(Wallet wallet, BigInteger value, Address toAddress) throws IOException, VerificationException {
+//
+//    // If the next line isn't compiling you probably need to update your bitcoinj !
+//    // createFakeTx has been moved !
+//    Transaction tx = com.google.bitcoin.testing.FakeTxBuilder.createFakeTx(NETWORK_PARAMETERS, value, toAddress);
+//    // Mark it as coming from self as then it can be spent when pending
+//    tx.getConfidence().setSource(TransactionConfidence.Source.SELF);
+//
+//    // Mark it as being seen by a couple of peers
+//    tx.getConfidence().markBroadcastBy(new PeerAddress(InetAddress.getByAddress(new byte[]{1, 2, 3, 4})));
+//    tx.getConfidence().markBroadcastBy(new PeerAddress(InetAddress.getByAddress(new byte[]{10, 2, 3, 4})));
+//
+//    // Pending/broadcast tx.
+//    if (wallet.isPendingTransactionRelevant(tx)) {
+//      wallet.receivePending(tx, null);
+//    }
+//
+//    return wallet.getTransaction(tx.getHash());  // Can be null if tx is a double spend that's otherwise irrelevant.
+//  }
 
   private static void broadcastAndCommit(Wallet wallet, Transaction t) throws Exception {
 

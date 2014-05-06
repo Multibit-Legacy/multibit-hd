@@ -150,7 +150,7 @@ public class SecureFiles {
 
     Preconditions.checkNotNull(filename, "'filename' must be present");
 
-    File file = new File(parentDirectory.getAbsolutePath() + "/" + filename);
+    File file = new File(parentDirectory.getAbsolutePath() + File.separator + filename);
 
     log.debug("Verify or create file: '{}'", file.getAbsolutePath());
 

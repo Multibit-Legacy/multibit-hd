@@ -353,4 +353,11 @@ public class Dates {
     return utcBackupFormatter.parseDateTime(text);
   }
 
+  /**
+   * Get the current date since epoch in seconds
+   * @return the current date in seconds
+   */
+  public static long nowInSeconds() {
+    return (long)(DateTime.now().getMillis() * 0.001);
+  }
 }

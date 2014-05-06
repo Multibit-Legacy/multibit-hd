@@ -3,8 +3,15 @@ package org.multibit.hd.core.services;
 import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
+import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.Contact;
+import org.multibit.hd.core.dto.WalletIdTest;
+import org.multibit.hd.core.managers.BackupManager;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.managers.WalletManagerTest;
+import org.multibit.hd.core.utils.Dates;
 
 import java.io.File;
 import java.util.List;
@@ -18,8 +25,18 @@ public class PersistentContactServiceTest {
 
   @Before
   public void setUp() throws Exception {
+    Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
     File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
+
+    // Create a wallet from a seed
+    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
+
+    BackupManager.INSTANCE.initialise(temporaryDirectory, null);
+    long nowInSeconds = Dates.nowInSeconds();
+    WalletManager.INSTANCE.getOrCreateWalletSummary(temporaryDirectory, seed1, nowInSeconds, WalletServiceTest.PASSWORD);
+
     File contactDbFile = new File(temporaryDirectory.getAbsolutePath() + File.separator + ContactService.CONTACTS_DATABASE_NAME);
 
     contactService = new PersistentContactService(contactDbFile);

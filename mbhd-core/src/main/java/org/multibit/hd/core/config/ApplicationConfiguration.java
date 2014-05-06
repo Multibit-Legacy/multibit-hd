@@ -31,6 +31,8 @@ public class ApplicationConfiguration {
 
   private String sidebarWidth = "180";
 
+  private String cloudBackupLocation = "";
+
   /**
    * @return The application directory path (e.g. ".")
    */
@@ -116,6 +118,14 @@ public class ApplicationConfiguration {
     this.sidebarWidth = sidebarWidth;
   }
 
+  public String getCloudBackupLocation() {
+    return cloudBackupLocation;
+  }
+
+  public void setCloudBackupLocation(String cloudBackupLocation) {
+    this.cloudBackupLocation = cloudBackupLocation;
+  }
+
   /**
    * @return A deep copy of this object
    */
@@ -131,6 +141,7 @@ public class ApplicationConfiguration {
     app.setSidebarWidth(getSidebarWidth());
     app.setCurrentTheme(getCurrentTheme());
     app.setVersion(getVersion());
+    app.setCloudBackupLocation(getCloudBackupLocation());
 
     return app;
   }

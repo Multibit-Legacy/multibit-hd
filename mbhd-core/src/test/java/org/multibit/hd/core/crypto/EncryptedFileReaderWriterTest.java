@@ -16,24 +16,27 @@ package org.multibit.hd.core.crypto;
  * limitations under the License.
  */
 
+import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.utils.BriefLogFormatter;
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
-import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.utils.FileUtils;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.dto.WalletIdTest;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.managers.WalletManagerTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
 import java.security.SecureRandom;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class AESUtilsTest {
+public class EncryptedFileReaderWriterTest {
 
   private static final Logger log = LoggerFactory.getLogger(FileUtils.class);
 
@@ -41,7 +44,9 @@ public class AESUtilsTest {
   private static final String EXAMPLE_TEXT = "The quick brown fox jumps over the lazy dog. 01234567890. !@#$%^&*(). ,.;:[]-_=+";
 
   // Nonsense bytes for encryption test.
-  private static final byte[] TEST_BYTES = {0, -101, 2, 103, -4, 105, 6, 107, 8, -109, 10, 111, -12, 113, 14, -115, 16, 117, -18, 119, 20, 121, 22, 123, -24, 125, 26, 127, -28, 29, -30, 31};
+  private static final byte[] TEST_BYTES1 = {0, -101, 2, 103, -4, 105, 6, 107, 8, -109, 10, 111, -12, 113, 14, -115, 16, 117, -18, 119, 20, 121, 22, 123, -24, 125, 26, 127, -28, 29, -30, 31};
+
+  private static final CharSequence PASSWORD1 = "aTestPassword";
 
   private byte[] initialisationVector;
   private byte[] keyBytes;
@@ -56,27 +61,40 @@ public class AESUtilsTest {
     secureRandom = new SecureRandom();
 
     // Create a random initialisationVector
-    initialisationVector = new byte[org.multibit.hd.brit.crypto.AESUtils.BLOCK_LENGTH];
+    initialisationVector = new byte[AESUtils.BLOCK_LENGTH];
     secureRandom.nextBytes(initialisationVector);
 
     // Create a random key
     secureRandom.nextBytes(initialisationVector);
-    keyBytes = new byte[org.multibit.hd.brit.crypto.AESUtils.KEY_LENGTH];
+    keyBytes = new byte[AESUtils.KEY_LENGTH];
     keyParameter = new KeyParameter(keyBytes);
 
     BriefLogFormatter.init();
   }
 
-
   @Test
-  public void testCreateAESKey() throws Exception {
-    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-    byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_3));
+  public void testEncryptDecryptSuccess() throws Exception {
+    // Create a random temporary directory
+    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
 
-    KeyParameter aesKey1 = AESUtils.createAESKey(seed, WalletManager.SCRYPT_SALT);
+    File outputFile = new File(temporaryDirectory + File.separator + "outputFile.aes");
 
-    assertThat(aesKey1).isNotNull();
-    assertThat(aesKey1.getKey()).isNotNull();
-    assertThat(aesKey1.getKey().length).isEqualTo(org.multibit.hd.brit.crypto.AESUtils.KEY_LENGTH);
+    EncryptedFileReaderWriter.encryptAndWrite(TEST_BYTES1, PASSWORD1, outputFile);
+    InputStream decryptedInputstream = EncryptedFileReaderWriter.readAndDecrypt(outputFile, PASSWORD1, WalletManager.SCRYPT_SALT, WalletManager.AES_INITIALISATION_VECTOR);
+
+    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+    int nRead;
+    byte[] data = new byte[16384];
+
+    while ((nRead = decryptedInputstream.read(data, 0, data.length)) != -1) {
+      buffer.write(data, 0, nRead);
+    }
+
+    buffer.flush();
+
+    assertThat(Utils.bytesToHexString(buffer.toByteArray())).isEqualTo(Utils.bytesToHexString(TEST_BYTES1));
+
+    decryptedInputstream.close();
   }
 }

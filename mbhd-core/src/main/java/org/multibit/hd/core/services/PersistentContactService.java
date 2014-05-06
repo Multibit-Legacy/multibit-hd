@@ -5,10 +5,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.exceptions.ContactsLoadException;
 import org.multibit.hd.core.exceptions.ContactsSaveException;
+import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -16,10 +18,9 @@ import org.multibit.hd.core.store.ContactsProtobufSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -57,7 +58,6 @@ public class PersistentContactService implements ContactService {
    * <p>Create a ContactService for a Wallet with the given walletId</p>
    *
    * <p>Reduced visibility constructor to prevent accidental instance creation outside of CoreServices.</p>
-   *
    */
   PersistentContactService(WalletId walletId) {
 
@@ -129,7 +129,7 @@ public class PersistentContactService implements ContactService {
   @Override
   public List<Contact> filterContactsByBitcoinAddress(Address address) {
 
-    Preconditions.checkNotNull(address, "'address' must be present");
+    Preconditions.checkNotNull(address,"'address' must be present");
 
     String queryAddress = address.toString();
 
@@ -220,13 +220,16 @@ public class PersistentContactService implements ContactService {
 
     log.debug("Loading contacts from '{}'", backingStoreFile.getAbsolutePath());
 
-    try (FileInputStream fis = new FileInputStream(backingStoreFile)) {
-
-      Set<Contact> loadedContacts = protobufSerializer.readContacts(fis);
+    try {
+      ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(backingStoreFile,
+              WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(),
+              WalletManager.SCRYPT_SALT,
+              WalletManager.AES_INITIALISATION_VECTOR);
+      Set<Contact> loadedContacts = protobufSerializer.readContacts(decryptedInputStream);
       contacts.clear();
       contacts.addAll(loadedContacts);
 
-    } catch (IOException e) {
+    } catch (EncryptedFileReaderWriterException e) {
       throw new ContactsLoadException("Could not loadContacts contacts db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");
     }
   }
@@ -274,11 +277,13 @@ public class PersistentContactService implements ContactService {
 
     log.debug("Writing {} contact(s)", contacts.size());
 
-    try (FileOutputStream fos = new FileOutputStream(backingStoreFile)) {
+    try {
+      ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
 
-      protobufSerializer.writeContacts(contacts, fos);
+      protobufSerializer.writeContacts(contacts, byteArrayOutputStream);
+      EncryptedFileReaderWriter.encryptAndWrite(byteArrayOutputStream.toByteArray(), WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(), backingStoreFile);
 
-    } catch (IOException e) {
+    } catch (Exception e) {
       throw new ContactsSaveException("Could not save contacts db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");
     }
   }

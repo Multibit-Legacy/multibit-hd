@@ -19,27 +19,21 @@ package org.multibit.hd.core.managers;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.common.base.Optional;
 import com.google.common.io.Files;
-import org.bitcoinj.wallet.Protos;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletIdTest;
 import org.multibit.hd.core.dto.WalletSummary;
-import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.utils.Dates;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -70,77 +64,77 @@ public class WalletManagerTest {
 
   }
 
-  @Test
-  public void testCreateProtobufEncryptedWallet() throws Exception {
-
-    // Create a random temporary directory to writeContacts the wallets
-    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
-
-    BackupManager.INSTANCE.initialise(temporaryDirectory, null);
-
-    // Create a wallet directory from a seed
-    final SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-    final byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
-    final WalletId walletId = new WalletId(seed);
-    final String walletRoot = WalletManager.createWalletRoot(walletId);
-
-    final File walletDirectory = WalletManager.getOrCreateWalletDirectory(temporaryDirectory, walletRoot);
-    final File walletFile = SecureFiles.verifyOrCreateFile(walletDirectory, WalletManager.MBHD_WALLET_NAME);
-
-    final KeyCrypterScrypt initialKeyCrypter = new KeyCrypterScrypt();
-
-    // Create a new wallet
-    final Wallet wallet = new Wallet(BitcoinNetwork.current().get(), initialKeyCrypter);
-    wallet.setVersion(3); // PROTOBUF_ENCRYPTED
-
-    // Create and add encrypted keys to the wallet
-    final byte[] plainPrivateKey1Bytes = addEncryptedKey(wallet);
-    final byte[] plainPrivateKey2Bytes = addEncryptedKey(wallet);
-
-    // Get the keys of the wallet and check that all the keys are encrypted
-    final Collection<ECKey> keys = wallet.getKeys();
-    for (ECKey key : keys) {
-      assertThat(key.isEncrypted()).isTrue();
-    }
-
-    // Save the wallet and read it back in again
-    WalletManager.INSTANCE.saveWallet(wallet, walletFile);
-
-    // Check the wallet and wallet info file exists
-    assertThat(walletFile.exists()).isTrue();
-
-    // Check wallet can be loaded and is still protobuf and encrypted
-    final WalletSummary rebornWalletSummary = WalletManager.INSTANCE.loadFromWalletDirectory(walletDirectory, "password");
-    final Wallet rebornWallet = rebornWalletSummary.getWallet();
-
-    assertThat(rebornWalletSummary).isNotNull();
-    assertThat(rebornWallet).isNotNull();
-
-    assertThat(rebornWallet.getBalance()).isEqualTo(BigInteger.ZERO);
-    assertThat(rebornWallet.getKeys().size()).isEqualTo(2);
-    assertThat(rebornWallet.getEncryptionType())
-      .describedAs("Wallet is not of type ENCRYPTED when it should be")
-      .isEqualTo(Protos.Wallet.EncryptionType.ENCRYPTED_SCRYPT_AES);
-
-    // Get the keys out of the reborn wallet and check that all the keys are encrypted
-    final Collection<ECKey> rebornEncryptedKeys = rebornWallet.getKeys();
-    for (ECKey key : rebornEncryptedKeys) {
-      assertThat(key.isEncrypted()).describedAs("Reborn key should be encrypted").isTrue();
-    }
-
-    // Decrypt the reborn wallet
-    rebornWallet.decrypt(rebornWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
-
-    // Get the keys out the reborn wallet and check that all the keys match.
-    final Collection<ECKey> rebornPlainKeys = rebornWallet.getKeys();
-
-    assertThat(rebornPlainKeys.size()).describedAs("Wrong number of keys in reborn wallet").isEqualTo(2);
-
-    Iterator<ECKey> iterator = rebornPlainKeys.iterator();
-    compareRebornToOriginal(plainPrivateKey1Bytes, iterator);
-    compareRebornToOriginal(plainPrivateKey2Bytes, iterator);
-
-  }
+//  @Test
+//  public void testCreateProtobufEncryptedWallet() throws Exception {
+//
+//    // Create a random temporary directory to write the wallets
+//    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
+//
+//    BackupManager.INSTANCE.initialise(temporaryDirectory, null);
+//
+//    // Create a wallet directory from a seed
+//    final SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+//    final byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
+//    final WalletId walletId = new WalletId(seed);
+//    final String walletRoot = WalletManager.createWalletRoot(walletId);
+//
+//    final File walletDirectory = WalletManager.getOrCreateWalletDirectory(temporaryDirectory, walletRoot);
+//    final File walletFile = SecureFiles.verifyOrCreateFile(walletDirectory, WalletManager.MBHD_WALLET_NAME);
+//
+//    final KeyCrypterScrypt initialKeyCrypter = new KeyCrypterScrypt();
+//
+//    // Create a new wallet
+//    final Wallet wallet = new Wallet(BitcoinNetwork.current().get(), initialKeyCrypter);
+//    wallet.setVersion(3); // PROTOBUF_ENCRYPTED
+//
+//    // Create and add encrypted keys to the wallet
+//    final byte[] plainPrivateKey1Bytes = addEncryptedKey(wallet);
+//    final byte[] plainPrivateKey2Bytes = addEncryptedKey(wallet);
+//
+//    // Get the keys of the wallet and check that all the keys are encrypted
+//    final Collection<ECKey> keys = wallet.getKeys();
+//    for (ECKey key : keys) {
+//      assertThat(key.isEncrypted()).isTrue();
+//    }
+//
+//    // Save the wallet and read it back in again
+//    WalletManager.INSTANCE.saveWallet(wallet, walletFile);
+//
+//    // Check the wallet and wallet info file exists
+//    assertThat(walletFile.exists()).isTrue();
+//
+//    // Check wallet can be loaded and is still protobuf and encrypted
+//    final WalletSummary rebornWalletSummary = WalletManager.INSTANCE.loadFromWalletDirectory(walletDirectory, "password");
+//    final Wallet rebornWallet = rebornWalletSummary.getWallet();
+//
+//    assertThat(rebornWalletSummary).isNotNull();
+//    assertThat(rebornWallet).isNotNull();
+//
+//    assertThat(rebornWallet.getBalance()).isEqualTo(BigInteger.ZERO);
+//    assertThat(rebornWallet.getKeys().size()).isEqualTo(2);
+//    assertThat(rebornWallet.getEncryptionType())
+//      .describedAs("Wallet is not of type ENCRYPTED when it should be")
+//      .isEqualTo(Protos.Wallet.EncryptionType.ENCRYPTED_SCRYPT_AES);
+//
+//    // Get the keys out of the reborn wallet and check that all the keys are encrypted
+//    final Collection<ECKey> rebornEncryptedKeys = rebornWallet.getKeys();
+//    for (ECKey key : rebornEncryptedKeys) {
+//      assertThat(key.isEncrypted()).describedAs("Reborn key should be encrypted").isTrue();
+//    }
+//
+//    // Decrypt the reborn wallet
+//    rebornWallet.decrypt(rebornWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
+//
+//    // Get the keys out the reborn wallet and check that all the keys match.
+//    final Collection<ECKey> rebornPlainKeys = rebornWallet.getKeys();
+//
+//    assertThat(rebornPlainKeys.size()).describedAs("Wrong number of keys in reborn wallet").isEqualTo(2);
+//
+//    Iterator<ECKey> iterator = rebornPlainKeys.iterator();
+//    compareRebornToOriginal(plainPrivateKey1Bytes, iterator);
+//    compareRebornToOriginal(plainPrivateKey2Bytes, iterator);
+//
+//  }
 
   private void compareRebornToOriginal(byte[] plainPrivateKey1Bytes, Iterator<ECKey> iterator) {
 
@@ -191,33 +185,27 @@ public class WalletManagerTest {
 
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
+    long nowInSeconds = Dates.nowInSeconds();
 
-    WalletSummary walletSummary1 = walletManager.getOrCreateWalletSummary(temporaryDirectory1, seed, "password");
+    WalletSummary walletSummary1 = walletManager.getOrCreateWalletSummary(temporaryDirectory1, seed, nowInSeconds, "password");
 
     // Uncomment this next line if you want a wallet created in your MultiBitHD user data directory.
     //walletManager.createWallet( seed, "password");
 
     assertThat(walletSummary1).isNotNull();
 
-    // There should be a single key
-    assertThat(walletSummary1.getWallet().getKeychainSize() == 1).isTrue();
-
-
     // Create another wallet - it should have the same wallet id and the private key should be the same
     File temporaryDirectory2 = makeRandomTemporaryApplicationDirectory();
     BackupManager.INSTANCE.initialise(temporaryDirectory2, null);
 
-    WalletSummary walletSummary2 = walletManager.getOrCreateWalletSummary(temporaryDirectory2, seed, "password");
+    WalletSummary walletSummary2 = walletManager.getOrCreateWalletSummary(temporaryDirectory2, seed, nowInSeconds, "password");
 
     assertThat(walletSummary2).isNotNull();
 
-    // There should be a single key
-    assertThat(walletSummary2.getWallet().getKeychainSize() == 1).isTrue();
+    ECKey key1 = walletSummary1.getWallet().freshReceiveKey();
+    ECKey key2 = walletSummary2.getWallet().freshReceiveKey();
 
-    ECKey key1 = walletSummary1.getWallet().getKeys().get(0);
-    ECKey key2 = walletSummary2.getWallet().getKeys().get(0);
-
-    assertThat(Arrays.equals(key1.getPrivKeyBytes(), key2.getPrivKeyBytes())).isTrue();
+    assertThat(key1).isEqualTo(key2);
 
     File expectedFile = new File(
       temporaryDirectory2.getAbsolutePath()
@@ -226,6 +214,7 @@ public class WalletManagerTest {
         + walletSummary2.getWalletId().toFormattedString()
         + File.separator
         + WalletManager.MBHD_WALLET_NAME
+        + WalletManager.MBHD_AES_SUFFIX
     );
 
     assertThat(expectedFile.exists()).isTrue();

@@ -121,8 +121,6 @@ public class MultiBitPeerEventListener implements PeerEventListener {
                   if (currentWallet.getTransaction(transaction.getHash()) == null) {
                     log.debug("MultiBitHD adding a new pending transaction for the wallet '"
                             + currentWalletSummary.get().getWalletId() + "'\n" + transaction.toString());
-                    // The perWalletModelData is marked as dirty.
-                    // TODO - mark wallet as dirty ?
                     currentWallet.receivePending(transaction, null);
 
                     // Emit an event so that GUI elements can update as required
