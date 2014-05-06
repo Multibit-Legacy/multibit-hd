@@ -36,4 +36,10 @@ public interface SeedPhraseGenerator {
    */
   byte[] convertToSeed(List<String> seedPhrase) throws SeedPhraseException;
 
+  /**
+   * @param seedPhrase The seed phrase to verify
+   *
+   * @return True if the seed phrase contains words within the seed phrase generator lexicon
+   */
+  boolean isValid(List<String> seedPhrase);
 }

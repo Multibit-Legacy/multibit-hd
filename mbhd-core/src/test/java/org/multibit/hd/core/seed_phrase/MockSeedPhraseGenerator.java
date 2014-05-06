@@ -47,4 +47,9 @@ public class MockSeedPhraseGenerator implements SeedPhraseGenerator {
   public byte[] convertToSeed(List<String> seedPhrase) throws SeedPhraseException {
     throw new UnsupportedOperationException();
   }
+
+  @Override
+  public boolean isValid(List<String> seedPhrase) {
+    return true;
+  }
 }

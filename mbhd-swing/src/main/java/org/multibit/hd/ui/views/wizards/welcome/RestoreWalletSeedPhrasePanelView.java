@@ -89,7 +89,6 @@ public class RestoreWalletSeedPhrasePanelView extends AbstractWizardPanelView<We
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {
-    // Do nothing - panel model is updated via an action and wizard model is not applicable
 
     // Enable the "next" button if the seed phrase has a valid size
     boolean seedPhraseSizeValid = SeedPhraseSize.isValid(enterSeedPhraseMaV.getModel().getValue().size());
