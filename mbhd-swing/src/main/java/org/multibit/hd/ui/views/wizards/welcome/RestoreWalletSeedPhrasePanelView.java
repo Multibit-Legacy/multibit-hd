@@ -1,8 +1,11 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.brit.seed_phrase.SeedPhraseSize;
+import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
@@ -32,6 +35,8 @@ import java.util.List;
 public class RestoreWalletSeedPhrasePanelView extends AbstractWizardPanelView<WelcomeWizardModel, List<String>> {
 
   private ModelAndView<EnterSeedPhraseModel, EnterSeedPhraseView> enterSeedPhraseMaV;
+
+  private SeedPhraseGenerator generator = new Bip39SeedPhraseGenerator();
 
   /**
    * @param wizard    The wizard managing the states
@@ -90,14 +95,41 @@ public class RestoreWalletSeedPhrasePanelView extends AbstractWizardPanelView<We
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 
-    // Enable the "next" button if the seed phrase has a valid size
-    boolean seedPhraseSizeValid = SeedPhraseSize.isValid(enterSeedPhraseMaV.getModel().getValue().size());
-
-    ViewEvents.fireWizardButtonEnabledEvent(
-      getPanelName(),
-      WizardButton.NEXT,
-      seedPhraseSizeValid
-    );
+    // Fire the decision events
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, isNextEnabled());
+    ViewEvents.fireVerificationStatusChangedEvent(getPanelName(), isNextEnabled());
 
   }
+
+  /**
+   * @return True if the "next" button should be enabled
+   */
+  private boolean isNextEnabled() {
+
+    // Get the user data
+    String timestamp = enterSeedPhraseMaV.getModel().getSeedTimestamp();
+    List<String> seedPhrase = enterSeedPhraseMaV.getModel().getSeedPhrase();
+
+    // Attempt to parse the timestamp if present
+    boolean timestampIsValid = false;
+    if (Strings.isNullOrEmpty(timestamp)) {
+      // User has not entered any timestamp so assume it's lost
+      timestampIsValid = true;
+    } else {
+      try {
+        Dates.parseSeedTimestamp(timestamp);
+        timestampIsValid = true;
+      } catch (IllegalArgumentException e) {
+        // Do nothing
+      }
+    }
+
+    // Perform a more comprehensive test on the seed phrase
+    boolean seedPhraseIsValid = generator.isValid(seedPhrase);
+
+    return timestampIsValid && seedPhraseIsValid;
+
+
+  }
+
 }
