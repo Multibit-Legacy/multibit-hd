@@ -190,9 +190,6 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
 
     Preconditions.checkNotNull(event, "'event' must be present");
 
-    // Switch the exchange ticker service
-    handleExchange();
-
     // Ensure the Swing thread can perform a complete refresh
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {
@@ -218,6 +215,12 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
 
       }
     });
+
+    // Restart the Bitcoin network (may have switched parameters)
+    handleBitcoinNetwork();
+
+    // Switch the exchange ticker service
+    handleExchange();
 
   }
 
@@ -488,12 +491,13 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
   }
 
   /**
-   * <p>Start the Bitcoin network</p>
+   * <p>Restart the Bitcoin network</p>
    */
-  private void handleBitcoinNetworkStart() {
+  private void handleBitcoinNetwork() {
+
     // Only start the network once
     if (bitcoinNetworkService.isPresent()) {
-      return;
+      bitcoinNetworkService.get().stopAndWait();
     }
 
     bitcoinNetworkService = Optional.of(CoreServices.getOrCreateBitcoinNetworkService());
@@ -504,6 +508,7 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
     if (bitcoinNetworkService.get().isStartedOk()) {
       bitcoinNetworkService.get().downloadBlockChainInBackground();
     }
+
   }
 
   private void handleExitCancelHide(String panelName) {
@@ -606,7 +611,7 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
         handleBitcoinURIAlert();
 
         // Lastly start the Bitcoin network
-        handleBitcoinNetworkStart();
+        handleBitcoinNetwork();
 
       }
     });

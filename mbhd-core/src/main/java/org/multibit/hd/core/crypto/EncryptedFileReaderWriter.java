@@ -101,7 +101,6 @@ public class EncryptedFileReaderWriter {
      Preconditions.checkNotNull(password);
      Preconditions.checkNotNull(encryptedBackupAESKey);
      try {
-       log.debug("Password in makeBackupAESEncryptedCopyAndDeleteOriginal = " + password);
        // Decrypt the backup AES key stored in the wallet summary
        KeyParameter walletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(password.getBytes(Charsets.UTF_8), WalletManager.SCRYPT_SALT);
        byte[] backupAESKeyBytes = org.multibit.hd.brit.crypto.AESUtils.decrypt(encryptedBackupAESKey, walletPasswordDerivedAESKey, WalletManager.AES_INITIALISATION_VECTOR);

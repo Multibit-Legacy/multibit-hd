@@ -6,6 +6,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ProgressChangedEvent;
@@ -39,6 +40,7 @@ public class FooterView {
   private final JLabel messageLabel;
   private final JLabel statusLabel;
   private final JLabel statusIcon;
+  private final JLabel torIcon;
 
   private final ListeningScheduledExecutorService scheduledExecutorService = SafeExecutors.newSingleThreadScheduledExecutor("hide-progress");
   private final List<Future> hideProgressFutures = Lists.newArrayList();
@@ -73,9 +75,15 @@ public class FooterView {
     statusIcon = Labels.newBlankLabel();
     AwesomeDecorator.bindIcon(AwesomeIcon.CIRCLE, statusIcon, false, MultiBitUI.SMALL_ICON_SIZE);
 
+    // Create a TOR icon - don't use green or amber colouring it is visually confusing
+    torIcon = Labels.newBlankLabel();
+    AwesomeDecorator.bindIcon(AwesomeIcon.LOCK, torIcon, false, MultiBitUI.SMALL_ICON_SIZE);
+    torIcon.setVisible(Configurations.currentConfiguration.isTor());
+
     // Start with no knowledge so assume the worst
     statusIcon.setForeground(Themes.currentTheme.dangerAlertBackground());
 
+    contentPanel.add(torIcon, "shrink,left");
     contentPanel.add(progressBar, "shrink,left");
     contentPanel.add(messageLabel, "grow,push");
     contentPanel.add(statusLabel, "split,shrink,right");

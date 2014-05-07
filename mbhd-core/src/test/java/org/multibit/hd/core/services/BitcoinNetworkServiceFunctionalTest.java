@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -266,7 +267,7 @@ public class BitcoinNetworkServiceFunctionalTest {
     return walletSummary;
   }
 
-  private void replayWallet(DateTime replayDate) throws IOException, BlockStoreException {
+  private void replayWallet(DateTime replayDate) throws IOException, BlockStoreException, TimeoutException {
 
     bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
 
