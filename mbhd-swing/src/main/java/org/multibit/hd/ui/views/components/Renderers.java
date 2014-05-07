@@ -33,11 +33,18 @@ public class Renderers {
   public static DefaultTableCellRenderer newTrailingJustifiedNumericRenderer() {
     return new AmountBTCTableCellRenderer();
   }
+
   public static DefaultTableCellRenderer newTrailingJustifiedFiatRenderer() {
     return new AmountFiatTableCellRenderer();
   }
 
   public static DefaultTableCellRenderer newPaymentTypeRenderer() {
-     return new PaymentTypeTableCellRenderer();
+    return new PaymentTypeTableCellRenderer();
   }
+
+  public static DefaultTableCellRenderer newCheckboxRenderer() {
+    return new CheckBoxTableCellRenderer();
+  }
+
+
 }

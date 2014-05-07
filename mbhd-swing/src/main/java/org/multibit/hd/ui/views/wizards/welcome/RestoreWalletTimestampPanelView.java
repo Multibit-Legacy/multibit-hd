@@ -101,9 +101,8 @@ public class RestoreWalletTimestampPanelView extends AbstractWizardPanelView<Wel
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {
-    // Do nothing - panel model is updated via an action and wizard model is not applicable
 
-    // Enable the "next" button if the seed phrase has a valid size
+    // Enable the "next" button if the timestamp is valid (we already have the seed phrase)
     boolean timestampIsValid = false;
     try {
       Dates.parseSeedTimestamp(enterSeedPhraseMaV.getModel().getSeedTimestamp());
@@ -117,6 +116,7 @@ public class RestoreWalletTimestampPanelView extends AbstractWizardPanelView<Wel
       WizardButton.NEXT,
       timestampIsValid
     );
+
     ViewEvents.fireVerificationStatusChangedEvent(
       getPanelName(),
       timestampIsValid

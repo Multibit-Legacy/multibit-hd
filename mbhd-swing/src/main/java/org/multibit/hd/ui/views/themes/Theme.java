@@ -14,9 +14,24 @@ import java.awt.*;
 public interface Theme {
 
   /**
-   * @return The panel background colour for headers/footers
+   * @return The panel background colour for the header
    */
   Color headerPanelBackground();
+
+  /**
+   * @return The text colour for the header
+   */
+  Color headerPanelText();
+
+  /**
+   * @return The panel background colour for the footer
+   */
+  Color footerPanelBackground();
+
+  /**
+   * @return The text colour for the footer
+   */
+  Color footerPanelText();
 
   /**
    * @return The panel background colour for detail/wizards
@@ -27,6 +42,21 @@ public interface Theme {
    * @return The panel background colour for the sidebar
    */
   Color sidebarPanelBackground();
+
+  /**
+   * @return The background colour for the default table stripe
+   */
+  Color tableRowBackground();
+
+  /**
+   * @return The background colour for the alternate table stripe
+   */
+  Color tableRowAltBackground();
+
+  /**
+   * @return The background colour for the selected table stripe
+   */
+  Color tableRowSelectedBackground();
 
   /**
    * @return The background colour for read only data display elements (like seed phrase display etc)
@@ -197,5 +227,20 @@ public interface Theme {
    * @return The text of a debit entry in a payment screen (usually red)
    */
   Color debitText();
+
+  /**
+   * @return The RAG status red
+   */
+  Color statusRed();
+
+  /**
+   * @return The RAG status amber
+   */
+  Color statusAmber();
+
+  /**
+   * @return The RAG status green
+   */
+  Color statusGreen();
 
 }

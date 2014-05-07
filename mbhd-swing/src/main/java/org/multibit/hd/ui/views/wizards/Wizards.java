@@ -42,6 +42,9 @@ import org.multibit.hd.ui.views.wizards.exit.ExitWizardModel;
 import org.multibit.hd.ui.views.wizards.export_payments.ExportPaymentsWizard;
 import org.multibit.hd.ui.views.wizards.export_payments.ExportPaymentsWizardModel;
 import org.multibit.hd.ui.views.wizards.export_payments.ExportPaymentsWizardState;
+import org.multibit.hd.ui.views.wizards.lab_settings.LabSettingsState;
+import org.multibit.hd.ui.views.wizards.lab_settings.LabSettingsWizard;
+import org.multibit.hd.ui.views.wizards.lab_settings.LabSettingsWizardModel;
 import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsState;
 import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsWizard;
 import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsWizardModel;
@@ -281,7 +284,7 @@ public class Wizards {
   }
 
   /**
-   * @return A new "application settings" wizard for language selection
+   * @return A new "application settings" wizard for theme selection
    */
   public static ApplicationSettingsWizard newApplicationSettingsWizard() {
 
@@ -294,7 +297,7 @@ public class Wizards {
   }
 
   /**
-   * @return A new "sound settings" wizard for language selection
+   * @return A new "sound settings" wizard for sound selection
    */
   public static SoundSettingsWizard newSoundSettingsWizard() {
 
@@ -307,7 +310,20 @@ public class Wizards {
   }
 
   /**
-   * @return A new "Bitcoin settings" wizard for currency selection
+   * @return A new "lab settings" wizard for experimental features selection
+   */
+  public static LabSettingsWizard newLabSettingsWizard() {
+
+    log.debug("New 'Lab settings wizard'");
+
+    // Ensure we work with a copy of the current configuration in case of cancellation
+    Configuration configuration = Configurations.currentConfiguration.deepCopy();
+
+    return new LabSettingsWizard(new LabSettingsWizardModel(LabSettingsState.LAB_ENTER_DETAILS, configuration));
+  }
+
+  /**
+   * @return A new "Bitcoin settings" wizard for currency unit selection
    */
   public static BitcoinSettingsWizard newBitcoinSettingsWizard() {
 

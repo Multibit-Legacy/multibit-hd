@@ -88,6 +88,13 @@ public class SettingsScreenView extends AbstractScreenView<SettingsScreenModel> 
         Panels.showLightBox(Wizards.newSoundSettingsWizard().getWizardScreenHolder());
       }
     };
+    Action showLabAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        Panels.showLightBox(Wizards.newLabSettingsWizard().getWizardScreenHolder());
+      }
+    };
 
     showLanguageSettingsWizardButton = Buttons.newShowLanguageSettingsWizardButton(showLanguageAction);
 
@@ -96,8 +103,8 @@ public class SettingsScreenView extends AbstractScreenView<SettingsScreenModel> 
     contentPanel.add(Buttons.newShowExchangeSettingsWizardButton(showExchangeAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push,wrap");
 
     contentPanel.add(Buttons.newShowApplicationSettingsWizardButton(showApplicationAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
-    contentPanel.add(Buttons.newShowSoundSettingsWizardButton(showSoundAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push,wrap");
-
+    contentPanel.add(Buttons.newShowSoundSettingsWizardButton(showSoundAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push");
+    contentPanel.add(Buttons.newShowLabSettingsWizardButton(showLabAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push,wrap");
 
     return contentPanel;
   }

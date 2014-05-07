@@ -4,11 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
-import org.multibit.hd.ui.views.components.AbstractComponentView;
-import org.multibit.hd.ui.views.components.Buttons;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.components.TextBoxes;
+import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
@@ -127,12 +123,8 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
     if (showTimestamp) {
       try {
 
-        // Only bother with parsing when the length is appropriate
-        if (seedTimestampText.getText().length() > 5) {
-
-          getModel().get().setSeedTimestamp(seedTimestampText.getText());
-
-        }
+        // Need to parse at any length
+        getModel().get().setSeedTimestamp(seedTimestampText.getText());
 
       } catch (IllegalArgumentException e) {
 
@@ -141,6 +133,22 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
       }
     }
 
+  }
+
+  @Subscribe
+  public void onVerificationStatusChanged(final VerificationStatusChangedEvent event) {
+
+    if (event.getPanelName().equals(getModel().get().getPanelName())) {
+
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          verificationStatusLabel.setVisible(event.isOK());
+        }
+      });
+
+
+    }
   }
 
   /**
@@ -195,16 +203,6 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
       }
 
     };
-  }
-
-  @Subscribe
-  public void onVerificationStatusChanged(VerificationStatusChangedEvent event) {
-
-    if (event.getPanelName().equals(getModel().get().getPanelName())) {
-
-      verificationStatusLabel.setVisible(event.isOK());
-
-    }
   }
 
 }

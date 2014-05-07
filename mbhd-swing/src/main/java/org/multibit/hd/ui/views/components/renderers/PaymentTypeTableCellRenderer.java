@@ -3,7 +3,7 @@ package org.multibit.hd.ui.views.components.renderers;
 import org.multibit.hd.core.dto.PaymentType;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.tables.StripedTable;
+import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -36,9 +36,9 @@ public class PaymentTypeTableCellRenderer extends DefaultTableCellRenderer {
     } else {
       label.setForeground(table.getForeground());
       if (row % 2 == 1) {
-        label.setBackground(StripedTable.alternateColor);
+        label.setBackground(Themes.currentTheme.tableRowAltBackground());
       } else {
-        label.setBackground(StripedTable.rowColor);
+        label.setBackground(Themes.currentTheme.tableRowBackground());
       }
     }
 

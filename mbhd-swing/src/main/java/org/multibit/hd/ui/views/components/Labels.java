@@ -493,36 +493,47 @@ public class Labels {
     final Font largeFont;
     final Font normalFont;
 
+    final Color textColor;
+
     switch (style) {
       case HEADER:
         largeFont = primaryBalanceLabel.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE);
         normalFont = primaryBalanceLabel.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_NORMAL_FONT_SIZE);
+        textColor = Themes.currentTheme.headerPanelText();
         break;
       case TRANSACTION_DETAIL_AMOUNT:
         largeFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, MultiBitUI.BALANCE_TRANSACTION_LARGE_FONT_SIZE);
         normalFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, MultiBitUI.BALANCE_TRANSACTION_NORMAL_FONT_SIZE);
+        textColor = Themes.currentTheme.text();
         break;
       case FEE_AMOUNT:
         largeFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, MultiBitUI.BALANCE_FEE_NORMAL_FONT_SIZE);
         normalFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, MultiBitUI.BALANCE_FEE_NORMAL_FONT_SIZE);
+        textColor = Themes.currentTheme.text();
         break;
       case PLAIN:
         largeFont = primaryBalanceLabel.getFont().deriveFont(Font.PLAIN, MultiBitUI.BALANCE_FEE_NORMAL_FONT_SIZE);
         normalFont = primaryBalanceLabel.getFont().deriveFont(Font.PLAIN, MultiBitUI.BALANCE_FEE_NORMAL_FONT_SIZE);
+        textColor = Themes.currentTheme.text();
         break;
       default:
         throw new IllegalStateException("Unknown style:" + style.name());
     }
 
     leadingBalanceLabel.setFont(largeFont);
+    leadingBalanceLabel.setForeground(textColor);
 
     primaryBalanceLabel.setFont(largeFont);
+    primaryBalanceLabel.setForeground(textColor);
 
     secondaryBalanceLabel.setFont(normalFont);
+    secondaryBalanceLabel.setForeground(textColor);
 
     trailingSymbolLabel.setFont(largeFont);
+    trailingSymbolLabel.setForeground(textColor);
 
     exchangeLabel.setFont(normalFont);
+    exchangeLabel.setForeground(textColor);
 
     // Theme
     if (style != DisplayAmountStyle.PLAIN) {
@@ -779,6 +790,13 @@ public class Labels {
   }
 
   /**
+   * @return a new "select TOR" for lab settings
+   */
+  public static JLabel newSelectTor() {
+    return newLabel(MessageKey.SELECT_TOR);
+  }
+
+  /**
    * @return a new "peer count" for verifying network
    */
   public static JLabel newPeerCount() {
@@ -896,6 +914,17 @@ public class Labels {
 
     return newNoteLabel(new MessageKey[]{
       MessageKey.SOUND_CHANGE_NOTE_1
+    }, new Object[][]{});
+
+  }
+
+  /**
+   * @return A new "lab change" note
+   */
+  public static JLabel newLabChangeNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.LAB_CHANGE_NOTE_1
     }, new Object[][]{});
 
   }

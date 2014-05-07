@@ -113,13 +113,13 @@ public class LabelDecorator {
     applyStatusIcon(paymentStatus, label, isCoinbase, iconSize);
     switch (paymentStatus.getStatus()) {
       case RED:
-        label.setForeground(Themes.currentTheme.dangerAlertBackground());
+        label.setForeground(Themes.currentTheme.statusRed());
         break;
       case AMBER:
         label.setForeground(Themes.currentTheme.text());
         break;
       case GREEN:
-        label.setForeground(Themes.currentTheme.successAlertBackground());
+        label.setForeground(Themes.currentTheme.statusGreen());
         break;
       case PINK:
         label.setForeground(Themes.currentTheme.pendingAlertBackground().darker());

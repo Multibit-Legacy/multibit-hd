@@ -66,4 +66,22 @@ public class Bip39SeedPhraseGenerator implements SeedPhraseGenerator {
       throw new SeedPhraseException("The seed phrase is not valid", e);
     }
   }
+
+  public boolean isValid(List<String> seedPhrase) {
+
+    if (SeedPhraseSize.isValid(seedPhrase.size())) {
+      try {
+        mnemonicCode.check(seedPhrase);
+        return true;
+
+      } catch (MnemonicException e) {
+        // Do nothing
+      }
+    }
+
+    // Must have failed to be here
+    return false;
+
+  }
+
 }

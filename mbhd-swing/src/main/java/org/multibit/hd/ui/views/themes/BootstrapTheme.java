@@ -7,27 +7,27 @@ import java.awt.*;
 /**
  * <p>Strategy to provide the following to Themes API:</p>
  * <ul>
- * <li>A light theme for bright lighting conditions</li>
+ * <li>A Bootstrap theme</li>
  * </ul>
  *
  * @since 0.0.1
- *  
+ *         
  */
-public class LightTheme extends BaseTheme {
+public class BootstrapTheme extends BaseTheme {
 
   @Override
   public Color headerPanelBackground() {
-    return new Color(200, 200, 200);
+    return new Color(35,35,35);
   }
 
   @Override
   public Color headerPanelText() {
-    return text();
+    return inverseText();
   }
 
   @Override
   public Color footerPanelBackground() {
-    return headerPanelBackground();
+    return sidebarPanelBackground();
   }
 
   @Override
@@ -37,72 +37,72 @@ public class LightTheme extends BaseTheme {
 
   @Override
   public Color sidebarPanelBackground() {
-    return new Color(229, 234, 241);
+    return new Color(230,230,230);
   }
 
   @Override
   public Color detailPanelBackground() {
-    return new Color(252, 252, 238);
+    return new Color(250,250,250);
   }
 
   @Override
   public Color buttonBackground() {
-    return new Color(228, 228, 228);
+    return new Color(200, 200, 200);
   }
 
   @Override
   public Color readOnlyBackground() {
-    return new Color(193, 226, 248);
+    return new Color(217,237,247);
   }
 
   @Override
   public Color readOnlyBorder() {
-    return new Color(103, 126, 146);
+    return new Color(103,126,146);
   }
 
   @Override
   public Color readOnlyComboBox() {
-    return new Color(25, 81, 130);
+    return new Color(25,81,130);
   }
 
   @Override
   public Color focusBorder() {
-    return new Color(252, 91, 79);
+    return new Color(6,6,6);
   }
 
   @Override
   public Color sidebarSelectedText() {
-    return new Color(25, 97, 218);
+    return new Color(66,139,202);
   }
 
   @Override
   public Color dataEntryBackground() {
-    return new Color(250, 241, 157);
+    return new Color(242,242,242);
   }
 
   @Override
   public Color dataEntryBorder() {
-    return new Color(235, 207, 37);
+    return new Color(200, 200, 200);
   }
 
   @Override
   public Color invalidDataEntryBackground() {
-    return new Color(252, 91, 79);
+    return new Color(252,91,79);
   }
 
   @Override
   public Color text() {
-    return new Color(20, 20, 20);
+    return new Color(20,20,20);
   }
 
   @Override
   public Color fadedText() {
-    return new Color(147, 147, 147);
+    return new Color(147,147,147);
   }
 
   @Override
   public Color inverseText() {
-    return new Color(230, 230, 230);
+    return new Color(230,230,230);
   }
 
   @Override
@@ -117,12 +117,12 @@ public class LightTheme extends BaseTheme {
 
   @Override
   public Color successAlertText() {
-    return inverseText();
+    return text();
   }
 
   @Override
   public Color successAlertBackground() {
-    return new Color(111, 176, 83);
+    return new Color(223,240,216);
   }
 
   @Override
@@ -140,17 +140,17 @@ public class LightTheme extends BaseTheme {
 
   @Override
   public Color successAlertBorder() {
-    return new Color(64, 106, 45);
+    return new Color(70,136,71);
   }
 
   @Override
   public Color infoAlertBackground() {
-    return new Color(107, 163, 199);
+    return new Color(107,163,199);
   }
 
   @Override
   public Color infoAlertBorder() {
-    return new Color(64, 97, 118);
+    return new Color(64,97,118);
   }
 
   @Override
@@ -160,12 +160,12 @@ public class LightTheme extends BaseTheme {
 
   @Override
   public Color warningAlertBackground() {
-    return new Color(250, 241, 157);
+    return new Color(250,241,157);
   }
 
   @Override
   public Color warningAlertBorder() {
-    return new Color(205, 144, 46);
+    return new Color(205,144,46);
   }
 
   @Override
@@ -202,7 +202,7 @@ public class LightTheme extends BaseTheme {
 
   @Override
   public Color pendingAlertBackground() {
-    return new Color(250, 188, 185);
+    return new Color(250,188,185);
   }
 
   @Override
@@ -218,7 +218,7 @@ public class LightTheme extends BaseTheme {
 
   @Override
   public Color pendingAlertBorder() {
-    return new Color(237, 117, 112);
+    return new Color(237,117,112);
   }
 
   @Override

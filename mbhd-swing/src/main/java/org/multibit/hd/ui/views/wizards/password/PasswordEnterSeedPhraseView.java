@@ -1,7 +1,11 @@
 package org.multibit.hd.ui.views.wizards.password;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
@@ -17,6 +21,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
+import java.util.List;
 
 import static org.multibit.hd.ui.views.wizards.password.PasswordState.PASSWORD_ENTER_SEED_PHRASE;
 
@@ -33,6 +38,8 @@ public class PasswordEnterSeedPhraseView extends AbstractWizardPanelView<Passwor
 
   // View components
   private ModelAndView<EnterSeedPhraseModel, EnterSeedPhraseView> enterSeedPhraseMaV;
+
+  private SeedPhraseGenerator generator = new Bip39SeedPhraseGenerator();
 
   /**
    * @param wizard    The wizard managing the states
@@ -108,6 +115,29 @@ public class PasswordEnterSeedPhraseView extends AbstractWizardPanelView<Passwor
    */
   private boolean isNextEnabled() {
 
-    return !getPanelModel().get().getEnterSeedPhraseModel().getValue().isEmpty();
+    // Get the user data
+    String timestamp = getPanelModel().get().getEnterSeedPhraseModel().getSeedTimestamp();
+    List<String> seedPhrase = getPanelModel().get().getEnterSeedPhraseModel().getSeedPhrase();
+
+    // Attempt to parse the timestamp if present
+    boolean timestampIsValid = false;
+    if (Strings.isNullOrEmpty(timestamp)) {
+      // User has not entered any timestamp so assume it's lost
+      timestampIsValid = true;
+    } else {
+      try {
+        Dates.parseSeedTimestamp(timestamp);
+        timestampIsValid = true;
+      } catch (IllegalArgumentException e) {
+        // Do nothing
+      }
+    }
+
+    // Perform a more comprehensive test on the seed phrase
+    boolean seedPhraseIsValid = generator.isValid(seedPhrase);
+
+    return timestampIsValid && seedPhraseIsValid;
+
+
   }
 }

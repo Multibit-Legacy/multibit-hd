@@ -27,7 +27,7 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
   /**
    * Initialise to earliest possible HD wallet seed to provide a default during restore operation
    */
-  private String seedTimestamp = "1826/6";
+  private String seedTimestamp = "1826/80";
 
   // Start with the text displayed
   private boolean asClearText = true;
@@ -35,7 +35,7 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
   private final String panelName;
 
   /**
-   * @param panelName     The panel name to identify the "verification status" and "next" buttons
+   * @param panelName The panel name to identify the "verification status" and "next" buttons
    */
   public EnterSeedPhraseModel(String panelName) {
     this.panelName = panelName;
@@ -90,18 +90,28 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
 
     Preconditions.checkNotNull(text, "'text' must be present");
 
-    seedPhrase = Lists.newArrayList(Splitter.on(" ").trimResults().split(text));
+    seedPhrase = Lists.newArrayList(Splitter
+        .on(" ")
+        .omitEmptyStrings()
+        .trimResults()
+        .split(text)
+    );
 
+    // Perform a basic verification of the seed phrase
     if (SeedPhraseSize.isValid(seedPhrase.size())) {
 
-      // Have a possible match so alert the panel model
+      // Have a possible match so alert the panel model to do more detailed checking
       ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
+
     } else {
 
-      // Ensure the "next" button is kept disabled
+      // Definitely a fail so don't bother the panel model with it
+
+      // Ensure the "next" button is kept disabled and no "verified" message
       ViewEvents.fireWizardButtonEnabledEvent(panelName, WizardButton.NEXT, false);
       ViewEvents.fireVerificationStatusChangedEvent(panelName, false);
     }
+
   }
 
   /**
