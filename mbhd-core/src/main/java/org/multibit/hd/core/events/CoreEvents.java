@@ -1,6 +1,7 @@
 package org.multibit.hd.core.events;
 
 import com.google.common.base.Optional;
+import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import org.joda.money.BigMoney;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
@@ -31,6 +32,8 @@ public class CoreEvents {
   private static final long CONSOLIDATION_INTERVAL = 1000; // milliseconds
   private static boolean waitingToFireSlowTransactionSeenEvent = false;
   private static final Object lockObject = new Object();
+
+  private static ListeningScheduledExecutorService safeExecutor = SafeExecutors.newSingleThreadScheduledExecutor("tx-seen");
 
   /**
    * Utilities have a private constructor
@@ -98,7 +101,7 @@ public class CoreEvents {
       if (!waitingToFireSlowTransactionSeenEvent) {
         // Fire in the future
         waitingToFireSlowTransactionSeenEvent = true;
-        SafeExecutors.newSingleThreadScheduledExecutor("tx-seen").schedule(new Callable() {
+        safeExecutor.schedule(new Callable() {
           @Override
           public Object call() throws Exception {
             CoreServices.uiEventBus.post(new SlowTransactionSeenEvent());

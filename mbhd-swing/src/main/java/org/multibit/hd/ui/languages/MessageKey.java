@@ -412,6 +412,8 @@ public enum MessageKey {
   PAYMENT_REQUESTS_WERE_EXPORTED_TO_THE_FILE("payment_requests_were_exported_to_the_file"),
   COULD_NOT_WRITE_TO_THE_DIRECTORY("could_not_write_to_the_directory"),
 
+  // Repair wallet
+  REPAIR_WALLET_NOTE("repair_wallet_note")
   // End of enum
   ;
 
