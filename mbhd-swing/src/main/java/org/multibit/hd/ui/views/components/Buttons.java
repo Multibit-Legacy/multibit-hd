@@ -782,6 +782,26 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "Lab settings" wizard button with icon
+   */
+  public static JButton newShowLabSettingsWizardButton(Action action) {
+
+    JButton button = newLargeButton(action, MessageKey.SHOW_LAB_WIZARD);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.FLASK,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "edit wallet" button with icon
    */
   public static JButton newShowEditWalletButton(Action action) {

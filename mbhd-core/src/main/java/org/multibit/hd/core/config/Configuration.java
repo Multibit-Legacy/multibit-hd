@@ -16,7 +16,7 @@ import java.util.Map;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Configuration {
@@ -35,6 +35,11 @@ public class Configuration {
 
   @JsonIgnore
   private LoggingConfiguration logging = new LoggingConfiguration();
+
+  /**
+   * True if TOR should be used for Bitcoin connections
+   */
+  private boolean tor = false;
 
   /**
    * Any unknown objects in the configuration go here (preserve order of insertion)
@@ -151,6 +156,21 @@ public class Configuration {
     this.configurationVersion = configurationVersion;
   }
 
+  //////////////// Labs properties are added to the top configuration before being allocated to a sub-section ///////////////////////
+
+  /**
+   * TODO Move out of "labs"
+   *
+   * @return True if TOR should be used for communications
+   */
+  public boolean isTor() {
+    return tor;
+  }
+
+  public void setTor(boolean tor) {
+    this.tor = tor;
+  }
+
   /**
    * @return A deep copy of this configuration
    */
@@ -175,7 +195,9 @@ public class Configuration {
 
     // Copy top level properties
     configuration.setConfigurationVersion(getConfigurationVersion());
+    configuration.setTor(isTor());
 
     return configuration;
   }
+
 }

@@ -100,6 +100,10 @@ public class ComboBoxes {
    * The "currency" combo box action command
    */
   public static final String CURRENCY_COMMAND = "currency";
+  /**
+   * The "Tor" combo box action command
+   */
+  public static final String TOR_COMMAND = "tor";
 
   /**
    * Utilities have no public constructor
@@ -210,6 +214,24 @@ public class ComboBoxes {
     AccessibilityDecorator.apply(comboBox, MessageKey.RECEIVE_SOUND);
 
     comboBox.setActionCommand(RECEIVE_SOUND_COMMAND);
+
+    return comboBox;
+  }
+
+  /**
+   * @param listener The action listener to alert when the selection is made
+   * @param useTor   True if the "yes" option should be pre-selected
+   *
+   * @return A new "yes/no" combo box
+   */
+  public static JComboBox<String> newTorYesNoComboBox(ActionListener listener, boolean useTor) {
+
+    JComboBox<String> comboBox = newYesNoComboBox(listener, useTor);
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_TOR);
+
+    comboBox.setActionCommand(TOR_COMMAND);
 
     return comboBox;
   }

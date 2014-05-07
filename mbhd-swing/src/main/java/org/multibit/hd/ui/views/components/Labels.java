@@ -782,6 +782,13 @@ public class Labels {
   }
 
   /**
+   * @return a new "select TOR" for lab settings
+   */
+  public static JLabel newSelectTor() {
+    return newLabel(MessageKey.SELECT_TOR);
+  }
+
+  /**
    * @return a new "peer count" for verifying network
    */
   public static JLabel newPeerCount() {
@@ -899,6 +906,17 @@ public class Labels {
 
     return newNoteLabel(new MessageKey[]{
       MessageKey.SOUND_CHANGE_NOTE_1
+    }, new Object[][]{});
+
+  }
+
+  /**
+   * @return A new "lab change" note
+   */
+  public static JLabel newLabChangeNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.LAB_CHANGE_NOTE_1
     }, new Object[][]{});
 
   }

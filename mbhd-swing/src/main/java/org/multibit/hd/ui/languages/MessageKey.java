@@ -128,6 +128,8 @@ public enum MessageKey {
   ALERT_SOUND("alert_sound"),
   RECEIVE_SOUND("receive_sound"),
 
+  SELECT_TOR("select_tor"),
+
   // Sidebar
 
   SIDEBAR_TREE("sidebar_tree"),
@@ -252,6 +254,7 @@ public enum MessageKey {
   SHOW_SEND_WIZARD("show_send_wizard"),
   SHOW_REQUEST_WIZARD("show_request_wizard"),
   SHOW_SOUND_WIZARD("show_sound_wizard"),
+  SHOW_LAB_WIZARD("show_lab_wizard"),
   SHOW_BITCOIN_WIZARD("show_bitcoin_wizard"),
   SHOW_EXCHANGE_WIZARD("show_exchange_wizard"),
   SHOW_APPLICATION_WIZARD("show_application_wizard"),
@@ -350,6 +353,8 @@ public enum MessageKey {
   THEME_CHANGE_NOTE_1("theme_change_note_1"),
 
   SOUND_CHANGE_NOTE_1("sound_change_note_1"),
+
+  LAB_CHANGE_NOTE_1("lab_change_note_1"),
 
   DATA_ENTERED_NOTE_1("data_entered_note_1"),
   DATA_ENTERED_NOTE_2("data_entered_note_2"),
