@@ -17,8 +17,6 @@ import org.spongycastle.crypto.params.KeyParameter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 /**
@@ -56,8 +54,8 @@ public class EncryptedFileReaderWriter {
       byte[] decryptedBytes = AESUtils.decrypt(encryptedWalletBytes, keyParameter, initialisationVector);
 
       return new ByteArrayInputStream(decryptedBytes);
-    } catch (IOException ioe) {
-      throw new EncryptedFileReaderWriterException("Cannot read and decrypt the file '" + encryptedProtobufFile.getAbsolutePath() + "'", ioe);
+    } catch (Exception e) {
+      throw new EncryptedFileReaderWriterException("Cannot read and decrypt the file '" + encryptedProtobufFile.getAbsolutePath() + "'", e);
     }
   }
 
@@ -86,8 +84,8 @@ public class EncryptedFileReaderWriter {
       } else {
         throw new EncryptedFileReaderWriterException("The encryption was not reversible so aborting.");
       }
-    } catch (IOException ioe) {
-      throw new EncryptedFileReaderWriterException("Cannot encryptAndWrite", ioe);
+    } catch (Exception e) {
+      throw new EncryptedFileReaderWriterException("Cannot encryptAndWrite", e);
     }
   }
 
@@ -103,13 +101,14 @@ public class EncryptedFileReaderWriter {
      Preconditions.checkNotNull(password);
      Preconditions.checkNotNull(encryptedBackupAESKey);
      try {
+       log.debug("Password in makeBackupAESEncryptedCopyAndDeleteOriginal = " + password);
        // Decrypt the backup AES key stored in the wallet summary
        KeyParameter walletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(password.getBytes(Charsets.UTF_8), WalletManager.SCRYPT_SALT);
        byte[] backupAESKeyBytes = org.multibit.hd.brit.crypto.AESUtils.decrypt(encryptedBackupAESKey, walletPasswordDerivedAESKey, WalletManager.AES_INITIALISATION_VECTOR);
        KeyParameter backupAESKey = new KeyParameter(backupAESKeyBytes);
 
        return encryptAndDeleteOriginal(fileToEncrypt, backupAESKey, WalletManager.AES_INITIALISATION_VECTOR);
-     } catch (NoSuchAlgorithmException e) {
+     } catch (Exception e) {
        throw new EncryptedFileReaderWriterException("Could not decrypt backup AES key", e);
      }
    }
@@ -163,8 +162,8 @@ public class EncryptedFileReaderWriter {
         log.error("The file encryption was not reversible. Aborting. This means the file {} is being stored unencrypted", fileToEncrypt.getAbsolutePath());
         return null;
       }
-    } catch (IOException ioe) {
-      throw new EncryptedFileReaderWriterException("Cannot make encrypted copy for file '" + fileToEncrypt.getAbsolutePath() + "'", ioe);
+    } catch (Exception e) {
+      throw new EncryptedFileReaderWriterException("Cannot make encrypted copy for file '" + fileToEncrypt.getAbsolutePath() + "'", e);
     }
   }
 

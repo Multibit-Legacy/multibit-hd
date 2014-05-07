@@ -32,7 +32,7 @@ public class WalletIdTest {
   public static final String WALLET_ID_1 = "5c81964a030c3b659dc56fe63dbe27aef3370750";
   private static final String WALLET_ID_FORMATTED_1 = "5c81964a-030c3b65-9dc56fe6-3dbe27ae-f3370750";
 
-  private static final String SEED_PHRASE_2 = "require want tube elegant juice cool cup noble town poem plate harsh";
+  public static final String SEED_PHRASE_2 = "require want tube elegant juice cool cup noble town poem plate harsh";
   private static final String WALLET_ID_2 = "a0bf136f8ce97d0358b4b29a87f6662cf14e594f";
   private static final String WALLET_ID_FORMATTED_2 = "a0bf136f-8ce97d03-58b4b29a-87f6662c-f14e594f";
 

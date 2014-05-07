@@ -765,18 +765,16 @@ public class WalletService {
   }
 
   static void changeWalletPasswordInternal(final WalletSummary walletSummary, final String oldPassword, final String newPassword) {
-    // Attempt to open the wallet using the oldPassword
-    try {
-      WalletId walletId = walletSummary.getWalletId();
-      WalletManager.INSTANCE.open(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, oldPassword);
-    } catch (WalletLoadException wle) {
-      wle.printStackTrace();
-      // Assume bad password
-      CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(false, CoreMessageKey.CHANGE_PASSWORD_WRONG_OLD_PASSWORD, null));
-    }
-
     if (walletSummary.getWallet() != null) {
+
       Wallet wallet = walletSummary.getWallet();
+      WalletId walletId = walletSummary.getWalletId();
+
+      // Check old password
+      if (!walletSummary.getWallet().checkPassword(oldPassword)) {
+        CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(false, CoreMessageKey.CHANGE_PASSWORD_WRONG_OLD_PASSWORD, null));
+        return;
+      }
 
       try {
         // Decrypt the seedDerivedAESKey using the old password and encrypt it with the new one
@@ -808,19 +806,27 @@ public class WalletService {
         // Locate the installation directory
         File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
-        File walletFileAes = new File(WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory).get().getAbsolutePath() + ".aes");
+        // Load up all the history, contacts and payments using the old password
+        ContactService contactService = CoreServices.getOrCreateContactService(walletId);
+        HistoryService historyService = CoreServices.getOrCreateHistoryService(walletId);
+        WalletService walletService = CoreServices.getOrCreateWalletService(walletId);
 
-        log.debug("Length of wallet before decrypt = " + walletFileAes.length());
+        // Change the password used to encrypt the wallet
         wallet.decrypt(oldPassword);
-        log.debug("Length of wallet after decrypt = " + walletFileAes.length());
-        wallet.encrypt(newPassword);
-        log.debug("Length of wallet after encrypt = " + walletFileAes.length());
-
+        walletSummary.setPassword(newPassword);
         walletSummary.setEncryptedBackupKey(encryptedNewBackupAESKey);
         walletSummary.setEncryptedPassword(encryptedNewPassword);
 
-        // Save the wallet summary file
+         // Save the wallet summary file
         WalletManager.updateWalletSummary(WalletManager.INSTANCE.getCurrentWalletSummaryFile(applicationDataDirectory).get(), walletSummary);
+
+        // Save all the Contacts, history and payment information using the new wallet password
+        contactService.writeContacts();
+        historyService.writeHistory();
+        walletService.writePayments();
+
+        wallet.encrypt(newPassword);
+
         CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(true, CoreMessageKey.CHANGE_PASSWORD_SUCCESS, null));
       } catch (Exception e) {
         e.printStackTrace();

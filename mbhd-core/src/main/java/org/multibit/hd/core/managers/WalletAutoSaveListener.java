@@ -35,6 +35,7 @@ public class WalletAutoSaveListener implements WalletFiles.Listener {
         try {
           // Save an encrypted copy of the wallet
           CharSequence password = walletSummary.get().getPassword();
+          log.debug("Password in auto save listener = " + password);
           File encryptedWalletFile = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(newlySavedFile, password);
           if (encryptedWalletFile != null && encryptedWalletFile.exists()) {
             log.debug("Save encrypted copy of wallet as '{}'. Size was {} bytes.", encryptedWalletFile.getAbsolutePath(), encryptedWalletFile.length());

@@ -12,9 +12,12 @@ import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.managers.BackupManager;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.managers.WalletManagerTest;
 import org.multibit.hd.core.utils.Dates;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -29,9 +32,20 @@ public class WalletServiceTest {
 
   private WalletService walletService;
 
-  public static final CharSequence PASSWORD = "throckSplockChockAdock";
+  private WalletId walletId;
+
+  private WalletSummary walletSummary;
+
+  public static final String PASSWORD = "1throckSplockChockAdock";
+
+  public static final String CHANGED_PASSWORD1 = "2orinocoFlow";
+
+  public static final String CHANGED_PASSWORD2 = "3the quick brown fox jumps over the lazy dog";
 
   private String firstAddress;
+
+  private static final Logger log = LoggerFactory.getLogger(WalletServiceTest.class);
+
 
   @Before
   public void setUp() throws Exception {
@@ -45,11 +59,14 @@ public class WalletServiceTest {
     // Create a wallet from a seed
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
-    WalletId walletId = new WalletId(seed1);
+    walletId = new WalletId(seed1);
 
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
+    InstallationManager.setCurrentApplicationDataDirectory(temporaryDirectory);
+
     long nowInSeconds = Dates.nowInSeconds();
-    WalletSummary walletSummary = WalletManager.INSTANCE.getOrCreateWalletSummary(temporaryDirectory, seed1, nowInSeconds, PASSWORD);
+    walletSummary = WalletManager.INSTANCE.getOrCreateWalletSummary(temporaryDirectory, seed1, nowInSeconds, PASSWORD);
+    WalletManager.INSTANCE.setCurrentWalletSummary(walletSummary);
 
     firstAddress = walletSummary.getWallet().freshReceiveKey().toString();
 
@@ -121,5 +138,24 @@ public class WalletServiceTest {
 //    // Test the 'no-generate' functionality works
 //    assertThat(firstAddress).isEqualTo(walletService.generateNextReceivingAddress(Optional.<CharSequence>absent()));
 //  }
+
+  @Test
+  public void testChangePassword() throws Exception {
+    log.debug("Start of testChangePassword");
+
+    assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
+
+    // Change the password once
+    WalletService.changeWalletPasswordInternal(walletSummary, PASSWORD, CHANGED_PASSWORD1);
+    assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD1)).isTrue();
+
+    // Change the password again
+    WalletService.changeWalletPasswordInternal(walletSummary, CHANGED_PASSWORD1, CHANGED_PASSWORD2);
+    assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD2)).isTrue();
+
+    // And change ti back to the original value just for good measure
+    WalletService.changeWalletPasswordInternal(walletSummary, CHANGED_PASSWORD2, PASSWORD);
+    assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
+  }
 
 }

@@ -162,4 +162,12 @@ public class InstallationManager {
     }
   }
 
+  /**
+   * USe for testing only
+   * @param currentApplicationDataDirectory the application data directory to use
+   */
+  public static void setCurrentApplicationDataDirectory(File currentApplicationDataDirectory) {
+    InstallationManager.currentApplicationDataDirectory = currentApplicationDataDirectory;
+  }
+
 }
