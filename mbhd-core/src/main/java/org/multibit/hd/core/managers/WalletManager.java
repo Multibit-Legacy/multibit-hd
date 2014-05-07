@@ -97,12 +97,6 @@ public enum WalletManager implements WalletEventListener {
   // TODO (GR) Refactor this to be injected
   private static final NetworkParameters networkParameters = BitcoinNetwork.current().get();
 
-  private static WalletProtobufSerializer walletProtobufSerializer;
-
-  static {
-    walletProtobufSerializer = new WalletProtobufSerializer();
-  }
-
   private static final Logger log = LoggerFactory.getLogger(WalletManager.class);
 
   public static final String WALLET_DIRECTORY_PREFIX = "mbhd";

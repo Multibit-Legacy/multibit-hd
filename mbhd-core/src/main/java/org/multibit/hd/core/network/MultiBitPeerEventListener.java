@@ -42,7 +42,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     if (!suppressPeerCountMessages) {
       // Switch to showing the peer count
       CoreEvents.fireBitcoinNetworkChangedEvent(
-              BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
+        BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
     }
   }
 
@@ -66,7 +66,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     } else {
       // Switch to showing the peer count
       CoreEvents.fireBitcoinNetworkChangedEvent(
-              BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
+        BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
     }
   }
 
@@ -79,7 +79,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     // Only show peers after synchronization to avoid confusion
     if (!suppressPeerCountMessages) {
       CoreEvents.fireBitcoinNetworkChangedEvent(
-              BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
+        BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
     }
   }
 
@@ -95,7 +95,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     // Only show peers after synchronization to avoid confusion
     if (!suppressPeerCountMessages) {
       CoreEvents.fireBitcoinNetworkChangedEvent(
-              BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
+        BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
     }
   }
 
@@ -119,15 +119,19 @@ public class MultiBitPeerEventListener implements PeerEventListener {
               if (currentWallet.isTransactionRelevant(transaction)) {
                 if (!(transaction.isTimeLocked() && transaction.getConfidence().getSource() != TransactionConfidence.Source.SELF)) {
                   if (currentWallet.getTransaction(transaction.getHash()) == null) {
-                    log.debug("MultiBitHD adding a new pending transaction for the wallet '"
-                            + currentWalletSummary.get().getWalletId() + "'\n" + transaction.toString());
+
+                    log.debug("MultiBitHD adding a new pending transaction for the wallet '{}'\n{}",
+                      currentWalletSummary.get().getWalletId(),
+                      transaction.toString()
+                    );
                     currentWallet.receivePending(transaction, null);
 
                     // Emit an event so that GUI elements can update as required
-                    TransactionSeenEvent transactionSeenEvent = new TransactionSeenEvent((transaction));
+                    TransactionSeenEvent transactionSeenEvent = new TransactionSeenEvent(transaction);
                     BigInteger value = transaction.getValue(currentWallet);
-                    transactionSeenEvent.setValue(value);
+                    transactionSeenEvent.setAmount(value);
                     transactionSeenEvent.setFirstAppearanceInWallet(true);
+
                     CoreEvents.fireTransactionSeenEvent(transactionSeenEvent);
                   }
                 }

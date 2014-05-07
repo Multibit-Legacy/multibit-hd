@@ -22,7 +22,7 @@ public class TransactionSeenEvent implements CoreEvent {
 
   private final boolean coinbase;
 
-  private BigInteger value;
+  private BigInteger amount;
 
   /**
    * This is the first time this transaction has been seen in the wallet
@@ -31,10 +31,13 @@ public class TransactionSeenEvent implements CoreEvent {
 
   public static final int DEPTH_IN_BLOCKS_IS_UNDEFINED = -1;
 
-  public TransactionSeenEvent(Transaction transactionSeen) {
+  /**
+   * @param transaction The Bitcoinj transaction providing the information
+   */
+  public TransactionSeenEvent(Transaction transaction) {
 
-    transactionId = transactionSeen.getHashAsString();
-    TransactionConfidence confidence = transactionSeen.getConfidence();
+    transactionId = transaction.getHashAsString();
+    TransactionConfidence confidence = transaction.getConfidence();
 
     confidenceType = confidence.getConfidenceType();
 
@@ -44,7 +47,7 @@ public class TransactionSeenEvent implements CoreEvent {
       depthInBlocks = DEPTH_IN_BLOCKS_IS_UNDEFINED;
     }
 
-    coinbase = transactionSeen.isCoinBase();
+    coinbase = transaction.isCoinBase();
 
     numberOfPeers = confidence.numBroadcastPeers();
 
@@ -54,18 +57,27 @@ public class TransactionSeenEvent implements CoreEvent {
     return confidenceType;
   }
 
+  /**
+   * @return The depth in blocks (confirmations), -1 if unknown
+   */
   public int getDepthInBlocks() {
     return depthInBlocks;
   }
 
-  public BigInteger getValue() {
-    return value;
+  /**
+   * @return The amount in satoshis
+   */
+  public BigInteger getAmount() {
+    return amount;
   }
 
-  public void setValue(BigInteger value) {
-    this.value = value;
+  public void setAmount(BigInteger amount) {
+    this.amount = amount;
   }
 
+  /**
+   * @return True if this is the first time this transaction has appeared in the wallet
+   */
   public boolean isFirstAppearanceInWallet() {
     return firstAppearanceInWallet;
   }
@@ -74,8 +86,25 @@ public class TransactionSeenEvent implements CoreEvent {
     this.firstAppearanceInWallet = firstAppearanceInWallet;
   }
 
+  /**
+   * @return The transaction ID
+   */
   public String getTransactionId() {
     return transactionId;
+  }
+
+  /**
+   * @return True if this transaction is from the coinbase
+   */
+  public boolean isCoinbase() {
+    return coinbase;
+  }
+
+  /**
+   * @return The number of peers that have broadcast this transaction
+   */
+  public int getNumberOfPeers() {
+    return numberOfPeers;
   }
 
   @Override
@@ -84,14 +113,10 @@ public class TransactionSeenEvent implements CoreEvent {
       "transactionId='" + transactionId + '\'' +
       ", confidenceType=" + confidenceType +
       ", depthInBlocks=" + depthInBlocks +
+      ", numberOfPeers=" + numberOfPeers +
+      ", coinbase=" + coinbase +
+      ", value=" + amount +
+      ", firstAppearanceInWallet=" + firstAppearanceInWallet +
       '}';
-  }
-
-  public boolean isCoinbase() {
-    return coinbase;
-  }
-
-  public int getNumberOfPeers() {
-    return numberOfPeers;
   }
 }

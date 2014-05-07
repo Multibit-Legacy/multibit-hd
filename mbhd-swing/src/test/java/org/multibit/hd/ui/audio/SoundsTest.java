@@ -25,7 +25,7 @@ public class SoundsTest {
   public void testPlayReceiveBitcoin() throws Exception {
 
     Sounds.initialise();
-    Sounds.playReceiveBitcoin();
+    Sounds.playPaymentReceived();
 
   }
 }

@@ -203,9 +203,6 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   @Subscribe
   public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
 
-    // Too many to log
-    //log.debug("Received the TransactionSeenEvent: " + transactionSeenEvent.toString());
-
     lastTransactionSeenEvent = transactionSeenEvent;
     // The event may be fired before the UI has initialised
     if (!initialised) {
@@ -217,8 +214,18 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     if (getPanelModel().get() != null) {
       String currentTransactionId = getPanelModel().get().getTransactionId();
       if (transactionSeenEvent.getTransactionId().equals(currentTransactionId)) {
-        PaymentStatus paymentStatus = WalletService.calculateStatus(transactionSeenEvent.getConfidenceType(), transactionSeenEvent.getDepthInBlocks(), transactionSeenEvent.getNumberOfPeers());
-        transactionConfirmationStatus.setText(Languages.safeText(paymentStatus.getStatusKey(), transactionSeenEvent.getNumberOfPeers() ));
+        PaymentStatus paymentStatus = WalletService.calculateStatus(
+          transactionSeenEvent.getConfidenceType(),
+          transactionSeenEvent.getDepthInBlocks(),
+          transactionSeenEvent.getNumberOfPeers()
+        );
+        transactionConfirmationStatus.setText(
+          Languages.safeText(
+            paymentStatus.getStatusKey(),
+            transactionSeenEvent.getNumberOfPeers()
+          )
+        );
+
         LabelDecorator.applyStatusIconAndColor(paymentStatus, transactionConfirmationStatus, transactionSeenEvent.isCoinbase(), MultiBitUI.NORMAL_ICON_SIZE);
       }
     }

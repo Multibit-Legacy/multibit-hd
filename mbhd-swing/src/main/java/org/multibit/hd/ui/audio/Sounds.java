@@ -29,7 +29,12 @@ public class Sounds {
 
   private static final Map<String, byte[]> allSounds = Maps.newHashMap();
 
-  private static final String RECEIVE_BITCOIN = "receive-bitcoin";
+  /**
+   * The name and key of the MP3 file containing the "payment received" sound
+   */
+  private static final String PAYMENT_RECEIVED = "receive-bitcoin";
+
+  private static final ExecutorService executorService = SafeExecutors.newSingleThreadExecutor("play-received");
 
   /**
    * Utilities have no public constructor
@@ -39,7 +44,7 @@ public class Sounds {
 
   public static void initialise() {
 
-    allSounds.put(RECEIVE_BITCOIN, load(RECEIVE_BITCOIN));
+    allSounds.put(PAYMENT_RECEIVED, load(PAYMENT_RECEIVED));
 
   }
 
@@ -54,17 +59,16 @@ public class Sounds {
   }
 
   /**
-   * Plays the "receive bitcoin" sound in a new thread
+   * Plays the "payment received" sound in a new thread
    */
-  public static void playReceiveBitcoin() {
+  public static void playPaymentReceived() {
 
     if (Configurations.currentConfiguration.getSound().isReceiveSound()) {
 
-      ExecutorService executorService = SafeExecutors.newSingleThreadExecutor("play-received");
       executorService.submit(new Runnable() {
         @Override
         public void run() {
-          play(RECEIVE_BITCOIN);
+          play(PAYMENT_RECEIVED);
         }
       });
     }

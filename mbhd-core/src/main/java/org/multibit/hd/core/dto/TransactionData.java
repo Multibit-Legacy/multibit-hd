@@ -8,14 +8,14 @@ import java.math.BigInteger;
 import java.util.Collection;
 
 /**
- *  <p>Data object to provide the following to Payments display:</p>
- *  <ul>
- *  <li>Contains transaction relevant data</li>
- *  <li>Immutable</li>
- *  </ul>
- *  
+ * <p>Data object to provide the following to Payments display:</p>
+ * <ul>
+ * <li>Contains transaction relevant data</li>
+ * <li>Immutable</li>
+ * </ul>
+ *
+ * @since 0.0.1
  */
-
 public class TransactionData implements PaymentData {
 
   private final PaymentStatus statusWithOrdinal;
@@ -77,17 +77,17 @@ public class TransactionData implements PaymentData {
   @Override
   public String toString() {
     return "TransactionData{" +
-            "transactionId='" + transactionId + '\'' +
-            "statusWithOrdinal=" + statusWithOrdinal +
-            ", amountBTC=" + amountBTC +
-            ", amountFiat=" + amountFiat +
-            ", feeOnSendBTC=" + feeOnSendBTC +
-            ", confidenceType=" + confidenceType +
-            ", type=" + type +
-            ", date=" + date +
-            ", description='" + description + "'" +
-            ", note='" + note + "'" +
-            '}';
+      "transactionId='" + transactionId + '\'' +
+      "statusWithOrdinal=" + statusWithOrdinal +
+      ", amountBTC=" + amountBTC +
+      ", amountFiat=" + amountFiat +
+      ", feeOnSendBTC=" + feeOnSendBTC +
+      ", confidenceType=" + confidenceType +
+      ", type=" + type +
+      ", date=" + date +
+      ", description='" + description + "'" +
+      ", note='" + note + "'" +
+      '}';
   }
 
   @Override

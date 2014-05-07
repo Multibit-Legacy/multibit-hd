@@ -10,6 +10,7 @@ import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.Recipient;
+import org.multibit.hd.core.dto.SendBitcoinData;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.events.TransactionCreationEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
@@ -137,14 +138,9 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     String password = confirmPanelModel.getPasswordModel().getValue();
 
     Optional<FeeState> feeState = calculateBRITFeeState();
-    log.debug("Just about to send bitcoin : amount = '{}', address = '{}', changeAddress = '{}'. feeState = {}",
-            satoshis,
-            bitcoinAddress,
-            changeAddress,
-            feeState
-    );
 
-    bitcoinNetworkService.send(
+    // Send the bitcoins
+    final SendBitcoinData sendBitcoinData = new SendBitcoinData(
       bitcoinAddress,
       satoshis,
       changeAddress,
@@ -152,6 +148,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
       password,
       feeState
     );
+    log.debug("Just about to send bitcoin: {}", sendBitcoinData);
+    bitcoinNetworkService.send(sendBitcoinData);
 
     // The send throws TransactionCreationEvents and BitcoinSentEvents to which you subscribe to to work out success and failure.
 
@@ -209,8 +207,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
    */
   public Recipient getRecipient() {
     return enterAmountPanelModel
-            .getEnterRecipientModel()
-            .getRecipient().get();
+      .getEnterRecipientModel()
+      .getRecipient().get();
   }
 
   /**
@@ -218,8 +216,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
    */
   public BigInteger getSatoshis() {
     return enterAmountPanelModel
-            .getEnterAmountModel()
-            .getSatoshis();
+      .getEnterAmountModel()
+      .getSatoshis();
   }
 
   /**
@@ -227,8 +225,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
    */
   public BigMoney getLocalAmount() {
     return enterAmountPanelModel
-            .getEnterAmountModel()
-            .getLocalAmount();
+      .getEnterAmountModel()
+      .getLocalAmount();
   }
 
   /**
@@ -287,7 +285,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
       feeService = CoreServices.createFeeService();
     }
     if (WalletManager.INSTANCE.getCurrentWalletSummary() != null &&
-            WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+      WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
       Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
 
       File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
@@ -297,7 +295,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
       }
       Optional<FeeState> feeStateOptional = Optional.of(feeService.calculateFeeState(wallet));
       if (walletFileOptional.isPresent()) {
-        log.debug("Wallet file after to calculateFeeState is " +walletFileOptional.get().length() + " bytes");
+        log.debug("Wallet file after to calculateFeeState is " + walletFileOptional.get().length() + " bytes");
       }
 
       return feeStateOptional;

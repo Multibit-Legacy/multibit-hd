@@ -9,6 +9,7 @@ import org.joda.money.BigMoney;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
+import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.core.utils.Satoshis;
 
@@ -21,6 +22,7 @@ import java.util.Locale;
  * <p>Utility to provide the following to controllers:</p>
  * <ul>
  * <li>Access to international formats for date/time and decimal data</li>
+ * <li>Access to alert layouts in different languages</li>
  * </ul>
  *
  * @since 0.0.1
@@ -29,23 +31,23 @@ import java.util.Locale;
 public class Formats {
 
   /**
-    * <p>Provide a split representation for the Bitcoin balance display.</p>
-    * <p>For example, 12345.6789 becomes "12,345.67", "89" </p>
-    * <p>The amount will be adjusted by the symbolic multiplier from the current confiuration</p>
-    *
-    * @param satoshis              The amount in satoshis
-    * @param languageConfiguration The  language configuration to use as the basis for presentation
-    * @param bitcoinConfiguration  The Bitcoin configuration to use as the basis for the symbol
-    *
-    * @return The left [0] and right [1] components suitable for presentation as a balance with no symbolic decoration
-    */
-   public static String[] formatSatoshisAsSymbolic(
-     BigInteger satoshis,
-     LanguageConfiguration languageConfiguration,
-     BitcoinConfiguration bitcoinConfiguration
-   ) {
-     return formatSatoshisAsSymbolic(satoshis, languageConfiguration, bitcoinConfiguration, true);
-   }
+   * <p>Provide a split representation for the Bitcoin balance display.</p>
+   * <p>For example, 12345.6789 becomes "12,345.67", "89" </p>
+   * <p>The amount will be adjusted by the symbolic multiplier from the current confiuration</p>
+   *
+   * @param satoshis              The amount in satoshis
+   * @param languageConfiguration The  language configuration to use as the basis for presentation
+   * @param bitcoinConfiguration  The Bitcoin configuration to use as the basis for the symbol
+   *
+   * @return The left [0] and right [1] components suitable for presentation as a balance with no symbolic decoration
+   */
+  public static String[] formatSatoshisAsSymbolic(
+    BigInteger satoshis,
+    LanguageConfiguration languageConfiguration,
+    BitcoinConfiguration bitcoinConfiguration
+  ) {
+    return formatSatoshisAsSymbolic(satoshis, languageConfiguration, bitcoinConfiguration, true);
+  }
 
   /**
    * <p>Provide a split representation for the Bitcoin balance display.</p>
@@ -139,12 +141,11 @@ public class Formats {
   /**
    * <p>Provide a simple representation for a local currency amount.</p>
    *
-   *
    * @param amount               The amount as a plain number (no multipliers)
    * @param locale               The locale to use
    * @param bitcoinConfiguration The Bitcoin configuration to use as the basis for the symbol
+   * @param showNegative         True if the negative prefix is allowed
    *
-   * @param showNegative
    * @return The local currency representation with no symbolic decoration
    */
   public static String formatLocalAmount(BigMoney amount, Locale locale, BitcoinConfiguration bitcoinConfiguration, boolean showNegative) {
@@ -189,11 +190,10 @@ public class Formats {
   }
 
   /**
-   *
    * @param dfs                  The decimal format symbols
    * @param bitcoinConfiguration The Bitcoin configuration to use
+   * @param showNegative         True if the negative prefix is allowed
    *
-   * @param showNegative
    * @return A decimal format suitable for local currency balance representation
    */
   private static DecimalFormat configureLocalDecimalFormat(DecimalFormatSymbols dfs, BitcoinConfiguration bitcoinConfiguration, boolean showNegative) {
@@ -231,6 +231,28 @@ public class Formats {
     dfs.setGroupingSeparator(bitcoinConfiguration.getGroupingSeparator().charAt(0));
 
     return dfs;
+
+  }
+
+  /**
+   * @param event The "transaction seen" event
+   *
+   * @return A String suitably formatted for presentation as an alert message
+   */
+  public static String formatAlertMessage(TransactionSeenEvent event) {
+
+    // Decode the "transaction seen" event
+    final BigInteger amount = event.getAmount();
+
+    // Create a suitable representation for inline text (no icon)
+    final String messageAmount = Formats.formatSatoshisAsSymbolicText(
+      amount,
+      Configurations.currentConfiguration.getLanguage(),
+      Configurations.currentConfiguration.getBitcoin()
+    );
+
+    // Construct a suitable alert message
+    return Languages.safeText(MessageKey.PAYMENT_RECEIVED_ALERT, messageAmount);
 
   }
 
@@ -273,4 +295,6 @@ public class Formats {
     return alertMessage;
 
   }
+
+
 }

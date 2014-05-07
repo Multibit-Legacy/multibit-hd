@@ -17,6 +17,7 @@ import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WalletDetailChangedEvent;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.AlertModel;
+import org.multibit.hd.ui.models.Models;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.enter_search.EnterSearchModel;
 import org.multibit.hd.ui.views.components.enter_search.EnterSearchView;
@@ -127,17 +128,12 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
 
   @Subscribe
   public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
-    log.trace("Received the TransactionSeenEvent: " + transactionSeenEvent.toString());
 
-    // Play a sound the first time a transaction is received
-    // TODO some more filtering required - just set to play when it confirms for the first time for now
-    if (transactionSeenEvent.getDepthInBlocks() == 1) {
-      //  && transactionSeenEvent.getValue() != null && transactionSeenEvent.getValue().compareTo(BigInteger.ZERO) >0
-      Sounds.playReceiveBitcoin();
-    }
+    log.trace("Received a TransactionSeenEvent: {}", transactionSeenEvent);
 
     if (transactionSeenEvent.isFirstAppearanceInWallet()) {
-      AlertModel alertModel = new AlertModel("A new payment has been received.", RAGStatus.PINK);
+      Sounds.playPaymentReceived();
+      AlertModel alertModel = Models.newPaymentReceivedAlertModel(transactionSeenEvent);
       ControllerEvents.fireAddAlertEvent(alertModel);
     }
   }

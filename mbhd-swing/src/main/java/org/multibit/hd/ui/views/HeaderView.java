@@ -140,6 +140,8 @@ public class HeaderView {
           alertButton.setIcon(button.getIcon());
 
           alertButton.setVisible(true);
+        } else {
+          alertButton.setVisible(false);
         }
 
         // Don't play sounds here since this will be called each time an alert is dismissed

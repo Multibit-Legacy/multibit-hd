@@ -151,6 +151,7 @@ public enum MessageKey {
   DECIMAL_SPACE("decimal_space"),
 
   BITCOIN_URI_ALERT("bitcoin_uri_label"),
+  PAYMENT_RECEIVED_ALERT("payment_received_label"),
 
   PEER_COUNT("peer_count"),
   BLOCKS_LEFT("blocks_left"),

@@ -64,12 +64,6 @@ public class SecurityCheckingService extends AbstractService {
           // Issue the alert
           CoreEvents.fireSecurityEvent(SecuritySummary.newDebuggerAttached());
 
-          log.debug("Debug event {}", nextAlert);
-
-        } else {
-
-          log.debug("Event blocked");
-
         }
 
       }

@@ -3,6 +3,7 @@ package org.multibit.hd.ui.models;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import org.multibit.hd.core.dto.RAGStatus;
+import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -119,4 +120,20 @@ public class Models {
 
     return Optional.absent();
   }
+
+  /**
+   * @param transactionSeenEvent@return An alert model suitable for use for displaying the information, absent if the Bitcoin URI does not contain sufficient information
+   */
+  public static AlertModel newPaymentReceivedAlertModel(TransactionSeenEvent transactionSeenEvent) {
+
+    // Attempt to decode the "transaction seen" event
+    String alertMessage = Formats.formatAlertMessage(transactionSeenEvent);
+
+    return Models.newAlertModel(
+      alertMessage,
+      RAGStatus.GREEN
+    );
+
+  }
+
 }
