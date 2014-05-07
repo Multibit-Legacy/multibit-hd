@@ -37,17 +37,17 @@ public class BootstrapTheme extends BaseTheme {
 
   @Override
   public Color sidebarPanelBackground() {
-    return new Color(250,250,250);
-  }
-
-  @Override
-  public Color detailPanelBackground() {
     return new Color(230,230,230);
   }
 
   @Override
+  public Color detailPanelBackground() {
+    return new Color(250,250,250);
+  }
+
+  @Override
   public Color buttonBackground() {
-    return new Color(228, 228, 228);
+    return new Color(200, 200, 200);
   }
 
   @Override

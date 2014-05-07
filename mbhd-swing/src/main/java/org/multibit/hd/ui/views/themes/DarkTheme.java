@@ -77,7 +77,7 @@ public class DarkTheme extends BaseTheme {
 
   @Override
   public Color dataEntryBackground() {
-    return new Color(190, 160, 55);
+    return new Color(240, 211, 85);
   }
 
   @Override
