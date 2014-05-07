@@ -16,7 +16,6 @@ import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.HistoryEntry;
-import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
@@ -25,7 +24,6 @@ import org.multibit.hd.core.exceptions.CoreException;
 import org.multibit.hd.core.logging.LoggingFactory;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.utils.OSUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -149,15 +147,8 @@ public class CoreServices {
     // Configure logging
     new LoggingFactory(Configurations.currentConfiguration.getLogging(), "MBHD").configure();
 
-    if (OSUtils.isDebuggerAttached()) {
-
-      CoreEvents.fireSecurityEvent(SecuritySummary.newDebuggerAttached());
-
-      log.error("************************************************************************");
-      log.error("* A debugger is attached. This is a security risk in normal operation. *");
-      log.error("************************************************************************");
-
-    }
+    // Start security checking service
+    securityCheckingService.start();
 
   }
 

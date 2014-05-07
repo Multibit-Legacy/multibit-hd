@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * <p>Service to provide the following to application API:</p>
@@ -26,7 +25,10 @@ public class SecurityCheckingService extends AbstractService {
 
   public static final int ENVIRONMENT_REFRESH_SECONDS = 2;
 
-  private final AtomicReference<DateTime> nextAlert=new AtomicReference<>(Dates.nowUtc());
+  /**
+   * Initialise to allow single security alert
+   */
+  private DateTime nextAlert = Dates.nowUtc().minusSeconds(1);
 
   public SecurityCheckingService() {
     CoreServices.uiEventBus.register(this);
@@ -47,12 +49,26 @@ public class SecurityCheckingService extends AbstractService {
 
         // Check for a Java debugger being attached
         if (OSUtils.isDebuggerAttached()) {
+          handleDebuggerAttached();
+        }
 
-          if (Dates.nowUtc().isAfter(nextAlert.get())) {
+      }
 
+      private void handleDebuggerAttached() {
+
+        if (Dates.nowUtc().isAfter(nextAlert)) {
+
+          // Prevent lots of repeat alerts
+          nextAlert = Dates.nowUtc().plusMinutes(5);
+
+          // Issue the alert
           CoreEvents.fireSecurityEvent(SecuritySummary.newDebuggerAttached());
-            nextAlert.set(Dates.nowUtc().plusMinutes(5));
-          }
+
+          log.debug("Debug event {}", nextAlert);
+
+        } else {
+
+          log.debug("Event blocked");
 
         }
 

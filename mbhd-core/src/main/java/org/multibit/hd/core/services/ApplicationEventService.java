@@ -68,10 +68,6 @@ public class ApplicationEventService {
       );
     }
 
-    if (latestSecurityEvent.isPresent()) {
-      CoreEvents.fireSecurityEvent(latestSecurityEvent.get().getSummary());
-    }
-
   }
 
   /**

@@ -1,9 +1,7 @@
 package org.multibit.hd.ui;
 
-import com.google.common.base.Optional;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
-import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.SSLManager;
@@ -279,13 +277,6 @@ public class MultiBitHD {
         mainView.refresh();
       }
     });
-
-    // Catch up with any early security events
-    Optional<SecurityEvent> securityEvent = CoreServices.getApplicationEventService().getLatestSecurityEvent();
-
-    if (securityEvent.isPresent()) {
-      mainController.onSecurityEvent(securityEvent.get());
-    }
 
     // See the MainController wizard hide event for the next stage
 
