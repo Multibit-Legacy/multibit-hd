@@ -141,7 +141,7 @@ public class PasswordReportPanelView extends AbstractWizardPanelView<PasswordWiz
     }
 
     byte[] decryptedWalletPasswordBytes = org.multibit.hd.brit.crypto.AESUtils.decrypt(
-      // TODO (JB) Where does this password come from?
+      // Get the password out of the wallet summary. This is put in when a wallet is created.
       walletSummary.getEncryptedPassword(),
       backupAESKey,
       WalletManager.AES_INITIALISATION_VECTOR

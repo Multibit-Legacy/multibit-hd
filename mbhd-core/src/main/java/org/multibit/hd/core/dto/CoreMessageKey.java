@@ -67,6 +67,15 @@ public enum CoreMessageKey {
   EXCHANGE_ERROR("core_exchange_error"),
   EXCHANGE_DOWN("core_exchange_down"),
 
+  // Change password
+    // Change password
+  CHANGE_PASSWORD_REPORT_TITLE("core_change_password_report_title"),
+  CHANGE_PASSWORD_WORKING("core_change_password_working"),
+  CHANGE_PASSWORD_SUCCESS("core_change_password_success"),
+  CHANGE_PASSWORD_WRONG_OLD_PASSWORD("core_change_password_wrong_old_password"),
+  CHANGE_PASSWORD_ERROR("core_change_password_error")
+
+
   // End of enum
   ;
 

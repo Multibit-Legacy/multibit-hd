@@ -12,6 +12,7 @@ package org.multibit.hd.ui.views.wizards.change_password;
 public enum ChangePasswordState {
 
   CHANGE_PASSWORD_ENTER_PASSWORD,
+  CHANGE_PASSWORD_REPORT,
 
   // End of enum
   ;

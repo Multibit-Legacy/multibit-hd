@@ -231,6 +231,8 @@ public enum MessageKey {
   SELECT_BACKUP("select_backup"),
   WALLET_CREATED_STATUS("wallet_created_status"),
 
+  PASSWORD_CHANGED_STATUS("password_changed_status"),
+
   HISTORY_WALLET_CREATED("history_wallet_created"),
   HISTORY_WALLET_OPENED("history_wallet_opened"),
 
@@ -418,7 +420,8 @@ public enum MessageKey {
   COULD_NOT_WRITE_TO_THE_DIRECTORY("could_not_write_to_the_directory"),
 
   // Repair wallet
-  REPAIR_WALLET_NOTE("repair_wallet_note")
+  REPAIR_WALLET_NOTE("repair_wallet_note"),
+
   // End of enum
   ;
 

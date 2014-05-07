@@ -324,6 +324,14 @@ public class Labels {
   }
 
   /**
+    *
+    * @return A new "passwordChanged" status label
+    */
+   public static JLabel newPasswordChangedStatus() {
+     return newStatusLabel(Optional.<MessageKey>absent(), new Object[]{}, Optional.<Boolean>absent());
+   }
+
+  /**
    * @param status True if the status is "good"
    *
    * @return A new "backup location" status label
