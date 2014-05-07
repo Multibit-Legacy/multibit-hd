@@ -123,7 +123,6 @@ public class RepairWalletPanelView extends AbstractWizardPanelView<RepairWalletW
          ExceptionHandler.handleThrowable(e);
        }
      }
-
   }
 
 
