@@ -42,7 +42,7 @@ public class BootstrapTheme extends BaseTheme {
 
   @Override
   public Color detailPanelBackground() {
-    return new Color(250,250,250);
+    return new Color(230,230,230);
   }
 
   @Override

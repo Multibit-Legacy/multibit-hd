@@ -40,7 +40,7 @@ public abstract class BaseTheme implements Theme {
 
   @Override
   public Color tableRowBackground() {
-    return sidebarPanelBackground().darker();
+    return sidebarPanelBackground();
   }
 
   @Override
