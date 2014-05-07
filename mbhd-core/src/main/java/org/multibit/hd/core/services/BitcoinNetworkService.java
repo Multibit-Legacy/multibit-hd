@@ -8,6 +8,7 @@ import com.google.bitcoin.wallet.KeyChain;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.subgraph.orchid.TorClient;
 import org.joda.time.DateTime;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.core.concurrent.SafeExecutors;
@@ -105,7 +106,7 @@ public class BitcoinNetworkService extends AbstractService {
       log.debug("Starting Bitcoin network...");
       restartNetwork();
 
-    } catch (IOException | BlockStoreException e) {
+    } catch (IOException | BlockStoreException | TimeoutException e) {
 
       log.error(e.getMessage(), e);
 
@@ -125,10 +126,11 @@ public class BitcoinNetworkService extends AbstractService {
   /**
    * Restart the network, using the current wallet (specifically the blockstore)
    *
-   * @throws BlockStoreException
-   * @throws IOException
+   * @throws BlockStoreException If the block store fails
+   * @throws IOException If the network fails
+   * @throws java.util.concurrent.TimeoutException If the TOR connection fails
    */
-  private void restartNetwork() throws BlockStoreException, IOException {
+  private void restartNetwork() throws BlockStoreException, IOException, TimeoutException {
     requireSingleThreadExecutor("bitcoin-network");
 
     // Check if there is a network connection
@@ -558,7 +560,7 @@ public class BitcoinNetworkService extends AbstractService {
    * Sync the current wallet from the date specified.
    * The blockstore is deleted and created anew, checkpointed and then the blockchain is downloaded.
    */
-  public void replayWallet(DateTime dateToReplayFrom) throws IOException, BlockStoreException {
+  public void replayWallet(DateTime dateToReplayFrom) throws IOException, BlockStoreException, TimeoutException {
 
     Preconditions.checkNotNull(dateToReplayFrom);
     Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().isPresent());
@@ -597,17 +599,26 @@ public class BitcoinNetworkService extends AbstractService {
   /**
    * <p>Create a new peer group</p>
    */
-  private void createNewPeerGroup() {
+  private void createNewPeerGroup() throws TimeoutException {
 
-    log.info("Creating new peer group for '{}'", networkParameters);
+    if (Configurations.currentConfiguration.isTor()) {
 
-    peerGroup = new PeerGroup(networkParameters, blockChain);
-    peerGroup.setFastCatchupTimeSecs(0); // genesis block
+      log.info("Creating new TOR peer group for '{}'", networkParameters);
+      InstallationManager.removeCryptographyRestrictions();
+      peerGroup = PeerGroup.newWithTor(networkParameters, blockChain, new TorClient());
+
+    } else {
+
+      log.info("Creating new DNS peer group for '{}'", networkParameters);
+      peerGroup = new PeerGroup(networkParameters, blockChain);
+      peerGroup.addPeerDiscovery(new DnsDiscovery(networkParameters));
+
+    }
+
     peerGroup.setUserAgent(InstallationManager.MBHD_APP_NAME,
       Configurations.currentConfiguration.getApplication().getVersion());
+    peerGroup.setFastCatchupTimeSecs(0); // genesis block
     peerGroup.setMaxConnections(MAXIMUM_NUMBER_OF_PEERS);
-
-    peerGroup.addPeerDiscovery(new DnsDiscovery(networkParameters));
 
     peerEventListener = new MultiBitPeerEventListener();
     peerGroup.addEventListener(peerEventListener);
