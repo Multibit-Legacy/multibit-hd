@@ -99,8 +99,6 @@ public class PasswordReportPanelView extends AbstractWizardPanelView<PasswordWiz
       String walletRoot = applicationDataDirectory.getAbsolutePath() + File.separator + WalletManager.createWalletRoot(walletId);
       WalletSummary walletSummary = WalletManager.getOrCreateWalletSummary(new File(walletRoot), walletId);
 
-      //String walletName = walletSummary.getName();
-
       // Read the encrypted wallet password and decrypt with an AES key derived from the seed
       KeyParameter backupAESkey = AESUtils.createAESKey(seed, WalletManager.SCRYPT_SALT);
       byte[] decryptedWalletPasswordBytes = org.multibit.hd.brit.crypto.AESUtils.decrypt(walletSummary.getEncryptedPassword(), backupAESkey, WalletManager.AES_INITIALISATION_VECTOR);

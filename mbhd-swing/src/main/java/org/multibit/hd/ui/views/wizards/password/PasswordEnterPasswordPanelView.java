@@ -13,6 +13,7 @@ import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
@@ -286,8 +287,13 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
     if (!"".equals(password)) {
       // Attempt to open the wallet
       WalletId walletId = selectWalletMaV.getModel().getValue().getWalletId();
-      WalletManager.INSTANCE.open(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, password);
-
+      try {
+        WalletManager.INSTANCE.open(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, password);
+      } catch (WalletLoadException wle) {
+        wle.printStackTrace();
+        // Assume bad password
+        return false;
+      }
       Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
       if (currentWalletSummary.isPresent()) {
 

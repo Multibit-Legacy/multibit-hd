@@ -28,7 +28,8 @@ public class ChangePasswordWizard extends AbstractWizard<ChangePasswordWizardMod
     wizardViewMap.put(
       ChangePasswordState.CHANGE_PASSWORD_ENTER_PASSWORD.name(),
       new ChangePasswordPanelView(this, ChangePasswordState.CHANGE_PASSWORD_ENTER_PASSWORD.name()));
-
+    wizardViewMap.put(
+        ChangePasswordState.CHANGE_PASSWORD_REPORT.name(),
+        new ChangePasswordReportPanelView(this, ChangePasswordState.CHANGE_PASSWORD_REPORT.name()));
   }
-
 }

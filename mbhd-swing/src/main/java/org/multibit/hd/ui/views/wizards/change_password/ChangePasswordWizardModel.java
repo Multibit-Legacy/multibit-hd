@@ -66,9 +66,23 @@ public class ChangePasswordWizardModel extends AbstractWizardModel<ChangePasswor
   public void onVerificationStatusChangedEvent(VerificationStatusChangedEvent event) {
 
     if (ChangePasswordState.CHANGE_PASSWORD_ENTER_PASSWORD.name().equals(event.getPanelName())) {
-      ViewEvents.fireWizardButtonEnabledEvent(event.getPanelName(), WizardButton.FINISH, event.isOK());
+      ViewEvents.fireWizardButtonEnabledEvent(event.getPanelName(), WizardButton.NEXT, event.isOK());
     }
 
   }
 
+  @Override
+  public void showNext() {
+
+    switch (state) {
+      case CHANGE_PASSWORD_ENTER_PASSWORD:
+        state = ChangePasswordState.CHANGE_PASSWORD_REPORT;
+        break;
+      case CHANGE_PASSWORD_REPORT:
+         state = ChangePasswordState.CHANGE_PASSWORD_REPORT;
+         break;
+       default:
+        throw new IllegalStateException("Unknown state: " + state.name());
+    }
+  }
 }

@@ -8,10 +8,11 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.Uninterruptibles;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
-import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
@@ -106,7 +107,7 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
   @Override
   protected void initialiseButtons(AbstractWizard<ChangePasswordWizardModel> wizard) {
 
-    PanelDecorator.addCancelFinish(this, wizard);
+    PanelDecorator.addCancelNext(this, wizard);
 
   }
 
@@ -116,8 +117,8 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
     // Determine any events
     ViewEvents.fireWizardButtonEnabledEvent(
       getPanelName(),
-      WizardButton.FINISH,
-      false
+      WizardButton.NEXT,
+      true
     );
 
   }
@@ -125,7 +126,7 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
   @Override
   public void afterShow() {
 
-    registerDefaultButton(getFinishButton());
+    registerDefaultButton(getNextButton());
 
     SwingUtilities.invokeLater(new Runnable() {
       @Override
@@ -163,14 +164,14 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
       public void run() {
 
         // Ensure the view shows the spinner and disables components
-        getFinishButton().setEnabled(false);
+        getNextButton().setEnabled(false);
         getCancelButton().setEnabled(false);
         enterPasswordMaV.getView().setSpinnerVisibility(true);
 
       }
     });
 
-    // Check the password (might take a while so do it asynchronously while showing a spinner)
+    // Check the old password (might take a while so do it asynchronously while showing a spinner)
     // Tar pit (must be in a separate thread to ensure UI updates)
     ListenableFuture<Boolean> passwordFuture = SafeExecutors.newSingleThreadExecutor("change-password").submit(new Callable<Boolean>() {
 
@@ -192,10 +193,19 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
           // Check the result
           if (result) {
 
-            // Maintain the spinner while the initialisation continues
-
             // Trigger the deferred hide
             ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
+
+             // Enable components
+            SwingUtilities.invokeLater(new Runnable() {
+              @Override
+              public void run() {
+                if (isNextEnabled()) {
+                  getNextButton().setEnabled(true);
+                }
+                getCancelButton().setEnabled(true);
+              }
+            });
 
           } else {
 
@@ -210,18 +220,17 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
               @Override
               public void run() {
 
-                getFinishButton().setEnabled(true);
-                getExitButton().setEnabled(true);
-                getRestoreButton().setEnabled(true);
+                if (isNextEnabled()) {
+                  getNextButton().setEnabled(true);
+                }
+                getCancelButton().setEnabled(true);
                 enterPasswordMaV.getView().setSpinnerVisibility(false);
 
                 enterPasswordMaV.getView().requestInitialFocus();
 
               }
             });
-
           }
-
         }
 
         @Override
@@ -232,9 +241,10 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
             @Override
             public void run() {
 
-              getFinishButton().setEnabled(true);
-              getExitButton().setEnabled(true);
-              getRestoreButton().setEnabled(true);
+              if (isNextEnabled()) {
+                getNextButton().setEnabled(true);
+              }
+              getCancelButton().setEnabled(true);
               enterPasswordMaV.getView().setSpinnerVisibility(false);
 
               enterPasswordMaV.getView().requestInitialFocus();
@@ -258,15 +268,16 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
 
     CharSequence password = enterPasswordMaV.getModel().getValue();
 
-    // TODO Adjust these checks when encrypted wallets are on the scene
-    if (!"".equals(password) && !"x".equals(password)) {
+    if (!"".equals(password)) {
 
       // If a password has been entered, put it into the wallet summary (so that it is available for address generation)
-      // TODO - remove when we have proper HD wallets  - won't need password for address generation
-      // TODO should be using WalletService
       WalletId walletId = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId();
-      WalletManager.INSTANCE.open(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, password);
-
+      try {
+        WalletManager.INSTANCE.open(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, password);
+      } catch (WalletLoadException wle) {
+        // Wallet did not load - assume password was incorrect
+        return false;
+      }
       Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
       if (currentWalletSummary.isPresent()) {
 
@@ -284,7 +295,7 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
     }
 
     // Must have failed to be here
-    log.error("Failed attempt to open wallet");
+    log.error("Failed attempt to open wallet - old password was incorrect");
 
     return false;
 
@@ -298,16 +309,16 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
     // Determine any events
     ViewEvents.fireWizardButtonEnabledEvent(
       getPanelName(),
-      WizardButton.FINISH,
-      isFinishEnabled()
+      WizardButton.NEXT,
+      isNextEnabled()
     );
 
   }
 
   /**
-   * @return True if the "finish" button should be enabled
+   * @return True if the "next" button should be enabled
    */
-  private boolean isFinishEnabled() {
+  private boolean isNextEnabled() {
 
     boolean isPasswordCorrect = !Strings.isNullOrEmpty(
       getPanelModel().get()

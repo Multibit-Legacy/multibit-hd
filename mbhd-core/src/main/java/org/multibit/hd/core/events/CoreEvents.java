@@ -84,6 +84,13 @@ public class CoreEvents {
   }
 
   /**
+   * Broadcast ChangePasswordResultEvent
+   */
+  public static void fireChangePasswordResultEvent(ChangePasswordResultEvent changePasswordResultEvent) {
+    CoreServices.uiEventBus.post(changePasswordResultEvent);
+  }
+
+  /**
    * <p>Broadcast TransactionSeenEvent</p>
    *
    * @param transactionSeenEvent containing transaction information
