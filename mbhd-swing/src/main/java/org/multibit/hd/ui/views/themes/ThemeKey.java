@@ -15,7 +15,8 @@ import org.multibit.hd.ui.languages.MessageKey;
 public enum ThemeKey {
 
   LIGHT(new LightTheme()),
-  DARK(new DarkTheme())
+  DARK(new DarkTheme()),
+  BOOTSTRAP(new BootstrapTheme()),
 
   // End of enum
   ;
@@ -43,7 +44,8 @@ public enum ThemeKey {
 
     return new String[]{
       Languages.safeText(MessageKey.LIGHT_THEME),
-      Languages.safeText(MessageKey.DARK_THEME)
+      Languages.safeText(MessageKey.DARK_THEME),
+      Languages.safeText(MessageKey.BOOTSTRAP_THEME),
     };
 
   }
@@ -61,6 +63,9 @@ public enum ThemeKey {
     }
     if (theme instanceof DarkTheme) {
       return DARK;
+    }
+    if (theme instanceof BootstrapTheme) {
+      return BOOTSTRAP;
     }
     throw new IllegalArgumentException("Unknown theme '" + theme.getClass().getName() + "'");
   }

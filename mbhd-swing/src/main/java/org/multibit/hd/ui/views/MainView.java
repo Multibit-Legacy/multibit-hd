@@ -167,12 +167,9 @@ public class MainView extends JFrame {
     MigLayout layout = new MigLayout(
       Panels.migXYLayout(),
       "[]", // Columns
-      "[][][]"  // Rows
+      "0[]0[]0[]"  // Rows
     );
     JPanel mainPanel = Panels.newPanel(layout);
-
-    // Set the overall tone
-    mainPanel.setBackground(Themes.currentTheme.headerPanelBackground());
 
     // Require opaque to ensure the color is shown
     mainPanel.setOpaque(true);

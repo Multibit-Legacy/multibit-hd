@@ -7,18 +7,32 @@ import java.awt.*;
 /**
  * <p>Strategy to provide the following to Themes API:</p>
  * <ul>
- * <li>A low-light dark theme using an accented analogic colour wheel</li>
+ * <li>A low-light dark theme</li>
  * </ul>
- * <p>See <a href="http://colorschemedesigner.com/#2U62lw0w0w0w0">colour scheme</a> and Export to a file as a starting point</p>
  *
  * @since 0.0.1
  *  
  */
-public class DarkTheme implements Theme {
+public class DarkTheme extends BaseTheme {
 
   @Override
   public Color headerPanelBackground() {
     return new Color(72, 75, 78);
+  }
+
+  @Override
+  public Color headerPanelText() {
+    return text();
+  }
+
+  @Override
+  public Color footerPanelBackground() {
+    return headerPanelBackground();
+  }
+
+  @Override
+  public Color footerPanelText() {
+    return text();
   }
 
   @Override
@@ -211,16 +225,6 @@ public class DarkTheme implements Theme {
   @Override
   public Color pendingAlertText() {
     return inverseText();
-  }
-
-  @Override
-  public Color creditText() {
-    return new Color(0,200,0);
-  }
-
-  @Override
-  public Color debitText() {
-    return new Color(255,0,0);
   }
 
 }

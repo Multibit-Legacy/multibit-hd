@@ -392,6 +392,7 @@ public enum MessageKey {
   // Themes
   LIGHT_THEME("light_theme"),
   DARK_THEME("dark_theme"),
+  BOOTSTRAP_THEME("bootstrap_theme"),
 
   // Date rendering
   TODAY("today"),

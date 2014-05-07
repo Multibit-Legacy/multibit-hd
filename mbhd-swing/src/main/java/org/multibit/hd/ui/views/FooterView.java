@@ -43,9 +43,6 @@ public class FooterView {
   private final ListeningScheduledExecutorService scheduledExecutorService = SafeExecutors.newSingleThreadScheduledExecutor("hide-progress");
   private final List<Future> hideProgressFutures = Lists.newArrayList();
 
-  // Hide the progress bar
-//  private Optional<? extends ScheduledFuture<?>> hideProgressBarFuture = Optional.<ScheduledFuture<?>>absent();
-
   public FooterView() {
 
     CoreServices.uiEventBus.register(this);
@@ -57,7 +54,8 @@ public class FooterView {
     ));
 
     // Apply the theme
-    contentPanel.setBackground(Themes.currentTheme.headerPanelBackground());
+    contentPanel.setBackground(Themes.currentTheme.footerPanelBackground());
+    contentPanel.setOpaque(true);
 
     progressBar = new JProgressBar();
     progressBar.setMinimum(0);
@@ -111,13 +109,13 @@ public class FooterView {
         statusLabel.setText(event.getLocalisedMessage());
         switch (event.getSeverity()) {
           case RED:
-            statusIcon.setForeground(Themes.currentTheme.dangerAlertBackground());
+            statusIcon.setForeground(Themes.currentTheme.statusRed());
             break;
           case AMBER:
-            statusIcon.setForeground(Themes.currentTheme.warningAlertBackground());
+            statusIcon.setForeground(Themes.currentTheme.statusAmber());
             break;
           case GREEN:
-            statusIcon.setForeground(Themes.currentTheme.successAlertBackground());
+            statusIcon.setForeground(Themes.currentTheme.statusGreen());
             break;
           default:
             // Unknown status
@@ -154,14 +152,14 @@ public class FooterView {
 
         if (amber.contains(event.getPercent())) {
 
-          NimbusDecorator.applyThemeColor(Themes.currentTheme.warningAlertBackground(), progressBar);
+          NimbusDecorator.applyThemeColor(Themes.currentTheme.statusAmber(), progressBar);
           progressBar.setValue(event.getPercent());
           progressBar.setVisible(true);
         }
 
         if (green.contains(event.getPercent())) {
 
-          NimbusDecorator.applyThemeColor(Themes.currentTheme.successAlertBackground(), progressBar);
+          NimbusDecorator.applyThemeColor(Themes.currentTheme.statusGreen(), progressBar);
           progressBar.setValue(Math.min(100, event.getPercent()));
           progressBar.setVisible(true);
 

@@ -124,7 +124,7 @@ public class Images {
     if ((!isCoinbase && confirmationCount >= 6) || (isCoinbase && confirmationCount >= 120)) {
       return ImageDecorator.toImageIcon(AwesomeDecorator.createIcon(
         AwesomeIcon.CHECK,
-        Themes.currentTheme.successAlertBackground(),
+        Themes.currentTheme.statusGreen(),
         iconSize));
     }
 
@@ -144,10 +144,10 @@ public class Images {
 
     // Have an icon size 20% bigger for the pie pieces
     iconSize = (int) (iconSize * 1.2);
-    g2.setColor(Themes.currentTheme.successAlertBackground());
+    g2.setColor(Themes.currentTheme.statusGreen());
     g2.fillArc(1, 1, iconSize - 2, iconSize - 2, 90, -angle);
 
-    g2.setColor(Themes.currentTheme.successAlertBackground().darker());
+    g2.setColor(Themes.currentTheme.statusGreen().darker());
     g2.drawArc(1, 1, iconSize - 2, iconSize - 2, 90, -angle);
     if (angle != 360) {
       int center = (int) (iconSize * 0.5);

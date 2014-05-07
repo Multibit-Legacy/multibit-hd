@@ -143,15 +143,21 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
     // Set a basic style sheet
     StyleSheet styleSheet = kit.getStyleSheet();
 
+    // Define some color entries
+    Color linkColor = Themes.currentTheme.sidebarSelectedText();
+
+    String linkCss = String.format("#%02x%02x%02x", linkColor.getRed(), linkColor.getGreen(), linkColor.getBlue());
+    String headingCss = "#973131";
+
     // Avoid setting the background here since it can bleed through the look and feel
     styleSheet.addRule("body{font-family:\"Helvetica Neue\",\"Liberation Sans\",Arial,sans-serif;margin:0;padding:0;}");
     styleSheet.addRule("h1,h2{font-family:\"Helvetica Neue\",\"Liberation Sans\",Arial,sans-serif;font-weight:normal;}");
-    styleSheet.addRule("h1{color:#973131;font-size:150%;}");
-    styleSheet.addRule("h2{color:#973131;font-size:125%;}");
-    styleSheet.addRule("h3{color:#973131;font-size:100%;}");
+    styleSheet.addRule("h1{color:" + headingCss + ";font-size:150%;}");
+    styleSheet.addRule("h2{color:" + headingCss + ";font-size:125%;}");
+    styleSheet.addRule("h3{color:" + headingCss + ";font-size:100%;}");
     styleSheet.addRule("h1 img,h2 img,h3 img{vertical-align:middle;margin-right:5px;}");
-    styleSheet.addRule("a:link,a:visited,a:active{color:#973131;}");
-    styleSheet.addRule("a:link:hover,a:visited:hover,a:active:hover{color:#973131;}");
+    styleSheet.addRule("a:link,a:visited,a:active{color:" + linkCss + ";}");
+    styleSheet.addRule("a:link:hover,a:visited:hover,a:active:hover{color:" + linkCss + ";}");
     styleSheet.addRule("a img{border:0;}");
 
     // TODO More robust error handling required

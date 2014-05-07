@@ -22,8 +22,8 @@ import java.awt.*;
  */
 public class StripedTable extends JTable {
 
-  public static Color alternateColor = Themes.currentTheme.headerPanelBackground();
-  public static Color rowColor = Themes.currentTheme.sidebarPanelBackground();
+  public static Color rowColor = Themes.currentTheme.tableRowBackground();
+  public static Color alternateColor = Themes.currentTheme.tableRowAltBackground();
 
   public StripedTable(AbstractTableModel model) {
     super(model);
@@ -74,11 +74,6 @@ public class StripedTable extends JTable {
         newGraphics.fillRect(0, rowYToDraw, getWidth(), getRowHeight());
 
         rowYToDraw += getRowHeight();
-
-        //if (showHorizontalLines) {
-            // Draw the horizontal line
-            //newGraphics.drawLine(0, rowYToDraw, getWidth(), rowYToDraw);
-        //  }
 
         virtualRow++;
       }

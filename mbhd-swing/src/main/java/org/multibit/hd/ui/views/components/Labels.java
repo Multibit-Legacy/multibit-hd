@@ -485,36 +485,47 @@ public class Labels {
     final Font largeFont;
     final Font normalFont;
 
+    final Color textColor;
+
     switch (style) {
       case HEADER:
         largeFont = primaryBalanceLabel.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE);
         normalFont = primaryBalanceLabel.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_NORMAL_FONT_SIZE);
+        textColor = Themes.currentTheme.headerPanelText();
         break;
       case TRANSACTION_DETAIL_AMOUNT:
         largeFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, MultiBitUI.BALANCE_TRANSACTION_LARGE_FONT_SIZE);
         normalFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, MultiBitUI.BALANCE_TRANSACTION_NORMAL_FONT_SIZE);
+        textColor = Themes.currentTheme.text();
         break;
       case FEE_AMOUNT:
         largeFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, MultiBitUI.BALANCE_FEE_NORMAL_FONT_SIZE);
         normalFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, MultiBitUI.BALANCE_FEE_NORMAL_FONT_SIZE);
+        textColor = Themes.currentTheme.text();
         break;
       case PLAIN:
         largeFont = primaryBalanceLabel.getFont().deriveFont(Font.PLAIN, MultiBitUI.BALANCE_FEE_NORMAL_FONT_SIZE);
         normalFont = primaryBalanceLabel.getFont().deriveFont(Font.PLAIN, MultiBitUI.BALANCE_FEE_NORMAL_FONT_SIZE);
+        textColor = Themes.currentTheme.text();
         break;
       default:
         throw new IllegalStateException("Unknown style:" + style.name());
     }
 
     leadingBalanceLabel.setFont(largeFont);
+    leadingBalanceLabel.setForeground(textColor);
 
     primaryBalanceLabel.setFont(largeFont);
+    primaryBalanceLabel.setForeground(textColor);
 
     secondaryBalanceLabel.setFont(normalFont);
+    secondaryBalanceLabel.setForeground(textColor);
 
     trailingSymbolLabel.setFont(largeFont);
+    trailingSymbolLabel.setForeground(textColor);
 
     exchangeLabel.setFont(normalFont);
+    exchangeLabel.setForeground(textColor);
 
     // Theme
     if (style != DisplayAmountStyle.PLAIN) {
