@@ -27,6 +27,7 @@ public class StripedTable extends JTable {
 
   public StripedTable(AbstractTableModel model) {
     super(model);
+
   }
 
   @Override
@@ -109,11 +110,12 @@ public class StripedTable extends JTable {
 
     // Only called if there are rows present
 
-    Component c = super.prepareRenderer(renderer, row, column);
+    JComponent c = (JComponent) super.prepareRenderer(renderer, row, column);
 
     // Use custom rendering to overcome background color bug in Nimbus
     if (!isRowSelected(row)) {
       c.setBackground(row % 2 == 1 ? alternateColor : rowColor);
+      c.setOpaque(true);
     }
 
     return c;

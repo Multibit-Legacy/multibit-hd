@@ -71,8 +71,12 @@ public class Tables {
     // Orientation
     table.applyComponentOrientation(Languages.currentComponentOrientation());
 
-    // Set preferred widths
+    // Checkbox column
+    TableColumn checkBoxTableColumn = table.getColumnModel().getColumn(ContactTableModel.CHECKBOX_COLUMN_INDEX);
+    checkBoxTableColumn.setCellRenderer(Renderers.newCheckboxRenderer());
     resizeColumn(table, ContactTableModel.CHECKBOX_COLUMN_INDEX, MultiBitUI.NORMAL_ICON_SIZE + SPACER);
+
+    // Gravatar column
     resizeColumn(table, ContactTableModel.GRAVATAR_COLUMN_INDEX, MultiBitUI.LARGE_ICON_SIZE + SPACER);
 
 
@@ -205,6 +209,11 @@ public class Tables {
 
     // Orientation
     table.applyComponentOrientation(Languages.currentComponentOrientation());
+
+    // Checkbox column
+    TableColumn checkBoxTableColumn = table.getColumnModel().getColumn(HistoryTableModel.CHECKBOX_COLUMN_INDEX);
+    checkBoxTableColumn.setCellRenderer(Renderers.newCheckboxRenderer());
+    resizeColumn(table, HistoryTableModel.CHECKBOX_COLUMN_INDEX, MultiBitUI.NORMAL_ICON_SIZE + SPACER);
 
     // Date column
     TableColumn dateTableColumn = table.getColumnModel().getColumn(HistoryTableModel.CREATED_COLUMN_INDEX);
