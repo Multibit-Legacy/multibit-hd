@@ -79,7 +79,6 @@ public class Tables {
     // Gravatar column
     resizeColumn(table, ContactTableModel.GRAVATAR_COLUMN_INDEX, MultiBitUI.LARGE_ICON_SIZE + SPACER);
 
-
     justifyColumnHeaders(table);
 
     return table;
@@ -134,7 +133,7 @@ public class Tables {
     TableColumn column = table.getColumnModel().getColumn(PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX);
     column.setHeaderRenderer(new AmountBTCTableHeaderRenderer(
       table.getTableHeader().getDefaultRenderer(),
-      new int[] {PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX}
+      new int[]{PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX}
     ));
 
     TableColumn amountBTCTableColumn = table.getColumnModel().getColumn(PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX);
@@ -163,7 +162,7 @@ public class Tables {
     Comparator<PaymentStatus> comparatorStatus = newStatusComparator();
     rowSorter.setComparator(PaymentTableModel.STATUS_COLUMN_INDEX, comparatorStatus);
 
-     // Comparator for payment type
+    // Comparator for payment type
     Comparator<PaymentType> comparatorPaymentType = newPaymentTypeComparator();
     rowSorter.setComparator(PaymentTableModel.TYPE_COLUMN_INDEX, comparatorPaymentType);
 
@@ -220,10 +219,11 @@ public class Tables {
     dateTableColumn.setCellRenderer(Renderers.newTrailingJustifiedDateRenderer());
     resizeColumn(table, HistoryTableModel.CREATED_COLUMN_INDEX, 150, 200);
 
-    // Set preferred widths
-    resizeColumn(table, HistoryTableModel.CHECKBOX_COLUMN_INDEX, MultiBitUI.NORMAL_ICON_SIZE + SPACER);
+    // Description column
     resizeColumn(table, HistoryTableModel.DESCRIPTION_COLUMN_INDEX, MultiBitUI.HUGE_ICON_SIZE + SPACER);
-    resizeColumn(table, HistoryTableModel.NOTES_COLUMN_INDEX, MultiBitUI.HUGE_ICON_SIZE + SPACER);
+
+    // Notes column
+//    resizeColumn(table, HistoryTableModel.NOTES_COLUMN_INDEX, MultiBitUI.HUGE_ICON_SIZE + SPACER);
 
     // Row sorter for date
     TableRowSorter<TableModel> rowSorter = new TableRowSorter<>(table.getModel());
@@ -261,88 +261,93 @@ public class Tables {
       }
     };
   }
-  /**
-    * @return A new status comparator for use with a TableRowSorter
-    */
-   private static Comparator<PaymentStatus> newStatusComparator() {
-
-     return new Comparator<PaymentStatus>() {
-
-
-
-       @Override
-       public int compare(PaymentStatus o1, PaymentStatus o2) {
-
-         if (o1 != null && o2 == null) {
-           return 1;
-         }
-
-         return o1 != null ? o1.compareToWithOrdinal(o2) : 0;
-
-       }
-     };
-   }
 
   /**
-    * @return A new BigInteger comparator for use with a TableRowSorter
-    */
-   private static Comparator<BigInteger> newBigIntegerComparator() {
+   * @return A new status comparator for use with a TableRowSorter
+   */
+  private static Comparator<PaymentStatus> newStatusComparator() {
 
-     return new Comparator<BigInteger>() {
+    return new Comparator<PaymentStatus>() {
 
-       @Override
-       public int compare(BigInteger o1, BigInteger o2) {
 
-         if (o1 != null && o2 == null) {
-           return 1;
-         }
+      @Override
+      public int compare(PaymentStatus o1, PaymentStatus o2) {
 
-         return o1 != null ? o1.compareTo(o2) : 0;
-
-       }
-     };
-   }
-
-  /**
-     * @return A new FiatPayment comparator for use with a TableRowSorter
-     */
-    private static Comparator<FiatPayment> newFiatPaymentComparator() {
-
-      return new Comparator<FiatPayment>() {
-
-        @Override
-        public int compare(FiatPayment o1, FiatPayment o2) {
-
-          if (o1 != null && o2 == null) {
-            return 1;
-          }
-
-          return o1 != null ? o1.compareTo(o2) : 0;
-
+        if (o1 != null && o2 == null) {
+          return 1;
         }
-      };
-    }
 
-   /**
-    * @return A new PaymentType comparator for use with a TableRowSorter
-    */
-   private static Comparator<PaymentType> newPaymentTypeComparator() {
+        return o1 != null ? o1.compareToWithOrdinal(o2) : 0;
 
-     return new Comparator<PaymentType>() {
+      }
+    };
+  }
 
-       @Override
-       public int compare(PaymentType o1, PaymentType o2) {
+  /**
+   * @return A new BigInteger comparator for use with a TableRowSorter
+   */
+  private static Comparator<BigInteger> newBigIntegerComparator() {
 
-         if (o1 != null && o2 == null) {
-           return 1;
-         }
+    return new Comparator<BigInteger>() {
 
-         return o1 != null ? o1.compareTo(o2) : 0;
+      @Override
+      public int compare(BigInteger o1, BigInteger o2) {
 
-       }
-     };
-   }
+        if (o1 != null && o2 == null) {
+          return 1;
+        }
 
+        return o1 != null ? o1.compareTo(o2) : 0;
+
+      }
+    };
+  }
+
+  /**
+   * @return A new FiatPayment comparator for use with a TableRowSorter
+   */
+  private static Comparator<FiatPayment> newFiatPaymentComparator() {
+
+    return new Comparator<FiatPayment>() {
+
+      @Override
+      public int compare(FiatPayment o1, FiatPayment o2) {
+
+        if (o1 != null && o2 == null) {
+          return 1;
+        }
+
+        return o1 != null ? o1.compareTo(o2) : 0;
+
+      }
+    };
+  }
+
+  /**
+   * @return A new PaymentType comparator for use with a TableRowSorter
+   */
+  private static Comparator<PaymentType> newPaymentTypeComparator() {
+
+    return new Comparator<PaymentType>() {
+
+      @Override
+      public int compare(PaymentType o1, PaymentType o2) {
+
+        if (o1 != null && o2 == null) {
+          return 1;
+        }
+
+        return o1 != null ? o1.compareTo(o2) : 0;
+
+      }
+    };
+  }
+
+  /**
+   * <p>Center the column headers</p>
+   *
+   * @param table The table
+   */
   private static void justifyColumnHeaders(JTable table) {
 
     TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
@@ -351,6 +356,13 @@ public class Tables {
 
   }
 
+  /**
+   * <p>Resize a column by setting its preferred with</p>
+   *
+   * @param table          The table
+   * @param columnIndex    The column index
+   * @param preferredWidth The preferred width
+   */
   private static void resizeColumn(StripedTable table, int columnIndex, int preferredWidth) {
 
     resizeColumn(table, columnIndex, preferredWidth, preferredWidth);
