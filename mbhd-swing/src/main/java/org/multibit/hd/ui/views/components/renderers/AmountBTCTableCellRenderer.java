@@ -5,7 +5,6 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.tables.StripedTable;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
@@ -67,9 +66,9 @@ public class AmountBTCTableCellRenderer extends DefaultTableCellRenderer {
         label.setForeground(table.getSelectionForeground());
       } else {
         if (row % 2 == 1) {
-          label.setBackground(StripedTable.alternateColor);
+          label.setBackground(Themes.currentTheme.tableRowAltBackground());
         } else {
-          label.setBackground(StripedTable.rowColor);
+          label.setBackground(Themes.currentTheme.tableRowBackground());
         }
       }
     }

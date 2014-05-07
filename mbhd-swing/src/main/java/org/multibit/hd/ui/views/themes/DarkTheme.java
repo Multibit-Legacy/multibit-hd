@@ -47,7 +47,7 @@ public class DarkTheme extends BaseTheme {
 
   @Override
   public Color buttonBackground() {
-    return new Color(57, 59, 61);
+    return new Color(90, 90, 90);
   }
 
   @Override

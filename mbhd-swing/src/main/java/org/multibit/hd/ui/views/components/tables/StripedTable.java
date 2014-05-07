@@ -22,8 +22,8 @@ import java.awt.*;
  */
 public class StripedTable extends JTable {
 
-  public static Color rowColor = Themes.currentTheme.tableRowBackground();
-  public static Color alternateColor = Themes.currentTheme.tableRowAltBackground();
+  private Color rowColor = Themes.currentTheme.tableRowBackground();
+  private Color alternateColor = Themes.currentTheme.tableRowAltBackground();
 
   public StripedTable(AbstractTableModel model) {
     super(model);
@@ -32,40 +32,48 @@ public class StripedTable extends JTable {
   @Override
   public void paintComponent(Graphics g) {
 
-    // Paint the table as normal using prepareRenderer()
+    // Paint the table as normal using prepareRenderer() if any rows are present
     super.paintComponent(g);
 
     // Paint more stripes based on the remainder of the viewport
     Graphics newGraphics = g.create();
 
-    // Start with the odd color
-    newGraphics.setColor(alternateColor);
+    // Start with the even color
+    newGraphics.setColor(rowColor);
 
     // Get the rectangle for the last row
+    // A negative value provides the nearest available row
     Rectangle rectOfLastRow = getCellRect(getRowCount() - 1, 0, true);
 
-    // The top Y-coordinate of the first empty row
-    int firstNonExistentRowY = rectOfLastRow.y;
+    int firstNonExistentRowY;
+    if (getRowCount() == 0) {
+      // The top Y-coordinate of the top of the table
+      firstNonExistentRowY = -getRowHeight();
+    } else {
 
-    // Only paint the grid if empty space is visible
+      // The top Y-coordinate of the first empty row
+      firstNonExistentRowY = rectOfLastRow.y;
+    }
+
+    // Only paint the virtual grid if empty space is visible
     if (getVisibleRect().height > firstNonExistentRowY) {
-      // Fill the rows alternating and paint the row-lines
 
       // Use minus 1 otherwise the first empty row is one pixel too high
-      int rowYToDraw = (firstNonExistentRowY - 1) + getRowHeight();
+      int rowYToDraw = firstNonExistentRowY - 1 + getRowHeight();
 
       // Continue the stripes from the area with table data
-      int virtualRow = getRowCount() > 0 ? getRowCount() - 1 : 0;
+      int virtualRow = getRowCount() > 0 ? getRowCount() : 0;
 
+      // Keep drawing until we reach the overall height of the table
       while (rowYToDraw < getHeight()) {
-        if (virtualRow % 2 == 0) {
+        if (virtualRow % 2 == 1) {
 
-          // Even row
+          // Odd row
           newGraphics.setColor(alternateColor);
 
         } else {
 
-          // Odd row
+          // Even row
           newGraphics.setColor(rowColor);
 
         }
@@ -96,13 +104,16 @@ public class StripedTable extends JTable {
     }
   }
 
+  @Override
   public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+
+    // Only called if there are rows present
 
     Component c = super.prepareRenderer(renderer, row, column);
 
     // Use custom rendering to overcome background color bug in Nimbus
     if (!isRowSelected(row)) {
-      c.setBackground(row % 2 == 0 ? rowColor : alternateColor);
+      c.setBackground(row % 2 == 1 ? alternateColor : rowColor);
     }
 
     return c;

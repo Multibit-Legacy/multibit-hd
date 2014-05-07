@@ -6,7 +6,7 @@ import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.views.components.LabelDecorator;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.tables.PaymentTableModel;
-import org.multibit.hd.ui.views.components.tables.StripedTable;
+import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -35,7 +35,6 @@ public class RAGStatusTableCellRenderer extends DefaultTableCellRenderer {
 
     // Get the RAG (which is in the model as a RAGStatus
     if (value instanceof PaymentStatus) {
-      PaymentStatus status = (PaymentStatus) value;
 
       java.util.List<PaymentData> paymentDatas = paymentTableModel.getPaymentData();
       int modelRow = table.convertRowIndexToModel(row);
@@ -47,9 +46,9 @@ public class RAGStatusTableCellRenderer extends DefaultTableCellRenderer {
       label.setBackground(table.getSelectionBackground());
     } else {
       if (row % 2 == 1) {
-        label.setBackground(StripedTable.alternateColor);
+        label.setBackground(Themes.currentTheme.tableRowAltBackground());
       } else {
-        label.setBackground(StripedTable.rowColor);
+        label.setBackground(Themes.currentTheme.tableRowBackground());
       }
     }
 

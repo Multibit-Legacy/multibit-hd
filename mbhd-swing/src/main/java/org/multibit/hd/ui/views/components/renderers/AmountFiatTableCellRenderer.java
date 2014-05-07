@@ -7,7 +7,6 @@ import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.tables.StripedTable;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,9 +78,9 @@ public class AmountFiatTableCellRenderer extends DefaultTableCellRenderer {
         label.setForeground(table.getSelectionForeground());
       } else {
         if (row % 2 == 1) {
-          label.setBackground(StripedTable.alternateColor);
+          label.setBackground(Themes.currentTheme.tableRowAltBackground());
         } else {
-          label.setBackground(StripedTable.rowColor);
+          label.setBackground(Themes.currentTheme.tableRowBackground());
         }
       }
     }
