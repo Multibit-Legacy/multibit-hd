@@ -167,6 +167,14 @@ public class InstallationManager {
   }
 
   /**
+   * Use for testing only
+   * @param currentApplicationDataDirectory the application data directory to use
+   */
+  public static void setCurrentApplicationDataDirectory(File currentApplicationDataDirectory) {
+    InstallationManager.currentApplicationDataDirectory = currentApplicationDataDirectory;
+  }
+
+  /**
    * Do the following, but with reflection to bypass access checks:
    *
    * JceSecurity.isRestricted = false;
@@ -212,7 +220,5 @@ public class InstallationManager {
 
     // This simply matches the Oracle JRE, but not OpenJDK
     return "Java(TM) SE Runtime Environment".equals(System.getProperty("java.runtime.name"));
-
   }
-
 }

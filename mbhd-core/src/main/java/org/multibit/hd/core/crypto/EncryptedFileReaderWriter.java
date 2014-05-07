@@ -17,8 +17,6 @@ import org.spongycastle.crypto.params.KeyParameter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 /**
@@ -56,8 +54,8 @@ public class EncryptedFileReaderWriter {
       byte[] decryptedBytes = AESUtils.decrypt(encryptedWalletBytes, keyParameter, initialisationVector);
 
       return new ByteArrayInputStream(decryptedBytes);
-    } catch (IOException ioe) {
-      throw new EncryptedFileReaderWriterException("Cannot read and decrypt the file '" + encryptedProtobufFile.getAbsolutePath() + "'", ioe);
+    } catch (Exception e) {
+      throw new EncryptedFileReaderWriterException("Cannot read and decrypt the file '" + encryptedProtobufFile.getAbsolutePath() + "'", e);
     }
   }
 
@@ -86,8 +84,8 @@ public class EncryptedFileReaderWriter {
       } else {
         throw new EncryptedFileReaderWriterException("The encryption was not reversible so aborting.");
       }
-    } catch (IOException ioe) {
-      throw new EncryptedFileReaderWriterException("Cannot encryptAndWrite", ioe);
+    } catch (Exception e) {
+      throw new EncryptedFileReaderWriterException("Cannot encryptAndWrite", e);
     }
   }
 
@@ -109,7 +107,7 @@ public class EncryptedFileReaderWriter {
        KeyParameter backupAESKey = new KeyParameter(backupAESKeyBytes);
 
        return encryptAndDeleteOriginal(fileToEncrypt, backupAESKey, WalletManager.AES_INITIALISATION_VECTOR);
-     } catch (NoSuchAlgorithmException e) {
+     } catch (Exception e) {
        throw new EncryptedFileReaderWriterException("Could not decrypt backup AES key", e);
      }
    }
@@ -163,8 +161,8 @@ public class EncryptedFileReaderWriter {
         log.error("The file encryption was not reversible. Aborting. This means the file {} is being stored unencrypted", fileToEncrypt.getAbsolutePath());
         return null;
       }
-    } catch (IOException ioe) {
-      throw new EncryptedFileReaderWriterException("Cannot make encrypted copy for file '" + fileToEncrypt.getAbsolutePath() + "'", ioe);
+    } catch (Exception e) {
+      throw new EncryptedFileReaderWriterException("Cannot make encrypted copy for file '" + fileToEncrypt.getAbsolutePath() + "'", e);
     }
   }
 
