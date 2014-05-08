@@ -1,5 +1,6 @@
 package org.multibit.hd.brit.matcher;
 
+import com.google.bitcoin.core.Address;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -118,21 +119,24 @@ public class BasicMatcher implements Matcher {
     }
     // Lookup the current valid set of Bitcoin addresses to return to the payer
     Date now = new Date();
-    Set<String> currentBitcoinAddressList = matcherStore.lookupBitcoinAddressListForDate(now);
+    Set<Address> currentBitcoinAddressList = matcherStore.lookupBitcoinAddressListForDate(now);
 
     if (currentBitcoinAddressList == null || currentBitcoinAddressList.isEmpty()) {
+
       // No Bitcoin addresses have been set up for this date - create some addresses, store it and return it
       currentBitcoinAddressList = Sets.newHashSet();
-      Set<String> allAddresses = matcherStore.getAllBitcoinAddresses();
+      Set<Address> allAddresses = matcherStore.getAllBitcoinAddresses();
+
       if (allAddresses != null && !allAddresses.isEmpty()) {
         // Create a subset of all addresses for use today
-        String[] randomAccessAllAddresses = allAddresses.toArray(new String[allAddresses.size()]);
+        Address[] randomAccessAllAddresses = allAddresses.toArray(new Address[allAddresses.size()]);
         // Ensure we create a complete subset (no duplications, no missing entries)
         while (currentBitcoinAddressList.size() < NUMBER_OF_ADDRESSES_PER_DAY) {
           // Index should lie between 0 and size() so that array is safe
           int index = secureRandom.nextInt(allAddresses.size());
           currentBitcoinAddressList.add(randomAccessAllAddresses[index]);
         }
+
       } else {
         log.error("Could not produce a new set of Bitcoin addresses for '{}'. There are no Bitcoin addresses to pick from. Check " +
           "'var/matcher/store/all.txt' is not missing/empty.",now.toString());
@@ -140,7 +144,7 @@ public class BasicMatcher implements Matcher {
 
       // On a Matcher level lock, double check there is no data and write the list for today
       synchronized (lockObject) {
-        Set<String> doubleCheckCurrentBitcoinAddressList = matcherStore.lookupBitcoinAddressListForDate(now);
+        Set<Address> doubleCheckCurrentBitcoinAddressList = matcherStore.lookupBitcoinAddressListForDate(now);
         if (doubleCheckCurrentBitcoinAddressList == null || doubleCheckCurrentBitcoinAddressList.isEmpty()) {
           // We're certain that new addresses need to be stored
           matcherStore.storeBitcoinAddressesForDate(currentBitcoinAddressList, now);

@@ -1,6 +1,7 @@
 package org.multibit.hd.core.services;
 
 import com.google.bitcoin.core.*;
+import com.google.bitcoin.crypto.KeyCrypterException;
 import com.google.bitcoin.net.discovery.DnsDiscovery;
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
@@ -23,7 +24,6 @@ import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.network.MultiBitPeerEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spongycastle.crypto.params.KeyParameter;
 
 import java.io.File;
 import java.io.IOException;
@@ -288,8 +288,22 @@ public class BitcoinNetworkService extends AbstractService {
 
   }
 
-  public void empty() {
+  /**
+   * <p>Empty the wallet of all bitcoin</p>
+   * <p/>
+   * <p>In the future will also need:</p>
+   * <ul>
+   * <li>the wallet to send from - when Trezor comes onstream</li>
+   * <li>a CoinSelector - when HD subnodes are supported</li>
+   * </ul>
+   * <p>The result of the operation is sent to the CoreEventBus as a TransactionCreationEvent and, if the tx is created ok, a BitcoinSentEvent</p>
+   *
+   * @param sendRequestSummary A new instance of the information required to send bitcoin containing a suitably adjusted amount and fee
+   */
+  public SendRequestSummary empty(final SendRequestSummary sendRequestSummary) {
 
+
+    return sendRequestSummary;
 
   }
 
@@ -303,15 +317,15 @@ public class BitcoinNetworkService extends AbstractService {
    * </ul>
    * <p>The result of the operation is sent to the CoreEventBus as a TransactionCreationEvent and, if the tx is created ok, a BitcoinSentEvent</p>
    *
-   * @param sendBitcoinData The information required to send bitcoin
+   * @param sendRequestSummary The information required to send bitcoin
    */
-  public void send(final SendBitcoinData sendBitcoinData) {
+  public void send(final SendRequestSummary sendRequestSummary) {
 
     getExecutorService().submit(new Runnable() {
       @Override
       public void run() {
 
-        handleSendBitcoin(sendBitcoinData);
+        performSend(sendRequestSummary);
       }
 
     });
@@ -357,89 +371,148 @@ public class BitcoinNetworkService extends AbstractService {
     log.debug("Blockchain download started.");
   }
 
-  private void handleSendBitcoin(SendBitcoinData sendBitcoinData) {
+  /**
+   * @param sendRequestSummary The information required to send bitcoin
+   *
+   * @return The send request
+   */
+  private Optional<Wallet.SendRequest> performSend(SendRequestSummary sendRequestSummary) {
 
     log.debug("Starting the send process");
 
     // Verify the wallet summary
-    if (!checkWalletSummary(sendBitcoinData)) {
+    if (!checkWalletSummary(sendRequestSummary)) {
       log.debug("Wallet summary check fail");
-      return;
+      return Optional.absent();
     }
 
     Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
-    KeyParameter aesKey;
 
-    log.debug("Calculating client fee");
-    boolean addClientFee;
-    Address feeAddress = null;
-    try {
-      if (wallet.getKeyCrypter() == null) {
-        throw new IllegalStateException("No keyCrypter in wallet when one is expected.");
-      }
-      aesKey = wallet.getKeyCrypter().deriveKey(sendBitcoinData.getPassword());
-      addClientFee = sendBitcoinData.getFeeStateOptional().isPresent() && (sendBitcoinData.getFeeStateOptional().get().getCurrentNumberOfSends() == sendBitcoinData.getFeeStateOptional().get().getNextFeeSendCount());
-      if (addClientFee) {
-        String feeAddressString = sendBitcoinData.getFeeStateOptional().get().getNextFeeAddress();
-        log.debug("Adding client fee to address: '{}'", feeAddressString);
-        feeAddress = new Address(networkParameters, feeAddressString);
-      }
+    // Derive the key parameter to unlock the wallet
+    if (!deriveKeyParameter(sendRequestSummary, wallet)) {
+      return Optional.absent();
+    }
 
-    } catch (Exception e) {
-      log.error(e.getMessage(), e);
-
-      // Declare the transaction creation a failure
-      CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
-        null,
-        sendBitcoinData.getAmount(),
-        BigInteger.ZERO,
-        sendBitcoinData.getDestinationAddress(),
-        sendBitcoinData.getChangeAddress(),
-        false,
-        CoreMessageKey.THE_ERROR_WAS.getKey(),
-        new String[]{e.getClass().getCanonicalName() + " " + e.getMessage()}));
-
-      // Prevent fall-through to success
-      return;
+    // Determine if a client fee should be appended
+    if (!appendClientFee(sendRequestSummary)) {
+      return Optional.absent();
     }
 
     // Addresses and aesKey must be OK to be here
 
     // Build the send request
-    final Wallet.SendRequest sendRequest = buildSendRequest(sendBitcoinData, aesKey, addClientFee, feeAddress);
+    final Wallet.SendRequest sendRequest = buildSendRequest(sendRequestSummary);
 
     Preconditions.checkNotNull(sendRequest, "'sendRequest' must be present");
 
     // Attempt to complete it
-    if (!completeAndCommit(sendBitcoinData, wallet, sendRequest)) {
-      return;
+    if (!completeAndCommit(sendRequestSummary, wallet, sendRequest)) {
+      return Optional.absent();
     }
 
     // Attempt to broadcast it
-    if (!broadcast(sendBitcoinData, sendRequest)) {
-      return;
+    if (!broadcast(sendRequestSummary, sendRequest)) {
+      return Optional.absent();
     }
 
     log.debug("Send coins has completed");
+
+    return Optional.of(sendRequest);
+
+  }
+
+  /**
+   * @param sendRequestSummary The information required to send bitcoin
+   * @param wallet             The wallet
+   *
+   * @return True if the derivation process was successful
+   */
+  private boolean deriveKeyParameter(SendRequestSummary sendRequestSummary, Wallet wallet) {
+
+    // Wrap it all up in a try-catch to ensure we fire a failure event
+    try {
+
+      Preconditions.checkNotNull(wallet, "'wallet' must be present");
+
+      if (wallet.getKeyCrypter() == null) {
+        throw new IllegalStateException("No key crypter in wallet when one is expected.");
+      }
+      sendRequestSummary.setKeyParameter(wallet.getKeyCrypter().deriveKey(sendRequestSummary.getPassword()));
+
+      return true;
+
+    } catch (IllegalStateException | KeyCrypterException e) {
+
+      log.error(e.getMessage(), e);
+
+      // Declare the transaction creation a failure
+      CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
+        null,
+        sendRequestSummary.getAmount(),
+        BigInteger.ZERO,
+        sendRequestSummary.getDestinationAddress(),
+        sendRequestSummary.getChangeAddress(),
+        false,
+        CoreMessageKey.THE_ERROR_WAS.getKey(),
+        new String[]{e.getClass().getCanonicalName() + " " + e.getMessage()}));
+
+    }
+
+    // Must have failed to be here
+    return false;
+  }
+
+  /**
+   * @param sendRequestSummary The information required to send bitcoin
+   *
+   * @return True if no error was encountered
+   */
+  private boolean appendClientFee(SendRequestSummary sendRequestSummary) {
+
+    final boolean isClientFeeRequired;
+    if (sendRequestSummary.getFeeState().isPresent()) {
+
+      int currentNumberOfSends = sendRequestSummary.getFeeState().get().getCurrentNumberOfSends();
+      int nextFeeSendCount = sendRequestSummary.getFeeState().get().getNextFeeSendCount();
+
+      isClientFeeRequired = (currentNumberOfSends == nextFeeSendCount);
+
+    } else {
+
+      // Nothing more to be done
+      return true;
+    }
+
+    // May need to add the client fee
+    if (isClientFeeRequired) {
+
+      Address feeAddress = sendRequestSummary.getFeeState().get().getNextFeeAddress();
+      sendRequestSummary.setFeeAddress(feeAddress);
+
+      log.debug("Added client fee to address: '{}'", feeAddress);
+
+    }
+
+    return false;
   }
 
   /**
    * Handle missing wallet summary
    *
-   * @param sendBitcoinData The information required to send bitcoin
+   * @param sendRequestSummary The information required to send bitcoin
    *
    * @return True if the wallet summary is present
    */
-  private boolean checkWalletSummary(SendBitcoinData sendBitcoinData) {
+  private boolean checkWalletSummary(SendRequestSummary sendRequestSummary) {
 
     if (!WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
       // Declare the transaction creation a failure - no wallet
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
         null,
-        sendBitcoinData.getAmount(),
+        sendRequestSummary.getAmount(),
         BigInteger.ZERO,
-        sendBitcoinData.getDestinationAddress(),
-        sendBitcoinData.getChangeAddress(),
+        sendRequestSummary.getDestinationAddress(),
+        sendRequestSummary.getChangeAddress(),
         false,
         CoreMessageKey.NO_ACTIVE_WALLET.getKey(),
         new String[]{""}
@@ -454,39 +527,42 @@ public class BitcoinNetworkService extends AbstractService {
   }
 
   /**
-   * @param aesKey       The AES decryption key for the wallet
-   * @param addClientFee True if the client fee should be added
-   * @param feeAddress   The fee address
+   * @param sendRequestSummary The information required to send bitcoin
    *
    * @return The send request
    */
-  private Wallet.SendRequest buildSendRequest(SendBitcoinData sendBitcoinData, KeyParameter aesKey, boolean addClientFee, Address feeAddress) {
+  private Wallet.SendRequest buildSendRequest(SendRequestSummary sendRequestSummary) {
 
     log.debug("Building send request");
 
-    final Wallet.SendRequest sendRequest;
-    sendRequest = Wallet.SendRequest.to(sendBitcoinData.getDestinationAddress(), sendBitcoinData.getAmount());
-    sendRequest.aesKey = aesKey;
+    final Wallet.SendRequest sendRequest = Wallet.SendRequest.to(
+      sendRequestSummary.getDestinationAddress(),
+      sendRequestSummary.getAmount()
+    );
+    sendRequest.aesKey = sendRequestSummary.getKeyParameter().get();
     sendRequest.fee = BigInteger.ZERO;
-    sendRequest.feePerKb = sendBitcoinData.getFeePerKB();
-    sendRequest.changeAddress = sendBitcoinData.getChangeAddress();
+    sendRequest.feePerKb = sendRequestSummary.getFeePerKB();
+    sendRequest.changeAddress = sendRequestSummary.getChangeAddress();
 
     // TODO (JB) Position of fee should be randomized
-    if (addClientFee) {
-      sendRequest.tx.addOutput(sendBitcoinData.getFeeStateOptional().get().getFeeOwed(), feeAddress);
+    if (sendRequestSummary.getFeeAddress().isPresent()) {
+      sendRequest.tx.addOutput(
+        sendRequestSummary.getFeeState().get().getFeeOwed(),
+        sendRequestSummary.getFeeAddress().get()
+      );
     }
 
     return sendRequest;
   }
 
   /**
-   * @param sendBitcoinData The information required to send bitcoin
-   * @param wallet          The wallet
-   * @param sendRequest     The send request
+   * @param sendRequestSummary The information required to send bitcoin
+   * @param wallet             The wallet
+   * @param sendRequest        The send request
    *
    * @return True if the complete and commit operations were successful
    */
-  private boolean completeAndCommit(SendBitcoinData sendBitcoinData, Wallet wallet, Wallet.SendRequest sendRequest) {
+  private boolean completeAndCommit(SendRequestSummary sendRequestSummary, Wallet wallet, Wallet.SendRequest sendRequest) {
 
     log.debug("Complete and commit send request...");
     try {
@@ -500,10 +576,10 @@ public class BitcoinNetworkService extends AbstractService {
       // Fire a successful transaction creation event
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
         sendRequest.tx.getHashAsString(),
-        sendBitcoinData.getAmount(),
+        sendRequestSummary.getAmount(),
         sendRequest.fee /* the actual fee paid */,
-        sendBitcoinData.getDestinationAddress(),
-        sendBitcoinData.getChangeAddress(),
+        sendRequestSummary.getDestinationAddress(),
+        sendRequestSummary.getChangeAddress(),
         true,
         null,
         null
@@ -517,10 +593,10 @@ public class BitcoinNetworkService extends AbstractService {
       // Fire a failed transaction creation event
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
         transactionId,
-        sendBitcoinData.getAmount(),
+        sendRequestSummary.getAmount(),
         BigInteger.ZERO,
-        sendBitcoinData.getDestinationAddress(),
-        sendBitcoinData.getChangeAddress(),
+        sendRequestSummary.getDestinationAddress(),
+        sendRequestSummary.getChangeAddress(),
         false,
         CoreMessageKey.THE_ERROR_WAS.getKey(),
         new String[]{e.getMessage()}));
@@ -534,12 +610,12 @@ public class BitcoinNetworkService extends AbstractService {
   }
 
   /**
-   * @param sendBitcoinData The information required to send bitcoin
-   * @param sendRequest     The send request
+   * @param sendRequestSummary The information required to send bitcoin
+   * @param sendRequest        The send request
    *
    * @return True if the broadcast operation was successful
    */
-  private boolean broadcast(SendBitcoinData sendBitcoinData, Wallet.SendRequest sendRequest) {
+  private boolean broadcast(SendRequestSummary sendRequestSummary, Wallet.SendRequest sendRequest) {
 
     log.debug("Attempting to broadcast transaction");
     try {
@@ -547,9 +623,9 @@ public class BitcoinNetworkService extends AbstractService {
       if (!pingPeers()) {
         // Declare the send a failure
         CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(
-          sendBitcoinData.getDestinationAddress(),
-          sendBitcoinData.getAmount(),
-          sendBitcoinData.getChangeAddress(),
+          sendRequestSummary.getDestinationAddress(),
+          sendRequestSummary.getAmount(),
+          sendRequestSummary.getChangeAddress(),
           BigInteger.ZERO,
           false,
           CoreMessageKey.COULD_NOT_CONNECT_TO_BITCOIN_NETWORK.getKey(),
@@ -567,8 +643,8 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Declare the send a success
       CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(
-        sendBitcoinData.getDestinationAddress(), sendBitcoinData.getAmount(),
-        sendBitcoinData.getChangeAddress(), BigInteger.ZERO,
+        sendRequestSummary.getDestinationAddress(), sendRequestSummary.getAmount(),
+        sendRequestSummary.getChangeAddress(), BigInteger.ZERO,
         true,
         CoreMessageKey.BITCOIN_SENT_OK.getKey(),
         null
@@ -579,8 +655,8 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Declare the send a failure
       CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(
-        sendBitcoinData.getDestinationAddress(), sendBitcoinData.getAmount(),
-        sendBitcoinData.getChangeAddress(), BigInteger.ZERO,
+        sendRequestSummary.getDestinationAddress(), sendRequestSummary.getAmount(),
+        sendRequestSummary.getChangeAddress(), BigInteger.ZERO,
         false,
         CoreMessageKey.THE_ERROR_WAS.getKey(),
         new String[]{e.getMessage()}

@@ -1,5 +1,6 @@
 package org.multibit.hd.brit.matcher;
 
+import com.google.bitcoin.core.Address;
 import org.multibit.hd.brit.dto.BRITWalletId;
 import org.multibit.hd.brit.dto.WalletToEncounterDateLink;
 
@@ -41,7 +42,7 @@ public interface MatcherStore {
    *
    * @return The Bitcoin address set for this date (empty if none selected yet)
    */
-  public Set<String> lookupBitcoinAddressListForDate(Date encounterDate);
+  public Set<Address> lookupBitcoinAddressListForDate(Date encounterDate);
 
   /**
    * Store the Bitcoin address set as the Bitcoin addresses to send back to the payer for the encounter date
@@ -49,19 +50,19 @@ public interface MatcherStore {
    * @param bitcoinAddresses The Bitcoin addresses to store
    * @param encounterDate    The date to store them against
    */
-  public void storeBitcoinAddressesForDate(Set<String> bitcoinAddresses, Date encounterDate);
+  public void storeBitcoinAddressesForDate(Set<Address> bitcoinAddresses, Date encounterDate);
 
   /**
    * Store the set of Bitcoin addresses as the 'universe' of all possible Bitcoin addresses
    *
    * @param allBitcoinAddresses The set of all possible Bitcoin addresses to store
    */
-  public void storeAllBitcoinAddresses(Set<String> allBitcoinAddresses);
+  public void storeAllBitcoinAddresses(Set<Address> allBitcoinAddresses);
 
   /**
    * Get the set of all possible Bitcoin addresses in this MatcherStore
    *
    * @return The set of all Bitcoin addresses in the store
    */
-  public Set<String> getAllBitcoinAddresses();
+  public Set<Address> getAllBitcoinAddresses();
 }

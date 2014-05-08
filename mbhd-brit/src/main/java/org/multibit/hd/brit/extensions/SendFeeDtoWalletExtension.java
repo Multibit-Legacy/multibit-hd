@@ -1,7 +1,9 @@
 package org.multibit.hd.brit.extensions;
 
+import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletExtension;
+import com.google.bitcoin.params.MainNetParams;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import org.multibit.hd.brit.dto.SendFeeDto;
@@ -92,11 +94,11 @@ public class SendFeeDtoWalletExtension implements WalletExtension {
         }
       }
 
-      String addressString = tokens[1];
-      Optional<String> nextFeeSendAddress = Optional.absent();
+      String rawAddress = tokens[1];
+      Optional<Address> nextFeeSendAddress = Optional.absent();
 
-      if (!NOT_PRESENT_MARKER.equals(addressString)) {
-        nextFeeSendAddress = Optional.of(addressString);
+      if (!NOT_PRESENT_MARKER.equals(rawAddress)) {
+        nextFeeSendAddress = Optional.of(new Address(MainNetParams.get(), rawAddress));
       }
 
       sendFeeDto = new SendFeeDto(nextFeeSendCount, nextFeeSendAddress);

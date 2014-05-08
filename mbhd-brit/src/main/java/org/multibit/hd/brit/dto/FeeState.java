@@ -1,22 +1,29 @@
 package org.multibit.hd.brit.dto;
 
+import com.google.bitcoin.core.Address;
+
 import java.math.BigInteger;
 
 /**
  * <p>DTO to provide the following to BRIT Payers :</p>
  * <ul>
- * <li>whether the Payer is using the list of hardwired BRIT payment addresses</li>
- * <li>the next Bitcoin address to send fees to</li>
- * <li>the count of sends in the Payers wallet at which to make the payment</li>
- * <li>the amount of bitcoin to send</li>
- * <li>the current fee per send</li>
- * <li>the current fee deficit (the amount allowing from the BRIT Payer to the Redeemer</li>
- *  </ul>
+ * <li>Management of the client fee payment schedule</li>
+ * </ul>
+ *
+ * @since 0.0.1
  */
 public class FeeState {
 
+  /**
+   * @param usingHardwiredBRITAddresses True if the Payer is using the list of hardwired BRIT payment addresses
+   * @param nextFeeAddress              The next Bitcoin address to send fees to
+   * @param currentNumberOfSends        The current count of send in the Payer's wallet
+   * @param nextFeeSendCount            The count of sends in the Payer's wallet at which to make the payment
+   * @param feePerSendSatoshi           The current fee per send (in Satoshis)
+   * @param feeOwed                     The current deficit (the amount allowing from the BRIT Payer to the Redeemer)
+   */
   public FeeState(boolean usingHardwiredBRITAddresses,
-                  String nextFeeAddress,
+                  Address nextFeeAddress,
                   int currentNumberOfSends,
                   int nextFeeSendCount,
                   BigInteger feePerSendSatoshi,
@@ -40,7 +47,7 @@ public class FeeState {
   /**
    * The Bitcoin address to which the next Payer fee payment should be paid.
    */
-  private String nextFeeAddress;
+  private Address nextFeeAddress;
 
   /**
    * The total number of sends in the Payer's wallet.
@@ -69,7 +76,7 @@ public class FeeState {
     return usingHardwiredBRITAddresses;
   }
 
-  public String getNextFeeAddress() {
+  public Address getNextFeeAddress() {
     return nextFeeAddress;
   }
 

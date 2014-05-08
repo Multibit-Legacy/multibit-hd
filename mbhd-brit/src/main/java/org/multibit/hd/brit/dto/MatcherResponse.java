@@ -1,5 +1,8 @@
 package org.multibit.hd.brit.dto;
 
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.AddressFormatException;
+import com.google.bitcoin.params.MainNetParams;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
@@ -27,9 +30,13 @@ public class MatcherResponse {
 
   private final Optional<Date> replayDateOptional;
 
-  private final Set<String> bitcoinAddresses;
+  private final Set<Address> bitcoinAddresses;
 
-  public MatcherResponse(Optional<Date> replayDateOptional, Set<String> bitcoinAddresses) {
+  /**
+   * @param replayDateOptional The replay date
+   * @param bitcoinAddresses   The Bitcoin addresses to use
+   */
+  public MatcherResponse(Optional<Date> replayDateOptional, Set<Address> bitcoinAddresses) {
     this.replayDateOptional = replayDateOptional;
     this.bitcoinAddresses = bitcoinAddresses;
   }
@@ -38,7 +45,7 @@ public class MatcherResponse {
     return 1;
   }
 
-  public Set<String> getBitcoinAddresses() {
+  public Set<Address> getBitcoinAddresses() {
     return bitcoinAddresses;
   }
 
@@ -64,7 +71,7 @@ public class MatcherResponse {
       builder.append(OPTIONAL_NOT_PRESENT_TEXT).append(PayerRequest.SEPARATOR);
     }
     if (bitcoinAddresses != null) {
-      for (String address : bitcoinAddresses) {
+      for (Address address : bitcoinAddresses) {
         builder.append(address).append(PayerRequest.SEPARATOR);
       }
     }
@@ -81,8 +88,7 @@ public class MatcherResponse {
    *
    * @return a recreated MatcherResponse
    */
-  public static MatcherResponse parse(byte[] serialisedMatcherResponse)
-    throws MatcherResponseException {
+  public static MatcherResponse parse(byte[] serialisedMatcherResponse) throws MatcherResponseException {
 
     String serialisedMatcherResponseAsString = new String(serialisedMatcherResponse, Charsets.UTF_8);
 
@@ -100,14 +106,19 @@ public class MatcherResponse {
       } else {
         replayDateOptional = Optional.of(new Date(Long.parseLong(rows[1])));
       }
-      Set<String> bitcoinAddresses = Sets.newHashSet();
+      Set<Address> bitcoinAddresses = Sets.newHashSet();
       if (rows.length > 2) {
         for (int i = 2; i < rows.length; i++) {
           if (rows[i] != null && rows[i].length() > 0) {
-            bitcoinAddresses.add(rows[i]);
+            try {
+              bitcoinAddresses.add(new Address(MainNetParams.get(), rows[i]));
+            } catch (AddressFormatException e) {
+              log.error("BRIT address is malformed in MatcherResponse. Ignoring.",e);
+            }
           }
         }
       }
+
       return new MatcherResponse(replayDateOptional, bitcoinAddresses);
 
     } else {
@@ -139,8 +150,8 @@ public class MatcherResponse {
   @Override
   public String toString() {
     return "MatcherResponse{" +
-            "replayDateOptional=" + replayDateOptional +
-            ", addressList=" + bitcoinAddresses +
-            '}';
+      "replayDateOptional=" + replayDateOptional +
+      ", addressList=" + bitcoinAddresses +
+      '}';
   }
 }

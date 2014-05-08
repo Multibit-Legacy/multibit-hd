@@ -1,5 +1,6 @@
 package org.multibit.hd.brit.dto;
 
+import com.google.bitcoin.core.Address;
 import com.google.common.base.Optional;
 
 /**
@@ -24,9 +25,9 @@ public class SendFeeDto {
    * The address to send the next fee to.
    * If this value has not been set yet it will be Optional.absent();
    */
-  private Optional<String> sendFeeAddress;
+  private Optional<Address> sendFeeAddress;
 
-  public SendFeeDto(Optional<Integer> sendFeeCount, Optional<String> sendFeeAddress) {
+  public SendFeeDto(Optional<Integer> sendFeeCount, Optional<Address> sendFeeAddress) {
     this.sendFeeCount = sendFeeCount;
     this.sendFeeAddress = sendFeeAddress;
   }
@@ -35,7 +36,7 @@ public class SendFeeDto {
     return sendFeeCount;
   }
 
-  public Optional<String> getSendFeeAddress() {
+  public Optional<Address> getSendFeeAddress() {
     return sendFeeAddress;
   }
 
@@ -43,7 +44,7 @@ public class SendFeeDto {
     this.sendFeeCount = sendFeeCount;
   }
 
-  public void setSendFeeAddress(Optional<String> sendFeeAddress) {
+  public void setSendFeeAddress(Optional<Address> sendFeeAddress) {
     this.sendFeeAddress = sendFeeAddress;
   }
 

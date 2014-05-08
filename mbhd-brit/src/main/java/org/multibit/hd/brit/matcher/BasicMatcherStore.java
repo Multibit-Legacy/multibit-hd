@@ -1,5 +1,8 @@
 package org.multibit.hd.brit.matcher;
 
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.AddressFormatException;
+import com.google.bitcoin.params.MainNetParams;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
@@ -17,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -55,7 +59,7 @@ public class BasicMatcherStore implements MatcherStore {
   /**
    * A map containing the link from a BRITWalletId to the previous encounter of this wallet (if available)
    */
-  private Map<BRITWalletId, WalletToEncounterDateLink> previousEncounterMap=Maps.newHashMap();
+  private Map<BRITWalletId, WalletToEncounterDateLink> previousEncounterMap = Maps.newHashMap();
 
   /**
    * The file to which the wallet to encounter dates are appended
@@ -65,12 +69,12 @@ public class BasicMatcherStore implements MatcherStore {
   /**
    * The set of all the Bitcoin addresses in the MatcherStore
    */
-  private Set<String> allBitcoinAddresses= Sets.newHashSet();
+  private Set<Address> allBitcoinAddresses = Sets.newHashSet();
 
   /**
    * A map from the date of encounter to the list of Bitcoins used that day
    */
-  private Map<Date, Set<String>> encounterDateToBitcoinAddressesMap = Maps.newHashMap();
+  private Map<Date, Set<Address>> encounterDateToBitcoinAddressesMap = Maps.newHashMap();
 
   /**
    * @param backingStoreDirectory The Matcher backing store directory
@@ -145,7 +149,7 @@ public class BasicMatcherStore implements MatcherStore {
           DateTime parsedDate = utcShortDateWithHyphensFormatter.parseDateTime(filePart);
           if (parsedDate != null) {
             // This file contains the bitcoin addresses for this date
-            Set<String> bitcoinAddressesForDate = readBitcoinAddresses(linkFile.getAbsolutePath());
+            Set<Address> bitcoinAddressesForDate = readBitcoinAddresses(linkFile.getAbsolutePath());
             encounterDateToBitcoinAddressesMap.put(parsedDate.toDate(), bitcoinAddressesForDate);
           }
         } catch (IllegalArgumentException e) {
@@ -189,12 +193,12 @@ public class BasicMatcherStore implements MatcherStore {
   }
 
   @Override
-  public Set<String> lookupBitcoinAddressListForDate(Date encounterDate) {
+  public Set<Address> lookupBitcoinAddressListForDate(Date encounterDate) {
     return encounterDateToBitcoinAddressesMap.get(convertToMidnight(encounterDate));
   }
 
   @Override
-  public void storeBitcoinAddressesForDate(Set<String> bitcoinAddresses, Date encounterDate) {
+  public void storeBitcoinAddressesForDate(Set<Address> bitcoinAddresses, Date encounterDate) {
 
     // Update the in memory data representation
     encounterDateToBitcoinAddressesMap.put(convertToMidnight(encounterDate), bitcoinAddresses);
@@ -221,7 +225,7 @@ public class BasicMatcherStore implements MatcherStore {
   }
 
   @Override
-  public void storeAllBitcoinAddresses(Set<String> allBitcoinAddresses) {
+  public void storeAllBitcoinAddresses(Set<Address> allBitcoinAddresses) {
 
     // Update the in memory data representation
     this.allBitcoinAddresses = allBitcoinAddresses;
@@ -236,7 +240,7 @@ public class BasicMatcherStore implements MatcherStore {
   }
 
   @Override
-  public Set<String> getAllBitcoinAddresses() {
+  public Set<Address> getAllBitcoinAddresses() {
     return allBitcoinAddresses;
   }
 
@@ -247,13 +251,13 @@ public class BasicMatcherStore implements MatcherStore {
     return (new DateTime(inputDate, DateTimeZone.UTC)).toDateMidnight().toDate();
   }
 
-  private void storeBitcoinAddressesToFile(Set<String> bitcoinAddresses, String filename) throws IOException {
+  private void storeBitcoinAddressesToFile(Set<Address> bitcoinAddresses, String filename) throws IOException {
 
     // Convert the bitcoin addresses to a byte array
     StringBuilder builder = new StringBuilder();
     if (bitcoinAddresses != null) {
-      for (String address : bitcoinAddresses) {
-        builder.append(address).append("\n");
+      for (Address address : bitcoinAddresses) {
+        builder.append(address.toString()).append("\n");
       }
     }
     byte[] bitcoinAddressesAsBytes = builder.toString().getBytes(Charsets.UTF_8);
@@ -263,14 +267,24 @@ public class BasicMatcherStore implements MatcherStore {
 
   }
 
-  private Set<String> readBitcoinAddresses(String filename) {
+  private Set<Address> readBitcoinAddresses(String filename) {
 
-    Set<String> addresses = Sets.newHashSet();
+    Set<Address> addresses = Sets.newHashSet();
     File addressesFile = new File(filename);
     if (addressesFile.exists()) {
       try {
-        addresses.addAll(Files.readLines(addressesFile, Charsets.UTF_8));
-        log.debug("Loaded {} addresses", addresses.size());
+        List<String> rawAddresses = Files.readLines(addressesFile, Charsets.UTF_8);
+        log.debug("Loaded {} raw addresses", rawAddresses.size());
+
+        int line = 0;
+        for (String rawAddress : rawAddresses) {
+          try {
+            addresses.add(new Address(MainNetParams.get(), rawAddress));
+            line++;
+          } catch (AddressFormatException e) {
+            log.error("Malformed BRIT address in 'all.txt' line: " + line + ". Ignoring.", e);
+          }
+        }
       } catch (IOException ioe) {
         log.error(ioe.getMessage(), ioe);
       }

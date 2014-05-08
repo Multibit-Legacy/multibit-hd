@@ -16,11 +16,15 @@ package org.multibit.hd.brit.matcher;
  * limitations under the License.
  */
 
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.params.MainNetParams;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.crypto.PGPUtils;
@@ -39,6 +43,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.security.SecureRandom;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -48,6 +53,28 @@ public class BasicMatcherTest {
   private static final Logger log = LoggerFactory.getLogger(BasicMatcherTest.class);
 
   private SecureRandom secureRandom;
+
+  private static List<Address> testAddresses = Lists.newArrayList();
+
+  @BeforeClass
+  public static void setUpOnce() throws Exception {
+
+    String[] rawTestAddresses = new String[]{
+
+      "1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty",
+      "14Ru32Lb4kdLGfAMz1VAtxh3UFku62HaNH",
+      "1KesQEF2yC2FzkJYLLozZJdbBF7zRhrdSC",
+      "1CuWW5fDxuFN6CcrRi51ADWHXAMJPYxY5y",
+      "1NfNX36S8aocBomvWgySaK9fn93pbpEhmY",
+      "1J1nTRJJT3ghsnAEvwd8dMmoTuaAMSLf4V"
+    };
+
+    for (String rawTestAddress : rawTestAddresses) {
+      testAddresses.add(new Address(MainNetParams.get(), rawTestAddress));
+
+    }
+
+  }
 
   @Before
   public void setUp() throws Exception {
@@ -110,7 +137,7 @@ public class BasicMatcherTest {
     assertThat(matcherResponse).isEqualTo(payersMatcherResponse);
 
     // The Payer's Matcher response contains the list of addresses the Payer will use
-    Set<String> addressList = payersMatcherResponse.getBitcoinAddresses();
+    Set<Address> addressList = payersMatcherResponse.getBitcoinAddresses();
     assertThat(addressList).isNotNull();
 
     // The Payer's Matcher response contains a stored replay date for the wallet
@@ -132,11 +159,11 @@ public class BasicMatcherTest {
     assertThat(matcher).isNotNull();
 
     // Add some test data for today's bitcoin addresses
-    Set<String> bitcoinAddresses = Sets.newHashSet();
-    bitcoinAddresses.add("cat");
-    bitcoinAddresses.add("dog");
-    bitcoinAddresses.add("elephant");
-    bitcoinAddresses.add("worm");
+    Set<Address> bitcoinAddresses = Sets.newHashSet();
+    bitcoinAddresses.add(testAddresses.get(0));
+    bitcoinAddresses.add(testAddresses.get(1));
+    bitcoinAddresses.add(testAddresses.get(2));
+    bitcoinAddresses.add(testAddresses.get(3));
 
     matcherStore.storeBitcoinAddressesForDate(bitcoinAddresses, new Date());
 

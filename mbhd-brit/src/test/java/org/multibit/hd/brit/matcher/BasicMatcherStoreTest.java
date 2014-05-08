@@ -16,10 +16,14 @@ package org.multibit.hd.brit.matcher;
  * limitations under the License.
  */
 
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.params.MainNetParams;
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.multibit.hd.brit.dto.BRITWalletId;
 import org.multibit.hd.brit.dto.BRITWalletIdTest;
@@ -32,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -43,6 +48,28 @@ public class BasicMatcherStoreTest {
   private MatcherStore matcherStore;
 
   private File matcherStoreDirectory;
+
+  private static List<Address> testAddresses = Lists.newArrayList();
+
+  @BeforeClass
+  public static void setUpOnce() throws Exception {
+
+    String[] rawTestAddresses = new String[]{
+
+      "1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty",
+      "14Ru32Lb4kdLGfAMz1VAtxh3UFku62HaNH",
+      "1KesQEF2yC2FzkJYLLozZJdbBF7zRhrdSC",
+      "1CuWW5fDxuFN6CcrRi51ADWHXAMJPYxY5y",
+      "1NfNX36S8aocBomvWgySaK9fn93pbpEhmY",
+      "1J1nTRJJT3ghsnAEvwd8dMmoTuaAMSLf4V"
+    };
+
+    for (String rawTestAddress : rawTestAddresses) {
+      testAddresses.add(new Address(MainNetParams.get(), rawTestAddress));
+
+    }
+
+  }
 
   @Before
   public void setUp() throws Exception {
@@ -59,10 +86,10 @@ public class BasicMatcherStoreTest {
   public void testStoreAndGetAllBitcoinAddresses() throws Exception {
 
     // Store some unique Bitcoin addresses
-    Set<String> allBitcoinAddresses = Sets.newHashSet();
-    allBitcoinAddresses.add("one");
-    allBitcoinAddresses.add("two");
-    allBitcoinAddresses.add("three");
+    Set<Address> allBitcoinAddresses = Sets.newHashSet();
+    allBitcoinAddresses.add(testAddresses.get(0));
+    allBitcoinAddresses.add(testAddresses.get(1));
+    allBitcoinAddresses.add(testAddresses.get(2));
 
     matcherStore.storeAllBitcoinAddresses(allBitcoinAddresses);
 
@@ -81,24 +108,24 @@ public class BasicMatcherStoreTest {
     Date tomorrow = DateTime.now().plusDays(1).toDate();
 
     // Store some bitcoin address lists by date
-    final Set<String> bitcoinAddresses1 = Sets.newHashSet();
-    bitcoinAddresses1.add("one.cat");
-    bitcoinAddresses1.add("one.dog");
-    bitcoinAddresses1.add("one.elephant");
+    final Set<Address> bitcoinAddresses1 = Sets.newHashSet();
+    bitcoinAddresses1.add(testAddresses.get(0));
+    bitcoinAddresses1.add(testAddresses.get(1));
+    bitcoinAddresses1.add(testAddresses.get(2));
     matcherStore.storeBitcoinAddressesForDate(bitcoinAddresses1, yesterday);
 
-    final Set<String> bitcoinAddresses2 = Sets.newHashSet();
-    bitcoinAddresses2.add("two.cat");
-    bitcoinAddresses2.add("two.dog");
-    bitcoinAddresses2.add("two.elephant");
-    bitcoinAddresses2.add("two.worm");
+    final Set<Address> bitcoinAddresses2 = Sets.newHashSet();
+    bitcoinAddresses2.add(testAddresses.get(3));
+    bitcoinAddresses2.add(testAddresses.get(4));
+    bitcoinAddresses2.add(testAddresses.get(5));
+    bitcoinAddresses2.add(testAddresses.get(0));
     matcherStore.storeBitcoinAddressesForDate(bitcoinAddresses2, today);
 
-    final Set<String> bitcoinAddresses3 = Sets.newHashSet();
-    bitcoinAddresses3.add("three.cat");
-    bitcoinAddresses3.add("three.dog");
-    bitcoinAddresses3.add("three.elephant");
-    bitcoinAddresses3.add("three.wallaby");
+    final Set<Address> bitcoinAddresses3 = Sets.newHashSet();
+    bitcoinAddresses3.add(testAddresses.get(1));
+    bitcoinAddresses3.add(testAddresses.get(2));
+    bitcoinAddresses3.add(testAddresses.get(3));
+    bitcoinAddresses3.add(testAddresses.get(4));
     matcherStore.storeBitcoinAddressesForDate(bitcoinAddresses3, tomorrow);
 
     // Bounce the MatcherStore to check everything is being persisted
@@ -108,10 +135,12 @@ public class BasicMatcherStoreTest {
     assertThat(rebornMatcherStore.lookupBitcoinAddressListForDate(yesterday)).isEqualTo(bitcoinAddresses1);
     assertThat(rebornMatcherStore.lookupBitcoinAddressListForDate(today)).isEqualTo(bitcoinAddresses2);
     assertThat(rebornMatcherStore.lookupBitcoinAddressListForDate(tomorrow)).isEqualTo(bitcoinAddresses3);
+
   }
 
   @Test
   public void testStoreAndLookupWalletToEncounterDateLinks() throws Exception {
+
     // Create a BRITWalletId (in real life this would be using the Payer's wallet seed)
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(BRITWalletIdTest.SEED_PHRASE_1));
@@ -123,7 +152,6 @@ public class BasicMatcherStoreTest {
     // Store an encounter with this britWalletId and an lastTransactionDate
     WalletToEncounterDateLink walletToEncounterLink1 = new WalletToEncounterDateLink(britWalletId1, Optional.of(encounterDate1), Optional.of(firstTransactionDate1));
     matcherStore.storeWalletToEncounterDateLink(walletToEncounterLink1);
-
 
     // Store another one
     byte[] seed2 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(BRITWalletIdTest.SEED_PHRASE_2));
@@ -141,5 +169,6 @@ public class BasicMatcherStoreTest {
     // Check they have been stored ok
     assertThat(rebornMatcherStore.lookupWalletToEncounterDateLink(britWalletId1)).isEqualTo(walletToEncounterLink1);
     assertThat(rebornMatcherStore.lookupWalletToEncounterDateLink(britWalletId2)).isEqualTo(walletToEncounterLink2);
+
   }
 }

@@ -16,7 +16,7 @@ import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.PaymentData;
-import org.multibit.hd.core.dto.SendBitcoinData;
+import org.multibit.hd.core.dto.SendRequestSummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
@@ -220,7 +220,7 @@ public class BitcoinNetworkServiceFunctionalTest {
       bitcoinSentEvent = null;
 
       // Send the bitcoins
-      final SendBitcoinData sendBitcoinData = new SendBitcoinData(
+      final SendRequestSummary sendRequestSummary = new SendRequestSummary(
         destinationAddress,
         SEND_AMOUNT,
         changeAddress,
@@ -228,7 +228,7 @@ public class BitcoinNetworkServiceFunctionalTest {
         WALLET_PASSWORD,
         Optional.<FeeState>absent()
       );
-      bitcoinNetworkService.send(sendBitcoinData);
+      bitcoinNetworkService.send(sendRequestSummary);
 
       // the onBitcoinSentEvent method receives the bitcoinSentEvent once the send has completed
       // wait for a while for the send to actually be transmitted

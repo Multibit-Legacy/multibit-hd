@@ -10,7 +10,7 @@ import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.Recipient;
-import org.multibit.hd.core.dto.SendBitcoinData;
+import org.multibit.hd.core.dto.SendRequestSummary;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.events.TransactionCreationEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
@@ -140,7 +140,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     Optional<FeeState> feeState = calculateBRITFeeState();
 
     // Send the bitcoins
-    final SendBitcoinData sendBitcoinData = new SendBitcoinData(
+    final SendRequestSummary sendRequestSummary = new SendRequestSummary(
       bitcoinAddress,
       satoshis,
       changeAddress,
@@ -148,8 +148,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
       password,
       feeState
     );
-    log.debug("Just about to send bitcoin: {}", sendBitcoinData);
-    bitcoinNetworkService.send(sendBitcoinData);
+    log.debug("Just about to send bitcoin: {}", sendRequestSummary);
+    bitcoinNetworkService.send(sendRequestSummary);
 
     // The send throws TransactionCreationEvents and BitcoinSentEvents to which you subscribe to to work out success and failure.
 
