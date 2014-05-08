@@ -173,7 +173,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <ul>
    * <li>Start with empty wallet fixture</li>
    * <li>Unlock wallet</li>
-   * <li>Exercise the Contacts screen</li>
+   * <li>Exercise the History screen</li>
    * </ul>
    */
   @Test
@@ -187,6 +187,28 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
     // Examine the history after unlocking
     HistoryScreen.verifyUsing(window);
+
+  }
+
+  /**
+   * <p>Verify the following:</p>
+   * <ul>
+   * <li>Start with empty wallet fixture</li>
+   * <li>Unlock wallet</li>
+   * <li>Exercise the Tools screen</li>
+   * </ul>
+   */
+  @Test
+  public void verifyToolsScreen() throws Exception {
+
+    // Start with the empty wallet fixture
+    arrangeEmpty();
+
+    // Unlock the wallet
+    UnlockEmptyWalletFixture.verifyUsing(window);
+
+    // Examine the history after unlocking
+    ToolsScreen.verifyUsing(window);
 
   }
 

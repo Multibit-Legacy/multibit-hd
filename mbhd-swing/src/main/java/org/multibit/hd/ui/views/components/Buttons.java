@@ -178,6 +178,36 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "Sign message" button with icon
+   */
+  public static JButton newSignMessageButton(Action action) {
+
+    JButton button = newButton(action, MessageKey.SIGN_MESSAGE);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.PENCIL, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
+
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "Clear all" button with icon
+   */
+  public static JButton newClearAllButton(Action action) {
+
+    JButton button = newButton(action, MessageKey.CLEAR_ALL);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.MINUS_CIRCLE, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
+
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "Delete Payment Request" button with icon
    */
   public static JButton newDeletePaymentRequestButton(Action action) {
@@ -657,6 +687,46 @@ public class Buttons {
 
     return button;
 
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "sign" wizard button with icon
+   */
+  public static JButton newShowSignMessageWizardButton(Action action) {
+
+    JButton button = newLargeButton(action, MessageKey.SHOW_SIGN_WIZARD);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.PENCIL,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "verify" wizard button with icon
+   */
+  public static JButton newShowVerifyMessageWizardButton(Action action) {
+
+    JButton button = newLargeButton(action, MessageKey.SHOW_VERIFY_WIZARD);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.CERTIFICATE,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
+
+    return button;
   }
 
   /**

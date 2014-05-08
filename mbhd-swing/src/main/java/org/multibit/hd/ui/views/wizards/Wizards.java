@@ -63,6 +63,9 @@ import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinParameter;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinWizard;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinWizardModel;
+import org.multibit.hd.ui.views.wizards.sign_message.SignMessageState;
+import org.multibit.hd.ui.views.wizards.sign_message.SignMessageWizard;
+import org.multibit.hd.ui.views.wizards.sign_message.SignMessageWizardModel;
 import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsState;
 import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsWizard;
 import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsWizardModel;
@@ -214,6 +217,28 @@ public class Wizards {
 
     return new WelcomeWizard(new WelcomeWizardModel(initialState), false);
   }
+
+  /**
+   * @return A new "sign message" wizard for a warm start
+   */
+  public static SignMessageWizard newSignMessageWizard() {
+
+    log.debug("New 'Sign message wizard'");
+
+    return new SignMessageWizard(new SignMessageWizardModel(SignMessageState.EDIT_MESSAGE), false);
+
+  }
+
+//  /**
+//   * @return A new "verify message" wizard for a warm start
+//   */
+//  public static VerifyMessageWizard newVerifyMessageWizard() {
+//
+//    log.debug("New 'Verify message wizard'");
+//
+//    return new VerifyMessageWizard(new VerifyMessageWizardModel(VerifyMessageState.EDIT_MESSAGE), false);
+//
+//  }
 
   /**
    * @return A new "password" wizard for a warm start

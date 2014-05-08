@@ -72,6 +72,51 @@ public class TextBoxes {
   }
 
   /**
+   * @param listener The document listener for detecting changes to the content
+   * @param rows The number of rows (normally 6)
+   * @param columns The number of columns (normally
+   * @return A new text field with default theme
+   */
+  public static JTextArea newReadOnlyTextArea(DocumentListener listener, int rows, int columns) {
+
+    JTextArea textArea = new JTextArea(rows, columns);
+
+    // Users should not be able to change the data
+    textArea.setEditable(false);
+
+    // Set the theme
+    textArea.setBorder(new TextBubbleBorder(Themes.currentTheme.readOnlyBorder()));
+    textArea.setBackground(Themes.currentTheme.readOnlyBackground());
+
+    textArea.setOpaque(false);
+
+    // Limit the length of the underlying document
+    DefaultStyledDocument doc = new DefaultStyledDocument();
+    doc.setDocumentFilter(new DocumentMaxLengthFilter(rows * columns));
+    textArea.setDocument(doc);
+
+    // Ensure we monitor changes
+    doc.addDocumentListener(listener);
+
+    // Ensure line wrapping occurs correctly
+    textArea.setLineWrap(true);
+    textArea.setWrapStyleWord(true);
+
+    // Ensure TAB transfers focus
+    AbstractAction transferFocus = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        ((Component) e.getSource()).transferFocus();
+      }
+    };
+    textArea.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "transferFocus");
+    textArea.getActionMap().put("transferFocus", transferFocus);
+
+    return textArea;
+
+  }
+
+
+  /**
    * @return A new "enter label" text field
    */
   public static JTextField newEnterLabel() {
@@ -375,6 +420,30 @@ public class TextBoxes {
   /**
    * @param listener The document listener for detecting changes to the content
    *
+   * @return A new "message" text area (usually for signing for verifying)
+   */
+  public static JTextArea newEnterMessage(DocumentListener listener, boolean readOnly) {
+
+    final JTextArea textArea;
+    if (readOnly) {
+      textArea = TextBoxes.newReadOnlyTextArea(listener, 6, MultiBitUI.PASSWORD_LENGTH);
+    } else {
+      textArea = TextBoxes.newEnterPrivateNotes(listener, MultiBitUI.PASSWORD_LENGTH);
+    }
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textArea, MessageKey.MESSAGE);
+
+    // Ensure Accessibility can find it
+    textArea.getAccessibleContext().setAccessibleName(Languages.safeText(MessageKey.MESSAGE));
+    textArea.getAccessibleContext().setAccessibleDescription(Languages.safeText(MessageKey.MESSAGE_TOOLTIP));
+
+    return textArea;
+  }
+
+  /**
+   * @param listener The document listener for detecting changes to the content
+   *
    * @return A new default "private notes" text area
    */
   public static JTextArea newEnterPrivateNotes(DocumentListener listener) {
@@ -533,4 +602,5 @@ public class TextBoxes {
   public static char getPasswordEchoChar() {
     return '\u2022';
   }
+
 }

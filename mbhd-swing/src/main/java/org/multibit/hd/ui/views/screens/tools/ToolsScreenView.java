@@ -72,6 +72,9 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
     contentPanel.add(Buttons.newShowVerifyNetworkButton(getShowVerifyNetworkAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowWelcomeWizardButton(getShowWelcomeWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
 
+    contentPanel.add(Buttons.newShowSignMessageWizardButton(getShowSignMessageWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    contentPanel.add(Buttons.newShowVerifyMessageWizardButton(getShowVerifyMessageWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+
     return contentPanel;
   }
 
@@ -84,6 +87,33 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
       public void actionPerformed(ActionEvent e) {
 
         Panels.showLightBox(Wizards.newClosingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardScreenHolder());
+      }
+    };
+  }
+
+  /**
+   * @return An action to show the "sign message" wizard
+   */
+  private AbstractAction getShowSignMessageWizardAction() {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        Panels.showLightBox(Wizards.newSignMessageWizard().getWizardScreenHolder());
+      }
+    };
+  }
+
+  /**
+   * @return An action to show the "verify message" wizard
+   */
+  private AbstractAction getShowVerifyMessageWizardAction() {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        // TODO Implement this
+        //Panels.showLightBox(Wizards.newVerifyMessageWizard().getWizardScreenHolder());
       }
     };
   }

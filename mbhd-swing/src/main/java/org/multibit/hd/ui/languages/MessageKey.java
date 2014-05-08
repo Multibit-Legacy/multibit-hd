@@ -41,6 +41,8 @@ public enum MessageKey {
   PRINT("print"),
   PASTE("paste"),
   COPY("copy"),
+  CLEAR_ALL("clear_all"),
+  SIGN_MESSAGE("sign_message"),
 
   // Nouns
 
@@ -69,6 +71,14 @@ public enum MessageKey {
 
   NOTES("notes"),
   NOTES_TOOLTIP("notes_tooltip"),
+
+  // Sign/verify message
+
+  MESSAGE("message"),
+  MESSAGE_TOOLTIP("message_tooltip"),
+  SIGNATURE("signature"),
+
+
 
   ONE_OF_YOUR_ADDRESSES("one_of_your_addresses"),
 
@@ -207,6 +217,10 @@ public enum MessageKey {
   PASSWORD_REPORT_MESSAGE_FAIL("password_report_message_fail"),
   PASSWORD_UNLOCK("password_unlock"),
 
+  SIGN_MESSAGE_TITLE("sign_message_title"),
+
+  VERIFY_MESSAGE_TITLE("verify_message_title"),
+
   EDIT_WALLET_TITLE("edit_wallet_title"),
 
   CHANGE_PASSWORD_TITLE("change_password_title"),
@@ -267,6 +281,8 @@ public enum MessageKey {
   SHOW_VERIFY_NETWORK_WIZARD("show_verify_network_wizard"),
   SHOW_REPAIR_WALLET_WIZARD("show_repair_wallet_wizard"),
   SHOW_EMPTY_WALLET_WIZARD("show_empty_wallet_wizard"),
+  SHOW_SIGN_WIZARD("show_sign_wizard"),
+  SHOW_VERIFY_WIZARD("show_verify_wizard"),
 
   SHOW_ALERT("show_alert"),
   HIDE_ALERT("hide_alert"),
@@ -364,6 +380,10 @@ public enum MessageKey {
 
   DATA_ENTERED_NOTE_1("data_entered_note_1"),
   DATA_ENTERED_NOTE_2("data_entered_note_2"),
+
+  SIGN_MESSAGE_NOTE_1("sign_message_note_1"),
+  SIGN_MESSAGE_NOTE_2("sign_message_note_2"),
+  SIGN_MESSAGE_NOTE_3("sign_message_note_3"),
 
   RECIPIENT_SUMMARY("recipient_summary"),
 

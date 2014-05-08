@@ -28,7 +28,7 @@ public class FormattedBitcoinAddressField extends JFormattedTextField {
    */
   public FormattedBitcoinAddressField(NetworkParameters networkParameters, boolean readOnly) {
 
-    super(34);
+    super();
 
     Preconditions.checkNotNull(networkParameters, "'networkParameters' must be present");
 

@@ -818,12 +818,25 @@ public class Labels {
   }
 
   /**
-   * @return A new "notes" message
+   * @return A new "notes" label
    */
   public static JLabel newNotes() {
     return newLabel(MessageKey.PRIVATE_NOTES);
   }
 
+  /**
+   * @return A new "message" label
+   */
+  public static JLabel newMessage() {
+    return newLabel(MessageKey.MESSAGE);
+  }
+
+  /**
+   * @return A new "signature" label
+   */
+  public static JLabel newSignature() {
+    return newLabel(MessageKey.SIGNATURE);
+  }
   /**
    * @return A new "multi edit note" label
    */
@@ -1150,6 +1163,19 @@ public class Labels {
     return newNoteLabel(new MessageKey[]{
       MessageKey.DATA_ENTERED_NOTE_1,
       MessageKey.DATA_ENTERED_NOTE_2
+    }, new Object[][]{});
+
+  }
+
+  /**
+   * @return A new "sign message" note
+   */
+  public static JLabel newSignMessageNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.SIGN_MESSAGE_NOTE_1,
+      MessageKey.SIGN_MESSAGE_NOTE_2,
+      MessageKey.SIGN_MESSAGE_NOTE_3
     }, new Object[][]{});
 
   }
