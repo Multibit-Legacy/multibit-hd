@@ -4,10 +4,8 @@ import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.ui.views.components.AbstractComponentView;
-import org.multibit.hd.ui.views.components.ComboBoxes;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.components.*;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -53,6 +51,9 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
 
     // Create the labels
     descriptionLabel = Labels.newBlankLabel();
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(descriptionLabel, MessageKey.DESCRIPTION);
 
     // Add to the panel
     panel.add(selectedWalletComboBox, "grow,push,w min:510:,wrap");

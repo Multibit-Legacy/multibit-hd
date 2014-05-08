@@ -16,6 +16,7 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
@@ -199,8 +200,16 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
       DateTime replayDate = Dates.parseSeedTimestamp(timestamp);
+
+      // Provide some default text
+      String name = Languages.safeText(MessageKey.WALLET);
+      String notes = Languages.safeText(
+        MessageKey.WALLET_DEFAULT_NOTES,
+        Dates.formatDeliveryDate(Dates.nowUtc(), Configurations.currentConfiguration.getLocale())
+      );
+
       // TODO necessary to backup any existing wallet with the same seed before creation/ overwrite ?
-      WalletManager.INSTANCE.createWalletSummary(seed, (long) (replayDate.getMillis() * 0.001), password);
+      WalletManager.INSTANCE.createWalletSummary(seed, (long) (replayDate.getMillis() * 0.001), password, name, notes);
 
       // Initialise the WalletService with the newly created wallet, which provides transaction information from the wallet
       Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();

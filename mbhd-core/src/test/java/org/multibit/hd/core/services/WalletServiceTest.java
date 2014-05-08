@@ -65,7 +65,16 @@ public class WalletServiceTest {
     InstallationManager.setCurrentApplicationDataDirectory(temporaryDirectory);
 
     long nowInSeconds = Dates.nowInSeconds();
-    walletSummary = WalletManager.INSTANCE.getOrCreateWalletSummary(temporaryDirectory, seed1, nowInSeconds, PASSWORD);
+    walletSummary = WalletManager
+      .INSTANCE
+      .getOrCreateWalletSummary(
+        temporaryDirectory,
+        seed1,
+        nowInSeconds,
+        PASSWORD,
+        "Example",
+        "Example"
+      );
     WalletManager.INSTANCE.setCurrentWalletSummary(walletSummary);
 
     firstAddress = walletSummary.getWallet().freshReceiveKey().toString();

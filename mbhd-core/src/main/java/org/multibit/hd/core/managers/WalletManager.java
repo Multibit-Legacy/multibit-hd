@@ -138,7 +138,7 @@ public enum WalletManager implements WalletEventListener {
    * There is no particular significance to the value of these bytes
    */
   public static final byte[] AES_INITIALISATION_VECTOR = new byte[]{(byte) 0xa3, (byte) 0x44, (byte) 0x39, (byte) 0x1f, (byte) 0x53, (byte) 0x83, (byte) 0x11,
-          (byte) 0xb3, (byte) 0x29, (byte) 0x54, (byte) 0x86, (byte) 0x16, (byte) 0xc4, (byte) 0x89, (byte) 0x72, (byte) 0x3e};
+    (byte) 0xb3, (byte) 0x29, (byte) 0x54, (byte) 0x86, (byte) 0x16, (byte) 0xc4, (byte) 0x89, (byte) 0x72, (byte) 0x3e};
 
   /**
    * The salt used for deriving the KeyParameter from the password in AES encryption for wallets
@@ -203,9 +203,11 @@ public enum WalletManager implements WalletEventListener {
    * The name of the wallet file is derived from the seed.
    * If the wallet file already exists it is loaded and returned (and the input password is not used)
    *
-   * @param seed     the seed used to initialise the wallet
-   * @param creationTimeInSeconds    The creation time of the wallet, in seconds since epoch
-   * @param password to use to encrypt the wallet
+   * @param seed                  the seed used to initialise the wallet
+   * @param creationTimeInSeconds The creation time of the wallet, in seconds since epoch
+   * @param password              to use to encrypt the wallet
+   * @param name                  The wallet name
+   * @param notes                 Public notes associated with the wallet
    *
    * @return Wallet summary containing the wallet object and the walletId (used in storage etc)
    *
@@ -213,10 +215,17 @@ public enum WalletManager implements WalletEventListener {
    * @throws WalletLoadException    if there is already a simple wallet created but it could not be loaded
    * @throws WalletVersionException if there is already a simple wallet but the wallet version cannot be understood
    */
-  public WalletSummary createWalletSummary(byte[] seed, long creationTimeInSeconds, CharSequence password) throws WalletLoadException, WalletVersionException, IOException {
+  public WalletSummary createWalletSummary(
+    byte[] seed,
+    long creationTimeInSeconds,
+    CharSequence password,
+    String name,
+    String notes
+
+  ) throws WalletLoadException, WalletVersionException, IOException {
 
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-    return getOrCreateWalletSummary(applicationDataDirectory, seed, creationTimeInSeconds, password);
+    return getOrCreateWalletSummary(applicationDataDirectory, seed, creationTimeInSeconds, password, name, notes);
 
   }
 
@@ -233,6 +242,8 @@ public enum WalletManager implements WalletEventListener {
    * @param seed                     The seed phrase to initialise the wallet
    * @param creationTimeInSeconds    The creation time of the wallet, in seconds since epoch
    * @param password                 The password to use to encrypt the wallet - if mull then the wallet is not loaded
+   * @param name                     The wallet name
+   * @param notes                    Public notes associated with the wallet
    *
    * @return Wallet summary containing the wallet object and the walletId (used in storage etc)
    *
@@ -240,9 +251,16 @@ public enum WalletManager implements WalletEventListener {
    * @throws WalletLoadException    if there is already a wallet created but it could not be loaded
    * @throws WalletVersionException if there is already a wallet but the wallet version cannot be understood
    */
-  public WalletSummary getOrCreateWalletSummary(File applicationDataDirectory, byte[] seed, long creationTimeInSeconds, CharSequence password) throws WalletLoadException, WalletVersionException, IOException {
+  public WalletSummary getOrCreateWalletSummary(
+    File applicationDataDirectory,
+    byte[] seed,
+    long creationTimeInSeconds,
+    CharSequence password,
+    String name,
+    String notes
+  ) throws WalletLoadException, WalletVersionException, IOException {
 
-    final WalletSummary walletSummaryToReturn;
+    final WalletSummary walletSummary;
 
     // Create a wallet id from the seed to work out the wallet root directory
     final WalletId walletId = new WalletId(seed);
@@ -257,13 +275,13 @@ public enum WalletManager implements WalletEventListener {
     if (walletFileWithAES.exists()) {
 
       // There is already a wallet created with this root - if so load it and return that
-      walletSummaryToReturn = loadFromWalletDirectory(walletDirectory, password);
+      walletSummary = loadFromWalletDirectory(walletDirectory, password);
       if (Configurations.currentConfiguration != null) {
         Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
       }
-      setCurrentWalletSummary(walletSummaryToReturn);
+      setCurrentWalletSummary(walletSummary);
 
-      return walletSummaryToReturn;
+      return walletSummary;
     }
 
     // Wallet file does not exist so create it
@@ -294,14 +312,18 @@ public enum WalletManager implements WalletEventListener {
     if (Configurations.currentConfiguration != null) {
       Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
     }
-    walletSummaryToReturn = new WalletSummary(walletId, walletToReturn);
-    walletSummaryToReturn.setPassword(password);
-    setCurrentWalletSummary(walletSummaryToReturn);
+
+    // Create a new wallet summary
+    walletSummary = new WalletSummary(walletId, walletToReturn);
+    walletSummary.setName(name);
+    walletSummary.setNotes(notes);
+    walletSummary.setPassword(password);
+    setCurrentWalletSummary(walletSummary);
 
     try {
-      WalletManager.writeEncryptedPasswordAndBackupKey(walletSummaryToReturn, seed, (String) password);
+      WalletManager.writeEncryptedPasswordAndBackupKey(walletSummary, seed, (String) password);
       File walletSummaryFile = WalletManager.getOrCreateWalletSummaryFile(walletDirectory);
-      WalletManager.updateWalletSummary(walletSummaryFile, walletSummaryToReturn);
+      WalletManager.updateWalletSummary(walletSummaryFile, walletSummary);
     } catch (NoSuchAlgorithmException e) {
       throw new WalletLoadException("could not store encrypted password and backup AES key", e);
     }
@@ -314,7 +336,7 @@ public enum WalletManager implements WalletEventListener {
     BackupManager.INSTANCE.createRollingBackup(currentWalletSummary.get(), password);
     BackupManager.INSTANCE.createLocalAndCloudBackup(currentWalletSummary.get().getWalletId(), password);
 
-    return walletSummaryToReturn;
+    return walletSummary;
   }
 
   /**
@@ -370,7 +392,7 @@ public enum WalletManager implements WalletEventListener {
 
         Protos.Wallet walletProto = WalletProtobufSerializer.parseToProto(inputStream);
 
-        WalletExtension[] walletExtensions = new WalletExtension[] {new SendFeeDtoWalletExtension(), new MatcherResponseWalletExtension()};
+        WalletExtension[] walletExtensions = new WalletExtension[]{new SendFeeDtoWalletExtension(), new MatcherResponseWalletExtension()};
         wallet = new WalletProtobufSerializer().readWallet(networkParameters, walletExtensions, walletProto);
         wallet.setKeychainLookaheadSize(WalletManager.LOOK_AHEAD_SIZE);
 
@@ -686,7 +708,7 @@ public enum WalletManager implements WalletEventListener {
    * Write the encrypted wallet password and backup AES key to the wallet configuration.
    * You probably want to save it afterwards with an updateSummary
    */
-  public static void writeEncryptedPasswordAndBackupKey(WalletSummary walletSummary, byte[] seed, String password) throws NoSuchAlgorithmException{
+  public static void writeEncryptedPasswordAndBackupKey(WalletSummary walletSummary, byte[] seed, String password) throws NoSuchAlgorithmException {
     // Save the wallet password, AES encrypted with a key derived from the wallet seed
     KeyParameter seedDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(seed, SCRYPT_SALT);
     byte[] passwordBytes = password.getBytes(Charsets.UTF_8);

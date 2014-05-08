@@ -110,7 +110,7 @@ public class BitcoinNetworkServiceFunctionalTest {
     // Create a wallet from the WALLET_SEED_1_PROPERTY_NAME
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_1_PROPERTY_NAME)));
-    WalletSummary walletSummary = createWallet(temporaryDirectory, seed);
+    WalletSummary walletSummary = createWallet(temporaryDirectory, seed, "Example", "Example");
 
     DateTime timestamp1 = Dates.parseSeedTimestamp(seedProperties.getProperty(WALLET_TIMESTAMP_1_PROPERTY_NAME));
 
@@ -147,13 +147,13 @@ public class BitcoinNetworkServiceFunctionalTest {
     // Create two wallets from the two seeds
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_1_PROPERTY_NAME)));
-    WalletSummary walletSummary1 = createWallet(temporaryDirectory, seed1);
+    WalletSummary walletSummary1 = createWallet(temporaryDirectory, seed1, "Example", "Example");
     String walletRoot1 = WalletManager.createWalletRoot(walletSummary1.getWalletId());
 
     DateTime timestamp1 = Dates.parseSeedTimestamp(seedProperties.getProperty(WALLET_TIMESTAMP_1_PROPERTY_NAME));
 
     byte[] seed2 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_2_PROPERTY_NAME)));
-    WalletSummary walletSummary2 = createWallet(temporaryDirectory, seed2);
+    WalletSummary walletSummary2 = createWallet(temporaryDirectory, seed2, "Example", "Example");
     String walletRoot2 = WalletManager.createWalletRoot(walletSummary2.getWalletId());
 
     DateTime timestamp2 = Dates.parseSeedTimestamp(seedProperties.getProperty(WALLET_TIMESTAMP_2_PROPERTY_NAME));
@@ -257,9 +257,18 @@ public class BitcoinNetworkServiceFunctionalTest {
     }
   }
 
-  private WalletSummary createWallet(File walletDirectory, byte[] seed) throws IOException {
+  private WalletSummary createWallet(File walletDirectory, byte[] seed, String name, String notes) throws IOException {
+
     long nowInSeconds = Dates.nowInSeconds();
-    WalletSummary walletSummary = walletManager.getOrCreateWalletSummary(walletDirectory, seed, nowInSeconds, WALLET_PASSWORD);
+
+    WalletSummary walletSummary = walletManager.getOrCreateWalletSummary(
+      walletDirectory,
+      seed,
+      nowInSeconds,
+      WALLET_PASSWORD,
+      name,
+      notes
+    );
     assertThat(walletSummary).isNotNull();
     assertThat(walletSummary.getWallet()).isNotNull();
 

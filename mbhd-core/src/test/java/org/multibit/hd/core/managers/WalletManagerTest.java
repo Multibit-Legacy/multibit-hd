@@ -183,7 +183,15 @@ public class WalletManagerTest {
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
     long nowInSeconds = Dates.nowInSeconds();
 
-    WalletSummary walletSummary1 = walletManager.getOrCreateWalletSummary(temporaryDirectory1, seed, nowInSeconds, "password");
+    WalletSummary walletSummary1 = walletManager
+      .getOrCreateWalletSummary(
+        temporaryDirectory1,
+        seed,
+        nowInSeconds,
+        "password",
+        "Example",
+        "Example"
+      );
 
     // Uncomment this next line if you want a wallet created in your MultiBitHD user data directory.
     //walletManager.createWallet( seed, "password");
@@ -194,7 +202,15 @@ public class WalletManagerTest {
     File temporaryDirectory2 = makeRandomTemporaryApplicationDirectory();
     BackupManager.INSTANCE.initialise(temporaryDirectory2, null);
 
-    WalletSummary walletSummary2 = walletManager.getOrCreateWalletSummary(temporaryDirectory2, seed, nowInSeconds, "password");
+    WalletSummary walletSummary2 = walletManager
+      .getOrCreateWalletSummary(
+        temporaryDirectory2,
+        seed,
+        nowInSeconds,
+        "password",
+        "Example",
+        "Example"
+      );
 
     assertThat(walletSummary2).isNotNull();
 

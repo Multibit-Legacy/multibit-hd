@@ -61,7 +61,16 @@ public class BackupManagerTest {
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
     long nowInSeconds = Dates.nowInSeconds();
     String password = "password";
-    WalletSummary walletSummary = WalletManager.INSTANCE.getOrCreateWalletSummary(temporaryApplicationDirectory, seed, nowInSeconds, password);
+    WalletSummary walletSummary = WalletManager
+      .INSTANCE
+      .getOrCreateWalletSummary(
+        temporaryApplicationDirectory,
+        seed,
+        nowInSeconds,
+        password,
+        "Example",
+        "Example"
+      );
 
     // Check there are initially a single wallet backup for the wallet id of the created wallet
     List<BackupSummary> localBackups = BackupManager.INSTANCE.getLocalZipBackups(walletSummary.getWalletId());

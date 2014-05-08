@@ -34,8 +34,18 @@ public class PersistentContactServiceTest {
     byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
 
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
+
     long nowInSeconds = Dates.nowInSeconds();
-    WalletManager.INSTANCE.getOrCreateWalletSummary(temporaryDirectory, seed1, nowInSeconds, WalletServiceTest.PASSWORD);
+    WalletManager
+      .INSTANCE
+      .getOrCreateWalletSummary(
+        temporaryDirectory,
+        seed1,
+        nowInSeconds,
+        WalletServiceTest.PASSWORD,
+        "Example",
+        "Example"
+      );
 
     File contactDbFile = new File(temporaryDirectory.getAbsolutePath() + File.separator + ContactService.CONTACTS_DATABASE_NAME);
 

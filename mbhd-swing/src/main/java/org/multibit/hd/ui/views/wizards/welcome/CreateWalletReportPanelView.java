@@ -146,7 +146,13 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       // Attempt to create the wallet (the manager will track the ID etc)
       WalletManager walletManager = WalletManager.INSTANCE;
       seed = seedPhraseGenerator.convertToSeed(seedPhrase);
-      walletSummary = walletManager.createWalletSummary(seed, Dates.nowInSeconds(), password);
+
+      String name = Languages.safeText(MessageKey.WALLET);
+      String notes = Languages.safeText(
+        MessageKey.WALLET_DEFAULT_NOTES,
+        Dates.formatDeliveryDate(Dates.nowUtc(), Configurations.currentConfiguration.getLocale())
+      );
+      walletSummary = walletManager.createWalletSummary(seed, Dates.nowInSeconds(), password, name, notes);
 
       Preconditions.checkNotNull(walletSummary.getWalletId(), "'walletId' must be present");
 

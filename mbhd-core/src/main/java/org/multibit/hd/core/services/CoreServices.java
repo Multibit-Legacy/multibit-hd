@@ -250,7 +250,7 @@ public class CoreServices {
   public static synchronized BitcoinNetworkService getOrCreateBitcoinNetworkService() {
 
     log.debug("Get Bitcoin network service");
-    if (bitcoinNetworkService == null) {
+    if (bitcoinNetworkService == null || !bitcoinNetworkService.isStartedOk()) {
       bitcoinNetworkService = new BitcoinNetworkService(BitcoinNetwork.current().get());
     }
     return bitcoinNetworkService;

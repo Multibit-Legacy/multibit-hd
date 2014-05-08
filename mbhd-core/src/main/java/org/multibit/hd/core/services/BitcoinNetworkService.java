@@ -94,11 +94,12 @@ public class BitcoinNetworkService extends AbstractService {
       File checkpointsFile = new File(walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX);
 
       // Load or create the blockStore..
-      log.debug("Get or create block store");
+      log.debug("Create new block store");
       blockStore = new BlockStoreManager(networkParameters).createBlockStore(blockStoreFile, checkpointsFile, null, false);
       log.debug("Success. Blockstore is '{}'", blockStore);
 
       log.debug("Starting Bitcoin network...");
+
       restartNetwork();
 
     } catch (IOException | BlockStoreException | TimeoutException e) {
@@ -131,6 +132,9 @@ public class BitcoinNetworkService extends AbstractService {
 
     // Save the current wallet
     saveWallet();
+
+    // Close the wallet
+    closeWallet();
 
     // Hand over to the superclass to finalise service executors
     super.stopAndWait();
@@ -681,6 +685,17 @@ public class BitcoinNetworkService extends AbstractService {
       } catch (BlockStoreException e) {
         log.error("Blockstore not closed successfully: {}", e.getMessage(), e);
       }
+    }
+
+  }
+
+  /**
+   * Closes the wallet
+   */
+  private void closeWallet() {
+
+    if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent() && blockChain != null) {
+      WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet().shutdownAutosaveAndWait();
     }
 
   }

@@ -6,8 +6,10 @@ import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.swing.timing.Timeout.timeout;
 
 /**
  * <p>Use case to provide the following to FEST testing:</p>
@@ -53,6 +55,27 @@ public class CreateWalletReportUseCase extends AbstractFestUseCase {
     window
       .button(MessageKey.FINISH.getKey())
       .click();
+
+    // Wait for Exit button to appear
+    window
+      .button(MessageKey.EXIT.getKey())
+      .requireVisible()
+        // Allow a short time to overcome initialisation delays
+      .requireEnabled(timeout(1, TimeUnit.SECONDS));
+
+    // Examine the list
+    window
+      .comboBox(MessageKey.SELECT_WALLET.getKey())
+      .requireEnabled()
+      .requireSelection(0)
+      .requireNotEditable();
+
+    String description =window
+      .label(MessageKey.DESCRIPTION.getKey())
+      .text();
+
+    assertThat(description).startsWith("Wallet created");
+
 
   }
 

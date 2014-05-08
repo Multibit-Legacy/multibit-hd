@@ -37,8 +37,7 @@ public class WalletFixtures {
     CharSequence password = "abc123";
     long nowInSeconds = Dates.nowInSeconds();
 
-    return walletManager.createWalletSummary(seed, nowInSeconds, password);
-
+    return walletManager.createWalletSummary(seed, nowInSeconds, password, "Example", "Example wallet. Password is abc123.");
 
   }
 
