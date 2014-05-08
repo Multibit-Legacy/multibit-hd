@@ -1,6 +1,7 @@
 package org.multibit.hd.core.dto;
 
 import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.Wallet;
 import com.google.common.base.Optional;
 import org.multibit.hd.brit.dto.FeeState;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -23,10 +24,12 @@ public class SendRequestSummary {
   private final BigInteger feePerKB;
   private final CharSequence password;
   private final Optional<FeeState> feeState;
+  private final boolean emptyWallet;
 
   // Mutable values
   private Optional<Address> feeAddress = Optional.absent();
   private Optional<KeyParameter> keyParameter = Optional.absent();
+  private Optional<Wallet.SendRequest> sendRequest = Optional.absent();
 
   /**
    * @param destinationAddress The destination address to send to
@@ -35,6 +38,7 @@ public class SendRequestSummary {
    * @param feePerKB           The fee per Kb (in satoshis)
    * @param password           The wallet password
    * @param feeState           The BRIT fee state
+   * @param emptyWallet        True if the wallet should be fully emptied including all payable fees
    */
   public SendRequestSummary(
     Address destinationAddress,
@@ -42,14 +46,17 @@ public class SendRequestSummary {
     Address changeAddress,
     BigInteger feePerKB,
     CharSequence password,
-    Optional<FeeState> feeState
-  ) {
+    Optional<FeeState> feeState,
+    boolean emptyWallet) {
+
     this.destinationAddress = destinationAddress;
     this.amount = amount;
     this.changeAddress = changeAddress;
     this.feePerKB = feePerKB;
     this.password = password;
     this.feeState = feeState;
+    this.emptyWallet = emptyWallet;
+
   }
 
   /**
@@ -101,6 +108,13 @@ public class SendRequestSummary {
     return feeAddress;
   }
 
+  /**
+   * @return True if the wallet should be fully emptied including all payable fees
+   */
+  public boolean isEmptyWallet() {
+    return emptyWallet;
+  }
+
   public void setFeeAddress(Address feeAddress) {
     this.feeAddress = Optional.fromNullable(feeAddress);
   }
@@ -114,6 +128,17 @@ public class SendRequestSummary {
 
   public void setKeyParameter(KeyParameter keyParameter) {
     this.keyParameter = Optional.fromNullable(keyParameter);
+  }
+
+  /**
+   * @return The Bitcoinj send request providing detailed information about the transaction
+   */
+  public Optional<Wallet.SendRequest> getSendRequest() {
+    return sendRequest;
+  }
+
+  public void setSendRequest(Wallet.SendRequest sendRequest) {
+    this.sendRequest = Optional.of(sendRequest);
   }
 
   @Override

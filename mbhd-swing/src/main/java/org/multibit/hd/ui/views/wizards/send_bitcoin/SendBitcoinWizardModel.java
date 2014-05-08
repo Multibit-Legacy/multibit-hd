@@ -146,8 +146,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
       changeAddress,
       BitcoinNetworkService.DEFAULT_FEE_PER_KB,
       password,
-      feeState
-    );
+      feeState,
+      false);
     log.debug("Just about to send bitcoin: {}", sendRequestSummary);
     bitcoinNetworkService.send(sendRequestSummary);
 

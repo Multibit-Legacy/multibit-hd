@@ -226,8 +226,8 @@ public class BitcoinNetworkServiceFunctionalTest {
         changeAddress,
         FEE_PER_KB,
         WALLET_PASSWORD,
-        Optional.<FeeState>absent()
-      );
+        Optional.<FeeState>absent(),
+        false);
       bitcoinNetworkService.send(sendRequestSummary);
 
       // the onBitcoinSentEvent method receives the bitcoinSentEvent once the send has completed
