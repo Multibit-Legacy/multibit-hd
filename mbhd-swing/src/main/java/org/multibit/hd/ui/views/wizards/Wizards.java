@@ -1,6 +1,5 @@
 package org.multibit.hd.ui.views.wizards;
 
-import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.config.Configuration;
@@ -60,6 +59,7 @@ import org.multibit.hd.ui.views.wizards.receive_bitcoin.ReceiveBitcoinWizardMode
 import org.multibit.hd.ui.views.wizards.repair_wallet.RepairWalletState;
 import org.multibit.hd.ui.views.wizards.repair_wallet.RepairWalletWizard;
 import org.multibit.hd.ui.views.wizards.repair_wallet.RepairWalletWizardModel;
+import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinParameter;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinWizard;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinWizardModel;
@@ -131,15 +131,15 @@ public class Wizards {
   }
 
   /**
-   * @param bitcoinURI The optional Bitcoin URI containing information for the send
+   * @param parameter Providing information about how the send should be performed
    *
    * @return A new "send bitcoin" wizard
    */
-  public static SendBitcoinWizard newSendBitcoinWizard(Optional<BitcoinURI> bitcoinURI) {
+  public static SendBitcoinWizard newSendBitcoinWizard(SendBitcoinParameter parameter) {
 
     log.debug("New 'Send bitcoin wizard'");
 
-    return new SendBitcoinWizard(new SendBitcoinWizardModel(SendBitcoinState.SEND_ENTER_AMOUNT), false, bitcoinURI);
+    return new SendBitcoinWizard(new SendBitcoinWizardModel(SendBitcoinState.SEND_ENTER_AMOUNT, parameter));
 
   }
 
@@ -164,7 +164,7 @@ public class Wizards {
     log.debug("New 'Edit contact wizard'");
 
     Preconditions.checkState(!contacts.isEmpty(), "'contacts' cannot be empty");
-    Preconditions.checkNotNull(mode,"'mode' must be present");
+    Preconditions.checkNotNull(mode, "'mode' must be present");
 
     return new EditContactWizard(
       new EditContactWizardModel(EditContactState.EDIT_CONTACT_ENTER_DETAILS, contacts),
@@ -184,7 +184,7 @@ public class Wizards {
     log.debug("New 'Edit history wizard'");
 
     Preconditions.checkState(!historyEntries.isEmpty(), "'historyEntries' cannot be empty");
-    Preconditions.checkNotNull(mode,"'mode' must be present");
+    Preconditions.checkNotNull(mode, "'mode' must be present");
 
     return new EditHistoryWizard(
       new EditHistoryWizardModel(EditHistoryState.HISTORY_ENTER_DETAILS, historyEntries),
@@ -200,7 +200,7 @@ public class Wizards {
 
     log.debug("New 'Exiting welcome wizard'");
 
-    Preconditions.checkNotNull(initialState,"'initialState' must be present");
+    Preconditions.checkNotNull(initialState, "'initialState' must be present");
 
     return new WelcomeWizard(new WelcomeWizardModel(initialState), true);
   }
@@ -355,7 +355,7 @@ public class Wizards {
 
     log.debug("New 'Payments wizard'");
 
-    Preconditions.checkNotNull(paymentData,"'paymentData' must be present");
+    Preconditions.checkNotNull(paymentData, "'paymentData' must be present");
 
     PaymentsWizardModel paymentsWizardModel;
     if (paymentData instanceof PaymentRequestData) {
@@ -388,7 +388,7 @@ public class Wizards {
     log.debug("New 'Edit wallet wizard'");
 
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
-    Preconditions.checkState(currentWalletSummary.isPresent(),"'currentWalletSummary' must be present");
+    Preconditions.checkState(currentWalletSummary.isPresent(), "'currentWalletSummary' must be present");
 
     return new EditWalletWizard(new EditWalletWizardModel(EditWalletState.EDIT_WALLET, currentWalletSummary.get()), false);
   }

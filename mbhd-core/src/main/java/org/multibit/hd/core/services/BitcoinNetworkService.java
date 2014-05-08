@@ -303,6 +303,8 @@ public class BitcoinNetworkService extends AbstractService {
     // Wrap it all up in a try-catch to ensure we fire a failure event
     try {
 
+      log.debug("Deriving key parameter");
+
       Preconditions.checkNotNull(wallet, "'wallet' must be present");
 
       if (wallet.getKeyCrypter() == null) {
@@ -331,6 +333,7 @@ public class BitcoinNetworkService extends AbstractService {
 
     // Must have failed to be here
     return false;
+
   }
 
   /**
@@ -339,6 +342,8 @@ public class BitcoinNetworkService extends AbstractService {
    * @return True if no error was encountered
    */
   private boolean appendClientFee(SendRequestSummary sendRequestSummary) {
+
+    log.debug("Appending client fee (if required)");
 
     final boolean isClientFeeRequired;
     if (sendRequestSummary.getFeeState().isPresent()) {
@@ -364,7 +369,8 @@ public class BitcoinNetworkService extends AbstractService {
 
     }
 
-    return false;
+    // Must be OK to be here
+    return true;
   }
 
   /**
@@ -377,6 +383,7 @@ public class BitcoinNetworkService extends AbstractService {
   private boolean checkWalletSummary(SendRequestSummary sendRequestSummary) {
 
     if (!WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+
       // Declare the transaction creation a failure - no wallet
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
         null,

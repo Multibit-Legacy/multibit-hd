@@ -7,14 +7,29 @@ package org.multibit.hd.core.config;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public enum BitcoinUriHandling {
 
+  /**
+   * Ignore all Bitcoin URI request (no alert or wizard)
+   */
   IGNORE,
-  FILL,
-  ASK
+  /**
+   * Present an alert and if acknowledged fill in as much detail as possible
+   */
+  FILL
 
   // End of enum
   ;
+
+  /**
+   * @return The Bitcoin URI handling strategy
+   */
+  public static BitcoinUriHandling current() {
+
+    String rawBitcoinUriHandling = Configurations.currentConfiguration.getApplication().getBitcoinUriHandling();
+
+    return valueOf(rawBitcoinUriHandling);
+  }
 }

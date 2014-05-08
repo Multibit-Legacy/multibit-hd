@@ -11,6 +11,7 @@ import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinParameter;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -98,7 +99,10 @@ public class Models {
       public void actionPerformed(ActionEvent e) {
 
         ControllerEvents.fireRemoveAlertEvent();
-        Panels.showLightBox(Wizards.newSendBitcoinWizard(Optional.of(bitcoinURI)).getWizardScreenHolder());
+
+        SendBitcoinParameter parameter = new SendBitcoinParameter(Optional.fromNullable(bitcoinURI), false);
+
+        Panels.showLightBox(Wizards.newSendBitcoinWizard(parameter).getWizardScreenHolder());
 
       }
     };

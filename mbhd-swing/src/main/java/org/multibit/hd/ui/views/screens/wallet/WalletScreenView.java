@@ -24,6 +24,7 @@ import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinParameter;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -83,7 +84,9 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        Panels.showLightBox(Wizards.newSendBitcoinWizard(Optional.<BitcoinURI>absent()).getWizardScreenHolder());
+        SendBitcoinParameter parameter = new SendBitcoinParameter(Optional.<BitcoinURI>absent(), false);
+
+        Panels.showLightBox(Wizards.newSendBitcoinWizard(parameter).getWizardScreenHolder());
       }
     };
 
