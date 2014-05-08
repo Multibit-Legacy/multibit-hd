@@ -17,6 +17,8 @@ import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.NimbusDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.util.List;
@@ -35,6 +37,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class FooterView {
 
+  private static final Logger log = LoggerFactory.getLogger(FooterView.class);
+
   private final JPanel contentPanel;
   private final JProgressBar progressBar;
   private final JLabel messageLabel;
@@ -42,7 +46,7 @@ public class FooterView {
   private final JLabel statusIcon;
   private final JLabel torIcon;
 
-  private final ListeningScheduledExecutorService scheduledExecutorService = SafeExecutors.newSingleThreadScheduledExecutor("hide-progress");
+  private final ListeningScheduledExecutorService scheduledExecutorService = SafeExecutors.newScheduledThreadPool(3, "hide-progress");
   private final List<Future> hideProgressFutures = Lists.newArrayList();
 
   public FooterView() {
@@ -146,6 +150,7 @@ public class FooterView {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
+
         progressBar.setEnabled(true);
 
         // Provide some ranges to allow different colouring
@@ -155,24 +160,30 @@ public class FooterView {
         Range<Integer> green = Range.greaterThan(99);
 
         if (hidden.contains(event.getPercent())) {
-          progressBar.setVisible(false);
+          if (hideProgressFutures.isEmpty()) {
+            // No earlier activity so hide immediately
+            progressBar.setVisible(false);
+          }
         }
 
         if (amber.contains(event.getPercent())) {
 
+          // Make the progress bar amber
           NimbusDecorator.applyThemeColor(Themes.currentTheme.statusAmber(), progressBar);
           progressBar.setValue(event.getPercent());
           progressBar.setVisible(true);
+
         }
 
         if (green.contains(event.getPercent())) {
 
-          NimbusDecorator.applyThemeColor(Themes.currentTheme.statusGreen(), progressBar);
-          progressBar.setValue(Math.min(100, event.getPercent()));
-          progressBar.setVisible(true);
-
           // Cancel all existing hide operations
           cancelPendingHideProgressFutures();
+
+          // Make the progress bar green
+          NimbusDecorator.applyThemeColor(Themes.currentTheme.statusGreen(), progressBar);
+          progressBar.setValue(100);
+          progressBar.setVisible(true);
 
           // Schedule the new hide
           hideProgressFutures.add(scheduleHideProgressBar());
@@ -209,6 +220,7 @@ public class FooterView {
           @Override
           public void run() {
 
+            log.debug("Hiding progress bar");
             progressBar.setVisible(false);
 
           }
