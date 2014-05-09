@@ -75,12 +75,14 @@ public class FeeService {
    * @param matcherURL       the HTTP URL to send PayerRequests to
    */
   public FeeService(PGPPublicKey matcherPublicKey, URL matcherURL) {
+
     Preconditions.checkNotNull(matcherPublicKey);
     Preconditions.checkNotNull(matcherURL);
 
     this.matcherPublicKey = matcherPublicKey;
     this.matcherURL = matcherURL;
     this.secureRandom = new SecureRandom();
+
   }
 
   /**
@@ -90,6 +92,7 @@ public class FeeService {
    * @param wallet the wallet to perform the BRIT exchange against
    */
   public void performExchangeWithMatcher(byte[] seed, Wallet wallet) {
+
     // Work out the BRITWalletId for this seed
     BRITWalletId britWalletId = new BRITWalletId(seed);
 
@@ -118,7 +121,7 @@ public class FeeService {
       matcherResponse = payer.decryptMatcherResponse(encryptedMatcherResponse);
     } catch (IOException | PayerRequestException | MatcherResponseException e) {
       // The exchange with the matcher failed
-      log.debug("The exchange with the matcher failed. The error was " + e.getClass().getCanonicalName() + e.getMessage());
+      log.debug("The exchange with the matcher failed. The error was {}", e.getClass().getCanonicalName() + e.getMessage());
 
       // Fall back to the list of hardwired addresses
       matcherResponse = new MatcherResponse(Optional.<Date>absent(), getHardwiredFeeAddresses());
@@ -137,12 +140,12 @@ public class FeeService {
    */
   public FeeState calculateFeeState(Wallet wallet) {
 
-    log.debug("Wallet at beginning of calculateFeeState = " + wallet.toString(false, true, true, null));
+    log.debug("Wallet at beginning of calculateFeeState = {}" , wallet.toString(false, true, true, null));
 
     // Get all the send transactions sent by me, ordered by date
     List<Transaction> sendTransactions = getSentBySelfTransactionList(wallet);
     int currentNumberOfSends = sendTransactions.size();
-    log.debug("The wallet send count is " + currentNumberOfSends);
+    log.debug("The wallet send count is {}", currentNumberOfSends);
 
     // Work out the total amount that should be paid by the Payer for this wallet
     BigInteger grossFeeToBePaid = FEE_PER_SEND.multiply(BigInteger.valueOf(currentNumberOfSends));
@@ -176,7 +179,7 @@ public class FeeService {
               lastFeePayingSendingCountOptional = Optional.of(lastFeePayingSendCount);
             }
           } catch (ScriptException se) {
-            log.debug("Cannot cast script to Address for transaction : " + sendTransaction.getHash().toString());
+            log.debug("Cannot cast script to Address for transaction: {}", sendTransaction.getHash().toString());
           }
         }
       }
@@ -193,8 +196,8 @@ public class FeeService {
     if (sendFeeDto == null) {
       log.debug("There was no persisted send fee information");
     } else {
-      log.debug("The wallet persisted next fee send count is " + sendFeeDto.getSendFeeCount());
-      log.debug("The wallet persisted next fee send address is " + sendFeeDto.getSendFeeAddress());
+      log.debug("The wallet persisted next fee send count is {}", sendFeeDto.getSendFeeCount());
+      log.debug("The wallet persisted next fee send address is {}", sendFeeDto.getSendFeeAddress());
     }
     // If the persisted next fee send count is in the future and the last send is NOT a fee payment then reuse the persisted info
     boolean usePersistedData = false;
@@ -214,8 +217,8 @@ public class FeeService {
       nextSendFeeCount = sendFeeDto.getSendFeeCount().get();
       nextSendFeeAddress = sendFeeDto.getSendFeeAddress().get();
 
-      log.debug("Reusing the next send fee transaction. It will be at the send count of " + nextSendFeeCount);
-      log.debug("Reusing the next address to send fee to. It will be is " + nextSendFeeAddress);
+      log.debug("Reusing the next send fee transaction. It will be at the send count of {}", nextSendFeeCount);
+      log.debug("Reusing the next address to send fee to. It will be is {}", nextSendFeeAddress);
 
     } else {
 
