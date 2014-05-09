@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.empty_wallet;
 
+import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_recipient.EnterRecipientModel;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
 
@@ -14,19 +15,23 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
  */
 public class EmptyWalletEnterDetailsPanelModel extends AbstractWizardPanelModel {
 
-  // TODO Add password MaV support
   private final EnterRecipientModel enterRecipientModel;
+  private final EnterPasswordModel enterPasswordModel;
 
   /**
    * @param panelName           The panel name
    * @param enterRecipientModel The "enter recipient" component model
+   * @param enterPasswordModel  The "enter password" component model
    */
   public EmptyWalletEnterDetailsPanelModel(
     String panelName,
-    EnterRecipientModel enterRecipientModel
-  ) {
+    EnterRecipientModel enterRecipientModel,
+    EnterPasswordModel enterPasswordModel) {
+
     super(panelName);
+
     this.enterRecipientModel = enterRecipientModel;
+    this.enterPasswordModel = enterPasswordModel;
   }
 
   /**
@@ -34,6 +39,13 @@ public class EmptyWalletEnterDetailsPanelModel extends AbstractWizardPanelModel 
    */
   public EnterRecipientModel getEnterRecipientModel() {
     return enterRecipientModel;
+  }
+
+  /**
+   * @return The "enter password" model
+   */
+  public EnterPasswordModel getPasswordModel() {
+    return enterPasswordModel;
   }
 
 }

@@ -55,11 +55,6 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
   private EmptyWalletEnterDetailsPanelModel enterDetailsPanelModel;
 
   /**
-   * The "confirm" panel model
-   */
-  private EmptyWalletConfirmPanelModel confirmPanelModel;
-
-  /**
    * The "report" panel model
    */
   private EmptyWalletReportPanelModel reportPanelModel;
@@ -133,14 +128,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
    * @return The password the user entered
    */
   public String getPassword() {
-    return confirmPanelModel.getPasswordModel().getValue();
-  }
-
-  /**
-   * @return The notes the user entered
-   */
-  public String getNotes() {
-    return confirmPanelModel.getNotes();
+    return enterDetailsPanelModel.getPasswordModel().getValue();
   }
 
   /**
@@ -150,15 +138,6 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
    */
   void setEnterDetailsPanelModel(EmptyWalletEnterDetailsPanelModel enterDetailsPanelModel) {
     this.enterDetailsPanelModel = enterDetailsPanelModel;
-  }
-
-  /**
-   * <p>Reduced visibility for panel models only</p>
-   *
-   * @param confirmPanelModel The "confirm" panel model
-   */
-  void setConfirmPanelModel(EmptyWalletConfirmPanelModel confirmPanelModel) {
-    this.confirmPanelModel = confirmPanelModel;
   }
 
   /**
@@ -188,11 +167,6 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     // Create a transactionInfo to match the event created
     TransactionInfo transactionInfo = new TransactionInfo();
     transactionInfo.setHash(transactionCreationEvent.getTransactionId());
-    String note = getNotes();
-    if (note == null) {
-      note = "";
-    }
-    transactionInfo.setNote(note);
 
     // Append miner's fee info
     BigInteger minerFeePaid = transactionCreationEvent.getFeePaid();
@@ -257,7 +231,6 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
 
     // Actually send the bitcoin
     Preconditions.checkNotNull(enterDetailsPanelModel);
-    Preconditions.checkNotNull(confirmPanelModel);
 
     BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
     Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started");
@@ -272,7 +245,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
       .getRecipient()
       .get()
       .getBitcoinAddress();
-    String password = confirmPanelModel.getPasswordModel().getValue();
+    String password = enterDetailsPanelModel.getPasswordModel().getValue();
 
     Optional<FeeState> feeState = calculateBRITFeeState();
 

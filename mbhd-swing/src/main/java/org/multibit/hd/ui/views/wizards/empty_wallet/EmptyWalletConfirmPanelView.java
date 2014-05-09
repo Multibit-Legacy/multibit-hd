@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.views.wizards.empty_wallet;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
 import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
@@ -15,8 +14,6 @@ import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountModel;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountView;
-import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
-import org.multibit.hd.ui.views.components.enter_password.EnterPasswordView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -36,21 +33,16 @@ import java.math.BigInteger;
  * @since 0.0.1
  *  
  */
-public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWalletWizardModel, EmptyWalletConfirmPanelModel> {
+public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWalletWizardModel, String> {
 
   // View components
-  private JTextArea notesTextArea;
-
   private ModelAndView<DisplayAmountModel, DisplayAmountView> transactionDisplayAmountMaV;
   private ModelAndView<DisplayAmountModel, DisplayAmountView> transactionFeeDisplayAmountMaV;
   private ModelAndView<DisplayAmountModel, DisplayAmountView> clientFeeDisplayAmountMaV;
-  private ModelAndView<EnterPasswordModel, EnterPasswordView> enterPasswordMaV;
 
   private JLabel recipientSummaryLabel;
 
   private JLabel clientFeeInfoLabel;
-
-  private EmptyWalletConfirmPanelModel panelModel;
 
   /**
    * @param wizard    The wizard managing the states
@@ -65,18 +57,7 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
   @Override
   public void newPanelModel() {
 
-    // Require a reference for the model
-    enterPasswordMaV = Components.newEnterPasswordMaV(getPanelName());
-
-    // Configure the panel model
-    panelModel = new EmptyWalletConfirmPanelModel(
-      getPanelName(),
-      enterPasswordMaV.getModel()
-    );
-    setPanelModel(panelModel);
-
-    // Bind it to the wizard model
-    getWizardModel().setConfirmPanelModel(panelModel);
+    // Configure the panel model (no user data)
 
   }
 
@@ -90,9 +71,6 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
 
     // Blank labels populated from wizard model later
     recipientSummaryLabel = Labels.newRecipientSummary(getWizardModel().getRecipient());
-
-    // User entered text
-    notesTextArea = TextBoxes.newEnterPrivateNotes(getWizardModel());
 
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
@@ -119,11 +97,6 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
     contentPanel.add(clientFeeInfoLabel, "top");
 
     contentPanel.add(Labels.newBlankLabel(), "top, growx, push,wrap");
-
-    contentPanel.add(Labels.newNotes());
-    contentPanel.add(notesTextArea, "span 3,growx,push,wrap");
-
-    contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "span 4,align right,wrap");
 
   }
 
@@ -202,39 +175,16 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
 
     return true;
   }
-
-  @Override
-  public void afterShow() {
-
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        notesTextArea.requestFocusInWindow();
-      }
-    });
-
-  }
-
   @Override
   public void updateFromComponentModels(Optional componentModel) {
-
-    panelModel.setNotes(notesTextArea.getText());
 
     // Determine any events
     ViewEvents.fireWizardButtonEnabledEvent(
       getPanelName(),
       WizardButton.NEXT,
-      isNextEnabled()
+      true
     );
 
   }
 
-  /**
-   * @return True if the "next" button should be enabled
-   */
-  private boolean isNextEnabled() {
-
-    return !Strings.isNullOrEmpty(getPanelModel().get().getPasswordModel().getValue());
-
-  }
 }

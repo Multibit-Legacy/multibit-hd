@@ -7,6 +7,8 @@ import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
+import org.multibit.hd.ui.views.components.enter_password.EnterPasswordView;
 import org.multibit.hd.ui.views.components.enter_recipient.EnterRecipientModel;
 import org.multibit.hd.ui.views.components.enter_recipient.EnterRecipientView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
@@ -34,6 +36,7 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
 
   // Panel specific components
   private ModelAndView<EnterRecipientModel, EnterRecipientView> enterRecipientMaV;
+  private ModelAndView<EnterPasswordModel, EnterPasswordView> enterPasswordMaV;
 
   /**
    * @param wizard    The wizard managing the states
@@ -48,12 +51,15 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
   @Override
   public void newPanelModel() {
 
+    // Require a reference for the model
     enterRecipientMaV = Components.newEnterRecipientMaV(getPanelName());
+    enterPasswordMaV = Components.newEnterPasswordMaV(getPanelName());
 
     // Configure the panel model
     final EmptyWalletEnterDetailsPanelModel panelModel = new EmptyWalletEnterDetailsPanelModel(
       getPanelName(),
-      enterRecipientMaV.getModel()
+      enterRecipientMaV.getModel(),
+      enterPasswordMaV.getModel()
     );
     setPanelModel(panelModel);
 
@@ -72,6 +78,7 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
     ));
 
     contentPanel.add(enterRecipientMaV.getView().newComponentPanel(), "wrap");
+    contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "wrap");
 
   }
 
