@@ -199,7 +199,7 @@ public class Buttons {
 
     JButton button = newButton(action, MessageKey.VERIFY_MESSAGE);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.CERTIFICATE, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -734,7 +734,7 @@ public class Buttons {
     JButton button = newLargeButton(action, MessageKey.SHOW_VERIFY_WIZARD);
 
     AwesomeDecorator.applyIcon(
-      AwesomeIcon.CERTIFICATE,
+      AwesomeIcon.CHECK,
       button,
       true,
       JLabel.BOTTOM,
