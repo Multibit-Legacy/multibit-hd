@@ -90,7 +90,7 @@ public class CoreServicesTest {
     assertThat(sendFeeDto).isNull();
 
     // The wallet is empty but you can still calculate the feeDto. Let's do that now
-    FeeState feeState = feeService.calculateFeeState(wallet);
+    FeeState feeState = feeService.calculateFeeState(wallet, false);
     assertThat(feeState).isNotNull();
 
     // There should now be some fee information in the wallet

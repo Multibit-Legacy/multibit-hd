@@ -136,11 +136,12 @@ public class FeeService {
    * <p/>
    * The caller needs to save the wallet after this call to persist extensions added.
    *
-   * @param wallet the wallet to calculate the fee state for
+   * @param wallet   The wallet to calculate the fee state for
+   * @param forceNow True if the fee should be paid immediately (dust levels permitting)
    */
-  public FeeState calculateFeeState(Wallet wallet) {
+  public FeeState calculateFeeState(Wallet wallet, boolean forceNow) {
 
-    log.debug("Wallet at beginning of calculateFeeState = {}" , wallet.toString(false, true, true, null));
+    log.debug("Wallet at beginning of calculateFeeState = {}", wallet.toString(false, true, true, null));
 
     // Get all the send transactions sent by me, ordered by date
     List<Transaction> sendTransactions = getSentBySelfTransactionList(wallet);
@@ -189,7 +190,6 @@ public class FeeService {
     // The net amount fee still to be paid is the gross amount minus the amount paid so far
     // This could be negative if the user has overpaid
     BigInteger netFeeToBePaid = grossFeeToBePaid.subtract(feePaid);
-
 
     // nextSendFeeCount and nextSendFeeAddress may already be on the wallet in an extension - if so use those else recalculate
     SendFeeDto sendFeeDto = getSendFeeDtoFromWallet(wallet);
@@ -255,9 +255,11 @@ public class FeeService {
       wallet.addOrUpdateExtension(new SendFeeDtoWalletExtension(new SendFeeDto(Optional.of(nextSendFeeCount), Optional.of(nextSendFeeAddress))));
     }
 
-    // If the user has overpaid then they have amountOverpaid/ FEE_PER_SEND free sends so adjust the nextFeeSendCount accordingly
+    // If the user has overpaid then they have amountOverpaid / FEE_PER_SEND free sends so adjust the nextFeeSendCount accordingly
     if (netFeeToBePaid.compareTo(BigInteger.ZERO) < 0) {
+
       int numberOfFreeSends = netFeeToBePaid.negate().divide(FEE_PER_SEND).intValue();
+
       // if the nextSendFeeCount is less than the numberOfFreeSendCount + NEXT_SEND_DELTA_LOWER_LIMIT then push out the nextSendFeeCount a little
       if ((nextSendFeeCount - currentNumberOfSends) < (numberOfFreeSends + NEXT_SEND_DELTA_LOWER_LIMIT)) {
         nextSendFeeCount = currentNumberOfSends + numberOfFreeSends + NEXT_SEND_DELTA_LOWER_LIMIT;
@@ -265,14 +267,31 @@ public class FeeService {
         // Persist back to wallet
         wallet.addOrUpdateExtension(new SendFeeDtoWalletExtension(new SendFeeDto(Optional.of(nextSendFeeCount), Optional.of(nextSendFeeAddress))));
       }
+
+    } else {
+
+      // User has not incurred a fee or has underpaid - check for a forced payment due to emptying wallet
+      if (forceNow) {
+
+        // Indicate that the fee is due now (but they may be let off)
+        nextSendFeeCount = currentNumberOfSends;
+
+        if (netFeeToBePaid.compareTo(Transaction.MIN_NONDUST_OUTPUT) > 0) {
+          log.debug("Including forced payment. The user has underpaid and owes more than the dust limit.");
+        } else {
+          log.debug("Excluding forced payment. The user has underpaid and owes less than the dust limit.");
+          netFeeToBePaid = BigInteger.ZERO;
+        }
+      }
     }
 
-    log.debug("Wallet at end of calculateFeeState = " + wallet.toString(false, false, true, null));
+    log.debug("Wallet at end of calculateFeeState: {}", wallet.toString(false, false, true, null));
 
     log.debug("The wallet has currentNumberOfSends = {}", currentNumberOfSends);
     log.debug("The wallet owes a GROSS total of {} satoshi in fees", grossFeeToBePaid);
     log.debug("The wallet had paid a total of {} satoshi in fees", feePaid);
     log.debug("The wallet owes a NET total of {} satoshi in fees", netFeeToBePaid);
+
     if (lastFeePayingSendAddressOptional.isPresent()) {
       log.debug("The last fee address sent any fee was = '{}'. The sendCount then was {}.", lastFeePayingSendAddressOptional.get(), lastFeePayingSendingCountOptional.toString());
     } else {

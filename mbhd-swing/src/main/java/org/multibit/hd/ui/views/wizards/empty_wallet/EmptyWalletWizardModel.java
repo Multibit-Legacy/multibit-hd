@@ -1,17 +1,18 @@
 package org.multibit.hd.ui.views.wizards.empty_wallet;
 
 import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Wallet;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
+import org.joda.money.BigMoney;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.brit.services.FeeService;
-import org.multibit.hd.core.config.BitcoinNetwork;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.dto.SendRequestSummary;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.events.TransactionCreationEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
@@ -24,11 +25,14 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.core.store.TransactionInfo;
 import org.multibit.hd.core.utils.Satoshis;
+import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import static org.multibit.hd.ui.views.wizards.empty_wallet.EmptyWalletState.EMPTY_WALLET_CONFIRM;
@@ -69,14 +73,28 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
    */
   private FeeService feeService;
 
-  private final NetworkParameters networkParameters = BitcoinNetwork.current().get();
+  /**
+   * The current wallet balance in satoshis
+   */
+  private final BigInteger satoshis;
 
   /**
-   * @param state     The state object
+   * @param state The state object
    */
   public EmptyWalletWizardModel(EmptyWalletState state) {
     super(state);
+
     CoreServices.uiEventBus.register(this);
+
+    Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+    if (currentWalletSummary.isPresent()) {
+      // Use the real wallet data
+      this.satoshis = currentWalletSummary.get().getWallet().getBalance();
+    } else {
+      // Unknown at this time
+      this.satoshis = BigInteger.ZERO;
+    }
+
   }
 
   @Override
@@ -128,7 +146,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
    * @return The password the user entered
    */
   public String getPassword() {
-    return enterDetailsPanelModel.getPasswordModel().getValue();
+    return enterDetailsPanelModel.getEnterPasswordModel().getValue();
   }
 
   /**
@@ -156,6 +174,13 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     return transactionFee;
   }
 
+  /**
+   * @return The current wallet balance in satoshis
+   */
+  public BigInteger getSatoshis() {
+    return satoshis;
+  }
+
   @Subscribe
   public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
 
@@ -167,6 +192,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     // Create a transactionInfo to match the event created
     TransactionInfo transactionInfo = new TransactionInfo();
     transactionInfo.setHash(transactionCreationEvent.getTransactionId());
+    transactionInfo.setNote(Languages.safeText(MessageKey.EMPTY_WALLET_TITLE));
 
     // Append miner's fee info
     BigInteger minerFeePaid = transactionCreationEvent.getFeePaid();
@@ -175,18 +201,20 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     } else {
       transactionInfo.setMinerFee(Optional.of(minerFeePaid));
     }
-    FiatPayment fiatPayment = new FiatPayment();
-    // A send is denoted with a negative fiat amount
-    // TODO Consider if the header is sufficient for sourcing this
-    //fiatPayment.setAmount(getLocalAmount().negated());
-    fiatPayment.setExchange(ExchangeKey.current().getExchangeName());
 
+    // Create the empty fiat payment
+    FiatPayment fiatPayment = new FiatPayment();
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
     if (exchangeRateChangedEvent.isPresent()) {
       fiatPayment.setRate(exchangeRateChangedEvent.get().getRate().toString());
+      // A send is denoted with a negative fiat amount
+      fiatPayment.setAmount(Satoshis.toLocalAmount(getSatoshis(), exchangeRateChangedEvent.get().getRate()).negated());
     } else {
       fiatPayment.setRate("");
+      fiatPayment.setAmount(BigMoney.of(Configurations.currentConfiguration.getBitcoin().getLocalCurrencyUnit(), BigDecimal.ZERO));
     }
+    fiatPayment.setExchange(ExchangeKey.current().getExchangeName());
+
     transactionInfo.setAmountFiat(fiatPayment);
 
     WalletService walletService = CoreServices.getCurrentWalletService();
@@ -207,6 +235,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     if (feeService == null) {
       feeService = CoreServices.createFeeService();
     }
+
     if (WalletManager.INSTANCE.getCurrentWalletSummary() != null &&
       WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
       Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
@@ -216,15 +245,16 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
       if (walletFileOptional.isPresent()) {
         log.debug("Wallet file prior to calculateFeeState is " + walletFileOptional.get().length() + " bytes");
       }
-      Optional<FeeState> feeStateOptional = Optional.of(feeService.calculateFeeState(wallet));
+      Optional<FeeState> feeState = Optional.of(feeService.calculateFeeState(wallet, true));
       if (walletFileOptional.isPresent()) {
         log.debug("Wallet file after to calculateFeeState is " + walletFileOptional.get().length() + " bytes");
       }
 
-      return feeStateOptional;
+      return feeState;
     } else {
       return Optional.absent();
     }
+
   }
 
   private void emptyWallet() {
@@ -237,15 +267,13 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
 
     Address changeAddress = bitcoinNetworkService.getNextChangeAddress();
 
-    // TODO Get the satoshis from somewhere
-    //BigInteger satoshis = enterDetailsPanelModel.getEnterAmountModel().getSatoshis();
-    BigInteger satoshis = BigInteger.ZERO;
+
     Address bitcoinAddress = enterDetailsPanelModel
       .getEnterRecipientModel()
       .getRecipient()
       .get()
       .getBitcoinAddress();
-    String password = enterDetailsPanelModel.getPasswordModel().getValue();
+    String password = enterDetailsPanelModel.getEnterPasswordModel().getValue();
 
     Optional<FeeState> feeState = calculateBRITFeeState();
 
@@ -259,11 +287,10 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
       feeState,
       true);
 
-    log.debug("Just about to send bitcoin: {}", sendRequestSummary);
+    log.debug("Emptying wallet with: {}", sendRequestSummary);
     bitcoinNetworkService.send(sendRequestSummary);
 
     // The send throws TransactionCreationEvents and BitcoinSentEvents to which you subscribe to to work out success and failure.
 
   }
-
 }

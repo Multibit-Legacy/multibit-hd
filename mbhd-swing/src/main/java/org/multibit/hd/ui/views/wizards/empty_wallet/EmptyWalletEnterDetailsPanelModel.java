@@ -44,7 +44,7 @@ public class EmptyWalletEnterDetailsPanelModel extends AbstractWizardPanelModel 
   /**
    * @return The "enter password" model
    */
-  public EnterPasswordModel getPasswordModel() {
+  public EnterPasswordModel getEnterPasswordModel() {
     return enterPasswordModel;
   }
 

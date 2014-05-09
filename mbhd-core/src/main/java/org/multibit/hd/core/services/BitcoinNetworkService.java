@@ -267,8 +267,8 @@ public class BitcoinNetworkService extends AbstractService {
     // Get the current wallet
     Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
 
-    // Derive the key parameter to unlock the wallet
-    if (!deriveKeyParameter(sendRequestSummary, wallet)) {
+    // Derive and append the key parameter to unlock the wallet
+    if (!appendKeyParameter(sendRequestSummary, wallet)) {
       return false;
     }
 
@@ -277,17 +277,89 @@ public class BitcoinNetworkService extends AbstractService {
       return false;
     }
 
-    // Build and append the send request
-    appendSendRequest(sendRequestSummary);
+    if (!sendRequestSummary.isEmptyWallet()) {
 
-    // Attempt to complete it
-    if (!completeAndCommit(sendRequestSummary, wallet)) {
-      return false;
-    }
+      // This is a standard send so proceed as normal
+      log.debug("Treating as standard send");
 
-    // Attempt to broadcast it
-    if (!broadcast(sendRequestSummary)) {
-      return false;
+      // Attempt to build and append the send request as if it were standard
+      if (!appendSendRequest(sendRequestSummary)) {
+        return false;
+      }
+
+      // Attempt to complete it
+      if (!complete(sendRequestSummary, wallet)) {
+        return false;
+      }
+
+      // Attempt to commit it
+      if (!commit(sendRequestSummary, wallet)) {
+        return false;
+      }
+
+      // Attempt to broadcast it
+      if (!broadcast(sendRequestSummary)) {
+        return false;
+      }
+
+    } else {
+
+      // This is an empty wallet so perform a dry run to get fees
+      log.debug("Treating as an 'empty wallet' send");
+
+      // Attempt to build and append the send request as if it were standard
+      if (!appendSendRequest(sendRequestSummary)) {
+        return false;
+      }
+
+      // Attempt to complete it
+      if (!complete(sendRequestSummary, wallet)) {
+        return false;
+      }
+
+      log.debug("Adjusting outputs using 'dry run' values");
+
+      // Examine the result to determine fees
+      Wallet.SendRequest sendRequest = sendRequestSummary.getSendRequest().get();
+
+      // Determine the maximum amount allowing for fees
+      BigInteger recipientAmount = sendRequest.tx.getOutput(0).getValue();
+      BigInteger feeAmount = sendRequestSummary.getFeeState().get().getFeeOwed();
+
+      // Adjust the send request summary accordingly
+      recipientAmount = recipientAmount.subtract(feeAmount);
+
+      // Update the SendRequestSummary with the new values and ensure it is not an "empty wallet"
+      final SendRequestSummary emptyWalletSendRequestSummary = new SendRequestSummary(
+        sendRequestSummary.getDestinationAddress(),
+        recipientAmount,
+        sendRequestSummary.getChangeAddress(),
+        sendRequestSummary.getFeePerKB(),
+        sendRequestSummary.getPassword(),
+        sendRequestSummary.getFeeState(),
+        false
+      );
+      emptyWalletSendRequestSummary.setKeyParameter(sendRequestSummary.getKeyParameter().get());
+
+      // Attempt to build and append the send request as if it were standard
+      if (!appendSendRequest(emptyWalletSendRequestSummary)) {
+        return false;
+      }
+
+      // Attempt to complete it
+      if (!complete(emptyWalletSendRequestSummary, wallet)) {
+        return false;
+      }
+
+      // Attempt to commit it
+      if (!commit(emptyWalletSendRequestSummary, wallet)) {
+        return false;
+      }
+
+      // Attempt to broadcast it
+      if (!broadcast(emptyWalletSendRequestSummary)) {
+        return false;
+      }
     }
 
     // Must be OK to be here
@@ -302,7 +374,7 @@ public class BitcoinNetworkService extends AbstractService {
    *
    * @return True if the derivation process was successful
    */
-  private boolean deriveKeyParameter(SendRequestSummary sendRequestSummary, Wallet wallet) {
+  private boolean appendKeyParameter(SendRequestSummary sendRequestSummary, Wallet wallet) {
 
     // Wrap it all up in a try-catch to ensure we fire a failure event
     try {
@@ -413,29 +485,58 @@ public class BitcoinNetworkService extends AbstractService {
    *
    * @param sendRequestSummary The information required to send bitcoin
    */
-  private void appendSendRequest(SendRequestSummary sendRequestSummary) {
+  private boolean appendSendRequest(SendRequestSummary sendRequestSummary) {
 
-    log.debug("Appending send request");
+    log.debug("Appending send request based on: {}", sendRequestSummary);
 
-    final Wallet.SendRequest sendRequest = Wallet.SendRequest.to(
-      sendRequestSummary.getDestinationAddress(),
-      sendRequestSummary.getAmount()
-    );
-    sendRequest.aesKey = sendRequestSummary.getKeyParameter().get();
-    sendRequest.fee = BigInteger.ZERO;
-    sendRequest.feePerKb = sendRequestSummary.getFeePerKB();
-    sendRequest.changeAddress = sendRequestSummary.getChangeAddress();
-
-    // TODO (JB) Position of fee should be randomized
-    if (sendRequestSummary.getFeeAddress().isPresent()) {
-      sendRequest.tx.addOutput(
-        sendRequestSummary.getFeeState().get().getFeeOwed(),
-        sendRequestSummary.getFeeAddress().get()
+    try {
+      final Wallet.SendRequest sendRequest = Wallet.SendRequest.to(
+        sendRequestSummary.getDestinationAddress(),
+        sendRequestSummary.getAmount()
       );
+      sendRequest.aesKey = sendRequestSummary.getKeyParameter().get();
+      sendRequest.fee = BigInteger.ZERO;
+      sendRequest.feePerKb = sendRequestSummary.getFeePerKB();
+      sendRequest.changeAddress = sendRequestSummary.getChangeAddress();
+
+      // Require empty wallet to ensure that all funds are included
+      sendRequest.emptyWallet = sendRequestSummary.isEmptyWallet();
+
+      // Only include the fee output if not emptying since it interferes
+      // with the coin selector
+      if (!sendRequest.emptyWallet && sendRequestSummary.getFeeAddress().isPresent()) {
+
+        sendRequest.tx.addOutput(
+          sendRequestSummary.getFeeState().get().getFeeOwed(),
+          sendRequestSummary.getFeeAddress().get()
+        );
+      }
+
+      // Append the Bitcoinj send request to the summary
+      sendRequestSummary.setSendRequest(sendRequest);
+
+    } catch (IllegalStateException e) {
+
+      log.error(e.getMessage(), e);
+
+      // Declare the transaction creation a failure
+      CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
+        null,
+        sendRequestSummary.getAmount(),
+        BigInteger.ZERO,
+        sendRequestSummary.getDestinationAddress(),
+        sendRequestSummary.getChangeAddress(),
+        false,
+        CoreMessageKey.THE_ERROR_WAS.getKey(),
+        new String[]{e.getClass().getCanonicalName() + " " + e.getMessage()}));
+
+      // We cannot proceed to broadcast
+      return false;
+
     }
 
-    // Append the Bitcoinj send request to the summary
-    sendRequestSummary.setSendRequest(sendRequest);
+    // Must be OK to be here
+    return true;
 
   }
 
@@ -445,16 +546,55 @@ public class BitcoinNetworkService extends AbstractService {
    *
    * @return True if the complete and commit operations were successful
    */
-  private boolean completeAndCommit(SendRequestSummary sendRequestSummary, Wallet wallet) {
+  private boolean complete(SendRequestSummary sendRequestSummary, Wallet wallet) {
 
-    log.debug("Complete and commit send request...");
+    log.debug("Completing send request...");
 
     Wallet.SendRequest sendRequest = sendRequestSummary.getSendRequest().get();
 
     try {
 
       // Complete it (works out fee and signs tx)
-      wallet.completeTx(sendRequestSummary.getSendRequest().get());
+      wallet.completeTx(sendRequest);
+
+    } catch (Exception e) {
+
+      log.error(e.getMessage(), e);
+
+      String transactionId = sendRequest.tx != null ? sendRequest.tx.getHashAsString() : "?";
+
+      // Fire a failed transaction creation event
+      CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
+        transactionId,
+        sendRequestSummary.getAmount(),
+        BigInteger.ZERO,
+        sendRequestSummary.getDestinationAddress(),
+        sendRequestSummary.getChangeAddress(),
+        false,
+        CoreMessageKey.THE_ERROR_WAS.getKey(),
+        new String[]{e.getMessage()}));
+
+      // We cannot proceed to broadcast
+      return false;
+    }
+
+    // Must be OK to be here
+    return true;
+  }
+
+  /**
+   * @param sendRequestSummary The information required to send bitcoin
+   * @param wallet             The wallet
+   *
+   * @return True if the complete and commit operations were successful
+   */
+  private boolean commit(SendRequestSummary sendRequestSummary, Wallet wallet) {
+
+    log.debug("Committing send request...");
+
+    Wallet.SendRequest sendRequest = sendRequestSummary.getSendRequest().get();
+
+    try {
 
       // Commit to the wallet (informs the wallet of the transaction)
       wallet.commitTx(sendRequest.tx);

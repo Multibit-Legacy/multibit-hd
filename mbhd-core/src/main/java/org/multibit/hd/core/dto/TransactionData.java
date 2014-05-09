@@ -2,6 +2,7 @@ package org.multibit.hd.core.dto;
 
 import com.google.bitcoin.core.TransactionConfidence;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.joda.time.DateTime;
 
 import java.math.BigInteger;
@@ -55,10 +56,42 @@ public class TransactionData implements PaymentData {
    */
   private Collection<String> outputAddresses;
 
+  /**
+   * @param transactionId     The transaction ID
+   * @param date              The creation date
+   * @param statusWithOrdinal The status with ordinal
+   * @param amountBTC         The amount in satoshis
+   * @param amountFiat        The amount in fiat
+   * @param feeOnSendBTC      The fee in satoshis
+   * @param confidenceType    The confidence type
+   * @param paymentType       The payment type
+   * @param description       The description
+   * @param isCoinbase        True if coinbase
+   * @param outputAddresses   The output addresses
+   * @param rawTransaction    The raw transaction
+   * @param size              The size in bytes
+   * @param isMock            True if this is a mock (CSV export header)
+   */
   public TransactionData(String transactionId, DateTime date, PaymentStatus statusWithOrdinal,
                          BigInteger amountBTC, FiatPayment amountFiat, Optional<BigInteger> feeOnSendBTC,
-                         TransactionConfidence.ConfidenceType confidenceType, PaymentType type, String description,
-                         boolean coinBase, Collection<String> outputAddresses, String rawTransaction, int size) {
+                         TransactionConfidence.ConfidenceType confidenceType, PaymentType paymentType, String description,
+                         boolean isCoinbase, Collection<String> outputAddresses, String rawTransaction, int size, boolean isMock) {
+
+    // Apply preconditions if being used in a real environment
+    if (!isMock) {
+      Preconditions.checkNotNull(transactionId, "'transactionId' must be present");
+      Preconditions.checkNotNull(date, "'date' must be present");
+      Preconditions.checkNotNull(statusWithOrdinal, "'statusWithOrdinal' must be present");
+      Preconditions.checkNotNull(amountBTC, "'amountBTC' must be present");
+      Preconditions.checkNotNull(amountFiat, "'amountFiat' must be present");
+      Preconditions.checkNotNull(feeOnSendBTC, "'feeOnSendBTC' must be present");
+      Preconditions.checkNotNull(confidenceType, "'confidenceType' must be present");
+      Preconditions.checkNotNull(paymentType, "'paymentType' must be present");
+      Preconditions.checkNotNull(description, "'description' must be present");
+      Preconditions.checkNotNull(outputAddresses, "'outputAddress' must be present");
+      Preconditions.checkNotNull(rawTransaction, "'rawTransaction' must be present");
+    }
+
     this.transactionId = transactionId;
     this.date = date;
     this.statusWithOrdinal = statusWithOrdinal;
@@ -66,9 +99,9 @@ public class TransactionData implements PaymentData {
     this.amountFiat = amountFiat;
     this.feeOnSendBTC = feeOnSendBTC;
     this.confidenceType = confidenceType;
-    this.type = type;
+    this.type = paymentType;
     this.description = description;
-    this.coinBase = coinBase;
+    this.coinBase = isCoinbase;
     this.outputAddresses = outputAddresses;
     this.rawTransaction = rawTransaction;
     this.size = size;

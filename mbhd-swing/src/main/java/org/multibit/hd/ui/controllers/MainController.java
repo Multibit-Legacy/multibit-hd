@@ -79,10 +79,6 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
   // Start with the assumption that it is fine to avoid annoying "everything is OK" alert
   private RAGStatus lastExchangeSeverity = RAGStatus.GREEN;
 
-  // Start with no security alert
-  private Optional<String> lastSecurityEvent = Optional.absent();
-
-
   /**
    * @param bitcoinURIListeningService The Bitcoin URI listening service (must be present to permit a UI)
    * @param headerController           The header controller

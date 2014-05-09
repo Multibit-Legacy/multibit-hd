@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.wizards.empty_wallet;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -128,14 +129,18 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
    */
   private boolean isNextEnabled() {
 
-    // TODO Add password verification
-
+    // Recipient must be present
     boolean recipientOK = getPanelModel().get()
       .getEnterRecipientModel()
       .getRecipient()
       .isPresent();
 
-    return recipientOK;
+    // Password only has to contain something to qualify
+    boolean passwordOK = !Strings.isNullOrEmpty(getPanelModel().get()
+      .getEnterPasswordModel()
+      .getValue());
+
+    return recipientOK && passwordOK;
   }
 
 }

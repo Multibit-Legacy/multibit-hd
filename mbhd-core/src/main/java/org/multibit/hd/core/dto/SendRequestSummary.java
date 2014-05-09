@@ -24,9 +24,9 @@ public class SendRequestSummary {
   private final BigInteger feePerKB;
   private final CharSequence password;
   private final Optional<FeeState> feeState;
-  private final boolean emptyWallet;
 
   // Mutable values
+  private boolean emptyWallet;
   private Optional<Address> feeAddress = Optional.absent();
   private Optional<KeyParameter> keyParameter = Optional.absent();
   private Optional<Wallet.SendRequest> sendRequest = Optional.absent();
@@ -115,6 +115,10 @@ public class SendRequestSummary {
     return emptyWallet;
   }
 
+  public void setEmptyWallet(boolean emptyWallet) {
+    this.emptyWallet = emptyWallet;
+  }
+
   public void setFeeAddress(Address feeAddress) {
     this.feeAddress = Optional.fromNullable(feeAddress);
   }
@@ -148,7 +152,7 @@ public class SendRequestSummary {
       ", amount=" + amount +
       ", changeAddress=" + changeAddress +
       ", feePerKB=" + feePerKB +
-      ", password=" + password +
+      ", password=***" +
       ", feeStateOptional=" + feeState +
       '}';
   }

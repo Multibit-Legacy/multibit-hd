@@ -240,6 +240,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     } else {
       transactionInfo.setMinerFee(Optional.of(minerFeePaid));
     }
+
+    // Create the fiat payment
     FiatPayment fiatPayment = new FiatPayment();
     // A send is denoted with a negative fiat amount
     fiatPayment.setAmount(getLocalAmount().negated());
@@ -280,12 +282,12 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
       if (walletFileOptional.isPresent()) {
         log.debug("Wallet file prior to calculateFeeState is " + walletFileOptional.get().length() + " bytes");
       }
-      Optional<FeeState> feeStateOptional = Optional.of(feeService.calculateFeeState(wallet));
+      Optional<FeeState> feeState = Optional.of(feeService.calculateFeeState(wallet, false));
       if (walletFileOptional.isPresent()) {
         log.debug("Wallet file after to calculateFeeState is " + walletFileOptional.get().length() + " bytes");
       }
 
-      return feeStateOptional;
+      return feeState;
     } else {
       return Optional.absent();
     }

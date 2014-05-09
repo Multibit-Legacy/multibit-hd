@@ -18,7 +18,10 @@ import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.ChangePasswordResultEvent;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
-import org.multibit.hd.core.exceptions.*;
+import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.exceptions.PaymentsLoadException;
+import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.ExportManager;
@@ -237,6 +240,7 @@ public class WalletService {
 
   /**
    * @param query The text fragment to match (case-insensitive, anywhere in the name)
+   *
    * @return A filtered set of Payments for the given query
    */
   public List<PaymentData> filterPaymentsByContent(String query) {
@@ -265,12 +269,12 @@ public class WalletService {
         isRawTransactionMatched = transactionData.getRawTransaction().toLowerCase().contains(lowerQuery);
       }
       if (isDescriptionMatched
-              || isNoteMatched
-              || isQrCodeLabelMatched
-              || isPaymentAddressMatched
-              || isOutputAddressMatched
-              || isRawTransactionMatched
-              ) {
+        || isNoteMatched
+        || isQrCodeLabelMatched
+        || isPaymentAddressMatched
+        || isOutputAddressMatched
+        || isRawTransactionMatched
+        ) {
         filteredPayments.add(paymentData);
       }
     }
@@ -285,6 +289,7 @@ public class WalletService {
    *
    * @param wallet      the current wallet
    * @param transaction the transaction to adapt
+   *
    * @return TransactionData the transaction data
    */
   public TransactionData adaptTransaction(Wallet wallet, Transaction transaction) {
@@ -344,8 +349,22 @@ public class WalletService {
     List<String> outputAddresses = calculateOutputAddresses(transaction);
 
     // Create the DTO from the raw transaction info
-    TransactionData transactionData = new TransactionData(transactionHashAsString, new DateTime(updateTime), paymentStatus, amountBTC, amountFiat,
-            feeOnSend, confidenceType, paymentType, description, transaction.isCoinBase(), outputAddresses, rawTransaction, size);
+    TransactionData transactionData = new TransactionData(
+      transactionHashAsString,
+      new DateTime(updateTime),
+      paymentStatus,
+      amountBTC,
+      amountFiat,
+      feeOnSend,
+      confidenceType,
+      paymentType,
+      description,
+      transaction.isCoinBase(),
+      outputAddresses,
+      rawTransaction,
+      size,
+      false
+    );
 
     // Note - from the transactionInfo (if present)
     String note = calculateNote(transactionData, transactionHashAsString);
@@ -362,6 +381,7 @@ public class WalletService {
    *
    * @param confidenceType the bitcoinj confidenceType  to use to work out the status
    * @param depth          depth in blocks of the transaction
+   *
    * @return status of the transaction
    */
   public static PaymentStatus calculateStatus(TransactionConfidence.ConfidenceType confidenceType, int depth, int numberOfPeers) {
@@ -436,11 +456,11 @@ public class WalletService {
   }
 
   private String calculateDescriptionAndUpdatePaymentRequests(
-          Wallet wallet,
-          Transaction transaction,
-          String transactionHashAsString,
-          PaymentType paymentType,
-          BigInteger amountBTC
+    Wallet wallet,
+    Transaction transaction,
+    String transactionHashAsString,
+    PaymentType paymentType,
+    BigInteger amountBTC
   ) {
 
     String description;
@@ -580,9 +600,9 @@ public class WalletService {
     log.debug("Loading payments from '{}'", backingStoreFile.getAbsolutePath());
     try {
       ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(backingStoreFile,
-              WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(),
-              WalletManager.SCRYPT_SALT,
-              WalletManager.AES_INITIALISATION_VECTOR);
+        WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(),
+        WalletManager.SCRYPT_SALT,
+        WalletManager.AES_INITIALISATION_VECTOR);
       Payments payments = protobufSerializer.readPayments(decryptedInputStream);
 
       // For quick access payment requests and transaction infos are stored in maps
@@ -622,6 +642,7 @@ public class WalletService {
       EncryptedFileReaderWriter.encryptAndWrite(byteArrayOutputStream.toByteArray(), WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(), backingStoreFile);
 
     } catch (Exception e) {
+      log.error("Could not write to payments db '{}'. backingStoreFile.getAbsolutePath()", e);
       throw new PaymentsSaveException("Could not write payments db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");
     }
   }
@@ -648,6 +669,7 @@ public class WalletService {
    * worked out deterministically and uses the lastIndexUsed on the Payments so that each address is unique
    *
    * @param walletPasswordOptional Either: Optional.absent() = just recycle the first address in the wallet or:  password of the wallet to which the new private key is added
+   *
    * @return Address the next generated address, as a String. The corresponding private key will be added to the wallet
    */
   public String generateNextReceivingAddress(Optional<CharSequence> walletPasswordOptional) {
@@ -673,6 +695,7 @@ public class WalletService {
    * Find the payment requests that are either partially or fully funded by the transaction specified
    *
    * @param transactionData The transaction data
+   *
    * @return The list of payment requests that the transaction data funds
    */
   public List<PaymentRequestData> findPaymentRequestsThisTransactionFunds(TransactionData transactionData) {
@@ -731,15 +754,15 @@ public class WalletService {
     // Refresh all payments
     List<PaymentData> paymentDataList = getPaymentDataList();
     ExportManager.export(
-            paymentDataList,
-            getPaymentRequests(),
-            exportDirectory,
-            transactionFileStem,
-            paymentRequestFileStem,
-            paymentRequestHeaderConverter,
-            paymentRequestConverter,
-            transactionHeaderConverter,
-            transactionConverter
+      paymentDataList,
+      getPaymentRequests(),
+      exportDirectory,
+      transactionFileStem,
+      paymentRequestFileStem,
+      paymentRequestHeaderConverter,
+      paymentRequestConverter,
+      transactionHeaderConverter,
+      transactionConverter
     );
   }
 
@@ -817,7 +840,7 @@ public class WalletService {
         walletSummary.setEncryptedBackupKey(encryptedNewBackupAESKey);
         walletSummary.setEncryptedPassword(encryptedNewPassword);
 
-         // Save the wallet summary file
+        // Save the wallet summary file
         WalletManager.updateWalletSummary(WalletManager.INSTANCE.getCurrentWalletSummaryFile(applicationDataDirectory).get(), walletSummary);
 
         // Save all the Contacts, history and payment information using the new wallet password

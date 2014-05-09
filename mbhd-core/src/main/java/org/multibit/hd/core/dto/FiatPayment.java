@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
  *  
  */
 public class FiatPayment {
+
   private BigMoney amount;
   private String exchange;
   private String rate;

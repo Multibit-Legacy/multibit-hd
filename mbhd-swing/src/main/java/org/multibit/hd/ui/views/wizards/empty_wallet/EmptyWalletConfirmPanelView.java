@@ -2,8 +2,6 @@ package org.multibit.hd.ui.views.wizards.empty_wallet;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.joda.money.BigMoney;
-import org.joda.money.CurrencyUnit;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
@@ -21,7 +19,6 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
@@ -50,7 +47,7 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
    */
   public EmptyWalletConfirmPanelView(AbstractWizard<EmptyWalletWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.CONFIRM_SEND_TITLE, AwesomeIcon.FIRE);
+    super(wizard, panelName, MessageKey.EMPTY_WALLET_CONFIRM_TITLE, AwesomeIcon.FIRE);
 
   }
 
@@ -65,8 +62,8 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
   public void initialiseContent(JPanel contentPanel) {
 
     // Transaction information
-    transactionDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT, true,"transaction");
-    transactionFeeDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.FEE_AMOUNT, true,"transaction_fee");
+    transactionDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT, true, "transaction");
+    transactionFeeDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.FEE_AMOUNT, true, "transaction_fee");
     clientFeeDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.FEE_AMOUNT, true, "client_fee");
 
     // Blank labels populated from wizard model later
@@ -110,8 +107,8 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
   @Override
   public void fireInitialStateViewEvents() {
 
-    // Send button starts off disabled
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, false);
+    // Send button starts off enabled (nothing to confirm besides values)
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
 
   }
 
@@ -121,10 +118,8 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
     Configuration configuration = Configurations.currentConfiguration;
 
     // Update the model and view for the amount
-//    transactionDisplayAmountMaV.getModel().setSatoshis(getWizardModel().getSatoshis());
-    transactionDisplayAmountMaV.getModel().setSatoshis(BigInteger.ZERO);
-//    transactionDisplayAmountMaV.getModel().setLocalAmount(getWizardModel().getLocalAmount());
-    transactionDisplayAmountMaV.getModel().setLocalAmount(BigMoney.of(CurrencyUnit.USD, BigDecimal.ZERO));
+    transactionDisplayAmountMaV.getModel().setSatoshis(getWizardModel().getSatoshis());
+    transactionDisplayAmountMaV.getModel().setLocalAmountVisible(false);
     transactionDisplayAmountMaV.getView().updateView(configuration);
 
     // Update the model and view for the transaction fee
@@ -139,8 +134,14 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
       FeeState feeState = feeStateOptional.get();
 
       if (feeState.getCurrentNumberOfSends() == feeState.getNextFeeSendCount()) {
-        // The fee is due at the next send e.g. current number of sends = 20, nextFeeSendCount = 20 (the 21st send i.e. the coming one)
-        feeText = Languages.safeText(MessageKey.CLIENT_FEE_NOW);
+
+        // The fee is due now - so check for zero owing due to dust/force etc
+        if (feeState.getFeeOwed().compareTo(BigInteger.ZERO) == 0) {
+          feeText = "";
+        } else {
+          feeText = Languages.safeText(MessageKey.CLIENT_FEE_NOW);
+        }
+
       } else if (feeState.getFeeOwed().compareTo(BigInteger.ZERO) < 0) {
         // The user has overpaid
         feeText = Languages.safeText(MessageKey.CLIENT_FEE_OVERPAID);
@@ -175,6 +176,20 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
 
     return true;
   }
+
+  @Override
+  public void afterShow() {
+
+    // Start with Cancel having focus to avoid accidental confirmation
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        getCancelButton().requestFocusInWindow();
+      }
+    });
+
+  }
+
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 
