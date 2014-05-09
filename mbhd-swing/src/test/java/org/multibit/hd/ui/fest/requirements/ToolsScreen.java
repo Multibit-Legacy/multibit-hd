@@ -3,6 +3,7 @@ package org.multibit.hd.ui.fest.requirements;
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.tools.ShowThenFinishSignMessageUseCase;
+import org.multibit.hd.ui.fest.use_cases.tools.ShowThenFinishVerifyMessageUseCase;
 import org.multibit.hd.ui.fest.use_cases.tools.ShowToolsScreenUseCase;
 
 import java.util.Map;
@@ -28,5 +29,7 @@ public class ToolsScreen {
     // Perform a simple edit and finish operation
     new ShowThenFinishSignMessageUseCase(window).execute(parameters);
 
+    // Perform a simple edit and finish operation
+    new ShowThenFinishVerifyMessageUseCase(window).execute(parameters);
   }
 }

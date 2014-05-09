@@ -69,6 +69,9 @@ import org.multibit.hd.ui.views.wizards.sign_message.SignMessageWizardModel;
 import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsState;
 import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsWizard;
 import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsWizardModel;
+import org.multibit.hd.ui.views.wizards.verify_message.VerifyMessageState;
+import org.multibit.hd.ui.views.wizards.verify_message.VerifyMessageWizard;
+import org.multibit.hd.ui.views.wizards.verify_message.VerifyMessageWizardModel;
 import org.multibit.hd.ui.views.wizards.verify_network.VerifyNetworkState;
 import org.multibit.hd.ui.views.wizards.verify_network.VerifyNetworkWizard;
 import org.multibit.hd.ui.views.wizards.verify_network.VerifyNetworkWizardModel;
@@ -229,16 +232,16 @@ public class Wizards {
 
   }
 
-//  /**
-//   * @return A new "verify message" wizard for a warm start
-//   */
-//  public static VerifyMessageWizard newVerifyMessageWizard() {
-//
-//    log.debug("New 'Verify message wizard'");
-//
-//    return new VerifyMessageWizard(new VerifyMessageWizardModel(VerifyMessageState.EDIT_MESSAGE), false);
-//
-//  }
+  /**
+   * @return A new "verify message" wizard for a warm start
+   */
+  public static VerifyMessageWizard newVerifyMessageWizard() {
+
+    log.debug("New 'Verify message wizard'");
+
+    return new VerifyMessageWizard(new VerifyMessageWizardModel(VerifyMessageState.EDIT_MESSAGE), false);
+
+  }
 
   /**
    * @return A new "password" wizard for a warm start

@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.wizards.sign_message;
 
 /**
- * <p>Enum to provide the following to "edit wallet" wizard model:</p>
+ * <p>Enum to provide the following to "sign message" wizard model:</p>
  * <ul>
  * <li>State identification</li>
  * </ul>

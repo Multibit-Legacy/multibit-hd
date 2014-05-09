@@ -73,8 +73,8 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
 
     signingAddress = TextBoxes.newEnterBitcoinAddress(getWizardModel(), false);
     message = TextBoxes.newEnterMessage(getWizardModel(), false);
-    signature = TextBoxes.newReadOnlyTextArea(getWizardModel(), 6, 40);
 
+    signature = TextBoxes.newReadOnlyTextArea(getWizardModel(), 6, 40);
     AccessibilityDecorator.apply(signature, MessageKey.SIGNATURE);
 
     contentPanel.add(Labels.newSignMessageNote(), "span 4,wrap");
