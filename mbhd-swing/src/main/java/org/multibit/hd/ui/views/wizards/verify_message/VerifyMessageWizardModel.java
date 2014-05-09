@@ -1,10 +1,10 @@
-package org.multibit.hd.ui.views.wizards.sign_message;
+package org.multibit.hd.ui.views.wizards.verify_message;
 
 import com.google.bitcoin.core.Address;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 
 /**
- * <p>Model object to provide the following to "sign message" wizard:</p>
+ * <p>Model object to provide the following to "verify message" wizard:</p>
  * <ul>
  * <li>Storage of panel data</li>
  * <li>State transition management</li>
@@ -13,16 +13,16 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
  * @since 0.0.1
  *  
  */
-public class SignMessageWizardModel extends AbstractWizardModel<SignMessageState> {
+public class VerifyMessageWizardModel extends AbstractWizardModel<VerifyMessageState> {
 
-  private Address signingAddress = null;
+  private Address verifyingAddress = null;
   private String message;
   private byte[] signature;
 
   /**
    * @param state The state object
    */
-  public SignMessageWizardModel(SignMessageState state) {
+  public VerifyMessageWizardModel(VerifyMessageState state) {
     super(state);
   }
 
@@ -38,14 +38,14 @@ public class SignMessageWizardModel extends AbstractWizardModel<SignMessageState
   }
 
   /**
-   * @return The signing address
+   * @return The verifying address
    */
-  public Address getSigningAddress() {
-    return signingAddress;
+  public Address getVerifyingAddress() {
+    return verifyingAddress;
   }
 
-  public void setSigningAddress(Address signingAddress) {
-    this.signingAddress = signingAddress;
+  public void setVerifyingAddress(Address verifyingAddress) {
+    this.verifyingAddress = verifyingAddress;
   }
 
   /**

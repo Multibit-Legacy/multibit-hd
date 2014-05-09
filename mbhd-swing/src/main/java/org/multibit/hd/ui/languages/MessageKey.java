@@ -43,6 +43,7 @@ public enum MessageKey {
   COPY("copy"),
   CLEAR_ALL("clear_all"),
   SIGN_MESSAGE("sign_message"),
+  VERIFY_MESSAGE("verify_message"),
 
   // Nouns
 
@@ -384,6 +385,9 @@ public enum MessageKey {
   SIGN_MESSAGE_NOTE_1("sign_message_note_1"),
   SIGN_MESSAGE_NOTE_2("sign_message_note_2"),
   SIGN_MESSAGE_NOTE_3("sign_message_note_3"),
+
+  VERIFY_MESSAGE_NOTE_1("verify_message_note_1"),
+  VERIFY_MESSAGE_NOTE_2("verify_message_note_2"),
 
   RECIPIENT_SUMMARY("recipient_summary"),
 

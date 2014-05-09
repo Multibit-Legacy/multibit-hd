@@ -1180,4 +1180,16 @@ public class Labels {
 
   }
 
+  /**
+   * @return A new "verify message" note
+   */
+  public static JLabel newVerifyMessageNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.VERIFY_MESSAGE_NOTE_1,
+      MessageKey.VERIFY_MESSAGE_NOTE_2
+    }, new Object[][]{});
+
+  }
+
 }

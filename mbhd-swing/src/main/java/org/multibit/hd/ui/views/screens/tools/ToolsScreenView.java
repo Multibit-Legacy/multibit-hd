@@ -112,8 +112,7 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        // TODO Implement this
-        //Panels.showLightBox(Wizards.newVerifyMessageWizard().getWizardScreenHolder());
+        Panels.showLightBox(Wizards.newVerifyMessageWizard().getWizardScreenHolder());
       }
     };
   }

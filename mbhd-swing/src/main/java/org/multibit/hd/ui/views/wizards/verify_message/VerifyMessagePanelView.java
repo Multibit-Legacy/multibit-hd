@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.sign_message;
+package org.multibit.hd.ui.views.wizards.verify_message;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
@@ -18,16 +18,16 @@ import java.awt.event.ActionEvent;
 /**
  * <p>Wizard to provide the following to UI:</p>
  * <ul>
- * <li>Sign message: Enter details</li>
+ * <li>Verify message: Enter details</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWizardModel, String> {
+public class VerifyMessagePanelView extends AbstractWizardPanelView<VerifyMessageWizardModel, String> {
 
   // View components
-  FormattedBitcoinAddressField signingAddress;
+  FormattedBitcoinAddressField verifyingAddress;
   JTextArea signature;
   JTextArea message;
 
@@ -35,9 +35,9 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to allow event filtering
    */
-  public SignMessagePanelView(AbstractWizard<SignMessageWizardModel> wizard, String panelName) {
+  public VerifyMessagePanelView(AbstractWizard<VerifyMessageWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.SIGN_MESSAGE_TITLE, AwesomeIcon.PENCIL);
+    super(wizard, panelName, MessageKey.VERIFY_MESSAGE_TITLE, AwesomeIcon.CERTIFICATE);
 
   }
 
@@ -58,21 +58,21 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
     ));
 
 
-    signingAddress = TextBoxes.newEnterBitcoinAddress(getWizardModel(), false);
+    verifyingAddress = TextBoxes.newEnterBitcoinAddress(getWizardModel(), false);
     message = TextBoxes.newEnterMessage(getWizardModel(), false);
 
     signature = TextBoxes.newReadOnlyTextArea(getWizardModel(), 6, 40);
     AccessibilityDecorator.apply(signature, MessageKey.SIGNATURE);
 
-    contentPanel.add(Labels.newSignMessageNote(), "span 4,wrap");
+    contentPanel.add(Labels.newVerifyMessageNote(), "span 4,wrap");
 
     contentPanel.add(Labels.newBitcoinAddress());
-    contentPanel.add(signingAddress, "grow,span 3,push,wrap");
+    contentPanel.add(verifyingAddress, "grow,span 3,push,wrap");
 
     contentPanel.add(Labels.newMessage());
     contentPanel.add(message, "grow,span 3,push,wrap");
 
-    contentPanel.add(Buttons.newSignMessageButton(getSignMessageAction()), "cell 2 3,");
+    contentPanel.add(Buttons.newVerifyMessageButton(getSignMessageAction()), "cell 2 3,");
     contentPanel.add(Buttons.newClearAllButton(getClearAllAction()), "cell 3 3,wrap");
 
     contentPanel.add(Labels.newSignature());
@@ -82,7 +82,7 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<SignMessageWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<VerifyMessageWizardModel> wizard) {
 
     PanelDecorator.addFinish(this, wizard);
 
@@ -103,7 +103,7 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
       @Override
       public void run() {
 
-        signingAddress.requestFocusInWindow();
+        verifyingAddress.requestFocusInWindow();
 
       }
     });
@@ -162,7 +162,7 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        signingAddress.setText("");
+        verifyingAddress.setText("");
         message.setText("");
         signature.setText("");
 

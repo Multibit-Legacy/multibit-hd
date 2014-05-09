@@ -193,6 +193,21 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "Verify message" button with icon
+   */
+  public static JButton newVerifyMessageButton(Action action) {
+
+    JButton button = newButton(action, MessageKey.VERIFY_MESSAGE);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.CERTIFICATE, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
+
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "Clear all" button with icon
    */
   public static JButton newClearAllButton(Action action) {
