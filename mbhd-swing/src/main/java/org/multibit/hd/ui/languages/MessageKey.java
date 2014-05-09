@@ -231,6 +231,8 @@ public enum MessageKey {
   REPAIR_WALLET_TITLE("repair_wallet_title"),
 
   EMPTY_WALLET_TITLE("empty_wallet_title"),
+  EMPTY_WALLET_CONFIRM_TITLE("empty_wallet_confirm_title"),
+  EMPTY_WALLET_PROGRESS_TITLE("empty_wallet_progress_title"),
 
   // Labels
   CONFIRM_SEND_MESSAGE("confirm_send_message"),

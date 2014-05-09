@@ -116,7 +116,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
 
     log.debug("Show wizard: {}", name);
 
-    Preconditions.checkState(wizardViewMap.containsKey(name), "'" + name + "' is not a valid panel name");
+    Preconditions.checkState(wizardViewMap.containsKey(name), "'" + name + "' is not a valid panel name. Check the panel has been registered in the view map.");
 
     final AbstractWizardPanelView wizardPanelView = wizardViewMap.get(name);
 

@@ -294,7 +294,7 @@ public class Wizards {
 
     log.debug("New 'Empty wallet wizard'");
 
-    return new EmptyWalletWizard(new EmptyWalletWizardModel(EmptyWalletState.EMPTY_WALLET), false);
+    return new EmptyWalletWizard(new EmptyWalletWizardModel(EmptyWalletState.EMPTY_WALLET_ENTER_DETAILS), false);
 
   }
 

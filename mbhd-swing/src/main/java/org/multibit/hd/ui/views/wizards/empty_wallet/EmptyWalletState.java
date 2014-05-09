@@ -11,7 +11,9 @@ package org.multibit.hd.ui.views.wizards.empty_wallet;
  */
 public enum EmptyWalletState {
 
-  EMPTY_WALLET,
+  EMPTY_WALLET_ENTER_DETAILS,
+  EMPTY_WALLET_CONFIRM,
+  EMPTY_WALLET_REPORT,
 
   // End of enum
   ;

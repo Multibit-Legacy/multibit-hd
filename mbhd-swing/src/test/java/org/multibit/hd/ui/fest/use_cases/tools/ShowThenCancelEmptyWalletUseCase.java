@@ -16,38 +16,33 @@ import java.util.Map;
  * @since 0.0.1
  *  
  */
-public class ShowThenFinishVerifyMessageUseCase extends AbstractFestUseCase {
+public class ShowThenCancelEmptyWalletUseCase extends AbstractFestUseCase {
 
-  public ShowThenFinishVerifyMessageUseCase(FrameFixture window) {
+  public ShowThenCancelEmptyWalletUseCase(FrameFixture window) {
     super(window);
   }
 
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    // Click on Verify message
+    // Click on "empty wallet"
     window
-      .button(MessageKey.SHOW_VERIFY_WIZARD.getKey())
+      .button(MessageKey.SHOW_EMPTY_WALLET_WIZARD.getKey())
       .click();
 
-    // Verify the "verify message" wizard appears
+    // Verify the "empty wallet" wizard appears
     window
-      .label(MessageKey.VERIFY_MESSAGE_TITLE.getKey());
+      .label(MessageKey.EMPTY_WALLET_TITLE.getKey());
 
-    // Verify finish is present
+    // Verify cancel is present
     window
-      .button(MessageKey.FINISH.getKey())
+      .button(MessageKey.CANCEL.getKey())
       .requireVisible()
       .requireEnabled();
 
-    // Create a message to sign
+    // Click Cancel
     window
-      .textBox(MessageKey.MESSAGE.getKey())
-      .setText("A message for Bob Cratchit");
-
-    // Click Finish
-    window
-      .button(MessageKey.FINISH.getKey())
+      .button(MessageKey.CANCEL.getKey())
       .click();
 
     // Verify the underlying screen is back

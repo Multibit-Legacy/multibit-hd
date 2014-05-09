@@ -24,7 +24,9 @@ public class EmptyWalletWizard extends AbstractWizard<EmptyWalletWizardModel> {
   @Override
   protected void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap) {
 
-    wizardViewMap.put(EmptyWalletState.EMPTY_WALLET.name(), new EmptyWalletPanelView(this, EmptyWalletState.EMPTY_WALLET.name()));
+    wizardViewMap.put(EmptyWalletState.EMPTY_WALLET_ENTER_DETAILS.name(), new EmptyWalletEnterDetailsPanelView(this, EmptyWalletState.EMPTY_WALLET_ENTER_DETAILS.name()));
+    wizardViewMap.put(EmptyWalletState.EMPTY_WALLET_CONFIRM.name(), new EmptyWalletConfirmPanelView(this, EmptyWalletState.EMPTY_WALLET_CONFIRM.name()));
+    wizardViewMap.put(EmptyWalletState.EMPTY_WALLET_REPORT.name(), new EmptyWalletReportPanelView(this, EmptyWalletState.EMPTY_WALLET_REPORT.name()));
 
   }
 

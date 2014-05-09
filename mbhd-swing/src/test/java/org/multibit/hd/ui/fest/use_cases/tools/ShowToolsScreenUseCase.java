@@ -46,6 +46,11 @@ public class ShowToolsScreenUseCase extends AbstractFestUseCase {
       .requireEnabled();
 
     window
+      .button(MessageKey.SHOW_EMPTY_WALLET_WIZARD.getKey())
+      .requireVisible()
+      .requireEnabled();
+
+    window
       .button(MessageKey.SHOW_VERIFY_NETWORK_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
@@ -60,6 +65,15 @@ public class ShowToolsScreenUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled();
 
+    window
+      .button(MessageKey.SHOW_SIGN_WIZARD.getKey())
+      .requireVisible()
+      .requireEnabled();
+
+    window
+      .button(MessageKey.SHOW_VERIFY_WIZARD.getKey())
+      .requireVisible()
+      .requireEnabled();
   }
 
 }
