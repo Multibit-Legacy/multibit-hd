@@ -25,6 +25,7 @@ import org.multibit.hd.core.network.MultiBitPeerEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -56,6 +57,11 @@ public class BitcoinNetworkService extends AbstractService {
 
   public static final BigInteger DEFAULT_FEE_PER_KB = Transaction.REFERENCE_DEFAULT_MIN_TX_FEE; // Currently 10,000 satoshi
   public static final int MAXIMUM_NUMBER_OF_PEERS = 6;
+
+  /**
+   * The boundary for when more mining fee is due
+   */
+  private static final int MINING_FEE_BOUNDARY = 1000;
 
   private BlockStore blockStore;
   private PeerGroup peerGroup;  // May need to add listener as in MultiBitPeerGroup
@@ -303,7 +309,6 @@ public class BitcoinNetworkService extends AbstractService {
       }
 
     } else {
-
       // This is an empty wallet so perform a dry run to get fees
       log.debug("Treating as an 'empty wallet' send");
 
@@ -319,18 +324,18 @@ public class BitcoinNetworkService extends AbstractService {
 
       log.debug("Adjusting outputs using 'dry run' values");
 
-      // Examine the result to determine fees
+      // Examine the result to determine miner fees - the calculated maximum amount is put on the (single) tx output
       Wallet.SendRequest sendRequest = sendRequestSummary.getSendRequest().get();
 
-      // Determine the maximum amount allowing for fees
+      // Determine the maximum amount allowing for client fees
       BigInteger recipientAmount = sendRequest.tx.getOutput(0).getValue();
-      BigInteger feeAmount = sendRequestSummary.getFeeState().get().getFeeOwed();
+      BigInteger clientFeeAmount = sendRequestSummary.getFeeState().get().getFeeOwed();
 
       // Adjust the send request summary accordingly
-      recipientAmount = recipientAmount.subtract(feeAmount);
+      recipientAmount = recipientAmount.subtract(clientFeeAmount);
 
       // Update the SendRequestSummary with the new values and ensure it is not an "empty wallet"
-      final SendRequestSummary emptyWalletSendRequestSummary = new SendRequestSummary(
+      SendRequestSummary emptyWalletSendRequestSummary = new SendRequestSummary(
         sendRequestSummary.getDestinationAddress(),
         recipientAmount,
         sendRequestSummary.getChangeAddress(),
@@ -342,6 +347,7 @@ public class BitcoinNetworkService extends AbstractService {
       emptyWalletSendRequestSummary.setKeyParameter(sendRequestSummary.getKeyParameter().get());
 
       // Attempt to build and append the send request as if it were standard
+      // (This may now add on a client fee output and also adjust the size of the output amounts)
       if (!appendSendRequest(emptyWalletSendRequestSummary)) {
         return false;
       }
@@ -491,8 +497,8 @@ public class BitcoinNetworkService extends AbstractService {
 
     try {
       final Wallet.SendRequest sendRequest = Wallet.SendRequest.to(
-        sendRequestSummary.getDestinationAddress(),
-        sendRequestSummary.getAmount()
+              sendRequestSummary.getDestinationAddress(),
+              sendRequestSummary.getAmount()
       );
       sendRequest.aesKey = sendRequestSummary.getKeyParameter().get();
       sendRequest.fee = BigInteger.ZERO;
@@ -505,11 +511,55 @@ public class BitcoinNetworkService extends AbstractService {
       // Only include the fee output if not emptying since it interferes
       // with the coin selector
       if (!sendRequest.emptyWallet && sendRequestSummary.getFeeAddress().isPresent()) {
+        // Work out the size of the transaction in bytes (the fee solver will have calculated the fee for this size)
+        int initialSize;
+        try {
+          initialSize = calculateSize(sendRequest.tx);
+          log.debug("Size of transaction before adding the client fee was {0}", initialSize);
+        } catch (IOException ioe) {
+          log.error("Could not calculate initial transaction size. " + ioe.getMessage());
+          return false;
+        }
 
+        // Add a tx output to pay the client fee
         sendRequest.tx.addOutput(
-          sendRequestSummary.getFeeState().get().getFeeOwed(),
-          sendRequestSummary.getFeeAddress().get()
+                sendRequestSummary.getFeeState().get().getFeeOwed(),
+                sendRequestSummary.getFeeAddress().get()
         );
+
+        // The transaction now has an extra client fee output added
+        // This increases the size of the transaction, and may require more fee if it pushes it over a 1000 byte size boundary
+        int updatedSize;
+        try {
+          updatedSize = calculateSize(sendRequest.tx);
+          log.debug("Size of transaction after adding the client fee was {0}", updatedSize);
+        } catch (IOException ioe) {
+          log.error("Could not calculate updated transaction size. " + ioe.getMessage());
+          return false;
+        }
+
+        if (Math.floor(updatedSize / MINING_FEE_BOUNDARY) > Math.floor(initialSize / MINING_FEE_BOUNDARY)) {
+          // Adding a client fee output has stepped over a mining fee boundary.
+          // There is extra mining fee due - this can either be paid by reducing the amount redeemed (tx output 0)
+          // or reducing the client fee (tx output 1)
+          // If neither of these is possible (due to dust limits) then give up trying to claim the client fee.
+
+          if (sendRequest.tx.getOutput(0).getValue().compareTo(Transaction.MIN_NONDUST_OUTPUT.add(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE)) > 0) {
+            // There is enough bitcoin on the redemption output, decrease that
+            sendRequest.tx.getOutput(0).setValue(sendRequest.tx.getOutput(0).getValue().subtract(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE));
+          } else {
+            // Try decreasing the client fee
+            if (sendRequest.tx.getOutput(1).getValue().compareTo(Transaction.MIN_NONDUST_OUTPUT.add(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE)) > 0) {
+              // There is enough bitcoin on the client fee output, decrease that
+              sendRequest.tx.getOutput(1).setValue(sendRequest.tx.getOutput(1).getValue().subtract(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE));
+            } else {
+              // We cannot pay the mining fee for the extra client fee output so remove it.
+              // Put back the original amount on the redemption output
+              sendRequest.tx.clearOutputs();
+              sendRequest.tx.addOutput(sendRequestSummary.getAmount(), sendRequestSummary.getDestinationAddress());
+            }
+          }
+        }
       }
 
       // Append the Bitcoinj send request to the summary
@@ -521,14 +571,14 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Declare the transaction creation a failure
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
-        null,
-        sendRequestSummary.getAmount(),
-        BigInteger.ZERO,
-        sendRequestSummary.getDestinationAddress(),
-        sendRequestSummary.getChangeAddress(),
-        false,
-        CoreMessageKey.THE_ERROR_WAS.getKey(),
-        new String[]{e.getClass().getCanonicalName() + " " + e.getMessage()}));
+              null,
+              sendRequestSummary.getAmount(),
+              BigInteger.ZERO,
+              sendRequestSummary.getDestinationAddress(),
+              sendRequestSummary.getChangeAddress(),
+              false,
+              CoreMessageKey.THE_ERROR_WAS.getKey(),
+              new String[]{e.getClass().getCanonicalName() + " " + e.getMessage()}));
 
       // We cannot proceed to broadcast
       return false;
@@ -925,4 +975,15 @@ public class BitcoinNetworkService extends AbstractService {
       }
     }
   }
+
+  /**
+    * Calculate the size of the transaction
+    * @param transaction The transaction to calculate the size of
+    * @return size of the transaction
+    */
+   private int calculateSize(Transaction transaction) throws IOException {
+     ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
+     transaction.bitcoinSerialize(byteOutputStream);
+     return byteOutputStream.size();
+   }
 }
