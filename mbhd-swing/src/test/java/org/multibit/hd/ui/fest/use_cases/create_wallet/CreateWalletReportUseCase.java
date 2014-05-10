@@ -61,7 +61,7 @@ public class CreateWalletReportUseCase extends AbstractFestUseCase {
       .button(MessageKey.EXIT.getKey())
       .requireVisible()
         // Allow a short time to overcome initialisation delays
-      .requireEnabled(timeout(1, TimeUnit.SECONDS));
+      .requireEnabled(timeout(3, TimeUnit.SECONDS));
 
     // Examine the list
     window

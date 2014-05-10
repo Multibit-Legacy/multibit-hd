@@ -63,10 +63,6 @@ public enum WelcomeWizardState {
    * Select wallet: Select a hardware wallet (Trezor etc)
    */
   SELECT_WALLET_HARDWARE,
-  /**
-   * Select wallet: Switch to another wallet (from application directory)
-   */
-  SELECT_WALLET_SWITCH,
 
   // End of enum
   ;
