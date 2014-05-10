@@ -293,7 +293,6 @@ public enum MessageKey {
   // Radio buttons
   CREATE_WALLET("create_wallet"),
   RESTORE_WALLET("restore_wallet"),
-  SWITCH_WALLET("switch_wallet"),
   USE_HARDWARE_WALLET("use_hardware_wallet"),
 
   RESTORE_FROM_SEED_PHRASE("restore_from_seed_phrase"),

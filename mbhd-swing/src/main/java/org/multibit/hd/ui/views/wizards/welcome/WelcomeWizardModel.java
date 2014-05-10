@@ -39,9 +39,6 @@ import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
  * <li>Storage of panel data</li>
  * <li>State transition management</li>
  * </ul>
- * <p>Example:</p>
- * <pre>
- * </pre>
  *
  * @since 0.0.1
  *  
@@ -51,7 +48,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   private static final Logger log = LoggerFactory.getLogger(WelcomeWizardModel.class);
 
   /**
-   * The "select wallet" radio button choice (as a state)
+   * The "select language" locale code
    */
   private String localeCode = Languages.currentLocale().getLanguage();
 
@@ -160,10 +157,6 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
       case RESTORE_WALLET_REPORT:
         throw new IllegalStateException("'Next' is not permitted here");
       case SELECT_WALLET_HARDWARE:
-        // TODO Requires implementation
-        state = selectWalletChoice;
-        break;
-      case SELECT_WALLET_SWITCH:
         // TODO Requires implementation
         state = selectWalletChoice;
         break;

@@ -47,58 +47,11 @@ public class WelcomeSelectWalletUseCase extends AbstractFestUseCase {
       .requireDisabled()
       .requireVisible();
 
-    window
-      .radioButton(MessageKey.SWITCH_WALLET.getKey())
-      .requireNotSelected()
-      .requireEnabled()
-      .requireVisible();
-
-    window
-      .comboBox(MessageKey.SELECT_WALLET.getKey())
-      .requireDisabled()
-      .requireVisible();
-
-    // Verify interactions
-    verifySelectWalletEnabled();
-
     // OK to proceed
     window
       .button(MessageKey.NEXT.getKey())
       .click();
 
-  }
-
-  /**
-   * Verifies that the select wallet combo is only enabled occasionally
-   */
-  private void verifySelectWalletEnabled() {
-
-    window
-      .radioButton(MessageKey.RESTORE_WALLET.getKey())
-      .click();
-
-    window
-      .comboBox(MessageKey.SELECT_WALLET.getKey())
-      .requireDisabled()
-      .requireVisible();
-
-    window
-      .radioButton(MessageKey.SWITCH_WALLET.getKey())
-      .click();
-
-    window
-      .comboBox(MessageKey.SELECT_WALLET.getKey())
-      .requireEnabled()
-      .requireVisible();
-
-    window
-      .radioButton(MessageKey.CREATE_WALLET.getKey())
-      .click();
-
-    window
-      .comboBox(MessageKey.SELECT_WALLET.getKey())
-      .requireDisabled()
-      .requireVisible();
   }
 
 }
