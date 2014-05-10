@@ -535,7 +535,6 @@ public class WalletService {
     FiatPayment amountFiat = new FiatPayment();
     amountFiat.setExchange(ExchangeKey.current().getExchangeName());
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
-
     if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
 
       amountFiat.setRate(exchangeRateChangedEvent.get().getRate().toString());

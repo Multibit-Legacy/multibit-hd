@@ -82,6 +82,9 @@ public class BitcoinNetworkService extends AbstractService {
     log.debug("Bitcoin network service using '{}'", networkParameters.getId());
 
     this.networkParameters = networkParameters;
+
+    requireFixedThreadPoolExecutor(5, "bitcoin-network");
+
   }
 
   @Override
@@ -918,8 +921,6 @@ public class BitcoinNetworkService extends AbstractService {
    * @throws java.util.concurrent.TimeoutException If the TOR connection fails
    */
   private void restartNetwork() throws BlockStoreException, IOException, TimeoutException {
-
-    requireFixedThreadPoolExecutor(5, "bitcoin-network");
 
     // Check if there is a network connection
     if (!isNetworkPresent()) {
