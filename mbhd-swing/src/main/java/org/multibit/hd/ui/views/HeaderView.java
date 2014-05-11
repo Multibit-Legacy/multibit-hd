@@ -68,8 +68,9 @@ public class HeaderView {
     contentPanel.setBackground(Themes.currentTheme.headerPanelBackground());
     contentPanel.setOpaque(true);
 
-    // Create the balance display
+    // Create the balance display hiding it initially
     balanceDisplayMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.HEADER, true, "header");
+    balanceDisplayMaV.getView().setVisible(false);
 
     contentPanel.add(balanceDisplayMaV.getView().newComponentPanel(), "growx,push,wrap");
     contentPanel.add(alertPanel, "growx,aligny top,push");
@@ -103,6 +104,7 @@ public class HeaderView {
         balanceDisplayMaV.getModel().setSatoshis(event.getSatoshis());
         balanceDisplayMaV.getModel().setRateProvider(event.getRateProvider());
 
+        balanceDisplayMaV.getView().setVisible(true);
         balanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
       }
     });

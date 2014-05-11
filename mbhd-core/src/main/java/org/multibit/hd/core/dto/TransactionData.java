@@ -132,7 +132,9 @@ public class TransactionData implements PaymentData {
 
     if (statusWithOrdinal != that.statusWithOrdinal) return false;
     if (!amountBTC.equals(that.amountBTC)) return false;
-    if (!amountFiat.equals(that.amountFiat)) return false;
+    if (amountFiat != null) {
+      if (!amountFiat.equals(that.amountFiat)) return false;
+    }
     if (confidenceType != that.confidenceType) return false;
     if (!feeOnSendBTC.equals(that.feeOnSendBTC)) return false;
     if (!transactionId.equals(that.transactionId)) return false;
@@ -149,7 +151,9 @@ public class TransactionData implements PaymentData {
     int result = transactionId.hashCode();
     result = 31 * result + statusWithOrdinal.hashCode();
     result = 31 * result + amountBTC.hashCode();
-    result = 31 * result + amountFiat.hashCode();
+    if (amountFiat != null) {
+      result = 31 * result + amountFiat.hashCode();
+    }
     result = 31 * result + feeOnSendBTC.hashCode();
     result = 31 * result + confidenceType.hashCode();
     result = 31 * result + type.hashCode();

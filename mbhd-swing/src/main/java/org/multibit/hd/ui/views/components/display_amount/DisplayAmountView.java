@@ -37,6 +37,8 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
   private JLabel trailingSymbolLabel;
   private JLabel exchangeLabel;
 
+  private boolean visible;
+
   /**
    * @param model The model backing this view
    */
@@ -105,6 +107,13 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
 
     Preconditions.checkNotNull(configuration, "'configuration' must be present");
 
+    // Determine initial visibility
+    leadingSymbolLabel.setVisible(visible);
+    primaryBalanceLabel.setVisible(visible);
+    secondaryBalanceLabel.setVisible(visible);
+    trailingSymbolLabel.setVisible(visible);
+    exchangeLabel.setVisible(visible);
+
     LanguageConfiguration languageConfiguration = configuration.getLanguage();
     BitcoinConfiguration bitcoinConfiguration = configuration.getBitcoin();
     BigInteger satoshis = getModel().get().getSatoshis();
@@ -114,11 +123,14 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
 
     if (bitcoinConfiguration.isCurrencySymbolLeading()) {
       handleLeadingSymbol(bitcoinConfiguration);
-      leadingSymbolLabel.setVisible(true);
+      if (visible) {
+        leadingSymbolLabel.setVisible(true);
+      }
       // Require a hard space to ensure leading/trailing symbols look right
       primaryBalanceLabel.setText("\u00a0" + bitcoinDisplay[0]);
     } else {
       handleTrailingSymbol(bitcoinConfiguration);
+      // Configuration overrides UI context when hiding
       leadingSymbolLabel.setVisible(false);
       primaryBalanceLabel.setText(bitcoinDisplay[0]);
     }
@@ -132,7 +144,9 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
       String localDisplay = Formats.formatLocalAmount(getModel().get().getLocalAmount(), locale, bitcoinConfiguration, getModel().get().isShowNegative());
       // Exchange label text is complex
       handleExchangeLabelText(bitcoinConfiguration, localSymbol, localDisplay);
-      exchangeLabel.setVisible(true);
+      if (visible) {
+        exchangeLabel.setVisible(true);
+      }
 
       // Create an accessible summary
       panel.getAccessibleContext().setAccessibleName(Languages.safeText(
@@ -142,6 +156,7 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
         exchangeLabel.getText()
       ));
     } else {
+      // Configuration overrides UI context when hiding
       exchangeLabel.setVisible(false);
 
       // Create an accessible summary
@@ -153,6 +168,18 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
     }
 
   }
+
+  /**
+   * @param visible True if all the symbol labels that should be visible will be visible (no exchange rate overrides this)
+   */
+  public void setVisible(boolean visible) {
+
+    this.visible = visible;
+
+    updateModelFromView();
+
+  }
+
 
   /**
    * <p>Place currency symbol before the number</p>
@@ -167,7 +194,6 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
     trailingSymbolLabel.setText("");
 
   }
-
 
   /**
    * <p>Place currency symbol after the number</p>
@@ -244,5 +270,4 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
 
     }
   }
-
 }
