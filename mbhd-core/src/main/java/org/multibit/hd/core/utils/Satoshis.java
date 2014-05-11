@@ -2,7 +2,6 @@ package org.multibit.hd.core.utils;
 
 import com.google.bitcoin.core.Utils;
 import com.google.common.base.Preconditions;
-import org.joda.money.BigMoney;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -28,14 +27,12 @@ public class Satoshis {
   private static final int LOCAL_SCALE = 12;
 
   /**
-   * TODO (GR) Refactor to remove BigMoney dependency
-   *
    * @param satoshis     The Bitcoin amount in satoshis
-   * @param exchangeRate The exchange rate in terms of the local currency (e.g. "USD 1000" means 1000 USD = 1 bitcoin)
+   * @param exchangeRate The exchange rate in terms of the local currency (e.g. "1000" means 1000 local = 1 bitcoin)
    *
    * @return The plain amount in the local currency
    */
-  public static BigMoney toLocalAmount(BigInteger satoshis, BigMoney exchangeRate) {
+  public static BigDecimal toLocalAmount(BigInteger satoshis, BigDecimal exchangeRate) {
 
     Preconditions.checkNotNull(satoshis, "'satoshis' must be present");
     Preconditions.checkNotNull(exchangeRate, "'exchangeRate' must be present");
@@ -44,47 +41,29 @@ public class Satoshis {
     BigDecimal bitcoins = new BigDecimal(satoshis)
       .divide(BTC_SAT, LOCAL_SCALE, RoundingMode.HALF_EVEN);
 
-    return exchangeRate.multipliedBy(bitcoins);
+    return exchangeRate.multiply(bitcoins);
 
   }
 
   /**
-   * TODO (GR) Refactor to remove BigMoney dependency
-   *
    * @param localAmount  A monetary amount denominated in the local currency
-   * @param exchangeRate The exchange rate in terms of the local currency (e.g. "USD 1000" means 1000 USD = 1 bitcoin)
+   * @param exchangeRate The exchange rate in terms of the local currency (e.g. "1000" means 1000 local = 1 bitcoin)
    *
    * @return The satoshi value (e.g. 150000)
    */
-  public static BigInteger fromLocalAmount(BigMoney localAmount, BigMoney exchangeRate) {
+  public static BigInteger fromLocalAmount(BigDecimal localAmount, BigDecimal exchangeRate) {
 
     Preconditions.checkNotNull(localAmount, "'localAmount' must be present");
     Preconditions.checkNotNull(exchangeRate, "'exchangeRate' must be present");
 
-    Preconditions.checkState(localAmount.getCurrencyUnit().equals(exchangeRate.getCurrencyUnit()), "'localAmount' has a different currency unit to 'exchangeRate': " + localAmount.getCurrencyUnit().getCode() + " vs " + exchangeRate.getCurrencyUnit().getCode());
-
     // Truncate to 8 dp to ensure conversion to Satoshis can take place
     BigDecimal bitcoinAmount = localAmount
-      .getAmount()
       .setScale(BITCOIN_SCALE)
-      .divide(exchangeRate.getAmount(), BITCOIN_SCALE, RoundingMode.HALF_EVEN)
+      .divide(exchangeRate, BITCOIN_SCALE, RoundingMode.HALF_EVEN)
       .setScale(8, RoundingMode.HALF_EVEN);
 
     return Utils.toNanoCoins(bitcoinAmount.toPlainString());
 
-  }
-
-  /**
-   * TODO (GR) Refactor to remove BigMoney dependency
-   * @param plainAmount A big money denominated in Bitcoin (e.g. "BTC 0.0015")
-   *
-   * @return The satoshi value (e.g. 150 000)
-   */
-  public static BigInteger fromPlainAmount(BigMoney plainAmount) {
-
-    Preconditions.checkNotNull(plainAmount, "'plainAmount' must be present");
-
-    return Utils.toNanoCoins(plainAmount.getAmount().toPlainString());
   }
 
   /**

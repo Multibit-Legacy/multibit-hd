@@ -4,7 +4,6 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
-import org.joda.money.BigMoney;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
@@ -19,6 +18,7 @@ import org.multibit.hd.ui.models.AlertModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -73,7 +73,7 @@ public class HeaderController {
       // Unknown at this time
       satoshis = BigInteger.ZERO;
     }
-    BigMoney localBalance;
+    BigDecimal localBalance;
 
     if (event.getRate() != null) {
       localBalance = Satoshis.toLocalAmount(satoshis, event.getRate());

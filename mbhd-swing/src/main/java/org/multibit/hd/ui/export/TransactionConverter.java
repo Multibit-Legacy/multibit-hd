@@ -46,13 +46,13 @@ public class TransactionConverter implements CSVEntryConverter<TransactionData> 
     // Exchange rate
     columns[7] = "";
     if (transactionData.getAmountFiat() != null && transactionData.getAmountFiat().getRate() != null) {
-      columns[7] = transactionData.getAmountFiat().getRate();
+      columns[7] = transactionData.getAmountFiat().getRate().or("");
     }
 
     // Exchange rate provider
     columns[8] = "";
-    if (transactionData.getAmountFiat() != null && transactionData.getAmountFiat().getExchange() != null) {
-      columns[8] = transactionData.getAmountFiat().getExchange();
+    if (transactionData.getAmountFiat() != null && transactionData.getAmountFiat().getExchangeName() != null) {
+      columns[8] = transactionData.getAmountFiat().getExchangeName().or("");
     }
 
     // Miner's fee

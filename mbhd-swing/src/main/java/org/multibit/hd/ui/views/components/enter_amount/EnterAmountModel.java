@@ -2,12 +2,10 @@ package org.multibit.hd.ui.views.components.enter_amount;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import org.joda.money.BigMoney;
-import org.joda.money.CurrencyUnit;
-import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
@@ -22,7 +20,7 @@ import java.math.BigInteger;
 public class EnterAmountModel implements Model<EnterAmountModel> {
 
   private Optional<BigInteger> satoshis = Optional.absent();
-  private Optional<BigMoney> localAmount = Optional.absent();
+  private Optional<BigDecimal> localAmount = Optional.absent();
 
   private final String panelName;
 
@@ -75,15 +73,14 @@ public class EnterAmountModel implements Model<EnterAmountModel> {
   /**
    * @return The local amount (zero if not present)
    */
-  public BigMoney getLocalAmount() {
-    CurrencyUnit currencyUnit = Configurations.currentConfiguration.getBitcoin().getLocalCurrencyUnit();
-    return localAmount.or(BigMoney.zero(currencyUnit));
+  public BigDecimal getLocalAmount() {
+    return localAmount.or(BigDecimal.ZERO);
   }
 
   /**
    * @param value The local amount - no component event since the Bitcoin value drives this component
    */
-  public void setLocalAmount(BigMoney value) {
+  public void setLocalAmount(BigDecimal value) {
 
     Preconditions.checkNotNull(value, "'value' should be present");
 

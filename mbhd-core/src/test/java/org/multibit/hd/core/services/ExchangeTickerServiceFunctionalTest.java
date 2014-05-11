@@ -2,11 +2,9 @@ package org.multibit.hd.core.services;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
-import com.xeiam.xchange.currency.Currencies;
+import com.xeiam.xchange.currency.CurrencyPair;
 import com.xeiam.xchange.dto.marketdata.Ticker;
 import com.xeiam.xchange.service.polling.PollingMarketDataService;
-import org.joda.money.BigMoney;
-import org.joda.money.CurrencyUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.config.BitcoinConfiguration;
@@ -15,6 +13,7 @@ import org.multibit.hd.core.exchanges.ExchangeKey;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Currency;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -33,16 +32,16 @@ public class ExchangeTickerServiceFunctionalTest {
 
     Ticker ticker = Ticker.TickerBuilder
       .newInstance()
-      .withTradableIdentifier("BTC")
-      .withBid(BigMoney.zero(CurrencyUnit.USD))
-      .withAsk(BigMoney.zero(CurrencyUnit.USD))
-      .withLast(BigMoney.zero(CurrencyUnit.USD))
-      .withHigh(BigMoney.zero(CurrencyUnit.USD))
-      .withLow(BigMoney.zero(CurrencyUnit.USD))
+      .withCurrencyPair(CurrencyPair.BTC_USD)
+      .withBid(BigDecimal.ZERO)
+      .withAsk(BigDecimal.ZERO)
+      .withLast(BigDecimal.ZERO)
+      .withHigh(BigDecimal.ZERO)
+      .withLow(BigDecimal.ZERO)
       .withTimestamp(new Date())
       .withVolume(BigDecimal.ZERO).build();
 
-    when(pollingMarketDataService.getTicker(Currencies.BTC, Currencies.USD)).thenReturn(ticker);
+    when(pollingMarketDataService.getTicker(CurrencyPair.BTC_USD)).thenReturn(ticker);
 
   }
 
@@ -52,7 +51,7 @@ public class ExchangeTickerServiceFunctionalTest {
     // Use Bitstamp for functional testing
     BitcoinConfiguration bitcoinConfiguration = new BitcoinConfiguration();
     bitcoinConfiguration.setCurrentExchange(ExchangeKey.BITSTAMP.name());
-    bitcoinConfiguration.setLocalCurrencyUnit(CurrencyUnit.USD);
+    bitcoinConfiguration.setLocalCurrency(Currency.getInstance("USD"));
 
     ExchangeTickerService testObject = new ExchangeTickerService(bitcoinConfiguration);
 

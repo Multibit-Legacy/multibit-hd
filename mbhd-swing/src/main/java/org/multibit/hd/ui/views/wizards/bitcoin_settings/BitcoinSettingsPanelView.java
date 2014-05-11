@@ -3,7 +3,6 @@ package org.multibit.hd.ui.views.wizards.bitcoin_settings;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
-import org.joda.money.BigMoney;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
@@ -89,7 +88,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
 
     displayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT, true,"example");
     displayAmountMaV.getModel().setSatoshis(BigInteger.valueOf(123_456_789_012L)); // 1.23... million bitcoins
-    displayAmountMaV.getModel().setLocalAmount(BigMoney.of(bitcoinConfiguration.getLocalCurrencyUnit(), new BigDecimal("1234567.89")));
+    displayAmountMaV.getModel().setLocalAmount(new BigDecimal("1234567.89"));
     displayAmountMaV.getModel().setRateProvider(Optional.of(Languages.safeText(MessageKey.EXAMPLE)));
     displayAmountMaV.getModel().setLocalAmountVisible(true);
 

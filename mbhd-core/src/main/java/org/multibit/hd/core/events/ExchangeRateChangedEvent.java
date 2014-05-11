@@ -1,9 +1,10 @@
 package org.multibit.hd.core.events;
 
 import com.google.common.base.Optional;
-import org.joda.money.BigMoney;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.utils.Dates;
+
+import java.math.BigDecimal;
 
 /**
  * <p>Event to provide the following to application API:</p>
@@ -16,25 +17,25 @@ import org.multibit.hd.core.utils.Dates;
  */
 public class ExchangeRateChangedEvent implements CoreEvent {
 
-  private final BigMoney rate;
+  private final BigDecimal rate;
   private final Optional<String> rateProvider;
   private final DateTime expires;
 
   /**
-   * @param rate         The rate with the local currency (e.g. "USD 1000" means 1000 USD = 1 bitcoin)
+   * @param rate         The rate with the local currency (e.g. "1000" means 1000 local = 1 bitcoin)
    * @param rateProvider The rate provider (absent if unknown)
    * @param expires      The expiry timestamp of this rate
    */
-  public ExchangeRateChangedEvent(BigMoney rate, Optional<String> rateProvider, DateTime expires) {
+  public ExchangeRateChangedEvent(BigDecimal rate, Optional<String> rateProvider, DateTime expires) {
     this.rate = rate;
     this.rateProvider = rateProvider;
     this.expires = expires;
   }
 
   /**
-   * @return The rate in the local currency (e.g. "USD 1000" means 1000 USD = 1 bitcoin)
+   * @return The rate in the local currency (e.g. "1000" means 1000 local = 1 bitcoin)
    */
-  public BigMoney getRate() {
+  public BigDecimal getRate() {
     return rate;
   }
 

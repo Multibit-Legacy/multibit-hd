@@ -9,7 +9,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.googlecode.jcsv.writer.CSVEntryConverter;
-import org.joda.money.BigMoney;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
@@ -39,6 +38,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -533,12 +533,14 @@ public class WalletService {
   private FiatPayment calculateFiatPayment(BigInteger amountBTC) {
 
     FiatPayment amountFiat = new FiatPayment();
-    amountFiat.setExchange(ExchangeKey.current().getExchangeName());
+
+    amountFiat.setExchangeName(ExchangeKey.current().getExchangeName());
+
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
     if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
 
       amountFiat.setRate(exchangeRateChangedEvent.get().getRate().toString());
-      BigMoney localAmount = Satoshis.toLocalAmount(amountBTC, exchangeRateChangedEvent.get().getRate());
+      BigDecimal localAmount = Satoshis.toLocalAmount(amountBTC, exchangeRateChangedEvent.get().getRate());
       amountFiat.setAmount(localAmount);
     } else {
       amountFiat.setRate("");

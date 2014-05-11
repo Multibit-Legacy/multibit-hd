@@ -14,10 +14,7 @@
   <name>MultiBit HD Core</name>
   <description>This module contains the core classes required by a HD SPV wallet. It is independent of user interface or persistence implementations.</description>
 
-  <properties>
-    <jackson.version>2.2.2</jackson.version>
-    <xchange.version>1.10.0</xchange.version>
-  </properties>
+  <!-- Set properties in the Parent POM -->
 
   <profiles>
 
@@ -52,6 +49,7 @@
                     <exec executable="/usr/local/bin/protoc" failonerror="true">
                       <arg value="--java_out=${project.basedir}/src/main/java"/>
                       <arg value="-I=${project.basedir}/src"/>
+                      <!-- This "error" can be ignored in IDEs -->
                       <arg line="${proto.files}"/>
                     </exec>
                   </tasks>
@@ -157,42 +155,135 @@
       <artifactId>xchange-core</artifactId>
       <version>${xchange.version}</version>
     </dependency>
-    <!-- XChange Canadian Virtex exchange support -->
+
+    <!-- List exchanges in alphabetical order -->
+
+    <!-- XChange ANX exchange support -->
     <dependency>
       <groupId>com.xeiam.xchange</groupId>
-      <artifactId>xchange-cavirtex</artifactId>
+      <artifactId>xchange-anx</artifactId>
       <version>${xchange.version}</version>
     </dependency>
-    <!-- XChange BTC-E exchange support -->
+
+    <!-- XChange Bitcoin Average exchange support -->
     <dependency>
       <groupId>com.xeiam.xchange</groupId>
-      <artifactId>xchange-btce</artifactId>
+      <artifactId>xchange-bitcoinaverage</artifactId>
       <version>${xchange.version}</version>
     </dependency>
+
+    <!-- XChange Bitcoin Charts exchange support -->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-bitcoincharts</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+
+    <!-- XChange Bitcoinium exchange support -->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-bitcoinium</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+
+    <!-- XChange BitCurex exchange support -->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-bitcurex</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+
+    <!-- XChange BitFinex exchange support -->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-bitfinex</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+
     <!-- XChange Bitstamp exchange support -->
     <dependency>
       <groupId>com.xeiam.xchange</groupId>
       <artifactId>xchange-bitstamp</artifactId>
       <version>${xchange.version}</version>
     </dependency>
-    <!-- XChange Bitcurex exchange support -->
+
+    <!-- XChange Blockchain exchange support -->
     <dependency>
       <groupId>com.xeiam.xchange</groupId>
-      <artifactId>xchange-bitcurex</artifactId>
+      <artifactId>xchange-blockchain</artifactId>
       <version>${xchange.version}</version>
     </dependency>
-    <!-- XChange CampBX exchange support -->
-    <dependency>
-      <groupId>com.xeiam.xchange</groupId>
-      <artifactId>xchange-campbx</artifactId>
-      <version>${xchange.version}</version>
-    </dependency>
+
     <!-- XChange BTCChina exchange support -->
     <dependency>
       <groupId>com.xeiam.xchange</groupId>
       <artifactId>xchange-btcchina</artifactId>
       <version>${xchange.version}</version>
     </dependency>
+
+    <!-- XChange BTC-E exchange support -->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-btce</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+
+    <!-- XChange BTER exchange support -->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-bter</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+
+    <!-- XChange Cavirtex exchange support -->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-cavirtex</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+
+    <!-- XChange CampBX exchange support -->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-campbx</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+
+    <!-- XChange CEXIO exchange support -->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-cexio</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+
+    <!-- XChange Coinbase exchange support -->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-coinbase</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+
+    <!-- XChange Coinfloor exchange support -->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-coinfloor</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+
+    <!-- XChange Cryptotrade exchange support -->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-cryptotrade</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+
+    <!-- XChange JustCoin exchange support -->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-justcoin</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+
     <!-- XChange Kraken exchange support -->
     <dependency>
       <groupId>com.xeiam.xchange</groupId>
@@ -200,17 +291,24 @@
       <version>${xchange.version}</version>
     </dependency>
 
-    <!-- Exchange rate providers -->
     <!-- XChange Open Exchange Rates support -->
     <dependency>
       <groupId>com.xeiam.xchange</groupId>
       <artifactId>xchange-openexchangerates</artifactId>
       <version>${xchange.version}</version>
     </dependency>
-    <!-- XChange Bitcoin Charts support -->
+
+    <!-- XChange Vault of Satoshi exchange support -->
     <dependency>
       <groupId>com.xeiam.xchange</groupId>
-      <artifactId>xchange-bitcoincharts</artifactId>
+      <artifactId>xchange-vaultofsatoshi</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+
+    <!-- XChange Vircurex exchange support -->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-vircurex</artifactId>
       <version>${xchange.version}</version>
     </dependency>
 

@@ -5,7 +5,6 @@ import com.google.bitcoin.core.Wallet;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
-import org.joda.money.BigMoney;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.config.Configurations;
@@ -208,12 +207,13 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     if (exchangeRateChangedEvent.isPresent()) {
       fiatPayment.setRate(exchangeRateChangedEvent.get().getRate().toString());
       // A send is denoted with a negative fiat amount
-      fiatPayment.setAmount(Satoshis.toLocalAmount(getSatoshis(), exchangeRateChangedEvent.get().getRate()).negated());
+      fiatPayment.setAmount(Satoshis.toLocalAmount(getSatoshis(), exchangeRateChangedEvent.get().getRate().negate()));
     } else {
       fiatPayment.setRate("");
-      fiatPayment.setAmount(BigMoney.of(Configurations.currentConfiguration.getBitcoin().getLocalCurrencyUnit(), BigDecimal.ZERO));
+      fiatPayment.setAmount(BigDecimal.ZERO);
+      fiatPayment.setCurrency(Configurations.currentConfiguration.getBitcoin().getLocalCurrency());
     }
-    fiatPayment.setExchange(ExchangeKey.current().getExchangeName());
+    fiatPayment.setExchangeName(ExchangeKey.current().getExchangeName());
 
     transactionInfo.setAmountFiat(fiatPayment);
 

@@ -3,8 +3,6 @@ package org.multibit.hd.core.utils;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.joda.money.BigMoney;
-import org.joda.money.CurrencyUnit;
 import org.multibit.hd.core.config.Configurations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,8 +21,6 @@ import java.util.*;
 public class CurrencyUtils {
 
   private static final Logger log = LoggerFactory.getLogger(CurrencyUtils.class);
-
-  public static final CurrencyUnit BTC = CurrencyUnit.of("BTC");
 
   /**
    * A map of all available currencies for available locales
@@ -90,24 +86,11 @@ public class CurrencyUtils {
   }
 
   /**
-   * A zero amount for the current local currency
-   */
-  public static BigMoney ZERO = currentZero();
-
-  /**
-   * @return A zero amount in the current local currency (prefer {@link CurrencyUtils#ZERO} to maintain consistency with BigDecimal etc)
-   */
-  public static BigMoney currentZero() {
-
-    return BigMoney.zero(currentUnit());
-  }
-
-  /**
    * @return The current local currency unit from the configuration
    */
-  public static CurrencyUnit currentUnit() {
+  public static Currency currentUnit() {
 
-    return Configurations.currentConfiguration.getBitcoin().getLocalCurrencyUnit();
+    return Configurations.currentConfiguration.getBitcoin().getLocalCurrency();
 
   }
 
@@ -116,7 +99,7 @@ public class CurrencyUtils {
    */
   public static String currentCode() {
 
-    return currentUnit().getCode();
+    return currentUnit().getCurrencyCode();
 
   }
 

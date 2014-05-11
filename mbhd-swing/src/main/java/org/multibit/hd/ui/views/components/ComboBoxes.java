@@ -420,8 +420,8 @@ public class ComboBoxes {
   public static JComboBox<String> newLocalSymbolComboBox(ActionListener listener, BitcoinConfiguration bitcoinConfiguration) {
 
     String[] localSymbols = new String[]{
-      CurrencyUtils.symbolFor(bitcoinConfiguration.getLocalCurrencyUnit().getCurrencyCode()),
-      bitcoinConfiguration.getLocalCurrencyUnit().getCurrencyCode(),
+      CurrencyUtils.symbolFor(bitcoinConfiguration.getLocalCurrency().getCurrencyCode()),
+      bitcoinConfiguration.getLocalCurrency().getCurrencyCode(),
     };
     JComboBox<String> comboBox = newReadOnlyComboBox(localSymbols);
 
@@ -665,7 +665,7 @@ public class ComboBoxes {
         comboBox.setModel(model);
         comboBox.setMaximumRowCount(MultiBitUI.COMBOBOX_MAX_ROW_COUNT);
 
-        selectFirstMatch(comboBox, allCurrencies, bitcoinConfiguration.getLocalCurrencyUnit().getCode());
+        selectFirstMatch(comboBox, allCurrencies, bitcoinConfiguration.getLocalCurrency().getCurrencyCode());
 
         // Add the listener at the end to avoid false events
         comboBox.setActionCommand(CURRENCY_COMMAND);

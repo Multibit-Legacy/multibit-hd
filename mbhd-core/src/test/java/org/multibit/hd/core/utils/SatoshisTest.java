@@ -1,7 +1,5 @@
 package org.multibit.hd.core.utils;
 
-import com.xeiam.xchange.currency.MoneyUtils;
-import org.joda.money.BigMoney;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -17,26 +15,26 @@ public class SatoshisTest {
     new BigInteger("1") // 0.000 000 01
   };
 
-  private BigMoney exchangeRate = MoneyUtils.parseMoney("GBP", new BigDecimal("1000"));
+  private BigDecimal exchangeRate = new BigDecimal("1000");
 
   @Test
   public void testToLocalAmount() throws Exception {
 
     // Large
-    BigMoney expected1 = MoneyUtils.parse("GBP 20999999123.456780000000");
-    BigMoney actual1 = Satoshis.toLocalAmount(testAmounts[0], exchangeRate);
+    BigDecimal expected1 = new BigDecimal("20999999123.456780000000");
+    BigDecimal actual1 = Satoshis.toLocalAmount(testAmounts[0], exchangeRate);
 
     assertThat(actual1).isEqualTo(expected1);
 
     // Medium
-    BigMoney expected2 = MoneyUtils.parse("GBP 123.456780000000");
-    BigMoney actual2 = Satoshis.toLocalAmount(testAmounts[1], exchangeRate);
+    BigDecimal expected2 = new BigDecimal("123.456780000000");
+    BigDecimal actual2 = Satoshis.toLocalAmount(testAmounts[1], exchangeRate);
 
     assertThat(actual2).isEqualTo(expected2);
 
     // Small
-    BigMoney expected3 = MoneyUtils.parse("GBP 0.000010000000");
-    BigMoney actual3 = Satoshis.toLocalAmount(testAmounts[2], exchangeRate);
+    BigDecimal expected3 = new BigDecimal("0.000010000000");
+    BigDecimal actual3 = Satoshis.toLocalAmount(testAmounts[2], exchangeRate);
 
     assertThat(actual3).isEqualTo(expected3);
 
@@ -47,7 +45,7 @@ public class SatoshisTest {
   public void testFromLocalAmount() throws Exception {
 
     // Large
-    BigMoney localAmount1 = MoneyUtils.parse("GBP 20999999123.456780000000");
+    BigDecimal localAmount1 = new BigDecimal("20999999123.456780000000");
 
     BigInteger expected1 = testAmounts[0];
     BigInteger actual1 = Satoshis.fromLocalAmount(localAmount1, exchangeRate);
@@ -55,7 +53,7 @@ public class SatoshisTest {
     assertThat(actual1).isEqualTo(expected1);
 
     // Medium
-    BigMoney localAmount2 = MoneyUtils.parse("GBP 123.456780000000");
+    BigDecimal localAmount2 = new BigDecimal("123.456780000000");
 
     BigInteger expected2 = testAmounts[1];
     BigInteger actual2 = Satoshis.fromLocalAmount(localAmount2, exchangeRate);
@@ -63,39 +61,10 @@ public class SatoshisTest {
     assertThat(actual2).isEqualTo(expected2);
 
     // Small
-    BigMoney localAmount3 = MoneyUtils.parse("GBP 0.000010000000");
+    BigDecimal localAmount3 = new BigDecimal("0.000010000000");
 
     BigInteger expected3 = testAmounts[2];
     BigInteger actual3 = Satoshis.fromLocalAmount(localAmount3, exchangeRate);
-
-    assertThat(actual3).isEqualTo(expected3);
-
-  }
-
-  @Test
-  public void testFromPlainAmount_BigMoney() throws Exception {
-
-    // Large
-    BigMoney localAmount1 = MoneyUtils.parse("GBP 20999999.123456780000000");
-
-    BigInteger expected1 = testAmounts[0];
-    BigInteger actual1 = Satoshis.fromPlainAmount(localAmount1);
-
-    assertThat(actual1).isEqualTo(expected1);
-
-    // Medium
-    BigMoney localAmount2 = MoneyUtils.parse("GBP 0.123456780000000");
-
-    BigInteger expected2 = testAmounts[1];
-    BigInteger actual2 = Satoshis.fromPlainAmount(localAmount2);
-
-    assertThat(actual2).isEqualTo(expected2);
-
-    // Small
-    BigMoney localAmount3 = MoneyUtils.parse("GBP 0.000000010000000");
-
-    BigInteger expected3 = testAmounts[2];
-    BigInteger actual3 = Satoshis.fromPlainAmount(localAmount3);
 
     assertThat(actual3).isEqualTo(expected3);
 

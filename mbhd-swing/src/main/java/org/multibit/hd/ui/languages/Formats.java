@@ -5,7 +5,6 @@ import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import org.joda.money.BigMoney;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
@@ -13,6 +12,7 @@ import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.core.utils.Satoshis;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -148,7 +148,7 @@ public class Formats {
    *
    * @return The local currency representation with no symbolic decoration
    */
-  public static String formatLocalAmount(BigMoney amount, Locale locale, BitcoinConfiguration bitcoinConfiguration, boolean showNegative) {
+  public static String formatLocalAmount(BigDecimal amount, Locale locale, BitcoinConfiguration bitcoinConfiguration, boolean showNegative) {
 
     if (amount == null) {
       return "";
@@ -157,7 +157,7 @@ public class Formats {
     DecimalFormatSymbols dfs = configureDecimalFormatSymbols(bitcoinConfiguration, locale);
     DecimalFormat localFormat = configureLocalDecimalFormat(dfs, bitcoinConfiguration, showNegative);
 
-    return localFormat.format(amount.getAmount());
+    return localFormat.format(amount);
 
   }
 

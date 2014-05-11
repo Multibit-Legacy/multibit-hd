@@ -1,10 +1,9 @@
 package org.multibit.hd.ui.views.components.display_amount;
 
 import com.google.common.base.Optional;
-import org.joda.money.BigMoney;
-import org.multibit.hd.core.utils.CurrencyUtils;
 import org.multibit.hd.ui.models.Model;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
@@ -22,7 +21,7 @@ public class DisplayAmountModel implements Model<DisplayAmountModel> {
 
   // Values depend on earlier wizard panel
   private BigInteger satoshis = BigInteger.ZERO;
-  private BigMoney localAmount = CurrencyUtils.ZERO;
+  private BigDecimal localAmount = BigDecimal.ZERO;
 
   // Default to Bitcoin only (exchanges are an optional feature)
   private boolean localAmountVisible = false;
@@ -81,11 +80,11 @@ public class DisplayAmountModel implements Model<DisplayAmountModel> {
   /**
    * @return The local amount
    */
-  public BigMoney getLocalAmount() {
+  public BigDecimal getLocalAmount() {
     return localAmount;
   }
 
-  public void setLocalAmount(BigMoney localAmount) {
+  public void setLocalAmount(BigDecimal localAmount) {
     this.localAmount = localAmount;
   }
 

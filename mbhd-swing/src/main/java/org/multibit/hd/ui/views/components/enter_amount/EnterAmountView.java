@@ -2,14 +2,11 @@ package org.multibit.hd.ui.views.components.enter_amount;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
-import com.xeiam.xchange.currency.MoneyUtils;
 import net.miginfocom.swing.MigLayout;
-import org.joda.money.BigMoney;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.BitcoinSymbol;
-import org.multibit.hd.core.utils.CurrencyUtils;
 import org.multibit.hd.core.utils.Numbers;
 import org.multibit.hd.core.utils.Satoshis;
 import org.multibit.hd.ui.MultiBitUI;
@@ -264,9 +261,9 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
       if (value.isPresent()) {
 
-        BigMoney localAmount = MoneyUtils.parseMoney(CurrencyUtils.currentCode(), value.get());
+        BigDecimal localAmount = value.get();
 
-        BigMoney exchangeRate = latestExchangeRateChangedEvent.get().getRate();
+        BigDecimal exchangeRate = latestExchangeRateChangedEvent.get().getRate();
 
         try {
           // Apply the exchange rate
@@ -295,13 +292,13 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
         // Update the model
         getModel().get().setSatoshis(BigInteger.ZERO);
-        getModel().get().setLocalAmount(CurrencyUtils.ZERO);
+        getModel().get().setLocalAmount(BigDecimal.ZERO);
       }
 
     } else {
 
       // No exchange rate so no local amount
-      getModel().get().setLocalAmount(CurrencyUtils.ZERO);
+      getModel().get().setLocalAmount(BigDecimal.ZERO);
 
     }
 
@@ -327,7 +324,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
           BigInteger satoshis = Satoshis.fromSymbolicAmount(value.get(), bitcoinSymbol);
 
           // Apply the exchange rate
-          BigMoney localAmount = Satoshis.toLocalAmount(satoshis, latestExchangeRateChangedEvent.get().getRate());
+          BigDecimal localAmount = Satoshis.toLocalAmount(satoshis, latestExchangeRateChangedEvent.get().getRate());
 
           // Update the model
           getModel().get().setSatoshis(satoshis);
@@ -335,7 +332,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
           // Use setValue for the local amount so that the display formatter
           // will match the currency requirements
-          localAmountText.setValue(localAmount.getAmount());
+          localAmountText.setValue(localAmount);
 
           // Give feedback to the user
           bitcoinAmountText.setBackground(Themes.currentTheme.dataEntryBackground());
@@ -351,7 +348,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
         // Update the model
         getModel().get().setSatoshis(BigInteger.ZERO);
-        getModel().get().setLocalAmount(CurrencyUtils.ZERO);
+        getModel().get().setLocalAmount(BigDecimal.ZERO);
       }
     } else {
 
@@ -364,7 +361,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
           // Update the model
           getModel().get().setSatoshis(satoshis);
-          getModel().get().setLocalAmount(CurrencyUtils.ZERO);
+          getModel().get().setLocalAmount(BigDecimal.ZERO);
 
           // Give feedback to the user
           localAmountText.setBackground(Themes.currentTheme.dataEntryBackground());
@@ -380,7 +377,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
         // Update the model
         getModel().get().setSatoshis(BigInteger.ZERO);
-        getModel().get().setLocalAmount(CurrencyUtils.ZERO);
+        getModel().get().setLocalAmount(BigDecimal.ZERO);
       }
     }
 

@@ -1,6 +1,5 @@
 package org.multibit.hd.ui.views.components.renderers;
 
-import org.joda.money.BigMoney;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
@@ -15,6 +14,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
+import java.math.BigDecimal;
 
 /**
  *  <p>Renderer to provide the following to tables:</p>
@@ -43,16 +43,16 @@ public class AmountFiatTableCellRenderer extends DefaultTableCellRenderer {
       FiatPayment fiatPayment = (FiatPayment) value;
 
       if (!(fiatPayment.getAmount() == null)) {
-        BigMoney amountAsBigMoney = fiatPayment.getAmount();
+        BigDecimal amount = fiatPayment.getAmount();
         try {
           LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage();
           BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
 
-          String balance = Formats.formatLocalAmount(amountAsBigMoney, languageConfiguration.getLocale(), bitcoinConfiguration, true);
+          String balance = Formats.formatLocalAmount(amount, languageConfiguration.getLocale(), bitcoinConfiguration, true);
 
           label.setText(balance + TrailingJustifiedDateTableCellRenderer.SPACER);
 
-          if (amountAsBigMoney.isNegative()) {
+          if (amount.signum() == -1) {
             // Debit
             if (isSelected) {
               label.setForeground(table.getSelectionForeground());

@@ -2,7 +2,6 @@ package org.multibit.hd.core.events;
 
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
-import org.joda.money.BigMoney;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
@@ -13,6 +12,7 @@ import org.multibit.hd.core.services.CoreServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -44,11 +44,11 @@ public class CoreEvents {
   /**
    * <p>Broadcast a new "exchange rate changed" event</p>
    *
-   * @param rate         The rate in the local currency (e.g. "USD 1000" means 1000 USD = 1 bitcoin)
+   * @param rate         The rate in the local currency against Bitcoin (e.g. "1000" means 1000 local = 1 bitcoin)
    * @param rateProvider The rate provider (e.g. "Bitstamp" or absent if unknown)
    * @param expires      The expiry timestamp of this rate
    */
-  public static void fireExchangeRateChangedEvent(BigMoney rate, Optional<String> rateProvider, DateTime expires) {
+  public static void fireExchangeRateChangedEvent(BigDecimal rate, Optional<String> rateProvider, DateTime expires) {
     log.trace("Firing 'exchange rate changed' event");
     CoreServices.uiEventBus.post(new ExchangeRateChangedEvent(rate, rateProvider, expires));
   }

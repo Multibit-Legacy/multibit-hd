@@ -8,7 +8,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.xeiam.xchange.dto.marketdata.Ticker;
 import net.miginfocom.swing.MigLayout;
-import org.joda.money.CurrencyUnit;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
@@ -35,6 +34,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Currency;
 import java.util.Locale;
 import java.util.Map;
 
@@ -360,11 +360,11 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     String isoCounterCode = String.valueOf(source.getSelectedItem()).substring(0, 3);
 
     // Immediately update the model while we wait for the results
-    CurrencyUnit currencyUnit = CurrencyUnit.getInstance(isoCounterCode);
+    Currency currency = Currency.getInstance(isoCounterCode);
 
     // Update the model (even if in error)
     getWizardModel().getConfiguration().getBitcoin().setLocalCurrencySymbol(isoCounterCode);
-    getWizardModel().getConfiguration().getBitcoin().setLocalCurrencyUnit(currencyUnit);
+    getWizardModel().getConfiguration().getBitcoin().setLocalCurrency(currency);
 
     // Test the new settings
     handleTestTicker();

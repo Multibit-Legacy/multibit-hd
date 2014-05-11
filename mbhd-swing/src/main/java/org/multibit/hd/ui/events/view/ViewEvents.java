@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.events.view;
 
 import com.google.common.base.Optional;
-import org.joda.money.BigMoney;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.models.AlertModel;
@@ -11,6 +10,7 @@ import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
@@ -43,7 +43,7 @@ public class ViewEvents {
    */
   public static void fireBalanceChangedEvent(
     BigInteger satoshis,
-    BigMoney localBalance,
+    BigDecimal localBalance,
     Optional<String> rateProvider
   ) {
 

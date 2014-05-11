@@ -2,8 +2,6 @@ package org.multibit.hd.core.store;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import org.joda.money.BigMoney;
-import org.joda.money.CurrencyUnit;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +16,7 @@ import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
+import java.util.Currency;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -60,9 +59,10 @@ public class PaymentsProtobufSerializerTest {
 
     FiatPayment fiatPayment1 = new FiatPayment();
     paymentRequestData1.setAmountFiat(fiatPayment1);
-    fiatPayment1.setAmount(BigMoney.of(CurrencyUnit.USD, new BigDecimal("12345.6")));
+    fiatPayment1.setAmount(new BigDecimal("12345.6"));
+    fiatPayment1.setCurrency(Currency.getInstance("USD"));
     fiatPayment1.setRate("10.0");
-    fiatPayment1.setExchange("Bitstamp");
+    fiatPayment1.setExchangeName("Bitstamp");
 
     PaymentRequestData paymentRequestData2 = new PaymentRequestData();
     paymentRequestData2.setAddress("1xyz");
@@ -74,9 +74,10 @@ public class PaymentsProtobufSerializerTest {
 
     FiatPayment fiatPayment2 = new FiatPayment();
     paymentRequestData2.setAmountFiat(fiatPayment2);
-    fiatPayment2.setAmount(BigMoney.of(CurrencyUnit.GBP, new BigDecimal("12345.678")));
+    fiatPayment2.setAmount(new BigDecimal("12345.678"));
+    fiatPayment2.setCurrency(Currency.getInstance("GBP"));
     fiatPayment2.setRate("20.0");
-    fiatPayment2.setExchange("OER");
+    fiatPayment2.setExchangeName("OER");
 
     paymentRequestDatas.add(paymentRequestData1);
     paymentRequestDatas.add(paymentRequestData2);
@@ -108,7 +109,7 @@ public class PaymentsProtobufSerializerTest {
     FiatPayment otherFiatPayment = paymentRequestData.getAmountFiat();
     assertThat(fiatPayment.getAmount()).isEqualTo(otherFiatPayment.getAmount());
     assertThat(fiatPayment.getRate()).isEqualTo(otherFiatPayment.getRate());
-    assertThat(fiatPayment.getExchange()).isEqualTo(otherFiatPayment.getExchange());
+    assertThat(fiatPayment.getExchangeName()).isEqualTo(otherFiatPayment.getExchangeName());
   }
 
   @Test
@@ -122,9 +123,10 @@ public class PaymentsProtobufSerializerTest {
 
     FiatPayment fiatPayment1 = new FiatPayment();
     transactionInfo1.setAmountFiat(fiatPayment1);
-    fiatPayment1.setAmount(BigMoney.of(CurrencyUnit.EUR, new BigDecimal("99.9")));
+    fiatPayment1.setAmount(new BigDecimal("99.9"));
+    fiatPayment1.setCurrency(Currency.getInstance("EUR"));
     fiatPayment1.setRate("30.0");
-    fiatPayment1.setExchange("Bitstamp");
+    fiatPayment1.setExchangeName("Bitstamp");
 
     transactionInfo1.setClientFee(Optional.<BigInteger>absent());
     transactionInfo1.setMinerFee(Optional.of(BigInteger.valueOf(123)));
@@ -136,9 +138,10 @@ public class PaymentsProtobufSerializerTest {
 
     FiatPayment fiatPayment2 = new FiatPayment();
     transactionInfo2.setAmountFiat(fiatPayment2);
-    fiatPayment2.setAmount(BigMoney.of(CurrencyUnit.JPY, new BigDecimal("11.1")));
+    fiatPayment2.setAmount(new BigDecimal("11.1"));
+    fiatPayment2.setCurrency(Currency.getInstance("JPY"));
     fiatPayment2.setRate("50.0");
-    fiatPayment2.setExchange("BitstampJunior");
+    fiatPayment2.setExchangeName("BitstampJunior");
 
     transactionInfo2.setClientFee(Optional.of(BigInteger.valueOf(456)));
     transactionInfo2.setMinerFee(Optional.<BigInteger>absent());
@@ -169,7 +172,7 @@ public class PaymentsProtobufSerializerTest {
     FiatPayment otherFiatPayment = transactionInfo.getAmountFiat();
     assertThat(fiatPayment.getAmount()).isEqualTo(otherFiatPayment.getAmount());
     assertThat(fiatPayment.getRate()).isEqualTo(otherFiatPayment.getRate());
-    assertThat(fiatPayment.getExchange()).isEqualTo(otherFiatPayment.getExchange());
+    assertThat(fiatPayment.getExchangeName()).isEqualTo(otherFiatPayment.getExchangeName());
 
     assertThat(transactionInfo.getClientFee()).isEqualTo(other.getClientFee());
     assertThat(transactionInfo.getMinerFee()).isEqualTo(other.getMinerFee());

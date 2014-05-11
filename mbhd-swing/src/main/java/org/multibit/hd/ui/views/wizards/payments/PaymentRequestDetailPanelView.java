@@ -208,10 +208,10 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
       amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount(), languageConfiguration.getLocale(), bitcoinConfiguration, true)));
 
       String exchangeRateText;
-      if (Strings.isNullOrEmpty(paymentRequestData.getAmountFiat().getRate()) || Strings.isNullOrEmpty(paymentRequestData.getAmountFiat().getExchange())) {
+      if (Strings.isNullOrEmpty(paymentRequestData.getAmountFiat().getRate().or("")) || Strings.isNullOrEmpty(paymentRequestData.getAmountFiat().getExchangeName().or(""))) {
         exchangeRateText = Languages.safeText(MessageKey.NOT_AVAILABLE);
       } else {
-        exchangeRateText = paymentRequestData.getAmountFiat().getRate() + " (" + paymentRequestData.getAmountFiat().getExchange() + ")";
+        exchangeRateText = paymentRequestData.getAmountFiat().getRate().or("") + " (" + paymentRequestData.getAmountFiat().getExchangeName().or("") + ")";
       }
       exchangeRateValue.setText(exchangeRateText);
     }

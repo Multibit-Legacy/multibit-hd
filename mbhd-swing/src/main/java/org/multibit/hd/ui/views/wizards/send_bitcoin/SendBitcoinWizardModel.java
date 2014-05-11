@@ -8,7 +8,6 @@ import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
-import org.joda.money.BigMoney;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.config.BitcoinNetwork;
@@ -30,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -148,7 +148,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   /**
    * @return The local amount
    */
-  public BigMoney getLocalAmount() {
+  public BigDecimal getLocalAmount() {
     return enterAmountPanelModel
       .getEnterAmountModel()
       .getLocalAmount();
@@ -244,8 +244,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     // Create the fiat payment
     FiatPayment fiatPayment = new FiatPayment();
     // A send is denoted with a negative fiat amount
-    fiatPayment.setAmount(getLocalAmount().negated());
-    fiatPayment.setExchange(ExchangeKey.current().getExchangeName());
+    fiatPayment.setAmount(getLocalAmount().negate());
+    fiatPayment.setExchangeName(ExchangeKey.current().getExchangeName());
 
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
     if (exchangeRateChangedEvent.isPresent()) {

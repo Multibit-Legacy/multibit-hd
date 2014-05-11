@@ -51,13 +51,13 @@ public class PaymentRequestConverter implements CSVEntryConverter<PaymentRequest
     // Exchange rate
     columns[8] = "";
     if (paymentRequestData.getAmountFiat() != null && paymentRequestData.getAmountFiat().getRate() != null) {
-      columns[8] = paymentRequestData.getAmountFiat().getRate();
+      columns[8] = paymentRequestData.getAmountFiat().getRate().or("");
     }
 
     // Exchange rate provider
     columns[9] = "";
-    if (paymentRequestData.getAmountFiat() != null && paymentRequestData.getAmountFiat().getExchange() != null) {
-      columns[9] = paymentRequestData.getAmountFiat().getExchange();
+    if (paymentRequestData.getAmountFiat() != null && paymentRequestData.getAmountFiat().getExchangeName() != null) {
+      columns[9] = paymentRequestData.getAmountFiat().getExchangeName().or("");
     }
 
     // Paid amount in BTC

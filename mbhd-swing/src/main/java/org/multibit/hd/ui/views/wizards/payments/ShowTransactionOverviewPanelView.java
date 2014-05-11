@@ -258,10 +258,10 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
       }
 
       String exchangeRateText;
-      if (Strings.isNullOrEmpty(paymentData.getAmountFiat().getRate()) || Strings.isNullOrEmpty(paymentData.getAmountFiat().getExchange())) {
+      if (Strings.isNullOrEmpty(paymentData.getAmountFiat().getRate().or("")) || Strings.isNullOrEmpty(paymentData.getAmountFiat().getExchangeName().or(""))) {
         exchangeRateText = Languages.safeText(MessageKey.NOT_AVAILABLE);
       } else {
-        exchangeRateText = paymentData.getAmountFiat().getRate() + " (" + paymentData.getAmountFiat().getExchange() + ")";
+        exchangeRateText = paymentData.getAmountFiat().getRate().or("") + " (" + paymentData.getAmountFiat().getExchangeName().or("") + ")";
       }
       exchangeRateValue.setText(exchangeRateText);
     }

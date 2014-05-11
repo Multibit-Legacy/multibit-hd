@@ -2,8 +2,8 @@ package org.multibit.hd.core.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Maps;
-import org.joda.money.CurrencyUnit;
 
+import java.util.Currency;
 import java.util.Map;
 
 /**
@@ -33,10 +33,13 @@ public class BitcoinConfiguration {
   private int localDecimalPlaces = 2;
 
   private boolean currencySymbolLeading = true;
+
   @JsonIgnore
-  private CurrencyUnit localCurrencyUnit = CurrencyUnit.USD;
+  private Currency localCurrency = Currency.getInstance("USD");
+
   private String localCurrencySymbol = "$";
 
+  // TODO (GR) Add currency code here ?
 
   /**
    * Start with Bitstamp since it provides USD (the global reserve currency)
@@ -68,7 +71,7 @@ public class BitcoinConfiguration {
     configuration.setGroupingSeparator(getGroupingSeparator());
     configuration.setLocalDecimalPlaces(getLocalDecimalPlaces());
 
-    configuration.setLocalCurrencyUnit(getLocalCurrencyUnit());
+    configuration.setLocalCurrency(getLocalCurrency());
     configuration.setLocalCurrencySymbol(getLocalCurrencySymbol());
 
     configuration.setBitcoinNetwork(getBitcoinNetwork());
@@ -158,17 +161,17 @@ public class BitcoinConfiguration {
   }
 
   /**
-   * @return The local currency unit (e.g. USD, GBP etc for use with local currencies in Joda Money)
+   * @return The local currency (e.g. USD, GBP etc)
    */
-  public CurrencyUnit getLocalCurrencyUnit() {
-    return localCurrencyUnit;
+  public Currency getLocalCurrency() {
+    return localCurrency;
   }
 
   /**
-   * @param localCurrencyUnit The local currency unit
+   * @param localCurrency The local currency unit
    */
-  public void setLocalCurrencyUnit(CurrencyUnit localCurrencyUnit) {
-    this.localCurrencyUnit = localCurrencyUnit;
+  public void setLocalCurrency(Currency localCurrency) {
+    this.localCurrency = localCurrency;
   }
 
   /**

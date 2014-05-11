@@ -1,50 +1,70 @@
 package org.multibit.hd.core.dto;
 
-import org.joda.money.BigMoney;
+import com.google.common.base.Optional;
+import org.multibit.hd.core.config.Configurations;
 
-import javax.annotation.Nullable;
+import java.math.BigDecimal;
+import java.util.Currency;
 
 /**
- *  <p>DTO to provide the following to WalletService:</p>
- *  <ul>
- *  <li>A fiat equivalent to a bitcoin amount</li>
- *  </ul>
+ * <p>DTO to provide the following to WalletService:</p>
+ * <ul>
+ * <li>A fiat equivalent to a bitcoin amount</li>
+ * </ul>
  * </p>
- *  
+ *
+ * TODO The values here need more strict handling (which should be final, mandatory, optional to avoid nulls in hashCode/equals etc)
  */
 public class FiatPayment {
 
-  private BigMoney amount;
-  private String exchange;
-  private String rate;
+  private BigDecimal amount;
+  private Currency currency= Configurations.currentConfiguration.getBitcoin().getLocalCurrency();
+
+  private Optional<String> exchangeName = Optional.absent();
+  private Optional<String> rate = Optional.absent();
 
   /**
-   * The Joda money representation of the amount.
-   * This is a BigMoney (BigDecimal wrapped with a currency code)
-   * @return amount of fiat as a BigMoney
+   * @return amount of fiat as a BigDecimal
    */
-  public BigMoney getAmount() {
+  public BigDecimal getAmount() {
     return amount;
   }
 
-  public void setAmount(@Nullable BigMoney amount) {
+  public void setAmount(BigDecimal amount) {
     this.amount = amount;
   }
 
-  public String getExchange() {
-    return exchange;
+  /**
+   * @return The local currency associated with this payment (e.g. "USD")
+   */
+  public Currency getCurrency() {
+    return currency;
   }
 
-  public void setExchange(String exchange) {
-    this.exchange = exchange;
+  public void setCurrency(Currency currency) {
+    this.currency = currency;
   }
 
-  public String getRate() {
+  /**
+   * @return The exchange name
+   */
+  public Optional<String> getExchangeName() {
+    return exchangeName;
+  }
+
+  public void setExchangeName(String exchangeName) {
+    this.exchangeName = Optional.fromNullable(exchangeName);
+  }
+
+  /**
+   * @return the exchange rate at the time of creation (use String to ease representation)
+   */
+  public Optional<String> getRate() {
     return rate;
   }
 
   public void setRate(String rate) {
-    this.rate = rate;
+    this.rate = Optional.fromNullable(rate);
   }
 
   @Override
@@ -55,8 +75,9 @@ public class FiatPayment {
     FiatPayment that = (FiatPayment) o;
 
     if (amount != null ? !amount.equals(that.amount) : that.amount != null) return false;
-    if (exchange != null ? !exchange.equals(that.exchange) : that.exchange != null) return false;
-    if (rate != null ? !rate.equals(that.rate) : that.rate != null) return false;
+    if (!currency.equals(that.currency)) return false;
+    if (!exchangeName.equals(that.exchangeName)) return false;
+    if (!rate.equals(that.rate)) return false;
 
     return true;
   }
@@ -64,8 +85,9 @@ public class FiatPayment {
   @Override
   public int hashCode() {
     int result = amount != null ? amount.hashCode() : 0;
-    result = 31 * result + (exchange != null ? exchange.hashCode() : 0);
-    result = 31 * result + (rate != null ? rate.hashCode() : 0);
+    result = 31 * result + currency.hashCode();
+    result = 31 * result + exchangeName.hashCode();
+    result = 31 * result + rate.hashCode();
     return result;
   }
 

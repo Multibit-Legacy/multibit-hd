@@ -9,8 +9,6 @@ import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
 import com.xeiam.xchange.currency.CurrencyPair;
 import com.xeiam.xchange.dto.marketdata.Ticker;
-import org.joda.money.BigMoney;
-import org.joda.money.CurrencyUnit;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
@@ -52,7 +50,7 @@ public class ExchangeTickerService extends AbstractService {
   public static final int TICKER_REFRESH_SECONDS = 900;
 
   private final ExchangeKey exchangeKey;
-  private final CurrencyUnit localCurrencyUnit;
+  private final Currency localCurrency;
   final Exchange exchange;
 
   /**
@@ -63,7 +61,7 @@ public class ExchangeTickerService extends AbstractService {
   public ExchangeTickerService(BitcoinConfiguration bitcoinConfiguration) {
 
     this.exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getCurrentExchange());
-    this.localCurrencyUnit = bitcoinConfiguration.getLocalCurrencyUnit();
+    this.localCurrency = bitcoinConfiguration.getLocalCurrency();
 
     // Create a new exchange
     String exchangeClassName = exchangeKey.getExchange().getExchangeSpecification().getExchangeClassName();
@@ -88,7 +86,7 @@ public class ExchangeTickerService extends AbstractService {
     // Use the provided executor service management
     getScheduledExecutorService().scheduleAtFixedRate(new Runnable() {
 
-      private BigMoney previous;
+      private BigDecimal previous;
 
       public void run() {
 
@@ -109,9 +107,9 @@ public class ExchangeTickerService extends AbstractService {
               // Fire the event in case the exchange is restored (or a new exchange comes online from a settings change)
               CoreEvents.fireExchangeStatusChangedEvent(ExchangeSummary.newExchangeOK(exchangeKey.getExchangeName()));
 
-              if (previous == null || !ticker.getLast().isEqual(previous)) {
+              if (previous == null || !ticker.getLast().equals(previous)) {
 
-                BigMoney rate = ticker.getLast();
+                BigDecimal rate = ticker.getLast();
 
                 String exchangeName = exchangeKey.getExchangeName();
 
@@ -170,7 +168,7 @@ public class ExchangeTickerService extends AbstractService {
   public ListenableFuture<Ticker> latestTicker() {
 
     // Apply any exchange quirks to the counter code (e.g. ISO "RUB" -> legacy "RUR")
-    final String exchangeCounterCode = ExchangeKey.exchangeCode(localCurrencyUnit.getCurrencyCode(), exchangeKey);
+    final String exchangeCounterCode = ExchangeKey.exchangeCode(localCurrency.getCurrencyCode(), exchangeKey);
     final String exchangeBaseCode = ExchangeKey.exchangeCode("XBT", exchangeKey);
 
     return SafeExecutors.newSingleThreadExecutor("latest-ticker").submit(new Callable<Ticker>() {
@@ -191,33 +189,37 @@ public class ExchangeTickerService extends AbstractService {
 
       private Ticker getDirectTicker() throws IOException {
 
-        return exchange.getPollingMarketDataService().getTicker(exchangeBaseCode, exchangeCounterCode);
+        CurrencyPair directPair = new CurrencyPair(exchangeBaseCode, exchangeCounterCode);
+        return exchange.getPollingMarketDataService().getTicker(directPair);
+
       }
 
       private Ticker getTriangulatedTicker() throws IOException {
 
+        CurrencyPair localToUsdPair = new CurrencyPair(exchangeCounterCode, "USD");
+        CurrencyPair bitcoinToUsdPair = new CurrencyPair("BTC", "USD");
+
         // Need to triangulate through USD
-        Ticker inverseLocalToUsdTicker = exchange.getPollingMarketDataService().getTicker(exchangeCounterCode, CurrencyUnit.USD.getCode());
-        Ticker inverseBitcoinToUsdTicker = exchange.getPollingMarketDataService().getTicker(exchangeBaseCode, CurrencyUnit.USD.getCode());
+        Ticker inverseLocalToUsdTicker = exchange.getPollingMarketDataService().getTicker(localToUsdPair);
+        Ticker inverseBitcoinToUsdTicker = exchange.getPollingMarketDataService().getTicker(localToUsdPair);
 
         // OER gives inverse values to reduce number of calculations
-        BigMoney inverseLocalToUsd = inverseLocalToUsdTicker.getLast();
-        BigMoney inverseBitcoinToUsd = inverseBitcoinToUsdTicker.getLast();
+        BigDecimal inverseLocalToUsd = inverseLocalToUsdTicker.getLast();
+        BigDecimal inverseBitcoinToUsd = inverseBitcoinToUsdTicker.getLast();
 
         // Conversion rate is inverse local divided by inverse Bitcoin
-        BigDecimal conversionRate = inverseLocalToUsd.getAmount().divide(inverseBitcoinToUsd.getAmount(), RoundingMode.HALF_EVEN);
-        BigMoney bitcoinToLocal = BigMoney.of(localCurrencyUnit, conversionRate);
+        BigDecimal conversionRate = inverseLocalToUsd.divide(inverseBitcoinToUsd, RoundingMode.HALF_EVEN);
 
         // Infer the ticker
         return Ticker.TickerBuilder.newInstance()
-          .withLast(bitcoinToLocal)
+          .withLast(conversionRate)
             // All others are zero
-          .withAsk(BigMoney.zero(localCurrencyUnit))
-          .withBid(BigMoney.zero(localCurrencyUnit))
-          .withHigh(BigMoney.zero(localCurrencyUnit))
-          .withLow(BigMoney.zero(localCurrencyUnit))
-          .withTradableIdentifier(localCurrencyUnit.getCode())
-          .withVolume(BigDecimal.ZERO)
+          .withAsk(BigDecimal.ZERO)
+          .withBid(BigDecimal.ZERO)
+          .withHigh(BigDecimal.ZERO)
+          .withLow(BigDecimal.ZERO)
+          .withCurrencyPair(bitcoinToUsdPair)
+          .withVolume(BigDecimal.ONE)
           .build();
       }
     });
@@ -235,7 +237,7 @@ public class ExchangeTickerService extends AbstractService {
         Locale currentLocale = Configurations.currentConfiguration.getLocale();
 
         // This may involve a call to the exchange or not
-        List<CurrencyPair> currencyPairs = exchange.getPollingMarketDataService().getExchangeSymbols();
+        List<CurrencyPair> currencyPairs = exchange.getPollingMarketDataService().getExchangeInfo().getPairs();
 
         if (currencyPairs == null || currencyPairs.isEmpty()) {
           return new String[]{};
@@ -245,8 +247,8 @@ public class ExchangeTickerService extends AbstractService {
         for (CurrencyPair currencyPair : currencyPairs) {
 
           // Add the currency (if non-BTC we can triangulate through USD)
-          String baseCode = currencyPair.baseCurrency;
-          String counterCode = currencyPair.counterCurrency;
+          String baseCode = currencyPair.baseSymbol;
+          String counterCode = currencyPair.counterSymbol;
 
           // Ignore any malformed currency pairs
           if (baseCode == null || counterCode == null) {
@@ -257,8 +259,8 @@ public class ExchangeTickerService extends AbstractService {
           counterCode = CurrencyUtils.isoCandidateFor(counterCode);
 
           try {
-            // Use Joda Money to determine supported currency
-            CurrencyUnit base = CurrencyUnit.getInstance(baseCode);
+            // Use JVM to determine if currency is in ISO 4217
+            Currency base = Currency.getInstance(baseCode);
             if (base != null) {
               // Use JVM to provide translated name
               String localName = Currency.getInstance(baseCode).getDisplayName(currentLocale);
@@ -268,7 +270,7 @@ public class ExchangeTickerService extends AbstractService {
             // Base code is not in ISO 4217 so attempt to locate counter currency (e.g. BTC/RUR)
             try {
               // Use Joda Money to determine supported currency
-              CurrencyUnit counter = CurrencyUnit.getInstance(counterCode);
+              Currency counter = Currency.getInstance(counterCode);
               if (counter != null) {
                 // Use JVM to provide translated name
                 String localName = Currency.getInstance(counterCode).getDisplayName(currentLocale);
