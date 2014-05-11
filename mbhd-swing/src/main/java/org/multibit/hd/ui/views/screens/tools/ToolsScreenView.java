@@ -57,7 +57,7 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
     MigLayout layout = new MigLayout(
       Panels.migXYLayout(),
       "[]10[]10[]", // Column constraints
-      "[]50[]" // Row constraints
+      "10[]30[]30[]10" // Row constraints
     );
 
     JPanel contentPanel = Panels.newPanel(layout);
@@ -65,10 +65,10 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
     primaryButton = Buttons.newShowEditWalletButton(getShowWalletDetailsAction());
 
     contentPanel.add(primaryButton, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
-    contentPanel.add(Buttons.newShowChangePasswordButton(getShowChangePasswordAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    contentPanel.add(Buttons.newShowEmptyWalletButton(getShowEmptyWalletAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowRepairWalletButton(getShowRepairWalletAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
 
-    contentPanel.add(Buttons.newShowEmptyWalletButton(getShowEmptyWalletAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    contentPanel.add(Buttons.newShowChangePasswordButton(getShowChangePasswordAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowVerifyNetworkButton(getShowVerifyNetworkAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowWelcomeWizardButton(getShowWelcomeWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
 
