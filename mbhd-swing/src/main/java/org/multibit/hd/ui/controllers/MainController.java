@@ -144,7 +144,8 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
       // Successful wizard interaction
 
       if (WelcomeWizardState.CREATE_WALLET_REPORT.name().equals(event.getPanelName()) ||
-        WelcomeWizardState.RESTORE_WALLET_REPORT.name().equals(event.getPanelName())) {
+        WelcomeWizardState.RESTORE_WALLET_REPORT.name().equals(event.getPanelName()) ||
+              PasswordState.PASSWORD_REPORT.name().equals(event.getPanelName())) {
 
         // Need to hand over to the password wizard
         handlePasswordWizardHandover();
@@ -541,8 +542,8 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
       @Override
       public void run() {
 
-        // Allow time for the other wizard to finish hiding (50ms is sufficient)
-        Uninterruptibles.sleepUninterruptibly(50, TimeUnit.MILLISECONDS);
+        // Allow time for the other wizard to finish hiding (200ms is sufficient)
+        Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
 
         // Must execute on the EDT
         SwingUtilities.invokeLater(new Runnable() {
