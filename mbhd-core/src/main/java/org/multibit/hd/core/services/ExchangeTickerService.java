@@ -1,18 +1,23 @@
 package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
+import com.xeiam.xchange.NotAvailableFromExchangeException;
 import com.xeiam.xchange.currency.CurrencyPair;
 import com.xeiam.xchange.dto.marketdata.Ticker;
+import com.xeiam.xchange.service.BaseExchangeService;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.ExchangeSummary;
+import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.utils.CurrencyUtils;
@@ -52,6 +57,11 @@ public class ExchangeTickerService extends AbstractService {
   private final ExchangeKey exchangeKey;
   private final Currency localCurrency;
   final Exchange exchange;
+
+  /**
+   * The executor service for managing one off dynamic "all currency" lookups against exchanges
+   */
+  final ListeningExecutorService allCurrenciesExecutorService = SafeExecutors.newSingleThreadExecutor( "all-currencies");
 
   /**
    * <p>Each new instance of the exchange ticker service creates a new independent Exchange</p>
@@ -129,6 +139,18 @@ public class ExchangeTickerService extends AbstractService {
             @Override
             public void onFailure(Throwable t) {
 
+              if (t instanceof IllegalArgumentException) {
+                // The exchange may have changed their currency offerings
+                log.warn("Exchange '{}' reported a currency error: {}", exchangeKey.getExchangeName(), t.getMessage());
+                CoreEvents.fireExchangeStatusChangedEvent(ExchangeSummary.newExchangeError(exchangeKey.getExchangeName(), t.getMessage()));
+              }
+
+              if (t instanceof NotAvailableFromExchangeException) {
+                // The exchange is unable to service this request
+                log.warn("Exchange '{}' reported a 'not available from exchange' error: {}", exchangeKey.getExchangeName(), t.getMessage());
+                CoreEvents.fireExchangeStatusChangedEvent(ExchangeSummary.newExchangeError(exchangeKey.getExchangeName(), t.getMessage()));
+              }
+
               if (t instanceof UnknownHostException) {
                 // The exchange is either down or we have no network connection
                 log.warn("Exchange '{}' reported an unknown host error: {}", exchangeKey.getExchangeName(), t.getMessage());
@@ -141,11 +163,6 @@ public class ExchangeTickerService extends AbstractService {
                 CoreEvents.fireExchangeStatusChangedEvent(ExchangeSummary.newExchangeDown(exchangeKey.getExchangeName(), t.getMessage()));
               }
 
-              if (t instanceof IllegalArgumentException) {
-                // The exchange may have changed their currency offerings
-                log.warn("Exchange '{}' reported a currency error: {}", exchangeKey.getExchangeName(), t.getMessage());
-                CoreEvents.fireExchangeStatusChangedEvent(ExchangeSummary.newExchangeError(exchangeKey.getExchangeName(), t.getMessage()));
-              }
             }
           }
         );
@@ -231,17 +248,36 @@ public class ExchangeTickerService extends AbstractService {
    */
   public ListenableFuture<String[]> allCurrencies() {
 
-    return SafeExecutors.newFixedThreadPool(1, "all-currencies").submit(new Callable<String[]>() {
+    return allCurrenciesExecutorService.submit(new Callable<String[]>() {
       @Override
       public String[] call() throws Exception {
         Locale currentLocale = Configurations.currentConfiguration.getLocale();
 
         // This may involve a call to the exchange or not
-        List<CurrencyPair> currencyPairs = exchange.getPollingMarketDataService().getExchangeInfo().getPairs();
+        Collection<CurrencyPair> currencyPairs;
+        BaseExchangeService exchangeService = (BaseExchangeService) exchange.getPollingMarketDataService();
+        if (exchangeService != null) {
+          try {
+            // Use dynamic lookup (may result in null or SSL failures)
+            currencyPairs = exchangeService.getExchangeSymbols();
+          } catch (SSLHandshakeException e) {
+            // Inform the user of a serious problem with current certificates
+            CoreEvents.fireSecurityEvent(SecuritySummary.newCertificateFailed());
+            // Trigger the failure handler
+            throw new IllegalStateException(e.getMessage(), e);
+          }
 
+        } else {
+          log.warn("Exchange '{}' does not support dynamic currency lookup.", ExchangeKey.current().getExchangeName());
+          currencyPairs = Lists.newArrayList();
+        }
+
+        // Fail fast
         if (currencyPairs == null || currencyPairs.isEmpty()) {
           return new String[]{};
         }
+
+        // Must have at least one currency pair to be here
 
         SortedSet<String> allCurrencies = Sets.newTreeSet();
         for (CurrencyPair currencyPair : currencyPairs) {
@@ -269,7 +305,7 @@ public class ExchangeTickerService extends AbstractService {
           } catch (IllegalArgumentException e) {
             // Base code is not in ISO 4217 so attempt to locate counter currency (e.g. BTC/RUR)
             try {
-              // Use Joda Money to determine supported currency
+              // Use JVM to determine supported currency
               Currency counter = Currency.getInstance(counterCode);
               if (counter != null) {
                 // Use JVM to provide translated name

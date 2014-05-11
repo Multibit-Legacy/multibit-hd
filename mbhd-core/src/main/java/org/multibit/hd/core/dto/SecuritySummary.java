@@ -13,6 +13,15 @@ import com.google.common.base.Optional;
  */
 public class SecuritySummary {
 
+  public enum AlertType {
+
+    DEBUGGER_ATTACHED,
+    BACKUP_FAILED,
+    CERTIFICATE_FAILED
+
+  }
+
+  private final AlertType alertType;
   private final RAGStatus severity;
 
   private final Optional<CoreMessageKey> messageKey;
@@ -28,23 +37,38 @@ public class SecuritySummary {
     return new SecuritySummary(
       RAGStatus.RED,
       Optional.of(CoreMessageKey.DEBUGGER_ATTACHED),
-      Optional.<Object[]>absent()
+      Optional.<Object[]>absent(),
+      AlertType.DEBUGGER_ATTACHED
     );
   }
 
   /**
-   * <p>The network has connected but no synchronization has occurred so show the progress bar with 0%</p>
+   * <p>A ZIP backup has failed to write correctly</p>
    *
    * @return A new "backup failed" summary
    */
   public static SecuritySummary newBackupFailed() {
     return new SecuritySummary(
       RAGStatus.AMBER,
-      Optional.of(CoreMessageKey.CHAIN_DOWNLOAD),
-      Optional.of(new Object[]{"0"})
+      Optional.of(CoreMessageKey.BACKUP_FAILED),
+      Optional.<Object[]>absent(),
+      AlertType.BACKUP_FAILED
     );
   }
 
+  /**
+   * <p>A HTTPS connection has failed due to incorrect certificate</p>
+   *
+   * @return A new "certificate failure" summary
+   */
+  public static SecuritySummary newCertificateFailed() {
+    return new SecuritySummary(
+      RAGStatus.RED,
+      Optional.of(CoreMessageKey.CERTIFICATE_FAILED),
+      Optional.<Object[]>absent(),
+      AlertType.CERTIFICATE_FAILED
+    );
+  }
 
   /**
    * @param severity    The severity (Red, Amber, Green)
@@ -54,13 +78,22 @@ public class SecuritySummary {
   public SecuritySummary(
     RAGStatus severity,
     Optional<CoreMessageKey> messageKey,
-    Optional<Object[]> messageData
+    Optional<Object[]> messageData,
+    AlertType alertType
   ) {
 
+    this.alertType = alertType;
     this.severity = severity;
 
     this.messageKey = messageKey;
     this.messageData = messageData;
+  }
+
+  /**
+   * @return The alert type to assist creation of alert models
+   */
+  public AlertType getAlertType() {
+    return alertType;
   }
 
   /**
@@ -71,22 +104,26 @@ public class SecuritySummary {
   }
 
   /**
+   * @return The message key
+   */
+  public Optional<CoreMessageKey> getMessageKey() {
+    return messageKey;
+  }
+
+  /**
    * @return An optional array of arbitrary objects, often for insertion into a resource bundle string
    */
   public Optional<Object[]> getMessageData() {
     return messageData;
   }
 
-  public Optional<CoreMessageKey> getMessageKey() {
-    return messageKey;
-  }
-
   @Override
   public String toString() {
-    return "BitcoinNetworkSummary{" +
-      "errorData=" + messageData +
+    return "SecuritySummary{" +
+      "alertType=" + alertType +
       ", severity=" + severity +
-      ", errorKey=" + messageKey +
+      ", messageKey=" + messageKey +
+      ", messageData=" + messageData +
       '}';
   }
 }

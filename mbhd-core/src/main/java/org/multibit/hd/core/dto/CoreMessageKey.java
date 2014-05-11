@@ -34,6 +34,7 @@ public enum CoreMessageKey {
   // Security
   DEBUGGER_ATTACHED("core_debugger_attached"),
   BACKUP_FAILED("core_backup_failed"),
+  CERTIFICATE_FAILED("core_certificate_failed"),
   SECURITY_ADVICE("core_security_advice"),
 
   // Errors

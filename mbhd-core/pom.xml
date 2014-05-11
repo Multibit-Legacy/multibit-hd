@@ -166,25 +166,27 @@
     </dependency>
 
     <!-- XChange Bitcoin Average exchange support -->
-    <dependency>
-      <groupId>com.xeiam.xchange</groupId>
-      <artifactId>xchange-bitcoinaverage</artifactId>
-      <version>${xchange.version}</version>
-    </dependency>
+    <!-- Causes problems during ExchangeKey enum creation -->
+    <!--<dependency>-->
+    <!--<groupId>com.xeiam.xchange</groupId>-->
+    <!--<artifactId>xchange-bitcoinaverage</artifactId>-->
+    <!--<version>${xchange.version}</version>-->
+    <!--</dependency>-->
 
     <!-- XChange Bitcoin Charts exchange support -->
-    <dependency>
-      <groupId>com.xeiam.xchange</groupId>
-      <artifactId>xchange-bitcoincharts</artifactId>
-      <version>${xchange.version}</version>
-    </dependency>
+    <!-- Not an exchange but an aggregator of market data -->
+    <!--<dependency>-->
+      <!--<groupId>com.xeiam.xchange</groupId>-->
+      <!--<artifactId>xchange-bitcoincharts</artifactId>-->
+      <!--<version>${xchange.version}</version>-->
+    <!--</dependency>-->
 
     <!-- XChange Bitcoinium exchange support -->
-    <dependency>
-      <groupId>com.xeiam.xchange</groupId>
-      <artifactId>xchange-bitcoinium</artifactId>
-      <version>${xchange.version}</version>
-    </dependency>
+    <!--<dependency>-->
+    <!--<groupId>com.xeiam.xchange</groupId>-->
+    <!--<artifactId>xchange-bitcoinium</artifactId>-->
+    <!--<version>${xchange.version}</version>-->
+    <!--</dependency>-->
 
     <!-- XChange BitCurex exchange support -->
     <dependency>
@@ -208,11 +210,12 @@
     </dependency>
 
     <!-- XChange Blockchain exchange support -->
-    <dependency>
-      <groupId>com.xeiam.xchange</groupId>
-      <artifactId>xchange-blockchain</artifactId>
-      <version>${xchange.version}</version>
-    </dependency>
+    <!-- This is not a rate provider -->
+    <!--<dependency>-->
+    <!--<groupId>com.xeiam.xchange</groupId>-->
+    <!--<artifactId>xchange-blockchain</artifactId>-->
+    <!--<version>${xchange.version}</version>-->
+    <!--</dependency>-->
 
     <!-- XChange BTCChina exchange support -->
     <dependency>
@@ -236,11 +239,11 @@
     </dependency>
 
     <!-- XChange Cavirtex exchange support -->
-    <dependency>
-      <groupId>com.xeiam.xchange</groupId>
-      <artifactId>xchange-cavirtex</artifactId>
-      <version>${xchange.version}</version>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>com.xeiam.xchange</groupId>-->
+      <!--<artifactId>xchange-cavirtex</artifactId>-->
+      <!--<version>${xchange.version}</version>-->
+    <!--</dependency>-->
 
     <!-- XChange CampBX exchange support -->
     <dependency>
@@ -250,11 +253,11 @@
     </dependency>
 
     <!-- XChange CEXIO exchange support -->
-    <dependency>
-      <groupId>com.xeiam.xchange</groupId>
-      <artifactId>xchange-cexio</artifactId>
-      <version>${xchange.version}</version>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>com.xeiam.xchange</groupId>-->
+      <!--<artifactId>xchange-cexio</artifactId>-->
+      <!--<version>${xchange.version}</version>-->
+    <!--</dependency>-->
 
     <!-- XChange Coinbase exchange support -->
     <dependency>
@@ -264,11 +267,12 @@
     </dependency>
 
     <!-- XChange Coinfloor exchange support -->
-    <dependency>
-      <groupId>com.xeiam.xchange</groupId>
-      <artifactId>xchange-coinfloor</artifactId>
-      <version>${xchange.version}</version>
-    </dependency>
+    <!-- Requires non-trivial registration -->
+    <!--<dependency>-->
+      <!--<groupId>com.xeiam.xchange</groupId>-->
+      <!--<artifactId>xchange-coinfloor</artifactId>-->
+      <!--<version>${xchange.version}</version>-->
+    <!--</dependency>-->
 
     <!-- XChange Cryptotrade exchange support -->
     <dependency>
@@ -306,17 +310,17 @@
     </dependency>
 
     <!-- XChange Vircurex exchange support -->
-    <dependency>
-      <groupId>com.xeiam.xchange</groupId>
-      <artifactId>xchange-vircurex</artifactId>
-      <version>${xchange.version}</version>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>com.xeiam.xchange</groupId>-->
+      <!--<artifactId>xchange-vircurex</artifactId>-->
+      <!--<version>${xchange.version}</version>-->
+    <!--</dependency>-->
 
     <!-- Java CSV for exporting data -->
     <dependency>
-        <groupId>com.googlecode.jcsv</groupId>
-        <artifactId>jcsv</artifactId>
-        <version>1.4.0</version>
+      <groupId>com.googlecode.jcsv</groupId>
+      <artifactId>jcsv</artifactId>
+      <version>1.4.0</version>
     </dependency>
 
     <!-- Jackson for JSON/YAML representation -->

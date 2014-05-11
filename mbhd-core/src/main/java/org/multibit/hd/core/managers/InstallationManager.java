@@ -33,6 +33,7 @@ public class InstallationManager {
   public static final String SPV_BLOCKCHAIN_SUFFIX = ".spvchain";
 
   public static final String CHECKPOINTS_SUFFIX = ".checkpoints";
+  public static final String CA_CERTS_NAME = MBHD_PREFIX +"-cacerts";
 
   /**
    * The current application data directory
@@ -221,4 +222,5 @@ public class InstallationManager {
     // This simply matches the Oracle JRE, but not OpenJDK
     return "Java(TM) SE Runtime Environment".equals(System.getProperty("java.runtime.name"));
   }
+
 }

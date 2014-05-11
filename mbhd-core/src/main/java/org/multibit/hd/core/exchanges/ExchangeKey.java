@@ -3,28 +3,20 @@ package org.multibit.hd.core.exchanges;
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
 import com.xeiam.xchange.anx.v2.ANXExchange;
-import com.xeiam.xchange.bitcoinium.BitcoiniumExchange;
 import com.xeiam.xchange.bitcurex.BitcurexExchange;
 import com.xeiam.xchange.bitfinex.v1.BitfinexExchange;
 import com.xeiam.xchange.bitstamp.BitstampExchange;
-import com.xeiam.xchange.blockchain.BlockchainExchange;
 import com.xeiam.xchange.btcchina.BTCChinaExchange;
 import com.xeiam.xchange.btce.v3.BTCEExchange;
 import com.xeiam.xchange.bter.BTERExchange;
 import com.xeiam.xchange.campbx.CampBXExchange;
-import com.xeiam.xchange.cexio.CexIOExchange;
 import com.xeiam.xchange.coinbase.CoinbaseExchange;
-import com.xeiam.xchange.coinfloor.CoinfloorExchange;
 import com.xeiam.xchange.cryptotrade.CryptoTradeExchange;
 import com.xeiam.xchange.justcoin.JustcoinExchange;
 import com.xeiam.xchange.kraken.KrakenExchange;
 import com.xeiam.xchange.oer.OERExchange;
 import com.xeiam.xchange.vaultofsatoshi.VaultOfSatoshiExchange;
-import com.xeiam.xchange.vircurex.VircurexExchange;
-import com.xeiam.xchange.virtex.VirtExExchange;
 import org.multibit.hd.core.config.Configurations;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>Enum to provide the following to Exchange API:</p>
@@ -40,38 +32,34 @@ public enum ExchangeKey {
   // Full list of available exchanges from XChange library
 
   ANX(ANXExchange.class.getName()),
-  // BITCOIN_AVERAGE(BitcoinAverage.class.getName()), // Causes problems
-  // BITCOIN_CHARTS(BitcoinChartsExchange.class.getName()), // Causes problems
-  BITCOINIUM(BitcoiniumExchange.class.getName()),
+  // BITCOIN_AVERAGE(BitcoinAverage.class.getName()), // Causes problems with enum creation
+  // BITCOIN_CHARTS(BitcoinChartsExchange.class.getName()), // Aggregator over exchanges
+  // BITCOINIUM(BitcoiniumExchange.class.getName()), // No currency pair lookup
   BITCUREX(BitcurexExchange.class.getName()),
   BITFINEX(BitfinexExchange.class.getName()),
   BITSTAMP(BitstampExchange.class.getName()),
-  BLOCKCHAIN(BlockchainExchange.class.getName()),
+  // BLOCKCHAIN(BlockchainExchange.class.getName()), // Not a rate supplier
   BTC_CHINA(BTCChinaExchange.class.getName()),
   BTC_E(BTCEExchange.class.getName()),
   BTER(BTERExchange.class.getName()),
   CAMPBX(CampBXExchange.class.getName()),
-  CA_VIRTEX(VirtExExchange.class.getName()),
-  CEXIO(CexIOExchange.class.getName()),
-  COINBASE(CoinbaseExchange.class.getName()),
-  COINFLOOR(CoinfloorExchange.class.getName()),
+  // CA_VIRTEX(VirtExExchange.class.getName()), // Broken
+  // CEXIO(CexIOExchange.class.getName()), // Weird GHS/NMC combo
+  COINBASE(CoinbaseExchange.class.getName()), // No dynamic currency pair lookup
+  // COINFLOOR(CoinfloorExchange.class.getName()), // Requires non-trivial registration
   CRYPTO_TRADE(CryptoTradeExchange.class.getName()),
   JUSTCOIN(JustcoinExchange.class.getName()),
   KRAKEN(KrakenExchange.class.getName()),
   OPEN_EXCHANGE_RATES(OERExchange.class.getName()),
   VAULT_OF_SATOSHI(VaultOfSatoshiExchange.class.getName()),
-  VIRCUREX(VircurexExchange.class.getName()),
+  // VIRCUREX(VircurexExchange.class.getName()), // Broken
 
   // End of enum
   ;
 
-  private final Logger log = LoggerFactory.getLogger(ExchangeKey.class);
-
   private Exchange exchange;
 
   ExchangeKey(String exchangeClassName) {
-
-    log.debug("Creating exchange: {}", exchangeClassName);
 
     // Force the use of the default exchange specification
     this.exchange = ExchangeFactory.INSTANCE.createExchange(exchangeClassName);

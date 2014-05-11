@@ -7,6 +7,8 @@ import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.managers.SSLManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -62,7 +64,7 @@ public class RepairWalletPanelView extends AbstractWizardPanelView<RepairWalletW
       "[]" // Row constraints
     ));
 
-    contentPanel.add(Labels.newNoteLabel(new MessageKey[]{MessageKey.REPAIR_WALLET_NOTE}, new Object[][]{}));
+    contentPanel.add(Labels.newRepairWalletNote());
 
   }
 
@@ -87,42 +89,62 @@ public class RepairWalletPanelView extends AbstractWizardPanelView<RepairWalletW
 
   @Override
   public boolean beforeHide(boolean isExitCancel) {
+
     if (!isExitCancel) {
+
+      // Attempt to fix any SSL problems first
+      try {
+        SSLManager.INSTANCE.installMultiBitSSLCertificate(
+          InstallationManager.getOrCreateApplicationDataDirectory(),
+          InstallationManager.CA_CERTS_NAME,
+          true
+        );
+      } catch (Exception e) {
+        // TODO - put on UI
+        ExceptionHandler.handleThrowable(e);
+      }
+
       resetWalletAndResync();
     }
+
     return true;
+
   }
 
   /**
    * Reset the transactions of the current wallet and resync
    */
   private void resetWalletAndResync() {
-     Optional<WalletSummary> currentWalletSummaryOptional = WalletManager.INSTANCE.getCurrentWalletSummary();
 
-     if (currentWalletSummaryOptional.isPresent()) {
-       WalletSummary currentWalletSummary = currentWalletSummaryOptional.get();
-       Wallet currentWallet = currentWalletSummary.getWallet();
+    Optional<WalletSummary> currentWalletSummaryOptional = WalletManager.INSTANCE.getCurrentWalletSummary();
 
-       // Work out the replay date
-       DateTime replayDate = new DateTime(currentWallet.getEarliestKeyCreationTime() * 1000);
+    if (currentWalletSummaryOptional.isPresent()) {
 
-       // Clear all the transactions
-       currentWallet.clearTransactions(0);
+      WalletSummary currentWalletSummary = currentWalletSummaryOptional.get();
+      Wallet currentWallet = currentWalletSummary.getWallet();
 
-       // Fire a notification that 'a slow transaction has been seen' which will refresh anything listening for transactions
-       CoreServices.uiEventBus.post(new SlowTransactionSeenEvent());
+      // Work out the replay date
+      DateTime replayDate = new DateTime(currentWallet.getEarliestKeyCreationTime() * 1000);
 
-       // Create a wallet service
-       CoreServices.getOrCreateWalletService(currentWalletSummary.getWalletId());
+      // Clear all the transactions
+      currentWallet.clearTransactions(0);
 
-       // Start the Bitcoin network to synchronize
-       try {
-         CoreServices.getOrCreateBitcoinNetworkService().replayWallet(replayDate);
-       } catch (Exception e) {
-         // TODO - put on UI
-         ExceptionHandler.handleThrowable(e);
-       }
-     }
+      // Fire a notification that 'a slow transaction has been seen' which will refresh anything listening for transactions
+      CoreServices.uiEventBus.post(new SlowTransactionSeenEvent());
+
+      // Create a wallet service
+      CoreServices.getOrCreateWalletService(currentWalletSummary.getWalletId());
+
+      // Start the Bitcoin network to synchronize
+      try {
+        CoreServices.getOrCreateBitcoinNetworkService().replayWallet(replayDate);
+
+      } catch (Exception e) {
+        // TODO - put on UI
+        ExceptionHandler.handleThrowable(e);
+      }
+
+    }
   }
 
 

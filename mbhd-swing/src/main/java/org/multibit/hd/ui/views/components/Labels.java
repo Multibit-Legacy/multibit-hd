@@ -1192,4 +1192,19 @@ public class Labels {
 
   }
 
+  /**
+   * @return A new "repair wallet" note
+   */
+  public static JLabel newRepairWalletNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.REPAIR_WALLET_NOTE_1,
+      MessageKey.REPAIR_WALLET_NOTE_2,
+      MessageKey.REPAIR_WALLET_NOTE_3,
+      MessageKey.REPAIR_WALLET_NOTE_4
+    }, new Object[][]{});
+
+  }
+
+
 }

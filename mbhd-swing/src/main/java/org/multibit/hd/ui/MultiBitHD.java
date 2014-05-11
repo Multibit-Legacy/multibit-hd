@@ -190,8 +190,10 @@ public class MultiBitHD {
     }
 
     // Configure SSL certificates without forcing
-    final File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-    SSLManager.INSTANCE.installMultiBitSSLCertificate(applicationDirectory, "multibit-cacerts", false);
+    SSLManager.INSTANCE.installMultiBitSSLCertificate(
+      InstallationManager.getOrCreateApplicationDataDirectory(),
+      InstallationManager.CA_CERTS_NAME,
+      false);
 
   }
 

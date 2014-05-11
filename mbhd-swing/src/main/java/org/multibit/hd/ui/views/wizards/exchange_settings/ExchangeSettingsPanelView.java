@@ -12,15 +12,19 @@ import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
+import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.ExchangeTickerService;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
+import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
@@ -103,7 +107,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     JButton exchangeRateProviderBrowserButton = Buttons.newLaunchBrowserButton(getExchangeRateProviderBrowserAction());
 
     exchangeRateProviderComboBox = ComboBoxes.newExchangeRateProviderComboBox(this, bitcoinConfiguration);
-    currencyCodeComboBox = ComboBoxes.newCurrencyCodeComboBox(this, bitcoinConfiguration);
+    currencyCodeComboBox = ComboBoxes.newCurrencyCodeComboBox(this);
 
     // API key
     apiKeyTextField = TextBoxes.newEnterApiKey(getApiKeyDocumentListener());
@@ -180,11 +184,39 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
   @Override
   public void afterShow() {
 
+    // Required to finish the addition of a listener
+    final ExchangeSettingsPanelView self = this;
+
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
 
         exchangeRateProviderComboBox.requestFocusInWindow();
+
+        final BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin().deepCopy();
+
+        // Get all the currencies available at the exchange
+        ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(bitcoinConfiguration);
+        ListenableFuture<String[]> futureAllCurrencies = exchangeTickerService.allCurrencies();
+        Futures.addCallback(futureAllCurrencies, new FutureCallback<String[]>() {
+          @Override
+          public void onSuccess(String[] allCurrencies) {
+
+            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(allCurrencies);
+            currencyCodeComboBox.setModel(model);
+            currencyCodeComboBox.setMaximumRowCount(MultiBitUI.COMBOBOX_MAX_ROW_COUNT);
+
+            ComboBoxes.selectFirstMatch(currencyCodeComboBox, allCurrencies, bitcoinConfiguration.getLocalCurrency().getCurrencyCode());
+
+          }
+
+          @Override
+          public void onFailure(Throwable t) {
+
+            handleFailure(t);
+          }
+        });
+
 
       }
     });
@@ -302,6 +334,9 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     // Hide the ticker verification
     tickerVerifiedStatus.setVisible(false);
 
+    // Show the spinner so the user knows something is happening
+    tickerSpinner.setVisible(true);
+
     // Update the model (even if in error)
     getWizardModel().getConfiguration().getBitcoin().setCurrentExchange(exchangeKey.name());
 
@@ -322,13 +357,19 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
           false
         );
 
+        // Hide the spinner
+        tickerSpinner.setVisible(false);
+
       }
 
       @Override
       public void onFailure(Throwable t) {
 
-        // Exchange currency look up failed
-        ExceptionHandler.handleThrowable(t);
+        // Clear the currency combo
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        currencyCodeComboBox.setModel(model);
+
+        handleFailure(t);
 
       }
     });
@@ -400,6 +441,13 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
         }
 
         // Show the ticker verification
+        tickerVerifiedStatus.setText(Languages.safeText(MessageKey.VERIFICATION_STATUS));
+        AwesomeDecorator.bindIcon(
+          AwesomeIcon.CHECK,
+          tickerVerifiedStatus,
+          true,
+          MultiBitUI.NORMAL_ICON_SIZE
+        );
         tickerVerifiedStatus.setVisible(true);
 
         ViewEvents.fireWizardButtonEnabledEvent(
@@ -415,14 +463,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
       @Override
       public void onFailure(Throwable t) {
 
-        Sounds.playBeep();
-        ViewEvents.fireWizardButtonEnabledEvent(
-          getPanelName(),
-          WizardButton.APPLY,
-          false
-        );
-
-        tickerSpinner.setVisible(false);
+        handleFailure(t);
 
       }
     });
@@ -480,6 +521,32 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
       }
     };
+  }
+
+  /**
+   * @param t The throwable that caused the failure
+   */
+  private void handleFailure(Throwable t) {
+
+    Sounds.playBeep();
+
+    tickerVerifiedStatus.setText(Languages.safeText(CoreMessageKey.THE_ERROR_WAS, new String[]{t.getMessage()}));
+    AwesomeDecorator.bindIcon(
+      AwesomeIcon.TIMES,
+      tickerVerifiedStatus,
+      true,
+      MultiBitUI.NORMAL_ICON_SIZE
+    );
+    tickerVerifiedStatus.setVisible(true);
+
+    ViewEvents.fireWizardButtonEnabledEvent(
+      getPanelName(),
+      WizardButton.APPLY,
+      false
+    );
+
+    tickerSpinner.setVisible(false);
+
   }
 
   /**

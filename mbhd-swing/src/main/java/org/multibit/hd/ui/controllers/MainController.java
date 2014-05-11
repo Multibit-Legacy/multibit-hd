@@ -331,12 +331,31 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
       localisedMessage = summary.getSeverity().name();
     }
 
-    // Append general security advice allowing for LTR/RTL
-    ControllerEvents.fireAddAlertEvent(
-      Models.newAlertModel(
-        localisedMessage + " " + Languages.safeText(CoreMessageKey.SECURITY_ADVICE),
-        summary.getSeverity())
-    );
+    switch (summary.getAlertType()) {
+      case DEBUGGER_ATTACHED:
+      case BACKUP_FAILED:
+        // Append general security advice allowing for LTR/RTL
+        ControllerEvents.fireAddAlertEvent(
+          Models.newAlertModel(
+            localisedMessage + " " + Languages.safeText(CoreMessageKey.SECURITY_ADVICE),
+            summary.getSeverity())
+        );
+        break;
+      case CERTIFICATE_FAILED:
+        // Create a button to the repair wallet tool
+        JButton button = Buttons.newAlertPanelButton(getShowRepairWalletAction(), MessageKey.REPAIR, AwesomeIcon.MEDKIT);
+
+        // Append general security advice allowing for LTR/RTL
+        ControllerEvents.fireAddAlertEvent(
+          Models.newAlertModel(
+            localisedMessage + "\n" + Languages.safeText(CoreMessageKey.SECURITY_ADVICE),
+            summary.getSeverity(),
+            button)
+        );
+        break;
+      default:
+        throw new IllegalStateException("Unknown alert type: "+ summary.getAlertType());
+    }
   }
 
   @Override
@@ -387,6 +406,19 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
     // Immediately shutdown without requesting confirmation
     CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.HARD);
 
+  }
+
+  /**
+   * @return An action to show the "repair wallet" tool
+   */
+  private AbstractAction getShowRepairWalletAction() {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        Panels.showLightBox(Wizards.newRepairWalletWizard().getWizardScreenHolder());
+      }
+    };
   }
 
   /**

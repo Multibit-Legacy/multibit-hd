@@ -41,6 +41,7 @@ public enum MessageKey {
   PRINT("print"),
   PASTE("paste"),
   COPY("copy"),
+  REPAIR("repair"),
   CLEAR_ALL("clear_all"),
   SIGN_MESSAGE("sign_message"),
   VERIFY_MESSAGE("verify_message"),
@@ -449,7 +450,10 @@ public enum MessageKey {
   COULD_NOT_WRITE_TO_THE_DIRECTORY("could_not_write_to_the_directory"),
 
   // Repair wallet
-  REPAIR_WALLET_NOTE("repair_wallet_note"),
+  REPAIR_WALLET_NOTE_1("repair_wallet_note_1"),
+  REPAIR_WALLET_NOTE_2("repair_wallet_note_2"),
+  REPAIR_WALLET_NOTE_3("repair_wallet_note_3"),
+  REPAIR_WALLET_NOTE_4("repair_wallet_note_4"),
 
   // End of enum
   ;
