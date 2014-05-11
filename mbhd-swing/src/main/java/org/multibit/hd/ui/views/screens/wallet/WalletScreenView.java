@@ -16,10 +16,7 @@ import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.SystemStatusChangedEvent;
 import org.multibit.hd.ui.events.view.WalletDetailChangedEvent;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.Buttons;
-import org.multibit.hd.ui.views.components.Components;
-import org.multibit.hd.ui.views.components.ModelAndView;
-import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.display_payments.DisplayPaymentsModel;
 import org.multibit.hd.ui.views.components.display_payments.DisplayPaymentsView;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
@@ -82,7 +79,7 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
     MigLayout layout = new MigLayout(
             Panels.migXYLayout(),
             "10[]10[]", // Column constraints
-            "20[]10[]" // Row constraints
+            "1[]20[]10[]" // Row constraints
     );
 
     JPanel contentPanel = Panels.newPanel(layout);
@@ -138,9 +135,13 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
     receivingPaymentsScrollPane.setOpaque(true);
     receivingPaymentsScrollPane.setBorder(BorderFactory.createEmptyBorder());
 
-    contentPanel.add(sendBitcoin, MultiBitUI.LARGE_BUTTON_MIG + ",align center, pushx");
+    contentPanel.add(Labels.newBlankLabel(), "width 47%, pushx");
+    contentPanel.add(Labels.newBlankLabel(), "width 6%, pushx");
+    contentPanel.add(Labels.newBlankLabel(), "width 47%, pushx, wrap");
+
+    contentPanel.add(sendBitcoin, MultiBitUI.LARGE_BUTTON_MIG + ",align center");
     contentPanel.add(Panels.newVerticalDashedSeparator(), "growy,spany 2");
-    contentPanel.add(requestBitcoin, MultiBitUI.LARGE_BUTTON_MIG + ",align center, pushx, wrap");
+    contentPanel.add(requestBitcoin, MultiBitUI.LARGE_BUTTON_MIG + ",align center, wrap");
 
     contentPanel.add(sendingPaymentsScrollPane, "grow, push");
     contentPanel.add(receivingPaymentsScrollPane, "grow, push, wrap");
@@ -150,17 +151,18 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
 
   @Override
   public boolean beforeShow() {
+    boolean enabled = CoreServices.getOrCreateBitcoinNetworkService().isStartedOk();
+
+    sendBitcoin.setEnabled(enabled);
+    requestBitcoin.setEnabled(enabled);
+
     update();
+
     return true;
   }
 
   @Override
   public void afterShow() {
-
-    boolean enabled = CoreServices.getOrCreateBitcoinNetworkService().isStartedOk();
-
-    sendBitcoin.setEnabled(enabled);
-    requestBitcoin.setEnabled(enabled);
 
   }
 
@@ -240,13 +242,14 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
         public void run() {
 
           List<PaymentData> allPayments = walletService.getPaymentDataList();
+
           // Find the 'Sending' transactions for today
           List<PaymentData> todaysSendingPayments = walletService.subsetPaymentsAndSort(allPayments, PaymentType.SENDING);
           displaySendingPaymentsMaV.getModel().setValue(todaysSendingPayments);
 
+          // Find the receiving events for today
           List<PaymentData> todaysReceivingPayments = walletService.subsetPaymentsAndSort(allPayments, PaymentType.RECEIVING);
           displayReceivingPaymentsMaV.getModel().setValue(todaysReceivingPayments);
-
 
           displaySendingPaymentsMaV.getView().createView();
           displaySendingPaymentsMaV.getView().updateView();
