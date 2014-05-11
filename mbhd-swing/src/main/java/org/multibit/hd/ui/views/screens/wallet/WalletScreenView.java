@@ -27,6 +27,8 @@ import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinParameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -42,6 +44,9 @@ import java.util.List;
  *  
  */
 public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
+
+  private static final Logger log = LoggerFactory.getLogger(WalletScreenView.class);
+
 
   private JButton sendBitcoin;
   private JButton requestBitcoin;
@@ -228,7 +233,6 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
   }
 
   private void update() {
-
     if (isInitialised()) {
 
       SwingUtilities.invokeLater(new Runnable() {
@@ -253,6 +257,8 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
 
         }
       });
+    } else {
+      log.debug("Not updating recent payments as panel is not initialised");
     }
   }
 }
