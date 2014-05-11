@@ -37,7 +37,8 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
   private JLabel trailingSymbolLabel;
   private JLabel exchangeLabel;
 
-  private boolean visible;
+  // Default to show amounts where possible
+  private boolean visible=true;
 
   /**
    * @param model The model backing this view
