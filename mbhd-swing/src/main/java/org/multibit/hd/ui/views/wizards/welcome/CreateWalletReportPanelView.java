@@ -230,7 +230,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       final boolean cloudBackupLocationStatus = exists && isDirectory && canRead && canWrite;
 
       // Attempt to create a backup
-        if (cloudBackupLocationStatus) {
+      if (cloudBackupLocationStatus) {
         BackupManager.INSTANCE.initialise(applicationDataDirectory, new File(cloudBackupLocation));
       } else {
         BackupManager.INSTANCE.initialise(applicationDataDirectory, null);

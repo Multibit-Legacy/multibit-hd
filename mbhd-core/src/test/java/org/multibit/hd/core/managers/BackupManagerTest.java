@@ -72,6 +72,10 @@ public class BackupManagerTest {
         "Example"
       );
 
+    // Wallet manager does not initiate the backup
+    BackupManager.INSTANCE.createRollingBackup(walletSummary, password);
+    BackupManager.INSTANCE.createLocalAndCloudBackup(walletSummary.getWalletId(), password);
+
     // Check there are initially a single wallet backup for the wallet id of the created wallet
     List<BackupSummary> localBackups = BackupManager.INSTANCE.getLocalZipBackups(walletSummary.getWalletId());
 
