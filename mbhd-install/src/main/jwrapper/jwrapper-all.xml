@@ -6,7 +6,7 @@
   <!-- The specification for one app within the bundle -->
   <App>
     <Name>MultiBit HD</Name>
-    <LogoPNG>src/main/deploy/package/linux/logo.png</LogoPNG>
+    <LogoPNG>src/main/jwrapper/logo.png</LogoPNG>
     <MainClass>org.multibit.hd.ui.MultiBitHD</MainClass>
   </App>
 
@@ -17,8 +17,8 @@
   <InstallType>CurrentUser</InstallType>
 
   <!-- Splash and Logo -->
-  <SplashPNG>src/main/deploy/package/linux/logo.png</SplashPNG>
-  <BundleLogoPNG>src/main/deploy/package/linux/logo.png</BundleLogoPNG>
+  <SplashPNG>src/main/jwrapper/logo.png</SplashPNG>
+  <BundleLogoPNG>src/main/jwrapper/logo.png</BundleLogoPNG>
 
   <!-- JVM options (e.g. extra memory) -->
   <JvmOptions>

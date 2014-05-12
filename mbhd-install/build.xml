@@ -27,64 +27,27 @@
   </path>
   <property name="JWrapperJAR" refid="jwrapper.jar.path"/>
 
-  <!-- Default target to build all native installers -->
-  <target name="release-all" depends="release-win64,release-win32,release-macosx,release-linux64,release-linux32">
-  </target>
-
-  <target name="release-win32" depends="download">
+  <!-- Default target to build all native installers in one go -->
+  <target name="release-all">
 
     <java jar="${JWrapperJAR}" failonerror="true" fork="true">
       <jvmarg value="-Xmx512m"/>
-      <arg value="jwrapper-win32.xml"/>
-    </java>
-
-    <move file="build/${app.name}-windows32-offline.exe" tofile="bin/${jars.prefix}-${build_version}-win32.exe"/>
-
-  </target>
-
-  <target name="release-win64" depends="download">
-
-    <java jar="${JWrapperJAR}" failonerror="true" fork="true">
-      <jvmarg value="-Xmx512m"/>
-      <arg value="jwrapper-win64.xml"/>
-    </java>
-
-    <move file="build/${app.name}-windows64-offline.exe" tofile="bin/${jars.prefix}-${build_version}-win64.exe"/>
-
-  </target>
-
-  <target name="release-macosx">
-
-    <java jar="${JWrapperJAR}" failonerror="true" fork="true">
-      <jvmarg value="-Xmx512m"/>
-      <arg value="src/main/jwrapper/jwrapper-macosx.xml"/>
+      <arg value="src/main/jwrapper/jwrapper-all.xml"/>
     </java>
 
     <!-- This name is from JWrapper -->
     <move file="build/${app.name}-macos64-offline.dmg" tofile="target/${jars.prefix}-${build_version}-macosx.dmg"/>
-  </target>
 
-  <target name="release-linux32" depends="download">
+    <!--<move file="build/${app.name}-windows32-offline.exe" tofile="bin/${jars.prefix}-${build_version}-win32.exe"/>-->
+    <!--<move file="build/${app.name}-windows64-offline.exe" tofile="bin/${jars.prefix}-${build_version}-win64.exe"/>-->
 
-    <java jar="${JWrapperJAR}" failonerror="true" fork="true">
-      <jvmarg value="-Xmx512m"/>
-      <arg value="jwrapper-linux.xml"/>
-    </java>
+    <!-- Linux32 -->
+    <!--<untar src="build/${app.name}-linux32-offline.tar" dest="build/"/>-->
+    <!--<move file="build/${app.name}-linux32-offline" tofile="bin/${jars.prefix}-${build_version}-linux"/>-->
 
-    <untar src="build/${app.name}-linux32-offline.tar" dest="build/"/>
-    <move file="build/${app.name}-linux32-offline" tofile="bin/${jars.prefix}-${build_version}-linux"/>
-
-  </target>
-
-  <target name="release-linux64" depends="download">
-
-    <java jar="${JWrapperJAR}" failonerror="true" fork="true">
-      <jvmarg value="-Xmx512m"/>
-      <arg value="jwrapper-linux64.xml"/>
-    </java>
-
-    <untar src="build/${app.name}-linux64-offline.tar" dest="build/"/>
-    <move file="build/${app.name}-linux64-offline" tofile="bin/${jars.prefix}-${build_version}-linux64"/>
+    <!-- Linux64 -->
+    <!--<untar src="build/${app.name}-linux64-offline.tar" dest="build/"/>-->
+    <!--<move file="build/${app.name}-linux64-offline" tofile="bin/${jars.prefix}-${build_version}-linux64"/>-->
 
   </target>
 
