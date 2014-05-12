@@ -53,11 +53,6 @@ public class MainView extends JFrame {
     // Provide all panels with a reference to the main frame
     Panels.applicationFrame = this;
 
-    setTitle(Languages.safeText(MessageKey.APPLICATION_TITLE));
-
-    // Parse the configuration
-    resizeToLastFrameBounds();
-
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
     addComponentListener(new ComponentAdapter() {
@@ -76,9 +71,11 @@ public class MainView extends JFrame {
        * Keep the current configuration updated
        */
       private void updateConfiguration() {
+
         Rectangle bounds = getBounds();
         String lastFrameBounds = String.format("%d,%d,%d,%d", bounds.x, bounds.y, bounds.width, bounds.height);
         Configurations.currentConfiguration.getApplication().setLastFrameBounds(lastFrameBounds);
+
       }
     });
 
@@ -122,6 +119,12 @@ public class MainView extends JFrame {
     log.debug("Refreshing MainView");
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be in the EDT. Check MainController.");
+
+    // Ensure the title matches the new language
+    setTitle(Languages.safeText(MessageKey.APPLICATION_TITLE));
+
+    // Parse the configuration
+    resizeToLastFrameBounds();
 
     // Clear out all the old content and rebuild it from scratch
     getContentPane().removeAll();
