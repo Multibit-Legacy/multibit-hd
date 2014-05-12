@@ -11,7 +11,6 @@
 
   <!-- All JARs have this name -->
   <property name="jars.prefix" value="mbhd"/>
-  <property name="jars.version" value="0.0.1-alpha"/>
 
   <property name="jars.win32" value="${jars.prefix}-win.jar"/>
   <property name="jars.win64" value="${jars.prefix}-win-64.jar"/>
@@ -35,19 +34,19 @@
       <arg value="src/main/jwrapper/jwrapper-all.xml"/>
     </java>
 
-    <!-- This name is from JWrapper -->
+    <!-- Windows -->
+    <move file="build/${app.name}-windows32-offline.exe" tofile="target/${jars.prefix}-${build_version}-win32.exe"/>
+    <move file="build/${app.name}-windows64-offline.exe" tofile="target/${jars.prefix}-${build_version}-win64.exe"/>
+
+    <!-- Mac -->
     <move file="build/${app.name}-macos64-offline.dmg" tofile="target/${jars.prefix}-${build_version}-macosx.dmg"/>
 
-    <!--<move file="build/${app.name}-windows32-offline.exe" tofile="bin/${jars.prefix}-${build_version}-win32.exe"/>-->
-    <!--<move file="build/${app.name}-windows64-offline.exe" tofile="bin/${jars.prefix}-${build_version}-win64.exe"/>-->
+    <!-- Linux -->
+    <untar src="build/${app.name}-linux32-offline.tar" dest="build/"/>
+    <move file="build/${app.name}-linux32-offline" tofile="target/${jars.prefix}-${build_version}-linux"/>
 
-    <!-- Linux32 -->
-    <!--<untar src="build/${app.name}-linux32-offline.tar" dest="build/"/>-->
-    <!--<move file="build/${app.name}-linux32-offline" tofile="bin/${jars.prefix}-${build_version}-linux"/>-->
-
-    <!-- Linux64 -->
-    <!--<untar src="build/${app.name}-linux64-offline.tar" dest="build/"/>-->
-    <!--<move file="build/${app.name}-linux64-offline" tofile="bin/${jars.prefix}-${build_version}-linux64"/>-->
+    <untar src="build/${app.name}-linux64-offline.tar" dest="build/"/>
+    <move file="build/${app.name}-linux64-offline" tofile="target/${jars.prefix}-${build_version}-linux64"/>
 
   </target>
 
