@@ -13,7 +13,6 @@ import org.multibit.hd.core.exchanges.ExchangeKey;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Currency;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -51,7 +50,7 @@ public class ExchangeTickerServiceFunctionalTest {
     // Use Bitstamp for functional testing
     BitcoinConfiguration bitcoinConfiguration = new BitcoinConfiguration();
     bitcoinConfiguration.setCurrentExchange(ExchangeKey.BITSTAMP.name());
-    bitcoinConfiguration.setLocalCurrency(Currency.getInstance("USD"));
+    bitcoinConfiguration.setLocalCurrencyCode("USD");
 
     ExchangeTickerService testObject = new ExchangeTickerService(bitcoinConfiguration);
 

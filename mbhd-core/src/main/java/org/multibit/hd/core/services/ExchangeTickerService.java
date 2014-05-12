@@ -71,7 +71,7 @@ public class ExchangeTickerService extends AbstractService {
   public ExchangeTickerService(BitcoinConfiguration bitcoinConfiguration) {
 
     this.exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getCurrentExchange());
-    this.localCurrency = bitcoinConfiguration.getLocalCurrency();
+    this.localCurrency = Currency.getInstance(bitcoinConfiguration.getLocalCurrencyCode());
 
     // Create a new exchange
     String exchangeClassName = exchangeKey.getExchange().getExchangeSpecification().getExchangeClassName();

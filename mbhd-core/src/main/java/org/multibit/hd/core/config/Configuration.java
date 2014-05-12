@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.collect.Maps;
 
+import java.util.Currency;
 import java.util.Locale;
 import java.util.Map;
 
@@ -77,6 +78,16 @@ public class Configuration {
   @JsonIgnore
   public String getVersion() {
     return getApplication().getVersion();
+  }
+
+  /**
+   * <p>Shortcut to the local currency</p>
+   *
+   * @return The current local currency
+   */
+  @JsonIgnore
+  public Currency getLocalCurrency() {
+    return Currency.getInstance(getBitcoin().getLocalCurrencyCode());
   }
 
   /**

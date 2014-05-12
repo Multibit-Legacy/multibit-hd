@@ -1,9 +1,7 @@
 package org.multibit.hd.core.config;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Maps;
 
-import java.util.Currency;
 import java.util.Map;
 
 /**
@@ -34,12 +32,8 @@ public class BitcoinConfiguration {
 
   private boolean currencySymbolLeading = true;
 
-  @JsonIgnore
-  private Currency localCurrency = Currency.getInstance("USD");
-
   private String localCurrencySymbol = "$";
-
-  // TODO (GR) Add currency code here ?
+  private String localCurrencyCode = "USD";
 
   /**
    * Start with Bitstamp since it provides USD (the global reserve currency)
@@ -71,8 +65,8 @@ public class BitcoinConfiguration {
     configuration.setGroupingSeparator(getGroupingSeparator());
     configuration.setLocalDecimalPlaces(getLocalDecimalPlaces());
 
-    configuration.setLocalCurrency(getLocalCurrency());
     configuration.setLocalCurrencySymbol(getLocalCurrencySymbol());
+    configuration.setLocalCurrencyCode(getLocalCurrencyCode());
 
     configuration.setBitcoinNetwork(getBitcoinNetwork());
 
@@ -161,20 +155,6 @@ public class BitcoinConfiguration {
   }
 
   /**
-   * @return The local currency (e.g. USD, GBP etc)
-   */
-  public Currency getLocalCurrency() {
-    return localCurrency;
-  }
-
-  /**
-   * @param localCurrency The local currency unit
-   */
-  public void setLocalCurrency(Currency localCurrency) {
-    this.localCurrency = localCurrency;
-  }
-
-  /**
    * @return The local currency symbol (e.g. "$", "£" etc)
    */
   public String getLocalCurrencySymbol() {
@@ -186,6 +166,17 @@ public class BitcoinConfiguration {
    */
   public void setLocalCurrencySymbol(String localCurrencySymbol) {
     this.localCurrencySymbol = localCurrencySymbol;
+  }
+
+  /**
+   * @return The local currency code (e.g. "USD", "GBP" etc)
+   */
+  public String getLocalCurrencyCode() {
+    return localCurrencyCode;
+  }
+
+  public void setLocalCurrencyCode(String localCurrencyCode) {
+    this.localCurrencyCode = localCurrencyCode;
   }
 
   /**

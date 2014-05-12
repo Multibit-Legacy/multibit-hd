@@ -206,7 +206,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
             currencyCodeComboBox.setModel(model);
             currencyCodeComboBox.setMaximumRowCount(MultiBitUI.COMBOBOX_MAX_ROW_COUNT);
 
-            ComboBoxes.selectFirstMatch(currencyCodeComboBox, allCurrencies, bitcoinConfiguration.getLocalCurrency().getCurrencyCode());
+            ComboBoxes.selectFirstMatch(currencyCodeComboBox, allCurrencies, bitcoinConfiguration.getLocalCurrencyCode());
 
           }
 
@@ -404,8 +404,9 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     Currency currency = Currency.getInstance(isoCounterCode);
 
     // Update the model (even if in error)
+    // TODO (GR) Symbol is not code
     getWizardModel().getConfiguration().getBitcoin().setLocalCurrencySymbol(isoCounterCode);
-    getWizardModel().getConfiguration().getBitcoin().setLocalCurrency(currency);
+    getWizardModel().getConfiguration().getBitcoin().setLocalCurrencyCode(isoCounterCode);
 
     // Test the new settings
     handleTestTicker();
@@ -530,7 +531,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
     Sounds.playBeep();
 
-    tickerVerifiedStatus.setText(Languages.safeText(CoreMessageKey.THE_ERROR_WAS, new String[]{t.getMessage()}));
+    tickerVerifiedStatus.setText(Languages.safeText(CoreMessageKey.THE_ERROR_WAS, t.getMessage()));
     AwesomeDecorator.bindIcon(
       AwesomeIcon.TIMES,
       tickerVerifiedStatus,

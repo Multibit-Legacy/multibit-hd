@@ -12,7 +12,7 @@ import java.util.*;
 /**
  * <p>Utility to provide the following to low level currency operations:</p>
  * <ul>
- * <li>Bridge methods between Bitcoin and Joda Money</li>
+ * <li>Bridge methods between Bitcoin and JVM ISO 4217 currencies</li>
  * </ul>
  *
  * @since 0.0.1
@@ -86,29 +86,11 @@ public class CurrencyUtils {
   }
 
   /**
-   * @return The current local currency unit from the configuration
-   */
-  public static Currency currentUnit() {
-
-    return Configurations.currentConfiguration.getBitcoin().getLocalCurrency();
-
-  }
-
-  /**
-   * @return The current local currency ISO-4217 3 letter code (e.g. "USD")
-   */
-  public static String currentCode() {
-
-    return currentUnit().getCurrencyCode();
-
-  }
-
-  /**
    * @return The current local currency symbol (e.g. "£", "$" etc)
    */
   public static String currentSymbol() {
 
-    String currentCode = currentCode();
+    String currentCode = Configurations.currentConfiguration.getLocalCurrency().getCurrencyCode();
 
     return symbolFor(currentCode);
 
@@ -129,36 +111,6 @@ public class CurrencyUtils {
 
     return isoCode;
 
-  }
-
-  /**
-   * @param locale The locale to use
-   *
-   * @return The currency symbol appropriate for the locale (e.g. "$")
-   */
-  public static String symbolFor(Locale locale) {
-
-    // Not all currencies are known to all JVMs
-    if (localeCurrencyMap.containsKey(locale)) {
-      return localeCurrencyMap.get(locale).getSymbol();
-    } else {
-      // Make best guess from JVM
-      Currency currency = Currency.getInstance(locale);
-      return currency.getSymbol();
-    }
-
-  }
-
-  /**
-   * @param locale The locale to use
-   *
-   * @return The currency code appropriate for the locale (e.g "USD")
-   */
-  public static String codeFor(Locale locale) {
-
-    Currency currency = Currency.getInstance(locale);
-
-    return currency.getCurrencyCode();
   }
 
   /**

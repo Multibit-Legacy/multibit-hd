@@ -20,6 +20,7 @@ bitcoin:
   localDecimalPlaces: 2
   currencySymbolLeading: true
   localCurrencySymbol: "$"
+  localCurrencyCode: "USD"
   currentExchange: "BITSTAMP"
   exchangeApiKeys: {}
 sound:

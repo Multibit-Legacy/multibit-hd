@@ -211,7 +211,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     } else {
       fiatPayment.setRate("");
       fiatPayment.setAmount(BigDecimal.ZERO);
-      fiatPayment.setCurrency(Configurations.currentConfiguration.getBitcoin().getLocalCurrency());
+      fiatPayment.setCurrency(Configurations.currentConfiguration.getLocalCurrency());
     }
     fiatPayment.setExchangeName(ExchangeKey.current().getExchangeName());
 

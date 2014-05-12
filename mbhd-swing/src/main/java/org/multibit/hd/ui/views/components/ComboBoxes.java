@@ -414,8 +414,8 @@ public class ComboBoxes {
   public static JComboBox<String> newLocalSymbolComboBox(ActionListener listener, BitcoinConfiguration bitcoinConfiguration) {
 
     String[] localSymbols = new String[]{
-      CurrencyUtils.symbolFor(bitcoinConfiguration.getLocalCurrency().getCurrencyCode()),
-      bitcoinConfiguration.getLocalCurrency().getCurrencyCode(),
+      CurrencyUtils.symbolFor(bitcoinConfiguration.getLocalCurrencyCode()),
+      bitcoinConfiguration.getLocalCurrencyCode()
     };
     JComboBox<String> comboBox = newReadOnlyComboBox(localSymbols);
 
@@ -676,6 +676,11 @@ public class ComboBoxes {
     return comboBox;
   }
 
+  /**
+   * @param comboBox The combo box to set the selection on
+   * @param items    The items in the model
+   * @param item     the item that should be matched using a case-sensitive "starts with" approach
+   */
   public static void selectFirstMatch(JComboBox<String> comboBox, String[] items, String item) {
 
     // Avoid working with nulls

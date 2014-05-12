@@ -18,7 +18,7 @@ import java.util.Currency;
 public class FiatPayment {
 
   private BigDecimal amount;
-  private Currency currency= Configurations.currentConfiguration.getBitcoin().getLocalCurrency();
+  private Currency currency= Currency.getInstance(Configurations.currentConfiguration.getBitcoin().getLocalCurrencyCode());
 
   private Optional<String> exchangeName = Optional.absent();
   private Optional<String> rate = Optional.absent();
