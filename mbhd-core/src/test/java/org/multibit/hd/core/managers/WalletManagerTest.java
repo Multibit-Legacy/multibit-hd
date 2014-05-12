@@ -247,8 +247,17 @@ public class WalletManagerTest {
     List<File> walletDirectories = WalletManager.findWalletDirectories(temporaryDirectory);
     assertThat(walletDirectories).isNotNull();
     assertThat(walletDirectories.size()).isEqualTo(2);
-    assertThat(walletDirectories.get(0).getAbsolutePath()).isEqualTo(walletPath1);
-    assertThat(walletDirectories.get(1).getAbsolutePath()).isEqualTo(walletPath2);
+
+    // Order of discovery is not guaranteed
+    boolean foundWalletPath1First = walletDirectories.get(0).getAbsolutePath().equals(walletPath1);
+
+    if (foundWalletPath1First) {
+      assertThat(walletDirectories.get(0).getAbsolutePath()).isEqualTo(walletPath1);
+      assertThat(walletDirectories.get(1).getAbsolutePath()).isEqualTo(walletPath2);
+    } else {
+      assertThat(walletDirectories.get(1).getAbsolutePath()).isEqualTo(walletPath1);
+      assertThat(walletDirectories.get(0).getAbsolutePath()).isEqualTo(walletPath2);
+    }
 
   }
 
