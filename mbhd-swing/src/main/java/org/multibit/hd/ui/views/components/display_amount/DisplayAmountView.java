@@ -38,7 +38,7 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
   private JLabel exchangeLabel;
 
   // Default to show amounts where possible
-  private boolean visible=true;
+  private boolean visible = true;
 
   /**
    * @param model The model backing this view
@@ -142,7 +142,14 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
     String localSymbol = bitcoinConfiguration.getLocalCurrencySymbol();
 
     if (getModel().get().isLocalAmountVisible()) {
-      String localDisplay = Formats.formatLocalAmount(getModel().get().getLocalAmount(), locale, bitcoinConfiguration, getModel().get().isShowNegative());
+
+      // Provide basic representation for locale
+      String localDisplay = Formats.formatLocalAmount(
+        getModel().get().getLocalAmount(),
+        locale,
+        bitcoinConfiguration, getModel().get().isShowNegative()
+      );
+
       // Exchange label text is complex
       handleExchangeLabelText(bitcoinConfiguration, localSymbol, localDisplay);
       if (visible) {

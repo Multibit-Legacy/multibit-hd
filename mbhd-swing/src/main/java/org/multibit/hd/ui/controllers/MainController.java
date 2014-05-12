@@ -187,6 +187,10 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
 
     Preconditions.checkNotNull(event, "'event' must be present");
 
+    // Switch the exchange ticker service before the UI to ensure the
+    // exchange rate provider is rendered correctly
+    handleExchange();
+
     // Ensure the Swing thread can perform a complete refresh
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {
@@ -215,9 +219,6 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
 
     // Restart the Bitcoin network (may have switched parameters)
     handleBitcoinNetwork();
-
-    // Switch the exchange ticker service
-    handleExchange();
 
   }
 

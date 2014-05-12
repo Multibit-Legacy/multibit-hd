@@ -38,7 +38,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Currency;
 import java.util.Locale;
 import java.util.Map;
 
@@ -400,11 +399,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
     String isoCounterCode = String.valueOf(source.getSelectedItem()).substring(0, 3);
 
-    // Immediately update the model while we wait for the results
-    Currency currency = Currency.getInstance(isoCounterCode);
-
-    // Update the model (even if in error)
-    // TODO (GR) Symbol is not code
+    // Update the model so that both symbol and code are the same
     getWizardModel().getConfiguration().getBitcoin().setLocalCurrencySymbol(isoCounterCode);
     getWizardModel().getConfiguration().getBitcoin().setLocalCurrencyCode(isoCounterCode);
 
