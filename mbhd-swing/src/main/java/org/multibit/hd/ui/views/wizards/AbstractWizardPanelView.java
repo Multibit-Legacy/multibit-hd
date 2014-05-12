@@ -435,7 +435,7 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
    * @param event The wizard button enable event
    */
   @Subscribe
-  public void onWizardButtonEnabled(WizardButtonEnabledEvent event) {
+  public void onWizardButtonEnabled(final WizardButtonEnabledEvent event) {
 
     Preconditions.checkNotNull(event, "'event' must be present");
     Preconditions.checkNotNull(panelName, "'panelName' must be present");
@@ -445,44 +445,51 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
       return;
     }
 
-    // Enable the button if present
-    switch (event.getWizardButton()) {
-      case CANCEL:
-        if (cancelButton.isPresent()) {
-          cancelButton.get().setEnabled(event.isEnabled());
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        // Enable the button if present
+        switch (event.getWizardButton()) {
+          case CANCEL:
+            if (cancelButton.isPresent()) {
+              cancelButton.get().setEnabled(event.isEnabled());
+            }
+            break;
+          case EXIT:
+            if (exitButton.isPresent()) {
+              exitButton.get().setEnabled(event.isEnabled());
+            }
+            break;
+          case NEXT:
+            if (nextButton.isPresent()) {
+              nextButton.get().setEnabled(event.isEnabled());
+            }
+            break;
+          case PREVIOUS:
+            if (previousButton.isPresent()) {
+              previousButton.get().setEnabled(event.isEnabled());
+            }
+            break;
+          case FINISH:
+            if (finishButton.isPresent()) {
+              finishButton.get().setEnabled(event.isEnabled());
+            }
+            break;
+          case APPLY:
+            if (applyButton.isPresent()) {
+              applyButton.get().setEnabled(event.isEnabled());
+            }
+            break;
+          case RESTORE:
+            if (restoreButton.isPresent()) {
+              restoreButton.get().setEnabled(event.isEnabled());
+            }
+            break;
         }
-        break;
-      case EXIT:
-        if (exitButton.isPresent()) {
-          exitButton.get().setEnabled(event.isEnabled());
-        }
-        break;
-      case NEXT:
-        if (nextButton.isPresent()) {
-          nextButton.get().setEnabled(event.isEnabled());
-        }
-        break;
-      case PREVIOUS:
-        if (previousButton.isPresent()) {
-          previousButton.get().setEnabled(event.isEnabled());
-        }
-        break;
-      case FINISH:
-        if (finishButton.isPresent()) {
-          finishButton.get().setEnabled(event.isEnabled());
-        }
-        break;
-      case APPLY:
-        if (applyButton.isPresent()) {
-          applyButton.get().setEnabled(event.isEnabled());
-        }
-        break;
-      case RESTORE:
-        if (restoreButton.isPresent()) {
-          restoreButton.get().setEnabled(event.isEnabled());
-        }
-        break;
-    }
+
+      }
+    });
+
 
   }
 

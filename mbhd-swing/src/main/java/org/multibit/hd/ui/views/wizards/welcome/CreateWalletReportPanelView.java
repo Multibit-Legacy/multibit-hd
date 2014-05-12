@@ -1,11 +1,13 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
-import com.google.bitcoin.core.Wallet;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.Uninterruptibles;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.services.FeeService;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
@@ -31,6 +33,7 @@ import org.multibit.hd.ui.views.wizards.WizardButton;
 import javax.swing.*;
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -48,6 +51,9 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
   private JLabel walletPasswordCreatedStatusLabel;
   private JLabel backupLocationStatusLabel;
   private JLabel walletCreatedStatusLabel;
+  private JLabel spinner;
+
+  final ListeningExecutorService createWalletExecutorService = SafeExecutors.newSingleThreadExecutor("create-wallet");
 
   /**
    * @param wizard    The wizard managing the states
@@ -87,9 +93,19 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
     walletCreatedStatusLabel = Labels.newWalletCreatedStatus(false);
     backupLocationStatusLabel = Labels.newBackupLocationStatus(false);
 
-    contentPanel.add(backupLocationStatusLabel, "wrap");
+    // Provide a spinner
+    spinner = Labels.newSpinner();
+
+    // Make all labels invisible initially
+    seedPhraseCreatedStatusLabel.setVisible(false);
+    walletPasswordCreatedStatusLabel.setVisible(false);
+    walletCreatedStatusLabel.setVisible(false);
+    backupLocationStatusLabel.setVisible(false);
+
+    contentPanel.add(spinner, "align right,wrap");
     contentPanel.add(seedPhraseCreatedStatusLabel, "wrap");
     contentPanel.add(walletPasswordCreatedStatusLabel, "wrap");
+    contentPanel.add(backupLocationStatusLabel, "wrap");
     contentPanel.add(walletCreatedStatusLabel, "wrap");
 
   }
@@ -116,7 +132,23 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
 
   @Override
   public void afterShow() {
+
     getFinishButton().requestFocusInWindow();
+
+    createWalletExecutorService.submit(new Runnable() {
+      @Override
+      public void run() {
+
+        handleCreateWallet();
+
+      }
+    });
+  }
+
+  /**
+   * Handles the process of creating the wallet
+   */
+  private void handleCreateWallet() {
 
     WelcomeWizardModel model = getWizardModel();
 
@@ -126,26 +158,37 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
     // Work out the seed
     List<String> seedPhrase = model.getCreateWalletSeedPhrase();
     String password = model.getCreateWalletUserPassword();
-    String backupLocation = model.getBackupLocation();
+    String cloudBackupLocation = model.getCloudBackupLocation();
+
     if (Configurations.currentConfiguration != null) {
-      Configurations.currentConfiguration.getApplication().setCloudBackupLocation(backupLocation);
+      Configurations.currentConfiguration.getApplication().setCloudBackupLocation(cloudBackupLocation);
     }
     SeedPhraseGenerator seedPhraseGenerator = getWizardModel().getSeedPhraseGenerator();
 
-    Preconditions.checkNotNull(backupLocation, "'backupLocation' must be present");
-
-    // Initialise backup (must be before Bitcoin network starts and on the main thread)
-    BackupManager.INSTANCE.initialise(applicationDataDirectory, new File(backupLocation));
+    Preconditions.checkNotNull(cloudBackupLocation, "'backupLocation' must be present");
 
     // Actually create the wallet
-    boolean walletCreatedStatus = false;
-    byte[] seed = null;
-    WalletSummary walletSummary = null;
-    File walletDirectory = null;
+    final byte[] seed;
+    final WalletSummary walletSummary;
+    final File walletDirectory;
+
     try {
+
       // Attempt to create the wallet (the manager will track the ID etc)
       WalletManager walletManager = WalletManager.INSTANCE;
       seed = seedPhraseGenerator.convertToSeed(seedPhrase);
+
+      // Seed phrase always OK
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, seedPhraseCreatedStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
+          seedPhraseCreatedStatusLabel.setVisible(true);
+        }
+      });
+
+      // Give the user the impression of work being done
+      Uninterruptibles.sleepUninterruptibly(250, TimeUnit.MILLISECONDS);
 
       String name = Languages.safeText(MessageKey.WALLET);
       String notes = Languages.safeText(
@@ -164,56 +207,92 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       File walletSummaryFile = WalletManager.getOrCreateWalletSummaryFile(walletDirectory);
       WalletManager.updateWalletSummary(walletSummaryFile, walletSummary);
 
-      // Must be OK to be here
-      walletCreatedStatus = true;
+      File cloudBackupLocationFile = new File(cloudBackupLocation);
+
+      // Password always OK
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, walletPasswordCreatedStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
+          walletPasswordCreatedStatusLabel.setVisible(true);
+
+        }
+      });
+
+      // Give the user the impression of work being done
+      Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
+
+      // Determine if the backup location is valid
+      final boolean exists = cloudBackupLocationFile.exists();
+      final boolean isDirectory = cloudBackupLocationFile.isDirectory();
+      final boolean canRead = cloudBackupLocationFile.canRead();
+      final boolean canWrite = cloudBackupLocationFile.canWrite();
+      final boolean cloudBackupLocationStatus = exists && isDirectory && canRead && canWrite;
+
+      // Attempt to create a backup
+        if (cloudBackupLocationStatus) {
+        BackupManager.INSTANCE.initialise(applicationDataDirectory, new File(cloudBackupLocation));
+      } else {
+        BackupManager.INSTANCE.initialise(applicationDataDirectory, null);
+      }
+      BackupManager.INSTANCE.createRollingBackup(walletSummary, password);
+      BackupManager.INSTANCE.createLocalAndCloudBackup(walletSummary.getWalletId(), password);
+
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          if (cloudBackupLocationStatus) {
+            AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, backupLocationStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
+          } else {
+            AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, backupLocationStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
+          }
+          backupLocationStatusLabel.setVisible(true);
+
+        }
+      });
+
+      // Give the user the impression of work being done
+      Uninterruptibles.sleepUninterruptibly(250, TimeUnit.MILLISECONDS);
+
+      // Once all the initial wallet creation is complete and stored to disk, perform a BRIT wallet exchange.
+      // This saves the wallet creation date/ replay date and returns a list of Bitcoin addresses to use for BRIT fee payment
+      if (seed != null && walletSummary.getWallet() != null) {
+
+        // Perform a BRIT exchange
+        FeeService feeService = CoreServices.createFeeService();
+        feeService.performExchangeWithMatcher(seed, walletSummary.getWallet());
+
+      }
+
+      // Update the UI after the BRIT exchange completes
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+
+          // Determine if the create wallet status is valid
+          AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, walletCreatedStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
+          if (walletDirectory != null) {
+            CoreServices.logHistory(Languages.safeText(MessageKey.HISTORY_WALLET_CREATED, walletDirectory.getAbsoluteFile()));
+          }
+          walletCreatedStatusLabel.setVisible(true);
+
+          // We're done
+          spinner.setVisible(false);
+
+        }
+      });
+
+      // Give the user the impression of work being done
+      Uninterruptibles.sleepUninterruptibly(250, TimeUnit.MILLISECONDS);
+
+      // Enable the finish button on the report page
+      ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, true);
 
     } catch (Exception e) {
+      // Handing over to the exception handler means a hard shutdown
+      spinner.setVisible(false);
       ExceptionHandler.handleThrowable(e);
     }
 
-    File backupLocationFile = new File(backupLocation);
-
-    // Seed phrase and password are always OK
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, seedPhraseCreatedStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, walletPasswordCreatedStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
-
-    // Determine if the backup location is valid
-    boolean exists = backupLocationFile.exists();
-    boolean isDirectory = backupLocationFile.isDirectory();
-    boolean canRead = backupLocationFile.canRead();
-    boolean canWrite = backupLocationFile.canWrite();
-    boolean backupLocationStatus = exists && isDirectory && canRead && canWrite;
-
-    if (backupLocationStatus) {
-      AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, backupLocationStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
-    } else {
-      AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, backupLocationStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
-    }
-
-    // Determine if the create wallet status is valid
-    if (walletCreatedStatus) {
-      AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, walletCreatedStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
-      if (walletDirectory != null) {
-        CoreServices.logHistory(Languages.safeText(MessageKey.HISTORY_WALLET_CREATED, walletDirectory.getAbsoluteFile()));
-      }
-    } else {
-      AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, walletCreatedStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
-    }
-
-    // Once all the initial wallet creation is complete and stored to disk, perform a BRIT wallet exchange.
-    // This saves the wallet creation date/ replay date and returns a list of Bitcoin addresses to use for BRIT fee payment
-    if (walletCreatedStatus && seed != null && walletSummary.getWallet() != null) {
-      performMatcherExchange(seed, walletSummary.getWallet());
-    }
-
-    // Enable the finish button on the report page
-    ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, true);
-  }
-
-  private void performMatcherExchange(byte[] seed, Wallet wallet) {
-    FeeService feeService = CoreServices.createFeeService();
-
-    // Perform a BRIT exchange
-    feeService.performExchangeWithMatcher(seed, wallet);
   }
 }

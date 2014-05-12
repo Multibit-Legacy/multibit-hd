@@ -245,9 +245,9 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     File temporaryDirectory = makeRandomTemporaryApplicationDirectory();
     InstallationManager.currentApplicationDataDirectory = SecureFiles.verifyOrCreateDirectory(temporaryDirectory);
 
-    // Copy the default cacerts
-    InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/fixtures/multibit-cacerts");
-    OutputStream target = new FileOutputStream(new File(temporaryDirectory + "/multibit-cacerts"));
+    // Copy the MBHD cacerts
+    InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/fixtures/"+InstallationManager.CA_CERTS_NAME);
+    OutputStream target = new FileOutputStream(new File(temporaryDirectory + "/"+InstallationManager.CA_CERTS_NAME));
     ByteStreams.copy(cacerts, target);
 
     // Initialise the backup manager

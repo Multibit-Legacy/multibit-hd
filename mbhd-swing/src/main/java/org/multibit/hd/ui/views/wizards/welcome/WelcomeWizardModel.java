@@ -77,7 +77,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
    */
   private ConfirmPasswordModel confirmPasswordModel;
 
-  private SelectFileModel backupLocationSelectFileModel;
+  private SelectFileModel cloudBackupLocationSelectFileModel;
   private SelectFileModel restoreLocationSelectFileModel;
 
   private EnterSeedPhraseModel createWalletEnterSeedPhraseModel;
@@ -351,10 +351,10 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   }
 
   /**
-   * @return The user entered backup location
+   * @return The user entered "cloud backup" location
    */
-  public String getBackupLocation() {
-    return backupLocationSelectFileModel.getValue();
+  public String getCloudBackupLocation() {
+    return cloudBackupLocationSelectFileModel.getValue();
   }
 
   /**
@@ -383,10 +383,10 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   /**
    * <p>Reduced visibility for panel models</p>
    *
-   * @param backupLocationSelectFileModel The "backup location" select file model
+   * @param cloudBackupLocationSelectFileModel The "cloud backup location" select file model
    */
-  void setBackupLocationSelectFileModel(SelectFileModel backupLocationSelectFileModel) {
-    this.backupLocationSelectFileModel = backupLocationSelectFileModel;
+  void setCloudBackupLocationSelectFileModel(SelectFileModel cloudBackupLocationSelectFileModel) {
+    this.cloudBackupLocationSelectFileModel = cloudBackupLocationSelectFileModel;
   }
 
   /**

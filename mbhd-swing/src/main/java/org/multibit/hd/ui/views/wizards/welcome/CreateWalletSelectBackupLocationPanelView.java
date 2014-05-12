@@ -50,7 +50,7 @@ public class CreateWalletSelectBackupLocationPanelView extends AbstractWizardPan
       selectFileMaV.getModel().setValue(Configurations.currentConfiguration.getApplication().getCloudBackupLocation());
     }
 
-    getWizardModel().setBackupLocationSelectFileModel(selectFileMaV.getModel());
+    getWizardModel().setCloudBackupLocationSelectFileModel(selectFileMaV.getModel());
 
   }
 
