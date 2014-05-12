@@ -1,43 +1,46 @@
 package org.multibit.hd.ui.views.components.renderers;
 
-import org.multibit.hd.core.dto.PaymentType;
-import org.multibit.hd.ui.MultiBitUI;
-import org.multibit.hd.ui.languages.Languages;
+import com.google.common.base.Optional;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 /**
- * Render the transaction type as localised text
+ * Render the background of an image icon correctly
  */
-public class PaymentTypeTableCellRenderer extends DefaultTableCellRenderer {
+public class ImageIconTableCellRenderer extends DefaultTableCellRenderer {
 
-  private JLabel label = Labels.newBlankLabel();
+  JLabel label = Labels.newImageLabel(Optional.<BufferedImage>absent());
+
 
   @Override
   public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                                                  int column) {
 
-    label.setHorizontalAlignment(SwingConstants.LEADING);
-    label.setOpaque(true);
-    label.setFont(label.getFont().deriveFont(MultiBitUI.TABLE_TEXT_FONT_SIZE));
+    label.setHorizontalAlignment(SwingConstants.CENTER);
 
-
-    if (value instanceof PaymentType) {
-      PaymentType type = (PaymentType) value;
-
-      label.setText(Languages.safeText(type.getLocalisationKey()));
+    if (isSelected) {
+      setForeground(table.getSelectionForeground());
+      super.setBackground(table.getSelectionBackground());
+    }
+    else {
+      setForeground(table.getForeground());
+      setBackground(table.getBackground());
     }
 
+    if (value != null && value instanceof ImageIcon) {
+      label.setIcon((ImageIcon)value);
+    }
+
+    setBorder(noFocusBorder);
 
     if (isSelected) {
       label.setBackground(table.getSelectionBackground());
-      label.setForeground(table.getSelectionForeground());
     } else {
-      label.setForeground(table.getForeground());
       if (row % 2 == 1) {
         label.setBackground(Themes.currentTheme.tableRowAltBackground());
       } else {

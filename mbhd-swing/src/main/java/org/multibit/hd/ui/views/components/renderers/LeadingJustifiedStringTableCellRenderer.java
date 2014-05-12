@@ -1,8 +1,6 @@
 package org.multibit.hd.ui.views.components.renderers;
 
-import org.joda.time.DateTime;
 import org.multibit.hd.ui.MultiBitUI;
-import org.multibit.hd.ui.utils.LocalisedDateUtils;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.themes.Themes;
 
@@ -17,7 +15,7 @@ import java.awt.*;
  *  </ul>
  *  
  */
-public class TrailingJustifiedDateTableCellRenderer extends DefaultTableCellRenderer {
+public class LeadingJustifiedStringTableCellRenderer extends DefaultTableCellRenderer {
 
   JLabel label;
 
@@ -25,7 +23,7 @@ public class TrailingJustifiedDateTableCellRenderer extends DefaultTableCellRend
 
   public static final String SPACER = "   "; // 3 spaces
 
-  public TrailingJustifiedDateTableCellRenderer() {
+  public LeadingJustifiedStringTableCellRenderer() {
 
     label = Labels.newBlankLabel();
 
@@ -35,19 +33,13 @@ public class TrailingJustifiedDateTableCellRenderer extends DefaultTableCellRend
   public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                                                  int column) {
 
-    label.setHorizontalAlignment(SwingConstants.TRAILING);
+    label.setHorizontalAlignment(SwingConstants.LEADING);
     label.setOpaque(true);
     label.setFont(label.getFont().deriveFont(MultiBitUI.TABLE_TEXT_FONT_SIZE));
 
-    String formattedDate;
-    if (value != null && value instanceof DateTime) {
-        DateTime date = (DateTime) value;
-        formattedDate = LocalisedDateUtils.formatFriendlyDate(date);
-    } else {
-      formattedDate = "";
+    if (value != null) {
+      label.setText(value.toString());
     }
-
-    label.setText(formattedDate + SPACER);
 
     if (isSelected) {
       label.setBackground(table.getSelectionBackground());

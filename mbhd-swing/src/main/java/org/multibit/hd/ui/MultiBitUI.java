@@ -106,6 +106,11 @@ public interface MultiBitUI {
    */
   float PANEL_CLOSE_FONT_SIZE = 28.0f;
 
+  /**
+   * Font size for table text
+   */
+  float TABLE_TEXT_FONT_SIZE = 13.0f;
+
   // Icons
 
   /**

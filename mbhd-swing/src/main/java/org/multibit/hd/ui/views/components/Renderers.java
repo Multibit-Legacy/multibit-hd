@@ -30,6 +30,14 @@ public class Renderers {
     return new TrailingJustifiedDateTableCellRenderer();
   }
 
+  public static DefaultTableCellRenderer newImageIconRenderer() {
+     return new ImageIconTableCellRenderer();
+   }
+
+  public static DefaultTableCellRenderer newLeadingJustifiedStringRenderer() {
+    return new LeadingJustifiedStringTableCellRenderer();
+  }
+
   public static DefaultTableCellRenderer newTrailingJustifiedNumericRenderer() {
     return new AmountBTCTableCellRenderer();
   }

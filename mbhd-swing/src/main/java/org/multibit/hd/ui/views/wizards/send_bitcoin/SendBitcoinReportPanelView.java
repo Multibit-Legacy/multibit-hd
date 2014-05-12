@@ -124,6 +124,17 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   }
 
   @Override
+  public boolean beforeShow() {
+    SwingUtilities.invokeLater(new Runnable(){
+      @Override
+      public void run() {
+        transactionConstructionStatusSummary.setText(Languages.safeText(CoreMessageKey.CHANGE_PASSWORD_WORKING));
+        transactionConstructionStatusDetail.setText("");
+      }
+    });
+    return true;
+  }
+  @Override
   public void afterShow() {
 
     SwingUtilities.invokeLater(new Runnable() {
