@@ -4,6 +4,7 @@ import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.core.dto.FiatPayment;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -37,6 +38,7 @@ public class AmountFiatTableCellRenderer extends DefaultTableCellRenderer {
     label.setHorizontalAlignment(SwingConstants.TRAILING);
     label.setOpaque(true);
     label.setBorder(new EmptyBorder(new Insets(0, TrailingJustifiedDateTableCellRenderer.TABLE_BORDER, 1, TrailingJustifiedDateTableCellRenderer.TABLE_BORDER)));
+    label.setFont(label.getFont().deriveFont(MultiBitUI.TABLE_TEXT_FONT_SIZE));
 
     if (value instanceof FiatPayment) {
 

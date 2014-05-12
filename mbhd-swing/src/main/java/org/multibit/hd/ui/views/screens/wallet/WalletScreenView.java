@@ -9,7 +9,6 @@ import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.PaymentType;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
-import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.ui.MultiBitUI;
@@ -180,41 +179,42 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
       return;
     }
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-
-        // NOTE: Both send and request are disabled when the network is not available
-        // because it is possible that a second wallet is generating transactions using
-        // addresses that this one has not displayed yet. This would lead to the same
-        // address being used twice.
-        switch (event.getSeverity()) {
-          case RED:
-            // Always disabled on RED
-            sendBitcoin.setEnabled(false);
-            requestBitcoin.setEnabled(false);
-            break;
-          case AMBER:
-            if (InstallationManager.unrestricted) {
-              sendBitcoin.setEnabled(true);
-              requestBitcoin.setEnabled(true);
-            } else {
-              // Disable on AMBER in production
-              sendBitcoin.setEnabled(false);
-              requestBitcoin.setEnabled(false);
-            }
-            break;
-          case GREEN:
-            sendBitcoin.setEnabled(true);
-            requestBitcoin.setEnabled(true);
-            break;
-          default:
-            // Unknown status
-            throw new IllegalStateException("Unknown event severity " + event.getSeverity());
-        }
-
-      }
-    });
+        // TODO remove setting to true for extra demobility
+//    SwingUtilities.invokeLater(new Runnable() {
+//      @Override
+//      public void run() {
+//
+//        // NOTE: Both send and request are disabled when the network is not available
+//        // because it is possible that a second wallet is generating transactions using
+//        // addresses that this one has not displayed yet. This would lead to the same
+//        // address being used twice.
+//        switch (event.getSeverity()) {
+//          case RED:
+//            // Always disabled on RED
+//            sendBitcoin.setEnabled(false);
+//            requestBitcoin.setEnabled(false);
+//            break;
+//          case AMBER:
+//            if (InstallationManager.unrestricted) {
+//              sendBitcoin.setEnabled(true);
+//              requestBitcoin.setEnabled(true);
+//            } else {
+//              // Disable on AMBER in production
+//              sendBitcoin.setEnabled(false);
+//              requestBitcoin.setEnabled(false);
+//            }
+//            break;
+//          case GREEN:
+//            sendBitcoin.setEnabled(true);
+//            requestBitcoin.setEnabled(true);
+//            break;
+//          default:
+//            // Unknown status
+//            throw new IllegalStateException("Unknown event severity " + event.getSeverity());
+//        }
+//
+//      }
+//    });
 
   }
 

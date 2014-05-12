@@ -77,7 +77,25 @@ public class Tables {
     resizeColumn(table, ContactTableModel.CHECKBOX_COLUMN_INDEX, MultiBitUI.NORMAL_ICON_SIZE + SPACER);
 
     // Gravatar column
+    TableColumn gravatarTableColumn = table.getColumnModel().getColumn(ContactTableModel.GRAVATAR_COLUMN_INDEX);
+    gravatarTableColumn.setCellRenderer(Renderers.newImageIconRenderer());
     resizeColumn(table, ContactTableModel.GRAVATAR_COLUMN_INDEX, MultiBitUI.LARGE_ICON_SIZE + SPACER);
+
+    // Email column
+    TableColumn emailTableColumn = table.getColumnModel().getColumn(ContactTableModel.EMAIL_COLUMN_INDEX);
+    emailTableColumn.setCellRenderer(Renderers.newLeadingJustifiedStringRenderer());
+
+    // Address
+    TableColumn addressTableColumn = table.getColumnModel().getColumn(ContactTableModel.ADDRESS_COLUMN_INDEX);
+    addressTableColumn.setCellRenderer(Renderers.newLeadingJustifiedStringRenderer());
+
+    // Name
+    TableColumn nameTableColumn = table.getColumnModel().getColumn(ContactTableModel.NAME_COLUMN_INDEX);
+    nameTableColumn.setCellRenderer(Renderers.newLeadingJustifiedStringRenderer());
+
+    // Tags
+    TableColumn tagTableColumn = table.getColumnModel().getColumn(ContactTableModel.TAG_COLUMN_INDEX);
+    tagTableColumn.setCellRenderer(Renderers.newLeadingJustifiedStringRenderer());
 
     justifyColumnHeaders(table);
 
@@ -139,6 +157,10 @@ public class Tables {
     TableColumn amountBTCTableColumn = table.getColumnModel().getColumn(PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX);
     amountBTCTableColumn.setCellRenderer(Renderers.newTrailingJustifiedNumericRenderer());
     resizeColumn(table, PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX, 120, 180);
+
+    // Description
+    TableColumn descriptionTableColumn = table.getColumnModel().getColumn(PaymentTableModel.DESCRIPTION_COLUMN_INDEX);
+    descriptionTableColumn.setCellRenderer(Renderers.newLeadingJustifiedStringRenderer());
 
     // Amount Fiat column
     TableColumn amountFiatTableColumn = table.getColumnModel().getColumn(PaymentTableModel.AMOUNT_FIAT_COLUMN_INDEX);
@@ -220,10 +242,14 @@ public class Tables {
     resizeColumn(table, HistoryTableModel.CREATED_COLUMN_INDEX, 150, 200);
 
     // Description column
+    TableColumn descriptionTableColumn = table.getColumnModel().getColumn(HistoryTableModel.DESCRIPTION_COLUMN_INDEX);
+    descriptionTableColumn.setCellRenderer(Renderers.newLeadingJustifiedStringRenderer());
+
     resizeColumn(table, HistoryTableModel.DESCRIPTION_COLUMN_INDEX, MultiBitUI.HUGE_ICON_SIZE + SPACER);
 
     // Notes column
-//    resizeColumn(table, HistoryTableModel.NOTES_COLUMN_INDEX, MultiBitUI.HUGE_ICON_SIZE + SPACER);
+    TableColumn notesTableColumn = table.getColumnModel().getColumn(HistoryTableModel.NOTES_COLUMN_INDEX);
+    notesTableColumn.setCellRenderer(Renderers.newLeadingJustifiedStringRenderer());
 
     // Row sorter for date
     TableRowSorter<TableModel> rowSorter = new TableRowSorter<>(table.getModel());
