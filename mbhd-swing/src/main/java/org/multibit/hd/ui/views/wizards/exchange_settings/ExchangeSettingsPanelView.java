@@ -229,8 +229,10 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
       // If the user has selected OER then update the API key
       if (apiKeyTextField.isVisible() && !Strings.isNullOrEmpty(apiKeyTextField.getText())) {
-        // TODO Provide an exchange key
-        getWizardModel().getConfiguration().getBitcoin().getExchangeApiKeys().put(ExchangeKey.OPEN_EXCHANGE_RATES.name(), apiKeyTextField.getText());
+
+        BitcoinConfiguration bitcoinConfiguration = getWizardModel().getConfiguration().getBitcoin();
+        bitcoinConfiguration.getExchangeApiKeys().put(ExchangeKey.OPEN_EXCHANGE_RATES.name(), apiKeyTextField.getText());
+
       }
 
       // Switch the main configuration over to the new one
@@ -316,11 +318,12 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
     // Test for Open Exchange Rates
     if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
+
       // Show the API key
       setApiKeyVisibility(true);
 
-      // Hide the currency code to start with
-      setCurrencyCodeVisibility(false);
+      // Hide the currency code if the API key is not present
+      setCurrencyCodeVisibility(!Strings.isNullOrEmpty(apiKeyTextField.getText()));
 
     } else {
       // Hide the API key
@@ -559,6 +562,11 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     apiKeyLabel.setVisible(visible);
     apiKeyTextField.setVisible(visible);
 
+    if (visible) {
+      // Ensure we use the current API key setting (currently only OER supported)
+      BitcoinConfiguration bitcoinConfiguration = getWizardModel().getConfiguration().getBitcoin();
+      apiKeyTextField.setText(bitcoinConfiguration.getExchangeApiKeys().get(ExchangeKey.OPEN_EXCHANGE_RATES.name()));
+    }
   }
 
   /**
