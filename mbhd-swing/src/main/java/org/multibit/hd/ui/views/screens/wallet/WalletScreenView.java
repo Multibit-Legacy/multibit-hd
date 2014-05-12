@@ -105,14 +105,15 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
     sendBitcoin = Buttons.newSendBitcoinWizardButton(showSendBitcoinWizardAction);
 
     // Start with disabled button and use Bitcoin network status to enable
-    sendBitcoin.setEnabled(false);
+    // TODO remove setting to true for extra demobility
+    sendBitcoin.setEnabled(true);
 
     requestBitcoin = Buttons.newRequestBitcoinWizardButton(showRequestBitcoinWizardAction);
 
     // Start with disabled button and use Bitcoin network status to enable
-    requestBitcoin.setEnabled(false);
+    // TODO remove setting to true for extra demobility
+    requestBitcoin.setEnabled(true);
 
-    //List<PaymentData> allPayments = walletService.getPaymentDataList();
     // Initialise panel with a blank list of today's sending payments
     List<PaymentData> todaysSendingPayments = Lists.newArrayList(); // walletService.subsetPaymentsAndSort(allPayments, PaymentType.SENDING);
     displaySendingPaymentsMaV = Components.newDisplayPaymentsMaV(getScreen().name());
@@ -151,10 +152,11 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
 
   @Override
   public boolean beforeShow() {
-    boolean enabled = CoreServices.getOrCreateBitcoinNetworkService().isStartedOk();
+    //boolean enabled = CoreServices.getOrCreateBitcoinNetworkService().isStartedOk();
+    // TODO remove setting to true for extra demobility
 
-    sendBitcoin.setEnabled(enabled);
-    requestBitcoin.setEnabled(enabled);
+    sendBitcoin.setEnabled(true);
+    requestBitcoin.setEnabled(true);
 
     update();
 
