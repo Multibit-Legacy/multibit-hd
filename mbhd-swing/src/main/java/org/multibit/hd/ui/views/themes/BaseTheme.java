@@ -15,11 +15,13 @@ public abstract class BaseTheme implements Theme {
 
   @Override
   public Color creditText() {
+    // The status color value provides suitable contrast across all themes
     return statusGreen();
   }
 
   @Override
   public Color debitText() {
+    // The status color value provides suitable contrast across all themes
     return statusRed();
   }
 
