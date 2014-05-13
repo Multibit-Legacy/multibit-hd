@@ -68,6 +68,11 @@ public class EditBobContactUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled();
 
+    // Verify contact image
+    window
+      .label(MessageKey.CONTACT_IMAGE.getKey())
+      .requireVisible();
+
     // Update Bob's details
     window
       .textBox(MessageKey.NAME.getKey())

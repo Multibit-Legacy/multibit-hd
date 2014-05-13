@@ -80,7 +80,7 @@ public enum MessageKey {
   MESSAGE_TOOLTIP("message_tooltip"),
   SIGNATURE("signature"),
 
-
+  CONTACT_IMAGE("contact_image"),
 
   ONE_OF_YOUR_ADDRESSES("one_of_your_addresses"),
 

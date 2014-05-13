@@ -48,6 +48,11 @@ public class AddAliceContactUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled();
 
+    // Verify contact image
+    window
+      .label(MessageKey.CONTACT_IMAGE.getKey())
+      .requireVisible();
+
     // Fill in Alice's details
     window
       .textBox(MessageKey.NAME.getKey())

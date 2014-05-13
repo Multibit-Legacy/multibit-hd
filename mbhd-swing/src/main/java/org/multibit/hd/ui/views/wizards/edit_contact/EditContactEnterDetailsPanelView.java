@@ -7,9 +7,14 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.Contact;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.gravatar.Gravatars;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.enter_tags.EnterTagsModel;
@@ -21,6 +26,9 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Set;
 
@@ -40,6 +48,7 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
   // Panel specific components
   private JTextField name;
+  private JLabel imageLabel;
 
   private JTextField emailAddress;
   private JTextField bitcoinAddress;
@@ -79,7 +88,7 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[][][]", // Column constraints
-      "[][][]" // Row constraints
+      "[]" // Row constraints
     ));
 
     List<Contact> contacts = getWizardModel().getContacts();
@@ -91,8 +100,24 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
     Contact firstContact = getWizardModel().getContacts().get(0);
 
+    // Start with an invisible gravatar image label
+    imageLabel = Labels.newImageLabel(Optional.<BufferedImage>absent());
+    imageLabel.setVisible(false);
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(imageLabel, MessageKey.CONTACT_IMAGE);
+
     name = TextBoxes.newEnterName(getWizardModel(), multiEdit);
+
+    // Email address triggers a Gravatar
     emailAddress = TextBoxes.newEnterEmailAddress(getWizardModel(), multiEdit);
+    emailAddress.addFocusListener(new FocusAdapter() {
+      @Override
+      public void focusLost(FocusEvent e) {
+        displayContactImage();
+      }
+    });
+
     bitcoinAddress = TextBoxes.newEnterBitcoinAddress(getWizardModel(), multiEdit);
     extendedPublicKey = TextBoxes.newEnterExtendedPublicKey(getWizardModel(), multiEdit);
 
@@ -105,6 +130,8 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
     if (multiEdit) {
 
       // Multiple contacts so some fields are not for display
+
+      emailAddress.setVisible(false);
 
       // Notes are initially empty since concatenating from multiple contacts
       // quickly becomes unmanageable
@@ -123,7 +150,7 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
       // Extract those that are common to all contacts
       Set<String> sharedTags = Sets.newHashSet();
-      for (String tag: allTags) {
+      for (String tag : allTags) {
         if (tagOccurrences.count(tag) >= contactCount) {
           sharedTags.add(tag);
         }
@@ -135,16 +162,22 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
     } else {
 
       if (firstContact != null) {
+
         // Use a single contact
         name.setText(firstContact.getName() == null ? "" : firstContact.getName().trim());
+
+        // Populate the email address and update the image
         emailAddress.setText(firstContact.getEmail().or("").trim());
+
         bitcoinAddress.setText(firstContact.getBitcoinAddress().or("").trim());
         extendedPublicKey.setText(firstContact.getExtendedPublicKey().or("").trim());
         notes.setText(firstContact.getNotes().or("").trim());
 
         // Base the tags on first contact tags
         enterTagsMaV = Components.newEnterTagsMaV(getPanelName(), firstContact.getTags() == null ? Lists.<String>newArrayList() : firstContact.getTags());
+
       } else {
+
         name.setText("");
         emailAddress.setText("");
         bitcoinAddress.setText("");
@@ -155,22 +188,28 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
         enterTagsMaV = Components.newEnterTagsMaV(getPanelName(), Lists.<String>newArrayList());
 
       }
+
+      // Ensure contact image is available
+      displayContactImage();
+
     }
 
     if (!multiEdit) {
 
       // Allow unique contact fields
       contentPanel.add(Labels.newName());
-      contentPanel.add(name, "grow,push,wrap");
+      contentPanel.add(name, "grow,push");
+
+      contentPanel.add(imageLabel, "spany 2,grow,wrap");
 
       contentPanel.add(Labels.newEmailAddress());
       contentPanel.add(emailAddress, "grow,push,wrap");
 
       contentPanel.add(Labels.newBitcoinAddress());
-      contentPanel.add(bitcoinAddress, "grow,push,wrap");
+      contentPanel.add(bitcoinAddress, "grow,span 2,push,wrap");
 
       contentPanel.add(Labels.newExtendedPublicKey());
-      contentPanel.add(extendedPublicKey, "grow,push,wrap");
+      contentPanel.add(extendedPublicKey, "grow,span 2,push,wrap");
 
     }
 
@@ -187,11 +226,11 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
     // Tags must be top aligned since it is a tall component
     contentPanel.add(Labels.newTags(), "aligny top");
-    contentPanel.add(enterTagsMaV.getView().newComponentPanel(), "growx,aligny top,wrap");
+    contentPanel.add(enterTagsMaV.getView().newComponentPanel(), "growx,span 2,aligny top,wrap");
 
     // Ensure we shrink to avoid scrunching up if no tags are present
-    contentPanel.add(Labels.newNotes());
-    contentPanel.add(notes, "shrink,wrap");
+    contentPanel.add(Labels.newNotes(), "aligny top");
+    contentPanel.add(notes, "grow,span 2,wrap");
 
   }
 
@@ -254,7 +293,7 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
     // Determine which tags should be added
     List<String> addToAllTags = Lists.newArrayList();
-    for (String newTag: newTags) {
+    for (String newTag : newTags) {
 
       if (!originalTags.contains(newTag)) {
         // Tag is new
@@ -265,7 +304,7 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
     // Determine which tags should be removed
     List<String> removeFromAllTags = Lists.newArrayList();
-    for (String originalTag: originalTags) {
+    for (String originalTag : originalTags) {
 
       if (!newTags.contains(originalTag)) {
         // Tag has been removed
@@ -290,8 +329,6 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
         // Notes are not appended
         contact.setNotes(notes.getText().trim());
 
-        // TODO Support image
-
         // Overwrite existing tags
         contact.setTags(newTags);
 
@@ -309,7 +346,7 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
         // Adjust the existing tags
         List<String> existingTags = contact.getTags();
-        for (String addToAllTag: addToAllTags) {
+        for (String addToAllTag : addToAllTags) {
 
           if (!existingTags.contains(addToAllTag)) {
             // Add the tag
@@ -318,7 +355,7 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
         }
 
-        for (String removeFromAllTag: removeFromAllTags) {
+        for (String removeFromAllTag : removeFromAllTags) {
 
           if (existingTags.contains(removeFromAllTag)) {
             // Add the tag
@@ -332,6 +369,49 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
     }
 
+  }
+
+  /**
+   * <p>Display the gravatar of the contact</p>
+   */
+  private void displayContactImage() {
+
+    // No images in multi-edit mode
+    if (EnterContactDetailsMode.EDIT_MULTIPLE.equals(mode)) {
+      return;
+    }
+
+    // Always attempt a lookup (a blank image will be returned on failure)
+    final ListenableFuture<Optional<BufferedImage>> imageFuture = Gravatars.retrieveGravatar(emailAddress.getText());
+    Futures.addCallback(imageFuture, new FutureCallback<Optional<BufferedImage>>() {
+      public void onSuccess(Optional<BufferedImage> image) {
+        if (image.isPresent()) {
+
+          // Apply the rounded corners
+          final ImageIcon imageIcon = new ImageIcon(ImageDecorator.applyRoundedCorners(image.get(), MultiBitUI.IMAGE_CORNER_RADIUS));
+
+          // Update the UI
+          SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+              imageLabel.setIcon(imageIcon);
+              imageLabel.setVisible(true);
+            }
+          });
+        }
+      }
+
+      public void onFailure(Throwable thrown) {
+
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            imageLabel.setVisible(false);
+          }
+        });
+
+      }
+    });
   }
 
 }
