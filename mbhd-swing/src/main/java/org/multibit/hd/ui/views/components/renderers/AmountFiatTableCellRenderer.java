@@ -62,7 +62,7 @@ public class AmountFiatTableCellRenderer extends DefaultTableCellRenderer {
               label.setForeground(Themes.currentTheme.debitText());
             }
           } else {
-            // Credit
+            // Credit or zero
             if (isSelected) {
               label.setForeground(table.getSelectionForeground());
             } else {
@@ -73,6 +73,13 @@ public class AmountFiatTableCellRenderer extends DefaultTableCellRenderer {
           // The fiat amount could not be understood as a number
           // show nothing
           log.error(nfe.getClass().getCanonicalName() + " " + nfe.getMessage());
+        }
+      } else {
+        label.setText("");
+        if (isSelected) {
+          label.setForeground(table.getSelectionForeground());
+        } else {
+          label.setForeground(Themes.currentTheme.creditText());
         }
       }
       if (isSelected) {

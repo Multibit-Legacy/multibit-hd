@@ -304,7 +304,7 @@ public class WalletService {
     BigInteger amountBTC = transaction.getValue(wallet);
 
     // Fiat amount
-    FiatPayment amountFiat = calculateFiatPayment(amountBTC);
+    FiatPayment amountFiat = calculateFiatPayment(amountBTC, transactionHashAsString);
 
     TransactionConfidence transactionConfidence = transaction.getConfidence();
 
@@ -530,10 +530,19 @@ public class WalletService {
     return outputAddresses;
   }
 
-  private FiatPayment calculateFiatPayment(BigInteger amountBTC) {
+  private FiatPayment calculateFiatPayment(BigInteger amountBTC, String transactionHashAsString) {
 
     FiatPayment amountFiat = new FiatPayment();
 
+    // Get the transactionInfo that contains the fiat exchange info, if it is available from the backing store
+    // This will use the fiat rate at time of send/ receive
+    TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
+    if (transactionInfo != null) {
+      //log.debug("For a bitcoin amount of " + amountBTC + " the local amount is " + transactionInfo.getAmountFiat().getAmount() + " STORED");
+      return transactionInfo.getAmountFiat();
+    }
+
+    // Else work it out from the current settings
     amountFiat.setExchangeName(ExchangeKey.current().getExchangeName());
 
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
@@ -541,10 +550,12 @@ public class WalletService {
 
       amountFiat.setRate(exchangeRateChangedEvent.get().getRate().toString());
       BigDecimal localAmount = Satoshis.toLocalAmount(amountBTC, exchangeRateChangedEvent.get().getRate());
+      log.debug("For a bitcoin amount of " + amountBTC + " the local amount is " + localAmount);
       amountFiat.setAmount(localAmount);
     } else {
       amountFiat.setRate("");
       amountFiat.setAmount(null);
+      log.debug("For a bitcoin amount of " + amountBTC + " the local amount is null");
     }
 
     return amountFiat;
