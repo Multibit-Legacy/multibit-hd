@@ -56,11 +56,11 @@ are needed, although a Bitcoin URI is accepted.
 
 #### Start the application (from the command line)
 
-To run the application from the command line, first use the installer profile:
+To run the application from the command line, first build with:
 ```
 mvn clean package
 ```
-Then start the application using the shaded JAR:
+then start the application using the shaded JAR:
 ```
 $ java -jar mbhd-install/target/multibit-hd.jar
 ```
@@ -134,9 +134,9 @@ The code is changing too rapidly and is too unstable to justify a long-lived ins
 for demo purposes you need to [first read the installer README](mbhd-install/README.md) to do the necessary manual steps to configure JWrapper
 and then run the following Maven command:
 ```
-mvn -Dinstaller=true clean package
+mvn -Dinstaller=true clean install
 ```
-The installers will be found in the `target/bundles` directory ready for installer signing.
+The installers will be found in the `target` directory ready for installer signing.
 
 #### Is there a developer wiki ?
 
