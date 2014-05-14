@@ -44,9 +44,11 @@
     <!-- Linux -->
     <untar src="build/${app.name}-linux32-offline.tar" dest="build/"/>
     <move file="build/${app.name}-linux32-offline" tofile="target/${jars.prefix}-${build_version}-linux"/>
+    <chmod file="target/${jars.prefix}-${build_version}-linux" perm="755"/>
 
     <untar src="build/${app.name}-linux64-offline.tar" dest="build/"/>
     <move file="build/${app.name}-linux64-offline" tofile="target/${jars.prefix}-${build_version}-linux64"/>
+    <chmod file="target/${jars.prefix}-${build_version}-linux64" perm="755"/>
 
   </target>
 
