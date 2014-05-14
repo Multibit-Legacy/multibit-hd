@@ -49,8 +49,8 @@ public class ImageDecorator {
 
     g2.fill(new RoundRectangle2D.Float(0, 0, w, h, cornerRadius, cornerRadius));
 
-    // Use the mask as an alpha source and apply the image
-    g2.setComposite(AlphaComposite.SrcAtop);
+    // Use the mask as an alpha source and apply the image respecting existing transparency
+    g2.setComposite(AlphaComposite.SrcIn);
     g2.drawImage(image, 0, 0, null);
 
     g2.dispose();
