@@ -96,15 +96,15 @@ public class Images {
   }
 
   /**
-   * @return A new "user" image icon suitable for use in tables
+   * @return A new "no network" contact image icon suitable for use in tables and labels
    */
-  public static ImageIcon newUserIcon() {
+  public static ImageIcon newNoNetworkContactImageIcon() {
 
     final Icon icon;
 
     icon = AwesomeDecorator.createIcon(
       AwesomeIcon.USER,
-      Themes.currentTheme.text(),
+      Themes.currentTheme.fadedText(),
       MultiBitUI.LARGE_ICON_SIZE
     );
 

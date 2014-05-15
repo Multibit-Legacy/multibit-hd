@@ -222,7 +222,8 @@ public class ContactTableModel extends AbstractTableModel {
                 );
                 rowData[GRAVATAR_COLUMN_INDEX] = gravatar;
               } else {
-                rowData[GRAVATAR_COLUMN_INDEX] = Images.newUserIcon();
+                // Update the UI to use the "no network" icon
+                rowData[GRAVATAR_COLUMN_INDEX] = Images.newNoNetworkContactImageIcon();
               }
 
               // Ensure all listeners update to the new situation
@@ -236,7 +237,9 @@ public class ContactTableModel extends AbstractTableModel {
           SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-              rowData[GRAVATAR_COLUMN_INDEX] = Images.newUserIcon();
+
+              // Update the UI to use the "no network" icon
+              rowData[GRAVATAR_COLUMN_INDEX] = Images.newNoNetworkContactImageIcon();
 
               // Ensure all listeners update to the new situation
               fireTableDataChanged();

@@ -21,6 +21,7 @@ import org.multibit.hd.ui.views.components.enter_tags.EnterTagsModel;
 import org.multibit.hd.ui.views.components.enter_tags.EnterTagsView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
@@ -100,9 +101,9 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
     Contact firstContact = getWizardModel().getContacts().get(0);
 
-    // Start with an invisible gravatar image label
+    // Start with a "no network" contact image label by overriding the default theme
     imageLabel = Labels.newImageLabel(Optional.<BufferedImage>absent());
-    imageLabel.setVisible(false);
+    imageLabel.setForeground(Themes.currentTheme.fadedText());
 
     // Ensure it is accessible
     AccessibilityDecorator.apply(imageLabel, MessageKey.CONTACT_IMAGE);
@@ -130,8 +131,6 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
     if (multiEdit) {
 
       // Multiple contacts so some fields are not for display
-
-      emailAddress.setVisible(false);
 
       // Notes are initially empty since concatenating from multiple contacts
       // quickly becomes unmanageable
@@ -366,7 +365,6 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
       }
 
-
     }
 
   }
@@ -395,7 +393,19 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
             @Override
             public void run() {
               imageLabel.setIcon(imageIcon);
-              imageLabel.setVisible(true);
+            }
+          });
+        } else {
+
+          // Update the UI to use the "no network" icon
+          SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+
+              // Use the internal "no network" icon
+              final ImageIcon imageIcon = Images.newNoNetworkContactImageIcon();
+
+              imageLabel.setIcon(imageIcon);
             }
           });
         }
@@ -403,10 +413,15 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
       public void onFailure(Throwable thrown) {
 
+        // Update the UI to use the "no network" icon
         SwingUtilities.invokeLater(new Runnable() {
           @Override
           public void run() {
-            imageLabel.setVisible(false);
+
+            // Use the internal "no network" icon
+            final ImageIcon imageIcon = Images.newNoNetworkContactImageIcon();
+
+            imageLabel.setIcon(imageIcon);
           }
         });
 
