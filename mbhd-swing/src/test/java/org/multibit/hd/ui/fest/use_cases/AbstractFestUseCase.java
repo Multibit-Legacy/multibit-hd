@@ -27,7 +27,7 @@ public abstract class AbstractFestUseCase {
   public AbstractFestUseCase(FrameFixture window) {
     this.window = window;
 
-    log.info("New use case: {}",this.getClass().getName());
+    log.info("New use case: {}", this.getClass().getName());
 
   }
 
@@ -60,7 +60,20 @@ public abstract class AbstractFestUseCase {
 
   }
 
+  /**
+   * @return True if an exchange rate has been received
+   */
   protected boolean isExchangePresent() {
     return CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().isPresent();
   }
+
+  /**
+   * @return True if the Bitcoin network is running rate has been received
+   */
+  protected boolean isBitcoinNetworkPresent() {
+
+    return CoreServices.getOrCreateBitcoinNetworkService().isStartedOk();
+
+  }
+
 }

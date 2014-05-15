@@ -127,7 +127,7 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 
-    // No need to update the wizard it has the references
+    // No need to update the panel model it already has the references
 
     // Determine any events
     ViewEvents.fireWizardButtonEnabledEvent(
@@ -153,7 +153,7 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
       .getRecipient()
       .isPresent();
 
-    log.trace("Bitcoin amount: {} Recipient: {}", bitcoinAmountOK, recipientOK);
+    log.debug("Bitcoin amount: {} Recipient: {}", bitcoinAmountOK, recipientOK);
 
     return bitcoinAmountOK && recipientOK;
   }

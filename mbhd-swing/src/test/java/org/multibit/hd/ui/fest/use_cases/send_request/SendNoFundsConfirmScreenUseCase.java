@@ -83,31 +83,34 @@ public class SendNoFundsConfirmScreenUseCase extends AbstractFestUseCase {
       .requireEnabled()
       .click();
 
-    // Verify the send progress panel is showing
-    window
-      .label(MessageKey.SEND_PROGRESS_TITLE.getKey());
+    if (isBitcoinNetworkPresent()) {
 
-    window
-      .label(MessageKey.TRANSACTION_CONSTRUCTION_STATUS_SUMMARY.getKey());
+      // Verify the send progress panel is showing
+      window
+        .label(MessageKey.SEND_PROGRESS_TITLE.getKey());
 
-    window
-      .label(MessageKey.TRANSACTION_CONSTRUCTION_STATUS_DETAIL.getKey());
+      window
+        .label(MessageKey.TRANSACTION_CONSTRUCTION_STATUS_SUMMARY.getKey());
 
-    window
-      .label(MessageKey.TRANSACTION_BROADCAST_STATUS_SUMMARY.getKey());
+      window
+        .label(MessageKey.TRANSACTION_CONSTRUCTION_STATUS_DETAIL.getKey());
 
-    window
-      .label(MessageKey.TRANSACTION_BROADCAST_STATUS_DETAIL.getKey());
+      window
+        .label(MessageKey.TRANSACTION_BROADCAST_STATUS_SUMMARY.getKey());
 
-    window
-      .label(MessageKey.TRANSACTION_CONFIRMATION_STATUS.getKey());
+      window
+        .label(MessageKey.TRANSACTION_BROADCAST_STATUS_DETAIL.getKey());
 
-    // Click Finish
-    window
-      .button(MessageKey.FINISH.getKey())
-      .click();
+      window
+        .label(MessageKey.TRANSACTION_CONFIRMATION_STATUS.getKey());
+
+      // Click Finish
+      window
+        .button(MessageKey.FINISH.getKey())
+        .click();
+
+    }
 
   }
-
 
 }

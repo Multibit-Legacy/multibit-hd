@@ -117,6 +117,10 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
 
   @Override
   public boolean beforeHide(boolean isExitCancel) {
+
+    // Always call super() before hiding
+    super.beforeHide(isExitCancel);
+
     if (!isExitCancel) {
 
       // Ensure the wizard model correctly reflects the contents of the components

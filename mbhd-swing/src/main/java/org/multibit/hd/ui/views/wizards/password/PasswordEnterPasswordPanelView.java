@@ -171,10 +171,13 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
   }
 
   @Override
-  public boolean beforeHide(boolean isExiting) {
+  public boolean beforeHide(boolean isExitCancel) {
+
+    // Always call super() before hiding
+    super.beforeHide(isExitCancel);
 
     // Don't block an exit
-    if (isExiting) {
+    if (isExitCancel) {
       return true;
     }
 

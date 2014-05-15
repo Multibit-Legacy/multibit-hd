@@ -361,6 +361,9 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
    */
   public boolean beforeHide(boolean isExitCancel) {
 
+    // Ensure we unregister for events
+    CoreServices.uiEventBus.unregister(this);
+
     // Default is to return OK
     return true;
 

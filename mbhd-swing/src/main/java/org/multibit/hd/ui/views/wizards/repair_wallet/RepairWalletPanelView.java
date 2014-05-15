@@ -90,6 +90,9 @@ public class RepairWalletPanelView extends AbstractWizardPanelView<RepairWalletW
   @Override
   public boolean beforeHide(boolean isExitCancel) {
 
+    // Always call super() before hiding
+    super.beforeHide(isExitCancel);
+
     if (!isExitCancel) {
 
       // Attempt to fix any SSL problems first
