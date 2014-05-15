@@ -20,7 +20,7 @@ public class ApplicationConfiguration {
 
   private String applicationDirectory = ".";
 
-  private String currentTheme = "LIGHT";
+  private String currentTheme = "BOOTSTRAP";
 
   /**
    * The version field cannot contain "/" or "(" or ")" since it is used in the PeerGroup of Bitcoinj
