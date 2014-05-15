@@ -4,8 +4,6 @@ import com.google.common.base.Optional;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>Model to provide the following to view:</p>
@@ -17,8 +15,6 @@ import org.slf4j.LoggerFactory;
  *  
  */
 public class EnterRecipientModel implements Model<Recipient> {
-
-  private static final Logger log = LoggerFactory.getLogger(EnterRecipientModel.class);
 
   private Optional<Recipient> recipient = Optional.absent();
   private final String panelName;
@@ -46,8 +42,6 @@ public class EnterRecipientModel implements Model<Recipient> {
 
   @Override
   public void setValue(Recipient value) {
-
-    log.debug("Set recipient: {}", value);
 
     this.recipient = Optional.fromNullable(value);
 

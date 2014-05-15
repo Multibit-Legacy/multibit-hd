@@ -3,8 +3,6 @@ package org.multibit.hd.ui.views.components.enter_amount;
 import com.google.common.base.Optional;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -19,8 +17,6 @@ import java.math.BigInteger;
  *  
  */
 public class EnterAmountModel implements Model<EnterAmountModel> {
-
-  private static final Logger log = LoggerFactory.getLogger(EnterAmountModel.class);
 
   private Optional<BigInteger> satoshis = Optional.absent();
   private Optional<BigDecimal> localAmount = Optional.absent();
@@ -66,8 +62,6 @@ public class EnterAmountModel implements Model<EnterAmountModel> {
 
     satoshis = Optional.of(value);
 
-    log.debug("Setting Satoshis: {}", value);
-
     // Fire a component model updated event
     ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
 
@@ -86,8 +80,6 @@ public class EnterAmountModel implements Model<EnterAmountModel> {
   public void setLocalAmount(BigDecimal value) {
 
     localAmount = Optional.of(value);
-
-    log.debug("Setting local amount: {}", value);
 
   }
 }
