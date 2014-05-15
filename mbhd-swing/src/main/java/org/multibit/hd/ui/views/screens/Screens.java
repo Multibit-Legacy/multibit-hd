@@ -20,8 +20,8 @@ import org.multibit.hd.ui.views.screens.settings.SettingsScreenModel;
 import org.multibit.hd.ui.views.screens.settings.SettingsScreenView;
 import org.multibit.hd.ui.views.screens.tools.ToolsScreenModel;
 import org.multibit.hd.ui.views.screens.tools.ToolsScreenView;
-import org.multibit.hd.ui.views.screens.wallet.WalletScreenModel;
-import org.multibit.hd.ui.views.screens.wallet.WalletScreenView;
+import org.multibit.hd.ui.views.screens.wallet.SendRequestScreenModel;
+import org.multibit.hd.ui.views.screens.wallet.SendRequestScreenView;
 
 /**
  * <p>Factory to provide the following to UI:</p>
@@ -63,8 +63,8 @@ public class Screens {
     final AbstractScreenView view;
 
     switch (screen) {
-      case WALLET:
-        view = new WalletScreenView(new WalletScreenModel(screen), screen, MessageKey.CONTACTS);
+      case SEND_REQUEST:
+        view = new SendRequestScreenView(new SendRequestScreenModel(screen), screen, MessageKey.CONTACTS);
         break;
       case CONTACTS:
         // Expect a current contact service

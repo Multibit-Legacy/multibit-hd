@@ -143,17 +143,21 @@ public class VerifyAmountAndCancelContactUseCase extends AbstractFestUseCase {
         .background()
         .requireEqualTo(Themes.currentTheme.dataEntryBackground());
 
-      // Verify the local amount has updated
-      String localAmount = window
-        .textBox(MessageKey.LOCAL_AMOUNT.getKey())
-        .text();
+      if (isExchangePresent()) {
 
-      assertThat(Strings.isNullOrEmpty(localAmount)).isFalse();
+        // Verify the local amount has updated
+        String localAmount = window
+          .textBox(MessageKey.LOCAL_AMOUNT.getKey())
+          .text();
 
-      window
-        .textBox(MessageKey.LOCAL_AMOUNT.getKey())
-        .background()
-        .requireEqualTo(Themes.currentTheme.dataEntryBackground());
+        assertThat(Strings.isNullOrEmpty(localAmount)).isFalse();
+
+        window
+          .textBox(MessageKey.LOCAL_AMOUNT.getKey())
+          .background()
+          .requireEqualTo(Themes.currentTheme.dataEntryBackground());
+
+      }
 
     } else {
       window
@@ -161,7 +165,6 @@ public class VerifyAmountAndCancelContactUseCase extends AbstractFestUseCase {
         .background()
         .requireEqualTo(Themes.currentTheme.invalidDataEntryBackground());
     }
-
 
   }
 

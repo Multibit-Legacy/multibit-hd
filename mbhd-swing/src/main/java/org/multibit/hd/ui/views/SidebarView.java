@@ -49,7 +49,7 @@ public class SidebarView {
   /**
    * The detail screen that was selected (provide a sensible default)
    */
-  private Screen lastSelectedScreen = Screen.WALLET;
+  private Screen lastSelectedScreen = Screen.SEND_REQUEST;
 
   /**
    * The wallet tree node
@@ -95,7 +95,7 @@ public class SidebarView {
       public void run() {
         if (walletNode != null && name != null) {
 
-          SidebarNodeInfo nodeInfo = new SidebarNodeInfo(name, Screen.WALLET);
+          SidebarNodeInfo nodeInfo = new SidebarNodeInfo(name, Screen.SEND_REQUEST);
           walletNode.setUserObject(nodeInfo);
           // This is to ensure the tree resizes correctly
           ((DefaultTreeModel) sidebarTree.getModel()).nodeChanged(walletNode);
@@ -196,13 +196,13 @@ public class SidebarView {
 
   private DefaultMutableTreeNode createSidebarTreeNodes() {
 
-    DefaultMutableTreeNode root = TreeNodes.newSidebarTreeNode("", Screen.WALLET);
+    DefaultMutableTreeNode root = TreeNodes.newSidebarTreeNode("", Screen.SEND_REQUEST);
 
     // This node gets overwritten by WalletSummary.getName()
-    walletNode = TreeNodes.newSidebarTreeNode(MessageKey.WALLET, Screen.WALLET);
+    walletNode = TreeNodes.newSidebarTreeNode(MessageKey.WALLET, Screen.SEND_REQUEST);
 
     // Add standard wallet nodes
-    walletNode.add(TreeNodes.newSidebarTreeNode(MessageKey.SEND_OR_REQUEST, Screen.WALLET));
+    walletNode.add(TreeNodes.newSidebarTreeNode(MessageKey.SEND_OR_REQUEST, Screen.SEND_REQUEST));
     walletNode.add(TreeNodes.newSidebarTreeNode(MessageKey.PAYMENTS, Screen.TRANSACTIONS));
     walletNode.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, Screen.CONTACTS));
     root.add(walletNode);

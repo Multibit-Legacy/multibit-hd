@@ -3,6 +3,7 @@ package org.multibit.hd.ui.fest.use_cases;
 import org.fest.swing.core.matcher.JButtonMatcher;
 import org.fest.swing.core.matcher.JLabelMatcher;
 import org.fest.swing.fixture.FrameFixture;
+import org.multibit.hd.core.services.CoreServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,4 +60,7 @@ public abstract class AbstractFestUseCase {
 
   }
 
+  protected boolean isExchangePresent() {
+    return CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().isPresent();
+  }
 }
