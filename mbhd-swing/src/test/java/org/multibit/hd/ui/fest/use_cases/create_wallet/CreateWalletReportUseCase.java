@@ -58,6 +58,7 @@ public class CreateWalletReportUseCase extends AbstractFestUseCase {
     // OK to proceed
     window
       .button(MessageKey.FINISH.getKey())
+      .requireEnabled(timeout(2, TimeUnit.SECONDS))
       .click();
 
     // Wait for password wizard Exit button to appear (allow at least 2 seconds)
