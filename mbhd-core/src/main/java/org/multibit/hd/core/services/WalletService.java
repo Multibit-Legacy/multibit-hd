@@ -534,6 +534,8 @@ public class WalletService {
 
     FiatPayment amountFiat = new FiatPayment();
 
+    // TODO - missing rates should not be overwritten by new rates
+
     // Get the transactionInfo that contains the fiat exchange info, if it is available from the backing store
     // This will use the fiat rate at time of send/ receive
     TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
