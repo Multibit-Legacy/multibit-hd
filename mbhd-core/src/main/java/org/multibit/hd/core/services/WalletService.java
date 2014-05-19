@@ -552,12 +552,12 @@ public class WalletService {
 
       amountFiat.setRate(exchangeRateChangedEvent.get().getRate().toString());
       BigDecimal localAmount = Satoshis.toLocalAmount(amountBTC, exchangeRateChangedEvent.get().getRate());
-      log.debug("For a bitcoin amount of " + amountBTC + " the local amount is " + localAmount);
+      //log.debug("For a bitcoin amount of " + amountBTC + " the local amount is " + localAmount);
       amountFiat.setAmount(localAmount);
     } else {
       amountFiat.setRate("");
       amountFiat.setAmount(null);
-      log.debug("For a bitcoin amount of " + amountBTC + " the local amount is null");
+      //log.debug("For a bitcoin amount of " + amountBTC + " the local amount is null");
     }
 
     return amountFiat;
