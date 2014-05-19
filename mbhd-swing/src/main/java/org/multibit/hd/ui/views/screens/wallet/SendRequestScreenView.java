@@ -39,9 +39,9 @@ import java.util.List;
  * @since 0.0.1
  *  
  */
-public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
+public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenModel> {
 
-  private static final Logger log = LoggerFactory.getLogger(WalletScreenView.class);
+  private static final Logger log = LoggerFactory.getLogger(SendRequestScreenView.class);
 
 
   private JButton sendBitcoin;
@@ -58,7 +58,7 @@ public class WalletScreenView extends AbstractScreenView<WalletScreenModel> {
    * @param screen     The screen to filter events from components
    * @param title      The key to the main title of this panel view
    */
-  public WalletScreenView(WalletScreenModel panelModel, Screen screen, MessageKey title) {
+  public SendRequestScreenView(SendRequestScreenModel panelModel, Screen screen, MessageKey title) {
     super(panelModel, screen, title);
   }
 

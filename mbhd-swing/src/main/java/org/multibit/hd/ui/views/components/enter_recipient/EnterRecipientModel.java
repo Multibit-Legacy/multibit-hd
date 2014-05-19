@@ -35,7 +35,9 @@ public class EnterRecipientModel implements Model<Recipient> {
 
   @Override
   public Recipient getValue() {
-    return recipient.get();
+
+    throw new IllegalStateException("This method should be called. Use getRecipient() instead.");
+
   }
 
   @Override

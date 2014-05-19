@@ -5,7 +5,6 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
-import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.WalletSummary;
@@ -175,7 +174,12 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
 
   @Override
   public boolean beforeHide(boolean isExitCancel) {
+
+    // Always call super() before hiding
+    super.beforeHide(isExitCancel);
+
     savePaymentRequest();
+
     return true;
   }
 

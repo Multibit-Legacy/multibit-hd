@@ -77,7 +77,7 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
     if (leaf) {
       switch (nodeInfo.getDetailScreen()) {
 
-        case WALLET:
+        case SEND_REQUEST:
           if (nodeInfo.getText().equals(Languages.safeText(MessageKey.SEND_OR_REQUEST))) {
             setIcon(AwesomeDecorator.createIcon(AwesomeIcon.EXCHANGE, iconColor, MultiBitUI.NORMAL_ICON_SIZE - 3));
           }

@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.views.components.enter_amount;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
 
@@ -41,12 +40,12 @@ public class EnterAmountModel implements Model<EnterAmountModel> {
 
   @Override
   public EnterAmountModel getValue() {
-    return this;
+    throw new IllegalStateException("This method should not be called directly.");
   }
 
   @Override
   public void setValue(EnterAmountModel value) {
-    // Do nothing
+    throw new IllegalStateException("This method should not be called directly.");
   }
 
   /**
@@ -60,8 +59,6 @@ public class EnterAmountModel implements Model<EnterAmountModel> {
    * @param value The Bitcoin amount (fires a "component model changed" event)
    */
   public void setSatoshis(BigInteger value) {
-
-    Preconditions.checkNotNull(value, "'value' should be present");
 
     satoshis = Optional.of(value);
 
@@ -81,8 +78,6 @@ public class EnterAmountModel implements Model<EnterAmountModel> {
    * @param value The local amount - no component event since the Bitcoin value drives this component
    */
   public void setLocalAmount(BigDecimal value) {
-
-    Preconditions.checkNotNull(value, "'value' should be present");
 
     localAmount = Optional.of(value);
 

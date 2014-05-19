@@ -19,7 +19,7 @@ public enum Screen {
   /**
    * The wallet screen
    */
-  WALLET,
+  SEND_REQUEST,
 
   /**
    * The tools screen

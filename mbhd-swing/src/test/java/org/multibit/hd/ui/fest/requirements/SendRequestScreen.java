@@ -15,7 +15,6 @@ import java.util.Map;
  * @since 0.0.1
  *  
  */
-// TODO (GR) Rename to WalletScreen throughout
 public class SendRequestScreen {
 
   public static void verifyUsing(FrameFixture window) {

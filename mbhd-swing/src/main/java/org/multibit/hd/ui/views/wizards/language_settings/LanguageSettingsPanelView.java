@@ -118,6 +118,9 @@ public class LanguageSettingsPanelView extends AbstractWizardPanelView<LanguageS
   @Override
   public boolean beforeHide(boolean isExitCancel) {
 
+    // Always call super() before hiding
+    super.beforeHide(isExitCancel);
+
     if (!isExitCancel) {
 
       // Switch the main configuration over to the new one

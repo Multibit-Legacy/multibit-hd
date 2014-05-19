@@ -3,6 +3,7 @@ package org.multibit.hd.ui.fest.use_cases;
 import org.fest.swing.core.matcher.JButtonMatcher;
 import org.fest.swing.core.matcher.JLabelMatcher;
 import org.fest.swing.fixture.FrameFixture;
+import org.multibit.hd.core.services.CoreServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +27,7 @@ public abstract class AbstractFestUseCase {
   public AbstractFestUseCase(FrameFixture window) {
     this.window = window;
 
-    log.info("New use case: {}",this.getClass().getName());
+    log.info("New use case: {}", this.getClass().getName());
 
   }
 
@@ -56,6 +57,22 @@ public abstract class AbstractFestUseCase {
   public JButtonMatcher newNotShowingJButtonFixture(String name) {
 
     return JButtonMatcher.withName(name);
+
+  }
+
+  /**
+   * @return True if an exchange rate has been received
+   */
+  protected boolean isExchangePresent() {
+    return CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().isPresent();
+  }
+
+  /**
+   * @return True if the Bitcoin network is running rate has been received
+   */
+  protected boolean isBitcoinNetworkPresent() {
+
+    return CoreServices.getOrCreateBitcoinNetworkService().isStartedOk();
 
   }
 

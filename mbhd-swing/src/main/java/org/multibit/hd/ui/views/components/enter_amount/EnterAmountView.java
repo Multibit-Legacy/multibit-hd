@@ -252,8 +252,8 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
    */
   private void updateBitcoinAmount() {
 
-    String text = localAmountText.getText();
-    Optional<BigDecimal> value = Numbers.parseBigDecimal(text);
+    // Build the value directly from the string
+    Optional<BigDecimal> value = Numbers.parseBigDecimal(localAmountText.getText());
 
     BitcoinSymbol bitcoinSymbol = BitcoinSymbol.current();
 
@@ -310,8 +310,8 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
    */
   private void updateLocalAmount() {
 
-    String text = bitcoinAmountText.getText();
-    Optional<BigDecimal> value = Numbers.parseBigDecimal(text);
+    // Build the value directly from the string
+    Optional<BigDecimal> value = Numbers.parseBigDecimal(bitcoinAmountText.getText());
 
     BitcoinSymbol bitcoinSymbol = BitcoinSymbol.current();
 
@@ -356,8 +356,8 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
       if (value.isPresent()) {
 
         try {
-          // Use the text directly into BigDecimal to avoid ambiguity
-          BigInteger satoshis = Satoshis.fromSymbolicAmount(new BigDecimal(text), bitcoinSymbol);
+          // Use the value directly
+          BigInteger satoshis = Satoshis.fromSymbolicAmount(value.get(), bitcoinSymbol);
 
           // Update the model
           getModel().get().setSatoshis(satoshis);
