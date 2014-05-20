@@ -59,12 +59,18 @@ public class FeeService {
   /**
    * The lower limit of the gap from one fee send to the next
    */
-  public final static int NEXT_SEND_DELTA_LOWER_LIMIT = 10;
+  public final static int NEXT_SEND_DELTA_LOWER_LIMIT = 20;
 
   /**
    * The upper limit of the gap from one fee send to the next
    */
-  public final static int NEXT_SEND_DELTA_UPPER_LIMIT = 15;
+  public final static int NEXT_SEND_DELTA_UPPER_LIMIT = 30;
+
+  /**
+   * The multiplicative factor used in determining the first SEND DELTA
+   */
+  public final static double FIRST_SEND_DELTA_FACTOR = 0.5;
+
 
   private SecureRandom secureRandom;
 
@@ -213,19 +219,24 @@ public class FeeService {
     int nextSendFeeCount;
 
     if (usePersistedData) {
-
       nextSendFeeCount = sendFeeDto.getSendFeeCount().get();
       nextSendFeeAddress = sendFeeDto.getSendFeeAddress().get();
 
       log.debug("Reusing the next send fee transaction. It will be at the send count of {}", nextSendFeeCount);
       log.debug("Reusing the next address to send fee to. It will be is {}", nextSendFeeAddress);
-
     } else {
-
       // Work out the count of the sends at which the next payment will be made
+      // The first nextSendFeeCount is earlier than others by a factor of FIRST_SEND_DELTA_FACTOR
       int numberOfSendCountsPaidFor = feePaid.divide(FEE_PER_SEND).intValue();
-      nextSendFeeCount = numberOfSendCountsPaidFor +
-        +NEXT_SEND_DELTA_LOWER_LIMIT + secureRandom.nextInt(NEXT_SEND_DELTA_UPPER_LIMIT - NEXT_SEND_DELTA_LOWER_LIMIT);
+      if (feePaid.equals(BigInteger.ZERO)) {
+        // This is the first fee payment
+        nextSendFeeCount = (int)Math.floor(FIRST_SEND_DELTA_FACTOR *
+                (NEXT_SEND_DELTA_LOWER_LIMIT + secureRandom.nextInt(NEXT_SEND_DELTA_UPPER_LIMIT - NEXT_SEND_DELTA_LOWER_LIMIT)));
+      } else {
+        nextSendFeeCount = numberOfSendCountsPaidFor +
+                + NEXT_SEND_DELTA_LOWER_LIMIT + secureRandom.nextInt(NEXT_SEND_DELTA_UPPER_LIMIT - NEXT_SEND_DELTA_LOWER_LIMIT);
+      }
+
       // If we already have more sends than that then mark the next send as a fee send ie send a fee ASAP
       if (currentNumberOfSends >= nextSendFeeCount) {
         nextSendFeeCount = currentNumberOfSends;
@@ -269,7 +280,6 @@ public class FeeService {
       }
 
     } else {
-
       // User has not incurred a fee or has underpaid - check for a forced payment due to emptying wallet
       if (forceNow) {
 
