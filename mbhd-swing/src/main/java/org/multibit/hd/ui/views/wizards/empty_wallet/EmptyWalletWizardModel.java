@@ -286,6 +286,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
       password,
       feeState,
       true);
+    sendRequestSummary.setNotes(Optional.of(Languages.safeText(MessageKey.EMPTY_WALLET_TITLE)));
 
     log.debug("Emptying wallet with: {}", sendRequestSummary);
     bitcoinNetworkService.send(sendRequestSummary);

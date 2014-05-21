@@ -227,10 +227,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     // Create a transactionInfo to match the event created
     TransactionInfo transactionInfo = new TransactionInfo();
     transactionInfo.setHash(transactionCreationEvent.getTransactionId());
-    String note = getNotes();
-    if (note == null) {
-      note = "";
-    }
+    String note = transactionCreationEvent.getNotes().or("");
     transactionInfo.setNote(note);
 
     // Append miner's fee info
@@ -323,6 +320,11 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
       password,
       feeState,
       emptyWallet);
+    if (confirmPanelModel.getNotes() != null) {
+      sendRequestSummary.setNotes(Optional.of(confirmPanelModel.getNotes()));
+    } else {
+      sendRequestSummary.setNotes(Optional.<String>absent());
+    }
 
     log.debug("Just about to send bitcoin: {}", sendRequestSummary);
     bitcoinNetworkService.send(sendRequestSummary);
@@ -389,7 +391,5 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
         .setSatoshis(amount.or(BigInteger.ZERO));
 
     }
-
   }
-
 }

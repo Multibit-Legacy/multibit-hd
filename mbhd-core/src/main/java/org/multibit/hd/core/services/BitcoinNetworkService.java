@@ -347,6 +347,7 @@ public class BitcoinNetworkService extends AbstractService {
         sendRequestSummary.getFeeState(),
         false
       );
+      emptyWalletSendRequestSummary.setNotes(sendRequestSummary.getNotes());
       emptyWalletSendRequestSummary.setKeyParameter(sendRequestSummary.getKeyParameter().get());
 
       // Attempt to build and append the send request as if it were standard
@@ -412,8 +413,8 @@ public class BitcoinNetworkService extends AbstractService {
         sendRequestSummary.getChangeAddress(),
         false,
         CoreMessageKey.THE_ERROR_WAS.getKey(),
-        new String[]{e.getClass().getCanonicalName() + " " + e.getMessage()}));
-
+        new String[]{e.getClass().getCanonicalName() + " " + e.getMessage()},
+        sendRequestSummary.getNotes()));
     }
 
     // Must have failed to be here
@@ -478,7 +479,8 @@ public class BitcoinNetworkService extends AbstractService {
         sendRequestSummary.getChangeAddress(),
         false,
         CoreMessageKey.NO_ACTIVE_WALLET.getKey(),
-        new String[]{""}
+        new String[]{""},
+        sendRequestSummary.getNotes()
       ));
 
       // Prevent fall-through to success
@@ -581,7 +583,9 @@ public class BitcoinNetworkService extends AbstractService {
               sendRequestSummary.getChangeAddress(),
               false,
               CoreMessageKey.THE_ERROR_WAS.getKey(),
-              new String[]{e.getClass().getCanonicalName() + " " + e.getMessage()}));
+              new String[]{e.getClass().getCanonicalName() + " " + e.getMessage()},
+              sendRequestSummary.getNotes()
+      ));
 
       // We cannot proceed to broadcast
       return false;
@@ -625,7 +629,8 @@ public class BitcoinNetworkService extends AbstractService {
         sendRequestSummary.getChangeAddress(),
         false,
         CoreMessageKey.THE_ERROR_WAS.getKey(),
-        new String[]{e.getMessage()}));
+        new String[]{e.getMessage()},
+        sendRequestSummary.getNotes()));
 
       // We cannot proceed to broadcast
       return false;
@@ -661,7 +666,8 @@ public class BitcoinNetworkService extends AbstractService {
         sendRequestSummary.getChangeAddress(),
         true,
         null,
-        null
+        null,
+        sendRequestSummary.getNotes()
       ));
 
     } catch (Exception e) {
@@ -679,7 +685,8 @@ public class BitcoinNetworkService extends AbstractService {
         sendRequestSummary.getChangeAddress(),
         false,
         CoreMessageKey.THE_ERROR_WAS.getKey(),
-        new String[]{e.getMessage()}));
+        new String[]{e.getMessage()},
+        sendRequestSummary.getNotes()));
 
       // We cannot proceed to broadcast
       return false;

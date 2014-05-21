@@ -30,6 +30,7 @@ public class SendRequestSummary {
   private Optional<Address> feeAddress = Optional.absent();
   private Optional<KeyParameter> keyParameter = Optional.absent();
   private Optional<Wallet.SendRequest> sendRequest = Optional.absent();
+  private Optional<String> notes = Optional.absent();
 
   /**
    * @param destinationAddress The destination address to send to
@@ -145,6 +146,14 @@ public class SendRequestSummary {
     this.sendRequest = Optional.of(sendRequest);
   }
 
+  public void setNotes(Optional<String> notes) {
+    this.notes = notes;
+  }
+
+  public Optional<String> getNotes() {
+    return notes;
+  }
+
   @Override
   public String toString() {
     return "SendBitcoinData{" +
@@ -154,6 +163,7 @@ public class SendRequestSummary {
       ", feePerKB=" + feePerKB +
       ", password=***" +
       ", feeStateOptional=" + feeState +
+      ", notes = " + notes +
       '}';
   }
 }

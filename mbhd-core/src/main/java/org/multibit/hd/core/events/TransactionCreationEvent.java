@@ -1,6 +1,7 @@
 package org.multibit.hd.core.events;
 
 import com.google.bitcoin.core.Address;
+import com.google.common.base.Optional;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -29,6 +30,8 @@ public class TransactionCreationEvent implements CoreEvent {
 
   private final String transactionCreationFailureReasonKey;
 
+  private final Optional<String> notes;
+
   public TransactionCreationEvent(
     String transactionId,
     BigInteger amount,
@@ -37,7 +40,8 @@ public class TransactionCreationEvent implements CoreEvent {
     Address changeAddress,
     boolean transactionCreationWasSuccessful,
     String transactionCreationFailureReasonKey,
-    String[] transactionCreationFailureReasonData
+    String[] transactionCreationFailureReasonData,
+    Optional<String> notes
   ) {
 
     this.transactionId = transactionId;
@@ -48,6 +52,7 @@ public class TransactionCreationEvent implements CoreEvent {
     this.transactionCreationWasSuccessful = transactionCreationWasSuccessful;
     this.transactionCreationFailureReasonKey = transactionCreationFailureReasonKey;
     this.transactionCreationFailureReasonData = transactionCreationFailureReasonData;
+    this.notes = notes;
   }
 
   private final String[] transactionCreationFailureReasonData;
@@ -81,6 +86,10 @@ public class TransactionCreationEvent implements CoreEvent {
     return transactionId;
   }
 
+  public Optional<String> getNotes() {
+    return notes;
+  }
+
   @Override
   public String toString() {
     return "TransactionCreationEvent{" +
@@ -92,6 +101,7 @@ public class TransactionCreationEvent implements CoreEvent {
       ", transactionId='" + transactionId + '\'' +
       ", transactionCreationFailureReasonKey='" + transactionCreationFailureReasonKey + '\'' +
       ", transactionCreationFailureReasonData=" + Arrays.toString(transactionCreationFailureReasonData) +
+      ", notes=" + notes +
       '}';
   }
 }

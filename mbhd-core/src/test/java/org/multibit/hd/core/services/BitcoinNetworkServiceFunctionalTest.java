@@ -228,6 +228,7 @@ public class BitcoinNetworkServiceFunctionalTest {
         WALLET_PASSWORD,
         Optional.<FeeState>absent(),
         false);
+      sendRequestSummary.setNotes(Optional.of("BitcoinNetworkServiceFunctionalTest"));
       bitcoinNetworkService.send(sendRequestSummary);
 
       // the onBitcoinSentEvent method receives the bitcoinSentEvent once the send has completed
