@@ -75,6 +75,7 @@ public class BackupManagerTest {
     // Wallet manager does not initiate the backup
     BackupManager.INSTANCE.createRollingBackup(walletSummary, password);
     BackupManager.INSTANCE.createLocalBackup(walletSummary.getWalletId(), password);
+    BackupManager.INSTANCE.createCloudBackup(walletSummary.getWalletId(), password);
 
     // Check there are initially a single wallet backup for the wallet id of the created wallet
     List<BackupSummary> localBackups = BackupManager.INSTANCE.getLocalZipBackups(walletSummary.getWalletId());
@@ -91,6 +92,8 @@ public class BackupManagerTest {
     // Backup the wallet.
     // This zips the wallet root directory and adds a timestamp, then saves the file in both the local and cloud backup directories
     File localBackupFile = BackupManager.INSTANCE.createLocalBackup(walletSummary.getWalletId(), password);
+    BackupManager.INSTANCE.createCloudBackup(walletSummary.getWalletId(), password);
+
 
     // Check that a backup copy has been saved in the local backup directory
     localBackups = BackupManager.INSTANCE.getLocalZipBackups(walletSummary.getWalletId());
