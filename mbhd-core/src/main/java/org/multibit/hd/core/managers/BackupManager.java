@@ -288,14 +288,14 @@ public enum BackupManager {
   }
 
   /**
-   * Create a backup of the specified wallet id.
+   * Create a local zip backup of the specified wallet id.
    * The wallet manager is interrogated to find the physical directory where the wallet is stored.
    * The whole directory (except the zip-backups) is then copied and zipped into a timestamped backup file
-   * This is then written to the local and cloud backup directories
+   * This is then written to the local backup directories
    *
    * @return The created local backup as a file
    */
-  public File createLocalAndCloudBackup(WalletId walletId, CharSequence password) throws IOException {
+  public File createLocalBackup(WalletId walletId, CharSequence password) throws IOException {
 
     Preconditions.checkNotNull(applicationDataDirectory);
     Preconditions.checkNotNull(walletId);
@@ -325,20 +325,51 @@ public enum BackupManager {
     File localBackupEncryptedFilename = EncryptedFileReaderWriter.makeBackupAESEncryptedCopyAndDeleteOriginal(new File(localBackupFilename), (String) password, walletSummary.getEncryptedBackupKey());
     log.debug("Created encrypted local zip-backup successfully. Size = " + (localBackupEncryptedFilename).length() + " bytes");
 
-    if (cloudBackupDirectory != null && cloudBackupDirectory.exists()) {
-      String cloudBackupFilename = cloudBackupDirectory.getAbsolutePath() + File.separator + backupFilename;
-      log.debug("Creating cloud zip-backup '" + cloudBackupFilename + "'");
-      ZipFiles.zipFolder(walletRootDirectory.getAbsolutePath(), cloudBackupFilename, false);
-      File cloudBackupEncryptedFilename = EncryptedFileReaderWriter.makeBackupAESEncryptedCopyAndDeleteOriginal(new File(cloudBackupFilename), (String) password, walletSummary.getEncryptedBackupKey());
-
-      log.debug("Created encrypted cloud zip-backup successfully. Size = " + (cloudBackupEncryptedFilename).length() + " bytes");
-    } else {
-      log.debug("No cloud backup made for wallet '" + walletId + "' as no cloudBackupDirectory is set.");
-    }
-
     return localBackupEncryptedFilename;
   }
 
+  /**
+    * Create a cloud backup of the specified wallet id.
+    * The wallet manager is interrogated to find the physical directory where the wallet is stored.
+    * The whole directory (except the zip-backups) is then copied and zipped into a timestamped backup file
+    * This is then written to the cloud backup directories
+    *
+    * @return The created cloud backup as a file or null if nothing was generated
+    */
+   public File createCloudBackup(WalletId walletId, CharSequence password) throws IOException {
+     Preconditions.checkNotNull(applicationDataDirectory);
+     Preconditions.checkNotNull(walletId);
+
+     // Find the wallet root directory for this wallet id
+     File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletId));
+
+     if (!walletRootDirectory.exists()) {
+       throw new IOException("Directory " + walletRootDirectory + " does not exist. Cannot backup.");
+     }
+
+     WalletSummary walletSummary = WalletManager.getOrCreateWalletSummary(walletRootDirectory, walletId);
+
+
+     String backupFilename = WalletManager.WALLET_DIRECTORY_PREFIX
+             + WALLET_ID_SEPARATOR
+             + walletId.toFormattedString()
+             + WALLET_ID_SEPARATOR
+             + Dates.formatBackupDate(Dates.nowUtc())
+             + BACKUP_ZIP_FILE_EXTENSION;
+
+     if (cloudBackupDirectory != null && cloudBackupDirectory.exists()) {
+       String cloudBackupFilename = cloudBackupDirectory.getAbsolutePath() + File.separator + backupFilename;
+       log.debug("Creating cloud zip-backup '" + cloudBackupFilename + "'");
+       ZipFiles.zipFolder(walletRootDirectory.getAbsolutePath(), cloudBackupFilename, false);
+       File cloudBackupEncryptedFilename = EncryptedFileReaderWriter.makeBackupAESEncryptedCopyAndDeleteOriginal(new File(cloudBackupFilename), (String) password, walletSummary.getEncryptedBackupKey());
+
+       log.debug("Created encrypted cloud zip-backup successfully. Size = " + (cloudBackupEncryptedFilename).length() + " bytes");
+       return cloudBackupEncryptedFilename;
+     } else {
+       log.debug("No cloud backup made for wallet '" + walletId + "' as no cloudBackupDirectory is set.");
+       return null;
+     }
+   }
 
   /**
    * Load a backup file, copying all the backup files to the appropriate wallet root directory
@@ -368,7 +399,7 @@ public enum BackupManager {
 
     // TODO backup original - needs password
     //if (walletRootDirectory.exists()) {
-    //  createLocalAndCloudBackup(walletId, seed);
+    //  createLocalBackup(walletId, seed);
     //}
 
     File temporaryFile = null;

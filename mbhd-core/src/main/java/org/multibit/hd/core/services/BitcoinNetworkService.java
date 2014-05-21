@@ -17,7 +17,6 @@ import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.TransactionCreationEvent;
-import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.BlockStoreManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -374,11 +373,6 @@ public class BitcoinNetworkService extends AbstractService {
 
     // Must be OK to be here
     log.debug("Send coins has completed");
-
-    // Schedule backups
-    BackupService.scheduleRollingBackup();
-    BackupService.scheduleLocalZipBackup();
-    BackupService.scheduleCloudZipBackup();
 
     return true;
 
@@ -982,8 +976,11 @@ public class BitcoinNetworkService extends AbstractService {
         log.debug("Created AES encrypted wallet as file '{}', size {}", encryptedAESCopy == null ? "null" : encryptedAESCopy.getAbsolutePath(),
           encryptedAESCopy == null ? "null" : encryptedAESCopy.length());
 
-        BackupManager.INSTANCE.createRollingBackup(walletSummary, walletSummary.getPassword());
-        BackupManager.INSTANCE.createLocalAndCloudBackup(walletId, walletSummary.getPassword());
+        BackupService backupService = CoreServices.getOrCreateBackupService();
+        backupService.rememberWalletSummaryAndPasswordForRollingBackup(walletSummary, walletSummary.getPassword());
+        backupService.rememberWalletIdAndPasswordForLocalZipBackup(walletSummary.getWalletId(), walletSummary.getPassword());
+        backupService.rememberWalletIdAndPasswordForCloudZipBackup(walletSummary.getWalletId(), walletSummary.getPassword());
+
       } catch (IOException ioe) {
         log.error("Could not write wallet and backups for wallet with id '" + walletId + "' successfully. The error was '" + ioe.getMessage() + "'");
       }
