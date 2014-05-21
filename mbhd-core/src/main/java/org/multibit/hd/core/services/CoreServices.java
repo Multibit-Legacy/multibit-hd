@@ -99,6 +99,11 @@ public class CoreServices {
    */
   private static Map<WalletId, HistoryService> historyServiceMap = Maps.newHashMap();
 
+  /**
+   * Keep track of the backup service
+   */
+  private static BackupService backupService;
+
   static {
 
     // Order is important here
@@ -218,6 +223,18 @@ public class CoreServices {
     log.debug("Creating new exchange ticker service");
     return new ExchangeTickerService(bitcoinConfiguration);
 
+  }
+
+  /**
+   * @return Create a new backup service or return the extant one
+   */
+  public static BackupService getOrCreateBackupService() {
+    log.debug("Getting backup service");
+    if (backupService == null) {
+      backupService = new BackupService();
+    }
+
+    return backupService;
   }
 
   /**

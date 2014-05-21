@@ -374,6 +374,12 @@ public class BitcoinNetworkService extends AbstractService {
 
     // Must be OK to be here
     log.debug("Send coins has completed");
+
+    // Schedule backups
+    BackupService.scheduleRollingBackup();
+    BackupService.scheduleLocalZipBackup();
+    BackupService.scheduleCloudZipBackup();
+
     return true;
 
   }

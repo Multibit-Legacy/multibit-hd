@@ -15,6 +15,7 @@ import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.BackupService;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.ExchangeTickerService;
@@ -497,6 +498,8 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
     }
     BackupManager.INSTANCE.initialise(applicationDataDirectory, cloudBackupLocation);
 
+    BackupService backupService = CoreServices.getOrCreateBackupService();
+    backupService.start();
   }
 
   /**
