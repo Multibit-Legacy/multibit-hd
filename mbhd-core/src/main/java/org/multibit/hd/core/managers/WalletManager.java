@@ -92,7 +92,7 @@ public enum WalletManager implements WalletEventListener {
     }
   };
 
-  private static final int AUTO_SAVE_DELAY = 20; // Seconds
+  private static final int AUTO_SAVE_DELAY = 30; // Seconds
 
   // TODO (GR) Refactor this to be injected
   private static final NetworkParameters networkParameters = BitcoinNetwork.current().get();
