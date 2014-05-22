@@ -2,11 +2,8 @@ package org.multibit.hd.ui.views.components.enter_seed_phrase;
 
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.views.components.*;
-import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
-import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -171,23 +168,15 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
         JButton button = (JButton) e.getSource();
 
         if (asClearText) {
-          AwesomeDecorator.applyIcon(
-            AwesomeIcon.EYE,
-            button,
-            true,
-            MultiBitUI.NORMAL_ICON_SIZE
-          );
+
+          ButtonDecorator.applyShow(button);
 
           // Ensure the model matches the clear contents
           updateModelFromView();
 
         } else {
-          AwesomeDecorator.applyIcon(
-            AwesomeIcon.EYE_SLASH,
-            button,
-            true,
-            MultiBitUI.NORMAL_ICON_SIZE
-          );
+
+          ButtonDecorator.applyHide(button);
 
           // Do not update the model with the hidden contents (they are meaningless)
 

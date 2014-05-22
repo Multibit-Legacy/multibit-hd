@@ -2,12 +2,9 @@ package org.multibit.hd.ui.views.components.confirm_password;
 
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
-import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
-import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -128,20 +125,9 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
         JButton button = (JButton) e.getSource();
 
         if (asClearText) {
-          AwesomeDecorator.applyIcon(
-            AwesomeIcon.EYE,
-            button,
-            true,
-            MultiBitUI.NORMAL_ICON_SIZE
-          );
-
+          ButtonDecorator.applyShow(button);
         } else {
-          AwesomeDecorator.applyIcon(
-            AwesomeIcon.EYE_SLASH,
-            button,
-            true,
-            MultiBitUI.NORMAL_ICON_SIZE
-          );
+          ButtonDecorator.applyHide(button);
         }
         asClearText = !asClearText;
 

@@ -2,11 +2,8 @@ package org.multibit.hd.ui.views.components.display_seed_phrase;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseSize;
-import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.utils.PrintingUtils;
 import org.multibit.hd.ui.views.components.*;
-import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
-import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -117,20 +114,13 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
         JButton button = (JButton) e.getSource();
 
         if (asClearText) {
-          AwesomeDecorator.applyIcon(
-            AwesomeIcon.EYE,
-            button,
-            true,
-            MultiBitUI.NORMAL_ICON_SIZE
-          );
+
+          ButtonDecorator.applyShow(button);
 
         } else {
-          AwesomeDecorator.applyIcon(
-            AwesomeIcon.EYE_SLASH,
-            button,
-            true,
-            MultiBitUI.NORMAL_ICON_SIZE
-          );
+
+          ButtonDecorator.applyHide(button);
+
         }
 
         asClearText = !asClearText;

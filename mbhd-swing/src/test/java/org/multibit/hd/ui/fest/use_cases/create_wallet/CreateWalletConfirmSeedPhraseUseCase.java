@@ -148,7 +148,7 @@ public class CreateWalletConfirmSeedPhraseUseCase extends AbstractFestUseCase {
 
     // Show the phrase
     window
-      .button(MessageKey.HIDE.getKey())
+      .button(MessageKey.SHOW.getKey())
       .click();
 
     String seedPhrase3 = window
