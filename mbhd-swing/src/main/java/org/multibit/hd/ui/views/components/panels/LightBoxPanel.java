@@ -74,7 +74,7 @@ public class LightBoxPanel extends JPanel {
 
     // Center the light box panel in the frame
     int x = (currentFrameWidth - screenPanel.getWidth()) / 2;
-    int y = ((currentFrameHeight - screenPanel.getHeight()) / 2)-10;
+    int y = ((currentFrameHeight - screenPanel.getHeight()) / 2) - 10; // The 10 offset is a magic number
 
     // Avoid any negative values if resizing gets cramped
     x = x < 0 ? 0 : x;
