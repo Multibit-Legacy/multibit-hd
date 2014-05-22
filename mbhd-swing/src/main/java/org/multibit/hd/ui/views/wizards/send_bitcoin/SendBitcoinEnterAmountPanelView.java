@@ -153,8 +153,6 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
       .getRecipient()
       .isPresent();
 
-    log.debug("Bitcoin amount: {} Recipient: {}", bitcoinAmountOK, recipientOK);
-
     return bitcoinAmountOK && recipientOK;
   }
 }
