@@ -206,14 +206,23 @@ public class PersistentHistoryService implements HistoryService {
 
   @Override
   public void writeHistory() throws HistorySaveException {
+
+    Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().isPresent(), "Current wallet summary must be present");
+    Preconditions.checkNotNull(protobufSerializer, "'protobufSerializer' must be present");
+
     log.debug("Writing {} history(s)", history.size());
+
     try {
       ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
       protobufSerializer.writeHistoryEntries(history, byteArrayOutputStream);
-      EncryptedFileReaderWriter.encryptAndWrite(byteArrayOutputStream.toByteArray(), WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(), backingStoreFile);
+      EncryptedFileReaderWriter.encryptAndWrite(
+        byteArrayOutputStream.toByteArray(),
+        WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(),
+        backingStoreFile
+      );
 
     } catch (Exception e) {
-      throw new HistorySaveException("Could not save history db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");
+      throw new HistorySaveException("Could not save history db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.", e);
     }
   }
 
