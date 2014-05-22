@@ -70,6 +70,7 @@ public class MultiBitHD {
 
     }
 
+    log.debug("Bootstrap complete.");
 
   }
 
@@ -278,8 +279,12 @@ public class MultiBitHD {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
+
         // Provide a backdrop to the user and trigger the showing of the wizard
         mainView.refresh();
+
+        log.debug("Initialising UI: Refresh complete");
+
       }
     });
 

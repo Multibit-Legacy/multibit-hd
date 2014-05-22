@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.services.CoreServices;
@@ -20,6 +21,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.List;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -42,6 +44,7 @@ public class MainView extends JFrame {
   // Need to track if a wizard was showing before a refresh occurred
   private boolean showExitingWelcomeWizard = false;
   private boolean showExitingPasswordWizard = false;
+  private boolean isCentered = false;
 
   public MainView() {
 
@@ -49,6 +52,9 @@ public class MainView extends JFrame {
 
     // Define the minimum size for the frame
     setMinimumSize(new Dimension(MultiBitUI.UI_MIN_WIDTH, MultiBitUI.UI_MIN_HEIGHT));
+
+    // Set the starting size
+    setSize(new Dimension(MultiBitUI.UI_MIN_WIDTH, MultiBitUI.UI_MIN_HEIGHT));
 
     // Provide all panels with a reference to the main frame
     Panels.applicationFrame = this;
@@ -74,40 +80,13 @@ public class MainView extends JFrame {
 
         Rectangle bounds = getBounds();
         String lastFrameBounds = String.format("%d,%d,%d,%d", bounds.x, bounds.y, bounds.width, bounds.height);
+
+        log.debug("Update last frame bounds: {}", lastFrameBounds);
+
         Configurations.currentConfiguration.getApplication().setLastFrameBounds(lastFrameBounds);
 
       }
     });
-
-  }
-
-  /**
-   * <p>Resize the frame to the last bounds</p>
-   */
-  private void resizeToLastFrameBounds() {
-
-    Rectangle newBounds = new Rectangle(0, 0, MultiBitUI.UI_MIN_WIDTH, MultiBitUI.UI_MIN_HEIGHT);
-
-    String frameDimension = Configurations.currentConfiguration.getApplication().getLastFrameBounds();
-    if (frameDimension != null) {
-      String[] lastFrameDimension = frameDimension.split(",");
-      if (lastFrameDimension.length == 4) {
-        try {
-          int x = Integer.valueOf(lastFrameDimension[0]);
-          int y = Integer.valueOf(lastFrameDimension[1]);
-          int w = Integer.valueOf(lastFrameDimension[2]);
-          int h = Integer.valueOf(lastFrameDimension[3]);
-          newBounds = new Rectangle(x, y, w, h);
-          System.out.println("Rectangle: " + newBounds.toString());
-        } catch (NumberFormatException e) {
-          log.error("Incorrect format in configuration - using defaults");
-        }
-      }
-    }
-
-    // Place the frame in the desired position (setBounds() does not work)
-    setLocation(newBounds.x, newBounds.y);
-    setPreferredSize(new Dimension(newBounds.width, newBounds.height));
 
   }
 
@@ -155,10 +134,76 @@ public class MainView extends JFrame {
 
     }
 
+    log.debug("Pack and show UI");
+
     // Tidy up and show
     pack();
+
+    if (isCentered) {
+
+      GraphicsDevice defaultScreen = getGraphicsDevices().get(0);
+
+      GraphicsConfiguration defaultConfiguration = defaultScreen.getDefaultConfiguration();
+
+      Rectangle sb = defaultConfiguration.getBounds();
+      setBounds(
+        sb.x + sb.width / 2 - getWidth() / 2,
+        sb.y + sb.height / 2 - getHeight() / 2,
+        getWidth(),
+        getHeight()
+      );
+
+    }
+
     setVisible(true);
 
+    log.debug("Refresh complete");
+
+  }
+
+  /**
+   * @param show True if the exiting welcome wizard should be shown during the next refresh
+   */
+  public void setShowExitingWelcomeWizard(boolean show) {
+
+    showExitingWelcomeWizard = show;
+
+  }
+
+  /**
+   * @param show True if the exiting password wizard should be shown during the next refresh
+   */
+  public void setShowExitingPasswordWizard(boolean show) {
+
+    showExitingPasswordWizard = show;
+
+  }
+
+  /**
+   * Attempt to get focus to the sidebar
+   */
+  public void sidebarRequestFocus() {
+
+    sidebarView.requestFocus();
+  }
+
+  /**
+   * Update the sidebar wallet name tree node
+   *
+   * @param walletName The wallet name
+   */
+  public void sidebarWalletName(String walletName) {
+
+    sidebarView.updateWalletTreeNode(walletName);
+
+  }
+
+  /**
+   * Update the detail view to reflect the new wallet
+   */
+  public void detailViewAfterWalletOpened() {
+
+    detailView.afterWalletOpened();
   }
 
   /**
@@ -244,48 +289,101 @@ public class MainView extends JFrame {
   }
 
   /**
-   * @param show True if the exiting welcome wizard should be shown during the next refresh
+   * <p>Resize the frame to the last bounds</p>
    */
-  public void setShowExitingWelcomeWizard(boolean show) {
+  private void resizeToLastFrameBounds() {
 
-    showExitingWelcomeWizard = show;
+    String frameDimension = Configurations.currentConfiguration.getApplication().getLastFrameBounds();
+
+    if (frameDimension != null) {
+
+      String[] lastFrameDimension = frameDimension.split(",");
+      if (lastFrameDimension.length == 4) {
+
+        log.debug("Using absolute coordinates");
+
+        try {
+          int x = Integer.valueOf(lastFrameDimension[0]);
+          int y = Integer.valueOf(lastFrameDimension[1]);
+          int w = Integer.valueOf(lastFrameDimension[2]);
+          int h = Integer.valueOf(lastFrameDimension[3]);
+          Rectangle newBounds = new Rectangle(x, y, w, h);
+
+          // Not centered
+          isCentered = false;
+
+          // Place the frame in the desired position (setBounds() does not work)
+          setLocation(newBounds.x, newBounds.y);
+          setPreferredSize(new Dimension(newBounds.width, newBounds.height));
+
+          return;
+
+        } catch (NumberFormatException e) {
+          log.error("Incorrect format in configuration - using defaults", e);
+        }
+
+      } else if (lastFrameDimension.length == 2) {
+
+        log.debug("Using partial coordinates");
+
+        try {
+          int w = Integer.valueOf(lastFrameDimension[0]);
+          int h = Integer.valueOf(lastFrameDimension[1]);
+          Dimension newBounds = new Dimension(w, h);
+
+          // Center in main screen
+          isCentered = true;
+
+          // Place the frame in the desired position (setBounds() does not work)
+          setPreferredSize(new Dimension(newBounds.width, newBounds.height));
+
+          return;
+
+        } catch (NumberFormatException e) {
+          log.error("Incorrect format in configuration - using defaults", e);
+        }
+
+      }
+
+    }
+
+    log.debug("Using default coordinates");
+
+    // By default center in main screen
+    isCentered = true;
+
+    // Set preferred size based on internal defaults
+    setPreferredSize(new Dimension(MultiBitUI.UI_MIN_WIDTH, MultiBitUI.UI_MIN_HEIGHT));
 
   }
 
   /**
-   * @param show True if the exiting password wizard should be shown during the next refresh
+   * @return The available graphics devices with the default in position 0
    */
-  public void setShowExitingPasswordWizard(boolean show) {
+  private List<GraphicsDevice> getGraphicsDevices() {
 
-    showExitingPasswordWizard = show;
+    List<GraphicsDevice> devices = Lists.newArrayList();
 
-  }
+    // Get the default screen device
+    GraphicsDevice defaultScreenDevice = GraphicsEnvironment
+      .getLocalGraphicsEnvironment()
+      .getDefaultScreenDevice();
 
-  /**
-   * Attempt to get focus to the sidebar
-   */
-  public void sidebarRequestFocus() {
+    for (GraphicsDevice gd : GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()) {
 
-    sidebarView.requestFocus();
-  }
+      if (GraphicsDevice.TYPE_RASTER_SCREEN == gd.getType()) {
 
-  /**
-   * Update the sidebar wallet name tree node
-   *
-   * @param walletName The wallet name
-   */
-  public void sidebarWalletName(String walletName) {
+        if (defaultScreenDevice == gd) {
+          devices.add(0, gd);
+        } else {
+          devices.add(gd);
+        }
+      }
+    }
 
-    sidebarView.updateWalletTreeNode(walletName);
+    Preconditions.checkState(!devices.isEmpty(),"'devices' must not be empty. Is machine in headless mode?");
 
-  }
-
-  /**
-   * Update the detail view to reflect the new wallet
-   */
-  public void detailViewAfterWalletOpened() {
-
-    detailView.afterWalletOpened();
+    return devices;
   }
 
 }

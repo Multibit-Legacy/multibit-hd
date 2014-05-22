@@ -111,6 +111,11 @@ public interface MultiBitUI {
    */
   float TABLE_TEXT_FONT_SIZE = 13.0f;
 
+  /**
+   * Font size for combo box text
+   */
+  float COMBO_BOX_TEXT_FONT_SIZE = 15.0f;
+
   // Icons
 
   /**
