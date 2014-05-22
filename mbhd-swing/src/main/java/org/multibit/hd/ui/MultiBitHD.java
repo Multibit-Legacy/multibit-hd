@@ -1,5 +1,6 @@
 package org.multibit.hd.ui;
 
+import com.google.common.base.Preconditions;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
@@ -245,6 +246,8 @@ public class MultiBitHD {
   public MainView initialiseUIViews() {
 
     log.debug("Initialising UI...");
+
+    Preconditions.checkNotNull(mainController, "'mainController' must be present. FEST will cause this if another instance is running.");
 
     // Ensure that we are using the configured theme
     ThemeKey themeKey = ThemeKey.valueOf(Configurations.currentConfiguration.getApplication().getCurrentTheme());
