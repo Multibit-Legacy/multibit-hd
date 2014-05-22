@@ -63,16 +63,16 @@ public class BackupService extends AbstractService {
    * This is the fastest tick used for backups.
    * Everything else is done on a multiple of this
    */
-  private static final int TICK_TIME_SECONDS = 30;   // TODO testing is set faster - want 120 seconds;
+  private static final int TICK_TIME_SECONDS = 120;
   /**
    * The slowdown rate for performing local zip backups
    */
-  private static final int LOCAL_ZIP_BACKUP_MODULO = 2; // TODO testing is set faster - should be x5 = every 10 mins
+  private static final int LOCAL_ZIP_BACKUP_MODULO = 5;
   /**
    * The slowdown rate for performing local zip backups
    */
 
-  private static final int CLOUD_ZIP_BACKUP_MODULO = 4; // TODO testing is set faster - should be x15 = every 30 mins
+  private static final int CLOUD_ZIP_BACKUP_MODULO = 15;
 
   private static final Logger log = LoggerFactory.getLogger(BackupService.class);
 
