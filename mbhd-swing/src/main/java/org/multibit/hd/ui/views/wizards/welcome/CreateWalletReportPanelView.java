@@ -232,7 +232,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
 
       // Attempt to create a backup
       if (cloudBackupLocationStatus) {
-        BackupManager.INSTANCE.initialise(applicationDataDirectory, new File(cloudBackupLocation));
+        BackupManager.INSTANCE.initialise(applicationDataDirectory, Optional.of(new File(cloudBackupLocation)));
       } else {
         BackupManager.INSTANCE.initialise(applicationDataDirectory, null);
       }
@@ -297,6 +297,5 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       spinner.setVisible(false);
       ExceptionHandler.handleThrowable(e);
     }
-
   }
 }

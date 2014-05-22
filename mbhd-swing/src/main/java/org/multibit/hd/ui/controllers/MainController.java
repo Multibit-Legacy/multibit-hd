@@ -496,7 +496,7 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
         }
       }
     }
-    BackupManager.INSTANCE.initialise(applicationDataDirectory, cloudBackupLocation);
+    BackupManager.INSTANCE.initialise(applicationDataDirectory, Optional.of(cloudBackupLocation));
 
     BackupService backupService = CoreServices.getOrCreateBackupService();
     backupService.start();

@@ -1,5 +1,6 @@
 package org.multibit.hd.core.managers;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -61,15 +62,14 @@ public enum BackupManager {
   private File applicationDataDirectory;
 
   // Where the cloud backups are stored (this is typically specified by the user and is a SpiderOak etc sync directory)
-  private File cloudBackupDirectory;
+  private Optional<File> cloudBackupDirectory;
 
   /**
    * Initialise the backup manager to use the specified cloudBackupDirectory.
    * All the cloud backups will be written and read from this directory.
    * Note that each wallet also have a local copy of the zip backups.
-   * TODO (GR) cloud backup must be optional
    */
-  public void initialise(File applicationDataDirectory, File cloudBackupDirectory) {
+  public void initialise(File applicationDataDirectory, Optional<File> cloudBackupDirectory) {
     Preconditions.checkNotNull(applicationDataDirectory);
 
     this.applicationDataDirectory = applicationDataDirectory;
@@ -119,9 +119,6 @@ public enum BackupManager {
    * @return The wallet backups available
    */
   public List<BackupSummary> getWalletBackups(WalletId walletId, File directoryName) {
-
-    // TODO would also be nice return them sorted by age
-
     List<BackupSummary> walletBackups = Lists.newArrayList();
 
     if (directoryName == null || !directoryName.exists()) {
@@ -357,8 +354,8 @@ public enum BackupManager {
              + Dates.formatBackupDate(Dates.nowUtc())
              + BACKUP_ZIP_FILE_EXTENSION;
 
-     if (cloudBackupDirectory != null && cloudBackupDirectory.exists()) {
-       String cloudBackupFilename = cloudBackupDirectory.getAbsolutePath() + File.separator + backupFilename;
+     if (cloudBackupDirectory.isPresent() && cloudBackupDirectory.get().exists()) {
+       String cloudBackupFilename = cloudBackupDirectory.get().getAbsolutePath() + File.separator + backupFilename;
        log.debug("Creating cloud zip-backup '" + cloudBackupFilename + "'");
        ZipFiles.zipFolder(walletRootDirectory.getAbsolutePath(), cloudBackupFilename, false);
        File cloudBackupEncryptedFilename = EncryptedFileReaderWriter.makeBackupAESEncryptedCopyAndDeleteOriginal(new File(cloudBackupFilename), (String) password, walletSummary.getEncryptedBackupKey());
@@ -397,11 +394,6 @@ public enum BackupManager {
     // Make a backup of all the current file in the wallet root directory if it exists
     File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletId));
 
-    // TODO backup original - needs password
-    //if (walletRootDirectory.exists()) {
-    //  createLocalBackup(walletId, seed);
-    //}
-
     File temporaryFile = null;
     try {
       // Read the encrypted file in.
@@ -433,5 +425,4 @@ public enum BackupManager {
       }
     }
   }
-
 }
