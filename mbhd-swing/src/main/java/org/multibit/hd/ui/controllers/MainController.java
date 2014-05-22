@@ -481,23 +481,20 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
    * <p>Start the backup manager</p>
    */
   private void handleBackupManager() {
-
     // Locate the installation directory
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-
     // Initialise backup (must be before Bitcoin network starts and on the main thread)
-    File cloudBackupLocation = null;
+    Optional<File> cloudBackupLocation = Optional.absent();
     if (Configurations.currentConfiguration != null) {
       String cloudBackupLocationString = Configurations.currentConfiguration.getApplication().getCloudBackupLocation();
       if (cloudBackupLocationString != null && !"".equals(cloudBackupLocationString)) {
         File cloudBackupLocationAsFile = new File(cloudBackupLocationString);
         if (cloudBackupLocationAsFile.exists()) {
-          cloudBackupLocation = cloudBackupLocationAsFile;
+          cloudBackupLocation = Optional.of(cloudBackupLocationAsFile);
         }
       }
     }
-    BackupManager.INSTANCE.initialise(applicationDataDirectory, Optional.of(cloudBackupLocation));
-
+    BackupManager.INSTANCE.initialise(applicationDataDirectory, cloudBackupLocation);
     BackupService backupService = CoreServices.getOrCreateBackupService();
     backupService.start();
   }
@@ -633,19 +630,27 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
     SafeExecutors.newSingleThreadExecutor("wallet-services").submit(new Runnable() {
       @Override
       public void run() {
+        try {
+          // Get a ticker going
+          log.debug("Starting exchange...");
+          handleExchange();
 
-        // Get a ticker going
-        handleExchange();
+          // Start the backup manager
+          log.debug("Starting backup manager...");
+          handleBackupManager();
 
-        // Start the backup manager
-        handleBackupManager();
+          // Check for Bitcoin URIs
+          log.debug("Check for Bitcoin URIs...");
+          handleBitcoinURIAlert();
 
-        // Check for Bitcoin URIs
-        handleBitcoinURIAlert();
-
-        // Lastly start the Bitcoin network
-        handleBitcoinNetwork();
-
+          // Lastly start the Bitcoin network
+          log.debug("Starting Bitcoin network...");
+          handleBitcoinNetwork();
+        } catch (Exception e) {
+          // TODO localise and put on UI
+          log.error("Services did not start ok. Error was {}", e.getClass().getCanonicalName() + " " + e.getMessage());
+          e.printStackTrace();
+        }
       }
     });
   }
