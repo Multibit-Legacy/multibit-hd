@@ -18,6 +18,7 @@ import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.Popovers;
 import org.multibit.hd.ui.views.layouts.WizardCardLayout;
 import org.multibit.hd.ui.views.wizards.password.PasswordState;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,10 +98,16 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
 
     }
 
-    // Ensure the wizard panel has size
-    wizardScreenHolder.setMinimumSize(new Dimension(MultiBitUI.WIZARD_MIN_WIDTH, MultiBitUI.WIZARD_MIN_HEIGHT));
-    wizardScreenHolder.setPreferredSize(new Dimension(MultiBitUI.WIZARD_MIN_WIDTH, MultiBitUI.WIZARD_MIN_HEIGHT));
-    wizardScreenHolder.setSize(new Dimension(MultiBitUI.WIZARD_MIN_WIDTH, MultiBitUI.WIZARD_MIN_HEIGHT));
+    // Ensure the wizard panel has appropriate size
+    if (wizardModel instanceof WelcomeWizardModel) {
+      wizardScreenHolder.setMinimumSize(new Dimension(MultiBitUI.WIZARD_MIN_WIDTH, MultiBitUI.WELCOME_WIZARD_MIN_HEIGHT));
+      wizardScreenHolder.setPreferredSize(new Dimension(MultiBitUI.WIZARD_MIN_WIDTH, MultiBitUI.WELCOME_WIZARD_MIN_HEIGHT));
+      wizardScreenHolder.setSize(new Dimension(MultiBitUI.WIZARD_MIN_WIDTH, MultiBitUI.WELCOME_WIZARD_MIN_HEIGHT));
+    } else {
+      wizardScreenHolder.setMinimumSize(new Dimension(MultiBitUI.WIZARD_MIN_WIDTH, MultiBitUI.WIZARD_MIN_HEIGHT));
+      wizardScreenHolder.setPreferredSize(new Dimension(MultiBitUI.WIZARD_MIN_WIDTH, MultiBitUI.WIZARD_MIN_HEIGHT));
+      wizardScreenHolder.setSize(new Dimension(MultiBitUI.WIZARD_MIN_WIDTH, MultiBitUI.WIZARD_MIN_HEIGHT));
+    }
 
     // Show the panel specified by the initial state
     show(wizardModel.getPanelName());

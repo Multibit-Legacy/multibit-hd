@@ -60,7 +60,7 @@ public class CreateWalletConfirmSeedPhrasePanelView extends AbstractWizardPanelV
     contentPanel.setLayout(new MigLayout(
       Panels.migLayout("fill,insets 0,hidemode 1"),
       "[]", // Column constraints
-      "[][]" // Row constraints
+      "[][shrink]" // Row constraints
     ));
 
     contentPanel.add(Panels.newConfirmSeedPhrase(), "wrap");

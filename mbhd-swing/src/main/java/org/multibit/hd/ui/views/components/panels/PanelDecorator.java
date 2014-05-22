@@ -45,7 +45,7 @@ public class PanelDecorator {
     MigLayout layout = new MigLayout(
       Panels.migLayout("fill,insets 15"),
       "[][][][]", // Column constraints
-      "[shrink]10[grow]10[]" // Row constraints
+      "[]10[grow]10[]" // Row constraints
     );
     wizardScreenPanel.setLayout(layout);
 

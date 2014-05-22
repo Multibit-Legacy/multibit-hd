@@ -66,12 +66,15 @@ public class LightBoxPanel extends JPanel {
     int currentFrameWidth = Panels.applicationFrame.getWidth();
     int currentFrameHeight = Panels.applicationFrame.getHeight();
 
+    Rectangle bounds = Panels.applicationFrame.getBounds();
+
+
     // Ensure this panel covers all the available frame area allowing for fast dragging
     setSize(currentFrameWidth * 2, currentFrameHeight * 2);
 
     // Center the light box panel in the frame
     int x = (currentFrameWidth - screenPanel.getWidth()) / 2;
-    int y = (currentFrameHeight - screenPanel.getHeight()) / 2;
+    int y = ((currentFrameHeight - screenPanel.getHeight()) / 2)-10;
 
     // Avoid any negative values if resizing gets cramped
     x = x < 0 ? 0 : x;

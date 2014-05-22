@@ -31,7 +31,7 @@ public class ApplicationConfiguration {
    * Good default width and height for centered initial screen and balance displayed
    * Arranged as either W,H (centered) or X,Y,W,H (absolute)
    */
-  private String lastFrameBounds = "1000,620";
+  private String lastFrameBounds = "1000,650";
 
   private String sidebarWidth = "180";
 
