@@ -126,6 +126,9 @@ public class ComboBoxes {
     // Ensure that keyboard navigation does not trigger action events
     comboBox.putClientProperty("JComboBox.isTableCellEditor", Boolean.TRUE);
 
+    // Increase border insets to create better visual clarity
+    comboBox.setBorder(BorderFactory.createEmptyBorder(5,5,5,0));
+
     return comboBox;
 
   }
@@ -517,9 +520,13 @@ public class ComboBoxes {
     // Ensure it is accessible
     AccessibilityDecorator.apply(comboBox, MessageKey.RECIPIENT);
 
+    // Remove border
+    comboBox.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+
     // Ensure we start with nothing selected (must come before editor is set)
     comboBox.setSelectedIndex(-1);
 
+    // Allow editing
     comboBox.setEditable(true);
 
     // Use a recipient editor to force use of the name field
