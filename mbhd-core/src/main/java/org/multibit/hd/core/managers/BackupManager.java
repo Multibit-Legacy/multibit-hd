@@ -27,6 +27,11 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,13 +53,15 @@ public enum BackupManager {
   public static final String ROLLING_BACKUP_DIRECTORY_NAME = "rolling-backup";
   public static final int MAXIMUM_NUMBER_OF_ROLLING_BACKUPS = 4;
 
-  // Backup suffix format is "yyyyMMddHHmmss"
   public static final String REGEX_FOR_TIMESTAMP_AND_WALLET_AND_AES_SUFFIX = ".*-\\d{14}\\.wallet\\.aes$";
 
   public static final String LOCAL_ZIP_BACKUP_DIRECTORY_NAME = "zip-backup";
-  public static final int MAXIMUM_NUMBER_OF_ZIP_BACKUPS = 60; // Chosen so that you will have about weekly backups for a year, fortnightly over two years.
+  public static final int MAXIMUM_NUMBER_OF_ZIP_BACKUPS = 15; // TODO 15 // Chosen so that you will have about weekly backups for a year, fortnightly over two years.
   public static final int NUMBER_OF_FIRST_WALLET_ZIP_BACKUPS_TO_ALWAYS_KEEP = 2;
   public static final int NUMBER_OF_LAST_WALLET_ZIP_BACKUPS_TO_ALWAYS_KEEP = 8; // Must be at least 1.
+
+  public static final String BACKUP_TIMESTAMP_SUFFIX_FORMAT = "yyyyMMddHHmmss";
+  private DateFormat dateFormat;
 
   private static final Logger log = LoggerFactory.getLogger(BackupManager.class);
 
@@ -171,7 +178,6 @@ public enum BackupManager {
    * @return a list of filenames of the rolling backups, oldest first
    */
   public List<File> getRollingBackups(WalletId walletId) {
-
     Preconditions.checkNotNull(walletId);
 
     // Calculate the directory the rolling backups are stored in for this wallet id
@@ -234,7 +240,6 @@ public enum BackupManager {
    * @throws java.io.IOException if the wallet backup could not be created
    */
   public File createRollingBackup(WalletSummary walletSummary, CharSequence password) throws IOException {
-
     Preconditions.checkNotNull(walletSummary, "'walletSummary' must be present");
     Preconditions.checkNotNull(walletSummary.getWallet(), "'wallet' must be present");
     Preconditions.checkNotNull(walletSummary.getWalletId(), "'walletId' must be present");
@@ -293,7 +298,6 @@ public enum BackupManager {
    * @return The created local backup as a file
    */
   public File createLocalBackup(WalletId walletId, CharSequence password) throws IOException {
-
     Preconditions.checkNotNull(applicationDataDirectory);
     Preconditions.checkNotNull(walletId);
 
@@ -321,6 +325,9 @@ public enum BackupManager {
     ZipFiles.zipFolder(walletRootDirectory.getAbsolutePath(), localBackupFilename, false);
     File localBackupEncryptedFilename = EncryptedFileReaderWriter.makeBackupAESEncryptedCopyAndDeleteOriginal(new File(localBackupFilename), (String) password, walletSummary.getEncryptedBackupKey());
     log.debug("Created encrypted local zip-backup successfully. Size = " + (localBackupEncryptedFilename).length() + " bytes");
+
+    // Thin the local backup directory
+    thinBackupDirectory(walletId, localBackupDirectory);
 
     return localBackupEncryptedFilename;
   }
@@ -361,6 +368,10 @@ public enum BackupManager {
        File cloudBackupEncryptedFilename = EncryptedFileReaderWriter.makeBackupAESEncryptedCopyAndDeleteOriginal(new File(cloudBackupFilename), (String) password, walletSummary.getEncryptedBackupKey());
 
        log.debug("Created encrypted cloud zip-backup successfully. Size = " + (cloudBackupEncryptedFilename).length() + " bytes");
+
+       // Thin the local backup directory
+       thinBackupDirectory(walletId, cloudBackupDirectory.get());
+
        return cloudBackupEncryptedFilename;
      } else {
        log.debug("No cloud backup made for wallet '" + walletId + "' as no cloudBackupDirectory is set.");
@@ -425,4 +436,89 @@ public enum BackupManager {
       }
     }
   }
+
+  /**
+    * Thin the wallet backups when they reach the MAXIMUM_NUMBER_OF_BACKUPS setting.
+    * Thinning is done by removing the most quickly replaced backup, except for the first and last few
+    * (as they are considered to be more valuable backups).
+    *
+    * @param walletId the wallet id of wallet backups to thin
+   *  @param backupDirectory the directory to thin
+    */
+   void thinBackupDirectory(WalletId walletId, File backupDirectory) {
+       if (dateFormat == null) {
+           dateFormat = new SimpleDateFormat(BACKUP_TIMESTAMP_SUFFIX_FORMAT);
+       }
+
+       if (walletId == null || backupDirectory == null) {
+           return;
+       }
+
+       // Find out how many wallet backups there are.
+       List<BackupSummary> backups = getWalletBackups(walletId, backupDirectory);
+
+       if (backups.size() < MAXIMUM_NUMBER_OF_ZIP_BACKUPS) {
+           // No thinning required.
+           return;
+       }
+
+       // Work out the date the backup was made for each of the wallet.
+       // This is done using the timestamp rather than the write time of the file.
+       // A typical backup filename is: mbhd-0da4e1dc-3a1726d7-5456cb44-f474e117-285799bb-20140520110455.zip.aes
+       // Constructed of :
+       // 5 chars "mbhd-"
+       // 44 chars of walletId
+       // 1 char separator
+       // 14 chars of timestamp
+       // 8 chars of filetype suffix
+       Map<File, Date> mapOfFileToBackupTimes = new HashMap<>();
+       for (int i = 0; i < backups.size(); i++) {
+           String filename = backups.get(i).getName();
+           if (filename.length() > 71) {
+               int startOfTimestamp = filename.length() - BACKUP_TIMESTAMP_SUFFIX_FORMAT.length() - ENCRYPTED_BACKUP_FILE_EXTENSION.length();
+               String timestampText = filename.substring(startOfTimestamp, startOfTimestamp + BACKUP_TIMESTAMP_SUFFIX_FORMAT.length() );
+               try {
+                   Date parsedTimestamp = dateFormat.parse(timestampText);
+                   mapOfFileToBackupTimes.put(backups.get(i).getFile(), parsedTimestamp);
+               } catch (ParseException pe) {
+                   // Cannot parse text - may be some other type of file the user has put in the directory.
+                   log.debug("For wallet '" + filename + " could not parse the timestamp of '" + timestampText + "'.");
+               }
+           }
+       }
+
+       // See which wallet is most quickly replaced by another backup - this will be thinned.
+       int walletBackupToDeleteIndex = -1; // Not set yet.
+       long walletBackupToDeleteReplacementTimeMillis = Integer.MAX_VALUE; // How quickly the wallet was replaced by a later one.
+
+       for (int i = 0; i < backups.size(); i++) {
+           if ((i < NUMBER_OF_FIRST_WALLET_ZIP_BACKUPS_TO_ALWAYS_KEEP)
+                   || (i >= backups.size() - NUMBER_OF_LAST_WALLET_ZIP_BACKUPS_TO_ALWAYS_KEEP)) {
+               // Keep the very first and last wallets always.
+           } else {
+               // Work out how quickly the wallet is replaced by the next backup.
+               Date thisWalletTimestamp = mapOfFileToBackupTimes.get(backups.get(i).getFile());
+               Date nextWalletTimestamp = mapOfFileToBackupTimes.get(backups.get(i + 1).getFile());
+               if (thisWalletTimestamp != null && nextWalletTimestamp != null) {
+                   long deltaTimeMillis = nextWalletTimestamp.getTime() - thisWalletTimestamp.getTime();
+                   if (deltaTimeMillis < walletBackupToDeleteReplacementTimeMillis) {
+                       // This is the best candidate for deletion so far.
+                       walletBackupToDeleteIndex = i;
+                       walletBackupToDeleteReplacementTimeMillis = deltaTimeMillis;
+                   }
+               }
+           }
+       }
+
+       if (walletBackupToDeleteIndex > -1) {
+          try {
+               // Secure delete the chosen backup wallet.
+               log.debug("To save space, secure deleting backup wallet '"
+                       + backups.get(walletBackupToDeleteIndex).getFile().getAbsolutePath() + "'.");
+               SecureFiles.secureDelete(backups.get(walletBackupToDeleteIndex).getFile());
+           } catch (IOException ioe) {
+               log.error(ioe.getClass().getName() + " " + ioe.getMessage());
+           }
+       }
+   }
 }
