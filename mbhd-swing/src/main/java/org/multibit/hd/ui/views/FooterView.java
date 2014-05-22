@@ -220,7 +220,7 @@ public class FooterView {
           @Override
           public void run() {
 
-            log.debug("Hiding progress bar");
+            log.trace("Hiding progress bar");
             progressBar.setVisible(false);
 
           }

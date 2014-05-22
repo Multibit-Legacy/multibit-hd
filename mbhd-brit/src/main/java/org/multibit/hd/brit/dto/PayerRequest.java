@@ -92,7 +92,7 @@ public class PayerRequest {
       builder.append(OPTIONAL_NOT_PRESENT_TEXT);
     }
 
-    log.debug("Serialised payerRequest = \n{}\n", builder.toString());
+    //log.debug("Serialised payerRequest = \n{}\n", builder.toString());
     return builder.toString().getBytes(Charsets.UTF_8);
   }
 

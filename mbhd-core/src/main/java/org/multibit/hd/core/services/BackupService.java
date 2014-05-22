@@ -99,14 +99,24 @@ public class BackupService extends AbstractService {
   private Optional<CharSequence> rememberedPasswordForLocalBackup = Optional.absent();
 
   /**
-    * The wallet id to use for the next cloud zip backup
-    */
-   private Optional<WalletId> rememberedWalletIdForCloudBackup = Optional.absent();
+   * The wallet id to use for the next cloud zip backup
+   */
+  private Optional<WalletId> rememberedWalletIdForCloudBackup = Optional.absent();
 
-   /**
-    * The password to use for the next cloud zip backup
-    */
-   private Optional<CharSequence> rememberedPasswordForCloudBackup = Optional.absent();
+  /**
+   * The password to use for the next cloud zip backup
+   */
+  private Optional<CharSequence> rememberedPasswordForCloudBackup = Optional.absent();
+
+  /**
+   * Whether backups are enabled or not
+   */
+  private boolean backupsAreEnabled = true;
+
+  /**
+   * Whether backups are currently being performed
+   */
+  private boolean backupsAreRunning = false;
 
 
   public BackupService() {
@@ -117,6 +127,10 @@ public class BackupService extends AbstractService {
   public boolean start() {
 
     log.debug("Starting service");
+
+    // The first tick (at time TICK_TIME_SECONDS seconds) all of a rolling backup,
+    // local backup and a cloud backup
+    // The users copy of MBHD will most likely be fully synchronised by then
     tickCount = 0;
 
     // Use the provided executor service management
@@ -125,28 +139,34 @@ public class BackupService extends AbstractService {
     // Use the provided executor service management
     getScheduledExecutorService().scheduleAtFixedRate(new Runnable() {
       public void run() {
+        backupsAreRunning = true;
+        try {
+          // Main backup loop
+          //log.debug("The tickCount is {}", tickCount);
 
-        // Main backup loop
-        //log.debug("The tickCount is {}", tickCount);
+          // A rolling backup is performed every tick
+          if (backupsAreEnabled) {
+            performRollingBackup();
+          }
 
-        // A rolling backup is performed every tick
-        performRollingBackup();
+          // Local zip backups are done every LOCAL_ZIP_BACKUP_MODULO number of ticks
+          if (backupsAreEnabled && tickCount % LOCAL_ZIP_BACKUP_MODULO == 0) {
+            performLocalZipBackup();
+          }
 
-        // Local zip backups are done every LOCAL_ZIP_BACKUP_MODULO number of ticks
-        if (tickCount % LOCAL_ZIP_BACKUP_MODULO == 0) {
-          performLocalZipBackup();
+          // Check if a cloud zip backup is required
+          // Cloud backups are done every CLOUD_ZIP_BACKUP_MODULO number of ticks
+          if (backupsAreEnabled && tickCount % CLOUD_ZIP_BACKUP_MODULO == 0) {
+            performCloudZipBackup();
+          }
+
+        } finally {
+          tickCount++;
+          backupsAreRunning = false;
         }
-
-        // Check if a cloud zip backup is required
-        // Cloud backups are done every CLOUD_ZIP_BACKUP_MODULO number of ticks
-        if (tickCount % CLOUD_ZIP_BACKUP_MODULO == 0) {
-          performCloudZipBackup();
-        }
-
-        tickCount++;
       }
     }
-            , 0, TICK_TIME_SECONDS, TimeUnit.SECONDS);
+            , TICK_TIME_SECONDS, TICK_TIME_SECONDS, TimeUnit.SECONDS);
 
     return true;
   }
@@ -183,62 +203,80 @@ public class BackupService extends AbstractService {
   }
 
   /**
-    * Remember a wallet id and password.
-    * This will be used at the next local zip backup.
-    */
-   public void rememberWalletIdAndPasswordForLocalZipBackup(WalletId walletId, CharSequence password) {
-     rememberedWalletIdForLocalBackup = Optional.of(walletId);
-     rememberedPasswordForLocalBackup = Optional.of(password);
-   }
+   * Remember a wallet id and password.
+   * This will be used at the next local zip backup.
+   */
+  public void rememberWalletIdAndPasswordForLocalZipBackup(WalletId walletId, CharSequence password) {
+    rememberedWalletIdForLocalBackup = Optional.of(walletId);
+    rememberedPasswordForLocalBackup = Optional.of(password);
+  }
 
   /**
    * Perform a local zip backup
    */
   private void performLocalZipBackup() {
     if (rememberedWalletIdForLocalBackup.isPresent() && rememberedPasswordForLocalBackup.isPresent()) {
-        log.debug("Performing a local zip backup");
+      log.debug("Performing a local zip backup");
 
-        try {
-          BackupManager.INSTANCE.createLocalBackup(rememberedWalletIdForLocalBackup.get(), rememberedPasswordForLocalBackup.get());
+      try {
+        BackupManager.INSTANCE.createLocalBackup(rememberedWalletIdForLocalBackup.get(), rememberedPasswordForLocalBackup.get());
 
-          // Don't use anything remembered in the past at this point again
-          // (This will miss anything newly remembered whilst the backup is taking place
-          rememberedWalletIdForLocalBackup = Optional.absent();
-          rememberedPasswordForLocalBackup = Optional.absent();
-        } catch (IOException ioe) {
-          ioe.printStackTrace();
-          // TODO handle exception (which is thrown inside the main runnable)
-        }
+        // Don't use anything remembered in the past at this point again
+        // (This will miss anything newly remembered whilst the backup is taking place
+        rememberedWalletIdForLocalBackup = Optional.absent();
+        rememberedPasswordForLocalBackup = Optional.absent();
+      } catch (IOException ioe) {
+        ioe.printStackTrace();
+        // TODO handle exception (which is thrown inside the main runnable)
       }
+    }
   }
 
   /**
-     * Remember a wallet id and password.
-     * This will be used at the next cloud zip backup.
-     */
-    public void rememberWalletIdAndPasswordForCloudZipBackup(WalletId walletId, CharSequence password) {
-      rememberedWalletIdForCloudBackup = Optional.of(walletId);
-      rememberedPasswordForCloudBackup = Optional.of(password);
-    }
+   * Remember a wallet id and password.
+   * This will be used at the next cloud zip backup.
+   */
+  public void rememberWalletIdAndPasswordForCloudZipBackup(WalletId walletId, CharSequence password) {
+    rememberedWalletIdForCloudBackup = Optional.of(walletId);
+    rememberedPasswordForCloudBackup = Optional.of(password);
+  }
 
   /**
    * Perform a cloud zip backup
    */
   private void performCloudZipBackup() {
     if (rememberedWalletIdForCloudBackup.isPresent() && rememberedPasswordForCloudBackup.isPresent()) {
-        log.debug("Performing a cloud zip backup");
+      log.debug("Performing a cloud zip backup");
 
-        try {
-          BackupManager.INSTANCE.createCloudBackup(rememberedWalletIdForCloudBackup.get(), rememberedPasswordForCloudBackup.get());
+      try {
+        BackupManager.INSTANCE.createCloudBackup(rememberedWalletIdForCloudBackup.get(), rememberedPasswordForCloudBackup.get());
 
-          // Don't use anything remembered in the past at this point again
-          // (This will miss anything newly remembered whilst the backup is taking place
-          rememberedWalletIdForCloudBackup = Optional.absent();
-          rememberedPasswordForCloudBackup = Optional.absent();
-        } catch (IOException ioe) {
-          ioe.printStackTrace();
-          // TODO handle exception (which is thrown inside the main runnable)
-        }
+        // Don't use anything remembered in the past at this point again
+        // (This will miss anything newly remembered whilst the backup is taking place
+        rememberedWalletIdForCloudBackup = Optional.absent();
+        rememberedPasswordForCloudBackup = Optional.absent();
+      } catch (IOException ioe) {
+        ioe.printStackTrace();
+        // TODO handle exception (which is thrown inside the main runnable)
       }
+    }
+  }
+
+  public boolean isBackupsAreEnabled() {
+    return backupsAreEnabled;
+  }
+
+  /**
+   * Set whether backups are enabled.
+   * Can be called on any thread.
+   * Only affects backups starting subsequently
+   * @param backupsAreEnabled whether backups should be performed (true) or not (false)
+   */
+  public void setBackupsAreEnabled(boolean backupsAreEnabled) {
+    this.backupsAreEnabled = backupsAreEnabled;
+  }
+
+  public boolean isBackupsAreRunning() {
+    return backupsAreRunning;
   }
 }
