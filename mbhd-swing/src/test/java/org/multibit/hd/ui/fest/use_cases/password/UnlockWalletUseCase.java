@@ -46,6 +46,14 @@ public class UnlockWalletUseCase extends AbstractFestUseCase {
       .textBox(MessageKey.ENTER_PASSWORD.getKey())
       .enterText("abc123");
 
+    // Verify show and hide
+    window
+      .button(MessageKey.SHOW.getKey())
+      .click();
+    window
+      .button(MessageKey.HIDE.getKey())
+      .click();
+
     // Click on unlock
     window
       .button(MessageKey.PASSWORD_UNLOCK.getKey())
