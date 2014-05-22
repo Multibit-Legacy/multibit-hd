@@ -138,6 +138,8 @@ mvn -Dinstaller=true clean install
 ```
 The installers will be found in the `target` directory ready for installer signing.
 
+Alternatively apply to join the [private beta mailing list](https://groups.google.com/forum/?hl=en#!forum/multibit-hd-private-beta) where new signed installers will be shared.
+
 #### Is there a developer wiki ?
 
 Yes. [The wiki pages](https://github.com/bitcoin-solutions/multibit-hd/wiki/_pages) provide comprehensive instructions for
@@ -171,3 +173,7 @@ Developers are strongly encouraged to create a FEST test for any UI work they ar
 in progress. It is far faster to run FEST than to manually run up the application and do it manually.
 
 FEST is not intended to run as part of a Maven build since not all build environments support a display.
+
+### Upgrading FontAwesome
+
+Use the `FontAwesomeTools` to create the necessary enum entries for `AwesomeIcon` as required.

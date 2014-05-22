@@ -168,7 +168,7 @@ public class CreateWalletCreatePasswordUseCase extends AbstractFestUseCase {
 
     // Hide the password
     window
-      .button(MessageKey.SHOW.getKey())
+      .button(MessageKey.HIDE.getKey())
       .click();
 
   }

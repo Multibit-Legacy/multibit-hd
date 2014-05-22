@@ -59,6 +59,7 @@ public class CreateWalletSeedPhraseUseCase extends AbstractFestUseCase {
       .textBox(MessageKey.SEED_PHRASE.getKey())
       .requireVisible();
 
+    // Verify the initial state is to trigger a hide
     window
       .button(MessageKey.HIDE.getKey())
       .requireVisible();
@@ -97,7 +98,7 @@ public class CreateWalletSeedPhraseUseCase extends AbstractFestUseCase {
       .textBox(MessageKey.SEED_PHRASE.getKey())
       .text();
 
-    // Hide the phrase
+    // Click to trigger the hide
     window
       .button(MessageKey.HIDE.getKey())
       .click();
@@ -108,9 +109,9 @@ public class CreateWalletSeedPhraseUseCase extends AbstractFestUseCase {
 
     assertThat(seedPhrase2).isNotEqualTo(seedPhrase1);
 
-    // Show the phrase
+    // Click to trigger the show
     window
-      .button(MessageKey.HIDE.getKey())
+      .button(MessageKey.SHOW.getKey())
       .click();
 
     String seedPhrase3 = window

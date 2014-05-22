@@ -425,10 +425,7 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    // Ensure it is accessible
-    AccessibilityDecorator.apply(button, MessageKey.SHOW);
-
-    AwesomeDecorator.applyIcon(AwesomeIcon.EYE, button, true, MultiBitUI.NORMAL_ICON_SIZE);
+    ButtonDecorator.applyShow(button);
 
     return button;
 
@@ -443,10 +440,7 @@ public class Buttons {
 
     JButton button = newButton(action);
 
-    // Ensure it is accessible
-    AccessibilityDecorator.apply(button, MessageKey.HIDE);
-
-    AwesomeDecorator.applyIcon(AwesomeIcon.EYE_SLASH, button, true, MultiBitUI.NORMAL_ICON_SIZE);
+    ButtonDecorator.applyHide(button);
 
     return button;
 
