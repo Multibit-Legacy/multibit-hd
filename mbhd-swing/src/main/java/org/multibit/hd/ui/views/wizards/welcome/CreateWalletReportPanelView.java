@@ -14,6 +14,7 @@ import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.BackupService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.MultiBitUI;
@@ -235,8 +236,11 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       } else {
         BackupManager.INSTANCE.initialise(applicationDataDirectory, null);
       }
-      BackupManager.INSTANCE.createRollingBackup(walletSummary, password);
-      BackupManager.INSTANCE.createLocalAndCloudBackup(walletSummary.getWalletId(), password);
+      // Remember the walletSummary and password so that it will be used for the next rolling backup
+      BackupService backupService = CoreServices.getOrCreateBackupService();
+      backupService.rememberWalletSummaryAndPasswordForRollingBackup(walletSummary, password);
+      backupService.rememberWalletIdAndPasswordForLocalZipBackup(walletSummary.getWalletId(), password);
+      backupService.rememberWalletIdAndPasswordForCloudZipBackup(walletSummary.getWalletId(), password);
 
       SwingUtilities.invokeLater(new Runnable() {
         @Override

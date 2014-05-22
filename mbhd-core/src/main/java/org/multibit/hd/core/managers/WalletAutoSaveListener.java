@@ -4,11 +4,12 @@ import com.google.bitcoin.wallet.WalletFiles;
 import com.google.common.base.Optional;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.services.BackupService;
+import org.multibit.hd.core.services.CoreServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  *  <p>Listener to provide the following to WalletManager:</p>
@@ -31,26 +32,23 @@ public class WalletAutoSaveListener implements WalletFiles.Listener {
     log.debug("Have just saved wallet to newlySavedFile '" + newlySavedFile.getAbsolutePath() + "'");
 
     Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
-      if (walletSummary.isPresent()) {
-        try {
-          // Save an encrypted copy of the wallet
-          CharSequence password = walletSummary.get().getPassword();
-          File encryptedWalletFile = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(newlySavedFile, password);
-          if (encryptedWalletFile != null && encryptedWalletFile.exists()) {
-            log.debug("Save encrypted copy of wallet as '{}'. Size was {} bytes.", encryptedWalletFile.getAbsolutePath(), encryptedWalletFile.length());
-          } else {
-            log.debug("No encrypted copy of wallet '{}' made.", newlySavedFile.getAbsolutePath());
-          }
-
-          BackupManager.INSTANCE.createRollingBackup(walletSummary.get(), password);
-
-          BackupManager.INSTANCE.createLocalAndCloudBackup(walletSummary.get().getWalletId(), password);
-          // TODO save the cloud backups at a slower rate than the local backups to save bandwidth - say a factor of 2 or 3
-        } catch (IOException ioe) {
-          log.error("No backups created. The error was '" + ioe.getMessage() + "'.");
-        }
+    if (walletSummary.isPresent()) {
+      // Save an encrypted copy of the wallet
+      CharSequence password = walletSummary.get().getPassword();
+      File encryptedWalletFile = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(newlySavedFile, password);
+      if (encryptedWalletFile != null && encryptedWalletFile.exists()) {
+        log.debug("Save encrypted copy of wallet as '{}'. Size was {} bytes.", encryptedWalletFile.getAbsolutePath(), encryptedWalletFile.length());
       } else {
-        log.error("No AES wallet encryption nor backups created as there was no wallet data to backup.");
+        log.debug("No encrypted copy of wallet '{}' made.", newlySavedFile.getAbsolutePath());
       }
+
+      // Remember the info required for the next backups
+      BackupService backupService = CoreServices.getOrCreateBackupService();
+      backupService.rememberWalletSummaryAndPasswordForRollingBackup(walletSummary.get(), password);
+      backupService.rememberWalletIdAndPasswordForLocalZipBackup(walletSummary.get().getWalletId(), password);
+      backupService.rememberWalletIdAndPasswordForCloudZipBackup(walletSummary.get().getWalletId(), password);
+    } else {
+      log.error("No AES wallet encryption nor backups created as there was no wallet data to backup.");
+    }
   }
 }
