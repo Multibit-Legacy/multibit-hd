@@ -29,7 +29,7 @@ public class AwesomeDecorator {
 
       AWESOME_FONT = Font.createFont(Font.TRUETYPE_FONT, in);
 
-      Preconditions.checkNotNull(AWESOME_FONT, "'awesome' font not loaded");
+      Preconditions.checkNotNull(AWESOME_FONT, "Font Awesome not loaded");
 
       AWESOME_FONT = AWESOME_FONT.deriveFont(Font.PLAIN, MultiBitUI.NORMAL_ICON_SIZE);
 

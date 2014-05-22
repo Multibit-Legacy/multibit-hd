@@ -13,6 +13,7 @@ import org.multibit.hd.ui.views.animations.RotatingIcon;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.fonts.CorbenDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.imageio.ImageIO;
@@ -104,8 +105,7 @@ public class Labels {
     JLabel label = newLabel(key);
 
     // Font
-    Font font = label.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE);
-    label.setFont(font);
+    CorbenDecorator.apply(label, MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE);
 
     // Theme
     label.setForeground(Themes.currentTheme.text());
