@@ -65,7 +65,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
    * @param wizard The wizard managing the states
    */
   public PaymentRequestDetailPanelView(AbstractWizard<PaymentsWizardModel> wizard, String panelName) {
-    super(wizard, panelName, MessageKey.PAYMENT_REQUEST, AwesomeIcon.FILE_TEXT_ALT);
+    super(wizard, panelName, MessageKey.PAYMENT_REQUEST, AwesomeIcon.FILE_TEXT_O);
   }
 
   @Override

@@ -50,7 +50,7 @@ public class ShowTransactionDetailPanelView extends AbstractWizardPanelView<Paym
    */
   public ShowTransactionDetailPanelView(AbstractWizard<PaymentsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.TRANSACTION_DETAIL, AwesomeIcon.FILE_TEXT_ALT);
+    super(wizard, panelName, MessageKey.TRANSACTION_DETAIL, AwesomeIcon.FILE_TEXT_O);
 
   }
 

@@ -46,7 +46,7 @@ public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<Payme
    */
   public ChoosePaymentRequestPanelView(AbstractWizard<PaymentsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.CHOOSE_PAYMENT_REQUEST, AwesomeIcon.FILE_TEXT_ALT);
+    super(wizard, panelName, MessageKey.CHOOSE_PAYMENT_REQUEST, AwesomeIcon.FILE_TEXT_O);
   }
 
   @Override
@@ -81,7 +81,7 @@ public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<Payme
 
     paymentRequestInfoLabel = Labels.newBlankLabel();
     paymentRequestSelectLabel = Labels.newLabel(MessageKey.CHOOSE_PAYMENT_REQUEST_LABEL);
-    AwesomeDecorator.bindIcon(AwesomeIcon.FILE_TEXT_ALT, paymentRequestSelectLabel, true, MultiBitUI.NORMAL_ICON_SIZE + 12);
+    AwesomeDecorator.bindIcon(AwesomeIcon.FILE_TEXT_O, paymentRequestSelectLabel, true, MultiBitUI.NORMAL_ICON_SIZE + 12);
     contentPanel.add(paymentRequestInfoLabel, "growx,span 2,wrap");
 
     contentPanel.add(paymentRequestSelectLabel, "shrink,aligny top");

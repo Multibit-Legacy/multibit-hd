@@ -169,7 +169,7 @@ public class Buttons {
 
     JButton button = newButton(action, MessageKey.EXPORT);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.SHARE_SQUARE_ALT, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.SHARE_SQUARE_O, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -229,7 +229,7 @@ public class Buttons {
 
     JButton button = newButton(action, MessageKey.DELETE_PAYMENT_REQUEST);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.TRASH_ALT, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.TRASH_O, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -244,7 +244,7 @@ public class Buttons {
 
     JButton button = newButton(action, MessageKey.DELETE);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.TRASH_ALT, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.TRASH_O, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
   }
@@ -584,7 +584,7 @@ public class Buttons {
 
     JButton button = newButton(action, MessageKey.DETAILS);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.FILE_TEXT_ALT, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.FILE_TEXT_O, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
   }
@@ -754,7 +754,7 @@ public class Buttons {
     JButton button = newLargeButton(action, MessageKey.SHOW_WELCOME_WIZARD);
 
     AwesomeDecorator.applyIcon(
-      AwesomeIcon.SMILE_ALT,
+      AwesomeIcon.SMILE_O,
       button,
       true,
       JLabel.BOTTOM,
