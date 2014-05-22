@@ -56,7 +56,7 @@ public enum BackupManager {
   public static final String REGEX_FOR_TIMESTAMP_AND_WALLET_AND_AES_SUFFIX = ".*-\\d{14}\\.wallet\\.aes$";
 
   public static final String LOCAL_ZIP_BACKUP_DIRECTORY_NAME = "zip-backup";
-  public static final int MAXIMUM_NUMBER_OF_ZIP_BACKUPS = 15; // TODO 15 // Chosen so that you will have about weekly backups for a year, fortnightly over two years.
+  public static final int MAXIMUM_NUMBER_OF_ZIP_BACKUPS = 60; // Chosen so that you will have about weekly backups for a year, fortnightly over two years.
   public static final int NUMBER_OF_FIRST_WALLET_ZIP_BACKUPS_TO_ALWAYS_KEEP = 2;
   public static final int NUMBER_OF_LAST_WALLET_ZIP_BACKUPS_TO_ALWAYS_KEEP = 8; // Must be at least 1.
 
