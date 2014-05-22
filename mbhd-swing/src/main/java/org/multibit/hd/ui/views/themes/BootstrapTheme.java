@@ -97,7 +97,7 @@ public class BootstrapTheme extends BaseTheme {
 
   @Override
   public Color fadedText() {
-    return new Color(147,147,147);
+    return new Color(157,157,157);
   }
 
   @Override
@@ -107,7 +107,7 @@ public class BootstrapTheme extends BaseTheme {
 
   @Override
   public Color inverseFadedText() {
-    return fadedText();
+    return new Color(137, 137, 137);
   }
 
   @Override
