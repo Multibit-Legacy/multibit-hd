@@ -1,8 +1,11 @@
 package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
+import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.BackupManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -262,8 +265,37 @@ public class BackupService extends AbstractService {
     }
   }
 
-  public boolean isBackupsAreEnabled() {
-    return backupsAreEnabled;
+  /**
+   * On shutdown disable any more backups, wait until any current backup is finished and then perform
+   * a rolling, local and cloud backup
+   * @param shutdownEvent Shutdown event
+   */
+  @Subscribe
+  public void onShutdownEvent(ShutdownEvent shutdownEvent) {
+    // A hard shutdown does not give enough time to wait gracefully
+    if (shutdownEvent != null && shutdownEvent.getShutdownType() == ShutdownEvent.ShutdownType.SOFT) {
+      log.debug("Performing backups at shutdown");
+
+      // Disable any new backups
+      this.setBackupsAreEnabled(false);
+
+      getScheduledExecutorService().schedule(new Runnable() {
+        public void run() {
+          // Wait for any current backups to complete
+          while (isBackupsAreRunning()) {
+            Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
+          }
+
+          performRollingBackup();
+
+          performLocalZipBackup();
+
+          performCloudZipBackup();
+
+        }
+
+      }, 0, TimeUnit.MILLISECONDS);
+    }
   }
 
   /**
@@ -276,6 +308,10 @@ public class BackupService extends AbstractService {
     this.backupsAreEnabled = backupsAreEnabled;
   }
 
+  /**
+   * Indicates whether backups are currently running in the main scheduled loop
+   * @return true if a backup is running in the main scheduled loop
+   */
   public boolean isBackupsAreRunning() {
     return backupsAreRunning;
   }
