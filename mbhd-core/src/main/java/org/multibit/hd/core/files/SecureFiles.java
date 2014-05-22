@@ -63,7 +63,7 @@ public class SecureFiles {
    */
   public static synchronized void secureDelete(File file) throws IOException {
 
-    log.debug("Start of secureDelete");
+    log.trace("Start of secureDelete");
 
     if (file != null && file.exists()) {
       try (RandomAccessFile raf = new RandomAccessFile(file, "rws")) {
@@ -85,9 +85,9 @@ public class SecureFiles {
         }
       }
       boolean deleteSuccess = file.delete();
-      log.debug("Result of delete of file '" + file.getAbsolutePath() + "' was " + deleteSuccess);
+      log.trace("Result of delete of file '" + file.getAbsolutePath() + "' was " + deleteSuccess);
     }
-    log.debug("End of secureDelete");
+    log.trace("End of secureDelete");
   }
 
   /**

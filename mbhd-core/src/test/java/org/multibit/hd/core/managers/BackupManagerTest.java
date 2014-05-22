@@ -15,6 +15,7 @@
  */
 package org.multibit.hd.core.managers;
 
+import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +56,7 @@ public class BackupManagerTest {
     BackupManager backupManager = BackupManager.INSTANCE;
 
     // Initialise the backupManager to point at the temporaryBackupDirectory
-    backupManager.initialise(temporaryApplicationDirectory, temporaryBackupDirectory);
+    backupManager.initialise(temporaryApplicationDirectory, Optional.of(temporaryBackupDirectory));
 
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
