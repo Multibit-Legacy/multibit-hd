@@ -275,9 +275,6 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
 
           // Determine if the create wallet status is valid
           AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, walletCreatedStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
-          if (walletDirectory != null) {
-            CoreServices.logHistory(Languages.safeText(MessageKey.HISTORY_WALLET_CREATED, walletDirectory.getAbsoluteFile()));
-          }
           walletCreatedStatusLabel.setVisible(true);
 
           // We're done

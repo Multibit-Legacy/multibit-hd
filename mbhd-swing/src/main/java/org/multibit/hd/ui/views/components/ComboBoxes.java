@@ -451,7 +451,8 @@ public class ComboBoxes {
     // Ensure it is accessible
     AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_BITCOIN_SYMBOL);
 
-    comboBox.setEditable(false);
+    // Increase default font size
+    comboBox.setFont(comboBox.getFont().deriveFont(MultiBitUI.COMBO_BOX_TEXT_FONT_SIZE));
 
     // Ensure we have no ugly scrollbar
     comboBox.setMaximumRowCount(BitcoinSymbol.values().length);

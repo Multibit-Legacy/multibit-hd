@@ -5,8 +5,10 @@ import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.swing.timing.Timeout.timeout;
 
 /**
  * <p>Use case to provide the following to FEST testing:</p>
@@ -36,12 +38,13 @@ public class ShowHistoryScreenUseCase extends AbstractFestUseCase {
 
     // Expect the History screen to show
     window
-      .textBox(MessageKey.SEARCH.getKey())
+      .button(MessageKey.SEARCH.getKey())
       .requireVisible()
-      .requireEnabled();
+      .requireEnabled(timeout(1, TimeUnit.SECONDS));
+
 
     window
-      .button(MessageKey.SEARCH.getKey())
+      .textBox(MessageKey.SEARCH.getKey())
       .requireVisible()
       .requireEnabled();
 

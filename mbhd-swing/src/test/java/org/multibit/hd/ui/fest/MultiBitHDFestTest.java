@@ -283,9 +283,15 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
       }
     });
 
+    log.info("Creating FEST frame fixture");
+
     window = new FrameFixture(frame);
-    window.show(); // shows the frame to test
+
+    // Show the frame to test at 100,100 (unavoidable)
     window.show();
+
+    log.info("FEST setup complete");
+
   }
 
   /**

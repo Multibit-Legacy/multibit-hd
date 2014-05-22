@@ -190,6 +190,7 @@ public class Panels {
 
     log.debug("Show light box");
 
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(),"LightBox requires the EDT");
     Preconditions.checkState(!lightBoxPanel.isPresent(), "Light box should never be called twice");
 
     // Prevent focus
@@ -234,6 +235,7 @@ public class Panels {
 
     log.debug("Show light box popover");
 
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(),"LightBoxPopover requires the EDT");
     Preconditions.checkState(lightBoxPanel.isPresent(), "LightBoxPopover should not be called unless a light box is showing");
     Preconditions.checkState(!lightBoxPopoverPanel.isPresent(), "LightBoxPopover should never be called twice");
 
