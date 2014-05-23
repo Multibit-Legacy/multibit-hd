@@ -36,6 +36,7 @@ public enum CoreMessageKey {
   BACKUP_FAILED("core_backup_failed"),
   CERTIFICATE_FAILED("core_certificate_failed"),
   SECURITY_ADVICE("core_security_advice"),
+  BACKUP_WALLET_WAS_LOADED("core_backup_wallet_was_loaded"),
 
   // Errors
   THE_ERROR_WAS("core_the_error_was"),

@@ -256,6 +256,22 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
   }
 
   @Subscribe
+  public void onBackupWalletLoadedEvent(BackupWalletLoadedEvent event) {
+    log.trace("Received 'backup wallet loaded' event");
+
+    Preconditions.checkNotNull(event, "'event' must be present");
+    Preconditions.checkNotNull(event.getBackupLoaded(), "backup file must be present");
+
+    final String localisedMessage = Languages.safeText(CoreMessageKey.BACKUP_WALLET_WAS_LOADED);
+
+    ControllerEvents.fireAddAlertEvent(
+            Models.newAlertModel(
+                    localisedMessage,
+                    RAGStatus.AMBER)
+    );
+  }
+
+  @Subscribe
   public void onExchangeStatusChangeEvent(ExchangeStatusChangedEvent event) {
 
     log.trace("Received 'Exchange status changed' event");
@@ -615,6 +631,10 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
     // Allow time for MainView to refresh
     Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
 
+    // Start the backup manager
+    log.debug("Starting backup manager...");
+    handleBackupManager();
+
     // Use the current wallet summary
     Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
     mainView.sidebarWalletName(walletSummary.get().getName());
@@ -634,10 +654,6 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
           // Get a ticker going
           log.debug("Starting exchange...");
           handleExchange();
-
-          // Start the backup manager
-          log.debug("Starting backup manager...");
-          handleBackupManager();
 
           // Check for Bitcoin URIs
           log.debug("Check for Bitcoin URIs...");

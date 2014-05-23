@@ -107,7 +107,7 @@ public class BackupManagerTest {
     assertThat(cloudBackups.size()).isEqualTo(2);
 
     // Load in the wallet backup and compare the wallets
-    WalletId recreatedWalletId= BackupManager.INSTANCE.loadBackup(localBackupFile, Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
+    WalletId recreatedWalletId= BackupManager.INSTANCE.loadZipBackup(localBackupFile, Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
     assertThat(walletSummary.getWalletId()).isEqualTo(recreatedWalletId);
 
     // Open

@@ -263,7 +263,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     log.debug("Loading wallet backup '" + selectedBackupSummaryModel.getValue().getFile() + "'");
     try {
 
-      WalletId loadedWalletId = BackupManager.INSTANCE.loadBackup(selectedBackupSummaryModel.getValue().getFile(), seedPhrase);
+      WalletId loadedWalletId = BackupManager.INSTANCE.loadZipBackup(selectedBackupSummaryModel.getValue().getFile(), seedPhrase);
 
       // Locate the installation directory
       File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();

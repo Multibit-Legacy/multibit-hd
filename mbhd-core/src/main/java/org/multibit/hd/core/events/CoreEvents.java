@@ -4,14 +4,12 @@ import com.google.common.base.Optional;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
-import org.multibit.hd.core.dto.BitcoinNetworkSummary;
-import org.multibit.hd.core.dto.ExchangeSummary;
-import org.multibit.hd.core.dto.HistoryEntry;
-import org.multibit.hd.core.dto.SecuritySummary;
+import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.services.CoreServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -136,6 +134,15 @@ public class CoreEvents {
 
     CoreServices.uiEventBus.post(new BitcoinNetworkChangedEvent(bitcoinNetworkSummary));
   }
+  /**
+    * <p>Broadcast a new "Backup wallet has been loaded" event</p>
+    *
+    * @param walletId the walletId of the wallet that had the backup loaded
+   *  @param backupWalletFile The backup wallet that was loaded
+    */
+   public static void fireBackupWalletLoadedEvent(WalletId walletId, File backupWalletFile) {
+     CoreServices.uiEventBus.post(new BackupWalletLoadedEvent(walletId, backupWalletFile));
+   }
 
   /**
    * <p>Broadcast a new "security" event</p>

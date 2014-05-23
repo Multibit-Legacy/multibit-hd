@@ -3,6 +3,7 @@ package org.multibit.hd.core.managers;
 import com.google.bitcoin.core.*;
 import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.bitcoin.script.Script;
+import com.google.bitcoin.store.UnreadableWalletException;
 import com.google.bitcoin.store.WalletProtobufSerializer;
 import com.google.bitcoin.wallet.DeterministicSeed;
 import com.google.common.base.Charsets;
@@ -158,6 +159,9 @@ public enum WalletManager implements WalletEventListener {
     Preconditions.checkNotNull(password, "'password' must be present");
 
     this.currentWalletSummary = Optional.absent();
+
+    // Ensure BackupManager knows where the wallets are
+    BackupManager.INSTANCE.setApplicationDataDirectory(applicationDataDirectory);
 
     // Work out the list of available wallets in the application data directory
     List<File> walletDirectories = findWalletDirectories(applicationDataDirectory);
@@ -337,6 +341,27 @@ public enum WalletManager implements WalletEventListener {
     return walletSummary;
   }
 
+  public static Wallet loadWalletFromFile(File walletFile, CharSequence password) throws IOException, UnreadableWalletException {
+    // Read the encrypted file in and decrypt it.
+    byte[] encryptedWalletBytes = org.multibit.hd.brit.utils.FileUtils.readFile(walletFile);
+    log.trace("Encrypted wallet bytes after load:\n" + Utils.bytesToHexString(encryptedWalletBytes));
+
+    KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(EncryptedFileReaderWriter.makeScryptParameters(WalletManager.SCRYPT_SALT));
+    KeyParameter keyParameter = keyCrypterScrypt.deriveKey(password);
+
+    // Decrypt the wallet bytes
+    byte[] decryptedBytes = AESUtils.decrypt(encryptedWalletBytes, keyParameter, WalletManager.AES_INITIALISATION_VECTOR);
+
+    InputStream inputStream = new ByteArrayInputStream(decryptedBytes);
+
+    Protos.Wallet walletProto = WalletProtobufSerializer.parseToProto(inputStream);
+
+    WalletExtension[] walletExtensions = new WalletExtension[]{new SendFeeDtoWalletExtension(), new MatcherResponseWalletExtension()};
+    Wallet wallet = new WalletProtobufSerializer().readWallet(BitcoinNetwork.current().get(), walletExtensions, walletProto);
+    wallet.setKeychainLookaheadSize(WalletManager.LOOK_AHEAD_SIZE);
+    return wallet;
+  }
+
   /**
    * <p>Load up an encrypted Wallet from a specified wallet directory.</p>
    * <p>Reduced visibility for testing</p>
@@ -373,33 +398,19 @@ public enum WalletManager implements WalletEventListener {
 
       Wallet wallet;
       try {
-        InputStream inputStream;
-
-        // Read the encrypted file in and decrypt it.
-        byte[] encryptedWalletBytes = org.multibit.hd.brit.utils.FileUtils.readFile(new File(walletFilename));
-        log.trace("Encrypted wallet bytes after load:\n" + Utils.bytesToHexString(encryptedWalletBytes));
-
-        KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(EncryptedFileReaderWriter.makeScryptParameters(WalletManager.SCRYPT_SALT));
-        KeyParameter keyParameter = keyCrypterScrypt.deriveKey(password);
-
-        // Decrypt the wallet bytes
-        byte[] decryptedBytes = AESUtils.decrypt(encryptedWalletBytes, keyParameter, WalletManager.AES_INITIALISATION_VECTOR);
-
-        inputStream = new ByteArrayInputStream(decryptedBytes);
-
-        Protos.Wallet walletProto = WalletProtobufSerializer.parseToProto(inputStream);
-
-        WalletExtension[] walletExtensions = new WalletExtension[]{new SendFeeDtoWalletExtension(), new MatcherResponseWalletExtension()};
-        wallet = new WalletProtobufSerializer().readWallet(networkParameters, walletExtensions, walletProto);
-        wallet.setKeychainLookaheadSize(WalletManager.LOOK_AHEAD_SIZE);
-
+        wallet = loadWalletFromFile(walletFile, password);
         log.debug("Wallet at read in from file:\n" + wallet.toString());
       } catch (WalletVersionException wve) {
         // We want this exception to propagate out.
+        // Don't bother trying to load the rolling backups as they will most likely be an unreadable version too.
         throw wve;
       } catch (Exception e) {
+        // Log the initial error
         log.error(e.getClass().getCanonicalName() + " " + e.getMessage());
-        throw new WalletLoadException(e.getMessage(), e);
+
+        // Try loading one of the rolling backups - this will send a BackupWalletLoadedEvent containing the initial error
+        // If the rolling backups don't load then loadRollingBackup will throw a WalletLoadException which will propagate out
+        wallet = BackupManager.INSTANCE.loadRollingBackup(walletId, password);
       }
 
       // Create the wallet summary with its wallet
