@@ -108,7 +108,7 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     contentPanel.add(Labels.newAmount(), "baseline");
     contentPanel.add(transactionDisplayAmountMaV.getView().newComponentPanel(), "span 3,wrap");
 
-    contentPanel.add(Labels.newTransactionFee(getWizardModel().getTransactionFee()), "top");
+    contentPanel.add(Labels.newTransactionFee(), "top");
     contentPanel.add(transactionFeeDisplayAmountMaV.getView().newComponentPanel(), "span 3,wrap");
 
     contentPanel.add(Labels.newDeveloperFee(), "top");

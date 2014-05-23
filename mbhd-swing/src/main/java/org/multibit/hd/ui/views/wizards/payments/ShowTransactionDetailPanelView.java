@@ -10,13 +10,13 @@ import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.TextBoxes;
+import org.multibit.hd.ui.views.components.borders.TextBubbleBorder;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,13 +35,11 @@ import java.net.URI;
  */
 public class ShowTransactionDetailPanelView extends AbstractWizardPanelView<PaymentsWizardModel, ShowTransactionDetailPanelModel> {
 
-  private static final Logger log = LoggerFactory.getLogger(ShowTransactionDetailPanelView.class);
-
-  private static final String BLOCKCHAIN_INFO_PREFIX = "http://blockchain.info/tx-index/";
+  private static final String BLOCKCHAIN_INFO_PREFIX = "https://blockchain.info/tx-index/";
 
   private JLabel transactionHashValue;
 
-  private JTextArea rawTransactionValue;
+  private JTextArea rawTransactionTextArea;
 
   private JLabel sizeValue;
 
@@ -59,7 +57,7 @@ public class ShowTransactionDetailPanelView extends AbstractWizardPanelView<Paym
 
     // Configure the panel model
     ShowTransactionDetailPanelModel panelModel = new ShowTransactionDetailPanelModel(
-            getPanelName()
+      getPanelName()
     );
     setPanelModel(panelModel);
   }
@@ -67,38 +65,53 @@ public class ShowTransactionDetailPanelView extends AbstractWizardPanelView<Paym
   @Override
   public void initialiseContent(JPanel contentPanel) {
     contentPanel.setLayout(new MigLayout(
-            Panels.migXYLayout(),
-            "[][][]", // Column constraints
-            "[]10[]10[]" // Row constraints
+      Panels.migXYLayout(),
+      "[][]", // Column constraints
+      "[shrink][shrink][grow]" // Row constraints
     ));
 
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
-    JLabel transactionHashLabel = Labels.newValueLabel(Languages.safeText(MessageKey.TRANSACTION_HASH));
+    JLabel transactionHashLabel = Labels.newTransactionHash();
     transactionHashValue = Labels.newValueLabel("");
 
-    JLabel rawTransactionLabel = Labels.newValueLabel(Languages.safeText(MessageKey.RAW_TRANSACTION));
-    rawTransactionValue = new JTextArea(5, 60);
-    JScrollPane scrollPane = new JScrollPane(rawTransactionValue, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+    // The raw transaction is a wall of text so needs scroll bars in many cases
+    JLabel rawTransactionLabel = Labels.newRawTransaction();
+    rawTransactionTextArea = TextBoxes.newReadOnlyTextArea(10, 80);
+    rawTransactionTextArea.setBorder(null);
 
-    JLabel sizeLabel = Labels.newValueLabel(Languages.safeText(MessageKey.SIZE));
+    // Raw transaction requires its own scroll pane
+    JScrollPane scrollPane = new JScrollPane();
+    scrollPane.setOpaque(true);
+    scrollPane.setBackground(Themes.currentTheme.readOnlyBackground());
+    scrollPane.setBorder(null);
+    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+    // View port requires special handling
+    scrollPane.setViewportView(rawTransactionTextArea);
+    scrollPane.getViewport().setBackground(Themes.currentTheme.readOnlyBackground());
+    scrollPane.setViewportBorder(new TextBubbleBorder(Themes.currentTheme.readOnlyBorder()));
+
+    JLabel sizeLabel = Labels.newSize();
     sizeValue = Labels.newValueLabel("");
 
     JButton blockchainInfoBrowserButton = Buttons.newLaunchBrowserButton(getBlockchainInfoBrowserAction());
     blockchainInfoBrowserButton.setText(Languages.safeText(MessageKey.VIEW_IN_BLOCKCHAIN_INFO));
 
     contentPanel.add(transactionHashLabel);
-    contentPanel.add(transactionHashValue, "wrap");
-
-    contentPanel.add( Labels.newValueLabel(""));
-    contentPanel.add(blockchainInfoBrowserButton, "wrap");
-
-    contentPanel.add(rawTransactionLabel);
-    contentPanel.add(scrollPane, "grow, push, wrap");
+    contentPanel.add(transactionHashValue, "shrink,wrap");
 
     contentPanel.add(sizeLabel);
-    contentPanel.add(sizeValue, "wrap");
+    contentPanel.add(sizeValue, "shrink,wrap");
+
+    // Consider adding more providers here (buttons break up the information overload)
+    contentPanel.add(blockchainInfoBrowserButton, "shrink,alignx left,span 2,wrap");
+
+    contentPanel.add(rawTransactionLabel,"wrap");
+    contentPanel.add(scrollPane, "grow,push,span 2,wrap");
+
   }
 
   @Override
@@ -112,30 +125,30 @@ public class ShowTransactionDetailPanelView extends AbstractWizardPanelView<Paym
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
+
         getNextButton().requestFocusInWindow();
         getNextButton().setEnabled(true);
+
+        PaymentData paymentData = getWizardModel().getPaymentData();
+        if (paymentData != null && paymentData instanceof TransactionData) {
+          final TransactionData transactionData = (TransactionData) paymentData;
+
+          transactionHashValue.setText(transactionData.getTransactionId());
+          rawTransactionTextArea.setText(transactionData.getRawTransaction());
+
+          int size = transactionData.getSize();
+          sizeValue.setText(Languages.safeText(MessageKey.SIZE_VALUE, size));
+
+        }
+
       }
     });
-
-    update();
 
   }
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
-  }
-
-  public void update() {
-    PaymentData paymentData = getWizardModel().getPaymentData();
-    if (paymentData != null && paymentData instanceof TransactionData) {
-      final TransactionData transactionData = (TransactionData) paymentData;
-
-      transactionHashValue.setText(transactionData.getTransactionId());
-      rawTransactionValue.setText(transactionData.getRawTransaction());
-      int size = transactionData.getSize();
-      sizeValue.setText(Languages.safeText(MessageKey.SIZE_VALUE, size));
-    }
   }
 
   /**

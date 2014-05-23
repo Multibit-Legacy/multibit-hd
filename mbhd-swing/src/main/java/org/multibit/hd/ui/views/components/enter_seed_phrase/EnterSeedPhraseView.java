@@ -140,12 +140,9 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
-          if (event != null) {
-            verificationStatusLabel.setVisible(event.isOK());
-          }
+          verificationStatusLabel.setVisible(event.isOK());
         }
       });
-
 
     }
   }

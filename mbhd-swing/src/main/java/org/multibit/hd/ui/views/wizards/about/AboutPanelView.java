@@ -53,7 +53,7 @@ public class AboutPanelView extends AbstractWizardPanelView<AboutWizardModel, St
 
     String version = Configurations.currentConfiguration.getVersion();
 
-    contentPanel.add(Labels.newVersionLabel(), "grow,push");
+    contentPanel.add(Labels.newVersion(), "grow,push");
     contentPanel.add(Labels.newValueLabel(version), "wrap");
     contentPanel.add(Labels.newAboutNote(), "grow,push,span 2,wrap");
 

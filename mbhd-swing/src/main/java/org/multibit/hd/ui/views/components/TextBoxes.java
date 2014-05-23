@@ -72,12 +72,12 @@ public class TextBoxes {
   }
 
   /**
-   * @param listener The document listener for detecting changes to the content
-   * @param rows The number of rows (normally 6)
-   * @param columns The number of columns (normally
-   * @return A new text field with default theme
+   * @param rows    The number of rows (normally 6)
+   * @param columns The number of columns (normally 60)
+   *
+   * @return A new read only text field with default theme
    */
-  public static JTextArea newReadOnlyTextArea(DocumentListener listener, int rows, int columns) {
+  public static JTextArea newReadOnlyTextArea(int rows, int columns) {
 
     JTextArea textArea = new JTextArea(rows, columns);
 
@@ -89,14 +89,6 @@ public class TextBoxes {
     textArea.setBackground(Themes.currentTheme.readOnlyBackground());
 
     textArea.setOpaque(false);
-
-    // Limit the length of the underlying document
-    DefaultStyledDocument doc = new DefaultStyledDocument();
-    doc.setDocumentFilter(new DocumentMaxLengthFilter(rows * columns));
-    textArea.setDocument(doc);
-
-    // Ensure we monitor changes
-    doc.addDocumentListener(listener);
 
     // Ensure line wrapping occurs correctly
     textArea.setLineWrap(true);
@@ -115,6 +107,28 @@ public class TextBoxes {
 
   }
 
+  /**
+   * @param listener The document listener for detecting changes to the content
+   * @param rows     The number of rows (normally 6)
+   * @param columns  The number of columns (normally 60)
+   *
+   * @return A new read only length limited text field with default theme
+   */
+  public static JTextArea newReadOnlyLengthLimitedTextArea(DocumentListener listener, int rows, int columns) {
+
+    JTextArea textArea = newReadOnlyTextArea(rows, columns);
+
+    // Limit the length of the underlying document
+    DefaultStyledDocument doc = new DefaultStyledDocument();
+    doc.setDocumentFilter(new DocumentMaxLengthFilter(rows * columns));
+    textArea.setDocument(doc);
+
+    // Ensure we monitor changes
+    doc.addDocumentListener(listener);
+
+    return textArea;
+
+  }
 
   /**
    * @return A new "enter label" text field
@@ -426,7 +440,7 @@ public class TextBoxes {
 
     final JTextArea textArea;
     if (readOnly) {
-      textArea = TextBoxes.newReadOnlyTextArea(listener, 6, MultiBitUI.PASSWORD_LENGTH);
+      textArea = TextBoxes.newReadOnlyLengthLimitedTextArea(listener, 6, MultiBitUI.PASSWORD_LENGTH);
     } else {
       textArea = TextBoxes.newEnterPrivateNotes(listener, MultiBitUI.PASSWORD_LENGTH);
     }
