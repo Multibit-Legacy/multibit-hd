@@ -15,6 +15,7 @@
  */
 package org.multibit.hd.core.managers;
 
+import com.google.bitcoin.core.Wallet;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.junit.Before;
@@ -116,5 +117,9 @@ public class BackupManagerTest {
     WalletSummary recreatedWalletSummary = WalletManager.INSTANCE.loadFromWalletDirectory(walletDirectory, password);
     assertThat(recreatedWalletSummary).isNotNull();
     assertThat(recreatedWalletSummary.getWallet()).isNotNull();
+
+    // Load one of the rolling backups
+    Wallet wallet = BackupManager.INSTANCE.loadRollingBackup(walletSummary.getWalletId(), password);
+    assertThat(wallet).isNotNull();
   }
 }
