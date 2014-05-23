@@ -32,7 +32,7 @@ public class ShowToolsScreenUseCase extends AbstractFestUseCase {
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .requireVisible()
       .requireEnabled()
-      .selectRow(7);
+      .selectRow(TOOLS_ROW);
 
     // Expect the Tools screen to show
     window

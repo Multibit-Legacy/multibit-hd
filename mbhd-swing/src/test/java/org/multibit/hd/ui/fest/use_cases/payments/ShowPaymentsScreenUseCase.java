@@ -32,7 +32,7 @@ public class ShowPaymentsScreenUseCase extends AbstractFestUseCase {
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .requireVisible()
       .requireEnabled()
-      .selectRow(2);
+      .selectRow(PAYMENTS_ROW);
 
     // Expect the Payments screen to show
     window

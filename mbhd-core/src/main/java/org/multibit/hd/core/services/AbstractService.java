@@ -6,6 +6,8 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.events.ShutdownEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Abstract base class to provide the following to application services:</p>
@@ -17,6 +19,8 @@ import org.multibit.hd.core.events.ShutdownEvent;
  *         
  */
 public abstract class AbstractService implements ManagedService {
+
+  protected static final Logger log = LoggerFactory.getLogger(AbstractService.class);
 
   /**
    * The optional scheduled executor service running this service's activity
@@ -42,6 +46,8 @@ public abstract class AbstractService implements ManagedService {
   @Override
   public void stopAndWait() {
 
+    log.debug("Service {} stopping...",this.getClass().getSimpleName());
+
     if (scheduledService.isPresent()) {
       scheduledService.get().shutdownNow();
     }
@@ -49,6 +55,7 @@ public abstract class AbstractService implements ManagedService {
     if (service.isPresent()) {
       service.get().shutdownNow();
     }
+
   }
 
   /**

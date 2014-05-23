@@ -3,8 +3,12 @@ package org.multibit.hd.ui.gravatar;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.hash.Hashing;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.RAGStatus;
@@ -51,6 +55,23 @@ public class Gravatars {
   // Maintain a multi-threaded shared reference to a failure mode
   private static AtomicReference<Optional<DateTime>> lastFailedDownload = new AtomicReference<>(Optional.<DateTime>absent());
 
+  // Keep an image thread pool
+  private static final ListeningExecutorService gravatarExecutorService = SafeExecutors.newFixedThreadPool(10, "gravatar");
+
+  // Maintain an image cache
+  private static LoadingCache<String, Optional<BufferedImage>> cache = CacheBuilder
+    .newBuilder()
+    .maximumSize(1000)
+    .build(new CacheLoader<String, Optional<BufferedImage>>() {
+      @Override
+      public Optional<BufferedImage> load(String cleanEmailAddress) throws Exception {
+
+        // Get the image synchronously (the overall cache call is wrapped in an executor)
+        return loadBufferedImage(cleanEmailAddress);
+
+      }
+    });
+
   /**
    * Utilities have private constructors
    */
@@ -68,49 +89,63 @@ public class Gravatars {
 
     Preconditions.checkNotNull(emailAddress, "'emailAddress' must be present");
 
-    return SafeExecutors.newFixedThreadPool(1,"gravatar").submit(new Callable<Optional<BufferedImage>>() {
+    final String cleanEmailAddress = emailAddress.toLowerCase().trim();
+
+    return gravatarExecutorService.submit(new Callable<Optional<BufferedImage>>() {
+
       @Override
       public Optional<BufferedImage> call() throws Exception {
-
-        // Require a hex MD5 hash of email address (lowercase) no whitespace
-        final String emailHash = Hashing
-          .md5()
-          .hashString(emailAddress.toLowerCase().trim(), Charsets.UTF_8)
-          .toString();
-
-        // Create the URL
-        final URL url;
-        try {
-          url = new URL(GRAVATAR_URL + emailHash + ".jpg" + PARAMETERS);
-          log.debug("Gravatar lookup: '{}'", url.toString());
-        } catch (MalformedURLException e) {
-          // This should never happen
-          log.error("Gravatar URL malformed", e);
-          return Optional.absent();
-        }
-
-        try (InputStream stream = url.openStream()) {
-          return Optional.of(ImageIO.read(stream));
-        } catch (IOException e) {
-          // This may happen if no network is available
-          log.warn("Gravatar download failed" + e.getMessage());
-
-          // Avoid flooding the user with failure alerts
-          DateTime now = Dates.nowUtc();
-          if (lastFailedDownload.get().isPresent()) {
-            DateTime lastFailure = lastFailedDownload.get().get();
-            if (lastFailure.plusMinutes(1).isBefore(now)) {
-              // It's been a while since we had a failure so OK to notify the user again
-              ControllerEvents.fireAddAlertEvent(Models.newAlertModel(Languages.safeText(MessageKey.NETWORK_CONFIGURATION_ERROR), RAGStatus.AMBER));
-            }
-          }
-          lastFailedDownload.set(Optional.of(now));
-
-          return Optional.absent();
-        }
+        return cache.get(cleanEmailAddress);
       }
     });
 
+  }
+
+  /**
+   * @param emailAddress The cleaned email address to use as an MD5 lookup
+   *
+   * @return The buffered image if present
+   */
+  private static Optional<BufferedImage> loadBufferedImage(String emailAddress) {
+
+    log.debug("Loading image from external resource");
+
+    // Require a hex MD5 hash of email address (lowercase) no whitespace
+    final String emailHash = Hashing
+      .md5()
+      .hashString(emailAddress, Charsets.UTF_8)
+      .toString();
+
+    // Create the URL
+    final URL url;
+    try {
+      url = new URL(GRAVATAR_URL + emailHash + ".jpg" + PARAMETERS);
+      log.debug("Gravatar lookup: '{}'", url.toString());
+    } catch (MalformedURLException e) {
+      // This should never happen
+      log.error("Gravatar URL malformed", e);
+      return Optional.absent();
+    }
+
+    try (InputStream stream = url.openStream()) {
+      return Optional.of(ImageIO.read(stream));
+    } catch (IOException e) {
+      // This may happen if no network is available
+      log.warn("Gravatar download failed" + e.getMessage());
+
+      // Avoid flooding the user with failure alerts
+      DateTime now = Dates.nowUtc();
+      if (lastFailedDownload.get().isPresent()) {
+        DateTime lastFailure = lastFailedDownload.get().get();
+        if (lastFailure.plusMinutes(1).isBefore(now)) {
+          // It's been a while since we had a failure so OK to notify the user again
+          ControllerEvents.fireAddAlertEvent(Models.newAlertModel(Languages.safeText(MessageKey.NETWORK_CONFIGURATION_ERROR), RAGStatus.AMBER));
+        }
+      }
+      lastFailedDownload.set(Optional.of(now));
+
+      return Optional.absent();
+    }
   }
 
 }

@@ -127,7 +127,7 @@ public class ComboBoxes {
     comboBox.putClientProperty("JComboBox.isTableCellEditor", Boolean.TRUE);
 
     // Increase border insets to create better visual clarity
-    comboBox.setBorder(BorderFactory.createEmptyBorder(5,5,5,0));
+    comboBox.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 0));
 
     return comboBox;
 
@@ -522,7 +522,7 @@ public class ComboBoxes {
     AccessibilityDecorator.apply(comboBox, MessageKey.RECIPIENT);
 
     // Remove border
-    comboBox.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+    comboBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
     // Ensure we start with nothing selected (must come before editor is set)
     comboBox.setSelectedIndex(-1);
@@ -620,6 +620,7 @@ public class ComboBoxes {
 
     // Get all the exchange names
     String[] allExchangeNames = ExchangeKey.allExchangeNames();
+    allExchangeNames[0] = Languages.safeText(MessageKey.NONE);
     JComboBox<String> comboBox = newReadOnlyComboBox(allExchangeNames);
     comboBox.setMaximumRowCount(MultiBitUI.COMBOBOX_MAX_ROW_COUNT);
 

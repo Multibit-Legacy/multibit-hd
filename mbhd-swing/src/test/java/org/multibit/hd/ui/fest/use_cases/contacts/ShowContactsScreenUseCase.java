@@ -32,7 +32,7 @@ public class ShowContactsScreenUseCase extends AbstractFestUseCase {
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .requireVisible()
       .requireEnabled()
-      .selectRow(3);
+      .selectRow(CONTACTS_ROW);
 
     // Expect the Contacts screen to show
     window

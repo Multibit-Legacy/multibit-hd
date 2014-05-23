@@ -32,7 +32,7 @@ public class ShowExitScreenUseCase extends AbstractFestUseCase {
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .requireVisible()
       .requireEnabled()
-      .selectRow(8);
+      .selectRow(EXIT_ROW);
 
     // Expect the Exit wizard to show
     window

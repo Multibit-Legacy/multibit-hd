@@ -77,8 +77,6 @@ public class HeaderView {
 
     populateAlertPanel();
 
-    balanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
-
   }
 
   /**

@@ -5,7 +5,6 @@ import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactState;
 
-import java.awt.event.KeyEvent;
 import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -225,29 +224,6 @@ public class AddBobContactUseCase extends AbstractFestUseCase {
         .requireDisabled();
 
     }
-
-  }
-
-  private void removeTag(int startCount) {
-
-    // Count the tags
-    final int tagCount1 = window
-      .list(MessageKey.TAGS.getKey())
-      .contents().length;
-
-    assertThat(tagCount1).isEqualTo(startCount);
-
-    // Click on tag to remove
-    window
-      .list(MessageKey.TAGS.getKey())
-      .pressAndReleaseKeys(KeyEvent.VK_DELETE);
-
-    // Count the tags
-    final int tagCount2 = window
-      .list(MessageKey.TAGS.getKey())
-      .contents().length;
-
-    assertThat(tagCount2).isEqualTo(startCount - 1);
 
   }
 

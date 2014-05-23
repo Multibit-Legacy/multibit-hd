@@ -56,12 +56,14 @@ public class ExchangeTickerService extends AbstractService {
 
   private final ExchangeKey exchangeKey;
   private final Currency localCurrency;
-  final Exchange exchange;
+
+  private final Optional<Exchange> exchange;
 
   /**
    * The executor service for managing one off dynamic "all currency" lookups against exchanges
    */
-  final ListeningExecutorService allCurrenciesExecutorService = SafeExecutors.newSingleThreadExecutor( "all-currencies");
+  final ListeningExecutorService allCurrenciesExecutorService = SafeExecutors.newSingleThreadExecutor("all-currencies");
+  private ListeningExecutorService latestTickerExecutorService = SafeExecutors.newSingleThreadExecutor("latest-ticker");
 
   /**
    * <p>Each new instance of the exchange ticker service creates a new independent Exchange</p>
@@ -73,14 +75,23 @@ public class ExchangeTickerService extends AbstractService {
     this.exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getCurrentExchange());
     this.localCurrency = Currency.getInstance(bitcoinConfiguration.getLocalCurrencyCode());
 
-    // Create a new exchange
-    String exchangeClassName = exchangeKey.getExchange().getExchangeSpecification().getExchangeClassName();
-    exchange = ExchangeFactory.INSTANCE.createExchange(exchangeClassName);
+    // Check for a real exchange
+    if (ExchangeKey.NONE.equals(exchangeKey)) {
 
-    // Apply the Bitcoin configuration to this exchange
-    Map<String, String> exchangeApiKeys = bitcoinConfiguration.getExchangeApiKeys();
-    if (exchangeApiKeys.containsKey(exchangeKey.name())) {
-      exchange.getExchangeSpecification().setApiKey(exchangeApiKeys.get(exchangeKey.name()));
+      this.exchange = Optional.absent();
+
+    } else {
+
+      // Create a new exchange
+      String exchangeClassName = exchangeKey.getExchange().get().getExchangeSpecification().getExchangeClassName();
+      exchange = Optional.of(ExchangeFactory.INSTANCE.createExchange(exchangeClassName));
+
+      // Apply the Bitcoin configuration to this exchange
+      Map<String, String> exchangeApiKeys = bitcoinConfiguration.getExchangeApiKeys();
+      if (exchangeApiKeys.containsKey(exchangeKey.name())) {
+        exchange.get().getExchangeSpecification().setApiKey(exchangeApiKeys.get(exchangeKey.name()));
+      }
+
     }
 
   }
@@ -177,6 +188,16 @@ public class ExchangeTickerService extends AbstractService {
 
   }
 
+  @Override
+  public void stopAndWait() {
+
+    super.stopAndWait();
+
+    allCurrenciesExecutorService.shutdownNow();
+    latestTickerExecutorService.shutdownNow();
+
+  }
+
   /**
    * <p>Asynchronously get a single ticker response from the exchange</p>
    *
@@ -184,13 +205,21 @@ public class ExchangeTickerService extends AbstractService {
    */
   public ListenableFuture<Ticker> latestTicker() {
 
+
     // Apply any exchange quirks to the counter code (e.g. ISO "RUB" -> legacy "RUR")
     final String exchangeCounterCode = ExchangeKey.exchangeCode(localCurrency.getCurrencyCode(), exchangeKey);
     final String exchangeBaseCode = ExchangeKey.exchangeCode("XBT", exchangeKey);
 
-    return SafeExecutors.newSingleThreadExecutor("latest-ticker").submit(new Callable<Ticker>() {
+    // Perform an asynchronous call to the exchange
+    return latestTickerExecutorService.submit(new Callable<Ticker>() {
+
       @Override
       public Ticker call() throws Exception {
+
+        if (ExchangeKey.NONE.equals(exchangeKey)) {
+
+          return getEmptyTicker();
+        }
 
         if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
 
@@ -206,19 +235,23 @@ public class ExchangeTickerService extends AbstractService {
 
       private Ticker getDirectTicker() throws IOException {
 
+        log.debug("Direct ticker");
+
         CurrencyPair directPair = new CurrencyPair(exchangeBaseCode, exchangeCounterCode);
-        return exchange.getPollingMarketDataService().getTicker(directPair);
+        return exchange.get().getPollingMarketDataService().getTicker(directPair);
 
       }
 
       private Ticker getTriangulatedTicker() throws IOException {
 
+        log.debug("OER triangulated ticker");
+
         CurrencyPair localToUsdPair = new CurrencyPair(exchangeCounterCode, "USD");
         CurrencyPair bitcoinToUsdPair = new CurrencyPair("BTC", "USD");
 
         // Need to triangulate through USD
-        Ticker inverseLocalToUsdTicker = exchange.getPollingMarketDataService().getTicker(localToUsdPair);
-        Ticker inverseBitcoinToUsdTicker = exchange.getPollingMarketDataService().getTicker(localToUsdPair);
+        Ticker inverseLocalToUsdTicker = exchange.get().getPollingMarketDataService().getTicker(localToUsdPair);
+        Ticker inverseBitcoinToUsdTicker = exchange.get().getPollingMarketDataService().getTicker(localToUsdPair);
 
         // OER gives inverse values to reduce number of calculations
         BigDecimal inverseLocalToUsd = inverseLocalToUsdTicker.getLast();
@@ -239,6 +272,26 @@ public class ExchangeTickerService extends AbstractService {
           .withVolume(BigDecimal.ONE)
           .build();
       }
+
+      private Ticker getEmptyTicker() throws IOException {
+
+        log.debug("Empty ticker");
+
+        CurrencyPair directPair = new CurrencyPair(exchangeBaseCode, exchangeCounterCode);
+
+        // Infer the ticker
+        return Ticker.TickerBuilder.newInstance()
+          .withLast(BigDecimal.ZERO)
+            // All others are zero
+          .withAsk(BigDecimal.ZERO)
+          .withBid(BigDecimal.ZERO)
+          .withHigh(BigDecimal.ZERO)
+          .withLow(BigDecimal.ZERO)
+          .withCurrencyPair(directPair)
+          .withVolume(BigDecimal.ONE)
+          .build();
+      }
+
     });
 
   }
@@ -251,11 +304,16 @@ public class ExchangeTickerService extends AbstractService {
     return allCurrenciesExecutorService.submit(new Callable<String[]>() {
       @Override
       public String[] call() throws Exception {
+
+        if (ExchangeKey.NONE.equals(exchangeKey)) {
+          return new String[]{"BTC"};
+        }
+
         Locale currentLocale = Configurations.currentConfiguration.getLocale();
 
         // This may involve a call to the exchange or not
         Collection<CurrencyPair> currencyPairs;
-        BaseExchangeService exchangeService = (BaseExchangeService) exchange.getPollingMarketDataService();
+        BaseExchangeService exchangeService = (BaseExchangeService) exchange.get().getPollingMarketDataService();
         if (exchangeService != null) {
           try {
             // Use dynamic lookup (may result in null or SSL failures)

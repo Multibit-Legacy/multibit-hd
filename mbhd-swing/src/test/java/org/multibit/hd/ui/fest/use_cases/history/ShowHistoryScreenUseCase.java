@@ -34,7 +34,7 @@ public class ShowHistoryScreenUseCase extends AbstractFestUseCase {
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .requireVisible()
       .requireEnabled()
-      .selectRow(5);
+      .selectRow(HISTORY_ROW);
 
     // Expect the History screen to show
     window

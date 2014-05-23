@@ -36,12 +36,14 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
   private JComboBox<Recipient> recipientComboBox;
   private JLabel imageLabel;
 
+  // TODO This should be injected
+  private ContactService contactService = CoreServices.getCurrentContactService();
+
   /**
    * @param model The model backing this view
    */
   public EnterRecipientView(EnterRecipientModel model) {
     super(model);
-
   }
 
   @Override
@@ -57,9 +59,6 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
     imageLabel = Labels.newImageLabel(Optional.<BufferedImage>absent());
     imageLabel.setVisible(false);
 
-    // Look up the contact service
-    ContactService contactService = CoreServices.getCurrentContactService();
-
     recipientComboBox = ComboBoxes.newRecipientComboBox(contactService, BitcoinNetwork.current().get());
 
     // Set the recipient before the action listener is added
@@ -69,7 +68,7 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
 
       // If the recipient is a contact with an email address, then attempt to show the gravatar
       if (recipient.getContact().isPresent() && recipient.getContact().get().getEmail().isPresent()) {
-        displayGravatar(recipient);
+        displayContactImage(recipient);
       }
     }
 
@@ -129,7 +128,7 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
       if (editorRecipient.getContact().isPresent()) {
         if (editorRecipient.getContact().get().getEmail().isPresent()) {
 
-          displayGravatar(editorRecipient);
+          displayContactImage(editorRecipient);
 
         } else {
           imageLabel.setVisible(false);
@@ -148,11 +147,11 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
   }
 
   /**
-   * <p>Display the gravatar of the recipient</p>
+   * <p>Display the contact image of the recipient</p>
    *
    * @param recipient The recipient (must have an email address)F
    */
-  private void displayGravatar(Recipient recipient) {
+  private void displayContactImage(Recipient recipient) {
 
     // We have an email address
     String emailAddress = recipient.getContact().get().getEmail().get();

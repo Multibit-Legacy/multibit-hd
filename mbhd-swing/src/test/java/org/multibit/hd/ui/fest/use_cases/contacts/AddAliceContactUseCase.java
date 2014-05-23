@@ -82,9 +82,9 @@ public class AddAliceContactUseCase extends AbstractFestUseCase {
       .setText("");
 
     // Ensure Add button is disabled without tag
-    addTag("Alice", 0);
-    addTag("Bob", 1);
-    removeTag("Bob", 2);
+    addTag("Poet", 0);
+    addTag("Traveller", 1);
+    removeTag(2);
 
     // Private notes
     window
@@ -208,29 +208,6 @@ public class AddAliceContactUseCase extends AbstractFestUseCase {
       .contents().length;
 
     assertThat(tagCount2).isEqualTo(tagCount1 + 1);
-
-  }
-
-  private void removeTag(String tag, int startCount) {
-
-    // Count the tags
-    final int tagCount1 = window
-      .list(MessageKey.TAGS.getKey())
-      .contents().length;
-
-    assertThat(tagCount1).isEqualTo(startCount);
-
-    // Click on tag to remove
-    window
-      .list(MessageKey.TAGS.getKey())
-      .clickItem(tag);
-
-    // Count the tags
-    final int tagCount2 = window
-      .list(MessageKey.TAGS.getKey())
-      .contents().length;
-
-    assertThat(tagCount2).isEqualTo(startCount - 1);
 
   }
 

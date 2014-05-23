@@ -32,7 +32,7 @@ public class ShowHelpScreenUseCase extends AbstractFestUseCase {
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .requireVisible()
       .requireEnabled()
-      .selectRow(4);
+      .selectRow(HELP_ROW);
 
     // Expect the Help screen to show
     window
