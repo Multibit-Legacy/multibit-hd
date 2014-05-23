@@ -134,7 +134,10 @@ public class ShowTransactionDetailPanelView extends AbstractWizardPanelView<Paym
           final TransactionData transactionData = (TransactionData) paymentData;
 
           transactionHashValue.setText(transactionData.getTransactionId());
+
+          // Ensure the raw transaction starts at the beginning
           rawTransactionTextArea.setText(transactionData.getRawTransaction());
+          rawTransactionTextArea.setCaretPosition(0);
 
           int size = transactionData.getSize();
           sizeValue.setText(Languages.safeText(MessageKey.SIZE_VALUE, size));
