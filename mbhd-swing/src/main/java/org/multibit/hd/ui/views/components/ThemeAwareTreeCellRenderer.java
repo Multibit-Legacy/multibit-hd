@@ -92,7 +92,7 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.QUESTION, iconColor, MultiBitUI.NORMAL_ICON_SIZE + 15));
           break;
         case HISTORY:
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.ARCHIVE, iconColor, MultiBitUI.NORMAL_ICON_SIZE));
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.HISTORY, iconColor, MultiBitUI.NORMAL_ICON_SIZE));
           break;
         case SETTINGS:
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.GEARS, iconColor, MultiBitUI.NORMAL_ICON_SIZE - 1));
