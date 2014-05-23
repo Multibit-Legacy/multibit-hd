@@ -106,24 +106,24 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
 
     contentPanel.add(Labels.newBitcoinSettingsNote(), "growx,push,span 3,wrap");
 
-    contentPanel.add(Labels.newBitcoinSymbolLabel(), "shrink");
+    contentPanel.add(Labels.newBitcoinSymbol(), "shrink");
     contentPanel.add(bitcoinSymbolComboBox, "growx,push,wrap");
 
-    contentPanel.add(Labels.newLocalSymbolLabel(), "shrink");
+    contentPanel.add(Labels.newLocalSymbol(), "shrink");
     contentPanel.add(localSymbolComboBox, "growx,push,wrap");
 
-    contentPanel.add(Labels.newPlacementLabel(), "shrink");
+    contentPanel.add(Labels.newPlacement(), "shrink");
     contentPanel.add(placementComboBox, "growx,push,wrap");
 
-    contentPanel.add(Labels.newSelectGroupingLabel(), "shrink");
+    contentPanel.add(Labels.newSelectGrouping(), "shrink");
     contentPanel.add(groupingComboBox, "growx,push");
     contentPanel.add(groupingErrorStatus, "grow,push,wrap");
 
-    contentPanel.add(Labels.newSelectDecimalLabel(), "shrink");
+    contentPanel.add(Labels.newSelectDecimal(), "shrink");
     contentPanel.add(decimalComboBox, "growx,push");
     contentPanel.add(decimalErrorStatus, "grow,push,wrap");
 
-    contentPanel.add(Labels.newExampleLabel(), "shrink,wrap");
+    contentPanel.add(Labels.newExample(), "shrink,wrap");
     contentPanel.add(displayAmountMaV.getView().newComponentPanel(), "push,span 3,align center,wrap");
 
   }

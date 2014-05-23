@@ -139,7 +139,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     contentPanel.add(showQRCode, "wrap");
     contentPanel.add(Labels.newBlankLabel());
     contentPanel.add(addressCommentLabel, "wrap");
-    contentPanel.add(Labels.newQRCodeLabelLabel());
+    contentPanel.add(Labels.newQRCodeLabel());
     contentPanel.add(label, "span 2,wrap");
     contentPanel.add(Labels.newNotes());
     contentPanel.add(notesTextArea, "span 3,push,wrap");

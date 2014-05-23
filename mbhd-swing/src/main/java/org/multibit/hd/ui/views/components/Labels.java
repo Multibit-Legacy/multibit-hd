@@ -22,7 +22,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.math.BigInteger;
 
 /**
  * <p>Utility to provide the following to UI:</p>
@@ -324,12 +323,11 @@ public class Labels {
   }
 
   /**
-    *
-    * @return A new "passwordChanged" status label
-    */
-   public static JLabel newPasswordChangedStatus() {
-     return newStatusLabel(Optional.<MessageKey>absent(), new Object[]{}, Optional.<Boolean>absent());
-   }
+   * @return A new "passwordChanged" status label
+   */
+  public static JLabel newPasswordChangedStatus() {
+    return newStatusLabel(Optional.<MessageKey>absent(), new Object[]{}, Optional.<Boolean>absent());
+  }
 
   /**
    * @param status True if the status is "good"
@@ -380,7 +378,7 @@ public class Labels {
   /**
    * @return A new "select theme" label
    */
-  public static JLabel newSelectThemeLabel() {
+  public static JLabel newSelectTheme() {
 
     return Labels.newLabel(MessageKey.SELECT_THEME);
 
@@ -389,7 +387,7 @@ public class Labels {
   /**
    * @return A new "select decimal separator" label
    */
-  public static JLabel newSelectDecimalLabel() {
+  public static JLabel newSelectDecimal() {
 
     return Labels.newLabel(MessageKey.SELECT_DECIMAL_SEPARATOR);
   }
@@ -397,7 +395,7 @@ public class Labels {
   /**
    * @return A new "select grouping separator" label
    */
-  public static JLabel newSelectGroupingLabel() {
+  public static JLabel newSelectGrouping() {
 
     return Labels.newLabel(MessageKey.SELECT_GROUPING_SEPARATOR);
   }
@@ -405,7 +403,7 @@ public class Labels {
   /**
    * @return A new "select local currency symbol" label
    */
-  public static JLabel newLocalSymbolLabel() {
+  public static JLabel newLocalSymbol() {
 
     return Labels.newLabel(MessageKey.SELECT_LOCAL_SYMBOL);
   }
@@ -413,7 +411,7 @@ public class Labels {
   /**
    * @return A new "select local currency code" label
    */
-  public static JLabel newLocalCurrencyLabel() {
+  public static JLabel newLocalCurrency() {
 
     return Labels.newLabel(MessageKey.SELECT_LOCAL_CURRENCY);
   }
@@ -421,7 +419,7 @@ public class Labels {
   /**
    * @return A new "enter access code" label (for API keys)
    */
-  public static JLabel newApiKeyLabel() {
+  public static JLabel newApiKey() {
 
     return Labels.newLabel(MessageKey.ENTER_ACCESS_CODE);
   }
@@ -429,7 +427,7 @@ public class Labels {
   /**
    * @return A new "select local Bitcoin symbol" label
    */
-  public static JLabel newBitcoinSymbolLabel() {
+  public static JLabel newBitcoinSymbol() {
 
     return Labels.newLabel(MessageKey.SELECT_BITCOIN_SYMBOL);
   }
@@ -437,7 +435,7 @@ public class Labels {
   /**
    * @return A new "select placement" label
    */
-  public static JLabel newPlacementLabel() {
+  public static JLabel newPlacement() {
 
     return Labels.newLabel(MessageKey.SELECT_PLACEMENT);
   }
@@ -445,7 +443,7 @@ public class Labels {
   /**
    * @return A new "example" label
    */
-  public static JLabel newExampleLabel() {
+  public static JLabel newExample() {
 
     return Labels.newLabel(MessageKey.EXAMPLE);
   }
@@ -453,7 +451,7 @@ public class Labels {
   /**
    * @return A new "version" label
    */
-  public static JLabel newVersionLabel() {
+  public static JLabel newVersion() {
 
     return Labels.newLabel(MessageKey.VERSION);
   }
@@ -461,7 +459,7 @@ public class Labels {
   /**
    * @return A new "select exchange rate provider" label
    */
-  public static JLabel newSelectExchangeRateProviderLabel() {
+  public static JLabel newSelectExchangeRateProvider() {
 
     return Labels.newLabel(MessageKey.SELECT_EXCHANGE_RATE_PROVIDER);
   }
@@ -670,14 +668,25 @@ public class Labels {
   }
 
   /**
-   * @param transactionFee The transaction fee in satoshis
-   *
    * @return A new "transaction fee" message
    */
-  public static JLabel newTransactionFee(BigInteger transactionFee) {
+  public static JLabel newTransactionFee() {
     return newLabel(MessageKey.TRANSACTION_FEE);
   }
 
+  /**
+   * @return A new "transaction hash" label
+   */
+  public static JLabel newTransactionHash() {
+    return newValueLabel(Languages.safeText(MessageKey.TRANSACTION_HASH));
+  }
+
+  /**
+   * @return A new "raw transaction" label
+   */
+  public static JLabel newRawTransaction() {
+    return Labels.newValueLabel(Languages.safeText(MessageKey.RAW_TRANSACTION));
+  }
 
   /**
    * @return A new "circle" label
@@ -771,8 +780,8 @@ public class Labels {
   /**
    * @return A new "QR code label" message for use with receiving addresses
    */
-  public static JLabel newQRCodeLabelLabel() {
-    return newLabel(MessageKey.QR_CODE_LABEL_LABEL);
+  public static JLabel newQRCodeLabel() {
+    return newLabel(MessageKey.QR_CODE_LABEL);
   }
 
   /**
@@ -837,6 +846,7 @@ public class Labels {
   public static JLabel newSignature() {
     return newLabel(MessageKey.SIGNATURE);
   }
+
   /**
    * @return A new "multi edit note" label
    */
@@ -1205,6 +1215,5 @@ public class Labels {
     }, new Object[][]{});
 
   }
-
 
 }

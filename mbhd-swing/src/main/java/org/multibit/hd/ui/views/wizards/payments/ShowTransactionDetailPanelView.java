@@ -75,10 +75,10 @@ public class ShowTransactionDetailPanelView extends AbstractWizardPanelView<Paym
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
-    JLabel transactionHashLabel = Labels.newValueLabel(Languages.safeText(MessageKey.TRANSACTION_HASH));
+    JLabel transactionHashLabel = Labels.newTransactionHash();;
     transactionHashValue = Labels.newValueLabel("");
 
-    JLabel rawTransactionLabel = Labels.newValueLabel(Languages.safeText(MessageKey.RAW_TRANSACTION));
+    JLabel rawTransactionLabel = Labels.newRawTransaction();
     rawTransactionValue = new JTextArea(5, 60);
     JScrollPane scrollPane = new JScrollPane(rawTransactionValue, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 

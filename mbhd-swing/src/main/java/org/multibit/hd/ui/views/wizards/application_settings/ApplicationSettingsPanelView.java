@@ -75,7 +75,7 @@ public class ApplicationSettingsPanelView extends AbstractWizardPanelView<Applic
 
     contentPanel.add(Labels.newThemeChangeNote(), "growx,span 2,wrap");
 
-    contentPanel.add(Labels.newSelectThemeLabel(), "shrink");
+    contentPanel.add(Labels.newSelectTheme(), "shrink");
     contentPanel.add(themesComboBox, "growx,shrinky,width min:250:,push,wrap");
     contentPanel.add(Labels.newBlankLabel(), "grow,span 2,push,wrap"); // Fill out the remainder
 

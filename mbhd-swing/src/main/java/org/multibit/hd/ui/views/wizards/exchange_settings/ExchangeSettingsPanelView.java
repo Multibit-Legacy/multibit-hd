@@ -110,7 +110,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
     // API key
     apiKeyTextField = TextBoxes.newEnterApiKey(getApiKeyDocumentListener());
-    apiKeyLabel = Labels.newApiKeyLabel();
+    apiKeyLabel = Labels.newApiKey();
 
     // API key visibility
     boolean isOERExchange = ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey);
@@ -130,7 +130,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     tickerSpinner.setVisible(false);
 
     // Local currency
-    currencyCodeLabel = Labels.newLocalCurrencyLabel();
+    currencyCodeLabel = Labels.newLocalCurrency();
 
     // All components are initialised
     setHasComponents(true);
@@ -151,7 +151,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
     contentPanel.add(Labels.newExchangeSettingsNote(), "growx,push,span 3,wrap");
 
-    contentPanel.add(Labels.newSelectExchangeRateProviderLabel(), "shrink");
+    contentPanel.add(Labels.newSelectExchangeRateProvider(), "shrink");
     contentPanel.add(exchangeRateProviderComboBox, "growx,push");
     contentPanel.add(exchangeRateProviderBrowserButton, "shrink,wrap");
 

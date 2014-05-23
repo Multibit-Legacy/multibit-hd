@@ -27,7 +27,7 @@ public class PaymentRequestHeaderConverter implements CSVEntryConverter<PaymentR
     columns[3] = Languages.safeText(MessageKey.DESCRIPTION);
 
     // QR code label.
-    columns[4] = Languages.safeText(MessageKey.QR_CODE_LABEL_LABEL);
+    columns[4] = Languages.safeText(MessageKey.QR_CODE_LABEL);
 
     // Private notes.
     columns[5] = Languages.safeText(MessageKey.PRIVATE_NOTES);

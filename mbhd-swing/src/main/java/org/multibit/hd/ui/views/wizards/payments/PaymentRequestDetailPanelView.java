@@ -103,7 +103,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
     displayQRCodePopoverMaV = Popovers.newDisplayQRCodePopoverMaV(getPanelName());
     showQRCode = Buttons.newQRCodeButton(getShowQRCodePopoverAction());
 
-    JLabel qrCodeLabelLabel = Labels.newValueLabel(Languages.safeText(MessageKey.QR_CODE_LABEL_LABEL));
+    JLabel qrCodeLabelLabel = Labels.newValueLabel(Languages.safeText(MessageKey.QR_CODE_LABEL));
     qrCodeLabelValue = Labels.newBlankLabel();
 
     JLabel noteLabel = Labels.newValueLabel(Languages.safeText(MessageKey.PRIVATE_NOTES));
