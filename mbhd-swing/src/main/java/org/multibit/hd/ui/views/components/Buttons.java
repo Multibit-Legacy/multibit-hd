@@ -453,7 +453,7 @@ public class Buttons {
    */
   public static JButton newQRCodeButton(Action action) {
 
-    JButton button = newButton(action, MessageKey.QR_CODE);
+    JButton button = newButton(action);
 
     // Ensure it is accessible
     AccessibilityDecorator.apply(button, MessageKey.QR_CODE);

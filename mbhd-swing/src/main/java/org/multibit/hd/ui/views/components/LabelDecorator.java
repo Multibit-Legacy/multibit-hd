@@ -110,7 +110,9 @@ public class LabelDecorator {
    *
    */
   public static void applyStatusIconAndColor(PaymentStatus paymentStatus, JLabel label, boolean isCoinbase, int iconSize) {
+
     applyStatusIcon(paymentStatus, label, isCoinbase, iconSize);
+
     switch (paymentStatus.getStatus()) {
       case RED:
         label.setForeground(Themes.currentTheme.statusRed());
@@ -128,6 +130,7 @@ public class LabelDecorator {
         // Unknown status
         throw new IllegalStateException("Unknown status " + paymentStatus.getStatus());
     }
+
   }
 
   /**
@@ -140,6 +143,7 @@ public class LabelDecorator {
     *
     */
    public static void applyStatusIcon(PaymentStatus paymentStatus, JLabel label, boolean isCoinbase, int iconSize) {
+
      switch (paymentStatus.getStatus()) {
        case RED:
          AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, label, true, iconSize);
@@ -150,7 +154,6 @@ public class LabelDecorator {
        case GREEN:
          int depth = paymentStatus.getDepth();
          label.setIcon(Images.newConfirmationIcon(depth, isCoinbase, iconSize));
-
          break;
        case PINK:
          AwesomeDecorator.bindIcon(AwesomeIcon.FILE_TEXT, label, true, iconSize);
@@ -159,5 +162,6 @@ public class LabelDecorator {
          // Unknown status
          throw new IllegalStateException("Unknown status " + paymentStatus.getStatus());
      }
+
    }
 }

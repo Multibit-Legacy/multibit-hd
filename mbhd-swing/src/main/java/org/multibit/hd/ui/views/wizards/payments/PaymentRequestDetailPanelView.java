@@ -58,7 +58,6 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
   // Support QR code popover
   private ModelAndView<DisplayQRCodeModel, DisplayQRCodeView> displayQRCodePopoverMaV;
-  private JButton showQRCode;
 
 
   /**
@@ -101,7 +100,6 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
     // Create the QR code display
     displayQRCodePopoverMaV = Popovers.newDisplayQRCodePopoverMaV(getPanelName());
-    showQRCode = Buttons.newQRCodeButton(getShowQRCodePopoverAction());
 
     JLabel qrCodeLabelLabel = Labels.newValueLabel(Languages.safeText(MessageKey.QR_CODE_LABEL));
     qrCodeLabelValue = Labels.newBlankLabel();
@@ -133,7 +131,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
     contentPanel.add(addressLabel);
     contentPanel.add(addressValue);
-    contentPanel.add(showQRCode, "wrap");
+    contentPanel.add(Buttons.newQRCodeButton(getShowQRCodePopoverAction()), "wrap");
 
     contentPanel.add(qrCodeLabelLabel);
     contentPanel.add(qrCodeLabelValue, "wrap");
@@ -162,6 +160,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
   @Override
   public void afterShow() {
+
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
