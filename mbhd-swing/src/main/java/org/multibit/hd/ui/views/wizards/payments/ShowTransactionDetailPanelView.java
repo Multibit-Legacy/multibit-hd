@@ -10,6 +10,7 @@ import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.TextBoxes;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -79,10 +80,10 @@ public class ShowTransactionDetailPanelView extends AbstractWizardPanelView<Paym
     transactionHashValue = Labels.newValueLabel("");
 
     JLabel rawTransactionLabel = Labels.newRawTransaction();
-    rawTransactionValue = new JTextArea(5, 60);
-    JScrollPane scrollPane = new JScrollPane(rawTransactionValue, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+    rawTransactionValue = TextBoxes.newReadOnlyTextArea(getWizardModel(), 5, 60);
+    JScrollPane scrollPane = new JScrollPane(rawTransactionValue, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
-    JLabel sizeLabel = Labels.newValueLabel(Languages.safeText(MessageKey.SIZE));
+    JLabel sizeLabel = Labels.newSize();
     sizeValue = Labels.newValueLabel("");
 
     JButton blockchainInfoBrowserButton = Buttons.newLaunchBrowserButton(getBlockchainInfoBrowserAction());

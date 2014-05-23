@@ -682,6 +682,13 @@ public class Labels {
   }
 
   /**
+   * @return A new "size" label
+   */
+  public static JLabel newSize() {
+    return newValueLabel(Languages.safeText(MessageKey.SIZE));
+  }
+
+  /**
    * @return A new "raw transaction" label
    */
   public static JLabel newRawTransaction() {
