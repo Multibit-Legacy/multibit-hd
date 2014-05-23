@@ -188,7 +188,7 @@ public class EnterTagsView extends AbstractComponentView<EnterTagsModel> {
 
     String tag = tagsListModel.getElementAt(index);
 
-    log.debug("Removing '{}' at {}", tag, index);
+    log.trace("Removing '{}' at {}", tag, index);
 
     // Remove it from the model
     getModel().get().getNewTags().remove(tag);
@@ -209,7 +209,7 @@ public class EnterTagsView extends AbstractComponentView<EnterTagsModel> {
       tagsList.setSelectedIndex(index);
       tagsList.ensureIndexIsVisible(index);
 
-      log.debug("Set focus to tag index: {} with count: {}", index, sizeAfterRemoval);
+      log.trace("Set focus to tag index: {} with count: {}", index, sizeAfterRemoval);
 
     }
   }
@@ -227,7 +227,7 @@ public class EnterTagsView extends AbstractComponentView<EnterTagsModel> {
 
       String tag = tagText.getText();
 
-      log.debug("Adding tag '{}'", tag);
+      log.trace("Adding tag '{}'", tag);
 
       // Add it to the model
       getModel().get().getNewTags().add(tag);

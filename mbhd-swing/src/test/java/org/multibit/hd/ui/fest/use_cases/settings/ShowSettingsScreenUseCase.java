@@ -32,7 +32,7 @@ public class ShowSettingsScreenUseCase extends AbstractFestUseCase {
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .requireVisible()
       .requireEnabled()
-      .selectRow(6);
+      .selectRow(SETTINGS_ROW);
 
     // Expect the Settings screen to show
     window

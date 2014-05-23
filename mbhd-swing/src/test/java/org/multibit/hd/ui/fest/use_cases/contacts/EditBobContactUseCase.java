@@ -190,27 +190,4 @@ public class EditBobContactUseCase extends AbstractFestUseCase {
 
   }
 
-  private void removeTag(int tagIndex, int startCount) {
-
-    // Count the tags
-    final int tagCount1 = window
-      .list(MessageKey.TAGS.getKey())
-      .contents().length;
-
-    assertThat(tagCount1).isEqualTo(startCount);
-
-    // Click Remove on "tag"
-    window
-      .list(MessageKey.TAGS.getKey())
-      .selectItem(tagIndex);
-
-    // Count the tags
-    final int tagCount2 = window
-      .list(MessageKey.TAGS.getKey())
-      .contents().length;
-
-    assertThat(tagCount2).isEqualTo(startCount- 1);
-
-  }
-
 }
