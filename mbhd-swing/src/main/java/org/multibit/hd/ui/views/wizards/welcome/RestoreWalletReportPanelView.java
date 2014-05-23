@@ -139,7 +139,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     }
 
     // Initialise backup (must be before Bitcoin network starts and on the main thread)
-    BackupManager.INSTANCE.initialise(applicationDataDirectory, Optional.of(cloudBackupLocation));
+    BackupManager.INSTANCE.initialise(applicationDataDirectory, cloudBackupLocation == null ? Optional.<File>absent() : Optional.of(cloudBackupLocation));
 
     if (WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP.equals(getWizardModel().getRestoreMethod())) {
       log.debug("Performing a restore from a seed phrase and a wallet backup.");
