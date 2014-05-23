@@ -5,6 +5,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.LanguageConfiguration;
+import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -117,11 +118,14 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
 
     LanguageConfiguration languageConfiguration = configuration.getLanguage();
     BitcoinConfiguration bitcoinConfiguration = configuration.getBitcoin();
+
+    ExchangeKey exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getCurrentExchange());
     BigInteger satoshis = getModel().get().getSatoshis();
 
     // Display using the symbolic amount
     String[] bitcoinDisplay = Formats.formatSatoshisAsSymbolic(satoshis, languageConfiguration, bitcoinConfiguration, getModel().get().isShowNegative());
 
+    // Bitcoin labels
     if (bitcoinConfiguration.isCurrencySymbolLeading()) {
       handleLeadingSymbol(bitcoinConfiguration);
       if (visible) {
@@ -141,7 +145,10 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
     Locale locale = languageConfiguration.getLocale();
     String localSymbol = bitcoinConfiguration.getLocalCurrencySymbol();
 
-    if (getModel().get().isLocalAmountVisible()) {
+    // Exchange labels
+    if (getModel().get().isLocalAmountVisible()
+      && !ExchangeKey.NONE.equals(exchangeKey)
+      ) {
 
       // Provide basic representation for locale
       String localDisplay = Formats.formatLocalAmount(
@@ -163,7 +170,9 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
         secondaryBalanceLabel.getText(),
         exchangeLabel.getText()
       ));
+
     } else {
+
       // Configuration overrides UI context when hiding
       exchangeLabel.setVisible(false);
 
@@ -173,6 +182,7 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
         primaryBalanceLabel.getText(),
         secondaryBalanceLabel.getText()
       ));
+
     }
 
   }
@@ -227,7 +237,8 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
    */
   private void handleExchangeLabelText(BitcoinConfiguration bitcoinConfiguration, String localSymbol, String localDisplay) {
 
-    if (getModel().get().getRateProvider().isPresent() && getModel().get().getStyle() != DisplayAmountStyle.PLAIN) {
+    if (getModel().get().getRateProvider().isPresent()
+      && getModel().get().getStyle() != DisplayAmountStyle.PLAIN) {
 
       // Have a provider
       if (bitcoinConfiguration.isCurrencySymbolLeading()) {

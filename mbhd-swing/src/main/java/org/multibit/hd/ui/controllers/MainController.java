@@ -450,7 +450,7 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
     if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
       if (bitcoinConfiguration.getExchangeApiKeys().containsKey(ExchangeKey.OPEN_EXCHANGE_RATES.name())) {
         String apiKey = Configurations.currentConfiguration.getBitcoin().getExchangeApiKeys().get(ExchangeKey.OPEN_EXCHANGE_RATES.name());
-        exchangeKey.getExchange().getExchangeSpecification().setApiKey(apiKey);
+        exchangeKey.getExchange().get().getExchangeSpecification().setApiKey(apiKey);
       }
     }
 

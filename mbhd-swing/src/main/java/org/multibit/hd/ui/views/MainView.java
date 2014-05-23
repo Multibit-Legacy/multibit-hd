@@ -81,8 +81,6 @@ public class MainView extends JFrame {
         Rectangle bounds = getBounds();
         String lastFrameBounds = String.format("%d,%d,%d,%d", bounds.x, bounds.y, bounds.width, bounds.height);
 
-        log.debug("Update last frame bounds: {}", lastFrameBounds);
-
         Configurations.currentConfiguration.getApplication().setLastFrameBounds(lastFrameBounds);
 
       }
@@ -105,8 +103,10 @@ public class MainView extends JFrame {
     // Parse the configuration
     resizeToLastFrameBounds();
 
-    // Clear out all the old content and rebuild it from scratch
+    // Clear out all the old content
     getContentPane().removeAll();
+
+    // Rebuild the main content
     getContentPane().add(createMainContent());
 
     // Catch up on recent events
@@ -211,6 +211,8 @@ public class MainView extends JFrame {
    */
   private JPanel createMainContent() {
 
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(),"Must execute on the EDT");
+
     // Create the main panel and place it in this frame
     MigLayout layout = new MigLayout(
       Panels.migXYLayout(),
@@ -224,10 +226,13 @@ public class MainView extends JFrame {
 
     // Deregister any previous references
     if (headerView != null) {
+
+      log.debug("Deregister earlier views");
       CoreServices.uiEventBus.unregister(headerView);
       CoreServices.uiEventBus.unregister(sidebarView);
       CoreServices.uiEventBus.unregister(detailView);
       CoreServices.uiEventBus.unregister(footerView);
+
     }
 
     // Create supporting views (rebuild every time for language support)

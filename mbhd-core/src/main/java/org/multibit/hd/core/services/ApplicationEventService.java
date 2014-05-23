@@ -2,10 +2,7 @@ package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
-import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
-import org.multibit.hd.core.events.CoreEvents;
-import org.multibit.hd.core.events.ExchangeRateChangedEvent;
-import org.multibit.hd.core.events.SecurityEvent;
+import org.multibit.hd.core.events.*;
 
 /**
  * <p>Service to provide the following to application:</p>
@@ -66,6 +63,20 @@ public class ApplicationEventService {
         latestExchangeRateChangedEvent.get().getRateProvider(),
         latestExchangeRateChangedEvent.get().getExpires()
       );
+    }
+
+  }
+
+  /**
+   * @param event The "shutdown" event
+   */
+  @Subscribe
+  public void onShutdownEvent(ShutdownEvent event) {
+
+    // Clear the non-essential events
+    if (ShutdownEvent.ShutdownType.SOFT.equals(event.getShutdownType())) {
+      latestBitcoinNetworkChangedEvent = Optional.absent();
+      latestExchangeRateChangedEvent = Optional.absent();
     }
 
   }

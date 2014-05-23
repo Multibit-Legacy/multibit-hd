@@ -1,5 +1,6 @@
 package org.multibit.hd.core.exchanges;
 
+import com.google.common.base.Optional;
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
 import com.xeiam.xchange.anx.v2.ANXExchange;
@@ -31,6 +32,10 @@ public enum ExchangeKey {
 
   // Full list of available exchanges from XChange library
 
+  /**
+   * NONE is always the first entry in the list
+   */
+  NONE(""),
   ANX(ANXExchange.class.getName()),
   // BITCOIN_AVERAGE(BitcoinAverage.class.getName()), // Causes problems with enum creation
   // BITCOIN_CHARTS(BitcoinChartsExchange.class.getName()), // Aggregator over exchanges
@@ -57,19 +62,23 @@ public enum ExchangeKey {
   // End of enum
   ;
 
-  private Exchange exchange;
+  private final Optional<Exchange> exchange;
 
   ExchangeKey(String exchangeClassName) {
 
-    // Force the use of the default exchange specification
-    this.exchange = ExchangeFactory.INSTANCE.createExchange(exchangeClassName);
-
+    // #35 Support the idea of no exchange for Bitcoin-only situations
+    if ("".equals(exchangeClassName)) {
+      this.exchange = Optional.absent();
+    } else {
+      // Force the use of the default exchange specification
+      this.exchange = Optional.of(ExchangeFactory.INSTANCE.createExchange(exchangeClassName));
+    }
   }
 
   /**
    * @return The exchange instance (not connected) providing access to the default exchange specification
    */
-  public Exchange getExchange() {
+  public Optional<Exchange> getExchange() {
     return exchange;
   }
 
@@ -77,7 +86,13 @@ public enum ExchangeKey {
    * @return The exchange name (not localised)
    */
   public String getExchangeName() {
-    return exchange.getExchangeSpecification().getExchangeName();
+
+    if (exchange.isPresent()) {
+      return exchange.get().getExchangeSpecification().getExchangeName();
+    } else {
+      return "";
+    }
+
   }
 
   /**

@@ -98,7 +98,10 @@ public enum SSLManager {
     hosts[i] = "multibit.org";
     i++;
     for (ExchangeKey exchangeKey : ExchangeKey.values()) {
-      String sslUri = exchangeKey.getExchange().getExchangeSpecification().getSslUri();
+      if (ExchangeKey.NONE.equals(exchangeKey)) {
+        continue;
+      }
+      String sslUri = exchangeKey.getExchange().get().getExchangeSpecification().getSslUri();
       if (sslUri != null && sslUri.startsWith("https://")) {
         hosts[i] = URI.create(sslUri).getHost();
         log.debug("Added {}' to SSL hosts", hosts[i]);

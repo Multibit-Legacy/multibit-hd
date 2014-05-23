@@ -53,6 +53,7 @@ import java.util.Map;
 public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeSettingsWizardModel, ExchangeSettingsPanelModel> implements ActionListener {
 
   private JComboBox<String> exchangeRateProviderComboBox;
+  private JButton exchangeRateProviderBrowserButton;
 
   private JLabel apiKeyLabel;
   private JTextField apiKeyTextField;
@@ -103,7 +104,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
     Preconditions.checkNotNull(locale, "'locale' cannot be empty");
 
-    JButton exchangeRateProviderBrowserButton = Buttons.newLaunchBrowserButton(getExchangeRateProviderBrowserAction());
+    exchangeRateProviderBrowserButton = Buttons.newLaunchBrowserButton(getExchangeRateProviderBrowserAction());
 
     exchangeRateProviderComboBox = ComboBoxes.newExchangeRateProviderComboBox(this, bitcoinConfiguration);
     currencyCodeComboBox = ComboBoxes.newCurrencyCodeComboBox(this);
@@ -184,39 +185,50 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
   public void afterShow() {
 
     // Required to finish the addition of a listener
-    final ExchangeSettingsPanelView self = this;
+
+    final BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin().deepCopy();
+
+    final ExchangeKey exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getCurrentExchange());
 
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
 
-        exchangeRateProviderComboBox.requestFocusInWindow();
+        if (!ExchangeKey.NONE.equals(exchangeKey)) {
 
-        final BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin().deepCopy();
+          exchangeRateProviderComboBox.requestFocusInWindow();
 
-        // Get all the currencies available at the exchange
-        ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(bitcoinConfiguration);
-        ListenableFuture<String[]> futureAllCurrencies = exchangeTickerService.allCurrencies();
-        Futures.addCallback(futureAllCurrencies, new FutureCallback<String[]>() {
-          @Override
-          public void onSuccess(String[] allCurrencies) {
+          exchangeRateProviderBrowserButton.setEnabled(!ExchangeKey.NONE.equals(exchangeKey));
 
-            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(allCurrencies);
-            currencyCodeComboBox.setModel(model);
-            currencyCodeComboBox.setMaximumRowCount(MultiBitUI.COMBOBOX_MAX_ROW_COUNT);
+          // Get all the currencies available at the exchange
+          ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(bitcoinConfiguration);
 
-            ComboBoxes.selectFirstMatch(currencyCodeComboBox, allCurrencies, bitcoinConfiguration.getLocalCurrencyCode());
+          ListenableFuture<String[]> futureAllCurrencies = exchangeTickerService.allCurrencies();
+          Futures.addCallback(futureAllCurrencies, new FutureCallback<String[]>() {
+            @Override
+            public void onSuccess(String[] allCurrencies) {
 
-          }
+              DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(allCurrencies);
+              currencyCodeComboBox.setModel(model);
+              currencyCodeComboBox.setMaximumRowCount(MultiBitUI.COMBOBOX_MAX_ROW_COUNT);
 
-          @Override
-          public void onFailure(Throwable t) {
+              ComboBoxes.selectFirstMatch(currencyCodeComboBox, allCurrencies, bitcoinConfiguration.getLocalCurrencyCode());
 
-            handleFailure(t);
-          }
-        });
+            }
 
+            @Override
+            public void onFailure(Throwable t) {
 
+              handleFailure(t);
+            }
+          });
+
+        } else {
+
+          setCurrencyCodeVisibility(false);
+          setApiKeyVisibility(false);
+
+        }
       }
     });
 
@@ -285,16 +297,22 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
         ExchangeKey exchangeKey = ExchangeKey.values()[selectedIndex];
 
+        // Break out early
+        if (ExchangeKey.NONE.equals(exchangeKey)) {
+          return;
+        }
+
         try {
           final URI exchangeUri;
           if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
             // Ensure MultiBit customers go straight to the free API key page with referral
             exchangeUri = URI.create("https://openexchangerates.org/signup/free?r=multibit");
+            Desktop.getDesktop().browse(exchangeUri);
           } else {
             // All other exchanges go to the main host (not API root)
-            exchangeUri = URI.create("http://" + exchangeKey.getExchange().getExchangeSpecification().getHost());
+            exchangeUri = URI.create("http://" + exchangeKey.getExchange().get().getExchangeSpecification().getHost());
+            Desktop.getDesktop().browse(exchangeUri);
           }
-          Desktop.getDesktop().browse(exchangeUri);
         } catch (IOException ex) {
           ExceptionHandler.handleThrowable(ex);
         }
@@ -314,10 +332,29 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     int exchangeIndex = source.getSelectedIndex();
 
     // Exchanges are presented in the same order as they are declared in the enum
-    ExchangeKey exchangeKey = ExchangeKey.values()[exchangeIndex];
+    final ExchangeKey exchangeKey = ExchangeKey.values()[exchangeIndex];
 
-    // Test for Open Exchange Rates
-    if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
+    // Test for None
+    if (ExchangeKey.NONE.equals(exchangeKey)) {
+
+      // Hide everything
+
+      // Prevent exchange browsing
+      exchangeRateProviderBrowserButton.setEnabled(false);
+
+      setApiKeyVisibility(false);
+      setCurrencyCodeVisibility(false);
+
+      // Hide the ticker verification
+      tickerVerifiedStatus.setVisible(false);
+
+      // Hide the spinner since its related component is not visible
+      tickerSpinner.setVisible(false);
+
+    } else if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
+
+      // Allow exchange browsing
+      exchangeRateProviderBrowserButton.setEnabled(true);
 
       // Show the API key
       setApiKeyVisibility(true);
@@ -325,21 +362,34 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
       // Hide the currency code if the API key is not present
       setCurrencyCodeVisibility(!Strings.isNullOrEmpty(apiKeyTextField.getText()));
 
+      // Hide the ticker verification
+      tickerVerifiedStatus.setVisible(false);
+
+      // Show the spinner so the user knows something is happening
+      tickerSpinner.setVisible(true);
+
     } else {
+
+      // Allow exchange browsing
+      exchangeRateProviderBrowserButton.setEnabled(true);
+
       // Hide the API key
       setApiKeyVisibility(false);
 
       // Show the currency code
       setCurrencyCodeVisibility(true);
+
+      // Disable until populated
+      currencyCodeComboBox.setEnabled(false);
+
+      // Hide the ticker verification
+      tickerVerifiedStatus.setVisible(false);
+
+      // Show the spinner so the user knows something is happening
+      tickerSpinner.setVisible(true);
     }
 
-    // Hide the ticker verification
-    tickerVerifiedStatus.setVisible(false);
-
-    // Show the spinner so the user knows something is happening
-    tickerSpinner.setVisible(true);
-
-    // Update the model (even if in error)
+    // Update the model
     getWizardModel().getConfiguration().getBitcoin().setCurrentExchange(exchangeKey.name());
 
     // Reset the available currencies
@@ -349,15 +399,28 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
       @Override
       public void onSuccess(String[] allCurrencies) {
 
-        currencyCodeComboBox.setModel(new DefaultComboBoxModel<>(allCurrencies));
-        currencyCodeComboBox.setSelectedIndex(-1);
+        if (ExchangeKey.NONE.equals(exchangeKey)) {
 
-        // Prevent application until the currency is selected (to allow ticker check)
-        ViewEvents.fireWizardButtonEnabledEvent(
-          getPanelName(),
-          WizardButton.APPLY,
-          false
-        );
+          // Permit application since there are no currencies to select
+          ViewEvents.fireWizardButtonEnabledEvent(
+            getPanelName(),
+            WizardButton.APPLY,
+            true
+          );
+
+        } else {
+          currencyCodeComboBox.setEnabled(true);
+          currencyCodeComboBox.setModel(new DefaultComboBoxModel<>(allCurrencies));
+          currencyCodeComboBox.setSelectedIndex(-1);
+
+          // Prevent application until the currency is selected (to allow ticker check)
+          ViewEvents.fireWizardButtonEnabledEvent(
+            getPanelName(),
+            WizardButton.APPLY,
+            false
+          );
+
+        }
 
         // Hide the spinner
         tickerSpinner.setVisible(false);
