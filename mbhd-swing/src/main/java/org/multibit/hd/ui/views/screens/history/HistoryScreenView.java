@@ -41,6 +41,8 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
   private JTable historyTable;
   private HistoryTableModel historyTableModel;
 
+  private JButton editButton;
+
   /**
    * @param panelModel The model backing this panel view
    * @param screen     The screen to filter events from components
@@ -75,7 +77,7 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
     enterSearchMaV = Components.newEnterSearchMaV(getScreen().name());
     checkSelectorComboBox = ComboBoxes.newHistoryCheckboxComboBox(this);
 
-    final JButton editButton = Buttons.newEditButton(getEditAction());
+    editButton = Buttons.newEditButton(getEditAction());
 
     // Detect clicks on the table
     historyTable.addMouseListener(getTableMouseListener());
@@ -248,6 +250,26 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
 
         }
 
+        if (e.getClickCount() == 2) {
+
+          // Force select the check mark
+          JTable target = (JTable) e.getSource();
+          int row = target.getSelectedRow();
+
+          if (row != -1) {
+
+            int modelRow = historyTable.convertRowIndexToModel(row);
+
+            historyTableModel.setSelectionCheckmark(
+              modelRow,
+              true
+            );
+          }
+
+          editButton.doClick();
+
+        }
+
       }
 
     };
@@ -280,6 +302,26 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
               !(boolean) historyTableModel.getValueAt(modelRow, ContactTableModel.CHECKBOX_COLUMN_INDEX)
             );
           }
+
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+
+          // Force select the check mark
+          JTable target = (JTable) e.getSource();
+          int row = target.getSelectedRow();
+
+          if (row != -1) {
+
+            int modelRow = historyTable.convertRowIndexToModel(row);
+
+            historyTableModel.setSelectionCheckmark(
+              modelRow,
+              true
+            );
+          }
+
+          editButton.doClick();
 
         }
 

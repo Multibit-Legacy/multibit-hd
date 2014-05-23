@@ -2,7 +2,10 @@ package org.multibit.hd.ui.views.screens.payments;
 
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.dto.*;
+import org.multibit.hd.core.dto.PaymentData;
+import org.multibit.hd.core.dto.PaymentRequestData;
+import org.multibit.hd.core.dto.TransactionData;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
 import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -32,9 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.util.List;
 
@@ -108,6 +109,8 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
       }
     });
 
+    // Ensure we have consistent keyboard selection handling
+    AccessibilityDecorator.applyKeyboardSelectionShortcuts(paymentsTable, detailsButton);
 
     // Create the scroll pane and add the table to it.
     JScrollPane scrollPane = new JScrollPane(paymentsTable);
