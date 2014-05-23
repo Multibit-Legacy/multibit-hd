@@ -80,28 +80,40 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
         case SEND_REQUEST:
           if (nodeInfo.getText().equals(Languages.safeText(MessageKey.SEND_OR_REQUEST))) {
             setIcon(AwesomeDecorator.createIcon(AwesomeIcon.EXCHANGE, iconColor, MultiBitUI.NORMAL_ICON_SIZE - 3));
+            setIconTextGap(9);
+          } else {
+            // In "single mode" this is the home
+            setIcon(AwesomeDecorator.createIcon(AwesomeIcon.HOME, iconColor, MultiBitUI.NORMAL_ICON_SIZE));
+            setIconTextGap(7);
           }
           break;
         case CONTACTS:
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.USER, iconColor, MultiBitUI.NORMAL_ICON_SIZE));
+          setIconTextGap(10);
           break;
         case TRANSACTIONS:
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.LIST, iconColor, MultiBitUI.NORMAL_ICON_SIZE - 2));
+          setIconTextGap(8);
           break;
         case HELP:
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.QUESTION, iconColor, MultiBitUI.NORMAL_ICON_SIZE + 15));
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.QUESTION, iconColor, MultiBitUI.NORMAL_ICON_SIZE + 10));
+          setIconTextGap(9);
           break;
         case HISTORY:
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.HISTORY, iconColor, MultiBitUI.NORMAL_ICON_SIZE));
+          setIconTextGap(9);
           break;
         case SETTINGS:
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.GEARS, iconColor, MultiBitUI.NORMAL_ICON_SIZE - 1));
+          setIconTextGap(6);
           break;
         case TOOLS:
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.WRENCH, iconColor, MultiBitUI.NORMAL_ICON_SIZE));
+          setIconTextGap(6);
           break;
         case EXIT:
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.SIGN_OUT, iconColor, MultiBitUI.NORMAL_ICON_SIZE + 2));
+          setIconTextGap(6);
           break;
       }
 

@@ -1,11 +1,13 @@
 package org.multibit.hd.ui.views;
 
+import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.screens.Screen;
@@ -55,10 +57,16 @@ public class SidebarView {
    * The wallet tree node
    */
   private DefaultMutableTreeNode walletNode;
+  private final boolean multiWallet;
 
-  public SidebarView() {
+  /**
+   * @param multiWallet True if the overall application is supporting hard- and soft-wallets or is in hierarchical mode
+   */
+  public SidebarView(boolean multiWallet) {
 
     CoreServices.uiEventBus.register(this);
+
+    this.multiWallet = multiWallet;
 
     // Insets for top, left
     MigLayout layout = new MigLayout(
@@ -90,16 +98,26 @@ public class SidebarView {
    */
   public void updateWalletTreeNode(final String name) {
 
+    Preconditions.checkNotNull(name, "'name' must be present");
+
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        if (walletNode != null && name != null) {
 
+        // Preconditions
+        if (multiWallet) {
+
+          // Multi wallet requires a tree node to be updated
           SidebarNodeInfo nodeInfo = new SidebarNodeInfo(name, Screen.SEND_REQUEST);
           walletNode.setUserObject(nodeInfo);
+
           // This is to ensure the tree resizes correctly
           ((DefaultTreeModel) sidebarTree.getModel()).nodeChanged(walletNode);
+
         }
+
+        // Always update the title
+        Panels.applicationFrame.setTitle(Languages.safeText(MessageKey.APPLICATION_TITLE) + " - " + name);
 
       }
     });
@@ -201,11 +219,19 @@ public class SidebarView {
     // This node gets overwritten by WalletSummary.getName()
     walletNode = TreeNodes.newSidebarTreeNode(MessageKey.WALLET, Screen.SEND_REQUEST);
 
-    // Add standard wallet nodes
-    walletNode.add(TreeNodes.newSidebarTreeNode(MessageKey.SEND_OR_REQUEST, Screen.SEND_REQUEST));
-    walletNode.add(TreeNodes.newSidebarTreeNode(MessageKey.PAYMENTS, Screen.TRANSACTIONS));
-    walletNode.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, Screen.CONTACTS));
-    root.add(walletNode);
+    // #61 At the moment all users don't use a Trezor or soft-wallet accounts
+    if (multiWallet) {
+      // Add standard wallet nodes at the soft-wallet level
+      walletNode.add(TreeNodes.newSidebarTreeNode(MessageKey.SEND_OR_REQUEST, Screen.SEND_REQUEST));
+      walletNode.add(TreeNodes.newSidebarTreeNode(MessageKey.PAYMENTS, Screen.TRANSACTIONS));
+      walletNode.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, Screen.CONTACTS));
+      root.add(walletNode);
+    } else {
+      // Add standard wallet nodes at the root level
+      root.add(TreeNodes.newSidebarTreeNode(MessageKey.SEND_OR_REQUEST, Screen.SEND_REQUEST));
+      root.add(TreeNodes.newSidebarTreeNode(MessageKey.PAYMENTS, Screen.TRANSACTIONS));
+      root.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, Screen.CONTACTS));
+    }
 
     // Add application nodes
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.HELP, Screen.HELP));
@@ -240,7 +266,7 @@ public class SidebarView {
           ControllerEvents.fireShowDetailScreenEvent(nodeInfo.getDetailScreen());
       }
     } else {
-      log.debug("Ignoring selection: '{}'",detailScreen);
+      log.debug("Ignoring selection: '{}'", detailScreen);
     }
 
     lastSelectedScreen = detailScreen;

@@ -232,7 +232,8 @@ public class MainView extends JFrame {
 
     // Create supporting views (rebuild every time for language support)
     headerView = new HeaderView();
-    sidebarView = new SidebarView();
+    // At present we are always in single wallet mode
+    sidebarView = new SidebarView(false);
     detailView = new DetailView();
     footerView = new FooterView();
 
