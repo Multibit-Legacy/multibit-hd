@@ -120,7 +120,7 @@ public enum WalletManager implements WalletEventListener {
   /**
    * The wallet version number for protobuf encrypted wallets - compatible with MultiBit Classic
    */
-  public static final int MBHD_WALLET_VERSION = 1; // TODO- check compatibility - this is the same as the old serialised MB classic wallets
+  public static final int MBHD_WALLET_VERSION = 1; // TODO - check compatibility - this is the same as the old serialised MB classic wallets
   public static final String MBHD_WALLET_PREFIX = "mbhd";
   public static final String MBHD_WALLET_SUFFIX = ".wallet";
   public static final String MBHD_AES_SUFFIX = ".aes";
@@ -198,7 +198,7 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
-   * Create a wallet that contains only a single, random private key.
+   * Create a wallet
    * This is stored in the MultiBitHD application data directory
    * The name of the wallet file is derived from the seed.
    * If the wallet file already exists it is loaded and returned (and the input password is not used)
@@ -230,7 +230,7 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
-   * Create a wallet that contains only a single, random private key.
+   * Create a wallet.
    * This is stored in the specified directory.
    * The name of the wallet file is derived from the seed.
    * <p/>
@@ -356,7 +356,6 @@ public enum WalletManager implements WalletEventListener {
     checkWalletDirectory(walletDirectory);
 
     try {
-
       String walletFilenameNoAESSuffix = walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME;
       File walletFile = new File(walletFilenameNoAESSuffix + MBHD_AES_SUFFIX);
       String walletFilename = walletFile.getAbsolutePath();
@@ -378,7 +377,7 @@ public enum WalletManager implements WalletEventListener {
 
         // Read the encrypted file in and decrypt it.
         byte[] encryptedWalletBytes = org.multibit.hd.brit.utils.FileUtils.readFile(new File(walletFilename));
-        //log.debug("Encrypted wallet bytes after load:\n" + Utils.bytesToHexString(encryptedWalletBytes));
+        log.trace("Encrypted wallet bytes after load:\n" + Utils.bytesToHexString(encryptedWalletBytes));
 
         KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(EncryptedFileReaderWriter.makeScryptParameters(WalletManager.SCRYPT_SALT));
         KeyParameter keyParameter = keyCrypterScrypt.deriveKey(password);
