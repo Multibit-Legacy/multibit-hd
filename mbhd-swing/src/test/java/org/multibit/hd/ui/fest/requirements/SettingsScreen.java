@@ -3,7 +3,13 @@ package org.multibit.hd.ui.fest.requirements;
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.settings.ShowSettingsScreenUseCase;
+import org.multibit.hd.ui.fest.use_cases.settings.appearance.ShowThenCancelApplicationUseCase;
+import org.multibit.hd.ui.fest.use_cases.settings.exchange.ShowThenCancelExchangeUseCase;
 import org.multibit.hd.ui.fest.use_cases.settings.exchange.VerifyExchangeNoneUseCase;
+import org.multibit.hd.ui.fest.use_cases.settings.exchange.VerifyExchangeOERUseCase;
+import org.multibit.hd.ui.fest.use_cases.settings.language.ShowThenCancelLanguageUseCase;
+import org.multibit.hd.ui.fest.use_cases.settings.sounds.ShowThenCancelSoundsUseCase;
+import org.multibit.hd.ui.fest.use_cases.settings.units.ShowThenCancelUnitsUseCase;
 
 import java.util.Map;
 
@@ -26,12 +32,11 @@ public class SettingsScreen {
     new ShowSettingsScreenUseCase(window).execute(parameters);
 
     // Exercise the basic settings by showing and cancelling
-// TODO Reinstate these as required
-//    new ShowThenCancelLanguageUseCase(window).execute(parameters);
-//    new ShowThenCancelUnitsUseCase(window).execute(parameters);
-//    new ShowThenCancelExchangeUseCase(window).execute(parameters);
-//    new ShowThenCancelApplicationUseCase(window).execute(parameters);
-//    new ShowThenCancelSoundsUseCase(window).execute(parameters);
+    new ShowThenCancelLanguageUseCase(window).execute(parameters);
+    new ShowThenCancelUnitsUseCase(window).execute(parameters);
+    new ShowThenCancelExchangeUseCase(window).execute(parameters);
+    new ShowThenCancelApplicationUseCase(window).execute(parameters);
+    new ShowThenCancelSoundsUseCase(window).execute(parameters);
 
     // Language
 
@@ -39,6 +44,7 @@ public class SettingsScreen {
 
     // Exchange
     new VerifyExchangeNoneUseCase(window).execute(parameters);
+    new VerifyExchangeOERUseCase(window).execute(parameters);
 
     // Application
 

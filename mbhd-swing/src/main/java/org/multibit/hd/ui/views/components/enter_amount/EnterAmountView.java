@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
+import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.core.utils.Numbers;
@@ -188,7 +189,9 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
    */
   private void setLocalAmountVisibility() {
 
-    if (latestExchangeRateChangedEvent.isPresent() && latestExchangeRateChangedEvent.get().getRateProvider().isPresent()) {
+    if (latestExchangeRateChangedEvent.isPresent()
+      && latestExchangeRateChangedEvent.get().getRateProvider().isPresent()
+      && !ExchangeKey.current().equals(ExchangeKey.NONE)) {
 
       setLocalCurrencyComponentVisibility(true);
 
@@ -197,7 +200,9 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
     } else {
 
-      // Never had a rate so hide the local currency components
+      // No rate or rate provider
+
+      // Hide the local currency components
       setLocalCurrencyComponentVisibility(false);
 
       // Rate is not valid by definition
