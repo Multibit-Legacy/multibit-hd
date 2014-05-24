@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fest.use_cases.settings.exchange;
+package org.multibit.hd.ui.fest.use_cases.settings.sounds;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
@@ -9,30 +9,30 @@ import java.util.Map;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "settings" screen exchange wizard shows</li>
+ * <li>Verify the "settings" screen sounds wizard shows</li>
  * </ul>
  * <p>Requires the "settings" screen to be showing</p>
  *
  * @since 0.0.1
  *  
  */
-public class ShowThenCancelExchangeUseCase extends AbstractFestUseCase {
+public class ShowThenCancelSoundsUseCase extends AbstractFestUseCase {
 
-  public ShowThenCancelExchangeUseCase(FrameFixture window) {
+  public ShowThenCancelSoundsUseCase(FrameFixture window) {
     super(window);
   }
 
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    // Click on "exchange"
+    // Click on "sounds"
     window
-      .button(MessageKey.SHOW_EXCHANGE_WIZARD.getKey())
+      .button(MessageKey.SHOW_SOUNDS_WIZARD.getKey())
       .click();
 
-    // Verify the "exchange" wizard appears
+    // Verify the "sounds" wizard appears
     window
-      .label(MessageKey.EXCHANGE_SETTINGS_TITLE.getKey());
+      .label(MessageKey.SOUNDS_SETTINGS_TITLE.getKey());
 
     // Verify cancel is present
     window

@@ -70,7 +70,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
    */
   public ExchangeSettingsPanelView(AbstractWizard<ExchangeSettingsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.SHOW_EXCHANGE_WIZARD, AwesomeIcon.DOLLAR);
+    super(wizard, panelName, MessageKey.EXCHANGE_SETTINGS_TITLE, AwesomeIcon.DOLLAR);
 
   }
 
@@ -205,14 +205,22 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
           ListenableFuture<String[]> futureAllCurrencies = exchangeTickerService.allCurrencies();
           Futures.addCallback(futureAllCurrencies, new FutureCallback<String[]>() {
+
             @Override
-            public void onSuccess(String[] allCurrencies) {
+            public void onSuccess(final String[] allCurrencies) {
 
-              DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(allCurrencies);
-              currencyCodeComboBox.setModel(model);
-              currencyCodeComboBox.setMaximumRowCount(MultiBitUI.COMBOBOX_MAX_ROW_COUNT);
+              SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
 
-              ComboBoxes.selectFirstMatch(currencyCodeComboBox, allCurrencies, bitcoinConfiguration.getLocalCurrencyCode());
+                  DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(allCurrencies);
+                  currencyCodeComboBox.setModel(model);
+                  currencyCodeComboBox.setMaximumRowCount(MultiBitUI.COMBOBOX_MAX_ROW_COUNT);
+
+                  ComboBoxes.selectFirstMatch(currencyCodeComboBox, allCurrencies, bitcoinConfiguration.getLocalCurrencyCode());
+
+                }
+              });
 
             }
 
@@ -493,32 +501,40 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     // Avoid freezing the UI
     Futures.addCallback(futureTicker, new FutureCallback<Ticker>() {
       @Override
-      public void onSuccess(Ticker ticker) {
+      public void onSuccess(final Ticker ticker) {
 
-        // Network or exchange might be down
-        if (ticker == null) {
-          // Stop the spinner but do not allow the Apply
-          tickerSpinner.setVisible(false);
-          return;
-        }
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
 
-        // Show the ticker verification
-        tickerVerifiedStatus.setText(Languages.safeText(MessageKey.VERIFICATION_STATUS));
-        AwesomeDecorator.bindIcon(
-          AwesomeIcon.CHECK,
-          tickerVerifiedStatus,
-          true,
-          MultiBitUI.NORMAL_ICON_SIZE
-        );
-        tickerVerifiedStatus.setVisible(true);
+            // Network or exchange might be down
+            if (ticker == null) {
+              // Stop the spinner but do not allow the Apply
+              tickerSpinner.setVisible(false);
+              return;
+            }
 
-        ViewEvents.fireWizardButtonEnabledEvent(
-          getPanelName(),
-          WizardButton.APPLY,
-          true
-        );
+            // Show the ticker verification
+            tickerVerifiedStatus.setText(Languages.safeText(MessageKey.VERIFICATION_STATUS));
+            AwesomeDecorator.bindIcon(
+              AwesomeIcon.CHECK,
+              tickerVerifiedStatus,
+              true,
+              MultiBitUI.NORMAL_ICON_SIZE
+            );
+            tickerVerifiedStatus.setVisible(true);
 
-        tickerSpinner.setVisible(false);
+            ViewEvents.fireWizardButtonEnabledEvent(
+              getPanelName(),
+              WizardButton.APPLY,
+              true
+            );
+
+            tickerSpinner.setVisible(false);
+
+          }
+        });
+
 
       }
 
@@ -588,26 +604,34 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
   /**
    * @param t The throwable that caused the failure
    */
-  private void handleFailure(Throwable t) {
+  private void handleFailure(final Throwable t) {
 
-    Sounds.playBeep();
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
 
-    tickerVerifiedStatus.setText(Languages.safeText(CoreMessageKey.THE_ERROR_WAS, t.getMessage()));
-    AwesomeDecorator.bindIcon(
-      AwesomeIcon.TIMES,
-      tickerVerifiedStatus,
-      true,
-      MultiBitUI.NORMAL_ICON_SIZE
-    );
-    tickerVerifiedStatus.setVisible(true);
+        Sounds.playBeep();
 
-    ViewEvents.fireWizardButtonEnabledEvent(
-      getPanelName(),
-      WizardButton.APPLY,
-      false
-    );
+        tickerVerifiedStatus.setText(Languages.safeText(CoreMessageKey.THE_ERROR_WAS, t.getMessage()));
+        AwesomeDecorator.bindIcon(
+          AwesomeIcon.TIMES,
+          tickerVerifiedStatus,
+          true,
+          MultiBitUI.NORMAL_ICON_SIZE
+        );
+        tickerVerifiedStatus.setVisible(true);
 
-    tickerSpinner.setVisible(false);
+        ViewEvents.fireWizardButtonEnabledEvent(
+          getPanelName(),
+          WizardButton.APPLY,
+          false
+        );
+
+        tickerSpinner.setVisible(false);
+
+      }
+
+    });
 
   }
 

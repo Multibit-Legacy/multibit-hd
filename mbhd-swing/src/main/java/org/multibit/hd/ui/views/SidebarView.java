@@ -117,7 +117,7 @@ public class SidebarView {
         }
 
         // Always update the title
-        Panels.applicationFrame.setTitle(Languages.safeText(MessageKey.APPLICATION_TITLE) + " - " + name);
+        Panels.applicationFrame.setTitle(Languages.safeText(MessageKey.MULTIBIT_HD_TITLE) + " - " + name);
 
       }
     });

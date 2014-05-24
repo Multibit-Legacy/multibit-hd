@@ -845,7 +845,7 @@ public class Buttons {
    */
   public static JButton newShowSoundSettingsWizardButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.SHOW_SOUND_WIZARD);
+    JButton button = newLargeButton(action, MessageKey.SHOW_SOUNDS_WIZARD);
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.MUSIC,

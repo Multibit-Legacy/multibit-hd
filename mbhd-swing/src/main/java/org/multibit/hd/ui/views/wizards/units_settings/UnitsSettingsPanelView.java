@@ -53,7 +53,7 @@ public class UnitsSettingsPanelView extends AbstractWizardPanelView<UnitsWizardM
    */
   public UnitsSettingsPanelView(AbstractWizard<UnitsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.UNIT_TITLE, AwesomeIcon.BITCOIN);
+    super(wizard, panelName, MessageKey.UNITS_SETTINGS_TITLE, AwesomeIcon.BITCOIN);
 
   }
 
