@@ -5,8 +5,10 @@ import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.swing.timing.Pause.pause;
 
 /**
  * <p>Use case to provide the following to FEST testing:</p>

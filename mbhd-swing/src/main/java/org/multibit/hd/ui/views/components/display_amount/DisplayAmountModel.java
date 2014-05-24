@@ -107,12 +107,7 @@ public class DisplayAmountModel implements Model<DisplayAmountModel> {
   }
 
   public void setRateProvider(Optional<String> rateProvider) {
-
     this.rateProvider = rateProvider;
-
-    // Update the local amount visibility
-    localAmountVisible = rateProvider.isPresent();
-
   }
 
   public boolean isShowNegative() {

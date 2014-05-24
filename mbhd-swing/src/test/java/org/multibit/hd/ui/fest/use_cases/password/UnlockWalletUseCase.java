@@ -62,7 +62,7 @@ public class UnlockWalletUseCase extends AbstractFestUseCase {
       .click();
 
     // Fixed time to unlock
-    Pause.pause(2, TimeUnit.SECONDS);
+    Pause.pause(3, TimeUnit.SECONDS);
 
   }
 

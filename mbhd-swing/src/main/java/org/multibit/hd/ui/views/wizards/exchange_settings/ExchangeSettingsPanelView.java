@@ -105,6 +105,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     Preconditions.checkNotNull(locale, "'locale' cannot be empty");
 
     exchangeRateProviderBrowserButton = Buttons.newLaunchBrowserButton(getExchangeRateProviderBrowserAction());
+    exchangeRateProviderBrowserButton.setEnabled(false);
 
     exchangeRateProviderComboBox = ComboBoxes.newExchangeRateProviderComboBox(this, bitcoinConfiguration);
     currencyCodeComboBox = ComboBoxes.newCurrencyCodeComboBox(this);
@@ -198,7 +199,8 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
           exchangeRateProviderComboBox.requestFocusInWindow();
 
-          exchangeRateProviderBrowserButton.setEnabled(!ExchangeKey.NONE.equals(exchangeKey));
+          // Exchange is not NONE so we can browse
+          exchangeRateProviderBrowserButton.setEnabled(true);
 
           // Get all the currencies available at the exchange
           ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(bitcoinConfiguration);
@@ -235,6 +237,9 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
           setCurrencyCodeVisibility(false);
           setApiKeyVisibility(false);
+
+          // Exchange is NONE so no browsing
+          exchangeRateProviderBrowserButton.setEnabled(false);
 
         }
       }

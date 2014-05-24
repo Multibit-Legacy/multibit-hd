@@ -2,6 +2,7 @@ package org.multibit.hd.ui.fest.use_cases;
 
 import org.fest.swing.core.matcher.JButtonMatcher;
 import org.fest.swing.core.matcher.JLabelMatcher;
+import org.fest.swing.core.matcher.JTextComponentMatcher;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -64,13 +65,24 @@ public abstract class AbstractFestUseCase {
   }
 
   /**
-   * @param name The label name
+   * @param name The button name
    *
    * @return The button if it is not showing
    */
   public JButtonMatcher newNotShowingJButtonFixture(String name) {
 
     return JButtonMatcher.withName(name);
+
+  }
+
+  /**
+   * @param name The text box name
+   *
+   * @return The text box if it is not showing
+   */
+  public JTextComponentMatcher newNotShowingJTextBoxFixture(String name) {
+
+    return JTextComponentMatcher.withName(name);
 
   }
 
