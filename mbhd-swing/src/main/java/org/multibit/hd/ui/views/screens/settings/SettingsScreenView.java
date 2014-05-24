@@ -64,7 +64,7 @@ public class SettingsScreenView extends AbstractScreenView<SettingsScreenModel> 
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        Panels.showLightBox(Wizards.newBitcoinSettingsWizard().getWizardScreenHolder());
+        Panels.showLightBox(Wizards.newUnitsSettingsWizard().getWizardScreenHolder());
       }
     };
     Action showExchangeAction = new AbstractAction() {
@@ -99,7 +99,7 @@ public class SettingsScreenView extends AbstractScreenView<SettingsScreenModel> 
     showLanguageSettingsWizardButton = Buttons.newShowLanguageSettingsWizardButton(showLanguageAction);
 
     contentPanel.add(showLanguageSettingsWizardButton, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
-    contentPanel.add(Buttons.newShowBitcoinSettingsWizardButton(showBitcoinAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push");
+    contentPanel.add(Buttons.newShowUnitsSettingsWizardButton(showBitcoinAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push");
     contentPanel.add(Buttons.newShowExchangeSettingsWizardButton(showExchangeAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push,wrap");
 
     contentPanel.add(Buttons.newShowApplicationSettingsWizardButton(showApplicationAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");

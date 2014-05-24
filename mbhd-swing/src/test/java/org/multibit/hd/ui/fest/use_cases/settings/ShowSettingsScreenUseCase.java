@@ -41,7 +41,7 @@ public class ShowSettingsScreenUseCase extends AbstractFestUseCase {
       .requireEnabled();
 
     window
-      .button(MessageKey.SHOW_BITCOIN_WIZARD.getKey())
+      .button(MessageKey.SHOW_UNITS_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
 

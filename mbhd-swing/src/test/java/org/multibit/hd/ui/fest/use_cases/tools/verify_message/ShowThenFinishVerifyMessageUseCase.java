@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fest.use_cases.tools;
+package org.multibit.hd.ui.fest.use_cases.tools.verify_message;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;

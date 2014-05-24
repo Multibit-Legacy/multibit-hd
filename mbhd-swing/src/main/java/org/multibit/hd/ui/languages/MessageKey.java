@@ -178,6 +178,7 @@ public enum MessageKey {
   // Titles
   APPLICATION_TITLE("application_title"),
 
+  // Send/request
   RECEIVE_BITCOIN_TITLE("receive_bitcoin_title"),
 
   SEND_BITCOIN_TITLE("send_bitcoin_title"),
@@ -219,16 +220,22 @@ public enum MessageKey {
   PASSWORD_REPORT_MESSAGE_FAIL("password_report_message_fail"),
   PASSWORD_UNLOCK("password_unlock"),
 
+  // Settings titles
+
+  LANGUAGE_TITLE("language_title"),
+  EXCHANGE_TITLE("exchange_title"),
+  UNIT_TITLE("unit_title"),
+  APPEARANCE_TITLE("appearance_title"),
+  SOUNDS_TITLE("sounds_title"),
+  FEES_TITLE("fees_title"),
+
+  // Tools titles
+
   SIGN_MESSAGE_TITLE("sign_message_title"),
-
   VERIFY_MESSAGE_TITLE("verify_message_title"),
-
   EDIT_WALLET_TITLE("edit_wallet_title"),
-
   CHANGE_PASSWORD_TITLE("change_password_title"),
-
   VERIFY_NETWORK_TITLE("verify_network_title"),
-
   REPAIR_WALLET_TITLE("repair_wallet_title"),
 
   EMPTY_WALLET_TITLE("empty_wallet_title"),
@@ -276,7 +283,7 @@ public enum MessageKey {
   SHOW_REQUEST_WIZARD("show_request_wizard"),
   SHOW_SOUND_WIZARD("show_sound_wizard"),
   SHOW_LAB_WIZARD("show_lab_wizard"),
-  SHOW_BITCOIN_WIZARD("show_bitcoin_wizard"),
+  SHOW_UNITS_WIZARD("show_units_wizard"),
   SHOW_EXCHANGE_WIZARD("show_exchange_wizard"),
   SHOW_APPLICATION_WIZARD("show_application_wizard"),
   SHOW_LANGUAGE_WIZARD("show_language_wizard"),
@@ -369,7 +376,7 @@ public enum MessageKey {
 
   VERIFY_NETWORK_NOTE_1("verify_network_note_1"),
 
-  BITCOIN_SETTINGS_NOTE_1("bitcoin_settings_note_1"),
+  UNITS_SETTINGS_NOTE_1("units_settings_note_1"),
 
   EXCHANGE_SETTINGS_NOTE_1("exchange_settings_note_1"),
 

@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.bitcoin_settings;
+package org.multibit.hd.ui.views.wizards.units_settings;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -32,13 +32,13 @@ import java.util.Locale;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Settings: Bitcoin display</li>
+ * <li>Settings: Units</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSettingsWizardModel, BitcoinSettingsPanelModel> implements ActionListener {
+public class UnitsSettingsPanelView extends AbstractWizardPanelView<UnitsWizardModel, UnitsSettingsPanelModel> implements ActionListener {
 
   private JComboBox<String> localSymbolComboBox;
 
@@ -51,9 +51,9 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
    * @param wizard    The wizard managing the states
    * @param panelName The panel name
    */
-  public BitcoinSettingsPanelView(AbstractWizard<BitcoinSettingsWizardModel> wizard, String panelName) {
+  public UnitsSettingsPanelView(AbstractWizard<UnitsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.SHOW_BITCOIN_WIZARD, AwesomeIcon.BITCOIN);
+    super(wizard, panelName, MessageKey.UNIT_TITLE, AwesomeIcon.BITCOIN);
 
   }
 
@@ -64,7 +64,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
 
     // Configure the panel model
-    setPanelModel(new BitcoinSettingsPanelModel(
+    setPanelModel(new UnitsSettingsPanelModel(
       getPanelName(),
       configuration
     ));
@@ -104,7 +104,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
     groupingErrorStatus = Labels.newErrorStatus(false);
     groupingErrorStatus.setVisible(false);
 
-    contentPanel.add(Labels.newBitcoinSettingsNote(), "growx,push,span 3,wrap");
+    contentPanel.add(Labels.newUnitsSettingsNote(), "growx,push,span 3,wrap");
 
     contentPanel.add(Labels.newBitcoinSymbol(), "shrink");
     contentPanel.add(bitcoinSymbolComboBox, "growx,push,wrap");
@@ -129,7 +129,7 @@ public class BitcoinSettingsPanelView extends AbstractWizardPanelView<BitcoinSet
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<BitcoinSettingsWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<UnitsWizardModel> wizard) {
 
     PanelDecorator.addCancelApply(this, wizard);
 

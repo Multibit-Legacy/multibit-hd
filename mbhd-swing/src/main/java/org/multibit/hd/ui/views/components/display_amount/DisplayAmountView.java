@@ -146,9 +146,10 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
     String localSymbol = bitcoinConfiguration.getLocalCurrencySymbol();
 
     // Exchange labels
-    if (getModel().get().isLocalAmountVisible()
-      && !ExchangeKey.NONE.equals(exchangeKey)
-      ) {
+    if (getModel().get().isLocalAmountVisible()) {
+
+      // Leave this in to prevent regression of exchange rate race conditions
+      Preconditions.checkState(!ExchangeKey.NONE.equals(exchangeKey),"Exchange NONE should not permit a local amount to be visible.");
 
       // Provide basic representation for locale
       String localDisplay = Formats.formatLocalAmount(

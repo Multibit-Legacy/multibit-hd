@@ -1151,12 +1151,12 @@ public class Labels {
   }
 
   /**
-   * @return A new "Bitcoin settings" note
+   * @return A new "Units settings" note
    */
-  public static JLabel newBitcoinSettingsNote() {
+  public static JLabel newUnitsSettingsNote() {
 
     return newNoteLabel(new MessageKey[]{
-      MessageKey.BITCOIN_SETTINGS_NOTE_1
+      MessageKey.UNITS_SETTINGS_NOTE_1
     }, new Object[][]{});
 
   }
