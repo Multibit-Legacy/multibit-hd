@@ -59,7 +59,9 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
   private JLabel recipientImageLabel;
   private JLabel amountBTCValue;
   private JLabel amountFiatValue;
+  private JLabel miningFeePaidLabel;
   private JLabel miningFeePaidValue;
+  private JLabel clientFeePaidLabel;
   private JLabel clientFeePaidValue;
   private JLabel exchangeRateValue;
 
@@ -128,10 +130,10 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
     JLabel amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT) + " " + Configurations.currentConfiguration.getBitcoin().getLocalCurrencySymbol());
     amountFiatValue = Labels.newValueLabel("");
 
-    JLabel miningFeePaidLabel = Labels.newValueLabel(Languages.safeText(MessageKey.TRANSACTION_FEE));
+    miningFeePaidLabel = Labels.newValueLabel(Languages.safeText(MessageKey.TRANSACTION_FEE));
     miningFeePaidValue = Labels.newValueLabel("");
 
-    JLabel clientFeePaidLabel = Labels.newValueLabel(Languages.safeText(MessageKey.CLIENT_FEE));
+    clientFeePaidLabel = Labels.newValueLabel(Languages.safeText(MessageKey.CLIENT_FEE));
     clientFeePaidValue = Labels.newValueLabel("");
 
     JLabel exchangeRateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL));
@@ -154,12 +156,12 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
     contentPanel.add(amountBTCValue, "span 2, wrap");
     contentPanel.add(amountFiatLabel);
     contentPanel.add(amountFiatValue, "span 2, wrap");
+    contentPanel.add(exchangeRateLabel);
+    contentPanel.add(exchangeRateValue, "span 2, wrap");
     contentPanel.add(miningFeePaidLabel);
     contentPanel.add(miningFeePaidValue, "span 2, wrap");
     contentPanel.add(clientFeePaidLabel);
     contentPanel.add(clientFeePaidValue, "span 2, wrap");
-    contentPanel.add(exchangeRateLabel);
-    contentPanel.add(exchangeRateValue, "span 2, wrap");
   }
 
   @Override
@@ -225,8 +227,22 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
         if (transactionData.getAmountBTC().compareTo(BigInteger.ZERO) >= 0) {
           // Received bitcoin
           recipientValue.setText(Languages.safeText(MessageKey.THIS_BITCOIN_WAS_SENT_TO_YOU));
+
+          // Client and mining fee is not applicable
+          clientFeePaidValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
+          clientFeePaidLabel.setVisible(false);
+          clientFeePaidValue.setVisible(false);
+          miningFeePaidLabel.setVisible(false);
+          miningFeePaidValue.setVisible(false);
         } else {
           // Sent bitcoin
+
+          // TODO set client fee paid
+          clientFeePaidLabel.setVisible(true);
+          clientFeePaidValue.setVisible(true);
+          miningFeePaidLabel.setVisible(true);
+          miningFeePaidValue.setVisible(true);
+
           // Contact may be one of the output addresses
           Collection<String> addressList = transactionData.getOutputAddresses();
           // This is a bit inefficient - could have a hashmap of Contacts, keyed by address
