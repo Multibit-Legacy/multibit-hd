@@ -234,7 +234,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       if (cloudBackupLocationStatus) {
         BackupManager.INSTANCE.initialise(applicationDataDirectory, Optional.of(new File(cloudBackupLocation)));
       } else {
-        BackupManager.INSTANCE.initialise(applicationDataDirectory, null);
+        BackupManager.INSTANCE.initialise(applicationDataDirectory, Optional.<File>absent());
       }
       // Remember the walletSummary and password so that it will be used for the next rolling backup
       BackupService backupService = CoreServices.getOrCreateBackupService();

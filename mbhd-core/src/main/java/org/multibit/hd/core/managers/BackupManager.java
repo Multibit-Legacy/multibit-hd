@@ -431,7 +431,9 @@ public enum BackupManager {
       } else {
         // Emit backupWalletLoadedEvent for notification on GUI
         // This is delayed a few seconds to ensure the UI has initialised to accept alerts
-        log.debug("Loaded backup wallet {0} ok.", fileLoaded);
+        if (fileLoaded != null) {
+          log.debug("Loaded backup wallet " + fileLoaded.getAbsolutePath() + " ok.");
+        }
         if (backupNotifier == null) {
           backupNotifier = SafeExecutors.newSingleThreadScheduledExecutor("backup-notification");
         }

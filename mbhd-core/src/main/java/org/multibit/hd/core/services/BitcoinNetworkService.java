@@ -893,9 +893,15 @@ public class BitcoinNetworkService extends AbstractService {
    * Closes the wallet
    */
   private void closeWallet() {
-
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent() && blockChain != null) {
-      WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet().shutdownAutosaveAndWait();
+      try {
+        WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet().shutdownAutosaveAndWait();
+      } catch (IllegalStateException ise) {
+        // If there is no autosaving set up yet then that is ok
+        if (!ise.getMessage().contains("Auto saving not enabled.")) {
+          throw ise;
+        }
+      }
     }
 
   }
