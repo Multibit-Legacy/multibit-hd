@@ -44,6 +44,8 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
   private JTable contactsTable;
   private ContactTableModel contactsTableModel;
 
+  private JButton editButton;
+
   /**
    * @param panelModel The model backing this panel view
    * @param screen     The screen to filter events from components
@@ -78,7 +80,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
     enterSearchMaV = Components.newEnterSearchMaV(getScreen().name());
     checkSelectorComboBox = ComboBoxes.newContactsCheckboxComboBox(this);
     JButton addButton = Buttons.newAddButton(getAddAction());
-    final JButton editButton = Buttons.newEditButton(getEditAction());
+    editButton = Buttons.newEditButton(getEditAction());
     JButton deleteButton = Buttons.newDeleteButton(getDeleteAction());
     JButton undoButton = Buttons.newUndoButton(getUndoAction());
 
@@ -92,6 +94,9 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
         editButton.requestFocusInWindow();
       }
     });
+
+    // Ensure we have consistent keyboard selection handling
+    AccessibilityDecorator.applyKeyboardSelectionShortcuts(contactsTable, editButton);
 
     // Create the scroll pane and add the table to it.
     JScrollPane scrollPane = new JScrollPane(contactsTable);
@@ -306,6 +311,26 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
 
         }
 
+        if (e.getClickCount() == 2) {
+
+          // Force select the check mark
+          JTable target = (JTable) e.getSource();
+          int row = target.getSelectedRow();
+
+          if (row != -1) {
+
+            int modelRow = contactsTable.convertRowIndexToModel(row);
+
+            contactsTableModel.setSelectionCheckmark(
+              modelRow,
+              true
+            );
+          }
+
+          editButton.doClick();
+
+        }
+
       }
 
     };
@@ -338,6 +363,26 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
               !(boolean) contactsTableModel.getValueAt(modelRow, ContactTableModel.CHECKBOX_COLUMN_INDEX)
             );
           }
+
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+
+          // Force select the check mark
+          JTable target = (JTable) e.getSource();
+          int row = target.getSelectedRow();
+
+          if (row != -1) {
+
+            int modelRow = contactsTable.convertRowIndexToModel(row);
+
+            contactsTableModel.setSelectionCheckmark(
+              modelRow,
+              true
+            );
+          }
+
+          editButton.doClick();
 
         }
 
