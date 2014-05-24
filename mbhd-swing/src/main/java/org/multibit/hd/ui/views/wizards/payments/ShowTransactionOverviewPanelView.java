@@ -222,44 +222,50 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
           miningFeePaidValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
         }
 
-        // Contact may be one of the output addresses
-        Collection<String> addressList = transactionData.getOutputAddresses();
-        // This is a bit inefficient - could have a hashmap of Contacts, keyed by address
-        // Or store the address sent to
-        ContactService contactService = CoreServices.getOrCreateContactService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
-        List<Contact> allContacts = contactService.allContacts();
-        Contact matchedContact = null;
+        if (transactionData.getAmountBTC().compareTo(BigInteger.ZERO) >= 0) {
+          // Received bitcoin
+          recipientValue.setText(Languages.safeText(MessageKey.THIS_BITCOIN_WAS_SENT_TO_YOU));
+        } else {
+          // Sent bitcoin
+          // Contact may be one of the output addresses
+          Collection<String> addressList = transactionData.getOutputAddresses();
+          // This is a bit inefficient - could have a hashmap of Contacts, keyed by address
+          // Or store the address sent to
+          ContactService contactService = CoreServices.getOrCreateContactService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
+          List<Contact> allContacts = contactService.allContacts();
+          Contact matchedContact = null;
 
-        if (allContacts != null) {
-          for (Contact contact : allContacts) {
-            if (addressList != null) {
-              for (String address : addressList) {
-                if (contact.getBitcoinAddress().isPresent() && contact.getBitcoinAddress().get().equals(address)) {
+          if (allContacts != null) {
+            for (Contact contact : allContacts) {
+              if (addressList != null) {
+                for (String address : addressList) {
+                  if (contact.getBitcoinAddress().isPresent() && contact.getBitcoinAddress().get().equals(address)) {
 
-                  // This is a contact for this address
-                  final Address bitcoinAddress;
-                  try {
-                    bitcoinAddress = new Address(networkParameters, address);
-                  } catch (AddressFormatException e) {
-                    // If this occurs we really want to know
-                    throw new IllegalArgumentException("Contact has an incorrect Bitcoin address: " + contact,e);
+                    // This is a contact for this address
+                    final Address bitcoinAddress;
+                    try {
+                      bitcoinAddress = new Address(networkParameters, address);
+                    } catch (AddressFormatException e) {
+                      // If this occurs we really want to know
+                      throw new IllegalArgumentException("Contact has an incorrect Bitcoin address: " + contact, e);
+                    }
+
+                    // Only show the first match
+                    recipientValue.setText(contact.getName());
+                    Recipient matchedRecipient = new Recipient(bitcoinAddress);
+                    matchedRecipient.setContact(contact);
+                    matchedContact = contact;
+
+                    displayGravatar(contact, recipientImageLabel);
+                    break;
                   }
-
-                  // Only show the first match
-                  recipientValue.setText(contact.getName());
-                  Recipient matchedRecipient = new Recipient(bitcoinAddress);
-                  matchedRecipient.setContact(contact);
-                  matchedContact = contact;
-
-                  displayGravatar(contact, recipientImageLabel);
-                  break;
                 }
               }
             }
           }
-        }
-        if (matchedContact == null) {
-          recipientValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
+          if (matchedContact == null) {
+            recipientValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
+          }
         }
       }
 
