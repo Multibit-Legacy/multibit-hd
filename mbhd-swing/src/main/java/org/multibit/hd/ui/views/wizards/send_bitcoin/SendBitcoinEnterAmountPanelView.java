@@ -118,7 +118,9 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
+
         enterRecipientMaV.getView().requestInitialFocus();
+
       }
     });
 

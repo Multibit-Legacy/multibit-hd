@@ -12,9 +12,9 @@ import org.multibit.hd.ui.views.wizards.about.AboutWizardModel;
 import org.multibit.hd.ui.views.wizards.application_settings.ApplicationSettingsState;
 import org.multibit.hd.ui.views.wizards.application_settings.ApplicationSettingsWizard;
 import org.multibit.hd.ui.views.wizards.application_settings.ApplicationSettingsWizardModel;
-import org.multibit.hd.ui.views.wizards.bitcoin_settings.BitcoinSettingsState;
-import org.multibit.hd.ui.views.wizards.bitcoin_settings.BitcoinSettingsWizard;
-import org.multibit.hd.ui.views.wizards.bitcoin_settings.BitcoinSettingsWizardModel;
+import org.multibit.hd.ui.views.wizards.units_settings.UnitsSettingsState;
+import org.multibit.hd.ui.views.wizards.units_settings.UnitsSettingsWizard;
+import org.multibit.hd.ui.views.wizards.units_settings.UnitsWizardModel;
 import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordState;
 import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordWizard;
 import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordWizardModel;
@@ -351,16 +351,16 @@ public class Wizards {
   }
 
   /**
-   * @return A new "Bitcoin settings" wizard for currency unit selection
+   * @return A new "Units settings" wizard for currency unit selection
    */
-  public static BitcoinSettingsWizard newBitcoinSettingsWizard() {
+  public static UnitsSettingsWizard newUnitsSettingsWizard() {
 
-    log.debug("New 'Bitcoin settings wizard'");
+    log.debug("New 'Units settings wizard'");
 
     // Ensure we work with a copy of the current configuration in case of cancellation
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
 
-    return new BitcoinSettingsWizard(new BitcoinSettingsWizardModel(BitcoinSettingsState.BITCOIN_ENTER_DETAILS, configuration));
+    return new UnitsSettingsWizard(new UnitsWizardModel(UnitsSettingsState.UNITS_ENTER_DETAILS, configuration));
   }
 
   /**

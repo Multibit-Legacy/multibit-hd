@@ -12,14 +12,34 @@ package org.multibit.hd.ui.views.screens;
 public enum Screen {
 
   /**
+   * The send/request screen
+   */
+  SEND_REQUEST,
+
+  /**
+   * The wallet payments screen
+   */
+  TRANSACTIONS,
+
+  /**
+   * The wallet contacts screen
+   */
+  CONTACTS,
+
+  /**
+   * The help screen
+   */
+  HELP,
+
+  /**
+   * The history screen
+   */
+  HISTORY,
+
+  /**
    * The settings screen
    */
   SETTINGS,
-
-  /**
-   * The wallet screen
-   */
-  SEND_REQUEST,
 
   /**
    * The tools screen
@@ -27,25 +47,10 @@ public enum Screen {
   TOOLS,
 
   /**
-   * The wallet contacts screen
-   */
-  CONTACTS,
-  /**
-   * The wallet payments screen
-   */
-  TRANSACTIONS,
-  /**
-   * The help screen
-   */
-  HELP,
-  /**
-   * The history screen
-   */
-  HISTORY,
-  /**
    * The about screen
    */
   ABOUT,
+
   /**
    * The exit screen
    */

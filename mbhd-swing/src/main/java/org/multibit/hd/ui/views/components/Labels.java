@@ -421,7 +421,9 @@ public class Labels {
    */
   public static JLabel newApiKey() {
 
-    return Labels.newLabel(MessageKey.ENTER_ACCESS_CODE);
+    JLabel label = Labels.newLabel(MessageKey.ENTER_ACCESS_CODE);
+    label.setName("exchange_"+MessageKey.ENTER_ACCESS_CODE.getKey());
+    return label;
   }
 
   /**
@@ -475,9 +477,10 @@ public class Labels {
    *
    * @param style The display style to use depending on the context
    *
+   * @param festName The FEST name to use when adding accessibility
    * @return A new collection of labels that together form a balance display
    */
-  public static JLabel[] newBalanceLabels(DisplayAmountStyle style) {
+  public static JLabel[] newBalanceLabels(DisplayAmountStyle style, String festName) {
 
     Preconditions.checkNotNull(style, "'style' must be present");
 
@@ -486,6 +489,13 @@ public class Labels {
     JLabel secondaryBalanceLabel = newBlankLabel();
     JLabel trailingSymbolLabel = newBlankLabel();
     JLabel exchangeLabel = newBlankLabel();
+
+    // Add FEST information (accessibility is covered at the overall panel level)
+    leadingBalanceLabel.setName(festName + "_leading_balance");
+    primaryBalanceLabel.setName(festName + "_primary_balance");
+    secondaryBalanceLabel.setName(festName + "_secondary_balance");
+    trailingSymbolLabel.setName(festName + "_trailing_symbol");
+    exchangeLabel.setName(festName + "_exchange");
 
     // Font
     final Font largeFont;
@@ -1151,12 +1161,12 @@ public class Labels {
   }
 
   /**
-   * @return A new "Bitcoin settings" note
+   * @return A new "Units settings" note
    */
-  public static JLabel newBitcoinSettingsNote() {
+  public static JLabel newUnitsSettingsNote() {
 
     return newNoteLabel(new MessageKey[]{
-      MessageKey.BITCOIN_SETTINGS_NOTE_1
+      MessageKey.UNITS_SETTINGS_NOTE_1
     }, new Object[][]{});
 
   }

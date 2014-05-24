@@ -67,7 +67,7 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
     panel.setName(getModel().get().getFestName());
 
     // Create the balance labels (normal size)
-    JLabel[] balanceLabels = Labels.newBalanceLabels(getModel().get().getStyle());
+    JLabel[] balanceLabels = Labels.newBalanceLabels(getModel().get().getStyle(), getModel().get().getFestName());
     leadingSymbolLabel = balanceLabels[0];
     primaryBalanceLabel = balanceLabels[1];
     secondaryBalanceLabel = balanceLabels[2];
@@ -120,6 +120,12 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
     BitcoinConfiguration bitcoinConfiguration = configuration.getBitcoin();
 
     ExchangeKey exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getCurrentExchange());
+
+    // The exchange rate provider can override the intention of the local amount visibility
+    if (ExchangeKey.NONE.equals(exchangeKey)) {
+      getModel().get().setLocalAmountVisible(false);
+    }
+
     BigInteger satoshis = getModel().get().getSatoshis();
 
     // Display using the symbolic amount
@@ -146,9 +152,10 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
     String localSymbol = bitcoinConfiguration.getLocalCurrencySymbol();
 
     // Exchange labels
-    if (getModel().get().isLocalAmountVisible()
-      && !ExchangeKey.NONE.equals(exchangeKey)
-      ) {
+    if (getModel().get().isLocalAmountVisible()) {
+
+      // Leave this in to prevent regression of exchange rate misconfiguration conditions
+      Preconditions.checkState(!ExchangeKey.NONE.equals(exchangeKey),"Exchange NONE should not permit a local amount to be visible.");
 
       // Provide basic representation for locale
       String localDisplay = Formats.formatLocalAmount(

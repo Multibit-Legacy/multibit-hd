@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.bitcoin_settings;
+package org.multibit.hd.ui.views.wizards.units_settings;
 
 import com.google.common.base.Optional;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -7,7 +7,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import java.util.Map;
 
 /**
- * <p>Wizard to provide the following to UI for "Bitcoin settings" wizard:</p>
+ * <p>Wizard to provide the following to UI for "units settings" wizard:</p>
  * <ol>
  * <li>Enter settings</li>
  * </ol>
@@ -15,9 +15,9 @@ import java.util.Map;
  * @since 0.0.1
  *  
  */
-public class BitcoinSettingsWizard extends AbstractWizard<BitcoinSettingsWizardModel> {
+public class UnitsSettingsWizard extends AbstractWizard<UnitsWizardModel> {
 
-  public BitcoinSettingsWizard(BitcoinSettingsWizardModel model) {
+  public UnitsSettingsWizard(UnitsWizardModel model) {
     super(model, false, Optional.absent());
   }
 
@@ -26,8 +26,8 @@ public class BitcoinSettingsWizard extends AbstractWizard<BitcoinSettingsWizardM
 
     // Use the wizard parameter to retrieve the appropriate mode
     wizardViewMap.put(
-      BitcoinSettingsState.BITCOIN_ENTER_DETAILS.name(),
-      new BitcoinSettingsPanelView(this, BitcoinSettingsState.BITCOIN_ENTER_DETAILS.name())
+      UnitsSettingsState.UNITS_ENTER_DETAILS.name(),
+      new UnitsSettingsPanelView(this, UnitsSettingsState.UNITS_ENTER_DETAILS.name())
     );
 
   }

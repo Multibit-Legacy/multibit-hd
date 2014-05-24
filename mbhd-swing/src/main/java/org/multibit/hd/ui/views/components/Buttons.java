@@ -781,11 +781,11 @@ public class Buttons {
   /**
    * @param action The click action
    *
-   * @return A new "Bitcoin settings" wizard button with icon
+   * @return A new "Units settings" wizard button with icon
    */
-  public static JButton newShowBitcoinSettingsWizardButton(Action action) {
+  public static JButton newShowUnitsSettingsWizardButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.SHOW_BITCOIN_WIZARD);
+    JButton button = newLargeButton(action, MessageKey.SHOW_UNITS_WIZARD);
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.BITCOIN,
@@ -845,7 +845,7 @@ public class Buttons {
    */
   public static JButton newShowSoundSettingsWizardButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.SHOW_SOUND_WIZARD);
+    JButton button = newLargeButton(action, MessageKey.SHOW_SOUNDS_WIZARD);
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.MUSIC,

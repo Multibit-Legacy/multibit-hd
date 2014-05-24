@@ -2,7 +2,7 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.ui.fest.use_cases.tools.ShowThenCancelEmptyWalletUseCase;
+import org.multibit.hd.ui.fest.use_cases.tools.empty_wallet.ShowThenCancelEmptyWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.tools.ShowToolsScreenUseCase;
 
 import java.util.Map;

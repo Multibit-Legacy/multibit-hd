@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components.display_payments;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
@@ -77,8 +78,11 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
 
           ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.PLAIN, false,"payment");
           if (CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().isPresent()) {
-            paymentAmountMaV.getModel().setRateProvider(CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().get().getRateProvider());
+            Optional<String> rateProvider = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().get().getRateProvider();
+            paymentAmountMaV.getModel().setRateProvider(rateProvider);
+            paymentAmountMaV.getModel().setLocalAmountVisible(rateProvider.isPresent());
           }
+
           displayAmountMaVList.add(paymentAmountMaV);
           paymentAmountMaV.getModel().setSatoshis(paymentData.getAmountBTC());
           paymentAmountMaV.getModel().setLocalAmount(paymentData.getAmountFiat().getAmount());
@@ -126,6 +130,7 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
     if (displayAmountMaVList != null) {
       for (ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV : displayAmountMaVList) {
         paymentAmountMaV.getModel().setRateProvider(event.getRateProvider());
+        paymentAmountMaV.getModel().setLocalAmountVisible(event.getRateProvider().isPresent());
       }
     }
     updateView();

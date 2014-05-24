@@ -98,7 +98,7 @@ public class MainView extends JFrame {
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be in the EDT. Check MainController.");
 
     // Ensure the title matches the new language
-    setTitle(Languages.safeText(MessageKey.APPLICATION_TITLE));
+    setTitle(Languages.safeText(MessageKey.MULTIBIT_HD_TITLE));
 
     // Parse the configuration
     resizeToLastFrameBounds();

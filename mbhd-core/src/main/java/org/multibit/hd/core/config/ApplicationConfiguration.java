@@ -12,7 +12,7 @@ package org.multibit.hd.core.config;
  */
 public class ApplicationConfiguration {
 
-  private String currentScreen = "HELP";
+  private String currentScreen = "SEND_REQUEST";
 
   private boolean restoreApplicationLayoutOnStartup = false;
 

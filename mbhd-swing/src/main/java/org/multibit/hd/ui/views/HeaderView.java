@@ -101,6 +101,9 @@ public class HeaderView {
         balanceDisplayMaV.getModel().setLocalAmount(event.getLocalBalance());
         balanceDisplayMaV.getModel().setSatoshis(event.getSatoshis());
         balanceDisplayMaV.getModel().setRateProvider(event.getRateProvider());
+        if (event.getRateProvider().isPresent()) {
+          balanceDisplayMaV.getModel().setLocalAmountVisible(true);
+        }
 
         balanceDisplayMaV.getView().setVisible(true);
         balanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
