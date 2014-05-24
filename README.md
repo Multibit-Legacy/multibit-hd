@@ -160,20 +160,18 @@ We are currently working to the following timetable:
 The use cases are described here:
 https://docs.google.com/document/d/18qtE5lmRzB32Sc9Ii37GySJGLKx3VNypBkjnHbNjdik/edit?usp=drive_web
 
-### Automated requirements testing with FEST
+### Automated requirements testing with Swing FEST
 
-We use [Swing FEST](http://docs.codehaus.org/display/FEST/Swing+Module) to perform automated requirements testing of the user interface.
+We use [Swing FEST](http://docs.codehaus.org/display/FEST/Swing+Module) to perform automated requirements testing of the user interface. It gives super fast overview of the application and runs like a standard unit test. `MultiBitHDFestTest` provides the entry point.
 
 This provides an ever-improving set of regression tests to ensure that new code does not break the existing work.
 
-The code is arranged as a single test case with multiple individual tests that are independent of each other. Each create their own temporary
-application directory and may or may not require an initial randomly created empty wallet.
+The code is arranged as a single test case with multiple individual tests that are independent of each other. Each create their own temporary application directory and may or may not require an initial randomly created empty wallet.
 
-Developers are strongly encouraged to create a FEST test for any UI work they are about to undertake and use it to actually test the work
-in progress. It is far faster to run FEST than to manually run up the application and do it manually.
+Developers are strongly encouraged to create a FEST test for any UI work they are about to undertake and use it to actually test the work in progress. It is far faster to run FEST than to manually run up the application and do it manually.
 
 FEST is not intended to run as part of a Maven build since not all build environments support a display.
 
-### Upgrading FontAwesome
+### Upgrading Font Awesome
 
 Use the `FontAwesomeTools` to create the necessary enum entries for `AwesomeIcon` as required.
