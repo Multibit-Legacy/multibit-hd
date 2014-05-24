@@ -1,6 +1,7 @@
 package org.multibit.hd.core.events;
 
 import com.google.bitcoin.core.Address;
+import com.google.common.base.Optional;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -13,9 +14,14 @@ import java.util.Arrays;
  */
 public class BitcoinSentEvent implements CoreEvent {
 
+  /**
+   * The total amount paid (including the client fee)
+   */
   private final BigInteger amount;
 
-  private final BigInteger feePaid;
+  private final Optional<BigInteger> miningFeePaid;
+
+  private final Optional<BigInteger> clientFeePaid;
 
   private final Address destinationAddress;
 
@@ -29,14 +35,16 @@ public class BitcoinSentEvent implements CoreEvent {
     Address destinationAddress,
     BigInteger amount,
     Address changeAddress,
-    BigInteger feePaid,
+    Optional<BigInteger> miningFeePaid,
+    Optional<BigInteger> clientFeePaid,
     boolean sendWasSuccessful,
     String sendFailureReasonKey,
     String[] sendFailureReasonData
   ) {
 
     this.amount = amount;
-    this.feePaid = feePaid;
+    this.miningFeePaid = miningFeePaid;
+    this.clientFeePaid = clientFeePaid;
     this.destinationAddress = destinationAddress;
     this.changeAddress = changeAddress;
     this.sendWasSuccessful = sendWasSuccessful;
@@ -51,8 +59,12 @@ public class BitcoinSentEvent implements CoreEvent {
     return amount;
   }
 
-  public BigInteger getFeePaid() {
-    return feePaid;
+  public Optional<BigInteger> getMiningFeePaid() {
+    return miningFeePaid;
+  }
+
+  public Optional<BigInteger> getClientFeePaid() {
+    return clientFeePaid;
   }
 
   public Address getDestinationAddress() {
@@ -75,7 +87,8 @@ public class BitcoinSentEvent implements CoreEvent {
   public String toString() {
     return "BitcoinSentEvent{" +
             "amount=" + amount +
-            ", feePaid=" + feePaid +
+            ", miningFeePaid=" + miningFeePaid +
+            ", clientFeePaid=" + clientFeePaid +
             ", destinationAddress='" + destinationAddress + '\'' +
             ", changeAddress='" + changeAddress + '\'' +
             ", sendWasSuccessful=" + sendWasSuccessful +

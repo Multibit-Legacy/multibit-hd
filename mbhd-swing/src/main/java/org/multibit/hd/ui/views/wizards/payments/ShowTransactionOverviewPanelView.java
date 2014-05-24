@@ -59,7 +59,8 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
   private JLabel recipientImageLabel;
   private JLabel amountBTCValue;
   private JLabel amountFiatValue;
-  private JLabel minerFeePaidValue;
+  private JLabel miningFeePaidValue;
+  private JLabel clientFeePaidValue;
   private JLabel exchangeRateValue;
 
   // TODO Inject this
@@ -127,8 +128,11 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
     JLabel amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT) + " " + Configurations.currentConfiguration.getBitcoin().getLocalCurrencySymbol());
     amountFiatValue = Labels.newValueLabel("");
 
-    JLabel minerFeePaidLabel = Labels.newValueLabel(Languages.safeText(MessageKey.TRANSACTION_FEE));
-    minerFeePaidValue = Labels.newValueLabel("");
+    JLabel miningFeePaidLabel = Labels.newValueLabel(Languages.safeText(MessageKey.TRANSACTION_FEE));
+    miningFeePaidValue = Labels.newValueLabel("");
+
+    JLabel clientFeePaidLabel = Labels.newValueLabel(Languages.safeText(MessageKey.CLIENT_FEE));
+    clientFeePaidValue = Labels.newValueLabel("");
 
     JLabel exchangeRateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL));
     exchangeRateValue = Labels.newValueLabel("");
@@ -150,8 +154,10 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
     contentPanel.add(amountBTCValue, "span 2, wrap");
     contentPanel.add(amountFiatLabel);
     contentPanel.add(amountFiatValue, "span 2, wrap");
-    contentPanel.add(minerFeePaidLabel);
-    contentPanel.add(minerFeePaidValue, "span 2, wrap");
+    contentPanel.add(miningFeePaidLabel);
+    contentPanel.add(miningFeePaidValue, "span 2, wrap");
+    contentPanel.add(clientFeePaidLabel);
+    contentPanel.add(clientFeePaidValue, "span 2, wrap");
     contentPanel.add(exchangeRateLabel);
     contentPanel.add(exchangeRateValue, "span 2, wrap");
   }
@@ -211,9 +217,9 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
         Optional<BigInteger> feeOnSend = transactionData.getFeeOnSendBTC();
         if (feeOnSend.isPresent()) {
           String[] minerFeePaidArray = Formats.formatSatoshisAsSymbolic(feeOnSend.get(), languageConfiguration, bitcoinConfiguration, true);
-          minerFeePaidValue.setText(minerFeePaidArray[0] + minerFeePaidArray[1]);
+          miningFeePaidValue.setText(minerFeePaidArray[0] + minerFeePaidArray[1]);
         } else {
-          minerFeePaidValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
+          miningFeePaidValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
         }
 
         // Contact may be one of the output addresses

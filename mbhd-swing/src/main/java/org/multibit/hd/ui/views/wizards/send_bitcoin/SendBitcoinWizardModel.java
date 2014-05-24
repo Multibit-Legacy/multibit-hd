@@ -231,12 +231,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     transactionInfo.setNote(note);
 
     // Append miner's fee info
-    BigInteger minerFeePaid = transactionCreationEvent.getFeePaid();
-    if (minerFeePaid == null) {
-      transactionInfo.setMinerFee(Optional.<BigInteger>absent());
-    } else {
-      transactionInfo.setMinerFee(Optional.of(minerFeePaid));
-    }
+    transactionInfo.setMinerFee(transactionCreationEvent.getMiningFeePaid());
 
     // Create the fiat payment
     FiatPayment fiatPayment = new FiatPayment();
