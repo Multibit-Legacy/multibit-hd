@@ -26,6 +26,7 @@ import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
@@ -128,7 +129,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     tickerVerifiedStatus.setVisible(false);
 
     // Ticker spinner
-    tickerSpinner = Labels.newSpinner();
+    tickerSpinner = Labels.newSpinner(Themes.currentTheme.fadedText(), MultiBitUI.NORMAL_PLUS_ICON_SIZE);
     tickerSpinner.setVisible(false);
 
     // Local currency
@@ -162,7 +163,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
     contentPanel.add(currencyCodeLabel, "shrink");
     contentPanel.add(currencyCodeComboBox, "growx,push");
-    contentPanel.add(tickerSpinner, "grow,wrap");
+    contentPanel.add(tickerSpinner, "grow," + MultiBitUI.NORMAL_PLUS_ICON_SIZE_MIG + ",wrap");
     contentPanel.add(tickerVerifiedStatus, "grow,cell 1 4,push,wrap");
 
   }

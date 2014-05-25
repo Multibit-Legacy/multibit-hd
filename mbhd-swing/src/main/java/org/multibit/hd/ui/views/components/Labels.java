@@ -339,21 +339,23 @@ public class Labels {
   }
 
   /**
+   * @param color The spinner color
+   * @param size  The size in pixels of the target component
+   *
    * @return A new "spinner" label (indicates that something is happening asynchronously)
    */
-  public static JLabel newSpinner() {
+  public static JLabel newSpinner(Color color, int size) {
 
-    JLabel label = newBlankLabel();
+    // The container label
+    final JLabel label = newBlankLabel();
 
-    Icon icon = new RotatingIcon(AwesomeDecorator.createIcon(
-      AwesomeIcon.SPINNER,
-      Themes.currentTheme.text(),
-      MultiBitUI.NORMAL_PLUS_ICON_SIZE
+    final RotatingIcon rotatingIcon = new RotatingIcon(AwesomeDecorator.createIcon(
+      AwesomeIcon.REFRESH,
+      color,
+      size
     ), label);
 
-    label.setIcon(icon);
-
-    label.setSize(icon.getIconWidth() + 20, icon.getIconHeight() + 20);
+    label.setIcon(rotatingIcon);
 
     return label;
   }
@@ -422,7 +424,7 @@ public class Labels {
   public static JLabel newApiKey() {
 
     JLabel label = Labels.newLabel(MessageKey.ENTER_ACCESS_CODE);
-    label.setName("exchange_"+MessageKey.ENTER_ACCESS_CODE.getKey());
+    label.setName("exchange_" + MessageKey.ENTER_ACCESS_CODE.getKey());
     return label;
   }
 
@@ -475,9 +477,9 @@ public class Labels {
    * <li>[3]: Localised exchange rate display</li>
    * </ul>
    *
-   * @param style The display style to use depending on the context
-   *
+   * @param style    The display style to use depending on the context
    * @param festName The FEST name to use when adding accessibility
+   *
    * @return A new collection of labels that together form a balance display
    */
   public static JLabel[] newBalanceLabels(DisplayAmountStyle style, String festName) {

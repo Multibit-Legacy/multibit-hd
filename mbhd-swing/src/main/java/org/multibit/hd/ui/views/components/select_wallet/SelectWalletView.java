@@ -56,7 +56,7 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
     AccessibilityDecorator.apply(descriptionLabel, MessageKey.DESCRIPTION);
 
     // Add to the panel
-    panel.add(selectedWalletComboBox, "grow,push,w min:503:,wrap");
+    panel.add(selectedWalletComboBox, "grow,push,w min:501:,wrap");
     panel.add(descriptionLabel, "grow,push,wrap");
 
     return panel;

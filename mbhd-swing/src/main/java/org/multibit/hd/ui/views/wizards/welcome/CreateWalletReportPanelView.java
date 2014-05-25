@@ -95,7 +95,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
     backupLocationStatusLabel = Labels.newBackupLocationStatus(false);
 
     // Provide a spinner
-    spinner = Labels.newSpinner();
+    spinner = Labels.newSpinner(Themes.currentTheme.text(), MultiBitUI.NORMAL_PLUS_ICON_SIZE);
 
     // Make all labels invisible initially
     seedPhraseCreatedStatusLabel.setVisible(false);
@@ -103,7 +103,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
     walletCreatedStatusLabel.setVisible(false);
     backupLocationStatusLabel.setVisible(false);
 
-    contentPanel.add(spinner, "align right,wrap");
+    contentPanel.add(spinner, "span 3,align right,"+MultiBitUI.NORMAL_PLUS_ICON_SIZE_MIG+",wrap");
     contentPanel.add(seedPhraseCreatedStatusLabel, "wrap");
     contentPanel.add(walletPasswordCreatedStatusLabel, "wrap");
     contentPanel.add(backupLocationStatusLabel, "wrap");

@@ -150,6 +150,16 @@ public interface MultiBitUI {
    */
   String LARGE_BUTTON_MIG = "w 200,h 160";
 
+  /**
+   * Provides the MiG layout information for a normal icon
+   */
+  String NORMAL_ICON_SIZE_MIG="w "+NORMAL_ICON_SIZE+",h "+NORMAL_ICON_SIZE;
+
+  /**
+   * Provides the MiG layout information for a normal plus icon
+   */
+  String NORMAL_PLUS_ICON_SIZE_MIG="w "+(NORMAL_PLUS_ICON_SIZE * 1.5)+",h "+NORMAL_PLUS_ICON_SIZE;
+
   // Text fields
 
   /**

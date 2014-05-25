@@ -2,9 +2,11 @@ package org.multibit.hd.ui.views.components.confirm_password;
 
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
+import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -83,7 +85,7 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
     verificationStatusLabel.setName(panelName+"."+MessageKey.VERIFICATION_STATUS.getKey());
     verificationStatusLabel.setVisible(false);
 
-    JLabel spinner = Labels.newSpinner();
+    JLabel spinner = Labels.newSpinner(Themes.currentTheme.fadedText(), MultiBitUI.NORMAL_PLUS_ICON_SIZE);
     spinner.setVisible(false);
 
     // Add to the panel
@@ -95,7 +97,7 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
     panel.add(Labels.newEnterNewPassword());
     panel.add(password1);
     panel.add(Buttons.newShowButton(toggleDisplayAction), "spany 2");
-    panel.add(spinner, "spany 2,wrap");
+    panel.add(spinner, "spany 2,"+ MultiBitUI.NORMAL_PLUS_ICON_SIZE_MIG+",wrap");
     panel.add(Labels.newRetypeNewPassword());
     panel.add(password2, "wrap");
     panel.add(verificationStatusLabel, "span 4,grow,push");

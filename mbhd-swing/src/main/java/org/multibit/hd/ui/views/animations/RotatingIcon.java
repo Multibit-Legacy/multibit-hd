@@ -20,17 +20,63 @@ import java.awt.geom.AffineTransform;
 public class RotatingIcon implements Icon {
 
   private final Icon delegateIcon;
-
-  private double theta = -Math.PI/4;
-  private double delta = - theta / 4;
-  private double thetaMax = 2 * Math.PI;
-
-  private final int centerX;
-  private final int centerY;
-
   private final int width;
   private final int height;
 
+  /**
+   * Required to correct for variation in the centroid of Font Awesome icons
+   */
+  private final int[][] rotationOffsets = new int[][]{
+
+    // 0
+    {0, 0},
+    {0, 0},
+    {0, 0},
+    {0, 1},
+
+    // 4
+    {0, 1},
+    {0, 1},
+    {0, 1},
+    {-1, 1},
+
+    // 8
+    {-1, 1},
+    {-1, 1},
+    {-1, 1},
+    {-1, 0},
+
+    // 12
+    {-1, 0},
+    {-1, 0},
+    {-1, 0},
+    {0, 0},
+
+  };
+
+  /**
+   * The number of steps to make per rotation (power of 2)
+   */
+  private final int maxStepCount = 16;
+
+  /**
+   * Starting position is "North"
+   */
+  private double theta = 0;
+
+  /**
+   * Delta is in radians is a complete circle split into max steps
+   */
+  private double delta = 2 * Math.PI / maxStepCount;
+
+  /**
+   * The current step count (start at the halfway point)
+   */
+  private int stepCount = 0;
+
+  /**
+   * Handles periodic increments of rotation
+   */
   private final Timer timer;
 
   /**
@@ -44,27 +90,59 @@ public class RotatingIcon implements Icon {
     width = delegateIcon.getIconWidth();
     height = delegateIcon.getIconHeight();
 
-    centerX = width / 2;
-    centerY = height / 2;
-
-    timer = new Timer(50, new ActionListener() {
+    // Timer needs to be fairly fast to appear responsive
+    timer = new Timer(75, new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        theta += delta;
-
-        if (theta >= thetaMax) {
-          theta = 0;
-        }
-
-        component.repaint();
+        incrementRotation(component);
 
       }
     });
 
+    component.repaint();
+
     // Run continuously
     timer.setRepeats(true);
     timer.start();
+
+  }
+
+  public void incrementRotation(JComponent component) {
+
+    // Increment theta
+    theta += delta;
+
+    // Rollover to start
+    stepCount++;
+    if (stepCount >= maxStepCount) {
+
+      theta = 0;
+      stepCount = 0;
+
+    }
+
+    component.repaint();
+
+  }
+
+  public void decrementRotation(JComponent component) {
+
+    theta -= delta;
+
+    // Rollover to end
+    if (stepCount == 0) {
+
+      theta = 2 * Math.PI - delta;
+      stepCount = maxStepCount - 1;
+
+    } else {
+
+      stepCount--;
+
+    }
+
+    component.repaint();
 
   }
 
@@ -77,17 +155,26 @@ public class RotatingIcon implements Icon {
     Graphics2D g2 = (Graphics2D) g.create();
     g2.setRenderingHints(ImageDecorator.smoothRenderingHints());
 
-    Rectangle rectangle = new Rectangle(x, y, delegateIcon.getIconWidth(), delegateIcon.getIconHeight());
-    g2.setClip(rectangle);
+    // Required to center the image within the component
+    int xCenteringOffset = 11;
+    int yCenteringOffset = 0;
 
-    AffineTransform original = g2.getTransform();
-    AffineTransform at = new AffineTransform();
+    // Required to compensate for centroid movements during placement within the component
+    int xRotationOffset = rotationOffsets[stepCount][0];
+    int yRotationOffset = rotationOffsets[stepCount][1];
 
-    at.concatenate(original);
-    at.rotate(theta, x + centerX, y + centerY);
-    g2.setTransform(at);
-    delegateIcon.paintIcon(c, g2, x, y);
-    g2.setTransform(original);
+    // Calculate the centroid
+    double centerX = xRotationOffset + xCenteringOffset + x + (width / 2);
+    double centerY = yRotationOffset + yCenteringOffset + y + (height / 2);
+
+    // Create rotation transform
+    AffineTransform tx = new AffineTransform();
+    tx.rotate(theta, centerX, centerY);
+
+    // Paint the icon onto the component
+    g2.setTransform(tx);
+    delegateIcon.paintIcon(c, g2, xRotationOffset + xCenteringOffset + x, yRotationOffset + yCenteringOffset + y);
+    g2.dispose();
 
     // Start the timer again
     timer.start();
@@ -96,11 +183,11 @@ public class RotatingIcon implements Icon {
 
   @Override
   public int getIconWidth() {
-    return delegateIcon.getIconWidth();
+    return width;
   }
 
   @Override
   public int getIconHeight() {
-    return delegateIcon.getIconHeight();
+    return height;
   }
 }
