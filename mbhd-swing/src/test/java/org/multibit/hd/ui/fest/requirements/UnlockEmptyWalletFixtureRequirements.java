@@ -13,7 +13,7 @@ import org.multibit.hd.ui.fest.use_cases.security.CloseDebugSecurityPopoverUseCa
  * @since 0.0.1
  *  
  */
-public class UnlockEmptyWalletFixture {
+public class UnlockEmptyWalletFixtureRequirements {
 
   public static void verifyUsing(FrameFixture window) {
 

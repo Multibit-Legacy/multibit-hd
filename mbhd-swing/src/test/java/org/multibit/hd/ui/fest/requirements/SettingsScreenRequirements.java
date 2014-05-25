@@ -22,7 +22,7 @@ import java.util.Map;
  * @since 0.0.1
  *  
  */
-public class SettingsScreen {
+public class SettingsScreenRequirements {
 
   public static void verifyUsing(FrameFixture window) {
 
