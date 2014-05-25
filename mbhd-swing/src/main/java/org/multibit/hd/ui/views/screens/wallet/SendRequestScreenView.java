@@ -2,18 +2,21 @@ package org.multibit.hd.ui.views.screens.wallet;
 
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.dto.BitcoinNetworkStatus;
+import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.PaymentType;
+import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.ui.MultiBitUI;
-import org.multibit.hd.ui.events.view.SystemStatusChangedEvent;
 import org.multibit.hd.ui.events.view.WalletDetailChangedEvent;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
@@ -77,9 +80,9 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
     walletService = CoreServices.getCurrentWalletService();
 
     MigLayout layout = new MigLayout(
-            Panels.migXYLayout(),
-            "10[]10[]", // Column constraints
-            "1[]20[]10[]" // Row constraints
+      Panels.migXYLayout(),
+      "10[]10[]", // Column constraints
+      "1[]20[]10[]" // Row constraints
     );
 
     JPanel contentPanel = Panels.newPanel(layout);
@@ -104,20 +107,23 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
 
     sendBitcoin = Buttons.newSendBitcoinWizardButton(showSendBitcoinWizardAction);
 
-    // Start with disabled button and use Bitcoin network status to enable
-    sendBitcoin.setEnabled(false);
-
     requestBitcoin = Buttons.newRequestBitcoinWizardButton(showRequestBitcoinWizardAction);
 
-    // Start with disabled button and use Bitcoin network status to enable
-    requestBitcoin.setEnabled(false);
-
+    if (InstallationManager.unrestricted) {
+      // Start with enabled buttons and use Bitcoin network status to modify
+      sendBitcoin.setEnabled(true);
+      requestBitcoin.setEnabled(true);
+    } else {
+      // Start with disabled button and use Bitcoin network status to modify
+      sendBitcoin.setEnabled(false);
+      requestBitcoin.setEnabled(false);
+    }
     // Initialise panel with a blank list of today's sending payments
     List<PaymentData> todaysSendingPayments = Lists.newArrayList(); // walletService.subsetPaymentsAndSort(allPayments, PaymentType.SENDING);
     displaySendingPaymentsMaV = Components.newDisplayPaymentsMaV(getScreen().name());
     displaySendingPaymentsMaV.getModel().setValue(todaysSendingPayments);
     JScrollPane sendingPaymentsScrollPane = new JScrollPane(displaySendingPaymentsMaV.getView().newComponentPanel(),
-            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+      JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     sendingPaymentsScrollPane.setBackground(Themes.currentTheme.detailPanelBackground());
     sendingPaymentsScrollPane.getViewport().setBackground(Themes.currentTheme.detailPanelBackground());
     sendingPaymentsScrollPane.setOpaque(true);
@@ -129,7 +135,7 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
     displayReceivingPaymentsMaV.getModel().setValue(todaysReceivingPayments);
 
     JScrollPane receivingPaymentsScrollPane = new JScrollPane(displayReceivingPaymentsMaV.getView().newComponentPanel(),
-            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+      JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     receivingPaymentsScrollPane.getViewport().setBackground(Themes.currentTheme.detailPanelBackground());
     receivingPaymentsScrollPane.setOpaque(true);
     receivingPaymentsScrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -150,31 +156,27 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
 
   @Override
   public boolean beforeShow() {
-    enableButtons();
-
     return true;
   }
 
   @Override
   public void afterShow() {
     update();
-    enableButtons();
   }
 
-  private void enableButtons() {
-    boolean enabled = CoreServices.getOrCreateBitcoinNetworkService().isStartedOk();
-
-    sendBitcoin.setEnabled(enabled);
-    requestBitcoin.setEnabled(enabled);
-  }
-
-  /**
-   * <p>Handles the response to a system status change</p>
-   *
-   * @param event The system status change event
-   */
   @Subscribe
-  public void onSystemStatusChangeEvent(final SystemStatusChangedEvent event) {
+  public void onBitcoinNetworkChangeEvent(final BitcoinNetworkChangedEvent event) {
+
+    log.trace("Received 'Bitcoin network changed' event");
+
+    Preconditions.checkNotNull(event, "'event' must be present");
+    Preconditions.checkNotNull(event.getSummary(), "'summary' must be present");
+
+    BitcoinNetworkSummary summary = event.getSummary();
+
+    Preconditions.checkNotNull(summary.getSeverity(), "'severity' must be present");
+    Preconditions.checkNotNull(summary.getMessageKey(), "'errorKey' must be present");
+    Preconditions.checkNotNull(summary.getMessageData(), "'errorData' must be present");
 
     if (!isInitialised()) {
       return;
@@ -188,34 +190,52 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
         // because it is possible that a second wallet is generating transactions using
         // addresses that this one has not displayed yet. This would lead to the same
         // address being used twice.
-        switch (event.getSeverity()) {
+        switch (event.getSummary().getSeverity()) {
           case RED:
             // Always disabled on RED
             sendBitcoin.setEnabled(false);
             requestBitcoin.setEnabled(false);
+
             break;
           case AMBER:
             if (InstallationManager.unrestricted) {
+              // Enable on AMBER if unrestricted
               sendBitcoin.setEnabled(true);
               requestBitcoin.setEnabled(true);
             } else {
+
               // Disable on AMBER in production
               sendBitcoin.setEnabled(false);
               requestBitcoin.setEnabled(false);
             }
             break;
           case GREEN:
-            sendBitcoin.setEnabled(true);
-            requestBitcoin.setEnabled(true);
+            if (BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus())) {
+
+              // Always enabled on GREEN and fully synchronized
+              sendBitcoin.setEnabled(true);
+              requestBitcoin.setEnabled(true);
+
+            } else {
+
+              // Enable if unrestricted to assist testing
+              if (InstallationManager.unrestricted) {
+                sendBitcoin.setEnabled(true);
+                requestBitcoin.setEnabled(true);
+              } else {
+                sendBitcoin.setEnabled(false);
+                requestBitcoin.setEnabled(false);
+              }
+
+            }
             break;
           default:
             // Unknown status
-            throw new IllegalStateException("Unknown event severity " + event.getSeverity());
+            throw new IllegalStateException("Unknown event severity " + event.getSummary().getStatus());
         }
 
       }
     });
-
   }
 
   @Subscribe
