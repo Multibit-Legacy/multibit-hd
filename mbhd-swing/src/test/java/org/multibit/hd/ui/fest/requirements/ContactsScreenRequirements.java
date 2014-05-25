@@ -16,7 +16,7 @@ import java.util.Map;
  * @since 0.0.1
  *  
  */
-public class ContactsScreen {
+public class ContactsScreenRequirements {
 
   public static void verifyUsing(FrameFixture window) {
 

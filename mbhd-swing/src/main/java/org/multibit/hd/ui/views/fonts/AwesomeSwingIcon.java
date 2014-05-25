@@ -134,7 +134,7 @@ public class AwesomeSwingIcon implements Icon, PropertyChangeListener {
 
     FontMetrics fm = component.getFontMetrics(font);
 
-    iconWidth = fm.stringWidth(text) + 2;
+    iconWidth = fm.stringWidth(text);
     iconHeight = fm.getHeight();
 
     component.revalidate();
@@ -160,10 +160,12 @@ public class AwesomeSwingIcon implements Icon, PropertyChangeListener {
     g2.setFont(font);
     g2.setColor(getForeground());
 
+    // Align the icon vertically
     FontMetrics fm = g2.getFontMetrics();
-
     g2.translate(x, y + fm.getAscent());
-    g2.drawString(text, 2, 0);
+
+    // Draw the Font Awesome character without any offset to allow rotation if required
+    g2.drawString(text, 0, 0);
 
     g2.dispose();
   }

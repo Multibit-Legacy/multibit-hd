@@ -15,7 +15,7 @@ import java.util.Map;
  * @since 0.0.1
  *  
  */
-public class SendRequestScreen {
+public class SendRequestScreenRequirements {
 
   public static void verifyUsing(FrameFixture window) {
 

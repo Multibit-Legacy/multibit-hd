@@ -95,10 +95,10 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     arrangeFresh();
 
     // Create a wallet through the welcome wizard
-    WelcomeWizardCreateWallet.verifyUsing(window);
+    WelcomeWizardCreateWalletRequirements.verifyUsing(window);
 
     // Unlock the wallet
-    UnlockEmptyWalletFixture.verifyUsing(window);
+    UnlockEmptyWalletFixtureRequirements.verifyUsing(window);
 
   }
 
@@ -117,10 +117,10 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     arrangeEmpty();
 
     // Unlock the wallet
-    UnlockEmptyWalletFixture.verifyUsing(window);
+    UnlockEmptyWalletFixtureRequirements.verifyUsing(window);
 
     // Explore the sidebar screens
-    SidebarTreeScreens.verifyUsing(window);
+    SidebarTreeScreensRequirements.verifyUsing(window);
 
   }
 
@@ -139,10 +139,10 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     arrangeEmpty();
 
     // Unlock the wallet
-    UnlockEmptyWalletFixture.verifyUsing(window);
+    UnlockEmptyWalletFixtureRequirements.verifyUsing(window);
 
     // Examine the history after unlocking
-    SendRequestScreen.verifyUsing(window);
+    SendRequestScreenRequirements.verifyUsing(window);
 
   }
 
@@ -161,10 +161,10 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     arrangeEmpty();
 
     // Unlock the wallet
-    UnlockEmptyWalletFixture.verifyUsing(window);
+    UnlockEmptyWalletFixtureRequirements.verifyUsing(window);
 
     // Create some contacts for use with send/receive later
-    ContactsScreen.verifyUsing(window);
+    ContactsScreenRequirements.verifyUsing(window);
 
   }
 
@@ -183,10 +183,10 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     arrangeEmpty();
 
     // Unlock the wallet
-    UnlockEmptyWalletFixture.verifyUsing(window);
+    UnlockEmptyWalletFixtureRequirements.verifyUsing(window);
 
     // Examine the history after unlocking
-    HistoryScreen.verifyUsing(window);
+    HistoryScreenRequirements.verifyUsing(window);
 
   }
 
@@ -205,10 +205,10 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     arrangeEmpty();
 
     // Unlock the wallet
-    UnlockEmptyWalletFixture.verifyUsing(window);
+    UnlockEmptyWalletFixtureRequirements.verifyUsing(window);
 
     // Examine the settings after unlocking
-    SettingsScreen.verifyUsing(window);
+    SettingsScreenRequirements.verifyUsing(window);
 
   }
 
@@ -227,10 +227,10 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     arrangeEmpty();
 
     // Unlock the wallet
-    UnlockEmptyWalletFixture.verifyUsing(window);
+    UnlockEmptyWalletFixtureRequirements.verifyUsing(window);
 
     // Examine the tools after unlocking
-    ToolsScreen.verifyUsing(window);
+    ToolsScreenRequirements.verifyUsing(window);
 
   }
 

@@ -1,12 +1,12 @@
 package org.multibit.hd.ui.views.components.enter_password;
 
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.views.components.*;
+import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -47,7 +47,7 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
     password = TextBoxes.newPassword();
 
     // Provide an invisible tar pit spinner
-    spinner = Labels.newSpinner();
+    spinner = Labels.newSpinner(Themes.currentTheme.fadedText(), MultiBitUI.NORMAL_PLUS_ICON_SIZE);
     spinner.setVisible(false);
 
     // Configure the actions
@@ -72,7 +72,9 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
     }
     panel.add(password, "grow,push");
     panel.add(showButton, "shrink");
-    panel.add(spinner, "shrink,wrap");
+
+    // Ensure the icon label is a size suitable for rotation
+    panel.add(spinner, "grow,"+ MultiBitUI.NORMAL_PLUS_ICON_SIZE_MIG+",wrap");
 
     return panel;
 
