@@ -325,10 +325,13 @@ public class WalletService {
     // Payment type
     PaymentType paymentType = calculatePaymentType(amountBTC, depth);
 
-    // Fee on send
-    Optional<BigInteger> feeOnSend = calculateFeeOnSend(paymentType, transactionHashAsString);
+    // Mining fee
+    Optional<BigInteger> miningFee = calculateMiningFee(paymentType, transactionHashAsString);
 
-    // Description +
+    // Client fee
+    Optional<BigInteger> clientFee = calculateClientFee(paymentType, transactionHashAsString);
+
+     // Description +
     // Ensure that any payment requests that are funded by this transaction know about it
     // (The payment request knows about the transactions that fund it but not the reverse)
 
@@ -355,7 +358,8 @@ public class WalletService {
       paymentStatus,
       amountBTC,
       amountFiat,
-      feeOnSend,
+      miningFee,
+      clientFee,
       confidenceType,
       paymentType,
       description,
@@ -590,19 +594,36 @@ public class WalletService {
     return note;
   }
 
-  private Optional<BigInteger> calculateFeeOnSend(PaymentType paymentType, String transactionHashAsString) {
+  private Optional<BigInteger> calculateMiningFee(PaymentType paymentType, String transactionHashAsString) {
 
-    Optional<BigInteger> feeOnSend = Optional.absent();
+    Optional<BigInteger> miningFee = Optional.absent();
 
     if (paymentType == PaymentType.SENDING || paymentType == PaymentType.SENT) {
       TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
       if (transactionInfo != null) {
-        feeOnSend = transactionInfo.getMinerFee();
+        miningFee = transactionInfo.getMinerFee();
       }
     }
 
-    return feeOnSend;
+    return miningFee;
   }
+
+  private Optional<BigInteger> calculateClientFee(PaymentType paymentType, String transactionHashAsString) {
+
+     Optional<BigInteger> clientFee = Optional.absent();
+
+     if (paymentType == PaymentType.SENDING || paymentType == PaymentType.SENT) {
+       TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
+       if (transactionInfo != null) {
+         clientFee = transactionInfo.getClientFee();
+         if (clientFee == null) {
+           clientFee = Optional.absent();
+         }
+       }
+     }
+
+     return clientFee;
+   }
 
   /**
    * <p>Populate the internal cache of Payments from the backing store</p>

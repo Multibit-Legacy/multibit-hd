@@ -216,12 +216,21 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
       if (paymentData instanceof TransactionData) {
         TransactionData transactionData = (TransactionData) paymentData;
         // Miner's fee
-        Optional<BigInteger> feeOnSend = transactionData.getFeeOnSendBTC();
-        if (feeOnSend.isPresent()) {
-          String[] minerFeePaidArray = Formats.formatSatoshisAsSymbolic(feeOnSend.get(), languageConfiguration, bitcoinConfiguration, true);
+        Optional<BigInteger> miningFee = transactionData.getMiningFee();
+        if (miningFee.isPresent()) {
+          String[] minerFeePaidArray = Formats.formatSatoshisAsSymbolic(miningFee.get(), languageConfiguration, bitcoinConfiguration, true);
           miningFeePaidValue.setText(minerFeePaidArray[0] + minerFeePaidArray[1]);
         } else {
           miningFeePaidValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
+        }
+
+        // Client fee
+        Optional<BigInteger> clientFee = transactionData.getClientFee();
+        if (clientFee.isPresent()) {
+          String[] clientFeePaidArray = Formats.formatSatoshisAsSymbolic(clientFee.get(), languageConfiguration, bitcoinConfiguration, true);
+          clientFeePaidValue.setText(clientFeePaidArray[0] + clientFeePaidArray[1]);
+        } else {
+          clientFeePaidValue.setText(Languages.safeText(MessageKey.NO_CLIENT_FEE_WAS_ADDED));
         }
 
         if (transactionData.getAmountBTC().compareTo(BigInteger.ZERO) >= 0) {
@@ -236,8 +245,6 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
           miningFeePaidValue.setVisible(false);
         } else {
           // Sent bitcoin
-
-          // TODO set client fee paid
           clientFeePaidLabel.setVisible(true);
           clientFeePaidValue.setVisible(true);
           miningFeePaidLabel.setVisible(true);

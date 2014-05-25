@@ -13,7 +13,7 @@ public class TransactionHeaderConverter implements CSVEntryConverter<Transaction
 
   @Override
   public String[] convertEntry(TransactionData transactionData) {
-    String[] columns = new String[12];
+    String[] columns = new String[13];
 
     // Date.
     columns[0] = Languages.safeText(MessageKey.DATE);
@@ -45,11 +45,14 @@ public class TransactionHeaderConverter implements CSVEntryConverter<Transaction
     // Miner's fee
     columns[9] = Languages.safeText(MessageKey.TRANSACTION_FEE);
 
+    // Client fee
+    columns[10] = Languages.safeText(MessageKey.CLIENT_FEE);
+
     // coinbase
-    columns[10] = Languages.safeText(MessageKey.COINBASE);
+    columns[11] = Languages.safeText(MessageKey.COINBASE);
 
     // Transaction hash.
-    columns[11] = Languages.safeText(MessageKey.TRANSACTION_HASH);
+    columns[12] = Languages.safeText(MessageKey.TRANSACTION_HASH);
 
     return columns;
   }

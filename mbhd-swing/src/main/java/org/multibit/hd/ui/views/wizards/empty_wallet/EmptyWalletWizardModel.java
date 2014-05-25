@@ -196,6 +196,9 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     // Append miner's fee info
     transactionInfo.setMinerFee(transactionCreationEvent.getMiningFeePaid());
 
+    // Append client fee info
+    transactionInfo.setClientFee(transactionCreationEvent.getClientFeePaid());
+
     // Create the empty fiat payment
     FiatPayment fiatPayment = new FiatPayment();
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();

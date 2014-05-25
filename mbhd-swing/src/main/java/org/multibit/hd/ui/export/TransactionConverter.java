@@ -17,7 +17,7 @@ public class TransactionConverter implements CSVEntryConverter<TransactionData> 
 
   @Override
   public String[] convertEntry(TransactionData transactionData) {
-    String[] columns = new String[12];
+    String[] columns = new String[13];
 
     // Date.
     columns[0] = transactionData.getDate() == null ? "" : dateFormatter.format(transactionData.getDate().toDate());
@@ -56,14 +56,18 @@ public class TransactionConverter implements CSVEntryConverter<TransactionData> 
     }
 
     // Miner's fee
-    columns[9] = transactionData.getFeeOnSendBTC() == null || !(transactionData.getFeeOnSendBTC().isPresent())
-            ? "" : transactionData.getFeeOnSendBTC().get().toString();
+    columns[9] = transactionData.getMiningFee() == null || !(transactionData.getMiningFee().isPresent())
+            ? "" : transactionData.getMiningFee().get().toString();
 
-    // Coinbase
-    columns[10] = Boolean.toString(transactionData.isCoinBase());
+    // Client fee
+    columns[10] = transactionData.getClientFee() == null || !(transactionData.getClientFee().isPresent())
+            ? "" : transactionData.getClientFee().get().toString();
+
+     // Coinbase
+    columns[11] = Boolean.toString(transactionData.isCoinBase());
 
     // Transaction hash.
-    columns[11] = transactionData.getTransactionId();
+    columns[12] = transactionData.getTransactionId();
     return columns;
   }
 }

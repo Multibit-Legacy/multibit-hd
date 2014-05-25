@@ -142,7 +142,7 @@ public class ExportManager {
       CSVWriter<TransactionData> csvHeaderWriter = new CSVWriterBuilder<TransactionData>(outputStreamWriter).strategy(CSVStrategy.UK_DEFAULT)
         .entryConverter(transactionHeaderConverter).build();
 
-      csvHeaderWriter.write(new TransactionData(null, null, null, null, null, null, null, null, null, false, null, null, 0, true));
+      csvHeaderWriter.write(new TransactionData(null, null, null, null, null, null, null, null, null, null, false, null, null, 0, true));
 
       // Write the body of the CSV file.
       CSVWriter<TransactionData> csvWriter = new CSVWriterBuilder<TransactionData>(outputStreamWriter).strategy(CSVStrategy.UK_DEFAULT)

@@ -27,7 +27,9 @@ public class TransactionData implements PaymentData {
 
   private FiatPayment amountFiat;
 
-  private final Optional<BigInteger> feeOnSendBTC;
+  private final Optional<BigInteger> miningFee;
+
+  private final Optional<BigInteger> clientFee;
 
   private final TransactionConfidence.ConfidenceType confidenceType;
 
@@ -62,7 +64,8 @@ public class TransactionData implements PaymentData {
    * @param statusWithOrdinal The status with ordinal
    * @param amountBTC         The amount in satoshis
    * @param amountFiat        The amount in fiat
-   * @param feeOnSendBTC      The fee in satoshis
+   * @param miningFee         The mining fee in satoshis
+   * @param clientFee         The client fee in satoshis
    * @param confidenceType    The confidence type
    * @param paymentType       The payment type
    * @param description       The description
@@ -73,7 +76,7 @@ public class TransactionData implements PaymentData {
    * @param isMock            True if this is a mock (CSV export header)
    */
   public TransactionData(String transactionId, DateTime date, PaymentStatus statusWithOrdinal,
-                         BigInteger amountBTC, FiatPayment amountFiat, Optional<BigInteger> feeOnSendBTC,
+                         BigInteger amountBTC, FiatPayment amountFiat, Optional<BigInteger> miningFee, Optional<BigInteger> clientFee,
                          TransactionConfidence.ConfidenceType confidenceType, PaymentType paymentType, String description,
                          boolean isCoinbase, Collection<String> outputAddresses, String rawTransaction, int size, boolean isMock) {
 
@@ -84,7 +87,8 @@ public class TransactionData implements PaymentData {
       Preconditions.checkNotNull(statusWithOrdinal, "'statusWithOrdinal' must be present");
       Preconditions.checkNotNull(amountBTC, "'amountBTC' must be present");
       Preconditions.checkNotNull(amountFiat, "'amountFiat' must be present");
-      Preconditions.checkNotNull(feeOnSendBTC, "'feeOnSendBTC' must be present");
+      Preconditions.checkNotNull(miningFee, "'miningFee' must be present");
+      Preconditions.checkNotNull(clientFee, "'clientFee' must be present");
       Preconditions.checkNotNull(confidenceType, "'confidenceType' must be present");
       Preconditions.checkNotNull(paymentType, "'paymentType' must be present");
       Preconditions.checkNotNull(description, "'description' must be present");
@@ -97,7 +101,8 @@ public class TransactionData implements PaymentData {
     this.statusWithOrdinal = statusWithOrdinal;
     this.amountBTC = amountBTC;
     this.amountFiat = amountFiat;
-    this.feeOnSendBTC = feeOnSendBTC;
+    this.miningFee = miningFee;
+    this.clientFee = clientFee;
     this.confidenceType = confidenceType;
     this.type = paymentType;
     this.description = description;
@@ -114,7 +119,8 @@ public class TransactionData implements PaymentData {
       "statusWithOrdinal=" + statusWithOrdinal +
       ", amountBTC=" + amountBTC +
       ", amountFiat=" + amountFiat +
-      ", feeOnSendBTC=" + feeOnSendBTC +
+      ", miningFee=" + miningFee +
+      ", clientFee=" + clientFee +
       ", confidenceType=" + confidenceType +
       ", type=" + type +
       ", date=" + date +
@@ -136,7 +142,8 @@ public class TransactionData implements PaymentData {
       if (!amountFiat.equals(that.amountFiat)) return false;
     }
     if (confidenceType != that.confidenceType) return false;
-    if (!feeOnSendBTC.equals(that.feeOnSendBTC)) return false;
+    if (!miningFee.equals(that.miningFee)) return false;
+    if (!clientFee.equals(that.clientFee)) return false;
     if (!transactionId.equals(that.transactionId)) return false;
     if (!type.equals(that.type)) return false;
     if (!date.equals(that.date)) return false;
@@ -154,7 +161,8 @@ public class TransactionData implements PaymentData {
     if (amountFiat != null) {
       result = 31 * result + amountFiat.hashCode();
     }
-    result = 31 * result + feeOnSendBTC.hashCode();
+    result = 31 * result + miningFee.hashCode();
+    result = 31 * result + clientFee.hashCode();
     result = 31 * result + confidenceType.hashCode();
     result = 31 * result + type.hashCode();
     result = 31 * result + date.hashCode();
@@ -172,8 +180,12 @@ public class TransactionData implements PaymentData {
     return amountBTC;
   }
 
-  public Optional<BigInteger> getFeeOnSendBTC() {
-    return feeOnSendBTC;
+  public Optional<BigInteger> getMiningFee() {
+    return miningFee;
+  }
+
+  public Optional<BigInteger> getClientFee() {
+    return clientFee;
   }
 
   public TransactionConfidence.ConfidenceType getConfidenceType() {
