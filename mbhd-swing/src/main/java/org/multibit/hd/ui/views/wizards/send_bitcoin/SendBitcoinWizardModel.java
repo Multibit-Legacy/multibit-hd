@@ -235,7 +235,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
     // Append client fee info
     transactionInfo.setClientFee(transactionCreationEvent.getClientFeePaid());
-    
+
     // Create the fiat payment
     FiatPayment fiatPayment = new FiatPayment();
     // A send is denoted with a negative fiat amount
