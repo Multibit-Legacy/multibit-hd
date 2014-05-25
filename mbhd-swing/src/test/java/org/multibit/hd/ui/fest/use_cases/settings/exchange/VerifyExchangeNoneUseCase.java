@@ -81,6 +81,11 @@ public class VerifyExchangeNoneUseCase extends AbstractFestUseCase {
       .comboBox(MessageKey.SELECT_LOCAL_CURRENCY.getKey())
       .requireEnabled();
 
+    // Select the first currency
+    window
+      .comboBox(MessageKey.SELECT_LOCAL_CURRENCY.getKey())
+      .selectItem(0);
+
     // Click Apply
     window
       .button(MessageKey.APPLY.getKey())
