@@ -33,6 +33,11 @@ public class SendRequestSummary {
   private Optional<String> notes = Optional.absent();
 
   /**
+   * The client fee added to the sendRequest.tx
+   */
+  private Optional<BigInteger> clientFeeAdded = Optional.absent();
+
+  /**
    * @param destinationAddress The destination address to send to
    * @param amount             The amount to send (in satoshis)
    * @param changeAddress      The change address
@@ -68,10 +73,22 @@ public class SendRequestSummary {
   }
 
   /**
-   * @return The amount in satoshis
+   * @return The amount sent by the user in satoshis.
+   *         This does NOT include any client fee
    */
   public BigInteger getAmount() {
     return amount;
+  }
+
+  /**
+   * @return The total amount sent, including the client fee
+   */
+  public BigInteger getTotalAmount() {
+    if (clientFeeAdded.isPresent()) {
+      return amount.add(clientFeeAdded.get());
+    } else {
+      return amount;
+    }
   }
 
   /**
@@ -154,6 +171,15 @@ public class SendRequestSummary {
     return notes;
   }
 
+
+  public Optional<BigInteger> getClientFeeAdded() {
+    return clientFeeAdded;
+  }
+
+  public void setClientFeeAdded(Optional<BigInteger> clientFeeAdded) {
+    this.clientFeeAdded = clientFeeAdded;
+  }
+
   @Override
   public String toString() {
     return "SendBitcoinData{" +
@@ -163,6 +189,7 @@ public class SendRequestSummary {
       ", feePerKB=" + feePerKB +
       ", password=***" +
       ", feeStateOptional=" + feeState +
+      ", clientFeeAdded=" + clientFeeAdded +
       ", notes = " + notes +
       '}';
   }

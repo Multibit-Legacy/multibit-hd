@@ -16,9 +16,20 @@ import java.util.Arrays;
  */
 public class TransactionCreationEvent implements CoreEvent {
 
+  /**
+   * The total amount paid (including the client fee)
+   */
   private final BigInteger amount;
 
-  private final BigInteger feePaid;
+  /**
+   * The mining fee that was paid (if available) or Optional.absent() if not available
+   */
+  private final Optional<BigInteger> miningFeePaid;
+
+  /**
+   * The client fee that was paid, or Optional.absent() if no client fee was added to the transaction
+   */
+  private final Optional<BigInteger> clientFeePaid;
 
   private final Address destinationAddress;
 
@@ -35,7 +46,8 @@ public class TransactionCreationEvent implements CoreEvent {
   public TransactionCreationEvent(
     String transactionId,
     BigInteger amount,
-    BigInteger feePaid,
+    Optional<BigInteger> miningFeePaid,
+    Optional<BigInteger> clientFeePaid,
     Address destinationAddress,
     Address changeAddress,
     boolean transactionCreationWasSuccessful,
@@ -46,7 +58,8 @@ public class TransactionCreationEvent implements CoreEvent {
 
     this.transactionId = transactionId;
     this.amount = amount;
-    this.feePaid = feePaid;
+    this.miningFeePaid = miningFeePaid;
+    this.clientFeePaid = clientFeePaid;
     this.destinationAddress = destinationAddress;
     this.changeAddress = changeAddress;
     this.transactionCreationWasSuccessful = transactionCreationWasSuccessful;
@@ -62,11 +75,15 @@ public class TransactionCreationEvent implements CoreEvent {
   }
 
 
-  public BigInteger getFeePaid() {
-    return feePaid;
+  public Optional<BigInteger> getMiningFeePaid() {
+    return miningFeePaid;
   }
 
-  public Address getDestinationAddress() {
+  public Optional<BigInteger> getClientFeePaid() {
+     return clientFeePaid;
+   }
+
+   public Address getDestinationAddress() {
     return destinationAddress;
   }
 
@@ -94,7 +111,8 @@ public class TransactionCreationEvent implements CoreEvent {
   public String toString() {
     return "TransactionCreationEvent{" +
       "amount=" + amount +
-      ", feePaid=" + feePaid +
+      ", miningFeePaid=" + miningFeePaid +
+      ", clientFeePaid=" + clientFeePaid +
       ", destinationAddress='" + destinationAddress + '\'' +
       ", changeAddress='" + changeAddress + '\'' +
       ", transactionCreationWasSuccessful=" + transactionCreationWasSuccessful +

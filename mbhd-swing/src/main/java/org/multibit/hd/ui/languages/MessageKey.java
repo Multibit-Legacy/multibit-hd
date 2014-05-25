@@ -83,6 +83,7 @@ public enum MessageKey {
   CONTACT_IMAGE("contact_image"),
 
   ONE_OF_YOUR_ADDRESSES("one_of_your_addresses"),
+  THIS_BITCOIN_WAS_SENT_TO_YOU("this_bitcoin_was_sent_to_you"),
 
   SELECT_FOLDER("select_folder"),
   SELECT_FILE("select_file"),

@@ -194,12 +194,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     transactionInfo.setNote(Languages.safeText(MessageKey.EMPTY_WALLET_TITLE));
 
     // Append miner's fee info
-    BigInteger minerFeePaid = transactionCreationEvent.getFeePaid();
-    if (minerFeePaid == null) {
-      transactionInfo.setMinerFee(Optional.<BigInteger>absent());
-    } else {
-      transactionInfo.setMinerFee(Optional.of(minerFeePaid));
-    }
+    transactionInfo.setMinerFee(transactionCreationEvent.getMiningFeePaid());
 
     // Create the empty fiat payment
     FiatPayment fiatPayment = new FiatPayment();

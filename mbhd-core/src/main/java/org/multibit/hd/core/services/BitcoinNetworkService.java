@@ -306,7 +306,7 @@ public class BitcoinNetworkService extends AbstractService {
       }
 
       // Attempt to broadcast it
-      if (!broadcast(sendRequestSummary)) {
+      if (!broadcast(sendRequestSummary, wallet)) {
         return false;
       }
 
@@ -335,6 +335,7 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Adjust the send request summary accordingly
       recipientAmount = recipientAmount.subtract(clientFeeAmount);
+      log.debug("Adjusted recipientAmount = " + recipientAmount.toString() + ", clientFeeAmount = " + clientFeeAmount.toString());
 
       // Update the SendRequestSummary with the new values and ensure it is not an "empty wallet"
       SendRequestSummary emptyWalletSendRequestSummary = new SendRequestSummary(
@@ -366,7 +367,7 @@ public class BitcoinNetworkService extends AbstractService {
       }
 
       // Attempt to broadcast it
-      if (!broadcast(emptyWalletSendRequestSummary)) {
+      if (!broadcast(emptyWalletSendRequestSummary, wallet)) {
         return false;
       }
     }
@@ -407,8 +408,9 @@ public class BitcoinNetworkService extends AbstractService {
       // Declare the transaction creation a failure
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
         null,
-        sendRequestSummary.getAmount(),
-        BigInteger.ZERO,
+        sendRequestSummary.getTotalAmount(),
+        Optional.<BigInteger>absent(),
+        Optional.<BigInteger>absent(),
         sendRequestSummary.getDestinationAddress(),
         sendRequestSummary.getChangeAddress(),
         false,
@@ -473,8 +475,9 @@ public class BitcoinNetworkService extends AbstractService {
       // Declare the transaction creation a failure - no wallet
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
         null,
-        sendRequestSummary.getAmount(),
-        BigInteger.ZERO,
+        sendRequestSummary.getTotalAmount(),
+        Optional.<BigInteger>absent(),
+        Optional.<BigInteger>absent(),
         sendRequestSummary.getDestinationAddress(),
         sendRequestSummary.getChangeAddress(),
         false,
@@ -531,6 +534,7 @@ public class BitcoinNetworkService extends AbstractService {
                 sendRequestSummary.getFeeState().get().getFeeOwed(),
                 sendRequestSummary.getFeeAddress().get()
         );
+        sendRequestSummary.setClientFeeAdded(Optional.of(sendRequestSummary.getFeeState().get().getFeeOwed()));
 
         // The transaction now has an extra client fee output added
         // This increases the size of the transaction, and may require more fee if it pushes it over a 1000 byte size boundary
@@ -556,13 +560,15 @@ public class BitcoinNetworkService extends AbstractService {
             // Try decreasing the client fee
             if (sendRequest.tx.getOutput(1).getValue().compareTo(Transaction.MIN_NONDUST_OUTPUT.add(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE)) > 0) {
               // There is enough bitcoin on the client fee output, decrease that
-              sendRequest.tx.getOutput(1).setValue(sendRequest.tx.getOutput(1).getValue().subtract(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE));
+              BigInteger adjustedClientFee = sendRequest.tx.getOutput(1).getValue().subtract(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE);
+              sendRequest.tx.getOutput(1).setValue(adjustedClientFee);
+              sendRequestSummary.setClientFeeAdded(Optional.of(adjustedClientFee));
             } else {
               // We cannot pay the mining fee for the extra client fee output so remove it.
               // Put back the original amount on the redemption output
               sendRequest.tx.clearOutputs();
               sendRequest.tx.addOutput(sendRequestSummary.getAmount(), sendRequestSummary.getDestinationAddress());
-            }
+              sendRequestSummary.setClientFeeAdded(Optional.<BigInteger>absent());              }
           }
         }
       }
@@ -577,8 +583,9 @@ public class BitcoinNetworkService extends AbstractService {
       // Declare the transaction creation a failure
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
               null,
-              sendRequestSummary.getAmount(),
-              BigInteger.ZERO,
+              sendRequestSummary.getTotalAmount(),
+              Optional.<BigInteger>absent(),
+              Optional.<BigInteger>absent(),
               sendRequestSummary.getDestinationAddress(),
               sendRequestSummary.getChangeAddress(),
               false,
@@ -623,8 +630,9 @@ public class BitcoinNetworkService extends AbstractService {
       // Fire a failed transaction creation event
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
         transactionId,
-        sendRequestSummary.getAmount(),
-        BigInteger.ZERO,
+        sendRequestSummary.getTotalAmount(),
+        Optional.<BigInteger>absent(),
+        Optional.<BigInteger>absent(),
         sendRequestSummary.getDestinationAddress(),
         sendRequestSummary.getChangeAddress(),
         false,
@@ -660,8 +668,9 @@ public class BitcoinNetworkService extends AbstractService {
       // Fire a successful transaction creation event (not yet broadcast)
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
         sendRequest.tx.getHashAsString(),
-        sendRequestSummary.getAmount(),
-        sendRequest.fee /* the actual fee paid */,
+        sendRequestSummary.getTotalAmount(),
+        Optional.of(sendRequest.fee) /* the actual mining fee paid */,
+        sendRequestSummary.getClientFeeAdded(),
         sendRequestSummary.getDestinationAddress(),
         sendRequestSummary.getChangeAddress(),
         true,
@@ -679,8 +688,9 @@ public class BitcoinNetworkService extends AbstractService {
       // Fire a failed transaction creation event
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
         transactionId,
-        sendRequestSummary.getAmount(),
-        BigInteger.ZERO,
+        sendRequestSummary.getTotalAmount(),
+        Optional.<BigInteger>absent(),
+        Optional.<BigInteger>absent(),
         sendRequestSummary.getDestinationAddress(),
         sendRequestSummary.getChangeAddress(),
         false,
@@ -703,7 +713,7 @@ public class BitcoinNetworkService extends AbstractService {
    *
    * @return True if the broadcast operation was successful
    */
-  private boolean broadcast(SendRequestSummary sendRequestSummary) {
+  private boolean broadcast(SendRequestSummary sendRequestSummary, Wallet wallet) {
 
     log.debug("Attempting to broadcast transaction");
 
@@ -717,9 +727,10 @@ public class BitcoinNetworkService extends AbstractService {
         // Declare the send a failure
         CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(
           sendRequestSummary.getDestinationAddress(),
-          sendRequestSummary.getAmount(),
+          sendRequestSummary.getTotalAmount(),
           sendRequestSummary.getChangeAddress(),
-          BigInteger.ZERO,
+          Optional.<BigInteger>absent(),
+          Optional.<BigInteger>absent(),
           false,
           CoreMessageKey.COULD_NOT_CONNECT_TO_BITCOIN_NETWORK.getKey(),
           new String[]{"Could not reach any Bitcoin nodes"}
@@ -736,8 +747,10 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Declare the send a success
       CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(
-        sendRequestSummary.getDestinationAddress(), sendRequestSummary.getAmount(),
-        sendRequestSummary.getChangeAddress(), BigInteger.ZERO,
+        sendRequestSummary.getDestinationAddress(), sendRequestSummary.getTotalAmount(),
+        sendRequestSummary.getChangeAddress(),
+        Optional.of(sendRequest.fee),
+        sendRequestSummary.getClientFeeAdded(),
         true,
         CoreMessageKey.BITCOIN_SENT_OK.getKey(),
         null
@@ -749,8 +762,10 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Declare the send a failure
       CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(
-        sendRequestSummary.getDestinationAddress(), sendRequestSummary.getAmount(),
-        sendRequestSummary.getChangeAddress(), BigInteger.ZERO,
+        sendRequestSummary.getDestinationAddress(), sendRequestSummary.getTotalAmount(),
+        sendRequestSummary.getChangeAddress(),
+        Optional.<BigInteger>absent(),
+        Optional.<BigInteger>absent(),
         false,
         CoreMessageKey.THE_ERROR_WAS.getKey(),
         new String[]{e.getMessage()}

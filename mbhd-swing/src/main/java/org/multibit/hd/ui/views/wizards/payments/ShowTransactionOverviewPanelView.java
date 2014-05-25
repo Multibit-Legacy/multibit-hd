@@ -59,7 +59,10 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
   private JLabel recipientImageLabel;
   private JLabel amountBTCValue;
   private JLabel amountFiatValue;
-  private JLabel minerFeePaidValue;
+  private JLabel miningFeePaidLabel;
+  private JLabel miningFeePaidValue;
+  private JLabel clientFeePaidLabel;
+  private JLabel clientFeePaidValue;
   private JLabel exchangeRateValue;
 
   // TODO Inject this
@@ -127,8 +130,11 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
     JLabel amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT) + " " + Configurations.currentConfiguration.getBitcoin().getLocalCurrencySymbol());
     amountFiatValue = Labels.newValueLabel("");
 
-    JLabel minerFeePaidLabel = Labels.newValueLabel(Languages.safeText(MessageKey.TRANSACTION_FEE));
-    minerFeePaidValue = Labels.newValueLabel("");
+    miningFeePaidLabel = Labels.newValueLabel(Languages.safeText(MessageKey.TRANSACTION_FEE));
+    miningFeePaidValue = Labels.newValueLabel("");
+
+    clientFeePaidLabel = Labels.newValueLabel(Languages.safeText(MessageKey.CLIENT_FEE));
+    clientFeePaidValue = Labels.newValueLabel("");
 
     JLabel exchangeRateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL));
     exchangeRateValue = Labels.newValueLabel("");
@@ -150,10 +156,12 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
     contentPanel.add(amountBTCValue, "span 2, wrap");
     contentPanel.add(amountFiatLabel);
     contentPanel.add(amountFiatValue, "span 2, wrap");
-    contentPanel.add(minerFeePaidLabel);
-    contentPanel.add(minerFeePaidValue, "span 2, wrap");
     contentPanel.add(exchangeRateLabel);
     contentPanel.add(exchangeRateValue, "span 2, wrap");
+    contentPanel.add(miningFeePaidLabel);
+    contentPanel.add(miningFeePaidValue, "span 2, wrap");
+    contentPanel.add(clientFeePaidLabel);
+    contentPanel.add(clientFeePaidValue, "span 2, wrap");
   }
 
   @Override
@@ -211,49 +219,69 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
         Optional<BigInteger> feeOnSend = transactionData.getFeeOnSendBTC();
         if (feeOnSend.isPresent()) {
           String[] minerFeePaidArray = Formats.formatSatoshisAsSymbolic(feeOnSend.get(), languageConfiguration, bitcoinConfiguration, true);
-          minerFeePaidValue.setText(minerFeePaidArray[0] + minerFeePaidArray[1]);
+          miningFeePaidValue.setText(minerFeePaidArray[0] + minerFeePaidArray[1]);
         } else {
-          minerFeePaidValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
+          miningFeePaidValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
         }
 
-        // Contact may be one of the output addresses
-        Collection<String> addressList = transactionData.getOutputAddresses();
-        // This is a bit inefficient - could have a hashmap of Contacts, keyed by address
-        // Or store the address sent to
-        ContactService contactService = CoreServices.getOrCreateContactService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
-        List<Contact> allContacts = contactService.allContacts();
-        Contact matchedContact = null;
+        if (transactionData.getAmountBTC().compareTo(BigInteger.ZERO) >= 0) {
+          // Received bitcoin
+          recipientValue.setText(Languages.safeText(MessageKey.THIS_BITCOIN_WAS_SENT_TO_YOU));
 
-        if (allContacts != null) {
-          for (Contact contact : allContacts) {
-            if (addressList != null) {
-              for (String address : addressList) {
-                if (contact.getBitcoinAddress().isPresent() && contact.getBitcoinAddress().get().equals(address)) {
+          // Client and mining fee is not applicable
+          clientFeePaidValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
+          clientFeePaidLabel.setVisible(false);
+          clientFeePaidValue.setVisible(false);
+          miningFeePaidLabel.setVisible(false);
+          miningFeePaidValue.setVisible(false);
+        } else {
+          // Sent bitcoin
 
-                  // This is a contact for this address
-                  final Address bitcoinAddress;
-                  try {
-                    bitcoinAddress = new Address(networkParameters, address);
-                  } catch (AddressFormatException e) {
-                    // If this occurs we really want to know
-                    throw new IllegalArgumentException("Contact has an incorrect Bitcoin address: " + contact,e);
+          // TODO set client fee paid
+          clientFeePaidLabel.setVisible(true);
+          clientFeePaidValue.setVisible(true);
+          miningFeePaidLabel.setVisible(true);
+          miningFeePaidValue.setVisible(true);
+
+          // Contact may be one of the output addresses
+          Collection<String> addressList = transactionData.getOutputAddresses();
+          // This is a bit inefficient - could have a hashmap of Contacts, keyed by address
+          // Or store the address sent to
+          ContactService contactService = CoreServices.getOrCreateContactService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
+          List<Contact> allContacts = contactService.allContacts();
+          Contact matchedContact = null;
+
+          if (allContacts != null) {
+            for (Contact contact : allContacts) {
+              if (addressList != null) {
+                for (String address : addressList) {
+                  if (contact.getBitcoinAddress().isPresent() && contact.getBitcoinAddress().get().equals(address)) {
+
+                    // This is a contact for this address
+                    final Address bitcoinAddress;
+                    try {
+                      bitcoinAddress = new Address(networkParameters, address);
+                    } catch (AddressFormatException e) {
+                      // If this occurs we really want to know
+                      throw new IllegalArgumentException("Contact has an incorrect Bitcoin address: " + contact, e);
+                    }
+
+                    // Only show the first match
+                    recipientValue.setText(contact.getName());
+                    Recipient matchedRecipient = new Recipient(bitcoinAddress);
+                    matchedRecipient.setContact(contact);
+                    matchedContact = contact;
+
+                    displayGravatar(contact, recipientImageLabel);
+                    break;
                   }
-
-                  // Only show the first match
-                  recipientValue.setText(contact.getName());
-                  Recipient matchedRecipient = new Recipient(bitcoinAddress);
-                  matchedRecipient.setContact(contact);
-                  matchedContact = contact;
-
-                  displayGravatar(contact, recipientImageLabel);
-                  break;
                 }
               }
             }
           }
-        }
-        if (matchedContact == null) {
-          recipientValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
+          if (matchedContact == null) {
+            recipientValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
+          }
         }
       }
 

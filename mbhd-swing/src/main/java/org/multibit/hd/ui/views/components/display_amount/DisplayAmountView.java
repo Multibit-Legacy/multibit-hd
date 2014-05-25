@@ -244,56 +244,109 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
    */
   private void handleExchangeLabelText(BitcoinConfiguration bitcoinConfiguration, String localSymbol, String localDisplay) {
 
-    if (getModel().get().getRateProvider().isPresent()
-      && getModel().get().getStyle() != DisplayAmountStyle.PLAIN) {
+    if (Languages.isLeftToRight()) {
+      if (getModel().get().getRateProvider().isPresent()
+              && getModel().get().getStyle() != DisplayAmountStyle.PLAIN) {
 
-      // Have a provider
-      if (bitcoinConfiguration.isCurrencySymbolLeading()) {
-        // Use leading format
-        exchangeLabel.setText(
-          Languages.safeText(
-            MessageKey.EXCHANGE_FIAT_RATE_WITH_PROVIDER,
-            "~\u00a0" + localSymbol + "\u00a0",
-            localDisplay,
-            getModel().get().getRateProvider().get()
-          )
-        );
+        // Have a provider
+        if (bitcoinConfiguration.isCurrencySymbolLeading()) {
+          // Use leading format
+          exchangeLabel.setText(
+                  Languages.safeText(
+                          MessageKey.EXCHANGE_FIAT_RATE_WITH_PROVIDER,
+                          "~\u00a0" + localSymbol + "\u00a0",
+                          localDisplay,
+                          getModel().get().getRateProvider().get()
+                  )
+          );
+        } else {
+
+          // Use trailing format
+          exchangeLabel.setText(
+                  Languages.safeText(
+                          MessageKey.EXCHANGE_FIAT_RATE_WITH_PROVIDER,
+                          "~\u00a0",
+                          localDisplay + "\u00a0" + localSymbol + "\u00a0",
+                          getModel().get().getRateProvider().get()
+                  )
+          );
+        }
       } else {
 
-        // Use trailing format
-        exchangeLabel.setText(
-          Languages.safeText(
-            MessageKey.EXCHANGE_FIAT_RATE_WITH_PROVIDER,
-            "~\u00a0",
-            localDisplay + "\u00a0" + localSymbol + "\u00a0",
-            getModel().get().getRateProvider().get()
-          )
-        );
+        // No provider or plain style
+        if (bitcoinConfiguration.isCurrencySymbolLeading()) {
+          // Use leading format
+          exchangeLabel.setText(
+                  Languages.safeText(
+                          MessageKey.EXCHANGE_FIAT_RATE,
+                          "~\u00a0" + localSymbol + "\u00a0",
+                          localDisplay
+                  )
+          );
+
+        } else {
+          // Use trailing format
+          exchangeLabel.setText(
+                  Languages.safeText(
+                          MessageKey.EXCHANGE_FIAT_RATE,
+                          "~\u00a0",
+                          localDisplay + "\u00a0" + localSymbol
+                  )
+          );
+        }
       }
     } else {
+      // RTL language - tilda is on opposite side
+      if (getModel().get().getRateProvider().isPresent()
+              && getModel().get().getStyle() != DisplayAmountStyle.PLAIN) {
 
-      // No provider or plain style
-      if (bitcoinConfiguration.isCurrencySymbolLeading()) {
-        // Use leading format
-        exchangeLabel.setText(
-          Languages.safeText(
-            MessageKey.EXCHANGE_FIAT_RATE,
-            "~\u00a0" + localSymbol + "\u00a0",
-            localDisplay
-          )
-        );
+        // Have a provider
+        if (bitcoinConfiguration.isCurrencySymbolLeading()) {
+          // Use leading format
+          exchangeLabel.setText(
+                  Languages.safeText(
+                          MessageKey.EXCHANGE_FIAT_RATE_WITH_PROVIDER,
+                          "\u00a0" + localSymbol + "\u00a0",
+                          localDisplay,
+                          getModel().get().getRateProvider().get()
+                  )  +  "\u00a0~"
+          );
+        } else {
 
+          // Use trailing format
+          exchangeLabel.setText(
+                  Languages.safeText(
+                          MessageKey.EXCHANGE_FIAT_RATE_WITH_PROVIDER,
+                          "\u00a0",
+                          localDisplay + "\u00a0" + localSymbol + "\u00a0",
+                          getModel().get().getRateProvider().get()
+                  ) +  "\u00a0~"
+          );
+        }
       } else {
-        // Use trailing format
-        exchangeLabel.setText(
-          Languages.safeText(
-            MessageKey.EXCHANGE_FIAT_RATE,
-            "~\u00a0",
-            localDisplay + "\u00a0" + localSymbol
-          )
-        );
-      }
 
+        // No provider or plain style
+        if (bitcoinConfiguration.isCurrencySymbolLeading()) {
+          // Use leading format
+          exchangeLabel.setText(
+                  Languages.safeText(
+                          MessageKey.EXCHANGE_FIAT_RATE,
+                          "\u00a0" + localSymbol + "\u00a0",
+                          localDisplay
+                  ) + "\u00a0~"
+          );
+
+        } else {
+          // Use trailing format
+          exchangeLabel.setText(
+                  Languages.safeText(
+                          MessageKey.EXCHANGE_FIAT_RATE,
+                          "\u00a0",
+                          localDisplay + "\u00a0" + localSymbol
+                  )  +  "\u00a0~"
+          );
+        }
+      }
     }
   }
 }

@@ -150,19 +150,22 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
 
   @Override
   public boolean beforeShow() {
-    boolean enabled = CoreServices.getOrCreateBitcoinNetworkService().isStartedOk();
-
-    sendBitcoin.setEnabled(enabled);
-    requestBitcoin.setEnabled(enabled);
-
-    update();
+    enableButtons();
 
     return true;
   }
 
   @Override
   public void afterShow() {
+    update();
+    enableButtons();
+  }
 
+  private void enableButtons() {
+    boolean enabled = CoreServices.getOrCreateBitcoinNetworkService().isStartedOk();
+
+    sendBitcoin.setEnabled(enabled);
+    requestBitcoin.setEnabled(enabled);
   }
 
   /**
