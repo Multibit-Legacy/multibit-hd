@@ -44,8 +44,8 @@ public class AmountFiatTableCellRenderer extends DefaultTableCellRenderer {
 
       FiatPayment fiatPayment = (FiatPayment) value;
 
-      if (!(fiatPayment.getAmount() == null)) {
-        BigDecimal amount = fiatPayment.getAmount();
+      if (!(fiatPayment.getAmount() == null) && fiatPayment.getAmount().isPresent()) {
+        BigDecimal amount = fiatPayment.getAmount().get();
         try {
           LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage();
           BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();

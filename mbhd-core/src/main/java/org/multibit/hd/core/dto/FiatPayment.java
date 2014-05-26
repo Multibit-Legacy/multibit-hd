@@ -1,7 +1,7 @@
 package org.multibit.hd.core.dto;
 
 import com.google.common.base.Optional;
-import org.multibit.hd.core.config.Configurations;
+import com.google.common.base.Preconditions;
 
 import java.math.BigDecimal;
 import java.util.Currency;
@@ -12,13 +12,11 @@ import java.util.Currency;
  * <li>A fiat equivalent to a bitcoin amount</li>
  * </ul>
  * </p>
- *
- * TODO The values here need more strict handling (which should be final, mandatory, optional to avoid nulls in hashCode/equals etc)
  */
 public class FiatPayment {
 
-  private BigDecimal amount;
-  private Currency currency= Currency.getInstance(Configurations.currentConfiguration.getBitcoin().getLocalCurrencyCode());
+  private Optional<BigDecimal> amount = Optional.absent();
+  private Optional<Currency> currency = Optional.absent();
 
   private Optional<String> exchangeName = Optional.absent();
   private Optional<String> rate = Optional.absent();
@@ -26,22 +24,24 @@ public class FiatPayment {
   /**
    * @return amount of fiat as a BigDecimal
    */
-  public BigDecimal getAmount() {
+  public Optional<BigDecimal> getAmount() {
     return amount;
   }
 
-  public void setAmount(BigDecimal amount) {
+  public void setAmount(Optional<BigDecimal> amount) {
+    Preconditions.checkNotNull(amount);
     this.amount = amount;
   }
 
   /**
    * @return The local currency associated with this payment (e.g. "USD")
    */
-  public Currency getCurrency() {
+  public Optional<Currency> getCurrency() {
     return currency;
   }
 
-  public void setCurrency(Currency currency) {
+  public void setCurrency(Optional<Currency> currency) {
+    Preconditions.checkNotNull(currency);
     this.currency = currency;
   }
 
@@ -53,6 +53,7 @@ public class FiatPayment {
   }
 
   public void setExchangeName(String exchangeName) {
+    Preconditions.checkNotNull(exchangeName);
     this.exchangeName = Optional.fromNullable(exchangeName);
   }
 
@@ -64,6 +65,7 @@ public class FiatPayment {
   }
 
   public void setRate(String rate) {
+    Preconditions.checkNotNull(rate);
     this.rate = Optional.fromNullable(rate);
   }
 
@@ -74,7 +76,7 @@ public class FiatPayment {
 
     FiatPayment that = (FiatPayment) o;
 
-    if (amount != null ? !amount.equals(that.amount) : that.amount != null) return false;
+    if (!amount.equals(that.amount)) return false;
     if (!currency.equals(that.currency)) return false;
     if (!exchangeName.equals(that.exchangeName)) return false;
     if (!rate.equals(that.rate)) return false;
@@ -84,7 +86,7 @@ public class FiatPayment {
 
   @Override
   public int hashCode() {
-    int result = amount != null ? amount.hashCode() : 0;
+    int result = amount.hashCode();
     result = 31 * result + currency.hashCode();
     result = 31 * result + exchangeName.hashCode();
     result = 31 * result + rate.hashCode();
@@ -92,6 +94,9 @@ public class FiatPayment {
   }
 
   public int compareTo(FiatPayment other) {
-    return amount.compareTo(other.getAmount());
+    if (!amount.isPresent() || !other.getAmount().isPresent()) {
+      return 0;
+    }
+    return amount.get().compareTo(other.getAmount().get());
   }
 }

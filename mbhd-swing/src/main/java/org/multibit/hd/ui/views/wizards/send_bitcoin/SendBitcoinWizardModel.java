@@ -239,7 +239,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     // Create the fiat payment
     FiatPayment fiatPayment = new FiatPayment();
     // A send is denoted with a negative fiat amount
-    fiatPayment.setAmount(getLocalAmount().negate());
+    fiatPayment.setAmount(Optional.of(getLocalAmount().negate()));
     fiatPayment.setExchangeName(ExchangeKey.current().getExchangeName());
 
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();

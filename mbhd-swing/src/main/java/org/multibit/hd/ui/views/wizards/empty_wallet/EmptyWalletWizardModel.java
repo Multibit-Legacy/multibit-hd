@@ -205,11 +205,11 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     if (exchangeRateChangedEvent.isPresent()) {
       fiatPayment.setRate(exchangeRateChangedEvent.get().getRate().toString());
       // A send is denoted with a negative fiat amount
-      fiatPayment.setAmount(Satoshis.toLocalAmount(getSatoshis(), exchangeRateChangedEvent.get().getRate().negate()));
+      fiatPayment.setAmount(Optional.of(Satoshis.toLocalAmount(getSatoshis(), exchangeRateChangedEvent.get().getRate().negate())));
     } else {
       fiatPayment.setRate("");
-      fiatPayment.setAmount(BigDecimal.ZERO);
-      fiatPayment.setCurrency(Configurations.currentConfiguration.getLocalCurrency());
+      fiatPayment.setAmount(Optional.<BigDecimal>absent());
+      fiatPayment.setCurrency(Optional.of(Configurations.currentConfiguration.getLocalCurrency()));
     }
     fiatPayment.setExchangeName(ExchangeKey.current().getExchangeName());
 

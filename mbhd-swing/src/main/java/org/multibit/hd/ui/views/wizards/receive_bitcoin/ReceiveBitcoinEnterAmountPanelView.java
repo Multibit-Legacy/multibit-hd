@@ -200,7 +200,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     paymentRequestData.setAmountBTC(enterAmountMaV.getModel().getSatoshis());
 
     FiatPayment fiatPayment = new FiatPayment();
-    fiatPayment.setAmount(enterAmountMaV.getModel().getLocalAmount());
+    fiatPayment.setAmount(Optional.of(enterAmountMaV.getModel().getLocalAmount()));
 
     ExchangeKey exchangeKey = ExchangeKey.current();
     fiatPayment.setExchangeName(exchangeKey.getExchangeName());

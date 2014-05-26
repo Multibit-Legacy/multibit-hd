@@ -85,7 +85,11 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
 
           displayAmountMaVList.add(paymentAmountMaV);
           paymentAmountMaV.getModel().setSatoshis(paymentData.getAmountBTC());
-          paymentAmountMaV.getModel().setLocalAmount(paymentData.getAmountFiat().getAmount());
+          if (paymentData.getAmountFiat().getAmount().isPresent()) {
+            paymentAmountMaV.getModel().setLocalAmount(paymentData.getAmountFiat().getAmount().get());
+          } else {
+            paymentAmountMaV.getModel().setLocalAmount(null);
+          }
 
           panel.add(timeLabel, "shrink");
           panel.add(paymentDataLabel, "shrink");

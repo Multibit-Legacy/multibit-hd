@@ -1,6 +1,7 @@
 package org.multibit.hd.core.services;
 
 import com.google.bitcoin.core.NetworkParameters;
+import com.google.common.base.Optional;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -100,8 +101,8 @@ public class WalletServiceTest {
 
     FiatPayment fiatPayment1 = new FiatPayment();
     paymentRequestData1.setAmountFiat(fiatPayment1);
-    fiatPayment1.setAmount(new BigDecimal("12345.6"));
-    fiatPayment1.setCurrency(Currency.getInstance("USD"));
+    fiatPayment1.setAmount(Optional.of(new BigDecimal("12345.6")));
+    fiatPayment1.setCurrency(Optional.of(Currency.getInstance("USD")));
     fiatPayment1.setRate("10.0");
     fiatPayment1.setExchangeName("Bitstamp");
 

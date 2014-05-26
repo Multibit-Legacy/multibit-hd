@@ -167,7 +167,9 @@ public class TransactionData implements PaymentData {
     result = 31 * result + type.hashCode();
     result = 31 * result + date.hashCode();
     result = 31 * result + description.hashCode();
-    result = 31 * result + note.hashCode();
+    if (note != null) {
+      result = 31 * result + note.hashCode();
+    }
     return result;
   }
 

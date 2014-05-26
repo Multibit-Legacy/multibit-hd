@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.eventbus.Subscribe;
 import com.googlecode.jcsv.writer.CSVEntryConverter;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
@@ -17,6 +18,7 @@ import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.ChangePasswordResultEvent;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
+import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
@@ -117,6 +119,8 @@ public class WalletService {
     Preconditions.checkNotNull(networkParameters, "'networkParameters' must be present");
 
     this.networkParameters = networkParameters;
+
+    CoreServices.uiEventBus.register(this);
   }
 
   /**
@@ -538,8 +542,6 @@ public class WalletService {
 
     FiatPayment amountFiat = new FiatPayment();
 
-    // TODO - missing rates should not be overwritten by new rates
-
     // Get the transactionInfo that contains the fiat exchange info, if it is available from the backing store
     // This will use the fiat rate at time of send/ receive
     TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
@@ -557,10 +559,10 @@ public class WalletService {
       amountFiat.setRate(exchangeRateChangedEvent.get().getRate().toString());
       BigDecimal localAmount = Satoshis.toLocalAmount(amountBTC, exchangeRateChangedEvent.get().getRate());
       //log.debug("For a bitcoin amount of " + amountBTC + " the local amount is " + localAmount);
-      amountFiat.setAmount(localAmount);
+      amountFiat.setAmount(Optional.of(localAmount));
     } else {
       amountFiat.setRate("");
-      amountFiat.setAmount(null);
+      amountFiat.setAmount(Optional.<BigDecimal>absent());
       //log.debug("For a bitcoin amount of " + amountBTC + " the local amount is null");
     }
 
@@ -893,6 +895,41 @@ public class WalletService {
     } else {
       // No wallet to change the password for
       CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(false, CoreMessageKey.CHANGE_PASSWORD_ERROR, new Object[]{"There is no wallet"}));
+    }
+  }
+
+
+  @Subscribe
+  /**
+   * When a transaction is seen by the network, ensure there is a transaction info available storing the exchange rate
+   */
+  public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
+    // Get/ Create a transactionInfo to match the event
+    TransactionInfo transactionInfo = transactionInfoMap.get(transactionSeenEvent.getTransactionId());
+    if (transactionInfo == null) {
+      transactionInfo = new TransactionInfo();
+      transactionInfo.setHash(transactionSeenEvent.getTransactionId());
+
+      // Create the fiat payment
+      FiatPayment amountFiat = new FiatPayment();
+      amountFiat.setExchangeName(ExchangeKey.current().getExchangeName());
+
+      Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
+      if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
+        amountFiat.setRate(exchangeRateChangedEvent.get().getRate().toString());
+        BigDecimal localAmount = Satoshis.toLocalAmount(transactionSeenEvent.getAmount(), exchangeRateChangedEvent.get().getRate());
+        amountFiat.setAmount(Optional.of(localAmount));
+      } else {
+        amountFiat.setRate("");
+        amountFiat.setAmount(Optional.<BigDecimal>absent());
+      }
+
+      transactionInfo.setAmountFiat(amountFiat);
+
+      log.debug("Created TransactionInfo: " + transactionInfo.toString());
+      transactionInfoMap.put(transactionSeenEvent.getTransactionId(), transactionInfo);
+    } else {
+      log.debug("There was already a TransactionInfo: for " + transactionSeenEvent.getTransactionId());
     }
   }
 }

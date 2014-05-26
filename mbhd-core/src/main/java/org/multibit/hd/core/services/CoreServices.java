@@ -220,7 +220,7 @@ public class CoreServices {
    * @return A new exchange service based on the current configuration
    */
   public static ExchangeTickerService newExchangeService(BitcoinConfiguration bitcoinConfiguration) {
-    log.debug("Creating new exchange ticker service");
+    log.trace("Creating new exchange ticker service");
     return new ExchangeTickerService(bitcoinConfiguration);
 
   }
@@ -229,7 +229,7 @@ public class CoreServices {
    * @return Create a new backup service or return the extant one
    */
   public static BackupService getOrCreateBackupService() {
-    log.debug("Getting backup service");
+    log.trace("Getting backup service");
     if (backupService == null) {
       backupService = new BackupService();
     }
@@ -241,7 +241,7 @@ public class CoreServices {
    * @return Create a new seed phrase generator
    */
   public static SeedPhraseGenerator newSeedPhraseGenerator() {
-    log.debug("Creating new BIP39 seed phrase generator");
+    log.trace("Creating new BIP39 seed phrase generator");
     return new Bip39SeedPhraseGenerator();
   }
 
@@ -257,7 +257,7 @@ public class CoreServices {
    * @return The security checking service singleton
    */
   public static SecurityCheckingService getSecurityCheckingService() {
-    log.debug("Get security checking service");
+    log.trace("Get security checking service");
     return securityCheckingService;
   }
 
@@ -266,7 +266,7 @@ public class CoreServices {
    */
   public static synchronized BitcoinNetworkService getOrCreateBitcoinNetworkService() {
 
-    log.debug("Get Bitcoin network service");
+    log.trace("Get Bitcoin network service");
     if (bitcoinNetworkService == null || !bitcoinNetworkService.isStartedOk()) {
       bitcoinNetworkService = new BitcoinNetworkService(BitcoinNetwork.current().get());
     }
@@ -298,7 +298,7 @@ public class CoreServices {
    */
   public static WalletService getCurrentWalletService() {
 
-    log.debug("Get current wallet service");
+    log.trace("Get current wallet service");
 
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
 
@@ -315,7 +315,7 @@ public class CoreServices {
    */
   public static ContactService getCurrentContactService() {
 
-    log.debug("Get current contact service");
+    log.trace("Get current contact service");
 
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
 
@@ -331,7 +331,7 @@ public class CoreServices {
    */
   public static HistoryService getCurrentHistoryService() {
 
-    log.debug("Get current history service");
+    log.trace("Get current history service");
 
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
 
@@ -347,7 +347,7 @@ public class CoreServices {
    */
   public static WalletService getOrCreateWalletService(WalletId walletId) {
 
-    log.debug("Get or create history service");
+    log.trace("Get or create history service");
 
     Preconditions.checkNotNull(walletId, "'walletId' must be present");
 
@@ -371,7 +371,7 @@ public class CoreServices {
    */
   public static HistoryService getOrCreateHistoryService(WalletId walletId) {
 
-    log.debug("Get or create history service");
+    log.trace("Get or create history service");
 
     Preconditions.checkNotNull(walletId, "'walletId' must be present");
 
@@ -392,7 +392,7 @@ public class CoreServices {
    */
   public static ContactService getOrCreateContactService(WalletId walletId) {
 
-    log.debug("Get or create contact service");
+    log.trace("Get or create contact service");
 
     Preconditions.checkNotNull(walletId, "'walletId' must be present");
 
@@ -409,7 +409,7 @@ public class CoreServices {
    * @return A BRIT fee service pointing to the live Matcher machine
    */
   public static FeeService createFeeService() throws CoreException {
-    log.debug("Create fee service");
+    log.trace("Create fee service");
 
     ClassLoader classloader = Thread.currentThread().getContextClassLoader();
     InputStream pgpPublicKeyInputStream = classloader.getResourceAsStream(LIVE_MATCHER_PUBLIC_KEY_FILE);

@@ -60,6 +60,8 @@ public class PaymentsProtobufSerializer {
 
   private static final long ABSENT_VALUE = -1;
 
+  private static final String ABSENT_STRING = "absent";
+
   private static final Logger log = LoggerFactory.getLogger(PaymentsProtobufSerializer.class);
 
   public PaymentsProtobufSerializer() {
@@ -159,18 +161,22 @@ public class PaymentsProtobufSerializer {
           MBHDPaymentsProtos.FiatPayment fiatPaymentProto = paymentRequestProto.getAmountFiat();
 
           if (fiatPaymentProto.hasCurrency()) {
-
-            final BigDecimal amountFiat;
             final String fiatCurrencyCode = fiatPaymentProto.getCurrency();
-            final Currency fiatCurrency = Currency.getInstance(fiatCurrencyCode);
-
-            // May need to adjust the fiat payment amount to include a decimal
-            String fiatPaymentAmount = fiatPaymentProto.getAmount();
-            amountFiat = new BigDecimal(fiatPaymentAmount);
-
-            fiatPayment.setAmount(amountFiat);
+            final Optional<Currency> fiatCurrency;
+            if (ABSENT_STRING.equals(fiatCurrencyCode)) {
+              fiatCurrency = Optional.absent();
+            } else {
+              fiatCurrency = Optional.of(Currency.getInstance(fiatCurrencyCode));
+            }
             fiatPayment.setCurrency(fiatCurrency);
 
+            String fiatPaymentAmount = fiatPaymentProto.getAmount();
+            Optional<BigDecimal> amountFiat;
+            if (ABSENT_STRING.equals(fiatPaymentAmount)) {
+              amountFiat = Optional.absent();
+            } else {
+              amountFiat = Optional.of(new BigDecimal(fiatPaymentAmount));
+            }
             fiatPayment.setAmount(amountFiat);
           }
 
@@ -180,7 +186,6 @@ public class PaymentsProtobufSerializer {
           if (fiatPaymentProto.hasRate()) {
             fiatPayment.setRate(fiatPaymentProto.getRate());
           }
-
         }
 
         paymentRequestDatas.add(paymentRequestData);
@@ -225,19 +230,24 @@ public class PaymentsProtobufSerializer {
           transactionInfo.setAmountFiat(fiatPayment);
           MBHDPaymentsProtos.FiatPayment fiatPaymentProto = transactionInfoProto.getAmountFiat();
           if (fiatPaymentProto.hasCurrency()) {
-
-            final BigDecimal amountFiat;
             final String fiatCurrencyCode = fiatPaymentProto.getCurrency();
-            final Currency fiatCurrency = Currency.getInstance(fiatCurrencyCode);
-
-            // May need to adjust the fiat payment amount to include a decimal
-            String fiatPaymentAmount = fiatPaymentProto.getAmount();
-
-            amountFiat = new BigDecimal(fiatPaymentAmount);
-
-            fiatPayment.setAmount(amountFiat);
+            final Optional<Currency> fiatCurrency;
+            if (ABSENT_STRING.equals(fiatCurrencyCode)) {
+              fiatCurrency = Optional.absent();
+            } else {
+              fiatCurrency = Optional.of(Currency.getInstance(fiatCurrencyCode));
+            }
             fiatPayment.setCurrency(fiatCurrency);
 
+            String fiatPaymentAmount = fiatPaymentProto.getAmount();
+            Optional<BigDecimal> amountFiat;
+            if (ABSENT_STRING.equals(fiatPaymentAmount)) {
+              amountFiat = Optional.absent();
+            } else {
+              amountFiat = Optional.of(new BigDecimal(fiatPaymentAmount));
+            }
+
+            fiatPayment.setAmount(amountFiat);
           }
           if (fiatPaymentProto.hasExchange()) {
             fiatPayment.setExchangeName(fiatPaymentProto.getExchange());
@@ -281,9 +291,13 @@ public class PaymentsProtobufSerializer {
         MBHDPaymentsProtos.FiatPayment.Builder fiatPaymentBuilder = MBHDPaymentsProtos.FiatPayment.newBuilder();
 
         // Amount
-        if (fiatPayment.getAmount() != null && fiatPayment.getCurrency() != null) {
-          fiatPaymentBuilder.setAmount(fiatPayment.getAmount().stripTrailingZeros().toPlainString());
-          fiatPaymentBuilder.setCurrency(fiatPayment.getCurrency().getCurrencyCode());
+        if (fiatPayment.getAmount() != null && fiatPayment.getAmount().isPresent()
+                && fiatPayment.getCurrency() != null && fiatPayment.getCurrency().isPresent()) {
+          fiatPaymentBuilder.setAmount(fiatPayment.getAmount().get().stripTrailingZeros().toPlainString());
+          fiatPaymentBuilder.setCurrency(fiatPayment.getCurrency().get().getCurrencyCode());
+        } else {
+          fiatPaymentBuilder.setAmount(ABSENT_STRING);
+          fiatPaymentBuilder.setCurrency(ABSENT_STRING);
         }
 
         fiatPaymentBuilder.setExchange(fiatPayment.getExchangeName().or(""));
@@ -320,11 +334,15 @@ public class PaymentsProtobufSerializer {
     FiatPayment fiatPayment = transactionInfo.getAmountFiat();
     if (fiatPayment != null) {
       MBHDPaymentsProtos.FiatPayment.Builder fiatPaymentBuilder = MBHDPaymentsProtos.FiatPayment.newBuilder();
-      if (fiatPayment.getAmount() != null) {
-        fiatPaymentBuilder.setAmount(fiatPayment.getAmount().stripTrailingZeros().toPlainString());
+      if (fiatPayment.getAmount() != null && fiatPayment.getAmount().isPresent()) {
+        fiatPaymentBuilder.setAmount(fiatPayment.getAmount().get().stripTrailingZeros().toPlainString());
+      } else {
+        fiatPaymentBuilder.setAmount(ABSENT_STRING);
       }
-      if (fiatPayment.getAmount() != null && fiatPayment.getCurrency() != null) {
-        fiatPaymentBuilder.setCurrency(fiatPayment.getCurrency().getCurrencyCode());
+      if (fiatPayment.getAmount() != null  && fiatPayment.getAmount().isPresent() && fiatPayment.getCurrency() != null  && fiatPayment.getCurrency().isPresent()) {
+        fiatPaymentBuilder.setCurrency(fiatPayment.getCurrency().get().getCurrencyCode());
+      } else {
+        fiatPaymentBuilder.setCurrency(ABSENT_STRING);
       }
       fiatPaymentBuilder.setExchange(fiatPayment.getExchangeName().or(""));
       fiatPaymentBuilder.setRate(fiatPayment.getRate().or(""));

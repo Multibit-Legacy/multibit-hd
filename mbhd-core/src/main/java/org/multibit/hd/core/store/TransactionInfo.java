@@ -17,7 +17,7 @@ public class TransactionInfo {
 
   private String hash;
   private FiatPayment amountFiat;
-  private String note;
+  private String note = "";
 
   /**
    * On a send, the miner's fee added in satoshi, otherwise Optional.absent()
