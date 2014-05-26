@@ -551,17 +551,17 @@ public class WalletService {
     }
 
     // Else work it out from the current settings
-    amountFiat.setExchangeName(ExchangeKey.current().getExchangeName());
+    amountFiat.setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
 
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
     if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
 
-      amountFiat.setRate(exchangeRateChangedEvent.get().getRate().toString());
+      amountFiat.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
       BigDecimal localAmount = Satoshis.toLocalAmount(amountBTC, exchangeRateChangedEvent.get().getRate());
       //log.debug("For a bitcoin amount of " + amountBTC + " the local amount is " + localAmount);
       amountFiat.setAmount(Optional.of(localAmount));
     } else {
-      amountFiat.setRate("");
+      amountFiat.setRate(Optional.<String>absent());
       amountFiat.setAmount(Optional.<BigDecimal>absent());
       //log.debug("For a bitcoin amount of " + amountBTC + " the local amount is null");
     }
@@ -912,15 +912,15 @@ public class WalletService {
 
       // Create the fiat payment
       FiatPayment amountFiat = new FiatPayment();
-      amountFiat.setExchangeName(ExchangeKey.current().getExchangeName());
+      amountFiat.setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
 
       Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
       if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
-        amountFiat.setRate(exchangeRateChangedEvent.get().getRate().toString());
+        amountFiat.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
         BigDecimal localAmount = Satoshis.toLocalAmount(transactionSeenEvent.getAmount(), exchangeRateChangedEvent.get().getRate());
         amountFiat.setAmount(Optional.of(localAmount));
       } else {
-        amountFiat.setRate("");
+        amountFiat.setRate(Optional.<String>absent());
         amountFiat.setAmount(Optional.<BigDecimal>absent());
       }
 

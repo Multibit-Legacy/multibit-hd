@@ -203,15 +203,15 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     FiatPayment fiatPayment = new FiatPayment();
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
     if (exchangeRateChangedEvent.isPresent()) {
-      fiatPayment.setRate(exchangeRateChangedEvent.get().getRate().toString());
+      fiatPayment.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
       // A send is denoted with a negative fiat amount
       fiatPayment.setAmount(Optional.of(Satoshis.toLocalAmount(getSatoshis(), exchangeRateChangedEvent.get().getRate().negate())));
     } else {
-      fiatPayment.setRate("");
+      fiatPayment.setRate(Optional.<String>absent());
       fiatPayment.setAmount(Optional.<BigDecimal>absent());
       fiatPayment.setCurrency(Optional.of(Configurations.currentConfiguration.getLocalCurrency()));
     }
-    fiatPayment.setExchangeName(ExchangeKey.current().getExchangeName());
+    fiatPayment.setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
 
     transactionInfo.setAmountFiat(fiatPayment);
 
@@ -222,7 +222,6 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     } catch (PaymentsSaveException pse) {
       ExceptionHandler.handleThrowable(pse);
     }
-
   }
 
   /**
@@ -252,7 +251,6 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     } else {
       return Optional.absent();
     }
-
   }
 
   private void emptyWallet() {

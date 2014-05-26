@@ -52,9 +52,9 @@ public class FiatPayment {
     return exchangeName;
   }
 
-  public void setExchangeName(String exchangeName) {
+  public void setExchangeName(Optional<String> exchangeName) {
     Preconditions.checkNotNull(exchangeName);
-    this.exchangeName = Optional.fromNullable(exchangeName);
+    this.exchangeName = exchangeName;
   }
 
   /**
@@ -64,9 +64,9 @@ public class FiatPayment {
     return rate;
   }
 
-  public void setRate(String rate) {
+  public void setRate(Optional<String> rate) {
     Preconditions.checkNotNull(rate);
-    this.rate = Optional.fromNullable(rate);
+    this.rate = rate;
   }
 
   @Override

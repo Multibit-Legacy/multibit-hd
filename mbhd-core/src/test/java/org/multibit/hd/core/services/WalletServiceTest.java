@@ -103,8 +103,8 @@ public class WalletServiceTest {
     paymentRequestData1.setAmountFiat(fiatPayment1);
     fiatPayment1.setAmount(Optional.of(new BigDecimal("12345.6")));
     fiatPayment1.setCurrency(Optional.of(Currency.getInstance("USD")));
-    fiatPayment1.setRate("10.0");
-    fiatPayment1.setExchangeName("Bitstamp");
+    fiatPayment1.setRate(Optional.of("10.0"));
+    fiatPayment1.setExchangeName(Optional.of("Bitstamp"));
 
     walletService.addPaymentRequest(paymentRequestData1);
 

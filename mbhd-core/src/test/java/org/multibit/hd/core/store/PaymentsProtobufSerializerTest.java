@@ -18,15 +18,12 @@ import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Currency;
 import java.util.Iterator;
-import java.util.Random;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class PaymentsProtobufSerializerTest {
 
   private PaymentsProtobufSerializer serializer;
-
-  private Random random;
 
   private File paymentsFile;
 
@@ -37,8 +34,6 @@ public class PaymentsProtobufSerializerTest {
     paymentsFile = new File(temporaryDirectory.getAbsolutePath() + File.separator + WalletService.PAYMENTS_DATABASE_NAME);
 
     serializer = new PaymentsProtobufSerializer();
-
-    random = new Random();
   }
 
 
@@ -61,8 +56,8 @@ public class PaymentsProtobufSerializerTest {
     paymentRequestData1.setAmountFiat(fiatPayment1);
     fiatPayment1.setAmount(Optional.of(new BigDecimal("12345.6")));
     fiatPayment1.setCurrency(Optional.of(Currency.getInstance("USD")));
-    fiatPayment1.setRate("10.0");
-    fiatPayment1.setExchangeName("Bitstamp");
+    fiatPayment1.setRate(Optional.of("10.0"));
+    fiatPayment1.setExchangeName(Optional.of("Bitstamp"));
 
     PaymentRequestData paymentRequestData2 = new PaymentRequestData();
     paymentRequestData2.setAddress("1xyz");
@@ -76,8 +71,8 @@ public class PaymentsProtobufSerializerTest {
     paymentRequestData2.setAmountFiat(fiatPayment2);
     fiatPayment2.setAmount(Optional.of(new BigDecimal("12345.678")));
     fiatPayment2.setCurrency(Optional.of(Currency.getInstance("GBP")));
-    fiatPayment2.setRate("20.0");
-    fiatPayment2.setExchangeName("OER");
+    fiatPayment2.setRate(Optional.of("20.0"));
+    fiatPayment2.setExchangeName(Optional.of("OER"));
 
     paymentRequestDatas.add(paymentRequestData1);
     paymentRequestDatas.add(paymentRequestData2);
@@ -125,8 +120,8 @@ public class PaymentsProtobufSerializerTest {
     transactionInfo1.setAmountFiat(fiatPayment1);
     fiatPayment1.setAmount(Optional.of(new BigDecimal("99.9")));
     fiatPayment1.setCurrency(Optional.of(Currency.getInstance("EUR")));
-    fiatPayment1.setRate("30.0");
-    fiatPayment1.setExchangeName("Bitstamp");
+    fiatPayment1.setRate(Optional.of("30.0"));
+    fiatPayment1.setExchangeName(Optional.of("Bitstamp"));
 
     transactionInfo1.setClientFee(Optional.<BigInteger>absent());
     transactionInfo1.setMinerFee(Optional.of(BigInteger.valueOf(123)));
@@ -140,8 +135,8 @@ public class PaymentsProtobufSerializerTest {
     transactionInfo2.setAmountFiat(fiatPayment2);
     fiatPayment2.setAmount(Optional.of(new BigDecimal("11.1")));
     fiatPayment2.setCurrency(Optional.of(Currency.getInstance("JPY")));
-    fiatPayment2.setRate("50.0");
-    fiatPayment2.setExchangeName("BitstampJunior");
+    fiatPayment2.setRate(Optional.of("50.0"));
+    fiatPayment2.setExchangeName(Optional.of("BitstampJunior"));
 
     transactionInfo2.setClientFee(Optional.of(BigInteger.valueOf(456)));
     transactionInfo2.setMinerFee(Optional.<BigInteger>absent());
@@ -165,7 +160,7 @@ public class PaymentsProtobufSerializerTest {
 
 
     Collection<TransactionInfo> newTransactionInfos = newPayments.getTransactionInfos();
-    assertThat(newTransactionInfos.size()).isEqualTo(2);
+    assertThat(newTransactionInfos.size()).isEqualTo(3);
 
     Iterator<TransactionInfo> iterator = newTransactionInfos.iterator();
     TransactionInfo newTransactionInfo1 = iterator.next();

@@ -203,13 +203,13 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     fiatPayment.setAmount(Optional.of(enterAmountMaV.getModel().getLocalAmount()));
 
     ExchangeKey exchangeKey = ExchangeKey.current();
-    fiatPayment.setExchangeName(exchangeKey.getExchangeName());
+    fiatPayment.setExchangeName(Optional.of(exchangeKey.getExchangeName()));
 
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
     if (exchangeRateChangedEvent.isPresent()) {
-      fiatPayment.setRate(exchangeRateChangedEvent.get().getRate().toString());
+      fiatPayment.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
     } else {
-      fiatPayment.setRate("");
+      fiatPayment.setRate(Optional.<String>absent());
     }
     paymentRequestData.setAmountFiat(fiatPayment);
 

@@ -181,10 +181,19 @@ public class PaymentsProtobufSerializer {
           }
 
           if (fiatPaymentProto.hasExchange()) {
-            fiatPayment.setExchangeName(fiatPaymentProto.getExchange());
+            if (ABSENT_STRING.equals(fiatPaymentProto.getExchange())) {
+              fiatPayment.setExchangeName(Optional.<String>absent());
+            } else {
+              fiatPayment.setExchangeName(Optional.of(fiatPaymentProto.getExchange()));
+            }
           }
           if (fiatPaymentProto.hasRate()) {
-            fiatPayment.setRate(fiatPaymentProto.getRate());
+            fiatPayment.setRate(Optional.of(fiatPaymentProto.getRate()));
+            if (ABSENT_STRING.equals(fiatPaymentProto.getRate())) {
+              fiatPayment.setRate(Optional.<String>absent());
+            } else {
+              fiatPayment.setRate(Optional.of(fiatPaymentProto.getRate()));
+            }
           }
         }
 
@@ -250,10 +259,19 @@ public class PaymentsProtobufSerializer {
             fiatPayment.setAmount(amountFiat);
           }
           if (fiatPaymentProto.hasExchange()) {
-            fiatPayment.setExchangeName(fiatPaymentProto.getExchange());
+            if (ABSENT_STRING.equals(fiatPaymentProto.getExchange())) {
+              fiatPayment.setExchangeName(Optional.<String>absent());
+            } else {
+              fiatPayment.setExchangeName(Optional.of(fiatPaymentProto.getExchange()));
+            }
           }
           if (fiatPaymentProto.hasRate()) {
-            fiatPayment.setRate(fiatPaymentProto.getRate());
+            fiatPayment.setRate(Optional.of(fiatPaymentProto.getRate()));
+            if (ABSENT_STRING.equals(fiatPaymentProto.getRate())) {
+              fiatPayment.setRate(Optional.<String>absent());
+            } else {
+              fiatPayment.setRate(Optional.of(fiatPaymentProto.getRate()));
+            }
           }
         }
 
@@ -300,8 +318,16 @@ public class PaymentsProtobufSerializer {
           fiatPaymentBuilder.setCurrency(ABSENT_STRING);
         }
 
-        fiatPaymentBuilder.setExchange(fiatPayment.getExchangeName().or(""));
-        fiatPaymentBuilder.setRate(fiatPayment.getRate().or(""));
+        if (fiatPayment.getExchangeName().isPresent()) {
+          fiatPaymentBuilder.setExchange(fiatPayment.getExchangeName().get());
+        } else {
+          fiatPaymentBuilder.setExchange(ABSENT_STRING);
+        }
+        if (fiatPayment.getRate().isPresent()) {
+          fiatPaymentBuilder.setRate(fiatPayment.getRate().get());
+        } else {
+          fiatPaymentBuilder.setRate(ABSENT_STRING);
+        }
 
         paymentRequestBuilder.setAmountFiat(fiatPaymentBuilder);
       }
@@ -344,8 +370,16 @@ public class PaymentsProtobufSerializer {
       } else {
         fiatPaymentBuilder.setCurrency(ABSENT_STRING);
       }
-      fiatPaymentBuilder.setExchange(fiatPayment.getExchangeName().or(""));
-      fiatPaymentBuilder.setRate(fiatPayment.getRate().or(""));
+      if (fiatPayment.getExchangeName().isPresent()) {
+        fiatPaymentBuilder.setExchange(fiatPayment.getExchangeName().get());
+      } else {
+        fiatPaymentBuilder.setExchange(ABSENT_STRING);
+      }
+      if (fiatPayment.getRate().isPresent()) {
+        fiatPaymentBuilder.setRate(fiatPayment.getRate().get());
+      } else {
+        fiatPaymentBuilder.setRate(ABSENT_STRING);
+      }
 
       transactionInfoBuilder.setAmountFiat(fiatPaymentBuilder);
     }
