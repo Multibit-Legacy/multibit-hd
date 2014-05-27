@@ -4,6 +4,7 @@ import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.timing.Pause;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.themes.Themes;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -13,15 +14,15 @@ import static org.fest.swing.timing.Timeout.timeout;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Unlock a wallet</li>
+ * <li>Unlock a wallet with a failed password</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class UnlockWalletUseCase extends AbstractFestUseCase {
+public class SlowUnlockWalletUseCase extends AbstractFestUseCase {
 
-  public UnlockWalletUseCase(FrameFixture window) {
+  public SlowUnlockWalletUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -41,10 +42,46 @@ public class UnlockWalletUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireDisabled();
 
-    // Enter password text
+    // Enter incorrect password text
     window
       .textBox(MessageKey.ENTER_PASSWORD.getKey())
+      .enterText("def456");
+
+    // Verify show and hide
+    window
+      .button(MessageKey.SHOW.getKey())
+      .click();
+    window
+      .button(MessageKey.HIDE.getKey())
+      .click();
+
+    // Click on unlock (expect failure)
+    window
+      .button(MessageKey.PASSWORD_UNLOCK.getKey())
+      .requireVisible()
+      .requireEnabled()
+      .click();
+
+    // Fixed time to fail to unlock
+    Pause.pause(3, TimeUnit.SECONDS);
+
+    // Verify failure colouring
+    window
+      .textBox(MessageKey.ENTER_PASSWORD.getKey())
+      .background()
+      .requireEqualTo(Themes.currentTheme.invalidDataEntryBackground());
+
+    // Enter new password
+    window
+      .textBox(MessageKey.ENTER_PASSWORD.getKey())
+      .deleteText()
       .enterText("abc123");
+
+    // Verify new attempt colouring
+    window
+      .textBox(MessageKey.ENTER_PASSWORD.getKey())
+      .background()
+      .requireEqualTo(Themes.currentTheme.dataEntryBackground());
 
     // Verify show and hide
     window
