@@ -42,7 +42,8 @@ public class TransactionConverter implements CSVEntryConverter<TransactionData> 
     if (transactionData.getAmountFiat() != null
       && transactionData.getAmountFiat().getAmount() != null
       && transactionData.getAmountFiat().getAmount().isPresent()) {
-      columns[6] = transactionData.getAmountFiat().getAmount().get().toString();
+      // Ensure we use plain string to avoid "E-05"
+      columns[6] = transactionData.getAmountFiat().getAmount().get().stripTrailingZeros().toPlainString();
     }
 
     // Exchange rate

@@ -41,6 +41,9 @@ public class PaymentRequestData implements PaymentData {
     return payingTransactionHashes;
   }
 
+  /**
+   * @return The amount paid in satoshis
+   */
   public BigInteger getPaidAmountBTC() {
     return paidAmountBTC;
   }

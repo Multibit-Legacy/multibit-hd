@@ -21,7 +21,7 @@ public class PaymentRequestConverter implements CSVEntryConverter<PaymentRequest
   public String[] convertEntry(PaymentRequestData paymentRequestData) {
     String[] columns = new String[12];
 
-    // Date.
+    // Date
     columns[0] = paymentRequestData.getDate() == null ? "" : dateFormatter.format(paymentRequestData.getDate().toDate());
 
     // Type
@@ -30,7 +30,7 @@ public class PaymentRequestConverter implements CSVEntryConverter<PaymentRequest
     // Bitcoin address
     columns[2] = paymentRequestData.getAddress() == null ? "" : paymentRequestData.getAddress();
 
-    // Description.
+    // Description
     columns[3] = paymentRequestData.getDescription() == null ? "" : paymentRequestData.getDescription();
 
     // QR code label
@@ -39,13 +39,16 @@ public class PaymentRequestConverter implements CSVEntryConverter<PaymentRequest
     // Note
     columns[5] = paymentRequestData.getNote() == null ? "" : paymentRequestData.getNote();
 
-    // Amount in BTC.
+    // Amount in BTC
     columns[6] = paymentRequestData.getAmountBTC() == null ? "" : paymentRequestData.getAmountBTC().toString();
 
     // Amount in fiat
     columns[7] = "";
-    if (paymentRequestData.getAmountFiat() != null && paymentRequestData.getAmountFiat().getAmount() != null) {
-      columns[7] = paymentRequestData.getAmountFiat().getAmount().toString();
+    if (paymentRequestData.getAmountFiat() != null
+      && paymentRequestData.getAmountFiat().getAmount() != null
+      && paymentRequestData.getAmountFiat().getAmount().isPresent()) {
+      // Ensure we use plain string to avoid "E-05" etc
+      columns[7] = paymentRequestData.getAmountFiat().getAmount().get().stripTrailingZeros().toPlainString();
     }
 
     // Exchange rate
@@ -60,7 +63,7 @@ public class PaymentRequestConverter implements CSVEntryConverter<PaymentRequest
       columns[9] = paymentRequestData.getAmountFiat().getExchangeName().or("");
     }
 
-    // Paid amount in BTC
+    // Paid amount in satoshis
     columns[10] = paymentRequestData.getPaidAmountBTC() == null ? "" : paymentRequestData.getPaidAmountBTC().toString();
 
     // Funding transactions
