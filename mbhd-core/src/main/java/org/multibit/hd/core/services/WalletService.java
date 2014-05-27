@@ -15,10 +15,7 @@ import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.*;
-import org.multibit.hd.core.events.ChangePasswordResultEvent;
-import org.multibit.hd.core.events.CoreEvents;
-import org.multibit.hd.core.events.ExchangeRateChangedEvent;
-import org.multibit.hd.core.events.TransactionSeenEvent;
+import org.multibit.hd.core.events.*;
 import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
@@ -544,7 +541,7 @@ public class WalletService {
     // This will use the fiat rate at time of send/ receive
     TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
     if (transactionInfo != null) {
-      log.debug("For the hash " + transactionHashAsString + " a bitcoin amount of " + amountBTC + " the local amount is " + transactionInfo.getAmountFiat().getAmount() + " STORED");
+      log.trace("For the hash " + transactionHashAsString + " a bitcoin amount of " + amountBTC + " the local amount is " + transactionInfo.getAmountFiat().getAmount() + " STORED");
       return transactionInfo.getAmountFiat();
     }
 
@@ -564,9 +561,9 @@ public class WalletService {
       amountFiat.setRate(Optional.<String>absent());
       amountFiat.setAmount(Optional.<BigDecimal>absent());
     }
-    log.debug("For the hash " + transactionHashAsString + "  a bitcoin amount of " + amountBTC + " the local amount is " + amountFiat.getAmount() + " NEW");
+    log.trace("For the hash " + transactionHashAsString + "  a bitcoin amount of " + amountBTC + " the local amount is " + amountFiat.getAmount() + " NEW");
 
-    // Remember the fiat imformation just worked out
+    // Remember the fiat information just worked out
     TransactionInfo newTransactionInfo = new TransactionInfo();
     newTransactionInfo.setHash(transactionHashAsString);
     newTransactionInfo.setAmountFiat(amountFiat);
@@ -931,6 +928,19 @@ public class WalletService {
       transactionInfoMap.put(transactionSeenEvent.getTransactionId(), transactionInfo);
     } else {
       log.debug("There was already a TransactionInfo: for " + transactionSeenEvent.getTransactionId() + ", value = " + transactionInfo.toString());
+    }
+  }
+
+  /**
+   * @param shutdownEvent The shutdown event
+   */
+  @Subscribe
+  public void onShutdownEvent(ShutdownEvent shutdownEvent) {
+    try {
+      writePayments();
+    } catch (PaymentsSaveException pse) {
+      // Cannot do much as shutting down
+      pse.printStackTrace();
     }
   }
 }

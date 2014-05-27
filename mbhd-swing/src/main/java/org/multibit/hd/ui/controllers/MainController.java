@@ -117,6 +117,9 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
       case HARD:
       case SOFT:
         log.debug("Informing singletons (wallet, backup, installation)");
+        if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+          CoreServices.getOrCreateWalletService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId()).onShutdownEvent(shutdownEvent);
+        }
         WalletManager.INSTANCE.onShutdownEvent(shutdownEvent);
         BackupManager.INSTANCE.onShutdownEvent(shutdownEvent);
         InstallationManager.onShutdownEvent(shutdownEvent);
