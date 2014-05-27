@@ -173,8 +173,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
   @Override
   public boolean beforeHide(boolean isExitCancel) {
 
-    // Always call super() before hiding
-    super.beforeHide(isExitCancel);
+    // Do not call the superclass to deregister this wizard since it uses a deferred hide
 
     // Don't block an exit
     if (isExitCancel) {
@@ -237,6 +236,8 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
               @Override
               public void run() {
 
+                enterPasswordMaV.getView().incorrectPassword();
+
                 getFinishButton().setEnabled(true);
                 getExitButton().setEnabled(true);
                 getRestoreButton().setEnabled(true);
@@ -293,7 +294,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
       try {
         WalletManager.INSTANCE.open(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, password);
       } catch (WalletLoadException wle) {
-        wle.printStackTrace();
+        log.error(wle.getMessage(), wle);
         // Assume bad password
         return false;
       }

@@ -1,12 +1,15 @@
 package org.multibit.hd.ui.views.components.enter_password;
 
+import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -58,6 +61,10 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
 
       @Override
       public void keyReleased(KeyEvent e) {
+
+        // Reset the password background
+        password.setBackground(Themes.currentTheme.dataEntryBackground());
+
         getModel().get().setPassword(password.getPassword());
 
       }
@@ -142,5 +149,16 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
 
   public void setAddLabel(boolean addLabel) {
     this.addLabel = addLabel;
+  }
+
+  /**
+   * Handles the UI feedback for an incorrect password
+   */
+  public void incorrectPassword() {
+
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(),"Must execute on EDT.");
+
+    password.setBackground(Themes.currentTheme.invalidDataEntryBackground());
+
   }
 }
