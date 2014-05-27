@@ -146,7 +146,11 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
 
     // Update the model and view for the amount
     transactionDisplayAmountMaV.getModel().setSatoshis(getWizardModel().getSatoshis());
-    transactionDisplayAmountMaV.getModel().setLocalAmount(getWizardModel().getLocalAmount());
+    if (getWizardModel().getLocalAmount().isPresent()) {
+      transactionDisplayAmountMaV.getModel().setLocalAmount(getWizardModel().getLocalAmount().get());
+    } else {
+      transactionDisplayAmountMaV.getModel().setLocalAmount(null);
+    }
     transactionDisplayAmountMaV.getView().updateView(configuration);
 
     // Update the model and view for the transaction fee

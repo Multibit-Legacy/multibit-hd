@@ -340,7 +340,7 @@ public class WalletService {
     // (The payment request knows about the transactions that fund it but not the reverse)
 
     String description = calculateDescriptionAndUpdatePaymentRequests(wallet, transaction, transactionHashAsString, paymentType, amountBTC);
-    // also works out outputAddresses
+    // Also works out outputAddresses
 
     String rawTransaction = transaction.toString();
 
@@ -525,7 +525,6 @@ public class WalletService {
   }
 
   private List<String> calculateOutputAddresses(Transaction transaction) {
-
     List<String> outputAddresses = Lists.newArrayList();
 
     if (transaction.getOutputs() != null) {
@@ -539,7 +538,6 @@ public class WalletService {
   }
 
   private FiatPayment calculateFiatPayment(BigInteger amountBTC, String transactionHashAsString) {
-
     FiatPayment amountFiat = new FiatPayment();
 
     // Get the transactionInfo that contains the fiat exchange info, if it is available from the backing store
@@ -555,22 +553,22 @@ public class WalletService {
 
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
     if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
-
       amountFiat.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
       BigDecimal localAmount = Satoshis.toLocalAmount(amountBTC, exchangeRateChangedEvent.get().getRate());
-      //log.debug("For a bitcoin amount of " + amountBTC + " the local amount is " + localAmount);
-      amountFiat.setAmount(Optional.of(localAmount));
+      if (localAmount.compareTo(BigDecimal.ZERO) != 0) {
+        amountFiat.setAmount(Optional.of(localAmount));
+      } else {
+        amountFiat.setAmount(Optional.<BigDecimal>absent());
+      }
     } else {
       amountFiat.setRate(Optional.<String>absent());
       amountFiat.setAmount(Optional.<BigDecimal>absent());
-      //log.debug("For a bitcoin amount of " + amountBTC + " the local amount is null");
     }
 
     return amountFiat;
   }
 
   private String calculateNote(TransactionData transactionData, String transactionHashAsString) {
-
     String note = "";
 
     TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
@@ -597,7 +595,6 @@ public class WalletService {
   }
 
   private Optional<BigInteger> calculateMiningFee(PaymentType paymentType, String transactionHashAsString) {
-
     Optional<BigInteger> miningFee = Optional.absent();
 
     if (paymentType == PaymentType.SENDING || paymentType == PaymentType.SENT) {
@@ -611,7 +608,6 @@ public class WalletService {
   }
 
   private Optional<BigInteger> calculateClientFee(PaymentType paymentType, String transactionHashAsString) {
-
      Optional<BigInteger> clientFee = Optional.absent();
 
      if (paymentType == PaymentType.SENDING || paymentType == PaymentType.SENT) {
@@ -631,7 +627,6 @@ public class WalletService {
    * <p>Populate the internal cache of Payments from the backing store</p>
    */
   public void readPayments() throws PaymentsLoadException {
-
     Preconditions.checkNotNull(backingStoreFile, "There is no backingStoreFile. Please initialise WalletService.");
 
     log.debug("Loading payments from '{}'", backingStoreFile.getAbsolutePath());
@@ -667,7 +662,6 @@ public class WalletService {
    * <p>Save the payments data to the backing store</p>
    */
   public void writePayments() throws PaymentsSaveException {
-
     Preconditions.checkNotNull(backingStoreFile, "There is no backingStoreFile. Please initialise WalletService.");
 
     try {
@@ -710,7 +704,6 @@ public class WalletService {
    * @return Address the next generated address, as a String. The corresponding private key will be added to the wallet
    */
   public String generateNextReceivingAddress(Optional<CharSequence> walletPasswordOptional) {
-
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
     if (!currentWalletSummary.isPresent()) {
       // No wallet is present
@@ -725,7 +718,6 @@ public class WalletService {
         throw new IllegalStateException("No password specified");
       }
     }
-
   }
 
   /**
@@ -736,7 +728,6 @@ public class WalletService {
    * @return The list of payment requests that the transaction data funds
    */
   public List<PaymentRequestData> findPaymentRequestsThisTransactionFunds(TransactionData transactionData) {
-
     List<PaymentRequestData> paymentRequestDataList = Lists.newArrayList();
 
     if (transactionData != null && transactionData.getOutputAddresses() != null) {
@@ -918,7 +909,11 @@ public class WalletService {
       if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
         amountFiat.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
         BigDecimal localAmount = Satoshis.toLocalAmount(transactionSeenEvent.getAmount(), exchangeRateChangedEvent.get().getRate());
-        amountFiat.setAmount(Optional.of(localAmount));
+        if (localAmount.compareTo(BigDecimal.ZERO) != 0) {
+          amountFiat.setAmount(Optional.of(localAmount));
+        } else {
+          amountFiat.setAmount(Optional.<BigDecimal>absent());
+        }
       } else {
         amountFiat.setRate(Optional.<String>absent());
         amountFiat.setAmount(Optional.<BigDecimal>absent());
@@ -929,7 +924,7 @@ public class WalletService {
       log.debug("Created TransactionInfo: " + transactionInfo.toString());
       transactionInfoMap.put(transactionSeenEvent.getTransactionId(), transactionInfo);
     } else {
-      log.debug("There was already a TransactionInfo: for " + transactionSeenEvent.getTransactionId());
+      log.debug("There was already a TransactionInfo: for " + transactionSeenEvent.getTransactionId() + ", value = " + transactionInfo.toString());
     }
   }
 }

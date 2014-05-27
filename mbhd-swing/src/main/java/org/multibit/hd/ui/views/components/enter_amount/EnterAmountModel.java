@@ -68,18 +68,18 @@ public class EnterAmountModel implements Model<EnterAmountModel> {
   }
 
   /**
-   * @return The local amount (zero if not present)
+   * @return The local amount
    */
-  public BigDecimal getLocalAmount() {
-    return localAmount.or(BigDecimal.ZERO);
+  public Optional<BigDecimal> getLocalAmount() {
+    return localAmount;
   }
 
   /**
    * @param value The local amount - no component event since the Bitcoin value drives this component
    */
-  public void setLocalAmount(BigDecimal value) {
+  public void setLocalAmount(Optional<BigDecimal> value) {
 
-    localAmount = Optional.of(value);
+    localAmount = value;
 
   }
 }

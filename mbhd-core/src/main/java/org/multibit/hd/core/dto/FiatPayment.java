@@ -99,4 +99,14 @@ public class FiatPayment {
     }
     return amount.get().compareTo(other.getAmount().get());
   }
+
+  @Override
+  public String toString() {
+    return "FiatPayment{" +
+            "amount=" + amount +
+            ", currency=" + currency +
+            ", exchangeName=" + exchangeName +
+            ", rate=" + rate +
+            '}';
+  }
 }

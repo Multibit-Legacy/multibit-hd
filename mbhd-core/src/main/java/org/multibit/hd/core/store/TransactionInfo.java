@@ -98,4 +98,15 @@ public class TransactionInfo {
     result = 31 * result + (clientFee != null ? clientFee.hashCode() : 0);
     return result;
   }
+
+  @Override
+  public String toString() {
+    return "TransactionInfo{" +
+            "hash='" + hash + '\'' +
+            ", amountFiat=" + amountFiat +
+            ", note='" + note + '\'' +
+            ", minerFee=" + minerFee +
+            ", clientFee=" + clientFee +
+            '}';
+  }
 }

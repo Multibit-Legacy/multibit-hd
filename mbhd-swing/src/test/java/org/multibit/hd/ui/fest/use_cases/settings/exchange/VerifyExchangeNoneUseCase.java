@@ -86,6 +86,9 @@ public class VerifyExchangeNoneUseCase extends AbstractFestUseCase {
       .comboBox(MessageKey.SELECT_LOCAL_CURRENCY.getKey())
       .selectItem(0);
 
+    // Allow time for currency to verify
+    pause(2, TimeUnit.SECONDS);
+
     // Click Apply
     window
       .button(MessageKey.APPLY.getKey())

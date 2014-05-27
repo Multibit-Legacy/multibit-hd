@@ -276,7 +276,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
           // Update the model with the plain value
           getModel().get().setSatoshis(satoshis);
-          getModel().get().setLocalAmount(localAmount);
+          getModel().get().setLocalAmount(value);
 
           // Use the symbolic amount in setValue() for display formatting
           BigDecimal symbolicAmount = Satoshis.toSymbolicAmount(satoshis, bitcoinSymbol);
@@ -297,13 +297,13 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
         // Update the model
         getModel().get().setSatoshis(BigInteger.ZERO);
-        getModel().get().setLocalAmount(BigDecimal.ZERO);
+        getModel().get().setLocalAmount(Optional.<BigDecimal>absent());
       }
 
     } else {
 
       // No exchange rate so no local amount
-      getModel().get().setLocalAmount(BigDecimal.ZERO);
+      getModel().get().setLocalAmount(Optional.<BigDecimal>absent());
 
     }
 
@@ -333,8 +333,11 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
           // Update the model
           getModel().get().setSatoshis(satoshis);
-          getModel().get().setLocalAmount(localAmount);
-
+          if (localAmount.compareTo(BigDecimal.ZERO) != 0) {
+            getModel().get().setLocalAmount(Optional.of(localAmount));
+          } else {
+            getModel().get().setLocalAmount(Optional.<BigDecimal>absent());
+          }
           // Use setValue for the local amount so that the display formatter
           // will match the currency requirements
           localAmountText.setValue(localAmount);
@@ -353,7 +356,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
         // Update the model
         getModel().get().setSatoshis(BigInteger.ZERO);
-        getModel().get().setLocalAmount(BigDecimal.ZERO);
+        getModel().get().setLocalAmount(Optional.<BigDecimal>absent());
       }
     } else {
 
@@ -366,7 +369,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
           // Update the model
           getModel().get().setSatoshis(satoshis);
-          getModel().get().setLocalAmount(BigDecimal.ZERO);
+          getModel().get().setLocalAmount(Optional.<BigDecimal>absent());
 
           // Give feedback to the user
           localAmountText.setBackground(Themes.currentTheme.dataEntryBackground());
@@ -382,7 +385,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
         // Update the model
         getModel().get().setSatoshis(BigInteger.ZERO);
-        getModel().get().setLocalAmount(BigDecimal.ZERO);
+        getModel().get().setLocalAmount(Optional.<BigDecimal>absent());
       }
     }
 

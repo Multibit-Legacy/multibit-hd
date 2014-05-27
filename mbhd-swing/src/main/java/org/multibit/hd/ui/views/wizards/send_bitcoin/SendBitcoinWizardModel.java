@@ -148,7 +148,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   /**
    * @return The local amount
    */
-  public BigDecimal getLocalAmount() {
+  public Optional<BigDecimal> getLocalAmount() {
     return enterAmountPanelModel
       .getEnterAmountModel()
       .getLocalAmount();
@@ -239,7 +239,11 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     // Create the fiat payment
     FiatPayment fiatPayment = new FiatPayment();
     // A send is denoted with a negative fiat amount
-    fiatPayment.setAmount(Optional.of(getLocalAmount().negate()));
+    if (getLocalAmount().isPresent()) {
+      fiatPayment.setAmount(Optional.of(getLocalAmount().get().negate()));
+    } else {
+      fiatPayment.setAmount(Optional.<BigDecimal>absent());
+    }
     fiatPayment.setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
 
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
