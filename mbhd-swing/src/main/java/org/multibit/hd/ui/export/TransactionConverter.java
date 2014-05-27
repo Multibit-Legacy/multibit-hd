@@ -19,7 +19,7 @@ public class TransactionConverter implements CSVEntryConverter<TransactionData> 
   public String[] convertEntry(TransactionData transactionData) {
     String[] columns = new String[13];
 
-    // Date.
+    // Date
     columns[0] = transactionData.getDate() == null ? "" : dateFormatter.format(transactionData.getDate().toDate());
 
     // Status
@@ -28,45 +28,57 @@ public class TransactionConverter implements CSVEntryConverter<TransactionData> 
     // Type
     columns[2] = transactionData.getType() == null ? "" : transactionData.getType().toString();
 
-    // Description.
+    // Description
     columns[3] = transactionData.getDescription() == null ? "" : transactionData.getDescription();
 
     // Note
     columns[4] = transactionData.getNote() == null ? "" : transactionData.getNote();
 
-    // Amount in BTC.
+    // Amount in BTC
     columns[5] = transactionData.getAmountBTC() == null ? "" : transactionData.getAmountBTC().toString();
 
     // Amount in fiat
     columns[6] = "";
-    if (transactionData.getAmountFiat() != null && transactionData.getAmountFiat().getAmount() != null) {
-      columns[6] = transactionData.getAmountFiat().getAmount().toString();
+    if (transactionData.getAmountFiat() != null
+      && transactionData.getAmountFiat().getAmount() != null
+      && transactionData.getAmountFiat().getAmount().isPresent()) {
+      columns[6] = transactionData.getAmountFiat().getAmount().get().toString();
     }
 
     // Exchange rate
     columns[7] = "";
-    if (transactionData.getAmountFiat() != null && transactionData.getAmountFiat().getRate() != null) {
-      columns[7] = transactionData.getAmountFiat().getRate().or("");
+    if (transactionData.getAmountFiat() != null
+      && transactionData.getAmountFiat().getRate() != null
+      && transactionData.getAmountFiat().getRate().isPresent()) {
+      columns[7] = transactionData.getAmountFiat().getRate().get();
     }
 
     // Exchange rate provider
     columns[8] = "";
-    if (transactionData.getAmountFiat() != null && transactionData.getAmountFiat().getExchangeName() != null) {
-      columns[8] = transactionData.getAmountFiat().getExchangeName().or("");
+    if (transactionData.getAmountFiat() != null
+      && transactionData.getAmountFiat().getExchangeName() != null
+      && transactionData.getAmountFiat().getExchangeName().isPresent()) {
+      columns[8] = transactionData.getAmountFiat().getExchangeName().get();
     }
 
     // Miner's fee
-    columns[9] = transactionData.getMiningFee() == null || !(transactionData.getMiningFee().isPresent())
-            ? "" : transactionData.getMiningFee().get().toString();
+    columns[9] = "";
+    if (transactionData.getMiningFee() != null
+      && transactionData.getMiningFee().isPresent()) {
+      columns[9] = transactionData.getMiningFee().get().toString();
+    }
 
     // Client fee
-    columns[10] = transactionData.getClientFee() == null || !(transactionData.getClientFee().isPresent())
-            ? "" : transactionData.getClientFee().get().toString();
+    columns[10] = "";
+    if (transactionData.getClientFee() != null
+      && transactionData.getClientFee().isPresent()) {
+      columns[10] = transactionData.getClientFee().get().toString();
+    }
 
-     // Coinbase
+    // Coinbase
     columns[11] = Boolean.toString(transactionData.isCoinBase());
 
-    // Transaction hash.
+    // Transaction hash
     columns[12] = transactionData.getTransactionId();
     return columns;
   }

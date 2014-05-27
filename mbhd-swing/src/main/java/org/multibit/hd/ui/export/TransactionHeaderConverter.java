@@ -3,6 +3,7 @@ package org.multibit.hd.ui.export;
 import com.googlecode.jcsv.writer.CSVEntryConverter;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.TransactionData;
+import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 
@@ -30,10 +31,10 @@ public class TransactionHeaderConverter implements CSVEntryConverter<Transaction
    // Note.
     columns[4] = Languages.safeText(MessageKey.PRIVATE_NOTES);
 
-    // Amount in BTC.
-    columns[5] = Languages.safeText(MessageKey.LOCAL_AMOUNT) + " "  + Configurations.currentConfiguration.getBitcoin().getBitcoinSymbol();
+    // Amount in BTC using text symbol for clarity
+    columns[5] = Languages.safeText(MessageKey.LOCAL_AMOUNT) + " "  + BitcoinSymbol.current().getTextSymbol();
 
-    // Amount in fiat
+    // Amount in fiat using local currency symbol
     columns[6] = Languages.safeText(MessageKey.LOCAL_AMOUNT) + " " + Configurations.currentConfiguration.getBitcoin().getLocalCurrencySymbol();
 
     // Exchange rate

@@ -125,11 +125,9 @@ public class ExportManager {
     Collections.sort(paymentRequestDataList, Collections.reverseOrder(comparator));
 
     List<TransactionData> transactionDataList = Lists.newArrayList();
-    if (paymentDataList != null) {
-      for (PaymentData paymentData : paymentDataList) {
-        if (paymentData instanceof TransactionData) {
-          transactionDataList.add((TransactionData) paymentData);
-        }
+    for (PaymentData paymentData : paymentDataList) {
+      if (paymentData instanceof TransactionData) {
+        transactionDataList.add((TransactionData) paymentData);
       }
     }
 
