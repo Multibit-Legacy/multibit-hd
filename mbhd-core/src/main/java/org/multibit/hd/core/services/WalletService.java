@@ -544,7 +544,7 @@ public class WalletService {
     // This will use the fiat rate at time of send/ receive
     TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
     if (transactionInfo != null) {
-      //log.debug("For a bitcoin amount of " + amountBTC + " the local amount is " + transactionInfo.getAmountFiat().getAmount() + " STORED");
+      log.debug("For the hash " + transactionHashAsString + " a bitcoin amount of " + amountBTC + " the local amount is " + transactionInfo.getAmountFiat().getAmount() + " STORED");
       return transactionInfo.getAmountFiat();
     }
 
@@ -564,7 +564,13 @@ public class WalletService {
       amountFiat.setRate(Optional.<String>absent());
       amountFiat.setAmount(Optional.<BigDecimal>absent());
     }
+    log.debug("For the hash " + transactionHashAsString + "  a bitcoin amount of " + amountBTC + " the local amount is " + amountFiat.getAmount() + " NEW");
 
+    // Remember the fiat imformation just worked out
+    TransactionInfo newTransactionInfo = new TransactionInfo();
+    newTransactionInfo.setHash(transactionHashAsString);
+    newTransactionInfo.setAmountFiat(amountFiat);
+    transactionInfoMap.put(transactionHashAsString, newTransactionInfo);
     return amountFiat;
   }
 
