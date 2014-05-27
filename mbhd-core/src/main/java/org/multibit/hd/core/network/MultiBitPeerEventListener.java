@@ -20,7 +20,8 @@ public class MultiBitPeerEventListener implements PeerEventListener {
   private int downloadPercent = 0;
   private int numberOfConnectedPeers = 0;
 
-  private boolean suppressPeerCountMessages = false;
+  // Start with peer count suppression until blocks start to arrive
+  private boolean suppressPeerCountMessages = true;
 
   public MultiBitPeerEventListener() {
   }
@@ -40,7 +41,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(downloadPercent, blocksLeft));
 
     if (!suppressPeerCountMessages) {
-      // Switch to showing the peer count
+      // Fully synchronized so switch to showing the peer count
       CoreEvents.fireBitcoinNetworkChangedEvent(
         BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
     }
@@ -64,7 +65,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     if (suppressPeerCountMessages) {
       CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(downloadPercent, blocksLeft));
     } else {
-      // Switch to showing the peer count
+      // Fully synchronized so switch to showing the peer count
       CoreEvents.fireBitcoinNetworkChangedEvent(
         BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
     }
@@ -78,6 +79,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
     // Only show peers after synchronization to avoid confusion
     if (!suppressPeerCountMessages) {
+      // Fully synchronized so switch to showing the peer count
       CoreEvents.fireBitcoinNetworkChangedEvent(
         BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
     }
@@ -94,6 +96,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
     // Only show peers after synchronization to avoid confusion
     if (!suppressPeerCountMessages) {
+      // Fully synchronized so switch to showing the peer count
       CoreEvents.fireBitcoinNetworkChangedEvent(
         BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
     }

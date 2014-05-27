@@ -107,6 +107,7 @@ public class RepairWalletPanelView extends AbstractWizardPanelView<RepairWalletW
         ExceptionHandler.handleThrowable(e);
       }
 
+      // TODO Move this off the EDT and into a ListenableFuture
       resetWalletAndResync();
     }
 

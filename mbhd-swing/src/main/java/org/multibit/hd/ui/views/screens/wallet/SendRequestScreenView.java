@@ -182,60 +182,7 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
       return;
     }
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-
-        // NOTE: Both send and request are disabled when the network is not available
-        // because it is possible that a second wallet is generating transactions using
-        // addresses that this one has not displayed yet. This would lead to the same
-        // address being used twice.
-        switch (event.getSummary().getSeverity()) {
-          case RED:
-            // Always disabled on RED
-            sendBitcoin.setEnabled(false);
-            requestBitcoin.setEnabled(false);
-
-            break;
-          case AMBER:
-            if (InstallationManager.unrestricted) {
-              // Enable on AMBER if unrestricted
-              sendBitcoin.setEnabled(true);
-              requestBitcoin.setEnabled(true);
-            } else {
-
-              // Disable on AMBER in production
-              sendBitcoin.setEnabled(false);
-              requestBitcoin.setEnabled(false);
-            }
-            break;
-          case GREEN:
-            if (BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus())) {
-
-              // Always enabled on GREEN and fully synchronized
-              sendBitcoin.setEnabled(true);
-              requestBitcoin.setEnabled(true);
-
-            } else {
-
-              // Enable if unrestricted to assist testing
-              if (InstallationManager.unrestricted) {
-                sendBitcoin.setEnabled(true);
-                requestBitcoin.setEnabled(true);
-              } else {
-                sendBitcoin.setEnabled(false);
-                requestBitcoin.setEnabled(false);
-              }
-
-            }
-            break;
-          default:
-            // Unknown status
-            throw new IllegalStateException("Unknown event severity " + event.getSummary().getStatus());
-        }
-
-      }
-    });
+    update();
   }
 
   @Subscribe
@@ -257,11 +204,67 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
   }
 
   private void update() {
+
     if (isInitialised()) {
 
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
+
+          Optional<BitcoinNetworkChangedEvent> latestBitcoinNetworkChangedEvent = CoreServices.getApplicationEventService().getLatestBitcoinNetworkChangedEvent();
+
+          if (latestBitcoinNetworkChangedEvent.isPresent()) {
+
+            BitcoinNetworkChangedEvent event = latestBitcoinNetworkChangedEvent.get();
+
+            // NOTE: Both send and request are disabled when the network is not available
+            // because it is possible that a second wallet is generating transactions using
+            // addresses that this one has not displayed yet. This would lead to the same
+            // address being used twice.
+            switch (event.getSummary().getSeverity()) {
+              case RED:
+                // Always disabled on RED
+                sendBitcoin.setEnabled(false);
+                requestBitcoin.setEnabled(false);
+
+                break;
+              case AMBER:
+                if (InstallationManager.unrestricted) {
+                  // Enable on AMBER if unrestricted
+                  sendBitcoin.setEnabled(true);
+                  requestBitcoin.setEnabled(true);
+                } else {
+
+                  // Disable on AMBER in production
+                  sendBitcoin.setEnabled(false);
+                  requestBitcoin.setEnabled(false);
+                }
+                break;
+              case GREEN:
+                if (BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus())) {
+
+                  // Always enabled on GREEN and fully synchronized
+                  sendBitcoin.setEnabled(true);
+                  requestBitcoin.setEnabled(true);
+
+                } else {
+
+                  // Enable if unrestricted to assist testing
+                  if (InstallationManager.unrestricted) {
+                    sendBitcoin.setEnabled(true);
+                    requestBitcoin.setEnabled(true);
+                  } else {
+                    sendBitcoin.setEnabled(false);
+                    requestBitcoin.setEnabled(false);
+                  }
+
+                }
+                break;
+              default:
+                // Unknown status
+                throw new IllegalStateException("Unknown event severity " + event.getSummary().getStatus());
+            }
+          }
 
           List<PaymentData> allPayments = walletService.getPaymentDataList();
 
