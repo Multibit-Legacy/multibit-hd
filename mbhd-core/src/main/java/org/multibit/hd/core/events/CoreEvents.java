@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.util.Currency;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -43,12 +44,15 @@ public class CoreEvents {
    * <p>Broadcast a new "exchange rate changed" event</p>
    *
    * @param rate         The rate in the local currency against Bitcoin (e.g. "1000" means 1000 local = 1 bitcoin)
+   * @param currency     The local currency
    * @param rateProvider The rate provider (e.g. "Bitstamp" or absent if unknown)
    * @param expires      The expiry timestamp of this rate
    */
-  public static void fireExchangeRateChangedEvent(BigDecimal rate, Optional<String> rateProvider, DateTime expires) {
-    log.trace("Firing 'exchange rate changed' event");
-    CoreServices.uiEventBus.post(new ExchangeRateChangedEvent(rate, rateProvider, expires));
+  public static void fireExchangeRateChangedEvent(BigDecimal rate, Currency currency, Optional<String> rateProvider, DateTime expires) {
+
+    ExchangeRateChangedEvent event = new ExchangeRateChangedEvent(rate, currency, rateProvider, expires);
+    CoreServices.uiEventBus.post(event);
+    log.debug("Firing 'exchange rate changed' event " + event);
   }
 
   /**

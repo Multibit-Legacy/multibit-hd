@@ -41,6 +41,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.math.BigInteger;
+import java.util.Currency;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -208,9 +209,12 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
     if (exchangeRateChangedEvent.isPresent()) {
       fiatPayment.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
+      fiatPayment.setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
     } else {
       fiatPayment.setRate(Optional.<String>absent());
+      fiatPayment.setCurrency(Optional.<Currency>absent());
     }
+
     paymentRequestData.setAmountFiat(fiatPayment);
 
     walletService.addPaymentRequest(paymentRequestData);

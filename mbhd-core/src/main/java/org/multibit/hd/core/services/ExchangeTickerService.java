@@ -136,6 +136,7 @@ public class ExchangeTickerService extends AbstractService {
 
                 CoreEvents.fireExchangeRateChangedEvent(
                   rate,
+                  localCurrency,
                   Optional.of(exchangeName),
                   // Exchange rate will expire just after the next update (with small overlap)
                   Dates.nowUtc().plusSeconds(TICKER_REFRESH_SECONDS + 5)

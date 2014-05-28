@@ -60,6 +60,7 @@ public class ApplicationEventService {
     if (latestExchangeRateChangedEvent.isPresent()) {
       CoreEvents.fireExchangeRateChangedEvent(
         latestExchangeRateChangedEvent.get().getRate(),
+        latestExchangeRateChangedEvent.get().getCurrency(),
         latestExchangeRateChangedEvent.get().getRateProvider(),
         latestExchangeRateChangedEvent.get().getExpires()
       );

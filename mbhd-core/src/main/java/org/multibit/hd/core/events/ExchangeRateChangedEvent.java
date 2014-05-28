@@ -5,6 +5,7 @@ import org.joda.time.DateTime;
 import org.multibit.hd.core.utils.Dates;
 
 import java.math.BigDecimal;
+import java.util.Currency;
 
 /**
  * <p>Event to provide the following to application API:</p>
@@ -18,6 +19,7 @@ import java.math.BigDecimal;
 public class ExchangeRateChangedEvent implements CoreEvent {
 
   private final BigDecimal rate;
+  private final Currency currency;
   private final Optional<String> rateProvider;
   private final DateTime expires;
 
@@ -26,8 +28,9 @@ public class ExchangeRateChangedEvent implements CoreEvent {
    * @param rateProvider The rate provider (absent if unknown)
    * @param expires      The expiry timestamp of this rate
    */
-  public ExchangeRateChangedEvent(BigDecimal rate, Optional<String> rateProvider, DateTime expires) {
+  public ExchangeRateChangedEvent(BigDecimal rate, Currency currency, Optional<String> rateProvider, DateTime expires) {
     this.rate = rate;
+    this.currency = currency;
     this.rateProvider = rateProvider;
     this.expires = expires;
   }
@@ -60,10 +63,15 @@ public class ExchangeRateChangedEvent implements CoreEvent {
     return Dates.nowUtc().isBefore(expires) && rateProvider.isPresent();
   }
 
+  public Currency getCurrency() {
+    return currency;
+  }
+
   @Override
   public String toString() {
     return "ExchangeRateChangedEvent{" +
       "rate=" + rate +
+      ", currency=" + currency +
       ", exchangeName='" + rateProvider + '\'' +
       ", expires=" + expires +
       '}';

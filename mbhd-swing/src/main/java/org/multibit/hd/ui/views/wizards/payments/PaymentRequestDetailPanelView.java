@@ -52,6 +52,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
   private JLabel amountBTCValue;
 
+  private JLabel amountFiatLabel;
   private JLabel amountFiatValue;
 
   private JLabel exchangeRateValue;
@@ -115,7 +116,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
             Configurations.currentConfiguration.getBitcoin(),
             Languages.safeText(MessageKey.LOCAL_AMOUNT) + " ");
 
-    JLabel amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT) + " " + Configurations.currentConfiguration.getBitcoin().getLocalCurrencySymbol());
+    amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT));
     amountFiatValue = Labels.newBlankLabel();
 
     JLabel exchangeRateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL));
@@ -208,6 +209,12 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
         amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount().get(), languageConfiguration.getLocale(), bitcoinConfiguration, true)));
       } else {
         amountFiatValue.setText("");
+      }
+
+      if (amountFiat.getCurrency().isPresent()) {
+        amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT) + " " + amountFiat.getCurrency().get().getCurrencyCode());
+      } else {
+        amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT));
       }
 
       String exchangeRateText;
