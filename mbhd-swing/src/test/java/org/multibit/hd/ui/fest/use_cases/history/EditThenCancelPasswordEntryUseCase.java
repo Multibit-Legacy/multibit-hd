@@ -48,13 +48,7 @@ public class EditThenCancelPasswordEntryUseCase extends AbstractFestUseCase {
       .table(MessageKey.HISTORY.getKey())
       .contents();
 
-    if ("false".equals(history[pvRow][HistoryTableModel.CHECKBOX_COLUMN_INDEX])) {
-
-      // Click on the row to activate the checkbox
-      window
-        .table(MessageKey.HISTORY.getKey())
-        .selectRows(pvRow);
-    }
+    ensureCheckboxIsSelected(MessageKey.HISTORY, pvRow, HistoryTableModel.CHECKBOX_COLUMN_INDEX);
 
     // Click on Edit
     window

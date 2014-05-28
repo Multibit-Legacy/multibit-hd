@@ -125,5 +125,42 @@ public abstract class AbstractFestUseCase {
 
   }
 
+  /**
+   * <p>Ensure that a checkbox has been selected</p>
+   *
+   * @param messageKey          The message key to identify the table
+   * @param row                 The row
+   * @param checkboxColumnIndex The checkbox column index
+   */
+  protected void ensureCheckboxIsSelected(MessageKey messageKey, int row, int checkboxColumnIndex) {
+
+    String[][] contents = window
+      .table(messageKey.getKey())
+      .contents();
+
+    if ("false".equals(contents[row][checkboxColumnIndex])) {
+
+      log.debug("Checkbox [{}][{}] is false. Selecting row...", row, checkboxColumnIndex);
+
+      // Click on the row to activate the checkbox
+      window
+        .table(messageKey.getKey())
+        .selectRows(row);
+
+    } else {
+
+      log.debug("Checkbox [{}][{}] is true.", row, checkboxColumnIndex);
+
+    }
+
+    // Verify we're in the correct state
+    contents = window
+      .table(messageKey.getKey())
+      .contents();
+
+    assertThat("true".equals(contents[row][checkboxColumnIndex])).isTrue();
+
+  }
+
 
 }

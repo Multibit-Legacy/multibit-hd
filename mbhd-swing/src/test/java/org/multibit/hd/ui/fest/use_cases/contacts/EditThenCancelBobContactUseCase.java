@@ -40,18 +40,7 @@ public class EditThenCancelBobContactUseCase extends AbstractFestUseCase {
       .cell("Bob Cratchit")
       .row;
 
-    // Get table contents
-    String[][] contacts =  window
-      .table(MessageKey.CONTACTS.getKey())
-      .contents();
-
-    if ("false".equals(contacts[bobRow][ContactTableModel.CHECKBOX_COLUMN_INDEX])) {
-
-      // Click on the row to activate the checkbox
-      window
-        .table(MessageKey.CONTACTS.getKey())
-        .selectRows(bobRow);
-    }
+    ensureCheckboxIsSelected(MessageKey.CONTACTS, bobRow, ContactTableModel.CHECKBOX_COLUMN_INDEX);
 
     // Click on Edit
     window
@@ -110,7 +99,7 @@ public class EditThenCancelBobContactUseCase extends AbstractFestUseCase {
     assertThat(rowCount2).isEqualTo(rowCount1);
 
     // Get updated table contents
-    contacts =  window
+    String[][] contacts =  window
       .table(MessageKey.CONTACTS.getKey())
       .contents();
 

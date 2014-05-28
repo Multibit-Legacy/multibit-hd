@@ -48,26 +48,8 @@ public class EditOpenedAndPasswordEntryUseCase extends AbstractFestUseCase {
       .cell(Languages.safeText(MessageKey.PASSWORD_VERIFIED))
       .row;
 
-    // Click on Password verified table row
-    String[][] history = window
-      .table(MessageKey.HISTORY.getKey())
-      .contents();
-
-    if ("false".equals(history[openedRow][HistoryTableModel.CHECKBOX_COLUMN_INDEX])) {
-
-      // Click on the row to activate the checkbox
-      window
-        .table(MessageKey.HISTORY.getKey())
-        .selectRows(openedRow);
-    }
-
-    if ("false".equals(history[pvRow][HistoryTableModel.CHECKBOX_COLUMN_INDEX])) {
-
-      // Click on the row to activate the checkbox
-      window
-        .table(MessageKey.HISTORY.getKey())
-        .selectRows(pvRow);
-    }
+    ensureCheckboxIsSelected(MessageKey.HISTORY, openedRow, HistoryTableModel.CHECKBOX_COLUMN_INDEX);
+    ensureCheckboxIsSelected(MessageKey.HISTORY, pvRow, HistoryTableModel.CHECKBOX_COLUMN_INDEX);
 
     // Click on Edit
     window
@@ -110,7 +92,7 @@ public class EditOpenedAndPasswordEntryUseCase extends AbstractFestUseCase {
     assertThat(rowCount2).isEqualTo(rowCount1);
 
     // Update the contents
-    history = window
+    String[][] history = window
       .table(MessageKey.HISTORY.getKey())
       .contents();
 

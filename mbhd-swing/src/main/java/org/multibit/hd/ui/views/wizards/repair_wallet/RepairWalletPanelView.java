@@ -2,8 +2,13 @@ package org.multibit.hd.ui.views.wizards.repair_wallet;
 
 import com.google.bitcoin.core.Wallet;
 import com.google.common.base.Optional;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
@@ -19,7 +24,9 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
+import javax.annotation.Nullable;
 import javax.swing.*;
+import java.util.concurrent.Callable;
 
 /**
  * <p>Wizard to provide the following to UI:</p>
@@ -34,6 +41,8 @@ public class RepairWalletPanelView extends AbstractWizardPanelView<RepairWalletW
 
   // View components
   //private ModelAndView<WalletDetailModel, WalletDetailView> walletDetailMaV;
+
+  private final ListeningExecutorService replayExecutorService = SafeExecutors.newSingleThreadExecutor("repair-wallet");
 
   /**
    * @param wizard    The wizard managing the states
@@ -107,7 +116,7 @@ public class RepairWalletPanelView extends AbstractWizardPanelView<RepairWalletW
         ExceptionHandler.handleThrowable(e);
       }
 
-      // TODO Move this off the EDT and into a ListenableFuture
+      // TODO Consider a deferred hide or separate report page
       resetWalletAndResync();
     }
 
@@ -128,7 +137,7 @@ public class RepairWalletPanelView extends AbstractWizardPanelView<RepairWalletW
       Wallet currentWallet = currentWalletSummary.getWallet();
 
       // Work out the replay date
-      DateTime replayDate = new DateTime(currentWallet.getEarliestKeyCreationTime() * 1000);
+      final DateTime replayDate = new DateTime(currentWallet.getEarliestKeyCreationTime() * 1000);
 
       // Clear all the transactions
       currentWallet.clearTransactions(0);
@@ -139,14 +148,28 @@ public class RepairWalletPanelView extends AbstractWizardPanelView<RepairWalletW
       // Create a wallet service
       CoreServices.getOrCreateWalletService(currentWalletSummary.getWalletId());
 
-      // Start the Bitcoin network to synchronize
-      try {
-        CoreServices.getOrCreateBitcoinNetworkService().replayWallet(replayDate);
+      // Start the Bitcoin network synchronization operation
+      ListenableFuture future = replayExecutorService.submit(new Callable<Boolean>() {
 
-      } catch (Exception e) {
-        // TODO - put on UI
-        ExceptionHandler.handleThrowable(e);
-      }
+        @Override
+        public Boolean call() throws Exception {
+
+          CoreServices.getOrCreateBitcoinNetworkService().replayWallet(replayDate);
+          return true;
+        }
+
+      });
+      Futures.addCallback(future, new FutureCallback() {
+        @Override
+        public void onSuccess(@Nullable Object result) {
+          // Do nothing
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+          // TODO Update the UI showing failure
+        }
+      });
 
     }
   }

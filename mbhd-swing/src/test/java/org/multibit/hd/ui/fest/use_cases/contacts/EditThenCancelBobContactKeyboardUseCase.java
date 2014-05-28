@@ -39,21 +39,10 @@ public class EditThenCancelBobContactKeyboardUseCase extends AbstractFestUseCase
     // Find Bob's row
     int bobRow = window
       .table(MessageKey.CONTACTS.getKey())
-      .cell("Bob Cratchit")
+      .cell("Bob")
       .row;
 
-    // Get table contents
-    String[][] contacts =  window
-      .table(MessageKey.CONTACTS.getKey())
-      .contents();
-
-    if ("false".equals(contacts[bobRow][ContactTableModel.CHECKBOX_COLUMN_INDEX])) {
-
-      // Click on the row to activate the checkbox
-      window
-        .table(MessageKey.CONTACTS.getKey())
-        .selectRows(bobRow);
-    }
+    ensureCheckboxIsSelected(MessageKey.CONTACTS, bobRow, ContactTableModel.CHECKBOX_COLUMN_INDEX);
 
     // Click Enter
     window

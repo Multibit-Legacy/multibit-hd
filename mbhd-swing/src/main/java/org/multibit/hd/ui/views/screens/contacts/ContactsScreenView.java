@@ -2,7 +2,9 @@ package org.multibit.hd.ui.views.screens.contacts;
 
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.comparators.ContactNameComparator;
 import org.multibit.hd.ui.events.view.ComponentChangedEvent;
@@ -19,6 +21,8 @@ import org.multibit.hd.ui.views.wizards.Wizards;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactState;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactWizardModel;
 import org.multibit.hd.ui.views.wizards.edit_contact.EnterContactDetailsMode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.*;
@@ -37,6 +41,8 @@ import java.util.List;
  */
 public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> implements ActionListener {
 
+  private static final Logger log = LoggerFactory.getLogger(ContactsScreenView.class);
+
   // View components
   private ModelAndView<EnterSearchModel, EnterSearchView> enterSearchMaV;
   private JComboBox<String> checkSelectorComboBox;
@@ -45,6 +51,8 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
   private ContactTableModel contactsTableModel;
 
   private JButton editButton;
+
+  private final ListeningExecutorService persistenceExecutorService = SafeExecutors.newSingleThreadExecutor("persist-contacts");
 
   /**
    * @param panelModel The model backing this panel view
@@ -141,7 +149,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
    * @param event The "wizard hide" event
    */
   @Subscribe
-  public void onWizardHideEvent(WizardHideEvent event) {
+  public void onWizardHideEvent(final WizardHideEvent event) {
 
     // Filter other events
     if (!event.getPanelName().equals(EditContactState.EDIT_CONTACT_ENTER_DETAILS.name())) {
@@ -150,7 +158,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
     if (event.isExitCancel()) {
       return;
     }
-    if (contactsTableModel==null) {
+    if (contactsTableModel == null) {
       return;
     }
 
@@ -289,7 +297,11 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
 
       public void mousePressed(MouseEvent e) {
 
+        log.debug("Mouse click");
+
         if (e.getClickCount() == 1) {
+
+          log.debug("Mouse click 1");
 
           // Toggle the check mark
           JTable target = (JTable) e.getSource();
@@ -308,6 +320,8 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
         }
 
         if (e.getClickCount() == 2) {
+
+          log.debug("Mouse click 2");
 
           // Force select the check mark
           JTable target = (JTable) e.getSource();
@@ -345,6 +359,8 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
 
         // Use space for checkbox selection
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+
+          log.debug("Space pressed");
 
           // Toggle the check mark
           JTable target = (JTable) e.getSource();

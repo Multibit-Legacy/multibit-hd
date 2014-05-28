@@ -1,7 +1,9 @@
 package org.multibit.hd.ui.views.screens.history;
 
 import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.events.HistoryChangedEvent;
 import org.multibit.hd.ui.events.view.ComponentChangedEvent;
@@ -42,6 +44,8 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
   private HistoryTableModel historyTableModel;
 
   private JButton editButton;
+
+  private final ListeningExecutorService persistenceExecutorService = SafeExecutors.newSingleThreadExecutor("persist-history");
 
   /**
    * @param panelModel The model backing this panel view
@@ -129,7 +133,7 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
    * @param event The "wizard hide" event
    */
   @Subscribe
-  public void onWizardHideEvent(WizardHideEvent event) {
+  public void onWizardHideEvent(final WizardHideEvent event) {
 
     // Filter other events
     if (!event.getPanelName().equals(EditHistoryState.HISTORY_ENTER_DETAILS.name())) {
@@ -138,7 +142,7 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
     if (event.isExitCancel()) {
       return;
     }
-    if (historyTableModel==null) {
+    if (historyTableModel == null) {
       return;
     }
 
@@ -215,7 +219,7 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
         public void run() {
 
           // Repopulate the table accordingly
-          historyTableModel.setHistoryEntries(getScreenModel().getHistory(),true);
+          historyTableModel.setHistoryEntries(getScreenModel().getHistory(), true);
         }
       });
     }

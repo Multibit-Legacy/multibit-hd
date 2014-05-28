@@ -166,14 +166,18 @@ public class HistoryTableModel extends AbstractTableModel {
 
     this.historyEntries = Lists.newArrayList(entries);
 
-    data = new Object[entries.size()][];
+    if (data == null || entries.size() != data.length) {
+      // Reset the model
+      data = new Object[entries.size()][COLUMN_COUNT];
+    }
 
     int row = 0;
     for (HistoryEntry historyEntry : entries) {
 
       // Build row manually to allow for flexible column index reporting
       final Object[] rowData = new Object[COLUMN_COUNT];
-      rowData[CHECKBOX_COLUMN_INDEX] = false;
+      // Attempt to preserve the earlier checkboxes
+      rowData[CHECKBOX_COLUMN_INDEX] = data[row][CHECKBOX_COLUMN_INDEX] == null ? false: data[row][CHECKBOX_COLUMN_INDEX];
       rowData[CREATED_COLUMN_INDEX] = historyEntry.getCreated();
       rowData[DESCRIPTION_COLUMN_INDEX] = historyEntry.getDescription();
       rowData[NOTES_COLUMN_INDEX] = historyEntry.getNotes().or("");

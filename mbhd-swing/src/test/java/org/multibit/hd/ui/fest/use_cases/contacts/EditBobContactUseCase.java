@@ -46,13 +46,7 @@ public class EditBobContactUseCase extends AbstractFestUseCase {
       .table(MessageKey.CONTACTS.getKey())
       .contents();
 
-    if ("false".equals(contacts[bobRow][ContactTableModel.CHECKBOX_COLUMN_INDEX])) {
-
-      // Click on the row to activate the checkbox
-      window
-        .table(MessageKey.CONTACTS.getKey())
-        .selectRows(bobRow);
-    }
+    ensureCheckboxIsSelected(MessageKey.CONTACTS, bobRow, ContactTableModel.CHECKBOX_COLUMN_INDEX);
 
     // Click on Edit
     window

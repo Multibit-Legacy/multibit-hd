@@ -64,18 +64,6 @@ public class TableDecorator {
       }
     });
 
-    // Mouse bindings
-    table.addMouseListener(new MouseAdapter() {
-      @Override
-      public void mouseClicked(MouseEvent e) {
-
-        if (2 == e.getClickCount()) {
-          enterButton.doClick();
-        }
-
-      }
-    });
-
   }
 
 }

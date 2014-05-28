@@ -44,14 +44,8 @@ public class DeleteUriahContactUseCase extends AbstractFestUseCase {
         .table(MessageKey.CONTACTS.getKey())
         .cell("Uriah Heep").row;
 
-    // Check if it is selected
-    if ("false".equals(contacts[uriahRow][ContactTableModel.CHECKBOX_COLUMN_INDEX])) {
-
-      // Click on the row to activate the checkbox
-      window
-        .table(MessageKey.CONTACTS.getKey())
-        .selectRows(uriahRow);
-    }
+    // Select the checkbox
+    ensureCheckboxIsSelected(MessageKey.CONTACTS, uriahRow, ContactTableModel.CHECKBOX_COLUMN_INDEX);
 
     // Click on Delete
     window

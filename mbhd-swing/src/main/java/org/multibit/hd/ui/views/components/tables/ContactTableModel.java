@@ -14,6 +14,8 @@ import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.ImageDecorator;
 import org.multibit.hd.ui.views.components.Images;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -32,6 +34,8 @@ import java.util.List;
  */
 public class ContactTableModel extends AbstractTableModel {
 
+  private static final Logger log = LoggerFactory.getLogger(ContactTableModel.class);
+
   public static final int CHECKBOX_COLUMN_INDEX = 0;
   public static final int GRAVATAR_COLUMN_INDEX = 1;
   public static final int NAME_COLUMN_INDEX = 2;
@@ -44,7 +48,7 @@ public class ContactTableModel extends AbstractTableModel {
    * The column names - note the use of spaces as identifiers for blank columns
    */
   private String[] columnNames = {
-    " ", // Checkbox (wider than a star icon)
+    " ", // Checkbox
     "  ", // Gravatar
     Languages.safeText(MessageKey.NAME),
     Languages.safeText(MessageKey.EMAIL_ADDRESS),
@@ -146,7 +150,10 @@ public class ContactTableModel extends AbstractTableModel {
   public void setSelectionCheckmark(int modelRow, boolean selected) {
 
     // If it is not starred then apply a check or remove the existing one
+    // This will fire a table changed event
     setValueAt(selected, modelRow, CHECKBOX_COLUMN_INDEX);
+
+    log.debug("Model [{}][{}] set to {}", modelRow, CHECKBOX_COLUMN_INDEX, selected);
 
   }
 
@@ -191,22 +198,28 @@ public class ContactTableModel extends AbstractTableModel {
    */
   public void setContacts(Collection<Contact> contacts, boolean fireTableDataChanged) {
 
+    log.debug("Set contacts, fireTableDataChanged='{}'", fireTableDataChanged);
+
     this.contacts = Lists.newArrayList(contacts);
 
-    data = new Object[contacts.size()][];
+    if (data == null || contacts.size() != data.length) {
+      // Reset the model
+      data = new Object[contacts.size()][COLUMN_COUNT];
+    }
 
     int row = 0;
     for (Contact contact : contacts) {
 
       // Build row manually to allow for flexible column index reporting
       final Object[] rowData = new Object[COLUMN_COUNT];
-      rowData[CHECKBOX_COLUMN_INDEX] = false;
+      // Attempt to preserve the earlier checkboxes
+      rowData[CHECKBOX_COLUMN_INDEX] = data[row][CHECKBOX_COLUMN_INDEX] == null ? false: data[row][CHECKBOX_COLUMN_INDEX];
       rowData[NAME_COLUMN_INDEX] = contact.getName();
       rowData[EMAIL_COLUMN_INDEX] = contact.getEmail().or("");
       rowData[ADDRESS_COLUMN_INDEX] = contact.getBitcoinAddress().or("");
       rowData[TAG_COLUMN_INDEX] = Joiner.on(" ").join(contact.getTags());
 
-      // Ensure we download the Gravatar asynchronously
+      // Ensure we download the contact image asynchronously
       final ListenableFuture<Optional<BufferedImage>> imageFuture = Gravatars.retrieveGravatar(contact.getEmail().or("nobody@example.org"));
       Futures.addCallback(imageFuture, new FutureCallback<Optional<BufferedImage>>() {
 
@@ -254,6 +267,7 @@ public class ContactTableModel extends AbstractTableModel {
 
     }
 
+    // Update the table data now
     if (fireTableDataChanged) {
       fireTableDataChanged();
     }
