@@ -103,7 +103,7 @@ public class HeaderController {
       onExchangeRateChangedEvent(exchangeRateChangedEventOptional.get());
     } else {
       // No exchange rate available but fire an event anyhow to force a balance change event
-      onExchangeRateChangedEvent(new ExchangeRateChangedEvent(null, Optional.<String>absent(), null));
+      onExchangeRateChangedEvent(new ExchangeRateChangedEvent(null, null, Optional.<String>absent(), null));
     }
   }
 

@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Currency;
 import java.util.List;
 
 import static org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState.*;
@@ -249,9 +250,12 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
     if (exchangeRateChangedEvent.isPresent()) {
       fiatPayment.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
+      fiatPayment.setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
     } else {
       fiatPayment.setRate(Optional.<String>absent());
+      fiatPayment.setCurrency(Optional.<Currency>absent());
     }
+
     transactionInfo.setAmountFiat(fiatPayment);
 
     WalletService walletService = CoreServices.getCurrentWalletService();

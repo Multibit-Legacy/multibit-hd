@@ -58,6 +58,7 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
   private JLabel recipientValue;
   private JLabel recipientImageLabel;
   private JLabel amountBTCValue;
+  private JLabel amountFiatLabel;
   private JLabel amountFiatValue;
   private JLabel miningFeePaidLabel;
   private JLabel miningFeePaidValue;
@@ -127,7 +128,7 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
       Configurations.currentConfiguration.getBitcoin(),
       Languages.safeText(MessageKey.LOCAL_AMOUNT) + " ");
 
-    JLabel amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT) + " " + Configurations.currentConfiguration.getBitcoin().getLocalCurrencySymbol());
+    amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT));
     amountFiatValue = Labels.newValueLabel("");
 
     miningFeePaidLabel = Labels.newValueLabel(Languages.safeText(MessageKey.TRANSACTION_FEE));
@@ -190,7 +191,6 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
   }
 
   public void update() {
-
     PaymentData paymentData = getWizardModel().getPaymentData();
     if (paymentData != null) {
       DateTime date = paymentData.getDate();
@@ -215,6 +215,12 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
         amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount().get(), languageConfiguration.getLocale(), bitcoinConfiguration, true)));
       } else {
         amountFiatValue.setText("");
+      }
+
+      if (amountFiat.getCurrency().isPresent()) {
+        amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT) + " " + amountFiat.getCurrency().get().getCurrencyCode());
+      } else {
+        amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT));
       }
 
       if (paymentData instanceof TransactionData) {

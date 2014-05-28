@@ -88,9 +88,7 @@ public class BitcoinNetworkService extends AbstractService {
 
   @Override
   public boolean start() {
-
     try {
-
       // Check if there is a wallet - if there is no wallet the network will not start (there's nowhere to put the blockchain)
       if (!WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
         log.warn("Not starting bitcoin network service as there is currently no wallet.");
@@ -124,7 +122,6 @@ public class BitcoinNetworkService extends AbstractService {
     }
 
     return true;
-
   }
 
   @Override
@@ -170,7 +167,6 @@ public class BitcoinNetworkService extends AbstractService {
    * <p>Download the block chain in a new thread</p>
    */
   public void downloadBlockChainInBackground() {
-
     getExecutorService().submit(new Runnable() {
       @Override
       public void run() {
@@ -246,7 +242,6 @@ public class BitcoinNetworkService extends AbstractService {
    * @param sendRequestSummary The information required to send bitcoin
    */
   public void send(final SendRequestSummary sendRequestSummary) {
-
     getExecutorService().submit(new Runnable() {
       @Override
       public void run() {
@@ -263,7 +258,6 @@ public class BitcoinNetworkService extends AbstractService {
    * @return The send request
    */
   private boolean performSend(SendRequestSummary sendRequestSummary) {
-
     log.debug("Starting the send process");
 
     // Verify the wallet summary

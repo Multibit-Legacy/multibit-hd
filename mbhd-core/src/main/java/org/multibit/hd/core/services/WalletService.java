@@ -557,9 +557,11 @@ public class WalletService {
       } else {
         amountFiat.setAmount(Optional.<BigDecimal>absent());
       }
+      amountFiat.setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
     } else {
       amountFiat.setRate(Optional.<String>absent());
       amountFiat.setAmount(Optional.<BigDecimal>absent());
+      amountFiat.setCurrency(Optional.<Currency>absent());
     }
     log.trace("For the hash " + transactionHashAsString + "  a bitcoin amount of " + amountBTC + " the local amount is " + amountFiat.getAmount() + " NEW");
 
@@ -611,20 +613,20 @@ public class WalletService {
   }
 
   private Optional<BigInteger> calculateClientFee(PaymentType paymentType, String transactionHashAsString) {
-    Optional<BigInteger> clientFee = Optional.absent();
+     Optional<BigInteger> clientFee = Optional.absent();
 
-    if (paymentType == PaymentType.SENDING || paymentType == PaymentType.SENT) {
-      TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
-      if (transactionInfo != null) {
-        clientFee = transactionInfo.getClientFee();
-        if (clientFee == null) {
-          clientFee = Optional.absent();
-        }
-      }
-    }
+     if (paymentType == PaymentType.SENDING || paymentType == PaymentType.SENT) {
+       TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
+       if (transactionInfo != null) {
+         clientFee = transactionInfo.getClientFee();
+         if (clientFee == null) {
+           clientFee = Optional.absent();
+         }
+       }
+     }
 
-    return clientFee;
-  }
+     return clientFee;
+   }
 
   /**
    * <p>Populate the internal cache of Payments from the backing store</p>
@@ -670,17 +672,16 @@ public class WalletService {
     Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().isPresent(), "Current wallet summary must be present");
 
     try {
-      ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
-      Payments payments = new Payments();
-      payments.setTransactionInfos(transactionInfoMap.values());
-      payments.setPaymentRequestDatas(paymentRequestMap.values());
-      protobufSerializer.writePayments(payments, byteArrayOutputStream);
-      EncryptedFileReaderWriter.encryptAndWrite(
-        byteArrayOutputStream.toByteArray(),
-        WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(),
-        backingStoreFile
-      );
-
+      if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
+        Payments payments = new Payments();
+        payments.setTransactionInfos(transactionInfoMap.values());
+        payments.setPaymentRequestDatas(paymentRequestMap.values());
+        protobufSerializer.writePayments(payments, byteArrayOutputStream);
+        EncryptedFileReaderWriter.encryptAndWrite(byteArrayOutputStream.toByteArray(), WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(), backingStoreFile);
+      } else {
+        log.debug("No password available so not saving Payments.");
+      }
     } catch (Exception e) {
       log.error("Could not write to payments db '{}'. backingStoreFile.getAbsolutePath()", e);
       throw new PaymentsSaveException("Could not write payments db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");
@@ -923,9 +924,11 @@ public class WalletService {
         } else {
           amountFiat.setAmount(Optional.<BigDecimal>absent());
         }
+        amountFiat.setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
       } else {
         amountFiat.setRate(Optional.<String>absent());
         amountFiat.setAmount(Optional.<BigDecimal>absent());
+        amountFiat.setCurrency(Optional.<Currency>absent());
       }
 
       transactionInfo.setAmountFiat(amountFiat);

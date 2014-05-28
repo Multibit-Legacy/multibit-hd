@@ -44,13 +44,21 @@ public class AmountFiatTableCellRenderer extends DefaultTableCellRenderer {
 
       FiatPayment fiatPayment = (FiatPayment) value;
 
-      if (!(fiatPayment.getAmount() == null) && fiatPayment.getAmount().isPresent()) {
+      if (!(fiatPayment.getAmount() == null) && fiatPayment.getAmount().isPresent() && fiatPayment.getCurrency().isPresent()) {
         BigDecimal amount = fiatPayment.getAmount().get();
         try {
           LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage();
           BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
 
           String balance = Formats.formatLocalAmount(amount, languageConfiguration.getLocale(), bitcoinConfiguration, true);
+          if (!bitcoinConfiguration.getLocalCurrencyCode().equals(fiatPayment.getCurrency().get().getCurrencyCode())) {
+            // Fiat payment is in a different currency to the main UI
+            if (bitcoinConfiguration.isCurrencySymbolLeading()) {
+              balance = fiatPayment.getCurrency().get().getSymbol() + "\u00a0" + balance;
+            } else {
+              balance = balance + "\u00a0" + fiatPayment.getCurrency().get().getSymbol();
+            }
+          }
 
           label.setText(balance + TrailingJustifiedDateTableCellRenderer.SPACER);
 
@@ -75,6 +83,7 @@ public class AmountFiatTableCellRenderer extends DefaultTableCellRenderer {
           log.error(nfe.getClass().getCanonicalName() + " " + nfe.getMessage());
         }
       } else {
+        log.debug("Cannot render fiatPayment = " + fiatPayment + ", bitcoinConfiguration.getLocalCurrencyCode() = " + Configurations.currentConfiguration.getBitcoin().getLocalCurrencyCode());
         label.setText("");
         if (isSelected) {
           label.setForeground(table.getSelectionForeground());
