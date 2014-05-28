@@ -38,17 +38,18 @@ $ mvn --version
 
 #### Manually build and install Bitcoinj (optional)
 
-The MultiBit Staging repository contains a Bitcoinj-0.12-SNAPSHOT that is aligned with the MultiBit HD `develop` branch. This can
+The MultiBit Staging repository contains a `Bitcoinj-0.12-SNAPSHOT` that is aligned with the MultiBit HD `develop` branch. This can
 be used for development builds but is certainly not suitable for production. The Bitcoinj occasionally gets updated but should not
 be relied upon.
 
-Ideally, developers should clone [Bitcoinj](https://code.google.com/p/bitcoinj/) and build it manually. You will need to
-use the HEAD of the `master` branch:
+Ideally, developers should clone [Bitcoinj](https://code.google.com/p/bitcoinj/) and build it manually. You should start with the
+HEAD of the `master` branch:
 ```
 $ mvn clean install
 ```
 If you find that compilation fails due to a missing class like `DeterministicSeed`, then Bitcoinj has not yet merged the `hdw-alpha`
 branch into `master`. You should switch to the `hdw-alpha` branch or use the MultiBit Staging repository.
+
 #### Start the application (from an IDE)
 
 To run the application within an IDE, simply execute `MultiBitHD.main()` in the `mbhd-swing` module. No command line parameters
@@ -58,7 +59,7 @@ are needed, although a Bitcoin URI is accepted.
 
 To run the application from the command line, first build with:
 ```
-mvn clean package
+$ mvn clean package
 ```
 then start the application using the shaded JAR:
 ```
