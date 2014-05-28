@@ -332,7 +332,7 @@ public class WalletService {
     // Client fee
     Optional<BigInteger> clientFee = calculateClientFee(paymentType, transactionHashAsString);
 
-     // Description +
+    // Description +
     // Ensure that any payment requests that are funded by this transaction know about it
     // (The payment request knows about the transactions that fund it but not the reverse)
 
@@ -611,20 +611,20 @@ public class WalletService {
   }
 
   private Optional<BigInteger> calculateClientFee(PaymentType paymentType, String transactionHashAsString) {
-     Optional<BigInteger> clientFee = Optional.absent();
+    Optional<BigInteger> clientFee = Optional.absent();
 
-     if (paymentType == PaymentType.SENDING || paymentType == PaymentType.SENT) {
-       TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
-       if (transactionInfo != null) {
-         clientFee = transactionInfo.getClientFee();
-         if (clientFee == null) {
-           clientFee = Optional.absent();
-         }
-       }
-     }
+    if (paymentType == PaymentType.SENDING || paymentType == PaymentType.SENT) {
+      TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
+      if (transactionInfo != null) {
+        clientFee = transactionInfo.getClientFee();
+        if (clientFee == null) {
+          clientFee = Optional.absent();
+        }
+      }
+    }
 
-     return clientFee;
-   }
+    return clientFee;
+  }
 
   /**
    * <p>Populate the internal cache of Payments from the backing store</p>
@@ -665,7 +665,9 @@ public class WalletService {
    * <p>Save the payments data to the backing store</p>
    */
   public void writePayments() throws PaymentsSaveException {
+
     Preconditions.checkNotNull(backingStoreFile, "There is no backingStoreFile. Please initialise WalletService.");
+    Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().isPresent(), "Current wallet summary must be present");
 
     try {
       ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
@@ -673,7 +675,11 @@ public class WalletService {
       payments.setTransactionInfos(transactionInfoMap.values());
       payments.setPaymentRequestDatas(paymentRequestMap.values());
       protobufSerializer.writePayments(payments, byteArrayOutputStream);
-      EncryptedFileReaderWriter.encryptAndWrite(byteArrayOutputStream.toByteArray(), WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(), backingStoreFile);
+      EncryptedFileReaderWriter.encryptAndWrite(
+        byteArrayOutputStream.toByteArray(),
+        WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(),
+        backingStoreFile
+      );
 
     } catch (Exception e) {
       log.error("Could not write to payments db '{}'. backingStoreFile.getAbsolutePath()", e);
