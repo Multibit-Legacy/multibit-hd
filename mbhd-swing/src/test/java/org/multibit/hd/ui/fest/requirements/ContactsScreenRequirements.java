@@ -3,7 +3,6 @@ package org.multibit.hd.ui.fest.requirements;
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.contacts.*;
-import org.multibit.hd.ui.fest.use_cases.history.SearchHistoryUseCase;
 
 import java.util.Map;
 
@@ -33,6 +32,9 @@ public class ContactsScreenRequirements {
 
     // Click Add and fill in "Bob"
     new AddBobContactUseCase(window).execute(parameters);
+
+    // Press Enter on Bob but then Cancel
+    new EditThenCancelBobContactKeyboardUseCase(window).execute(parameters);
 
     // Click Edit and update Bob's extra info
     new EditBobContactUseCase(window).execute(parameters);

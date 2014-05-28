@@ -95,34 +95,4 @@ public class AccessibilityDecorator {
 
   }
 
-  /**
-   * <p>Applies keyboard selection shortcuts in a consistent manner (double click, enter, space etc)</p>
-   *
-   * @param table       The table view
-   * @param enterButton The button that responds to the enter key
-   */
-  public static void applyKeyboardSelectionShortcuts(final JTable table, final JButton enterButton) {
-
-    table.addMouseListener(new MouseAdapter() {
-      @Override
-      public void mouseClicked(MouseEvent e) {
-        if (2 == e.getClickCount()) {
-
-          enterButton.doClick();
-
-        }
-      }
-    });
-
-    table.addKeyListener(new KeyAdapter() {
-      @Override
-      public void keyReleased(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-          enterButton.doClick();
-        }
-      }
-    });
-
-
-  }
 }

@@ -153,12 +153,12 @@ public interface MultiBitUI {
   /**
    * Provides the MiG layout information for a normal icon
    */
-  String NORMAL_ICON_SIZE_MIG="w "+NORMAL_ICON_SIZE+",h "+NORMAL_ICON_SIZE;
+  String NORMAL_ICON_SIZE_MIG = "w " + NORMAL_ICON_SIZE + ",h " + NORMAL_ICON_SIZE;
 
   /**
    * Provides the MiG layout information for a normal plus icon
    */
-  String NORMAL_PLUS_ICON_SIZE_MIG="w "+(NORMAL_PLUS_ICON_SIZE * 1.5)+",h "+NORMAL_PLUS_ICON_SIZE;
+  String NORMAL_PLUS_ICON_SIZE_MIG = "w " + (NORMAL_PLUS_ICON_SIZE * 1.5) + ",h " + NORMAL_PLUS_ICON_SIZE;
 
   // Text fields
 
@@ -185,9 +185,20 @@ public interface MultiBitUI {
    */
   float DETAIL_PANEL_BACKGROUND_ALPHA = 0.1f;
 
+  // Combo boxes
+
   /**
    * The maximum number of rows to show before a slider is introduced
    * 12 is a good value for the standard wizard height
    */
   int COMBOBOX_MAX_ROW_COUNT = 12;
+
+  // Tables
+
+  /**
+   * Additional padding for table columns
+   */
+  int TABLE_SPACER = 10;
+
+
 }

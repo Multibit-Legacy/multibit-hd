@@ -69,11 +69,6 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
       "[shrink][shrink][grow]" // Row constraints
     );
 
-    // Populate the model
-
-    contactsTable = Tables.newContactsTable(getScreenModel().getContacts());
-    contactsTableModel = (ContactTableModel) contactsTable.getModel();
-
     JPanel contentPanel = Panels.newPanel(layout);
 
     // Create view components
@@ -83,6 +78,10 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
     editButton = Buttons.newEditButton(getEditAction());
     JButton deleteButton = Buttons.newDeleteButton(getDeleteAction());
     JButton undoButton = Buttons.newUndoButton(getUndoAction());
+
+    // Populate the model
+    contactsTable = Tables.newContactsTable(getScreenModel().getContacts(), editButton);
+    contactsTableModel = (ContactTableModel) contactsTable.getModel();
 
     // Detect clicks and keyboard on the table
     contactsTable.addMouseListener(getTableMouseListener());
@@ -94,9 +93,6 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
         editButton.requestFocusInWindow();
       }
     });
-
-    // Ensure we have consistent keyboard selection handling
-    AccessibilityDecorator.applyKeyboardSelectionShortcuts(contactsTable, editButton);
 
     // Create the scroll pane and add the table to it.
     JScrollPane scrollPane = new JScrollPane(contactsTable);
@@ -347,7 +343,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
       @Override
       public void keyReleased(KeyEvent e) {
 
-        // People have a lot of ways of making a choice to delete with the keyboard
+        // Use space for checkbox selection
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 
           // Toggle the check mark
@@ -363,26 +359,6 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
               !(boolean) contactsTableModel.getValueAt(modelRow, ContactTableModel.CHECKBOX_COLUMN_INDEX)
             );
           }
-
-        }
-
-        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-
-          // Force select the check mark
-          JTable target = (JTable) e.getSource();
-          int row = target.getSelectedRow();
-
-          if (row != -1) {
-
-            int modelRow = contactsTable.convertRowIndexToModel(row);
-
-            contactsTableModel.setSelectionCheckmark(
-              modelRow,
-              true
-            );
-          }
-
-          editButton.doClick();
 
         }
 

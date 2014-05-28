@@ -99,7 +99,9 @@ public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<Payme
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        paymentRequestDataJComboBox.requestFocusInWindow();
+
+        // Leave focus on Next button for consistency
+        getNextButton().requestFocusInWindow();
         getNextButton().setEnabled(true);
       }
     });

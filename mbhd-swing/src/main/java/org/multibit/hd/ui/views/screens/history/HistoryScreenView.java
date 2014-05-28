@@ -66,11 +66,6 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
       "[shrink][shrink][grow]" // Row constraints
     );
 
-    // Populate the model
-
-    historyTable = Tables.newHistoryTable(getScreenModel().getHistory());
-    historyTableModel = (HistoryTableModel) historyTable.getModel();
-
     JPanel contentPanel = Panels.newPanel(layout);
 
     // Create view components
@@ -78,6 +73,10 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
     checkSelectorComboBox = ComboBoxes.newHistoryCheckboxComboBox(this);
 
     editButton = Buttons.newEditButton(getEditAction());
+
+    // Populate the model
+    historyTable = Tables.newHistoryTable(getScreenModel().getHistory(), editButton);
+    historyTableModel = (HistoryTableModel) historyTable.getModel();
 
     // Detect clicks on the table
     historyTable.addMouseListener(getTableMouseListener());
@@ -286,7 +285,7 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
       @Override
       public void keyReleased(KeyEvent e) {
 
-        // People have a lot of ways of making a choice to delete with the keyboard
+        // Use space for checkbox selection
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 
           // Toggle the check mark
@@ -302,26 +301,6 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
               !(boolean) historyTableModel.getValueAt(modelRow, ContactTableModel.CHECKBOX_COLUMN_INDEX)
             );
           }
-
-        }
-
-        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-
-          // Force select the check mark
-          JTable target = (JTable) e.getSource();
-          int row = target.getSelectedRow();
-
-          if (row != -1) {
-
-            int modelRow = historyTable.convertRowIndexToModel(row);
-
-            historyTableModel.setSelectionCheckmark(
-              modelRow,
-              true
-            );
-          }
-
-          editButton.doClick();
 
         }
 

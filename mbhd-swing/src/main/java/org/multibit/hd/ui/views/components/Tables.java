@@ -3,15 +3,12 @@ package org.multibit.hd.ui.views.components;
 import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.*;
-import org.multibit.hd.ui.MultiBitUI;
-import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.renderers.AmountBTCTableHeaderRenderer;
 import org.multibit.hd.ui.views.components.tables.ContactTableModel;
 import org.multibit.hd.ui.views.components.tables.HistoryTableModel;
 import org.multibit.hd.ui.views.components.tables.PaymentTableModel;
 import org.multibit.hd.ui.views.components.tables.StripedTable;
-import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
@@ -21,6 +18,8 @@ import javax.swing.table.TableRowSorter;
 import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.List;
+
+import static org.multibit.hd.ui.MultiBitUI.*;
 
 /**
  * <p>Utility to provide the following to UI:</p>
@@ -33,8 +32,6 @@ import java.util.List;
  */
 public class Tables {
 
-  private static int SPACER = 10;
-
   /**
    * Utilities have no public constructor
    */
@@ -43,11 +40,12 @@ public class Tables {
   }
 
   /**
-   * @param contacts The contacts to show
+   * @param contacts    The contacts to show
+   * @param enterButton The button to be pressed on "Enter" or double click
    *
    * @return A new "contacts" striped table
    */
-  public static StripedTable newContactsTable(List<Contact> contacts) {
+  public static StripedTable newContactsTable(List<Contact> contacts, JButton enterButton) {
 
     ContactTableModel model = new ContactTableModel(contacts);
 
@@ -56,30 +54,21 @@ public class Tables {
     // Ensure it is accessible
     AccessibilityDecorator.apply(table, MessageKey.CONTACTS);
 
-    table.setFillsViewportHeight(true);
-    table.setShowHorizontalLines(true);
-    table.setShowVerticalLines(false);
+    // Decorate with standard screen theme
+    TableDecorator.applyScreenTheme(table, enterButton);
 
-    table.setRowHeight(MultiBitUI.LARGE_ICON_SIZE + SPACER);
-    table.setAutoCreateRowSorter(true);
-    table.setRowSelectionAllowed(false);
-    table.setCellSelectionEnabled(false);
-
-    // Apply theme
-    table.setForeground(Themes.currentTheme.text());
-
-    // Orientation
-    table.applyComponentOrientation(Languages.currentComponentOrientation());
+    // Apply any exceptions
+    table.setRowHeight(LARGE_ICON_SIZE + TABLE_SPACER);
 
     // Checkbox column
     TableColumn checkBoxTableColumn = table.getColumnModel().getColumn(ContactTableModel.CHECKBOX_COLUMN_INDEX);
     checkBoxTableColumn.setCellRenderer(Renderers.newCheckboxRenderer());
-    resizeColumn(table, ContactTableModel.CHECKBOX_COLUMN_INDEX, MultiBitUI.NORMAL_ICON_SIZE + SPACER);
+    resizeColumn(table, ContactTableModel.CHECKBOX_COLUMN_INDEX, NORMAL_ICON_SIZE + TABLE_SPACER);
 
     // Gravatar column
     TableColumn gravatarTableColumn = table.getColumnModel().getColumn(ContactTableModel.GRAVATAR_COLUMN_INDEX);
     gravatarTableColumn.setCellRenderer(Renderers.newImageIconRenderer());
-    resizeColumn(table, ContactTableModel.GRAVATAR_COLUMN_INDEX, MultiBitUI.LARGE_ICON_SIZE + SPACER);
+    resizeColumn(table, ContactTableModel.GRAVATAR_COLUMN_INDEX, LARGE_ICON_SIZE + TABLE_SPACER);
 
     // Email column
     TableColumn emailTableColumn = table.getColumnModel().getColumn(ContactTableModel.EMAIL_COLUMN_INDEX);
@@ -104,10 +93,11 @@ public class Tables {
 
   /**
    * @param paymentData The payments to show
+   * @param enterButton The button to be pressed on "Enter" or double click
    *
    * @return A new "payments" striped table
    */
-  public static StripedTable newPaymentsTable(List<PaymentData> paymentData) {
+  public static StripedTable newPaymentsTable(List<PaymentData> paymentData, JButton enterButton) {
 
     PaymentTableModel model = new PaymentTableModel(paymentData);
 
@@ -116,21 +106,7 @@ public class Tables {
     // Ensure it is accessible
     AccessibilityDecorator.apply(table, MessageKey.PAYMENTS);
 
-    table.setFillsViewportHeight(true);
-    table.setShowHorizontalLines(true);
-    table.setShowVerticalLines(false);
-
-    table.setRowHeight(MultiBitUI.NORMAL_PLUS_ICON_SIZE + SPACER);
-    table.setAutoCreateRowSorter(true);
-    table.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-    table.setRowSelectionAllowed(true);
-    table.setColumnSelectionAllowed(false);
-
-    // Apply theme
-    table.setForeground(Themes.currentTheme.text());
-
-    // Orientation
-    table.setComponentOrientation(Languages.currentComponentOrientation());
+    TableDecorator.applyScreenTheme(table, enterButton);
 
     // Date column
     TableColumn dateTableColumn = table.getColumnModel().getColumn(PaymentTableModel.DATE_COLUMN_INDEX);
@@ -203,10 +179,11 @@ public class Tables {
 
   /**
    * @param historyEntries The history entries to show
+   * @param enterButton The button to be pressed on "Enter" or double click
    *
    * @return A new "contacts" striped table
    */
-  public static StripedTable newHistoryTable(List<HistoryEntry> historyEntries) {
+  public static StripedTable newHistoryTable(List<HistoryEntry> historyEntries, JButton enterButton) {
 
     HistoryTableModel model = new HistoryTableModel(historyEntries);
 
@@ -215,26 +192,12 @@ public class Tables {
     // Ensure it is accessible
     AccessibilityDecorator.apply(table, MessageKey.HISTORY);
 
-    table.setFillsViewportHeight(true);
-    table.setShowHorizontalLines(true);
-    table.setShowVerticalLines(false);
-
-    table.setRowHeight(MultiBitUI.NORMAL_PLUS_ICON_SIZE + SPACER);
-    table.setAutoCreateRowSorter(true);
-    table.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-    table.setRowSelectionAllowed(true);
-    table.setColumnSelectionAllowed(false);
-
-    // Apply theme
-    table.setForeground(Themes.currentTheme.text());
-
-    // Orientation
-    table.applyComponentOrientation(Languages.currentComponentOrientation());
+    TableDecorator.applyScreenTheme(table, enterButton);
 
     // Checkbox column
     TableColumn checkBoxTableColumn = table.getColumnModel().getColumn(HistoryTableModel.CHECKBOX_COLUMN_INDEX);
     checkBoxTableColumn.setCellRenderer(Renderers.newCheckboxRenderer());
-    resizeColumn(table, HistoryTableModel.CHECKBOX_COLUMN_INDEX, MultiBitUI.NORMAL_ICON_SIZE + SPACER);
+    resizeColumn(table, HistoryTableModel.CHECKBOX_COLUMN_INDEX, NORMAL_ICON_SIZE + TABLE_SPACER);
 
     // Date column
     TableColumn dateTableColumn = table.getColumnModel().getColumn(HistoryTableModel.CREATED_COLUMN_INDEX);
@@ -245,7 +208,7 @@ public class Tables {
     TableColumn descriptionTableColumn = table.getColumnModel().getColumn(HistoryTableModel.DESCRIPTION_COLUMN_INDEX);
     descriptionTableColumn.setCellRenderer(Renderers.newLeadingJustifiedStringRenderer());
 
-    resizeColumn(table, HistoryTableModel.DESCRIPTION_COLUMN_INDEX, MultiBitUI.HUGE_ICON_SIZE + SPACER);
+    resizeColumn(table, HistoryTableModel.DESCRIPTION_COLUMN_INDEX, HUGE_ICON_SIZE + TABLE_SPACER);
 
     // Notes column
     TableColumn notesTableColumn = table.getColumnModel().getColumn(HistoryTableModel.NOTES_COLUMN_INDEX);

@@ -99,18 +99,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     WalletService walletService = CoreServices.getCurrentWalletService();
     List<PaymentData> paymentList = walletService.getPaymentDataList();
 
-    paymentsTable = Tables.newPaymentsTable(paymentList);
-
-    paymentsTable.addFocusListener(new FocusAdapter() {
-      @Override
-      public void focusLost(FocusEvent e) {
-        // User is most likely to want the details button after losing table focus
-        detailsButton.requestFocusInWindow();
-      }
-    });
-
-    // Ensure we have consistent keyboard selection handling
-    AccessibilityDecorator.applyKeyboardSelectionShortcuts(paymentsTable, detailsButton);
+    paymentsTable = Tables.newPaymentsTable(paymentList, detailsButton);
 
     // Create the scroll pane and add the table to it.
     JScrollPane scrollPane = new JScrollPane(paymentsTable);
