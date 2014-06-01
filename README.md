@@ -47,8 +47,6 @@ HEAD of the `master` branch:
 ```
 $ mvn clean install
 ```
-If you find that compilation fails due to a missing class like `DeterministicSeed`, then Bitcoinj has not yet merged the `hdw-alpha`
-branch into `master`. You should switch to the `hdw-alpha` branch or use the MultiBit Staging repository.
 
 #### Start the application (from an IDE)
 

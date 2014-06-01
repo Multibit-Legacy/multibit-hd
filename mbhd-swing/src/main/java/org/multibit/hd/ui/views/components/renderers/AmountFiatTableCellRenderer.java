@@ -40,6 +40,7 @@ public class AmountFiatTableCellRenderer extends DefaultTableCellRenderer {
     label.setBorder(new EmptyBorder(new Insets(0, TrailingJustifiedDateTableCellRenderer.TABLE_BORDER, 1, TrailingJustifiedDateTableCellRenderer.TABLE_BORDER)));
     label.setFont(label.getFont().deriveFont(MultiBitUI.TABLE_TEXT_FONT_SIZE));
 
+    log.debug("Renderer saw a value : " + value.toString());
     if (value instanceof FiatPayment) {
 
       FiatPayment fiatPayment = (FiatPayment) value;

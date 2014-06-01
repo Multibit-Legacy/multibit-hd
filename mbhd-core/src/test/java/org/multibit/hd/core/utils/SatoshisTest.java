@@ -311,9 +311,9 @@ public class SatoshisTest {
     assertThat(actual2).isEqualTo(expected2);
 
     // Small
-    Coin localAmount3 = Coin.parseCoin("0.000000001");
+    Coin localAmount3 = Coin.parseCoin("0.001");
 
-    BigDecimal expected3 = new BigDecimal("0.00001");
+    BigDecimal expected3 = new BigDecimal("1.00000");
     BigDecimal actual3 = Satoshis.toSymbolicAmount(localAmount3, bitcoinSymbol);
 
     assertThat(actual3).isEqualTo(expected3);

@@ -13,7 +13,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
-import java.math.BigInteger;
 
 /**
  *  <p>Renderer to provide the following to tables:</p>
@@ -36,7 +35,7 @@ public class AmountBTCTableCellRenderer extends DefaultTableCellRenderer {
     label.setBorder(new EmptyBorder(new Insets(0, TrailingJustifiedDateTableCellRenderer.TABLE_BORDER, 1, TrailingJustifiedDateTableCellRenderer.TABLE_BORDER)));
     label.setFont(label.getFont().deriveFont(MultiBitUI.TABLE_TEXT_FONT_SIZE));
 
-    if (value instanceof BigInteger) {
+    if (value instanceof Coin) {
 
       // Do the Bitcoin processing
 
