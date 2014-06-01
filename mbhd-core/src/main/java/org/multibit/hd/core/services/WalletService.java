@@ -302,7 +302,7 @@ public class WalletService {
     Date updateTime = transaction.getUpdateTime();
 
     // Amount BTC
-    BigInteger amountBTC = transaction.getValue(wallet);
+    Coin amountBTC = transaction.getValue(wallet);
 
     // Fiat amount
     FiatPayment amountFiat = calculateFiatPayment(amountBTC, transactionHashAsString);
@@ -327,10 +327,10 @@ public class WalletService {
     PaymentType paymentType = calculatePaymentType(amountBTC, depth);
 
     // Mining fee
-    Optional<BigInteger> miningFee = calculateMiningFee(paymentType, transactionHashAsString);
+    Optional<Coin> miningFee = calculateMiningFee(paymentType, transactionHashAsString);
 
     // Client fee
-    Optional<BigInteger> clientFee = calculateClientFee(paymentType, transactionHashAsString);
+    Optional<Coin> clientFee = calculateClientFee(paymentType, transactionHashAsString);
 
     // Description +
     // Ensure that any payment requests that are funded by this transaction know about it
@@ -440,9 +440,9 @@ public class WalletService {
     return paymentStatus;
   }
 
-  private PaymentType calculatePaymentType(BigInteger amountBTC, int depth) {
+  private PaymentType calculatePaymentType(Coin amountBTC, int depth) {
     PaymentType paymentType;
-    if (amountBTC.compareTo(BigInteger.ZERO) < 0) {
+    if (amountBTC.compareTo(Coin.ZERO) < 0) {
       // Debit
       if (depth == 0) {
         paymentType = PaymentType.SENDING;
@@ -465,7 +465,7 @@ public class WalletService {
     Transaction transaction,
     String transactionHashAsString,
     PaymentType paymentType,
-    BigInteger amountBTC
+    Coin amountBTC
   ) {
 
     String description;
@@ -534,7 +534,7 @@ public class WalletService {
     return outputAddresses;
   }
 
-  private FiatPayment calculateFiatPayment(BigInteger amountBTC, String transactionHashAsString) {
+  private FiatPayment calculateFiatPayment(Coin amountBTC, String transactionHashAsString) {
     FiatPayment amountFiat = new FiatPayment();
 
     // Get the transactionInfo that contains the fiat exchange info, if it is available from the backing store
@@ -599,8 +599,8 @@ public class WalletService {
     return note;
   }
 
-  private Optional<BigInteger> calculateMiningFee(PaymentType paymentType, String transactionHashAsString) {
-    Optional<BigInteger> miningFee = Optional.absent();
+  private Optional<Coin> calculateMiningFee(PaymentType paymentType, String transactionHashAsString) {
+    Optional<Coin> miningFee = Optional.absent();
 
     if (paymentType == PaymentType.SENDING || paymentType == PaymentType.SENT) {
       TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
@@ -612,8 +612,8 @@ public class WalletService {
     return miningFee;
   }
 
-  private Optional<BigInteger> calculateClientFee(PaymentType paymentType, String transactionHashAsString) {
-     Optional<BigInteger> clientFee = Optional.absent();
+  private Optional<Coin> calculateClientFee(PaymentType paymentType, String transactionHashAsString) {
+     Optional<Coin> clientFee = Optional.absent();
 
      if (paymentType == PaymentType.SENDING || paymentType == PaymentType.SENT) {
        TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);

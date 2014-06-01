@@ -1,9 +1,9 @@
 package org.multibit.hd.core.events;
 
 import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.Coin;
 import com.google.common.base.Optional;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 
 /**
@@ -17,11 +17,11 @@ public class BitcoinSentEvent implements CoreEvent {
   /**
    * The total amount paid (including the client fee)
    */
-  private final BigInteger amount;
+  private final Coin amount;
 
-  private final Optional<BigInteger> miningFeePaid;
+  private final Optional<Coin> miningFeePaid;
 
-  private final Optional<BigInteger> clientFeePaid;
+  private final Optional<Coin> clientFeePaid;
 
   private final Address destinationAddress;
 
@@ -33,10 +33,10 @@ public class BitcoinSentEvent implements CoreEvent {
 
   public BitcoinSentEvent(
     Address destinationAddress,
-    BigInteger amount,
+    Coin amount,
     Address changeAddress,
-    Optional<BigInteger> miningFeePaid,
-    Optional<BigInteger> clientFeePaid,
+    Optional<Coin> miningFeePaid,
+    Optional<Coin> clientFeePaid,
     boolean sendWasSuccessful,
     String sendFailureReasonKey,
     String[] sendFailureReasonData
@@ -55,15 +55,15 @@ public class BitcoinSentEvent implements CoreEvent {
 
   private final String[] sendFailureReasonData;
 
-  public BigInteger getAmount() {
+  public Coin getAmount() {
     return amount;
   }
 
-  public Optional<BigInteger> getMiningFeePaid() {
+  public Optional<Coin> getMiningFeePaid() {
     return miningFeePaid;
   }
 
-  public Optional<BigInteger> getClientFeePaid() {
+  public Optional<Coin> getClientFeePaid() {
     return clientFeePaid;
   }
 

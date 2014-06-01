@@ -1,11 +1,11 @@
 package org.multibit.hd.core.dto;
 
+import com.google.bitcoin.core.Coin;
 import com.google.bitcoin.core.TransactionConfidence;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.joda.time.DateTime;
 
-import java.math.BigInteger;
 import java.util.Collection;
 
 /**
@@ -23,13 +23,13 @@ public class TransactionData implements PaymentData {
 
   private final String transactionId;
 
-  private final BigInteger amountBTC;
+  private final Coin amountBTC;
 
   private FiatPayment amountFiat;
 
-  private final Optional<BigInteger> miningFee;
+  private final Optional<Coin> miningFee;
 
-  private final Optional<BigInteger> clientFee;
+  private final Optional<Coin> clientFee;
 
   private final TransactionConfidence.ConfidenceType confidenceType;
 
@@ -76,7 +76,7 @@ public class TransactionData implements PaymentData {
    * @param isMock            True if this is a mock (CSV export header)
    */
   public TransactionData(String transactionId, DateTime date, PaymentStatus statusWithOrdinal,
-                         BigInteger amountBTC, FiatPayment amountFiat, Optional<BigInteger> miningFee, Optional<BigInteger> clientFee,
+                         Coin amountBTC, FiatPayment amountFiat, Optional<Coin> miningFee, Optional<Coin> clientFee,
                          TransactionConfidence.ConfidenceType confidenceType, PaymentType paymentType, String description,
                          boolean isCoinbase, Collection<String> outputAddresses, String rawTransaction, int size, boolean isMock) {
 
@@ -178,15 +178,15 @@ public class TransactionData implements PaymentData {
   }
 
   @Override
-  public BigInteger getAmountBTC() {
+  public Coin getAmountBTC() {
     return amountBTC;
   }
 
-  public Optional<BigInteger> getMiningFee() {
+  public Optional<Coin> getMiningFee() {
     return miningFee;
   }
 
-  public Optional<BigInteger> getClientFee() {
+  public Optional<Coin> getClientFee() {
     return clientFee;
   }
 

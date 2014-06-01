@@ -1,11 +1,11 @@
 package org.multibit.hd.ui.views.components.enter_amount;
 
+import com.google.bitcoin.core.Coin;
 import com.google.common.base.Optional;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 /**
  * <p>Model to provide the following to view:</p>
@@ -18,7 +18,7 @@ import java.math.BigInteger;
  */
 public class EnterAmountModel implements Model<EnterAmountModel> {
 
-  private Optional<BigInteger> satoshis = Optional.absent();
+  private Optional<Coin> satoshis = Optional.absent();
   private Optional<BigDecimal> localAmount = Optional.absent();
 
   private final String panelName;
@@ -51,14 +51,14 @@ public class EnterAmountModel implements Model<EnterAmountModel> {
   /**
    * @return The Bitcoin amount (zero if not present) in satoshis
    */
-  public BigInteger getSatoshis() {
-    return satoshis.or(BigInteger.ZERO);
+  public Coin getSatoshis() {
+    return satoshis.or(Coin.ZERO);
   }
 
   /**
    * @param value The Bitcoin amount (fires a "component model changed" event)
    */
-  public void setSatoshis(BigInteger value) {
+  public void setSatoshis(Coin value) {
 
     satoshis = Optional.of(value);
 

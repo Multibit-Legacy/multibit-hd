@@ -1,9 +1,9 @@
 package org.multibit.hd.core.dto;
 
+import com.google.bitcoin.core.Coin;
 import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
 
-import java.math.BigInteger;
 import java.util.Set;
 
 /**
@@ -18,7 +18,7 @@ public class PaymentRequestData implements PaymentData {
   private String address;
   private String label;
   // TODO (JB) Consider changing this to getSatoshis() for consistency and disambiguation
-  private BigInteger amountBTC;
+  private Coin amountBTC;
   private FiatPayment amountFiat;
   private String note;
   private DateTime date;
@@ -26,14 +26,14 @@ public class PaymentRequestData implements PaymentData {
   /**
    * The amount of bitcoin actually paid by transactions
    */
-  private BigInteger paidAmountBTC;
+  private Coin paidAmountBTC;
 
   private final Set<String> payingTransactionHashes;
 
   public static final String SEPARATOR = ". ";
 
   public PaymentRequestData() {
-    paidAmountBTC = BigInteger.ZERO;
+    paidAmountBTC = Coin.ZERO;
     payingTransactionHashes = Sets.newHashSet();
   }
 
@@ -44,11 +44,11 @@ public class PaymentRequestData implements PaymentData {
   /**
    * @return The amount paid in satoshis
    */
-  public BigInteger getPaidAmountBTC() {
+  public Coin getPaidAmountBTC() {
     return paidAmountBTC;
   }
 
-  public void setPaidAmountBTC(BigInteger paidAmountBTC) {
+  public void setPaidAmountBTC(Coin paidAmountBTC) {
     this.paidAmountBTC = paidAmountBTC;
   }
 
@@ -70,11 +70,11 @@ public class PaymentRequestData implements PaymentData {
   }
 
   @Override
-  public BigInteger getAmountBTC() {
+  public Coin getAmountBTC() {
     return amountBTC;
   }
 
-  public void setAmountBTC(BigInteger amountBTC) {
+  public void setAmountBTC(Coin amountBTC) {
     this.amountBTC = amountBTC;
   }
 
@@ -141,7 +141,7 @@ public class PaymentRequestData implements PaymentData {
     PaymentType type = PaymentType.REQUESTED;
     // Work out if it is requested, partly paid or fully paid
     if (paidAmountBTC != null && amountBTC != null) {
-      if (paidAmountBTC.compareTo(BigInteger.ZERO) > 0) {
+      if (paidAmountBTC.compareTo(Coin.ZERO) > 0) {
         // bitcoin has been paid to this payment request
         if (paidAmountBTC.compareTo(amountBTC) >= 0) {
           // fully paid
@@ -162,7 +162,7 @@ public class PaymentRequestData implements PaymentData {
 
     // Work out if it is requested, partly paid or fully paid
     if (paidAmountBTC != null && amountBTC != null) {
-      if (paidAmountBTC.compareTo(BigInteger.ZERO) > 0) {
+      if (paidAmountBTC.compareTo(Coin.ZERO) > 0) {
         // bitcoin has been paid to this payment request
         if (paidAmountBTC.compareTo(amountBTC) >= 0) {
           // fully paid

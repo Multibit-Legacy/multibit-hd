@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.payments;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
+import com.google.bitcoin.core.Coin;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
@@ -36,7 +37,6 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import javax.swing.*;
 import java.awt.image.BufferedImage;
-import java.math.BigInteger;
 import java.util.Collection;
 import java.util.List;
 
@@ -203,7 +203,7 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
 
       typeValue.setText(Languages.safeText(paymentData.getType().getLocalisationKey()));
 
-      BigInteger amountBTC = paymentData.getAmountBTC();
+      Coin amountBTC = paymentData.getAmountBTC();
       LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage();
       BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
 
@@ -226,7 +226,7 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
       if (paymentData instanceof TransactionData) {
         TransactionData transactionData = (TransactionData) paymentData;
         // Miner's fee
-        Optional<BigInteger> miningFee = transactionData.getMiningFee();
+        Optional<Coin> miningFee = transactionData.getMiningFee();
         if (miningFee.isPresent()) {
           String[] minerFeePaidArray = Formats.formatSatoshisAsSymbolic(miningFee.get(), languageConfiguration, bitcoinConfiguration, true);
           miningFeePaidValue.setText(minerFeePaidArray[0] + minerFeePaidArray[1]);
@@ -235,7 +235,7 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
         }
 
         // Client fee
-        Optional<BigInteger> clientFee = transactionData.getClientFee();
+        Optional<Coin> clientFee = transactionData.getClientFee();
         if (clientFee.isPresent()) {
           String[] clientFeePaidArray = Formats.formatSatoshisAsSymbolic(clientFee.get(), languageConfiguration, bitcoinConfiguration, true);
           clientFeePaidValue.setText(clientFeePaidArray[0] + clientFeePaidArray[1]);
@@ -243,7 +243,7 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
           clientFeePaidValue.setText(Languages.safeText(MessageKey.NO_CLIENT_FEE_WAS_ADDED));
         }
 
-        if (transactionData.getAmountBTC().compareTo(BigInteger.ZERO) >= 0) {
+        if (transactionData.getAmountBTC().compareTo(Coin.ZERO) >= 0) {
           // Received bitcoin
           recipientValue.setText(Languages.safeText(MessageKey.THIS_BITCOIN_WAS_SENT_TO_YOU));
 

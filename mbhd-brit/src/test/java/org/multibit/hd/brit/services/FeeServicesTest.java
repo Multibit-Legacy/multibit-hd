@@ -44,13 +44,12 @@ import org.spongycastle.crypto.params.KeyParameter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.Set;
 
-import static com.google.bitcoin.core.Utils.toNanoCoins;
+import static com.google.bitcoin.core.Coin.parseCoin;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class FeeServicesTest {
@@ -131,7 +130,7 @@ public class FeeServicesTest {
     // We are using a dummy Matcher so will always fall back to the hardwired addresses
     Set<Address> possibleNextFeeAddresses = feeService.getHardwiredFeeAddresses();
 
-    checkFeeState(feeState, true, 0, BigInteger.ZERO, FeeService.FEE_PER_SEND, possibleNextFeeAddresses);
+    checkFeeState(feeState, true, 0, Coin.ZERO, FeeService.FEE_PER_SEND, possibleNextFeeAddresses);
 
     // Receive some bitcoin to the wallet1 address
     receiveATransaction(wallet1, toAddress1);
@@ -140,12 +139,12 @@ public class FeeServicesTest {
     for (int i = 0; i < NUMBER_OF_NON_FEE_SENDS; i++) {
       // Create a send to the non fee destination address
       // This should increment the send count and the fee owed
-      BigInteger tenMillis = toNanoCoins(0, 1);
+      Coin tenMillis = parseCoin("0.01");
       sendBitcoin(tenMillis, nonFeeDestinationAddress, null);
 
       feeState = feeService.calculateFeeState(wallet1, false);
 
-      checkFeeState(feeState, true, 1 + i, FeeService.FEE_PER_SEND.multiply(BigInteger.valueOf(i + 1)), FeeService.FEE_PER_SEND, possibleNextFeeAddresses);
+      checkFeeState(feeState, true, 1 + i, FeeService.FEE_PER_SEND.multiply(i + 1), FeeService.FEE_PER_SEND, possibleNextFeeAddresses);
     }
 
     // Create another send to the FEE address
@@ -154,14 +153,14 @@ public class FeeServicesTest {
     sendBitcoin(feeState.getFeeOwed().add(FeeService.FEE_PER_SEND), feeState.getNextFeeAddress(), null);
 
     feeState = feeService.calculateFeeState(wallet1, false);
-    checkFeeState(feeState, true, NUMBER_OF_NON_FEE_SENDS + 1, BigInteger.ZERO, FeeService.FEE_PER_SEND, possibleNextFeeAddresses);
+    checkFeeState(feeState, true, NUMBER_OF_NON_FEE_SENDS + 1, Coin.ZERO, FeeService.FEE_PER_SEND, possibleNextFeeAddresses);
   }
 
   private void checkFeeState(FeeState feeState,
                              boolean expectedIsUsingHardwiredBRITAddress,
                              int expectedCurrentNumberOfSends,
-                             BigInteger expectedFeeOwed,
-                             BigInteger expectedFeePerSendSatoshi,
+                             Coin expectedFeeOwed,
+                             Coin expectedFeePerSendSatoshi,
                              Set<Address> possibleNextFeeAddresses) {
 
     assertThat(feeState.isUsingHardwiredBRITAddresses() == expectedIsUsingHardwiredBRITAddress).isTrue();
@@ -184,9 +183,9 @@ public class FeeServicesTest {
   }
 
   private void receiveATransaction(Wallet wallet, Address toAddress) throws Exception {
-    BigInteger v1 = Utils.toNanoCoins(1, 0);
-    final ListenableFuture<BigInteger> availFuture = wallet.getBalanceFuture(v1, Wallet.BalanceType.AVAILABLE);
-    final ListenableFuture<BigInteger> estimatedFuture = wallet.getBalanceFuture(v1, Wallet.BalanceType.ESTIMATED);
+    Coin v1 = parseCoin("1.0");
+    final ListenableFuture<Coin> availFuture = wallet.getBalanceFuture(v1, Wallet.BalanceType.AVAILABLE);
+    final ListenableFuture<Coin> estimatedFuture = wallet.getBalanceFuture(v1, Wallet.BalanceType.ESTIMATED);
     assertThat(availFuture.isDone()).isFalse();
     assertThat(estimatedFuture.isDone()).isFalse();
 
@@ -201,7 +200,7 @@ public class FeeServicesTest {
     assertThat(estimatedFuture.isDone()).isTrue();
   }
 
-  private Transaction sendMoneyToWallet(Wallet wallet, BigInteger value, Address toAddress) throws IOException, VerificationException {
+  private Transaction sendMoneyToWallet(Wallet wallet, Coin value, Address toAddress) throws IOException, VerificationException {
     Preconditions.checkNotNull(toAddress);
 
     // If the next line isn't compiling you probably need to update your bitcoinj !
@@ -226,7 +225,7 @@ public class FeeServicesTest {
     final LinkedList<Transaction> txns = Lists.newLinkedList();
     wallet.addEventListener(new AbstractWalletEventListener() {
       @Override
-      public void onCoinsSent(Wallet wallet, Transaction tx, BigInteger prevBalance, BigInteger newBalance) {
+      public void onCoinsSent(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance) {
         txns.add(tx);
       }
     });
@@ -237,10 +236,10 @@ public class FeeServicesTest {
     Threading.waitForUserCode();
   }
 
-  private void sendBitcoin(BigInteger amount, Address destinationAddress, KeyParameter aesKey) throws Exception {
+  private void sendBitcoin(Coin amount, Address destinationAddress, KeyParameter aesKey) throws Exception {
     Wallet.SendRequest req = Wallet.SendRequest.to(destinationAddress, amount);
     req.aesKey = aesKey;
-    req.fee = toNanoCoins(0, 1);
+    req.fee = parseCoin("0.01");
     req.ensureMinRequiredFee = false;
 
     // Complete the transaction successfully.

@@ -1,9 +1,8 @@
 package org.multibit.hd.core.store;
 
+import com.google.bitcoin.core.Coin;
 import com.google.common.base.Optional;
 import org.multibit.hd.core.dto.FiatPayment;
-
-import java.math.BigInteger;
 
 /**
  *  <p>DTOto provide the following to WalletService:</p>
@@ -22,12 +21,12 @@ public class TransactionInfo {
   /**
    * On a send, the miner's fee added in satoshi, otherwise Optional.absent()
    */
-  private Optional<BigInteger> minerFee;
+  private Optional<Coin> minerFee;
 
   /**
    * On a send, the MultiBit/ client fee added in satoshi, otherwise Optional.absent()
    */
-  private Optional<BigInteger> clientFee;
+  private Optional<Coin> clientFee;
 
   /**
    * The transaction hash as a String (commonly referred to as transaction id but don't forget about malleability!)
@@ -57,19 +56,19 @@ public class TransactionInfo {
     this.note = note;
   }
 
-  public Optional<BigInteger> getMinerFee() {
+  public Optional<Coin> getMinerFee() {
     return minerFee;
   }
 
-  public void setMinerFee(Optional<BigInteger> minerFee) {
+  public void setMinerFee(Optional<Coin> minerFee) {
     this.minerFee = minerFee;
   }
 
-  public Optional<BigInteger> getClientFee() {
+  public Optional<Coin> getClientFee() {
     return clientFee;
   }
 
-  public void setClientFee(Optional<BigInteger> clientFee) {
+  public void setClientFee(Optional<Coin> clientFee) {
     this.clientFee = clientFee;
   }
 

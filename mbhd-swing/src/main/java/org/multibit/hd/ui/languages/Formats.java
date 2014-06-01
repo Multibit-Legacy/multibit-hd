@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.languages;
 
 import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.Coin;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -13,7 +14,6 @@ import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.core.utils.Satoshis;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
@@ -42,7 +42,7 @@ public class Formats {
    * @return The left [0] and right [1] components suitable for presentation as a balance with no symbolic decoration
    */
   public static String[] formatSatoshisAsSymbolic(
-    BigInteger satoshis,
+          Coin satoshis,
     LanguageConfiguration languageConfiguration,
     BitcoinConfiguration bitcoinConfiguration
   ) {
@@ -62,7 +62,7 @@ public class Formats {
    * @return The left [0] and right [1] components suitable for presentation as a balance with no symbolic decoration
    */
   public static String[] formatSatoshisAsSymbolic(
-    BigInteger satoshis,
+          Coin satoshis,
     LanguageConfiguration languageConfiguration,
     BitcoinConfiguration bitcoinConfiguration,
     boolean showNegative
@@ -119,7 +119,7 @@ public class Formats {
    * @return The string suitable for presentation as a balance with symbol in a UTF-8 string
    */
   public static String formatSatoshisAsSymbolicText(
-    BigInteger satoshis,
+          Coin satoshis,
     LanguageConfiguration languageConfiguration,
     BitcoinConfiguration bitcoinConfiguration
   ) {
@@ -242,7 +242,7 @@ public class Formats {
   public static String formatAlertMessage(TransactionSeenEvent event) {
 
     // Decode the "transaction seen" event
-    final BigInteger amount = event.getAmount();
+    final Coin amount = event.getAmount();
 
     // Create a suitable representation for inline text (no icon)
     final String messageAmount = Formats.formatSatoshisAsSymbolicText(
@@ -267,7 +267,7 @@ public class Formats {
 
     // Decode the Bitcoin URI
     Optional<Address> address = Optional.fromNullable(bitcoinURI.getAddress());
-    Optional<BigInteger> amount = Optional.fromNullable(bitcoinURI.getAmount());
+    Optional<Coin> amount = Optional.fromNullable(bitcoinURI.getAmount());
     Optional<String> label = Optional.fromNullable(bitcoinURI.getLabel());
 
     // Only proceed if we have an address

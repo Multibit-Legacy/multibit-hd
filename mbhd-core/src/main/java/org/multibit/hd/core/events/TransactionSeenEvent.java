@@ -1,9 +1,8 @@
 package org.multibit.hd.core.events;
 
+import com.google.bitcoin.core.Coin;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionConfidence;
-
-import java.math.BigInteger;
 
 /**
  *  <p>Event to provide the following to UIEventbus subscribers
@@ -22,7 +21,7 @@ public class TransactionSeenEvent implements CoreEvent {
 
   private final boolean coinbase;
 
-  private BigInteger amount;
+  private Coin amount;
 
   /**
    * This is the first time this transaction has been seen in the wallet
@@ -67,11 +66,11 @@ public class TransactionSeenEvent implements CoreEvent {
   /**
    * @return The amount in satoshis
    */
-  public BigInteger getAmount() {
+  public Coin getAmount() {
     return amount;
   }
 
-  public void setAmount(BigInteger amount) {
+  public void setAmount(Coin amount) {
     this.amount = amount;
   }
 

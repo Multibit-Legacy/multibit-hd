@@ -29,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -52,8 +51,8 @@ public class BitcoinNetworkServiceFunctionalTest {
   private static final String WALLET_TIMESTAMP_1_PROPERTY_NAME = "walletTimestamp1";
   private static final String WALLET_TIMESTAMP_2_PROPERTY_NAME = "walletTimestamp2";
 
-  private static final BigInteger SEND_AMOUNT = BigInteger.valueOf(100000); // 0.001 BTC
-  private static final BigInteger FEE_PER_KB = BigInteger.valueOf(10000); // 0.0001 BTC / KB
+  private static final Coin SEND_AMOUNT = Coin.valueOf(100000); // 0.001 BTC
+  private static final Coin FEE_PER_KB = Coin.valueOf(10000); // 0.0001 BTC / KB
 
   private static final int MAX_TIMEOUT = 600000; // ms
   private static final int WAIT_INTERVAL = 100; // ms
@@ -119,11 +118,11 @@ public class BitcoinNetworkServiceFunctionalTest {
 
     log.debug("WalletSummary (after sync) = \n{}", walletSummary.toString());
 
-    BigInteger walletBalance = walletSummary.getWallet().getBalance(Wallet.BalanceType.ESTIMATED);
+    Coin walletBalance = walletSummary.getWallet().getBalance(Wallet.BalanceType.ESTIMATED);
 
     // If this test fails please fund the test wallet with bitcoin as it is needed for the sending test !
     // (The wallet is logged to the console so you can see the address you need to fund).
-    assertThat(walletBalance.compareTo(BigInteger.ZERO) > 0).isTrue();
+    assertThat(walletBalance.compareTo(Coin.ZERO) > 0).isTrue();
 
     // See if there are any payments
     WalletService walletService = new WalletService(BitcoinNetwork.current().get());
@@ -168,14 +167,14 @@ public class BitcoinNetworkServiceFunctionalTest {
     // Synchronize the current wallet, which will be wallet2 as that was created last
     replayWallet(timestamp2);
 
-    BigInteger walletBalance2 = walletSummary2.getWallet().getBalance();
+    Coin walletBalance2 = walletSummary2.getWallet().getBalance();
 
     // Set the current wallet to be wallet1 and synchronize that
     Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot1);
     walletManager.setCurrentWalletSummary(walletSummary1);
     replayWallet(timestamp1);
 
-    BigInteger walletBalance1 = walletSummary1.getWallet().getBalance();
+    Coin walletBalance1 = walletSummary1.getWallet().getBalance();
 
     log.debug("Wallet data 1 = \n{}", walletSummary1.toString());
     log.debug("Wallet data 2 = \n{}", walletSummary2.toString());

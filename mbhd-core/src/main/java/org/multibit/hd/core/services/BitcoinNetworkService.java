@@ -55,7 +55,7 @@ public class BitcoinNetworkService extends AbstractService {
 
   private static final Logger log = LoggerFactory.getLogger(BitcoinNetworkService.class);
 
-  public static final BigInteger DEFAULT_FEE_PER_KB = Transaction.REFERENCE_DEFAULT_MIN_TX_FEE; // Currently 10,000 satoshi
+  public static final Coin DEFAULT_FEE_PER_KB = Transaction.REFERENCE_DEFAULT_MIN_TX_FEE; // Currently 10,000 satoshi
   public static final int MAXIMUM_NUMBER_OF_PEERS = 6;
 
   /**
@@ -159,7 +159,7 @@ public class BitcoinNetworkService extends AbstractService {
   public void recalculateFastCatchupAndFilter() {
 
     if (peerGroup != null) {
-      peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.FORCE_SEND);
+      peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.FORCE_SEND_FOR_REFRESH);
     }
 
   }
@@ -326,8 +326,8 @@ public class BitcoinNetworkService extends AbstractService {
       Wallet.SendRequest sendRequest = sendRequestSummary.getSendRequest().get();
 
       // Determine the maximum amount allowing for client fees
-      BigInteger recipientAmount = sendRequest.tx.getOutput(0).getValue();
-      BigInteger clientFeeAmount = sendRequestSummary.getFeeState().get().getFeeOwed();
+      Coin recipientAmount = sendRequest.tx.getOutput(0).getValue();
+      Coin clientFeeAmount = sendRequestSummary.getFeeState().get().getFeeOwed();
 
       // Adjust the send request summary accordingly
       recipientAmount = recipientAmount.subtract(clientFeeAmount);
@@ -405,8 +405,8 @@ public class BitcoinNetworkService extends AbstractService {
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
         null,
         sendRequestSummary.getTotalAmount(),
-        Optional.<BigInteger>absent(),
-        Optional.<BigInteger>absent(),
+        Optional.<Coin>absent(),
+        Optional.<Coin>absent(),
         sendRequestSummary.getDestinationAddress(),
         sendRequestSummary.getChangeAddress(),
         false,
@@ -472,8 +472,8 @@ public class BitcoinNetworkService extends AbstractService {
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
         null,
         sendRequestSummary.getTotalAmount(),
-        Optional.<BigInteger>absent(),
-        Optional.<BigInteger>absent(),
+        Optional.<Coin>absent(),
+        Optional.<Coin>absent(),
         sendRequestSummary.getDestinationAddress(),
         sendRequestSummary.getChangeAddress(),
         false,
@@ -505,7 +505,7 @@ public class BitcoinNetworkService extends AbstractService {
               sendRequestSummary.getAmount()
       );
       sendRequest.aesKey = sendRequestSummary.getKeyParameter().get();
-      sendRequest.fee = BigInteger.ZERO;
+      sendRequest.fee = Coin.ZERO;
       sendRequest.feePerKb = sendRequestSummary.getFeePerKB();
       sendRequest.changeAddress = sendRequestSummary.getChangeAddress();
 
@@ -556,7 +556,7 @@ public class BitcoinNetworkService extends AbstractService {
             // Try decreasing the client fee
             if (sendRequest.tx.getOutput(1).getValue().compareTo(Transaction.MIN_NONDUST_OUTPUT.add(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE)) > 0) {
               // There is enough bitcoin on the client fee output, decrease that
-              BigInteger adjustedClientFee = sendRequest.tx.getOutput(1).getValue().subtract(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE);
+              Coin adjustedClientFee = sendRequest.tx.getOutput(1).getValue().subtract(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE);
               sendRequest.tx.getOutput(1).setValue(adjustedClientFee);
               sendRequestSummary.setClientFeeAdded(Optional.of(adjustedClientFee));
             } else {
@@ -564,7 +564,7 @@ public class BitcoinNetworkService extends AbstractService {
               // Put back the original amount on the redemption output
               sendRequest.tx.clearOutputs();
               sendRequest.tx.addOutput(sendRequestSummary.getAmount(), sendRequestSummary.getDestinationAddress());
-              sendRequestSummary.setClientFeeAdded(Optional.<BigInteger>absent());              }
+              sendRequestSummary.setClientFeeAdded(Optional.<Coin>absent());              }
           }
         }
       }
@@ -580,8 +580,8 @@ public class BitcoinNetworkService extends AbstractService {
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
               null,
               sendRequestSummary.getTotalAmount(),
-              Optional.<BigInteger>absent(),
-              Optional.<BigInteger>absent(),
+              Optional.<Coin>absent(),
+              Optional.<Coin>absent(),
               sendRequestSummary.getDestinationAddress(),
               sendRequestSummary.getChangeAddress(),
               false,
@@ -627,8 +627,8 @@ public class BitcoinNetworkService extends AbstractService {
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
         transactionId,
         sendRequestSummary.getTotalAmount(),
-        Optional.<BigInteger>absent(),
-        Optional.<BigInteger>absent(),
+        Optional.<Coin>absent(),
+        Optional.<Coin>absent(),
         sendRequestSummary.getDestinationAddress(),
         sendRequestSummary.getChangeAddress(),
         false,
@@ -685,8 +685,8 @@ public class BitcoinNetworkService extends AbstractService {
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
         transactionId,
         sendRequestSummary.getTotalAmount(),
-        Optional.<BigInteger>absent(),
-        Optional.<BigInteger>absent(),
+        Optional.<Coin>absent(),
+        Optional.<Coin>absent(),
         sendRequestSummary.getDestinationAddress(),
         sendRequestSummary.getChangeAddress(),
         false,
@@ -725,8 +725,8 @@ public class BitcoinNetworkService extends AbstractService {
           sendRequestSummary.getDestinationAddress(),
           sendRequestSummary.getTotalAmount(),
           sendRequestSummary.getChangeAddress(),
-          Optional.<BigInteger>absent(),
-          Optional.<BigInteger>absent(),
+          Optional.<Coin>absent(),
+          Optional.<Coin>absent(),
           false,
           CoreMessageKey.COULD_NOT_CONNECT_TO_BITCOIN_NETWORK.getKey(),
           new String[]{"Could not reach any Bitcoin nodes"}
@@ -760,8 +760,8 @@ public class BitcoinNetworkService extends AbstractService {
       CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(
         sendRequestSummary.getDestinationAddress(), sendRequestSummary.getTotalAmount(),
         sendRequestSummary.getChangeAddress(),
-        Optional.<BigInteger>absent(),
-        Optional.<BigInteger>absent(),
+        Optional.<Coin>absent(),
+        Optional.<Coin>absent(),
         false,
         CoreMessageKey.THE_ERROR_WAS.getKey(),
         new String[]{e.getMessage()}

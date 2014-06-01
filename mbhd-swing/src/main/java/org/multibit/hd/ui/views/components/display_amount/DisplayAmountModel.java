@@ -1,10 +1,10 @@
 package org.multibit.hd.ui.views.components.display_amount;
 
+import com.google.bitcoin.core.Coin;
 import com.google.common.base.Optional;
 import org.multibit.hd.ui.models.Model;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 /**
  * <p>Model to provide the following to view:</p>
@@ -20,7 +20,7 @@ public class DisplayAmountModel implements Model<DisplayAmountModel> {
   private final DisplayAmountStyle style;
 
   // Values depend on earlier wizard panel
-  private BigInteger satoshis = BigInteger.ZERO;
+  private Coin satoshis = Coin.ZERO;
   private BigDecimal localAmount = BigDecimal.ZERO;
 
   // Default to Bitcoin only (exchanges are an optional feature)
@@ -69,11 +69,11 @@ public class DisplayAmountModel implements Model<DisplayAmountModel> {
   /**
    * @return The Bitcoin amount in satoshis
    */
-  public BigInteger getSatoshis() {
+  public Coin getSatoshis() {
     return satoshis;
   }
 
-  public void setSatoshis(BigInteger satoshis) {
+  public void setSatoshis(Coin satoshis) {
     this.satoshis = satoshis;
   }
 

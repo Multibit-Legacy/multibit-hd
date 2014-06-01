@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
+import com.google.bitcoin.core.Coin;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
@@ -167,7 +168,7 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
       if (feeState.getCurrentNumberOfSends() == feeState.getNextFeeSendCount()) {
         // The fee is due at the next send e.g. current number of sends = 20, nextFeeSendCount = 20 (the 21st send i.e. the coming one)
         feeText = Languages.safeText(MessageKey.CLIENT_FEE_NOW);
-      } else if (feeState.getFeeOwed().compareTo(BigInteger.ZERO) < 0) {
+      } else if (feeState.getFeeOwed().compareTo(Coin.ZERO) < 0) {
         // The user has overpaid
         feeText = Languages.safeText(MessageKey.CLIENT_FEE_OVERPAID);
       } else {

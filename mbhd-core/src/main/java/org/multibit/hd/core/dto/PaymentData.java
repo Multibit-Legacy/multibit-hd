@@ -1,8 +1,7 @@
 package org.multibit.hd.core.dto;
 
+import com.google.bitcoin.core.Coin;
 import org.joda.time.DateTime;
-
-import java.math.BigInteger;
 
 /**
  *  <p>Interface to provide the following to payments view:</p>
@@ -19,7 +18,7 @@ public interface PaymentData {
 
   public DateTime getDate();
 
-  public BigInteger getAmountBTC();
+  public Coin getAmountBTC();
 
   public FiatPayment getAmountFiat();
 

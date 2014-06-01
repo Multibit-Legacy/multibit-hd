@@ -1,12 +1,11 @@
 package org.multibit.hd.ui.views.wizards.receive_bitcoin;
 
+import com.google.bitcoin.core.Coin;
 import com.google.common.base.Optional;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountModel;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.math.BigInteger;
 
 /**
  * <p>Model object to provide the following to "receive Bitcoin" wizard:</p>
@@ -43,7 +42,7 @@ public class ReceiveBitcoinWizardModel extends AbstractWizardModel<ReceiveBitcoi
   /**
    * @return The Bitcoin amount in satoshis
    */
-  public BigInteger getSatoshis() {
+  public Coin getSatoshis() {
     return enterAmountModel.getSatoshis();
   }
 

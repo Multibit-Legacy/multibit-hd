@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.empty_wallet;
 
+import com.google.bitcoin.core.Coin;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.brit.dto.FeeState;
@@ -19,7 +20,6 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
-import java.math.BigInteger;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -136,13 +136,13 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
       if (feeState.getCurrentNumberOfSends() == feeState.getNextFeeSendCount()) {
 
         // The fee is due now - so check for zero owing due to dust/force etc
-        if (feeState.getFeeOwed().compareTo(BigInteger.ZERO) == 0) {
+        if (feeState.getFeeOwed().compareTo(Coin.ZERO) == 0) {
           feeText = "";
         } else {
           feeText = Languages.safeText(MessageKey.CLIENT_FEE_NOW);
         }
 
-      } else if (feeState.getFeeOwed().compareTo(BigInteger.ZERO) < 0) {
+      } else if (feeState.getFeeOwed().compareTo(Coin.ZERO) < 0) {
         // The user has overpaid
         feeText = Languages.safeText(MessageKey.CLIENT_FEE_OVERPAID);
       } else {

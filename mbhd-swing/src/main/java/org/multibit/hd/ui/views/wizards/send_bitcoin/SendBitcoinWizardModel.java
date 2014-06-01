@@ -1,9 +1,6 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.AddressFormatException;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.core.*;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -30,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Currency;
 import java.util.List;
 
@@ -68,7 +64,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   /**
    * Default transaction fee
    */
-  private final BigInteger transactionFee = Satoshis.fromPlainAmount("0.0001"); // TODO needs to be displayed from a wallet.completeTx SendRequest.fee
+  private final Coin transactionFee = Satoshis.fromPlainAmount("0.0001"); // TODO needs to be displayed from a wallet.completeTx SendRequest.fee
 
   /**
    * The FeeService used to calculate the FeeState
@@ -140,7 +136,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   /**
    * @return The Bitcoin amount without symbolic multiplier
    */
-  public BigInteger getSatoshis() {
+  public Coin getSatoshis() {
     return enterAmountPanelModel
       .getEnterAmountModel()
       .getSatoshis();
@@ -199,7 +195,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   /**
    * @return The transaction fee (a.k.a "miner's fee") in satoshis
    */
-  public BigInteger getTransactionFee() {
+  public Coin getTransactionFee() {
     return transactionFee;
   }
 
@@ -307,7 +303,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
     Address changeAddress = bitcoinNetworkService.getNextChangeAddress();
 
-    BigInteger satoshis = enterAmountPanelModel.getEnterAmountModel().getSatoshis();
+    Coin satoshis = enterAmountPanelModel.getEnterAmountModel().getSatoshis();
     Address bitcoinAddress = enterAmountPanelModel
       .getEnterRecipientModel()
       .getRecipient()
@@ -350,7 +346,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
     BitcoinURI uri = bitcoinURI.get();
     Optional<Address> address = Optional.fromNullable(uri.getAddress());
-    Optional<BigInteger> amount = Optional.fromNullable(uri.getAmount());
+    Optional<Coin> amount = Optional.fromNullable(uri.getAmount());
 
     if (address.isPresent()) {
 
@@ -394,7 +390,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
       // Add in any amount or treat as zero
       enterAmountPanelModel
         .getEnterAmountModel()
-        .setSatoshis(amount.or(BigInteger.ZERO));
+        .setSatoshis(amount.or(Coin.ZERO));
 
     }
   }

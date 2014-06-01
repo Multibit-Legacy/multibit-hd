@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.units_settings;
 
+import com.google.bitcoin.core.Coin;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
@@ -26,7 +27,6 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Locale;
 
 /**
@@ -87,7 +87,7 @@ public class UnitsSettingsPanelView extends AbstractWizardPanelView<UnitsWizardM
     Preconditions.checkNotNull(locale, "'locale' cannot be empty");
 
     displayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT, true,"example");
-    displayAmountMaV.getModel().setSatoshis(BigInteger.valueOf(123_456_789_012L)); // 1.23... million bitcoins
+    displayAmountMaV.getModel().setSatoshis(Coin.valueOf(123_456_789_012L)); // 1.23... million bitcoins
     displayAmountMaV.getModel().setLocalAmount(new BigDecimal("1234567.89"));
     displayAmountMaV.getModel().setRateProvider(Optional.of(Languages.safeText(MessageKey.EXAMPLE)));
     displayAmountMaV.getModel().setLocalAmountVisible(true);

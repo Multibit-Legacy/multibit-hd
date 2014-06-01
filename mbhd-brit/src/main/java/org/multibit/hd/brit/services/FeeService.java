@@ -54,7 +54,7 @@ public class FeeService {
    * BRIT fee charged per send.
    * This is set to be equal to the (expected drop in) miner's fee in 2014Q2 to 0.01 mBTC per KB
    */
-  public final static BigInteger FEE_PER_SEND = BigInteger.valueOf(1000);    // In satoshi
+  public final static Coin FEE_PER_SEND = Coin.valueOf(1000);    // In satoshi
 
   /**
    * The lower limit of the gap from one fee send to the next
@@ -88,7 +88,6 @@ public class FeeService {
     this.matcherPublicKey = matcherPublicKey;
     this.matcherURL = matcherURL;
     this.secureRandom = new SecureRandom();
-
   }
 
   /**
@@ -155,7 +154,7 @@ public class FeeService {
     log.debug("The wallet send count is {}", currentNumberOfSends);
 
     // Work out the total amount that should be paid by the Payer for this wallet
-    BigInteger grossFeeToBePaid = FEE_PER_SEND.multiply(BigInteger.valueOf(currentNumberOfSends));
+    Coin grossFeeToBePaid = FEE_PER_SEND.multiply(currentNumberOfSends);
 
     // Get the previous persisted MatcherResponse from the wallet, if available
     MatcherResponse matcherResponseFromWallet = getMatcherResponseFromWallet(wallet);
@@ -171,7 +170,7 @@ public class FeeService {
     int lastFeePayingSendCount = 0;
     Optional<String> lastFeePayingSendAddressOptional = Optional.absent();
     Optional<Integer> lastFeePayingSendingCountOptional = Optional.absent();
-    BigInteger feePaid = BigInteger.ZERO;
+    Coin feePaid = Coin.ZERO;
 
     for (Transaction sendTransaction : sendTransactions) {
       List<TransactionOutput> sendTransactionOutputList = sendTransaction.getOutputs();
@@ -195,7 +194,7 @@ public class FeeService {
 
     // The net amount fee still to be paid is the gross amount minus the amount paid so far
     // This could be negative if the user has overpaid
-    BigInteger netFeeToBePaid = grossFeeToBePaid.subtract(feePaid);
+    Coin netFeeToBePaid = grossFeeToBePaid.subtract(feePaid);
 
     // nextSendFeeCount and nextSendFeeAddress may already be on the wallet in an extension - if so use those else recalculate
     SendFeeDto sendFeeDto = getSendFeeDtoFromWallet(wallet);
@@ -227,7 +226,7 @@ public class FeeService {
     } else {
       // Work out the count of the sends at which the next payment will be made
       // The first nextSendFeeCount is earlier than others by a factor of FIRST_SEND_DELTA_FACTOR
-      int numberOfSendCountsPaidFor = feePaid.divide(FEE_PER_SEND).intValue();
+      int numberOfSendCountsPaidFor = (int)feePaid.divide(FEE_PER_SEND);
       if (feePaid.equals(BigInteger.ZERO)) {
         // This is the first fee payment
         nextSendFeeCount = (int)Math.floor(FIRST_SEND_DELTA_FACTOR *
@@ -267,9 +266,9 @@ public class FeeService {
     }
 
     // If the user has overpaid then they have amountOverpaid / FEE_PER_SEND free sends so adjust the nextFeeSendCount accordingly
-    if (netFeeToBePaid.compareTo(BigInteger.ZERO) < 0) {
+    if (netFeeToBePaid.compareTo(Coin.ZERO) < 0) {
 
-      int numberOfFreeSends = netFeeToBePaid.negate().divide(FEE_PER_SEND).intValue();
+      int numberOfFreeSends = (int)netFeeToBePaid.negate().divide(FEE_PER_SEND);
 
       // if the nextSendFeeCount is less than the numberOfFreeSendCount + NEXT_SEND_DELTA_LOWER_LIMIT then push out the nextSendFeeCount a little
       if ((nextSendFeeCount - currentNumberOfSends) < (numberOfFreeSends + NEXT_SEND_DELTA_LOWER_LIMIT)) {
@@ -290,7 +289,7 @@ public class FeeService {
           log.debug("Including forced payment. The user has underpaid and owes more than the dust limit.");
         } else {
           log.debug("Excluding forced payment. The user has underpaid and owes less than the dust limit.");
-          netFeeToBePaid = BigInteger.ZERO;
+          netFeeToBePaid = Coin.ZERO;
         }
       }
     }
@@ -333,7 +332,7 @@ public class FeeService {
     List<Transaction> sendTransactions = Lists.newArrayList();
 
     for (Transaction transaction : transactions) {
-      if (transaction.getValueSentFromMe(wallet).compareTo(BigInteger.ZERO) > 0) {
+      if (transaction.getValueSentFromMe(wallet).compareTo(Coin.ZERO) > 0) {
         if (transaction.getConfidence() != null && TransactionConfidence.Source.SELF.equals(transaction.getConfidence().getSource())) {
           // This transaction sends from self
           sendTransactions.add(transaction);

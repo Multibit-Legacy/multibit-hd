@@ -1,12 +1,11 @@
 package org.multibit.hd.core.dto;
 
 import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.Coin;
 import com.google.bitcoin.core.Wallet;
 import com.google.common.base.Optional;
 import org.multibit.hd.brit.dto.FeeState;
 import org.spongycastle.crypto.params.KeyParameter;
-
-import java.math.BigInteger;
 
 /**
  * <p>Data object to provide the following to Bitcoin network service:</p>
@@ -19,9 +18,9 @@ import java.math.BigInteger;
 public class SendRequestSummary {
 
   private final Address destinationAddress;
-  private final BigInteger amount;
+  private final Coin amount;
   private final Address changeAddress;
-  private final BigInteger feePerKB;
+  private final Coin feePerKB;
   private final CharSequence password;
   private final Optional<FeeState> feeState;
 
@@ -35,7 +34,7 @@ public class SendRequestSummary {
   /**
    * The client fee added to the sendRequest.tx
    */
-  private Optional<BigInteger> clientFeeAdded = Optional.absent();
+  private Optional<Coin> clientFeeAdded = Optional.absent();
 
   /**
    * @param destinationAddress The destination address to send to
@@ -48,9 +47,9 @@ public class SendRequestSummary {
    */
   public SendRequestSummary(
     Address destinationAddress,
-    BigInteger amount,
+    Coin amount,
     Address changeAddress,
-    BigInteger feePerKB,
+    Coin feePerKB,
     CharSequence password,
     Optional<FeeState> feeState,
     boolean emptyWallet) {
@@ -76,14 +75,14 @@ public class SendRequestSummary {
    * @return The amount sent by the user in satoshis.
    *         This does NOT include any client fee
    */
-  public BigInteger getAmount() {
+  public Coin getAmount() {
     return amount;
   }
 
   /**
    * @return The total amount sent, including the client fee
    */
-  public BigInteger getTotalAmount() {
+  public Coin getTotalAmount() {
     if (clientFeeAdded.isPresent()) {
       return amount.add(clientFeeAdded.get());
     } else {
@@ -101,7 +100,7 @@ public class SendRequestSummary {
   /**
    * @return The fee to pay per Kb
    */
-  public BigInteger getFeePerKB() {
+  public Coin getFeePerKB() {
     return feePerKB;
   }
 
@@ -172,11 +171,11 @@ public class SendRequestSummary {
   }
 
 
-  public Optional<BigInteger> getClientFeeAdded() {
+  public Optional<Coin> getClientFeeAdded() {
     return clientFeeAdded;
   }
 
-  public void setClientFeeAdded(Optional<BigInteger> clientFeeAdded) {
+  public void setClientFeeAdded(Optional<Coin> clientFeeAdded) {
     this.clientFeeAdded = clientFeeAdded;
   }
 

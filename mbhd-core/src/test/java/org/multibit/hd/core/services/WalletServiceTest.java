@@ -1,5 +1,6 @@
 package org.multibit.hd.core.services;
 
+import com.google.bitcoin.core.Coin;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.common.base.Optional;
 import org.joda.time.DateTime;
@@ -20,7 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Currency;
 
@@ -93,7 +93,7 @@ public class WalletServiceTest {
     PaymentRequestData paymentRequestData1 = new PaymentRequestData();
 
     paymentRequestData1.setAddress("1abc");
-    paymentRequestData1.setAmountBTC(BigInteger.valueOf(245));
+    paymentRequestData1.setAmountBTC(Coin.valueOf(245));
     DateTime date1 = new DateTime();
     paymentRequestData1.setDate(date1);
     paymentRequestData1.setLabel("label1");

@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components.renderers;
 
+import com.google.bitcoin.core.Coin;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
@@ -39,16 +40,16 @@ public class AmountBTCTableCellRenderer extends DefaultTableCellRenderer {
 
       // Do the Bitcoin processing
 
-      BigInteger valueBigInteger = (BigInteger) value;
+      Coin valueCoin = (Coin) value;
       LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage();
       BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
 
-      String[] balanceArray = Formats.formatSatoshisAsSymbolic(valueBigInteger, languageConfiguration, bitcoinConfiguration, true);
+      String[] balanceArray = Formats.formatSatoshisAsSymbolic(valueCoin, languageConfiguration, bitcoinConfiguration, true);
       String balanceString = balanceArray[0] + balanceArray[1];
 
       label.setText(balanceString + TrailingJustifiedDateTableCellRenderer.SPACER);
 
-      if ((valueBigInteger.compareTo(BigInteger.ZERO) < 0)) {
+      if ((valueCoin.compareTo(Coin.ZERO) < 0)) {
         // Debit
         if (isSelected) {
           label.setForeground(table.getSelectionForeground());

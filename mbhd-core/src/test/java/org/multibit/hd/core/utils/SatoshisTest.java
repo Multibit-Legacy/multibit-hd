@@ -1,18 +1,18 @@
 package org.multibit.hd.core.utils;
 
+import com.google.bitcoin.core.Coin;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class SatoshisTest {
 
-  private BigInteger[] testAmounts = new BigInteger[]{
-    new BigInteger("2099999912345678"), // 20,999,999.123 456 78
-    new BigInteger("12345678"), // 0.123 456 78
-    new BigInteger("1") // 0.000 000 01
+  private Coin[] testAmounts = new Coin[]{
+    Coin.parseCoin("20999999.12345678"), // 20,999,999.123 456 78
+    Coin.parseCoin("0.12345678"), // 0.123 456 78
+    Coin.parseCoin("0.00000001") // 0.000 000 01
   };
 
   private BigDecimal exchangeRate = new BigDecimal("1000");
@@ -47,24 +47,24 @@ public class SatoshisTest {
     // Large
     BigDecimal localAmount1 = new BigDecimal("20999999123.456780000000");
 
-    BigInteger expected1 = testAmounts[0];
-    BigInteger actual1 = Satoshis.fromLocalAmount(localAmount1, exchangeRate);
+    Coin expected1 = testAmounts[0];
+    Coin actual1 = Satoshis.fromLocalAmount(localAmount1, exchangeRate);
 
     assertThat(actual1).isEqualTo(expected1);
 
     // Medium
     BigDecimal localAmount2 = new BigDecimal("123.456780000000");
 
-    BigInteger expected2 = testAmounts[1];
-    BigInteger actual2 = Satoshis.fromLocalAmount(localAmount2, exchangeRate);
+    Coin expected2 = testAmounts[1];
+    Coin actual2 = Satoshis.fromLocalAmount(localAmount2, exchangeRate);
 
     assertThat(actual2).isEqualTo(expected2);
 
     // Small
     BigDecimal localAmount3 = new BigDecimal("0.000010000000");
 
-    BigInteger expected3 = testAmounts[2];
-    BigInteger actual3 = Satoshis.fromLocalAmount(localAmount3, exchangeRate);
+    Coin expected3 = testAmounts[2];
+    Coin actual3 = Satoshis.fromLocalAmount(localAmount3, exchangeRate);
 
     assertThat(actual3).isEqualTo(expected3);
 
@@ -76,24 +76,24 @@ public class SatoshisTest {
     // Large
     BigDecimal localAmount1 = new BigDecimal("20999999.12345678");
 
-    BigInteger expected1 = testAmounts[0];
-    BigInteger actual1 = Satoshis.fromPlainAmount(localAmount1);
+    Coin expected1 = testAmounts[0];
+    Coin actual1 = Satoshis.fromPlainAmount(localAmount1);
 
     assertThat(actual1).isEqualTo(expected1);
 
     // Medium
     BigDecimal localAmount2 = new BigDecimal("0.12345678");
 
-    BigInteger expected2 = testAmounts[1];
-    BigInteger actual2 = Satoshis.fromPlainAmount(localAmount2);
+    Coin expected2 = testAmounts[1];
+    Coin actual2 = Satoshis.fromPlainAmount(localAmount2);
 
     assertThat(actual2).isEqualTo(expected2);
 
     // Small
     BigDecimal localAmount3 = new BigDecimal("0.00000001");
 
-    BigInteger expected3 = testAmounts[2];
-    BigInteger actual3 = Satoshis.fromPlainAmount(localAmount3);
+    Coin expected3 = testAmounts[2];
+    Coin actual3 = Satoshis.fromPlainAmount(localAmount3);
 
     assertThat(actual3).isEqualTo(expected3);
 
@@ -105,24 +105,24 @@ public class SatoshisTest {
     // Large
     String localAmount1 = "20999999.12345678";
 
-    BigInteger expected1 = testAmounts[0];
-    BigInteger actual1 = Satoshis.fromPlainAmount(localAmount1);
+    Coin expected1 = testAmounts[0];
+    Coin actual1 = Satoshis.fromPlainAmount(localAmount1);
 
     assertThat(actual1).isEqualTo(expected1);
 
     // Medium
     String localAmount2 = "0.12345678";
 
-    BigInteger expected2 = testAmounts[1];
-    BigInteger actual2 = Satoshis.fromPlainAmount(localAmount2);
+    Coin expected2 = testAmounts[1];
+    Coin actual2 = Satoshis.fromPlainAmount(localAmount2);
 
     assertThat(actual2).isEqualTo(expected2);
 
     // Small
     String localAmount3 = "0.00000001";
 
-    BigInteger expected3 = testAmounts[2];
-    BigInteger actual3 = Satoshis.fromPlainAmount(localAmount3);
+    Coin expected3 = testAmounts[2];
+    Coin actual3 = Satoshis.fromPlainAmount(localAmount3);
 
     assertThat(actual3).isEqualTo(expected3);
 
@@ -137,24 +137,24 @@ public class SatoshisTest {
     // Large
     BigDecimal localAmount1 = new BigDecimal("20999999.12345678");
 
-    BigInteger expected1 = testAmounts[0];
-    BigInteger actual1 = Satoshis.fromSymbolicAmount(localAmount1, bitcoinSymbol);
+    Coin expected1 = testAmounts[0];
+    Coin actual1 = Satoshis.fromSymbolicAmount(localAmount1, bitcoinSymbol);
 
     assertThat(actual1).isEqualTo(expected1);
 
     // Medium
     BigDecimal localAmount2 = new BigDecimal("0.12345678");
 
-    BigInteger expected2 = testAmounts[1];
-    BigInteger actual2 = Satoshis.fromSymbolicAmount(localAmount2, bitcoinSymbol);
+    Coin expected2 = testAmounts[1];
+    Coin actual2 = Satoshis.fromSymbolicAmount(localAmount2, bitcoinSymbol);
 
     assertThat(actual2).isEqualTo(expected2);
 
     // Small
     BigDecimal localAmount3 = new BigDecimal("0.00000001");
 
-    BigInteger expected3 = testAmounts[2];
-    BigInteger actual3 = Satoshis.fromSymbolicAmount(localAmount3, bitcoinSymbol);
+    Coin expected3 = testAmounts[2];
+    Coin actual3 = Satoshis.fromSymbolicAmount(localAmount3, bitcoinSymbol);
 
     assertThat(actual3).isEqualTo(expected3);
 
@@ -169,24 +169,24 @@ public class SatoshisTest {
     // Large
     BigDecimal localAmount1 = new BigDecimal("20999999123.45678");
 
-    BigInteger expected1 = testAmounts[0];
-    BigInteger actual1 = Satoshis.fromSymbolicAmount(localAmount1, bitcoinSymbol);
+    Coin expected1 = testAmounts[0];
+    Coin actual1 = Satoshis.fromSymbolicAmount(localAmount1, bitcoinSymbol);
 
     assertThat(actual1).isEqualTo(expected1);
 
     // Medium
     BigDecimal localAmount2 = new BigDecimal("123.45678");
 
-    BigInteger expected2 = testAmounts[1];
-    BigInteger actual2 = Satoshis.fromSymbolicAmount(localAmount2, bitcoinSymbol);
+    Coin expected2 = testAmounts[1];
+    Coin actual2 = Satoshis.fromSymbolicAmount(localAmount2, bitcoinSymbol);
 
     assertThat(actual2).isEqualTo(expected2);
 
     // Small
     BigDecimal localAmount3 = new BigDecimal("0.00001");
 
-    BigInteger expected3 = testAmounts[2];
-    BigInteger actual3 = Satoshis.fromSymbolicAmount(localAmount3, bitcoinSymbol);
+    Coin expected3 = testAmounts[2];
+    Coin actual3 = Satoshis.fromSymbolicAmount(localAmount3, bitcoinSymbol);
 
     assertThat(actual3).isEqualTo(expected3);
 
@@ -201,24 +201,24 @@ public class SatoshisTest {
     // Large
     BigDecimal localAmount1 = new BigDecimal("20999999123456.78");
 
-    BigInteger expected1 = testAmounts[0];
-    BigInteger actual1 = Satoshis.fromSymbolicAmount(localAmount1, bitcoinSymbol);
+    Coin expected1 = testAmounts[0];
+    Coin actual1 = Satoshis.fromSymbolicAmount(localAmount1, bitcoinSymbol);
 
     assertThat(actual1).isEqualTo(expected1);
 
     // Medium
     BigDecimal localAmount2 = new BigDecimal("123456.78");
 
-    BigInteger expected2 = testAmounts[1];
-    BigInteger actual2 = Satoshis.fromSymbolicAmount(localAmount2, bitcoinSymbol);
+    Coin expected2 = testAmounts[1];
+    Coin actual2 = Satoshis.fromSymbolicAmount(localAmount2, bitcoinSymbol);
 
     assertThat(actual2).isEqualTo(expected2);
 
     // Small
     BigDecimal localAmount3 = new BigDecimal("0.01");
 
-    BigInteger expected3 = testAmounts[2];
-    BigInteger actual3 = Satoshis.fromSymbolicAmount(localAmount3, bitcoinSymbol);
+    Coin expected3 = testAmounts[2];
+    Coin actual3 = Satoshis.fromSymbolicAmount(localAmount3, bitcoinSymbol);
 
     assertThat(actual3).isEqualTo(expected3);
 
@@ -233,24 +233,24 @@ public class SatoshisTest {
     // Large
     BigDecimal localAmount1 = new BigDecimal("2099999912345678");
 
-    BigInteger expected1 = testAmounts[0];
-    BigInteger actual1 = Satoshis.fromSymbolicAmount(localAmount1, bitcoinSymbol);
+    Coin expected1 = testAmounts[0];
+    Coin actual1 = Satoshis.fromSymbolicAmount(localAmount1, bitcoinSymbol);
 
     assertThat(actual1).isEqualTo(expected1);
 
     // Medium
     BigDecimal localAmount2 = new BigDecimal("12345678");
 
-    BigInteger expected2 = testAmounts[1];
-    BigInteger actual2 = Satoshis.fromSymbolicAmount(localAmount2, bitcoinSymbol);
+    Coin expected2 = testAmounts[1];
+    Coin actual2 = Satoshis.fromSymbolicAmount(localAmount2, bitcoinSymbol);
 
     assertThat(actual2).isEqualTo(expected2);
 
     // Small
     BigDecimal localAmount3 = new BigDecimal("1");
 
-    BigInteger expected3 = testAmounts[2];
-    BigInteger actual3 = Satoshis.fromSymbolicAmount(localAmount3, bitcoinSymbol);
+    Coin expected3 = testAmounts[2];
+    Coin actual3 = Satoshis.fromSymbolicAmount(localAmount3, bitcoinSymbol);
 
     assertThat(actual3).isEqualTo(expected3);
 
@@ -263,7 +263,7 @@ public class SatoshisTest {
     BitcoinSymbol bitcoinSymbol = BitcoinSymbol.BTC;
 
     // Large
-    BigInteger localAmount1 = new BigInteger("2099999912345678");
+    Coin localAmount1 = Coin.parseCoin("20999999.12345678");
 
     BigDecimal expected1 = new BigDecimal("20999999.12345678");
     BigDecimal actual1 = Satoshis.toSymbolicAmount(localAmount1, bitcoinSymbol);
@@ -271,7 +271,7 @@ public class SatoshisTest {
     assertThat(actual1).isEqualTo(expected1);
 
     // Medium
-    BigInteger localAmount2 = new BigInteger("12345678");
+    Coin localAmount2 = Coin.parseCoin("0.12345678");
 
     BigDecimal expected2 = new BigDecimal("0.12345678");
     BigDecimal actual2 = Satoshis.toSymbolicAmount(localAmount2, bitcoinSymbol);
@@ -279,7 +279,7 @@ public class SatoshisTest {
     assertThat(actual2).isEqualTo(expected2);
 
     // Small
-    BigInteger localAmount3 = new BigInteger("1");
+    Coin localAmount3 = Coin.parseCoin("0.00000001");
 
     BigDecimal expected3 = new BigDecimal("0.00000001");
     BigDecimal actual3 = Satoshis.toSymbolicAmount(localAmount3, bitcoinSymbol);
@@ -295,7 +295,7 @@ public class SatoshisTest {
     BitcoinSymbol bitcoinSymbol = BitcoinSymbol.MBTC;
 
     // Large
-    BigInteger localAmount1 = new BigInteger("2099999912345678");
+    Coin localAmount1 = Coin.parseCoin("20999999.12345678");
 
     BigDecimal expected1 = new BigDecimal("20999999123.45678");
     BigDecimal actual1 = Satoshis.toSymbolicAmount(localAmount1, bitcoinSymbol);
@@ -303,7 +303,7 @@ public class SatoshisTest {
     assertThat(actual1).isEqualTo(expected1);
 
     // Medium
-    BigInteger localAmount2 = new BigInteger("12345678");
+    Coin localAmount2 = Coin.parseCoin("0.12345678");
 
     BigDecimal expected2 = new BigDecimal("123.45678");
     BigDecimal actual2 = Satoshis.toSymbolicAmount(localAmount2, bitcoinSymbol);
@@ -311,7 +311,7 @@ public class SatoshisTest {
     assertThat(actual2).isEqualTo(expected2);
 
     // Small
-    BigInteger localAmount3 = new BigInteger("1");
+    Coin localAmount3 = Coin.parseCoin("0.000000001");
 
     BigDecimal expected3 = new BigDecimal("0.00001");
     BigDecimal actual3 = Satoshis.toSymbolicAmount(localAmount3, bitcoinSymbol);
@@ -327,7 +327,7 @@ public class SatoshisTest {
     BitcoinSymbol bitcoinSymbol = BitcoinSymbol.UBTC;
 
     // Large
-    BigInteger localAmount1 = new BigInteger("2099999912345678");
+    Coin localAmount1 = Coin.parseCoin("20999999.12345678");
 
     BigDecimal expected1 = new BigDecimal("20999999123456.78");
     BigDecimal actual1 = Satoshis.toSymbolicAmount(localAmount1, bitcoinSymbol);
@@ -335,7 +335,7 @@ public class SatoshisTest {
     assertThat(actual1).isEqualTo(expected1);
 
     // Medium
-    BigInteger localAmount2 = new BigInteger("12345678");
+    Coin localAmount2 = Coin.parseCoin("0.12345678");
 
     BigDecimal expected2 = new BigDecimal("123456.78");
     BigDecimal actual2 = Satoshis.toSymbolicAmount(localAmount2, bitcoinSymbol);
@@ -343,7 +343,7 @@ public class SatoshisTest {
     assertThat(actual2).isEqualTo(expected2);
 
     // Small
-    BigInteger localAmount3 = new BigInteger("1");
+    Coin localAmount3 = Coin.parseCoin("0.00000001");
 
     BigDecimal expected3 = new BigDecimal("0.01");
     BigDecimal actual3 = Satoshis.toSymbolicAmount(localAmount3, bitcoinSymbol);
@@ -359,7 +359,7 @@ public class SatoshisTest {
     BitcoinSymbol bitcoinSymbol = BitcoinSymbol.SATOSHI;
 
     // Large
-    BigInteger localAmount1 = new BigInteger("2099999912345678");
+    Coin localAmount1 = Coin.parseCoin("20999999.12345678");
 
     BigDecimal expected1 = new BigDecimal("2099999912345678");
     BigDecimal actual1 = Satoshis.toSymbolicAmount(localAmount1, bitcoinSymbol);
@@ -367,7 +367,7 @@ public class SatoshisTest {
     assertThat(actual1).isEqualTo(expected1);
 
     // Medium
-    BigInteger localAmount2 = new BigInteger("12345678");
+    Coin localAmount2 = Coin.parseCoin("0.12345678");
 
     BigDecimal expected2 = new BigDecimal("12345678");
     BigDecimal actual2 = Satoshis.toSymbolicAmount(localAmount2, bitcoinSymbol);
@@ -375,7 +375,7 @@ public class SatoshisTest {
     assertThat(actual2).isEqualTo(expected2);
 
     // Small
-    BigInteger localAmount3 = new BigInteger("1");
+    Coin localAmount3 = Coin.parseCoin("0.00000001");
 
     BigDecimal expected3 = new BigDecimal("1");
     BigDecimal actual3 = Satoshis.toSymbolicAmount(localAmount3, bitcoinSymbol);

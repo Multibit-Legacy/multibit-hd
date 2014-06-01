@@ -18,6 +18,7 @@
 
 package org.multibit.hd.core.store;
 
+import com.google.bitcoin.core.Coin;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -33,7 +34,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Currency;
 import java.util.List;
@@ -150,7 +150,7 @@ public class PaymentsProtobufSerializer {
           paymentRequestData.setDate(new DateTime(paymentRequestProto.getDate()));
         }
         if (paymentRequestProto.hasAmountBTC()) {
-          paymentRequestData.setAmountBTC(BigInteger.valueOf(paymentRequestProto.getAmountBTC()));
+          paymentRequestData.setAmountBTC(Coin.valueOf(paymentRequestProto.getAmountBTC()));
         }
 
         if (paymentRequestProto.hasAmountFiat()) {
@@ -215,23 +215,23 @@ public class PaymentsProtobufSerializer {
         if (transactionInfoProto.hasClientFee()) {
           long clientFee = transactionInfoProto.getClientFee();
           if (clientFee == ABSENT_VALUE) {
-            transactionInfo.setClientFee(Optional.<BigInteger>absent());
+            transactionInfo.setClientFee(Optional.<Coin>absent());
           } else {
-            transactionInfo.setClientFee(Optional.of(BigInteger.valueOf(clientFee)));
+            transactionInfo.setClientFee(Optional.of(Coin.valueOf(clientFee)));
           }
         } else {
-          transactionInfo.setClientFee(Optional.<BigInteger>absent());
+          transactionInfo.setClientFee(Optional.<Coin>absent());
         }
 
         if (transactionInfoProto.hasMinerFee()) {
           long minerFee = transactionInfoProto.getMinerFee();
           if (minerFee == ABSENT_VALUE) {
-            transactionInfo.setMinerFee(Optional.<BigInteger>absent());
+            transactionInfo.setMinerFee(Optional.<Coin>absent());
           } else {
-            transactionInfo.setMinerFee(Optional.of(BigInteger.valueOf(minerFee)));
+            transactionInfo.setMinerFee(Optional.of(Coin.valueOf(minerFee)));
           }
         } else {
-          transactionInfo.setMinerFee(Optional.<BigInteger>absent());
+          transactionInfo.setMinerFee(Optional.<Coin>absent());
         }
 
         if (transactionInfoProto.hasAmountFiat()) {
@@ -343,14 +343,14 @@ public class PaymentsProtobufSerializer {
     transactionInfoBuilder.setHash(transactionInfo.getHash());
     transactionInfoBuilder.setNote(transactionInfo.getNote());
 
-    Optional<BigInteger> clientFee = transactionInfo.getClientFee();
+    Optional<Coin> clientFee = transactionInfo.getClientFee();
     if (clientFee != null && clientFee.isPresent() && clientFee.get() != null) {
       transactionInfoBuilder.setClientFee(transactionInfo.getClientFee().get().longValue());
     } else {
       transactionInfoBuilder.setClientFee(ABSENT_VALUE);
     }
 
-    Optional<BigInteger> minerFee = transactionInfo.getMinerFee();
+    Optional<Coin> minerFee = transactionInfo.getMinerFee();
     if (minerFee != null && minerFee.isPresent() && transactionInfo.getMinerFee().get() != null) {
       transactionInfoBuilder.setMinerFee(minerFee.get().longValue());
     } else {

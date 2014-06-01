@@ -1,5 +1,6 @@
 package org.multibit.hd.core.store;
 
+import com.google.bitcoin.core.Coin;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
@@ -14,7 +15,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Currency;
 import java.util.Iterator;
@@ -46,7 +46,7 @@ public class PaymentsProtobufSerializerTest {
     PaymentRequestData paymentRequestData1 = new PaymentRequestData();
 
     paymentRequestData1.setAddress("1abc");
-    paymentRequestData1.setAmountBTC(BigInteger.valueOf(245));
+    paymentRequestData1.setAmountBTC(Coin.valueOf(245));
     DateTime date1 = new DateTime();
     paymentRequestData1.setDate(date1);
     paymentRequestData1.setLabel("label1");
@@ -61,7 +61,7 @@ public class PaymentsProtobufSerializerTest {
 
     PaymentRequestData paymentRequestData2 = new PaymentRequestData();
     paymentRequestData2.setAddress("1xyz");
-    paymentRequestData2.setAmountBTC(BigInteger.valueOf(789));
+    paymentRequestData2.setAmountBTC(Coin.valueOf(789));
     DateTime date2 = date1.plusDays(7);
     paymentRequestData2.setDate(date2);
     paymentRequestData2.setLabel("label2");
@@ -123,8 +123,8 @@ public class PaymentsProtobufSerializerTest {
     fiatPayment1.setRate(Optional.of("30.0"));
     fiatPayment1.setExchangeName(Optional.of("Bitstamp"));
 
-    transactionInfo1.setClientFee(Optional.<BigInteger>absent());
-    transactionInfo1.setMinerFee(Optional.of(BigInteger.valueOf(123)));
+    transactionInfo1.setClientFee(Optional.<Coin>absent());
+    transactionInfo1.setMinerFee(Optional.of(Coin.valueOf(123)));
 
     TransactionInfo transactionInfo2 = new TransactionInfo();
     transactionInfos.add(transactionInfo2);
@@ -138,8 +138,8 @@ public class PaymentsProtobufSerializerTest {
     fiatPayment2.setRate(Optional.of("50.0"));
     fiatPayment2.setExchangeName(Optional.of("BitstampJunior"));
 
-    transactionInfo2.setClientFee(Optional.of(BigInteger.valueOf(456)));
-    transactionInfo2.setMinerFee(Optional.<BigInteger>absent());
+    transactionInfo2.setClientFee(Optional.of(Coin.valueOf(456)));
+    transactionInfo2.setMinerFee(Optional.<Coin>absent());
 
     TransactionInfo transactionInfo3 = new TransactionInfo();
      transactionInfos.add(transactionInfo3);
@@ -149,8 +149,8 @@ public class PaymentsProtobufSerializerTest {
      FiatPayment fiatPayment3 = new FiatPayment();
      transactionInfo3.setAmountFiat(fiatPayment3);
 
-     transactionInfo3.setClientFee(Optional.of(BigInteger.valueOf(456)));
-     transactionInfo3.setMinerFee(Optional.<BigInteger>absent());
+     transactionInfo3.setClientFee(Optional.of(Coin.valueOf(456)));
+     transactionInfo3.setMinerFee(Optional.<Coin>absent());
 
 
     Payments payments = new Payments();

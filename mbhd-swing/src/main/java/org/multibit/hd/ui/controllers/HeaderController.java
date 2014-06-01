@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.controllers;
 
+import com.google.bitcoin.core.Coin;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -63,7 +64,7 @@ public class HeaderController {
   public void onExchangeRateChangedEvent(ExchangeRateChangedEvent event) {
 
     // Build the exchange string
-    BigInteger satoshis;
+    Coin satoshis;
 
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
     if (currentWalletSummary.isPresent()) {
@@ -71,7 +72,7 @@ public class HeaderController {
       satoshis = currentWalletSummary.get().getWallet().getBalance();
     } else {
       // Unknown at this time
-      satoshis = BigInteger.ZERO;
+      satoshis = Coin.ZERO;
     }
     BigDecimal localBalance;
 

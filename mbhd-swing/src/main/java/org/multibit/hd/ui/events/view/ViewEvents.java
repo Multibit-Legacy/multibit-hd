@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.events.view;
 
+import com.google.bitcoin.core.Coin;
 import com.google.common.base.Optional;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.services.CoreServices;
@@ -42,7 +43,7 @@ public class ViewEvents {
    * @param rateProvider The exchange rate provider (e.g. "Bitstamp")
    */
   public static void fireBalanceChangedEvent(
-    BigInteger satoshis,
+          Coin satoshis,
     BigDecimal localBalance,
     Optional<String> rateProvider
   ) {

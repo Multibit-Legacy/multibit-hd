@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.receive_bitcoin;
 
+import com.google.bitcoin.core.Coin;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -40,7 +41,6 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.math.BigInteger;
 import java.util.Currency;
 
 /**
@@ -263,7 +263,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
         ReceiveBitcoinEnterAmountPanelModel model = getPanelModel().get();
 
         String bitcoinAddress = model.getDisplayBitcoinAddressModel().getValue();
-        BigInteger satoshis = model.getEnterAmountModel().getSatoshis();
+        Coin satoshis = model.getEnterAmountModel().getSatoshis();
 
         // Form a Bitcoin URI from the contents
         String bitcoinUri = BitcoinURI.convertToBitcoinURI(

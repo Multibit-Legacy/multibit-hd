@@ -1,9 +1,9 @@
 package org.multibit.hd.core.events;
 
 import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.Coin;
 import com.google.common.base.Optional;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 
 /**
@@ -19,17 +19,17 @@ public class TransactionCreationEvent implements CoreEvent {
   /**
    * The total amount paid (including the client fee)
    */
-  private final BigInteger amount;
+  private final Coin amount;
 
   /**
    * The mining fee that was paid (if available) or Optional.absent() if not available
    */
-  private final Optional<BigInteger> miningFeePaid;
+  private final Optional<Coin> miningFeePaid;
 
   /**
    * The client fee that was paid, or Optional.absent() if no client fee was added to the transaction
    */
-  private final Optional<BigInteger> clientFeePaid;
+  private final Optional<Coin> clientFeePaid;
 
   private final Address destinationAddress;
 
@@ -45,9 +45,9 @@ public class TransactionCreationEvent implements CoreEvent {
 
   public TransactionCreationEvent(
     String transactionId,
-    BigInteger amount,
-    Optional<BigInteger> miningFeePaid,
-    Optional<BigInteger> clientFeePaid,
+    Coin amount,
+    Optional<Coin> miningFeePaid,
+    Optional<Coin> clientFeePaid,
     Address destinationAddress,
     Address changeAddress,
     boolean transactionCreationWasSuccessful,
@@ -70,16 +70,16 @@ public class TransactionCreationEvent implements CoreEvent {
 
   private final String[] transactionCreationFailureReasonData;
 
-  public BigInteger getAmount() {
+  public Coin getAmount() {
     return amount;
   }
 
 
-  public Optional<BigInteger> getMiningFeePaid() {
+  public Optional<Coin> getMiningFeePaid() {
     return miningFeePaid;
   }
 
-  public Optional<BigInteger> getClientFeePaid() {
+  public Optional<Coin> getClientFeePaid() {
      return clientFeePaid;
    }
 

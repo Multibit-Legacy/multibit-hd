@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.wizards.empty_wallet;
 
 import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.Coin;
 import com.google.bitcoin.core.Wallet;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -32,7 +33,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 import static org.multibit.hd.ui.views.wizards.empty_wallet.EmptyWalletState.EMPTY_WALLET_CONFIRM;
 import static org.multibit.hd.ui.views.wizards.empty_wallet.EmptyWalletState.EMPTY_WALLET_ENTER_DETAILS;
@@ -65,7 +65,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
   /**
    * Default transaction fee
    */
-  private final BigInteger transactionFee = Satoshis.fromPlainAmount("0.0001"); // TODO needs to be displayed from a wallet.completeTx SendRequest.fee
+  private final Coin transactionFee = Satoshis.fromPlainAmount("0.0001"); // TODO needs to be displayed from a wallet.completeTx SendRequest.fee
 
   /**
    * The FeeService used to calculate the FeeState
@@ -75,7 +75,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
   /**
    * The current wallet balance in satoshis
    */
-  private final BigInteger satoshis;
+  private final Coin satoshis;
 
   /**
    * @param state The state object
@@ -91,7 +91,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
       this.satoshis = currentWalletSummary.get().getWallet().getBalance();
     } else {
       // Unknown at this time
-      this.satoshis = BigInteger.ZERO;
+      this.satoshis = Coin.ZERO;
     }
 
   }
@@ -169,14 +169,14 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
   /**
    * @return The transaction fee (a.k.a "miner's fee") in satoshis
    */
-  public BigInteger getTransactionFee() {
+  public Coin getTransactionFee() {
     return transactionFee;
   }
 
   /**
    * @return The current wallet balance in satoshis
    */
-  public BigInteger getSatoshis() {
+  public Coin getSatoshis() {
     return satoshis;
   }
 

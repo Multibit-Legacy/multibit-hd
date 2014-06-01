@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
+import com.google.bitcoin.core.Coin;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.Recipient;
@@ -85,7 +86,7 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
       getWizardModel().handleBitcoinURI();
 
       Recipient recipient = getWizardModel().getRecipient();
-      BigInteger amount = getWizardModel().getSatoshis();
+      Coin amount = getWizardModel().getSatoshis();
 
       enterRecipientMaV.getModel().setValue(recipient);
       enterAmountMaV.getModel().setSatoshis(amount);

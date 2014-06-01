@@ -1,8 +1,7 @@
 package org.multibit.hd.brit.dto;
 
 import com.google.bitcoin.core.Address;
-
-import java.math.BigInteger;
+import com.google.bitcoin.core.Coin;
 
 /**
  * <p>DTO to provide the following to BRIT Payers :</p>
@@ -26,8 +25,8 @@ public class FeeState {
                   Address nextFeeAddress,
                   int currentNumberOfSends,
                   int nextFeeSendCount,
-                  BigInteger feePerSendSatoshi,
-                  BigInteger feeOwed) {
+                  Coin feePerSendSatoshi,
+                  Coin feeOwed) {
 
     this.usingHardwiredBRITAddresses = usingHardwiredBRITAddresses;
     this.nextFeeAddress = nextFeeAddress;
@@ -64,13 +63,13 @@ public class FeeState {
   /**
    * The current fee per send transaction in satoshi
    */
-  private BigInteger feePerSendSatoshi;
+  private Coin feePerSendSatoshi;
 
   /**
    * The current fee owed
    * The running total of BRIT fees that are due to be paid since the last actual payment in satoshi
    */
-  private BigInteger feeOwed;
+  private Coin feeOwed;
 
   public boolean isUsingHardwiredBRITAddresses() {
     return usingHardwiredBRITAddresses;
@@ -88,11 +87,11 @@ public class FeeState {
     return nextFeeSendCount;
   }
 
-  public BigInteger getFeePerSendSatoshi() {
+  public Coin getFeePerSendSatoshi() {
     return feePerSendSatoshi;
   }
 
-  public BigInteger getFeeOwed() {
+  public Coin getFeeOwed() {
     return feeOwed;
   }
 }

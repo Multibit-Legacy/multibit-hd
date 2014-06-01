@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.payments;
 
+import com.google.bitcoin.core.Coin;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
@@ -27,7 +28,6 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.math.BigInteger;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -197,7 +197,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
       noteValue.setText(paymentRequestData.getNote());
 
-      BigInteger amountBTC = paymentRequestData.getAmountBTC();
+      Coin amountBTC = paymentRequestData.getAmountBTC();
       LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage();
       BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
 
@@ -241,7 +241,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
         PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData();
 
         String bitcoinAddress = paymentRequestData.getAddress();
-        BigInteger satoshis = paymentRequestData.getAmountBTC();
+        Coin satoshis = paymentRequestData.getAmountBTC();
         String label = paymentRequestData.getLabel();
 
         // Form a Bitcoin URI from the contents

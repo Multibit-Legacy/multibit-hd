@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components.display_amount;
 
+import com.google.bitcoin.core.Coin;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.BitcoinConfiguration;
@@ -16,7 +17,6 @@ import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 
 import javax.swing.*;
-import java.math.BigInteger;
 import java.util.Locale;
 
 /**
@@ -126,7 +126,7 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
       getModel().get().setLocalAmountVisible(false);
     }
 
-    BigInteger satoshis = getModel().get().getSatoshis();
+    Coin satoshis = getModel().get().getSatoshis();
 
     // Display using the symbolic amount
     String[] bitcoinDisplay = Formats.formatSatoshisAsSymbolic(satoshis, languageConfiguration, bitcoinConfiguration, getModel().get().isShowNegative());

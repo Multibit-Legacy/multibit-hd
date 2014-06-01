@@ -1,9 +1,9 @@
 package org.multibit.hd.ui.events.view;
 
+import com.google.bitcoin.core.Coin;
 import com.google.common.base.Optional;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 /**
  * <p>Event to provide the following to View Event API:</p>
@@ -16,7 +16,7 @@ import java.math.BigInteger;
  */
 public class BalanceChangedEvent implements ViewEvent {
 
-  private final BigInteger satoshis;
+  private final Coin satoshis;
   private final BigDecimal localBalance;
   private final Optional<String> rateProvider;
 
@@ -25,7 +25,7 @@ public class BalanceChangedEvent implements ViewEvent {
    * @param localBalance The current balance in local currency
    * @param rateProvider The exchange rate provider (e.g. "Bitstamp" or absent if no network)
    */
-  public BalanceChangedEvent(BigInteger satoshis, BigDecimal localBalance, Optional<String> rateProvider) {
+  public BalanceChangedEvent(Coin satoshis, BigDecimal localBalance, Optional<String> rateProvider) {
 
     this.satoshis = satoshis;
     this.localBalance = localBalance;
@@ -36,7 +36,7 @@ public class BalanceChangedEvent implements ViewEvent {
   /**
    * @return The Bitcoin balance in satoshis
    */
-  public BigInteger getSatoshis() {
+  public Coin getSatoshis() {
     return satoshis;
   }
 

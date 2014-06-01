@@ -1,10 +1,9 @@
 package org.multibit.hd.core.utils;
 
-import com.google.bitcoin.core.Utils;
+import com.google.bitcoin.core.Coin;
 import com.google.common.base.Preconditions;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.math.RoundingMode;
 
 /**
@@ -32,14 +31,13 @@ public class Satoshis {
    *
    * @return The plain amount in the local currency
    */
-  public static BigDecimal toLocalAmount(BigInteger satoshis, BigDecimal exchangeRate) {
+  public static BigDecimal toLocalAmount(Coin satoshis, BigDecimal exchangeRate) {
 
     Preconditions.checkNotNull(satoshis, "'satoshis' must be present");
     Preconditions.checkNotNull(exchangeRate, "'exchangeRate' must be present");
 
     // Convert satoshis to bitcoins
-    BigDecimal bitcoins = new BigDecimal(satoshis)
-      .divide(BTC_SAT, LOCAL_SCALE, RoundingMode.HALF_EVEN);
+    BigDecimal bitcoins = BigDecimal.valueOf(satoshis.longValue()).divide(BTC_SAT, LOCAL_SCALE, RoundingMode.HALF_EVEN);
 
     return exchangeRate.multiply(bitcoins);
 
@@ -51,7 +49,7 @@ public class Satoshis {
    *
    * @return The satoshi value (e.g. 150000)
    */
-  public static BigInteger fromLocalAmount(BigDecimal localAmount, BigDecimal exchangeRate) {
+  public static Coin fromLocalAmount(BigDecimal localAmount, BigDecimal exchangeRate) {
 
     Preconditions.checkNotNull(localAmount, "'localAmount' must be present");
     Preconditions.checkNotNull(exchangeRate, "'exchangeRate' must be present");
@@ -62,7 +60,7 @@ public class Satoshis {
       .divide(exchangeRate, BITCOIN_SCALE, RoundingMode.HALF_EVEN)
       .setScale(8, RoundingMode.HALF_EVEN);
 
-    return Utils.toNanoCoins(bitcoinAmount.toPlainString());
+    return Coin.parseCoin(bitcoinAmount.toPlainString());
 
   }
 
@@ -71,11 +69,11 @@ public class Satoshis {
    *
    * @return The satoshi value (e.g. 150 000)
    */
-  public static BigInteger fromPlainAmount(BigDecimal plainAmount) {
+  public static Coin fromPlainAmount(BigDecimal plainAmount) {
 
     Preconditions.checkNotNull(plainAmount, "'plainAmount' must be present");
 
-    return Utils.toNanoCoins(plainAmount.toPlainString());
+    return Coin.parseCoin(plainAmount.toPlainString());
   }
 
   /**
@@ -83,11 +81,11 @@ public class Satoshis {
    *
    * @return The satoshi value (e.g. 150 000)
    */
-  public static BigInteger fromPlainAmount(String plainAmount) {
+  public static Coin fromPlainAmount(String plainAmount) {
 
     Preconditions.checkNotNull(plainAmount, "'plainAmount' must be present");
 
-    return Utils.toNanoCoins(plainAmount);
+    return Coin.parseCoin(plainAmount);
   }
 
   /**
@@ -96,7 +94,7 @@ public class Satoshis {
    *
    * @return The satoshi value (e.g. 150 000)
    */
-  public static BigInteger fromSymbolicAmount(BigDecimal symbolicAmount, BitcoinSymbol bitcoinSymbol) {
+  public static Coin fromSymbolicAmount(BigDecimal symbolicAmount, BitcoinSymbol bitcoinSymbol) {
 
     Preconditions.checkNotNull(symbolicAmount, "'symbolicAmount' must be present");
 
@@ -118,12 +116,12 @@ public class Satoshis {
    *
    * @return A Bitcoin amount expressed in terms of the current symbolic multiplier (e.g. "1.5" in mBTC)
    */
-  public static BigDecimal toSymbolicAmount(BigInteger satoshis, BitcoinSymbol bitcoinSymbol) {
+  public static BigDecimal toSymbolicAmount(Coin satoshis, BitcoinSymbol bitcoinSymbol) {
 
     Preconditions.checkNotNull(satoshis, "'satoshis' must be present");
 
     // Convert to plain string
-    String plainString = Utils.bitcoinValueToPlainString(satoshis);
+    String plainString = satoshis.toPlainString();
 
     // Apply the current symbolic multiplier
     BigDecimal symbolicAmount = new BigDecimal(plainString)

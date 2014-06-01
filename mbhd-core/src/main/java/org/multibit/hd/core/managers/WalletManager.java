@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
 import java.io.*;
-import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -55,13 +54,13 @@ public enum WalletManager implements WalletEventListener {
 
   INSTANCE {
     @Override
-    public void onCoinsReceived(Wallet wallet, Transaction tx, BigInteger prevBalance, BigInteger newBalance) {
+    public void onCoinsReceived(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance) {
       // Emit an event so that GUI elements can update as required
       CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(tx));
     }
 
     @Override
-    public void onCoinsSent(Wallet wallet, Transaction tx, BigInteger prevBalance, BigInteger newBalance) {
+    public void onCoinsSent(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance) {
       // Emit an event so that GUI elements can update as required
       CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(tx));
     }
