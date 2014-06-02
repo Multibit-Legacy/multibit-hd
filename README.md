@@ -38,7 +38,7 @@ $ mvn --version
 
 #### Manually build and install Bitcoinj (optional)
 
-The MultiBit Staging repository contains a `Bitcoinj-0.12-SNAPSHOT` that is aligned with the MultiBit HD `develop` branch. This can
+The [MultiBit Staging repository](https://github.com/bitcoin-solutions/mbhd-maven) contains a `Bitcoinj-0.12-SNAPSHOT` that is aligned with the MultiBit HD `develop` branch. This can
 be used for development builds but is certainly not suitable for production. The Bitcoinj occasionally gets updated but should not
 be relied upon.
 
@@ -80,9 +80,10 @@ Here are some common questions that developers ask when they first encounter MBH
 
 #### Why not Java 8 ?
 
-At the time MBHD was being written (Q4 2013 - Q1 2014) Java 8 was not in production release and the sheer size of the packaged download
+At the time MBHD was being written (Q4 2013 - Q2 2014) Java 8 was not in production release and the sheer size of the packaged download
 was coming in at 150Mb (18x MultiBit Classic and 3x the standard Java 7 packaged footprints). That footprint alone would be sufficient
-to dramatically increase the cost of serving the application and deter people from downloading.
+to dramatically increase the cost of serving the application and deter people from downloading in countries where bandwidth is less
+available.
 
 We will revisit this once we have suitable compressed JWrapper JREs available.
 
