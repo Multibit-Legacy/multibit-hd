@@ -343,7 +343,7 @@ public enum WalletManager implements WalletEventListener {
   public static Wallet loadWalletFromFile(File walletFile, CharSequence password) throws IOException, UnreadableWalletException {
     // Read the encrypted file in and decrypt it.
     byte[] encryptedWalletBytes = org.multibit.hd.brit.utils.FileUtils.readFile(walletFile);
-    log.trace("Encrypted wallet bytes after load:\n" + Utils.bytesToHexString(encryptedWalletBytes));
+    log.trace("Encrypted wallet bytes after load:\n" + Utils.HEX.encode(encryptedWalletBytes));
 
     KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(EncryptedFileReaderWriter.makeScryptParameters(WalletManager.SCRYPT_SALT));
     KeyParameter keyParameter = keyCrypterScrypt.deriveKey(password);

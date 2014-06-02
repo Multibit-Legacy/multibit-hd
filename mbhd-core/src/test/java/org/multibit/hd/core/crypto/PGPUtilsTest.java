@@ -50,7 +50,7 @@ public class PGPUtilsTest {
 
     assertThat(walletId).isNotNull();
     assertThat(walletId.getBytes()).isNotNull();
-    String walletIdString = Utils.bytesToHexString(walletId.getBytes());
+    String walletIdString = Utils.HEX.encode(walletId.getBytes());
     assertThat(walletIdString).isEqualTo(WalletIdTest.WALLET_ID_1);
 
     // Use the walletId to generate an entropy source, using a one way function

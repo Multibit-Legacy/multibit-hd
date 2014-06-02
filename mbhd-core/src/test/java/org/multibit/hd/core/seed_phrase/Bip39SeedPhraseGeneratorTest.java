@@ -106,6 +106,6 @@ public class Bip39SeedPhraseGeneratorTest {
     List<String> goodPhrase = generator.newSeedPhrase();
 
       byte[] seed = generator.convertToSeed(goodPhrase);
-    log.debug("Seed generated was '" + Utils.bytesToHexString(seed) +"'");
+    log.debug("Seed generated was '" + Utils.HEX.encode(seed) +"'");
   }
 }

@@ -101,7 +101,7 @@ public class WalletId {
     StringBuilder buffer = new StringBuilder();
 
     for (int i = 0; i < walletId.length; i++) {
-      buffer.append(Utils.bytesToHexString(new byte[]{walletId[i]}));
+      buffer.append(Utils.HEX.encode(new byte[]{walletId[i]}));
 
       if (((i + 1) % SEPARATOR_REPEAT_PERIOD == 0) && !(i == walletId.length - 1)) {
         buffer.append(WALLET_ID_SEPARATOR);

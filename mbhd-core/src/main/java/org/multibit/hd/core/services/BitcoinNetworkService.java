@@ -739,7 +739,7 @@ public class BitcoinNetworkService extends AbstractService {
       // Broadcast
       peerGroup.broadcastTransaction(sendRequest.tx);
 
-      log.debug("Broadcast transaction: '{}'", Utils.bytesToHexString(sendRequest.tx.bitcoinSerialize()));
+      log.debug("Broadcast transaction: '{}'", Utils.HEX.encode(sendRequest.tx.bitcoinSerialize()));
 
       // Declare the send a success
       CoreEvents.fireBitcoinSentEvent(new BitcoinSentEvent(

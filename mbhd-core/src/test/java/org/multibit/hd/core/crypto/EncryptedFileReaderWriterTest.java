@@ -93,7 +93,7 @@ public class EncryptedFileReaderWriterTest {
 
     buffer.flush();
 
-    assertThat(Utils.bytesToHexString(buffer.toByteArray())).isEqualTo(Utils.bytesToHexString(TEST_BYTES1));
+    assertThat(Utils.HEX.encode(buffer.toByteArray())).isEqualTo(Utils.HEX.encode(TEST_BYTES1));
 
     decryptedInputstream.close();
   }

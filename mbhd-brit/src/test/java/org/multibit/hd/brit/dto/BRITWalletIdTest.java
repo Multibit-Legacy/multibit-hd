@@ -49,7 +49,7 @@ public class BRITWalletIdTest {
 
     assertThat(walletId).isNotNull();
     assertThat(walletId.getBytes()).isNotNull();
-    String walletIdString = Utils.bytesToHexString(walletId.getBytes());
+    String walletIdString = Utils.HEX.encode(walletId.getBytes());
     assertThat(walletIdString).isEqualTo(WALLET_ID_1);
 
     // Generate the wallet Id again - it should get the same result.
@@ -69,7 +69,7 @@ public class BRITWalletIdTest {
 
     assertThat(walletId).isNotNull();
     assertThat(walletId.getBytes()).isNotNull();
-    String walletIdString = Utils.bytesToHexString(walletId.getBytes());
+    String walletIdString = Utils.HEX.encode(walletId.getBytes());
     assertThat(walletIdString).isEqualTo(WALLET_ID_2);
   }
 
@@ -82,7 +82,7 @@ public class BRITWalletIdTest {
 
     assertThat(walletId).isNotNull();
     assertThat(walletId.getBytes()).isNotNull();
-    String walletIdString = Utils.bytesToHexString(walletId.getBytes());
+    String walletIdString = Utils.HEX.encode(walletId.getBytes());
     assertThat(walletIdString).isEqualTo(WALLET_ID_3);
   }
 

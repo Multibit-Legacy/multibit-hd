@@ -81,9 +81,9 @@ public class PayerRequest {
     StringBuilder builder = new StringBuilder()
             .append(getVersion())
             .append(SEPARATOR)
-            .append(Utils.bytesToHexString(britWalletId.getBytes()))
+            .append(Utils.HEX.encode(britWalletId.getBytes()))
             .append(SEPARATOR)
-            .append(Utils.bytesToHexString(sessionKey))
+            .append(Utils.HEX.encode(sessionKey))
             .append(SEPARATOR);
 
     if (firstTransactionDate.isPresent()) {

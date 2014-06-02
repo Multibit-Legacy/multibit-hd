@@ -59,7 +59,7 @@ public class WalletToEncounterDateLink {
   public String serialise() {
 
     StringBuilder builder = new StringBuilder();
-    builder.append(Utils.bytesToHexString(britWalletId.getBytes())).append(SEPARATOR);
+    builder.append(Utils.HEX.encode(britWalletId.getBytes())).append(SEPARATOR);
 
     if (encounterDateOptional.isPresent()) {
       builder.append(encounterDateOptional.get().getTime()).append(SEPARATOR);

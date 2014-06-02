@@ -142,7 +142,7 @@ public class WalletManagerTest {
 //    if (rebornPlainPrivateKeyBytes == null) {
 //      fail();
 //    }
-//    System.out.println("FileHandlerTest - Reborn decrypted private key = " + Utils.bytesToHexString(rebornPlainPrivateKeyBytes));
+//    System.out.println("FileHandlerTest - Reborn decrypted private key = " + Utils.HEX.encode(rebornPlainPrivateKeyBytes));
 //
 //    assertThat(Arrays.equals(rebornPlainPrivateKeyBytes, plainPrivateKey1Bytes)).isTrue();
 //  }
@@ -162,7 +162,7 @@ public class WalletManagerTest {
 //      fail();
 //    }
 //    System.arraycopy(plainKey.getPrivKeyBytes(), 0, plainPrivateKeyBytes, 0, 32);
-//    System.out.println("testCreateProtobufEncryptedWallet - Original private key 1 = " + Utils.bytesToHexString(plainPrivateKeyBytes));
+//    System.out.println("testCreateProtobufEncryptedWallet - Original private key 1 = " + Utils.HEX.encode(plainPrivateKeyBytes));
 //
 //    final ECKey encryptedKey1 = plainKey.encrypt(wallet.getKeyCrypter(), wallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
 //    wallet.addKey(encryptedKey1);

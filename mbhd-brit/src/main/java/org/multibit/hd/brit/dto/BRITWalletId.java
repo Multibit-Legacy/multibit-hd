@@ -87,7 +87,7 @@ public class BRITWalletId {
 
   @Override
   public String toString() {
-    return Utils.bytesToHexString(britWalletId);
+    return Utils.HEX.encode(britWalletId);
 
   }
 

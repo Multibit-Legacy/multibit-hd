@@ -66,17 +66,17 @@ public class AESUtilsTest {
   public void testEncrypt_ExpectSuccess1() throws Exception {
     // Plain text
     byte[] plainBytes = EXAMPLE_TEXT.getBytes(Charsets.UTF_8);
-    log.debug("Initial message: " + Utils.bytesToHexString(plainBytes));
+    log.debug("Initial message: '{}'", Utils.HEX.encode(plainBytes));
 
     // Encrypt
     byte[] encryptedBytes = AESUtils.encrypt(plainBytes, keyParameter, initialisationVector);
-    log.debug("Encrypted message: " + Utils.bytesToHexString(encryptedBytes));
+    log.debug("Encrypted message: '{}'", Utils.HEX.encode(encryptedBytes));
 
     // Decrypt
     byte[] rebornBytes = AESUtils.decrypt(encryptedBytes, keyParameter, initialisationVector);
-    log.debug("Reborn message: " + Utils.bytesToHexString(rebornBytes));
+    log.debug("Reborn message: '{}'", Utils.HEX.encode(rebornBytes));
 
-    assertEquals(Utils.bytesToHexString(plainBytes), Utils.bytesToHexString(rebornBytes));
+    assertEquals(Utils.HEX.encode(plainBytes), Utils.HEX.encode(rebornBytes));
 
   }
 
@@ -84,17 +84,17 @@ public class AESUtilsTest {
    public void testEncrypt_ExpectSuccess2() throws Exception {
      // Plain text
      byte[] plainBytes = TEST_BYTES;
-     log.debug("Initial message: " + Utils.bytesToHexString(plainBytes));
+     log.debug("Initial message: '{}'", Utils.HEX.encode(plainBytes));
 
      // Encrypt
      byte[] encryptedBytes = AESUtils.encrypt(plainBytes, keyParameter, initialisationVector);
-     log.debug("Encrypted message: " + Utils.bytesToHexString(encryptedBytes));
+     log.debug("Encrypted message: '{}'", Utils.HEX.encode(encryptedBytes));
 
      // Decrypt
      byte[] rebornBytes = AESUtils.decrypt(encryptedBytes, keyParameter, initialisationVector);
-     log.debug("Reborn message: " + Utils.bytesToHexString(rebornBytes));
+     log.debug("Reborn message: '{}'", Utils.HEX.encode(rebornBytes));
 
-     assertEquals(Utils.bytesToHexString(plainBytes), Utils.bytesToHexString(rebornBytes));
+     assertEquals(Utils.HEX.encode(plainBytes), Utils.HEX.encode(rebornBytes));
 
    }
 }

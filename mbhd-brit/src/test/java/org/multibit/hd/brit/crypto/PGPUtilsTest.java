@@ -107,7 +107,7 @@ public class PGPUtilsTest {
     PGPPublicKey publicKey = PGPUtils.readPublicKey(publicKeyInputStream);
     assertThat(publicKey).isNotNull();
     log.debug("Loaded PGP public key :\nAlgorithm: " + publicKey.getAlgorithm() + ", bitStrength: "  + publicKey.getBitStrength()
-      + ", fingerprint: " + Utils.bytesToHexString(publicKey.getFingerprint()));
+      + ", fingerprint: " + Utils.HEX.encode(publicKey.getFingerprint()));
   }
 
   /**

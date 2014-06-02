@@ -53,7 +53,7 @@ public class WalletIdTest {
 
     assertThat(walletId).isNotNull();
     assertThat(walletId.getBytes()).isNotNull();
-    String walletIdString = Utils.bytesToHexString(walletId.getBytes());
+    String walletIdString = Utils.HEX.encode(walletId.getBytes());
     assertThat(walletIdString).isEqualTo(WALLET_ID_1);
     assertThat(walletId.toFormattedString()).isEqualTo(WALLET_ID_FORMATTED_1);
 
@@ -78,7 +78,7 @@ public class WalletIdTest {
 
     assertThat(walletId).isNotNull();
     assertThat(walletId.getBytes()).isNotNull();
-    String walletIdString = Utils.bytesToHexString(walletId.getBytes());
+    String walletIdString = Utils.HEX.encode(walletId.getBytes());
     assertThat(walletIdString).isEqualTo(WALLET_ID_2);
     assertThat(walletId.toFormattedString()).isEqualTo(WALLET_ID_FORMATTED_2);
 
@@ -93,7 +93,7 @@ public class WalletIdTest {
 
     assertThat(walletId).isNotNull();
     assertThat(walletId.getBytes()).isNotNull();
-    String walletIdString = Utils.bytesToHexString(walletId.getBytes());
+    String walletIdString = Utils.HEX.encode(walletId.getBytes());
     assertThat(walletIdString).isEqualTo(WALLET_ID_3);
     assertThat(walletId.toFormattedString()).isEqualTo(WALLET_ID_FORMATTED_3);
 
