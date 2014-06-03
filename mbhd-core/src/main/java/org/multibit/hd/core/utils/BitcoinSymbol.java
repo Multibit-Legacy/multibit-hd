@@ -3,6 +3,7 @@ package org.multibit.hd.core.utils;
 import org.multibit.hd.core.config.Configurations;
 
 import java.math.BigDecimal;
+import java.util.Locale;
 
 /**
  * <p>Enum to provide the following to controllers:</p>
@@ -102,7 +103,7 @@ public enum BitcoinSymbol {
    * @return The matching enum value
    */
   public static BitcoinSymbol of(String bitcoinSymbol) {
-    return BitcoinSymbol.valueOf(bitcoinSymbol.toUpperCase());
+    return BitcoinSymbol.valueOf(bitcoinSymbol.toUpperCase(Locale.ENGLISH));
   }
 
   /**

@@ -26,6 +26,7 @@ import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import java.io.File;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * <p>Main entry point to the application</p>
@@ -42,6 +43,8 @@ public class MultiBitHD {
    * @param args None specified
    */
   public static void main(final String[] args) throws Exception {
+
+    Locale.setDefault(new Locale("en", "IE"));
 
     if (args != null) {
       for (int i = 0; i < args.length; i++) {

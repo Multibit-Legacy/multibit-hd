@@ -39,8 +39,8 @@ public enum LanguageKey {
   HI_IN("hi_IN"),
   HR_HR("hr_HR"),
   HU_HU("hu_HU"),
-  IN_ID("in_ID"), // Legacy form of ID_ID
-  IW_IL("iw_IL"), // Legacy form of HE_IL
+  IN_ID("in_ID"), // Legacy form of "id_ID" for Indonesian in Indonesia
+  IW_IL("iw_IL"), // Legacy form of "he_IL" for Hebrew in Israel
   IT_IT("it_IT"),
   JA_JP("ja_JP"),
   KO_KR("ko_KR"),
@@ -135,25 +135,80 @@ public enum LanguageKey {
   /**
    * @param locale The locale providing at least language and region
    *
-   * @return the matching language key
+   * @return The matching language key, or the default EN_US since it is dominant on the internet
    */
   public static LanguageKey fromLocale(Locale locale) {
-    return valueOf(locale.toString().toUpperCase());
+
+    // Ensure we use English rules for uppercase to identify enum keys
+    // We use the legacy names for countries for consistency
+    String language = locale.getLanguage().toUpperCase(Locale.ENGLISH);
+    String country = locale.getCountry().toUpperCase(Locale.ENGLISH);
+    String variant = locale.getVariant().toUpperCase(Locale.ENGLISH);
+
+    String matcher1 = language + "_" + country + "_" + variant;
+    String matcher2 = language + "_" + country;
+
+    for (LanguageKey languageKey : LanguageKey.values()) {
+
+      // Language, country and variant
+      if (languageKey.name().equals(matcher1)) {
+        return languageKey;
+      }
+
+      // Language and country
+      if (languageKey.name().equals(matcher2)) {
+        return languageKey;
+      }
+
+      // At this point we match only on language (e.g. "EO" for Esperanto)
+      // so that we don't introduce a country or region bias
+
+      // Language only
+      if (languageKey.name().equals(matcher2)) {
+        return languageKey;
+      }
+
+    }
+
+    // We have an unsupported locale so we use the first entry that matches
+    // the supported language
+
+    // Find the first entry with the supported language
+    for (LanguageKey languageKey : LanguageKey.values()) {
+
+      if (languageKey.name().substring(0, 2).equals(language)) {
+        return languageKey;
+      }
+
+    }
+
+    // Unsupported language so default to EN_US since it is the dominant locale on the internet
+    return LanguageKey.EN_US;
+
   }
 
   /**
-   * @param languageName The language name (e.g. "English (United Kingdom)")
+   * @param languageName The language name (e.g. "English (United Kingdom)") as specified in the primary resource bundle
    *
    * @return The language key matching the language name
    */
   public static LanguageKey fromLanguageName(String languageName) {
 
+    // Use the resource bundle translations
     for (LanguageKey languageKey : values()) {
       if (languageKey.getLanguageName().equalsIgnoreCase(languageName)) {
         return languageKey;
       }
     }
-    throw new IllegalArgumentException("'languageName' was not matched");
+
+    // Unknown language name so fall back to Java locale lookup for current locale
+    for (Locale locale : Locale.getAvailableLocales()) {
+      if (locale.getDisplayName().equalsIgnoreCase(languageName)) {
+        return fromLocale(locale);
+      }
+    }
+
+    throw new IllegalArgumentException("'languageName' was not matched for '" + languageName + "'");
   }
 
   /**

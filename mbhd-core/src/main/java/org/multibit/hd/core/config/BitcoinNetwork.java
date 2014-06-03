@@ -3,6 +3,8 @@ package org.multibit.hd.core.config;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.params.MainNetParams;
 
+import java.util.Locale;
+
 /**
  * <p>Enum to provide the following to Exchange API:</p>
  * <ul>
@@ -65,7 +67,7 @@ public enum BitcoinNetwork {
    * @return The matching enum value
    */
   public static BitcoinNetwork of(String networkParameters) {
-    return BitcoinNetwork.valueOf(networkParameters.toUpperCase());
+    return BitcoinNetwork.valueOf(networkParameters.toUpperCase(Locale.ENGLISH));
   }
 
   /**

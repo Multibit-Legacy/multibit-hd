@@ -2,6 +2,7 @@ import com.google.common.base.Splitter;
 import org.multibit.hd.core.config.Configurations;
 
 import java.io.IOException;
+import java.util.Locale;
 
 /**
  * <p>Various tools to provide the following to Font Awesome upgrades:</p>
@@ -542,7 +543,7 @@ public class FontAwesomeTools {
     for (String variablesLessRawEntry: variablesLessRawIterable) {
 
       String entry = variablesLessRawEntry
-        .toUpperCase()
+        .toUpperCase(Locale.ENGLISH)
         .replace("-","_")
         .replace("\"","'")
         .replace("@FA_VAR_","")
