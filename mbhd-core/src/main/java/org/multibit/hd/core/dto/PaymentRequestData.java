@@ -17,8 +17,7 @@ public class PaymentRequestData implements PaymentData {
 
   private String address;
   private String label;
-  // TODO (JB) Consider changing this to getSatoshis() for consistency and disambiguation
-  private Coin amountBTC;
+  private Coin amountCoin;
   private FiatPayment amountFiat;
   private String note;
   private DateTime date;
@@ -26,14 +25,14 @@ public class PaymentRequestData implements PaymentData {
   /**
    * The amount of bitcoin actually paid by transactions
    */
-  private Coin paidAmountBTC;
+  private Coin paidAmountCoin;
 
   private final Set<String> payingTransactionHashes;
 
   public static final String SEPARATOR = ". ";
 
   public PaymentRequestData() {
-    paidAmountBTC = Coin.ZERO;
+    paidAmountCoin = Coin.ZERO;
     payingTransactionHashes = Sets.newHashSet();
   }
 
@@ -42,14 +41,14 @@ public class PaymentRequestData implements PaymentData {
   }
 
   /**
-   * @return The amount paid in satoshis
+   * @return The amount paid in coins
    */
-  public Coin getPaidAmountBTC() {
-    return paidAmountBTC;
+  public Coin getPaidAmountCoin() {
+    return paidAmountCoin;
   }
 
-  public void setPaidAmountBTC(Coin paidAmountBTC) {
-    this.paidAmountBTC = paidAmountBTC;
+  public void setPaidAmountCoin(Coin paidAmountCoin) {
+    this.paidAmountCoin = paidAmountCoin;
   }
 
   public String getAddress() {
@@ -70,12 +69,12 @@ public class PaymentRequestData implements PaymentData {
   }
 
   @Override
-  public Coin getAmountBTC() {
-    return amountBTC;
+  public Coin getAmountCoin() {
+    return amountCoin;
   }
 
-  public void setAmountBTC(Coin amountBTC) {
-    this.amountBTC = amountBTC;
+  public void setAmountCoin(Coin amountBTC) {
+    this.amountCoin = amountBTC;
   }
 
   @Override
@@ -140,10 +139,10 @@ public class PaymentRequestData implements PaymentData {
   public PaymentType getType() {
     PaymentType type = PaymentType.REQUESTED;
     // Work out if it is requested, partly paid or fully paid
-    if (paidAmountBTC != null && amountBTC != null) {
-      if (paidAmountBTC.compareTo(Coin.ZERO) > 0) {
+    if (paidAmountCoin != null && amountCoin != null) {
+      if (paidAmountCoin.compareTo(Coin.ZERO) > 0) {
         // bitcoin has been paid to this payment request
-        if (paidAmountBTC.compareTo(amountBTC) >= 0) {
+        if (paidAmountCoin.compareTo(amountCoin) >= 0) {
           // fully paid
           type = PaymentType.PAID;
         } else {
@@ -161,10 +160,10 @@ public class PaymentRequestData implements PaymentData {
     paymentStatus.setStatusKey(CoreMessageKey.PAYMENT_REQUESTED);
 
     // Work out if it is requested, partly paid or fully paid
-    if (paidAmountBTC != null && amountBTC != null) {
-      if (paidAmountBTC.compareTo(Coin.ZERO) > 0) {
+    if (paidAmountCoin != null && amountCoin != null) {
+      if (paidAmountCoin.compareTo(Coin.ZERO) > 0) {
         // bitcoin has been paid to this payment request
-        if (paidAmountBTC.compareTo(amountBTC) >= 0) {
+        if (paidAmountCoin.compareTo(amountCoin) >= 0) {
           // fully paid
           paymentStatus.setStatusKey(CoreMessageKey.PAYMENT_PAID);
         } else {
@@ -184,7 +183,7 @@ public class PaymentRequestData implements PaymentData {
     PaymentRequestData that = (PaymentRequestData) o;
 
     if (address != null ? !address.equals(that.address) : that.address != null) return false;
-    if (amountBTC != null ? !amountBTC.equals(that.amountBTC) : that.amountBTC != null) return false;
+    if (amountCoin != null ? !amountCoin.equals(that.amountCoin) : that.amountCoin != null) return false;
     if (date != null ? !date.equals(that.date) : that.date != null) return false;
     if (amountFiat != null ? !amountFiat.equals(that.amountFiat) : that.amountFiat != null) return false;
     if (label != null ? !label.equals(that.label) : that.label != null) return false;
@@ -197,7 +196,7 @@ public class PaymentRequestData implements PaymentData {
   public int hashCode() {
     int result = address != null ? address.hashCode() : 0;
     result = 31 * result + (label != null ? label.hashCode() : 0);
-    result = 31 * result + (amountBTC != null ? amountBTC.hashCode() : 0);
+    result = 31 * result + (amountCoin != null ? amountCoin.hashCode() : 0);
     result = 31 * result + (amountFiat != null ? amountFiat.hashCode() : 0);
     result = 31 * result + (note != null ? note.hashCode() : 0);
     result = 31 * result + (date != null ? date.hashCode() : 0);

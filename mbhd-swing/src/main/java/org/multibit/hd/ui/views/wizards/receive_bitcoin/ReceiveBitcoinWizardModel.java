@@ -40,10 +40,10 @@ public class ReceiveBitcoinWizardModel extends AbstractWizardModel<ReceiveBitcoi
     log.debug("state = " + state);
   }
   /**
-   * @return The Bitcoin amount in satoshis
+   * @return The Bitcoin amount in coins
    */
-  public Coin getSatoshis() {
-    return enterAmountModel.getSatoshis();
+  public Coin getCoinAmount() {
+    return enterAmountModel.getCoinAmount();
   }
 
   public Optional<String> getRecipientAddress() {

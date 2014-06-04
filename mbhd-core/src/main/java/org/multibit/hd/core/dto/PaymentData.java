@@ -18,7 +18,7 @@ public interface PaymentData {
 
   public DateTime getDate();
 
-  public Coin getAmountBTC();
+  public Coin getAmountCoin();
 
   public FiatPayment getAmountFiat();
 

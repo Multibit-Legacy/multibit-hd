@@ -62,10 +62,10 @@ public class TransactionData implements PaymentData {
    * @param transactionId     The transaction ID
    * @param date              The creation date
    * @param statusWithOrdinal The status with ordinal
-   * @param amountBTC         The amount in satoshis
+   * @param amountBTC         The amount in coins
    * @param amountFiat        The amount in fiat
-   * @param miningFee         The mining fee in satoshis
-   * @param clientFee         The client fee in satoshis
+   * @param miningFee         The mining fee in coins
+   * @param clientFee         The client fee in coins
    * @param confidenceType    The confidence type
    * @param paymentType       The payment type
    * @param description       The description
@@ -178,7 +178,7 @@ public class TransactionData implements PaymentData {
   }
 
   @Override
-  public Coin getAmountBTC() {
+  public Coin getAmountCoin() {
     return amountBTC;
   }
 

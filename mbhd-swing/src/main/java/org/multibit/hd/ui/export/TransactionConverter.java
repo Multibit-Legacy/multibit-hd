@@ -35,7 +35,7 @@ public class TransactionConverter implements CSVEntryConverter<TransactionData> 
     columns[4] = transactionData.getNote() == null ? "" : transactionData.getNote();
 
     // Amount in BTC
-    columns[5] = transactionData.getAmountBTC() == null ? "" : transactionData.getAmountBTC().toString();
+    columns[5] = transactionData.getAmountCoin() == null ? "" : transactionData.getAmountCoin().toString();
 
     // Amount in fiat
     columns[6] = "";

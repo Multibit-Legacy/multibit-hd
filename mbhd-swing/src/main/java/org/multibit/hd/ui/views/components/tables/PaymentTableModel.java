@@ -69,7 +69,7 @@ public class PaymentTableModel extends AbstractTableModel {
               payment.getStatus(),
               payment.getType(),
               payment.getDescription(),
-              payment.getAmountBTC(),
+              payment.getAmountCoin(),
               payment.getAmountFiat()
       };
 

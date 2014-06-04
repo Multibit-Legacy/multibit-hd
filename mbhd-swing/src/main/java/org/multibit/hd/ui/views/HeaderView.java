@@ -86,6 +86,8 @@ public class HeaderView {
     return contentPanel;
   }
 
+
+
   /**
    * <p>Handles the representation of the balance based on the current configuration</p>
    *
@@ -99,7 +101,7 @@ public class HeaderView {
       public void run() {
         // Handle the update
         balanceDisplayMaV.getModel().setLocalAmount(event.getLocalBalance());
-        balanceDisplayMaV.getModel().setSatoshis(event.getSatoshis());
+        balanceDisplayMaV.getModel().setCoinAmount(event.getCoinBalance());
         balanceDisplayMaV.getModel().setRateProvider(event.getRateProvider());
         if (event.getRateProvider().isPresent()) {
           balanceDisplayMaV.getModel().setLocalAmountVisible(true);

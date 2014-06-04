@@ -126,10 +126,10 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
       getModel().get().setLocalAmountVisible(false);
     }
 
-    Coin satoshis = getModel().get().getSatoshis();
+    Coin coin = getModel().get().getCoinAmount();
 
     // Display using the symbolic amount
-    String[] bitcoinDisplay = Formats.formatSatoshisAsSymbolic(satoshis, languageConfiguration, bitcoinConfiguration, getModel().get().isShowNegative());
+    String[] bitcoinDisplay = Formats.formatCoinAsSymbolic(coin, languageConfiguration, bitcoinConfiguration, getModel().get().isShowNegative());
 
     // Bitcoin labels
     if (bitcoinConfiguration.isCurrencySymbolLeading()) {

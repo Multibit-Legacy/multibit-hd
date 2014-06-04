@@ -9,8 +9,8 @@ import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.BitcoinSymbol;
+import org.multibit.hd.core.utils.Coins;
 import org.multibit.hd.core.utils.Numbers;
-import org.multibit.hd.core.utils.Satoshis;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -81,9 +81,9 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     localAmountText = TextBoxes.newLocalAmount(999_999_999_999_999.9999);
 
     // Set initial Bitcoin amount from the model (if non-zero)
-    if (!BigInteger.ZERO.equals(getModel().get().getSatoshis())) {
+    if (!BigInteger.ZERO.equals(getModel().get().getCoinAmount())) {
       BitcoinSymbol bitcoinSymbol = BitcoinSymbol.current();
-      BigDecimal symbolicAmount = Satoshis.toSymbolicAmount(getModel().get().getSatoshis(), bitcoinSymbol);
+      BigDecimal symbolicAmount = Coins.toSymbolicAmount(getModel().get().getCoinAmount(), bitcoinSymbol);
       bitcoinAmountText.setText(symbolicAmount.toPlainString());
       updateLocalAmount();
     }
@@ -273,14 +273,14 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
         try {
           // Apply the exchange rate
-          Coin satoshis = Satoshis.fromLocalAmount(localAmount, exchangeRate);
+          Coin coin = Coins.fromLocalAmount(localAmount, exchangeRate);
 
           // Update the model with the plain value
-          getModel().get().setSatoshis(satoshis);
+          getModel().get().setCoinAmount(coin);
           getModel().get().setLocalAmount(value);
 
           // Use the symbolic amount in setValue() for display formatting
-          BigDecimal symbolicAmount = Satoshis.toSymbolicAmount(satoshis, bitcoinSymbol);
+          BigDecimal symbolicAmount = Coins.toSymbolicAmount(coin, bitcoinSymbol);
           bitcoinAmountText.setValue(symbolicAmount);
 
           // Give feedback to the user
@@ -297,7 +297,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
         bitcoinAmountText.setText("");
 
         // Update the model
-        getModel().get().setSatoshis(Coin.ZERO);
+        getModel().get().setCoinAmount(Coin.ZERO);
         getModel().get().setLocalAmount(Optional.<BigDecimal>absent());
       }
 
@@ -327,13 +327,13 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
         try {
 
-          Coin satoshis = Satoshis.fromSymbolicAmount(value.get(), bitcoinSymbol);
+          Coin coin = Coins.fromSymbolicAmount(value.get(), bitcoinSymbol);
 
           // Apply the exchange rate
-          BigDecimal localAmount = Satoshis.toLocalAmount(satoshis, latestExchangeRateChangedEvent.get().getRate());
+          BigDecimal localAmount = Coins.toLocalAmount(coin, latestExchangeRateChangedEvent.get().getRate());
 
           // Update the model
-          getModel().get().setSatoshis(satoshis);
+          getModel().get().setCoinAmount(coin);
           if (localAmount.compareTo(BigDecimal.ZERO) != 0) {
             getModel().get().setLocalAmount(Optional.of(localAmount));
           } else {
@@ -356,7 +356,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
         localAmountText.setText("");
 
         // Update the model
-        getModel().get().setSatoshis(Coin.ZERO);
+        getModel().get().setCoinAmount(Coin.ZERO);
         getModel().get().setLocalAmount(Optional.<BigDecimal>absent());
       }
     } else {
@@ -366,10 +366,10 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
         try {
           // Use the value directly
-          Coin satoshis = Satoshis.fromSymbolicAmount(value.get(), bitcoinSymbol);
+          Coin coin = Coins.fromSymbolicAmount(value.get(), bitcoinSymbol);
 
           // Update the model
-          getModel().get().setSatoshis(satoshis);
+          getModel().get().setCoinAmount(coin);
           getModel().get().setLocalAmount(Optional.<BigDecimal>absent());
 
           // Give feedback to the user
@@ -385,7 +385,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
       } else {
 
         // Update the model
-        getModel().get().setSatoshis(Coin.ZERO);
+        getModel().get().setCoinAmount(Coin.ZERO);
         getModel().get().setLocalAmount(Optional.<BigDecimal>absent());
       }
     }

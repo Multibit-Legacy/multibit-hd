@@ -197,11 +197,11 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
       noteValue.setText(paymentRequestData.getNote());
 
-      Coin amountBTC = paymentRequestData.getAmountBTC();
+      Coin amountBTC = paymentRequestData.getAmountCoin();
       LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage();
       BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
 
-      String[] balanceArray = Formats.formatSatoshisAsSymbolic(amountBTC, languageConfiguration, bitcoinConfiguration, true);
+      String[] balanceArray = Formats.formatCoinAsSymbolic(amountBTC, languageConfiguration, bitcoinConfiguration, true);
       amountBTCValue.setText(balanceArray[0] + balanceArray[1]);
 
       FiatPayment amountFiat = paymentRequestData.getAmountFiat();
@@ -241,13 +241,13 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
         PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData();
 
         String bitcoinAddress = paymentRequestData.getAddress();
-        Coin satoshis = paymentRequestData.getAmountBTC();
+        Coin coin = paymentRequestData.getAmountCoin();
         String label = paymentRequestData.getLabel();
 
         // Form a Bitcoin URI from the contents
         String bitcoinUri = BitcoinURI.convertToBitcoinURI(
           bitcoinAddress,
-          satoshis,
+          coin,
           label,
           null
         );

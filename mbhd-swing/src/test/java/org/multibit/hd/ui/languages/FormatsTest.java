@@ -30,23 +30,23 @@ public class FormatsTest {
   }
 
   @Test
-  public void testFormatSatoshisAsSymbolic_Icon() throws Exception {
+  public void testFormatCoinAsSymbolic_Icon() throws Exception {
 
     bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.ICON.name());
 
-    String[] balance = Formats.formatSatoshisAsSymbolic(Coin.parseCoin(testAmounts[0]), languageConfiguration, bitcoinConfiguration);
+    String[] balance = Formats.formatCoinAsSymbolic(Coin.parseCoin(testAmounts[0]), languageConfiguration, bitcoinConfiguration);
 
     assertThat(balance.length).isEqualTo(2);
     assertThat(balance[0]).isEqualTo("20,999,999.12");
     assertThat(balance[1]).isEqualTo("345678");
 
-    balance = Formats.formatSatoshisAsSymbolic(Coin.parseCoin(testAmounts[1]), languageConfiguration, bitcoinConfiguration);
+    balance = Formats.formatCoinAsSymbolic(Coin.parseCoin(testAmounts[1]), languageConfiguration, bitcoinConfiguration);
 
     assertThat(balance.length).isEqualTo(2);
     assertThat(balance[0]).isEqualTo("1.00");
     assertThat(balance[1]).isEqualTo("000000");
 
-    balance = Formats.formatSatoshisAsSymbolic(Coin.parseCoin(testAmounts[2]), languageConfiguration, bitcoinConfiguration);
+    balance = Formats.formatCoinAsSymbolic(Coin.parseCoin(testAmounts[2]), languageConfiguration, bitcoinConfiguration);
 
     assertThat(balance.length).isEqualTo(2);
     assertThat(balance[0]).isEqualTo("0.00");
@@ -55,23 +55,23 @@ public class FormatsTest {
   }
 
   @Test
-  public void testFormatSatoshisAsSymbolic_BTC() throws Exception {
+  public void testFormatCoinAsSymbolic_BTC() throws Exception {
 
     bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.BTC.name());
 
-    String[] balance = Formats.formatSatoshisAsSymbolic(Coin.parseCoin(testAmounts[0]), languageConfiguration, bitcoinConfiguration);
+    String[] balance = Formats.formatCoinAsSymbolic(Coin.parseCoin(testAmounts[0]), languageConfiguration, bitcoinConfiguration);
 
     assertThat(balance.length).isEqualTo(2);
     assertThat(balance[0]).isEqualTo("20,999,999.12");
     assertThat(balance[1]).isEqualTo("345678");
 
-    balance = Formats.formatSatoshisAsSymbolic(Coin.parseCoin(testAmounts[1]), languageConfiguration, bitcoinConfiguration);
+    balance = Formats.formatCoinAsSymbolic(Coin.parseCoin(testAmounts[1]), languageConfiguration, bitcoinConfiguration);
 
     assertThat(balance.length).isEqualTo(2);
     assertThat(balance[0]).isEqualTo("1.00");
     assertThat(balance[1]).isEqualTo("000000");
 
-    balance = Formats.formatSatoshisAsSymbolic(Coin.parseCoin(testAmounts[2]), languageConfiguration, bitcoinConfiguration);
+    balance = Formats.formatCoinAsSymbolic(Coin.parseCoin(testAmounts[2]), languageConfiguration, bitcoinConfiguration);
 
     assertThat(balance.length).isEqualTo(2);
     assertThat(balance[0]).isEqualTo("0.00");
@@ -79,23 +79,23 @@ public class FormatsTest {
   }
 
   @Test
-  public void testFormatSatoshisAsSymbolic_XBT() throws Exception {
+  public void testFormatCoinAsSymbolic_XBT() throws Exception {
 
     bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.BTC.name());
 
-    String[] balance = Formats.formatSatoshisAsSymbolic(Coin.parseCoin(testAmounts[0]), languageConfiguration, bitcoinConfiguration);
+    String[] balance = Formats.formatCoinAsSymbolic(Coin.parseCoin(testAmounts[0]), languageConfiguration, bitcoinConfiguration);
 
     assertThat(balance.length).isEqualTo(2);
     assertThat(balance[0]).isEqualTo("20,999,999.12");
     assertThat(balance[1]).isEqualTo("345678");
 
-    balance = Formats.formatSatoshisAsSymbolic(Coin.parseCoin(testAmounts[1]), languageConfiguration, bitcoinConfiguration);
+    balance = Formats.formatCoinAsSymbolic(Coin.parseCoin(testAmounts[1]), languageConfiguration, bitcoinConfiguration);
 
     assertThat(balance.length).isEqualTo(2);
     assertThat(balance[0]).isEqualTo("1.00");
     assertThat(balance[1]).isEqualTo("000000");
 
-    balance = Formats.formatSatoshisAsSymbolic(Coin.parseCoin(testAmounts[2]), languageConfiguration, bitcoinConfiguration);
+    balance = Formats.formatCoinAsSymbolic(Coin.parseCoin(testAmounts[2]), languageConfiguration, bitcoinConfiguration);
 
     assertThat(balance.length).isEqualTo(2);
     assertThat(balance[0]).isEqualTo("0.00");
@@ -103,23 +103,23 @@ public class FormatsTest {
   }
 
   @Test
-  public void testFormatSatoshisAsSymbolic_mBTC() throws Exception {
+  public void testFormatCoinAsSymbolic_mBTC() throws Exception {
 
     bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.MBTC.name());
 
-    String[] balance = Formats.formatSatoshisAsSymbolic(Coin.parseCoin(testAmounts[0]), languageConfiguration, bitcoinConfiguration);
+    String[] balance = Formats.formatCoinAsSymbolic(Coin.parseCoin(testAmounts[0]), languageConfiguration, bitcoinConfiguration);
 
     assertThat(balance.length).isEqualTo(2);
     assertThat(balance[0]).isEqualTo("20,999,999,123.45");
     assertThat(balance[1]).isEqualTo("678");
 
-    balance = Formats.formatSatoshisAsSymbolic(Coin.parseCoin(testAmounts[1]), languageConfiguration, bitcoinConfiguration);
+    balance = Formats.formatCoinAsSymbolic(Coin.parseCoin(testAmounts[1]), languageConfiguration, bitcoinConfiguration);
 
     assertThat(balance.length).isEqualTo(2);
     assertThat(balance[0]).isEqualTo("1,000.00");
     assertThat(balance[1]).isEqualTo("000");
 
-    balance = Formats.formatSatoshisAsSymbolic(Coin.parseCoin(testAmounts[2]), languageConfiguration, bitcoinConfiguration);
+    balance = Formats.formatCoinAsSymbolic(Coin.parseCoin(testAmounts[2]), languageConfiguration, bitcoinConfiguration);
 
     assertThat(balance.length).isEqualTo(2);
     assertThat(balance[0]).isEqualTo("0.00");
@@ -127,23 +127,23 @@ public class FormatsTest {
   }
 
   @Test
-  public void testFormatSatoshisAsSymbolic_mXBT() throws Exception {
+  public void testFormatCoinAsSymbolic_mXBT() throws Exception {
 
     bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.MBTC.name());
 
-    String[] balance = Formats.formatSatoshisAsSymbolic(Coin.parseCoin(testAmounts[0]), languageConfiguration, bitcoinConfiguration);
+    String[] balance = Formats.formatCoinAsSymbolic(Coin.parseCoin(testAmounts[0]), languageConfiguration, bitcoinConfiguration);
 
     assertThat(balance.length).isEqualTo(2);
     assertThat(balance[0]).isEqualTo("20,999,999,123.45");
     assertThat(balance[1]).isEqualTo("678");
 
-    balance = Formats.formatSatoshisAsSymbolic(Coin.parseCoin(testAmounts[1]), languageConfiguration, bitcoinConfiguration);
+    balance = Formats.formatCoinAsSymbolic(Coin.parseCoin(testAmounts[1]), languageConfiguration, bitcoinConfiguration);
 
     assertThat(balance.length).isEqualTo(2);
     assertThat(balance[0]).isEqualTo("1,000.00");
     assertThat(balance[1]).isEqualTo("000");
 
-    balance = Formats.formatSatoshisAsSymbolic(Coin.parseCoin(testAmounts[2]), languageConfiguration, bitcoinConfiguration);
+    balance = Formats.formatCoinAsSymbolic(Coin.parseCoin(testAmounts[2]), languageConfiguration, bitcoinConfiguration);
 
     assertThat(balance.length).isEqualTo(2);
     assertThat(balance[0]).isEqualTo("0.00");
@@ -151,23 +151,23 @@ public class FormatsTest {
   }
 
   @Test
-  public void testFormatSatoshisAsSymbolic_uBTC() throws Exception {
+  public void testFormatCoinAsSymbolic_uBTC() throws Exception {
 
     bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.UBTC.name());
 
-    String[] balance = Formats.formatSatoshisAsSymbolic(Coin.parseCoin(testAmounts[0]), languageConfiguration, bitcoinConfiguration);
+    String[] balance = Formats.formatCoinAsSymbolic(Coin.parseCoin(testAmounts[0]), languageConfiguration, bitcoinConfiguration);
 
     assertThat(balance.length).isEqualTo(2);
     assertThat(balance[0]).isEqualTo("20,999,999,123,456.78");
     assertThat(balance[1]).isEqualTo("");
 
-    balance = Formats.formatSatoshisAsSymbolic(Coin.parseCoin(testAmounts[1]), languageConfiguration, bitcoinConfiguration);
+    balance = Formats.formatCoinAsSymbolic(Coin.parseCoin(testAmounts[1]), languageConfiguration, bitcoinConfiguration);
 
     assertThat(balance.length).isEqualTo(2);
     assertThat(balance[0]).isEqualTo("1,000,000.00");
     assertThat(balance[1]).isEqualTo("");
 
-    balance = Formats.formatSatoshisAsSymbolic(Coin.parseCoin(testAmounts[2]), languageConfiguration, bitcoinConfiguration);
+    balance = Formats.formatCoinAsSymbolic(Coin.parseCoin(testAmounts[2]), languageConfiguration, bitcoinConfiguration);
 
     assertThat(balance.length).isEqualTo(2);
     assertThat(balance[0]).isEqualTo("0.01");
@@ -175,23 +175,23 @@ public class FormatsTest {
   }
 
   @Test
-  public void testFormatSatoshisAsSymbolic_uXBT() throws Exception {
+  public void testFormatCoinAsSymbolic_uXBT() throws Exception {
 
     bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.UXBT.name());
 
-    String[] balance = Formats.formatSatoshisAsSymbolic(Coin.parseCoin(testAmounts[0]), languageConfiguration, bitcoinConfiguration);
+    String[] balance = Formats.formatCoinAsSymbolic(Coin.parseCoin(testAmounts[0]), languageConfiguration, bitcoinConfiguration);
 
     assertThat(balance.length).isEqualTo(2);
     assertThat(balance[0]).isEqualTo("20,999,999,123,456.78");
     assertThat(balance[1]).isEqualTo("");
 
-    balance = Formats.formatSatoshisAsSymbolic(Coin.parseCoin(testAmounts[1]), languageConfiguration, bitcoinConfiguration);
+    balance = Formats.formatCoinAsSymbolic(Coin.parseCoin(testAmounts[1]), languageConfiguration, bitcoinConfiguration);
 
     assertThat(balance.length).isEqualTo(2);
     assertThat(balance[0]).isEqualTo("1,000,000.00");
     assertThat(balance[1]).isEqualTo("");
 
-    balance = Formats.formatSatoshisAsSymbolic(Coin.parseCoin(testAmounts[2]), languageConfiguration, bitcoinConfiguration);
+    balance = Formats.formatCoinAsSymbolic(Coin.parseCoin(testAmounts[2]), languageConfiguration, bitcoinConfiguration);
 
     assertThat(balance.length).isEqualTo(2);
     assertThat(balance[0]).isEqualTo("0.01");
@@ -199,23 +199,23 @@ public class FormatsTest {
   }
 
   @Test
-  public void testFormatSatoshisAsSymbolic_Satoshi() throws Exception {
+  public void testFormatCoinAsSymbolic_Satoshi() throws Exception {
 
     bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.SATOSHI.name());
 
-    String[] balance = Formats.formatSatoshisAsSymbolic(Coin.parseCoin(testAmounts[0]), languageConfiguration, bitcoinConfiguration);
+    String[] balance = Formats.formatCoinAsSymbolic(Coin.parseCoin(testAmounts[0]), languageConfiguration, bitcoinConfiguration);
 
     assertThat(balance.length).isEqualTo(2);
     assertThat(balance[0]).isEqualTo("2,099,999,912,345,678");
     assertThat(balance[1]).isEqualTo("");
 
-    balance = Formats.formatSatoshisAsSymbolic(Coin.parseCoin(testAmounts[1]), languageConfiguration, bitcoinConfiguration);
+    balance = Formats.formatCoinAsSymbolic(Coin.parseCoin(testAmounts[1]), languageConfiguration, bitcoinConfiguration);
 
     assertThat(balance.length).isEqualTo(2);
     assertThat(balance[0]).isEqualTo("100,000,000");
     assertThat(balance[1]).isEqualTo("");
 
-    balance = Formats.formatSatoshisAsSymbolic(Coin.parseCoin(testAmounts[2]), languageConfiguration, bitcoinConfiguration);
+    balance = Formats.formatCoinAsSymbolic(Coin.parseCoin(testAmounts[2]), languageConfiguration, bitcoinConfiguration);
 
     assertThat(balance.length).isEqualTo(2);
     assertThat(balance[0]).isEqualTo("1");

@@ -11,7 +11,7 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.utils.BitcoinSymbol;
-import org.multibit.hd.core.utils.Satoshis;
+import org.multibit.hd.core.utils.Coins;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -35,18 +35,18 @@ public class Formats {
    * <p>For example, 12345.6789 becomes "12,345.67", "89" </p>
    * <p>The amount will be adjusted by the symbolic multiplier from the current confiuration</p>
    *
-   * @param satoshis              The amount in satoshis
+   * @param coin                  The amount in coins
    * @param languageConfiguration The  language configuration to use as the basis for presentation
    * @param bitcoinConfiguration  The Bitcoin configuration to use as the basis for the symbol
    *
    * @return The left [0] and right [1] components suitable for presentation as a balance with no symbolic decoration
    */
-  public static String[] formatSatoshisAsSymbolic(
-          Coin satoshis,
+  public static String[] formatCoinAsSymbolic(
+    Coin coin,
     LanguageConfiguration languageConfiguration,
     BitcoinConfiguration bitcoinConfiguration
   ) {
-    return formatSatoshisAsSymbolic(satoshis, languageConfiguration, bitcoinConfiguration, true);
+    return formatCoinAsSymbolic(coin, languageConfiguration, bitcoinConfiguration, true);
   }
 
   /**
@@ -54,21 +54,21 @@ public class Formats {
    * <p>For example, 123456789 in uBTC becomes "1,234,567.", "89" </p>
    * <p>The amount will be adjusted by the symbolic multiplier from the current configuration</p>
    *
-   * @param satoshis              The amount in satoshis
+   * @param coin              The amount in coins
    * @param languageConfiguration The  language configuration to use as the basis for presentation
    * @param bitcoinConfiguration  The Bitcoin configuration to use as the basis for the symbol
    * @param showNegative          If true, show '-' for negative numbers
    *
    * @return The left [0] and right [1] components suitable for presentation as a balance with no symbolic decoration
    */
-  public static String[] formatSatoshisAsSymbolic(
-          Coin satoshis,
+  public static String[] formatCoinAsSymbolic(
+    Coin coin,
     LanguageConfiguration languageConfiguration,
     BitcoinConfiguration bitcoinConfiguration,
     boolean showNegative
   ) {
 
-    Preconditions.checkNotNull(satoshis, "'satoshis' must be present");
+    Preconditions.checkNotNull(coin, "'coin' must be present");
     Preconditions.checkNotNull(languageConfiguration, "'languageConfiguration' must be present");
     Preconditions.checkNotNull(bitcoinConfiguration, "'bitcoinConfiguration' must be present");
 
@@ -79,7 +79,7 @@ public class Formats {
     DecimalFormat localFormat = configureBitcoinDecimalFormat(dfs, bitcoinSymbol, showNegative);
 
     // Apply formatting to the symbolic amount
-    String formattedAmount = localFormat.format(Satoshis.toSymbolicAmount(satoshis, bitcoinSymbol));
+    String formattedAmount = localFormat.format(Coins.toSymbolicAmount(coin, bitcoinSymbol));
 
     // The Satoshi symbol does not have decimals
     if (BitcoinSymbol.SATOSHI.equals(bitcoinSymbol)) {
@@ -112,19 +112,19 @@ public class Formats {
    * <p>For example, 123456789 becomes "1,234,567.89 uBTC" or "uXBT 12,345.6789" </p>
    * <p>The amount will be adjusted by the symbolic multiplier from the current configuration</p>
    *
-   * @param satoshis              The amount in satoshis
+   * @param coin                  The amount in coins
    * @param languageConfiguration The  language configuration to use as the basis for presentation
    * @param bitcoinConfiguration  The Bitcoin configuration to use as the basis for the symbol
    *
    * @return The string suitable for presentation as a balance with symbol in a UTF-8 string
    */
-  public static String formatSatoshisAsSymbolicText(
-          Coin satoshis,
+  public static String formatCoinAsSymbolicText(
+    Coin coin,
     LanguageConfiguration languageConfiguration,
     BitcoinConfiguration bitcoinConfiguration
   ) {
 
-    String[] formattedAmount = formatSatoshisAsSymbolic(satoshis, languageConfiguration, bitcoinConfiguration);
+    String[] formattedAmount = formatCoinAsSymbolic(coin, languageConfiguration, bitcoinConfiguration);
 
     String lineSymbol = BitcoinSymbol.of(bitcoinConfiguration.getBitcoinSymbol()).getTextSymbol();
 
@@ -245,7 +245,7 @@ public class Formats {
     final Coin amount = event.getAmount();
 
     // Create a suitable representation for inline text (no icon)
-    final String messageAmount = Formats.formatSatoshisAsSymbolicText(
+    final String messageAmount = Formats.formatCoinAsSymbolicText(
       amount,
       Configurations.currentConfiguration.getLanguage(),
       Configurations.currentConfiguration.getBitcoin()
@@ -276,7 +276,7 @@ public class Formats {
       final String messageAmount;
       if (amount.isPresent()) {
         // Create a suitable representation for inline text (no icon)
-        messageAmount = Formats.formatSatoshisAsSymbolicText(
+        messageAmount = Formats.formatCoinAsSymbolicText(
           amount.get(),
           Configurations.currentConfiguration.getLanguage(),
           Configurations.currentConfiguration.getBitcoin()

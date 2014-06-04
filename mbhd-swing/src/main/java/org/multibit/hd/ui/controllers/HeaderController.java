@@ -10,7 +10,7 @@ import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.core.utils.Satoshis;
+import org.multibit.hd.core.utils.Coins;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.controller.AddAlertEvent;
 import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.List;
 
 /**
@@ -64,26 +63,26 @@ public class HeaderController {
   public void onExchangeRateChangedEvent(ExchangeRateChangedEvent event) {
 
     // Build the exchange string
-    Coin satoshis;
+    Coin coin;
 
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
     if (currentWalletSummary.isPresent()) {
       // Use the real wallet data
-      satoshis = currentWalletSummary.get().getWallet().getBalance();
+      coin = currentWalletSummary.get().getWallet().getBalance();
     } else {
       // Unknown at this time
-      satoshis = Coin.ZERO;
+      coin = Coin.ZERO;
     }
     BigDecimal localBalance;
 
     if (event.getRate() != null) {
-      localBalance = Satoshis.toLocalAmount(satoshis, event.getRate());
+      localBalance = Coins.toLocalAmount(coin, event.getRate());
     } else {
       localBalance = null;
     }
     // Post the event
     ViewEvents.fireBalanceChangedEvent(
-      satoshis,
+      coin,
       localBalance,
       event.getRateProvider()
     );

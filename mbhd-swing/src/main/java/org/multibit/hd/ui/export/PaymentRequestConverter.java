@@ -40,7 +40,7 @@ public class PaymentRequestConverter implements CSVEntryConverter<PaymentRequest
     columns[5] = paymentRequestData.getNote() == null ? "" : paymentRequestData.getNote();
 
     // Amount in BTC
-    columns[6] = paymentRequestData.getAmountBTC() == null ? "" : paymentRequestData.getAmountBTC().toString();
+    columns[6] = paymentRequestData.getAmountCoin() == null ? "" : paymentRequestData.getAmountCoin().toString();
 
     // Amount in fiat
     columns[7] = "";
@@ -63,8 +63,8 @@ public class PaymentRequestConverter implements CSVEntryConverter<PaymentRequest
       columns[9] = paymentRequestData.getAmountFiat().getExchangeName().or("");
     }
 
-    // Paid amount in satoshis
-    columns[10] = paymentRequestData.getPaidAmountBTC() == null ? "" : paymentRequestData.getPaidAmountBTC().toString();
+    // Paid amount in coins
+    columns[10] = paymentRequestData.getPaidAmountCoin() == null ? "" : paymentRequestData.getPaidAmountCoin().toString();
 
     // Funding transactions
     columns[11] = paymentRequestData.getPayingTransactionHashes() == null ? "" : Joiner.on(" ").join(paymentRequestData.getPayingTransactionHashes());

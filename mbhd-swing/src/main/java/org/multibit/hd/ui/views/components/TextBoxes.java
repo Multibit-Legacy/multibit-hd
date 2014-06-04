@@ -324,7 +324,7 @@ public class TextBoxes {
     // Use the Bitcoin symbol multiplier to determine the decimal places
     int decimalPlaces = BitcoinSymbol.current().decimalPlaces();
 
-    // The max edit length varies depending on the Bitcoin symbol (e.g. Satoshis have no decimal)
+    // The max edit length varies depending on the Bitcoin symbol (e.g. coins have no decimal)
     int maxEditLength = BitcoinSymbol.current().maxRepresentationLength();
 
     FormattedDecimalField textField = new FormattedDecimalField(0, maximum, decimalPlaces, maxEditLength);

@@ -20,7 +20,7 @@ public class DisplayAmountModel implements Model<DisplayAmountModel> {
   private final DisplayAmountStyle style;
 
   // Values depend on earlier wizard panel
-  private Coin satoshis = Coin.ZERO;
+  private Coin coinAmount = Coin.ZERO;
   private BigDecimal localAmount = BigDecimal.ZERO;
 
   // Default to Bitcoin only (exchanges are an optional feature)
@@ -67,14 +67,14 @@ public class DisplayAmountModel implements Model<DisplayAmountModel> {
   }
 
   /**
-   * @return The Bitcoin amount in satoshis
+   * @return The Bitcoin amount in coins
    */
-  public Coin getSatoshis() {
-    return satoshis;
+  public Coin getCoinAmount() {
+    return coinAmount;
   }
 
-  public void setSatoshis(Coin satoshis) {
-    this.satoshis = satoshis;
+  public void setCoinAmount(Coin coinAmount) {
+    this.coinAmount = coinAmount;
   }
 
   /**

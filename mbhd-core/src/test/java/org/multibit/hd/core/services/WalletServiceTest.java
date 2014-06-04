@@ -93,7 +93,7 @@ public class WalletServiceTest {
     PaymentRequestData paymentRequestData1 = new PaymentRequestData();
 
     paymentRequestData1.setAddress("1abc");
-    paymentRequestData1.setAmountBTC(Coin.valueOf(245));
+    paymentRequestData1.setAmountCoin(Coin.valueOf(245));
     DateTime date1 = new DateTime();
     paymentRequestData1.setDate(date1);
     paymentRequestData1.setLabel("label1");
@@ -125,7 +125,7 @@ public class WalletServiceTest {
     assertThat(other.getAddress()).isEqualTo(paymentRequestData.getAddress());
     assertThat(other.getLabel()).isEqualTo(paymentRequestData.getLabel());
     assertThat(other.getNote()).isEqualTo(paymentRequestData.getNote());
-    assertThat(other.getAmountBTC()).isEqualTo(paymentRequestData.getAmountBTC());
+    assertThat(other.getAmountCoin()).isEqualTo(paymentRequestData.getAmountCoin());
     assertThat(other.getDate()).isEqualTo(paymentRequestData.getDate());
 
     FiatPayment fiatPayment = other.getAmountFiat();

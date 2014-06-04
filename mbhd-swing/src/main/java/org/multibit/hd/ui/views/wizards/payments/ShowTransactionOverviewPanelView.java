@@ -203,11 +203,11 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
 
       typeValue.setText(Languages.safeText(paymentData.getType().getLocalisationKey()));
 
-      Coin amountBTC = paymentData.getAmountBTC();
+      Coin amountBTC = paymentData.getAmountCoin();
       LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage();
       BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
 
-      String[] balanceArray = Formats.formatSatoshisAsSymbolic(amountBTC, languageConfiguration, bitcoinConfiguration, true);
+      String[] balanceArray = Formats.formatCoinAsSymbolic(amountBTC, languageConfiguration, bitcoinConfiguration, true);
       amountBTCValue.setText(balanceArray[0] + balanceArray[1]);
 
       FiatPayment amountFiat = paymentData.getAmountFiat();
@@ -228,7 +228,7 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
         // Miner's fee
         Optional<Coin> miningFee = transactionData.getMiningFee();
         if (miningFee.isPresent()) {
-          String[] minerFeePaidArray = Formats.formatSatoshisAsSymbolic(miningFee.get(), languageConfiguration, bitcoinConfiguration, true);
+          String[] minerFeePaidArray = Formats.formatCoinAsSymbolic(miningFee.get(), languageConfiguration, bitcoinConfiguration, true);
           miningFeePaidValue.setText(minerFeePaidArray[0] + minerFeePaidArray[1]);
         } else {
           miningFeePaidValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
@@ -237,13 +237,13 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
         // Client fee
         Optional<Coin> clientFee = transactionData.getClientFee();
         if (clientFee.isPresent()) {
-          String[] clientFeePaidArray = Formats.formatSatoshisAsSymbolic(clientFee.get(), languageConfiguration, bitcoinConfiguration, true);
+          String[] clientFeePaidArray = Formats.formatCoinAsSymbolic(clientFee.get(), languageConfiguration, bitcoinConfiguration, true);
           clientFeePaidValue.setText(clientFeePaidArray[0] + clientFeePaidArray[1]);
         } else {
           clientFeePaidValue.setText(Languages.safeText(MessageKey.NO_CLIENT_FEE_WAS_ADDED));
         }
 
-        if (transactionData.getAmountBTC().compareTo(Coin.ZERO) >= 0) {
+        if (transactionData.getAmountCoin().compareTo(Coin.ZERO) >= 0) {
           // Received bitcoin
           recipientValue.setText(Languages.safeText(MessageKey.THIS_BITCOIN_WAS_SENT_TO_YOU));
 

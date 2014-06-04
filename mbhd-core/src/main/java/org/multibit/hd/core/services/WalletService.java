@@ -28,7 +28,7 @@ import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.store.Payments;
 import org.multibit.hd.core.store.PaymentsProtobufSerializer;
 import org.multibit.hd.core.store.TransactionInfo;
-import org.multibit.hd.core.utils.Satoshis;
+import org.multibit.hd.core.utils.Coins;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -38,7 +38,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 
@@ -191,7 +190,7 @@ public class WalletService {
     // Determine which paymentRequests have not been fully funded (these will appear as independent entities in the UI)
     Set<PaymentRequestData> paymentRequestsNotFullyFunded = Sets.newHashSet();
     for (PaymentRequestData basePaymentRequestData : paymentRequestMap.values()) {
-      if (basePaymentRequestData.getPaidAmountBTC().compareTo(basePaymentRequestData.getAmountBTC()) < 0) {
+      if (basePaymentRequestData.getPaidAmountCoin().compareTo(basePaymentRequestData.getAmountCoin()) < 0) {
         paymentRequestsNotFullyFunded.add(basePaymentRequestData);
       }
     }
@@ -487,7 +486,7 @@ public class WalletService {
               if (!paymentRequestData.getPayingTransactionHashes().contains(transactionHashAsString)) {
                 // We have not yet added this tx to the total paid amount
                 paymentRequestData.getPayingTransactionHashes().add(transactionHashAsString);
-                paymentRequestData.setPaidAmountBTC(paymentRequestData.getPaidAmountBTC().add(amountBTC));
+                paymentRequestData.setPaidAmountCoin(paymentRequestData.getPaidAmountCoin().add(amountBTC));
               }
 
               if (paymentRequestData.getLabel() != null && paymentRequestData.getLabel().length() > 0) {
@@ -551,7 +550,7 @@ public class WalletService {
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
     if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
       amountFiat.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
-      BigDecimal localAmount = Satoshis.toLocalAmount(amountBTC, exchangeRateChangedEvent.get().getRate());
+      BigDecimal localAmount = Coins.toLocalAmount(amountBTC, exchangeRateChangedEvent.get().getRate());
       if (localAmount.compareTo(BigDecimal.ZERO) != 0) {
         amountFiat.setAmount(Optional.of(localAmount));
       } else {
@@ -918,7 +917,7 @@ public class WalletService {
       Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
       if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
         amountFiat.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
-        BigDecimal localAmount = Satoshis.toLocalAmount(transactionSeenEvent.getAmount(), exchangeRateChangedEvent.get().getRate());
+        BigDecimal localAmount = Coins.toLocalAmount(transactionSeenEvent.getAmount(), exchangeRateChangedEvent.get().getRate());
         if (localAmount.compareTo(BigDecimal.ZERO) != 0) {
           amountFiat.setAmount(Optional.of(localAmount));
         } else {

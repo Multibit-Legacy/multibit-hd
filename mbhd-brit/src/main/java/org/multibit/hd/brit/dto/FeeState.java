@@ -18,21 +18,21 @@ public class FeeState {
    * @param nextFeeAddress              The next Bitcoin address to send fees to
    * @param currentNumberOfSends        The current count of send in the Payer's wallet
    * @param nextFeeSendCount            The count of sends in the Payer's wallet at which to make the payment
-   * @param feePerSendSatoshi           The current fee per send (in Satoshis)
+   * @param feePerSend                  The current fee per send (in coins)
    * @param feeOwed                     The current deficit (the amount allowing from the BRIT Payer to the Redeemer)
    */
   public FeeState(boolean usingHardwiredBRITAddresses,
                   Address nextFeeAddress,
                   int currentNumberOfSends,
                   int nextFeeSendCount,
-                  Coin feePerSendSatoshi,
+                  Coin feePerSend,
                   Coin feeOwed) {
 
     this.usingHardwiredBRITAddresses = usingHardwiredBRITAddresses;
     this.nextFeeAddress = nextFeeAddress;
     this.currentNumberOfSends = currentNumberOfSends;
     this.nextFeeSendCount = nextFeeSendCount;
-    this.feePerSendSatoshi = feePerSendSatoshi;
+    this.feePerSendSatoshi = feePerSend;
     this.feeOwed = feeOwed;
 
   }

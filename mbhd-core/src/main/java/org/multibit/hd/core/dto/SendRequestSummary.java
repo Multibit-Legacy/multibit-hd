@@ -38,9 +38,9 @@ public class SendRequestSummary {
 
   /**
    * @param destinationAddress The destination address to send to
-   * @param amount             The amount to send (in satoshis)
+   * @param amount             The amount to send (in coins)
    * @param changeAddress      The change address
-   * @param feePerKB           The fee per Kb (in satoshis)
+   * @param feePerKB           The fee per Kb (in coins)
    * @param password           The wallet password
    * @param feeState           The BRIT fee state
    * @param emptyWallet        True if the wallet should be fully emptied including all payable fees
@@ -72,8 +72,8 @@ public class SendRequestSummary {
   }
 
   /**
-   * @return The amount sent by the user in satoshis.
-   *         This does NOT include any client fee
+   * @return The amount sent by the user in coins
+   * This does NOT include any client fee
    */
   public Coin getAmount() {
     return amount;

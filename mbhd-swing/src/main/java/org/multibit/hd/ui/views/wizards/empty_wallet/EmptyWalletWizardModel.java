@@ -24,7 +24,7 @@ import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.core.store.TransactionInfo;
-import org.multibit.hd.core.utils.Satoshis;
+import org.multibit.hd.core.utils.Coins;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
@@ -65,7 +65,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
   /**
    * Default transaction fee
    */
-  private final Coin transactionFee = Satoshis.fromPlainAmount("0.0001"); // TODO needs to be displayed from a wallet.completeTx SendRequest.fee
+  private final Coin transactionFee = Coins.fromPlainAmount("0.0001"); // TODO needs to be displayed from a wallet.completeTx SendRequest.fee
 
   /**
    * The FeeService used to calculate the FeeState
@@ -73,9 +73,9 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
   private FeeService feeService;
 
   /**
-   * The current wallet balance in satoshis
+   * The current wallet balance in coins
    */
-  private final Coin satoshis;
+  private final Coin coinAmount;
 
   /**
    * @param state The state object
@@ -88,10 +88,10 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
     if (currentWalletSummary.isPresent()) {
       // Use the real wallet data
-      this.satoshis = currentWalletSummary.get().getWallet().getBalance();
+      this.coinAmount = currentWalletSummary.get().getWallet().getBalance();
     } else {
       // Unknown at this time
-      this.satoshis = Coin.ZERO;
+      this.coinAmount = Coin.ZERO;
     }
 
   }
@@ -167,17 +167,17 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
   }
 
   /**
-   * @return The transaction fee (a.k.a "miner's fee") in satoshis
+   * @return The transaction fee (a.k.a "miner's fee") in coins
    */
   public Coin getTransactionFee() {
     return transactionFee;
   }
 
   /**
-   * @return The current wallet balance in satoshis
+   * @return The current wallet balance in coins
    */
-  public Coin getSatoshis() {
-    return satoshis;
+  public Coin getCoinAmount() {
+    return coinAmount;
   }
 
   @Subscribe
@@ -205,7 +205,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     if (exchangeRateChangedEvent.isPresent()) {
       fiatPayment.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
       // A send is denoted with a negative fiat amount
-      fiatPayment.setAmount(Optional.of(Satoshis.toLocalAmount(getSatoshis(), exchangeRateChangedEvent.get().getRate().negate())));
+      fiatPayment.setAmount(Optional.of(Coins.toLocalAmount(getCoinAmount(), exchangeRateChangedEvent.get().getRate().negate())));
     } else {
       fiatPayment.setRate(Optional.<String>absent());
       fiatPayment.setAmount(Optional.<BigDecimal>absent());
@@ -276,7 +276,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     // Send the bitcoins
     final SendRequestSummary sendRequestSummary = new SendRequestSummary(
       bitcoinAddress,
-      satoshis,
+      coinAmount,
       changeAddress,
       BitcoinNetworkService.DEFAULT_FEE_PER_KB,
       password,

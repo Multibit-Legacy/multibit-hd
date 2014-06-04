@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 /**
  * <p>Factory to provide the following to application API:</p>
@@ -38,19 +37,19 @@ public class ViewEvents {
   /**
    * <p>Broadcast a new "balance changed" event</p>
    *
-   * @param satoshis     The current balance in satoshis
+   * @param coinBalance         The current balance in coins
    * @param localBalance The current balance in local currency
    * @param rateProvider The exchange rate provider (e.g. "Bitstamp")
    */
   public static void fireBalanceChangedEvent(
-          Coin satoshis,
+    Coin coinBalance,
     BigDecimal localBalance,
     Optional<String> rateProvider
   ) {
 
     log.trace("Firing 'balance changed' event");
     CoreServices.uiEventBus.post(new BalanceChangedEvent(
-      satoshis,
+      coinBalance,
       localBalance,
       rateProvider
     ));

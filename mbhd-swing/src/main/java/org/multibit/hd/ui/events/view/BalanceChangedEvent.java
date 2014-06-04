@@ -16,28 +16,28 @@ import java.math.BigDecimal;
  */
 public class BalanceChangedEvent implements ViewEvent {
 
-  private final Coin satoshis;
+  private final Coin coinBalance;
   private final BigDecimal localBalance;
   private final Optional<String> rateProvider;
 
   /**
-   * @param satoshis     The current balance in satoshis
+   * @param coinBalance  The current balance in coins
    * @param localBalance The current balance in local currency
    * @param rateProvider The exchange rate provider (e.g. "Bitstamp" or absent if no network)
    */
-  public BalanceChangedEvent(Coin satoshis, BigDecimal localBalance, Optional<String> rateProvider) {
+  public BalanceChangedEvent(Coin coinBalance, BigDecimal localBalance, Optional<String> rateProvider) {
 
-    this.satoshis = satoshis;
+    this.coinBalance = coinBalance;
     this.localBalance = localBalance;
     this.rateProvider = rateProvider;
 
   }
 
   /**
-   * @return The Bitcoin balance in satoshis
+   * @return The Bitcoin balance in coins
    */
-  public Coin getSatoshis() {
-    return satoshis;
+  public Coin getCoinBalance() {
+    return coinBalance;
   }
 
   /**

@@ -18,7 +18,7 @@ import java.math.BigDecimal;
  */
 public class EnterAmountModel implements Model<EnterAmountModel> {
 
-  private Optional<Coin> satoshis = Optional.absent();
+  private Optional<Coin> coinAmount = Optional.absent();
   private Optional<BigDecimal> localAmount = Optional.absent();
 
   private final String panelName;
@@ -49,18 +49,18 @@ public class EnterAmountModel implements Model<EnterAmountModel> {
   }
 
   /**
-   * @return The Bitcoin amount (zero if not present) in satoshis
+   * @return The Bitcoin amount (zero if not present) in coins
    */
-  public Coin getSatoshis() {
-    return satoshis.or(Coin.ZERO);
+  public Coin getCoinAmount() {
+    return coinAmount.or(Coin.ZERO);
   }
 
   /**
    * @param value The Bitcoin amount (fires a "component model changed" event)
    */
-  public void setSatoshis(Coin value) {
+  public void setCoinAmount(Coin value) {
 
-    satoshis = Optional.of(value);
+    coinAmount = Optional.of(value);
 
     // Fire a component model updated event
     ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));

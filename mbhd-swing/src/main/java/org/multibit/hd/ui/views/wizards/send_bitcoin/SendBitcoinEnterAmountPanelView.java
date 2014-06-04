@@ -86,10 +86,10 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
       getWizardModel().handleBitcoinURI();
 
       Recipient recipient = getWizardModel().getRecipient();
-      Coin amount = getWizardModel().getSatoshis();
+      Coin amount = getWizardModel().getCoinAmount();
 
       enterRecipientMaV.getModel().setValue(recipient);
-      enterAmountMaV.getModel().setSatoshis(amount);
+      enterAmountMaV.getModel().setCoinAmount(amount);
 
     }
 
@@ -148,7 +148,7 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
 
     boolean bitcoinAmountOK = !getPanelModel().get()
       .getEnterAmountModel()
-      .getSatoshis()
+      .getCoinAmount()
       .equals(BigInteger.ZERO);
 
     boolean recipientOK = getPanelModel().get()

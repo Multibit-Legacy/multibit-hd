@@ -150,7 +150,7 @@ public class PaymentsProtobufSerializer {
           paymentRequestData.setDate(new DateTime(paymentRequestProto.getDate()));
         }
         if (paymentRequestProto.hasAmountBTC()) {
-          paymentRequestData.setAmountBTC(Coin.valueOf(paymentRequestProto.getAmountBTC()));
+          paymentRequestData.setAmountCoin(Coin.valueOf(paymentRequestProto.getAmountBTC()));
         }
 
         if (paymentRequestProto.hasAmountFiat()) {
@@ -297,7 +297,7 @@ public class PaymentsProtobufSerializer {
     if (paymentRequestData != null) {
       paymentRequestBuilder.setAddress(paymentRequestData.getAddress() == null ? "" : paymentRequestData.getAddress());
       paymentRequestBuilder.setNote(paymentRequestData.getNote() == null ? "" : paymentRequestData.getNote());
-      paymentRequestBuilder.setAmountBTC(paymentRequestData.getAmountBTC() == null ? 0 : paymentRequestData.getAmountBTC().longValue());
+      paymentRequestBuilder.setAmountBTC(paymentRequestData.getAmountCoin() == null ? 0 : paymentRequestData.getAmountCoin().longValue());
       if (paymentRequestData.getDate() != null) {
         paymentRequestBuilder.setDate(paymentRequestData.getDate().getMillis());
       }

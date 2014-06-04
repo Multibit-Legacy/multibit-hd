@@ -118,12 +118,12 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
     Configuration configuration = Configurations.currentConfiguration;
 
     // Update the model and view for the amount
-    transactionDisplayAmountMaV.getModel().setSatoshis(getWizardModel().getSatoshis());
+    transactionDisplayAmountMaV.getModel().setCoinAmount(getWizardModel().getCoinAmount());
     transactionDisplayAmountMaV.getModel().setLocalAmountVisible(false);
     transactionDisplayAmountMaV.getView().updateView(configuration);
 
     // Update the model and view for the transaction fee
-    transactionFeeDisplayAmountMaV.getModel().setSatoshis(getWizardModel().getTransactionFee());
+    transactionFeeDisplayAmountMaV.getModel().setCoinAmount(getWizardModel().getTransactionFee());
     transactionFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
     transactionFeeDisplayAmountMaV.getView().updateView(configuration);
 
@@ -155,7 +155,7 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
         }
       }
 
-      clientFeeDisplayAmountMaV.getModel().setSatoshis(feeState.getFeeOwed());
+      clientFeeDisplayAmountMaV.getModel().setCoinAmount(feeState.getFeeOwed());
       clientFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
       clientFeeDisplayAmountMaV.getView().updateView(configuration);
 

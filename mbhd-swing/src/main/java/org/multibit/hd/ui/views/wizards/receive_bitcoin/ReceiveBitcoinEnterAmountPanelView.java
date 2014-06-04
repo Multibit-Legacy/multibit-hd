@@ -198,7 +198,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     paymentRequestData.setDate(DateTime.now());
     paymentRequestData.setAddress(displayBitcoinAddressMaV.getModel().getValue());
     paymentRequestData.setLabel(label.getText());
-    paymentRequestData.setAmountBTC(enterAmountMaV.getModel().getSatoshis());
+    paymentRequestData.setAmountCoin(enterAmountMaV.getModel().getCoinAmount());
 
     FiatPayment fiatPayment = new FiatPayment();
     fiatPayment.setAmount(enterAmountMaV.getModel().getLocalAmount());
@@ -263,12 +263,12 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
         ReceiveBitcoinEnterAmountPanelModel model = getPanelModel().get();
 
         String bitcoinAddress = model.getDisplayBitcoinAddressModel().getValue();
-        Coin satoshis = model.getEnterAmountModel().getSatoshis();
+        Coin coin = model.getEnterAmountModel().getCoinAmount();
 
         // Form a Bitcoin URI from the contents
         String bitcoinUri = BitcoinURI.convertToBitcoinURI(
           bitcoinAddress,
-          satoshis,
+          coin,
           label.getText(),
           null
         );

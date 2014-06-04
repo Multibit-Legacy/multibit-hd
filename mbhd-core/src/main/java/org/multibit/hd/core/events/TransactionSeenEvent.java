@@ -64,7 +64,7 @@ public class TransactionSeenEvent implements CoreEvent {
   }
 
   /**
-   * @return The amount in satoshis
+   * @return The amount in coins
    */
   public Coin getAmount() {
     return amount;

@@ -43,7 +43,7 @@ public class AmountBTCTableCellRenderer extends DefaultTableCellRenderer {
       LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage();
       BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
 
-      String[] balanceArray = Formats.formatSatoshisAsSymbolic(valueCoin, languageConfiguration, bitcoinConfiguration, true);
+      String[] balanceArray = Formats.formatCoinAsSymbolic(valueCoin, languageConfiguration, bitcoinConfiguration, true);
       String balanceString = balanceArray[0] + balanceArray[1];
 
       label.setText(balanceString + TrailingJustifiedDateTableCellRenderer.SPACER);

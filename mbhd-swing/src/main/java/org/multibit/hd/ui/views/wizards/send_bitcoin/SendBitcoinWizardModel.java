@@ -20,7 +20,7 @@ import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.core.store.TransactionInfo;
-import org.multibit.hd.core.utils.Satoshis;
+import org.multibit.hd.core.utils.Coins;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +64,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   /**
    * Default transaction fee
    */
-  private final Coin transactionFee = Satoshis.fromPlainAmount("0.0001"); // TODO needs to be displayed from a wallet.completeTx SendRequest.fee
+  private final Coin transactionFee = Coins.fromPlainAmount("0.0001"); // TODO needs to be displayed from a wallet.completeTx SendRequest.fee
 
   /**
    * The FeeService used to calculate the FeeState
@@ -136,10 +136,10 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   /**
    * @return The Bitcoin amount without symbolic multiplier
    */
-  public Coin getSatoshis() {
+  public Coin getCoinAmount() {
     return enterAmountPanelModel
       .getEnterAmountModel()
-      .getSatoshis();
+      .getCoinAmount();
   }
 
   /**
@@ -193,7 +193,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   }
 
   /**
-   * @return The transaction fee (a.k.a "miner's fee") in satoshis
+   * @return The transaction fee (a.k.a "miner's fee") in coins
    */
   public Coin getTransactionFee() {
     return transactionFee;
@@ -303,7 +303,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
     Address changeAddress = bitcoinNetworkService.getNextChangeAddress();
 
-    Coin satoshis = enterAmountPanelModel.getEnterAmountModel().getSatoshis();
+    Coin coin = enterAmountPanelModel.getEnterAmountModel().getCoinAmount();
     Address bitcoinAddress = enterAmountPanelModel
       .getEnterRecipientModel()
       .getRecipient()
@@ -316,7 +316,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     // Send the bitcoins
     final SendRequestSummary sendRequestSummary = new SendRequestSummary(
       bitcoinAddress,
-      satoshis,
+      coin,
       changeAddress,
       BitcoinNetworkService.DEFAULT_FEE_PER_KB,
       password,
@@ -390,7 +390,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
       // Add in any amount or treat as zero
       enterAmountPanelModel
         .getEnterAmountModel()
-        .setSatoshis(amount.or(Coin.ZERO));
+        .setCoinAmount(amount.or(Coin.ZERO));
 
     }
   }

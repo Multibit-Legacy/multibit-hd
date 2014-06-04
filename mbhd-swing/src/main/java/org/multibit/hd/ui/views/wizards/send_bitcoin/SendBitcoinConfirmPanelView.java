@@ -23,7 +23,6 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
-import java.math.BigInteger;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -146,7 +145,7 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     Configuration configuration = Configurations.currentConfiguration;
 
     // Update the model and view for the amount
-    transactionDisplayAmountMaV.getModel().setSatoshis(getWizardModel().getSatoshis());
+    transactionDisplayAmountMaV.getModel().setCoinAmount(getWizardModel().getCoinAmount());
     if (getWizardModel().getLocalAmount().isPresent()) {
       transactionDisplayAmountMaV.getModel().setLocalAmount(getWizardModel().getLocalAmount().get());
     } else {
@@ -155,7 +154,7 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     transactionDisplayAmountMaV.getView().updateView(configuration);
 
     // Update the model and view for the transaction fee
-    transactionFeeDisplayAmountMaV.getModel().setSatoshis(getWizardModel().getTransactionFee());
+    transactionFeeDisplayAmountMaV.getModel().setCoinAmount(getWizardModel().getTransactionFee());
     transactionFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
     transactionFeeDisplayAmountMaV.getView().updateView(configuration);
 
@@ -181,7 +180,7 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
         }
       }
 
-      clientFeeDisplayAmountMaV.getModel().setSatoshis(feeState.getFeeOwed());
+      clientFeeDisplayAmountMaV.getModel().setCoinAmount(feeState.getFeeOwed());
       clientFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
       clientFeeDisplayAmountMaV.getView().updateView(configuration);
 

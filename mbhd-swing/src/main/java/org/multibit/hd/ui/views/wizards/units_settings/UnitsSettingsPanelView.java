@@ -87,7 +87,7 @@ public class UnitsSettingsPanelView extends AbstractWizardPanelView<UnitsWizardM
     Preconditions.checkNotNull(locale, "'locale' cannot be empty");
 
     displayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT, true,"example");
-    displayAmountMaV.getModel().setSatoshis(Coin.valueOf(123_456_789_012L)); // 1.23... million bitcoins
+    displayAmountMaV.getModel().setCoinAmount(Coin.valueOf(123_456_789_012L)); // 1.23... million bitcoins
     displayAmountMaV.getModel().setLocalAmount(new BigDecimal("1234567.89"));
     displayAmountMaV.getModel().setRateProvider(Optional.of(Languages.safeText(MessageKey.EXAMPLE)));
     displayAmountMaV.getModel().setLocalAmountVisible(true);
