@@ -36,7 +36,7 @@ public class HtmlUtilsTest {
 
     };
 
-    String expected = "<html><div align=left>Line 1<br/><br/>Line 2<br/><br/>Line 3<br/><br/></div></html>";
+    String expected = "<html><body style='width: 100%'><div align=left><p>Line 1</p><br><p>Line 2</p><br><p>Line 3</p><br></div></body></html>";
     assertThat(HtmlUtils.localiseWithLineBreaks(lines)).isEqualTo(expected);
 
   }
@@ -57,7 +57,7 @@ public class HtmlUtilsTest {
 
     };
 
-    String expected = "<html><div align=right>Line 1<br/><br/>Line 2<br/><br/>Line 3<br/><br/></div></html>";
+    String expected = "<html><body style='width: 100%'><div align=right><p>Line 1</p><br><p>Line 2</p><br><p>Line 3</p><br></div></body></html>";
     assertThat(HtmlUtils.localiseWithLineBreaks(lines)).isEqualTo(expected);
 
   }

@@ -36,8 +36,8 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
   public JPanel newComponentPanel() {
 
     panel = Panels.newPanel(new MigLayout(
-      "insets 0", // Layout
-      "[][][][][][][]", // Columns
+      Panels.migXLayout(), // Layout
+      "[][][][][]", // Columns
       "[][]" // Rows
     ));
 
@@ -54,14 +54,16 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
 
     // Add to the panel
     panel.add(Labels.newTimestamp());
-    panel.add(seedTimestamp, "span 2,grow");
+    panel.add(seedTimestamp, "grow");
     panel.add(Labels.newSeedSize(), "span 2,grow");
-    panel.add(seedSize, "shrink,wrap");
-    panel.add(seedPhrase, "span 3,shrink");
+    panel.add(seedSize, "grow,push,wrap");
+
+    panel.add(seedPhrase, "span 2,grow");
     panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink");
     panel.add(Buttons.newRefreshButton(refreshAction), "shrink");
 
     // Allowing printing of seed phrase is fraught with security hazards
+    // Could use BIP38 encrypted QR code once webcam scanning is introduced
     //panel.add(Buttons.newPrintButton(printAction), "shrink,wrap");
 
     seedSize.requestFocusInWindow();

@@ -64,8 +64,8 @@ public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<Wel
       "[][]" // Row constraints
     ));
 
-    contentPanel.add(Panels.newSeedPhraseWarning(), "grow,push,wrap");
-    contentPanel.add(displaySeedPhraseMaV.getView().newComponentPanel(), "wrap");
+    contentPanel.add(Panels.newSeedPhraseWarning(), Panels.migWizardMaxLayout() + ",wrap");
+    contentPanel.add(displaySeedPhraseMaV.getView().newComponentPanel(), Panels.migWizardMaxLayout() + ",wrap");
 
   }
 

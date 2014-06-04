@@ -31,15 +31,18 @@ public class HtmlUtils {
     final StringBuilder sb;
 
     if (Languages.isLeftToRight()) {
-      sb = new StringBuilder("<html><div align=left>");
+      sb = new StringBuilder("<html><body style='width: 100%'><div align=left>");
     } else {
-      sb = new StringBuilder("<html><div align=right>");
+      sb = new StringBuilder("<html><body style='width: 100%'><div align=right>");
     }
+
+    // Wrap in paragraphs to ensure word wrap
     for (String line : lines) {
-      sb.append(line);
-      sb.append("<br/><br/>");
+      sb.append("<p>")
+        .append(line)
+        .append("</p><br>");
     }
-    sb.append("</div></html>");
+    sb.append("</div></body></html>");
 
     return sb.toString();
   }

@@ -88,6 +88,13 @@ public class Panels {
   }
 
   /**
+   * @return A width constraint to avoid text overflow in wizards
+   */
+  public static String migWizardMaxLayout() {
+    return "wmax " + (MultiBitUI.WIZARD_MIN_WIDTH - 30);
+  }
+
+  /**
    * @return A simple theme-aware panel with a single cell MigLayout that fills all X and Y
    */
   public static JPanel newPanel() {
@@ -190,7 +197,7 @@ public class Panels {
 
     log.debug("Show light box");
 
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(),"LightBox requires the EDT");
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "LightBox requires the EDT");
     Preconditions.checkState(!lightBoxPanel.isPresent(), "Light box should never be called twice");
 
     // Prevent focus
@@ -235,7 +242,7 @@ public class Panels {
 
     log.debug("Show light box popover");
 
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(),"LightBoxPopover requires the EDT");
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "LightBoxPopover requires the EDT");
     Preconditions.checkState(lightBoxPanel.isPresent(), "LightBoxPopover should not be called unless a light box is showing");
     Preconditions.checkState(!lightBoxPopoverPanel.isPresent(), "LightBoxPopover should never be called twice");
 
