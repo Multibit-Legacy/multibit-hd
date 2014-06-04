@@ -312,12 +312,12 @@ public class Panels {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       Panels.migXYLayout(),
-      "[grow]", // Columns
+      "[]", // Columns
       "[]" // Rows
     ));
 
     // Add to the panel
-    panel.add(Labels.newConfirmSeedPhraseNote(), "push");
+    panel.add(Labels.newConfirmSeedPhraseNote(), "grow,push");
 
     return panel;
   }
@@ -331,14 +331,14 @@ public class Panels {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       Panels.migXLayout(),
-      "[grow]", // Columns
+      "[]", // Columns
       "[]" // Rows
     ));
 
     PanelDecorator.applyDangerFadedTheme(panel);
 
     // Add to the panel
-    panel.add(Labels.newSeedWarningNote(), "push");
+    panel.add(Labels.newSeedWarningNote(), "grow,push");
 
     return panel;
   }
@@ -352,7 +352,7 @@ public class Panels {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       Panels.migXLayout(),
-      "[grow]", // Columns
+      "[]", // Columns
       "[]" // Rows
     ));
 
@@ -362,7 +362,7 @@ public class Panels {
     PanelDecorator.applyDangerFadedTheme(panel);
 
     // Add to the panel
-    panel.add(Labels.newDebuggerWarningNote(), "push");
+    panel.add(Labels.newDebuggerWarningNote(), "grow,push");
 
     return panel;
   }
@@ -376,14 +376,14 @@ public class Panels {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       Panels.migXLayout(),
-      "[grow]", // Columns
+      "[]", // Columns
       "[]" // Rows
     ));
 
     PanelDecorator.applySuccessFadedTheme(panel);
 
     // Add to the panel
-    panel.add(Labels.newLanguageChangeNote(), "push");
+    panel.add(Labels.newLanguageChangeNote(), "grow,push");
 
     return panel;
   }
@@ -397,12 +397,12 @@ public class Panels {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       Panels.migXLayout(),
-      "[grow]", // Columns
+      "[]", // Columns
       "[]" // Rows
     ));
 
     // Add to the panel
-    panel.add(Labels.newRestoreFromBackupNote(), "push");
+    panel.add(Labels.newRestoreFromBackupNote(), "grow,push");
 
     return panel;
   }
@@ -416,12 +416,12 @@ public class Panels {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       Panels.migXLayout(),
-      "[grow]", // Columns
+      "[]", // Columns
       "[]" // Rows
     ));
 
     // Add to the panel
-    panel.add(Labels.newRestoreFromSeedPhraseNote(), "push");
+    panel.add(Labels.newRestoreFromSeedPhraseNote(), "grow,push");
 
     return panel;
   }
@@ -435,12 +435,12 @@ public class Panels {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       Panels.migXLayout(),
-      "[grow]", // Columns
+      "[]", // Columns
       "[]" // Rows
     ));
 
     // Add to the panel
-    panel.add(Labels.newRestoreFromTimestampNote(), "push");
+    panel.add(Labels.newRestoreFromTimestampNote(), "grow,push");
 
     return panel;
   }
@@ -454,12 +454,12 @@ public class Panels {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       Panels.migXLayout(),
-      "[grow]", // Columns
+      "[]", // Columns
       "[]" // Rows
     ));
 
     // Add to the panel
-    panel.add(Labels.newSelectBackupLocationNote(), "push");
+    panel.add(Labels.newSelectBackupLocationNote(), "grow,push");
 
     return panel;
   }
@@ -473,12 +473,12 @@ public class Panels {
 
     JPanel panel = Panels.newPanel(new MigLayout(
       Panels.migXLayout(),
-      "[grow]", // Columns
+      "[]", // Columns
       "[]" // Rows
     ));
 
     // Add to the panel
-    panel.add(Labels.newSelectExportPaymentsLocationNote(), "push");
+    panel.add(Labels.newSelectExportPaymentsLocationNote(), "grow,push");
 
     return panel;
   }
