@@ -252,7 +252,7 @@ public class ExchangeTickerService extends AbstractService {
 
         // Need to triangulate through USD
         Ticker inverseLocalToUsdTicker = exchange.get().getPollingMarketDataService().getTicker(localToUsdPair);
-        Ticker inverseBitcoinToUsdTicker = exchange.get().getPollingMarketDataService().getTicker(localToUsdPair);
+        Ticker inverseBitcoinToUsdTicker = exchange.get().getPollingMarketDataService().getTicker(bitcoinToUsdPair);
 
         // OER gives inverse values to reduce number of calculations
         BigDecimal inverseLocalToUsd = inverseLocalToUsdTicker.getLast();
