@@ -112,15 +112,18 @@ public class MainView extends JFrame {
     // Catch up on recent events
     CoreServices.getApplicationEventService().repeatLatestEvents();
 
-    // Ensure no light boxes are showing
-    Panels.hideLightBoxIfPresent();
-
     // Check for any wizards that were showing before the refresh occurred
     if (showExitingWelcomeWizard) {
+
+      // Ensure no light boxes are showing
+      Panels.hideLightBoxIfPresent();
 
       Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardScreenHolder());
 
     } else if (showExitingPasswordWizard) {
+
+      // Ensure no light boxes are showing
+      Panels.hideLightBoxIfPresent();
 
       // Force an exit if the user can't get through
       Panels.showLightBox(Wizards.newExitingPasswordWizard().getWizardScreenHolder());
@@ -129,7 +132,8 @@ public class MainView extends JFrame {
 
       log.debug("Showing detail view");
 
-      // No wizards so this reset is a settings change
+      // No wizards so this reset is a wallet unlock or settings change
+      // Something else will handle the hide
       detailViewAfterWalletOpened();
 
     }
