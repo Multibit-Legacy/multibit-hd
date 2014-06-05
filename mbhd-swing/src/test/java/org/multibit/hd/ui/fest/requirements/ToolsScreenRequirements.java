@@ -3,9 +3,7 @@ package org.multibit.hd.ui.fest.requirements;
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.tools.ShowToolsScreenUseCase;
-import org.multibit.hd.ui.fest.use_cases.tools.empty_wallet.ShowThenCancelEmptyWalletUseCase;
-import org.multibit.hd.ui.fest.use_cases.tools.sign_message.ShowThenFinishSignMessageUseCase;
-import org.multibit.hd.ui.fest.use_cases.tools.verify_message.ShowThenFinishVerifyMessageUseCase;
+import org.multibit.hd.ui.fest.use_cases.tools.repair_wallet.VerifyRepairWalletUseCase;
 
 import java.util.Map;
 
@@ -27,13 +25,19 @@ public class ToolsScreenRequirements {
     // Show the tools screen
     new ShowToolsScreenUseCase(window).execute(parameters);
 
-    // Perform a simple edit and finish operation
-    new ShowThenFinishSignMessageUseCase(window).execute(parameters);
+    // Show the repair wizard
+//    new ShowThenCancelRepairWalletUseCase(window).execute(parameters);
+
+    // Verify the repair wizard
+    new VerifyRepairWalletUseCase(window).execute(parameters);
 
     // Perform a simple edit and finish operation
-    new ShowThenFinishVerifyMessageUseCase(window).execute(parameters);
+//    new ShowThenFinishSignMessageUseCase(window).execute(parameters);
+
+    // Perform a simple edit and finish operation
+//    new ShowThenFinishVerifyMessageUseCase(window).execute(parameters);
 
     // Show then cancel the "empty wallet" wizard
-    new ShowThenCancelEmptyWalletUseCase(window).execute(parameters);
+//    new ShowThenCancelEmptyWalletUseCase(window).execute(parameters);
   }
 }

@@ -171,6 +171,8 @@ public enum MessageKey {
   BLOCKS_LEFT("blocks_left"),
   LAST_TRANSACTION_ID("last_transaction_id"),
 
+  TRANSACTION_COUNT("transaction_count"),
+
   // Panels
 
   NETWORK_CONFIGURATION_ERROR("network_configuration_error"),
@@ -239,7 +241,9 @@ public enum MessageKey {
   EDIT_WALLET_TITLE("edit_wallet_title"),
   CHANGE_PASSWORD_TITLE("change_password_title"),
   VERIFY_NETWORK_TITLE("verify_network_title"),
+
   REPAIR_WALLET_TITLE("repair_wallet_title"),
+  REPAIR_WALLET_PROGRESS_TITLE("repair_wallet_progress_title"),
 
   EMPTY_WALLET_TITLE("empty_wallet_title"),
   EMPTY_WALLET_CONFIRM_TITLE("empty_wallet_confirm_title"),
@@ -259,6 +263,7 @@ public enum MessageKey {
   BACKUP_LOCATION_STATUS("backup_location_status"),
   SELECT_BACKUP("select_backup"),
   WALLET_CREATED_STATUS("wallet_created_status"),
+  CACERTS_INSTALLED_STATUS("cacerts_installed_status"),
 
   PASSWORD_CHANGED_STATUS("password_changed_status"),
 

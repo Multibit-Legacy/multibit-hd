@@ -25,6 +25,7 @@ public class RepairWalletWizard extends AbstractWizard<RepairWalletWizardModel> 
   protected void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap) {
 
     wizardViewMap.put(RepairWalletState.REPAIR_WALLET.name(), new RepairWalletPanelView(this, RepairWalletState.REPAIR_WALLET.name()));
+    wizardViewMap.put(RepairWalletState.REPAIR_WALLET_REPORT.name(), new RepairWalletReportPanelView(this, RepairWalletState.REPAIR_WALLET_REPORT.name()));
 
   }
 

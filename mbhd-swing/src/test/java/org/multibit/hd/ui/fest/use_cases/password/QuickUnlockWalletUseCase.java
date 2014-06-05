@@ -54,7 +54,7 @@ public class QuickUnlockWalletUseCase extends AbstractFestUseCase {
       .click();
 
     // Fixed time to unlock
-    Pause.pause(3, TimeUnit.SECONDS);
+    Pause.pause(5, TimeUnit.SECONDS);
 
   }
 

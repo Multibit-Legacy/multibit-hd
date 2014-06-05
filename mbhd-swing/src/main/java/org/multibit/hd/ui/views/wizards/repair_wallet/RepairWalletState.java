@@ -12,6 +12,7 @@ package org.multibit.hd.ui.views.wizards.repair_wallet;
 public enum RepairWalletState {
 
   REPAIR_WALLET,
+  REPAIR_WALLET_REPORT
 
   // End of enum
   ;
