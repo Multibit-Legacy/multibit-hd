@@ -5,6 +5,7 @@ import com.google.common.base.Optional;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.models.AlertModel;
+import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.components.wallet_detail.WalletDetail;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
@@ -37,7 +38,7 @@ public class ViewEvents {
   /**
    * <p>Broadcast a new "balance changed" event</p>
    *
-   * @param coinBalance         The current balance in coins
+   * @param coinBalance  The current balance in coins
    * @param localBalance The current balance in local currency
    * @param rateProvider The exchange rate provider (e.g. "Bitstamp")
    */
@@ -172,4 +173,16 @@ public class ViewEvents {
     log.trace("Firing 'verification status changed' event: {}", status);
     CoreServices.uiEventBus.post(new VerificationStatusChangedEvent(panelName, status));
   }
+
+  /**
+   * <p>Broadcast a new "view changed" event</p>
+   *
+   * @param viewKey The view to which this applies
+   * @param visible True if the view is "visible" (could be reduced height etc)
+   */
+  public static void fireViewChangedEvent(ViewKey viewKey, boolean visible) {
+    log.trace("Firing 'view changed' event: {}", visible);
+    CoreServices.uiEventBus.post(new ViewChangedEvent(viewKey, visible));
+  }
+
 }

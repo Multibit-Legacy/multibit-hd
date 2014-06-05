@@ -17,7 +17,6 @@ import javax.swing.*;
  *  
  */
 public interface View<M extends Model> {
-
   /**
    * @return The model backing the view
    */

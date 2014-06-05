@@ -9,6 +9,7 @@ import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
 import org.multibit.hd.ui.events.view.AlertAddedEvent;
 import org.multibit.hd.ui.events.view.BalanceChangedEvent;
+import org.multibit.hd.ui.events.view.ViewChangedEvent;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.components.*;
@@ -72,7 +73,8 @@ public class HeaderView {
     balanceDisplayMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.HEADER, true, "header");
     balanceDisplayMaV.getView().setVisible(false);
 
-    contentPanel.add(balanceDisplayMaV.getView().newComponentPanel(), "growx,push,wrap");
+    // Provide a fixed height to avoid an annoying "slide down" during unlock
+    contentPanel.add(balanceDisplayMaV.getView().newComponentPanel(), "growx,push,hmin 50,wrap");
     contentPanel.add(alertPanel, "growx,aligny top,push");
 
     populateAlertPanel();
@@ -85,7 +87,6 @@ public class HeaderView {
   public JPanel getContentPanel() {
     return contentPanel;
   }
-
 
 
   /**
@@ -197,6 +198,29 @@ public class HeaderView {
         alertPanel.setVisible(false);
       }
     });
+
+  }
+
+  /**
+   * <p>Called when the view should be should be changed</p>
+   *
+   * @param event The view changed event
+   */
+  @Subscribe
+  public void onViewChangedEvent(final ViewChangedEvent event) {
+
+    if (event.getViewKey().equals(ViewKey.HEADER)) {
+
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+
+          balanceDisplayMaV.getView().setVisible(event.isVisible());
+          alertPanel.setVisible(event.isVisible());
+        }
+      });
+
+    }
 
   }
 

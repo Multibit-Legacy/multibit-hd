@@ -14,8 +14,10 @@ import org.multibit.hd.core.utils.Coins;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.controller.AddAlertEvent;
 import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
+import org.multibit.hd.ui.events.view.ViewChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.AlertModel;
+import org.multibit.hd.ui.views.ViewKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -2,10 +2,7 @@ package org.multibit.hd.ui.views.wizards.repair_wallet;
 
 import com.google.bitcoin.core.Wallet;
 import com.google.common.base.Optional;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.*;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
@@ -16,7 +13,9 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.SSLManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
@@ -27,6 +26,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Wizard to provide the following to UI:</p>
@@ -104,6 +104,8 @@ public class RepairWalletPanelView extends AbstractWizardPanelView<RepairWalletW
 
     if (!isExitCancel) {
 
+
+
       // Attempt to fix any SSL problems first
       try {
         SSLManager.INSTANCE.installMultiBitSSLCertificate(
@@ -139,6 +141,12 @@ public class RepairWalletPanelView extends AbstractWizardPanelView<RepairWalletW
       // Work out the replay date
       final DateTime replayDate = new DateTime(currentWallet.getEarliestKeyCreationTime() * 1000);
 
+      // Hide the header view
+      ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
+
+      // Allow time the UI to update
+      Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+
       // Clear all the transactions
       currentWallet.clearTransactions(0);
 
@@ -162,12 +170,18 @@ public class RepairWalletPanelView extends AbstractWizardPanelView<RepairWalletW
       Futures.addCallback(future, new FutureCallback() {
         @Override
         public void onSuccess(@Nullable Object result) {
-          // Do nothing
+
+          // Show the header view
+          ViewEvents.fireViewChangedEvent(ViewKey.HEADER, true);
+
         }
 
         @Override
         public void onFailure(Throwable t) {
           // TODO Update the UI showing failure
+
+          // Show the header view
+          ViewEvents.fireViewChangedEvent(ViewKey.HEADER, true);
         }
       });
 
