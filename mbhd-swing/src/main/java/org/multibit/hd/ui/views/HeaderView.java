@@ -100,6 +100,7 @@ public class HeaderView {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
+
         // Handle the update
         balanceDisplayMaV.getModel().setLocalAmount(event.getLocalBalance());
         balanceDisplayMaV.getModel().setCoinAmount(event.getCoinBalance());
@@ -108,7 +109,8 @@ public class HeaderView {
           balanceDisplayMaV.getModel().setLocalAmountVisible(true);
         }
 
-        balanceDisplayMaV.getView().setVisible(true);
+        // Do not set the visibility here, use the ViewChangedEvent
+
         balanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
       }
     });
@@ -216,7 +218,9 @@ public class HeaderView {
         public void run() {
 
           balanceDisplayMaV.getView().setVisible(event.isVisible());
-          alertPanel.setVisible(event.isVisible());
+          if (alertMessageLabel.getText().length() != 0 && event.isVisible()) {
+            alertPanel.setVisible(event.isVisible());
+          }
         }
       });
 

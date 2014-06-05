@@ -264,6 +264,7 @@ public enum MessageKey {
   SELECT_BACKUP("select_backup"),
   WALLET_CREATED_STATUS("wallet_created_status"),
   CACERTS_INSTALLED_STATUS("cacerts_installed_status"),
+  WALLET_REPAIRED_STATUS("wallet_repaired_status"),
 
   PASSWORD_CHANGED_STATUS("password_changed_status"),
 

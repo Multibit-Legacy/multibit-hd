@@ -5,10 +5,14 @@ import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionConfidence;
 
 /**
- *  <p>Event to provide the following to UIEventbus subscribers
- *  <ul>
- *  <li>A transaction has been seen coming in from the Bitcoin netowork</li>
- *  </ul>
+ * <p>Event to provide the following to Core event subscribers</p>
+ * <ul>
+ * <li>An arbitrary transaction has been seen coming in from the Bitcoin network</li>
+ * </ul>
+ * <p>This is a high frequency event during synchronization operations. Consider using
+ * {@link org.multibit.hd.core.events.SlowTransactionSeenEvent} instead.</p>
+ *
+ * @since 0.0.1
  */
 public class TransactionSeenEvent implements CoreEvent {
 

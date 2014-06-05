@@ -38,8 +38,8 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
   private JLabel trailingSymbolLabel;
   private JLabel exchangeLabel;
 
-  // Default to show amounts where possible
-  private boolean visible = true;
+  // Default to hide amounts where possible
+  private boolean visible = false;
 
   /**
    * @param model The model backing this view
@@ -197,11 +197,21 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
   /**
    * @param visible True if all the symbol labels that should be visible will be visible (no exchange rate overrides this)
    */
-  public void setVisible(boolean visible) {
+  public void setVisible(final boolean visible) {
 
     this.visible = visible;
 
-    updateModelFromView();
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        // Provide an immediate update
+        leadingSymbolLabel.setVisible(visible);
+        primaryBalanceLabel.setVisible(visible);
+        secondaryBalanceLabel.setVisible(visible);
+        trailingSymbolLabel.setVisible(visible);
+        exchangeLabel.setVisible(visible);
+      }
+    });
 
   }
 

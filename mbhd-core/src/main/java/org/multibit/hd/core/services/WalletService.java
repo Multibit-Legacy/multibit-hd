@@ -899,10 +899,10 @@ public class WalletService {
   }
 
 
-  @Subscribe
   /**
    * When a transaction is seen by the network, ensure there is a transaction info available storing the exchange rate
    */
+  @Subscribe
   public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
     // Get/ Create a transactionInfo to match the event
     TransactionInfo transactionInfo = transactionInfoMap.get(transactionSeenEvent.getTransactionId());
@@ -935,7 +935,7 @@ public class WalletService {
       log.debug("Created TransactionInfo: " + transactionInfo.toString());
       transactionInfoMap.put(transactionSeenEvent.getTransactionId(), transactionInfo);
     } else {
-      log.debug("There was already a TransactionInfo: for " + transactionSeenEvent.getTransactionId() + ", value = " + transactionInfo.toString());
+      log.trace("There was already a TransactionInfo: for " + transactionSeenEvent.getTransactionId() + ", value = " + transactionInfo.toString());
     }
   }
 

@@ -6,8 +6,6 @@ import com.google.common.util.concurrent.*;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.WalletSummary;
-import org.multibit.hd.core.events.SlowTransactionSeenEvent;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.SSLManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -35,7 +33,11 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
   /**
    * Repair wallet requires a separate executor
    */
-  private final ListeningExecutorService replayExecutorService = SafeExecutors.newSingleThreadExecutor("repair-wallet");
+  private final ListeningExecutorService walletExecutorService = SafeExecutors.newSingleThreadExecutor("repair-wallet");
+  private final ListeningExecutorService cacertsExecutorService = SafeExecutors.newSingleThreadExecutor("repair-cacerts");
+
+  private Optional<Boolean> walletRepaired = Optional.absent();
+  private Optional<Boolean> cacertsRepaired = Optional.absent();
 
   /**
    * @param state The state object
@@ -54,26 +56,61 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
     }
   }
 
+  /**
+   * @return True if the wallet has been repaired, absent if still progressing
+   */
+  public Optional<Boolean> isWalletRepaired() {
+    return walletRepaired;
+  }
 
   /**
-   * Reset the transactions of the current wallet and resynchronize with the block chain
+   * @return True if the CA certificates have been repaired, absent if still progressing
    */
-  protected void resetWalletAndResync() {
+  public Optional<Boolean> isCacertsRepaired() {
+    return cacertsRepaired;
+  }
 
-    // Attempt to fix any SSL problems first
-    try {
-      SSLManager.INSTANCE.installMultiBitSSLCertificate(
-        InstallationManager.getOrCreateApplicationDataDirectory(),
-        InstallationManager.CA_CERTS_NAME,
-        true
-      );
-    } catch (Exception e) {
-      // TODO - put on UI
-      ExceptionHandler.handleThrowable(e);
-    }
+  /**
+   * <p>Install the CA certificates</p>
+   * <p>Reduced visibility for panel view</p>
+   */
+  void installCACertificates() {
 
-    // TODO Consider a deferred hide or separate report page
-    resetWalletAndResync();
+    ListenableFuture cacertsFuture = cacertsExecutorService.submit(new Runnable() {
+      @Override
+      public void run() {
+        SSLManager.INSTANCE.installCACertificates(
+          InstallationManager.getOrCreateApplicationDataDirectory(),
+          InstallationManager.CA_CERTS_NAME,
+          true
+        );
+
+      }
+    });
+    Futures.addCallback(cacertsFuture, new FutureCallback() {
+      @Override
+      public void onSuccess(@Nullable Object result) {
+
+        cacertsRepaired = Optional.of(Boolean.TRUE);
+        ViewEvents.fireComponentChangedEvent(getPanelName(), Optional.of(this));
+
+      }
+
+      @Override
+      public void onFailure(Throwable t) {
+
+        cacertsRepaired = Optional.of(Boolean.FALSE);
+        ViewEvents.fireComponentChangedEvent(getPanelName(), Optional.of(this));
+      }
+    });
+
+  }
+
+  /**
+   * <p>Reset the transactions of the current wallet and resynchronize with the block chain</p>
+   * <p>Reduced visibility for panel view</p>
+   */
+  void repairWallet() {
 
     Optional<WalletSummary> currentWalletSummaryOptional = WalletManager.INSTANCE.getCurrentWalletSummary();
 
@@ -91,23 +128,21 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
       // Allow time the UI to update
       Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
-      // Clear all the transactions
+      // Clear all the transactions back to the genesis block
       currentWallet.clearTransactions(0);
 
-      // Fire a notification that 'a slow transaction has been seen' which will refresh anything listening for transactions
-      CoreServices.uiEventBus.post(new SlowTransactionSeenEvent());
-
-      // Create a wallet service
+      // Ensure we have a wallet service in place
       CoreServices.getOrCreateWalletService(currentWalletSummary.getWalletId());
 
       // Start the Bitcoin network synchronization operation
-      ListenableFuture future = replayExecutorService.submit(new Callable<Boolean>() {
+      ListenableFuture future = walletExecutorService.submit(new Callable<Boolean>() {
 
         @Override
         public Boolean call() throws Exception {
 
           CoreServices.getOrCreateBitcoinNetworkService().replayWallet(replayDate);
           return true;
+
         }
 
       });
@@ -115,21 +150,20 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
         @Override
         public void onSuccess(@Nullable Object result) {
 
-          // Show the header view
-          ViewEvents.fireViewChangedEvent(ViewKey.HEADER, true);
+          // Do nothing this just means that the block chain download has begun
 
         }
 
         @Override
         public void onFailure(Throwable t) {
-          // TODO Update the UI showing failure
 
-          // Show the header view
-          ViewEvents.fireViewChangedEvent(ViewKey.HEADER, true);
+          // Have a failure
+          walletRepaired = Optional.of(Boolean.FALSE);
+          ViewEvents.fireComponentChangedEvent(getPanelName(), Optional.of(this));
+
         }
       });
 
     }
   }
-
 }

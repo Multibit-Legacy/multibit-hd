@@ -28,7 +28,6 @@ import javax.swing.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -168,6 +167,7 @@ public class BitcoinNetworkService extends AbstractService {
    * <p>Download the block chain in a new thread</p>
    */
   public void downloadBlockChainInBackground() {
+
     getExecutorService().submit(new Runnable() {
       @Override
       public void run() {

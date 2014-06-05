@@ -242,7 +242,7 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
         }
       });
     } else {
-      log.debug("Not updating recent payments as panel is not initialised");
+      log.trace("Not updating recent payments as panel is not initialised");
     }
   }
 

@@ -6,6 +6,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
@@ -135,6 +136,9 @@ public class MainView extends JFrame {
       // No wizards so this reset is a wallet unlock or settings change
       // Something else will handle the hide
       detailViewAfterWalletOpened();
+
+      // Show the header information
+      ViewEvents.fireViewChangedEvent(ViewKey.HEADER, true);
 
     }
 
