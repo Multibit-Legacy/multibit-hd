@@ -36,8 +36,6 @@ public class ShowContactsScreenUseCase extends AbstractFestUseCase {
       .requireEnabled()
       .selectRow(CONTACTS_ROW);
 
-    pause(500, TimeUnit.MILLISECONDS);
-
     // Expect the Contacts screen to show
     window
       .textBox(MessageKey.SEARCH.getKey())

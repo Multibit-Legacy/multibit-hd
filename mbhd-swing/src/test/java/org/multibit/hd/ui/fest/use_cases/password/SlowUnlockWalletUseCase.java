@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.fest.use_cases.password;
 
 import org.fest.swing.fixture.FrameFixture;
-import org.fest.swing.timing.Pause;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -63,7 +62,7 @@ public class SlowUnlockWalletUseCase extends AbstractFestUseCase {
       .click();
 
     // Fixed time to fail to unlock
-    Pause.pause(3, TimeUnit.SECONDS);
+    pauseForFailedWalletUnlock();
 
     // Verify failure colouring
     window
@@ -99,7 +98,7 @@ public class SlowUnlockWalletUseCase extends AbstractFestUseCase {
       .click();
 
     // Fixed time to unlock
-    Pause.pause(3, TimeUnit.SECONDS);
+    pauseForWalletUnlock();
 
   }
 

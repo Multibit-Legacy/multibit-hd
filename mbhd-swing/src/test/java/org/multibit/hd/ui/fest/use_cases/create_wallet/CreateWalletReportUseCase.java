@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.swing.timing.Pause.pause;
 import static org.fest.swing.timing.Timeout.timeout;
 
 /**
@@ -36,8 +35,8 @@ public class CreateWalletReportUseCase extends AbstractFestUseCase {
       .label(MessageKey.CREATE_WALLET_REPORT_TITLE.getKey())
       .requireText(Languages.safeText(MessageKey.CREATE_WALLET_REPORT_TITLE));
 
-    // Building the wallet can take time (allow at least 5 seconds)
-    pause(5, TimeUnit.SECONDS);
+    // Building the wallet can take time
+    pauseForWalletCreation();
 
     window
       .label(MessageKey.SEED_PHRASE_CREATED_STATUS.getKey())
@@ -61,8 +60,8 @@ public class CreateWalletReportUseCase extends AbstractFestUseCase {
       .requireEnabled(timeout(2, TimeUnit.SECONDS))
       .click();
 
-    // Wait for password wizard Exit button to appear (allow at least 2 seconds)
-    pause(2, TimeUnit.SECONDS);
+    // Wait for password wizard Exit button to appear
+    pauseForViewReset();
 
     window
       .button(MessageKey.EXIT.getKey())

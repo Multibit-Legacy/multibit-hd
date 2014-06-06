@@ -5,9 +5,6 @@ import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import static org.fest.swing.timing.Pause.pause;
 
 /**
  * <p>Use case to provide the following to FEST testing:</p>
@@ -34,7 +31,7 @@ public class VerifyExchangeNoneUseCase extends AbstractFestUseCase {
       .click();
 
     // Allow time for the exchange rate provider to render
-    pause(1, TimeUnit.SECONDS);
+    pauseForViewReset();
 
     // Verify the "exchange" wizard appears
     window
@@ -86,8 +83,8 @@ public class VerifyExchangeNoneUseCase extends AbstractFestUseCase {
       .comboBox(MessageKey.SELECT_LOCAL_CURRENCY.getKey())
       .selectItem(0);
 
-    // Allow time for currency to verify
-    pause(2, TimeUnit.SECONDS);
+    // Allow time for currency to verify (can be slow)
+    pauseForViewReset();
 
     // Click Apply
     window
@@ -95,8 +92,8 @@ public class VerifyExchangeNoneUseCase extends AbstractFestUseCase {
       .requireEnabled()
       .click();
 
-    // Allow time for configuration reset
-    pause(1, TimeUnit.SECONDS);
+    // Allow time for component to change
+    pauseForComponentReset();
 
     // Verify the underlying screen is back
     window
@@ -147,8 +144,8 @@ public class VerifyExchangeNoneUseCase extends AbstractFestUseCase {
       .requireEnabled()
       .click();
 
-    // Allow time for configuration reset
-    pause(1, TimeUnit.SECONDS);
+    // Allow time for component to change
+    pauseForComponentReset();
 
     // Verify the underlying screen is back
     window

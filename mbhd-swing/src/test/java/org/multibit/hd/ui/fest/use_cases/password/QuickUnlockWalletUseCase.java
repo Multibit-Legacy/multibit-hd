@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.fest.use_cases.password;
 
 import org.fest.swing.fixture.FrameFixture;
-import org.fest.swing.timing.Pause;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
@@ -54,7 +53,7 @@ public class QuickUnlockWalletUseCase extends AbstractFestUseCase {
       .click();
 
     // Fixed time to unlock
-    Pause.pause(5, TimeUnit.SECONDS);
+    pauseForWalletUnlock();
 
   }
 

@@ -5,9 +5,6 @@ import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import static org.fest.swing.timing.Pause.pause;
 
 /**
  * <p>Use case to provide the following to FEST testing:</p>
@@ -33,8 +30,8 @@ public class VerifyExchangeOERUseCase extends AbstractFestUseCase {
       .button(MessageKey.SHOW_EXCHANGE_WIZARD.getKey())
       .click();
 
-    // Allow time for the exchange rate provider to render
-    pause(1, TimeUnit.SECONDS);
+    // Allow time for component to change
+    pauseForComponentReset();
 
     // Verify the "exchange" wizard appears
     window

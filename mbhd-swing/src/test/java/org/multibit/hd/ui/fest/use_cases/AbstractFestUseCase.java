@@ -4,6 +4,7 @@ import org.fest.swing.core.matcher.JButtonMatcher;
 import org.fest.swing.core.matcher.JLabelMatcher;
 import org.fest.swing.core.matcher.JTextComponentMatcher;
 import org.fest.swing.fixture.FrameFixture;
+import org.fest.swing.timing.Pause;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.event.KeyEvent;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -162,5 +164,46 @@ public abstract class AbstractFestUseCase {
 
   }
 
+  /**
+   * The standard length of time for a wallet to fail to unlock
+   */
+  protected void pauseForFailedWalletUnlock() {
+    Pause.pause(3, TimeUnit.SECONDS);
+  }
+
+  /**
+   * The standard length of time for a wallet to unlock
+   */
+  protected void pauseForWalletUnlock() {
+    Pause.pause(5, TimeUnit.SECONDS);
+  }
+
+  /**
+   * The standard length of time for a wallet to be created (at least 5 seconds)
+   */
+  protected void pauseForWalletCreation() {
+    Pause.pause(5, TimeUnit.SECONDS);
+  }
+
+  /**
+   * The standard length of time for data to persist (e.g. contacts)
+   */
+  protected void pauseForDataPersistence() {
+    Pause.pause(1, TimeUnit.SECONDS);
+  }
+
+  /**
+   * The standard length of time for a view reset to occur (e.g. configuration change)
+   */
+  protected void pauseForViewReset() {
+    Pause.pause(2, TimeUnit.SECONDS);
+  }
+
+  /**
+   * The standard length of time for a component reset to occur (e.g. exchange list)
+   */
+  protected void pauseForComponentReset() {
+    Pause.pause(1, TimeUnit.SECONDS);
+  }
 
 }

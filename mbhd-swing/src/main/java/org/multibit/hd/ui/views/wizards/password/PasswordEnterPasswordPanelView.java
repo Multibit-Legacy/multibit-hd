@@ -294,7 +294,8 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
       try {
         WalletManager.INSTANCE.open(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, password);
       } catch (WalletLoadException wle) {
-        log.error(wle.getMessage(), wle);
+        // Mostly this will be from a bad 
+        log.error(wle.getMessage());
         // Assume bad password
         return false;
       }
