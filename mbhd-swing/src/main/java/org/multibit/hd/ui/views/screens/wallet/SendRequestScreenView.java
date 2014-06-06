@@ -170,6 +170,10 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
   @Subscribe
   public void onBitcoinNetworkChangeEvent(final BitcoinNetworkChangedEvent event) {
 
+    if (!isInitialised()) {
+      return;
+    }
+
     log.trace("Received 'Bitcoin network changed' event: {}", event.getSummary());
 
     Preconditions.checkNotNull(event, "'event' must be present");
@@ -180,10 +184,6 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
     Preconditions.checkNotNull(summary.getSeverity(), "'severity' must be present");
     Preconditions.checkNotNull(summary.getMessageKey(), "'errorKey' must be present");
     Preconditions.checkNotNull(summary.getMessageData(), "'errorData' must be present");
-
-    if (!isInitialised()) {
-      return;
-    }
 
     // Keep the UI response to a minimum due to the volume of these events
     updateSendRequestButtons(event);
@@ -210,40 +210,40 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
 
   private void update() {
 
-    if (isInitialised()) {
-
-      // Ensure the buttons are kept up to date
-      Optional<BitcoinNetworkChangedEvent> changedEvent = CoreServices.getApplicationEventService().getLatestBitcoinNetworkChangedEvent();
-      if (changedEvent.isPresent()) {
-        updateSendRequestButtons(changedEvent.get());
-      }
-
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-
-          List<PaymentData> allPayments = walletService.getPaymentDataList();
-
-          // Find the 'Sending' transactions for today
-          List<PaymentData> todaysSendingPayments = walletService.subsetPaymentsAndSort(allPayments, PaymentType.SENDING);
-          displaySendingPaymentsMaV.getModel().setValue(todaysSendingPayments);
-
-          // Find the receiving events for today
-          List<PaymentData> todaysReceivingPayments = walletService.subsetPaymentsAndSort(allPayments, PaymentType.RECEIVING);
-          displayReceivingPaymentsMaV.getModel().setValue(todaysReceivingPayments);
-
-          displaySendingPaymentsMaV.getView().createView();
-          displaySendingPaymentsMaV.getView().updateView();
-
-          displayReceivingPaymentsMaV.getView().createView();
-          displayReceivingPaymentsMaV.getView().updateView();
-          sendBitcoin.requestFocusInWindow();
-
-        }
-      });
-    } else {
-      log.trace("Not updating recent payments as panel is not initialised");
+    if (!isInitialised()) {
+      return;
     }
+
+    // Ensure the buttons are kept up to date
+    Optional<BitcoinNetworkChangedEvent> changedEvent = CoreServices.getApplicationEventService().getLatestBitcoinNetworkChangedEvent();
+    if (changedEvent.isPresent()) {
+      updateSendRequestButtons(changedEvent.get());
+    }
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+
+        List<PaymentData> allPayments = walletService.getPaymentDataList();
+
+        // Find the 'Sending' transactions for today
+        List<PaymentData> todaysSendingPayments = walletService.subsetPaymentsAndSort(allPayments, PaymentType.SENDING);
+        displaySendingPaymentsMaV.getModel().setValue(todaysSendingPayments);
+
+        // Find the receiving events for today
+        List<PaymentData> todaysReceivingPayments = walletService.subsetPaymentsAndSort(allPayments, PaymentType.RECEIVING);
+        displayReceivingPaymentsMaV.getModel().setValue(todaysReceivingPayments);
+
+        displaySendingPaymentsMaV.getView().createView();
+        displaySendingPaymentsMaV.getView().updateView();
+
+        displayReceivingPaymentsMaV.getView().createView();
+        displayReceivingPaymentsMaV.getView().updateView();
+        sendBitcoin.requestFocusInWindow();
+
+      }
+    });
+
   }
 
   private void updateSendRequestButtons(BitcoinNetworkChangedEvent event) {

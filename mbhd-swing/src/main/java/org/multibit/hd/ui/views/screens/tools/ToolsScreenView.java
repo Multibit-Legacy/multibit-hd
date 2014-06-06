@@ -1,8 +1,12 @@
 package org.multibit.hd.ui.views.screens.tools;
 
+import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.dto.BitcoinNetworkStatus;
+import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
@@ -33,7 +37,7 @@ import java.io.File;
  */
 public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
 
-  private JButton primaryButton;
+  private JButton showEmptyWalletButton;
 
   /**
    * @param panelModel The model backing this panel view
@@ -62,10 +66,12 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
 
     JPanel contentPanel = Panels.newPanel(layout);
 
-    primaryButton = Buttons.newShowEditWalletButton(getShowWalletDetailsAction());
+    JButton primaryButton = Buttons.newShowEditWalletButton(getShowWalletDetailsAction());
+
+    showEmptyWalletButton = Buttons.newShowEmptyWalletButton(getShowEmptyWalletAction());
 
     contentPanel.add(primaryButton, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
-    contentPanel.add(Buttons.newShowEmptyWalletButton(getShowEmptyWalletAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    contentPanel.add(showEmptyWalletButton, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowRepairWalletButton(getShowRepairWalletAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
 
     contentPanel.add(Buttons.newShowChangePasswordButton(getShowChangePasswordAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
@@ -77,6 +83,31 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
 
     return contentPanel;
   }
+
+  /**
+   * @param event The "Bitcoin network changed" event - one per block downloaded during synchronization
+   */
+  @Subscribe
+  public void onBitcoinNetworkChangeEvent(final BitcoinNetworkChangedEvent event) {
+
+    if (!isInitialised()) {
+      return;
+    }
+
+    Preconditions.checkNotNull(event, "'event' must be present");
+    Preconditions.checkNotNull(event.getSummary(), "'summary' must be present");
+
+    BitcoinNetworkSummary summary = event.getSummary();
+
+    Preconditions.checkNotNull(summary.getSeverity(), "'severity' must be present");
+    Preconditions.checkNotNull(summary.getMessageKey(), "'errorKey' must be present");
+    Preconditions.checkNotNull(summary.getMessageData(), "'errorData' must be present");
+
+    // Keep the UI response to a minimum due to the volume of these events
+    updateEmptyButton(event);
+
+  }
+
 
   /**
    * @return An action to show the "welcome wizard"
@@ -207,6 +238,49 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
 
 
   }
+
+  private void updateEmptyButton(BitcoinNetworkChangedEvent event) {
+
+    boolean currentEnabled = showEmptyWalletButton.isEnabled();
+
+    final boolean newEnabled;
+
+    // NOTE: Show empty wallet is disabled when the network is not available
+    // because it is possible that a second wallet is generating transactions using
+    // addresses that this one has not displayed yet. This would lead to the same
+    // address being used twice.
+    switch (event.getSummary().getSeverity()) {
+      case RED:
+        // Always disabled on RED
+        newEnabled = false;
+        break;
+      case AMBER:
+        // Enable on AMBER only if unrestricted
+        newEnabled = InstallationManager.unrestricted;
+        break;
+      case GREEN:
+        // Enable on GREEN only if synchronized or unrestricted
+        newEnabled = BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus()) || InstallationManager.unrestricted;
+        break;
+      default:
+        // Unknown status
+        throw new IllegalStateException("Unknown event severity " + event.getSummary().getStatus());
+    }
+
+    // Test for a change in condition
+    if (currentEnabled != newEnabled) {
+
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          showEmptyWalletButton.setEnabled(newEnabled);
+        }
+      });
+
+    }
+
+  }
+
 
 
 }
