@@ -89,7 +89,11 @@ public class ResourceBundleTools {
 
         // Have a candidate pair
         String[] pair = targetLine.split("=");
-        targetMap.put(pair[0], pair[1]);
+
+        // Remove legacy keys
+        if (!pair[0].contains(".")) {
+          targetMap.put(pair[0], pair[1]);
+        }
       }
 
       final BufferedWriter writer = new BufferedWriter(new FileWriter(targetFileName));
