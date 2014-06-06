@@ -10,7 +10,6 @@ import org.multibit.hd.core.managers.WalletManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigInteger;
 import java.util.List;
 
 public class MultiBitPeerEventListener implements PeerEventListener {

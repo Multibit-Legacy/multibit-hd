@@ -27,7 +27,6 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -81,7 +80,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     localAmountText = TextBoxes.newLocalAmount(999_999_999_999_999.9999);
 
     // Set initial Bitcoin amount from the model (if non-zero)
-    if (!BigInteger.ZERO.equals(getModel().get().getCoinAmount())) {
+    if (!Coin.ZERO.equals(getModel().get().getCoinAmount())) {
       BitcoinSymbol bitcoinSymbol = BitcoinSymbol.current();
       BigDecimal symbolicAmount = Coins.toSymbolicAmount(getModel().get().getCoinAmount(), bitcoinSymbol);
       bitcoinAmountText.setText(symbolicAmount.toPlainString());

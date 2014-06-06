@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.math.BigInteger;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -149,7 +148,7 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
     boolean bitcoinAmountOK = !getPanelModel().get()
       .getEnterAmountModel()
       .getCoinAmount()
-      .equals(BigInteger.ZERO);
+      .equals(Coin.ZERO);
 
     boolean recipientOK = getPanelModel().get()
       .getEnterRecipientModel()

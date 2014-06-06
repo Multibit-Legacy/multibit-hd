@@ -23,7 +23,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.SecureRandom;
@@ -227,7 +226,7 @@ public class FeeService {
       // Work out the count of the sends at which the next payment will be made
       // The first nextSendFeeCount is earlier than others by a factor of FIRST_SEND_DELTA_FACTOR
       int numberOfSendCountsPaidFor = (int)feePaid.divide(FEE_PER_SEND);
-      if (feePaid.equals(BigInteger.ZERO)) {
+      if (feePaid.equals(Coin.ZERO)) {
         // This is the first fee payment
         nextSendFeeCount = (int)Math.floor(FIRST_SEND_DELTA_FACTOR *
                 (NEXT_SEND_DELTA_LOWER_LIMIT + secureRandom.nextInt(NEXT_SEND_DELTA_UPPER_LIMIT - NEXT_SEND_DELTA_LOWER_LIMIT)));

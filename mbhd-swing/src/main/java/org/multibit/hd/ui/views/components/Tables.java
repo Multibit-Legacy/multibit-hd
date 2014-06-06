@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
+import com.google.bitcoin.core.Coin;
 import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.*;
@@ -15,7 +16,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.List;
 
@@ -165,8 +165,8 @@ public class Tables {
     rowSorter.setComparator(PaymentTableModel.TYPE_COLUMN_INDEX, comparatorPaymentType);
 
     // Comparator for amount BTC
-    Comparator<BigInteger> comparatorBigInteger = newBigIntegerComparator();
-    rowSorter.setComparator(PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX, comparatorBigInteger);
+    Comparator<Coin> comparatorCoin = newCoinComparator();
+    rowSorter.setComparator(PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX, comparatorCoin);
 
     // Comparator for amount fiat
     Comparator<FiatPayment> comparatorFiatPayment = newFiatPaymentComparator();
@@ -273,14 +273,14 @@ public class Tables {
   }
 
   /**
-   * @return A new BigInteger comparator for use with a TableRowSorter
+   * @return A new Coin comparator for use with a TableRowSorter
    */
-  private static Comparator<BigInteger> newBigIntegerComparator() {
+  private static Comparator<Coin> newCoinComparator() {
 
-    return new Comparator<BigInteger>() {
+    return new Comparator<Coin>() {
 
       @Override
-      public int compare(BigInteger o1, BigInteger o2) {
+      public int compare(Coin o1, Coin o2) {
 
         if (o1 != null && o2 == null) {
           return 1;
