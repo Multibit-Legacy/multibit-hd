@@ -3,7 +3,6 @@ package org.multibit.hd.ui.views.wizards.payments;
 import com.google.common.collect.Lists;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.PaymentRequestData;
-import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +51,6 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
   public PaymentsWizardModel(PaymentsState state, PaymentData paymentData) {
     super(state);
     this.paymentData = paymentData;
-    CoreServices.uiEventBus.register(this);
   }
 
   @Override

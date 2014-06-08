@@ -64,6 +64,10 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
     // Bind it to the wizard model
     getWizardModel().setEnterAmountPanelModel(panelModel);
 
+    // Register components
+    getComponents().add(enterAmountMaV);
+    getComponents().add(enterRecipientMaV);
+
   }
 
   @Override
@@ -121,19 +125,6 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
     });
 
   }
-
-  @Override
-  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
-
-    // Always call super() before hide
-    return super.beforeHide(
-      isExitCancel,
-      enterAmountMaV,
-      enterRecipientMaV
-    );
-
-  }
-
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {

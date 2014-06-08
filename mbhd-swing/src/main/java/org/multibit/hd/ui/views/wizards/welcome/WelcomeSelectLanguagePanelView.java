@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configuration;
@@ -38,6 +39,7 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
 
   private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV;
   private JComboBox<String> languagesComboBox;
+  private ListeningExecutorService localeExecutorService = SafeExecutors.newSingleThreadExecutor("locale-change");
 
   /**
    * @param wizard    The wizard managing the states
@@ -59,6 +61,9 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
 
     // Bind it to the wizard model
     getWizardModel().setLocaleCode(localeCode);
+
+    // Register components
+    getComponents().add(displaySecurityPopoverMaV);
 
   }
 
@@ -119,17 +124,6 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
   }
 
   @Override
-  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
-
-    // Always call super() before hide
-    return super.beforeHide(
-      isExitCancel,
-      displaySecurityPopoverMaV
-    );
-  }
-
-
-  @Override
   public void updateFromComponentModels(Optional componentModel) {
 
     // Do nothing - panel model is updated via an action and wizard model is not applicable
@@ -145,12 +139,14 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
   public void actionPerformed(final ActionEvent e) {
 
     // Hand over the configuration change to a background task
-    SafeExecutors.newFixedThreadPool(1, "locale-change").execute(new Runnable() {
+    localeExecutorService.execute(new Runnable() {
       @Override
       public void run() {
 
         JComboBox source = (JComboBox) e.getSource();
         String localeCode = LanguageKey.values()[source.getSelectedIndex()].getKey();
+
+        log.debug("Language changed to '{}'. Starting UI reset.", localeCode);
 
         // Determine the new locale
         Locale newLocale = Languages.newLocaleFromCode(localeCode);
@@ -161,6 +157,9 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
 
         // Make the switch immediately
         Configurations.switchConfiguration(newConfiguration);
+
+        // Trigger the wizard hide process manually (no suitable button available)
+        ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
 
       }
     });

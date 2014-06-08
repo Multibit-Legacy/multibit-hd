@@ -89,7 +89,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     Optional<CharSequence> passwordParameter = Optional.absent();
     CharSequence password = currentWalletSummary.get().getPassword();
     if (currentWalletSummary.isPresent()) {
-      if (!( password == null) && !"".equals(password)) {
+      if (!(password == null) && !"".equals(password)) {
         passwordParameter = Optional.of(password);
       }
     }
@@ -98,7 +98,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
 
     // Recreate bloom filter
     BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
-    Preconditions.checkState(bitcoinNetworkService.isStartedOk(),"'bitcoinNetworkService' should be started OK");
+    Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started OK");
     bitcoinNetworkService.recalculateFastCatchupAndFilter();
 
     displayBitcoinAddressMaV = Components.newDisplayBitcoinAddressMaV(nextAddress);
@@ -123,6 +123,12 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     getWizardModel().setEnterAmountModel(enterAmountMaV.getModel());
     getWizardModel().setTransactionLabel(label.getText());
     getWizardModel().setNotes(Optional.of(notesTextArea.getText()));
+
+    // Register components
+    getComponents().add(enterAmountMaV);
+    getComponents().add(displayBitcoinAddressMaV);
+    getComponents().add(displayQRCodePopoverMaV);
+
   }
 
   @Override
@@ -174,15 +180,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
   }
 
   @Override
-  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
-
-    // Always call super() before hiding
-    super.beforeHide(
-      isExitCancel,
-      enterAmountMaV,
-      displayBitcoinAddressMaV,
-      displayQRCodePopoverMaV
-    );
+  public boolean beforeHide(boolean isExitCancel) {
 
     savePaymentRequest();
 

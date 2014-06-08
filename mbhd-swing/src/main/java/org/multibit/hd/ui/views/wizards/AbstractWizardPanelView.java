@@ -2,12 +2,15 @@ package org.multibit.hd.ui.views.wizards;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ComponentChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardButtonEnabledEvent;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.models.Model;
+import org.multibit.hd.ui.views.View;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
@@ -17,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.util.List;
 
 /**
  * <p>Abstract base class providing the following to wizard panel views:</p>
@@ -74,6 +78,9 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
    * True if the contents making up this screen have been populated
    */
   private boolean initialised = false;
+
+  // Components
+  private List<ModelAndView<? extends Model, ? extends View>> components = Lists.newArrayList();
 
   // Buttons
   private Optional<JButton> exitButton = Optional.absent();
@@ -153,6 +160,8 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
    * <pre>
    * ... initialise components ...
    *
+   * getComponents().add(aComponent);
+   *
    * contentPanel.setLayout(new MigLayout(
    *   Panels.migXYLayout(),
    *   "[][]", // Column constraints
@@ -173,6 +182,13 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
    * @param wizard The wizard providing exit/cancel information for button selection
    */
   protected abstract void initialiseButtons(AbstractWizard<M> wizard);
+
+  /**
+   * @return The list of {@link ModelAndView} entries for this view to allow the deregister of UI events. Can be empty, but never null.
+   */
+  public List<ModelAndView<? extends Model, ? extends View>> getComponents() {
+    return components;
+  }
 
   /**
    * @return The wizard model providing aggregated state information
@@ -359,34 +375,15 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
   }
 
   /**
-   * <p>Called before this wizard panel is about to be hidden</p>
-   *
-   * <p>Implementers must use this as an opportunity to deregister with the UI event bus for both the wizard and its components</p>
+   * <p>Called before this wizard is about to be hidden.</p>
    *
    * <p>Typically this is where a panel view would {@link #updateFromComponentModels}, but implementations will vary</p>
    *
    * @param isExitCancel True if this hide action comes from a exit or cancel operation
-   * @param mavs         The references to any {@link ModelAndView} instances that subscribe to UI events
    *
    * @return True if the panel can be hidden, false if the hide operation should be aborted (perhaps due to a data error)
    */
-  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
-
-    // Ensure we deregister for events
-    CoreServices.uiEventBus.unregister(this);
-
-    // Deregister all components
-    if (mavs != null) {
-
-      for (ModelAndView mav : mavs) {
-        try {
-          CoreServices.uiEventBus.unregister(mav);
-        } catch (IllegalArgumentException e) {
-          log.warn("ModelAndView {} was not registered", mav.getClass().getSimpleName(), e);
-        }
-      }
-
-    }
+  public boolean beforeHide(boolean isExitCancel) {
 
     // Default is to return OK
     return true;
@@ -538,6 +535,4 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
     }
 
   }
-
-
 }

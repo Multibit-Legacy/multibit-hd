@@ -52,6 +52,9 @@ public class CreateWalletSelectBackupLocationPanelView extends AbstractWizardPan
 
     getWizardModel().setCloudBackupLocationSelectFileModel(selectFileMaV.getModel());
 
+    // Register components
+    getComponents().add(selectFileMaV);
+
   }
 
   @Override
@@ -72,14 +75,6 @@ public class CreateWalletSelectBackupLocationPanelView extends AbstractWizardPan
   protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
 
     PanelDecorator.addExitCancelPreviousNext(this, wizard);
-
-  }
-
-  @Override
-  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
-
-    // Always call super() before hide
-    return super.beforeHide(isExitCancel, selectFileMaV);
 
   }
 

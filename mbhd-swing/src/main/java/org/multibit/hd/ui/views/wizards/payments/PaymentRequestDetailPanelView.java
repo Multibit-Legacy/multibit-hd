@@ -148,6 +148,10 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
     contentPanel.add(exchangeRateLabel);
     contentPanel.add(exchangeRateValue, "wrap");
+
+    // Register components
+    getComponents().add(displayQRCodePopoverMaV);
+
   }
 
   @Override
@@ -171,18 +175,6 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
     });
 
   }
-
-  @Override
-  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
-
-    // Always call super() before hide
-    return super.beforeHide(
-      isExitCancel,
-      displayQRCodePopoverMaV
-    );
-
-  }
-
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {

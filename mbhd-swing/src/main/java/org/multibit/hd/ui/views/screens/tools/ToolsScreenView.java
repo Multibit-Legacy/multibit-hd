@@ -9,7 +9,6 @@ import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.WizardHideEvent;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -55,8 +54,6 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
 
   @Override
   public JPanel initialiseScreenViewPanel() {
-
-    CoreServices.uiEventBus.register(this);
 
     MigLayout layout = new MigLayout(
       Panels.migXYLayout(),

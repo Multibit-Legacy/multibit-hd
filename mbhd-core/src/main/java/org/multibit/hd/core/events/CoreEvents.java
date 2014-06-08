@@ -32,7 +32,7 @@ public class CoreEvents {
   private static boolean waitingToFireSlowTransactionSeenEvent = false;
   private static final Object lockObject = new Object();
 
-  private static ListeningScheduledExecutorService safeExecutor = SafeExecutors.newSingleThreadScheduledExecutor("tx-seen");
+  private static ListeningScheduledExecutorService txSeenExecutor = SafeExecutors.newSingleThreadScheduledExecutor("tx-seen");
 
   /**
    * Utilities have a private constructor
@@ -106,11 +106,12 @@ public class CoreEvents {
    * Consolidate many transactionSeenEvents into a single call per (slow)time interval
    */
   private static void consolidateTransactionSeenEvents() {
+
     synchronized (lockObject) {
       if (!waitingToFireSlowTransactionSeenEvent) {
         // Fire in the future
         waitingToFireSlowTransactionSeenEvent = true;
-        safeExecutor.schedule(new Callable() {
+        txSeenExecutor.schedule(new Callable() {
           @Override
           public Object call() throws Exception {
             CoreServices.uiEventBus.post(new SlowTransactionSeenEvent());
@@ -122,6 +123,7 @@ public class CoreEvents {
         }, CONSOLIDATION_INTERVAL, TimeUnit.MILLISECONDS);
       }
     }
+
   }
 
   /**

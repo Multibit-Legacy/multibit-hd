@@ -81,7 +81,6 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
    */
   public SendBitcoinWizardModel(SendBitcoinState state, SendBitcoinParameter parameter) {
     super(state);
-    CoreServices.uiEventBus.register(this);
 
     this.bitcoinURI = parameter.getBitcoinURI();
     this.emptyWallet = parameter.isEmptyWallet();

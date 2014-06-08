@@ -27,7 +27,7 @@ import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.CREATE
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 
 public class CreateWalletConfirmSeedPhrasePanelView extends AbstractWizardPanelView<WelcomeWizardModel, List<String>> {
@@ -35,8 +35,8 @@ public class CreateWalletConfirmSeedPhrasePanelView extends AbstractWizardPanelV
   private ModelAndView<EnterSeedPhraseModel, EnterSeedPhraseView> enterSeedPhraseMaV;
 
   /**
-   * @param wizard The wizard managing the states
-   * @param panelName   The panel name to filter events from components
+   * @param wizard    The wizard managing the states
+   * @param panelName The panel name to filter events from components
    */
   public CreateWalletConfirmSeedPhrasePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
@@ -51,6 +51,9 @@ public class CreateWalletConfirmSeedPhrasePanelView extends AbstractWizardPanelV
     setPanelModel(enterSeedPhraseMaV.getModel().getValue());
 
     getWizardModel().setCreateWalletEnterSeedPhraseModel(enterSeedPhraseMaV.getModel());
+
+    // Register components
+    getComponents().add(enterSeedPhraseMaV);
 
   }
 
@@ -72,14 +75,6 @@ public class CreateWalletConfirmSeedPhrasePanelView extends AbstractWizardPanelV
   protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
 
     PanelDecorator.addExitCancelNext(this, wizard);
-
-  }
-
-  @Override
-  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
-
-    // Always call super() before hide
-    return super.beforeHide(isExitCancel, enterSeedPhraseMaV);
 
   }
 

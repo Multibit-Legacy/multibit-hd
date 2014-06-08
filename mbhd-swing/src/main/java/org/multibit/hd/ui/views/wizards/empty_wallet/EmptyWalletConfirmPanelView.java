@@ -95,6 +95,11 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
 
     contentPanel.add(Labels.newBlankLabel(), "top, growx, push,wrap");
 
+    // Register components
+    getComponents().add(transactionDisplayAmountMaV);
+    getComponents().add(transactionFeeDisplayAmountMaV);
+    getComponents().add(clientFeeDisplayAmountMaV);
+
   }
 
   @Override
@@ -189,20 +194,6 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
     });
 
   }
-
-  @Override
-  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
-
-    // Always call super() before hide
-    return super.beforeHide(
-      isExitCancel,
-      transactionDisplayAmountMaV,
-      transactionFeeDisplayAmountMaV,
-      clientFeeDisplayAmountMaV
-    );
-
-  }
-
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {

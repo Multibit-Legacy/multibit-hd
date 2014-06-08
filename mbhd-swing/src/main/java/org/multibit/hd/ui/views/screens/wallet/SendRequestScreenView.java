@@ -74,9 +74,6 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
   @Override
   public JPanel initialiseScreenViewPanel() {
 
-    // Only register when there is something to do
-    CoreServices.uiEventBus.register(this);
-
     walletService = CoreServices.getCurrentWalletService();
 
     MigLayout layout = new MigLayout(

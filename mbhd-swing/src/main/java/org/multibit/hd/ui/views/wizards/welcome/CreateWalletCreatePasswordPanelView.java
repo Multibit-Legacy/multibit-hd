@@ -48,6 +48,9 @@ public class CreateWalletCreatePasswordPanelView extends AbstractWizardPanelView
 
     getWizardModel().setConfirmPasswordModel(confirmPasswordMaV.getModel());
 
+    // Register components
+    getComponents().add(confirmPasswordMaV);
+
   }
 
   @Override
@@ -68,14 +71,6 @@ public class CreateWalletCreatePasswordPanelView extends AbstractWizardPanelView
   protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
 
     PanelDecorator.addExitCancelNext(this, wizard);
-
-  }
-
-  @Override
-  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
-
-    // Always call super() before hide
-    return super.beforeHide(isExitCancel, confirmPasswordMaV);
 
   }
 

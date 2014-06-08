@@ -38,8 +38,6 @@ public class AboutScreenView extends AbstractScreenView<AboutScreenModel>  {
   @Override
   public JPanel initialiseScreenViewPanel() {
 
-    CoreServices.uiEventBus.register(this);
-
     MigLayout layout = new MigLayout(
       Panels.migXYLayout(),
       "[]10[]", // Column constraints

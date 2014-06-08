@@ -88,6 +88,10 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
     // Bind it to the wizard model
     getWizardModel().setEnterPasswordPanelModel(panelModel);
 
+    // Register components
+    getComponents().add(enterPasswordMaV);
+    getComponents().add(selectWalletMaV);
+
   }
 
   @Override
@@ -106,6 +110,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
     contentPanel.add(selectWalletMaV.getView().newComponentPanel(), "wrap");
 
     contentPanel.add(Labels.newRestoreWalletNote(), "wrap");
+
   }
 
   @Override
@@ -171,18 +176,11 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
   }
 
   @Override
-  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
-
-    // Do not call the superclass to deregister this wizard since it uses a deferred hide
+  public boolean beforeHide(boolean isExitCancel) {
 
     // Don't block an exit
     if (isExitCancel) {
-      return super.beforeHide(
-        true,
-        displaySecurityPopoverMaV,
-        enterPasswordMaV,
-        selectWalletMaV
-      );
+      return true;
     }
 
     // Start the spinner (we are deferring the hide)

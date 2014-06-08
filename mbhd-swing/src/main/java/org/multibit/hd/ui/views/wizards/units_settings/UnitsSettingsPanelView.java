@@ -126,6 +126,9 @@ public class UnitsSettingsPanelView extends AbstractWizardPanelView<UnitsWizardM
     contentPanel.add(Labels.newExample(), "shrink,wrap");
     contentPanel.add(displayAmountMaV.getView().newComponentPanel(), "push,span 3,align center,wrap");
 
+    // Register components
+    getComponents().add(displayAmountMaV);
+
   }
 
   @Override
@@ -160,10 +163,7 @@ public class UnitsSettingsPanelView extends AbstractWizardPanelView<UnitsWizardM
   }
 
   @Override
-  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
-
-    // Always call super() before hiding
-    super.beforeHide(isExitCancel, displayAmountMaV);
+  public boolean beforeHide(boolean isExitCancel) {
 
     if (!isExitCancel) {
 

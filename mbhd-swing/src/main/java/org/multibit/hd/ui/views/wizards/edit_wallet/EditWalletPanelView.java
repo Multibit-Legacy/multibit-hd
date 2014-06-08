@@ -76,6 +76,9 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
     name.setText(getWizardModel().getWalletSummary().getName());
     notes.setText(getWizardModel().getWalletSummary().getNotes());
 
+    // Register components
+    getComponents().add(walletDetailMaV);
+
   }
 
   @Override
@@ -109,10 +112,7 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
   }
 
   @Override
-  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
-
-    // Always call super() before hiding
-    super.beforeHide(isExitCancel, walletDetailMaV);
+  public boolean beforeHide(boolean isExitCancel) {
 
     if (!isExitCancel) {
 

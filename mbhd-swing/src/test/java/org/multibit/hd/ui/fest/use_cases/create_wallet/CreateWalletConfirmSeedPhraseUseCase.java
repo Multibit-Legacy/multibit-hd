@@ -88,6 +88,7 @@ public class CreateWalletConfirmSeedPhraseUseCase extends AbstractFestUseCase {
       .releaseKey(KeyEvent.VK_SHIFT);
 
     // Correct seed phrase
+    log.debug("Sending correct seed phrase {}", seedPhrase1);
     window
       .textBox(MessageKey.SEED_PHRASE.getKey())
       .setText(seedPhrase1)
@@ -100,6 +101,7 @@ public class CreateWalletConfirmSeedPhraseUseCase extends AbstractFestUseCase {
       .requireVisible();
 
     // Almost correct seed phrase (short)
+    log.debug("Sending short seed phrase");
     window
       .textBox(MessageKey.SEED_PHRASE.getKey())
       .setText(seedPhrase2)
@@ -113,6 +115,7 @@ public class CreateWalletConfirmSeedPhraseUseCase extends AbstractFestUseCase {
       .requireNotVisible();
 
     // Almost correct seed phrase (long)
+    log.debug("Sending long seed phrase");
     window
       .textBox(MessageKey.SEED_PHRASE.getKey())
       .setText(seedPhrase3)
@@ -131,6 +134,8 @@ public class CreateWalletConfirmSeedPhraseUseCase extends AbstractFestUseCase {
 
     String seedPhrase1 = (String) parameters.get(MessageKey.SEED_PHRASE.getKey());
 
+    log.debug("Sending correct seed phrase {}", seedPhrase1);
+
     window
       .textBox(MessageKey.SEED_PHRASE.getKey())
       .setText(seedPhrase1);
@@ -140,6 +145,7 @@ public class CreateWalletConfirmSeedPhraseUseCase extends AbstractFestUseCase {
       .button(MessageKey.HIDE.getKey())
       .click();
 
+    log.debug("Sending correct seed phrase (hidden)");
     String seedPhrase2 = window
       .textBox(MessageKey.SEED_PHRASE.getKey())
       .text();
@@ -151,6 +157,7 @@ public class CreateWalletConfirmSeedPhraseUseCase extends AbstractFestUseCase {
       .button(MessageKey.SHOW.getKey())
       .click();
 
+    log.debug("Sending correct seed phrase (showing)");
     String seedPhrase3 = window
       .textBox(MessageKey.SEED_PHRASE.getKey())
       .text();

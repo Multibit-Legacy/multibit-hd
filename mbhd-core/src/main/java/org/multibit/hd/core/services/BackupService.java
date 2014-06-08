@@ -272,8 +272,10 @@ public class BackupService extends AbstractService {
    */
   @Subscribe
   public void onShutdownEvent(ShutdownEvent shutdownEvent) {
+
     // A hard shutdown does not give enough time to wait gracefully
-    if (shutdownEvent != null && shutdownEvent.getShutdownType() == ShutdownEvent.ShutdownType.SOFT) {
+    // A soft shutdown occurs during FEST testing so the backups may not be running
+    if (shutdownEvent.getShutdownType() == ShutdownEvent.ShutdownType.SOFT && isBackupsAreRunning()) {
       log.debug("Performing backups at shutdown");
 
       // Disable any new backups
@@ -296,6 +298,7 @@ public class BackupService extends AbstractService {
 
       }, 0, TimeUnit.MILLISECONDS);
     }
+
   }
 
   /**

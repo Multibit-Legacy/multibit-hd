@@ -53,6 +53,9 @@ public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<Wel
     getWizardModel().setCreateWalletSeedPhrase(displaySeedPhraseMaV.getModel().getSeedPhrase());
     getWizardModel().setActualSeedTimestamp(displaySeedPhraseMaV.getModel().getSeedTimestamp());
 
+    // Register components
+    getComponents().add(displaySeedPhraseMaV);
+
   }
 
   @Override
@@ -83,15 +86,6 @@ public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<Wel
     ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
 
   }
-
-  @Override
-  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
-
-    // Always call super() before hide
-    return super.beforeHide(isExitCancel, displaySeedPhraseMaV);
-
-  }
-
 
   @Override
   public void afterShow() {

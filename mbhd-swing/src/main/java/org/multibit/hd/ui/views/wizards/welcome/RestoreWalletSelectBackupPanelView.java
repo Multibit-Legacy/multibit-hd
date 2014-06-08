@@ -52,6 +52,9 @@ public class RestoreWalletSelectBackupPanelView extends AbstractWizardPanelView<
     // Bind it to the wizard model
     getWizardModel().setSelectBackupSummaryModel(selectBackupMaV.getModel());
 
+    // Register components
+    getComponents().add(selectBackupMaV);
+
   }
 
   @Override
@@ -103,16 +106,6 @@ public class RestoreWalletSelectBackupPanelView extends AbstractWizardPanelView<
       }
     });
 
-  }
-
-  @Override
-  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
-
-    // Always call super() before hide
-    return super.beforeHide(
-      isExitCancel,
-      selectBackupMaV
-    );
   }
 
   @Override

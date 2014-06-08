@@ -57,6 +57,9 @@ public class RestoreWalletSeedPhrasePanelView extends AbstractWizardPanelView<We
 
     getWizardModel().setRestoreWalletEnterSeedPhraseModel(enterSeedPhraseMaV.getModel());
 
+    // Register components
+    getComponents().add(enterSeedPhraseMaV);
+
   }
 
   @Override
@@ -91,17 +94,6 @@ public class RestoreWalletSeedPhrasePanelView extends AbstractWizardPanelView<We
     });
 
   }
-
-  @Override
-  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
-
-    // Always call super() before hide
-    return super.beforeHide(
-      isExitCancel,
-      enterSeedPhraseMaV
-    );
-  }
-
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {

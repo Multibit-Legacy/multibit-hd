@@ -82,6 +82,11 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
     // Bind it to the wizard model
     getWizardModel().setChangePasswordPanelModel(panelModel);
 
+    // Register components
+    getComponents().add(enterPasswordMaV);
+    getComponents().add(confirmPasswordMaV);
+    getComponents().add(displaySecurityPopoverMaV);
+
   }
 
   @Override
@@ -147,17 +152,13 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
   }
 
   @Override
-  public boolean beforeHide(final boolean isExitCancel, final ModelAndView... mavs) {
+  public boolean beforeHide(final boolean isExitCancel) {
 
     // Don't call super since this is a deferred hide
 
     // Don't block an exit
     if (isExitCancel) {
-      return super.beforeHide(
-        true,
-        enterPasswordMaV,
-        confirmPasswordMaV,
-        displaySecurityPopoverMaV);
+      return true;
     }
 
     // Start the spinner (we are deferring the hide)

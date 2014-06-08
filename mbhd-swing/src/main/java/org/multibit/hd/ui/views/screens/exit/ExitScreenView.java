@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.views.screens.exit;
 
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
@@ -37,8 +36,6 @@ public class ExitScreenView extends AbstractScreenView<ExitScreenModel>  {
 
   @Override
   public JPanel initialiseScreenViewPanel() {
-
-    CoreServices.uiEventBus.register(this);
 
     MigLayout layout = new MigLayout(
       Panels.migXYLayout(),

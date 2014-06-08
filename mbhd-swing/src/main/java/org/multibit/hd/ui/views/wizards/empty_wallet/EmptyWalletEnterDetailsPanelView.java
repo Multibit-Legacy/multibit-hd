@@ -17,8 +17,6 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 
@@ -32,8 +30,6 @@ import javax.swing.*;
  *  
  */
 public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<EmptyWalletWizardModel, EmptyWalletEnterDetailsPanelModel> {
-
-  private static final Logger log = LoggerFactory.getLogger(EmptyWalletEnterDetailsPanelView.class);
 
   // Panel specific components
   private ModelAndView<EnterRecipientModel, EnterRecipientView> enterRecipientMaV;
@@ -66,6 +62,10 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
 
     // Bind it to the wizard model
     getWizardModel().setEnterDetailsPanelModel(panelModel);
+
+    // Register components
+    getComponents().add(enterRecipientMaV);
+    getComponents().add(enterPasswordMaV);
 
   }
 
@@ -109,19 +109,6 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
     });
 
   }
-
-  @Override
-  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
-
-    // Always call super() before hide
-    return super.beforeHide(
-      isExitCancel,
-      enterRecipientMaV,
-      enterPasswordMaV
-    );
-
-  }
-
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {

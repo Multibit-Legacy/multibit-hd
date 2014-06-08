@@ -1,5 +1,7 @@
 package org.multibit.hd.core.exceptions;
 
+import com.google.common.eventbus.SubscriberExceptionContext;
+import com.google.common.eventbus.SubscriberExceptionHandler;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.slf4j.Logger;
@@ -15,7 +17,7 @@ import java.awt.*;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class ExceptionHandler extends EventQueue implements Thread.UncaughtExceptionHandler {
 
@@ -74,5 +76,19 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
     handleThrowable(e);
   }
 
+  /**
+   * @return A subscriber exception handler for the Guava event bus
+   */
+  public static SubscriberExceptionHandler newSubscriberExceptionHandler() {
+
+    return new SubscriberExceptionHandler() {
+      @Override
+      public void handleException(Throwable exception, SubscriberExceptionContext context) {
+
+        log.error(exception.getMessage(), exception);
+
+      }
+    };
+  }
 }
 

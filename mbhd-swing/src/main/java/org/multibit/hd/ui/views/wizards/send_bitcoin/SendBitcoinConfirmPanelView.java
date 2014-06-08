@@ -75,6 +75,12 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     // Bind it to the wizard model
     getWizardModel().setConfirmPanelModel(panelModel);
 
+    // Register components
+    getComponents().add(transactionDisplayAmountMaV);
+    getComponents().add(transactionFeeDisplayAmountMaV);
+    getComponents().add(clientFeeDisplayAmountMaV);
+    getComponents().add(enterPasswordMaV);
+
   }
 
   @Override
@@ -213,21 +219,6 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     });
 
   }
-
-  @Override
-  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
-
-    // Always call super() before hide
-    return super.beforeHide(
-      isExitCancel,
-      transactionDisplayAmountMaV,
-      transactionFeeDisplayAmountMaV,
-      clientFeeDisplayAmountMaV,
-      enterPasswordMaV
-    );
-
-  }
-
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {

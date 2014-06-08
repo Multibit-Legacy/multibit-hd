@@ -64,9 +64,6 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
    */
   public PaymentsScreenView(PaymentsScreenModel panelModel, Screen screen, MessageKey title) {
     super(panelModel, screen, title);
-
-    // Register for transaction seen events so it can update.
-    CoreServices.uiEventBus.register(this);
   }
 
   @Override
@@ -76,8 +73,6 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
 
   @Override
   public JPanel initialiseScreenViewPanel() {
-
-    CoreServices.uiEventBus.register(this);
 
     MigLayout layout = new MigLayout(
       Panels.migLayout("fill,insets 10 5 0 0"),

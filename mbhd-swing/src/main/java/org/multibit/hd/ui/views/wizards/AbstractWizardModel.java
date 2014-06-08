@@ -88,10 +88,9 @@ public abstract class AbstractWizardModel<S> implements DocumentListener {
     setDirty(true);
   }
 
+
   @Override
   public void changedUpdate(DocumentEvent e) {
     setDirty(true);
   }
-
-
 }

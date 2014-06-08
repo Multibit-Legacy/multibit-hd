@@ -35,7 +35,6 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
    */
   public ConfirmPasswordView(ConfirmPasswordModel model) {
     super(model);
-
   }
 
   @Override
@@ -155,7 +154,7 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
   @Subscribe
   public void onVerificationStatusChanged(VerificationStatusChangedEvent event) {
 
-    if (event.getPanelName().equals(getModel().get().getPanelName())) {
+    if (event.getPanelName().equals(getModel().get().getPanelName()) && verificationStatusLabel != null) {
 
       verificationStatusLabel.setVisible(event.isOK());
 

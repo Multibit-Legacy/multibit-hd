@@ -63,6 +63,10 @@ public class RestoreWalletTimestampPanelView extends AbstractWizardPanelView<Wel
     getWizardModel().setRestoreWalletEnterTimestampModel(enterSeedPhraseMaV.getModel());
     getWizardModel().setRestoreWalletEnterPasswordModel(enterPasswordMaV.getModel());
 
+    // Register components
+    getComponents().add(enterPasswordMaV);
+    getComponents().add(enterSeedPhraseMaV);
+
   }
 
   @Override
@@ -97,17 +101,6 @@ public class RestoreWalletTimestampPanelView extends AbstractWizardPanelView<Wel
       }
     });
 
-  }
-
-  @Override
-  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
-
-    // Always call super() before hide
-    return super.beforeHide(
-      isExitCancel,
-      enterSeedPhraseMaV,
-      enterPasswordMaV
-    );
   }
 
   @Override

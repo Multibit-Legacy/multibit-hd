@@ -21,6 +21,7 @@ import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.exceptions.CoreException;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.logging.LoggingFactory;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -62,7 +63,7 @@ public class CoreServices {
   /**
    * Send or register events to the user interface subscribers
    */
-  public static EventBus uiEventBus = new EventBus();
+  public static EventBus uiEventBus = new EventBus(ExceptionHandler.newSubscriberExceptionHandler());
 
   /**
    * Keep track of selected application events (e.g. exchange rate changes, security alerts etc)

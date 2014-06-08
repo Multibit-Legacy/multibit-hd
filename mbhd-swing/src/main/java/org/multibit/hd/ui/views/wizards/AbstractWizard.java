@@ -14,6 +14,7 @@ import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardDeferredHideEvent;
 import org.multibit.hd.ui.events.view.WizardPopoverHideEvent;
+import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.Popovers;
 import org.multibit.hd.ui.views.layouts.WizardCardLayout;
@@ -26,8 +27,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
 
 /**
  * <p>Abstract base class to provide the following to UI:</p>
@@ -169,42 +172,6 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
       handleHide(panelName, isExitCancel, wizardPanelView);
 
     }
-
-  }
-
-  /**
-   * <p>Hide the wizard</p>
-   *
-   * @param panelName       The panel name
-   * @param isExitCancel    True if this hide operation comes from an exit or cancel
-   * @param wizardPanelView The wizard panel view from the wizard view map
-   */
-  public void handleHide(final String panelName, boolean isExitCancel, AbstractWizardPanelView wizardPanelView) {
-
-    log.debug("Handle hide: '{}' ExitCancel: {}", panelName, isExitCancel);
-
-    // De-register
-    wizardPanelView.deregisterDefaultButton();
-
-    // Issue the wizard hide event before the hide takes place to give UI time to update
-    ViewEvents.fireWizardHideEvent(panelName, wizardModel, isExitCancel);
-
-    wizardHideExecutorService.submit(new Runnable() {
-      @Override
-      public void run() {
-
-        // Require some extra time to get the rest of the UI started for password wizard
-        if (PasswordState.PASSWORD_ENTER_PASSWORD.name().equals(panelName)) {
-
-          log.debug("Blocking to allow UI startup to complete");
-          Uninterruptibles.sleepUninterruptibly(3, TimeUnit.SECONDS);
-        }
-
-        // Proceed with hide
-        Panels.hideLightBoxIfPresent();
-
-      }
-    });
 
   }
 
@@ -411,10 +378,99 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
 
       final AbstractWizardPanelView wizardPanelView = wizardViewMap.get(panelName);
 
+      Preconditions.checkNotNull(wizardPanelView, "'wizardPanelView' must be present for " + panelName + ". Possible race condition.");
+
       // This is a deferred hide so don't call hide() again
       handleHide(panelName, event.isExitCancel(), wizardPanelView);
 
     }
+
+  }
+
+  /**
+   * <p>Hide the wizard</p>
+   *
+   * @param panelName       The panel name
+   * @param isExitCancel    True if this hide operation comes from an exit or cancel
+   * @param wizardPanelView The wizard panel view from the wizard view map
+   */
+  private void handleHide(final String panelName, boolean isExitCancel, AbstractWizardPanelView wizardPanelView) {
+
+    log.debug("Handle hide starting: '{}' ExitCancel: {}", panelName, isExitCancel);
+
+    // De-register
+    wizardPanelView.deregisterDefaultButton();
+
+    // Issue the wizard hide event before the hide takes place to give UI time to update
+    ViewEvents.fireWizardHideEvent(panelName, wizardModel, isExitCancel);
+
+    // Required to run on a new thread since this may take some time to complete
+    wizardHideExecutorService.submit(new Runnable() {
+      @Override
+      public void run() {
+
+        log.debug("Handle hide finalising: '{}'", panelName);
+
+        // Require some extra time to get the rest of the UI started for password wizard
+        if (PasswordState.PASSWORD_ENTER_PASSWORD.name().equals(panelName)) {
+
+          log.debug("Blocking to allow UI startup to complete");
+          Uninterruptibles.sleepUninterruptibly(3, TimeUnit.SECONDS);
+        }
+
+        // Work through the view map ensuring all components are deregistered from UI events
+        for (Map.Entry<String, AbstractWizardPanelView> entry : wizardViewMap.entrySet()) {
+
+          AbstractWizardPanelView panelView = entry.getValue();
+
+          // Ensure we deregister the panel for events
+          CoreServices.uiEventBus.unregister(panelView);
+          log.trace("Deregistered wizard panel '{}:{}' from UI events", panelView.getPanelName(), panelView);
+
+          // Deregister all components
+          @SuppressWarnings("unchecked")
+          List<ModelAndView> mavs = panelView.getComponents();
+          if (mavs != null) {
+
+            for (ModelAndView mav : mavs) {
+              try {
+                CoreServices.uiEventBus.unregister(mav.getView());
+                log.trace("Deregistered component view '{}:{}' from UI events", panelView.getPanelName(), mav.getView());
+              } catch (IllegalArgumentException e) {
+                log.trace("ModelAndView '{}:{}' was not registered", panelView.getPanelName(), mav.getView(), e);
+              }
+            }
+
+            // Remove the references
+            mavs.clear();
+
+          }
+
+        }
+
+        // Depopulate the map
+        wizardViewMap.clear();
+
+        // Hiding the light box must be on the EDT
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+
+            log.debug("Handle hide 1: '{}'", panelName);
+            wizardScreenHolder.removeAll();
+
+            // Proceed with hide
+            Panels.hideLightBoxIfPresent();
+            log.debug("Handle hide complete: '{}'", panelName);
+
+          }
+        });
+
+        log.debug("Handle hide waiting for EDT");
+        Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
+
+      }
+    });
 
   }
 

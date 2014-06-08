@@ -32,15 +32,6 @@ public abstract class AbstractComponentView<M extends Model> implements View<M> 
     CoreServices.uiEventBus.register(this);
   }
 
-  /**
-   * Ensure we clean up when no longer required
-   */
-  public void close() {
-
-    CoreServices.uiEventBus.unregister(this);
-
-  }
-
   @Override
   public Optional<M> getModel() {
     return model;

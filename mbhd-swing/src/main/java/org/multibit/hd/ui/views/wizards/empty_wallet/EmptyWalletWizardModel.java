@@ -83,8 +83,6 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
   public EmptyWalletWizardModel(EmptyWalletState state) {
     super(state);
 
-    CoreServices.uiEventBus.register(this);
-
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
     if (currentWalletSummary.isPresent()) {
       // Use the real wallet data

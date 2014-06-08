@@ -45,6 +45,7 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
     super(model);
     this.showTimestamp = showTimestamp;
     this.showSeedPhrase = showSeedPhrase;
+
   }
 
   @Override
@@ -140,17 +141,12 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
   @Subscribe
   public void onVerificationStatusChanged(final VerificationStatusChangedEvent event) {
 
-    log.debug("Received verification");
+    if (event.getPanelName().equals(getModel().get().getPanelName()) && verificationStatusLabel != null) {
 
-    if (event.getPanelName().equals(getModel().get().getPanelName())) {
-
-      log.debug("Received verification for enter seed phrase");
+      log.debug("Received {}:{} verification for enter seed phrase ", getModel().get().getPanelName(), this.toString());
 
       // Determine if the component is initialised
-      Preconditions.checkNotNull(verificationStatusLabel, "'verificationStatusLabel' must be present");
       Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on the EDT");
-
-      log.debug("Setting visible to {}",event.isOK());
 
       verificationStatusLabel.setVisible(event.isOK());
 

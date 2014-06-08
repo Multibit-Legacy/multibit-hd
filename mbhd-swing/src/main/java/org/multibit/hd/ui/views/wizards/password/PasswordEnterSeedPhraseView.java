@@ -66,6 +66,9 @@ public class PasswordEnterSeedPhraseView extends AbstractWizardPanelView<Passwor
     // Bind it to the wizard model
     getWizardModel().setEnterSeedPhrasePanelModel(panelModel);
 
+    // Register components
+    getComponents().add(enterSeedPhraseMaV);
+
   }
 
   @Override
@@ -100,15 +103,6 @@ public class PasswordEnterSeedPhraseView extends AbstractWizardPanelView<Passwor
     });
 
   }
-
-  @Override
-  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
-
-    // Always call super() before hide
-    return super.beforeHide(isExitCancel, enterSeedPhraseMaV);
-
-  }
-
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {

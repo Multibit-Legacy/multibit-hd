@@ -74,9 +74,6 @@ public class LightBoxPanel extends JPanel {
     int currentFrameWidth = Panels.applicationFrame.getWidth();
     int currentFrameHeight = Panels.applicationFrame.getHeight();
 
-    Rectangle bounds = Panels.applicationFrame.getBounds();
-
-
     // Ensure this panel covers all the available frame area allowing for fast dragging
     setSize(currentFrameWidth * 2, currentFrameHeight * 2);
 
@@ -100,6 +97,7 @@ public class LightBoxPanel extends JPanel {
 
     // Tidy up the layered pane - cannot remove by reference
     try {
+
       // The light box panel (dark border) is always here
       Panels.applicationFrame.getLayeredPane().remove(1);
 

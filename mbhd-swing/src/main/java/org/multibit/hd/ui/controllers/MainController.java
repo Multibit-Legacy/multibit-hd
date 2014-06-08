@@ -126,8 +126,13 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
 
         // Dispose of the main view and all its attendant references
         log.debug("Disposing of MainView");
-        Panels.hideLightBoxIfPresent();
-        Panels.applicationFrame.dispose();
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            Panels.hideLightBoxIfPresent();
+            Panels.applicationFrame.dispose();
+          }
+        });
         mainView = null;
         System.gc();
 
@@ -195,7 +200,7 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
 
     if (mainView.isShowExitingWelcomeWizard()) {
 
-      log.debug("Using simplified view refresh");
+      log.debug("Using simplified view refresh (language change)");
 
       // Ensure the Swing thread can perform a complete refresh
       SwingUtilities.invokeLater(new Runnable() {
@@ -215,7 +220,7 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
 
     } else {
 
-      log.debug("Using full view refresh");
+      log.debug("Using full view refresh (configuration change)");
 
       // Switch the exchange ticker service before the UI to ensure the
       // exchange rate provider is rendered correctly
@@ -629,6 +634,7 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
           @Override
           public void run() {
 
+            log.debug("Showing exiting password wizard after handover");
             Panels.showLightBox(Wizards.newExitingPasswordWizard().getWizardScreenHolder());
 
           }

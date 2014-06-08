@@ -51,6 +51,9 @@ public class RestoreWalletSelectBackupLocationPanelView extends AbstractWizardPa
 
     getWizardModel().setRestoreLocationSelectFileModel(selectFileMaV.getModel());
 
+    // Register components
+    getComponents().add(selectFileMaV);
+
   }
 
   @Override
@@ -95,17 +98,6 @@ public class RestoreWalletSelectBackupLocationPanelView extends AbstractWizardPa
     });
 
   }
-
-  @Override
-  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
-
-    // Always call super() before hide
-    return super.beforeHide(
-      isExitCancel,
-      selectFileMaV
-    );
-  }
-
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {
