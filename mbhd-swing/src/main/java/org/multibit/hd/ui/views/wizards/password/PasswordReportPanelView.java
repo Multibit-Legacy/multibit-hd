@@ -19,8 +19,6 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
 import javax.swing.*;
@@ -38,8 +36,6 @@ import java.util.List;
  *  
  */
 public class PasswordReportPanelView extends AbstractWizardPanelView<PasswordWizardModel, PasswordReportPanelModel> {
-
-  private static final Logger log = LoggerFactory.getLogger(PasswordReportPanelView.class);
 
   private JLabel passwordRecoveryStatus;
 

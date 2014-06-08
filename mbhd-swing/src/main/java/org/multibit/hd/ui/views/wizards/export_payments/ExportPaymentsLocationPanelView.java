@@ -84,6 +84,14 @@ public class ExportPaymentsLocationPanelView extends AbstractWizardPanelView<Exp
 
   }
 
+  @Override
+  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
+
+    // Always call super() before hide
+    return super.beforeHide(isExitCancel, selectFileMaV);
+
+  }
+
   public void fireInitialStateViewEvents() {
 
     // Enable the Next button - user can skip entering a cloud backup location

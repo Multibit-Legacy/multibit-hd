@@ -20,8 +20,6 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
 import javax.swing.*;
@@ -37,8 +35,6 @@ import java.awt.event.ActionEvent;
  *  
  */
 public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWizardModel, String> {
-
-  private static final Logger log = LoggerFactory.getLogger(SignMessagePanelView.class);
 
   // View components
   FormattedBitcoinAddressField signingAddress;
@@ -116,7 +112,7 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
   }
 
   @Override
-  public boolean beforeHide(boolean isExitCancel) {
+  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
 
     // Always call super() before hiding
     super.beforeHide(isExitCancel);

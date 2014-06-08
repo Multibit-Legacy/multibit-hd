@@ -111,7 +111,7 @@ public class VerifyMessagePanelView extends AbstractWizardPanelView<VerifyMessag
   }
 
   @Override
-  public boolean beforeHide(boolean isExitCancel) {
+  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
 
     // Always call super() before hiding
     super.beforeHide(isExitCancel);

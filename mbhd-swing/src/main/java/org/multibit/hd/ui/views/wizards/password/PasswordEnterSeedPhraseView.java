@@ -102,6 +102,15 @@ public class PasswordEnterSeedPhraseView extends AbstractWizardPanelView<Passwor
   }
 
   @Override
+  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
+
+    // Always call super() before hide
+    return super.beforeHide(isExitCancel, enterSeedPhraseMaV);
+
+  }
+
+
+  @Override
   public void updateFromComponentModels(Optional componentModel) {
 
     // Fire the decision events (requires knowledge of the previous panel data)

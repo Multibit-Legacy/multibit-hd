@@ -98,8 +98,8 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
     CoreServices.uiEventBus.register(this);
 
     this.bitcoinURIListeningService = bitcoinURIListeningService;
-    this.headerController= headerController;
-    this.sidebarController= sidebarController;
+    this.headerController = headerController;
+    this.sidebarController = sidebarController;
 
   }
 
@@ -123,12 +123,14 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
         WalletManager.INSTANCE.onShutdownEvent(shutdownEvent);
         BackupManager.INSTANCE.onShutdownEvent(shutdownEvent);
         InstallationManager.onShutdownEvent(shutdownEvent);
+
         // Dispose of the main view and all its attendant references
         log.debug("Disposing of MainView");
         Panels.hideLightBoxIfPresent();
         Panels.applicationFrame.dispose();
         mainView = null;
         System.gc();
+
         break;
       case STANDBY:
         log.debug("Keeping application frame (standby).");
@@ -149,7 +151,7 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
 
       if (WelcomeWizardState.CREATE_WALLET_REPORT.name().equals(event.getPanelName()) ||
         WelcomeWizardState.RESTORE_WALLET_REPORT.name().equals(event.getPanelName()) ||
-              PasswordState.PASSWORD_REPORT.name().equals(event.getPanelName())) {
+        PasswordState.PASSWORD_REPORT.name().equals(event.getPanelName())) {
 
         // Need to hand over to the password wizard
         handlePasswordWizardHandover();
@@ -191,38 +193,63 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
 
     Preconditions.checkNotNull(event, "'event' must be present");
 
-    // Switch the exchange ticker service before the UI to ensure the
-    // exchange rate provider is rendered correctly
-    handleExchange();
+    if (mainView.isShowExitingWelcomeWizard()) {
 
-    // Ensure the Swing thread can perform a complete refresh
-    SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
+      log.debug("Using simplified view refresh");
 
-        // Switch the theme before any other UI building takes place
-        handleTheme();
+      // Ensure the Swing thread can perform a complete refresh
+      SwingUtilities.invokeLater(new Runnable() {
+        public void run() {
 
-        // Rebuild MainView contents
-        handleLocale();
+          // Rebuild MainView contents
+          handleLocale();
 
-        // Force a frame redraw
-        Panels.applicationFrame.invalidate();
+          // Force a frame redraw
+          Panels.applicationFrame.invalidate();
 
-        // Rebuild the detail views and alert panels
-        mainView.refresh();
+          // Rebuild the detail views and alert panels
+          mainView.refresh();
 
-        // Show the current detail screen
-        Screen screen = Screen.valueOf(Configurations.currentConfiguration.getApplication().getCurrentScreen());
-        ControllerEvents.fireShowDetailScreenEvent(screen);
+        }
+      });
 
-        // Trigger the alert panels to refresh
-        headerController.refresh();
+    } else {
 
-      }
-    });
+      log.debug("Using full view refresh");
 
-    // Restart the Bitcoin network (may have switched parameters)
-    handleBitcoinNetwork();
+      // Switch the exchange ticker service before the UI to ensure the
+      // exchange rate provider is rendered correctly
+      handleExchange();
+
+      // Ensure the Swing thread can perform a complete refresh
+      SwingUtilities.invokeLater(new Runnable() {
+        public void run() {
+
+          // Switch the theme before any other UI building takes place
+          handleTheme();
+
+          // Rebuild MainView contents
+          handleLocale();
+
+          // Force a frame redraw
+          Panels.applicationFrame.invalidate();
+
+          // Rebuild the detail views and alert panels
+          mainView.refresh();
+
+          // Show the current detail screen
+          Screen screen = Screen.valueOf(Configurations.currentConfiguration.getApplication().getCurrentScreen());
+          ControllerEvents.fireShowDetailScreenEvent(screen);
+
+          // Trigger the alert panels to refresh
+          headerController.refresh();
+
+        }
+      });
+
+      // Restart the Bitcoin network (may have switched parameters)
+      handleBitcoinNetwork();
+    }
 
   }
 
@@ -268,9 +295,9 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
     final String localisedMessage = Languages.safeText(CoreMessageKey.BACKUP_WALLET_WAS_LOADED);
 
     ControllerEvents.fireAddAlertEvent(
-            Models.newAlertModel(
-                    localisedMessage,
-                    RAGStatus.AMBER)
+      Models.newAlertModel(
+        localisedMessage,
+        RAGStatus.AMBER)
     );
   }
 
@@ -375,7 +402,7 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
         );
         break;
       default:
-        throw new IllegalStateException("Unknown alert type: "+ summary.getAlertType());
+        throw new IllegalStateException("Unknown alert type: " + summary.getAlertType());
     }
   }
 
@@ -595,7 +622,7 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
       public void run() {
 
         // Allow time for the other wizard to finish hiding (200ms is sufficient)
-        Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
+        Uninterruptibles.sleepUninterruptibly(400, TimeUnit.MILLISECONDS);
 
         // Must execute on the EDT
         SwingUtilities.invokeLater(new Runnable() {

@@ -100,6 +100,17 @@ public class RestoreWalletTimestampPanelView extends AbstractWizardPanelView<Wel
   }
 
   @Override
+  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
+
+    // Always call super() before hide
+    return super.beforeHide(
+      isExitCancel,
+      enterSeedPhraseMaV,
+      enterPasswordMaV
+    );
+  }
+
+  @Override
   public void updateFromComponentModels(Optional componentModel) {
 
     // Enable the "next" button if the timestamp is valid (we already have the seed phrase)

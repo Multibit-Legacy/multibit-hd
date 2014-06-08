@@ -76,6 +76,14 @@ public class CreateWalletConfirmSeedPhrasePanelView extends AbstractWizardPanelV
   }
 
   @Override
+  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
+
+    // Always call super() before hide
+    return super.beforeHide(isExitCancel, enterSeedPhraseMaV);
+
+  }
+
+  @Override
   public void afterShow() {
 
     SwingUtilities.invokeLater(new Runnable() {

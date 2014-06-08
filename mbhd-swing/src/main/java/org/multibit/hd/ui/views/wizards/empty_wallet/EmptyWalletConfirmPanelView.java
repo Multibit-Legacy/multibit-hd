@@ -191,6 +191,20 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
   }
 
   @Override
+  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
+
+    // Always call super() before hide
+    return super.beforeHide(
+      isExitCancel,
+      transactionDisplayAmountMaV,
+      transactionFeeDisplayAmountMaV,
+      clientFeeDisplayAmountMaV
+    );
+
+  }
+
+
+  @Override
   public void updateFromComponentModels(Optional componentModel) {
 
     // Determine any events

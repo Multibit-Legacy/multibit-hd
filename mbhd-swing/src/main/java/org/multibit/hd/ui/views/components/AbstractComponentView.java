@@ -21,7 +21,6 @@ public abstract class AbstractComponentView<M extends Model> implements View<M> 
   private Optional<M> model = Optional.absent();
 
   protected JPanel panel;
-  private boolean enabled;
 
   /**
    * @param model The model backing this view
@@ -31,6 +30,15 @@ public abstract class AbstractComponentView<M extends Model> implements View<M> 
 
     // Ensure that any event handlers are automatically registered
     CoreServices.uiEventBus.register(this);
+  }
+
+  /**
+   * Ensure we clean up when no longer required
+   */
+  public void close() {
+
+    CoreServices.uiEventBus.unregister(this);
+
   }
 
   @Override

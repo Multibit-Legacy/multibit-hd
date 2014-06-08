@@ -9,9 +9,12 @@ import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardButtonEnabledEvent;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
+import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 
@@ -31,6 +34,11 @@ import javax.swing.*;
  *  
  */
 public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> {
+
+  /**
+   * Provide logging facilities to views
+   */
+  protected static final Logger log = LoggerFactory.getLogger(AbstractWizardPanelView.class);
 
   /**
    * The overall wizard model
@@ -353,16 +361,32 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
   /**
    * <p>Called before this wizard panel is about to be hidden</p>
    *
+   * <p>Implementers must use this as an opportunity to deregister with the UI event bus for both the wizard and its components</p>
+   *
    * <p>Typically this is where a panel view would {@link #updateFromComponentModels}, but implementations will vary</p>
    *
    * @param isExitCancel True if this hide action comes from a exit or cancel operation
+   * @param mavs         The references to any {@link ModelAndView} instances that subscribe to UI events
    *
    * @return True if the panel can be hidden, false if the hide operation should be aborted (perhaps due to a data error)
    */
-  public boolean beforeHide(boolean isExitCancel) {
+  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
 
-    // Ensure we unregister for events
+    // Ensure we deregister for events
     CoreServices.uiEventBus.unregister(this);
+
+    // Deregister all components
+    if (mavs != null) {
+
+      for (ModelAndView mav : mavs) {
+        try {
+          CoreServices.uiEventBus.unregister(mav);
+        } catch (IllegalArgumentException e) {
+          log.warn("ModelAndView {} was not registered", mav.getClass().getSimpleName(), e);
+        }
+      }
+
+    }
 
     // Default is to return OK
     return true;
@@ -422,6 +446,8 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
   }
 
   /**
+   * TODO (GR) Rename this
+   *
    * @return True if the components are all non-null (early events against uninitialised views need this to filter)
    */
   public boolean isHasComponents() {

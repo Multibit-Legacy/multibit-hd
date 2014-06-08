@@ -165,8 +165,8 @@ public class CreateWalletSeedPhraseUseCase extends AbstractFestUseCase {
       .textBox(MessageKey.SEED_PHRASE.getKey())
       .text();
 
-    // Expect at least 24 extra characters (6 words * 3 minimum length)
-    assertThat(seedPhrase3.length()).isGreaterThan(seedPhrase2.length() + 18);
+    // Expect at least 16 extra characters (6 words * 3 minimum length)
+    assertThat(seedPhrase3.length()).isGreaterThan(seedPhrase2.length() + 16);
 
   }
 

@@ -81,8 +81,8 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
   public void initialiseContent(JPanel contentPanel) {
 
     // Transaction information
-    transactionDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT, true,"transaction");
-    transactionFeeDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.FEE_AMOUNT, true,"transaction_fee");
+    transactionDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT, true, "transaction");
+    transactionFeeDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.FEE_AMOUNT, true, "transaction_fee");
     clientFeeDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.FEE_AMOUNT, true, "client_fee");
 
     // Blank labels populated from wizard model later
@@ -213,6 +213,21 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     });
 
   }
+
+  @Override
+  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
+
+    // Always call super() before hide
+    return super.beforeHide(
+      isExitCancel,
+      transactionDisplayAmountMaV,
+      transactionFeeDisplayAmountMaV,
+      clientFeeDisplayAmountMaV,
+      enterPasswordMaV
+    );
+
+  }
+
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {

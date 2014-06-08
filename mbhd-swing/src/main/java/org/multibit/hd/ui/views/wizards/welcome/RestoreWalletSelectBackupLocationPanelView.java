@@ -97,6 +97,17 @@ public class RestoreWalletSelectBackupLocationPanelView extends AbstractWizardPa
   }
 
   @Override
+  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
+
+    // Always call super() before hide
+    return super.beforeHide(
+      isExitCancel,
+      selectFileMaV
+    );
+  }
+
+
+  @Override
   public void updateFromComponentModels(Optional componentModel) {
 
     // Do nothing we have a direct reference

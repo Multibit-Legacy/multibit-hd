@@ -213,6 +213,8 @@ public class Panels {
    */
   public synchronized static void hideLightBoxIfPresent() {
 
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(),"LightBoxPopover requires the EDT");
+
     log.debug("Hide light box (if present)");
 
     hideLightBoxPopoverIfPresent();
@@ -223,13 +225,8 @@ public class Panels {
 
     lightBoxPanel = Optional.absent();
 
-    // Finally allow focus in the EDT
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        allowFocus(Panels.applicationFrame, true);
-      }
-    });
+    // Finally allow focus
+    allowFocus(Panels.applicationFrame, true);
 
   }
 
@@ -254,6 +251,8 @@ public class Panels {
    * <p>Hides the currently showing light box popover panel</p>
    */
   public synchronized static void hideLightBoxPopoverIfPresent() {
+
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(),"LightBoxPopover requires the EDT");
 
     log.debug("Hide light box popover");
 

@@ -116,12 +116,16 @@ public class MainView extends JFrame {
     // Check for any wizards that were showing before the refresh occurred
     if (showExitingWelcomeWizard) {
 
+      log.debug("Showing exiting welcome wizard");
+
       // Ensure no light boxes are showing
       Panels.hideLightBoxIfPresent();
 
       Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardScreenHolder());
 
     } else if (showExitingPasswordWizard) {
+
+      log.debug("Showing exiting password wizard");
 
       // Ensure no light boxes are showing
       Panels.hideLightBoxIfPresent();
@@ -170,12 +174,28 @@ public class MainView extends JFrame {
   }
 
   /**
+   * @return True if the exiting welcome wizard will be shown on a reset
+   */
+  public boolean isShowExitingWelcomeWizard() {
+    return showExitingWelcomeWizard;
+  }
+
+
+  /**
    * @param show True if the exiting welcome wizard should be shown during the next refresh
    */
   public void setShowExitingWelcomeWizard(boolean show) {
 
     showExitingWelcomeWizard = show;
 
+  }
+
+
+  /**
+   * @return True if the exiting password wizard will be shown on a reset
+   */
+  public boolean isShowExitingPasswordWizard() {
+    return showExitingPasswordWizard;
   }
 
   /**
@@ -219,7 +239,7 @@ public class MainView extends JFrame {
    */
   private JPanel createMainContent() {
 
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(),"Must execute on the EDT");
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must execute on the EDT");
 
     // Create the main panel and place it in this frame
     MigLayout layout = new MigLayout(
@@ -395,7 +415,7 @@ public class MainView extends JFrame {
       }
     }
 
-    Preconditions.checkState(!devices.isEmpty(),"'devices' must not be empty. Is machine in headless mode?");
+    Preconditions.checkState(!devices.isEmpty(), "'devices' must not be empty. Is machine in headless mode?");
 
     return devices;
   }

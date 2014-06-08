@@ -171,13 +171,18 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
   }
 
   @Override
-  public boolean beforeHide(boolean isExitCancel) {
+  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
 
     // Do not call the superclass to deregister this wizard since it uses a deferred hide
 
     // Don't block an exit
     if (isExitCancel) {
-      return true;
+      return super.beforeHide(
+        true,
+        displaySecurityPopoverMaV,
+        enterPasswordMaV,
+        selectWalletMaV
+      );
     }
 
     // Start the spinner (we are deferring the hide)
@@ -219,6 +224,11 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
           if (result) {
 
             // Maintain the spinner while the initialisation continues
+
+            // Manually deregister the MaVs
+            CoreServices.uiEventBus.unregister(displaySecurityPopoverMaV);
+            CoreServices.uiEventBus.unregister(enterPasswordMaV);
+            CoreServices.uiEventBus.unregister(selectWalletMaV);
 
             // Trigger the deferred hide
             ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);

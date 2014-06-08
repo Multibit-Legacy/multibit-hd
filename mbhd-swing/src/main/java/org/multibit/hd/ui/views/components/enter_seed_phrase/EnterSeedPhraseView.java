@@ -1,9 +1,12 @@
 package org.multibit.hd.ui.views.components.enter_seed_phrase;
 
+import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.views.components.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -21,6 +24,8 @@ import java.awt.event.KeyEvent;
  *  
  */
 public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseModel> {
+
+  private static final Logger log = LoggerFactory.getLogger(EnterSeedPhraseView.class);
 
   // View components
   private JTextArea seedPhraseTextArea;
@@ -135,14 +140,19 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
   @Subscribe
   public void onVerificationStatusChanged(final VerificationStatusChangedEvent event) {
 
+    log.debug("Received verification");
+
     if (event.getPanelName().equals(getModel().get().getPanelName())) {
 
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          verificationStatusLabel.setVisible(event.isOK());
-        }
-      });
+      log.debug("Received verification for enter seed phrase");
+
+      // Determine if the component is initialised
+      Preconditions.checkNotNull(verificationStatusLabel, "'verificationStatusLabel' must be present");
+      Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on the EDT");
+
+      log.debug("Setting visible to {}",event.isOK());
+
+      verificationStatusLabel.setVisible(event.isOK());
 
     }
   }

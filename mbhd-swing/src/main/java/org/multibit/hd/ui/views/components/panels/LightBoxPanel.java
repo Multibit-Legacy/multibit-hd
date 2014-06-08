@@ -2,6 +2,8 @@ package org.multibit.hd.ui.views.components.panels;
 
 import com.google.common.base.Preconditions;
 import org.multibit.hd.ui.views.components.Panels;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,6 +22,7 @@ import java.awt.event.MouseListener;
 public class LightBoxPanel extends JPanel {
 
   private final JPanel screenPanel;
+  private static final Logger log = LoggerFactory.getLogger(LightBoxPanel.class);
 
   /**
    * @param screenPanel The panel containing the light box components (e.g. a wizard screen panel)
@@ -36,6 +39,9 @@ public class LightBoxPanel extends JPanel {
 
     // Ensure we set the opacity (platform dependent)
     setOpaque(false);
+
+    // Ensure we are visible
+    setVisible(true);
 
     // Ensure this panel covers all the available frame area
     setSize(Panels.applicationFrame.getWidth() + 100, Panels.applicationFrame.getHeight() + 100);
@@ -55,6 +61,8 @@ public class LightBoxPanel extends JPanel {
 
     // Add the light box panel to the frame
     Panels.applicationFrame.getLayeredPane().add(screenPanel, layer);
+
+    log.debug("Light box panel added to application frame");
 
   }
 
@@ -88,25 +96,25 @@ public class LightBoxPanel extends JPanel {
    */
   public void close() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        // Tidy up the layered pane - cannot remove by reference
-        // The lightbox panel is always here
-        try {
-          Panels.applicationFrame.getLayeredPane().remove(1);
-          // The content panel is always here after the removal
-          Panels.applicationFrame.getLayeredPane().remove(0);
-        } catch (ArrayIndexOutOfBoundsException e) {
-          // Ignore
-        }
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on the EDT");
 
-        // Repaint
-        Panels.applicationFrame.validate();
-        Panels.applicationFrame.repaint();
+    // Tidy up the layered pane - cannot remove by reference
+    try {
+      // The light box panel (dark border) is always here
+      Panels.applicationFrame.getLayeredPane().remove(1);
 
-      }
-    });
+      // The content panel (components) is always here after the removal
+      Panels.applicationFrame.getLayeredPane().remove(0);
+
+      log.debug("Light box panel removed from application frame");
+
+    } catch (ArrayIndexOutOfBoundsException e) {
+      // Ignore
+    }
+
+    // Repaint
+    Panels.applicationFrame.validate();
+    Panels.applicationFrame.repaint();
 
   }
 

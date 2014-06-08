@@ -76,6 +76,14 @@ public class CreateWalletSelectBackupLocationPanelView extends AbstractWizardPan
   }
 
   @Override
+  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
+
+    // Always call super() before hide
+    return super.beforeHide(isExitCancel, selectFileMaV);
+
+  }
+
+  @Override
   public void afterShow() {
 
     SwingUtilities.invokeLater(new Runnable() {

@@ -268,7 +268,10 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
   }
 
   @Override
-  public boolean beforeHide(boolean isExitCancel) {
+  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
+
+    // Always call super() before hiding
+    super.beforeHide(isExitCancel, enterTagsMaV);
 
     if (!isExitCancel) {
 

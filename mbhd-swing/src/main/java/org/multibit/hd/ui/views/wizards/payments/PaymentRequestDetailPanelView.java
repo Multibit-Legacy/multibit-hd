@@ -173,6 +173,18 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
   }
 
   @Override
+  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
+
+    // Always call super() before hide
+    return super.beforeHide(
+      isExitCancel,
+      displayQRCodePopoverMaV
+    );
+
+  }
+
+
+  @Override
   public void updateFromComponentModels(Optional componentModel) {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
   }

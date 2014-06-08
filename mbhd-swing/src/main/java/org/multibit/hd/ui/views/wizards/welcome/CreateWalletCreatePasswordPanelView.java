@@ -72,6 +72,14 @@ public class CreateWalletCreatePasswordPanelView extends AbstractWizardPanelView
   }
 
   @Override
+  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
+
+    // Always call super() before hide
+    return super.beforeHide(isExitCancel, confirmPasswordMaV);
+
+  }
+
+  @Override
   public void afterShow() {
 
     SwingUtilities.invokeLater(new Runnable() {

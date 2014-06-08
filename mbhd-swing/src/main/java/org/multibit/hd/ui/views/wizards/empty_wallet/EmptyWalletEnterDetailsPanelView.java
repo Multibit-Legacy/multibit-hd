@@ -111,6 +111,19 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
   }
 
   @Override
+  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
+
+    // Always call super() before hide
+    return super.beforeHide(
+      isExitCancel,
+      enterRecipientMaV,
+      enterPasswordMaV
+    );
+
+  }
+
+
+  @Override
   public void updateFromComponentModels(Optional componentModel) {
 
     // No need to update the wizard it has the references

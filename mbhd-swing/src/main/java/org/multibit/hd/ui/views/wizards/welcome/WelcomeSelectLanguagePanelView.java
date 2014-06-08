@@ -36,9 +36,6 @@ import java.util.Locale;
  */
 public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> implements ActionListener {
 
-  // Model
-  private String localeCode = Languages.currentLocale().getLanguage();
-
   private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV;
   private JComboBox<String> languagesComboBox;
 
@@ -57,7 +54,7 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
 
     displaySecurityPopoverMaV = Popovers.newDisplaySecurityPopoverMaV(getPanelName());
 
-    localeCode = Languages.currentLocale().getLanguage();
+    String localeCode = Languages.currentLocale().getLanguage();
     setPanelModel(localeCode);
 
     // Bind it to the wizard model
@@ -120,6 +117,17 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
       }
     });
   }
+
+  @Override
+  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
+
+    // Always call super() before hide
+    return super.beforeHide(
+      isExitCancel,
+      displaySecurityPopoverMaV
+    );
+  }
+
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {

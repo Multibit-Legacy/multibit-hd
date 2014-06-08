@@ -32,8 +32,6 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.util.concurrent.Callable;
@@ -50,8 +48,6 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePasswordWizardModel, ChangePasswordPanelModel> {
-
-  private static final Logger log = LoggerFactory.getLogger(ChangePasswordPanelView.class);
 
   // Panel specific components
   private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV;
@@ -151,11 +147,17 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
   }
 
   @Override
-  public boolean beforeHide(boolean isExiting) {
+  public boolean beforeHide(final boolean isExitCancel, final ModelAndView... mavs) {
+
+    // Don't call super since this is a deferred hide
 
     // Don't block an exit
-    if (isExiting) {
-      return true;
+    if (isExitCancel) {
+      return super.beforeHide(
+        true,
+        enterPasswordMaV,
+        confirmPasswordMaV,
+        displaySecurityPopoverMaV);
     }
 
     // Start the spinner (we are deferring the hide)
@@ -193,10 +195,15 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
           // Check the result
           if (result) {
 
+            // Manually deregister the MaVs
+            CoreServices.uiEventBus.unregister(enterPasswordMaV);
+            CoreServices.uiEventBus.unregister(confirmPasswordMaV);
+            CoreServices.uiEventBus.unregister(displaySecurityPopoverMaV);
+
             // Trigger the deferred hide
             ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
 
-             // Enable components
+            // Enable components
             SwingUtilities.invokeLater(new Runnable() {
               @Override
               public void run() {

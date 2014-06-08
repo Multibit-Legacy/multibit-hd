@@ -18,8 +18,6 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 
@@ -34,8 +32,6 @@ import javax.swing.*;
  */
 
 public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<SendBitcoinWizardModel, SendBitcoinEnterAmountPanelModel> {
-
-  private static final Logger log = LoggerFactory.getLogger(SendBitcoinEnterAmountPanelView.class);
 
   // Panel specific components
   private ModelAndView<EnterRecipientModel, EnterRecipientView> enterRecipientMaV;
@@ -125,6 +121,19 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
     });
 
   }
+
+  @Override
+  public boolean beforeHide(boolean isExitCancel, ModelAndView... mavs) {
+
+    // Always call super() before hide
+    return super.beforeHide(
+      isExitCancel,
+      enterAmountMaV,
+      enterRecipientMaV
+    );
+
+  }
+
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {

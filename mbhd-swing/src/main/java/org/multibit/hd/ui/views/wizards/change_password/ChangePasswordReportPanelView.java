@@ -19,8 +19,6 @@ import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 
@@ -34,8 +32,6 @@ import javax.swing.*;
  *  
  */
 public class ChangePasswordReportPanelView extends AbstractWizardPanelView<ChangePasswordWizardModel, String> {
-
-  private static final Logger log = LoggerFactory.getLogger(ChangePasswordReportPanelView.class);
 
   // View
   private JLabel passwordChangedStatusLabel;

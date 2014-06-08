@@ -16,8 +16,6 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -34,8 +32,6 @@ import java.util.List;
  *  
  */
 public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<PaymentsWizardModel, ChoosePaymentRequestPanelModel> implements ActionListener {
-
-  private static final Logger log = LoggerFactory.getLogger(ChoosePaymentRequestPanelView.class);
 
   private JComboBox<PaymentRequestData> paymentRequestDataJComboBox;
   private JLabel paymentRequestInfoLabel;
