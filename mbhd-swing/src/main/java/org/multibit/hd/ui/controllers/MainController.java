@@ -622,7 +622,7 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
       public void run() {
 
         // Allow time for the other wizard to finish hiding (200ms is sufficient)
-        Uninterruptibles.sleepUninterruptibly(400, TimeUnit.MILLISECONDS);
+        Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
 
         // Must execute on the EDT
         SwingUtilities.invokeLater(new Runnable() {
