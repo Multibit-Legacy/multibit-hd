@@ -13,6 +13,7 @@ import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.managers.SSLManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.BackupService;
 import org.multibit.hd.core.services.CoreServices;
@@ -52,6 +53,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
   private JLabel walletPasswordCreatedStatusLabel;
   private JLabel backupLocationStatusLabel;
   private JLabel walletCreatedStatusLabel;
+  private JLabel cacertsInstalledStatusLabel;
   private JLabel spinner;
 
   final ListeningExecutorService createWalletExecutorService = SafeExecutors.newSingleThreadExecutor("create-wallet");
@@ -93,6 +95,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
     walletPasswordCreatedStatusLabel = Labels.newWalletPasswordCreatedStatus(false);
     walletCreatedStatusLabel = Labels.newWalletCreatedStatus(false);
     backupLocationStatusLabel = Labels.newBackupLocationStatus(false);
+    cacertsInstalledStatusLabel = Labels.newCACertsInstalledStatus(false);
 
     // Provide a spinner
     spinner = Labels.newSpinner(Themes.currentTheme.text(), MultiBitUI.NORMAL_PLUS_ICON_SIZE);
@@ -102,12 +105,14 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
     walletPasswordCreatedStatusLabel.setVisible(false);
     walletCreatedStatusLabel.setVisible(false);
     backupLocationStatusLabel.setVisible(false);
+    cacertsInstalledStatusLabel.setVisible(false);
 
     contentPanel.add(spinner, "span 3,align right,"+MultiBitUI.NORMAL_PLUS_ICON_SIZE_MIG+",wrap");
     contentPanel.add(seedPhraseCreatedStatusLabel, "wrap");
     contentPanel.add(walletPasswordCreatedStatusLabel, "wrap");
     contentPanel.add(backupLocationStatusLabel, "wrap");
     contentPanel.add(walletCreatedStatusLabel, "wrap");
+    contentPanel.add(cacertsInstalledStatusLabel,"wrap");
 
   }
 
@@ -221,7 +226,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       });
 
       // Give the user the impression of work being done
-      Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
+      Uninterruptibles.sleepUninterruptibly(400, TimeUnit.MILLISECONDS);
 
       // Determine if the backup location is valid
       final boolean exists = cloudBackupLocationFile.exists();
@@ -276,6 +281,28 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
           // Determine if the create wallet status is valid
           AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, walletCreatedStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
           walletCreatedStatusLabel.setVisible(true);
+
+        }
+      });
+
+      // Give the user the impression of work being done
+      Uninterruptibles.sleepUninterruptibly(250, TimeUnit.MILLISECONDS);
+
+      // Attempt to install the CA certifications for the exchanges and MultiBit.org
+      // Configure SSL certificates without forcing
+      SSLManager.INSTANCE.installCACertificates(
+        InstallationManager.getOrCreateApplicationDataDirectory(),
+        InstallationManager.CA_CERTS_NAME,
+        false);
+
+      // Update the UI after the BRIT exchange completes
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+
+          // Determine if the CA certificates are valid
+          AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, cacertsInstalledStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
+          cacertsInstalledStatusLabel.setVisible(true);
 
           // We're done
           spinner.setVisible(false);

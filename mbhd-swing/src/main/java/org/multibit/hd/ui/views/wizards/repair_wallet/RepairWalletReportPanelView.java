@@ -74,10 +74,7 @@ public class RepairWalletReportPanelView extends AbstractWizardPanelView<RepairW
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
     // Start invisible
-    cacertsRepairedStatusLabel = Labels.newStatusLabel(
-      Optional.of(MessageKey.CACERTS_INSTALLED_STATUS),
-      null,
-      Optional.<Boolean>absent());
+    cacertsRepairedStatusLabel = Labels.newCACertsInstalledStatus(false);
     AccessibilityDecorator.apply(cacertsRepairedStatusLabel, MessageKey.CACERTS_INSTALLED_STATUS);
     cacertsRepairedStatusLabel.setVisible(false);
 

@@ -339,6 +339,15 @@ public class Labels {
   }
 
   /**
+   * @param status True if the status is "good"
+   *
+   * @return A new "backup location" status label
+   */
+  public static JLabel newCACertsInstalledStatus(boolean status) {
+    return newStatusLabel(MessageKey.CACERTS_INSTALLED_STATUS, null, status);
+  }
+
+  /**
    * @param color The spinner color
    * @param size  The size in pixels of the target component
    *

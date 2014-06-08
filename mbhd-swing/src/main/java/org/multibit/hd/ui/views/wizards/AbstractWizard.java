@@ -451,20 +451,20 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
         // Depopulate the map
         wizardViewMap.clear();
 
-        // Hiding the light box must be on the EDT
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-
-            log.debug("Handle hide 1: '{}'", panelName);
-            wizardScreenHolder.removeAll();
-
-            // Proceed with hide
-            Panels.hideLightBoxIfPresent();
-            log.debug("Handle hide complete: '{}'", panelName);
-
-          }
-        });
+//        // Hiding the light box must be on the EDT
+//        SwingUtilities.invokeLater(new Runnable() {
+//          @Override
+//          public void run() {
+//
+//            log.debug("Handle hide 1: '{}'", panelName);
+//            wizardScreenHolder.removeAll();
+//
+//            // Proceed with hide
+//            Panels.hideLightBoxIfPresent();
+//            log.debug("Handle hide complete: '{}'", panelName);
+//
+//          }
+//        });
 
         log.debug("Handle hide waiting for EDT");
         Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);

@@ -179,10 +179,10 @@ public abstract class AbstractFestUseCase {
   }
 
   /**
-   * The standard length of time for a wallet to be created (at least 5 seconds)
+   * The standard length of time for a wallet to be created (at least 10 seconds with CA certs)
    */
   protected void pauseForWalletCreation() {
-    Pause.pause(5, TimeUnit.SECONDS);
+    Pause.pause(10, TimeUnit.SECONDS);
   }
 
   /**

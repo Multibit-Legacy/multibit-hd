@@ -5,7 +5,6 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.InstallationManager;
-import org.multibit.hd.core.managers.SSLManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.OSUtils;
@@ -190,12 +189,6 @@ public class MultiBitHD {
     } catch (SecurityException se) {
       log.error(se.getClass().getName() + " " + se.getMessage());
     }
-
-    // Configure SSL certificates without forcing
-    SSLManager.INSTANCE.installCACertificates(
-      InstallationManager.getOrCreateApplicationDataDirectory(),
-      InstallationManager.CA_CERTS_NAME,
-      false);
 
   }
 

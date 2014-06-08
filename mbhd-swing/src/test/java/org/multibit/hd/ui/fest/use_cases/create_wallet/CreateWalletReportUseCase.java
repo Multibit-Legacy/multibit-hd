@@ -54,6 +54,10 @@ public class CreateWalletReportUseCase extends AbstractFestUseCase {
       .label(MessageKey.BACKUP_LOCATION_STATUS.getKey())
       .requireVisible();
 
+    window
+      .label(MessageKey.CACERTS_INSTALLED_STATUS.getKey())
+      .requireVisible();
+
     // OK to proceed
     window
       .button(MessageKey.FINISH.getKey())
