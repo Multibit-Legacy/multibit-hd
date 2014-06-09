@@ -612,20 +612,20 @@ public class WalletService {
   }
 
   private Optional<Coin> calculateClientFee(PaymentType paymentType, String transactionHashAsString) {
-     Optional<Coin> clientFee = Optional.absent();
+    Optional<Coin> clientFee = Optional.absent();
 
-     if (paymentType == PaymentType.SENDING || paymentType == PaymentType.SENT) {
-       TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
-       if (transactionInfo != null) {
-         clientFee = transactionInfo.getClientFee();
-         if (clientFee == null) {
-           clientFee = Optional.absent();
-         }
-       }
-     }
+    if (paymentType == PaymentType.SENDING || paymentType == PaymentType.SENT) {
+      TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
+      if (transactionInfo != null) {
+        clientFee = transactionInfo.getClientFee();
+        if (clientFee == null) {
+          clientFee = Optional.absent();
+        }
+      }
+    }
 
-     return clientFee;
-   }
+    return clientFee;
+  }
 
   /**
    * <p>Populate the internal cache of Payments from the backing store</p>
@@ -944,11 +944,17 @@ public class WalletService {
    */
   @Subscribe
   public void onShutdownEvent(ShutdownEvent shutdownEvent) {
+
+    if (!WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+      // Nothing to write
+      return;
+    }
+
     try {
       writePayments();
     } catch (PaymentsSaveException pse) {
       // Cannot do much as shutting down
-      pse.printStackTrace();
+      log.error("Failed to write payments.", pse);
     }
   }
 }
