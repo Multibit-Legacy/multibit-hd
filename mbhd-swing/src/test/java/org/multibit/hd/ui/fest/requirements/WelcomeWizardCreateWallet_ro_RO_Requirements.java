@@ -10,13 +10,13 @@ import java.util.Map;
 /**
  * <p>FEST Swing UI test to provide:</p>
  * <ul>
- * <li>Create wallet using welcome wizard</li>
+ * <li>Create wallet using welcome wizard using ro_RO as the base language</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class WelcomeWizardCreateWalletRequirements {
+public class WelcomeWizardCreateWallet_ro_RO_Requirements {
 
   public static void verifyUsing(FrameFixture window) {
 
@@ -24,7 +24,8 @@ public class WelcomeWizardCreateWalletRequirements {
 
     new CloseDebugSecurityPopoverUseCase(window).execute(parameters);
 
-    new WelcomeSelectLanguageUseCase(window).execute(parameters);
+    // Use the ro_RO language
+    new WelcomeSelectLanguage_ro_RO_UseCase(window).execute(parameters);
 
     new WelcomeSelectWalletUseCase(window).execute(parameters);
 

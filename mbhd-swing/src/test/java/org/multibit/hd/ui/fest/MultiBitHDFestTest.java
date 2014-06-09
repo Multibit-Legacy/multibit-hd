@@ -84,18 +84,37 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <ul>
    * <li>Start with fresh application directory</li>
    * <li>Create a wallet</li>
-   * <li>Restore a wallet</li>
-   * <li>Switch wallets</li>
    * </ul>
    */
   @Test
-  public void verifyWelcomeWizard() throws Exception {
+  public void verifyWelcomeWizardCreateWallet_en_US() throws Exception {
 
     // Start with a completely empty random application directory
     arrangeFresh();
 
     // Create a wallet through the welcome wizard
-    WelcomeWizardCreateWalletRequirements.verifyUsing(window);
+    WelcomeWizardCreateWallet_en_US_Requirements.verifyUsing(window);
+
+    // Unlock the wallet
+    QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
+
+  }
+
+  /**
+   * <p>Verify the following:</p>
+   * <ul>
+   * <li>Start with fresh application directory</li>
+   * <li>Create a wallet</li>
+   * </ul>
+   */
+  @Test
+  public void verifyWelcomeWizardCreateWallet_ro_RO() throws Exception {
+
+    // Start with a completely empty random application directory
+    arrangeFresh();
+
+    // Create a wallet through the welcome wizard
+    WelcomeWizardCreateWallet_ro_RO_Requirements.verifyUsing(window);
 
     // Unlock the wallet
     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);

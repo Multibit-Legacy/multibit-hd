@@ -15,14 +15,15 @@ import static org.fest.assertions.Assertions.assertThat;
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
  * <li>Verify the welcome wizard "select language" panel view</li>
+ * <li>Selected language will be en_US</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class WelcomeSelectLanguageUseCase extends AbstractFestUseCase {
+public class WelcomeSelectLanguage_en_US_UseCase extends AbstractFestUseCase {
 
-  public WelcomeSelectLanguageUseCase(FrameFixture window) {
+  public WelcomeSelectLanguage_en_US_UseCase(FrameFixture window) {
     super(window);
   }
 
@@ -72,7 +73,7 @@ public class WelcomeSelectLanguageUseCase extends AbstractFestUseCase {
     // Clear any security popover
     new CloseDebugSecurityPopoverUseCase(window).execute(parameters);
 
-    // Verify that the Romanian welcome note is showing
+    // Verify that the English welcome note is showing once again
     welcomeNote1_en = window
       .label(MessageKey.WELCOME_NOTE_1.getKey())
       .text();
