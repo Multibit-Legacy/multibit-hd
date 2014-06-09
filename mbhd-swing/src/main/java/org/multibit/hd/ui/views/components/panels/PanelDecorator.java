@@ -43,7 +43,7 @@ public class PanelDecorator {
 
     // Standard wizard layout
     MigLayout layout = new MigLayout(
-      "debug,"+Panels.migLayout("fill,insets 15"),
+      Panels.migLayout("fill,insets 15"),
       "[][][][]", // Column constraints
       "[]10[grow]10[]" // Row constraints
     );
@@ -67,7 +67,7 @@ public class PanelDecorator {
 
     // Standard wizard layout
     MigLayout layout = new MigLayout(
-      "debug,"+Panels.migLayout("insets 5"),
+      Panels.migLayout("insets 5"),
       "[][][][]",
       "[shrink]10[grow]10[]" // Row constraints
     );

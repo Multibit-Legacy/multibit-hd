@@ -37,10 +37,15 @@ public class HtmlUtils {
     }
 
     // Wrap in paragraphs to ensure word wrap
+    boolean first = true;
     for (String line : lines) {
+      if (!first) {
+        sb.append("<br>");
+      }
       sb.append("<p>")
         .append(line)
-        .append("</p><br>");
+        .append("</p>");
+      first = false;
     }
     sb.append("</div></body></html>");
 
@@ -57,10 +62,15 @@ public class HtmlUtils {
     final StringBuilder sb = new StringBuilder("<html><body style='width: 100%'><div align=center>");
 
     // Wrap in paragraphs to ensure word wrap
+    boolean first = true;
     for (String line : lines) {
+      if (!first) {
+        sb.append("<br>");
+      }
       sb.append("<p>")
         .append(line)
-        .append("</p><br>");
+        .append("</p>");
+      first = false;
     }
     sb.append("</div></body></html>");
 
@@ -76,7 +86,7 @@ public class HtmlUtils {
   public static String applyBoldFragments(String fragment, String sourceText) {
 
     if (Strings.isNullOrEmpty(fragment) || Strings.isNullOrEmpty(sourceText)) {
-      return "<html>"+sourceText+"</html>";
+      return "<html>" + sourceText + "</html>";
     }
 
     String lowerFragment = fragment.toLowerCase();

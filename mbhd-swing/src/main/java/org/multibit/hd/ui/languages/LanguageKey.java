@@ -7,8 +7,7 @@ import java.awt.*;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import static org.multibit.hd.ui.views.fonts.TitleFontDecorator.CORBEN_REGULAR;
-import static org.multibit.hd.ui.views.fonts.TitleFontDecorator.IMPACT_REGULAR;
+import static org.multibit.hd.ui.views.fonts.TitleFontDecorator.*;
 
 /**
  * <p>Enum to provide the following to application:</p>
@@ -39,7 +38,7 @@ public enum LanguageKey {
   /**
    * Czech
    */
-  CS_CZ("cs_CZ", IMPACT_REGULAR),
+  CS_CZ("cs_CZ", OPENSANS_SEMIBOLD),
   /**
    * Danish
    */
@@ -51,7 +50,7 @@ public enum LanguageKey {
   /**
    * Greek
    */
-  EL_GR("el_GR", IMPACT_REGULAR),
+  EL_GR("el_GR", OPENSANS_SEMIBOLD),
   /**
    * English (United Kingdom)
    */
@@ -81,17 +80,17 @@ public enum LanguageKey {
    */
   FR_FR("fr_FR", CORBEN_REGULAR),
   /**
-   * Hindi
+   * Hindi (should use NotoSans-Bold when proven)
    */
   HI_IN("hi_IN", IMPACT_REGULAR),
   /**
    * Croatian
    */
-  HR_HR("hr_HR", IMPACT_REGULAR),
+  HR_HR("hr_HR", OPENSANS_SEMIBOLD),
   /**
    * Hungarian
    */
-  HU_HU("hu_HU", IMPACT_REGULAR),
+  HU_HU("hu_HU", OPENSANS_SEMIBOLD),
   /**
    * Indonesian
    */
@@ -115,7 +114,7 @@ public enum LanguageKey {
   /**
    * Latvian
    */
-  LV_LV("lv_LV", IMPACT_REGULAR),
+  LV_LV("lv_LV", OPENSANS_SEMIBOLD),
   /**
    * Dutch
    */
@@ -127,7 +126,7 @@ public enum LanguageKey {
   /**
    * Polish
    */
-  PL_PL("pl_PL", IMPACT_REGULAR),
+  PL_PL("pl_PL", OPENSANS_SEMIBOLD),
   /**
    * Portuguese (Portugal)
    */
@@ -135,19 +134,19 @@ public enum LanguageKey {
   /**
    * Romanian
    */
-  RO_RO("ro_RO", IMPACT_REGULAR),
+  RO_RO("ro_RO", OPENSANS_SEMIBOLD),
   /**
    * Russian
    */
-  RU_RU("ru_RU", IMPACT_REGULAR),
+  RU_RU("ru_RU", OPENSANS_SEMIBOLD),
   /**
    * Slovak
    */
-  SK_SK("sk_SK", IMPACT_REGULAR),
+  SK_SK("sk_SK", OPENSANS_SEMIBOLD),
   /**
    * Slovene
    */
-  SL_SI("sl_SI", IMPACT_REGULAR),
+  SL_SI("sl_SI", OPENSANS_SEMIBOLD),
   /**
    * Swedish
    */
@@ -175,7 +174,7 @@ public enum LanguageKey {
   /**
    * Vietnamese
    */
-  VI_VN("vi_VN", IMPACT_REGULAR),
+  VI_VN("vi_VN", OPENSANS_SEMIBOLD),
   /**
    * Chinese (Simplified)
    */

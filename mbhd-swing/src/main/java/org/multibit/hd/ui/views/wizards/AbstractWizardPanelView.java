@@ -93,13 +93,13 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
   /**
    * @param wizard         The wizard
    * @param panelName      The panel name to filter events from components
-   * @param title          The key for the title section text
+   * @param titleKey       The key for the title section text
    * @param backgroundIcon The icon for the content section background
    */
-  public AbstractWizardPanelView(AbstractWizard<M> wizard, String panelName, MessageKey title, AwesomeIcon backgroundIcon) {
+  public AbstractWizardPanelView(AbstractWizard<M> wizard, String panelName, MessageKey titleKey, AwesomeIcon backgroundIcon) {
 
     Preconditions.checkNotNull(wizard, "'wizard' must be present");
-    Preconditions.checkNotNull(title, "'title' must be present");
+    Preconditions.checkNotNull(titleKey, "'title' must be present");
 
     this.wizardModel = wizard.getWizardModel();
     this.panelName = panelName;
@@ -118,13 +118,14 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
     PanelDecorator.applyWizardTheme(wizardScreenPanel);
 
     // Add the title to the wizard
-    initialiseTitle(wizardScreenPanel, title);
+    JLabel title = Labels.newTitleLabel(titleKey);
+    wizardScreenPanel.add(title, "span 4," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",shrink,aligny top,align center,wrap");
 
     // Provide a basic empty content panel (allows lazy initialisation later)
     contentPanel = Panels.newDetailBackgroundPanel(backgroundIcon);
 
     // Add it to the wizard panel as a placeholder
-    wizardScreenPanel.add(contentPanel, "span 4,grow,wrap");
+    wizardScreenPanel.add(contentPanel, "span 4,grow,push,wrap");
 
     // Add the buttons to the wizard
     initialiseButtons(wizard);
@@ -134,28 +135,9 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
   /**
    * <p>Called when the wizard is first created to initialise the panel model.</p>
    *
-   * <p>This is called before {@link AbstractWizardPanelView#initialiseTitle(javax.swing.JPanel, org.multibit.hd.ui.languages.MessageKey)} ()}</p>
-   *
    * <p>Implementers must create a new panel model and bind it to the overall wizard</p>
    */
   public abstract void newPanelModel();
-
-  /**
-   * <p>Initialise the title section of the wizard panel</p>
-   *
-   * @param wizardScreenPanel The wizard screen panel (title, contents, buttons)
-   * @param titleKey          The title key to add to the panel
-   */
-  protected void initialiseTitle(JPanel wizardScreenPanel, MessageKey titleKey) {
-
-    JLabel title = Labels.newTitleLabel(titleKey);
-
-    // Useful for debugging screen issues in different locales
-    log.debug("Title font is {}", title.getFont().getFontName());
-
-    wizardScreenPanel.add(title, "span 4," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",shrink,aligny top,align center,wrap");
-
-  }
 
   /**
    * <p>Initialise the content section of the wizard panel just before first showing</p>

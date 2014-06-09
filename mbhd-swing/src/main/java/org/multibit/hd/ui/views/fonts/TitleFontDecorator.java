@@ -14,9 +14,11 @@ import java.util.Locale;
  * <p>Decorator to provide the following to Swing components:</p>
  * <ul>
  * <li>Application of a generic title font</li>
- * <li>Includes glyphs for extended Latin, Hebrew, Arabic and Hindi</li>
- * <li>Font name is supported on Windows, Mac and Linux</li>
+ * <li>Series of fonts for different languages</li>
+ * <li>Final fallback font is supported on Windows, Mac and Linux in all languages</li>
  * </ul>
+ *
+ * <p>More fonts can be sourced from Google Fonts and extracted from a ZIP file as a TTF</p>
  *
  * @since 0.0.1
  *  
@@ -24,10 +26,22 @@ import java.util.Locale;
 public class TitleFontDecorator {
 
   /**
-   * The Corben Regular font is good for Latin languages (North America, Western Europe)
+   * The Corben Regular font is good for a reduced set of Latin languages (North America, Western Europe)
    * and makes the application look attractive
    */
   public static final Font CORBEN_REGULAR;
+
+  /**
+   * The OpenSans Regular font is good for all Latin languages (North America, Europe)
+   * and is a good fallback from Corben
+   */
+  public static final Font OPENSANS_SEMIBOLD;
+
+  /**
+   * The NotoSans Bold font is good for all Devangari languages (India, Nepal)
+   * Currently elided due to its 415Kb payload
+   */
+  //public static final Font NOTOSANS_BOLD;
 
   /**
    * The Impact font is found on Windows, Mac and Linux variants
@@ -42,18 +56,34 @@ public class TitleFontDecorator {
 
   static {
 
-    try (InputStream in = TitleFontDecorator.class.getResourceAsStream("/assets/fonts/Corben-Regular.ttf")) {
+    CORBEN_REGULAR = assignFont("Corben-Regular.ttf");
+    OPENSANS_SEMIBOLD = assignFont("OpenSans-Semibold.ttf");
+    //NOTOSANS_BOLD = assignFont("NotoSans-Bold.ttf");
 
-      Font corbenRegular = Font.createFont(Font.TRUETYPE_FONT, in);
+  }
 
-      Preconditions.checkNotNull(corbenRegular, "Corben Regular not loaded");
+  /**
+   * @param fontName The font name (e.g. "Corben-Regular.ttf") as found in <code>/assets/fonts</code>
+   *
+   * @return The derived font after registration
+   */
+  private static Font assignFont(String fontName) {
 
-     CORBEN_REGULAR = corbenRegular.deriveFont(Font.PLAIN);
+    try (InputStream in = TitleFontDecorator.class.getResourceAsStream("/assets/fonts/" + fontName)) {
+
+      Font loadedFont = Font.createFont(Font.TRUETYPE_FONT, in);
+
+      Preconditions.checkNotNull(loadedFont, fontName + " not loaded");
+
+      // Always stick with plain for best effect
+      Font derivedFont = loadedFont.deriveFont(Font.PLAIN);
 
       // HTML tags won't use the font unless the graphics environment has registered it
-     GraphicsEnvironment
+      GraphicsEnvironment
         .getLocalGraphicsEnvironment()
-        .registerFont(CORBEN_REGULAR);
+        .registerFont(derivedFont);
+
+      return derivedFont;
 
     } catch (FontFormatException | IOException e) {
       throw new UIException(e);
