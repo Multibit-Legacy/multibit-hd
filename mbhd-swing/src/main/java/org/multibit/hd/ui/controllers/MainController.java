@@ -32,6 +32,7 @@ import org.multibit.hd.ui.views.MainView;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.fonts.TitleFontDecorator;
 import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.themes.Theme;
 import org.multibit.hd.ui.views.themes.ThemeKey;
@@ -209,6 +210,9 @@ public class MainController extends AbstractController implements
       // Ensure the Swing thread can perform a complete refresh
       SwingUtilities.invokeLater(new Runnable() {
         public void run() {
+
+          // Switch the theme before any other UI building takes place
+          handleTheme();
 
           // Rebuild MainView contents
           handleLocale();
@@ -519,6 +523,7 @@ public class MainController extends AbstractController implements
    */
   private void handleLocale() {
 
+    // Get the current locale
     Locale locale = Configurations.currentConfiguration.getLocale();
 
     log.debug("Setting application frame to locale '{}'", locale);

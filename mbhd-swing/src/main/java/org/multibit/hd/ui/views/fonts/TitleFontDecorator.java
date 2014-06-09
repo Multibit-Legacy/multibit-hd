@@ -1,7 +1,15 @@
 package org.multibit.hd.ui.views.fonts;
 
+import com.google.common.base.Preconditions;
+import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.exceptions.UIException;
+import org.multibit.hd.ui.languages.LanguageKey;
+
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Locale;
 
 /**
  * <p>Decorator to provide the following to Swing components:</p>
@@ -17,9 +25,37 @@ import java.awt.*;
 public class TitleFontDecorator {
 
   /**
-   * The Impact font is found on Windows, Mac and Linux variants
+   * The Corben Regular font is good for Latin languages (North America, Western Europe)
+   * and makes the application look attractive
    */
-  public static Font FONT = Font.decode("Impact").deriveFont(Font.BOLD);
+  public static final Font CORBEN_REGULAR;
+
+  /**
+   * The Impact font is found on Windows, Mac and Linux variants
+   * It is a good fall back position when other fonts are not suitable
+   */
+  public static final Font IMPACT_REGULAR = Font.decode("Impact");
+
+  /**
+   * The currently selected font for the given locale
+   */
+  private static Font TITLE_FONT = IMPACT_REGULAR;
+
+  static {
+
+    try (InputStream in = TitleFontDecorator.class.getResourceAsStream("/assets/fonts/Corben-Regular.ttf")) {
+
+      Font corbenRegular = Font.createFont(Font.TRUETYPE_FONT, in);
+
+      Preconditions.checkNotNull(corbenRegular, "Corben Regular not loaded");
+
+      CORBEN_REGULAR = corbenRegular.deriveFont(Font.PLAIN, MultiBitUI.NORMAL_ICON_SIZE);
+
+    } catch (FontFormatException | IOException e) {
+      throw new UIException(e);
+    }
+
+  }
 
   /**
    * @param component The component to which the plain default Corben font will be applied
@@ -27,9 +63,17 @@ public class TitleFontDecorator {
    */
   public static void apply(JComponent component, float size) {
 
-    Font font = FONT.deriveFont(size);
+    Font font = TITLE_FONT.deriveFont(size);
     component.setFont(font);
 
   }
 
+  /**
+   * Set the title font based on the given locale
+   */
+  public static synchronized void refresh(Locale locale) {
+
+    TITLE_FONT = LanguageKey.fromLocale(locale).getTitleFont();
+
+  }
 }

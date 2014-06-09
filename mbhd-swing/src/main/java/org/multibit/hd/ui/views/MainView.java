@@ -10,6 +10,7 @@ import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.fonts.TitleFontDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
@@ -98,6 +99,9 @@ public class MainView extends JFrame {
     log.debug("Refreshing MainView");
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be in the EDT. Check MainController.");
+
+    // Ensure the title font is updated depending on the new locale
+    TitleFontDecorator.refresh(Configurations.currentConfiguration.getLocale());
 
     // Ensure the title matches the new language
     setTitle(Languages.safeText(MessageKey.MULTIBIT_HD_TITLE));

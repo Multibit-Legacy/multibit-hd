@@ -51,7 +51,7 @@ public class Themes {
     UIManager.put("nimbusSelection", currentTheme.infoAlertBackground());
     UIManager.put("nimbusSelectionBackground", currentTheme.infoAlertBackground());
 
-    // Ensure the language icons match
+    // Ensure the language icons match the colour scheme
     LanguageKey.resetIcons();
 
     // Adjust the font size
