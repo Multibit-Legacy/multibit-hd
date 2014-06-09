@@ -19,8 +19,8 @@ import java.util.Enumeration;
  */
 public class Themes {
 
-  // Always start with the light theme and switch during startup if required
-  public static Theme currentTheme = new LightTheme();
+  // Always start with the Bootstrap theme and switch during startup if required
+  public static Theme currentTheme = new BootstrapTheme();
 
   /**
    * Utilities do not have public constructors
@@ -100,5 +100,4 @@ public class Themes {
     }
 
   }
-
 }
