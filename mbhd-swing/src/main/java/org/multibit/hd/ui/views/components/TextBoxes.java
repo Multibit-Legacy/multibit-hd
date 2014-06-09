@@ -131,9 +131,9 @@ public class TextBoxes {
   }
 
   /**
-   * @return A new "enter label" text field
+   * @return A new "enter transaction label" text field
    */
-  public static JTextField newEnterLabel() {
+  public static JTextField newEnterTransactionLabel() {
 
     JTextField textField = newTextField(MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH);
 

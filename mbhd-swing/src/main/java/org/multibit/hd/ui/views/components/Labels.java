@@ -755,13 +755,6 @@ public class Labels {
   }
 
   /**
-   * @return A new "transaction label" message for use with receiving addresses
-   */
-  public static JLabel newTransactionLabel() {
-    return newLabel(MessageKey.TRANSACTION_LABEL);
-  }
-
-  /**
    * @return A new "description" label
    */
   public static JLabel newDescription() {

@@ -713,6 +713,7 @@ public class WalletService {
    * @return Address the next generated address, as a String. The corresponding private key will be added to the wallet
    */
   public String generateNextReceivingAddress(Optional<CharSequence> walletPasswordOptional) {
+
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
     if (!currentWalletSummary.isPresent()) {
       // No wallet is present
@@ -727,6 +728,7 @@ public class WalletService {
         throw new IllegalStateException("No password specified");
       }
     }
+
   }
 
   /**

@@ -64,7 +64,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
   private ModelAndView<DisplayBitcoinAddressModel, DisplayBitcoinAddressView> displayBitcoinAddressMaV;
   private ModelAndView<DisplayQRCodeModel, DisplayQRCodeView> displayQRCodePopoverMaV;
 
-  private JTextField label;
+  private JTextField privateNotes;
   private JLabel addressCommentLabel;
 
   private JButton showQRCode;
@@ -84,7 +84,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     enterAmountMaV = Components.newEnterAmountMaV(getPanelName());
 
     // See if there is a password entered for the wallet
-    // TODO - remove when HDwallets supported - won't need a password to generate the next address
+    // TODO (JB) remove when HD wallets supported - won't need a password to generate the next address
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
     Optional<CharSequence> passwordParameter = Optional.absent();
     CharSequence password = currentWalletSummary.get().getPassword();
@@ -106,7 +106,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     // Create the QR code display
     displayQRCodePopoverMaV = Popovers.newDisplayQRCodePopoverMaV(getPanelName());
 
-    label = TextBoxes.newEnterLabel();
+    privateNotes = TextBoxes.newEnterTransactionLabel();
     showQRCode = Buttons.newQRCodeButton(getShowQRCodePopoverAction());
     addressCommentLabel = Labels.newLabel(MessageKey.ONE_OF_YOUR_ADDRESSES);
 
@@ -121,7 +121,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     ));
 
     getWizardModel().setEnterAmountModel(enterAmountMaV.getModel());
-    getWizardModel().setTransactionLabel(label.getText());
+    getWizardModel().setTransactionLabel(privateNotes.getText());
     getWizardModel().setNotes(Optional.of(notesTextArea.getText()));
 
     // Register components
@@ -145,7 +145,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     contentPanel.add(Labels.newBlankLabel());
     contentPanel.add(addressCommentLabel, "wrap");
     contentPanel.add(Labels.newQRCodeLabel());
-    contentPanel.add(label, "span 2,wrap");
+    contentPanel.add(privateNotes, "span 2,wrap");
     contentPanel.add(Labels.newNotes());
     contentPanel.add(notesTextArea, "span 3,push,wrap");
 
@@ -198,7 +198,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     paymentRequestData.setNote(notesTextArea.getText());
     paymentRequestData.setDate(DateTime.now());
     paymentRequestData.setAddress(displayBitcoinAddressMaV.getModel().getValue());
-    paymentRequestData.setLabel(label.getText());
+    paymentRequestData.setLabel(privateNotes.getText());
     paymentRequestData.setAmountCoin(enterAmountMaV.getModel().getCoinAmount());
 
     FiatPayment fiatPayment = new FiatPayment();
@@ -270,12 +270,12 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
         String bitcoinUri = BitcoinURI.convertToBitcoinURI(
           bitcoinAddress,
           coin,
-          label.getText(),
+          privateNotes.getText(),
           null
         );
 
         displayQRCodePopoverMaV.getModel().setValue(bitcoinUri);
-        displayQRCodePopoverMaV.getModel().setLabel(label.getText());
+        displayQRCodePopoverMaV.getModel().setLabel(privateNotes.getText());
 
         // Show the QR code as a popover
         Panels.showLightBoxPopover(displayQRCodePopoverMaV.getView().newComponentPanel());
