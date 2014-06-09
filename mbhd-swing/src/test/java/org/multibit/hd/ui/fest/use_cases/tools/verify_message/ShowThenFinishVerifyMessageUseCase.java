@@ -31,8 +31,7 @@ public class ShowThenFinishVerifyMessageUseCase extends AbstractFestUseCase {
       .click();
 
     // Verify the "verify message" wizard appears
-    window
-      .label(MessageKey.VERIFY_MESSAGE_TITLE.getKey());
+    assertLabelText(MessageKey.VERIFY_MESSAGE_TITLE);
 
     // Verify finish is present
     window

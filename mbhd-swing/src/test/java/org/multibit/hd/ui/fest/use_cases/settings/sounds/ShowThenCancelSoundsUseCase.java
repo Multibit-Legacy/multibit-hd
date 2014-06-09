@@ -31,8 +31,7 @@ public class ShowThenCancelSoundsUseCase extends AbstractFestUseCase {
       .click();
 
     // Verify the "sounds" wizard appears
-    window
-      .label(MessageKey.SOUNDS_SETTINGS_TITLE.getKey());
+    assertLabelText(MessageKey.SOUNDS_SETTINGS_TITLE);
 
     // Verify cancel is present
     window

@@ -42,8 +42,6 @@ public class Labels {
 
 
   /**
-   * TODO make this package private and create specialised labels
-   *
    * @param key    The resource key for the language message text
    * @param values The data values for token replacement in the message text
    *
@@ -78,7 +76,6 @@ public class Labels {
   }
 
   /**
-   * TODO Make this package private and create specialised methods to reduce key leaks
    * <p>A convenience method for creating a themed label with direct text. This is not internationalised.</p>
    *
    * @return A new value label with default styling for placing direct text
@@ -97,17 +94,25 @@ public class Labels {
   /**
    * @param key The message key
    *
-   * @return A new label with appropriate font and theme
+   * @return A new label with appropriate font, theme and alignment for a wizard panel view title
    */
   public static JLabel newTitleLabel(MessageKey key) {
 
-    JLabel label = newLabel(key);
+    String[] titleText = new String[] {Languages.safeText(key)};
+
+    String htmlText = HtmlUtils.localiseWithCenteredLinedBreaks(titleText);
+
+    JLabel label = new JLabel(htmlText);
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(label, key);
 
     // Font
     TitleFontDecorator.apply(label, MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE);
 
     // Theme
     label.setForeground(Themes.currentTheme.text());
+
 
     return label;
 

@@ -62,8 +62,7 @@ public class EditAliceAndBobContactUseCase extends AbstractFestUseCase {
       .click();
 
     // Verify the multiple contact edit wizard appears
-    window
-      .label(MessageKey.EDIT_CONTACTS_TITLE.getKey());
+    assertLabelText(MessageKey.EDIT_CONTACTS_TITLE);
 
     // Verify the multiple contact list is correct
     window

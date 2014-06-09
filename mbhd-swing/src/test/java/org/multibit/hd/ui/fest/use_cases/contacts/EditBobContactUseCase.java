@@ -54,8 +54,7 @@ public class EditBobContactUseCase extends AbstractFestUseCase {
       .click();
 
     // Verify the single contact edit wizard appears
-    window
-      .label(MessageKey.EDIT_CONTACT_TITLE.getKey());
+    assertLabelText(MessageKey.EDIT_CONTACT_TITLE);
 
     window
       .button(MessageKey.CANCEL.getKey())

@@ -2,7 +2,6 @@ package org.multibit.hd.ui.fest.use_cases.create_wallet;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
-import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 
 import java.util.Map;
@@ -31,9 +30,8 @@ public class CreateWalletReportUseCase extends AbstractFestUseCase {
 
     assertThat(parameters).isNotNull();
 
-    window
-      .label(MessageKey.CREATE_WALLET_REPORT_TITLE.getKey())
-      .requireText(Languages.safeText(MessageKey.CREATE_WALLET_REPORT_TITLE));
+    // Verify that the title appears
+    assertLabelText(MessageKey.CREATE_WALLET_REPORT_TITLE);
 
     // Building the wallet can take time
     pauseForWalletCreation();

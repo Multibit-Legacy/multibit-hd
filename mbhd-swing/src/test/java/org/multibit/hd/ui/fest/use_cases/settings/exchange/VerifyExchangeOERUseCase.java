@@ -34,8 +34,7 @@ public class VerifyExchangeOERUseCase extends AbstractFestUseCase {
     pauseForComponentReset();
 
     // Verify the "exchange" wizard appears
-    window
-      .label(MessageKey.EXCHANGE_SETTINGS_TITLE.getKey());
+    assertLabelText(MessageKey.EXCHANGE_SETTINGS_TITLE);
 
     // Verify cancel is present
     window

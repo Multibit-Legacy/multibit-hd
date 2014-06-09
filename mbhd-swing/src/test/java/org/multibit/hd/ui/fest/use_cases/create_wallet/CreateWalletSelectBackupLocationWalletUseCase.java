@@ -2,7 +2,6 @@ package org.multibit.hd.ui.fest.use_cases.create_wallet;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
-import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 
 import java.util.Map;
@@ -25,9 +24,8 @@ public class CreateWalletSelectBackupLocationWalletUseCase extends AbstractFestU
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    window
-      .label(MessageKey.SELECT_BACKUP_LOCATION_TITLE.getKey())
-      .requireText(Languages.safeText(MessageKey.SELECT_BACKUP_LOCATION_TITLE));
+    // Verify that the title appears
+    assertLabelText(MessageKey.SELECT_BACKUP_LOCATION_TITLE);
 
     window
       .textBox()

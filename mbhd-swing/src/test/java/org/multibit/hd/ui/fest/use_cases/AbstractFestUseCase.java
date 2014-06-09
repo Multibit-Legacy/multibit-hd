@@ -6,6 +6,7 @@ import org.fest.swing.core.matcher.JTextComponentMatcher;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.timing.Pause;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -161,6 +162,19 @@ public abstract class AbstractFestUseCase {
       .contents();
 
     assertThat("true".equals(contents[row][checkboxColumnIndex])).isTrue();
+
+  }
+
+  /**
+   * <p>Asserts that a label contains the required key text in the current locale (ignores wrapping HTML if present)</p>
+   *
+   * @param key The message key to use
+   */
+  protected void assertLabelText(MessageKey key) {
+
+    String titleHtml = window.label(key.getKey()).text();
+
+    assertThat(titleHtml).contains(Languages.safeText(key));
 
   }
 

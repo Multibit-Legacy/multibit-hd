@@ -24,6 +24,7 @@ import java.awt.event.ComponentEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -96,14 +97,16 @@ public class MainView extends JFrame {
    */
   public void refresh() {
 
-    log.debug("Refreshing MainView");
-
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be in the EDT. Check MainController.");
 
-    // Ensure the title font is updated depending on the new locale
-    TitleFontDecorator.refresh(Configurations.currentConfiguration.getLocale());
+    Locale locale = Configurations.currentConfiguration.getLocale();
 
-    // Ensure the title matches the new language
+    log.debug("Refreshing MainView with locale '{}'", locale);
+
+    // Ensure the title font is updated depending on the new locale
+    TitleFontDecorator.refresh(locale);
+
+    // Ensure the frame title matches the new language
     setTitle(Languages.safeText(MessageKey.MULTIBIT_HD_TITLE));
 
     // Parse the configuration

@@ -4,12 +4,9 @@ import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.fest.use_cases.security.CloseDebugSecurityPopoverUseCase;
 import org.multibit.hd.ui.languages.LanguageKey;
-import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 
 import java.util.Map;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * <p>Use case to provide the following to FEST testing:</p>
@@ -30,9 +27,7 @@ public class WelcomeSelectLanguage_ro_RO_UseCase extends AbstractFestUseCase {
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    window
-      .label(MessageKey.WELCOME_TITLE.getKey())
-      .requireText(Languages.safeText(MessageKey.WELCOME_TITLE));
+    assertLabelText(MessageKey.WELCOME_TITLE);
 
     // Verify that English (United States) is selected by default
     window
@@ -40,11 +35,7 @@ public class WelcomeSelectLanguage_ro_RO_UseCase extends AbstractFestUseCase {
       .requireSelection(LanguageKey.EN_US.ordinal());
 
     // Verify that the English welcome note is showing
-    String welcomeNote1_en = window
-      .label(MessageKey.WELCOME_NOTE_1.getKey())
-      .text();
-
-    assertThat(welcomeNote1_en).contains("MultiBit HD provides access to the Bitcoin network.");
+    assertLabelText(MessageKey.WELCOME_NOTE_1);
 
     // Switch to Romanian
     window
@@ -57,11 +48,7 @@ public class WelcomeSelectLanguage_ro_RO_UseCase extends AbstractFestUseCase {
     new CloseDebugSecurityPopoverUseCase(window).execute(parameters);
 
     // Verify that the Romanian welcome note is showing
-    String welcomeNote1_ro = window
-      .label(MessageKey.WELCOME_NOTE_1.getKey())
-      .text();
-
-    assertThat(welcomeNote1_ro).contains("MultiBit HD oferă acces la rețeaua Bitcoin.");
+    assertLabelText(MessageKey.WELCOME_NOTE_1);
 
     window
       .button(MessageKey.NEXT.getKey())

@@ -35,8 +35,7 @@ public class ShowSendThenCancelSendUseCase extends AbstractFestUseCase {
       .click();
 
     // Verify the wizard appears
-    window
-      .label(MessageKey.SEND_BITCOIN_TITLE.getKey());
+    assertLabelText(MessageKey.SEND_BITCOIN_TITLE);
 
     // Verify buttons
     window

@@ -31,8 +31,7 @@ public class ShowThenFinishSignMessageUseCase extends AbstractFestUseCase {
       .click();
 
     // Verify the sign message wizard appears
-    window
-      .label(MessageKey.SIGN_MESSAGE_TITLE.getKey());
+    assertLabelText(MessageKey.SIGN_MESSAGE_TITLE);
 
     // Verify buttons
     window

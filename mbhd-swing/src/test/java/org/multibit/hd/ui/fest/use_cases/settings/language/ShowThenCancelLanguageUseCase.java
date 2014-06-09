@@ -31,8 +31,7 @@ public class ShowThenCancelLanguageUseCase extends AbstractFestUseCase {
       .click();
 
     // Verify the "language" wizard appears
-    window
-      .label(MessageKey.LANGUAGE_SETTINGS_TITLE.getKey());
+    assertLabelText(MessageKey.LANGUAGE_SETTINGS_TITLE);
 
     // Verify cancel is present
     window

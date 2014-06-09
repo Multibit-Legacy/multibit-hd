@@ -147,7 +147,7 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
    */
   protected void initialiseTitle(JPanel wizardScreenPanel, MessageKey titleKey) {
 
-    wizardScreenPanel.add(Labels.newTitleLabel(titleKey), "span 4,shrink,wrap,aligny top,align center");
+    wizardScreenPanel.add(Labels.newTitleLabel(titleKey), "span 4,shrink,"+Panels.migWizardMaxLayout() + ",wrap,aligny top,align center");
 
   }
 

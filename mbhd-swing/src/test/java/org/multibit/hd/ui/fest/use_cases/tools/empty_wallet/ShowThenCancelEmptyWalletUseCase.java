@@ -31,8 +31,7 @@ public class ShowThenCancelEmptyWalletUseCase extends AbstractFestUseCase {
       .click();
 
     // Verify the "empty wallet" wizard appears
-    window
-      .label(MessageKey.EMPTY_WALLET_TITLE.getKey());
+    assertLabelText(MessageKey.EMPTY_WALLET_TITLE);
 
     // Verify cancel is present
     window

@@ -37,7 +37,7 @@ public class TitleFontDecorator {
   public static final Font IMPACT_REGULAR = Font.decode("Impact");
 
   /**
-   * The currently selected font for the given locale
+   * The currently selected font for the given locale (default is Impact in case of problems)
    */
   private static Font TITLE_FONT = IMPACT_REGULAR;
 

@@ -50,8 +50,7 @@ public class EditThenCancelBobContactKeyboardUseCase extends AbstractFestUseCase
       .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_ENTER));
 
     // Verify the single contact edit wizard appears
-    window
-      .label(MessageKey.EDIT_CONTACT_TITLE.getKey());
+    assertLabelText(MessageKey.EDIT_CONTACT_TITLE);
 
     window
       .button(MessageKey.CANCEL.getKey())

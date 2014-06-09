@@ -33,8 +33,7 @@ public class SendNoFundsConfirmScreenUseCase extends AbstractFestUseCase {
       .click();
 
     // Verify the confirm panel is showing
-    window
-      .label(MessageKey.CONFIRM_SEND_TITLE.getKey());
+    assertLabelText(MessageKey.CONFIRM_SEND_TITLE);
 
     // Verify buttons
     window

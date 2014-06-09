@@ -31,8 +31,7 @@ public class ShowThenCancelRepairWalletUseCase extends AbstractFestUseCase {
       .click();
 
     // Verify the "repair wallet" wizard appears
-    window
-      .label(MessageKey.REPAIR_WALLET_TITLE.getKey());
+    assertLabelText(MessageKey.REPAIR_WALLET_TITLE);
 
     // Verify cancel is present
     window

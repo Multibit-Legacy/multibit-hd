@@ -2,7 +2,6 @@ package org.multibit.hd.ui.fest.use_cases.create_wallet;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
-import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 
@@ -31,9 +30,8 @@ public class CreateWalletCreatePasswordUseCase extends AbstractFestUseCase {
 
     assertThat(parameters).isNotNull();
 
-    window
-      .label(MessageKey.CREATE_WALLET_PASSWORD_TITLE.getKey())
-      .requireText(Languages.safeText(MessageKey.CREATE_WALLET_PASSWORD_TITLE));
+    // Verify that the title appears
+    assertLabelText(MessageKey.CREATE_WALLET_PASSWORD_TITLE);
 
     window
       .label(MessageKey.WALLET_PASSWORD_NOTE_1.getKey())

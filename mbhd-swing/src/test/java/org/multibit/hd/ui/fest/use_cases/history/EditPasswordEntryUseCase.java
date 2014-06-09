@@ -54,8 +54,7 @@ public class EditPasswordEntryUseCase extends AbstractFestUseCase {
       .click();
 
     // Verify the single history edit wizard appears
-    window
-      .label(MessageKey.EDIT_HISTORY_ENTRY_TITLE.getKey());
+    assertLabelText(MessageKey.EDIT_HISTORY_ENTRY_TITLE);
 
     window
       .button(MessageKey.CANCEL.getKey())

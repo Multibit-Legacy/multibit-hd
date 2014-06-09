@@ -57,8 +57,7 @@ public class EditOpenedAndPasswordEntryUseCase extends AbstractFestUseCase {
       .click();
 
     // Verify the multiple history edit wizard appears
-    window
-      .label(MessageKey.EDIT_HISTORY_ENTRIES_TITLE.getKey());
+    assertLabelText(MessageKey.EDIT_HISTORY_ENTRIES_TITLE);
 
     window
       .button(MessageKey.CANCEL.getKey())

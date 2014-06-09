@@ -56,8 +56,7 @@ public class EditThenCancelPasswordEntryUseCase extends AbstractFestUseCase {
       .click();
 
     // Verify the single entry edit wizard appears
-    window
-      .label(MessageKey.EDIT_HISTORY_ENTRY_TITLE.getKey());
+    assertLabelText(MessageKey.EDIT_HISTORY_ENTRY_TITLE);
 
     window
       .button(MessageKey.CANCEL.getKey())

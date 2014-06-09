@@ -38,8 +38,7 @@ public class AddThenCancelContactUseCase extends AbstractFestUseCase {
       .click();
 
     // Verify the wizard appears
-    window
-      .label(MessageKey.NEW_CONTACT_TITLE.getKey());
+    assertLabelText(MessageKey.NEW_CONTACT_TITLE);
 
     window
       .button(MessageKey.APPLY.getKey())

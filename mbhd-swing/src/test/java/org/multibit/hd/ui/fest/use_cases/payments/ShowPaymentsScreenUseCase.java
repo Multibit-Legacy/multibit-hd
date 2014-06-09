@@ -17,7 +17,8 @@ import static org.fest.assertions.Assertions.assertThat;
  * @since 0.0.1
  *  
  */
-public class ShowPaymentsScreenUseCase extends AbstractFestUseCase {
+public class
+  ShowPaymentsScreenUseCase extends AbstractFestUseCase {
 
   public ShowPaymentsScreenUseCase(FrameFixture window) {
     super(window);

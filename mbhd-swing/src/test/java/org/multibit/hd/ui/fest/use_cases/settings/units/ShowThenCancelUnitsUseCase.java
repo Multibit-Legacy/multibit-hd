@@ -31,8 +31,7 @@ public class ShowThenCancelUnitsUseCase extends AbstractFestUseCase {
       .click();
 
     // Verify the "exchange" wizard appears
-    window
-      .label(MessageKey.UNITS_SETTINGS_TITLE.getKey());
+    assertLabelText(MessageKey.UNITS_SETTINGS_TITLE);
 
     // Verify cancel is present
     window
