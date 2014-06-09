@@ -98,7 +98,8 @@ public class InstallationManager {
     } else {
 
       // Other (probably a Unix variant)
-      applicationDataDirectoryName = System.getProperty("user.home") + "/" + MBHD_APP_NAME;
+      // Keep a clean home directory by prefixing with "."
+      applicationDataDirectoryName = System.getProperty("user.home") + "/." + MBHD_APP_NAME;
     }
 
     log.debug("Application data directory is '{}'", applicationDataDirectoryName);
