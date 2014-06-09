@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import static org.fest.swing.timing.Pause.pause;
@@ -308,6 +309,11 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * @throws Exception
    */
   private void setUpAfterArrange() throws Exception {
+
+    log.info("Reset locale to en_US");
+
+    // Always reset back to en_US
+    Locale.setDefault(Locale.US);
 
     log.info("Starting MultiBit HD...");
 

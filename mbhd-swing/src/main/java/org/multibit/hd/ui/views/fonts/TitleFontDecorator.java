@@ -34,10 +34,10 @@ public class TitleFontDecorator {
    * The Impact font is found on Windows, Mac and Linux variants
    * It is a good fall back position when other fonts are not suitable
    */
-  public static final Font IMPACT_REGULAR = Font.decode("Impact");
+  public static final Font IMPACT_REGULAR = Font.decode("Impact").deriveFont(Font.PLAIN);
 
   /**
-   * The currently selected font for the given locale (default is Impact in case of problems)
+   * The currently selected font for the given locale (default is Impact Regular in case of problems)
    */
   private static Font TITLE_FONT = IMPACT_REGULAR;
 
