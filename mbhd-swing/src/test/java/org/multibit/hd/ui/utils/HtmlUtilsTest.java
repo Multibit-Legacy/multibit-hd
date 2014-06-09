@@ -21,6 +21,27 @@ public class HtmlUtilsTest {
   }
 
   @Test
+  public void testLocaliseWithCenteredLineBreaks() throws Exception {
+
+    Locale.setDefault(Locale.UK);
+
+    // New Configuration relies on default locale
+    Configurations.currentConfiguration = new Configuration();
+
+    String[] lines = new String[] {
+
+      "Line 1",
+      "Line 2",
+      "Line 3",
+
+    };
+
+    String expected = "<html><body style='width: 100%'><div align=center><p>Line 1</p><br><p>Line 2</p><br><p>Line 3</p></div></body></html>";
+    assertThat(HtmlUtils.localiseWithCenteredLinedBreaks(lines)).isEqualTo(expected);
+
+  }
+
+  @Test
   public void testLocaliseWithLineBreaks_LTR() throws Exception {
 
     Locale.setDefault(Locale.UK);
@@ -36,7 +57,7 @@ public class HtmlUtilsTest {
 
     };
 
-    String expected = "<html><body style='width: 100%'><div align=left><p>Line 1</p><br><p>Line 2</p><br><p>Line 3</p><br></div></body></html>";
+    String expected = "<html><body style='width: 100%'><div align=left><p>Line 1</p><br><p>Line 2</p><br><p>Line 3</p></div></body></html>";
     assertThat(HtmlUtils.localiseWithLineBreaks(lines)).isEqualTo(expected);
 
   }
@@ -57,7 +78,7 @@ public class HtmlUtilsTest {
 
     };
 
-    String expected = "<html><body style='width: 100%'><div align=right><p>Line 1</p><br><p>Line 2</p><br><p>Line 3</p><br></div></body></html>";
+    String expected = "<html><body style='width: 100%'><div align=right><p>Line 1</p><br><p>Line 2</p><br><p>Line 3</p></div></body></html>";
     assertThat(HtmlUtils.localiseWithLineBreaks(lines)).isEqualTo(expected);
 
   }
