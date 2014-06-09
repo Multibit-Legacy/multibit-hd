@@ -96,9 +96,7 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
     contentPanel.add(Labels.newBlankLabel(), "top, growx, push,wrap");
 
     // Register components
-    getComponents().add(transactionDisplayAmountMaV);
-    getComponents().add(transactionFeeDisplayAmountMaV);
-    getComponents().add(clientFeeDisplayAmountMaV);
+    registerComponents(transactionDisplayAmountMaV, transactionFeeDisplayAmountMaV, clientFeeDisplayAmountMaV);
 
   }
 

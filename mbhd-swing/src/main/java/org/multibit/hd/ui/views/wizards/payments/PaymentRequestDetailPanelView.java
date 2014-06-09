@@ -150,7 +150,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
     contentPanel.add(exchangeRateValue, "wrap");
 
     // Register components
-    getComponents().add(displayQRCodePopoverMaV);
+    registerComponents(displayQRCodePopoverMaV);
 
   }
 

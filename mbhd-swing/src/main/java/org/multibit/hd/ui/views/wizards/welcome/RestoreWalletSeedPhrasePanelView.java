@@ -58,7 +58,7 @@ public class RestoreWalletSeedPhrasePanelView extends AbstractWizardPanelView<We
     getWizardModel().setRestoreWalletEnterSeedPhraseModel(enterSeedPhraseMaV.getModel());
 
     // Register components
-    getComponents().add(enterSeedPhraseMaV);
+    registerComponents(enterSeedPhraseMaV);
 
   }
 

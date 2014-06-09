@@ -7,7 +7,6 @@ import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ProgressChangedEvent;
 import org.multibit.hd.ui.events.view.SystemStatusChangedEvent;
@@ -35,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  * @since 0.0.1
  *  
  */
-public class FooterView {
+public class FooterView extends AbstractView {
 
   private static final Logger log = LoggerFactory.getLogger(FooterView.class);
 
@@ -51,7 +50,7 @@ public class FooterView {
 
   public FooterView() {
 
-    CoreServices.uiEventBus.register(this);
+    super();
 
     contentPanel = Panels.newPanel(new MigLayout(
       Panels.migLayout("insets 7"),

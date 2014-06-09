@@ -67,7 +67,7 @@ public class PasswordEnterSeedPhraseView extends AbstractWizardPanelView<Passwor
     getWizardModel().setEnterSeedPhrasePanelModel(panelModel);
 
     // Register components
-    getComponents().add(enterSeedPhraseMaV);
+    registerComponents(enterSeedPhraseMaV);
 
   }
 

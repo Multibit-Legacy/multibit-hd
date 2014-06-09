@@ -120,20 +120,20 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
   /**
    * <p>Show the named panel</p>
    *
-   * @param name The panel name
+   * @param panelName The panel name
    */
-  public void show(String name) {
+  public void show(String panelName) {
 
-    log.debug("Show wizard: {}", name);
+    log.debug("Show wizard panel: {}", panelName);
 
-    Preconditions.checkState(wizardViewMap.containsKey(name), "'" + name + "' is not a valid panel name. Check the panel has been registered in the view map.");
+    Preconditions.checkState(wizardViewMap.containsKey(panelName), "'" + panelName + "' is not a valid panel name. Check the panel has been registered in the view map.");
 
-    final AbstractWizardPanelView wizardPanelView = wizardViewMap.get(name);
+    final AbstractWizardPanelView wizardPanelView = wizardViewMap.get(panelName);
 
     if (!wizardPanelView.isInitialised()) {
 
       // Initialise the wizard screen panel and add it to the card layout parent
-      wizardScreenHolder.add(wizardPanelView.getWizardScreenPanel(true), name);
+      wizardScreenHolder.add(wizardPanelView.getWizardScreenPanel(true), panelName);
 
     }
 
@@ -144,7 +144,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
     if (wizardPanelView.beforeShow()) {
 
       // No abort so show
-      cardLayout.show(wizardScreenHolder, name);
+      cardLayout.show(wizardScreenHolder, panelName);
 
       wizardPanelView.afterShow();
     }
@@ -372,13 +372,17 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
   @Subscribe
   public void onWizardDeferredHideEvent(WizardDeferredHideEvent event) {
 
+    // Fail fast
+    if (wizardViewMap.isEmpty()) {
+      log.debug("Wizard panel view {} is still finalising.", event.getPanelName());
+      return;
+    }
+
     String panelName = event.getPanelName();
 
     if (getWizardModel().getPanelName().equals(panelName)) {
 
       final AbstractWizardPanelView wizardPanelView = wizardViewMap.get(panelName);
-
-      Preconditions.checkNotNull(wizardPanelView, "'wizardPanelView' must be present for " + panelName + ". Possible race condition.");
 
       // This is a deferred hide so don't call hide() again
       handleHide(panelName, event.isExitCancel(), wizardPanelView);
@@ -409,13 +413,13 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
       @Override
       public void run() {
 
-        log.debug("Handle hide finalising: '{}'", panelName);
+        log.debug("Handle hide background cleanup: '{}'", panelName);
 
         // Require some extra time to get the rest of the UI started for password wizard
         if (PasswordState.PASSWORD_ENTER_PASSWORD.name().equals(panelName)) {
 
           log.debug("Blocking to allow UI startup to complete");
-          Uninterruptibles.sleepUninterruptibly(3, TimeUnit.SECONDS);
+          Uninterruptibles.sleepUninterruptibly(4, TimeUnit.SECONDS);
         }
 
         // Work through the view map ensuring all components are deregistered from UI events
@@ -423,9 +427,18 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
 
           AbstractWizardPanelView panelView = entry.getValue();
 
-          // Ensure we deregister the panel for events
-          CoreServices.uiEventBus.unregister(panelView);
-          log.trace("Deregistered wizard panel '{}:{}' from UI events", panelView.getPanelName(), panelView);
+          // Ensure we deregister the wizard panel view (and model if present) for events
+          try {
+            CoreServices.uiEventBus.unregister(panelView);
+            log.trace("Deregistered wizard panel view '{}' from UI events", panelView.getPanelName());
+            if (panelView.getPanelModel().isPresent()) {
+              Object panelModel = panelView.getPanelModel().get();
+              CoreServices.uiEventBus.unregister(panelModel);
+              log.trace("Deregistered wizard panel model '{}' from UI events", panelView.getPanelName());
+            }
+          } catch (IllegalArgumentException e) {
+            log.warn("Wizard panel model/view '{}' was not registered", panelView.getPanelName());
+          }
 
           // Deregister all components
           @SuppressWarnings("unchecked")
@@ -435,9 +448,11 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
             for (ModelAndView mav : mavs) {
               try {
                 CoreServices.uiEventBus.unregister(mav.getView());
-                log.trace("Deregistered component view '{}:{}' from UI events", panelView.getPanelName(), mav.getView());
+                log.trace("Deregistered component view '{}' from UI events", panelView.getPanelName());
+                CoreServices.uiEventBus.unregister(mav.getModel());
+                log.trace("Deregistered component model '{}' from UI events", panelView.getPanelName());
               } catch (IllegalArgumentException e) {
-                log.trace("ModelAndView '{}:{}' was not registered", panelView.getPanelName(), mav.getView(), e);
+                log.warn("ModelAndView model/view '{}' was not registered", panelView.getPanelName());
               }
             }
 
@@ -448,26 +463,21 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
 
         }
 
-        // Depopulate the map
+        // Depopulate the map to ensure non-AWT references are removed
         wizardViewMap.clear();
 
-//        // Hiding the light box must be on the EDT
-//        SwingUtilities.invokeLater(new Runnable() {
-//          @Override
-//          public void run() {
-//
-//            log.debug("Handle hide 1: '{}'", panelName);
-//            wizardScreenHolder.removeAll();
-//
-//            // Proceed with hide
-//            Panels.hideLightBoxIfPresent();
-//            log.debug("Handle hide complete: '{}'", panelName);
-//
-//          }
-//        });
+        // Hiding the light box must be on the EDT
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
 
-        log.debug("Handle hide waiting for EDT");
-        Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
+            log.debug("Handle hide remove light box: '{}'", panelName);
+
+            // This removes the reference to the wizard allowing for garbage collection
+            Panels.hideLightBoxIfPresent();
+
+          }
+        });
 
       }
     });

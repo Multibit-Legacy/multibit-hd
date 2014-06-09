@@ -60,7 +60,11 @@ import java.util.concurrent.TimeUnit;
  * </ul>
  * <p>To allow complete separation between Model, View and Controller all interactions are handled using application events</p>
  */
-public class MainController implements GenericOpenURIEventListener, GenericPreferencesEventListener, GenericAboutEventListener, GenericQuitEventListener {
+public class MainController extends AbstractController implements
+  GenericOpenURIEventListener,
+  GenericPreferencesEventListener,
+  GenericAboutEventListener,
+  GenericQuitEventListener {
 
   private static final Logger log = LoggerFactory.getLogger(MainController.class);
 
@@ -91,11 +95,11 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
     SidebarController sidebarController
   ) {
 
+    super();
+
     Preconditions.checkNotNull(bitcoinURIListeningService, "'bitcoinURIListeningService' must be present");
     Preconditions.checkNotNull(headerController, "'headerController' must be present");
     Preconditions.checkNotNull(sidebarController, "'sidebarController' must be present");
-
-    CoreServices.uiEventBus.register(this);
 
     this.bitcoinURIListeningService = bitcoinURIListeningService;
     this.headerController = headerController;
@@ -517,6 +521,8 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
 
     Locale locale = Configurations.currentConfiguration.getLocale();
 
+    log.debug("Setting application frame to locale '{}'", locale);
+
     // Ensure the resource bundle is reset
     ResourceBundle.clearCache();
 
@@ -532,8 +538,10 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
    * <p>Start the backup manager</p>
    */
   private void handleBackupManager() {
+
     // Locate the installation directory
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+
     // Initialise backup (must be before Bitcoin network starts and on the main thread)
     Optional<File> cloudBackupLocation = Optional.absent();
     if (Configurations.currentConfiguration != null) {
@@ -545,9 +553,11 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
         }
       }
     }
+
     BackupManager.INSTANCE.initialise(applicationDataDirectory, cloudBackupLocation);
     BackupService backupService = CoreServices.getOrCreateBackupService();
     backupService.start();
+
   }
 
   /**
@@ -633,6 +643,8 @@ public class MainController implements GenericOpenURIEventListener, GenericPrefe
         SwingUtilities.invokeLater(new Runnable() {
           @Override
           public void run() {
+
+            Panels.hideLightBoxIfPresent();
 
             log.debug("Showing exiting password wizard after handover");
             Panels.showLightBox(Wizards.newExitingPasswordWizard().getWizardScreenHolder());

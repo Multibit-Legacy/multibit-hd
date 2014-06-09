@@ -125,9 +125,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     getWizardModel().setNotes(Optional.of(notesTextArea.getText()));
 
     // Register components
-    getComponents().add(enterAmountMaV);
-    getComponents().add(displayBitcoinAddressMaV);
-    getComponents().add(displayQRCodePopoverMaV);
+    registerComponents(enterAmountMaV, displayBitcoinAddressMaV, displayQRCodePopoverMaV);
 
   }
 

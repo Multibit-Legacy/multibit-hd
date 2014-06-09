@@ -64,8 +64,7 @@ public class RestoreWalletTimestampPanelView extends AbstractWizardPanelView<Wel
     getWizardModel().setRestoreWalletEnterPasswordModel(enterPasswordMaV.getModel());
 
     // Register components
-    getComponents().add(enterPasswordMaV);
-    getComponents().add(enterSeedPhraseMaV);
+    registerComponents(enterPasswordMaV, enterSeedPhraseMaV);
 
   }
 

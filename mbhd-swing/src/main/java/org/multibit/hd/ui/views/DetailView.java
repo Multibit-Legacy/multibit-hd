@@ -3,7 +3,6 @@ package org.multibit.hd.ui.views;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
-import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.controller.ShowScreenEvent;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
@@ -26,7 +25,7 @@ import java.util.Map;
  * @since 0.0.1
  *  
  */
-public class DetailView {
+public class DetailView extends AbstractView {
 
   private static final Logger log = LoggerFactory.getLogger(DetailView.class);
 
@@ -39,7 +38,7 @@ public class DetailView {
 
   public DetailView() {
 
-    CoreServices.uiEventBus.register(this);
+    super();
 
     contentPanel = Panels.newPanel();
 

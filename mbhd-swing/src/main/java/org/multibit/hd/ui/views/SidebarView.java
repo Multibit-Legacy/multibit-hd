@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.languages.Languages;
@@ -36,7 +35,7 @@ import java.awt.event.MouseEvent;
  * @since 0.0.1
  *  
  */
-public class SidebarView {
+public class SidebarView extends AbstractView {
 
   private static final Logger log = LoggerFactory.getLogger(SidebarView.class);
 
@@ -64,7 +63,7 @@ public class SidebarView {
    */
   public SidebarView(boolean multiWallet) {
 
-    CoreServices.uiEventBus.register(this);
+    super();
 
     this.multiWallet = multiWallet;
 

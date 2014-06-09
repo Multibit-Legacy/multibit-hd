@@ -49,7 +49,7 @@ public class CreateWalletCreatePasswordPanelView extends AbstractWizardPanelView
     getWizardModel().setConfirmPasswordModel(confirmPasswordMaV.getModel());
 
     // Register components
-    getComponents().add(confirmPasswordMaV);
+    registerComponents(confirmPasswordMaV);
 
   }
 

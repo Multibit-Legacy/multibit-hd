@@ -63,7 +63,7 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
     getWizardModel().setLocaleCode(localeCode);
 
     // Register components
-    getComponents().add(displaySecurityPopoverMaV);
+    registerComponents(displaySecurityPopoverMaV);
 
   }
 
@@ -138,31 +138,30 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
   @Override
   public void actionPerformed(final ActionEvent e) {
 
-    // Hand over the configuration change to a background task
-    localeExecutorService.execute(new Runnable() {
-      @Override
-      public void run() {
+    JComboBox source = (JComboBox) e.getSource();
+    String localeCode = LanguageKey.values()[source.getSelectedIndex()].getKey();
 
-        JComboBox source = (JComboBox) e.getSource();
-        String localeCode = LanguageKey.values()[source.getSelectedIndex()].getKey();
+    log.debug("Language changed to '{}'", localeCode);
 
-        log.debug("Language changed to '{}'. Starting UI reset.", localeCode);
+    // Prevent further events
+    source.setEnabled(false);
 
-        // Determine the new locale
-        Locale newLocale = Languages.newLocaleFromCode(localeCode);
+    // Determine the new locale
+    Locale newLocale = Languages.newLocaleFromCode(localeCode);
 
-        // Update the main configuration
-        Configuration newConfiguration = Configurations.currentConfiguration.deepCopy();
-        newConfiguration.getLanguage().setLocale(newLocale);
+    // Update the main configuration
+    Configuration newConfiguration = Configurations.currentConfiguration.deepCopy();
+    newConfiguration.getLanguage().setLocale(newLocale);
 
-        // Make the switch immediately
-        Configurations.switchConfiguration(newConfiguration);
+    log.debug("Simulating a wizard close event with configuration change");
 
-        // Trigger the wizard hide process manually (no suitable button available)
-        ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
+    // Trigger the wizard hide process manually (no suitable button available)
+    // using a deferred hide (control passes directly to handleHide)
+    ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
 
-      }
-    });
+    // Make the switch immediately
+    Configurations.switchConfiguration(newConfiguration);
+
 
   }
 }

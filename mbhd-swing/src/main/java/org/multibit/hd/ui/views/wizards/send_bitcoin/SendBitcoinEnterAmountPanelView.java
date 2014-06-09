@@ -65,8 +65,7 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
     getWizardModel().setEnterAmountPanelModel(panelModel);
 
     // Register components
-    getComponents().add(enterAmountMaV);
-    getComponents().add(enterRecipientMaV);
+    registerComponents(enterAmountMaV, enterRecipientMaV);
 
   }
 

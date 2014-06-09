@@ -269,17 +269,10 @@ public class MultiBitHD {
 
     }
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
+    // Provide a backdrop to the user and trigger the showing of the wizard
+    mainView.refresh();
 
-        // Provide a backdrop to the user and trigger the showing of the wizard
-        mainView.refresh();
-
-        log.debug("Initialising UI: Refresh complete");
-
-      }
-    });
+    log.debug("Initialising UI: Refresh complete");
 
     // See the MainController wizard hide event for the next stage
 

@@ -127,7 +127,7 @@ public class UnitsSettingsPanelView extends AbstractWizardPanelView<UnitsWizardM
     contentPanel.add(displayAmountMaV.getView().newComponentPanel(), "push,span 3,align center,wrap");
 
     // Register components
-    getComponents().add(displayAmountMaV);
+    registerComponents(displayAmountMaV);
 
   }
 

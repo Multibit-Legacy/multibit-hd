@@ -64,8 +64,7 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
     getWizardModel().setEnterDetailsPanelModel(panelModel);
 
     // Register components
-    getComponents().add(enterRecipientMaV);
-    getComponents().add(enterPasswordMaV);
+    registerComponents(enterRecipientMaV, enterPasswordMaV);
 
   }
 

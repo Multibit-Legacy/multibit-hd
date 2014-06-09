@@ -14,12 +14,8 @@ import org.multibit.hd.core.utils.Coins;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.controller.AddAlertEvent;
 import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
-import org.multibit.hd.ui.events.view.ViewChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.AlertModel;
-import org.multibit.hd.ui.views.ViewKey;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -30,17 +26,9 @@ import java.util.List;
  * <li>Handles interaction between the model and the view</li>
  * </ul>
  */
-public class HeaderController {
-
-  private static final Logger log = LoggerFactory.getLogger(HeaderController.class);
+public class HeaderController extends AbstractController {
 
   private final List<AlertModel> alertModels = Lists.newArrayList();
-
-  public HeaderController() {
-
-    CoreServices.uiEventBus.register(this);
-
-  }
 
   /**
    * <p>Trigger a refresh of the header view to ensure alert panels are shown</p>

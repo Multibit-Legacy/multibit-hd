@@ -37,8 +37,6 @@ public class WalletDetailModel implements Model<WalletDetail> {
     walletDetail = new WalletDetail();
     update();
 
-    // Register for slow transaction seen events so it can update.
-    CoreServices.uiEventBus.register(this);
   }
 
   @Override

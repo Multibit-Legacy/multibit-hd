@@ -254,7 +254,7 @@ public class Panels {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(),"LightBoxPopover requires the EDT");
 
-    log.debug("Hide light box popover");
+    log.debug("Hide light box popover (if present)");
 
     if (lightBoxPopoverPanel.isPresent()) {
       lightBoxPopoverPanel.get().close();

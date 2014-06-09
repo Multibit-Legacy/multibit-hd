@@ -143,8 +143,6 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
 
     if (event.getPanelName().equals(getModel().get().getPanelName()) && verificationStatusLabel != null) {
 
-      log.debug("Received {}:{} verification for enter seed phrase ", getModel().get().getPanelName(), this.toString());
-
       // Determine if the component is initialised
       Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on the EDT");
 

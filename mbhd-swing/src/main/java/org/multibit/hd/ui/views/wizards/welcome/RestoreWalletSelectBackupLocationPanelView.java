@@ -52,7 +52,7 @@ public class RestoreWalletSelectBackupLocationPanelView extends AbstractWizardPa
     getWizardModel().setRestoreLocationSelectFileModel(selectFileMaV.getModel());
 
     // Register components
-    getComponents().add(selectFileMaV);
+    registerComponents(selectFileMaV);
 
   }
 

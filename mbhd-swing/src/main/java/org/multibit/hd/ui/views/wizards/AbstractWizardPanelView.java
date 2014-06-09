@@ -9,8 +9,6 @@ import org.multibit.hd.ui.events.view.ComponentChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardButtonEnabledEvent;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.models.Model;
-import org.multibit.hd.ui.views.View;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
@@ -32,7 +30,7 @@ import java.util.List;
  * user interaction.</p>
  *
  * @param <M> the wizard model
- * @param <P> the panel model
+ * @param <P> the wizard panel model
  *
  * @since 0.0.1
  *  
@@ -80,7 +78,7 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
   private boolean initialised = false;
 
   // Components
-  private List<ModelAndView<? extends Model, ? extends View>> components = Lists.newArrayList();
+  private List<ModelAndView> components = Lists.newArrayList();
 
   // Buttons
   private Optional<JButton> exitButton = Optional.absent();
@@ -105,7 +103,7 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
     this.wizardModel = wizard.getWizardModel();
     this.panelName = panelName;
 
-    // All wizard views can receive events
+    // All wizard panel views can receive UI events
     CoreServices.uiEventBus.register(this);
 
     // All wizard screen panels are decorated with the same theme and
@@ -184,9 +182,28 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
   protected abstract void initialiseButtons(AbstractWizard<M> wizard);
 
   /**
+   * @param mavs The ModelAndView instances to register as potentially containing UI event handlers
+   */
+  public void registerComponents(ModelAndView... mavs) {
+
+    Preconditions.checkNotNull(mavs, "'mavs' must be present");
+
+    // Add one by one to verify references
+    for (ModelAndView mav : mavs) {
+
+      Preconditions.checkNotNull(mav, "'mav' must be present");
+      components.add(mav);
+
+    }
+
+  }
+
+  /**
+   * <p>Reduced visibility since this is only required during the wizard hide process</p>
+   *
    * @return The list of {@link ModelAndView} entries for this view to allow the deregister of UI events. Can be empty, but never null.
    */
-  public List<ModelAndView<? extends Model, ? extends View>> getComponents() {
+  /* package local */ List<ModelAndView> getComponents() {
     return components;
   }
 

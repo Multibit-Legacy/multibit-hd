@@ -53,7 +53,7 @@ public class CreateWalletConfirmSeedPhrasePanelView extends AbstractWizardPanelV
     getWizardModel().setCreateWalletEnterSeedPhraseModel(enterSeedPhraseMaV.getModel());
 
     // Register components
-    getComponents().add(enterSeedPhraseMaV);
+    registerComponents(enterSeedPhraseMaV);
 
   }
 

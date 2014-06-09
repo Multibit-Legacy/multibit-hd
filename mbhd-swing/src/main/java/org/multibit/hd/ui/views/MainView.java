@@ -49,6 +49,7 @@ public class MainView extends JFrame {
 
   public MainView() {
 
+    // Ensure we can respond to UI events
     CoreServices.uiEventBus.register(this);
 
     // Define the minimum size for the frame
@@ -116,19 +117,18 @@ public class MainView extends JFrame {
     // Check for any wizards that were showing before the refresh occurred
     if (showExitingWelcomeWizard) {
 
+      // This section must come after a deferred hide has completed
+
       log.debug("Showing exiting welcome wizard");
 
-      // Ensure no light boxes are showing
-      Panels.hideLightBoxIfPresent();
-
+      // Force an exit if the user can't get through
       Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardScreenHolder());
 
     } else if (showExitingPasswordWizard) {
 
-      log.debug("Showing exiting password wizard");
+      // This section must come after a deferred hide has completed
 
-      // Ensure no light boxes are showing
-      Panels.hideLightBoxIfPresent();
+      log.debug("Showing exiting password wizard");
 
       // Force an exit if the user can't get through
       Panels.showLightBox(Wizards.newExitingPasswordWizard().getWizardScreenHolder());
@@ -138,7 +138,8 @@ public class MainView extends JFrame {
       log.debug("Showing detail view");
 
       // No wizards so this reset is a wallet unlock or settings change
-      // Something else will handle the hide
+      // The AbstractWizard.handleHide password unlock thread will close the wizard later
+      // to get the effect of everything happening behind the wizard
       detailViewAfterWalletOpened();
 
       // Show the header information

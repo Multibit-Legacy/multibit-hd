@@ -35,7 +35,7 @@ public abstract class AbstractWizardModel<S> implements DocumentListener {
 
     this.state = state;
 
-    // Register for events
+    // All wizard models can receive UI events
     CoreServices.uiEventBus.register(this);
 
   }

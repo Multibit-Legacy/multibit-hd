@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
 import org.multibit.hd.ui.events.view.AlertAddedEvent;
@@ -32,7 +31,7 @@ import java.awt.event.ActionEvent;
  * @since 0.0.1
  *  
  */
-public class HeaderView {
+public class HeaderView extends AbstractView {
 
   private final ModelAndView<DisplayAmountModel, DisplayAmountView> balanceDisplayMaV;
 
@@ -47,7 +46,7 @@ public class HeaderView {
 
   public HeaderView() {
 
-    CoreServices.uiEventBus.register(this);
+    super();
 
     contentPanel = Panels.newPanel(new MigLayout(
       Panels.migLayout("fillx,insets 10 10 5 10,hidemode 3"), // Layout insets ensure border is tight to sidebar

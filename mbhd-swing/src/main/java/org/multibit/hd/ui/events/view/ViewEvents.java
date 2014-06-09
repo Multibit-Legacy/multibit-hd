@@ -170,7 +170,7 @@ public class ViewEvents {
    * @param status    True if the verification is OK
    */
   public static void fireVerificationStatusChangedEvent(String panelName, boolean status) {
-    log.debug("Firing 'verification status changed' event: {}", status);
+    log.trace("Firing 'verification status changed' event: {}", status);
     CoreServices.uiEventBus.post(new VerificationStatusChangedEvent(panelName, status));
   }
 

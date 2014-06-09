@@ -93,9 +93,9 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
     // Initialise to failure
     seedPhraseCreatedStatusLabel = Labels.newSeedPhraseCreatedStatus(false);
     walletPasswordCreatedStatusLabel = Labels.newWalletPasswordCreatedStatus(false);
-    walletCreatedStatusLabel = Labels.newWalletCreatedStatus(false);
     backupLocationStatusLabel = Labels.newBackupLocationStatus(false);
     cacertsInstalledStatusLabel = Labels.newCACertsInstalledStatus(false);
+    walletCreatedStatusLabel = Labels.newWalletCreatedStatus(false);
 
     // Provide a spinner
     spinner = Labels.newSpinner(Themes.currentTheme.text(), MultiBitUI.NORMAL_PLUS_ICON_SIZE);
@@ -103,16 +103,16 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
     // Make all labels invisible initially
     seedPhraseCreatedStatusLabel.setVisible(false);
     walletPasswordCreatedStatusLabel.setVisible(false);
-    walletCreatedStatusLabel.setVisible(false);
     backupLocationStatusLabel.setVisible(false);
     cacertsInstalledStatusLabel.setVisible(false);
+    walletCreatedStatusLabel.setVisible(false);
 
     contentPanel.add(spinner, "span 3,align right,"+MultiBitUI.NORMAL_PLUS_ICON_SIZE_MIG+",wrap");
     contentPanel.add(seedPhraseCreatedStatusLabel, "wrap");
     contentPanel.add(walletPasswordCreatedStatusLabel, "wrap");
     contentPanel.add(backupLocationStatusLabel, "wrap");
-    contentPanel.add(walletCreatedStatusLabel, "wrap");
     contentPanel.add(cacertsInstalledStatusLabel,"wrap");
+    contentPanel.add(walletCreatedStatusLabel, "wrap");
 
   }
 
@@ -263,31 +263,6 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       // Give the user the impression of work being done
       Uninterruptibles.sleepUninterruptibly(250, TimeUnit.MILLISECONDS);
 
-      // Once all the initial wallet creation is complete and stored to disk, perform a BRIT wallet exchange.
-      // This saves the wallet creation date/ replay date and returns a list of Bitcoin addresses to use for BRIT fee payment
-      if (seed != null && walletSummary.getWallet() != null) {
-
-        // Perform a BRIT exchange
-        FeeService feeService = CoreServices.createFeeService();
-        feeService.performExchangeWithMatcher(seed, walletSummary.getWallet());
-
-      }
-
-      // Update the UI after the BRIT exchange completes
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-
-          // Determine if the create wallet status is valid
-          AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, walletCreatedStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
-          walletCreatedStatusLabel.setVisible(true);
-
-        }
-      });
-
-      // Give the user the impression of work being done
-      Uninterruptibles.sleepUninterruptibly(250, TimeUnit.MILLISECONDS);
-
       // Attempt to install the CA certifications for the exchanges and MultiBit.org
       // Configure SSL certificates without forcing
       SSLManager.INSTANCE.installCACertificates(
@@ -306,6 +281,31 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
 
           // We're done
           spinner.setVisible(false);
+
+        }
+      });
+
+      // Give the user the impression of work being done
+      Uninterruptibles.sleepUninterruptibly(250, TimeUnit.MILLISECONDS);
+
+      // Once all the initial wallet creation is complete and stored to disk, perform a BRIT wallet exchange.
+      // This saves the wallet creation date/ replay date and returns a list of Bitcoin addresses to use for BRIT fee payment
+      if (seed != null && walletSummary.getWallet() != null) {
+
+        // Perform a BRIT exchange
+        FeeService feeService = CoreServices.createFeeService();
+        feeService.performExchangeWithMatcher(seed, walletSummary.getWallet());
+
+      }
+
+      // Update the UI after the BRIT exchange completes
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+
+          // Determine if the create wallet status is valid
+          AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, walletCreatedStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
+          walletCreatedStatusLabel.setVisible(true);
 
         }
       });

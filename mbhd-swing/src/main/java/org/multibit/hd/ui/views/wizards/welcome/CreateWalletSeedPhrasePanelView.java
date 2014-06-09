@@ -54,7 +54,7 @@ public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<Wel
     getWizardModel().setActualSeedTimestamp(displaySeedPhraseMaV.getModel().getSeedTimestamp());
 
     // Register components
-    getComponents().add(displaySeedPhraseMaV);
+    registerComponents(displaySeedPhraseMaV);
 
   }
 

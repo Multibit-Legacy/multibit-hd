@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
 import com.google.common.base.Optional;
-import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.models.Model;
 import org.multibit.hd.ui.views.View;
 
@@ -28,8 +27,7 @@ public abstract class AbstractComponentView<M extends Model> implements View<M> 
   public AbstractComponentView(M model) {
     this.model = Optional.fromNullable(model);
 
-    // Ensure that any event handlers are automatically registered
-    CoreServices.uiEventBus.register(this);
+    // Views are automatically registered through ModelAndView
   }
 
   @Override

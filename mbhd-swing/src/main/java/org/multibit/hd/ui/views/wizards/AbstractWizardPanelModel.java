@@ -25,7 +25,7 @@ public abstract class AbstractWizardPanelModel implements WizardPanelModel {
 
     this.panelName = panelName;
 
-    // Register for events
+    // All wizard panel models can receive events
     CoreServices.uiEventBus.register(this);
 
   }

@@ -83,9 +83,7 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
     getWizardModel().setChangePasswordPanelModel(panelModel);
 
     // Register components
-    getComponents().add(enterPasswordMaV);
-    getComponents().add(confirmPasswordMaV);
-    getComponents().add(displaySecurityPopoverMaV);
+    registerComponents(enterPasswordMaV, confirmPasswordMaV, displaySecurityPopoverMaV);
 
   }
 

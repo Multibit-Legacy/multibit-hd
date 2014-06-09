@@ -50,7 +50,7 @@ public class ExportPaymentsLocationPanelView extends AbstractWizardPanelView<Exp
     getWizardModel().setExportPaymentsLocationSelectFileModel(selectFileMaV.getModel());
 
     // Register components
-    getComponents().add(selectFileMaV);
+    registerComponents(selectFileMaV);
 
   }
 

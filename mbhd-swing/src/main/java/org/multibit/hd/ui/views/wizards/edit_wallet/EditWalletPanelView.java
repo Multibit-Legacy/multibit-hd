@@ -77,7 +77,7 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
     notes.setText(getWizardModel().getWalletSummary().getNotes());
 
     // Register components
-    getComponents().add(walletDetailMaV);
+    registerComponents(walletDetailMaV);
 
   }
 
