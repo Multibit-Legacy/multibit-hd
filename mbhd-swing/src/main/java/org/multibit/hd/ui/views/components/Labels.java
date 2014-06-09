@@ -113,7 +113,6 @@ public class Labels {
     // Theme
     label.setForeground(Themes.currentTheme.text());
 
-
     return label;
 
   }

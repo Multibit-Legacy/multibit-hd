@@ -6,6 +6,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.LanguageKey;
 import org.multibit.hd.ui.languages.Languages;
@@ -82,7 +83,7 @@ public class LanguageSettingsPanelView extends AbstractWizardPanelView<LanguageS
     contentPanel.add(Labels.newLanguageChangeNote(), "growx,span 2,wrap");
 
     contentPanel.add(Labels.newSelectLanguageLabel(), "shrink,aligny top");
-    contentPanel.add(languagesComboBox, "growx,width min:350:,push,aligny top,wrap");
+    contentPanel.add(languagesComboBox, "growx," + MultiBitUI.COMBO_BOX_WIDTH_MIG + ",push,aligny top,wrap");
 
   }
 

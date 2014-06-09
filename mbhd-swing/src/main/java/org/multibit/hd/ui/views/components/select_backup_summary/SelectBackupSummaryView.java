@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components.select_backup_summary;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.BackupSummary;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.views.components.AbstractComponentView;
 import org.multibit.hd.ui.views.components.ComboBoxes;
 import org.multibit.hd.ui.views.components.Labels;
@@ -54,7 +55,7 @@ public class SelectBackupSummaryView extends AbstractComponentView<SelectBackupS
     descriptionLabel = Labels.newBlankLabel();
 
     // Add to the panel
-    panel.add(selectedBackupComboBox, "grow,push,w min:350:,wrap");
+    panel.add(selectedBackupComboBox, "grow,push," + MultiBitUI.COMBO_BOX_WIDTH_MIG + ",wrap");
     panel.add(createdLabel, "grow,push,wrap");
     panel.add(descriptionLabel, "grow,push,wrap");
 

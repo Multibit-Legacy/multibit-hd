@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ComponentChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardButtonEnabledEvent;
@@ -147,7 +148,12 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
    */
   protected void initialiseTitle(JPanel wizardScreenPanel, MessageKey titleKey) {
 
-    wizardScreenPanel.add(Labels.newTitleLabel(titleKey), "span 4,shrink,"+Panels.migWizardMaxLayout() + ",wrap,aligny top,align center");
+    JLabel title = Labels.newTitleLabel(titleKey);
+
+    // Useful for debugging screen issues in different locales
+    log.debug("Title font is {}", title.getFont().getFontName());
+
+    wizardScreenPanel.add(title, "span 4," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",shrink,aligny top,align center,wrap");
 
   }
 

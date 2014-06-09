@@ -88,13 +88,6 @@ public class Panels {
   }
 
   /**
-   * @return A width constraint to avoid text overflow in wizards
-   */
-  public static String migWizardMaxLayout() {
-    return "wmax " + (MultiBitUI.WIZARD_MIN_WIDTH - 30);
-  }
-
-  /**
    * @return A simple theme-aware panel with a single cell MigLayout that fills all X and Y
    */
   public static JPanel newPanel() {

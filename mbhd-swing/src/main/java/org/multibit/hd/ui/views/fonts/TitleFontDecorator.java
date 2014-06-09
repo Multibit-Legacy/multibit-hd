@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.views.fonts;
 
 import com.google.common.base.Preconditions;
-import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.exceptions.UIException;
 import org.multibit.hd.ui.languages.LanguageKey;
 
@@ -49,7 +48,12 @@ public class TitleFontDecorator {
 
       Preconditions.checkNotNull(corbenRegular, "Corben Regular not loaded");
 
-      CORBEN_REGULAR = corbenRegular.deriveFont(Font.PLAIN, MultiBitUI.NORMAL_ICON_SIZE);
+     CORBEN_REGULAR = corbenRegular.deriveFont(Font.PLAIN);
+
+      // HTML tags won't use the font unless the graphics environment has registered it
+     GraphicsEnvironment
+        .getLocalGraphicsEnvironment()
+        .registerFont(CORBEN_REGULAR);
 
     } catch (FontFormatException | IOException e) {
       throw new UIException(e);

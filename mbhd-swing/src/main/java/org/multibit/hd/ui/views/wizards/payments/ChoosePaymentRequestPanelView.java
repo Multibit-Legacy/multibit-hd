@@ -50,7 +50,7 @@ public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<Payme
 
     // Configure the panel model
     ChoosePaymentRequestPanelModel panelModel = new ChoosePaymentRequestPanelModel(
-            getPanelName()
+      getPanelName()
     );
     setPanelModel(panelModel);
   }
@@ -59,9 +59,9 @@ public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<Payme
   public void initialiseContent(JPanel contentPanel) {
 
     contentPanel.setLayout(new MigLayout(
-            Panels.migXYLayout(),
-            "[][][]", // Column constraints
-            "[]30[]30[]" // Row constraints
+      Panels.migXYLayout(),
+      "[][][]", // Column constraints
+      "[]30[]30[]" // Row constraints
     ));
 
     // Apply the theme
@@ -81,7 +81,7 @@ public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<Payme
     contentPanel.add(paymentRequestInfoLabel, "growx,span 2,wrap");
 
     contentPanel.add(paymentRequestSelectLabel, "shrink,aligny top");
-    contentPanel.add(paymentRequestDataJComboBox, "growx,width min:350:,push,aligny top,wrap");
+    contentPanel.add(paymentRequestDataJComboBox, "growx," + MultiBitUI.COMBO_BOX_WIDTH_MIG + ",push,aligny top,wrap");
   }
 
   @Override

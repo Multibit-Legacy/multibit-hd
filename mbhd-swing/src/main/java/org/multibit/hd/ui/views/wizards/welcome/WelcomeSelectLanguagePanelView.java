@@ -8,6 +8,7 @@ import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.LanguageKey;
 import org.multibit.hd.ui.languages.Languages;
@@ -79,7 +80,7 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
     languagesComboBox = ComboBoxes.newLanguagesComboBox(this, Languages.currentLocale());
 
     contentPanel.add(Labels.newSelectLanguageLabel(), "shrink");
-    contentPanel.add(languagesComboBox, "growx,width min:350:,push,wrap");
+    contentPanel.add(languagesComboBox, "growx," + MultiBitUI.COMBO_BOX_WIDTH_MIG + ",push,wrap");
     contentPanel.add(Labels.newWelcomeNote(), "grow,push,span 2,wrap");
 
   }

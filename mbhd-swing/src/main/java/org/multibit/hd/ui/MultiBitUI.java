@@ -65,6 +65,16 @@ public interface MultiBitUI {
    */
   int SIDEBAR_LHS_PREF_WIDTH = 180;
 
+  /**
+   * A width constraint to avoid text overflow in wizards
+   */
+  String WIZARD_MAX_WIDTH_MIG = "wmax " + (MultiBitUI.WIZARD_MIN_WIDTH - 30);
+
+  /**
+   * A width constraint to avoid text overflow in wizards
+   */
+  String COMBO_BOX_WIDTH_MIG = "w min:350:";
+
   // Corners
 
   /**
