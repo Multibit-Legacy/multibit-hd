@@ -25,7 +25,7 @@ public class RequestBitcoinWizard extends AbstractWizard<RequestBitcoinWizardMod
   @Override
   protected void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap) {
 
-    wizardViewMap.put(RequestBitcoinState.REQUEST_ENTER_DETAILS.name(), new RequestBitcoinEnterAmountPanelView(this, RequestBitcoinState.REQUEST_ENTER_DETAILS.name()));
+    wizardViewMap.put(RequestBitcoinState.REQUEST_ENTER_DETAILS.name(), new RequestBitcoinEnterDetailsPanelView(this, RequestBitcoinState.REQUEST_ENTER_DETAILS.name()));
 
   }
 

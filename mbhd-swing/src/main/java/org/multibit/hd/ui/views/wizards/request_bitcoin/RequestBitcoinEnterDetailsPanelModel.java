@@ -13,7 +13,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
  * @since 0.0.1
  *  
  */
-public class RequestBitcoinEnterAmountPanelModel extends AbstractWizardPanelModel {
+public class RequestBitcoinEnterDetailsPanelModel extends AbstractWizardPanelModel {
 
   private final EnterAmountModel enterAmountModel;
   private final DisplayBitcoinAddressModel displayBitcoinAddressModel;
@@ -23,7 +23,7 @@ public class RequestBitcoinEnterAmountPanelModel extends AbstractWizardPanelMode
    * @param enterAmountModel           The "enter amount" component model
    * @param displayBitcoinAddressModel The "display Bitcoin address" component model
    */
-  public RequestBitcoinEnterAmountPanelModel(
+  public RequestBitcoinEnterDetailsPanelModel(
     String panelName,
     EnterAmountModel enterAmountModel,
     DisplayBitcoinAddressModel displayBitcoinAddressModel

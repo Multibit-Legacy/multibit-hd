@@ -53,9 +53,9 @@ import java.util.Currency;
  *  
  */
 
-public class RequestBitcoinEnterAmountPanelView extends AbstractWizardPanelView<RequestBitcoinWizardModel, RequestBitcoinEnterAmountPanelModel> {
+public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView<RequestBitcoinWizardModel, RequestBitcoinEnterDetailsPanelModel> {
 
-  private static final Logger log = LoggerFactory.getLogger(RequestBitcoinEnterAmountPanelView.class);
+  private static final Logger log = LoggerFactory.getLogger(RequestBitcoinEnterDetailsPanelView.class);
 
   // Panel specific components
   private JTextArea notesTextArea;
@@ -72,7 +72,7 @@ public class RequestBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
   /**
    * @param wizard The wizard managing the states
    */
-  public RequestBitcoinEnterAmountPanelView(AbstractWizard<RequestBitcoinWizardModel> wizard, String panelName) {
+  public RequestBitcoinEnterDetailsPanelView(AbstractWizard<RequestBitcoinWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, MessageKey.RECEIVE_BITCOIN_TITLE, AwesomeIcon.CLOUD_DOWNLOAD);
 
@@ -114,7 +114,7 @@ public class RequestBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     notesTextArea = TextBoxes.newEnterPrivateNotes(getWizardModel(), MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH);
 
     // Configure the panel model
-    setPanelModel(new RequestBitcoinEnterAmountPanelModel(
+    setPanelModel(new RequestBitcoinEnterDetailsPanelModel(
       getPanelName(),
       enterAmountMaV.getModel(),
       displayBitcoinAddressMaV.getModel()
@@ -261,7 +261,7 @@ public class RequestBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        RequestBitcoinEnterAmountPanelModel model = getPanelModel().get();
+        RequestBitcoinEnterDetailsPanelModel model = getPanelModel().get();
 
         String bitcoinAddress = model.getDisplayBitcoinAddressModel().getValue();
         Coin coin = model.getEnterAmountModel().getCoinAmount();
