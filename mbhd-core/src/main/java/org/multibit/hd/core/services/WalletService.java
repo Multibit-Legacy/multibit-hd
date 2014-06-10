@@ -200,7 +200,7 @@ public class WalletService {
   }
 
   /**
-   * Subset the supplied payments and sort by date, decending
+   * Subset the supplied payments and sort by date, descending
    *
    * @param paymentType if PaymentType.SENDING return all sending payments for today
    *                    if PaymentType.RECEIVING return all requesting and receiving payments for today
@@ -209,23 +209,32 @@ public class WalletService {
 
     // Subset to the required type of payment
     List<PaymentData> subsetPaymentDataList = Lists.newArrayList();
+
     if (paymentType != null) {
       DateMidnight now = DateTime.now().toDateMidnight();
+
       for (PaymentData paymentData : paymentDataList) {
-        if (paymentType == PaymentType.SENDING) {
-          if (paymentData.getType() == PaymentType.SENDING) {
-            if (paymentData.getDate().toDateMidnight().equals(now)) {
-              subsetPaymentDataList.add(paymentData);
-            }
-          }
+
+        if (paymentType == PaymentType.SENDING
+          && paymentData.getType() == PaymentType.SENDING
+          && paymentData.getDate().toDateMidnight().equals(now)) {
+
+          subsetPaymentDataList.add(paymentData);
+
         } else if (paymentType == PaymentType.RECEIVING) {
-          if (paymentData.getType() == PaymentType.REQUESTED || paymentData.getType() == PaymentType.RECEIVING || paymentData.getType() == PaymentType.PART_PAID) {
+
+          if (paymentData.getType() == PaymentType.REQUESTED
+            || paymentData.getType() == PaymentType.RECEIVING
+            || paymentData.getType() == PaymentType.PART_PAID) {
+
             if (paymentData.getDate().toDateMidnight().equals(now)) {
               subsetPaymentDataList.add(paymentData);
             }
           }
+
         }
       }
+
     }
 
     Collections.sort(subsetPaymentDataList, new Comparator<PaymentData>() {
@@ -235,6 +244,7 @@ public class WalletService {
         return -o1.getDate().compareTo(o2.getDate()); // note inverse sort
       }
     });
+
     return subsetPaymentDataList;
   }
 
