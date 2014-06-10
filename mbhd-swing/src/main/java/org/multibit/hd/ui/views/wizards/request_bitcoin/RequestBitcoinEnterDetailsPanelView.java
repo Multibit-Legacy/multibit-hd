@@ -35,8 +35,6 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -55,8 +53,6 @@ import java.util.Currency;
 
 public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView<RequestBitcoinWizardModel, RequestBitcoinEnterDetailsPanelModel> {
 
-  private static final Logger log = LoggerFactory.getLogger(RequestBitcoinEnterDetailsPanelView.class);
-
   // Panel specific components
   private JTextArea notesTextArea;
 
@@ -74,7 +70,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
    */
   public RequestBitcoinEnterDetailsPanelView(AbstractWizard<RequestBitcoinWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.RECEIVE_BITCOIN_TITLE, AwesomeIcon.CLOUD_DOWNLOAD);
+    super(wizard, panelName, MessageKey.REQUEST_BITCOIN_TITLE, AwesomeIcon.CLOUD_DOWNLOAD);
 
   }
 

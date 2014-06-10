@@ -184,7 +184,7 @@ public enum MessageKey {
   MULTIBIT_HD_TITLE("multibit_hd_title"),
 
   // Send/request
-  RECEIVE_BITCOIN_TITLE("receive_bitcoin_title"),
+  REQUEST_BITCOIN_TITLE("request_bitcoin_title"),
 
   SEND_BITCOIN_TITLE("send_bitcoin_title"),
   CONFIRM_SEND_TITLE("confirm_send_title"),
