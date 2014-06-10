@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.receive_bitcoin;
+package org.multibit.hd.ui.views.wizards.request_bitcoin;
 
 /**
  * <p>Enum to provide the following to "receive bitcoin" wizard model:</p>
@@ -9,9 +9,9 @@ package org.multibit.hd.ui.views.wizards.receive_bitcoin;
  * @since 0.0.1
  *  
  */
-public enum ReceiveBitcoinState {
+public enum RequestBitcoinState {
 
-  RECEIVE_ENTER_AMOUNT,
+  REQUEST_ENTER_DETAILS,
 
   // End of enum
   ;

@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fest.use_cases.send_request;
+package org.multibit.hd.ui.fest.use_cases.send_request.request;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.timing.Timeout;
@@ -11,31 +11,31 @@ import java.util.concurrent.TimeUnit;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "send" wizard with cancel</li>
+ * <li>Verify the "request" wizard with cancel</li>
  * </ul>
- * <p>Requires the "send" screen to be showing</p>
+ * <p>Requires the "send/request" screen to be showing</p>
  *
  * @since 0.0.1
  *  
  */
-public class ShowSendThenCancelSendUseCase extends AbstractFestUseCase {
+public class ShowRequestThenCancelSendUseCase extends AbstractFestUseCase {
 
-  public ShowSendThenCancelSendUseCase(FrameFixture window) {
+  public ShowRequestThenCancelSendUseCase(FrameFixture window) {
     super(window);
   }
 
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    // Click on Send allowing for network initialisation
+    // Click on Request allowing for network initialisation
     window
-      .button(MessageKey.SHOW_SEND_WIZARD.getKey())
+      .button(MessageKey.SHOW_REQUEST_WIZARD.getKey())
         // Allow time for the Bitcoin network to initialise
       .requireEnabled(Timeout.timeout(5, TimeUnit.SECONDS))
       .click();
 
     // Verify the wizard appears
-    assertLabelText(MessageKey.SEND_BITCOIN_TITLE);
+    assertLabelText(MessageKey.SHOW_REQUEST_WIZARD);
 
     // Verify buttons
     window

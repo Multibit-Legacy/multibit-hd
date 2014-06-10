@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.receive_bitcoin;
+package org.multibit.hd.ui.views.wizards.request_bitcoin;
 
 import com.google.bitcoin.core.Coin;
 import com.google.common.base.Optional;
@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>Model object to provide the following to "receive Bitcoin" wizard:</p>
+ * <p>Model object to provide the following to "request bitcoin" wizard:</p>
  * <ul>
  * <li>Storage of panel data</li>
  * <li>State transition management</li>
@@ -17,9 +17,9 @@ import org.slf4j.LoggerFactory;
  * @since 0.0.1
  *  
  */
-public class ReceiveBitcoinWizardModel extends AbstractWizardModel<ReceiveBitcoinState> {
+public class RequestBitcoinWizardModel extends AbstractWizardModel<RequestBitcoinState> {
 
-  private static final Logger log = LoggerFactory.getLogger(ReceiveBitcoinWizardModel.class);
+  private static final Logger log = LoggerFactory.getLogger(RequestBitcoinWizardModel.class);
 
   private Optional<String> recipientAddress = Optional.absent();
   private Optional<String> transactionLabel = Optional.absent();
@@ -31,14 +31,10 @@ public class ReceiveBitcoinWizardModel extends AbstractWizardModel<ReceiveBitcoi
   /**
    * @param state The state object
    */
-  public ReceiveBitcoinWizardModel(ReceiveBitcoinState state) {
+  public RequestBitcoinWizardModel(RequestBitcoinState state) {
     super(state);
   }
 
-  @Override
-  public void showNext() {
-    log.debug("state = " + state);
-  }
   /**
    * @return The Bitcoin amount in coins
    */

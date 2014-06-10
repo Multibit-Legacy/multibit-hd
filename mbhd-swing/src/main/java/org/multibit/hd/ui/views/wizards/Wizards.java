@@ -12,6 +12,9 @@ import org.multibit.hd.ui.views.wizards.about.AboutWizardModel;
 import org.multibit.hd.ui.views.wizards.application_settings.ApplicationSettingsState;
 import org.multibit.hd.ui.views.wizards.application_settings.ApplicationSettingsWizard;
 import org.multibit.hd.ui.views.wizards.application_settings.ApplicationSettingsWizardModel;
+import org.multibit.hd.ui.views.wizards.request_bitcoin.RequestBitcoinState;
+import org.multibit.hd.ui.views.wizards.request_bitcoin.RequestBitcoinWizard;
+import org.multibit.hd.ui.views.wizards.request_bitcoin.RequestBitcoinWizardModel;
 import org.multibit.hd.ui.views.wizards.units_settings.UnitsSettingsState;
 import org.multibit.hd.ui.views.wizards.units_settings.UnitsSettingsWizard;
 import org.multibit.hd.ui.views.wizards.units_settings.UnitsWizardModel;
@@ -53,9 +56,6 @@ import org.multibit.hd.ui.views.wizards.password.PasswordWizardModel;
 import org.multibit.hd.ui.views.wizards.payments.PaymentsState;
 import org.multibit.hd.ui.views.wizards.payments.PaymentsWizard;
 import org.multibit.hd.ui.views.wizards.payments.PaymentsWizardModel;
-import org.multibit.hd.ui.views.wizards.receive_bitcoin.ReceiveBitcoinState;
-import org.multibit.hd.ui.views.wizards.receive_bitcoin.ReceiveBitcoinWizard;
-import org.multibit.hd.ui.views.wizards.receive_bitcoin.ReceiveBitcoinWizardModel;
 import org.multibit.hd.ui.views.wizards.repair_wallet.RepairWalletState;
 import org.multibit.hd.ui.views.wizards.repair_wallet.RepairWalletWizard;
 import org.multibit.hd.ui.views.wizards.repair_wallet.RepairWalletWizardModel;
@@ -152,10 +152,10 @@ public class Wizards {
   /**
    * @return A new "request bitcoin" wizard
    */
-  public static ReceiveBitcoinWizard newRequestBitcoinWizard() {
+  public static RequestBitcoinWizard newRequestBitcoinWizard() {
 
     log.debug("New 'Request bitcoin wizard'");
-    return new ReceiveBitcoinWizard(new ReceiveBitcoinWizardModel(ReceiveBitcoinState.RECEIVE_ENTER_AMOUNT), false);
+    return new RequestBitcoinWizard(new RequestBitcoinWizardModel(RequestBitcoinState.REQUEST_ENTER_DETAILS), false);
 
   }
 

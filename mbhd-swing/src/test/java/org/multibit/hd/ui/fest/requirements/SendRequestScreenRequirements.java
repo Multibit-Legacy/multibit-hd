@@ -3,6 +3,7 @@ package org.multibit.hd.ui.fest.requirements;
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.send_request.*;
+import org.multibit.hd.ui.fest.use_cases.send_request.send.*;
 
 import java.util.Map;
 
@@ -28,10 +29,10 @@ public class SendRequestScreenRequirements {
     new ShowSendThenCancelSendUseCase(window).execute(parameters);
 
     // Verify the recipient field then Cancel
-    new VerifyRecipientAndCancelContactUseCase(window).execute(parameters);
+    new SendVerifyRecipientAndCancelContactUseCase(window).execute(parameters);
 
     // Verify the amount fields then Cancel
-    new VerifyAmountAndCancelContactUseCase(window).execute(parameters);
+    new SendVerifyAmountAndCancelContactUseCase(window).execute(parameters);
 
     // Click Send and fill in the amount panel
     new SendNoFundsAmountScreenUseCase(window).execute(parameters);

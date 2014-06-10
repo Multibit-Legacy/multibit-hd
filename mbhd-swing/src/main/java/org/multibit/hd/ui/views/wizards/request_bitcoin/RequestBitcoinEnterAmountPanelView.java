@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.receive_bitcoin;
+package org.multibit.hd.ui.views.wizards.request_bitcoin;
 
 import com.google.bitcoin.core.Coin;
 import com.google.bitcoin.uri.BitcoinURI;
@@ -46,16 +46,16 @@ import java.util.Currency;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Receive bitcoin: Enter amount</li>
+ * <li>Request bitcoin: Enter details</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
 
-public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<ReceiveBitcoinWizardModel, ReceiveBitcoinEnterAmountPanelModel> {
+public class RequestBitcoinEnterAmountPanelView extends AbstractWizardPanelView<RequestBitcoinWizardModel, RequestBitcoinEnterAmountPanelModel> {
 
-  private static final Logger log = LoggerFactory.getLogger(ReceiveBitcoinEnterAmountPanelView.class);
+  private static final Logger log = LoggerFactory.getLogger(RequestBitcoinEnterAmountPanelView.class);
 
   // Panel specific components
   private JTextArea notesTextArea;
@@ -72,7 +72,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
   /**
    * @param wizard The wizard managing the states
    */
-  public ReceiveBitcoinEnterAmountPanelView(AbstractWizard<ReceiveBitcoinWizardModel> wizard, String panelName) {
+  public RequestBitcoinEnterAmountPanelView(AbstractWizard<RequestBitcoinWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, MessageKey.RECEIVE_BITCOIN_TITLE, AwesomeIcon.CLOUD_DOWNLOAD);
 
@@ -114,7 +114,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
     notesTextArea = TextBoxes.newEnterPrivateNotes(getWizardModel(), MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH);
 
     // Configure the panel model
-    setPanelModel(new ReceiveBitcoinEnterAmountPanelModel(
+    setPanelModel(new RequestBitcoinEnterAmountPanelModel(
       getPanelName(),
       enterAmountMaV.getModel(),
       displayBitcoinAddressMaV.getModel()
@@ -152,7 +152,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<ReceiveBitcoinWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<RequestBitcoinWizardModel> wizard) {
 
     PanelDecorator.addFinish(this, wizard);
 
@@ -261,7 +261,7 @@ public class ReceiveBitcoinEnterAmountPanelView extends AbstractWizardPanelView<
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        ReceiveBitcoinEnterAmountPanelModel model = getPanelModel().get();
+        RequestBitcoinEnterAmountPanelModel model = getPanelModel().get();
 
         String bitcoinAddress = model.getDisplayBitcoinAddressModel().getValue();
         Coin coin = model.getEnterAmountModel().getCoinAmount();

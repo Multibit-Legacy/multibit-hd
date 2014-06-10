@@ -1,19 +1,19 @@
-package org.multibit.hd.ui.views.wizards.receive_bitcoin;
+package org.multibit.hd.ui.views.wizards.request_bitcoin;
 
 import org.multibit.hd.ui.views.components.display_address.DisplayBitcoinAddressModel;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountModel;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
 
 /**
- * <p>Panel model to provide the following to "send bitcoin" wizard:</p>
+ * <p>Panel model to provide the following to "request bitcoin" wizard:</p>
  * <ul>
- * <li>Storage of state for the "send bitcoin" panel</li>
+ * <li>Storage of state for the "request bitcoin" panel</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class ReceiveBitcoinEnterAmountPanelModel extends AbstractWizardPanelModel {
+public class RequestBitcoinEnterAmountPanelModel extends AbstractWizardPanelModel {
 
   private final EnterAmountModel enterAmountModel;
   private final DisplayBitcoinAddressModel displayBitcoinAddressModel;
@@ -23,7 +23,7 @@ public class ReceiveBitcoinEnterAmountPanelModel extends AbstractWizardPanelMode
    * @param enterAmountModel           The "enter amount" component model
    * @param displayBitcoinAddressModel The "display Bitcoin address" component model
    */
-  public ReceiveBitcoinEnterAmountPanelModel(
+  public RequestBitcoinEnterAmountPanelModel(
     String panelName,
     EnterAmountModel enterAmountModel,
     DisplayBitcoinAddressModel displayBitcoinAddressModel
