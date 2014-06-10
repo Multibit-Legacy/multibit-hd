@@ -82,7 +82,7 @@ public class FeeServicesTest {
   /**
    * A dummy URL - forces the hardwired list of addresses to be used
    */
-  private static final String DUMMY_MATCHER_URL = "http://nowhere.com";
+  private static final String DUMMY_MATCHER_URL = "http://example.org";
 
   private byte[] seed;
 

@@ -60,28 +60,41 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
     return panel;
   }
 
+  /**
+   * Refresh or create the view by rebuilding the content panel
+   */
   public void createView() {
 
+    // Prevent other events interfering
     synchronized (lockObject) {
+
       if (getModel().isPresent()) {
+
+        // Clear the panel
         List<PaymentData> paymentDataList = getModel().get().getValue();
         panel.removeAll();
         displayAmountMaVList = Lists.newArrayList();
 
+        // Work through the list of payment data entries
         for (PaymentData paymentData : paymentDataList) {
+
+          // Time label
           JLabel timeLabel = Labels.newBlankLabel();
           timeLabel.setText(Dates.formatShortTime(paymentData.getDate()));
 
+          // Payment icon label and text ("sending", "receiving" etc)
           JLabel paymentDataLabel = Labels.newBlankLabel();
           paymentDataLabel.setText(Languages.safeText(paymentData.getType().getLocalisationKey()));
           LabelDecorator.applyStatusIcon(paymentData.getStatus(), paymentDataLabel, paymentData.isCoinBase(), MultiBitUI.NORMAL_ICON_SIZE);
 
+          // Amount MaV
           ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.PLAIN, false,"payment");
           if (CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().isPresent()) {
             Optional<String> rateProvider = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().get().getRateProvider();
             paymentAmountMaV.getModel().setRateProvider(rateProvider);
             paymentAmountMaV.getModel().setLocalAmountVisible(rateProvider.isPresent());
           }
+          paymentAmountMaV.getView().setVisible(true);
 
           displayAmountMaVList.add(paymentAmountMaV);
           paymentAmountMaV.getModel().setCoinAmount(paymentData.getAmountCoin());
@@ -91,6 +104,7 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
             paymentAmountMaV.getModel().setLocalAmount(null);
           }
 
+          // Add to the panel
           panel.add(timeLabel, "shrink");
           panel.add(paymentDataLabel, "shrink");
           JPanel amountPanel = paymentAmountMaV.getView().newComponentPanel();
@@ -98,9 +112,11 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
           panel.add(amountPanel, "shrink, wrap");
         }
 
+        // Redraw
         panel.invalidate();
         panel.validate();
         panel.repaint();
+
         initialised = true;
       }
     }
