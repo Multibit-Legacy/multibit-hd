@@ -122,6 +122,8 @@ public enum MessageKey {
   EXAMPLE("example"),
   VERSION("version"),
 
+  VISIT_WEBSITE("visit_website"),
+
   DISPLAY_LANGUAGE("display_language"),
 
   SELECT_THEME("select_theme"),
@@ -304,6 +306,7 @@ public enum MessageKey {
   SHOW_EMPTY_WALLET_WIZARD("show_empty_wallet_wizard"),
   SHOW_SIGN_WIZARD("show_sign_wizard"),
   SHOW_VERIFY_WIZARD("show_verify_wizard"),
+  SHOW_ABOUT_WIZARD("show_about_wizard"),
 
   SHOW_ALERT("show_alert"),
   HIDE_ALERT("hide_alert"),

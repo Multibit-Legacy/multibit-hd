@@ -421,8 +421,6 @@ public class MainController extends AbstractController implements
   @Override
   public void onAboutEvent(GenericAboutEvent event) {
 
-    log.debug("Called");
-
     // Show the About screen
     Panels.showLightBox(Wizards.newAboutWizard().getWizardScreenHolder());
 

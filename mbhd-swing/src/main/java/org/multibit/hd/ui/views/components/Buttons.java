@@ -658,6 +658,23 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "launch browser" button with icon
+   */
+  public static JButton newLaunchBrowserButton(Action action, MessageKey key) {
+
+    JButton button = newButton(action, key);
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(button, MessageKey.BROWSE);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.EXTERNAL_LINK, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "restore" button with icon
    */
   public static JButton newRestoreButton(Action action) {
@@ -729,26 +746,6 @@ public class Buttons {
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.CHECK,
-      button,
-      true,
-      JLabel.BOTTOM,
-      MultiBitUI.LARGE_ICON_SIZE
-    );
-
-    return button;
-  }
-
-  /**
-   * @param action The click action
-   *
-   * @return A new "Welcome" wizard button with icon
-   */
-  public static JButton newShowWelcomeWizardButton(Action action) {
-
-    JButton button = newLargeButton(action, MessageKey.SHOW_WELCOME_WIZARD);
-
-    AwesomeDecorator.applyIcon(
-      AwesomeIcon.SMILE_O,
       button,
       true,
       JLabel.BOTTOM,
@@ -929,6 +926,26 @@ public class Buttons {
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.SITEMAP,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "about" button with icon
+   */
+  public static JButton newShowAboutButton(Action action) {
+
+    JButton button = newLargeButton(action, MessageKey.SHOW_ABOUT_WIZARD);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.SMILE_O,
       button,
       true,
       JLabel.BOTTOM,

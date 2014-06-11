@@ -40,5 +40,10 @@ public class ToolsScreenRequirements {
 
     // Show then cancel the "empty wallet" wizard
     new ShowThenCancelEmptyWalletUseCase(window).execute(parameters);
+
+    // Show then cancel the "about" wizard
+    // TODO Reinstate this
+    //new ShowThenCancelAboutUseCase(window).execute(parameters);
+
   }
 }

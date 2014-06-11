@@ -19,7 +19,6 @@ import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.wizards.Wizards;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletState;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletWizardModel;
-import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -73,7 +72,7 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
 
     contentPanel.add(Buttons.newShowChangePasswordButton(getShowChangePasswordAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowVerifyNetworkButton(getShowVerifyNetworkAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
-    contentPanel.add(Buttons.newShowWelcomeWizardButton(getShowWelcomeWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
+    contentPanel.add(Buttons.newShowAboutButton(getShowAboutAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
 
     contentPanel.add(Buttons.newShowSignMessageWizardButton(getShowSignMessageWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowVerifyMessageWizardButton(getShowVerifyMessageWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
@@ -109,12 +108,14 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
   /**
    * @return An action to show the "welcome wizard"
    */
-  private AbstractAction getShowWelcomeWizardAction() {
+  private AbstractAction getShowAboutAction() {
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        Panels.showLightBox(Wizards.newClosingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardScreenHolder());
+        // Show the About screen
+        Panels.showLightBox(Wizards.newAboutWizard().getWizardScreenHolder());
+
       }
     };
   }

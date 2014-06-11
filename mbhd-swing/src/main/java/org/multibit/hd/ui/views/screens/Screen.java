@@ -47,11 +47,6 @@ public enum Screen {
   TOOLS,
 
   /**
-   * The about screen
-   */
-  ABOUT,
-
-  /**
    * The exit screen
    */
   EXIT

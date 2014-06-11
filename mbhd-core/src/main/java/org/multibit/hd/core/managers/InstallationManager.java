@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.net.URI;
 import java.security.Permission;
 import java.security.PermissionCollection;
 import java.util.Map;
@@ -27,13 +28,18 @@ public class InstallationManager {
 
   private static final Logger log = LoggerFactory.getLogger(InstallationManager.class);
 
+  /**
+   * The main MultiBit download site
+   */
+  public static final URI MBHD_WEBSITE_URI = URI.create("https://multibit.org");
+
   public static final String MBHD_APP_NAME = "MultiBitHD";
   public static final String MBHD_PREFIX = "mbhd";
   public static final String MBHD_CONFIGURATION_FILE = MBHD_PREFIX + ".yaml";
-  public static final String SPV_BLOCKCHAIN_SUFFIX = ".spvchain";
 
+  public static final String SPV_BLOCKCHAIN_SUFFIX = ".spvchain";
   public static final String CHECKPOINTS_SUFFIX = ".checkpoints";
-  public static final String CA_CERTS_NAME = MBHD_PREFIX +"-cacerts";
+  public static final String CA_CERTS_NAME = MBHD_PREFIX + "-cacerts";
 
   /**
    * The current application data directory
@@ -170,6 +176,7 @@ public class InstallationManager {
 
   /**
    * Use for testing only
+   *
    * @param currentApplicationDataDirectory the application data directory to use
    */
   public static void setCurrentApplicationDataDirectory(File currentApplicationDataDirectory) {

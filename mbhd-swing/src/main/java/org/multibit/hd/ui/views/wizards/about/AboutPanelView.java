@@ -3,7 +3,10 @@ package org.multibit.hd.ui.views.wizards.about;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
@@ -12,6 +15,9 @@ import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.IOException;
 
 /**
  * <p>Wizard to provide the following to UI:</p>
@@ -30,7 +36,7 @@ public class AboutPanelView extends AbstractWizardPanelView<AboutWizardModel, St
    */
   public AboutPanelView(AbstractWizard<AboutWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.ABOUT_TITLE, AwesomeIcon.CHECK);
+    super(wizard, panelName, MessageKey.ABOUT_TITLE, AwesomeIcon.SMILE_O);
 
   }
 
@@ -48,13 +54,16 @@ public class AboutPanelView extends AbstractWizardPanelView<AboutWizardModel, St
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[][]", // Column constraints
-      "[][]" // Row constraints
+      "[]20[]20[]" // Row constraints
     ));
 
     String version = Configurations.currentConfiguration.getVersion();
 
-    contentPanel.add(Labels.newVersion(), "grow,push");
-    contentPanel.add(Labels.newValueLabel(version), "wrap");
+    contentPanel.add(Labels.newVersion(), "shrink");
+    contentPanel.add(Labels.newValueLabel(version), "push,align left,wrap");
+
+    contentPanel.add(Buttons.newLaunchBrowserButton(getLaunchBrowserAction(),MessageKey.VISIT_WEBSITE), "wrap");
+
     contentPanel.add(Labels.newAboutNote(), "grow,push,span 2,wrap");
 
   }
@@ -81,6 +90,25 @@ public class AboutPanelView extends AbstractWizardPanelView<AboutWizardModel, St
   @Override
   public void updateFromComponentModels(Optional componentModel) {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
+  }
+
+  /**
+   * @return The "launch browser" action
+   */
+  private Action getLaunchBrowserAction() {
+
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        try {
+          Desktop.getDesktop().browse(InstallationManager.MBHD_WEBSITE_URI);
+        } catch (IOException e1) {
+          ExceptionHandler.handleThrowable(e1);
+        }
+
+      }
+    };
   }
 
 }

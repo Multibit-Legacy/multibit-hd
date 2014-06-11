@@ -4,8 +4,6 @@ import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.HistoryService;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.screens.about.AboutScreenModel;
-import org.multibit.hd.ui.views.screens.about.AboutScreenView;
 import org.multibit.hd.ui.views.screens.contacts.ContactsScreenModel;
 import org.multibit.hd.ui.views.screens.contacts.ContactsScreenView;
 import org.multibit.hd.ui.views.screens.exit.ExitScreenModel;
@@ -87,9 +85,6 @@ public class Screens {
         break;
       case TOOLS:
         view = new ToolsScreenView(new ToolsScreenModel(screen), screen, MessageKey.CONTACTS);
-        break;
-      case ABOUT:
-        view = new AboutScreenView(new AboutScreenModel(screen), screen, MessageKey.CONTACTS);
         break;
       case EXIT:
         view = new ExitScreenView(new ExitScreenModel(screen), screen, MessageKey.CONTACTS);

@@ -25,7 +25,7 @@ public class ApplicationConfiguration {
   /**
    * The version field cannot contain "/" or "(" or ")" since it is used in the PeerGroup of Bitcoinj
    */
-  private String version = "0.0.1a";
+  private String version = "0.0.1b-2";
 
   /**
    * Good default width and height for centered initial screen and balance displayed
