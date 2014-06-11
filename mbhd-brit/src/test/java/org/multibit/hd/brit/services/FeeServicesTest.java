@@ -80,7 +80,7 @@ public class FeeServicesTest {
   private PGPPublicKey encryptionKey;
 
   /**
-   * A dummy URL - forces the hardwired list of addresses to be used
+   * example.org is an IETF reserved URL that will resolve (thus testing the HTTP transport) but not return useful bytes
    */
   private static final String DUMMY_MATCHER_URL = "http://example.org";
 
@@ -115,6 +115,7 @@ public class FeeServicesTest {
 
   @Test
   public void testCalculateFeeState() throws Exception {
+
     // Get the FeeService
     FeeService feeService = BRITServices.newFeeService(encryptionKey, new URL(DUMMY_MATCHER_URL));
     assertThat(feeService).isNotNull();
@@ -175,14 +176,17 @@ public class FeeServicesTest {
     assertThat(upperLimitOfNextFeeSendCount).isGreaterThanOrEqualTo(feeState.getNextFeeSendCount());
   }
 
-  public void createWallet(byte[] seed, CharSequence password) throws Exception {
+  private void createWallet(byte[] seed, CharSequence password) throws Exception {
+
     DeterministicSeed deterministicSeed = new DeterministicSeed(seed, DateTime.now().getMillis());
     KeyChainGroup keyChainGroup = new KeyChainGroup(deterministicSeed);
 
     wallet1 = new Wallet(MainNetParams.get(), keyChainGroup);
+
   }
 
   private void receiveATransaction(Wallet wallet, Address toAddress) throws Exception {
+
     Coin v1 = parseCoin("1.0");
     final ListenableFuture<Coin> availFuture = wallet.getBalanceFuture(v1, Wallet.BalanceType.AVAILABLE);
     final ListenableFuture<Coin> estimatedFuture = wallet.getBalanceFuture(v1, Wallet.BalanceType.ESTIMATED);
@@ -198,9 +202,11 @@ public class FeeServicesTest {
 
     // Our estimated balance has reached the requested level.
     assertThat(estimatedFuture.isDone()).isTrue();
+
   }
 
   private Transaction sendMoneyToWallet(Wallet wallet, Coin value, Address toAddress) throws IOException, VerificationException {
+
     Preconditions.checkNotNull(toAddress);
 
     // If the next line isn't compiling you probably need to update your bitcoinj !
@@ -219,9 +225,11 @@ public class FeeServicesTest {
     }
 
     return wallet.getTransaction(tx.getHash());  // Can be null if tx is a double spend that's otherwise irrelevant.
+
   }
 
   private static void broadcastAndCommit(Wallet wallet, Transaction t) throws Exception {
+
     final LinkedList<Transaction> txns = Lists.newLinkedList();
     wallet.addEventListener(new AbstractWalletEventListener() {
       @Override
@@ -234,9 +242,11 @@ public class FeeServicesTest {
     t.getConfidence().markBroadcastBy(new PeerAddress(InetAddress.getByAddress(new byte[]{10, 2, 3, 4})));
     wallet.commitTx(t);
     Threading.waitForUserCode();
+
   }
 
   private void sendBitcoin(Coin amount, Address destinationAddress, KeyParameter aesKey) throws Exception {
+
     Wallet.SendRequest req = Wallet.SendRequest.to(destinationAddress, amount);
     req.aesKey = aesKey;
     req.fee = parseCoin("0.01");
@@ -247,6 +257,7 @@ public class FeeServicesTest {
 
     // Broadcast the transaction and commit.
     broadcastAndCommit(wallet1, req.tx);
+
   }
 }
 

@@ -1,5 +1,6 @@
 package org.multibit.hd.brit.payer;
 
+import com.google.bitcoin.crypto.KeyCrypterException;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import org.bouncycastle.openpgp.PGPException;
@@ -97,7 +98,7 @@ public class BasicPayer implements Payer {
 
       // Parse the serialised MatcherResponse
       return MatcherResponse.parse(serialisedMatcherResponse);
-    } catch (NoSuchAlgorithmException | MatcherResponseException e) {
+    } catch (NoSuchAlgorithmException | KeyCrypterException | MatcherResponseException e) {
       throw new MatcherResponseException("Could not decrypt MatcherResponse", e);
     }
   }
