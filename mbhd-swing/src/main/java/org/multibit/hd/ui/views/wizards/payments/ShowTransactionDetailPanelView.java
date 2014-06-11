@@ -5,6 +5,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.TransactionData;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Buttons;
@@ -109,8 +110,8 @@ public class ShowTransactionDetailPanelView extends AbstractWizardPanelView<Paym
     // Consider adding more providers here (buttons break up the information overload)
     contentPanel.add(blockchainInfoBrowserButton, "shrink,alignx left,span 2,wrap");
 
-    contentPanel.add(rawTransactionLabel,"wrap");
-    contentPanel.add(scrollPane, "grow,push,span 2,wrap");
+    contentPanel.add(rawTransactionLabel, "wrap");
+    contentPanel.add(scrollPane, "grow,push,span 2," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
   }
 
