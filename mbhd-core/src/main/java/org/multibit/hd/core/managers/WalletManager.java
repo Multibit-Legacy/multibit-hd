@@ -383,10 +383,9 @@ public enum WalletManager implements WalletEventListener {
     checkWalletDirectory(walletDirectory);
 
     try {
+
       String walletFilenameNoAESSuffix = walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME;
       File walletFile = new File(walletFilenameNoAESSuffix + MBHD_AES_SUFFIX);
-      String walletFilename = walletFile.getAbsolutePath();
-
       WalletId walletId = parseWalletFilename(walletFile.getAbsolutePath());
 
       if (walletFile.exists() && isWalletSerialised(walletFile)) {

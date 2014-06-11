@@ -18,6 +18,8 @@ import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.utils.LocalisedDateUtils;
 import org.multibit.hd.ui.views.components.*;
+import org.multibit.hd.ui.views.components.display_address.DisplayBitcoinAddressModel;
+import org.multibit.hd.ui.views.components.display_address.DisplayBitcoinAddressView;
 import org.multibit.hd.ui.views.components.display_qrcode.DisplayQRCodeModel;
 import org.multibit.hd.ui.views.components.display_qrcode.DisplayQRCodeView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
@@ -44,7 +46,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
   private JLabel statusValue;
 
-  private JLabel addressValue;
+  private ModelAndView<DisplayBitcoinAddressModel, DisplayBitcoinAddressView> displayBitcoinAddressMaV;
 
   private JLabel qrCodeLabelValue;
 
@@ -73,7 +75,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
     // Configure the panel model
     PaymentRequestDetailPanelModel panelModel = new PaymentRequestDetailPanelModel(
-            getPanelName()
+      getPanelName()
     );
     setPanelModel(panelModel);
   }
@@ -82,9 +84,9 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
   public void initialiseContent(JPanel contentPanel) {
 
     contentPanel.setLayout(new MigLayout(
-            Panels.migXYLayout(),
-            "[][][]", // Column constraints
-            "[]10[]10[]" // Row constraints
+      Panels.migXYLayout(),
+      "[][][]", // Column constraints
+      "[]10[]10[]" // Row constraints
     ));
 
     // Apply the theme
@@ -96,8 +98,8 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
     JLabel statusLabel = Labels.newValueLabel(Languages.safeText(MessageKey.STATUS));
     statusValue = Labels.newBlankLabel();
 
+    // Prepare the Bitcoin address
     JLabel addressLabel = Labels.newValueLabel(Languages.safeText(MessageKey.BITCOIN_ADDRESS));
-    addressValue = Labels.newBlankLabel();
 
     // Create the QR code display
     displayQRCodePopoverMaV = Popovers.newDisplayQRCodePopoverMaV(getPanelName());
@@ -112,9 +114,9 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
     amountBTCValue = Labels.newBlankLabel();
     // Bitcoin column
     LabelDecorator.applyBitcoinSymbolLabel(
-            amountBTCLabel,
-            Configurations.currentConfiguration.getBitcoin(),
-            Languages.safeText(MessageKey.LOCAL_AMOUNT) + " ");
+      amountBTCLabel,
+      Configurations.currentConfiguration.getBitcoin(),
+      Languages.safeText(MessageKey.LOCAL_AMOUNT) + " ");
 
     amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT));
     amountFiatValue = Labels.newBlankLabel();
@@ -122,45 +124,50 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
     JLabel exchangeRateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL));
     exchangeRateValue = Labels.newBlankLabel();
 
-    update();
+    boolean paymentOK = readPaymentRequestData();
 
     contentPanel.add(statusLabel);
     contentPanel.add(statusValue, "wrap");
 
-    contentPanel.add(dateLabel);
-    contentPanel.add(dateValue, "wrap");
+    // Avoid NPEs if payment fails
+    if (paymentOK) {
+      contentPanel.add(dateLabel);
+      contentPanel.add(dateValue, "wrap");
 
-    contentPanel.add(addressLabel);
-    contentPanel.add(addressValue);
-    contentPanel.add(Buttons.newQRCodeButton(getShowQRCodePopoverAction()), "wrap");
+      contentPanel.add(addressLabel);
+      contentPanel.add(displayBitcoinAddressMaV.getView().newComponentPanel());
+      contentPanel.add(Buttons.newQRCodeButton(getShowQRCodePopoverAction()), "wrap");
 
-    contentPanel.add(qrCodeLabelLabel);
-    contentPanel.add(qrCodeLabelValue, "wrap");
+      contentPanel.add(qrCodeLabelLabel);
+      contentPanel.add(qrCodeLabelValue, "wrap");
 
-    contentPanel.add(noteLabel);
-    contentPanel.add(noteValue, "wrap");
+      contentPanel.add(noteLabel);
+      contentPanel.add(noteValue, "wrap");
 
-    contentPanel.add(amountBTCLabel);
-    contentPanel.add(amountBTCValue, "wrap");
+      contentPanel.add(amountBTCLabel);
+      contentPanel.add(amountBTCValue, "wrap");
 
-    contentPanel.add(amountFiatLabel);
-    contentPanel.add(amountFiatValue, "wrap");
+      contentPanel.add(amountFiatLabel);
+      contentPanel.add(amountFiatValue, "wrap");
 
-    contentPanel.add(exchangeRateLabel);
-    contentPanel.add(exchangeRateValue, "wrap");
+      contentPanel.add(exchangeRateLabel);
+      contentPanel.add(exchangeRateValue, "wrap");
 
-    // Register components
-    registerComponents(displayQRCodePopoverMaV);
+      // Register components
+      registerComponents(displayBitcoinAddressMaV, displayQRCodePopoverMaV);
 
+    }
   }
 
   @Override
   protected void initialiseButtons(AbstractWizard<PaymentsWizardModel> wizard) {
+
     if (getWizardModel().isShowPrevOnPaymentRequestDetailScreen()) {
       PanelDecorator.addCancelPreviousFinish(this, wizard);
     } else {
       PanelDecorator.addCancelFinish(this, wizard);
     }
+
   }
 
   @Override
@@ -181,7 +188,10 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
     // Do nothing - panel model is updated via an action and wizard model is not applicable
   }
 
-  public void update() {
+  /**
+   * @return True if the payment request data was populated
+   */
+  private boolean readPaymentRequestData() {
 
     // Work out the payment request to show
     PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData();
@@ -189,11 +199,14 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
     if (paymentRequestData == null) {
       // Shouldn't happen but put a message on the UI all the same
       statusValue.setText(Languages.safeText(CoreMessageKey.NO_PAYMENT_REQUEST));
+      return false;
     } else {
 
       DateTime date = paymentRequestData.getDate();
       dateValue.setText(LocalisedDateUtils.formatFriendlyDate(date));
-      addressValue.setText(paymentRequestData.getAddress());
+
+      displayBitcoinAddressMaV = Components.newDisplayBitcoinAddressMaV(paymentRequestData.getAddress());
+
       qrCodeLabelValue.setText(paymentRequestData.getLabel());
 
       statusValue.setText(Languages.safeText(paymentRequestData.getStatus().getStatusKey(), paymentRequestData.getStatus().getStatusData()));
@@ -229,6 +242,10 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
       }
       exchangeRateValue.setText(exchangeRateText);
     }
+
+    // Must be OK to be here
+    return true;
+
   }
 
   /**

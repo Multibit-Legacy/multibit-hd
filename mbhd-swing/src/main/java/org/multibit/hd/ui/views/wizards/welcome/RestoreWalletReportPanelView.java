@@ -303,7 +303,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
     final boolean synchronizationStatus = CoreServices.getOrCreateBitcoinNetworkService().isStartedOk();
 
-    // Let the user know that they're waiting for synch to complete
+    // Let the user know that they're waiting for synchronization to complete
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {

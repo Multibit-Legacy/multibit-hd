@@ -68,6 +68,57 @@ public class ZipFiles {
     }
   }
 
+  public static void unzip(String zipFileName, String directoryToExtractTo) throws IOException {
+
+    Enumeration entriesEnum;
+    ZipFile zipFile = null;
+    try {
+      zipFile = new ZipFile(zipFileName);
+
+      entriesEnum = zipFile.entries();
+
+      File directory = new File(directoryToExtractTo);
+      verifyOrCreateDirectory(directory);
+
+      while (entriesEnum.hasMoreElements()) {
+
+        ZipEntry entry = (ZipEntry) entriesEnum.nextElement();
+
+        if (entry.isDirectory()) {
+          verifyOrCreateDirectory(new File(directoryToExtractTo + File.separator + entry.getName()));
+        } else {
+
+          // Ignore certain files
+          if (entry.getName().contains(".DS_Store")) {
+            continue;
+          }
+
+          log.debug("Extracting file: " + entry.getName());
+
+          // This part is necessary because file entry can come before
+          // directory entry where is file located
+          // i.e.:
+          //   /foo/foo.txt
+          //   /foo/
+          String dir = directoryPart(entry.getName());
+          if (dir != null) {
+            verifyOrCreateDirectory(new File(directoryToExtractTo + File.separator + dir));
+          }
+          String name = entry.getName();
+
+          writeFile(zipFile.getInputStream(entry),
+            new BufferedOutputStream(new FileOutputStream(
+              directoryToExtractTo + File.separator + name))
+          );
+        }
+      }
+    } finally {
+      if (zipFile != null) {
+        zipFile.close();
+      }
+    }
+  }
+
   private static void addFileToZip(String path, String srcFile, ZipOutputStream zip, Boolean includeBlockStore)
     throws IOException {
 
@@ -108,51 +159,6 @@ public class ZipFiles {
     }
   }
 
-  public static void unzip(String zipFileName, String directoryToExtractTo) throws IOException {
-
-    Enumeration entriesEnum;
-    ZipFile zipFile = null;
-    try {
-      zipFile = new ZipFile(zipFileName);
-
-      entriesEnum = zipFile.entries();
-
-      File directory = new File(directoryToExtractTo);
-      verifyOrCreateDirectory(directory);
-
-      while (entriesEnum.hasMoreElements()) {
-
-        ZipEntry entry = (ZipEntry) entriesEnum.nextElement();
-
-        if (entry.isDirectory()) {
-          verifyOrCreateDirectory(new File(directoryToExtractTo + File.separator + entry.getName()));
-        } else {
-          log.debug("Extracting file: " + entry.getName());
-
-          // This part is necessary because file entry can come before
-          // directory entry where is file located
-          // i.e.:
-          //   /foo/foo.txt
-          //   /foo/
-          String dir = directoryPart(entry.getName());
-          if (dir != null) {
-            verifyOrCreateDirectory(new File(directoryToExtractTo + File.separator + dir));
-          }
-          String name = entry.getName();
-
-          writeFile(zipFile.getInputStream(entry),
-            new BufferedOutputStream(new FileOutputStream(
-              directoryToExtractTo + File.separator + name))
-          );
-        }
-      }
-    } finally {
-      if (zipFile != null) {
-        zipFile.close();
-      }
-    }
-  }
-
   /**
    * Work out the directory part of a filename
    *
@@ -161,7 +167,7 @@ public class ZipFiles {
    * @return directory part of filename
    * TODO (GR) Replace with Guava or NIO equivalent
    */
-  public static String directoryPart(String name) {
+  private static String directoryPart(String name) {
     int s = name.lastIndexOf(File.separatorChar);
     return s == -1 ? null : name.substring(0, s);
   }

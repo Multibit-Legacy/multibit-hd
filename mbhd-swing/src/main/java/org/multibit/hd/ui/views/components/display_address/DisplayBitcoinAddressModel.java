@@ -29,7 +29,7 @@ public class DisplayBitcoinAddressModel implements Model<String> {
 
   @Override
   public void setValue(String value) {
-    // Do nothing
+    // Do nothing the value is already set
   }
 
 }

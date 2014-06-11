@@ -14,7 +14,7 @@ import static org.fest.assertions.Assertions.assertThat;
  * <li>Verify the "payment" screen search</li>
  * </ul>
  * <p>Requires the "payment" screen to be showing</p>
- * <p>Requires restored transactions to be present</p>
+ * <p>Requires standard transactions to be present</p>
  *
  * @since 0.0.1
  *  
@@ -33,13 +33,26 @@ public class SearchPaymentsUseCase extends AbstractFestUseCase {
       .table(MessageKey.PAYMENTS.getKey())
       .rowCount();
 
-    // Verify that 2 rows are present (Alice, Bob and Uriah)
-    assertThat(rowCount1).isEqualTo(3);
+    // Verify that payments are present
+    assertThat(rowCount1).isEqualTo(5);
 
-    // Enter some search text
+    // Verify searches
+    verifySearch("Beer", 2);
+    verifySearch("10", 1);
+    verifySearch("13vdKy", 1);
+
+  }
+
+  /**
+   * @param query            The query
+   * @param expectedRowCount The expected row count
+   */
+  private void verifySearch(String query, int expectedRowCount) {
+
     window
       .textBox(MessageKey.SEARCH.getKey())
-      .enterText("Alice");
+      .setText("")
+      .enterText(query);
 
     // Click search
     window
@@ -47,21 +60,13 @@ public class SearchPaymentsUseCase extends AbstractFestUseCase {
       .click();
 
     // Get an updated row count
-    int rowCount2 = window
-      .table(MessageKey.CONTACTS.getKey())
+    int rowCount = window
+      .table(MessageKey.PAYMENTS.getKey())
       .rowCount();
 
-    // Expect only "Alice" and "Bob Cratchit"
-    assertThat(rowCount2).isEqualTo(2);
+    // Expect only a couple of requests for Beer
+    assertThat(rowCount).isEqualTo(expectedRowCount);
 
-    // Search for "Alice" and "Bob Cratchit"
-    window
-      .table(MessageKey.CONTACTS.getKey())
-      .cell("Alice");
-
-    window
-      .table(MessageKey.CONTACTS.getKey())
-      .cell("Bob Cratchit");
   }
 
 }

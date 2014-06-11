@@ -1,11 +1,17 @@
 package org.multibit.hd.testing;
 
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.files.Files;
+import org.multibit.hd.core.files.ZipFiles;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.utils.Dates;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -25,9 +31,12 @@ public class WalletFixtures {
   public static final String EMPTY_WALLET_SEED_PHRASE = "laundry code later tower memory close truly stomach note kid machine aunt";
 
   /**
-   * Contains public transactions with timestamp of 1949/09
+   * Empty but contains public transactions with timestamp of 1984/44
    */
-  private static final String RESTORED_WALLET_SEED_PHRASE = "refuse prison until practice update garlic apology social observe nuclear other daring";
+  public static final String STANDARD_WALLET_SEED_PHRASE = "twenty lecture clump slush curious aware wise trend surprise soft level coyote";
+  public static final String STANDARD_WALLET_ID = "612538c6-b613cdbb-41b31808-d22f83c6-2562f529";
+
+  public static final CharSequence STANDARD_PASSWORD = "abc123";
 
   /**
    * <p>Create an empty wallet in the current installation directory</p>
@@ -42,30 +51,47 @@ public class WalletFixtures {
 
     WalletManager walletManager = WalletManager.INSTANCE;
     byte[] seed = seedPhraseGenerator.convertToSeed(seedPhrase);
-    CharSequence password = "abc123";
+
     long nowInSeconds = Dates.nowInSeconds();
 
-    return walletManager.createWalletSummary(seed, nowInSeconds, password, "Example", "Example empty wallet. Password is abc123.");
+    return walletManager.createWalletSummary(seed, nowInSeconds, STANDARD_PASSWORD, "Example", "Example empty wallet. Password is abc123.");
 
   }
 
   /**
-   * <p>Create a restored wallet in the current installation directory containing known transactions</p>
+   * <p>Create a standard wallet in the current installation directory containing known transactions</p>
+   * <p>This is required when we want to examine real transactions in the payments screen</p>
    *
    * @return The wallet summary if successful
    */
-  public static WalletSummary createRestoredWalletFixture() throws IOException {
+  public static WalletSummary createStandardWalletFixture() throws IOException {
 
-    Bip39SeedPhraseGenerator seedPhraseGenerator = new Bip39SeedPhraseGenerator();
 
-    List<String> seedPhrase = Bip39SeedPhraseGenerator.split(RESTORED_WALLET_SEED_PHRASE);
+    String zipFileName = InstallationManager
+      .getOrCreateApplicationDataDirectory()
+      .getAbsolutePath() + "/mbhd-" + STANDARD_WALLET_ID + ".zip";
 
-    WalletManager walletManager = WalletManager.INSTANCE;
-    byte[] seed = seedPhraseGenerator.convertToSeed(seedPhrase);
-    CharSequence password = "abc123";
-    long nowInSeconds = (long) (Dates.parseSeedTimestamp("1949/09").getMillis() * 0.001);
+    String applicationDirectoryName = InstallationManager
+      .getOrCreateApplicationDataDirectory()
+      .getAbsolutePath();
 
-    return walletManager.createWalletSummary(seed, nowInSeconds, password, "Example", "Example recovered wallet. Password is abc123.");
+    try (InputStream is = WalletFixtures.class.getResourceAsStream("/fixtures/mbhd-" + STANDARD_WALLET_ID + ".zip");
+         FileOutputStream fos = new FileOutputStream(zipFileName)) {
+
+      // Extract the ZIP of the standard wallet
+      Files.writeFile(is, fos);
+      ZipFiles.unzip(zipFileName, applicationDirectoryName);
+
+    }
+
+    WalletId walletId = new WalletId(STANDARD_WALLET_ID);
+
+    // Expect this to work every time
+    return WalletManager.INSTANCE.open(
+      InstallationManager.getOrCreateApplicationDataDirectory(),
+      walletId,
+      STANDARD_PASSWORD
+    ).get();
 
   }
 

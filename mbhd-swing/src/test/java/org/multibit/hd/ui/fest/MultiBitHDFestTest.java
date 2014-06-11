@@ -198,8 +198,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   @Test
   public void verifyPaymentsScreen() throws Exception {
 
-    // Start with the restored wallet fixture
-    arrangeRestored();
+    // Start with the standard wallet fixture
+    arrangeStandard();
 
     // Unlock the wallet
     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
@@ -302,7 +302,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   /**
    * <p>Starts MultiBit HD with an empty application directory</p>
    *
-   * @throws Exception
+   * @throws Exception If something goes wrong
    */
   private void arrangeFresh() throws Exception {
 
@@ -320,7 +320,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   /**
    * <p>Starts MultiBit HD with an application directory containing the empty wallet fixture</p>
    *
-   * @throws Exception
+   * @throws Exception If something goes wrong
    */
   private void arrangeEmpty() throws Exception {
 
@@ -347,11 +347,11 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   }
 
   /**
-   * <p>Starts MultiBit HD with an application directory containing a restored wallet fixture containing real transactions</p>
+   * <p>Starts MultiBit HD with an application directory containing a standard wallet fixture containing real transactions</p>
    *
-   * @throws Exception
+   * @throws Exception If something goes wrong
    */
-  private void arrangeRestored() throws Exception {
+  private void arrangeStandard() throws Exception {
 
     log.info("Arranging burned wallet fixture environment...");
 
@@ -368,7 +368,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
 
     // Add the restored wallet fixture
-    WalletFixtures.createRestoredWalletFixture();
+    WalletFixtures.createStandardWalletFixture();
 
     // Continue with the set up
     setUpAfterArrange();
@@ -378,7 +378,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   /**
    * <p>Handles the ongoing process of application set up</p>
    *
-   * @throws Exception
+   * @throws Exception If something goes wrong
    */
   private void setUpAfterArrange() throws Exception {
 
