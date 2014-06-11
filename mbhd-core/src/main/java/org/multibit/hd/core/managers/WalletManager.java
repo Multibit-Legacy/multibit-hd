@@ -56,13 +56,15 @@ public enum WalletManager implements WalletEventListener {
     @Override
     public void onCoinsReceived(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance) {
       // Emit an event so that GUI elements can update as required
-      CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(tx));
+      Coin value = tx.getValue(wallet);
+      CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(tx, value));
     }
 
     @Override
     public void onCoinsSent(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance) {
       // Emit an event so that GUI elements can update as required
-      CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(tx));
+      Coin value = tx.getValue(wallet);
+      CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(tx, value));
     }
 
     @Override
@@ -73,7 +75,8 @@ public enum WalletManager implements WalletEventListener {
     @Override
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction tx) {
       // Emit an event so that GUI elements can update as required
-      CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(tx));
+      Coin value = tx.getValue(wallet);
+      CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(tx, value));
     }
 
     @Override

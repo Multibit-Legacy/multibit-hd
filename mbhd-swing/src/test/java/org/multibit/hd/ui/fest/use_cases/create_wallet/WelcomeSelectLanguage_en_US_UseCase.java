@@ -2,7 +2,6 @@ package org.multibit.hd.ui.fest.use_cases.create_wallet;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
-import org.multibit.hd.ui.fest.use_cases.security.CloseDebugSecurityPopoverUseCase;
 import org.multibit.hd.ui.languages.LanguageKey;
 import org.multibit.hd.ui.languages.MessageKey;
 
@@ -35,32 +34,6 @@ public class WelcomeSelectLanguage_en_US_UseCase extends AbstractFestUseCase {
       .requireSelection(LanguageKey.EN_US.ordinal());
 
     // Verify that the English welcome note is showing
-    assertLabelText(MessageKey.WELCOME_NOTE_1);
-
-    // Switch to Romanian
-    window
-      .comboBox(MessageKey.SELECT_LANGUAGE.getKey())
-      .selectItem(LanguageKey.RO_RO.ordinal());
-
-    pauseForViewReset();
-
-    // Clear any security popover
-    new CloseDebugSecurityPopoverUseCase(window).execute(parameters);
-
-    // Verify that the Romanian welcome note is showing
-    assertLabelText(MessageKey.WELCOME_NOTE_1);
-
-    // Switch back to English (United States)
-    window
-      .comboBox(MessageKey.SELECT_LANGUAGE.getKey())
-      .selectItem(LanguageKey.EN_US.ordinal());
-
-    pauseForViewReset();
-
-    // Clear any security popover
-    new CloseDebugSecurityPopoverUseCase(window).execute(parameters);
-
-    // Verify that the English welcome note is showing once again
     assertLabelText(MessageKey.WELCOME_NOTE_1);
 
     window

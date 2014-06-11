@@ -6,7 +6,6 @@ import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
 import com.google.bitcoin.store.SPVBlockStore;
 import com.google.common.base.Preconditions;
-import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +22,7 @@ import java.util.Date;
  */
 public class BlockStoreManager {
 
-  private static final Logger log = LoggerFactory.getLogger(BitcoinNetworkService.class);
+  private static final Logger log = LoggerFactory.getLogger(BlockStoreManager.class);
 
   private final NetworkParameters networkParameters;
 
@@ -78,7 +77,7 @@ public class BlockStoreManager {
     } catch (BlockStoreException bse) {
 
       try {
-        log.warn("Failed to get or create SPV block store");
+        log.warn("Failed to get or create SPV block store", bse);
         // If the block store creation failed, delete the block store file and try again.
 
         // Garbage collect any closed references to the block store file (required on Windows)
@@ -90,7 +89,7 @@ public class BlockStoreManager {
 
         blockStore = new SPVBlockStore(networkParameters, blockStoreFile);
       } catch (BlockStoreException bse2) {
-        log.error("Unrecoverable failure in opening block store. This is bad.");
+        log.error("Unrecoverable failure in opening block store. This is bad.", bse2);
         // Throw the exception so that it is indicated on the UI
         throw bse2;
       }

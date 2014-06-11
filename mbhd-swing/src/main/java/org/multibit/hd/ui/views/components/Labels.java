@@ -352,6 +352,15 @@ public class Labels {
   }
 
   /**
+   * @param status True if the status is "good"
+   *
+   * @return A new "synchronizing" status label
+   */
+  public static JLabel newSynchronizingStatus(boolean status) {
+    return newStatusLabel(MessageKey.SYNCHRONIZING_STATUS, null, status);
+  }
+
+  /**
    * @param color The spinner color
    * @param size  The size in pixels of the target component
    *

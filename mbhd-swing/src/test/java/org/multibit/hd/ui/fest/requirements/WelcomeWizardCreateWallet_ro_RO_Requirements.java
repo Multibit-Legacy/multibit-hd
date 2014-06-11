@@ -27,7 +27,7 @@ public class WelcomeWizardCreateWallet_ro_RO_Requirements {
     // Use the ro_RO language
     new WelcomeSelectLanguage_ro_RO_UseCase(window).execute(parameters);
 
-    new WelcomeSelectWalletUseCase(window).execute(parameters);
+    new WelcomeSelectCreateWalletUseCase(window).execute(parameters);
 
     new CreateWalletSelectBackupLocationWalletUseCase(window).execute(parameters);
 

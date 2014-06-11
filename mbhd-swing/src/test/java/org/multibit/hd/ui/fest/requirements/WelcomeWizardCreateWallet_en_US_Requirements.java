@@ -27,7 +27,7 @@ public class WelcomeWizardCreateWallet_en_US_Requirements {
     // use the en_US language
     new WelcomeSelectLanguage_en_US_UseCase(window).execute(parameters);
 
-    new WelcomeSelectWalletUseCase(window).execute(parameters);
+    new WelcomeSelectCreateWalletUseCase(window).execute(parameters);
 
     new CreateWalletSelectBackupLocationWalletUseCase(window).execute(parameters);
 

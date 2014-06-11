@@ -10,11 +10,13 @@ import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
+import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -107,7 +109,6 @@ public class PasswordReportPanelView extends AbstractWizardPanelView<PasswordWiz
   }
 
   /**
-   *
    * Attempt to recover the password and display it to the user
    */
   private void recoverPassword() {
@@ -122,8 +123,27 @@ public class PasswordReportPanelView extends AbstractWizardPanelView<PasswordWiz
     SeedPhraseGenerator seedPhraseGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedPhraseGenerator.convertToSeed(seedPhrase);
     WalletId walletId = new WalletId(seed);
+
     String walletRoot = applicationDataDirectory.getAbsolutePath() + File.separator + WalletManager.createWalletRoot(walletId);
-    WalletSummary walletSummary = WalletManager.getOrCreateWalletSummary(new File(walletRoot), walletId);
+    File walletDirectory = new File(walletRoot);
+
+    WalletSummary walletSummary;
+    if (walletDirectory.isDirectory()) {
+      walletSummary = WalletManager.getOrCreateWalletSummary(walletDirectory, walletId);
+    } else {
+      // Failed
+      passwordRecoveryStatus.setText(Languages.safeText(MessageKey.PASSWORD_REPORT_MESSAGE_FAIL));
+      AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+      return;
+    }
+
+    // Check for present but empty wallet directory
+    if (walletSummary.getEncryptedPassword() == null) {
+      // Failed
+      passwordRecoveryStatus.setText(Languages.safeText(MessageKey.PASSWORD_REPORT_MESSAGE_FAIL));
+      AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+      return;
+    }
 
     // Read the encrypted wallet password and decrypt with an AES key derived from the seed
     KeyParameter backupAESKey;
@@ -133,6 +153,7 @@ public class PasswordReportPanelView extends AbstractWizardPanelView<PasswordWiz
       // Failed
       log.error(e.getMessage(), e);
       passwordRecoveryStatus.setText(Languages.safeText(MessageKey.PASSWORD_REPORT_MESSAGE_FAIL));
+      AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
       return;
     }
 
@@ -147,10 +168,15 @@ public class PasswordReportPanelView extends AbstractWizardPanelView<PasswordWiz
     if (decryptedWalletPasswordBytes == null || decryptedWalletPasswordBytes.length == 0) {
       // Failed
       passwordRecoveryStatus.setText(Languages.safeText(MessageKey.PASSWORD_REPORT_MESSAGE_FAIL));
-    } else {
-      String decryptedWalletPassword = new String(decryptedWalletPasswordBytes, Charsets.UTF_8);
-      passwordRecoveryStatus.setText(Languages.safeText(MessageKey.PASSWORD_REPORT_MESSAGE, decryptedWalletPassword));
+      AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+      return;
+
     }
+
+    // Must be OK to be here
+    String decryptedWalletPassword = new String(decryptedWalletPasswordBytes, Charsets.UTF_8);
+    passwordRecoveryStatus.setText(Languages.safeText(MessageKey.PASSWORD_REPORT_MESSAGE, decryptedWalletPassword));
+    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
 
   }
 

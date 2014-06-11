@@ -129,9 +129,8 @@ public class MultiBitPeerEventListener implements PeerEventListener {
                     currentWallet.receivePending(transaction, null);
 
                     // Emit an event so that GUI elements can update as required
-                    TransactionSeenEvent transactionSeenEvent = new TransactionSeenEvent(transaction);
                     Coin value = transaction.getValue(currentWallet);
-                    transactionSeenEvent.setAmount(value);
+                    TransactionSeenEvent transactionSeenEvent = new TransactionSeenEvent(transaction, value);
                     transactionSeenEvent.setFirstAppearanceInWallet(true);
 
                     CoreEvents.fireTransactionSeenEvent(transactionSeenEvent);

@@ -9,9 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -69,7 +67,7 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
     // Fill the text area with appropriate content
     seedPhraseTextArea.setText(model.displaySeedPhrase());
 
-    // Bind a key listener to allow instant update of UI to mismatched seed phrase
+    // Bind key and focus listeners to allow instant update of UI to mismatched seed phrase
     seedPhraseTextArea.addKeyListener(new KeyAdapter() {
 
       @Override
@@ -78,8 +76,14 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
       }
 
     });
+    seedPhraseTextArea.addFocusListener(new FocusAdapter() {
+      @Override
+      public void focusLost(FocusEvent e) {
+        updateModelFromView();
+      }
+    });
 
-    // Bind a key listener to allow instant update of UI to invalid date
+    // Bind a key and focus listeners to allow instant update of UI to invalid date
     seedTimestampText.addKeyListener(new KeyAdapter() {
 
       @Override
@@ -87,6 +91,12 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
         updateModelFromView();
       }
 
+    });
+    seedTimestampText.addFocusListener(new FocusAdapter() {
+      @Override
+      public void focusLost(FocusEvent e) {
+        updateModelFromView();
+      }
     });
 
     // Create a new verification status panel (initially invisible)

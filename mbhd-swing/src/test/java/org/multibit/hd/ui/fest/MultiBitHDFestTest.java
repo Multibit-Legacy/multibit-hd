@@ -125,6 +125,27 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   /**
    * <p>Verify the following:</p>
    * <ul>
+   * <li>Start with fresh application directory</li>
+   * <li>Restore a wallet</li>
+   * </ul>
+   */
+  @Test
+  public void verifyWelcomeWizardRestoreWallet_en_US() throws Exception {
+
+    // Start with a completely empty random application directory
+    arrangeFresh();
+
+    // Create a wallet through the welcome wizard
+    WelcomeWizardRestoreWallet_en_US_Requirements.verifyUsing(window);
+
+    // Unlock the wallet
+    QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
+
+  }
+
+  /**
+   * <p>Verify the following:</p>
+   * <ul>
    * <li>Start with empty wallet fixture</li>
    * <li>Unlock wallet</li>
    * <li>Scan through sidebar screens</li>
@@ -161,8 +182,30 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     // Unlock the wallet
     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
 
-    // Examine the history after unlocking
+    // Verify
     SendRequestScreenRequirements.verifyUsing(window);
+
+  }
+
+  /**
+   * <p>Verify the following:</p>
+   * <ul>
+   * <li>Start with restored wallet fixture</li>
+   * <li>Unlock wallet</li>
+   * <li>Exercise the Payments screen</li>
+   * </ul>
+   */
+  @Test
+  public void verifyPaymentsScreen() throws Exception {
+
+    // Start with the restored wallet fixture
+    arrangeRestored();
+
+    // Unlock the wallet
+    QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
+
+    // Verify
+    PaymentsScreenRequirements.verifyUsing(window);
 
   }
 
@@ -183,7 +226,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     // Unlock the wallet
     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
 
-    // Create some contacts for use with send/receive later
+    // Verify
     ContactsScreenRequirements.verifyUsing(window);
 
   }
@@ -227,7 +270,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     // Unlock the wallet
     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
 
-    // Examine the settings after unlocking
+    // Verify
     SettingsScreenRequirements.verifyUsing(window);
 
   }
@@ -249,7 +292,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     // Unlock the wallet
     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
 
-    // Examine the tools after unlocking
+    // Verify
     ToolsScreenRequirements.verifyUsing(window);
 
   }
@@ -297,6 +340,35 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
     // Add the empty wallet fixture
     WalletFixtures.createEmptyWalletFixture();
+
+    // Continue with the set up
+    setUpAfterArrange();
+
+  }
+
+  /**
+   * <p>Starts MultiBit HD with an application directory containing a restored wallet fixture containing real transactions</p>
+   *
+   * @throws Exception
+   */
+  private void arrangeRestored() throws Exception {
+
+    log.info("Arranging burned wallet fixture environment...");
+
+    // Create a random temporary directory to write the wallets
+    File temporaryDirectory = makeRandomTemporaryApplicationDirectory();
+    InstallationManager.currentApplicationDataDirectory = SecureFiles.verifyOrCreateDirectory(temporaryDirectory);
+
+    // Copy the MBHD cacerts
+    InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/fixtures/"+InstallationManager.CA_CERTS_NAME);
+    OutputStream target = new FileOutputStream(new File(temporaryDirectory + "/"+InstallationManager.CA_CERTS_NAME));
+    ByteStreams.copy(cacerts, target);
+
+    // Initialise the backup manager
+    BackupManager.INSTANCE.initialise(temporaryDirectory, null);
+
+    // Add the restored wallet fixture
+    WalletFixtures.createRestoredWalletFixture();
 
     // Continue with the set up
     setUpAfterArrange();

@@ -107,11 +107,11 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
     cacertsInstalledStatusLabel.setVisible(false);
     walletCreatedStatusLabel.setVisible(false);
 
-    contentPanel.add(spinner, "span 3,align right,"+MultiBitUI.NORMAL_PLUS_ICON_SIZE_MIG+",wrap");
+    contentPanel.add(spinner, "span 3,align right," + MultiBitUI.NORMAL_PLUS_ICON_SIZE_MIG + ",wrap");
     contentPanel.add(seedPhraseCreatedStatusLabel, "wrap");
     contentPanel.add(walletPasswordCreatedStatusLabel, "wrap");
     contentPanel.add(backupLocationStatusLabel, "wrap");
-    contentPanel.add(cacertsInstalledStatusLabel,"wrap");
+    contentPanel.add(cacertsInstalledStatusLabel, "wrap");
     contentPanel.add(walletCreatedStatusLabel, "wrap");
 
   }
@@ -226,7 +226,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       });
 
       // Give the user the impression of work being done
-      Uninterruptibles.sleepUninterruptibly(400, TimeUnit.MILLISECONDS);
+      Uninterruptibles.sleepUninterruptibly(250, TimeUnit.MILLISECONDS);
 
       // Determine if the backup location is valid
       final boolean exists = cloudBackupLocationFile.exists();

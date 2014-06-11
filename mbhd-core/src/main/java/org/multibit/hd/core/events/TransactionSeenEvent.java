@@ -25,7 +25,10 @@ public class TransactionSeenEvent implements CoreEvent {
 
   private final boolean coinbase;
 
-  private Coin amount;
+  /**
+   * The amount is calculated from the wallet
+   */
+  private final Coin amount;
 
   /**
    * This is the first time this transaction has been seen in the wallet
@@ -36,8 +39,9 @@ public class TransactionSeenEvent implements CoreEvent {
 
   /**
    * @param transaction The Bitcoinj transaction providing the information
+   * @param amount      The amount as calculated from the wallet
    */
-  public TransactionSeenEvent(Transaction transaction) {
+  public TransactionSeenEvent(Transaction transaction, Coin amount) {
 
     transactionId = transaction.getHashAsString();
     TransactionConfidence confidence = transaction.getConfidence();
@@ -53,6 +57,8 @@ public class TransactionSeenEvent implements CoreEvent {
     coinbase = transaction.isCoinBase();
 
     numberOfPeers = confidence.numBroadcastPeers();
+
+    this.amount = amount;
 
   }
 
@@ -72,10 +78,6 @@ public class TransactionSeenEvent implements CoreEvent {
    */
   public Coin getAmount() {
     return amount;
-  }
-
-  public void setAmount(Coin amount) {
-    this.amount = amount;
   }
 
   /**

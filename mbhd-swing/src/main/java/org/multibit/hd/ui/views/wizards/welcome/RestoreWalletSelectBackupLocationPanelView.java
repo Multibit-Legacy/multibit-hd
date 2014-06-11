@@ -67,7 +67,7 @@ public class RestoreWalletSelectBackupLocationPanelView extends AbstractWizardPa
 
     contentPanel.add(Panels.newRestoreFromBackup(), "span 2,grow,wrap");
     contentPanel.add(Labels.newSelectFolder());
-    contentPanel.add(selectFileMaV.getView().newComponentPanel(), "grow,wrap");
+    contentPanel.add(selectFileMaV.getView().newComponentPanel(), "wrap");
 
   }
 
