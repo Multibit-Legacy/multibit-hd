@@ -86,12 +86,12 @@ public class WalletService {
   /**
    * The payment requests in a map, indexed by the bitcoin address
    */
-  private Map<String, PaymentRequestData> paymentRequestMap;
+  private final Map<String, PaymentRequestData> paymentRequestMap = Maps.newHashMap();
 
   /**
    * The additional transaction information, in the form of a map, index by the transaction hash
    */
-  private Map<String, TransactionInfo> transactionInfoMap;
+  private final Map<String, TransactionInfo> transactionInfoMap = Maps.newHashMap();
 
   /**
    * The wallet id that this WalletService is using
@@ -143,18 +143,14 @@ public class WalletService {
 
     protobufSerializer = new PaymentsProtobufSerializer();
 
-    // Load the payment request data from the backing store if it exists
-    // Initial values
-    paymentRequestMap = Maps.newHashMap();
-    transactionInfoMap = Maps.newHashMap();
     if (backingStoreFile.exists()) {
       readPayments();
     }
   }
 
   /**
-   * Get all the payments (payments and payment requests) in the current wallet.
-   * (This is moderately expensive so don't call it indiscriminately)
+   * <p>Get all the payments (payments and payment requests) in the current wallet.</p>
+   * <h3>WARNING: This is moderately expensive so don't call it indiscriminately</h3>
    */
   public List<PaymentData> getPaymentDataList() {
 
@@ -178,12 +174,12 @@ public class WalletService {
     Set<Transaction> transactions = wallet.getTransactions(true);
 
     // Adapted transaction data to return
-    Set<TransactionData> transactionDatas = Sets.newHashSet();
+    Set<TransactionData> transactionDataSet = Sets.newHashSet();
 
     if (transactions != null) {
       for (Transaction transaction : transactions) {
         TransactionData transactionData = adaptTransaction(wallet, transaction);
-        transactionDatas.add(transactionData);
+        transactionDataSet.add(transactionData);
       }
     }
 
@@ -194,8 +190,9 @@ public class WalletService {
         paymentRequestsNotFullyFunded.add(basePaymentRequestData);
       }
     }
-    // Union all the transactionDatas and paymentDatas
-    lastSeenPaymentDataList = Lists.newArrayList(Sets.union(transactionDatas, paymentRequestsNotFullyFunded));
+    // Union the transactionData set and paymentData set
+    lastSeenPaymentDataList = Lists.newArrayList(Sets.union(transactionDataSet, paymentRequestsNotFullyFunded));
+
     return lastSeenPaymentDataList;
   }
 
@@ -609,6 +606,7 @@ public class WalletService {
   }
 
   private Optional<Coin> calculateMiningFee(PaymentType paymentType, String transactionHashAsString) {
+
     Optional<Coin> miningFee = Optional.absent();
 
     if (paymentType == PaymentType.SENDING || paymentType == PaymentType.SENT) {
@@ -622,6 +620,7 @@ public class WalletService {
   }
 
   private Optional<Coin> calculateClientFee(PaymentType paymentType, String transactionHashAsString) {
+
     Optional<Coin> clientFee = Optional.absent();
 
     if (paymentType == PaymentType.SENDING || paymentType == PaymentType.SENT) {
@@ -641,10 +640,13 @@ public class WalletService {
    * <p>Populate the internal cache of Payments from the backing store</p>
    */
   public void readPayments() throws PaymentsLoadException {
+
     Preconditions.checkNotNull(backingStoreFile, "There is no backingStoreFile. Please initialise WalletService.");
 
-    log.debug("Loading payments from '{}'", backingStoreFile.getAbsolutePath());
     try {
+
+      log.debug("Reading payments from '{}'", backingStoreFile.getAbsolutePath());
+
       ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(backingStoreFile,
         WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(),
         WalletManager.SCRYPT_SALT,
@@ -667,6 +669,9 @@ public class WalletService {
           transactionInfoMap.put(transactionInfo.getHash(), transactionInfo);
         }
       }
+
+      log.debug("Reading payments completed");
+
     } catch (EncryptedFileReaderWriterException e) {
       ExceptionHandler.handleThrowable(new PaymentsLoadException("Could not load payments db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'."));
     }
@@ -677,23 +682,29 @@ public class WalletService {
    */
   public void writePayments() throws PaymentsSaveException {
 
-    Preconditions.checkNotNull(backingStoreFile, "There is no backingStoreFile. Please initialise WalletService.");
+    Preconditions.checkNotNull(backingStoreFile, "'backingStoreFile' must be present. Initialise WalletService.");
     Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().isPresent(), "Current wallet summary must be present");
 
     try {
-      if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
-        Payments payments = new Payments();
-        payments.setTransactionInfos(transactionInfoMap.values());
-        payments.setPaymentRequestDatas(paymentRequestMap.values());
-        protobufSerializer.writePayments(payments, byteArrayOutputStream);
-        EncryptedFileReaderWriter.encryptAndWrite(byteArrayOutputStream.toByteArray(), WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(), backingStoreFile);
-      } else {
-        log.debug("No password available so not saving Payments.");
-      }
+
+      log.debug("Writing payments to '{}'", backingStoreFile.getAbsolutePath());
+
+      ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
+      Payments payments = new Payments();
+      payments.setTransactionInfos(transactionInfoMap.values());
+      payments.setPaymentRequestDatas(paymentRequestMap.values());
+      protobufSerializer.writePayments(payments, byteArrayOutputStream);
+      EncryptedFileReaderWriter.encryptAndWrite(
+        byteArrayOutputStream.toByteArray(),
+        WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(),
+        backingStoreFile
+      );
+
+      log.debug("Writing payments completed");
+
     } catch (Exception e) {
       log.error("Could not write to payments db '{}'. backingStoreFile.getAbsolutePath()", e);
-      throw new PaymentsSaveException("Could not write payments db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");
+      throw new PaymentsSaveException("Could not write payments db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.", e);
     }
   }
 
@@ -702,7 +713,9 @@ public class WalletService {
   }
 
   public void addPaymentRequest(PaymentRequestData paymentRequestData) {
+
     paymentRequestMap.put(paymentRequestData.getAddress(), paymentRequestData);
+
   }
 
   public void addTransactionInfo(TransactionInfo transactionInfo) {
@@ -749,6 +762,7 @@ public class WalletService {
    * @return The list of payment requests that the transaction data funds
    */
   public List<PaymentRequestData> findPaymentRequestsThisTransactionFunds(TransactionData transactionData) {
+
     List<PaymentRequestData> paymentRequestDataList = Lists.newArrayList();
 
     if (transactionData != null && transactionData.getOutputAddresses() != null) {
@@ -768,6 +782,7 @@ public class WalletService {
    * Delete a payment request
    */
   public void deletePaymentRequest(PaymentRequestData paymentRequestData) {
+
     undoDeletePaymentRequestStack.push(paymentRequestData);
     paymentRequestMap.remove(paymentRequestData.getAddress());
     writePayments();
@@ -777,6 +792,7 @@ public class WalletService {
    * Undo the deletion of a payment request
    */
   public void undoDeletePaymentRequest() {
+
     if (!undoDeletePaymentRequestStack.isEmpty()) {
       PaymentRequestData deletedPaymentRequestData = undoDeletePaymentRequestStack.pop();
       addPaymentRequest(deletedPaymentRequestData);
@@ -824,6 +840,7 @@ public class WalletService {
    * @param newPassword   The new wallet password
    */
   public static void changeWalletPassword(final WalletSummary walletSummary, final String oldPassword, final String newPassword) {
+
     if (executorService == null) {
       executorService = SafeExecutors.newSingleThreadExecutor("wallet-service");
     }
@@ -837,6 +854,7 @@ public class WalletService {
   }
 
   static void changeWalletPasswordInternal(final WalletSummary walletSummary, final String oldPassword, final String newPassword) {
+
     if (walletSummary.getWallet() != null) {
 
       Wallet wallet = walletSummary.getWallet();
@@ -916,6 +934,7 @@ public class WalletService {
    */
   @Subscribe
   public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
+
     // Get/ Create a transactionInfo to match the event
     TransactionInfo transactionInfo = transactionInfoMap.get(transactionSeenEvent.getTransactionId());
     if (transactionInfo == null) {

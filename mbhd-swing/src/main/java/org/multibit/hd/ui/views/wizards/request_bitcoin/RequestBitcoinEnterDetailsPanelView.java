@@ -60,7 +60,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
   private ModelAndView<DisplayBitcoinAddressModel, DisplayBitcoinAddressView> displayBitcoinAddressMaV;
   private ModelAndView<DisplayQRCodeModel, DisplayQRCodeView> displayQRCodePopoverMaV;
 
-  private JTextField privateNotes;
+  private JTextField transactionLabel;
   private JLabel addressCommentLabel;
 
   private JButton showQRCode;
@@ -102,7 +102,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
     // Create the QR code display
     displayQRCodePopoverMaV = Popovers.newDisplayQRCodePopoverMaV(getPanelName());
 
-    privateNotes = TextBoxes.newEnterTransactionLabel();
+    transactionLabel = TextBoxes.newEnterTransactionLabel();
     showQRCode = Buttons.newQRCodeButton(getShowQRCodePopoverAction());
     addressCommentLabel = Labels.newLabel(MessageKey.ONE_OF_YOUR_ADDRESSES);
 
@@ -117,7 +117,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
     ));
 
     getWizardModel().setEnterAmountModel(enterAmountMaV.getModel());
-    getWizardModel().setTransactionLabel(privateNotes.getText());
+    getWizardModel().setTransactionLabel(transactionLabel.getText());
     getWizardModel().setNotes(Optional.of(notesTextArea.getText()));
 
     // Register components
@@ -141,7 +141,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
     contentPanel.add(Labels.newBlankLabel());
     contentPanel.add(addressCommentLabel, "wrap");
     contentPanel.add(Labels.newQRCodeLabel());
-    contentPanel.add(privateNotes, "span 2,wrap");
+    contentPanel.add(transactionLabel, "span 2,wrap");
     contentPanel.add(Labels.newNotes());
     contentPanel.add(notesTextArea, "span 3,push,wrap");
 
@@ -167,7 +167,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        getFinishButton().requestFocusInWindow();
+        enterAmountMaV.getView().requestInitialFocus();
       }
     });
 
@@ -186,24 +186,28 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
    */
   private void savePaymentRequest() {
 
+    log.debug("Saving payment request");
+
     WalletService walletService = CoreServices.getCurrentWalletService();
 
-    Preconditions.checkNotNull(walletService, "The wallet service was null so cannot save the payment request");
+    // Fail fast
+    Preconditions.checkNotNull(walletService, "'walletService' must be present");
+    Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().isPresent(), "'currentWalletSummary' must be present");
 
-    PaymentRequestData paymentRequestData = new PaymentRequestData();
+    final PaymentRequestData paymentRequestData = new PaymentRequestData();
     paymentRequestData.setNote(notesTextArea.getText());
     paymentRequestData.setDate(DateTime.now());
     paymentRequestData.setAddress(displayBitcoinAddressMaV.getModel().getValue());
-    paymentRequestData.setLabel(privateNotes.getText());
+    paymentRequestData.setLabel(transactionLabel.getText());
     paymentRequestData.setAmountCoin(enterAmountMaV.getModel().getCoinAmount());
 
-    FiatPayment fiatPayment = new FiatPayment();
+    final FiatPayment fiatPayment = new FiatPayment();
     fiatPayment.setAmount(enterAmountMaV.getModel().getLocalAmount());
 
-    ExchangeKey exchangeKey = ExchangeKey.current();
+    final ExchangeKey exchangeKey = ExchangeKey.current();
     fiatPayment.setExchangeName(Optional.of(exchangeKey.getExchangeName()));
 
-    Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
+    final Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
     if (exchangeRateChangedEvent.isPresent()) {
       fiatPayment.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
       fiatPayment.setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
@@ -220,26 +224,28 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
     } catch (PaymentsSaveException pse) {
       ExceptionHandler.handleThrowable(pse);
     }
-    // Ensure the views that display payments update
-    WalletDetail walletDetail = new WalletDetail();
-    if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-      WalletSummary walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary().get();
-      walletDetail.setApplicationDirectory(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath());
 
-      File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-      File walletFile = WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory).get();
-      walletDetail.setWalletDirectory(walletFile.getParentFile().getName());
+    // Ensure the views that display payments update through a "wallet detail changed" event
+    final WalletDetail walletDetail = new WalletDetail();
 
-      ContactService contactService = CoreServices.getOrCreateContactService(walletSummary.getWalletId());
-      walletDetail.setNumberOfContacts(contactService.allContacts().size());
+    final File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+    final File walletFile = WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory).get();
 
-      walletDetail.setNumberOfPayments(walletService.getPaymentDataList().size());
-      ViewEvents.fireWalletDetailChangedEvent(walletDetail);
-    }
+    final WalletSummary walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary().get();
+    ContactService contactService = CoreServices.getOrCreateContactService(walletSummary.getWalletId());
+
+    walletDetail.setApplicationDirectory(applicationDataDirectory.getAbsolutePath());
+    walletDetail.setWalletDirectory(walletFile.getParentFile().getName());
+    walletDetail.setNumberOfContacts(contactService.allContacts().size());
+    walletDetail.setNumberOfPayments(walletService.getPaymentDataList().size());
+
+    ViewEvents.fireWalletDetailChangedEvent(walletDetail);
+
   }
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {
+
     // No need to update since we expose the component models
 
     // No view events to fire
@@ -266,12 +272,12 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
         String bitcoinUri = BitcoinURI.convertToBitcoinURI(
           bitcoinAddress,
           coin,
-          privateNotes.getText(),
+          transactionLabel.getText(),
           null
         );
 
         displayQRCodePopoverMaV.getModel().setValue(bitcoinUri);
-        displayQRCodePopoverMaV.getModel().setLabel(privateNotes.getText());
+        displayQRCodePopoverMaV.getModel().setTransactionLabel(transactionLabel.getText());
 
         // Show the QR code as a popover
         Panels.showLightBoxPopover(displayQRCodePopoverMaV.getView().newComponentPanel());

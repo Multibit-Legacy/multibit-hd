@@ -27,7 +27,7 @@ public abstract class AbstractComponentView<M extends Model> implements View<M> 
   public AbstractComponentView(M model) {
     this.model = Optional.fromNullable(model);
 
-    // Views are automatically registered through ModelAndView
+    // Views are automatically registered for UI events through ModelAndView
   }
 
   @Override

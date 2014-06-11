@@ -17,7 +17,7 @@ public class DisplayQRCodeModel implements Model<String> {
 
   // Supporting data
   private final String panelName;
-  private String label;
+  private String transactionLabel;
 
   public DisplayQRCodeModel(String panelName) {
     this.panelName = panelName;
@@ -33,12 +33,12 @@ public class DisplayQRCodeModel implements Model<String> {
     this.value = value;
   }
 
-  public void setLabel(String label) {
-    this.label = label;
+  public void setTransactionLabel(String transactionLabel) {
+    this.transactionLabel = transactionLabel;
   }
 
-  public String getLabel() {
-    return label;
+  public String getTransactionLabel() {
+    return transactionLabel;
   }
 
   /**

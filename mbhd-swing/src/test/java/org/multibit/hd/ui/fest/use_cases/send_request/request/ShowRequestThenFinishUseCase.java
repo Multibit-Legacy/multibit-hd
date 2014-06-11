@@ -11,16 +11,16 @@ import java.util.concurrent.TimeUnit;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "request" wizard with cancel</li>
+ * <li>Verify the "request" wizard can handle a Bitcoin amount entry</li>
  * </ul>
  * <p>Requires the "send/request" screen to be showing</p>
  *
  * @since 0.0.1
  *  
  */
-public class ShowRequestThenCancelSendUseCase extends AbstractFestUseCase {
+public class ShowRequestThenFinishUseCase extends AbstractFestUseCase {
 
-  public ShowRequestThenCancelSendUseCase(FrameFixture window) {
+  public ShowRequestThenFinishUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -35,31 +35,52 @@ public class ShowRequestThenCancelSendUseCase extends AbstractFestUseCase {
       .click();
 
     // Verify the wizard appears
-    assertLabelText(MessageKey.SHOW_REQUEST_WIZARD);
+    assertLabelText(MessageKey.REQUEST_BITCOIN_TITLE);
 
     // Verify buttons
     window
-      .button(MessageKey.NEXT.getKey())
+      .button(MessageKey.COPY.getKey())
       .requireVisible()
-      .requireDisabled();
+      .requireEnabled();
+
+    window
+      .button(MessageKey.QR_CODE.getKey())
+      .requireVisible()
+      .requireEnabled();
+
+    window
+      .button(MessageKey.FINISH.getKey())
+      .requireVisible()
+      .requireEnabled();
 
     // Verify empty fields to start
-    window
-      .comboBox(MessageKey.RECIPIENT.getKey())
-      .requireVisible()
-      .requireEnabled()
-      .requireEditable()
-      .requireNoSelection();
-
     window
       .textBox(MessageKey.BITCOIN_AMOUNT.getKey())
       .requireVisible()
       .requireEnabled()
       .requireEmpty();
 
-    // Click Cancel
     window
-      .button(MessageKey.CANCEL.getKey())
+      .textBox(MessageKey.BITCOIN_ADDRESS.getKey())
+      .requireVisible()
+      .requireEnabled()
+      .requireNotEditable();
+
+    window
+      .textBox(MessageKey.TRANSACTION_LABEL.getKey())
+      .requireVisible()
+      .requireEnabled()
+      .requireEmpty();
+
+    window
+      .textBox(MessageKey.PRIVATE_NOTES.getKey())
+      .requireVisible()
+      .requireEnabled()
+      .requireEmpty();
+
+    // Click Finish
+    window
+      .button(MessageKey.FINISH.getKey())
       .requireVisible()
       .requireEnabled()
       .click();

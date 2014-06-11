@@ -7,10 +7,7 @@ import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.utils.ClipboardUtils;
 import org.multibit.hd.ui.utils.QRCodes;
-import org.multibit.hd.ui.views.components.AbstractComponentView;
-import org.multibit.hd.ui.views.components.Buttons;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.*;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -50,7 +47,7 @@ public class DisplayQRCodeView extends AbstractComponentView<DisplayQRCodeModel>
     panelCloseButton = Buttons.newPanelCloseButton(getClosePopoverAction());
 
     // Ensure it is accessible
-    panelCloseButton.setName("popover."+ MessageKey.CLOSE.getKey());
+    panelCloseButton.setName("popover_"+ MessageKey.CLOSE.getKey());
 
     // Add to the panel
     // Bug in JDK 1.7 on Mac prevents clipboard image copy
@@ -59,12 +56,18 @@ public class DisplayQRCodeView extends AbstractComponentView<DisplayQRCodeModel>
       panel.add(Buttons.newCopyButton(getCopyClipboardAction()), "align left,push");
     }
 
-    panel.add(panelCloseButton, "align right,shrink,wrap");
-    panel.add(Labels.newImageLabel(qrCodeImage), "span 2,grow,push,wrap");
+    // QR code image
+    JLabel imageLabel = Labels.newImageLabel(qrCodeImage);
 
-    JLabel labelLabel = Labels.newBlankLabel();
-    labelLabel.setText(getModel().get().getLabel());
-    panel.add(labelLabel, "align center,push,wrap");
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(imageLabel, MessageKey.QR_CODE);
+
+    panel.add(panelCloseButton, "align right,shrink,wrap");
+    panel.add(imageLabel, "span 2,grow,push,wrap");
+
+    JLabel transactionLabel = Labels.newBlankLabel();
+    transactionLabel.setText(getModel().get().getTransactionLabel());
+    panel.add(transactionLabel, "align center,push,wrap");
 
     // Set minimum size
     panel.setSize(MultiBitUI.POPOVER_MAX_WIDTH, MultiBitUI.POPOVER_MAX_HEIGHT);

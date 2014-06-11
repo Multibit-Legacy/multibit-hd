@@ -585,7 +585,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
       public void verify() {
 
-        if (!isHasComponents()) {
+        if (!hasComponents()) {
           return;
         }
 
@@ -654,7 +654,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
    */
   private void setApiKeyVisibility(boolean visible) {
 
-    if (!isHasComponents()) {
+    if (!hasComponents()) {
       return;
     }
     if (apiKeyLabel == null || apiKeyTextField == null) {
@@ -675,7 +675,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
    */
   private void setCurrencyCodeVisibility(boolean visible) {
 
-    if (!isHasComponents()) {
+    if (!hasComponents()) {
       return;
     }
     currencyCodeLabel.setVisible(visible);

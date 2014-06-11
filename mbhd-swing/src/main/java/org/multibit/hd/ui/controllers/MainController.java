@@ -32,7 +32,6 @@ import org.multibit.hd.ui.views.MainView;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
-import org.multibit.hd.ui.views.fonts.TitleFontDecorator;
 import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.themes.Theme;
 import org.multibit.hd.ui.views.themes.ThemeKey;
@@ -668,12 +667,13 @@ public class MainController extends AbstractController implements
    */
   private void handlePasswordWizardHide() {
 
-    log.debug("Starting wallet services");
+    log.debug("Wallet unlocked. Starting services...");
 
     // No wizards on further refreshes
     mainView.setShowExitingWelcomeWizard(false);
     mainView.setShowExitingPasswordWizard(false);
 
+    // Start the main view refresh on the EDT
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
@@ -688,9 +688,13 @@ public class MainController extends AbstractController implements
     log.debug("Starting backup manager...");
     handleBackupManager();
 
-    // Use the current wallet summary
+    // Get the current wallet summary
     Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
     mainView.sidebarWalletName(walletSummary.get().getName());
+
+    // Start the wallet service
+    log.debug("Starting wallet service...");
+    CoreServices.getOrCreateWalletService(walletSummary.get().getWalletId());
 
     // Record this in the history
     CoreServices.logHistory(Languages.safeText(MessageKey.HISTORY_WALLET_OPENED, walletSummary.get().getName()));
@@ -704,6 +708,7 @@ public class MainController extends AbstractController implements
       @Override
       public void run() {
         try {
+
           // Get a ticker going
           log.debug("Starting exchange...");
           handleExchange();
@@ -715,6 +720,7 @@ public class MainController extends AbstractController implements
           // Lastly start the Bitcoin network
           log.debug("Starting Bitcoin network...");
           handleBitcoinNetwork();
+
         } catch (Exception e) {
           // TODO localise and put on UI
           log.error("Services did not start ok. Error was {}", e.getClass().getCanonicalName() + " " + e.getMessage());

@@ -146,7 +146,7 @@ public class AddBobContactUseCase extends AbstractFestUseCase {
       .requireEnabled();
 
     window
-      .button("popover."+MessageKey.CLOSE.getKey())
+      .button("popover_"+MessageKey.CLOSE.getKey())
       .requireVisible()
       .requireEnabled();
 

@@ -257,7 +257,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
         );
 
         displayQRCodePopoverMaV.getModel().setValue(bitcoinUri);
-        displayQRCodePopoverMaV.getModel().setLabel(label);
+        displayQRCodePopoverMaV.getModel().setTransactionLabel(label);
 
         // Show the QR code as a popover
         Panels.showLightBoxPopover(displayQRCodePopoverMaV.getView().newComponentPanel());

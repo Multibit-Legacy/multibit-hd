@@ -55,7 +55,7 @@ public class EnterYesNoView extends AbstractComponentView<EnterYesNoModel> {
     panelCloseButton = Buttons.newPanelCloseButton(getClosePopoverAction());
 
     // Ensure it is accessible
-    panelCloseButton.setName("popover."+ MessageKey.CLOSE.getKey());
+    panelCloseButton.setName("popover_"+ MessageKey.CLOSE.getKey());
 
     panel.add(panelCloseButton, "span 2,align right,shrink,wrap");
     panel.add(Labels.newDataEnteredNote(), "grow,push,span 2,wrap");

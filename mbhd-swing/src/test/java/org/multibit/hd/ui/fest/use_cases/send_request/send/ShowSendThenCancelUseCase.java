@@ -18,9 +18,9 @@ import java.util.concurrent.TimeUnit;
  * @since 0.0.1
  *  
  */
-public class ShowSendThenCancelSendUseCase extends AbstractFestUseCase {
+public class ShowSendThenCancelUseCase extends AbstractFestUseCase {
 
-  public ShowSendThenCancelSendUseCase(FrameFixture window) {
+  public ShowSendThenCancelUseCase(FrameFixture window) {
     super(window);
   }
 

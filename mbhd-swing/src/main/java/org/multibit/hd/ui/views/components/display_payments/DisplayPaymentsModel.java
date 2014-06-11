@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class DisplayPaymentsModel implements Model<List<PaymentData>> {
 
-  private String panelName;
+  private final String panelName;
 
   private List<PaymentData> paymentDataList = Lists.newArrayList();
 
@@ -33,5 +33,9 @@ public class DisplayPaymentsModel implements Model<List<PaymentData>> {
   @Override
   public void setValue(List<PaymentData> value) {
     this.paymentDataList = value;
+  }
+
+  public String getPanelName() {
+    return panelName;
   }
 }

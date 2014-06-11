@@ -22,8 +22,7 @@ import java.util.Locale;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Presentation of a seed phrase display</li>
- * <li>Support for refresh and reveal operations</li>
+ * <li>Presentation of a balance display using a collection of labels</li>
  * </ul>
  *
  * @since 0.0.1
@@ -200,6 +199,11 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
   public void setVisible(final boolean visible) {
 
     this.visible = visible;
+
+    // Avoid NPE when not initialised
+    if (leadingSymbolLabel == null) {
+      return;
+    }
 
     SwingUtilities.invokeLater(new Runnable() {
       @Override

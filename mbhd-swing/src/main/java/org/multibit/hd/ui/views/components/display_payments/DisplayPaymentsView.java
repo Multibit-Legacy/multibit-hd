@@ -15,9 +15,12 @@ import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountModel;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -29,6 +32,8 @@ import java.util.List;
  *  
  */
 public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsModel> {
+
+  private static final Logger log = LoggerFactory.getLogger(DisplayPaymentsView.class);
 
   // View components
   private List<ModelAndView<DisplayAmountModel, DisplayAmountView>> displayAmountMaVList = Lists.newArrayList();
@@ -49,9 +54,9 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
   public JPanel newComponentPanel() {
 
     panel = Panels.newPanel(new MigLayout(
-            "insets 0", // Layout
-            "[]10[]10[]", // Columns
-            "[][]" // Rows
+      "insets 0", // Layout
+      "[]10[]10[]", // Columns
+      "[][]" // Rows
     ));
 
     // Populate components
@@ -70,12 +75,25 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
 
       if (getModel().isPresent()) {
 
+        String panelName = getModel().get().getPanelName();
+
         // Clear the panel
         List<PaymentData> paymentDataList = getModel().get().getValue();
         panel.removeAll();
-        displayAmountMaVList = Lists.newArrayList();
+
+        // Deregister any previous entries from UI events since
+        // this view is never closed unless the application exits
+        for (ModelAndView<DisplayAmountModel, DisplayAmountView> mav : displayAmountMaVList) {
+          mav.close();
+        }
+
+        // Reset the list
+        displayAmountMaVList.clear();
+
+        log.debug("Displaying {} payment(s) for {}", paymentDataList.size(), panelName);
 
         // Work through the list of payment data entries
+        int count = 0;
         for (PaymentData paymentData : paymentDataList) {
 
           // Time label
@@ -87,8 +105,11 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
           paymentDataLabel.setText(Languages.safeText(paymentData.getType().getLocalisationKey()));
           LabelDecorator.applyStatusIcon(paymentData.getStatus(), paymentDataLabel, paymentData.isCoinBase(), MultiBitUI.NORMAL_ICON_SIZE);
 
-          // Amount MaV
-          ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.PLAIN, false,"payment");
+          // Create a unique FEST name to ensure accessibility
+          String festName = panelName + "_" + paymentData.getType().name().toLowerCase(Locale.UK) + "_" + count;
+
+          // Amount MaV (ensure it is accessible)
+          ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.PLAIN, false, festName);
           if (CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().isPresent()) {
             Optional<String> rateProvider = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().get().getRateProvider();
             paymentAmountMaV.getModel().setRateProvider(rateProvider);
@@ -110,6 +131,8 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
           JPanel amountPanel = paymentAmountMaV.getView().newComponentPanel();
           amountPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
           panel.add(amountPanel, "shrink, wrap");
+
+          count++;
         }
 
         // Redraw
@@ -142,17 +165,20 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
 
   @Subscribe
   public void onBalanceChangedEvent(BalanceChangedEvent event) {
+
     if (!initialised) {
       return;
     }
 
     createView();
+
     if (displayAmountMaVList != null) {
       for (ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV : displayAmountMaVList) {
         paymentAmountMaV.getModel().setRateProvider(event.getRateProvider());
         paymentAmountMaV.getModel().setLocalAmountVisible(event.getRateProvider().isPresent());
       }
     }
+
     updateView();
   }
 

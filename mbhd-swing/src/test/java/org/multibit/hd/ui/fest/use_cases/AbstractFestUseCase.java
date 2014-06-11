@@ -189,7 +189,7 @@ public abstract class AbstractFestUseCase {
    * The standard length of time for a wallet to unlock
    */
   protected void pauseForWalletUnlock() {
-    Pause.pause(5, TimeUnit.SECONDS);
+    Pause.pause(6, TimeUnit.SECONDS);
   }
 
   /**

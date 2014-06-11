@@ -348,7 +348,7 @@ public class CoreServices {
    */
   public static WalletService getOrCreateWalletService(WalletId walletId) {
 
-    log.trace("Get or create history service");
+    log.trace("Get or create wallet service");
 
     Preconditions.checkNotNull(walletId, "'walletId' must be present");
 

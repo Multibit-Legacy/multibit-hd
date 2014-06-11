@@ -100,7 +100,7 @@ public enum MessageKey {
   PASSWORD_VERIFIED("password_verified"),
   PASSWORD_FAILED("password_failed"),
 
-  BITCOIN_AMOUNT("bitcoin_address"),
+  BITCOIN_AMOUNT("bitcoin_amount"),
   LOCAL_AMOUNT("local_amount"),
   AMOUNT_PAID("amount_paid"),
   TRANSACTION_FEE("transaction_fee"),

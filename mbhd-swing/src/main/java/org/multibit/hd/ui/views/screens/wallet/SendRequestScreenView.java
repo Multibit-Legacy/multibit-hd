@@ -53,7 +53,7 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
 
   private ModelAndView<DisplayPaymentsModel, DisplayPaymentsView> displaySendingPaymentsMaV;
 
-  private ModelAndView<DisplayPaymentsModel, DisplayPaymentsView> displayReceivingPaymentsMaV;
+  private ModelAndView<DisplayPaymentsModel, DisplayPaymentsView> displayRequestedPaymentsMaV;
 
   private WalletService walletService;
 
@@ -115,9 +115,10 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
       sendBitcoin.setEnabled(false);
       requestBitcoin.setEnabled(false);
     }
+
     // Initialise panel with a blank list of today's sending payments
     List<PaymentData> todaysSendingPayments = Lists.newArrayList(); // walletService.subsetPaymentsAndSort(allPayments, PaymentType.SENDING);
-    displaySendingPaymentsMaV = Components.newDisplayPaymentsMaV(getScreen().name());
+    displaySendingPaymentsMaV = Components.newDisplayPaymentsMaV(getScreen().name() + "_SENDING");
     displaySendingPaymentsMaV.getModel().setValue(todaysSendingPayments);
     JScrollPane sendingPaymentsScrollPane = new JScrollPane(displaySendingPaymentsMaV.getView().newComponentPanel(),
       JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -126,27 +127,27 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
     sendingPaymentsScrollPane.setOpaque(true);
     sendingPaymentsScrollPane.setBorder(BorderFactory.createEmptyBorder());
 
-    // Initialise panel with a blank list of today's receiving payments
-    List<PaymentData> todaysReceivingPayments = Lists.newArrayList(); //walletService.subsetPaymentsAndSort(allPayments, PaymentType.RECEIVING);
-    displayReceivingPaymentsMaV = Components.newDisplayPaymentsMaV(getScreen().name());
-    displayReceivingPaymentsMaV.getModel().setValue(todaysReceivingPayments);
+    // Initialise panel with a blank list of today's requested payments
+    List<PaymentData> todaysRequestedPayments = Lists.newArrayList(); //walletService.subsetPaymentsAndSort(allPayments, PaymentType.RECEIVING);
+    displayRequestedPaymentsMaV = Components.newDisplayPaymentsMaV(getScreen().name() + "_REQUESTED");
+    displayRequestedPaymentsMaV.getModel().setValue(todaysRequestedPayments);
 
-    JScrollPane receivingPaymentsScrollPane = new JScrollPane(displayReceivingPaymentsMaV.getView().newComponentPanel(),
+    JScrollPane requestingPaymentsScrollPane = new JScrollPane(displayRequestedPaymentsMaV.getView().newComponentPanel(),
       JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-    receivingPaymentsScrollPane.getViewport().setBackground(Themes.currentTheme.detailPanelBackground());
-    receivingPaymentsScrollPane.setOpaque(true);
-    receivingPaymentsScrollPane.setBorder(BorderFactory.createEmptyBorder());
+    requestingPaymentsScrollPane.getViewport().setBackground(Themes.currentTheme.detailPanelBackground());
+    requestingPaymentsScrollPane.setOpaque(true);
+    requestingPaymentsScrollPane.setBorder(BorderFactory.createEmptyBorder());
 
-    contentPanel.add(Labels.newBlankLabel(), "width 47%, pushx");
-    contentPanel.add(Labels.newBlankLabel(), "width 6%, pushx");
-    contentPanel.add(Labels.newBlankLabel(), "width 47%, pushx, wrap");
+    contentPanel.add(Labels.newBlankLabel(), "width 47%,pushx");
+    contentPanel.add(Labels.newBlankLabel(), "width 6%,pushx");
+    contentPanel.add(Labels.newBlankLabel(), "width 47%,pushx,wrap");
 
     contentPanel.add(sendBitcoin, MultiBitUI.LARGE_BUTTON_MIG + ",align center");
     contentPanel.add(Panels.newVerticalDashedSeparator(), "growy,spany 2");
-    contentPanel.add(requestBitcoin, MultiBitUI.LARGE_BUTTON_MIG + ",align center, wrap");
+    contentPanel.add(requestBitcoin, MultiBitUI.LARGE_BUTTON_MIG + ",align center,wrap");
 
-    contentPanel.add(sendingPaymentsScrollPane, "grow, push");
-    contentPanel.add(receivingPaymentsScrollPane, "grow, push, wrap");
+    contentPanel.add(sendingPaymentsScrollPane, "grow,push");
+    contentPanel.add(requestingPaymentsScrollPane, "grow,push,wrap");
 
     return contentPanel;
   }
@@ -202,6 +203,9 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
    */
   @Subscribe
   public void onWalletDetailChangedEvent(WalletDetailChangedEvent walletDetailChangedEvent) {
+
+    log.debug("Wallet detail has changed");
+
     update();
   }
 
@@ -227,15 +231,16 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
         List<PaymentData> todaysSendingPayments = walletService.subsetPaymentsAndSort(allPayments, PaymentType.SENDING);
         displaySendingPaymentsMaV.getModel().setValue(todaysSendingPayments);
 
-        // Find the receiving events for today
-        List<PaymentData> todaysReceivingPayments = walletService.subsetPaymentsAndSort(allPayments, PaymentType.RECEIVING);
-        displayReceivingPaymentsMaV.getModel().setValue(todaysReceivingPayments);
-
         displaySendingPaymentsMaV.getView().createView();
         displaySendingPaymentsMaV.getView().updateView();
 
-        displayReceivingPaymentsMaV.getView().createView();
-        displayReceivingPaymentsMaV.getView().updateView();
+        // Find the 'Requested' events for today
+        List<PaymentData> todaysRequestedPayments = walletService.subsetPaymentsAndSort(allPayments, PaymentType.RECEIVING);
+        displayRequestedPaymentsMaV.getModel().setValue(todaysRequestedPayments);
+
+        displayRequestedPaymentsMaV.getView().createView();
+        displayRequestedPaymentsMaV.getView().updateView();
+
         sendBitcoin.requestFocusInWindow();
 
       }

@@ -446,14 +446,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
           if (mavs != null) {
 
             for (ModelAndView mav : mavs) {
-              try {
-                CoreServices.uiEventBus.unregister(mav.getView());
-                log.trace("Deregistered component view '{}' from UI events", panelView.getPanelName());
-                CoreServices.uiEventBus.unregister(mav.getModel());
-                log.trace("Deregistered component model '{}' from UI events", panelView.getPanelName());
-              } catch (IllegalArgumentException e) {
-                log.warn("ModelAndView model/view '{}' was not registered", panelView.getPanelName());
-              }
+                mav.close();
             }
 
             // Remove the references

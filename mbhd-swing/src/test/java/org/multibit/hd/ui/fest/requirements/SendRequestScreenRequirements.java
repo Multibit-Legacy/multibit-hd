@@ -2,7 +2,10 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.ui.fest.use_cases.send_request.*;
+import org.multibit.hd.ui.fest.use_cases.send_request.ShowSendRequestScreenUseCase;
+import org.multibit.hd.ui.fest.use_cases.send_request.request.ShowRequestEnterAmountBitcoinUseCase;
+import org.multibit.hd.ui.fest.use_cases.send_request.request.ShowRequestEnterAmountWithQRBitcoinUseCase;
+import org.multibit.hd.ui.fest.use_cases.send_request.request.ShowRequestThenFinishUseCase;
 import org.multibit.hd.ui.fest.use_cases.send_request.send.*;
 
 import java.util.Map;
@@ -25,8 +28,18 @@ public class SendRequestScreenRequirements {
     // Select the send/request screen
     new ShowSendRequestScreenUseCase(window).execute(parameters);
 
+    // Send
+    //verifySend(window, parameters);
+
+    // Request
+    verifyRequest(window, parameters);
+
+  }
+
+  private static void verifySend(FrameFixture window, Map<String, Object> parameters) {
+
     // Click Send then immediately Cancel
-    new ShowSendThenCancelSendUseCase(window).execute(parameters);
+    new ShowSendThenCancelUseCase(window).execute(parameters);
 
     // Verify the recipient field then Cancel
     new SendVerifyRecipientAndCancelContactUseCase(window).execute(parameters);
@@ -39,6 +52,18 @@ public class SendRequestScreenRequirements {
 
     // Click Next and fill in the confirm panel
     new SendNoFundsConfirmScreenUseCase(window).execute(parameters);
+  }
+
+  private static void verifyRequest(FrameFixture window, Map<String, Object> parameters) {
+
+    // Click Request then immediately Finish
+    new ShowRequestThenFinishUseCase(window).execute(parameters);
+
+    // Click Request and enter an amount with QR code then Finish (checks for position 0)
+    new ShowRequestEnterAmountWithQRBitcoinUseCase(window).execute(parameters);
+
+    // Click Request and enter an amount then Finish (checks for position 0)
+    new ShowRequestEnterAmountBitcoinUseCase(window).execute(parameters);
 
   }
 }

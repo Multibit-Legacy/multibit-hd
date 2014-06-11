@@ -448,11 +448,9 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
   }
 
   /**
-   * TODO (GR) Rename this
-   *
    * @return True if the components are all non-null (early events against uninitialised views need this to filter)
    */
-  public boolean isHasComponents() {
+  public boolean hasComponents() {
     return hasComponents;
   }
 

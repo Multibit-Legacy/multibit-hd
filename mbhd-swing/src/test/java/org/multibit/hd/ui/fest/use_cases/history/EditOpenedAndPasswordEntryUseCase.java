@@ -117,7 +117,7 @@ public class EditOpenedAndPasswordEntryUseCase extends AbstractFestUseCase {
       .requireEnabled();
 
     window
-      .button("popover."+MessageKey.CLOSE.getKey())
+      .button("popover_" + MessageKey.CLOSE.getKey())
       .requireVisible()
       .requireEnabled();
 
