@@ -66,6 +66,11 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
     transactionFeeDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.FEE_AMOUNT, true, "transaction_fee");
     clientFeeDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.FEE_AMOUNT, true, "client_fee");
 
+    // Ensure amounts are visible
+    transactionDisplayAmountMaV.getView().setVisible(true);
+    transactionFeeDisplayAmountMaV.getView().setVisible(true);
+    clientFeeDisplayAmountMaV.getView().setVisible(true);
+
     // Blank labels populated from wizard model later
     recipientSummaryLabel = Labels.newRecipientSummary(getWizardModel().getRecipient());
 
