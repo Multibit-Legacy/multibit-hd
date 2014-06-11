@@ -196,8 +196,13 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
           getFinishButton().setEnabled(newEnabled);
 
           if (newEnabled) {
+
+            // Stop the Bitcoin network to release resources
+            CoreServices.getOrCreateBitcoinNetworkService().stopAndWait();
+
             // We're done
             spinner.setVisible(false);
+
           }
         }
       });

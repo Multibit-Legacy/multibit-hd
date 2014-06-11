@@ -892,9 +892,10 @@ public class BitcoinNetworkService extends AbstractService {
     // Close the blockstore
     if (blockStore != null) {
       try {
+        // The blockstore can throw an NPE internally
         blockStore.close();
-      } catch (BlockStoreException e) {
-        log.error("Blockstore not closed successfully: {}", e.getMessage(), e);
+      } catch (NullPointerException | BlockStoreException e) {
+        log.error("Blockstore not closed cleanly", e);
       }
     }
 

@@ -933,13 +933,15 @@ public class WalletService {
    * When a transaction is seen by the network, ensure there is a transaction info available storing the exchange rate
    */
   @Subscribe
-  public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
+  public void onTransactionSeenEvent(TransactionSeenEvent event) {
 
     // Get/ Create a transactionInfo to match the event
-    TransactionInfo transactionInfo = transactionInfoMap.get(transactionSeenEvent.getTransactionId());
+    TransactionInfo transactionInfo = transactionInfoMap.get(event.getTransactionId());
     if (transactionInfo == null) {
+
+      // Create a new one
       transactionInfo = new TransactionInfo();
-      transactionInfo.setHash(transactionSeenEvent.getTransactionId());
+      transactionInfo.setHash(event.getTransactionId());
 
       // Create the fiat payment
       FiatPayment amountFiat = new FiatPayment();
@@ -947,26 +949,32 @@ public class WalletService {
 
       Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
       if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
+
         amountFiat.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
-        BigDecimal localAmount = Coins.toLocalAmount(transactionSeenEvent.getAmount(), exchangeRateChangedEvent.get().getRate());
+        BigDecimal localAmount = Coins.toLocalAmount(event.getAmount(), exchangeRateChangedEvent.get().getRate());
+
         if (localAmount.compareTo(BigDecimal.ZERO) != 0) {
           amountFiat.setAmount(Optional.of(localAmount));
         } else {
           amountFiat.setAmount(Optional.<BigDecimal>absent());
         }
+
         amountFiat.setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
+
       } else {
+
         amountFiat.setRate(Optional.<String>absent());
         amountFiat.setAmount(Optional.<BigDecimal>absent());
         amountFiat.setCurrency(Optional.<Currency>absent());
+
       }
 
       transactionInfo.setAmountFiat(amountFiat);
 
       log.debug("Created TransactionInfo: " + transactionInfo.toString());
-      transactionInfoMap.put(transactionSeenEvent.getTransactionId(), transactionInfo);
+      transactionInfoMap.put(event.getTransactionId(), transactionInfo);
     } else {
-      log.trace("There was already a TransactionInfo: for " + transactionSeenEvent.getTransactionId() + ", value = " + transactionInfo.toString());
+      log.trace("There was already a TransactionInfo: for " + event.getTransactionId() + ", value = " + transactionInfo.toString());
     }
   }
 

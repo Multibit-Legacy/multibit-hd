@@ -21,15 +21,16 @@ public class TransactionInfo {
   /**
    * On a send, the miner's fee added in satoshi, otherwise Optional.absent()
    */
-  private Optional<Coin> minerFee;
+  private Optional<Coin> minerFee = Optional.absent();
 
   /**
    * On a send, the MultiBit/ client fee added in satoshi, otherwise Optional.absent()
    */
-  private Optional<Coin> clientFee;
+  private Optional<Coin> clientFee = Optional.absent();
 
   /**
    * The transaction hash as a String (commonly referred to as transaction id but don't forget about malleability!)
+   *
    * @return String transactionHash aka transaction id
    */
   public String getHash() {
@@ -40,6 +41,9 @@ public class TransactionInfo {
     this.hash = hash;
   }
 
+  /**
+   * @return The amount in fiat
+   */
   public FiatPayment getAmountFiat() {
     return amountFiat;
   }
@@ -48,6 +52,9 @@ public class TransactionInfo {
     this.amountFiat = amountFiat;
   }
 
+  /**
+   * @return An associated note
+   */
   public String getNote() {
     return note;
   }
@@ -56,6 +63,9 @@ public class TransactionInfo {
     this.note = note;
   }
 
+  /**
+   * @return The miner's fee if present
+   */
   public Optional<Coin> getMinerFee() {
     return minerFee;
   }
@@ -64,6 +74,10 @@ public class TransactionInfo {
     this.minerFee = minerFee;
   }
 
+  /**
+   *
+   * @return The client fee if present
+   */
   public Optional<Coin> getClientFee() {
     return clientFee;
   }
@@ -101,11 +115,11 @@ public class TransactionInfo {
   @Override
   public String toString() {
     return "TransactionInfo{" +
-            "hash='" + hash + '\'' +
-            ", amountFiat=" + amountFiat +
-            ", note='" + note + '\'' +
-            ", minerFee=" + minerFee +
-            ", clientFee=" + clientFee +
-            '}';
+      "hash='" + hash + '\'' +
+      ", amountFiat=" + amountFiat +
+      ", note='" + note + '\'' +
+      ", minerFee=" + minerFee +
+      ", clientFee=" + clientFee +
+      '}';
   }
 }
