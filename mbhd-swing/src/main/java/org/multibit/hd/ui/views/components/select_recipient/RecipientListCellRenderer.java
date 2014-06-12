@@ -3,8 +3,6 @@ package org.multibit.hd.ui.views.components.select_recipient;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.ui.utils.HtmlUtils;
 import org.multibit.hd.ui.views.themes.Themes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,8 +17,6 @@ import java.awt.*;
  *  
  */
 public class RecipientListCellRenderer extends JLabel implements ListCellRenderer<Recipient> {
-
-  private static final Logger log = LoggerFactory.getLogger(RecipientListCellRenderer.class);
 
   private final JTextField textField;
 
