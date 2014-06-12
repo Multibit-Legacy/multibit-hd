@@ -199,7 +199,7 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
       descriptionValue.setText(paymentData.getDescription());
 
       statusValue.setText(Languages.safeText(paymentData.getStatus().getStatusKey(), paymentData.getStatus().getStatusData()));
-      LabelDecorator.applyStatusIconAndColor(paymentData.getStatus(), statusValue, paymentData.isCoinBase(), MultiBitUI.SMALL_ICON_SIZE);
+      LabelDecorator.applyPaymentStatusIconAndColor(paymentData.getStatus(), statusValue, paymentData.isCoinBase(), MultiBitUI.SMALL_ICON_SIZE);
 
       typeValue.setText(Languages.safeText(paymentData.getType().getLocalisationKey()));
 

@@ -210,7 +210,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
       qrCodeLabelValue.setText(paymentRequestData.getLabel());
 
       statusValue.setText(Languages.safeText(paymentRequestData.getStatus().getStatusKey(), paymentRequestData.getStatus().getStatusData()));
-      LabelDecorator.applyStatusIconAndColor(paymentRequestData.getStatus(), statusValue, false, MultiBitUI.SMALL_ICON_SIZE);
+      LabelDecorator.applyPaymentStatusIconAndColor(paymentRequestData.getStatus(), statusValue, false, MultiBitUI.SMALL_ICON_SIZE);
 
       noteValue.setText(paymentRequestData.getNote());
 

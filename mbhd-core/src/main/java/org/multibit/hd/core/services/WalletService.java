@@ -385,65 +385,60 @@ public class WalletService {
   }
 
   /**
-   * Calculate the PaymentStatus of the transaction:
-   * + RED   = tx is dead, double spend, failed to be transmitted to the network
-   * + AMBER = tx is unconfirmed
-   * + GREEN = tx is confirmed
+   * <p>Calculate the PaymentStatus of the transaction:</p>
+   * <ul>
+   * <li>RED: tx is dead, double spend, failed to be transmitted to the network etc</li>
+   * <li>AMBER: tx is unconfirmed</li>
+   * <li>GREEN: tx has one or more confirmations</li>
+   * </ul>
    *
-   * @param confidenceType the bitcoinj confidenceType  to use to work out the status
-   * @param depth          depth in blocks of the transaction
+   * @param confidenceType the Bitcoinj ConfidenceType  to use to work out the status
+   * @param depth          depth in blocks of the transaction (1 is most recent)
    *
    * @return status of the transaction
    */
   public static PaymentStatus calculateStatus(TransactionConfidence.ConfidenceType confidenceType, int depth, int numberOfPeers) {
+
     if (confidenceType != null) {
 
       if (TransactionConfidence.ConfidenceType.BUILDING.equals(confidenceType)) {
-        // Confirmed
-        PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.GREEN);
 
-        paymentStatus.setDepth(depth);
+        // Confirmed
+        final PaymentStatus paymentStatus;
         if (depth == 1) {
-          paymentStatus.setStatusKey(CoreMessageKey.CONFIRMED_BY_ONE_BLOCK);
+          paymentStatus = new PaymentStatus(RAGStatus.GREEN, CoreMessageKey.CONFIRMED_BY_ONE_BLOCK);
         } else {
-          paymentStatus.setStatusKey(CoreMessageKey.CONFIRMED_BY_SEVERAL_BLOCKS);
+          paymentStatus = new PaymentStatus(RAGStatus.GREEN, CoreMessageKey.CONFIRMED_BY_SEVERAL_BLOCKS);
           paymentStatus.setStatusData(new Object[]{depth});
         }
+        paymentStatus.setDepth(depth);
         return paymentStatus;
+
       } else if (TransactionConfidence.ConfidenceType.PENDING.equals(confidenceType)) {
         if (numberOfPeers >= 2) {
           // Seen by the network but not confirmed yet
-          PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.AMBER);
-          paymentStatus.setStatusKey(CoreMessageKey.BROADCAST);
+          PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.AMBER, CoreMessageKey.BROADCAST);
           paymentStatus.setStatusData(new Object[]{numberOfPeers});
           return paymentStatus;
         } else {
           // Not out in the network
-          PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.RED);
-          paymentStatus.setStatusKey(CoreMessageKey.NOT_BROADCAST);
-          return paymentStatus;
+          return new PaymentStatus(RAGStatus.RED, CoreMessageKey.NOT_BROADCAST);
         }
       } else if (TransactionConfidence.ConfidenceType.DEAD.equals(confidenceType)) {
         // Dead
-        PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.RED);
-        paymentStatus.setStatusKey(CoreMessageKey.DEAD);
-        return paymentStatus;
+        return new PaymentStatus(RAGStatus.RED, CoreMessageKey.DEAD);
       } else if (TransactionConfidence.ConfidenceType.UNKNOWN.equals(confidenceType)) {
         // Unknown
-        PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.AMBER);
-        paymentStatus.setStatusKey(CoreMessageKey.UNKNOWN);
-        return paymentStatus;
+        return new PaymentStatus(RAGStatus.AMBER, CoreMessageKey.UNKNOWN);
       }
     } else {
       // No transaction status - don't know
-      PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.AMBER);
-      paymentStatus.setStatusKey(CoreMessageKey.UNKNOWN);
-      return paymentStatus;
+      return new PaymentStatus(RAGStatus.AMBER, CoreMessageKey.UNKNOWN);
     }
+
     // Unknown
-    PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.AMBER);
-    paymentStatus.setStatusKey(CoreMessageKey.UNKNOWN);
-    return paymentStatus;
+    return new PaymentStatus(RAGStatus.AMBER, CoreMessageKey.UNKNOWN);
+
   }
 
   private PaymentType calculatePaymentType(Coin amountBTC, int depth) {

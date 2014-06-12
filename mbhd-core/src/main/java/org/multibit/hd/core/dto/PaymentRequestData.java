@@ -1,6 +1,7 @@
 package org.multibit.hd.core.dto;
 
 import com.google.bitcoin.core.Coin;
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
 
@@ -41,7 +42,7 @@ public class PaymentRequestData implements PaymentData {
   }
 
   /**
-   * @return The amount paid in coins
+   * @return The amount paid so far in coins
    */
   public Coin getPaidAmountCoin() {
     return paidAmountCoin;
@@ -51,6 +52,9 @@ public class PaymentRequestData implements PaymentData {
     this.paidAmountCoin = paidAmountCoin;
   }
 
+  /**
+   * @return The Bitcoin address
+   */
   public String getAddress() {
 
     return address;
@@ -60,6 +64,9 @@ public class PaymentRequestData implements PaymentData {
     this.address = address;
   }
 
+  /**
+   * @return The transaction label (often for a QR code)
+   */
   public String getLabel() {
     return label;
   }
@@ -98,27 +105,31 @@ public class PaymentRequestData implements PaymentData {
 
   @Override
   public String getDescription() {
-    // TODO localise
+
     StringBuilder builder = new StringBuilder();
     boolean appendAddress = true;
     boolean appendSeparator = false;
 
-    builder.append("You requested: ");
-    if (getLabel() != null && getLabel().length() > 0) {
+    if (!Strings.isNullOrEmpty(getLabel())) {
       builder.append(getLabel());
       appendAddress = false;
       appendSeparator = true;
     }
-    if (getNote() != null && getNote().length() > 0) {
+
+    if (!Strings.isNullOrEmpty(getNote())) {
       if (appendSeparator) {
         builder.append(SEPARATOR);
       }
       builder.append(getNote());
       appendAddress = false;
     }
+
     if (appendAddress) {
-      builder.append("To ").append(getAddress());
+      builder
+        .append(": ")
+        .append(getAddress());
     }
+
     return builder.toString();
   }
 
@@ -156,22 +167,26 @@ public class PaymentRequestData implements PaymentData {
 
   @Override
   public PaymentStatus getStatus() {
-    PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.PINK);
-    paymentStatus.setStatusKey(CoreMessageKey.PAYMENT_REQUESTED);
 
-    // Work out if it is requested, partly paid or fully paid
+    final PaymentStatus paymentStatus;
+
+    // Work out if it is requested, part paid or fully paid
     if (paidAmountCoin != null && amountCoin != null) {
       if (paidAmountCoin.compareTo(Coin.ZERO) > 0) {
-        // bitcoin has been paid to this payment request
+        // Bitcoin has been paid to this payment request
         if (paidAmountCoin.compareTo(amountCoin) >= 0) {
-          // fully paid
-          paymentStatus.setStatusKey(CoreMessageKey.PAYMENT_PAID);
+          // Fully paid (or overpaid)
+          return new PaymentStatus(RAGStatus.GREEN, CoreMessageKey.PAYMENT_PAID);
         } else {
-          // partly paid
-          paymentStatus.setStatusKey(CoreMessageKey.PAYMENT_PART_PAID);
+          // Part paid
+          return new PaymentStatus(RAGStatus.PINK, CoreMessageKey.PAYMENT_PART_PAID);
         }
       }
     }
+
+    // Must be payment requested to be here
+    paymentStatus = new PaymentStatus(RAGStatus.PINK, CoreMessageKey.PAYMENT_REQUESTED);
+
     return paymentStatus;
   }
 

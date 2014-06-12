@@ -103,7 +103,7 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
           // Payment icon label and text ("sending", "receiving" etc)
           JLabel paymentDataLabel = Labels.newBlankLabel();
           paymentDataLabel.setText(Languages.safeText(paymentData.getType().getLocalisationKey()));
-          LabelDecorator.applyStatusIcon(paymentData.getStatus(), paymentDataLabel, paymentData.isCoinBase(), MultiBitUI.NORMAL_ICON_SIZE);
+          LabelDecorator.applyPaymentStatusIcon(paymentData.getStatus(), paymentDataLabel, paymentData.isCoinBase(), MultiBitUI.NORMAL_ICON_SIZE);
 
           // Create a unique FEST name to ensure accessibility
           String festName = panelName + "_" + paymentData.getType().name().toLowerCase(Locale.UK) + "_" + count;

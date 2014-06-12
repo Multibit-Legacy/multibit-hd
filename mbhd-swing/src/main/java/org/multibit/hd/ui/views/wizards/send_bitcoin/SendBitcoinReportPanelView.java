@@ -103,11 +103,11 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     transactionConfirmationStatus = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
     AccessibilityDecorator.apply(transactionConfirmationStatus, MessageKey.TRANSACTION_CONFIRMATION_STATUS);
 
-    contentPanel.add(transactionConstructionStatusSummary, "wrap");
-    contentPanel.add(transactionConstructionStatusDetail, "wrap");
-    contentPanel.add(transactionBroadcastStatusSummary, "wrap");
-    contentPanel.add(transactionBroadcastStatusDetail, "wrap");
-    contentPanel.add(transactionConfirmationStatus, "wrap");
+    contentPanel.add(transactionConstructionStatusSummary, "grow,push,wrap");
+    contentPanel.add(transactionConstructionStatusDetail, "grow,push,wrap");
+    contentPanel.add(transactionBroadcastStatusSummary, "grow,push,wrap");
+    contentPanel.add(transactionBroadcastStatusDetail, "grow,push,wrap");
+    contentPanel.add(transactionConfirmationStatus, "grow,push,wrap");
 
     initialised = true;
   }
@@ -233,7 +233,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
           )
         );
 
-        LabelDecorator.applyStatusIconAndColor(paymentStatus, transactionConfirmationStatus, transactionSeenEvent.isCoinbase(), MultiBitUI.NORMAL_ICON_SIZE);
+        LabelDecorator.applyPaymentStatusIconAndColor(paymentStatus, transactionConfirmationStatus, transactionSeenEvent.isCoinbase(), MultiBitUI.NORMAL_ICON_SIZE);
       }
     }
   }

@@ -7,30 +7,41 @@ package org.multibit.hd.core.dto;
 public class PaymentStatus {
 
   /**
-   * The RAGStatus for the payment
+   * The RAG status for the payment
    */
-  private RAGStatus status;
+  private final RAGStatus status;
 
   /**
    * The localisation key for the status text for the payment. This will typically be the localisation key for 'Unconfirmed', "Confirmed by 2 blocks", "Dead" etc
    */
-  private CoreMessageKey statusKey;
+  private final CoreMessageKey statusKey;
 
   /**
    * The localisation data for the status text for the payment
    */
   private Object[] statusData = null;
 
-  public PaymentStatus(RAGStatus status) {
+  /**
+   * @param status    The RAG status for quick assessment
+   * @param statusKey The localisation key for the status text for the payment. This will typically be the localisation key for 'Unconfirmed', "Confirmed by 2 blocks", "Dead" etc
+   */
+  public PaymentStatus(RAGStatus status, CoreMessageKey statusKey) {
     this.status = status;
+    this.statusKey = statusKey;
   }
 
+  /**
+   * @return The RAG status for quick assessment
+   */
   public RAGStatus getStatus() {
     return status;
   }
 
   private int depth = -1; // not set
 
+  /**
+   * @return The depth in the blockchain
+   */
   public int getDepth() {
     return depth;
   }
@@ -39,12 +50,11 @@ public class PaymentStatus {
     this.depth = depth;
   }
 
+  /**
+   * @return The core message key providing the appropriate status message (e.g. "Confirmed by several blocks" etc)
+   */
   public CoreMessageKey getStatusKey() {
     return statusKey;
-  }
-
-  public void setStatusKey(CoreMessageKey statusKey) {
-    this.statusKey = statusKey;
   }
 
   public Object[] getStatusData() {
@@ -59,6 +69,7 @@ public class PaymentStatus {
    * Order as RED < PINK < AMBER < GREEN < EMPTY and then order by the depth within GREEN
    *
    * @param other the PaymentStatus to compare to
+   *
    * @return the relative order (as per Comparable)
    */
   public int compareToWithOrdinal(PaymentStatus other) {

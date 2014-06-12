@@ -30,6 +30,8 @@ import javax.swing.*;
  * <li>Show empty wallet progress report</li>
  * </ul>
  *
+ * <p>Much of this code is lifted straight from SendBitcoinReportPanelView</p>
+ *
  * @since 0.0.1
  *  
  */
@@ -103,11 +105,11 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
     transactionConfirmationStatus = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
     AccessibilityDecorator.apply(transactionConfirmationStatus, MessageKey.TRANSACTION_CONFIRMATION_STATUS);
 
-    contentPanel.add(transactionConstructionStatusSummary, "wrap");
-    contentPanel.add(transactionConstructionStatusDetail, "wrap");
-    contentPanel.add(transactionBroadcastStatusSummary, "wrap");
-    contentPanel.add(transactionBroadcastStatusDetail, "wrap");
-    contentPanel.add(transactionConfirmationStatus, "wrap");
+    contentPanel.add(transactionConstructionStatusSummary, "grow,push,wrap");
+    contentPanel.add(transactionConstructionStatusDetail, "grow,push,wrap");
+    contentPanel.add(transactionBroadcastStatusSummary, "grow,push,wrap");
+    contentPanel.add(transactionBroadcastStatusDetail, "grow,push,wrap");
+    contentPanel.add(transactionConfirmationStatus, "grow,push,wrap");
 
     initialised = true;
   }
@@ -222,7 +224,7 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
           )
         );
 
-        LabelDecorator.applyStatusIconAndColor(paymentStatus, transactionConfirmationStatus, transactionSeenEvent.isCoinbase(), MultiBitUI.NORMAL_ICON_SIZE);
+        LabelDecorator.applyPaymentStatusIconAndColor(paymentStatus, transactionConfirmationStatus, transactionSeenEvent.isCoinbase(), MultiBitUI.NORMAL_ICON_SIZE);
       }
     }
   }
