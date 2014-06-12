@@ -46,7 +46,7 @@ public class ShowRequestEnterAmountWithQRBitcoinUseCase extends AbstractFestUseC
       .requireVisible()
       .requireEnabled()
       .requireEmpty()
-      .setText("100.0");
+      .enterText("100.0");
 
     // Enter a transaction label
     window

@@ -46,7 +46,7 @@ public class ShowRequestEnterAmountBitcoinUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled()
       .requireEmpty()
-      .setText("31.23");
+      .enterText("31.23");
 
     // Enter a transaction label
     window

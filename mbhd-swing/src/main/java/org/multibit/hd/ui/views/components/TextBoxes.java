@@ -389,11 +389,7 @@ public class TextBoxes {
     JPasswordField passwordField = new JPasswordField(MultiBitUI.PASSWORD_LENGTH);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(passwordField, MessageKey.ENTER_PASSWORD);
-
-    // Ensure Accessibility can find it
-    passwordField.getAccessibleContext().setAccessibleName(Languages.safeText(MessageKey.ENTER_PASSWORD));
-    passwordField.getAccessibleContext().setAccessibleDescription(Languages.safeText(MessageKey.ENTER_PASSWORD_TOOLTIP));
+    AccessibilityDecorator.apply(passwordField, MessageKey.ENTER_PASSWORD, MessageKey.ENTER_PASSWORD_TOOLTIP);
 
     // Provide a consistent echo character across all components
     passwordField.setEchoChar(getPasswordEchoChar());
@@ -422,11 +418,7 @@ public class TextBoxes {
     JTextArea textArea = TextBoxes.newEnterPrivateNotes(listener, MultiBitUI.PASSWORD_LENGTH);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textArea, MessageKey.NOTES);
-
-    // Ensure Accessibility can find it
-    textArea.getAccessibleContext().setAccessibleName(Languages.safeText(MessageKey.NOTES));
-    textArea.getAccessibleContext().setAccessibleDescription(Languages.safeText(MessageKey.NOTES_TOOLTIP));
+    AccessibilityDecorator.apply(textArea, MessageKey.NOTES, MessageKey.NOTES_TOOLTIP);
 
     return textArea;
   }
