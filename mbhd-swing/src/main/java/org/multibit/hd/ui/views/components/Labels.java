@@ -1212,19 +1212,6 @@ public class Labels {
   }
 
   /**
-   * @return A new "sign message" note
-   */
-  public static JLabel newSignMessageNote() {
-
-    return newNoteLabel(new MessageKey[]{
-      MessageKey.SIGN_MESSAGE_NOTE_1,
-      MessageKey.SIGN_MESSAGE_NOTE_2,
-      MessageKey.SIGN_MESSAGE_NOTE_3
-    }, new Object[][]{});
-
-  }
-
-  /**
    * @return A new "verify message" note
    */
   public static JLabel newVerifyMessageNote() {
