@@ -95,19 +95,39 @@ public class LightBoxPanel extends JPanel {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on the EDT");
 
-    // Tidy up the layered pane - cannot remove by reference
+    // NOTE: We cannot remove by reference reliably so this approach is used
+    // The light box panels are stacked in visual order therefore the usual index positions are
+    // 0: Wizard content panel
+    // 1: Dark panel
+    // 2: Main content
+    //
+    // If a popover is present it is stacked over the light box leading to
+    // 0: Popover content panel
+    // 1: Popover dark panel
+    // 2: Wizard content panel
+    // 3: Dark panel
+    // 4: Main content
+
     try {
 
-      // The light box panel (dark border) is always here
+      // Remove the dark panel
       Panels.applicationFrame.getLayeredPane().remove(1);
 
-      // The content panel (components) is always here after the removal
+    } catch (ArrayIndexOutOfBoundsException e) {
+      log.warn("Light box failed to remove at position [0]");
+      // Ignore so that we can remove the content at position 0
+    }
+
+    try {
+
+      // Remove the content panel (components will have shuffled)
       Panels.applicationFrame.getLayeredPane().remove(0);
 
+      // Log on success
       log.debug("Light box panel removed from application frame");
 
     } catch (ArrayIndexOutOfBoundsException e) {
-      // Ignore
+      log.warn("Light box failed to remove at position [0]. Indicates a changed stacking order.");
     }
 
     // Repaint
