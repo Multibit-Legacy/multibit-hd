@@ -96,11 +96,7 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
     scrollPane.getViewport().setBackground(Themes.currentTheme.readOnlyBackground());
     scrollPane.setViewportBorder(new TextBubbleBorder(Themes.currentTheme.readOnlyBorder()));
 
-    JLabel sizeLabel = Labels.newSize();
-    sizeValue = Labels.newValueLabel("");
-
-    JButton blockchainInfoBrowserButton = Buttons.newLaunchBrowserButton(getBlockchainInfoBrowserAction());
-    blockchainInfoBrowserButton.setText(Languages.safeText(MessageKey.VIEW_IN_BLOCKCHAIN_INFO));
+    JButton blockchainInfoBrowserButton = Buttons.newLaunchBrowserButton(getBlockchainInfoBrowserAction(), MessageKey.VIEW_IN_BLOCKCHAIN_INFO);
 
     contentPanel.add(transactionHashLabel, "wrap");
     contentPanel.add(transactionHashValue, "shrink," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");

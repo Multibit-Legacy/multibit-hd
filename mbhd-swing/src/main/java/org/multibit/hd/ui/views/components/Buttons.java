@@ -667,7 +667,7 @@ public class Buttons {
     // Ensure it is accessible
     AccessibilityDecorator.apply(button, MessageKey.BROWSE);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.EXTERNAL_LINK, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.EXTERNAL_LINK, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
   }
