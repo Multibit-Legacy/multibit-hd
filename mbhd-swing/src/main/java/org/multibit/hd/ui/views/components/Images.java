@@ -121,46 +121,64 @@ public class Images {
    */
   public static ImageIcon newConfirmationIcon(int confirmationCount, boolean isCoinbase, int iconSize) {
 
-    if ((!isCoinbase && confirmationCount >= 6) || (isCoinbase && confirmationCount >= 120)) {
+    // The arc angle is the extent in degrees (e.g. 90 is a quarter of a circle)
+    final int arcAngle;
+    if (isCoinbase) {
+      arcAngle = confirmationCount * 3 >= 360 ? 360 : confirmationCount * 3;
+    } else {
+      arcAngle = confirmationCount * 60 >= 360 ? 360 : confirmationCount * 60;
+    }
+
+    // Check for non-circular icon
+    if (arcAngle >= 360) {
+      return ImageDecorator.toImageIcon(AwesomeDecorator.createIcon(
+        AwesomeIcon.CHECK,
+        Themes.currentTheme.statusGreen(),
+        iconSize));
+    }
+    if (arcAngle < 0) {
+      // Depth of -1 indicates a payment request has been paid
+      // Note that he underlying transaction(s) may not have confirmed
+      // but these are shown separately
       return ImageDecorator.toImageIcon(AwesomeDecorator.createIcon(
         AwesomeIcon.CHECK,
         Themes.currentTheme.statusGreen(),
         iconSize));
     }
 
-    BufferedImage background = new BufferedImage(MultiBitUI.NORMAL_ICON_SIZE, MultiBitUI.NORMAL_ICON_SIZE, BufferedImage.TYPE_INT_ARGB);
+    // Have an icon size 20% bigger for the pie pieces for better visual effect
+    iconSize = (int) (iconSize * 1.2);
+
+    BufferedImage background = new BufferedImage(iconSize, iconSize, BufferedImage.TYPE_INT_ARGB);
 
     Graphics2D g2 = background.createGraphics();
 
     g2.setRenderingHints(ImageDecorator.smoothRenderingHints());
 
-    final int angle;
-    if (isCoinbase) {
-      angle = confirmationCount * 3 >= 360 ? 360 : confirmationCount * 3;
-    } else {
-      angle = confirmationCount * 60 >= 360 ? 360 : confirmationCount * 60;
+    // Ensure we start from "12 o'clock"
+    int startAngle = 90;
 
-    }
-
-    // Have an icon size 20% bigger for the pie pieces
-    iconSize = (int) (iconSize * 1.2);
+    // Create a segment with a small inset
     g2.setColor(Themes.currentTheme.statusGreen());
-    g2.fillArc(1, 1, iconSize - 2, iconSize - 2, 90, -angle);
+    g2.fillArc(1, 1, iconSize - 2, iconSize - 2, startAngle, -arcAngle);
 
+    // Add a border to the arc with the same inset
     g2.setColor(Themes.currentTheme.statusGreen().darker());
-    g2.drawArc(1, 1, iconSize - 2, iconSize - 2, 90, -angle);
-    if (angle != 360) {
-      int center = (int) (iconSize * 0.5);
-      int diameter = center - 1;
-      // vertical stroke
-      g2.drawLine(center, center, center, 1);
+    g2.drawArc(1, 1, iconSize - 2, iconSize - 2, startAngle, -arcAngle);
 
-      // angled stroke
-      int xFinish = (int) (center + diameter * Math.cos(Math.toRadians(90 - angle)));
-      int yFinish = (int) (center - diameter * Math.sin(Math.toRadians(90 - angle)));
+    // Draw the interior border (allowing a single line for 0 confirmations)
 
-      g2.drawLine(center, center, xFinish, yFinish);
-    }
+    int center = (int) (iconSize * 0.5);
+    int diameter = center - 1;
+
+    // Draw vertical interior border
+    g2.drawLine(center, center, center, 1);
+
+    // Draw angled interior border
+    int xFinish = (int) (center + diameter * Math.cos(Math.toRadians(90 - arcAngle)));
+    int yFinish = (int) (center - diameter * Math.sin(Math.toRadians(90 - arcAngle)));
+
+    g2.drawLine(center, center, xFinish, yFinish);
 
     g2.dispose();
 

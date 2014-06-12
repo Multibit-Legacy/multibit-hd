@@ -60,7 +60,7 @@ public class LabelDecorator {
    *
    * @param label                The label to apply the symbol to
    * @param bitcoinConfiguration The Bitcoin configuration to use
-   * @param leadingText           The text leading the Bitcoin symbol (e.g. "Amount" or "" )</p>
+   * @param leadingText          The text leading the Bitcoin symbol (e.g. "Amount" or "" )</p>
    */
   public static void applyBitcoinSymbolLabel(JLabel label, BitcoinConfiguration bitcoinConfiguration, String leadingText) {
 
@@ -101,17 +101,16 @@ public class LabelDecorator {
   }
 
   /**
-   * Apply the status icon and color to a label
+   * Apply the payment status icon and color to a label
    *
    * @param paymentStatus The payment status to derive the status icon and color from
-   * @param label       The label to apply the icon and color to
-   * @param isCoinbase  True if the transaction is a coinbase
-   * @param iconSize    THe size of the icon to use, typically MultiBitUI.SMALL_ICON_SIZE
-   *
+   * @param label         The label to apply the icon and color to
+   * @param isCoinbase    True if the transaction is a coinbase
+   * @param iconSize      THe size of the icon to use, typically MultiBitUI.SMALL_ICON_SIZE
    */
-  public static void applyStatusIconAndColor(PaymentStatus paymentStatus, JLabel label, boolean isCoinbase, int iconSize) {
+  public static void applyPaymentStatusIconAndColor(PaymentStatus paymentStatus, JLabel label, boolean isCoinbase, int iconSize) {
 
-    applyStatusIcon(paymentStatus, label, isCoinbase, iconSize);
+    applyPaymentStatusIcon(paymentStatus, label, isCoinbase, iconSize);
 
     switch (paymentStatus.getStatus()) {
       case RED:
@@ -134,34 +133,33 @@ public class LabelDecorator {
   }
 
   /**
-    * Apply the status icon to a label
-    *
-    * @param paymentStatus The payment status to derive the status icon and color from
-    * @param label       The label to apply the icon and color to
-    * @param isCoinbase  True if the transaction is a coinbase
-    * @param iconSize    THe size of the icon to use, typically MultiBitUI.SMALL_ICON_SIZE
-    *
-    */
-   public static void applyStatusIcon(PaymentStatus paymentStatus, JLabel label, boolean isCoinbase, int iconSize) {
+   * Apply the payment status icon to a label
+   *
+   * @param paymentStatus The payment status to derive the status icon and color from
+   * @param label         The label to apply the icon and color to
+   * @param isCoinbase    True if the transaction is a coinbase
+   * @param iconSize      THe size of the icon to use, typically MultiBitUI.SMALL_ICON_SIZE
+   */
+  public static void applyPaymentStatusIcon(PaymentStatus paymentStatus, JLabel label, boolean isCoinbase, int iconSize) {
 
-     switch (paymentStatus.getStatus()) {
-       case RED:
-         AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, label, true, iconSize);
-         break;
-       case AMBER:
-         AwesomeDecorator.bindIcon(AwesomeIcon.EXCHANGE, label, true, iconSize);
-         break;
-       case GREEN:
-         int depth = paymentStatus.getDepth();
-         label.setIcon(Images.newConfirmationIcon(depth, isCoinbase, iconSize));
-         break;
-       case PINK:
-         AwesomeDecorator.bindIcon(AwesomeIcon.FILE_TEXT, label, true, iconSize);
-         break;
-       default:
-         // Unknown status
-         throw new IllegalStateException("Unknown status " + paymentStatus.getStatus());
-     }
+    switch (paymentStatus.getStatus()) {
+      case RED:
+        AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, label, true, iconSize);
+        break;
+      case AMBER:
+        AwesomeDecorator.bindIcon(AwesomeIcon.EXCHANGE, label, true, iconSize);
+        break;
+      case GREEN:
+        int depth = paymentStatus.getDepth();
+        label.setIcon(Images.newConfirmationIcon(depth, isCoinbase, iconSize));
+        break;
+      case PINK:
+        AwesomeDecorator.bindIcon(AwesomeIcon.FILE_TEXT, label, true, iconSize);
+        break;
+      default:
+        // Unknown status
+        throw new IllegalStateException("Unknown status " + paymentStatus.getStatus());
+    }
 
-   }
+  }
 }
