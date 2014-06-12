@@ -74,6 +74,9 @@ public class EnterTagsView extends AbstractComponentView<EnterTagsModel> {
     listScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
     listScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
+    // Ensure we maintain the overall theme
+    ScrollBarUIDecorator.apply(listScrollPane);
+
     addTagButton = Buttons.newAddButton(null);
     addTagButton.setName(getModel().get().getPanelName() + "." + MessageKey.ADD.getKey());
 

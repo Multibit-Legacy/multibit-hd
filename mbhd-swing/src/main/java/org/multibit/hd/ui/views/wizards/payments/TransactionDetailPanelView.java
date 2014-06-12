@@ -8,10 +8,7 @@ import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.Buttons;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.components.TextBoxes;
+import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.borders.TextBubbleBorder;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -96,6 +93,9 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
     scrollPane.getViewport().setBackground(Themes.currentTheme.readOnlyBackground());
     scrollPane.setViewportBorder(new TextBubbleBorder(Themes.currentTheme.readOnlyBorder()));
 
+    // Ensure we maintain the overall theme
+    ScrollBarUIDecorator.apply(scrollPane);
+
     JButton blockchainInfoBrowserButton = Buttons.newLaunchBrowserButton(getBlockchainInfoBrowserAction(), MessageKey.VIEW_IN_BLOCKCHAIN_INFO);
 
     contentPanel.add(transactionHashLabel, "wrap");
@@ -132,7 +132,8 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
 
           // Append the size information
           int size = transactionData.getSize();
-          String rawTransactionValue = transactionData.getRawTransaction()
+          String rawTransactionValue = "TxID: "
+            + transactionData.getRawTransaction()
             + "\n\n"
             + Languages.safeText(MessageKey.SIZE)
             + ": "

@@ -129,6 +129,20 @@ public class ComboBoxes {
     // Increase border insets to create better visual clarity
     comboBox.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 0));
 
+    // Push out the standard scrollbar beyond the default
+    comboBox.setMaximumRowCount(10);
+
+    // Adjust the scrollbar UI
+    Object comp = comboBox.getUI().getAccessibleChild(comboBox, 0);
+    if (comp instanceof JPopupMenu) {
+
+      JPopupMenu popupMenu = (JPopupMenu) comp;
+      JScrollPane scrollPane = (JScrollPane) popupMenu.getComponent(0);
+
+      // Ensure we maintain the overall theme
+      ScrollBarUIDecorator.apply(scrollPane);
+    }
+
     return comboBox;
 
   }

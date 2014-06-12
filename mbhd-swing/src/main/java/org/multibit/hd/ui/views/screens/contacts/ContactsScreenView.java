@@ -106,6 +106,9 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
     JScrollPane scrollPane = new JScrollPane(contactsTable);
     scrollPane.setViewportBorder(null);
 
+    // Ensure we maintain the overall theme
+    ScrollBarUIDecorator.apply(scrollPane);
+
     // Add to the panel
     contentPanel.add(enterSearchMaV.getView().newComponentPanel(), "span 6,growx,push,wrap");
     contentPanel.add(checkSelectorComboBox, "shrink");

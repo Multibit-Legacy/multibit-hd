@@ -9,10 +9,7 @@ import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.Models;
-import org.multibit.hd.ui.views.components.AccessibilityDecorator;
-import org.multibit.hd.ui.views.components.Buttons;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -104,6 +101,9 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
     AccessibilityDecorator.apply(scrollPane, MessageKey.HELP);
 
     scrollPane.setViewportBorder(null);
+
+    // Ensure we maintain the overall theme
+    ScrollBarUIDecorator.apply(scrollPane);
 
     // Add to the panel
     contentPanel.add(backButton, "shrink");

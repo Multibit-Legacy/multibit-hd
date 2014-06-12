@@ -120,12 +120,16 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
     List<PaymentData> todaysSendingPayments = Lists.newArrayList(); // walletService.subsetPaymentsAndSort(allPayments, PaymentType.SENDING);
     displaySendingPaymentsMaV = Components.newDisplayPaymentsMaV(getScreen().name() + "_SENDING");
     displaySendingPaymentsMaV.getModel().setValue(todaysSendingPayments);
+
     JScrollPane sendingPaymentsScrollPane = new JScrollPane(displaySendingPaymentsMaV.getView().newComponentPanel(),
       JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     sendingPaymentsScrollPane.setBackground(Themes.currentTheme.detailPanelBackground());
     sendingPaymentsScrollPane.getViewport().setBackground(Themes.currentTheme.detailPanelBackground());
     sendingPaymentsScrollPane.setOpaque(true);
     sendingPaymentsScrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+    // Ensure we maintain the overall theme
+    ScrollBarUIDecorator.apply(sendingPaymentsScrollPane);
 
     // Initialise panel with a blank list of today's requested payments
     List<PaymentData> todaysRequestedPayments = Lists.newArrayList(); //walletService.subsetPaymentsAndSort(allPayments, PaymentType.RECEIVING);
@@ -137,6 +141,9 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
     requestingPaymentsScrollPane.getViewport().setBackground(Themes.currentTheme.detailPanelBackground());
     requestingPaymentsScrollPane.setOpaque(true);
     requestingPaymentsScrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+    // Ensure we maintain the overall theme
+    ScrollBarUIDecorator.apply(requestingPaymentsScrollPane);
 
     contentPanel.add(Labels.newBlankLabel(), "width 47%,pushx");
     contentPanel.add(Labels.newBlankLabel(), "width 6%,pushx");
