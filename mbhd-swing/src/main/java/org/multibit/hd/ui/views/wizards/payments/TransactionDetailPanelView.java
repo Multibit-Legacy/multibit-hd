@@ -76,6 +76,7 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
 
     JLabel transactionHashLabel = Labels.newTransactionHash();
     transactionHashValue = Labels.newValueLabel("");
+    transactionHashValue.setFont(transactionHashValue.getFont().deriveFont(Font.BOLD));
 
     // The raw transaction is a wall of text so needs scroll bars in many cases
     JLabel rawTransactionLabel = Labels.newRawTransaction();
@@ -101,11 +102,8 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
     JButton blockchainInfoBrowserButton = Buttons.newLaunchBrowserButton(getBlockchainInfoBrowserAction());
     blockchainInfoBrowserButton.setText(Languages.safeText(MessageKey.VIEW_IN_BLOCKCHAIN_INFO));
 
-    contentPanel.add(transactionHashLabel);
-    contentPanel.add(transactionHashValue, "shrink,wrap");
-
-    contentPanel.add(sizeLabel);
-    contentPanel.add(sizeValue, "shrink,wrap");
+    contentPanel.add(transactionHashLabel, "wrap");
+    contentPanel.add(transactionHashValue, "shrink," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
     // Consider adding more providers here (buttons break up the information overload)
     contentPanel.add(blockchainInfoBrowserButton, "shrink,alignx left,span 2,wrap");
@@ -136,12 +134,18 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
 
           transactionHashValue.setText(transactionData.getTransactionId());
 
-          // Ensure the raw transaction starts at the beginning
-          rawTransactionTextArea.setText(transactionData.getRawTransaction());
-          rawTransactionTextArea.setCaretPosition(0);
-
+          // Append the size information
           int size = transactionData.getSize();
-          sizeValue.setText(Languages.safeText(MessageKey.SIZE_VALUE, size));
+          String rawTransactionValue = transactionData.getRawTransaction()
+            + "\n\n"
+            + Languages.safeText(MessageKey.SIZE)
+            + ": "
+            + Languages.safeText(MessageKey.SIZE_VALUE,size);
+
+          rawTransactionTextArea.setText(rawTransactionValue);
+
+          // Ensure the raw transaction starts at the beginning
+          rawTransactionTextArea.setCaretPosition(0);
 
         }
 
