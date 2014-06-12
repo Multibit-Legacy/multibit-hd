@@ -49,7 +49,7 @@ import java.util.List;
  * @since 0.0.1
  *  
  */
-public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<PaymentsWizardModel, ShowTransactionOverviewPanelModel> {
+public class TransactionOverviewPanelView extends AbstractWizardPanelView<PaymentsWizardModel, TransactionOverviewPanelModel> {
 
   private JLabel dateValue;
   private JLabel statusValue;
@@ -72,7 +72,7 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
   /**
    * @param wizard The wizard managing the states
    */
-  public ShowTransactionOverviewPanelView(AbstractWizard<PaymentsWizardModel> wizard, String panelName) {
+  public TransactionOverviewPanelView(AbstractWizard<PaymentsWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, MessageKey.TRANSACTION_OVERVIEW, AwesomeIcon.FILE_TEXT_O);
 
@@ -82,7 +82,7 @@ public class ShowTransactionOverviewPanelView extends AbstractWizardPanelView<Pa
   public void newPanelModel() {
 
     // Configure the panel model
-    ShowTransactionOverviewPanelModel panelModel = new ShowTransactionOverviewPanelModel(
+    TransactionOverviewPanelModel panelModel = new TransactionOverviewPanelModel(
       getPanelName()
     );
     setPanelModel(panelModel);

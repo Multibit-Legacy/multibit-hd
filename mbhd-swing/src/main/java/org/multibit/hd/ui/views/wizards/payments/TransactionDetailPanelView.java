@@ -34,7 +34,7 @@ import java.net.URI;
  * @since 0.0.1
  *  
  */
-public class ShowTransactionDetailPanelView extends AbstractWizardPanelView<PaymentsWizardModel, ShowTransactionDetailPanelModel> {
+public class TransactionDetailPanelView extends AbstractWizardPanelView<PaymentsWizardModel, TransactionDetailPanelModel> {
 
   private static final String BLOCKCHAIN_INFO_PREFIX = "https://blockchain.info/tx-index/";
 
@@ -47,7 +47,7 @@ public class ShowTransactionDetailPanelView extends AbstractWizardPanelView<Paym
   /**
    * @param wizard The wizard managing the states
    */
-  public ShowTransactionDetailPanelView(AbstractWizard<PaymentsWizardModel> wizard, String panelName) {
+  public TransactionDetailPanelView(AbstractWizard<PaymentsWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, MessageKey.TRANSACTION_DETAIL, AwesomeIcon.FILE_TEXT_O);
 
@@ -57,7 +57,7 @@ public class ShowTransactionDetailPanelView extends AbstractWizardPanelView<Paym
   public void newPanelModel() {
 
     // Configure the panel model
-    ShowTransactionDetailPanelModel panelModel = new ShowTransactionDetailPanelModel(
+    TransactionDetailPanelModel panelModel = new TransactionDetailPanelModel(
       getPanelName()
     );
     setPanelModel(panelModel);

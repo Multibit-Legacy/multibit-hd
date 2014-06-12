@@ -29,10 +29,10 @@ public class PaymentsWizard extends AbstractWizard<PaymentsWizardModel> {
   protected void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap) {
     wizardViewMap.put(
       PaymentsState.TRANSACTION_OVERVIEW.name(),
-      new ShowTransactionOverviewPanelView(this, PaymentsState.TRANSACTION_OVERVIEW.name()));
+      new TransactionOverviewPanelView(this, PaymentsState.TRANSACTION_OVERVIEW.name()));
     wizardViewMap.put(
       PaymentsState.TRANSACTION_DETAIL.name(),
-      new ShowTransactionDetailPanelView(this, PaymentsState.TRANSACTION_DETAIL.name()));
+      new TransactionDetailPanelView(this, PaymentsState.TRANSACTION_DETAIL.name()));
     wizardViewMap.put(
       PaymentsState.CHOOSE_PAYMENT_REQUEST.name(),
       new ChoosePaymentRequestPanelView(this, PaymentsState.CHOOSE_PAYMENT_REQUEST.name()));
