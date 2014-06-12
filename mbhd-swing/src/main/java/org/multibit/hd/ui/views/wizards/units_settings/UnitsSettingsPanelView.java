@@ -91,6 +91,7 @@ public class UnitsSettingsPanelView extends AbstractWizardPanelView<UnitsWizardM
     displayAmountMaV.getModel().setLocalAmount(new BigDecimal("1234567.89"));
     displayAmountMaV.getModel().setRateProvider(Optional.of(Languages.safeText(MessageKey.EXAMPLE)));
     displayAmountMaV.getModel().setLocalAmountVisible(true);
+    displayAmountMaV.getView().setVisible(true);
 
     JComboBox<String> decimalComboBox = ComboBoxes.newDecimalComboBox(this, bitcoinConfiguration);
     JComboBox<String> groupingComboBox = ComboBoxes.newGroupingComboBox(this, bitcoinConfiguration);
