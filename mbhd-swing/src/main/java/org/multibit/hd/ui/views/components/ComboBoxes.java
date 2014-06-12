@@ -132,15 +132,20 @@ public class ComboBoxes {
     // Push out the standard scrollbar beyond the default
     comboBox.setMaximumRowCount(10);
 
-    // Adjust the scrollbar UI
-    Object comp = comboBox.getUI().getAccessibleChild(comboBox, 0);
-    if (comp instanceof JPopupMenu) {
+    // Adjust the scrollbar UI for the popup menu
+    Object popupComponent = comboBox.getUI().getAccessibleChild(comboBox, 0);
+    if (popupComponent instanceof JPopupMenu) {
 
-      JPopupMenu popupMenu = (JPopupMenu) comp;
-      JScrollPane scrollPane = (JScrollPane) popupMenu.getComponent(0);
+      JPopupMenu popupMenu = (JPopupMenu) popupComponent;
+      for (Component component : popupMenu.getComponents()) {
+        if ((component instanceof JScrollPane)) {
+          JScrollPane scrollPane = (JScrollPane) component;
 
-      // Ensure we maintain the overall theme
-      ScrollBarUIDecorator.apply(scrollPane);
+          // Ensure we maintain the overall theme
+          ScrollBarUIDecorator.apply(scrollPane);
+
+        }
+      }
     }
 
     return comboBox;
