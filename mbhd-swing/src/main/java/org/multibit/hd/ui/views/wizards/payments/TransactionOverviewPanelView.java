@@ -194,7 +194,8 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
     PaymentData paymentData = getWizardModel().getPaymentData();
     if (paymentData != null) {
       DateTime date = paymentData.getDate();
-      dateValue.setText(LocalisedDateUtils.formatFriendlyDate(date));
+      // Display in the system timezone
+      dateValue.setText(LocalisedDateUtils.formatFriendlyDateLocal(date));
 
       descriptionValue.setText(paymentData.getDescription());
 

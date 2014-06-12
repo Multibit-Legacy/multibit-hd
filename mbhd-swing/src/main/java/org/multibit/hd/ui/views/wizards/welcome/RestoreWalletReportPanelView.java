@@ -334,13 +334,15 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
       // Provide some default text
       String name = Languages.safeText(MessageKey.WALLET);
+
+      // Display in the system timezone
       String notes = Languages.safeText(
         MessageKey.WALLET_DEFAULT_NOTES,
-        Dates.formatDeliveryDate(Dates.nowUtc(), Configurations.currentConfiguration.getLocale())
+        Dates.formatDeliveryDateLocal(Dates.nowUtc(), Configurations.currentConfiguration.getLocale())
       );
 
       // TODO necessary to backup any existing wallet with the same seed before creation/ overwrite ?
-      WalletManager.INSTANCE.createWalletSummary(seed, (long) (replayDate.getMillis() * 0.001), password, name, notes);
+      WalletManager.INSTANCE.createWalletSummary(seed, Dates.thenInSeconds(replayDate), password, name, notes);
 
       // TODO Do we require an immediate backup ?
 

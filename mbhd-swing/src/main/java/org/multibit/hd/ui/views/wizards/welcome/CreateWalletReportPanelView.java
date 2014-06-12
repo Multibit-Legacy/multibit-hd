@@ -197,9 +197,11 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       Uninterruptibles.sleepUninterruptibly(250, TimeUnit.MILLISECONDS);
 
       String name = Languages.safeText(MessageKey.WALLET);
+
+      // Display in the system timezone
       String notes = Languages.safeText(
         MessageKey.WALLET_DEFAULT_NOTES,
-        Dates.formatDeliveryDate(Dates.nowUtc(), Configurations.currentConfiguration.getLocale())
+        Dates.formatDeliveryDateLocal(Dates.nowUtc(), Configurations.currentConfiguration.getLocale())
       );
       walletSummary = walletManager.createWalletSummary(seed, Dates.nowInSeconds(), password, name, notes);
 

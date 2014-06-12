@@ -98,7 +98,8 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
 
           // Time label
           JLabel timeLabel = Labels.newBlankLabel();
-          timeLabel.setText(Dates.formatShortTime(paymentData.getDate()));
+          // Display in the system timezone
+          timeLabel.setText(Dates.formatShortTimeLocal(paymentData.getDate()));
 
           // Payment icon label and text ("sending", "receiving" etc)
           JLabel paymentDataLabel = Labels.newBlankLabel();

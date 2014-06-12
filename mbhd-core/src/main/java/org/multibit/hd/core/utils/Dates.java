@@ -34,9 +34,9 @@ public class Dates {
    * Produces "Sat, 01 Jan 2000 23:59:59 GMT"
    */
   private static final DateTimeFormatter utcHttpDateFormatter = DateTimeFormat
-          .forPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'")
-          .withLocale(Locale.US) // For common language
-          .withZone(DateTimeZone.UTC); // For GMT
+    .forPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'")
+    .withLocale(Locale.US) // For common language
+    .withZone(DateTimeZone.UTC); // For GMT
 
   /**
    * Produces "01 Jan 2000" for simplified unambiguous user date as defined in RFC1123 (SMTP)
@@ -59,9 +59,9 @@ public class Dates {
   private static final DateTimeFormatter utcIso8601 = ISODateTimeFormat.dateTimeNoMillis().withZoneUTC();
 
   /**
-    * Produces "2000-04-01" for simplified short user date
-    */
-   private static final DateTimeFormatter utcShortDateWithHyphensFormatter = DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
+   * Produces "2000-04-01" for simplified short user date
+   */
+  private static final DateTimeFormatter utcShortDateWithHyphensFormatter = DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
 
   /**
    * Produces "23:59" for simplified short user time
@@ -81,6 +81,13 @@ public class Dates {
   }
 
   /**
+   * @return The current midnight in the system timezone
+   */
+  public static DateTime midnightLocal() {
+    return nowUtc().withZone(DateTimeZone.getDefault()).toDateMidnight().toDateTime();
+  }
+
+  /**
    * @return The current instant in UTC
    */
   public static DateTime nowUtc() {
@@ -94,21 +101,43 @@ public class Dates {
    * @param hour   The hour of the day (e.g. 0 through to 23)
    * @param minute The minute of the day (e.g. 0 through to 59)
    * @param second The second of the day (e.g. 0 through to 59)
+   *
    * @return The given instant with a UTC timezone
    */
   public static DateTime thenUtc(
-          int year,
-          int month,
-          int day,
-          int hour,
-          int minute,
-          int second) {
+    int year,
+    int month,
+    int day,
+    int hour,
+    int minute,
+    int second) {
     return new DateTime(year, month, day, hour, minute, second, 0).withZone(DateTimeZone.UTC);
   }
 
   /**
+   * Get the current date since epoch in seconds
+   *
+   * @return the current date in seconds
+   */
+  public static long nowInSeconds() {
+    return (long) (DateTime.now().getMillis() * 0.001);
+  }
+
+  /**
+   * Get the number of seconds since epoch for the given instant
+   *
+   * @param then The instant
+   *
+   * @return the number of seconds since the epoch
+   */
+  public static long thenInSeconds(ReadableInstant then) {
+    return (long) (then.getMillis() * 0.001);
+  }
+
+  /**
    * @param when The instant
-   * @return The instant formatted as "HH:mm"
+   *
+   * @return The instant formatted as "HH:mm" in UTC
    */
   public static String formatShortTime(ReadableInstant when) {
     if (when == null) {
@@ -119,7 +148,20 @@ public class Dates {
 
   /**
    * @param when The instant
-   * @return The instant formatted as "yyyyMMdd"
+   *
+   * @return The instant formatted as "HH:mm" in the system timezone
+   */
+  public static String formatShortTimeLocal(ReadableInstant when) {
+    if (when == null) {
+      return "";
+    }
+    return utcShortTimeFormatter.withZone(DateTimeZone.getDefault()).print(when);
+  }
+
+  /**
+   * @param when The instant
+   *
+   * @return The instant formatted as "yyyyMMdd" in UTC
    */
   public static String formatCompactDate(ReadableInstant when) {
     if (when == null) {
@@ -129,9 +171,22 @@ public class Dates {
   }
 
   /**
+   * @param when The instant
+   *
+   * @return The instant formatted as "yyyyMMdd" in the system timezone
+   */
+  public static String formatCompactDateLocal(ReadableInstant when) {
+    if (when == null) {
+      return "";
+    }
+    return ISODateTimeFormat.basicDate().withZone(DateTimeZone.getDefault()).print(when);
+  }
+
+  /**
    * @param when   The instant
    * @param locale The required locale
-   * @return The instant formatted as "yyyyMMdd"
+   *
+   * @return The instant formatted as "yyyyMMdd" in UTC
    */
   public static String formatCompactDate(ReadableInstant when, Locale locale) {
     if (when == null) {
@@ -141,8 +196,22 @@ public class Dates {
   }
 
   /**
+   * @param when   The instant
+   * @param locale The required locale
+   *
+   * @return The instant formatted as "yyyyMMdd" in the system timezone
+   */
+  public static String formatCompactDateLocal(ReadableInstant when, Locale locale) {
+    if (when == null) {
+      return "";
+    }
+    return ISODateTimeFormat.basicDate().withZone(DateTimeZone.getDefault()).withLocale(locale).print(when);
+  }
+
+  /**
    * @param when The instant
-   * @return The instant formatted as "yyyyMMddHHmmss"
+   *
+   * @return The instant formatted as "yyyyMMddHHmmss" in UTC
    */
   public static String formatBackupDate(ReadableInstant when) {
     if (when == null) {
@@ -153,7 +222,8 @@ public class Dates {
 
   /**
    * @param when The instant
-   * @return The instant formatted as "yyyy-MM-dd"
+   *
+   * @return The instant formatted as "yyyy-MM-dd" in UTC
    */
   public static String formatCompactDateWithHyphens(ReadableInstant when) {
     if (when == null) {
@@ -164,7 +234,20 @@ public class Dates {
 
   /**
    * @param when The instant
-   * @return The instant formatted as "ddd, MMM dd" (Saturday, January 01)
+   *
+   * @return The instant formatted as "yyyy-MM-dd" in the system timezone
+   */
+  public static String formatCompactDateWithHyphensLocal(ReadableInstant when) {
+    if (when == null) {
+      return "";
+    }
+    return utcShortDateWithHyphensFormatter.withZone(DateTimeZone.getDefault()).print(when);
+  }
+
+  /**
+   * @param when The instant
+   *
+   * @return The instant formatted as "ddd, MMM dd" (Saturday, January 01) in UTC
    */
   public static String formatDeliveryDate(ReadableInstant when) {
     if (when == null) {
@@ -174,9 +257,22 @@ public class Dates {
   }
 
   /**
+   * @param when The instant
+   *
+   * @return The instant formatted as "ddd, MMM dd" (Saturday, January 01) in the system timezone
+   */
+  public static String formatDeliveryDateLocal(ReadableInstant when) {
+    if (when == null) {
+      return "";
+    }
+    return utcDeliveryDateFormatter.withZone(DateTimeZone.getDefault()).print(when);
+  }
+
+  /**
    * @param when   The instant
    * @param locale The required locale
-   * @return The instant formatted as "ddd, MMM dd" (Saturday, January 01)
+   *
+   * @return The instant formatted as "ddd, MMM dd" (Saturday, January 01) in UTC
    */
   public static String formatDeliveryDate(ReadableInstant when, Locale locale) {
     if (when == null) {
@@ -186,8 +282,22 @@ public class Dates {
   }
 
   /**
+   * @param when   The instant
+   * @param locale The required locale
+   *
+   * @return The instant formatted as "ddd, MMM dd" (Saturday, January 01) in the system timezone
+   */
+  public static String formatDeliveryDateLocal(ReadableInstant when, Locale locale) {
+    if (when == null) {
+      return "";
+    }
+    return utcDeliveryDateFormatter.withZone(DateTimeZone.getDefault()).withLocale(locale).print(when);
+  }
+
+  /**
    * @param when The instant
-   * @return The instant formatted as "dd MMM yyyy" (01 Jan 2000)
+   *
+   * @return The instant formatted as "dd MMM yyyy" (01 Jan 2000) in UTC
    */
   public static String formatTransactionDate(ReadableInstant when) {
     if (when == null) {
@@ -197,9 +307,22 @@ public class Dates {
   }
 
   /**
+   * @param when The instant
+   *
+   * @return The instant formatted as "dd MMM yyyy" (01 Jan 2000) in the system timezone
+   */
+  public static String formatTransactionDateLocal(ReadableInstant when) {
+    if (when == null) {
+      return "";
+    }
+    return utcTransactionDateFormatter.withZone(DateTimeZone.getDefault()).print(when);
+  }
+
+  /**
    * @param when   The instant
    * @param locale The required locale
-   * @return The instant formatted as "ddd, MMM dd" (Saturday, January 01)
+   *
+   * @return The instant formatted as "ddd, MMM dd" (Saturday, January 01) in UTC
    */
   public static String formatTransactionDate(ReadableInstant when, Locale locale) {
     if (when == null) {
@@ -209,8 +332,22 @@ public class Dates {
   }
 
   /**
+   * @param when   The instant
+   * @param locale The required locale
+   *
+   * @return The instant formatted as "ddd, MMM dd" (Saturday, January 01) in the system timezone
+   */
+  public static String formatTransactionDateLocal(ReadableInstant when, Locale locale) {
+    if (when == null) {
+      return "";
+    }
+    return utcTransactionDateFormatter.withZone(DateTimeZone.getDefault()).withLocale(locale).print(when);
+  }
+
+  /**
    * @param when The instant
-   * @return The instant formatted for SMTP as defined in RFC 1123 e.g. "dd MMM yyyy" (01 Jan 2000)
+   *
+   * @return The instant formatted for SMTP as defined in RFC 1123 e.g. "dd MMM yyyy" (01 Jan 2000) in UTC
    */
   public static String formatSmtpDate(ReadableInstant when) {
     if (when == null) {
@@ -220,9 +357,22 @@ public class Dates {
   }
 
   /**
+   * @param when The instant
+   *
+   * @return The instant formatted for SMTP as defined in RFC 1123 e.g. "dd MMM yyyy" (01 Jan 2000) in the system timezone
+   */
+  public static String formatSmtpDateLocal(ReadableInstant when) {
+    if (when == null) {
+      return "";
+    }
+    return utcSmtpDateFormatter.withZone(DateTimeZone.getDefault()).print(when);
+  }
+
+  /**
    * @param when   The instant
    * @param locale The required locale
-   * @return The instant formatted for SMTP as defined in RFC 1123 e.g. "dd MMM yyyy" (01 Jan 2000)
+   *
+   * @return The instant formatted for SMTP as defined in RFC 1123 e.g. "dd MMM yyyy" (01 Jan 2000) in UTC
    */
   public static String formatSmtpDate(ReadableInstant when, Locale locale) {
     if (when == null) {
@@ -232,7 +382,21 @@ public class Dates {
   }
 
   /**
+   * @param when   The instant
+   * @param locale The required locale
+   *
+   * @return The instant formatted for SMTP as defined in RFC 1123 e.g. "dd MMM yyyy" (01 Jan 2000) in the system timezone
+   */
+  public static String formatSmtpDateLocal(ReadableInstant when, Locale locale) {
+    if (when == null) {
+      return "";
+    }
+    return utcSmtpDateFormatter.withZone(DateTimeZone.getDefault()).withLocale(locale).print(when);
+  }
+
+  /**
    * @param when The instant
+   *
    * @return The instant formatted for HTTP as defined in RFC 1123 e.g. "Sat, 01 Jan 2000 23:59:59 GMT"
    */
   public static String formatHttpDateHeader(ReadableInstant when) {
@@ -243,8 +407,21 @@ public class Dates {
   }
 
   /**
+   * @param when The instant
+   *
+   * @return The instant formatted for HTTP as defined in RFC 1123 e.g. "Sat, 01 Jan 2000 23:59:59 GMT" in UTC
+   */
+  public static String formatHttpDateHeaderLocal(ReadableInstant when) {
+    if (when == null) {
+      return "";
+    }
+    return utcHttpDateFormatter.withZone(DateTimeZone.getDefault()).print(when);
+  }
+
+  /**
    * @param when The instant in its timezone
-   * @return The instant formatted as ISO8601 e.g. "2000-01-02T03:04:05Z"
+   *
+   * @return The instant formatted as ISO8601 e.g. "2000-01-02T03:04:05Z" in UTC
    */
   public static String formatIso8601(ReadableInstant when) {
     if (when == null) {
@@ -254,9 +431,22 @@ public class Dates {
   }
 
   /**
+   * @param when The instant in its timezone
+   *
+   * @return The instant formatted as ISO8601 e.g. "2000-01-02T03:04:05" in the system timezone
+   */
+  public static String formatIso8601Local(ReadableInstant when) {
+    if (when == null) {
+      return "";
+    }
+    return utcIso8601.withZone(DateTimeZone.getDefault()).print(when);
+  }
+
+  /**
    * @param when   The instant
    * @param locale The required locale
-   * @return The instant formatted as ISO8601 e.g. "2000-01-02T03:04:05Z"
+   *
+   * @return The instant formatted as ISO8601 e.g. "2000-01-02T03:04:05Z" in UTC
    */
   public static String formatIso8601(ReadableInstant when, Locale locale) {
     if (when == null) {
@@ -266,8 +456,23 @@ public class Dates {
   }
 
   /**
-   * @param text The text representing a date and time in ISO8601 format (e.g. "2000-01-02T03:04:05Z")
+   * @param when   The instant
+   * @param locale The required locale
+   *
+   * @return The instant formatted as ISO8601 e.g. "2000-01-02T03:04:05" in the system timezone
+   */
+  public static String formatIso8601Local(ReadableInstant when, Locale locale) {
+    if (when == null) {
+      return "";
+    }
+    return utcIso8601.withZone(DateTimeZone.getDefault()).withLocale(locale).print(when);
+  }
+
+  /**
+   * @param text The text representing a date and time in ISO8601 format (e.g. "2000-01-02T03:04:05Z") in UTC
+   *
    * @return The DateTime
+   *
    * @throws IllegalArgumentException If the text cannot be parsed
    */
   public static DateTime parseIso8601(String text) {
@@ -275,8 +480,10 @@ public class Dates {
   }
 
   /**
-   * @param text The text representing a date and time in SMTP format (e.g. "01 Jan 2000")
+   * @param text The text representing a date and time in SMTP format (e.g. "01 Jan 2000") in UTC
+   *
    * @return The DateTime in the UTC timezone for the default locale
+   *
    * @throws IllegalArgumentException If the text cannot be parsed
    */
   public static DateTime parseSmtpUtc(String text) {
@@ -284,9 +491,11 @@ public class Dates {
   }
 
   /**
-   * @param text   The text representing a date and time in SMTP format (e.g. "01 Jan 2000")
+   * @param text   The text representing a date and time in SMTP format (e.g. "01 Jan 2000") in UTC
    * @param locale The specific local to use
+   *
    * @return The DateTime in the UTC timezone for the given locale
+   *
    * @throws IllegalArgumentException If the text cannot be parsed
    */
   public static DateTime parseSmtpUtc(String text, Locale locale) {
@@ -294,7 +503,7 @@ public class Dates {
   }
 
   /**
-   * @return The fixed date of the Bitcoin Genesis block (2009-01-03T18:15:00Z)
+   * @return The fixed date of the Bitcoin Genesis block (2009-01-03T18:15:00Z) in UTC
    */
   public static DateTime bitcoinGenesis() {
 
@@ -306,7 +515,7 @@ public class Dates {
    * <p>A seed timestamp is the number of days elapsed since Bitcoin genesis block with a modulo 97 checksum appended.
    * This gives a short representation that avoids user error during input and works in all locales.</p>
    *
-   * @return Create a new seed timestamp (e.g. "1850/07")
+   * @return Create a new seed timestamp (e.g. "1850/07") in UTC
    */
   public static String newSeedTimestamp() {
 
@@ -323,7 +532,9 @@ public class Dates {
 
   /**
    * @param text The text representing a date in seed timestamp format (e.g. "1850/07")
-   * @return The DateTime in the UTC timezone for the seed
+   *
+   * @return The DateTime in the UTC timezone for the seed in UTC
+   *
    * @throws IllegalArgumentException If the text cannot be parsed
    */
   public static DateTime parseSeedTimestamp(String text) {
@@ -345,19 +556,14 @@ public class Dates {
   }
 
   /**
-   * @param text The text representing a date and time in backup format (e.g. "20000203235958")
+   * @param text The text representing a date and time in backup format (e.g. "20000203235958") in UTC
+   *
    * @return The DateTime in the UTC timezone
+   *
    * @throws IllegalArgumentException If the text cannot be parsed
    */
   public static DateTime parseBackupDate(String text) {
     return utcBackupFormatter.parseDateTime(text);
   }
 
-  /**
-   * Get the current date since epoch in seconds
-   * @return the current date in seconds
-   */
-  public static long nowInSeconds() {
-    return (long)(DateTime.now().getMillis() * 0.001);
-  }
 }

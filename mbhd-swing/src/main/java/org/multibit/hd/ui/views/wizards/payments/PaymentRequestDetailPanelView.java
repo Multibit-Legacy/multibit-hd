@@ -203,7 +203,8 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
     } else {
 
       DateTime date = paymentRequestData.getDate();
-      dateValue.setText(LocalisedDateUtils.formatFriendlyDate(date));
+      // Display in the system timezone
+      dateValue.setText(LocalisedDateUtils.formatFriendlyDateLocal(date));
 
       displayBitcoinAddressMaV = Components.newDisplayBitcoinAddressMaV(paymentRequestData.getAddress());
 

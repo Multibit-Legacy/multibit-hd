@@ -41,8 +41,9 @@ public class TrailingJustifiedDateTableCellRenderer extends DefaultTableCellRend
 
     String formattedDate;
     if (value != null && value instanceof DateTime) {
-        DateTime date = (DateTime) value;
-        formattedDate = LocalisedDateUtils.formatFriendlyDate(date);
+      DateTime date = (DateTime) value;
+      // Display in the system timezone
+      formattedDate = LocalisedDateUtils.formatFriendlyDateLocal(date);
     } else {
       formattedDate = "";
     }
