@@ -24,8 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
@@ -101,6 +99,8 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     LabelDecorator.applyBitcoinSymbolLabel(bitcoinSymbolLabel);
 
     // Bind a key listener to allow instant update of UI to amount changes
+    // Do not use a focus listener because it will move the value according to
+    // the inexact fiat value leading to 10mB becoming 10.00635mB
     bitcoinAmountText.addKeyListener(new KeyAdapter() {
 
       @Override
@@ -110,28 +110,16 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
 
       }
     });
-    // Bind a focus listener to ensure that non-keyboard text filling is recognised
-    bitcoinAmountText.addFocusListener(new FocusAdapter() {
-      @Override
-      public void focusLost(FocusEvent e) {
-        updateLocalAmount();
-      }
-    });
 
     // Bind a key listener to allow instant update of UI to amount changes
+    // Do not use a focus listener because it will move the value according to
+    // the inexact fiat value leading to 10mB becoming 10.00635mB
     localAmountText.addKeyListener(new KeyAdapter() {
       @Override
       public void keyReleased(KeyEvent e) {
         updateBitcoinAmount();
       }
 
-    });
-    // Bind a focus listener to ensure that non-keyboard text filling is recognised
-    localAmountText.addFocusListener(new FocusAdapter() {
-      @Override
-      public void focusLost(FocusEvent e) {
-        updateBitcoinAmount();
-      }
     });
 
     // Arrange label placement according to configuration
