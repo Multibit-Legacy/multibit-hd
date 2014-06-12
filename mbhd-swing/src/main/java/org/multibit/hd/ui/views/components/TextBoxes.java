@@ -446,11 +446,7 @@ public class TextBoxes {
     }
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textArea, MessageKey.MESSAGE);
-
-    // Ensure Accessibility can find it
-    textArea.getAccessibleContext().setAccessibleName(Languages.safeText(MessageKey.MESSAGE));
-    textArea.getAccessibleContext().setAccessibleDescription(Languages.safeText(MessageKey.MESSAGE_TOOLTIP));
+    AccessibilityDecorator.apply(textArea, MessageKey.MESSAGE, MessageKey.MESSAGE_TOOLTIP);
 
     return textArea;
   }

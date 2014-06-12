@@ -64,7 +64,7 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[][][][]", // Column constraints
-      "[]" // Row constraints
+      "10[][][][]" // Row constraints
     ));
 
     signingAddress = TextBoxes.newEnterBitcoinAddress(getWizardModel(), false);
@@ -73,6 +73,7 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
     signature = TextBoxes.newReadOnlyLengthLimitedTextArea(getWizardModel(), 6, 40);
     AccessibilityDecorator.apply(signature, MessageKey.SIGNATURE);
 
+    // Add them to the panel
     contentPanel.add(Labels.newSignMessageNote(), "span 4,wrap");
 
     contentPanel.add(Labels.newBitcoinAddress());
