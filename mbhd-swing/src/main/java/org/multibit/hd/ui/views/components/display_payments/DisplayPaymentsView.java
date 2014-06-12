@@ -116,14 +116,14 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
             paymentAmountMaV.getModel().setLocalAmountVisible(rateProvider.isPresent());
           }
           paymentAmountMaV.getView().setVisible(true);
-
-          displayAmountMaVList.add(paymentAmountMaV);
           paymentAmountMaV.getModel().setCoinAmount(paymentData.getAmountCoin());
           if (paymentData.getAmountFiat().getAmount().isPresent()) {
             paymentAmountMaV.getModel().setLocalAmount(paymentData.getAmountFiat().getAmount().get());
           } else {
             paymentAmountMaV.getModel().setLocalAmount(null);
           }
+
+          displayAmountMaVList.add(paymentAmountMaV);
 
           // Add to the panel
           panel.add(timeLabel, "shrink");

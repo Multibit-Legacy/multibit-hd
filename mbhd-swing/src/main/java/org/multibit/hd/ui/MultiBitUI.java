@@ -157,8 +157,9 @@ public interface MultiBitUI {
 
   /**
    * Provides the MiG layout information for a large button
+   * Needs to be in ratio 5:4 and 150,120 is the comfortable minimum
    */
-  String LARGE_BUTTON_MIG = "w 200,h 160";
+  String LARGE_BUTTON_MIG = "wmin 150,hmin 120";
 
   /**
    * Provides the MiG layout information for a normal icon
