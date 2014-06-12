@@ -88,6 +88,20 @@ public class Panels {
   }
 
   /**
+   * <p>A default MiG layout constraint with:</p>
+   * <ul>
+   * <li>Detail screen insets</li>
+   * <li>Fills all available space (X and Y)</li>
+   * <li>Handles left-to-right and right-to-left presentation automatically</li>
+   * </ul>
+   *
+   * @return A default MiG layout constraint that fills all X and Y with RTL appended
+   */
+  public static String migXYDetailLayout() {
+    return migLayout("fill,insets 10 5 5 5");
+  }
+
+  /**
    * @return A simple theme-aware panel with a single cell MigLayout that fills all X and Y
    */
   public static JPanel newPanel() {

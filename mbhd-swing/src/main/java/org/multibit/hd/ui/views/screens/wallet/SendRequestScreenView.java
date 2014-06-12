@@ -77,7 +77,7 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
     walletService = CoreServices.getCurrentWalletService();
 
     MigLayout layout = new MigLayout(
-      Panels.migXYLayout(),
+      Panels.migXYDetailLayout(),
       "10[]10[]", // Column constraints
       "1[]20[]10[]" // Row constraints
     );

@@ -33,6 +33,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.LinkedList;
 
+import static org.multibit.hd.core.managers.InstallationManager.MBHD_WEBSITE_HELP_BASE;
+
 /**
  * <p>View to provide the following to application:</p>
  * <ul>
@@ -45,8 +47,6 @@ import java.util.LinkedList;
 public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
   private static final Logger log = LoggerFactory.getLogger(HelpScreenView.class);
-
-  private static final String HELP_BASE_URL = "https://www.multibit.org/v0.5/";
 
   /**
    * A primitive form of "browser history"
@@ -79,9 +79,9 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
   public JPanel initialiseScreenViewPanel() {
 
     MigLayout layout = new MigLayout(
-      Panels.migLayout("fillx,insets 10 5 0 0"),
+      Panels.migXYDetailLayout(),
       "[][][]push[]", // Column constraints
-      "[shrink][grow]" // Row constraints
+      "[shrink]10[grow]" // Row constraints
     );
 
     // Create the content panel
@@ -89,7 +89,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
     backButton = Buttons.newBackButton(getBackAction());
     forwardButton = Buttons.newForwardButton(getForwardAction());
-    launchBrowserButton = Buttons.newLaunchBrowserButton(getLaunchBrowserAction());
+    launchBrowserButton = Buttons.newLaunchBrowserButton(getLaunchBrowserAction(), MessageKey.VIEW_IN_EXTERNAL_BROWSER);
 
     // Control visibility and availability
     launchBrowserButton.setEnabled(Desktop.isDesktopSupported());
@@ -125,7 +125,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
         try {
           editorPane.setPage(currentPage());
         } catch (IOException e) {
-          e.printStackTrace();
+          log.warn(e.getMessage(),e);
         }
       }
     });
@@ -174,8 +174,8 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
       // Apply style
       editorPane.setEditorKit(kit);
 
-      // Look up the standard MultiBit help (via HTTP)
-      URL helpBaseUrl = URI.create(HELP_BASE_URL).toURL();
+      // Look up the standard MultiBit help (via HTTPS)
+      URL helpBaseUrl = URI.create(MBHD_WEBSITE_HELP_BASE).toURL();
 
       // Create a default document to manage HTML
       HTMLDocument doc = (HTMLDocument) kit.createDefaultDocument();
@@ -183,10 +183,10 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
       editorPane.setDocument(doc);
 
       // Create the starting page
-      addPage(URI.create(HELP_BASE_URL + "help_contents.html").toURL());
+      addPage(URI.create(MBHD_WEBSITE_HELP_BASE + "/help_contents.html").toURL());
 
     } catch (IOException e) {
-      e.printStackTrace();
+      log.error(e.getMessage(), e);
       return null;
     }
 
@@ -198,7 +198,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
           URL url = e.getURL();
 
-          boolean isMultiBit = url.toString().startsWith("/") || url.toString().startsWith(HELP_BASE_URL);
+          boolean isMultiBit = url.toString().startsWith("/") || url.toString().startsWith(MBHD_WEBSITE_HELP_BASE);
 
           // Ignore off site links
           if (!isMultiBit) {

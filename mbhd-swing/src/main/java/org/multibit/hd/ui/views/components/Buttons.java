@@ -641,7 +641,7 @@ public class Buttons {
   /**
    * @param action The click action
    *
-   * @return A new "launch browser" button with icon
+   * @return A new "launch browser" button with icon only
    */
   public static JButton newLaunchBrowserButton(Action action) {
 
@@ -658,7 +658,7 @@ public class Buttons {
   /**
    * @param action The click action
    *
-   * @return A new "launch browser" button with icon
+   * @return A new "launch browser" button with icon and message
    */
   public static JButton newLaunchBrowserButton(Action action, MessageKey key) {
 

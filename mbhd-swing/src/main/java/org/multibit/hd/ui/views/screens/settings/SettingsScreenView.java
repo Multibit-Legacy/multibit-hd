@@ -43,7 +43,7 @@ public class SettingsScreenView extends AbstractScreenView<SettingsScreenModel> 
   public JPanel initialiseScreenViewPanel() {
 
     MigLayout layout = new MigLayout(
-      Panels.migXYLayout(),
+      Panels.migXYDetailLayout(),
       "[]10[]", // Column constraints
       "10[]30[]10" // Row constraints
     );

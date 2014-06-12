@@ -29,9 +29,14 @@ public class InstallationManager {
   private static final Logger log = LoggerFactory.getLogger(InstallationManager.class);
 
   /**
-   * The main MultiBit download site
+   * The main MultiBit download site (HTTPS)
    */
   public static final URI MBHD_WEBSITE_URI = URI.create("https://multibit.org");
+
+  /**
+   * The main MultiBit help site (HTTP in case HTTPS fails and user needs to discover how to access repair wallet)
+   */
+  public static final String MBHD_WEBSITE_HELP_BASE = "http://www.multibit.org/v0.5";
 
   public static final String MBHD_APP_NAME = "MultiBitHD";
   public static final String MBHD_PREFIX = "mbhd";

@@ -441,7 +441,10 @@ public enum MessageKey {
 
   TRANSACTION_HASH("transaction_hash"),
   RAW_TRANSACTION("raw_transaction"),
+
   VIEW_IN_BLOCKCHAIN_INFO("view_in_blockchain_info"),
+  VIEW_IN_EXTERNAL_BROWSER("view_in_external_browser"),
+
   SIZE("size"),
   SIZE_VALUE("size_value"),
 
