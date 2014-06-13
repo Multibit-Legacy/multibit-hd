@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import org.multibit.hd.ui.languages.LanguageKey;
 
 import javax.swing.*;
+import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 import java.awt.*;
 import java.util.Enumeration;
@@ -52,18 +53,17 @@ public class Themes {
     UIManager.put("nimbusSelectionBackground", currentTheme.infoAlertBackground());
 
     // Scrollbar UI
-//    Color scrollBarThumb = Color.decode("#73a4d1");
     Color scrollBarThumb = currentTheme.infoAlertBackground();
     UIManager.put("ScrollBar.thumb", scrollBarThumb);
     UIManager.put("ScrollBar.thumbDarkShadow", scrollBarThumb);
-    UIManager.put("ScrollBar.thumbShadow", scrollBarThumb);
-    UIManager.put("ScrollBar.thumbHighlight", scrollBarThumb);
+    UIManager.put("ScrollBar.thumbShadow", scrollBarThumb.darker());
+    UIManager.put("ScrollBar.thumbHighlight", scrollBarThumb.darker());
 
-    Color scrollBarTrack = currentTheme.buttonBackground();
-    UIManager.put("ScrollBar.foreground", scrollBarTrack);
-    UIManager.put("ScrollBar.background", scrollBarTrack);
-    UIManager.put("ScrollBar.shadow", scrollBarTrack);
-    UIManager.put("ScrollBar.highlight", scrollBarTrack);
+    Color scrollBarTrack = currentTheme.detailPanelBackground();
+    UIManager.put("ScrollBar.background", new ColorUIResource(Color.RED));
+    UIManager.put("ScrollBar.foreground", new ColorUIResource(Color.BLUE));
+    UIManager.put("ScrollBar.track", scrollBarTrack);
+    UIManager.put("ScrollBar.trackHighlight", new ColorUIResource(Color.YELLOW));
 
     // Ensure the language icons match the colour scheme
     LanguageKey.resetIcons();

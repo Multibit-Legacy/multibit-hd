@@ -1,9 +1,13 @@
 package org.multibit.hd.ui.views.components;
 
+import org.multibit.hd.ui.views.themes.Themes;
+
 import javax.swing.*;
 import javax.swing.plaf.ScrollBarUI;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 
 /**
  * <p>Decorator to provide the following to UI:</p>
@@ -23,12 +27,51 @@ public class ScrollBarUIDecorator {
   }
 
   /**
-   * <p>Apply the scroll bar UI to the scroll pan</p>
+   * <p>Apply the scroll bar UI to the scroll pane</p>
+   *
+   * @param scrollPane The scroll pane
    */
-  public static void apply(JScrollPane scrollPane) {
+  public static void apply(final JScrollPane scrollPane) {
 
     if (scrollPane.getVerticalScrollBar() != null) {
       scrollPane.getVerticalScrollBar().setUI(newScrollBarUI());
+      // Add a vertical line to the left of scroll bar track for better visual effect
+      scrollPane.getVerticalScrollBar().setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Themes.currentTheme.text()));
+    }
+    if (scrollPane.getHorizontalScrollBar() != null) {
+      scrollPane.getHorizontalScrollBar().setUI(newScrollBarUI());
+    }
+
+  }
+
+  /**
+   * <p>Apply the scroll bar UI to a scroll pane wrapping a table</p>
+   *
+   * @param scrollPane The scroll pane
+   * @param table      The table contained within the scroll pane
+   */
+  public static void apply(final JScrollPane scrollPane, final JTable table) {
+
+    if (scrollPane.getVerticalScrollBar() != null) {
+      scrollPane.getVerticalScrollBar().setUI(newScrollBarUI());
+      scrollPane.getVerticalScrollBar().addHierarchyListener(new HierarchyListener() {
+        @Override
+        public void hierarchyChanged(HierarchyEvent e) {
+
+          if (HierarchyEvent.HIERARCHY_CHANGED == e.getID()
+            && (e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0) {
+            // The scroll bar has changed state
+            if (e.getComponent().isShowing()) {
+              // Draw a border to the right of the table
+              table.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Themes.currentTheme.text()));
+            } else {
+              // Remove the table border to avoid a thick black line on the right
+              table.setBorder(BorderFactory.createEmptyBorder());
+            }
+          }
+
+        }
+      });
     }
     if (scrollPane.getHorizontalScrollBar() != null) {
       scrollPane.getHorizontalScrollBar().setUI(newScrollBarUI());

@@ -101,7 +101,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     scrollPane.setViewportBorder(null);
 
     // Ensure we maintain the overall theme
-    ScrollBarUIDecorator.apply(scrollPane);
+    ScrollBarUIDecorator.apply(scrollPane, paymentsTable);
 
     // Add to the panel
     contentPanel.add(enterSearchMaV.getView().newComponentPanel(), "span 6,growx,push,wrap");

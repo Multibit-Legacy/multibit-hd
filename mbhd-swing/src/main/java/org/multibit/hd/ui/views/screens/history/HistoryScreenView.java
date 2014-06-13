@@ -98,7 +98,7 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
     scrollPane.setViewportBorder(null);
 
     // Ensure we maintain the overall theme
-    ScrollBarUIDecorator.apply(scrollPane);
+    ScrollBarUIDecorator.apply(scrollPane, historyTable);
 
     // Add to the panel
     contentPanel.add(enterSearchMaV.getView().newComponentPanel(), "span 6,growx,push,wrap");

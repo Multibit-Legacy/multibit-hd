@@ -107,7 +107,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
     scrollPane.setViewportBorder(null);
 
     // Ensure we maintain the overall theme
-    ScrollBarUIDecorator.apply(scrollPane);
+    ScrollBarUIDecorator.apply(scrollPane, contactsTable);
 
     // Add to the panel
     contentPanel.add(enterSearchMaV.getView().newComponentPanel(), "span 6,growx,push,wrap");
