@@ -212,5 +212,9 @@ public interface MultiBitUI {
    */
   int TABLE_SPACER = 10;
 
+  /**
+   * Footer minimum height
+   */
+  int FOOTER_MINIMUM_HEIGHT = 30;
 
 }
