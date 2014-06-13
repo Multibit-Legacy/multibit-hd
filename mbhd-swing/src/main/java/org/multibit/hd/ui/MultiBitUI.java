@@ -15,12 +15,13 @@ public interface MultiBitUI {
 
   /**
    * The minimum width for the application UI (900 is the minimum for tables)
+   * See #94 for screenshot of minimum resolution on Intel Atom at 1024x600
    */
-  int UI_MIN_WIDTH = 1000;
+  int UI_MIN_WIDTH = 900;
   /**
    * The minimum height for the application UI (550 is the minimum)
    */
-  int UI_MIN_HEIGHT = 590;
+  int UI_MIN_HEIGHT = 550;
 
   /**
    * The minimum width for a wizard panel (600 is about right) allowing for popovers
