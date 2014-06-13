@@ -90,7 +90,7 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
         // Reset the list
         displayAmountMaVList.clear();
 
-        log.debug("Displaying {} payment(s) for {}", paymentDataList.size(), panelName);
+        log.trace("Displaying {} payment(s) for {}", paymentDataList.size(), panelName);
 
         // Work through the list of payment data entries
         int count = 0;
