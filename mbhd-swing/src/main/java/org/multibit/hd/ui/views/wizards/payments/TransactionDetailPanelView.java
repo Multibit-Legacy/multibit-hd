@@ -132,9 +132,9 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
 
           // Append the size information
           int size = transactionData.getSize();
-          String rawTransactionValue = "TxID: "
+          String rawTransactionValue = "TxID:\n"
             + transactionData.getRawTransaction()
-            + "\n\n"
+            + "\n"
             + Languages.safeText(MessageKey.SIZE)
             + ": "
             + Languages.safeText(MessageKey.SIZE_VALUE,size);
