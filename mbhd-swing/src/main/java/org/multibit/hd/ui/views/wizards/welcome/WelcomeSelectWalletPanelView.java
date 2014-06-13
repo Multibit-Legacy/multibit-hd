@@ -67,6 +67,7 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
     contentPanel.add(Panels.newWalletSelector(
       this,
       CREATE_WALLET_SELECT_BACKUP_LOCATION.name(),
+      RESTORE_PASSWORD_SEED_PHRASE.name(),
       RESTORE_WALLET_SEED_PHRASE.name(),
       SELECT_WALLET_HARDWARE.name()
     ), "wrap");

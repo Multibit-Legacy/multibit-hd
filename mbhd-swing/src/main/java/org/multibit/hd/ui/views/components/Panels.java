@@ -276,7 +276,8 @@ public class Panels {
    *
    * @param listener        The action listener
    * @param createCommand   The create command name
-   * @param restoreCommand  The restore command name
+   * @param restorePasswordCommand  The restore password command name
+   * @param restoreWalletCommand  The restore wallet command name
    * @param hardwareCommand The hardware command name
    *
    * @return A new "wallet selector" panel
@@ -284,7 +285,8 @@ public class Panels {
   public static JPanel newWalletSelector(
     ActionListener listener,
     String createCommand,
-    String restoreCommand,
+    String restorePasswordCommand,
+    String restoreWalletCommand,
     String hardwareCommand
   ) {
 
@@ -294,24 +296,29 @@ public class Panels {
     radio1.setSelected(true);
     radio1.setActionCommand(createCommand);
 
-    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.RESTORE_WALLET);
-    radio2.setActionCommand(restoreCommand);
+    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.RESTORE_PASSWORD);
+    radio2.setActionCommand(restorePasswordCommand);
 
-    JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.USE_HARDWARE_WALLET);
-    radio3.setActionCommand(hardwareCommand);
-    radio3.setEnabled(false);
-    radio3.setForeground(UIManager.getColor("RadioButton.disabledText"));
+    JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.RESTORE_WALLET);
+    radio2.setActionCommand(restoreWalletCommand);
+
+    JRadioButton radio4 = RadioButtons.newRadioButton(listener, MessageKey.USE_HARDWARE_WALLET);
+    radio4.setActionCommand(hardwareCommand);
+    radio4.setEnabled(false);
+    radio4.setForeground(UIManager.getColor("RadioButton.disabledText"));
 
     // Wallet selection is mutually exclusive
     ButtonGroup group = new ButtonGroup();
     group.add(radio1);
     group.add(radio2);
     group.add(radio3);
+    group.add(radio4);
 
     // Add to the panel
     panel.add(radio1, "wrap");
     panel.add(radio2, "wrap");
     panel.add(radio3, "wrap");
+    panel.add(radio4, "wrap");
 
     return panel;
   }
@@ -503,18 +510,6 @@ public class Panels {
 
     JPanel panel = new JPanel();
     panel.setMaximumSize(new Dimension(1, 10000));
-    panel.setBorder(BorderFactory.createDashedBorder(Themes.currentTheme.headerPanelBackground(), 5, 5));
-
-    return panel;
-  }
-
-  /**
-   * New horizontal dashed separator
-   */
-  public static JPanel newHorizontalDashedSeparator() {
-
-    JPanel panel = new JPanel();
-    panel.setMaximumSize(new Dimension(10000, 1));
     panel.setBorder(BorderFactory.createDashedBorder(Themes.currentTheme.headerPanelBackground(), 5, 5));
 
     return panel;

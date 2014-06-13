@@ -4,6 +4,8 @@ import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.create_wallet.*;
 import org.multibit.hd.ui.fest.use_cases.security.CloseDebugSecurityPopoverUseCase;
+import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectCreateWalletUseCase;
+import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectLanguage_ro_RO_UseCase;
 
 import java.util.Map;
 

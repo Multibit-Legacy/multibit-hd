@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fest.use_cases.create_wallet;
+package org.multibit.hd.ui.fest.use_cases.welcome_select;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
@@ -10,15 +10,15 @@ import java.util.Map;
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
  * <li>Verify the welcome wizard "select wallet" panel view</li>
- * <li>Proceed with "restore wallet" selection</li>
+ * <li>Proceed with "create wallet" selection</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class WelcomeSelectRestoreWalletUseCase extends AbstractFestUseCase {
+public class WelcomeSelectCreateWalletUseCase extends AbstractFestUseCase {
 
-  public WelcomeSelectRestoreWalletUseCase(FrameFixture window) {
+  public WelcomeSelectCreateWalletUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -35,6 +35,12 @@ public class WelcomeSelectRestoreWalletUseCase extends AbstractFestUseCase {
       .requireVisible();
 
     window
+      .radioButton(MessageKey.RESTORE_PASSWORD.getKey())
+      .requireNotSelected()
+      .requireEnabled()
+      .requireVisible();
+
+    window
       .radioButton(MessageKey.RESTORE_WALLET.getKey())
       .requireNotSelected()
       .requireEnabled()
@@ -45,11 +51,6 @@ public class WelcomeSelectRestoreWalletUseCase extends AbstractFestUseCase {
       .requireNotSelected()
       .requireDisabled()
       .requireVisible();
-
-    // Select "restore wallet"
-    window
-      .radioButton(MessageKey.RESTORE_WALLET.getKey())
-      .click();
 
     // OK to proceed
     window

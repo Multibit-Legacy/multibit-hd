@@ -35,6 +35,7 @@ public class WalletFixtures {
    */
   public static final String STANDARD_WALLET_SEED_PHRASE = "twenty lecture clump slush curious aware wise trend surprise soft level coyote";
   public static final String STANDARD_WALLET_ID = "612538c6-b613cdbb-41b31808-d22f83c6-2562f529";
+  public static final String STANDARD_TIMESTAMP = "1984/44";
 
   public static final CharSequence STANDARD_PASSWORD = "abc123";
 
