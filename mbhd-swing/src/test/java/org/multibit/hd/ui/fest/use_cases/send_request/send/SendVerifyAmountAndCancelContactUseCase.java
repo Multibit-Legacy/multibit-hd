@@ -1,6 +1,5 @@
 package org.multibit.hd.ui.fest.use_cases.send_request.send;
 
-import com.google.common.base.Strings;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.timing.Timeout;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
@@ -9,8 +8,6 @@ import org.multibit.hd.ui.views.themes.Themes;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * <p>Use case to provide the following to FEST testing:</p>
@@ -67,7 +64,7 @@ public class SendVerifyAmountAndCancelContactUseCase extends AbstractFestUseCase
       .requireVisible()
       .requireDisabled();
 
-    verifyBitcoinAmountField("", false);
+    verifyBitcoinAmountField("", true);
     verifyBitcoinAmountField(" ", false);
     verifyBitcoinAmountField("abc", false);
     verifyBitcoinAmountField("'", false);
@@ -143,13 +140,6 @@ public class SendVerifyAmountAndCancelContactUseCase extends AbstractFestUseCase
         .requireEqualTo(Themes.currentTheme.dataEntryBackground());
 
       if (isExchangePresent()) {
-
-        // Verify the local amount has updated
-        String localAmount = window
-          .textBox(MessageKey.LOCAL_AMOUNT.getKey())
-          .text();
-
-        assertThat(Strings.isNullOrEmpty(localAmount)).isFalse();
 
         window
           .textBox(MessageKey.LOCAL_AMOUNT.getKey())
