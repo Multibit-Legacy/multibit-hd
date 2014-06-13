@@ -409,6 +409,23 @@ public enum MessageKey {
   SIGN_MESSAGE_NOTE_2("sign_message_note_2"),
   SIGN_MESSAGE_NOTE_3("sign_message_note_3"),
 
+  SIGN_ADDRESS_TOOLTIP("sign_address_tooltip"),
+  SIGN_MESSAGE_ENTER_MESSAGE("sign_message_enter_message"),
+  SIGN_MESSAGE_ENTER_PASSWORD("sign_message_enter_password"),
+  SIGN_MESSAGE_SUCCESS("sign_message_success"),
+  SIGN_MESSAGE_NO_SIGNING_KEY("sign_message_no_signing_key"),
+  SIGN_MESSAGE_SIGNING_KEY_NOT_ENCRYPTED("sign_message_signing_key_not_encrypted"),
+  SIGN_MESSAGE_NO_WALLET("sign_message_no_wallet"),
+  SIGN_MESSAGE_NO_PASSWORD("sign_message_no_password"),
+  SIGN_MESSAGE_FAILURE("sign_message_failure"),
+
+  VERIFY_MESSAGE_ENTER_ADDRESS("verify_message_enter_address"),
+  VERIFY_MESSAGE_ENTER_MESSAGE("verify_message_enter_message"),
+  VERIFY_MESSAGE_ENTER_SIGNATURE("verify_message_enter_signature"),
+  VERIFY_MESSAGE_FAILURE("verify_message_failure"),
+  VERIFY_MESSAGE_VERIFY_SUCCESS("verify_message_verify_success"),
+  VERIFY_MESSAGE_VERIFY_FAILURE("verify_message_verify_failure"),
+
   VERIFY_MESSAGE_NOTE_1("verify_message_note_1"),
   VERIFY_MESSAGE_NOTE_2("verify_message_note_2"),
 

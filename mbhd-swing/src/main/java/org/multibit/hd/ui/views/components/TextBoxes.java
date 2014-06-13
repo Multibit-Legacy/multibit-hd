@@ -108,6 +108,39 @@ public class TextBoxes {
   }
 
   /**
+    * @param rows    The number of rows (normally 6)
+    * @param columns The number of columns (normally 60)
+    *
+    * @return A new read only text field with default theme
+    */
+   public static JTextArea newTextArea(int rows, int columns) {
+
+     JTextArea textArea = new JTextArea(rows, columns);
+
+     // Set the theme
+     textArea.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
+     textArea.setBackground(Themes.currentTheme.dataEntryBackground());
+
+     textArea.setOpaque(false);
+
+     // Ensure line wrapping occurs correctly
+     textArea.setLineWrap(true);
+     textArea.setWrapStyleWord(true);
+
+     // Ensure TAB transfers focus
+     AbstractAction transferFocus = new AbstractAction() {
+       public void actionPerformed(ActionEvent e) {
+         ((Component) e.getSource()).transferFocus();
+       }
+     };
+     textArea.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "transferFocus");
+     textArea.getActionMap().put("transferFocus", transferFocus);
+
+     return textArea;
+
+   }
+
+  /**
    * @param listener The document listener for detecting changes to the content
    * @param rows     The number of rows (normally 6)
    * @param columns  The number of columns (normally 60)
@@ -432,7 +465,7 @@ public class TextBoxes {
 
     final JTextArea textArea;
     if (readOnly) {
-      textArea = TextBoxes.newReadOnlyLengthLimitedTextArea(listener, 6, MultiBitUI.PASSWORD_LENGTH);
+      textArea = TextBoxes.newReadOnlyLengthLimitedTextArea(listener, 5, MultiBitUI.PASSWORD_LENGTH);
     } else {
       textArea = TextBoxes.newEnterPrivateNotes(listener, MultiBitUI.PASSWORD_LENGTH);
     }
