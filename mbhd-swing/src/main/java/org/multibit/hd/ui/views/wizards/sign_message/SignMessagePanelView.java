@@ -11,6 +11,7 @@ import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.utils.WhitespaceTrimmer;
 import org.multibit.hd.ui.views.components.*;
@@ -64,9 +65,6 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
 
     enterPasswordMaV = Components.newEnterPasswordMaV(getPanelName());
     setPanelModel("");
-
-    // TODO register components ???
-
   }
 
   @Override
@@ -75,13 +73,13 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
     contentPanel.setLayout(new MigLayout(
             Panels.migXYLayout(),
             "[][][][]", // Column constraints
-            "10[][][][]" // Row constraints
+            "5[][][][][20:n:]" // Row constraints
     ));
 
     signingAddress = TextBoxes.newEnterBitcoinAddress(getWizardModel(), false);
     message = TextBoxes.newEnterMessage(getWizardModel(), false);
 
-    signature = TextBoxes.newReadOnlyLengthLimitedTextArea(getWizardModel(), 6, 40);
+    signature = TextBoxes.newReadOnlyLengthLimitedTextArea(getWizardModel(), 5, 40);
     AccessibilityDecorator.apply(signature, MessageKey.SIGNATURE);
 
     // Add them to the panel
@@ -99,9 +97,8 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
     contentPanel.add(Labels.newSignature());
     contentPanel.add(signature, "grow,span 3,push,wrap");
 
-    reportLabel = Labels.newBlankLabel();
-    reportLabel.setText(" ");
-    contentPanel.add(reportLabel, "grow,span 3,push,wrap");
+    reportLabel = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
+    contentPanel.add(reportLabel, "span 4,wrap");
   }
 
   @Override
@@ -187,6 +184,8 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
           ((JPasswordField) passwordField).setText("");
         }
         signature.setText("");
+
+        setReportText(Optional.<Boolean>absent(), null, null);
       }
 
     };
@@ -201,17 +200,17 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
     String walletPassword = enterPasswordMaV.getModel().getValue();
 
     if (Strings.isNullOrEmpty(addressText)) {
-      reportLabel.setText("Enter the bitcoin address to use for signing");
+      setReportText(Optional.of(Boolean.FALSE), MessageKey.SIGN_ADDRESS_TOOLTIP, null);
       return;
     }
 
     if (Strings.isNullOrEmpty(messageText)) {
-      reportLabel.setText("Enter the message you want to sign");
+      setReportText(Optional.of(Boolean.FALSE), MessageKey.SIGN_MESSAGE_ENTER_MESSAGE, null);
       return;
     }
 
     if (Strings.isNullOrEmpty(walletPassword)) {
-      reportLabel.setText("Enter the wallet password");
+      setReportText(Optional.of(Boolean.FALSE), MessageKey.SIGN_MESSAGE_ENTER_PASSWORD, null);
       return;
     }
 
@@ -228,9 +227,8 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
 
         if (signingKey == null) {
           // No signing key found.
-          reportLabel.setText("No signing key found for '" + addressText + "'");
+          setReportText(Optional.of(Boolean.FALSE), MessageKey.SIGN_MESSAGE_NO_SIGNING_KEY, new Object[]{addressText});
         } else {
-          System.out.println("Signing key = " + signingKey.toStringWithPrivate());
           if (signingKey.getKeyCrypter() != null) {
             KeyParameter aesKey = signingKey.getKeyCrypter().deriveKey(walletPassword);
             ECKey decryptedSigingKey = signingKey.decrypt(aesKey);
@@ -238,55 +236,36 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
             String signatureBase64 = decryptedSigingKey.signMessage(messageText);
             signature.setText(signatureBase64);
 
-            reportLabel.setText("Message signed successfully");
+            setReportText(Optional.of(Boolean.TRUE), MessageKey.SIGN_MESSAGE_SUCCESS, null);
           } else {
             // The signing key is not encrypted but it should be
-            reportLabel.setText("The signing key is not encrypted but it should be");
+            setReportText(Optional.of(Boolean.FALSE), MessageKey.SIGN_MESSAGE_SIGNING_KEY_NOT_ENCRYPTED, null);
           }
         }
-
       } else {
-        reportLabel.setText("There is no wallet");
+        setReportText(Optional.of(Boolean.FALSE), MessageKey.SIGN_MESSAGE_NO_WALLET, null);
       }
     } catch (KeyCrypterException e) {
-      reportLabel.setText("The password was incorrect");
+      setReportText(Optional.of(Boolean.FALSE), MessageKey.SIGN_MESSAGE_NO_PASSWORD, null);
     } catch (Exception e) {
-      reportLabel.setText("The message signing failed");
+      setReportText(Optional.of(Boolean.FALSE), MessageKey.SIGN_MESSAGE_FAILURE, null);
+
       e.printStackTrace();
     }
   }
+
+  private void setReportText(Optional<Boolean> status, MessageKey messageKey, Object[] messageData) {
+    if (reportLabel != null) {
+      if (messageKey == null) {
+        reportLabel.setText("");
+      } else {
+        reportLabel.setText(Languages.safeText(messageKey, messageData));
+      }
+      if (status.isPresent()) {
+        Labels.decorateStatusLabel(reportLabel, status);
+      } else {
+        reportLabel.setIcon(null);
+      }
+    }
+  }
 }
-
-//signMessagePanel.setMessageText1(controller.getLocaliser().getString("signMessageAction.noSigningKey", new String[]{addressText}));
-
-//signMessagePanel.setMessageText1(controller.getLocaliser().getString("signMessageAction.success"));
-
-//      CharSequence walletPassword = null;
-//      if (signMessagePanel.getWalletPasswordField() != null) {
-//          walletPassword = CharBuffer.wrap(signMessagePanel.getWalletPasswordField().getPassword());
-//
-//          if (bitcoinController.getModel().getActiveWallet().isEncrypted()) {
-//              if (walletPassword.length() == 0) {
-//                  signMessagePanel.setMessageText1(controller.getLocaliser().getString(
-//                          "showExportPrivateKeysAction.youMustEnterTheWalletPassword"));
-//                  return;
-//              }
-//
-//              if (!bitcoinController.getModel().getActiveWallet().checkPassword(walletPassword)) {
-//                  // The password supplied is incorrect.
-//                  signMessagePanel.setMessageText1(controller.getLocaliser().getString(
-//                          "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
-//                  return;
-//              }
-//          }
-//      }
-
-//      if (addressText == null || "".equals(addressText)) {
-//          signMessagePanel.setMessageText1(controller.getLocaliser().getString("signMessageAction.noAddress"));
-//          return;
-//      }
-//
-//      if (messageText == null || "".equals(messageText.trim())) {
-//          signMessagePanel.setMessageText1(controller.getLocaliser().getString("signMessageAction.noMessage"));
-//          return;
-//      }
