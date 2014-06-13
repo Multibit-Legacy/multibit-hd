@@ -27,8 +27,9 @@ public class ThemeAwareDecimalInputVerifierTest {
     // Act
 
     // Characters
+    // We must permit empty to allow for focus transition
     textField.setText("");
-    assertThat(testObject.verify(textField)).isFalse();
+    assertThat(testObject.verify(textField)).isTrue();
 
     textField.setText(" ");
     assertThat(testObject.verify(textField)).isFalse();

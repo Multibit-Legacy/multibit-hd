@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components.text_fields;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import org.multibit.hd.core.utils.Numbers;
 import org.multibit.hd.ui.views.themes.Themes;
 
@@ -71,6 +72,12 @@ public class ThemeAwareDecimalInputVerifier extends InputVerifier {
         return true;
       }
     } else {
+
+      // Allow a blank to pass through for focus transition
+      if (Strings.isNullOrEmpty(text)) {
+        return true;
+      }
+
       // Not a number
       component.setBackground(invalidColor);
       return false;

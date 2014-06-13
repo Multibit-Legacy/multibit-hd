@@ -106,6 +106,11 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
       @Override
       public void keyReleased(KeyEvent e) {
 
+        if (e.isActionKey() || e.getKeyCode() == KeyEvent.VK_TAB || e.getKeyCode() == KeyEvent.VK_SHIFT) {
+          // Ignore
+          return;
+        }
+
         updateLocalAmount();
 
       }
@@ -117,7 +122,13 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     localAmountText.addKeyListener(new KeyAdapter() {
       @Override
       public void keyReleased(KeyEvent e) {
-        updateBitcoinAmount();
+
+        if (e.isActionKey() || e.getKeyCode() == KeyEvent.VK_TAB || e.getKeyCode() == KeyEvent.VK_SHIFT) {
+          // Ignore
+          return;
+        }
+
+     updateBitcoinAmount();
       }
 
     });
