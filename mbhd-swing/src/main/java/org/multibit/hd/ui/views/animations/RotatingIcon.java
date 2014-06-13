@@ -108,7 +108,7 @@ public class RotatingIcon implements Icon {
 
   }
 
-  public void incrementRotation(JComponent component) {
+  public void incrementRotation(final JComponent component) {
 
     // Increment theta
     theta += delta;
@@ -122,7 +122,13 @@ public class RotatingIcon implements Icon {
 
     }
 
-    component.repaint();
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        component.repaint();
+
+      }
+    });
 
   }
 
