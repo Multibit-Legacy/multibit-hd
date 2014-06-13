@@ -24,11 +24,9 @@ import org.multibit.hd.ui.gravatar.Gravatars;
 import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.utils.HtmlUtils;
 import org.multibit.hd.ui.utils.LocalisedDateUtils;
-import org.multibit.hd.ui.views.components.ImageDecorator;
-import org.multibit.hd.ui.views.components.LabelDecorator;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -93,8 +91,8 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
 
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
-      "[][][]", // Column constraints
-      "[]10[]10[]" // Row constraints
+      "[][][][]", // Column constraints
+      "[]10" // Row constraints
     ));
 
     // Apply the theme
@@ -142,27 +140,34 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
 
     update();
 
+    contentPanel.add(recipientLabel,"growx,push");
+    contentPanel.add(recipientValue, "growx,span 2,push");
+    contentPanel.add(recipientImageLabel, "shrink,align right,wrap");
+
     contentPanel.add(statusLabel);
-    contentPanel.add(statusValue, "span 2, wrap");
-    contentPanel.add(dateLabel);
-    contentPanel.add(dateValue, "span 2, wrap");
+    contentPanel.add(statusValue, "span 3,wrap");
+
     contentPanel.add(typeLabel);
-    contentPanel.add(typeValue, "span 2, wrap");
-    contentPanel.add(descriptionLabel);
-    contentPanel.add(descriptionValue, "span 2, wrap");
-    contentPanel.add(recipientLabel);
-    contentPanel.add(recipientValue);
-    contentPanel.add(recipientImageLabel, "span 2, wrap");
+    contentPanel.add(typeValue, "growx,push");
+    contentPanel.add(dateLabel);
+    contentPanel.add(dateValue, "wrap");
+
     contentPanel.add(amountBTCLabel);
-    contentPanel.add(amountBTCValue, "span 2, wrap");
+    contentPanel.add(amountBTCValue);
     contentPanel.add(amountFiatLabel);
-    contentPanel.add(amountFiatValue, "span 2, wrap");
-    contentPanel.add(exchangeRateLabel);
-    contentPanel.add(exchangeRateValue, "span 2, wrap");
+    contentPanel.add(amountFiatValue, "wrap");
+
     contentPanel.add(miningFeePaidLabel);
-    contentPanel.add(miningFeePaidValue, "span 2, wrap");
+    contentPanel.add(miningFeePaidValue);
     contentPanel.add(clientFeePaidLabel);
-    contentPanel.add(clientFeePaidValue, "span 2, wrap");
+    contentPanel.add(clientFeePaidValue, "wrap");
+
+    contentPanel.add(exchangeRateLabel);
+    contentPanel.add(exchangeRateValue, "span 3,wrap");
+
+    contentPanel.add(descriptionLabel);
+    contentPanel.add(descriptionValue, "grow,push,span 3,wrap");
+
   }
 
   @Override
@@ -191,60 +196,32 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
   }
 
   public void update() {
+
     PaymentData paymentData = getWizardModel().getPaymentData();
+
     if (paymentData != null) {
+
       DateTime date = paymentData.getDate();
-      // Display in the system timezone
-      dateValue.setText(LocalisedDateUtils.formatFriendlyDateLocal(date));
-
-      descriptionValue.setText(paymentData.getDescription());
-
-      statusValue.setText(Languages.safeText(paymentData.getStatus().getStatusKey(), paymentData.getStatus().getStatusData()));
-      LabelDecorator.applyPaymentStatusIconAndColor(paymentData.getStatus(), statusValue, paymentData.isCoinBase(), MultiBitUI.SMALL_ICON_SIZE);
-
-      typeValue.setText(Languages.safeText(paymentData.getType().getLocalisationKey()));
-
-      Coin amountBTC = paymentData.getAmountCoin();
       LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage();
       BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
 
-      String[] balanceArray = Formats.formatCoinAsSymbolic(amountBTC, languageConfiguration, bitcoinConfiguration, true);
-      amountBTCValue.setText(balanceArray[0] + balanceArray[1]);
+      updateMetadata(paymentData, date);
 
-      FiatPayment amountFiat = paymentData.getAmountFiat();
-      if (amountFiat.getAmount().isPresent()) {
-        amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount().get(), languageConfiguration.getLocale(), bitcoinConfiguration, true)));
-      } else {
-        amountFiatValue.setText("");
-      }
+      updateAmountCoin(paymentData, languageConfiguration, bitcoinConfiguration);
 
-      if (amountFiat.getCurrency().isPresent()) {
-        amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT) + " " + amountFiat.getCurrency().get().getCurrencyCode());
-      } else {
-        amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT));
-      }
+      updateAmountFiat(paymentData, languageConfiguration, bitcoinConfiguration);
 
       if (paymentData instanceof TransactionData) {
         TransactionData transactionData = (TransactionData) paymentData;
+
         // Miner's fee
-        Optional<Coin> miningFee = transactionData.getMiningFee();
-        if (miningFee.isPresent()) {
-          String[] minerFeePaidArray = Formats.formatCoinAsSymbolic(miningFee.get(), languageConfiguration, bitcoinConfiguration, true);
-          miningFeePaidValue.setText(minerFeePaidArray[0] + minerFeePaidArray[1]);
-        } else {
-          miningFeePaidValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
-        }
+        updateMiningFee(languageConfiguration, bitcoinConfiguration, transactionData);
 
         // Client fee
-        Optional<Coin> clientFee = transactionData.getClientFee();
-        if (clientFee.isPresent()) {
-          String[] clientFeePaidArray = Formats.formatCoinAsSymbolic(clientFee.get(), languageConfiguration, bitcoinConfiguration, true);
-          clientFeePaidValue.setText(clientFeePaidArray[0] + clientFeePaidArray[1]);
-        } else {
-          clientFeePaidValue.setText(Languages.safeText(MessageKey.NO_CLIENT_FEE_WAS_ADDED));
-        }
+        updateClientFee(languageConfiguration, bitcoinConfiguration, transactionData);
 
         if (transactionData.getAmountCoin().compareTo(Coin.ZERO) >= 0) {
+
           // Received bitcoin
           recipientValue.setText(Languages.safeText(MessageKey.THIS_BITCOIN_WAS_SENT_TO_YOU));
 
@@ -254,7 +231,9 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
           clientFeePaidValue.setVisible(false);
           miningFeePaidLabel.setVisible(false);
           miningFeePaidValue.setVisible(false);
+
         } else {
+
           // Sent bitcoin
           clientFeePaidLabel.setVisible(true);
           clientFeePaidValue.setVisible(true);
@@ -263,40 +242,8 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
 
           // Contact may be one of the output addresses
           Collection<String> addressList = transactionData.getOutputAddresses();
-          // This is a bit inefficient - could have a hashmap of Contacts, keyed by address
-          // Or store the address sent to
-          ContactService contactService = CoreServices.getOrCreateContactService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
-          List<Contact> allContacts = contactService.allContacts();
-          Contact matchedContact = null;
 
-          if (allContacts != null) {
-            for (Contact contact : allContacts) {
-              if (addressList != null) {
-                for (String address : addressList) {
-                  if (contact.getBitcoinAddress().isPresent() && contact.getBitcoinAddress().get().equals(address)) {
-
-                    // This is a contact for this address
-                    final Address bitcoinAddress;
-                    try {
-                      bitcoinAddress = new Address(networkParameters, address);
-                    } catch (AddressFormatException e) {
-                      // If this occurs we really want to know
-                      throw new IllegalArgumentException("Contact has an incorrect Bitcoin address: " + contact, e);
-                    }
-
-                    // Only show the first match
-                    recipientValue.setText(contact.getName());
-                    Recipient matchedRecipient = new Recipient(bitcoinAddress);
-                    matchedRecipient.setContact(contact);
-                    matchedContact = contact;
-
-                    displayGravatar(contact, recipientImageLabel);
-                    break;
-                  }
-                }
-              }
-            }
-          }
+          Contact matchedContact = matchContact(addressList);
           if (matchedContact == null) {
             recipientValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
           }
@@ -313,32 +260,143 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
     }
   }
 
-  // Display a gravatar if we have a contact
-  private void displayGravatar(Contact contact, final JLabel recipientImageLabel) {
-    if (contact.getEmail().isPresent() && !Strings.isNullOrEmpty(contact.getEmail().get())) {
+  private Contact matchContact(Collection<String> addressList) {
 
-      // We have an email address
-      String emailAddress = contact.getEmail().get();
+    // This is a bit inefficient - could have a hashmap of Contacts, keyed by address
+    // Or store the address sent to
+    ContactService contactService = CoreServices.getOrCreateContactService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
+    List<Contact> allContacts = contactService.allContacts();
 
-      final ListenableFuture<Optional<BufferedImage>> imageFuture = Gravatars.retrieveGravatar(emailAddress);
-      Futures.addCallback(imageFuture, new FutureCallback<Optional<BufferedImage>>() {
-        public void onSuccess(Optional<BufferedImage> image) {
-          if (image.isPresent()) {
+    Contact matchedContact = null;
 
-            // Apply the rounded corners
-            ImageIcon imageIcon = new ImageIcon(ImageDecorator.applyRoundedCorners(image.get(), MultiBitUI.IMAGE_CORNER_RADIUS));
+    for (Contact contact : allContacts) {
 
-            recipientImageLabel.setIcon(imageIcon);
-            recipientImageLabel.setVisible(true);
+      if (addressList != null) {
+        for (String address : addressList) {
+          if (contact.getBitcoinAddress().isPresent() && contact.getBitcoinAddress().get().equals(address)) {
+
+            // This is a contact for this address
+            final Address bitcoinAddress;
+            try {
+              bitcoinAddress = new Address(networkParameters, address);
+            } catch (AddressFormatException e) {
+              // If this occurs we really want to know
+              throw new IllegalArgumentException("Contact has an incorrect Bitcoin address: " + contact, e);
+            }
+
+            // Only show the first match
+            recipientValue.setText(contact.getName());
+            Recipient matchedRecipient = new Recipient(bitcoinAddress);
+            matchedRecipient.setContact(contact);
+            matchedContact = contact;
+
+            displayGravatar(contact, recipientImageLabel);
+            break;
           }
         }
+      }
 
-        public void onFailure(Throwable thrown) {
-          recipientImageLabel.setVisible(false);
-        }
-      });
-    } else {
-      recipientImageLabel.setVisible(false);
     }
+
+    return matchedContact;
+  }
+
+  private void updateClientFee(LanguageConfiguration languageConfiguration, BitcoinConfiguration bitcoinConfiguration, TransactionData transactionData) {
+
+    Optional<Coin> clientFee = transactionData.getClientFee();
+    if (clientFee.isPresent()) {
+      String[] clientFeePaidArray = Formats.formatCoinAsSymbolic(clientFee.get(), languageConfiguration, bitcoinConfiguration, true);
+      clientFeePaidValue.setText(clientFeePaidArray[0] + clientFeePaidArray[1]);
+    } else {
+      clientFeePaidValue.setText(Languages.safeText(MessageKey.NO_CLIENT_FEE_WAS_ADDED));
+    }
+
+  }
+
+  private void updateMiningFee(LanguageConfiguration languageConfiguration, BitcoinConfiguration bitcoinConfiguration, TransactionData transactionData) {
+
+    Optional<Coin> miningFee = transactionData.getMiningFee();
+    if (miningFee.isPresent()) {
+      String[] minerFeePaidArray = Formats.formatCoinAsSymbolic(miningFee.get(), languageConfiguration, bitcoinConfiguration, true);
+      miningFeePaidValue.setText(minerFeePaidArray[0] + minerFeePaidArray[1]);
+    } else {
+      miningFeePaidValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
+    }
+
+  }
+
+  private void updateMetadata(PaymentData paymentData, DateTime date) {
+
+    // Display in the system timezone
+    dateValue.setText(LocalisedDateUtils.formatFriendlyDateLocal(date));
+
+    // Description may be long so ensure we wrap the label
+    String descriptionHtml = HtmlUtils.localiseWithLineBreaks(new String[]{paymentData.getDescription()});
+    descriptionValue.setText(descriptionHtml);
+
+    statusValue.setText(Languages.safeText(paymentData.getStatus().getStatusKey(), paymentData.getStatus().getStatusData()));
+    LabelDecorator.applyPaymentStatusIconAndColor(paymentData.getStatus(), statusValue, paymentData.isCoinBase(), MultiBitUI.SMALL_ICON_SIZE);
+
+    typeValue.setText(Languages.safeText(paymentData.getType().getLocalisationKey()));
+
+  }
+
+  private void updateAmountCoin(PaymentData paymentData, LanguageConfiguration languageConfiguration, BitcoinConfiguration bitcoinConfiguration) {
+
+    Coin amountCoin = paymentData.getAmountCoin();
+
+    String[] balanceArray = Formats.formatCoinAsSymbolic(amountCoin, languageConfiguration, bitcoinConfiguration, true);
+    amountBTCValue.setText(balanceArray[0] + balanceArray[1]);
+
+  }
+
+  private void updateAmountFiat(PaymentData paymentData, LanguageConfiguration languageConfiguration, BitcoinConfiguration bitcoinConfiguration) {
+
+    FiatPayment amountFiat = paymentData.getAmountFiat();
+    if (amountFiat.getAmount().isPresent()) {
+      amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount().get(), languageConfiguration.getLocale(), bitcoinConfiguration, true)));
+    } else {
+      amountFiatValue.setText("");
+    }
+
+    if (amountFiat.getCurrency().isPresent()) {
+      amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT) + " " + amountFiat.getCurrency().get().getCurrencyCode());
+    } else {
+      amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT));
+    }
+
+  }
+
+  // Display a gravatar if we have a contact
+  private void displayGravatar(Contact contact, final JLabel recipientImageLabel) {
+
+    // Attempt to find an email address
+    String emailAddress = contact.getEmail().or("nobody@example.org");
+
+    final ListenableFuture<Optional<BufferedImage>> imageFuture = Gravatars.retrieveGravatar(emailAddress);
+    Futures.addCallback(imageFuture, new FutureCallback<Optional<BufferedImage>>() {
+      public void onSuccess(Optional<BufferedImage> image) {
+        if (image.isPresent()) {
+
+          // Apply the rounded corners
+          ImageIcon imageIcon = new ImageIcon(ImageDecorator.applyRoundedCorners(image.get(), MultiBitUI.IMAGE_CORNER_RADIUS));
+
+          recipientImageLabel.setIcon(imageIcon);
+        } else {
+          // Update the UI to use the "no network" icon
+          recipientImageLabel.setIcon(Images.newNoNetworkContactImageIcon());
+        }
+
+        recipientImageLabel.setVisible(true);
+
+      }
+
+      public void onFailure(Throwable thrown) {
+        // Update the UI to use the "no network" icon
+        recipientImageLabel.setIcon(Images.newNoNetworkContactImageIcon());
+        recipientImageLabel.setVisible(true);
+      }
+    });
+
   }
 }
