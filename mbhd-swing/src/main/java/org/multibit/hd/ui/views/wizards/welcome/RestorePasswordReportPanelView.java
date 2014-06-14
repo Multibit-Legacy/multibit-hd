@@ -13,6 +13,7 @@ import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.components.AccessibilityDecorator;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
@@ -126,6 +127,7 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
     } else {
       // Failed
       passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
+      AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL);
       AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
       return;
     }
@@ -134,6 +136,7 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
     if (walletSummary.getEncryptedPassword() == null) {
       // Failed
       passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
+      AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL);
       AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
       return;
     }
@@ -146,6 +149,7 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
       // Failed
       log.error(e.getMessage(), e);
       passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
+      AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL);
       AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
       return;
     }
@@ -161,6 +165,7 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
     if (decryptedWalletPasswordBytes == null || decryptedWalletPasswordBytes.length == 0) {
       // Failed
       passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
+      AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL);
       AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
       return;
 
@@ -169,6 +174,7 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
     // Must be OK to be here
     String decryptedWalletPassword = new String(decryptedWalletPasswordBytes, Charsets.UTF_8);
     passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_SUCCESS, decryptedWalletPassword));
+    AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_SUCCESS);
     AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
 
   }

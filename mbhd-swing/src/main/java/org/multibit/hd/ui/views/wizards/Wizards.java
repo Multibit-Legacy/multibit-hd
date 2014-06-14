@@ -12,12 +12,6 @@ import org.multibit.hd.ui.views.wizards.about.AboutWizardModel;
 import org.multibit.hd.ui.views.wizards.application_settings.ApplicationSettingsState;
 import org.multibit.hd.ui.views.wizards.application_settings.ApplicationSettingsWizard;
 import org.multibit.hd.ui.views.wizards.application_settings.ApplicationSettingsWizardModel;
-import org.multibit.hd.ui.views.wizards.request_bitcoin.RequestBitcoinState;
-import org.multibit.hd.ui.views.wizards.request_bitcoin.RequestBitcoinWizard;
-import org.multibit.hd.ui.views.wizards.request_bitcoin.RequestBitcoinWizardModel;
-import org.multibit.hd.ui.views.wizards.units_settings.UnitsSettingsState;
-import org.multibit.hd.ui.views.wizards.units_settings.UnitsSettingsWizard;
-import org.multibit.hd.ui.views.wizards.units_settings.UnitsWizardModel;
 import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordState;
 import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordWizard;
 import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordWizardModel;
@@ -50,7 +44,6 @@ import org.multibit.hd.ui.views.wizards.lab_settings.LabSettingsWizardModel;
 import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsState;
 import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsWizard;
 import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsWizardModel;
-import org.multibit.hd.ui.views.wizards.password.PasswordState;
 import org.multibit.hd.ui.views.wizards.password.PasswordWizard;
 import org.multibit.hd.ui.views.wizards.password.PasswordWizardModel;
 import org.multibit.hd.ui.views.wizards.payments.PaymentsState;
@@ -59,6 +52,9 @@ import org.multibit.hd.ui.views.wizards.payments.PaymentsWizardModel;
 import org.multibit.hd.ui.views.wizards.repair_wallet.RepairWalletState;
 import org.multibit.hd.ui.views.wizards.repair_wallet.RepairWalletWizard;
 import org.multibit.hd.ui.views.wizards.repair_wallet.RepairWalletWizardModel;
+import org.multibit.hd.ui.views.wizards.request_bitcoin.RequestBitcoinState;
+import org.multibit.hd.ui.views.wizards.request_bitcoin.RequestBitcoinWizard;
+import org.multibit.hd.ui.views.wizards.request_bitcoin.RequestBitcoinWizardModel;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinParameter;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinWizard;
@@ -69,6 +65,9 @@ import org.multibit.hd.ui.views.wizards.sign_message.SignMessageWizardModel;
 import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsState;
 import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsWizard;
 import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsWizardModel;
+import org.multibit.hd.ui.views.wizards.units_settings.UnitsSettingsState;
+import org.multibit.hd.ui.views.wizards.units_settings.UnitsSettingsWizard;
+import org.multibit.hd.ui.views.wizards.units_settings.UnitsWizardModel;
 import org.multibit.hd.ui.views.wizards.verify_message.VerifyMessageState;
 import org.multibit.hd.ui.views.wizards.verify_message.VerifyMessageWizard;
 import org.multibit.hd.ui.views.wizards.verify_message.VerifyMessageWizardModel;
@@ -250,7 +249,7 @@ public class Wizards {
 
     log.debug("New 'Password wizard'");
 
-    return new PasswordWizard(new PasswordWizardModel(PasswordState.PASSWORD_ENTER_PASSWORD), true);
+    return new PasswordWizard(new PasswordWizardModel(), true);
 
   }
 

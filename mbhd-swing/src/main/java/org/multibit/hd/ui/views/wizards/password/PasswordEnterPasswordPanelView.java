@@ -2,10 +2,7 @@ package org.multibit.hd.ui.views.wizards.password;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.Uninterruptibles;
+import com.google.common.util.concurrent.*;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
@@ -59,6 +56,8 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
   private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV;
   private ModelAndView<EnterPasswordModel, EnterPasswordView> enterPasswordMaV;
   private ModelAndView<SelectWalletModel, SelectWalletView> selectWalletMaV;
+
+  final ListeningExecutorService checkPasswordExecutorService = SafeExecutors.newSingleThreadExecutor("check-password");
 
   /**
    * @param wizard The wizard managing the states
@@ -122,7 +121,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
   @Override
   public void fireInitialStateViewEvents() {
 
-    // Determine any events
+    // Initialise with "Unlock" disabled to force users to enter a password
     ViewEvents.fireWizardButtonEnabledEvent(
       getPanelName(),
       WizardButton.FINISH,
@@ -200,7 +199,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
 
     // Check the password (might take a while so do it asynchronously while showing a spinner)
     // Tar pit (must be in a separate thread to ensure UI updates)
-    ListenableFuture<Boolean> passwordFuture = SafeExecutors.newSingleThreadExecutor("check-password").submit(new Callable<Boolean>() {
+    ListenableFuture<Boolean> passwordFuture = checkPasswordExecutorService.submit(new Callable<Boolean>() {
 
       @Override
       public Boolean call() {

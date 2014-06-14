@@ -179,6 +179,19 @@ public abstract class AbstractFestUseCase {
   }
 
   /**
+   * <p>Asserts that a label contains the required value text in the current locale (ignores wrapping HTML if present)</p>
+   *
+   * @param key The message key to use
+   */
+  protected void assertLabelValue(MessageKey key, String value) {
+
+    String titleHtml = window.label(key.getKey()).text();
+
+    assertThat(titleHtml).contains(value);
+
+  }
+
+  /**
    * The standard length of time for a wallet to fail to unlock
    */
   protected void pauseForFailedWalletUnlock() {

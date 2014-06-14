@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.fest.use_cases.restore_password;
 
 import org.fest.swing.fixture.FrameFixture;
+import org.multibit.hd.testing.WalletFixtures;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
@@ -33,20 +34,8 @@ public class RestorePasswordReportUseCase extends AbstractFestUseCase {
     // Verify that the title appears
     assertLabelText(MessageKey.RESTORE_PASSWORD_REPORT_TITLE);
 
-    // Restoring the wallet can take time
-    pauseForWalletRestore();
-
-    window
-      .label(MessageKey.WALLET_CREATED_STATUS.getKey())
-      .requireVisible();
-
-    window
-      .label(MessageKey.CACERTS_INSTALLED_STATUS.getKey())
-      .requireVisible();
-
-    window
-      .label(MessageKey.SYNCHRONIZING_STATUS.getKey())
-      .requireVisible();
+    // Restoring the password should be instant
+    assertLabelValue(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_SUCCESS, WalletFixtures.STANDARD_PASSWORD.toString());
 
     // OK to proceed
     window
@@ -57,24 +46,13 @@ public class RestorePasswordReportUseCase extends AbstractFestUseCase {
     // Wait for password wizard Exit button to appear
     pauseForViewReset();
 
+    // Verify
+
     window
       .button(MessageKey.EXIT.getKey())
       .requireVisible()
         // Allow a short time to overcome initialisation delays
       .requireEnabled(timeout(3, TimeUnit.SECONDS));
-
-    // Examine the list
-    window
-      .comboBox(MessageKey.SELECT_WALLET.getKey())
-      .requireEnabled()
-      .requireSelection(0)
-      .requireNotEditable();
-
-    String description =window
-      .label(MessageKey.DESCRIPTION.getKey())
-      .text();
-
-    assertThat(description).startsWith("Wallet created");
 
   }
 

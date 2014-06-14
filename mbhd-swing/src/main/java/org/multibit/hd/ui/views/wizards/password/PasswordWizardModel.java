@@ -1,8 +1,6 @@
 package org.multibit.hd.ui.views.wizards.password;
 
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>Model object to provide the following to "password wizard":</p>
@@ -16,18 +14,13 @@ import org.slf4j.LoggerFactory;
  */
 public class PasswordWizardModel extends AbstractWizardModel<PasswordState> {
 
-  private static final Logger log = LoggerFactory.getLogger(PasswordWizardModel.class);
-
   /**
    * The "enter password" panel model
    */
   private PasswordEnterPasswordPanelModel enterPasswordPanelModel;
 
-  /**
-   * @param state The state object
-   */
-  public PasswordWizardModel(PasswordState state) {
-    super(state);
+  public PasswordWizardModel() {
+    super(PasswordState.PASSWORD_ENTER_PASSWORD);
   }
 
   @Override

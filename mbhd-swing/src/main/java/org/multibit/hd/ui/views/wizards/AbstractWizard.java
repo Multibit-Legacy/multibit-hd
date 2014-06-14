@@ -437,16 +437,13 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
           // Deregister all components
           @SuppressWarnings("unchecked")
           List<ModelAndView> mavs = panelView.getComponents();
-          if (mavs != null) {
-
-            for (ModelAndView mav : mavs) {
-                mav.close();
-            }
-
-            // Remove the references
-            mavs.clear();
-
+          for (ModelAndView mav : mavs) {
+            mav.close();
           }
+          log.debug("Closed {} registered component(s) from wizard panel view '{}'", mavs.size(), panelView.getPanelName());
+
+          // Remove the references
+          mavs.clear();
 
         }
 

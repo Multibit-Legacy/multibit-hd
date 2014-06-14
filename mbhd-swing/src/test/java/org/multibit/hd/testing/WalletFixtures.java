@@ -1,7 +1,6 @@
 package org.multibit.hd.testing;
 
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
-import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.files.Files;
 import org.multibit.hd.core.files.ZipFiles;
@@ -62,10 +61,8 @@ public class WalletFixtures {
   /**
    * <p>Create a standard wallet in the current installation directory containing known transactions</p>
    * <p>This is required when we want to examine real transactions in the payments screen</p>
-   *
-   * @return The wallet summary if successful
    */
-  public static WalletSummary createStandardWalletFixture() throws IOException {
+  public static void createStandardWalletFixture() throws IOException {
 
 
     String zipFileName = InstallationManager
@@ -85,14 +82,6 @@ public class WalletFixtures {
 
     }
 
-    WalletId walletId = new WalletId(STANDARD_WALLET_ID);
-
-    // Expect this to work every time
-    return WalletManager.INSTANCE.open(
-      InstallationManager.getOrCreateApplicationDataDirectory(),
-      walletId,
-      STANDARD_PASSWORD
-    ).get();
 
   }
 

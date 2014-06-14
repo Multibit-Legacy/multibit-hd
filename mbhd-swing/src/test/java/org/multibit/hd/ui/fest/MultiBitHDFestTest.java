@@ -126,27 +126,6 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <p>Verify the following:</p>
    * <ul>
    * <li>Start with fresh application directory</li>
-   * <li>Restore a password from a wallet using a known seed phrase</li>
-   * </ul>
-   */
-  @Test
-  public void verifyWelcomeWizardRestorePassword_en_US() throws Exception {
-
-    // Start with a completely empty random application directory
-    arrangeFresh();
-
-    // Restore a password through the welcome wizard
-    WelcomeWizardRestorePassword_en_US_Requirements.verifyUsing(window);
-
-    // Unlock the wallet
-    QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
-
-  }
-
-  /**
-   * <p>Verify the following:</p>
-   * <ul>
-   * <li>Start with fresh application directory</li>
    * <li>Restore a wallet</li>
    * </ul>
    */
@@ -158,6 +137,27 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
     // Restore a wallet through the welcome wizard
     WelcomeWizardRestoreWallet_en_US_Requirements.verifyUsing(window);
+
+    // Unlock the wallet
+    QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
+
+  }
+
+  /**
+   * <p>Verify the following:</p>
+   * <ul>
+   * <li>Start with fresh application directory</li>
+   * <li>Show the password unlock screen and restore from there</li>
+   * </ul>
+   */
+  @Test
+  public void verifyRestorePassword() throws Exception {
+
+    // Start with the standard empty wallet in a random application directory
+    arrangeStandard();
+
+    // Restore a password through the welcome wizard
+    WelcomeWizardRestorePasswordRequirements.verifyUsing(window);
 
     // Unlock the wallet
     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
@@ -374,7 +374,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    */
   private void arrangeStandard() throws Exception {
 
-    log.info("Arranging burned wallet fixture environment...");
+    log.info("Arranging standard wallet fixture environment...");
 
     // Create a random temporary directory to write the wallets
     File temporaryDirectory = makeRandomTemporaryApplicationDirectory();
@@ -385,7 +385,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     OutputStream target = new FileOutputStream(new File(temporaryDirectory + "/"+InstallationManager.CA_CERTS_NAME));
     ByteStreams.copy(cacerts, target);
 
-    // Initialise the backup manager
+    // Initialise the backup manager to use the temporary directory
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
 
     // Add the restored wallet fixture

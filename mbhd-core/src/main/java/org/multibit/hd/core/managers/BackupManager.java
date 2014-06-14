@@ -80,8 +80,6 @@ public enum BackupManager {
   // Notification scheduler
   private ListeningScheduledExecutorService backupNotifier;
 
-  private static final int NOTIFICATION_DELAY = 5;
-
   /**
    * Initialise the backup manager to use the specified cloudBackupDirectory.
    * All the cloud backups will be written and read from this directory.

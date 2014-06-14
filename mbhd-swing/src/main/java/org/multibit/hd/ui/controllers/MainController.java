@@ -167,21 +167,21 @@ public class MainController extends AbstractController implements
         ) {
 
         // Need to hand over to the password wizard
-        handlePasswordWizardHandover();
+        handoverToPasswordWizard();
 
       }
 
       if (PasswordState.PASSWORD_ENTER_PASSWORD.name().equals(event.getPanelName())) {
 
         // Perform final initialisation
-        handlePasswordWizardHide();
+        hidePasswordWizard();
 
       }
 
       if (PasswordState.PASSWORD_RESTORE.name().equals(event.getPanelName())) {
 
         // Need to hand over to the welcome wizard
-        handleWelcomeWizardHandover();
+        handoverToWelcomeWizard();
 
       }
 
@@ -189,14 +189,14 @@ public class MainController extends AbstractController implements
 
         // Update the sidebar name
         String walletName = ((EditWalletWizardModel) event.getWizardModel()).getWalletSummary().getName();
-        handleEditWalletHide(walletName);
+        hideEditWalletWizard(walletName);
 
       }
 
     } else {
 
       // Shift focus depending on what was cancelled
-      handleExitCancelHide(event.getPanelName());
+      hideAsExitCancel(event.getPanelName());
 
     }
   }
@@ -615,7 +615,7 @@ public class MainController extends AbstractController implements
 
   }
 
-  private void handleExitCancelHide(String panelName) {
+  private void hideAsExitCancel(String panelName) {
 
     // The exit dialog has no detail screen so focus defers to the sidebar
     if (ExitState.EXIT_CONFIRM.name().equals(panelName)) {
@@ -627,7 +627,7 @@ public class MainController extends AbstractController implements
 
   }
 
-  private void handleEditWalletHide(String walletName) {
+  private void hideEditWalletWizard(String walletName) {
 
     mainView.sidebarWalletName(walletName);
 
@@ -636,7 +636,7 @@ public class MainController extends AbstractController implements
   /**
    * Welcome wizard has created a new wallet so hand over to the password wizard for access
    */
-  private void handlePasswordWizardHandover() {
+  private void handoverToPasswordWizard() {
 
     log.debug("Hand over to password wizard");
 
@@ -674,7 +674,7 @@ public class MainController extends AbstractController implements
   /**
    * Password wizard needs to perform a restore so hand over to the welcome wizard
    */
-  private void handleWelcomeWizardHandover() {
+  private void handoverToWelcomeWizard() {
 
     log.debug("Hand over to welcome wizard");
 
@@ -711,7 +711,7 @@ public class MainController extends AbstractController implements
   /**
    * Password wizard has hidden
    */
-  private void handlePasswordWizardHide() {
+  private void hidePasswordWizard() {
 
     log.debug("Wallet unlocked. Starting services...");
 

@@ -24,7 +24,13 @@ public class RestoreButtonUseCase extends AbstractFestUseCase {
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    window.button(MessageKey.RESTORE.getKey()).click();
+    // Expect the restore button
+    window
+      .button(MessageKey.RESTORE.getKey())
+      .click();
+
+    // Allow time for the wizard hand over to take place
+    pauseForViewReset();
 
   }
 
