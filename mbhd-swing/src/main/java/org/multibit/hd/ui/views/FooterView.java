@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
@@ -57,6 +58,8 @@ public class FooterView extends AbstractView {
       "[][][]",
       "[]"
     ));
+
+    contentPanel.setMinimumSize(new Dimension(MultiBitUI.WIZARD_MIN_WIDTH,MultiBitUI.FOOTER_MINIMUM_HEIGHT));
 
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.footerPanelBackground());

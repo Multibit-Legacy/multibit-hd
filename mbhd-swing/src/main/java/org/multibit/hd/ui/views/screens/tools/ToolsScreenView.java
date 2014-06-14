@@ -56,8 +56,8 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
 
     MigLayout layout = new MigLayout(
       Panels.migXYDetailLayout(),
-      "[]10[]10[]", // Column constraints
-      "10[]10[]10[]" // Row constraints
+      "6[]6[]6[]6", // Column constraints
+      "6[]6[]6[]6" // Row constraints
     );
 
     JPanel contentPanel = Panels.newPanel(layout);
