@@ -212,6 +212,8 @@ public enum MessageKey {
   RESTORE_PASSWORD_SELECT_BACKUP_TITLE("restore_password_select_backup_title"),
   RESTORE_PASSWORD_TIMESTAMP_TITLE("restore_password_timestamp_title"),
   RESTORE_PASSWORD_REPORT_TITLE("restore_password_report_title"),
+  RESTORE_PASSWORD_REPORT_MESSAGE_FAIL("restore_password_report_message_fail"),
+  RESTORE_PASSWORD_REPORT_MESSAGE_SUCCESS("restore_password_report_message_success"),
 
   RESTORE_WALLET_SEED_PHRASE_TITLE("restore_wallet_seed_phrase_title"),
   RESTORE_WALLET_BACKUP_LOCATION_TITLE("restore_wallet_backup_location_title"),
@@ -228,10 +230,6 @@ public enum MessageKey {
   EDIT_HISTORY_ENTRIES_TITLE("edit_history_entries_title"),
 
   PASSWORD_TITLE("password_title"),
-  PASSWORD_ENTER_SEED_PHRASE_TITLE("password_enter_seed_phrase_title"),
-  PASSWORD_REPORT_TITLE("password_report_title"),
-  PASSWORD_REPORT_MESSAGE("password_report_message"),
-  PASSWORD_REPORT_MESSAGE_FAIL("password_report_message_fail"),
   PASSWORD_UNLOCK("password_unlock"),
 
   // Settings titles

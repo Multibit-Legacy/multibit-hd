@@ -47,7 +47,7 @@ public class RestorePasswordEnterSeedPhraseView extends AbstractWizardPanelView<
    */
   public RestorePasswordEnterSeedPhraseView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.PASSWORD_ENTER_SEED_PHRASE_TITLE, AwesomeIcon.MAGIC);
+    super(wizard, panelName, MessageKey.RESTORE_PASSWORD_SEED_PHRASE_TITLE, AwesomeIcon.MAGIC);
 
   }
 

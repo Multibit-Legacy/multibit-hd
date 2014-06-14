@@ -300,7 +300,7 @@ public class Panels {
     radio2.setActionCommand(restorePasswordCommand);
 
     JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.RESTORE_WALLET);
-    radio2.setActionCommand(restoreWalletCommand);
+    radio3.setActionCommand(restoreWalletCommand);
 
     JRadioButton radio4 = RadioButtons.newRadioButton(listener, MessageKey.USE_HARDWARE_WALLET);
     radio4.setActionCommand(hardwareCommand);

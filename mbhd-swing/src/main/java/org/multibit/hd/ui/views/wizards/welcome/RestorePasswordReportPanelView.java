@@ -46,7 +46,7 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
    */
   public RestorePasswordReportPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.PASSWORD_REPORT_TITLE, AwesomeIcon.MAGIC);
+    super(wizard, panelName, MessageKey.RESTORE_PASSWORD_REPORT_TITLE, AwesomeIcon.MAGIC);
 
   }
 
@@ -125,7 +125,7 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
       walletSummary = WalletManager.getOrCreateWalletSummary(walletDirectory, walletId);
     } else {
       // Failed
-      passwordRecoveryStatus.setText(Languages.safeText(MessageKey.PASSWORD_REPORT_MESSAGE_FAIL));
+      passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
       AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
       return;
     }
@@ -133,7 +133,7 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
     // Check for present but empty wallet directory
     if (walletSummary.getEncryptedPassword() == null) {
       // Failed
-      passwordRecoveryStatus.setText(Languages.safeText(MessageKey.PASSWORD_REPORT_MESSAGE_FAIL));
+      passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
       AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
       return;
     }
@@ -145,7 +145,7 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
     } catch (NoSuchAlgorithmException e) {
       // Failed
       log.error(e.getMessage(), e);
-      passwordRecoveryStatus.setText(Languages.safeText(MessageKey.PASSWORD_REPORT_MESSAGE_FAIL));
+      passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
       AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
       return;
     }
@@ -160,7 +160,7 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
     // Check the result
     if (decryptedWalletPasswordBytes == null || decryptedWalletPasswordBytes.length == 0) {
       // Failed
-      passwordRecoveryStatus.setText(Languages.safeText(MessageKey.PASSWORD_REPORT_MESSAGE_FAIL));
+      passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
       AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
       return;
 
@@ -168,7 +168,7 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
 
     // Must be OK to be here
     String decryptedWalletPassword = new String(decryptedWalletPasswordBytes, Charsets.UTF_8);
-    passwordRecoveryStatus.setText(Languages.safeText(MessageKey.PASSWORD_REPORT_MESSAGE, decryptedWalletPassword));
+    passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_SUCCESS, decryptedWalletPassword));
     AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
 
   }
