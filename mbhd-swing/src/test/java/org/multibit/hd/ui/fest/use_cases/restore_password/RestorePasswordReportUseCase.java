@@ -13,7 +13,7 @@ import static org.fest.swing.timing.Timeout.timeout;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the welcome wizard "restore wallet report" panel view</li>
+ * <li>Verify the welcome wizard "restore password report" panel view</li>
  * </ul>
  *
  * @since 0.0.1
@@ -31,7 +31,7 @@ public class RestorePasswordReportUseCase extends AbstractFestUseCase {
     assertThat(parameters).isNotNull();
 
     // Verify that the title appears
-    assertLabelText(MessageKey.RESTORE_WALLET_REPORT_TITLE);
+    assertLabelText(MessageKey.RESTORE_PASSWORD_REPORT_TITLE);
 
     // Restoring the wallet can take time
     pauseForWalletRestore();

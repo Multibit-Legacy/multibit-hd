@@ -44,6 +44,10 @@ public enum WelcomeWizardState {
    */
   RESTORE_PASSWORD_SEED_PHRASE,
   /**
+   * Restore password: Report on the restoration outcome
+   */
+  RESTORE_PASSWORD_REPORT,
+  /**
    * Restore wallet: Enter seed phrase to begin the process
    */
   RESTORE_WALLET_SEED_PHRASE,

@@ -57,6 +57,14 @@ public class WelcomeWizard extends AbstractWizard<WelcomeWizardModel> {
       new CreateWalletReportPanelView(this, CREATE_WALLET_REPORT.name()));
 
     wizardViewMap.put(
+      RESTORE_PASSWORD_SEED_PHRASE.name(),
+      new RestorePasswordEnterSeedPhraseView(this, RESTORE_PASSWORD_SEED_PHRASE.name()));
+
+    wizardViewMap.put(
+      RESTORE_PASSWORD_REPORT.name(),
+      new RestorePasswordReportPanelView(this, RESTORE_PASSWORD_REPORT.name()));
+
+    wizardViewMap.put(
       RESTORE_WALLET_SEED_PHRASE.name(),
       new RestoreWalletSeedPhrasePanelView(this, RESTORE_WALLET_SEED_PHRASE.name()));
 

@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.password;
+package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
@@ -23,18 +23,18 @@ import org.multibit.hd.ui.views.wizards.WizardButton;
 import javax.swing.*;
 import java.util.List;
 
-import static org.multibit.hd.ui.views.wizards.password.PasswordState.PASSWORD_ENTER_SEED_PHRASE;
+import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.RESTORE_PASSWORD_SEED_PHRASE;
 
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Password: Enter seed phrase</li>
+ * <li>Restore Password: Enter seed phrase</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class PasswordEnterSeedPhraseView extends AbstractWizardPanelView<PasswordWizardModel, PasswordEnterSeedPhrasePanelModel> {
+public class RestorePasswordEnterSeedPhraseView extends AbstractWizardPanelView<WelcomeWizardModel, EnterSeedPhraseModel> {
 
   // View components
   private ModelAndView<EnterSeedPhraseModel, EnterSeedPhraseView> enterSeedPhraseMaV;
@@ -45,7 +45,7 @@ public class PasswordEnterSeedPhraseView extends AbstractWizardPanelView<Passwor
    * @param wizard    The wizard managing the states
    * @param panelName The panel name for filtering component events
    */
-  public PasswordEnterSeedPhraseView(AbstractWizard<PasswordWizardModel> wizard, String panelName) {
+  public RestorePasswordEnterSeedPhraseView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, MessageKey.PASSWORD_ENTER_SEED_PHRASE_TITLE, AwesomeIcon.MAGIC);
 
@@ -56,15 +56,8 @@ public class PasswordEnterSeedPhraseView extends AbstractWizardPanelView<Passwor
 
     enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV(getPanelName(), true, true);
 
-    // Configure the panel model
-    PasswordEnterSeedPhrasePanelModel panelModel = new PasswordEnterSeedPhrasePanelModel(
-      getPanelName(),
-      enterSeedPhraseMaV.getModel()
-    );
-    setPanelModel(panelModel);
-
     // Bind it to the wizard model
-    getWizardModel().setEnterSeedPhrasePanelModel(panelModel);
+    getWizardModel().setRestorePasswordEnterSeedPhraseModel(enterSeedPhraseMaV.getModel());
 
     // Register components
     registerComponents(enterSeedPhraseMaV);
@@ -86,7 +79,7 @@ public class PasswordEnterSeedPhraseView extends AbstractWizardPanelView<Passwor
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<PasswordWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
 
     PanelDecorator.addExitCancelPreviousNext(this, wizard);
 
@@ -108,8 +101,8 @@ public class PasswordEnterSeedPhraseView extends AbstractWizardPanelView<Passwor
   public void updateFromComponentModels(Optional componentModel) {
 
     // Fire the decision events (requires knowledge of the previous panel data)
-    ViewEvents.fireWizardButtonEnabledEvent(PASSWORD_ENTER_SEED_PHRASE.name(), WizardButton.NEXT, isNextEnabled());
-    ViewEvents.fireVerificationStatusChangedEvent(PASSWORD_ENTER_SEED_PHRASE.name(), isNextEnabled());
+    ViewEvents.fireWizardButtonEnabledEvent(RESTORE_PASSWORD_SEED_PHRASE.name(), WizardButton.NEXT, isNextEnabled());
+    ViewEvents.fireVerificationStatusChangedEvent(RESTORE_PASSWORD_SEED_PHRASE.name(), isNextEnabled());
 
   }
 
@@ -119,8 +112,8 @@ public class PasswordEnterSeedPhraseView extends AbstractWizardPanelView<Passwor
   private boolean isNextEnabled() {
 
     // Get the user data
-    String timestamp = getPanelModel().get().getEnterSeedPhraseModel().getSeedTimestamp();
-    List<String> seedPhrase = getPanelModel().get().getEnterSeedPhraseModel().getSeedPhrase();
+    String timestamp = getWizardModel().getRestorePasswordEnterSeedPhraseModel().getSeedTimestamp();
+    List<String> seedPhrase = getWizardModel().getRestorePasswordEnterSeedPhraseModel().getSeedPhrase();
 
     // Attempt to parse the timestamp if present
     boolean timestampIsValid = false;

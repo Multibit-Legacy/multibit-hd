@@ -81,6 +81,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   private SelectFileModel restoreLocationSelectFileModel;
 
   private EnterSeedPhraseModel createWalletEnterSeedPhraseModel;
+  private EnterSeedPhraseModel restorePasswordEnterSeedPhraseModel;
   private EnterSeedPhraseModel restoreWalletEnterSeedPhraseModel;
   private EnterSeedPhraseModel restoreWalletBackupSeedPhraseModel;
 
@@ -94,7 +95,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   private SelectBackupSummaryModel selectBackupSummaryModel;
   private EnterSeedPhraseModel restoreWalletEnterTimestampModel;
   private EnterPasswordModel restoreWalletEnterPasswordModel;
-  private List<WalletSummary> walletList= Lists.newArrayList();
+  private List<WalletSummary> walletList = Lists.newArrayList();
 
   /**
    * @param state The state object
@@ -132,6 +133,9 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
         break;
       case CREATE_WALLET_REPORT:
         throw new IllegalStateException("'Next' is not permitted here");
+      case RESTORE_PASSWORD_SEED_PHRASE:
+        state = RESTORE_PASSWORD_REPORT;
+        break;
       case RESTORE_WALLET_SEED_PHRASE:
         if (!isLocalZipBackupPresent()) {
           restoreMethod = RESTORE_WALLET_SELECT_BACKUP_LOCATION;
@@ -184,6 +188,12 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
         break;
       case CREATE_WALLET_REPORT:
         throw new IllegalStateException("'Previous' is not permitted here");
+      case RESTORE_PASSWORD_SEED_PHRASE:
+        state = WELCOME_SELECT_WALLET;
+        break;
+      case RESTORE_PASSWORD_REPORT:
+        state = RESTORE_PASSWORD_SEED_PHRASE;
+        break;
       case RESTORE_WALLET_SEED_PHRASE:
         state = WELCOME_SELECT_WALLET;
         break;
@@ -505,5 +515,18 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
 
   public EnterPasswordModel getRestoreWalletEnterPasswordModel() {
     return restoreWalletEnterPasswordModel;
+  }
+
+  /**
+   * <p>Reduced visibility for panel models</p>
+   *
+   * @param enterSeedPhraseModel The "restore password" seed phrase mode
+   */
+  void setRestorePasswordEnterSeedPhraseModel(EnterSeedPhraseModel enterSeedPhraseModel) {
+    this.restorePasswordEnterSeedPhraseModel = enterSeedPhraseModel;
+  }
+
+  public EnterSeedPhraseModel getRestorePasswordEnterSeedPhraseModel() {
+    return restorePasswordEnterSeedPhraseModel;
   }
 }

@@ -89,7 +89,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
     getWizardModel().setEnterPasswordPanelModel(panelModel);
 
     // Register components
-    registerComponents(enterPasswordMaV, selectWalletMaV);
+    registerComponents(displaySecurityPopoverMaV, enterPasswordMaV, selectWalletMaV);
 
   }
 

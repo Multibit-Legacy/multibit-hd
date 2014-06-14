@@ -1028,9 +1028,9 @@ public class Labels {
   public static JLabel newRestoreFromSeedPhraseNote() {
 
     return newNoteLabel(new MessageKey[]{
-      MessageKey.RESTORE_SEED_PHRASE_NOTE_1,
-      MessageKey.RESTORE_SEED_PHRASE_NOTE_2,
-      MessageKey.RESTORE_SEED_PHRASE_NOTE_3
+      MessageKey.RESTORE_WALLET_SEED_PHRASE_NOTE_1,
+      MessageKey.RESTORE_WALLET_SEED_PHRASE_NOTE_2,
+      MessageKey.RESTORE_WALLET_SEED_PHRASE_NOTE_3
     }, new Object[][]{});
   }
 

@@ -207,6 +207,12 @@ public enum MessageKey {
   SELECT_BACKUP_LOCATION_TITLE("select_backup_location_title"),
   CREATE_WALLET_REPORT_TITLE("create_wallet_report_title"),
 
+  RESTORE_PASSWORD_SEED_PHRASE_TITLE("restore_password_seed_phrase_title"),
+  RESTORE_PASSWORD_BACKUP_LOCATION_TITLE("restore_password_backup_location_title"),
+  RESTORE_PASSWORD_SELECT_BACKUP_TITLE("restore_password_select_backup_title"),
+  RESTORE_PASSWORD_TIMESTAMP_TITLE("restore_password_timestamp_title"),
+  RESTORE_PASSWORD_REPORT_TITLE("restore_password_report_title"),
+
   RESTORE_WALLET_SEED_PHRASE_TITLE("restore_wallet_seed_phrase_title"),
   RESTORE_WALLET_BACKUP_LOCATION_TITLE("restore_wallet_backup_location_title"),
   RESTORE_WALLET_SELECT_BACKUP_TITLE("restore_wallet_select_backup_title"),
@@ -371,9 +377,13 @@ public enum MessageKey {
   RESTORE_BACKUP_NOTE_2("restore_backup_note_2"),
   RESTORE_BACKUP_NOTE_3("restore_backup_note_3"),
 
-  RESTORE_SEED_PHRASE_NOTE_1("restore_seed_phrase_note_1"),
-  RESTORE_SEED_PHRASE_NOTE_2("restore_seed_phrase_note_2"),
-  RESTORE_SEED_PHRASE_NOTE_3("restore_seed_phrase_note_3"),
+  RESTORE_PASSWORD_SEED_PHRASE_NOTE_1("restore_password_seed_phrase_note_1"),
+  RESTORE_PASSWORD_SEED_PHRASE_NOTE_2("restore_password_seed_phrase_note_2"),
+  RESTORE_PASSWORD_SEED_PHRASE_NOTE_3("restore_password_seed_phrase_note_3"),
+
+  RESTORE_WALLET_SEED_PHRASE_NOTE_1("restore_wallet_seed_phrase_note_1"),
+  RESTORE_WALLET_SEED_PHRASE_NOTE_2("restore_wallet_seed_phrase_note_2"),
+  RESTORE_WALLET_SEED_PHRASE_NOTE_3("restore_wallet_seed_phrase_note_3"),
 
   RESTORE_TIMESTAMP_NOTE_1("restore_timestamp_note_1"),
   RESTORE_TIMESTAMP_NOTE_2("restore_timestamp_note_2"),

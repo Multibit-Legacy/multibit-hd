@@ -30,12 +30,11 @@ public class PasswordWizard extends AbstractWizard<PasswordWizardModel> {
     wizardViewMap.put(
       PasswordState.PASSWORD_ENTER_PASSWORD.name(),
       new PasswordEnterPasswordPanelView(this, PasswordState.PASSWORD_ENTER_PASSWORD.name()));
+
+    // Transition panel that is never shown
     wizardViewMap.put(
-      PasswordState.PASSWORD_ENTER_SEED_PHRASE.name(),
-      new PasswordEnterSeedPhraseView(this, PasswordState.PASSWORD_ENTER_SEED_PHRASE.name()));
-    wizardViewMap.put(
-      PasswordState.PASSWORD_REPORT.name(),
-      new PasswordReportPanelView(this, PasswordState.PASSWORD_REPORT.name()));
+      PasswordState.PASSWORD_RESTORE.name(),
+      new PasswordRestorePanelView(this, PasswordState.PASSWORD_RESTORE.name()));
 
   }
 

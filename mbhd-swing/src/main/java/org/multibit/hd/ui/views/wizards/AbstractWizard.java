@@ -331,7 +331,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
   /**
    * @param wizardView The wizard view (providing a reference to its underlying panel model)
    *
-   * @return The "recover" action based on the model state
+   * @return The "restore" action based on the model state
    */
   public <P> Action getRestoreAction(final AbstractWizardPanelView<M, P> wizardView) {
 
@@ -339,16 +339,10 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        // Ensure the panel updates its model (the button is outside of the panel itself)
-        wizardView.updateFromComponentModels(Optional.absent());
+        // Since #17 all restore work is done by the welcome wizard
+        // See MainController for the hand over code
+        hide(PasswordState.PASSWORD_RESTORE.name(), false);
 
-        // Aggregate the panel information into the wizard model
-
-        // Move to the recover state (equivalent to next)
-        wizardModel.showNext();
-
-        // Show the panel based on the state
-        show(wizardModel.getPanelName());
       }
     };
   }

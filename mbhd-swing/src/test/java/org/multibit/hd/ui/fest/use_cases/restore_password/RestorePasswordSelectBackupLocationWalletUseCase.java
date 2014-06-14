@@ -25,7 +25,7 @@ public class RestorePasswordSelectBackupLocationWalletUseCase extends AbstractFe
   public void execute(Map<String, Object> parameters) {
 
     // Verify that the title appears
-    assertLabelText(MessageKey.RESTORE_WALLET_SELECT_BACKUP_TITLE);
+    assertLabelText(MessageKey.RESTORE_PASSWORD_SELECT_BACKUP_TITLE);
 
     window
       .textBox()

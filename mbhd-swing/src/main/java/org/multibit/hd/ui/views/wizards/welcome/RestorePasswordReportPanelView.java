@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.password;
+package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
@@ -37,14 +37,14 @@ import java.util.List;
  * @since 0.0.1
  *  
  */
-public class PasswordReportPanelView extends AbstractWizardPanelView<PasswordWizardModel, PasswordReportPanelModel> {
+public class RestorePasswordReportPanelView extends AbstractWizardPanelView<WelcomeWizardModel, Boolean> {
 
   private JLabel passwordRecoveryStatus;
 
   /**
    * @param wizard The wizard managing the states
    */
-  public PasswordReportPanelView(AbstractWizard<PasswordWizardModel> wizard, String panelName) {
+  public RestorePasswordReportPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, MessageKey.PASSWORD_REPORT_TITLE, AwesomeIcon.MAGIC);
 
@@ -53,14 +53,7 @@ public class PasswordReportPanelView extends AbstractWizardPanelView<PasswordWiz
   @Override
   public void newPanelModel() {
 
-    // Configure the panel model
-    PasswordReportPanelModel panelModel = new PasswordReportPanelModel(
-      getPanelName()
-    );
-    setPanelModel(panelModel);
-
-    // Bind it to the wizard model
-    getWizardModel().setReportPanelModel(panelModel);
+    // Nothing to bind
 
   }
 
@@ -85,7 +78,7 @@ public class PasswordReportPanelView extends AbstractWizardPanelView<PasswordWiz
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<PasswordWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
 
     PanelDecorator.addExitCancelPreviousFinish(this, wizard);
 
@@ -113,13 +106,13 @@ public class PasswordReportPanelView extends AbstractWizardPanelView<PasswordWiz
    */
   private void recoverPassword() {
 
-    PasswordWizardModel model = getWizardModel();
+    WelcomeWizardModel model = getWizardModel();
 
     // Locate the installation directory
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     // Work out the seed, wallet id and wallet directory
-    List<String> seedPhrase = model.getEnterSeedPhrasePanelModel().getEnterSeedPhraseModel().getSeedPhrase();
+    List<String> seedPhrase = model.getRestorePasswordEnterSeedPhraseModel().getSeedPhrase();
     SeedPhraseGenerator seedPhraseGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedPhraseGenerator.convertToSeed(seedPhrase);
     WalletId walletId = new WalletId(seed);

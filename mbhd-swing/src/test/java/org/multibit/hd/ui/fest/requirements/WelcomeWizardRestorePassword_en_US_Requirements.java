@@ -3,10 +3,10 @@ package org.multibit.hd.ui.fest.requirements;
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.testing.WalletFixtures;
-import org.multibit.hd.ui.fest.use_cases.restore_wallet.RestoreWalletEnterSeedPhraseUseCase;
-import org.multibit.hd.ui.fest.use_cases.restore_wallet.RestoreWalletReportUseCase;
-import org.multibit.hd.ui.fest.use_cases.restore_wallet.RestoreWalletSelectBackupLocationWalletUseCase;
-import org.multibit.hd.ui.fest.use_cases.restore_wallet.RestoreWalletTimestampUseCase;
+import org.multibit.hd.ui.fest.use_cases.restore_password.RestorePasswordEnterSeedPhraseUseCase;
+import org.multibit.hd.ui.fest.use_cases.restore_password.RestorePasswordReportUseCase;
+import org.multibit.hd.ui.fest.use_cases.restore_password.RestorePasswordSelectBackupLocationWalletUseCase;
+import org.multibit.hd.ui.fest.use_cases.restore_password.RestorePasswordTimestampUseCase;
 import org.multibit.hd.ui.fest.use_cases.security.CloseDebugSecurityPopoverUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectLanguage_en_US_UseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectRestorePasswordUseCase;
@@ -46,13 +46,13 @@ public class WelcomeWizardRestorePassword_en_US_Requirements {
       WalletFixtures.STANDARD_TIMESTAMP
     );
 
-    new RestoreWalletEnterSeedPhraseUseCase(window).execute(parameters);
+    new RestorePasswordEnterSeedPhraseUseCase(window).execute(parameters);
 
-    new RestoreWalletSelectBackupLocationWalletUseCase(window).execute(parameters);
+    new RestorePasswordSelectBackupLocationWalletUseCase(window).execute(parameters);
 
-    new RestoreWalletTimestampUseCase(window).execute(parameters);
+    new RestorePasswordTimestampUseCase(window).execute(parameters);
 
-    new RestoreWalletReportUseCase(window).execute(parameters);
+    new RestorePasswordReportUseCase(window).execute(parameters);
 
   }
 }

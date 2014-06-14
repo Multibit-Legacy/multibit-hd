@@ -5,6 +5,7 @@ import com.google.bitcoin.uri.BitcoinURIParseException;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
@@ -73,6 +74,8 @@ public class MainController extends AbstractController implements
   private Optional<BitcoinNetworkService> bitcoinNetworkService = Optional.absent();
 
   private final BitcoinURIListeningService bitcoinURIListeningService;
+
+  final ListeningExecutorService handoverExecutorService = SafeExecutors.newSingleThreadExecutor("wizard-handover");
 
   // Keep track of other controllers for use after a preferences change
   private final HeaderController headerController;
@@ -158,9 +161,10 @@ public class MainController extends AbstractController implements
 
       // Successful wizard interaction
 
-      if (WelcomeWizardState.CREATE_WALLET_REPORT.name().equals(event.getPanelName()) ||
-        WelcomeWizardState.RESTORE_WALLET_REPORT.name().equals(event.getPanelName()) ||
-        PasswordState.PASSWORD_REPORT.name().equals(event.getPanelName())) {
+      if (WelcomeWizardState.CREATE_WALLET_REPORT.name().equals(event.getPanelName())
+        || WelcomeWizardState.RESTORE_WALLET_REPORT.name().equals(event.getPanelName())
+        || WelcomeWizardState.RESTORE_PASSWORD_REPORT.name().equals(event.getPanelName())
+        ) {
 
         // Need to hand over to the password wizard
         handlePasswordWizardHandover();
@@ -171,6 +175,13 @@ public class MainController extends AbstractController implements
 
         // Perform final initialisation
         handlePasswordWizardHide();
+
+      }
+
+      if (PasswordState.PASSWORD_RESTORE.name().equals(event.getPanelName())) {
+
+        // Need to hand over to the welcome wizard
+        handleWelcomeWizardHandover();
 
       }
 
@@ -657,6 +668,43 @@ public class MainController extends AbstractController implements
       }
     });
 
+
+  }
+
+  /**
+   * Password wizard needs to perform a restore so hand over to the welcome wizard
+   */
+  private void handleWelcomeWizardHandover() {
+
+    log.debug("Hand over to welcome wizard");
+
+    // Handover
+    mainView.setShowExitingWelcomeWizard(true);
+    mainView.setShowExitingPasswordWizard(false);
+
+    // Use a new thread to handle the new wizard so that the handover can complete
+    handoverExecutorService.execute(new Runnable() {
+      @Override
+      public void run() {
+
+        // Allow time for the other wizard to finish hiding (200ms is sufficient)
+        Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
+
+        // Must execute on the EDT
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+
+            Panels.hideLightBoxIfPresent();
+
+            log.debug("Showing exiting welcome wizard after handover");
+            Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_WALLET).getWizardScreenHolder());
+
+          }
+        });
+
+      }
+    });
 
   }
 

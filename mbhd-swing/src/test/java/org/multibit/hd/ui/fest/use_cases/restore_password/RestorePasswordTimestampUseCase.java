@@ -12,7 +12,7 @@ import static org.fest.assertions.Assertions.assertThat;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the welcome wizard "restore wallet timestamp and password" panel view</li>
+ * <li>Verify the welcome wizard "restore password timestamp and password" panel view</li>
  * </ul>
  *
  * @since 0.0.1
@@ -30,7 +30,7 @@ public class RestorePasswordTimestampUseCase extends AbstractFestUseCase {
     assertThat(parameters).isNotNull();
 
     // Verify that the title appears
-    assertLabelText(MessageKey.RESTORE_WALLET_TIMESTAMP_TITLE);
+    assertLabelText(MessageKey.RESTORE_PASSWORD_TIMESTAMP_TITLE);
 
     // Verify that the notes are present
     assertLabelText(MessageKey.RESTORE_TIMESTAMP_NOTE_1);

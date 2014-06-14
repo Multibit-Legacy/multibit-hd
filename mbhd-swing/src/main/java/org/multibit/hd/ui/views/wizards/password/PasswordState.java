@@ -12,8 +12,11 @@ package org.multibit.hd.ui.views.wizards.password;
 public enum PasswordState {
 
   PASSWORD_ENTER_PASSWORD,
-  PASSWORD_ENTER_SEED_PHRASE,
-  PASSWORD_REPORT,
+  /**
+   * Special case state used by the restore button action to trigger
+   * a handover to the welcome wizard
+   */
+  PASSWORD_RESTORE,
 
   // End of enum
   ;
