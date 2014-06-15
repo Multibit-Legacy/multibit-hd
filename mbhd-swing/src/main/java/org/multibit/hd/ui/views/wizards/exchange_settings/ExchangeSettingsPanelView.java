@@ -22,6 +22,7 @@ import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.utils.HtmlUtils;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
@@ -626,7 +627,11 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
         Sounds.playBeep();
 
-        tickerVerifiedStatus.setText(Languages.safeText(CoreMessageKey.THE_ERROR_WAS, t.getMessage()));
+        // Ensure we wrap the label
+        String failureHtml = HtmlUtils.localiseWithLineBreaks(new String[] {
+          Languages.safeText(CoreMessageKey.THE_ERROR_WAS, t.getMessage())
+        });
+        tickerVerifiedStatus.setText(failureHtml);
         AwesomeDecorator.bindIcon(
           AwesomeIcon.TIMES,
           tickerVerifiedStatus,
