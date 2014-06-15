@@ -95,6 +95,7 @@ public class RotatingIcon implements Icon {
       @Override
       public void actionPerformed(ActionEvent e) {
 
+        // Guaranteed to be on the EDT
         incrementRotation(component);
 
       }
@@ -108,6 +109,11 @@ public class RotatingIcon implements Icon {
 
   }
 
+  /**
+   * Increment the rotation
+   *
+   * @param component The containing component (e.g. label or button)
+   */
   public void incrementRotation(final JComponent component) {
 
     // Increment theta
@@ -122,13 +128,7 @@ public class RotatingIcon implements Icon {
 
     }
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        component.repaint();
-
-      }
-    });
+    component.repaint();
 
   }
 
