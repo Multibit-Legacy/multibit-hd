@@ -82,8 +82,10 @@ public class ChangePasswordReportPanelView extends AbstractWizardPanelView<Chang
 
   @Override
   public void fireInitialStateViewEvents() {
-    // Enable the finish button
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
+
+    // Disable the finish button while the process is occurring
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, false);
+
   }
 
   @Override
@@ -112,20 +114,19 @@ public class ChangePasswordReportPanelView extends AbstractWizardPanelView<Chang
     return true;
   }
 
-  @Override
-  public void afterShow() {
+  @Subscribe
+  public void onChangePasswordResultEvent(ChangePasswordResultEvent changePasswordResultEvent) {
 
+    passwordChangedStatusLabel.setText(Languages.safeText(changePasswordResultEvent.getChangePasswordResultKey(), changePasswordResultEvent.getChangePasswordResultData()));
+    Labels.decorateStatusLabel(passwordChangedStatusLabel, Optional.of(changePasswordResultEvent.isChangePasswordWasSuccessful()));
+
+    // Enable and focus the finish button
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
         getFinishButton().requestFocusInWindow();
       }
     });
-  }
-
-  @Subscribe
-  public void onChangePasswordResultEvent(ChangePasswordResultEvent changePasswordResultEvent) {
-    passwordChangedStatusLabel.setText(Languages.safeText(changePasswordResultEvent.getChangePasswordResultKey(), changePasswordResultEvent.getChangePasswordResultData()));
-    Labels.decorateStatusLabel(passwordChangedStatusLabel, Optional.of(changePasswordResultEvent.isChangePasswordWasSuccessful()));
   }
 }
