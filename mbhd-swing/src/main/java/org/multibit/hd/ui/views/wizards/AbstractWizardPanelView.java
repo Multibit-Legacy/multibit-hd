@@ -56,7 +56,7 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
   /**
    * The optional panel model (some panels are read only views)
    */
-  private Optional<P> panelModel;
+  private Optional<P> panelModel=Optional.absent();
 
   /**
    * The wizard screen panel (title, contents, buttons)
@@ -203,7 +203,7 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
   }
 
   /**
-   * @return The panel model specific to this view
+   * @return The panel model specific to this view. Never null.
    */
   public Optional<P> getPanelModel() {
     return panelModel;

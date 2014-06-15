@@ -769,8 +769,7 @@ public class MainController extends AbstractController implements
 
         } catch (Exception e) {
           // TODO localise and put on UI
-          log.error("Services did not start ok. Error was {}", e.getClass().getCanonicalName() + " " + e.getMessage());
-          e.printStackTrace();
+          log.error("Services did not start ok. Error was {}", e.getClass().getCanonicalName() + " " + e.getMessage(), e);
         }
       }
     });

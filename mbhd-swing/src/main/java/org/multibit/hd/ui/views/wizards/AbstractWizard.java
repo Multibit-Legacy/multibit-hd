@@ -417,6 +417,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
         }
 
         // Work through the view map ensuring all components are deregistered from UI events
+        log.debug("Deregister {} views and their component(s)", wizardViewMap.size());
         for (Map.Entry<String, AbstractWizardPanelView> entry : wizardViewMap.entrySet()) {
 
           AbstractWizardPanelView panelView = entry.getValue();
@@ -424,14 +425,14 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
           // Ensure we deregister the wizard panel view (and model if present) for events
           try {
             CoreServices.uiEventBus.unregister(panelView);
-            log.trace("Deregistered wizard panel view '{}' from UI events", panelView.getPanelName());
+            log.debug("Deregistered wizard panel view '{}' from UI events", panelView.getPanelName());
             if (panelView.getPanelModel().isPresent()) {
               Object panelModel = panelView.getPanelModel().get();
               CoreServices.uiEventBus.unregister(panelModel);
-              log.trace("Deregistered wizard panel model '{}' from UI events", panelView.getPanelName());
+              log.debug("Deregistered wizard panel model '{}' from UI events", panelView.getPanelName());
             }
-          } catch (IllegalArgumentException e) {
-            log.warn("Wizard panel model/view '{}' was not registered", panelView.getPanelName());
+          } catch (NullPointerException | IllegalArgumentException e) {
+            log.warn("Wizard panel model/view '{}' was not registered", panelView.getPanelName(), e);
           }
 
           // Deregister all components
