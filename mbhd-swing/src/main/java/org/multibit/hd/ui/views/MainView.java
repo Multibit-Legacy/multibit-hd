@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -106,8 +107,17 @@ public class MainView extends JFrame {
     // Ensure the title font is updated depending on the new locale
     TitleFontDecorator.refresh(locale);
 
-    // Ensure the frame title matches the new language
-    setTitle(Languages.safeText(MessageKey.MULTIBIT_HD_TITLE));
+    // Ensure the frame title matches the new language and wallet name
+    if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+      setTitle(
+        Languages.safeText(MessageKey.MULTIBIT_HD_TITLE)
+          + " - "
+          + WalletManager.INSTANCE.getCurrentWalletSummary().get().getName());
+
+    } else {
+      // Do not have a wallet yet
+      setTitle(Languages.safeText(MessageKey.MULTIBIT_HD_TITLE));
+    }
 
     // Parse the configuration
     resizeToLastFrameBounds();
