@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * <p>FEST Swing UI test to provide:</p>
  * <ul>
- * <li>Exercise the "contacts" screen to verify its wizards show correctly</li>
+ * <li>Exercise the "payments" screen to verify its wizards show correctly</li>
  * </ul>
  *
  * @since 0.0.1
@@ -22,7 +22,7 @@ public class PaymentsScreenRequirements {
 
     Map<String,Object> parameters = Maps.newHashMap();
 
-    // Select the contacts screen
+    // Select the payments screen
     new ShowPaymentsScreenUseCase(window).execute(parameters);
 
     // Verify the standard wallet contains some payments
