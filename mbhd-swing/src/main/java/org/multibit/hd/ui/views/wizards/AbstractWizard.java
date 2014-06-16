@@ -66,6 +66,11 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
    */
   private final ListeningExecutorService wizardHideExecutorService = SafeExecutors.newSingleThreadExecutor("wizard-hide");
 
+  /**
+   * True if the wizard is restoring
+   */
+  private boolean restoring = false;
+
 
   /**
    * @param wizardModel     The overall wizard data model containing the aggregate information of all components in the wizard

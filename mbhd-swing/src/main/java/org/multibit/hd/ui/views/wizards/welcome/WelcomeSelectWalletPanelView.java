@@ -77,7 +77,14 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
   @Override
   protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
 
-    PanelDecorator.addExitCancelPreviousNext(this, wizard);
+    if (wizard.getWizardModel().isRestoring()) {
+      // Do not allow a return to the password wizard
+      // The logic is too complex to justify the operation
+      // It is much easier to just have the user Exit and restart instead
+      PanelDecorator.addExitCancelNext(this, wizard);
+    } else {
+      PanelDecorator.addExitCancelPreviousNext(this, wizard);
+    }
 
   }
 

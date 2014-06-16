@@ -208,16 +208,7 @@ public class Wizards {
     Preconditions.checkNotNull(initialState, "'initialState' must be present");
 
     return new WelcomeWizard(new WelcomeWizardModel(initialState), true);
-  }
 
-  /**
-   * @return A new "welcome" wizard for wallet recovery set up
-   */
-  public static WelcomeWizard newClosingWelcomeWizard(WelcomeWizardState initialState) {
-
-    log.debug("New 'Closing welcome wizard'");
-
-    return new WelcomeWizard(new WelcomeWizardModel(initialState), false);
   }
 
   /**

@@ -88,6 +88,8 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   private List<String> createWalletSeedPhrase = Lists.newArrayList();
   private List<String> restoreWalletSeedPhrase = Lists.newArrayList();
 
+  private final boolean restoring;
+
   private String actualSeedTimestamp;
 
   // Backup summaries for restoring a wallet
@@ -95,6 +97,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   private SelectBackupSummaryModel selectBackupSummaryModel;
   private EnterSeedPhraseModel restoreWalletEnterTimestampModel;
   private EnterPasswordModel restoreWalletEnterPasswordModel;
+
   private List<WalletSummary> walletList = Lists.newArrayList();
 
   /**
@@ -104,6 +107,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
     super(state);
 
     this.seedPhraseGenerator = CoreServices.newSeedPhraseGenerator();
+    this.restoring = WelcomeWizardState.WELCOME_SELECT_WALLET.equals(state);
 
   }
 
@@ -529,4 +533,12 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   public EnterSeedPhraseModel getRestorePasswordEnterSeedPhraseModel() {
     return restorePasswordEnterSeedPhraseModel;
   }
+
+  /**
+   * @return True if this wizard was created as the result of a restore operation
+   */
+  public boolean isRestoring() {
+    return restoring;
+  }
+
 }
