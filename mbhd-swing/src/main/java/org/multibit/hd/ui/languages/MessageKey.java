@@ -375,13 +375,9 @@ public enum MessageKey {
   RESTORE_BACKUP_NOTE_2("restore_backup_note_2"),
   RESTORE_BACKUP_NOTE_3("restore_backup_note_3"),
 
-  RESTORE_PASSWORD_SEED_PHRASE_NOTE_1("restore_password_seed_phrase_note_1"),
-  RESTORE_PASSWORD_SEED_PHRASE_NOTE_2("restore_password_seed_phrase_note_2"),
-  RESTORE_PASSWORD_SEED_PHRASE_NOTE_3("restore_password_seed_phrase_note_3"),
-
-  RESTORE_WALLET_SEED_PHRASE_NOTE_1("restore_wallet_seed_phrase_note_1"),
-  RESTORE_WALLET_SEED_PHRASE_NOTE_2("restore_wallet_seed_phrase_note_2"),
-  RESTORE_WALLET_SEED_PHRASE_NOTE_3("restore_wallet_seed_phrase_note_3"),
+  RESTORE_FROM_SEED_PHRASE_NOTE_1("restore_from_seed_phrase_note_1"),
+  RESTORE_FROM_SEED_PHRASE_NOTE_2("restore_from_seed_phrase_note_2"),
+  RESTORE_FROM_SEED_PHRASE_NOTE_3("restore_from_seed_phrase_note_3"),
 
   RESTORE_TIMESTAMP_NOTE_1("restore_timestamp_note_1"),
   RESTORE_TIMESTAMP_NOTE_2("restore_timestamp_note_2"),

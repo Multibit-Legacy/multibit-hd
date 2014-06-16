@@ -32,7 +32,7 @@ public class RestoreWalletEnterSeedPhraseUseCase extends AbstractFestUseCase {
     // Verify that the title appears
     assertLabelText(MessageKey.RESTORE_WALLET_SEED_PHRASE_TITLE);
 
-    assertLabelText(MessageKey.RESTORE_WALLET_SEED_PHRASE_NOTE_1);
+    assertLabelText(MessageKey.RESTORE_FROM_SEED_PHRASE_NOTE_1);
 
     window
       .textBox(MessageKey.SEED_PHRASE.getKey())
