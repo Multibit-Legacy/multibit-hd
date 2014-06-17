@@ -16,7 +16,11 @@ package org.multibit.hd.core.managers;
  * limitations under the License.
  */
 
+import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.crypto.DeterministicKey;
 import com.google.common.base.Optional;
 import com.google.common.io.Files;
 import org.junit.Before;
@@ -24,8 +28,7 @@ import org.junit.Test;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.dto.WalletIdTest;
-import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
 
@@ -35,10 +38,7 @@ import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-// TODO (JB) There is a lot of commented out code in here
 public class WalletManagerTest {
-
-//  private final CharSequence WALLET_PASSWORD = "horatio nelson 123";
 
   private final static String WALLET_DIRECTORY_1 = "mbhd-11111111-22222222-33333333-44444444-55555555";
   private final static String WALLET_DIRECTORY_2 = "mbhd-66666666-77777777-88888888-99999999-aaaaaaaa";
@@ -50,129 +50,19 @@ public class WalletManagerTest {
   private final static String INVALID_WALLET_DIRECTORY_2 = "mbhd-66666666-77777777-88888888-99999999-gggggggg";
   private final static String INVALID_WALLET_DIRECTORY_3 = "mbhd-1166666666-77777777-88888888-99999999-aaaaaaaa";
 
+  private final static String SIGNING_PASSWORD = "throgmorton999";
+  private final static String MESSAGE_TO_SIGN = "The quick brown fox jumps over the lazy dog.\n1234567890!@#$%^&*()";
+
   @Before
   public void setUp() throws Exception {
-
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
     // Start the core services
     CoreServices.main(null);
-
   }
-
-//  @Test
-//  public void testCreateProtobufEncryptedWallet() throws Exception {
-//
-//    // Create a random temporary directory to write the wallets
-//    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
-//
-//    BackupManager.INSTANCE.initialise(temporaryDirectory, null);
-//
-//    // Create a wallet directory from a seed
-//    final SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-//    final byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
-//    final WalletId walletId = new WalletId(seed);
-//    final String walletRoot = WalletManager.createWalletRoot(walletId);
-//
-//    final File walletDirectory = WalletManager.getOrCreateWalletDirectory(temporaryDirectory, walletRoot);
-//    final File walletFile = SecureFiles.verifyOrCreateFile(walletDirectory, WalletManager.MBHD_WALLET_NAME);
-//
-//    final KeyCrypterScrypt initialKeyCrypter = new KeyCrypterScrypt();
-//
-//    // Create a new wallet
-//    final Wallet wallet = new Wallet(BitcoinNetwork.current().get(), initialKeyCrypter);
-//    wallet.setVersion(3); // PROTOBUF_ENCRYPTED
-//
-//    // Create and add encrypted keys to the wallet
-//    final byte[] plainPrivateKey1Bytes = addEncryptedKey(wallet);
-//    final byte[] plainPrivateKey2Bytes = addEncryptedKey(wallet);
-//
-//    // Get the keys of the wallet and check that all the keys are encrypted
-//    final Collection<ECKey> keys = wallet.getKeys();
-//    for (ECKey key : keys) {
-//      assertThat(key.isEncrypted()).isTrue();
-//    }
-//
-//    // Save the wallet and read it back in again
-//    WalletManager.INSTANCE.saveWallet(wallet, walletFile);
-//
-//    // Check the wallet and wallet info file exists
-//    assertThat(walletFile.exists()).isTrue();
-//
-//    // Check wallet can be loaded and is still protobuf and encrypted
-//    final WalletSummary rebornWalletSummary = WalletManager.INSTANCE.loadFromWalletDirectory(walletDirectory, "password");
-//    final Wallet rebornWallet = rebornWalletSummary.getWallet();
-//
-//    assertThat(rebornWalletSummary).isNotNull();
-//    assertThat(rebornWallet).isNotNull();
-//
-//    assertThat(rebornWallet.getBalance()).isEqualTo(BigInteger.ZERO);
-//    assertThat(rebornWallet.getKeys().size()).isEqualTo(2);
-//    assertThat(rebornWallet.getEncryptionType())
-//      .describedAs("Wallet is not of type ENCRYPTED when it should be")
-//      .isEqualTo(Protos.Wallet.EncryptionType.ENCRYPTED_SCRYPT_AES);
-//
-//    // Get the keys out of the reborn wallet and check that all the keys are encrypted
-//    final Collection<ECKey> rebornEncryptedKeys = rebornWallet.getKeys();
-//    for (ECKey key : rebornEncryptedKeys) {
-//      assertThat(key.isEncrypted()).describedAs("Reborn key should be encrypted").isTrue();
-//    }
-//
-//    // Decrypt the reborn wallet
-//    rebornWallet.decrypt(rebornWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
-//
-//    // Get the keys out the reborn wallet and check that all the keys match.
-//    final Collection<ECKey> rebornPlainKeys = rebornWallet.getKeys();
-//
-//    assertThat(rebornPlainKeys.size()).describedAs("Wrong number of keys in reborn wallet").isEqualTo(2);
-//
-//    Iterator<ECKey> iterator = rebornPlainKeys.iterator();
-//    compareRebornToOriginal(plainPrivateKey1Bytes, iterator);
-//    compareRebornToOriginal(plainPrivateKey2Bytes, iterator);
-//
-//  }
-
-//  private void compareRebornToOriginal(byte[] plainPrivateKey1Bytes, Iterator<ECKey> iterator) {
-//
-//    ECKey rebornPlainPrivateKey = iterator.next();
-//    assertThat(!rebornPlainPrivateKey.isEncrypted()).describedAs("firstRebornKey should now de decrypted but is not").isTrue();
-//
-//    // The reborn unencrypted private key bytes should match the original private key.
-//    byte[] rebornPlainPrivateKeyBytes = rebornPlainPrivateKey.getPrivKeyBytes();
-//    if (rebornPlainPrivateKeyBytes == null) {
-//      fail();
-//    }
-//    System.out.println("FileHandlerTest - Reborn decrypted private key = " + Utils.HEX.encode(rebornPlainPrivateKeyBytes));
-//
-//    assertThat(Arrays.equals(rebornPlainPrivateKeyBytes, plainPrivateKey1Bytes)).isTrue();
-//  }
-
-//  /**
-//   * @param wallet The wallet
-//   *
-//   * @return The private key bytes before encryption
-//   */
-//  private byte[] addEncryptedKey(Wallet wallet) {
-//
-//    final ECKey plainKey = new ECKey();
-//
-//    // Copy the private key bytes for checking later.
-//    byte[] plainPrivateKeyBytes = new byte[32];
-//    if (plainKey.getPrivKeyBytes() == null) {
-//      fail();
-//    }
-//    System.arraycopy(plainKey.getPrivKeyBytes(), 0, plainPrivateKeyBytes, 0, 32);
-//    System.out.println("testCreateProtobufEncryptedWallet - Original private key 1 = " + Utils.HEX.encode(plainPrivateKeyBytes));
-//
-//    final ECKey encryptedKey1 = plainKey.encrypt(wallet.getKeyCrypter(), wallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
-//    wallet.addKey(encryptedKey1);
-//
-//    return plainPrivateKeyBytes;
-//  }
 
   @Test
   public void testCreateWallet() throws Exception {
-
     // Create a random temporary directory
     File temporaryDirectory1 = makeRandomTemporaryApplicationDirectory();
 
@@ -234,7 +124,6 @@ public class WalletManagerTest {
 
   @Test
   public void testFindWalletDirectories() throws Exception {
-
     // Create a random temporary directory
     File temporaryDirectory = makeRandomTemporaryApplicationDirectory();
 
@@ -258,12 +147,10 @@ public class WalletManagerTest {
       assertThat(walletDirectories.get(1).getAbsolutePath()).isEqualTo(walletPath1);
       assertThat(walletDirectories.get(0).getAbsolutePath()).isEqualTo(walletPath2);
     }
-
   }
 
   @Test
   public void testFindWallets() throws Exception {
-
     // Create a random temporary directory
     File temporaryDirectory = makeRandomTemporaryApplicationDirectory();
 
@@ -293,17 +180,92 @@ public class WalletManagerTest {
     // Expect the current wallet root to be first
     assertThat(wallets.get(0).getWalletId().toFormattedString()).isEqualTo(EXPECTED_WALLET_ID_2);
     assertThat(wallets.get(1).getWalletId().toFormattedString()).isEqualTo(EXPECTED_WALLET_ID_1);
+  }
 
+  @Test
+  public void testSignAndVerifyMessage() throws Exception {
+    // Create a random temporary directory
+    File temporaryDirectory1 = makeRandomTemporaryApplicationDirectory();
+
+    WalletManager walletManager = WalletManager.INSTANCE;
+    BackupManager.INSTANCE.initialise(temporaryDirectory1, null);
+
+    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
+    long nowInSeconds = Dates.nowInSeconds();
+
+    WalletSummary walletSummary = walletManager
+      .getOrCreateWalletSummary(
+        temporaryDirectory1,
+        seed,
+        nowInSeconds,
+        SIGNING_PASSWORD,
+        "Signing Example",
+        "Signing Example"
+      );
+
+    // Address not in wallet
+    ECKey ecKey = new ECKey();
+    String addressNotInWalletString = ecKey.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
+
+    Wallet wallet = walletSummary.getWallet();
+
+    // Create a signing key
+    DeterministicKey key = wallet.freshReceiveKey();
+    Address signingAddress = key.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
+
+    // Successfully sign the address
+    SignMessageResult signMessageResult = walletManager.signMessage(signingAddress.toString(), MESSAGE_TO_SIGN, SIGNING_PASSWORD);
+    assertThat(signMessageResult.isSigningWasSuccessful()).isTrue();
+    assertThat(signMessageResult.getSignatureKey()).isEqualTo(CoreMessageKey.SIGN_MESSAGE_SUCCESS);
+    assertThat(signMessageResult.getSignatureData()).isNull();
+    assertThat(signMessageResult.getSignature().isPresent()).isTrue();
+    assertThat(signMessageResult.getSignature().get()).isNotNull();
+
+    // Successfully verify the message
+    VerifyMessageResult verifyMessageResult = walletManager.verifyMessage(signingAddress.toString(), MESSAGE_TO_SIGN, signMessageResult.getSignature().get());
+    assertThat(verifyMessageResult.isVerifyWasSuccessful()).isTrue();
+    assertThat(verifyMessageResult.getVerifyKey()).isEqualTo(CoreMessageKey.VERIFY_MESSAGE_VERIFY_SUCCESS);
+    assertThat(verifyMessageResult.getVerifyData()).isNull();
+
+    // Incorrect verify of the message - wrong message
+    verifyMessageResult = walletManager.verifyMessage(signingAddress.toString(), MESSAGE_TO_SIGN + "a", signMessageResult.getSignature().get());
+    assertThat(verifyMessageResult.isVerifyWasSuccessful()).isFalse();
+    assertThat(verifyMessageResult.getVerifyKey()).isEqualTo(CoreMessageKey.VERIFY_MESSAGE_VERIFY_FAILURE);
+    assertThat(verifyMessageResult.getVerifyData()).isNull();
+
+    // Incorrect verify of the message - wrong address
+    verifyMessageResult = walletManager.verifyMessage(addressNotInWalletString, MESSAGE_TO_SIGN, signMessageResult.getSignature().get());
+    assertThat(verifyMessageResult.isVerifyWasSuccessful()).isFalse();
+    assertThat(verifyMessageResult.getVerifyKey()).isEqualTo(CoreMessageKey.VERIFY_MESSAGE_VERIFY_FAILURE);
+    assertThat(verifyMessageResult.getVerifyData()).isNull();
+
+    // Incorrect verify of the message - wrong signature
+    verifyMessageResult = walletManager.verifyMessage(signingAddress.toString(), MESSAGE_TO_SIGN, signMessageResult.getSignature().get() + "b");
+    assertThat(verifyMessageResult.isVerifyWasSuccessful()).isFalse();
+    assertThat(verifyMessageResult.getVerifyKey()).isEqualTo(CoreMessageKey.VERIFY_MESSAGE_FAILURE);
+    assertThat(verifyMessageResult.getVerifyData()).isNull();
+
+    // Bad signing password
+    signMessageResult = walletManager.signMessage(signingAddress.toString(), MESSAGE_TO_SIGN, "badPassword");
+    assertThat(signMessageResult.isSigningWasSuccessful()).isFalse();
+    assertThat(signMessageResult.getSignatureKey()).isEqualTo(CoreMessageKey.SIGN_MESSAGE_NO_PASSWORD);
+    assertThat(signMessageResult.getSignatureData()).isNull();
+    assertThat(signMessageResult.getSignature().isPresent()).isFalse();
+
+    signMessageResult = walletManager.signMessage(addressNotInWalletString, MESSAGE_TO_SIGN, SIGNING_PASSWORD);
+    assertThat(signMessageResult.isSigningWasSuccessful()).isFalse();
+    assertThat(signMessageResult.getSignatureKey()).isEqualTo(CoreMessageKey.SIGN_MESSAGE_NO_SIGNING_KEY);
+    assertThat(signMessageResult.getSignatureData()).isEqualTo(new Object[] {addressNotInWalletString});
+    assertThat(signMessageResult.getSignature().isPresent()).isFalse();
   }
 
   private String makeDirectory(File parentDirectory, String directoryName) {
-
     File directory = new File(parentDirectory, directoryName);
     assertThat(directory.mkdir()).isTrue();
     directory.deleteOnExit();
 
     return directory.getAbsolutePath();
-
   }
 
   /**
