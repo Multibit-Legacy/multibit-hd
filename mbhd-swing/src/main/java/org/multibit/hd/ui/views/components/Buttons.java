@@ -718,9 +718,9 @@ public class Buttons {
   /**
    * @param action The click action
    *
-   * @return A new "sign" wizard button with icon
+   * @return A new large "sign" wizard button with icon
    */
-  public static JButton newShowSignMessageWizardButton(Action action) {
+  public static JButton newLargeShowSignMessageWizardButton(Action action) {
 
     JButton button = newLargeButton(action, MessageKey.SHOW_SIGN_WIZARD);
 
@@ -734,6 +734,26 @@ public class Buttons {
 
     return button;
   }
+
+  /**
+    * @param action The click action
+    *
+    * @return A new small "sign" wizard button with icon
+    */
+   public static JButton newSmallShowSignMessageWizardButton(Action action) {
+
+     JButton button = newButton(action);
+
+     AwesomeDecorator.applyIcon(
+       AwesomeIcon.PENCIL,
+       button,
+       true,
+       JLabel.BOTTOM,
+       MultiBitUI.NORMAL_ICON_SIZE
+     );
+
+     return button;
+   }
 
   /**
    * @param action The click action

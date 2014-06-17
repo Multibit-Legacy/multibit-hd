@@ -185,6 +185,13 @@ public class MainController extends AbstractController implements
 
       }
 
+      // TODO this won't work as it starts up the sign message wizard ALWAYS when the payments wizard closes.
+//      if (PaymentsState.PAYMENT_REQUEST_DETAILS.name().equals(event.getPanelName())) {
+//           // Need to hand over to the sign message wizard
+//           log.debug("Want to hand over to sign message wizard");
+//           handoverToSignMessageWizard();
+//      }
+
       if (EditWalletState.EDIT_WALLET.name().equals(event.getPanelName())) {
 
         // Update the sidebar name
@@ -668,7 +675,6 @@ public class MainController extends AbstractController implements
       }
     });
 
-
   }
 
   /**
@@ -774,4 +780,44 @@ public class MainController extends AbstractController implements
       }
     });
   }
+
+  /**
+    *PaymentsWizard needs to hand over to the Sign Message Wizard
+    */
+   private void handoverToSignMessageWizard() {
+
+     log.debug("Hand over to sign message wizard");
+
+     // Handover
+     // TODO ????
+     //mainView.setShowExitingPasswordWizard(false);
+     //mainView.setShowExitingPasswordWizard(true);
+
+     // Use a new thread to handle the new wizard so that the handover can complete
+     SafeExecutors.newSingleThreadExecutor("signMessage-handover").execute(new Runnable() {
+       @Override
+       public void run() {
+
+         // Allow time for the other wizard to finish hiding (200ms is sufficient)
+         Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
+
+         // Must execute on the EDT
+         SwingUtilities.invokeLater(new Runnable() {
+           @Override
+           public void run() {
+
+             Panels.hideLightBoxIfPresent();
+
+             log.debug("Showing sign message wizard after handover");
+             // TODO need to call the wizard constructor with the selected address - see PaymentRequestDetailPanelView#getShowSignMessageWizardAction
+             Panels.showLightBox(Wizards.newSignMessageWizard().getWizardScreenHolder());
+
+           }
+         });
+
+       }
+     });
+
+
+   }
 }

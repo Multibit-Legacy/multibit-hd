@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards;
 
+import com.google.bitcoin.core.Address;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.config.Configuration;
@@ -221,6 +222,19 @@ public class Wizards {
     return new SignMessageWizard(new SignMessageWizardModel(SignMessageState.EDIT_MESSAGE), false);
 
   }
+
+  /**
+    * @return A new "sign message" wizard for a warm start, with the specified address filled in
+    */
+   public static SignMessageWizard newSignMessageWizard(Address signingAddress) {
+
+     log.debug("New 'Sign message wizard'");
+
+     SignMessageWizardModel signMessageWizardModel = new SignMessageWizardModel(SignMessageState.EDIT_MESSAGE);
+     signMessageWizardModel.setSigningAddress(signingAddress);
+     return new SignMessageWizard(signMessageWizardModel, false);
+
+   }
 
   /**
    * @return A new "verify message" wizard for a warm start
