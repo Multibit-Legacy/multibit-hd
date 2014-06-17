@@ -75,8 +75,24 @@ public enum CoreMessageKey {
   CHANGE_PASSWORD_WORKING("core_change_password_working"),
   CHANGE_PASSWORD_SUCCESS("core_change_password_success"),
   CHANGE_PASSWORD_WRONG_OLD_PASSWORD("core_change_password_wrong_old_password"),
-  CHANGE_PASSWORD_ERROR("core_change_password_error")
+  CHANGE_PASSWORD_ERROR("core_change_password_error"),
 
+  SIGN_MESSAGE_ENTER_ADDRESS("core_sign_message_enter_address"),
+  SIGN_MESSAGE_ENTER_MESSAGE("core_sign_message_enter_message"),
+  SIGN_MESSAGE_ENTER_PASSWORD("core_sign_message_enter_password"),
+  SIGN_MESSAGE_SUCCESS("core_sign_message_success"),
+  SIGN_MESSAGE_NO_SIGNING_KEY("core_sign_message_no_signing_key"),
+  SIGN_MESSAGE_SIGNING_KEY_NOT_ENCRYPTED("core_sign_message_signing_key_not_encrypted"),
+  SIGN_MESSAGE_NO_WALLET("core_sign_message_no_wallet"),
+  SIGN_MESSAGE_NO_PASSWORD("core_sign_message_no_password"),
+  SIGN_MESSAGE_FAILURE("core_sign_message_failure"),
+
+  VERIFY_MESSAGE_ENTER_ADDRESS("core_verify_message_enter_address"),
+  VERIFY_MESSAGE_ENTER_MESSAGE("core_verify_message_enter_message"),
+  VERIFY_MESSAGE_ENTER_SIGNATURE("core_verify_message_enter_signature"),
+  VERIFY_MESSAGE_FAILURE("core_verify_message_failure"),
+  VERIFY_MESSAGE_VERIFY_SUCCESS("core_verify_message_verify_success"),
+  VERIFY_MESSAGE_VERIFY_FAILURE("core_verify_message_verify_failure"),
 
   // End of enum
   ;

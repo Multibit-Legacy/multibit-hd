@@ -1,14 +1,8 @@
 package org.multibit.hd.ui.views.wizards.sign_message;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.crypto.KeyCrypterException;
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.config.BitcoinNetwork;
-import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.dto.SignMessageResult;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
@@ -23,7 +17,6 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.spongycastle.crypto.params.KeyParameter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -184,88 +177,27 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
           ((JPasswordField) passwordField).setText("");
         }
         signature.setText("");
-
-        setReportText(Optional.<Boolean>absent(), null, null);
+        reportLabel.setText("");
+        reportLabel.setIcon(null);
       }
-
     };
   }
 
   /**
-   * Sign the message text with the address specified
+   * Sign the message text with the address specified and update UI
    */
-  public void signMessage() {
+  private void signMessage() {
     String addressText = WhitespaceTrimmer.trim(signingAddress.getText());
     String messageText = message.getText();
     String walletPassword = enterPasswordMaV.getModel().getValue();
 
-    if (Strings.isNullOrEmpty(addressText)) {
-      setReportText(Optional.of(Boolean.FALSE), MessageKey.SIGN_ADDRESS_TOOLTIP, null);
-      return;
-    }
+    SignMessageResult signMessageResult = WalletManager.INSTANCE.signMessage(addressText, messageText, walletPassword);
 
-    if (Strings.isNullOrEmpty(messageText)) {
-      setReportText(Optional.of(Boolean.FALSE), MessageKey.SIGN_MESSAGE_ENTER_MESSAGE, null);
-      return;
-    }
+    reportLabel.setText(Languages.safeText(signMessageResult.getSignatureKey(), signMessageResult.getSignatureData()));
+    Labels.decorateStatusLabel(reportLabel, Optional.of(signMessageResult.isSigningWasSuccessful()));
 
-    if (Strings.isNullOrEmpty(walletPassword)) {
-      setReportText(Optional.of(Boolean.FALSE), MessageKey.SIGN_MESSAGE_ENTER_PASSWORD, null);
-      return;
-    }
-
-    try {
-      Address signingAddress = new Address(BitcoinNetwork.current().get(), addressText);
-
-      Optional<WalletSummary> walletSummaryOptional = WalletManager.INSTANCE.getCurrentWalletSummary();
-
-      if (walletSummaryOptional.isPresent()) {
-        WalletSummary walletSummary = walletSummaryOptional.get();
-
-        Wallet wallet = walletSummary.getWallet();
-        ECKey signingKey = wallet.findKeyFromPubHash(signingAddress.getHash160());
-
-        if (signingKey == null) {
-          // No signing key found.
-          setReportText(Optional.of(Boolean.FALSE), MessageKey.SIGN_MESSAGE_NO_SIGNING_KEY, new Object[]{addressText});
-        } else {
-          if (signingKey.getKeyCrypter() != null) {
-            KeyParameter aesKey = signingKey.getKeyCrypter().deriveKey(walletPassword);
-            ECKey decryptedSigingKey = signingKey.decrypt(aesKey);
-
-            String signatureBase64 = decryptedSigingKey.signMessage(messageText);
-            signature.setText(signatureBase64);
-
-            setReportText(Optional.of(Boolean.TRUE), MessageKey.SIGN_MESSAGE_SUCCESS, null);
-          } else {
-            // The signing key is not encrypted but it should be
-            setReportText(Optional.of(Boolean.FALSE), MessageKey.SIGN_MESSAGE_SIGNING_KEY_NOT_ENCRYPTED, null);
-          }
-        }
-      } else {
-        setReportText(Optional.of(Boolean.FALSE), MessageKey.SIGN_MESSAGE_NO_WALLET, null);
-      }
-    } catch (KeyCrypterException e) {
-      setReportText(Optional.of(Boolean.FALSE), MessageKey.SIGN_MESSAGE_NO_PASSWORD, null);
-    } catch (Exception e) {
-      setReportText(Optional.of(Boolean.FALSE), MessageKey.SIGN_MESSAGE_FAILURE, null);
-
-      e.printStackTrace();
-    }
-  }
-
-  private void setReportText(Optional<Boolean> status, MessageKey messageKey, Object[] messageData) {
-    if (reportLabel != null) {
-      if (messageKey == null) {
-        reportLabel.setText("");
-      } else {
-        reportLabel.setText(Languages.safeText(messageKey, messageData));
-      }
-      if (status.isPresent()) {
-        Labels.decorateStatusLabel(reportLabel, status);
-      } else {
-        reportLabel.setIcon(null);
-      }
+    if (signMessageResult.isSigningWasSuccessful() && signMessageResult.getSignature().isPresent()) {
+      signature.setText(signMessageResult.getSignature().get());
     }
   }
 }

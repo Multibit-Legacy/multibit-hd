@@ -1,13 +1,8 @@
 package org.multibit.hd.ui.views.wizards.verify_message;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.Wallet;
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.config.BitcoinNetwork;
-import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.dto.VerifyMessageResult;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
@@ -177,77 +172,24 @@ public class VerifyMessagePanelView extends AbstractWizardPanelView<VerifyMessag
         verifyingAddress.setText("");
         message.setText("");
         signature.setText("");
-        setReportText(Optional.<Boolean>absent(), null, null);
-
+        reportLabel.setText("");
+        reportLabel.setIcon(null);
       }
 
     };
   }
 
   /**
-    * Verify the message text with the address specified
+    * Verify the message text against the address specified and update UI
     */
-   public void verifyMessage() {
+   private void verifyMessage() {
      String addressText = WhitespaceTrimmer.trim(verifyingAddress.getText());
      String messageText = message.getText();
      String signatureText = signature.getText();
 
-     if (Strings.isNullOrEmpty(addressText)) {
-       setReportText(Optional.of(Boolean.FALSE), MessageKey.VERIFY_MESSAGE_ENTER_ADDRESS, null);
-       return;
-     }
+     VerifyMessageResult verifyMessageResult = WalletManager.INSTANCE.verifyMessage(addressText, messageText, signatureText);
 
-     if (Strings.isNullOrEmpty(messageText)) {
-       setReportText(Optional.of(Boolean.FALSE), MessageKey.VERIFY_MESSAGE_ENTER_MESSAGE, null);
-       return;
-     }
-
-     if (Strings.isNullOrEmpty(signatureText)) {
-       setReportText(Optional.of(Boolean.FALSE), MessageKey.VERIFY_MESSAGE_ENTER_SIGNATURE, null);
-       return;
-     }
-
-     try {
-       Address signingAddress = new Address(BitcoinNetwork.current().get(), addressText);
-
-       Optional<WalletSummary> walletSummaryOptional = WalletManager.INSTANCE.getCurrentWalletSummary();
-
-       if (walletSummaryOptional.isPresent()) {
-         WalletSummary walletSummary = walletSummaryOptional.get();
-
-         Wallet wallet = walletSummary.getWallet();
-
-         ECKey key = ECKey.signedMessageToKey(messageText, signatureText);
-         Address gotAddress = key.toAddress(BitcoinNetwork.current().get());
-         if (signingAddress.equals(gotAddress)) {
-           setReportText(Optional.of(Boolean.TRUE), MessageKey.VERIFY_MESSAGE_VERIFY_SUCCESS, null);
-         } else {
-           setReportText(Optional.of(Boolean.FALSE), MessageKey.VERIFY_MESSAGE_VERIFY_FAILURE, null);
-         }
-       } else {
-         // No wallet
-         setReportText(Optional.of(Boolean.FALSE), MessageKey.SIGN_MESSAGE_NO_WALLET, null);
-       }
-
-     } catch (Exception e) {
-       setReportText(Optional.of(Boolean.FALSE), MessageKey.VERIFY_MESSAGE_FAILURE, null);
-
-       e.printStackTrace();
-     }
-   }
-
-   private void setReportText(Optional<Boolean> status, MessageKey messageKey, Object[] messageData) {
-     if (reportLabel != null) {
-       if (messageKey == null) {
-         reportLabel.setText("");
-       } else {
-         reportLabel.setText(Languages.safeText(messageKey, messageData));
-       }
-       if (status.isPresent()) {
-         Labels.decorateStatusLabel(reportLabel, status);
-       } else {
-         reportLabel.setIcon(null);
-       }
-     }
+     reportLabel.setText(Languages.safeText(verifyMessageResult.getVerifyKey(), verifyMessageResult.getVerifyData()));
+     Labels.decorateStatusLabel(reportLabel, Optional.of(verifyMessageResult.isVerifyWasSuccessful()));
    }
 }

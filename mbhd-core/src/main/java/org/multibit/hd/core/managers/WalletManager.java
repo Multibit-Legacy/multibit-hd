@@ -1,6 +1,7 @@
 package org.multibit.hd.core.managers;
 
 import com.google.bitcoin.core.*;
+import com.google.bitcoin.crypto.KeyCrypterException;
 import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.bitcoin.script.Script;
 import com.google.bitcoin.store.UnreadableWalletException;
@@ -9,6 +10,7 @@ import com.google.bitcoin.wallet.DeterministicSeed;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.bitcoinj.wallet.Protos;
 import org.multibit.hd.brit.crypto.AESUtils;
@@ -17,8 +19,7 @@ import org.multibit.hd.brit.extensions.SendFeeDtoWalletExtension;
 import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
-import org.multibit.hd.core.dto.WalletId;
-import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.events.TransactionSeenEvent;
@@ -47,7 +48,7 @@ import static org.multibit.hd.core.dto.WalletId.parseWalletFilename;
  *  <li>load wallet wallet</li>
  * <li>tracks the current wallet and the list of wallet directories</li>
  *  </ul>
- *
+ * <p/>
  * TODO (GR) Consider renaming/restructuring this to Wallets since it provides tools for multiple wallets and allow for BitcoinNetwork injection
  */
 public enum WalletManager implements WalletEventListener {
@@ -106,17 +107,17 @@ public enum WalletManager implements WalletEventListener {
   // The format of the wallet directories is WALLET_DIRECTORY_PREFIX + a wallet id.
   // A walletid is 5 groups of 4 bytes in lowercase hex, with a "-' separator e.g. mbhd-11111111-22222222-33333333-44444444-55555555
   private static final String REGEX_FOR_WALLET_DIRECTORY = "^"
-    + WALLET_DIRECTORY_PREFIX
-    + WALLET_ID_SEPARATOR
-    + "[0-9a-f]{8}"
-    + WALLET_ID_SEPARATOR
-    + "[0-9a-f]{8}"
-    + WALLET_ID_SEPARATOR
-    + "[0-9a-f]{8}"
-    + WALLET_ID_SEPARATOR
-    + "[0-9a-f]{8}"
-    + WALLET_ID_SEPARATOR
-    + "[0-9a-f]{8}$";
+          + WALLET_DIRECTORY_PREFIX
+          + WALLET_ID_SEPARATOR
+          + "[0-9a-f]{8}"
+          + WALLET_ID_SEPARATOR
+          + "[0-9a-f]{8}"
+          + WALLET_ID_SEPARATOR
+          + "[0-9a-f]{8}"
+          + WALLET_ID_SEPARATOR
+          + "[0-9a-f]{8}"
+          + WALLET_ID_SEPARATOR
+          + "[0-9a-f]{8}$";
 
   private static final Pattern walletDirectoryPattern = Pattern.compile(REGEX_FOR_WALLET_DIRECTORY);
 
@@ -141,7 +142,7 @@ public enum WalletManager implements WalletEventListener {
    * There is no particular significance to the value of these bytes
    */
   public static final byte[] AES_INITIALISATION_VECTOR = new byte[]{(byte) 0xa3, (byte) 0x44, (byte) 0x39, (byte) 0x1f, (byte) 0x53, (byte) 0x83, (byte) 0x11,
-    (byte) 0xb3, (byte) 0x29, (byte) 0x54, (byte) 0x86, (byte) 0x16, (byte) 0xc4, (byte) 0x89, (byte) 0x72, (byte) 0x3e};
+          (byte) 0xb3, (byte) 0x29, (byte) 0x54, (byte) 0x86, (byte) 0x16, (byte) 0xc4, (byte) 0x89, (byte) 0x72, (byte) 0x3e};
 
   /**
    * The salt used for deriving the KeyParameter from the password in AES encryption for wallets
@@ -214,19 +215,17 @@ public enum WalletManager implements WalletEventListener {
    * @param password              to use to encrypt the wallet
    * @param name                  The wallet name
    * @param notes                 Public notes associated with the wallet
-   *
    * @return Wallet summary containing the wallet object and the walletId (used in storage etc)
-   *
    * @throws IllegalStateException  if applicationDataDirectory is incorrect
    * @throws WalletLoadException    if there is already a simple wallet created but it could not be loaded
    * @throws WalletVersionException if there is already a simple wallet but the wallet version cannot be understood
    */
   public WalletSummary createWalletSummary(
-    byte[] seed,
-    long creationTimeInSeconds,
-    CharSequence password,
-    String name,
-    String notes
+          byte[] seed,
+          long creationTimeInSeconds,
+          CharSequence password,
+          String name,
+          String notes
 
   ) throws WalletLoadException, WalletVersionException, IOException {
 
@@ -250,20 +249,18 @@ public enum WalletManager implements WalletEventListener {
    * @param password                 The password to use to encrypt the wallet - if mull then the wallet is not loaded
    * @param name                     The wallet name
    * @param notes                    Public notes associated with the wallet
-   *
    * @return Wallet summary containing the wallet object and the walletId (used in storage etc)
-   *
    * @throws IllegalStateException  if applicationDataDirectory is incorrect
    * @throws WalletLoadException    if there is already a wallet created but it could not be loaded
    * @throws WalletVersionException if there is already a wallet but the wallet version cannot be understood
    */
   public WalletSummary getOrCreateWalletSummary(
-    File applicationDataDirectory,
-    byte[] seed,
-    long creationTimeInSeconds,
-    CharSequence password,
-    String name,
-    String notes
+          File applicationDataDirectory,
+          byte[] seed,
+          long creationTimeInSeconds,
+          CharSequence password,
+          String name,
+          String notes
   ) throws WalletLoadException, WalletVersionException, IOException {
 
     final WalletSummary walletSummary;
@@ -370,9 +367,7 @@ public enum WalletManager implements WalletEventListener {
    *
    * @param walletDirectory The wallet directory containing the various wallet files to load
    * @param password        The password to use to decrypt the wallet
-   *
    * @return Wallet - the loaded wallet
-   *
    * @throws WalletLoadException    If the wallet could not be loaded
    * @throws WalletVersionException If the wallet has an unsupported version number
    */
@@ -391,9 +386,9 @@ public enum WalletManager implements WalletEventListener {
       if (walletFile.exists() && isWalletSerialised(walletFile)) {
         // Serialised wallets are no longer supported.
         throw new WalletLoadException(
-          "Could not load wallet '"
-            + walletFile
-            + "'. Serialized wallets are no longer supported."
+                "Could not load wallet '"
+                        + walletFile
+                        + "'. Serialized wallets are no longer supported."
         );
       }
 
@@ -440,7 +435,6 @@ public enum WalletManager implements WalletEventListener {
 
   /**
    * @param walletFile the wallet to test serialisation for
-   *
    * @return true if the wallet file specified is serialised (this format is no longer supported)
    */
   private boolean isWalletSerialised(File walletFile) {
@@ -472,7 +466,6 @@ public enum WalletManager implements WalletEventListener {
    * Create the name of the directory in which the wallet is stored
    *
    * @param walletId The wallet id to use (e.g. "11111111-22222222-33333333-44444444-55555555")
-   *
    * @return A wallet root
    */
   public static String createWalletRoot(WalletId walletId) {
@@ -484,9 +477,7 @@ public enum WalletManager implements WalletEventListener {
    *
    * @param applicationDataDirectory The application data directory containing the wallet
    * @param walletRoot               The wallet root from which to make a sub-directory (e.g. "mbhd-11111111-22222222-33333333-44444444-55555555")
-   *
    * @return The directory composed of parent directory plus the wallet root
-   *
    * @throws IllegalStateException if wallet could not be created
    */
   // TODO (GR) Refactor this to take a WalletId and infer the prefix to avoid info leak
@@ -511,7 +502,6 @@ public enum WalletManager implements WalletEventListener {
    * This is achieved by looking for directories with a name like <code>"mbhd-walletId"</code>
    *
    * @param directoryToSearch The directory to search
-   *
    * @return A list of files of wallet directories
    */
   public static List<File> findWalletDirectories(File directoryToSearch) {
@@ -542,7 +532,6 @@ public enum WalletManager implements WalletEventListener {
    *
    * @param walletDirectories The candidate wallet directory references
    * @param walletRoot        The wallet root of the first entry
-   *
    * @return A list of wallet summaries
    */
   public static List<WalletSummary> findWalletSummaries(List<File> walletDirectories, Optional walletRoot) {
@@ -607,13 +596,13 @@ public enum WalletManager implements WalletEventListener {
     if (applicationDataDirectory != null && currentWalletSummary.isPresent()) {
 
       String walletFilename =
-        applicationDataDirectory
-          + File.separator
-          + WALLET_DIRECTORY_PREFIX
-          + WALLET_ID_SEPARATOR
-          + currentWalletSummary.get().getWalletId().toFormattedString()
-          + File.separator
-          + MBHD_WALLET_NAME;
+              applicationDataDirectory
+                      + File.separator
+                      + WALLET_DIRECTORY_PREFIX
+                      + WALLET_ID_SEPARATOR
+                      + currentWalletSummary.get().getWalletId().toFormattedString()
+                      + File.separator
+                      + MBHD_WALLET_NAME;
       return Optional.of(new File(walletFilename));
 
     } else {
@@ -630,13 +619,13 @@ public enum WalletManager implements WalletEventListener {
     if (applicationDataDirectory != null && currentWalletSummary.isPresent()) {
 
       String walletFilename =
-        applicationDataDirectory
-          + File.separator
-          + WALLET_DIRECTORY_PREFIX
-          + WALLET_ID_SEPARATOR
-          + currentWalletSummary.get().getWalletId().toFormattedString()
-          + File.separator
-          + MBHD_SUMMARY_NAME;
+              applicationDataDirectory
+                      + File.separator
+                      + WALLET_DIRECTORY_PREFIX
+                      + WALLET_ID_SEPARATOR
+                      + currentWalletSummary.get().getWalletId().toFormattedString()
+                      + File.separator
+                      + MBHD_SUMMARY_NAME;
       return Optional.of(new File(walletFilename));
 
     } else {
@@ -647,7 +636,6 @@ public enum WalletManager implements WalletEventListener {
 
   /**
    * @param walletDirectory The wallet directory containing the various wallet files
-   *
    * @return A wallet summary file
    */
   public static File getOrCreateWalletSummaryFile(File walletDirectory) {
@@ -678,7 +666,6 @@ public enum WalletManager implements WalletEventListener {
 
   /**
    * @param walletDirectory The wallet directory to read
-   *
    * @return The wallet summary if present, or a default if not
    */
   public static WalletSummary getOrCreateWalletSummary(File walletDirectory, WalletId walletId) {
@@ -732,7 +719,6 @@ public enum WalletManager implements WalletEventListener {
 
   /**
    * @param walletDirectory The candidate wallet directory (e.g. "/User/example/Application Support/MultiBitHD/mbhd-11111111-22222222-33333333-44444444-55555555")
-   *
    * @throws IllegalStateException If the wallet directory is malformed
    */
   private static void checkWalletDirectory(File walletDirectory) {
@@ -744,5 +730,102 @@ public enum WalletManager implements WalletEventListener {
 
     Preconditions.checkState(result, "'walletDirectory' is not named correctly: '" + walletDirectory.getAbsolutePath() + "'");
 
+  }
+
+  /**
+   * Method to sign a message
+   *
+   * @param addressText    address to use to sign
+   * @param messageText    message to use to sign
+   * @param walletPassword wallet password
+   * @return aSignMessageResult describing if the signing was successful or not
+   */
+  public SignMessageResult signMessage(String addressText, String messageText, String walletPassword) {
+    if (Strings.isNullOrEmpty(addressText)) {
+      return new SignMessageResult(Optional.<String>absent(), false, CoreMessageKey.SIGN_MESSAGE_ENTER_ADDRESS, null);
+    }
+
+    if (Strings.isNullOrEmpty(messageText)) {
+      return new SignMessageResult(Optional.<String>absent(), false, CoreMessageKey.SIGN_MESSAGE_ENTER_MESSAGE, null);
+    }
+
+    if (Strings.isNullOrEmpty(walletPassword)) {
+      return new SignMessageResult(Optional.<String>absent(), false, CoreMessageKey.SIGN_MESSAGE_ENTER_PASSWORD, null);
+    }
+
+    try {
+      Address signingAddress = new Address(BitcoinNetwork.current().get(), addressText);
+
+      Optional<WalletSummary> walletSummaryOptional = WalletManager.INSTANCE.getCurrentWalletSummary();
+
+      if (walletSummaryOptional.isPresent()) {
+        WalletSummary walletSummary = walletSummaryOptional.get();
+
+        Wallet wallet = walletSummary.getWallet();
+        ECKey signingKey = wallet.findKeyFromPubHash(signingAddress.getHash160());
+
+        if (signingKey == null) {
+          // No signing key found.
+          return new SignMessageResult(Optional.<String>absent(), false, CoreMessageKey.SIGN_MESSAGE_NO_SIGNING_KEY, new Object[]{addressText});
+        } else {
+          if (signingKey.getKeyCrypter() != null) {
+            KeyParameter aesKey = signingKey.getKeyCrypter().deriveKey(walletPassword);
+            ECKey decryptedSigingKey = signingKey.decrypt(aesKey);
+
+            String signatureBase64 = decryptedSigingKey.signMessage(messageText);
+            return new SignMessageResult(Optional.of(signatureBase64), true, CoreMessageKey.SIGN_MESSAGE_SUCCESS, null);
+          } else {
+            // The signing key is not encrypted but it should be
+            return new SignMessageResult(Optional.<String>absent(), false, CoreMessageKey.SIGN_MESSAGE_SIGNING_KEY_NOT_ENCRYPTED, null);
+          }
+        }
+      } else {
+        return new SignMessageResult(Optional.<String>absent(), false, CoreMessageKey.SIGN_MESSAGE_NO_WALLET, null);
+      }
+    } catch (KeyCrypterException e) {
+      return new SignMessageResult(Optional.<String>absent(), false, CoreMessageKey.SIGN_MESSAGE_NO_PASSWORD, null);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new SignMessageResult(Optional.<String>absent(), false, CoreMessageKey.SIGN_MESSAGE_FAILURE, null);
+    }
+  }
+
+
+  /**
+   * Verify the message text against the address and signature specified
+   *
+   * @param addressText   address to use to sign
+   * @param messageText   message to use to sign
+   * @param signatureText the signature to verify
+   * @return aVerifyMessageResult describing if the verify was successful or not
+   */
+  public VerifyMessageResult verifyMessage(String addressText, String messageText, String signatureText) {
+    if (Strings.isNullOrEmpty(addressText)) {
+      return new VerifyMessageResult(false, CoreMessageKey.VERIFY_MESSAGE_ENTER_ADDRESS, null);
+    }
+
+    if (Strings.isNullOrEmpty(messageText)) {
+      return new VerifyMessageResult(false, CoreMessageKey.VERIFY_MESSAGE_ENTER_MESSAGE, null);
+    }
+
+    if (Strings.isNullOrEmpty(signatureText)) {
+      return new VerifyMessageResult(false, CoreMessageKey.VERIFY_MESSAGE_ENTER_SIGNATURE, null);
+    }
+
+    try {
+      Address signingAddress = new Address(BitcoinNetwork.current().get(), addressText);
+
+      ECKey key = ECKey.signedMessageToKey(messageText, signatureText);
+      Address gotAddress = key.toAddress(BitcoinNetwork.current().get());
+      if (signingAddress.equals(gotAddress)) {
+        return new VerifyMessageResult(true, CoreMessageKey.VERIFY_MESSAGE_VERIFY_SUCCESS, null);
+      } else {
+        return new VerifyMessageResult(false, CoreMessageKey.VERIFY_MESSAGE_VERIFY_FAILURE, null);
+      }
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new VerifyMessageResult(false, CoreMessageKey.VERIFY_MESSAGE_FAILURE, null);
+    }
   }
 }
