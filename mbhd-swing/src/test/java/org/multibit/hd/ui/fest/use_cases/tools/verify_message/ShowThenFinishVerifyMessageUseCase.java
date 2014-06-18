@@ -1,7 +1,9 @@
 package org.multibit.hd.ui.fest.use_cases.tools.verify_message;
 
 import org.fest.swing.fixture.FrameFixture;
+import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 
 import java.util.Map;
@@ -39,12 +41,109 @@ public class ShowThenFinishVerifyMessageUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled();
 
-    // Create a message to sign
+    // No address,message nor signature
+    // Click verify message
+    window
+      .button(MessageKey.VERIFY_MESSAGE.getKey())
+      .click();
+
+    // Check report notes - should be ask for bitcoin address
+    window
+       .label(MessageKey.NOTES.getKey())
+       .requireVisible()
+       .requireEnabled()
+       .requireText(Languages.safeText(CoreMessageKey.VERIFY_MESSAGE_ENTER_ADDRESS));
+
+    // Set the address to use with the verify
+    window
+      .textBox(MessageKey.BITCOIN_ADDRESS.getKey())
+      .setText("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
+
+    // No message nor signature
+    // Click verify message
+    window
+      .button(MessageKey.VERIFY_MESSAGE.getKey())
+      .click();
+
+    // Check report notes - should be ask for message
+    window
+       .label(MessageKey.NOTES.getKey())
+       .requireVisible()
+       .requireEnabled()
+       .requireText(Languages.safeText(CoreMessageKey.VERIFY_MESSAGE_ENTER_MESSAGE));
+
+    // Set the message to verify
     window
       .textBox(MessageKey.MESSAGE.getKey())
-      .setText("A message for Bob Cratchit");
+      .setText("The quick brown fox jumps over the lazy dog");
 
-    // Click Finish
+    // No signature
+    // Click verify message
+    window
+      .button(MessageKey.VERIFY_MESSAGE.getKey())
+      .click();
+
+    // Check report notes - should be ask for signature
+    window
+       .label(MessageKey.NOTES.getKey())
+       .requireVisible()
+       .requireEnabled()
+       .requireText(Languages.safeText(CoreMessageKey.VERIFY_MESSAGE_ENTER_SIGNATURE));
+
+    // Set the signature to verify
+    window
+      .textBox(MessageKey.SIGNATURE.getKey())
+      .setText("HF76s9EHMl9NHAyLm38b8z7iXC0y3nJVfyXXKYjt7un1Xkau29OK27Nl7hRhS9UyE++p+R6/WyXIwmWC0blc2XY=");
+
+    // Click verify message
+    window
+      .button(MessageKey.VERIFY_MESSAGE.getKey())
+      .click();
+
+    // Check report notes - successful verify
+    window
+       .label(MessageKey.NOTES.getKey())
+       .requireVisible()
+       .requireEnabled()
+       .requireText(Languages.safeText(CoreMessageKey.VERIFY_MESSAGE_VERIFY_SUCCESS));
+
+    // Set wrong signature - kau is reversed
+    window
+      .textBox(MessageKey.SIGNATURE.getKey())
+      .setText("HF76s9EHMl9NHAyLm38b8z7iXC0y3nJVfyXXKYjt7un1XuaK29OK27Nl7hRhS9UyE++p+R6/WyXIwmWC0blc2XY=");
+
+    // Click verify message
+    window
+      .button(MessageKey.VERIFY_MESSAGE.getKey())
+      .click();
+
+    // Check report notes - unsuccessful verify
+    window
+       .label(MessageKey.NOTES.getKey())
+       .requireVisible()
+       .requireEnabled()
+       .requireText(Languages.safeText(CoreMessageKey.VERIFY_MESSAGE_VERIFY_FAILURE));
+
+    // Click clear all
+    window
+      .button(MessageKey.CLEAR_ALL.getKey())
+      .click();
+
+    // All of bitcoin address, message, signature and report notes should be blank
+    window
+       .textBox(MessageKey.BITCOIN_ADDRESS.getKey())
+       .requireText("");
+    window
+       .textBox(MessageKey.MESSAGE.getKey())
+       .requireText("");
+    window
+       .textBox(MessageKey.SIGNATURE.getKey())
+       .requireText("");
+    window
+       .label(MessageKey.NOTES.getKey())
+       .requireText("");
+
+   // Click Finish
     window
       .button(MessageKey.FINISH.getKey())
       .click();
@@ -54,7 +153,5 @@ public class ShowThenFinishVerifyMessageUseCase extends AbstractFestUseCase {
       .button(MessageKey.SHOW_EDIT_WALLET_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
-
   }
-
 }

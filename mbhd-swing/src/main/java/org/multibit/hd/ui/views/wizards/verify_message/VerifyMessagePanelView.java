@@ -85,6 +85,7 @@ public class VerifyMessagePanelView extends AbstractWizardPanelView<VerifyMessag
     contentPanel.add(Buttons.newClearAllButton(getClearAllAction()), "cell 3 4,wrap");
 
     reportLabel = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
+    AccessibilityDecorator.apply(reportLabel, MessageKey.NOTES);
     contentPanel.add(reportLabel, "span 4,wrap");
   }
 
