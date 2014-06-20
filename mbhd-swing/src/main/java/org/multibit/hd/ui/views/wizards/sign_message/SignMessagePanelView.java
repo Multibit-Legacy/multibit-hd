@@ -91,6 +91,7 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
     contentPanel.add(signature, "grow,span 3,push,wrap");
 
     reportLabel = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
+    AccessibilityDecorator.apply(reportLabel, MessageKey.NOTES);
     contentPanel.add(reportLabel, "span 4,wrap");
   }
 

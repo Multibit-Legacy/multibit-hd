@@ -107,7 +107,7 @@ public class ShowThenFinishVerifyMessageUseCase extends AbstractFestUseCase {
        .requireEnabled()
        .requireText(Languages.safeText(CoreMessageKey.VERIFY_MESSAGE_VERIFY_SUCCESS));
 
-    // Set wrong signature - kau is reversed
+    // Set wrong signature - 'kau' is reversed
     window
       .textBox(MessageKey.SIGNATURE.getKey())
       .setText("HF76s9EHMl9NHAyLm38b8z7iXC0y3nJVfyXXKYjt7un1XuaK29OK27Nl7hRhS9UyE++p+R6/WyXIwmWC0blc2XY=");

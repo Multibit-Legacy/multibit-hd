@@ -32,11 +32,11 @@ public class ToolsScreenRequirements {
     // Verifying the repair will take too long
     new ShowThenCancelRepairWalletUseCase(window).execute(parameters);
 
-    // Perform a simple edit and finish operation
-    new ShowThenFinishSignMessageUseCase(window).execute(parameters);
-
-    // Perform a simple edit and finish operation
+    // Show the verify message wizard
     new ShowThenFinishVerifyMessageUseCase(window).execute(parameters);
+
+    // Show the sign message wizard
+    new ShowThenFinishSignMessageUseCase(window).execute(parameters);
 
     // Show then cancel the "empty wallet" wizard
     new ShowThenCancelEmptyWalletUseCase(window).execute(parameters);

@@ -307,7 +307,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   @Test
   public void verifyToolsScreen() throws Exception {
 
-    // Start with the empty wallet fixture
+    // Start with the standard wallet fixture
     arrangeEmpty();
 
     // Unlock the wallet
