@@ -139,8 +139,9 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
       contentPanel.add(addressLabel);
       contentPanel.add(displayBitcoinAddressMaV.getView().newComponentPanel());
-      contentPanel.add(Buttons.newQRCodeButton(getShowQRCodePopoverAction()));
-      contentPanel.add(Buttons.newSmallShowSignMessageWizardButton(getShowSignMessageWizardAction()), "wrap");
+      contentPanel.add(Buttons.newQRCodeButton(getShowQRCodePopoverAction()), "wrap");
+      // Not working yet
+      //contentPanel.add(Buttons.newSmallShowSignMessageWizardButton(getShowSignMessageWizardAction()), "wrap");
 
       contentPanel.add(qrCodeLabelLabel);
       contentPanel.add(qrCodeLabelValue, "wrap");
