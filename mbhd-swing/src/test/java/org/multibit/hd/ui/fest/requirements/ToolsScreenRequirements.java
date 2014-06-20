@@ -35,11 +35,12 @@ public class ToolsScreenRequirements {
     // Show the verify message wizard
     new ShowThenFinishVerifyMessageUseCase(window).execute(parameters);
 
+    // Show then cancel the "empty wallet" wizard
+    new ShowThenCancelEmptyWalletUseCase(window).execute(parameters);
+
     // Show the sign message wizard
     new ShowThenFinishSignMessageUseCase(window).execute(parameters);
 
-    // Show then cancel the "empty wallet" wizard
-    new ShowThenCancelEmptyWalletUseCase(window).execute(parameters);
 
     // Show then cancel the "about" wizard
     // TODO Reinstate this

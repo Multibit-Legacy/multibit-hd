@@ -39,6 +39,8 @@ public class ShowThenFinishSignMessageUseCase extends AbstractFestUseCase {
     Address signingAddress = signingKey.toAddress(BitcoinNetwork.current().get());
     String signingAddresString = signingAddress.toString();
 
+    SignMessageResult signMessageResult = WalletManager.INSTANCE.signMessage(signingAddress.toString(), SIGNING_TEXT, WalletFixtures.STANDARD_PASSWORD.toString());
+
     // Click on Sign message
     window
       .button(MessageKey.SHOW_SIGN_WIZARD.getKey())
@@ -145,7 +147,6 @@ public class ShowThenFinishSignMessageUseCase extends AbstractFestUseCase {
        .requireText(Languages.safeText(CoreMessageKey.SIGN_MESSAGE_SUCCESS));
 
     // Check signature text
-    SignMessageResult signMessageResult = WalletManager.INSTANCE.signMessage(signingAddress.toString(), SIGNING_TEXT, WalletFixtures.STANDARD_PASSWORD.toString());
     window
       .textBox(MessageKey.SIGNATURE.getKey())
       .requireText(signMessageResult.getSignature().get());
@@ -182,7 +183,5 @@ public class ShowThenFinishSignMessageUseCase extends AbstractFestUseCase {
       .button(MessageKey.SHOW_EDIT_WALLET_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
-
   }
-
 }
