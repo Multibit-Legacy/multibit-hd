@@ -88,12 +88,10 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     transactionFeeDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.FEE_AMOUNT, true, "transaction_fee");
     clientFeeDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.FEE_AMOUNT, true, "client_fee");
 
-    // Register components
-    registerComponents(
-      transactionDisplayAmountMaV,
-      transactionFeeDisplayAmountMaV,
-      clientFeeDisplayAmountMaV
-    );
+    // Ensure visibility
+    transactionDisplayAmountMaV.getView().setVisible(true);
+    transactionFeeDisplayAmountMaV.getView().setVisible(true);
+    clientFeeDisplayAmountMaV.getView().setVisible(true);
 
     // Blank labels populated from wizard model later
     recipientSummaryLabel = Labels.newRecipientSummary(getWizardModel().getRecipient());
@@ -131,6 +129,9 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     contentPanel.add(notesTextArea, "span 3,growx,push,wrap");
 
     contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "span 4,align right,wrap");
+
+    // Register components
+    registerComponents(transactionDisplayAmountMaV, transactionFeeDisplayAmountMaV, clientFeeDisplayAmountMaV);
 
   }
 
