@@ -3,6 +3,7 @@ package org.multibit.hd.ui.fest.use_cases.restore_wallet;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 
 import java.awt.event.KeyEvent;
 import java.util.Map;
@@ -35,6 +36,15 @@ public class RestoreWalletTimestampUseCase extends AbstractFestUseCase {
     // Verify that the notes are present
     assertLabelText(MessageKey.RESTORE_TIMESTAMP_NOTE_1);
 
+    // Verification status is not showing so requires a modified search
+    window
+      .label(newNotShowingJLabelFixture(
+        getVerificationStatusName(
+          WelcomeWizardState.RESTORE_WALLET_TIMESTAMP.name(),
+          "timestamp"
+        )))
+      .requireNotVisible();
+
     String timestamp = (String) parameters.get(MessageKey.TIMESTAMP.getKey());
     window
       .textBox(MessageKey.TIMESTAMP.getKey())
@@ -43,21 +53,47 @@ public class RestoreWalletTimestampUseCase extends AbstractFestUseCase {
       .pressKey(KeyEvent.VK_SHIFT)
       .releaseKey(KeyEvent.VK_SHIFT);
 
+    // Verify the password verification status is showing
     window
-      .label(MessageKey.ENTER_PASSWORD.getKey())
+      .label(
+        getVerificationStatusName(
+          WelcomeWizardState.RESTORE_WALLET_TIMESTAMP.name(),
+          "timestamp"
+        ))
       .requireVisible();
 
+    // Verify we have a show button
     window
       .button(MessageKey.SHOW.getKey())
       .requireVisible();
 
-    // Matching password
+    // Enter password
     window
-      .textBox(MessageKey.ENTER_PASSWORD.getKey())
-      .setText("abc123")
-        // Trigger the key release action
-      .pressKey(KeyEvent.VK_SHIFT)
-      .releaseKey(KeyEvent.VK_SHIFT);
+      .textBox(MessageKey.ENTER_NEW_PASSWORD.getKey())
+      .enterText("abc123");
+
+    // Verification status is not showing so requires a modified search
+    window
+      .label(newNotShowingJLabelFixture(
+        getVerificationStatusName(
+          WelcomeWizardState.RESTORE_WALLET_TIMESTAMP.name(),
+          "password"
+        )))
+      .requireNotVisible();
+
+    // Retype password
+    window
+      .textBox(MessageKey.RETYPE_NEW_PASSWORD.getKey())
+      .enterText("abc123");
+
+    // Verify the password verification status is showing
+    window
+      .label(
+        getVerificationStatusName(
+          WelcomeWizardState.RESTORE_WALLET_TIMESTAMP.name(),
+          "password"
+        ))
+      .requireVisible();
 
     // OK to proceed
     window

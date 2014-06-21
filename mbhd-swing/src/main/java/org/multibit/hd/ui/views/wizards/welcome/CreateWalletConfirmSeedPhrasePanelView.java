@@ -103,7 +103,9 @@ public class CreateWalletConfirmSeedPhrasePanelView extends AbstractWizardPanelV
 
     // Fire the decision events (requires knowledge of the previous panel data)
     ViewEvents.fireWizardButtonEnabledEvent(CREATE_WALLET_CONFIRM_SEED_PHRASE.name(), WizardButton.NEXT, result);
-    ViewEvents.fireVerificationStatusChangedEvent(CREATE_WALLET_CONFIRM_SEED_PHRASE.name(), result);
+
+    // Fire "seed phrase verification" event
+    ViewEvents.fireVerificationStatusChangedEvent(getPanelName()+".seedphrase", result);
 
   }
 }

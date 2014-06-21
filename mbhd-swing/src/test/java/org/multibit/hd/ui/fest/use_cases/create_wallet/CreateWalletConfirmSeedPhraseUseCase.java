@@ -3,6 +3,7 @@ package org.multibit.hd.ui.fest.use_cases.create_wallet;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 
 import java.awt.event.KeyEvent;
 import java.util.Map;
@@ -56,7 +57,11 @@ public class CreateWalletConfirmSeedPhraseUseCase extends AbstractFestUseCase {
 
     // Verification status is not showing so requires a modified search
     window
-      .label(newNotShowingJLabelFixture(MessageKey.VERIFICATION_STATUS.getKey()))
+      .label(newNotShowingJLabelFixture(
+        getVerificationStatusName(
+          WelcomeWizardState.CREATE_WALLET_CONFIRM_SEED_PHRASE.name(),
+          "seedphrase"
+        )))
       .requireNotVisible();
 
     // Verify interactions
@@ -81,7 +86,7 @@ public class CreateWalletConfirmSeedPhraseUseCase extends AbstractFestUseCase {
     window
       .textBox(MessageKey.TIMESTAMP.getKey())
       .setText(timestamp)
-       // Trigger the key release action
+        // Trigger the key release action
       .pressKey(KeyEvent.VK_SHIFT)
       .releaseKey(KeyEvent.VK_SHIFT);
 
@@ -95,7 +100,11 @@ public class CreateWalletConfirmSeedPhraseUseCase extends AbstractFestUseCase {
       .releaseKey(KeyEvent.VK_SHIFT);
 
     window
-      .label(MessageKey.VERIFICATION_STATUS.getKey())
+      .label(
+        getVerificationStatusName(
+          WelcomeWizardState.CREATE_WALLET_CONFIRM_SEED_PHRASE.name(),
+          "seedphrase"
+        ))
       .requireVisible();
 
     // Almost correct seed phrase (short)
@@ -109,7 +118,11 @@ public class CreateWalletConfirmSeedPhraseUseCase extends AbstractFestUseCase {
 
     // Verification status is not showing so requires a modified search
     window
-      .label(newNotShowingJLabelFixture(MessageKey.VERIFICATION_STATUS.getKey()))
+      .label(newNotShowingJLabelFixture(
+        getVerificationStatusName(
+          WelcomeWizardState.CREATE_WALLET_CONFIRM_SEED_PHRASE.name(),
+          "seedphrase"
+        )))
       .requireNotVisible();
 
     // Almost correct seed phrase (long)
@@ -123,7 +136,11 @@ public class CreateWalletConfirmSeedPhraseUseCase extends AbstractFestUseCase {
 
     // Verification status is not showing so requires a modified search
     window
-      .label(newNotShowingJLabelFixture(MessageKey.VERIFICATION_STATUS.getKey()))
+      .label(newNotShowingJLabelFixture(
+        getVerificationStatusName(
+          WelcomeWizardState.CREATE_WALLET_CONFIRM_SEED_PHRASE.name(),
+          "seedphrase"
+        )))
       .requireNotVisible();
 
   }

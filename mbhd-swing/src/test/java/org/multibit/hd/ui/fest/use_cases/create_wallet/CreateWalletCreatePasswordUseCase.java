@@ -61,7 +61,11 @@ public class CreateWalletCreatePasswordUseCase extends AbstractFestUseCase {
 
     // Verification status is not showing so requires a modified search
     window
-      .label(newNotShowingJLabelFixture(WelcomeWizardState.CREATE_WALLET_CREATE_PASSWORD+"."+MessageKey.VERIFICATION_STATUS.getKey()))
+      .label(newNotShowingJLabelFixture(
+        getVerificationStatusName(
+          WelcomeWizardState.CREATE_WALLET_CREATE_PASSWORD.name(),
+          "password"
+        )))
       .requireNotVisible();
 
     // Verify interactions
@@ -93,7 +97,11 @@ public class CreateWalletCreatePasswordUseCase extends AbstractFestUseCase {
       .releaseKey(KeyEvent.VK_SHIFT);
 
     window
-      .label(WelcomeWizardState.CREATE_WALLET_CREATE_PASSWORD+"."+MessageKey.VERIFICATION_STATUS.getKey())
+      .label(
+        getVerificationStatusName(
+          WelcomeWizardState.CREATE_WALLET_CREATE_PASSWORD.name(),
+          "password"
+        ))
       .requireVisible();
 
     // Almost correct (short)
@@ -113,7 +121,11 @@ public class CreateWalletCreatePasswordUseCase extends AbstractFestUseCase {
 
     // Verification status is not showing so requires a modified search
     window
-      .label(newNotShowingJLabelFixture(WelcomeWizardState.CREATE_WALLET_CREATE_PASSWORD+"."+MessageKey.VERIFICATION_STATUS.getKey()))
+      .label(newNotShowingJLabelFixture(
+        getVerificationStatusName(
+          WelcomeWizardState.CREATE_WALLET_CREATE_PASSWORD.name(),
+          "password"
+        )))
       .requireNotVisible();
 
     // Almost correct (long)
@@ -133,7 +145,11 @@ public class CreateWalletCreatePasswordUseCase extends AbstractFestUseCase {
 
     // Verification status is not showing so requires a modified search
     window
-      .label(newNotShowingJLabelFixture(WelcomeWizardState.CREATE_WALLET_CREATE_PASSWORD+"."+MessageKey.VERIFICATION_STATUS.getKey()))
+      .label(newNotShowingJLabelFixture(
+        getVerificationStatusName(
+          WelcomeWizardState.CREATE_WALLET_CREATE_PASSWORD.name(),
+          "password"
+        )))
       .requireNotVisible();
 
   }

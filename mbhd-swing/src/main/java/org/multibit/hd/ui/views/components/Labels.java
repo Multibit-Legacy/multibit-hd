@@ -98,7 +98,7 @@ public class Labels {
    */
   public static JLabel newTitleLabel(MessageKey key) {
 
-    String[] titleText = new String[] {Languages.safeText(key)};
+    String[] titleText = new String[]{Languages.safeText(key)};
 
     String htmlText = HtmlUtils.localiseWithCenteredLinedBreaks(titleText);
 
@@ -280,13 +280,21 @@ public class Labels {
   }
 
   /**
-   * @param status True if the status is "good"
+   * @param panelName The panel name (used as the basis of the unique FEST name)
+   * @param status    True if the status is "good"
    *
    * @return A new "verification" status label (confirms user has done something right)
    */
-  public static JLabel newVerificationStatus(boolean status) {
+  public static JLabel newVerificationStatus(String panelName, boolean status) {
 
-    return newStatusLabel(MessageKey.VERIFICATION_STATUS, null, status);
+    JLabel label = newStatusLabel(MessageKey.VERIFICATION_STATUS, null, status);
+
+    // There could be many verification labels on a single panel so provide a unique name
+    // See AbstractFestUseCase for more details
+    label.setName(panelName + "." + MessageKey.VERIFICATION_STATUS.getKey());
+
+    return label;
+
   }
 
   /**

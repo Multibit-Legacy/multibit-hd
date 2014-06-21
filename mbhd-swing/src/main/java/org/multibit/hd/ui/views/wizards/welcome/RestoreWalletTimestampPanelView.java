@@ -8,8 +8,8 @@ import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
-import org.multibit.hd.ui.views.components.enter_password.EnterPasswordView;
+import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
+import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordView;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
@@ -33,7 +33,7 @@ import javax.swing.*;
 public class RestoreWalletTimestampPanelView extends AbstractWizardPanelView<WelcomeWizardModel, RestoreWalletTimestampPanelModel> {
 
   private ModelAndView<EnterSeedPhraseModel, EnterSeedPhraseView> enterSeedPhraseMaV;
-  private ModelAndView<EnterPasswordModel, EnterPasswordView> enterPasswordMaV;
+  private ModelAndView<ConfirmPasswordModel, ConfirmPasswordView> confirmPasswordMaV;
 
   /**
    * @param wizard    The wizard managing the states
@@ -50,21 +50,21 @@ public class RestoreWalletTimestampPanelView extends AbstractWizardPanelView<Wel
 
     // Do not ask for seed phrase (we already have it)
     enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV(getPanelName(), true, false);
-    enterPasswordMaV = Components.newEnterPasswordMaV(getPanelName());
+    confirmPasswordMaV = Components.newConfirmPasswordMaV(getPanelName());
 
     // Create a panel model for the information
     RestoreWalletTimestampPanelModel panelModel = new RestoreWalletTimestampPanelModel(
       getPanelName(),
       enterSeedPhraseMaV.getModel(),
-      enterPasswordMaV.getModel()
+      confirmPasswordMaV.getModel()
     );
     setPanelModel(panelModel);
 
     getWizardModel().setRestoreWalletEnterTimestampModel(enterSeedPhraseMaV.getModel());
-    getWizardModel().setRestoreWalletEnterPasswordModel(enterPasswordMaV.getModel());
+    getWizardModel().setRestoreWalletConfirmPasswordModel(confirmPasswordMaV.getModel());
 
     // Register components
-    registerComponents(enterPasswordMaV, enterSeedPhraseMaV);
+    registerComponents(confirmPasswordMaV, enterSeedPhraseMaV);
 
   }
 
@@ -79,7 +79,7 @@ public class RestoreWalletTimestampPanelView extends AbstractWizardPanelView<Wel
 
     contentPanel.add(Panels.newRestoreFromTimestamp(), "wrap");
     contentPanel.add(enterSeedPhraseMaV.getView().newComponentPanel(), "wrap");
-    contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "wrap");
+    contentPanel.add(confirmPasswordMaV.getView().newComponentPanel(), "wrap");
 
   }
 
@@ -105,25 +105,39 @@ public class RestoreWalletTimestampPanelView extends AbstractWizardPanelView<Wel
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 
-    // Enable the "next" button if the timestamp is valid (we already have the seed phrase)
-    boolean timestampIsValid = false;
+    // No need to update the wizard it has the references
+
+    // Determine any events
+    ViewEvents.fireWizardButtonEnabledEvent(
+      getPanelName(),
+      WizardButton.NEXT,
+      isNextEnabled()
+    );
+
+  }
+
+  /**
+   * @return True if the "next" button should be enabled
+   */
+  private boolean isNextEnabled() {
+
+    boolean isPasswordValid = confirmPasswordMaV.getModel().comparePasswords();
+
+    boolean isTimestampValid = false;
     try {
       Dates.parseSeedTimestamp(enterSeedPhraseMaV.getModel().getSeedTimestamp());
-      timestampIsValid = true;
+      isTimestampValid = true;
     } catch (IllegalArgumentException e) {
       // Do nothing
     }
 
-    ViewEvents.fireWizardButtonEnabledEvent(
-      getPanelName(),
-      WizardButton.NEXT,
-      timestampIsValid
-    );
+    // Fire the "timestamp verified" event
+    ViewEvents.fireVerificationStatusChangedEvent(getPanelName() + ".timestamp", isTimestampValid);
 
-    ViewEvents.fireVerificationStatusChangedEvent(
-      getPanelName(),
-      timestampIsValid
-    );
+    // Confirm password will fire its own event
+
+    return isTimestampValid && isPasswordValid;
 
   }
+
 }

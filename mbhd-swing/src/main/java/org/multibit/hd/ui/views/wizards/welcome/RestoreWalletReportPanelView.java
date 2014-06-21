@@ -27,7 +27,7 @@ import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
+import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSummaryModel;
@@ -257,10 +257,14 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
       EnterSeedPhraseModel restoreEnterSeedPhraseModel = model.getRestoreWalletEnterSeedPhraseModel();
       EnterSeedPhraseModel restoreEnterTimestampModel = model.getRestoreWalletEnterTimestampModel();
-      EnterPasswordModel enterPasswordModel = model.getRestoreWalletEnterPasswordModel();
-      log.debug("Timestamp = " + restoreEnterTimestampModel.getSeedTimestamp());
+      ConfirmPasswordModel confirmPasswordModel = model.getRestoreWalletConfirmPasswordModel();
+      log.debug("Timestamp: {}", restoreEnterTimestampModel.getSeedTimestamp());
 
-      walletCreatedStatus = createWalletFromSeedPhraseAndTimestamp(restoreEnterSeedPhraseModel.getSeedPhrase(), restoreEnterTimestampModel.getSeedTimestamp(), enterPasswordModel.getValue());
+      walletCreatedStatus = createWalletFromSeedPhraseAndTimestamp(
+        restoreEnterSeedPhraseModel.getSeedPhrase(),
+        restoreEnterTimestampModel.getSeedTimestamp(),
+        confirmPasswordModel.getValue()
+      );
     } else {
       throw new IllegalStateException("Cannot perform a restore - unknown method of restore: '" + model.getRestoreMethod() + "'");
     }

@@ -8,8 +8,6 @@ import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
 import org.multibit.hd.ui.views.components.TextBoxes;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -23,8 +21,6 @@ import java.util.List;
  *  
  */
 public class EnterSeedPhraseModel implements Model<List<String>> {
-
-  private static final Logger log = LoggerFactory.getLogger(EnterSeedPhraseModel.class);
 
   private List<String> seedPhrase = Lists.newArrayList();
 
@@ -101,6 +97,8 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
         .split(text)
     );
 
+    String componentName = seedPhrase.size() > 0 ? ".seedphrase" : ".timestamp";
+
     // Perform a basic verification of the seed phrase
     if (SeedPhraseSize.isValid(seedPhrase.size())) {
 
@@ -114,7 +112,8 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
       // Ensure the "next" button is kept disabled and no "verified" message
       ViewEvents.fireWizardButtonEnabledEvent(panelName, WizardButton.NEXT, false);
 
-      ViewEvents.fireVerificationStatusChangedEvent(panelName, false);
+      // Fire "seed phrase verification" event
+      ViewEvents.fireVerificationStatusChangedEvent(panelName + componentName, false);
     }
 
   }

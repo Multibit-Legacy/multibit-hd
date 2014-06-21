@@ -100,7 +100,9 @@ public class RestoreWalletSeedPhrasePanelView extends AbstractWizardPanelView<We
 
     // Fire the decision events
     ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, isNextEnabled());
-    ViewEvents.fireVerificationStatusChangedEvent(getPanelName(), isNextEnabled());
+
+    // Fire "seed phrase verification" event
+    ViewEvents.fireVerificationStatusChangedEvent(getPanelName() + ".seedphrase", isNextEnabled());
 
   }
 

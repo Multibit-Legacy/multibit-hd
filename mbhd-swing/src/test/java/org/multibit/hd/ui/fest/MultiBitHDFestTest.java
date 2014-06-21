@@ -126,7 +126,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <p>Verify the following:</p>
    * <ul>
    * <li>Start with fresh application directory</li>
-   * <li>Restore a wallet</li>
+   * <li>Restore a wallet using the seed phrase and timestamp</li>
    * </ul>
    */
   @Test

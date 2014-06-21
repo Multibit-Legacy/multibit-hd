@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.Labels;
@@ -13,6 +14,7 @@ import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
 
@@ -89,7 +91,23 @@ public class CreateWalletCreatePasswordPanelView extends AbstractWizardPanelView
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 
-    // Do nothing
+    // No need to update the wizard it has the references
+
+    // Determine any events
+    ViewEvents.fireWizardButtonEnabledEvent(
+      getPanelName(),
+      WizardButton.NEXT,
+      isNextEnabled()
+    );
+
+  }
+
+  /**
+   * @return True if the "next" button should be enabled
+   */
+  private boolean isNextEnabled() {
+
+    return confirmPasswordMaV.getModel().comparePasswords();
 
   }
 

@@ -19,7 +19,6 @@ import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
-import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSummaryModel;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
@@ -96,7 +95,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   private List<BackupSummary> backupSummaries = Lists.newArrayList();
   private SelectBackupSummaryModel selectBackupSummaryModel;
   private EnterSeedPhraseModel restoreWalletEnterTimestampModel;
-  private EnterPasswordModel restoreWalletEnterPasswordModel;
+  private ConfirmPasswordModel restoreWalletConfirmPasswordModel;
 
   private List<WalletSummary> walletList = Lists.newArrayList();
 
@@ -511,14 +510,14 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   /**
    * <p>Reduced visibility for panel models</p>
    *
-   * @param restoreWalletEnterPasswordModel The "enter password" model for the restore wallet panel
+   * @param restoreWalletConfirmPasswordModel The "enter password" model for the restore wallet panel
    */
-  void setRestoreWalletEnterPasswordModel(EnterPasswordModel restoreWalletEnterPasswordModel) {
-    this.restoreWalletEnterPasswordModel = restoreWalletEnterPasswordModel;
+  void setRestoreWalletConfirmPasswordModel(ConfirmPasswordModel restoreWalletConfirmPasswordModel) {
+    this.restoreWalletConfirmPasswordModel = restoreWalletConfirmPasswordModel;
   }
 
-  public EnterPasswordModel getRestoreWalletEnterPasswordModel() {
-    return restoreWalletEnterPasswordModel;
+  public ConfirmPasswordModel getRestoreWalletConfirmPasswordModel() {
+    return restoreWalletConfirmPasswordModel;
   }
 
   /**

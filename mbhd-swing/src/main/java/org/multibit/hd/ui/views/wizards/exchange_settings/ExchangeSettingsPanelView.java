@@ -126,7 +126,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     }
 
     // Ticker verification status
-    tickerVerifiedStatus = Labels.newVerificationStatus(true);
+    tickerVerifiedStatus = Labels.newVerificationStatus(getPanelName() + ".exchange", true);
     tickerVerifiedStatus.setVisible(false);
 
     // Ticker spinner
@@ -628,7 +628,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
         Sounds.playBeep();
 
         // Ensure we wrap the label
-        String failureHtml = HtmlUtils.localiseWithLineBreaks(new String[] {
+        String failureHtml = HtmlUtils.localiseWithLineBreaks(new String[]{
           Languages.safeText(CoreMessageKey.THE_ERROR_WAS, t.getMessage())
         });
         tickerVerifiedStatus.setText(failureHtml);

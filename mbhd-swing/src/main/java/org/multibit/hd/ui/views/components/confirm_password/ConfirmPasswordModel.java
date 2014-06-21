@@ -1,6 +1,5 @@
 package org.multibit.hd.ui.views.components.confirm_password;
 
-import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
 
 /**
@@ -53,9 +52,6 @@ public class ConfirmPasswordModel implements Model<String> {
 
     // TODO Consider a check for whitespace characters leading or trailing
 
-    // Fire the UI event for "verification status" message
-    ViewEvents.fireVerificationStatusChangedEvent(panelName, passwordsEqual);
-
     return passwordsEqual;
 
   }
@@ -74,7 +70,9 @@ public class ConfirmPasswordModel implements Model<String> {
 
   @Override
   public void setValue(String value) {
+
     this.password1 = value.toCharArray();
+
   }
 
   public void setPassword1(char[] password1) {

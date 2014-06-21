@@ -33,6 +33,7 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
 
   private final boolean showSeedPhrase;
   private final boolean showTimestamp;
+  private final String componentName;
 
   /**
    * @param model          The model backing this view
@@ -41,8 +42,18 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
    */
   public EnterSeedPhraseView(EnterSeedPhraseModel model, boolean showTimestamp, boolean showSeedPhrase) {
     super(model);
+
     this.showTimestamp = showTimestamp;
     this.showSeedPhrase = showSeedPhrase;
+
+    // Determine the component name
+    if (showTimestamp && !showSeedPhrase) {
+      // Timestamp only
+      componentName = ".timestamp";
+    } else {
+      // Seed phrase only or seed phrase and timestamp
+      componentName = ".seedphrase";
+    }
 
   }
 
@@ -50,6 +61,7 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
   public JPanel newComponentPanel() {
 
     EnterSeedPhraseModel model = getModel().get();
+    String panelName = model.getPanelName();
 
     panel = Panels.newPanel(new MigLayout(
       "insets 0", // Layout
@@ -100,7 +112,7 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
     });
 
     // Create a new verification status panel (initially invisible)
-    verificationStatusLabel = Labels.newVerificationStatus(true);
+    verificationStatusLabel = Labels.newVerificationStatus(panelName + componentName, true);
     verificationStatusLabel.setVisible(false);
 
     // Configure the actions
@@ -151,7 +163,8 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
   @Subscribe
   public void onVerificationStatusChanged(final VerificationStatusChangedEvent event) {
 
-    if (event.getPanelName().equals(getModel().get().getPanelName()) && verificationStatusLabel != null) {
+
+    if (event.getPanelName().equals(getModel().get().getPanelName() + componentName) && verificationStatusLabel != null) {
 
       // Determine if the component is initialised
       Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on the EDT");

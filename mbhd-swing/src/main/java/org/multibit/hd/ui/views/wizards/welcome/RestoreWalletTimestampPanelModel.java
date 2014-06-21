@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
-import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
+import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
 
@@ -16,21 +16,21 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
 public class RestoreWalletTimestampPanelModel extends AbstractWizardPanelModel {
 
   private final EnterSeedPhraseModel enterSeedPhraseModel;
-  private final EnterPasswordModel enterPasswordModel;
+  private final ConfirmPasswordModel confirmPasswordModel;
 
   /**
    * @param panelName            The panel name
    * @param enterSeedPhraseModel The "enter seed phrase" component model
-   * @param enterPasswordModel   The "enter password" component model
+   * @param confirmPasswordModel The "confirm password" component model
    */
   public RestoreWalletTimestampPanelModel(
     String panelName,
     EnterSeedPhraseModel enterSeedPhraseModel,
-    EnterPasswordModel enterPasswordModel
+    ConfirmPasswordModel confirmPasswordModel
   ) {
     super(panelName);
     this.enterSeedPhraseModel = enterSeedPhraseModel;
-    this.enterPasswordModel = enterPasswordModel;
+    this.confirmPasswordModel = confirmPasswordModel;
   }
 
   /**
@@ -43,8 +43,8 @@ public class RestoreWalletTimestampPanelModel extends AbstractWizardPanelModel {
   /**
    * @return The password model
    */
-  public EnterPasswordModel getEnterPasswordModel() {
-    return enterPasswordModel;
+  public ConfirmPasswordModel getConfirmPasswordModel() {
+    return confirmPasswordModel;
   }
 
 }

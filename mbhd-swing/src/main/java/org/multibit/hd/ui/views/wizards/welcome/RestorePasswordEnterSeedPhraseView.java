@@ -23,8 +23,6 @@ import org.multibit.hd.ui.views.wizards.WizardButton;
 import javax.swing.*;
 import java.util.List;
 
-import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.RESTORE_PASSWORD_SEED_PHRASE;
-
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
@@ -102,8 +100,10 @@ public class RestorePasswordEnterSeedPhraseView extends AbstractWizardPanelView<
   public void updateFromComponentModels(Optional componentModel) {
 
     // Fire the decision events (requires knowledge of the previous panel data)
-    ViewEvents.fireWizardButtonEnabledEvent(RESTORE_PASSWORD_SEED_PHRASE.name(), WizardButton.NEXT, isNextEnabled());
-    ViewEvents.fireVerificationStatusChangedEvent(RESTORE_PASSWORD_SEED_PHRASE.name(), isNextEnabled());
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, isNextEnabled());
+
+    // Fire "seed phrase verification" event
+    ViewEvents.fireVerificationStatusChangedEvent(getPanelName() + ".seedphrase", isNextEnabled());
 
   }
 

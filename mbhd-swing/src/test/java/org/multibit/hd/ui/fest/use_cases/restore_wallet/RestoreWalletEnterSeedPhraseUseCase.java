@@ -3,6 +3,7 @@ package org.multibit.hd.ui.fest.use_cases.restore_wallet;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 
 import java.awt.event.KeyEvent;
 import java.util.Map;
@@ -45,7 +46,11 @@ public class RestoreWalletEnterSeedPhraseUseCase extends AbstractFestUseCase {
 
     // Verification status is not showing so requires a modified search
     window
-      .label(newNotShowingJLabelFixture(MessageKey.VERIFICATION_STATUS.getKey()))
+      .label(newNotShowingJLabelFixture(
+        getVerificationStatusName(
+          WelcomeWizardState.RESTORE_WALLET_SEED_PHRASE.name(),
+          "seedphrase"
+        )))
       .requireNotVisible();
 
     // Verify interactions
@@ -73,8 +78,13 @@ public class RestoreWalletEnterSeedPhraseUseCase extends AbstractFestUseCase {
       .pressKey(KeyEvent.VK_SHIFT)
       .releaseKey(KeyEvent.VK_SHIFT);
 
+    // Verification status is showing
     window
-      .label(MessageKey.VERIFICATION_STATUS.getKey())
+      .label(
+        getVerificationStatusName(
+          WelcomeWizardState.RESTORE_WALLET_SEED_PHRASE.name(),
+          "seedphrase"
+        ))
       .requireVisible();
 
     // Almost correct seed phrase (short)
@@ -87,7 +97,11 @@ public class RestoreWalletEnterSeedPhraseUseCase extends AbstractFestUseCase {
 
     // Verification status is not showing so requires a modified search
     window
-      .label(newNotShowingJLabelFixture(MessageKey.VERIFICATION_STATUS.getKey()))
+      .label(newNotShowingJLabelFixture(
+        getVerificationStatusName(
+          WelcomeWizardState.RESTORE_WALLET_SEED_PHRASE.name(),
+          "seedphrase"
+        )))
       .requireNotVisible();
 
     // Almost correct seed phrase (long)
@@ -100,7 +114,11 @@ public class RestoreWalletEnterSeedPhraseUseCase extends AbstractFestUseCase {
 
     // Verification status is not showing so requires a modified search
     window
-      .label(newNotShowingJLabelFixture(MessageKey.VERIFICATION_STATUS.getKey()))
+      .label(newNotShowingJLabelFixture(
+        getVerificationStatusName(
+          WelcomeWizardState.RESTORE_WALLET_SEED_PHRASE.name(),
+          "seedphrase"
+        )))
       .requireNotVisible();
 
   }

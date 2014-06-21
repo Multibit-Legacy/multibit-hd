@@ -90,6 +90,18 @@ public abstract class AbstractFestUseCase {
   }
 
   /**
+   * <p>Provides a naming convention for the verification label</p>
+   *
+   * @param panelName     The panel name taken from the wizard state (e.g. WelcomeWizardState.RESTORE_PASSWORD_SEED_PHRASE)
+   * @param componentName The component name to avoid conflict with multiple verifiable components (e.g. "timestamp", "seedphrase", "password")
+   *
+   * @return The appropriate FEST name for the verification label
+   */
+  protected String getVerificationStatusName(String panelName, String componentName) {
+    return panelName + "." + componentName + "." + MessageKey.VERIFICATION_STATUS.getKey();
+  }
+
+  /**
    * @return True if an exchange rate has been received
    */
   protected boolean isExchangePresent() {

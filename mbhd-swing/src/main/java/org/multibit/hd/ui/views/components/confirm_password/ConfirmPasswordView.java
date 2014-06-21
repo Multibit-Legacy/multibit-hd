@@ -1,9 +1,11 @@
 package org.multibit.hd.ui.views.components.confirm_password;
 
+import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -40,6 +42,9 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
   @Override
   public JPanel newComponentPanel() {
 
+    // Required to support FEST testing
+    final String panelName = getModel().get().getPanelName();
+
     panel = Panels.newPanel(new MigLayout(
       Panels.migXLayout(), // Layout
       "[][][][]", // Columns (require 4 columns for alignment with EnterPasswordView)
@@ -62,7 +67,14 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
       @Override
       public void keyReleased(KeyEvent e) {
         getModel().get().setPassword1(password1.getPassword());
-        getModel().get().comparePasswords();
+        boolean isPasswordValid = getModel().get().comparePasswords();
+
+        // Fire the UI event for "password verification status" message
+        ViewEvents.fireVerificationStatusChangedEvent(panelName + ".password", isPasswordValid);
+
+        // Fire the UI event for "component changed" message
+        ViewEvents.fireComponentChangedEvent(panelName, Optional.of(getModel()));
+
       }
 
     });
@@ -71,32 +83,36 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
       @Override
       public void keyReleased(KeyEvent e) {
         getModel().get().setPassword2(password2.getPassword());
-        getModel().get().comparePasswords();
+        boolean isPasswordValid = getModel().get().comparePasswords();
+
+        // Fire the UI event for "password verification status" message
+        ViewEvents.fireVerificationStatusChangedEvent(panelName + ".password", isPasswordValid);
+
+        // Fire the UI event for "component changed" message
+        ViewEvents.fireComponentChangedEvent(panelName, Optional.of(getModel()));
+
       }
 
     });
 
-    // Required to support FEST testing
-    String panelName = getModel().get().getPanelName();
-
     // Create a new verification status panel (initially hidden)
-    verificationStatusLabel = Labels.newVerificationStatus(true);
-    verificationStatusLabel.setName(panelName+"."+MessageKey.VERIFICATION_STATUS.getKey());
+    verificationStatusLabel = Labels.newVerificationStatus(panelName + ".password", true);
     verificationStatusLabel.setVisible(false);
 
     JLabel spinner = Labels.newSpinner(Themes.currentTheme.fadedText(), MultiBitUI.NORMAL_PLUS_ICON_SIZE);
     spinner.setVisible(false);
 
     // Add to the panel
-    // Cannot affect the focus traversal to be p1 -> p2 -> eye reliably
+    // Cannot affect the focus traversal to be p1 -> p2 -> show reliably
     // Tried using cell positioning, custom traversal policy etc but
-    // nothing is reliable enough
+    // nothing is reliable enough and still maintain the relative locations
+    // of the components
     //
     // Also the labels must be part of the component to ensure correct layout
     panel.add(Labels.newEnterNewPassword());
     panel.add(password1);
     panel.add(Buttons.newShowButton(toggleDisplayAction), "spany 2");
-    panel.add(spinner, "spany 2,"+ MultiBitUI.NORMAL_PLUS_ICON_SIZE_MIG+",wrap");
+    panel.add(spinner, "spany 2," + MultiBitUI.NORMAL_PLUS_ICON_SIZE_MIG + ",wrap");
     panel.add(Labels.newRetypeNewPassword());
     panel.add(password2, "wrap");
     panel.add(verificationStatusLabel, "span 4,grow,push");
@@ -154,7 +170,7 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
   @Subscribe
   public void onVerificationStatusChanged(VerificationStatusChangedEvent event) {
 
-    if (event.getPanelName().equals(getModel().get().getPanelName()) && verificationStatusLabel != null) {
+    if (event.getPanelName().equals(getModel().get().getPanelName() + ".password") && verificationStatusLabel != null) {
 
       verificationStatusLabel.setVisible(event.isOK());
 
