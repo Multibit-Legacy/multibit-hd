@@ -8,9 +8,12 @@ import org.fest.swing.edt.GuiQuery;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.testing.FestSwingTestCaseTemplate;
 import org.junit.*;
+import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -352,8 +355,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     InstallationManager.currentApplicationDataDirectory = SecureFiles.verifyOrCreateDirectory(temporaryDirectory);
 
     // Copy the MBHD cacerts
-    InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/fixtures/"+InstallationManager.CA_CERTS_NAME);
-    OutputStream target = new FileOutputStream(new File(temporaryDirectory + "/"+InstallationManager.CA_CERTS_NAME));
+    InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/fixtures/" + InstallationManager.CA_CERTS_NAME);
+    OutputStream target = new FileOutputStream(new File(temporaryDirectory + "/" + InstallationManager.CA_CERTS_NAME));
     ByteStreams.copy(cacerts, target);
 
     // Initialise the backup manager
@@ -381,8 +384,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     InstallationManager.currentApplicationDataDirectory = SecureFiles.verifyOrCreateDirectory(temporaryDirectory);
 
     // Copy the MBHD cacerts
-    InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/fixtures/"+InstallationManager.CA_CERTS_NAME);
-    OutputStream target = new FileOutputStream(new File(temporaryDirectory + "/"+InstallationManager.CA_CERTS_NAME));
+    InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/fixtures/" + InstallationManager.CA_CERTS_NAME);
+    OutputStream target = new FileOutputStream(new File(temporaryDirectory + "/" + InstallationManager.CA_CERTS_NAME));
     ByteStreams.copy(cacerts, target);
 
     // Initialise the backup manager to use the temporary directory
@@ -407,6 +410,19 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
     // Always reset back to en_US
     Locale.setDefault(Locale.US);
+
+    log.info("Create standard configuration (no exchange)");
+
+    // Always start without an exchange
+    Configuration configuration = Configurations.newDefaultConfiguration();
+    configuration.getBitcoin().setCurrentExchange(ExchangeKey.NONE.name());
+
+    // Persist the new configuration
+    try (FileOutputStream fos = new FileOutputStream(InstallationManager.getConfigurationFile())) {
+      Configurations.writeYaml(fos, configuration);
+    } catch (IOException e) {
+      ExceptionHandler.handleThrowable(e);
+    }
 
     log.info("Starting MultiBit HD...");
 

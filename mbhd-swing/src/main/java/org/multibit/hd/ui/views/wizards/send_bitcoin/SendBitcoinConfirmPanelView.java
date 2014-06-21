@@ -84,9 +84,21 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
   public void initialiseContent(JPanel contentPanel) {
 
     // Transaction information
-    transactionDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT, true, "transaction");
-    transactionFeeDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.FEE_AMOUNT, true, "transaction_fee");
-    clientFeeDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.FEE_AMOUNT, true, "client_fee");
+    transactionDisplayAmountMaV = Components.newDisplayAmountMaV(
+      DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT,
+      true,
+      SendBitcoinState.SEND_CONFIRM_AMOUNT.name() + ".transaction"
+    );
+    transactionFeeDisplayAmountMaV = Components.newDisplayAmountMaV(
+      DisplayAmountStyle.FEE_AMOUNT,
+      true,
+      SendBitcoinState.SEND_CONFIRM_AMOUNT.name() + ".transaction_fee"
+    );
+    clientFeeDisplayAmountMaV = Components.newDisplayAmountMaV(
+      DisplayAmountStyle.FEE_AMOUNT,
+      true,
+      SendBitcoinState.SEND_CONFIRM_AMOUNT.name() + ".client_fee"
+    );
 
     // Ensure visibility
     transactionDisplayAmountMaV.getView().setVisible(true);

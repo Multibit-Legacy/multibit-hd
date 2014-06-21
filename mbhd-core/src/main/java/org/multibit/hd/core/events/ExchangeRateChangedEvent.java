@@ -43,7 +43,7 @@ public class ExchangeRateChangedEvent implements CoreEvent {
   }
 
   /**
-   * @return The name of the exchange (e.g. "Bitstamp" or absent if unknown)
+   * @return The name of the exchange (e.g. "Bitstamp" or absent if "None")
    */
   public Optional<String> getRateProvider() {
     return rateProvider;
@@ -72,7 +72,7 @@ public class ExchangeRateChangedEvent implements CoreEvent {
     return "ExchangeRateChangedEvent{" +
       "rate=" + rate +
       ", currency=" + currency +
-      ", exchangeName='" + rateProvider + '\'' +
+      ", exchangeName='" + rateProvider.or("None") + '\'' +
       ", expires=" + expires +
       '}';
   }

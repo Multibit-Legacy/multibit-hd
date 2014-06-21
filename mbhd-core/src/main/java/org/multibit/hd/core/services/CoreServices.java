@@ -137,7 +137,7 @@ public class CoreServices {
     Optional<Configuration> configuration;
     try (InputStream is = new FileInputStream(InstallationManager.getConfigurationFile())) {
       // Load configuration (providing a default if none exists)
-      configuration = Configurations.readConfiguration(is, Configuration.class);
+      configuration = Configurations.readYaml(is, Configuration.class);
     } catch (IOException e) {
       configuration = Optional.absent();
     }

@@ -3,6 +3,7 @@ package org.multibit.hd.ui.fest.use_cases.send_request.send;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState;
 
 import java.util.Map;
 
@@ -47,18 +48,9 @@ public class SendNoFundsConfirmScreenUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireText("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
 
-    // Verify amount panels are present
-    window
-      .panel("transaction")
-      .requireVisible();
-
-    window
-      .panel("transaction_fee")
-      .requireVisible();
-
-    window
-      .panel("client_fee")
-      .requireVisible();
+    assertDisplayAmount(SendBitcoinState.SEND_CONFIRM_AMOUNT.name(), "transaction", false);
+    assertDisplayAmount(SendBitcoinState.SEND_CONFIRM_AMOUNT.name(), "transaction_fee", false);
+    assertDisplayAmount(SendBitcoinState.SEND_CONFIRM_AMOUNT.name(), "client_fee", false);
 
     window
       .textBox(MessageKey.PRIVATE_NOTES.getKey())

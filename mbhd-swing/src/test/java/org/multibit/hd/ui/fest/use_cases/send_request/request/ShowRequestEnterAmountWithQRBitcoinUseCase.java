@@ -94,7 +94,7 @@ public class ShowRequestEnterAmountWithQRBitcoinUseCase extends AbstractFestUseC
 
     // Verify the amount is showing as receiving in the correct position
     String paymentReceiving0= window
-      .label("SEND_REQUEST_REQUESTED_requested_0_primary_balance")
+      .label("SEND_REQUEST_REQUESTED.requested.0.primary_balance")
       .text();
 
     assertThat(paymentReceiving0).contains("100.00");

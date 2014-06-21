@@ -1,10 +1,13 @@
 package org.multibit.hd.ui.fest.use_cases;
 
+import com.google.common.base.Optional;
 import org.fest.swing.core.matcher.JButtonMatcher;
 import org.fest.swing.core.matcher.JLabelMatcher;
 import org.fest.swing.core.matcher.JTextComponentMatcher;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.timing.Pause;
+import org.multibit.hd.core.events.ExchangeRateChangedEvent;
+import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -102,10 +105,19 @@ public abstract class AbstractFestUseCase {
   }
 
   /**
-   * @return True if an exchange rate has been received
+   * @return True if an exchange rate from a valid provider has been received
    */
   protected boolean isExchangePresent() {
-    return CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().isPresent();
+
+    // If there is no exchange then return fast
+    if (ExchangeKey.current().equals(ExchangeKey.NONE)) {
+      return false;
+    }
+
+    // Work out the current exchange rate state
+    Optional<ExchangeRateChangedEvent> event = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
+    return event.isPresent() && event.get().getRateProvider().isPresent();
+
   }
 
   /**
@@ -202,6 +214,37 @@ public abstract class AbstractFestUseCase {
     assertThat(titleHtml).contains(value);
 
   }
+
+  /**
+   * <p>Asserts that a "display amount" component is showing</p>
+   *
+   * @param panelName             The panel name taken from the wizard state (e.g. WelcomeWizardState.RESTORE_PASSWORD_SEED_PHRASE)
+   * @param componentName         The component name to avoid conflict with multiple verifiable components (e.g. "client_fee")
+   * @param isExchangeRateVisible True if the exchange rate should be visible
+   */
+  protected void assertDisplayAmount(String panelName, String componentName, boolean isExchangeRateVisible) {
+
+    window
+      .label(panelName + "." + componentName + ".leading_balance")
+      .requireVisible();
+    window
+      .label(panelName + "." + componentName + ".primary_balance")
+      .requireVisible();
+    window
+      .label(panelName + "." + componentName + ".secondary_balance")
+      .requireVisible();
+    window
+      .label(newNotShowingJLabelFixture(panelName + "." + componentName + ".leading_balance"));
+    if (isExchangeRateVisible) {
+      window
+        .label(panelName + "." + componentName + ".exchange")
+        .requireVisible();
+    } else {
+      window
+        .label(newNotShowingJLabelFixture(panelName + "." + componentName + ".exchange"));
+    }
+  }
+
 
   /**
    * The standard length of time for a wallet to fail to unlock

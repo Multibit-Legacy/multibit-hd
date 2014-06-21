@@ -52,7 +52,7 @@ public class CoreEvents {
 
     ExchangeRateChangedEvent event = new ExchangeRateChangedEvent(rate, currency, rateProvider, expires);
     CoreServices.uiEventBus.post(event);
-    log.debug("Firing 'exchange rate changed' event " + event);
+    log.debug("Firing 'exchange rate changed' event: {}", event);
   }
 
   /**

@@ -66,7 +66,7 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
     panel.setName(getModel().get().getFestName());
 
     // Create the balance labels (normal size)
-    JLabel[] balanceLabels = Labels.newBalanceLabels(getModel().get().getStyle(), getModel().get().getFestName());
+    JLabel[] balanceLabels = Labels.newBalanceLabels(getModel().get().getStyle(),  getModel().get().getFestName());
     leadingSymbolLabel = balanceLabels[0];
     primaryBalanceLabel = balanceLabels[1];
     secondaryBalanceLabel = balanceLabels[2];

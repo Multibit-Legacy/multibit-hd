@@ -86,7 +86,11 @@ public class UnitsSettingsPanelView extends AbstractWizardPanelView<UnitsWizardM
 
     Preconditions.checkNotNull(locale, "'locale' cannot be empty");
 
-    displayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT, true,"example");
+    displayAmountMaV = Components.newDisplayAmountMaV(
+      DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT,
+      true,
+      UnitsSettingsState.UNITS_ENTER_DETAILS.name() + ".example"
+    );
     displayAmountMaV.getModel().setCoinAmount(Coin.valueOf(123_456_789_012L)); // 1.23... million bitcoins
     displayAmountMaV.getModel().setLocalAmount(new BigDecimal("1234567.89"));
     displayAmountMaV.getModel().setRateProvider(Optional.of(Languages.safeText(MessageKey.EXAMPLE)));
@@ -219,7 +223,7 @@ public class UnitsSettingsPanelView extends AbstractWizardPanelView<UnitsWizardM
   private void handleGroupingSelection(ActionEvent e) {
 
     JComboBox source = (JComboBox) e.getSource();
-    String grouping = String.valueOf(source.getSelectedItem()).substring(0,1);
+    String grouping = String.valueOf(source.getSelectedItem()).substring(0, 1);
 
     // Validate the combination
     if (grouping.equals(getWizardModel().getConfiguration().getBitcoin().getDecimalSeparator())) {
@@ -256,7 +260,7 @@ public class UnitsSettingsPanelView extends AbstractWizardPanelView<UnitsWizardM
   private void handleDecimalSelection(ActionEvent e) {
 
     JComboBox source = (JComboBox) e.getSource();
-    String decimal = String.valueOf(source.getSelectedItem()).substring(0,1);
+    String decimal = String.valueOf(source.getSelectedItem()).substring(0, 1);
 
     // Validate the combination
     if (decimal.equals(getWizardModel().getConfiguration().getBitcoin().getGroupingSeparator())) {

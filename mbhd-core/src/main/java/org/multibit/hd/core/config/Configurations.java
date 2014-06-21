@@ -9,7 +9,10 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Locale;
 
 /**
@@ -70,7 +73,7 @@ public class Configurations {
 
     // Persist the new configuration
     try (FileOutputStream fos = new FileOutputStream(InstallationManager.getConfigurationFile())) {
-      Configurations.writeCurrentConfiguration(fos, Configurations.currentConfiguration);
+      Configurations.writeYaml(fos, Configurations.currentConfiguration);
 
       // Update any JVM classes
       Locale.setDefault(currentConfiguration.getLocale());
@@ -84,9 +87,14 @@ public class Configurations {
   }
 
   /**
-   * @return The configuration data (<code>Configuration</code>, <code>Wallet Summary</code> etc)
+   * <p>Reads the YAML from the given input stream</p>
+   *
+   * @param is    The input stream to use (not closed)
+   * @param clazz The expected root class from the YAML
+   *
+   * @return The configuration data (<code>Configuration</code>, <code>Wallet Summary</code> etc) if present
    */
-  public static synchronized <T> Optional<T> readConfiguration(InputStream is, Class<T> clazz) {
+  public static synchronized <T> Optional<T> readYaml(InputStream is, Class<T> clazz) {
 
     log.debug("Reading configuration data...");
 
@@ -110,9 +118,12 @@ public class Configurations {
   }
 
   /**
-   * <p>Writes the current configuration to the application directory</p>
+   * <p>Writes the YAML to the application directory</p>
+   *
+   * @param os            The output stream to use (not closed)
+   * @param configuration The configuration to write as YAML
    */
-  public static synchronized <T> void writeCurrentConfiguration(OutputStream os, T configuration) {
+  public static synchronized <T> void writeYaml(OutputStream os, T configuration) {
 
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
     try {

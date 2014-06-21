@@ -523,11 +523,11 @@ public class Labels {
     JLabel exchangeLabel = newBlankLabel();
 
     // Add FEST information (accessibility is covered at the overall panel level)
-    leadingBalanceLabel.setName(festName + "_leading_balance");
-    primaryBalanceLabel.setName(festName + "_primary_balance");
-    secondaryBalanceLabel.setName(festName + "_secondary_balance");
-    trailingSymbolLabel.setName(festName + "_trailing_symbol");
-    exchangeLabel.setName(festName + "_exchange");
+    leadingBalanceLabel.setName(festName + ".leading_balance");
+    primaryBalanceLabel.setName(festName + ".primary_balance");
+    secondaryBalanceLabel.setName(festName + ".secondary_balance");
+    trailingSymbolLabel.setName(festName + ".trailing_symbol");
+    exchangeLabel.setName(festName + ".exchange");
 
     // Font
     final Font largeFont;

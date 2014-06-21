@@ -102,18 +102,18 @@ public class VerifyExchangeNoneUseCase extends AbstractFestUseCase {
 
     // Verify that balance with a local currency is showing in the header
     window
-      .label("header_leading_balance")
+      .label("header.leading_balance")
       .requireVisible();
     window
-      .label("header_primary_balance")
+      .label("header.primary_balance")
       .requireVisible();
     window
-      .label("header_secondary_balance")
+      .label("header.secondary_balance")
       .requireVisible();
     window
-      .label(newNotShowingJLabelFixture("header_leading_balance"));
+      .label(newNotShowingJLabelFixture("header.leading_balance"));
     window
-      .label("header_exchange")
+      .label("header.exchange")
       .requireVisible();
 
   }
@@ -154,18 +154,18 @@ public class VerifyExchangeNoneUseCase extends AbstractFestUseCase {
 
     // Verify that balance with no local currency is showing in the header
     window
-      .label("header_leading_balance")
+      .label("header.leading_balance")
       .requireVisible();
     window
-      .label("header_primary_balance")
+      .label("header.primary_balance")
       .requireVisible();
     window
-      .label("header_secondary_balance")
+      .label("header.secondary_balance")
       .requireVisible();
     window
-      .label(newNotShowingJLabelFixture("header_leading_balance"));
+      .label(newNotShowingJLabelFixture("header.leading_balance"));
     window
-      .label(newNotShowingJLabelFixture("header_exchange"));
+      .label(newNotShowingJLabelFixture("header.exchange"));
   }
 
 }

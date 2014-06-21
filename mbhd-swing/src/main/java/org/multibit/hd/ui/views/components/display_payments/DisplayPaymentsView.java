@@ -107,7 +107,7 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
           LabelDecorator.applyPaymentStatusIcon(paymentData.getStatus(), paymentDataLabel, paymentData.isCoinBase(), MultiBitUI.NORMAL_ICON_SIZE);
 
           // Create a unique FEST name to ensure accessibility
-          String festName = panelName + "_" + paymentData.getType().name().toLowerCase(Locale.UK) + "_" + count;
+          String festName = panelName + "." + paymentData.getType().name().toLowerCase(Locale.UK) + "." + count;
 
           // Amount MaV (ensure it is accessible)
           ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.PLAIN, false, festName);

@@ -62,9 +62,21 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
   public void initialiseContent(JPanel contentPanel) {
 
     // Transaction information
-    transactionDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT, true, "transaction");
-    transactionFeeDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.FEE_AMOUNT, true, "transaction_fee");
-    clientFeeDisplayAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.FEE_AMOUNT, true, "client_fee");
+    transactionDisplayAmountMaV = Components.newDisplayAmountMaV(
+      DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT,
+      true,
+      EmptyWalletState.EMPTY_WALLET_CONFIRM.name() + ".transaction"
+    );
+    transactionFeeDisplayAmountMaV = Components.newDisplayAmountMaV(
+      DisplayAmountStyle.FEE_AMOUNT,
+      true,
+      EmptyWalletState.EMPTY_WALLET_CONFIRM.name() + ".transaction_fee"
+    );
+    clientFeeDisplayAmountMaV = Components.newDisplayAmountMaV(
+      DisplayAmountStyle.FEE_AMOUNT,
+      true,
+      EmptyWalletState.EMPTY_WALLET_CONFIRM.name() + ".client_fee"
+    );
 
     // Ensure amounts are visible
     transactionDisplayAmountMaV.getView().setVisible(true);

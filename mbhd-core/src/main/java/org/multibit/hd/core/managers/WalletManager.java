@@ -657,7 +657,7 @@ public enum WalletManager implements WalletEventListener {
     // Persist the new configuration
     try (FileOutputStream fos = new FileOutputStream(walletSummaryFile)) {
 
-      Configurations.writeCurrentConfiguration(fos, walletSummary);
+      Configurations.writeYaml(fos, walletSummary);
 
     } catch (IOException e) {
       ExceptionHandler.handleThrowable(e);
@@ -678,7 +678,7 @@ public enum WalletManager implements WalletEventListener {
     if (walletSummaryFile.exists()) {
       try (InputStream is = new FileInputStream(walletSummaryFile)) {
         // Load configuration (providing a default if none exists)
-        walletSummaryOptional = Configurations.readConfiguration(is, WalletSummary.class);
+        walletSummaryOptional = Configurations.readYaml(is, WalletSummary.class);
       } catch (IOException e) {
         log.warn("Could not read wallet summary in '{}': {}. Creating default.", walletDirectory.getAbsolutePath(), e.getMessage());
       }

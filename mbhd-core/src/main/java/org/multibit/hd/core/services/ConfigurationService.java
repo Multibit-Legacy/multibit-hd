@@ -40,7 +40,7 @@ public class ConfigurationService extends AbstractService {
     if (Configurations.currentConfiguration != null) {
 
       try (FileOutputStream fos = new FileOutputStream(InstallationManager.getConfigurationFile())) {
-        Configurations.writeCurrentConfiguration(fos, Configurations.currentConfiguration);
+        Configurations.writeYaml(fos, Configurations.currentConfiguration);
 
       } catch (IOException e) {
         ExceptionHandler.handleThrowable(e);
