@@ -34,7 +34,7 @@ public class SearchPaymentsUseCase extends AbstractFestUseCase {
       .rowCount();
 
     // Verify that payments are present
-    assertThat(rowCount1).isEqualTo(5);
+    assertThat(rowCount1).isGreaterThanOrEqualTo(5);
 
     // Verify searches
     verifySearch("Beer", 2);
@@ -65,7 +65,7 @@ public class SearchPaymentsUseCase extends AbstractFestUseCase {
       .rowCount();
 
     // Expect only a couple of requests for query
-    assertThat(rowCount).isEqualTo(expectedRowCount);
+    assertThat(rowCount).isGreaterThanOrEqualTo(expectedRowCount);
 
   }
 

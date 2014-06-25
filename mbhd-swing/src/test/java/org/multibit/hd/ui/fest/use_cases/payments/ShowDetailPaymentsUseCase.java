@@ -10,7 +10,6 @@ import org.multibit.hd.ui.views.components.tables.PaymentTableModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -35,22 +34,19 @@ public class ShowDetailPaymentsUseCase extends AbstractFestUseCase {
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    // Get the payments
-
-    String[][] payments = window
-            .table(MessageKey.PAYMENTS.getKey())
-            .contents();
-
-
-    log.debug(Arrays.deepToString(payments));
-
     // Get the initial row count
     int rowCount1 = window
             .table(MessageKey.PAYMENTS.getKey())
             .rowCount();
 
-    // Select the first 5 rows in turn
-    for (int i = 0; i < Math.min(rowCount1, 5); i++) {
+    // Select the first 7 rows in turn
+    for (int i = 0; i < Math.min(rowCount1, 7); i++) {
+      // Get the payment data
+
+      String[][] payments = window
+              .table(MessageKey.PAYMENTS.getKey())
+              .contents();
+
       // See if it is a payment request or a transaction
       boolean isPaymentRequest = Languages.safeText(CoreMessageKey.PAYMENT_REQUESTED).equals(WhitespaceTrimmer.trim(payments[i][PaymentTableModel.TYPE_COLUMN_INDEX]));
 
@@ -58,7 +54,7 @@ public class ShowDetailPaymentsUseCase extends AbstractFestUseCase {
               .table(MessageKey.PAYMENTS.getKey())
               .selectRows(i);
 
-      // Click on Details
+      // Show the details
       window
               .button(MessageKey.DETAILS.getKey())
               .click();
