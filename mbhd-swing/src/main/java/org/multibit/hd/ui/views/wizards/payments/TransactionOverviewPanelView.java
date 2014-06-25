@@ -121,7 +121,7 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
 
     contentPanel.add(typeLabel);
     contentPanel.add(typeValue, "growx,wrap");
-    
+
     contentPanel.add(recipientLabel,"growx");
     contentPanel.add(recipientValue, "growx,span 2");
     contentPanel.add(recipientImageLabel, "shrink,align center,wrap");
