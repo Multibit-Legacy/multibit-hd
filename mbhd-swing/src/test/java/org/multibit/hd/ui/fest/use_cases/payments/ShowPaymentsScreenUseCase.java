@@ -70,7 +70,6 @@ public class
       .table(MessageKey.PAYMENTS.getKey())
       .requireVisible()
       .requireEnabled();
-
   }
 
 }

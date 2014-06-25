@@ -2,7 +2,7 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.ui.fest.use_cases.payments.SearchPaymentsUseCase;
+import org.multibit.hd.ui.fest.use_cases.payments.ShowDetailPaymentsUseCase;
 import org.multibit.hd.ui.fest.use_cases.payments.ShowPaymentsScreenUseCase;
 
 import java.util.Map;
@@ -25,8 +25,10 @@ public class PaymentsScreenRequirements {
     // Select the payments screen
     new ShowPaymentsScreenUseCase(window).execute(parameters);
 
-    // Verify the standard wallet contains some payments
-    new SearchPaymentsUseCase(window).execute(parameters);
+     // Verify the transaction details wizard works ok
+    new ShowDetailPaymentsUseCase(window).execute(parameters);
 
+    // Verify the standard wallet contains some payments
+    //new SearchPaymentsUseCase(window).execute(parameters);
   }
 }

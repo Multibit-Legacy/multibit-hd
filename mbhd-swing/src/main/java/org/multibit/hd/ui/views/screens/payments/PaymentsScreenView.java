@@ -178,16 +178,28 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
         @Override
         public void run() {
 
-          WalletService walletService = CoreServices.getCurrentWalletService();
+          try {
+            // Remember the selected row
+            int selectedTableRow = paymentsTable.getSelectedRow();
 
-          // Refresh the wallet payment list if asked
-          if (refreshData) {
-            walletService.getPaymentDataList();
+            WalletService walletService = CoreServices.getCurrentWalletService();
+
+            // Refresh the wallet payment list if asked
+            if (refreshData) {
+              walletService.getPaymentDataList();
+            }
+            // Check the search MaV model for a query and apply it
+            List<PaymentData> filteredPaymentDataList = walletService.filterPaymentsByContent(enterSearchMaV.getModel().getValue());
+
+            ((PaymentTableModel) paymentsTable.getModel()).setPaymentData(filteredPaymentDataList, true);
+
+            // Reselect the selected row if possible
+            if (selectedTableRow != -1 && selectedTableRow < paymentsTable.getModel().getRowCount()) {
+              paymentsTable.changeSelection(selectedTableRow, 0, false, false);
+            }
+          } catch (IllegalStateException ise) {
+            // No wallet is open - nothing to do
           }
-          // Check the search MaV model for a query and apply it
-          List<PaymentData> filteredPaymentDataList = walletService.filterPaymentsByContent(enterSearchMaV.getModel().getValue());
-
-          ((PaymentTableModel) paymentsTable.getModel()).setPaymentData(filteredPaymentDataList, true);
         }
       });
     }

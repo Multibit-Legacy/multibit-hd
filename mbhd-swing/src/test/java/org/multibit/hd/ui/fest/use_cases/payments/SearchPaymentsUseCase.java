@@ -64,7 +64,7 @@ public class SearchPaymentsUseCase extends AbstractFestUseCase {
       .table(MessageKey.PAYMENTS.getKey())
       .rowCount();
 
-    // Expect only a couple of requests for Beer
+    // Expect only a couple of requests for query
     assertThat(rowCount).isEqualTo(expectedRowCount);
 
   }
