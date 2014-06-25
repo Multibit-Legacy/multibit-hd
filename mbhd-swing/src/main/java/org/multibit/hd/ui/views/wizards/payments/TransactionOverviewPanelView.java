@@ -5,7 +5,6 @@ import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Coin;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -15,13 +14,15 @@ import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
-import org.multibit.hd.core.dto.*;
+import org.multibit.hd.core.dto.Contact;
+import org.multibit.hd.core.dto.PaymentData;
+import org.multibit.hd.core.dto.Recipient;
+import org.multibit.hd.core.dto.TransactionData;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.gravatar.Gravatars;
-import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.utils.HtmlUtils;
@@ -55,14 +56,7 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
   private JLabel descriptionValue;
   private JLabel recipientValue;
   private JLabel recipientImageLabel;
-  private JLabel amountBTCValue;
-  private JLabel amountFiatLabel;
-  private JLabel amountFiatValue;
-  private JLabel miningFeePaidLabel;
-  private JLabel miningFeePaidValue;
-  private JLabel clientFeePaidLabel;
-  private JLabel clientFeePaidValue;
-  private JLabel exchangeRateValue;
+
 
   // TODO Inject this
   private final NetworkParameters networkParameters = BitcoinNetwork.current().get();
@@ -91,8 +85,8 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
 
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
-      "[][][][]", // Column constraints
-      "[]10" // Row constraints
+      "[]10[][][]", // Column constraints
+      "[]10[]10[]10[]" // Row constraints
     ));
 
     // Apply the theme
@@ -117,57 +111,23 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
     recipientImageLabel = Labels.newImageLabel(Optional.<BufferedImage>absent());
     recipientImageLabel.setVisible(false);
 
-    JLabel amountBTCLabel = Labels.newValueLabel("");
-
-    amountBTCValue = Labels.newValueLabel("");
-    // Bitcoin column
-    LabelDecorator.applyBitcoinSymbolLabel(
-      amountBTCLabel,
-      Configurations.currentConfiguration.getBitcoin(),
-      Languages.safeText(MessageKey.LOCAL_AMOUNT) + " ");
-
-    amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT));
-    amountFiatValue = Labels.newValueLabel("");
-
-    miningFeePaidLabel = Labels.newValueLabel(Languages.safeText(MessageKey.TRANSACTION_FEE));
-    miningFeePaidValue = Labels.newValueLabel("");
-
-    clientFeePaidLabel = Labels.newValueLabel(Languages.safeText(MessageKey.CLIENT_FEE));
-    clientFeePaidValue = Labels.newValueLabel("");
-
-    JLabel exchangeRateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL));
-    exchangeRateValue = Labels.newValueLabel("");
-
     update();
 
-    contentPanel.add(recipientLabel,"growx,push");
-    contentPanel.add(recipientValue, "growx,span 2,push");
-    contentPanel.add(recipientImageLabel, "shrink,align right,wrap");
+    contentPanel.add(dateLabel);
+    contentPanel.add(dateValue, "wrap");
 
     contentPanel.add(statusLabel);
     contentPanel.add(statusValue, "span 3,wrap");
 
     contentPanel.add(typeLabel);
-    contentPanel.add(typeValue, "growx,push");
-    contentPanel.add(dateLabel);
-    contentPanel.add(dateValue, "wrap");
-
-    contentPanel.add(amountBTCLabel);
-    contentPanel.add(amountBTCValue);
-    contentPanel.add(amountFiatLabel);
-    contentPanel.add(amountFiatValue, "wrap");
-
-    contentPanel.add(miningFeePaidLabel);
-    contentPanel.add(miningFeePaidValue);
-    contentPanel.add(clientFeePaidLabel);
-    contentPanel.add(clientFeePaidValue, "wrap");
-
-    contentPanel.add(exchangeRateLabel);
-    contentPanel.add(exchangeRateValue, "span 3,wrap");
+    contentPanel.add(typeValue, "growx,wrap");
+    
+    contentPanel.add(recipientLabel,"growx");
+    contentPanel.add(recipientValue, "growx,span 2");
+    contentPanel.add(recipientImageLabel, "shrink,align center,wrap");
 
     contentPanel.add(descriptionLabel);
-    contentPanel.add(descriptionValue, "grow,push,span 3,wrap");
-
+    contentPanel.add(descriptionValue, "growx,span 3,wrap");
   }
 
   @Override
@@ -207,39 +167,14 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
 
       updateMetadata(paymentData, date);
 
-      updateAmountCoin(paymentData, languageConfiguration, bitcoinConfiguration);
-
-      updateAmountFiat(paymentData, languageConfiguration, bitcoinConfiguration);
-
       if (paymentData instanceof TransactionData) {
         TransactionData transactionData = (TransactionData) paymentData;
-
-        // Miner's fee
-        updateMiningFee(languageConfiguration, bitcoinConfiguration, transactionData);
-
-        // Client fee
-        updateClientFee(languageConfiguration, bitcoinConfiguration, transactionData);
 
         if (transactionData.getAmountCoin().compareTo(Coin.ZERO) >= 0) {
 
           // Received bitcoin
           recipientValue.setText(Languages.safeText(MessageKey.THIS_BITCOIN_WAS_SENT_TO_YOU));
-
-          // Client and mining fee is not applicable
-          clientFeePaidValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
-          clientFeePaidLabel.setVisible(false);
-          clientFeePaidValue.setVisible(false);
-          miningFeePaidLabel.setVisible(false);
-          miningFeePaidValue.setVisible(false);
-
         } else {
-
-          // Sent bitcoin
-          clientFeePaidLabel.setVisible(true);
-          clientFeePaidValue.setVisible(true);
-          miningFeePaidLabel.setVisible(true);
-          miningFeePaidValue.setVisible(true);
-
           // Contact may be one of the output addresses
           Collection<String> addressList = transactionData.getOutputAddresses();
 
@@ -249,14 +184,6 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
           }
         }
       }
-
-      String exchangeRateText;
-      if (Strings.isNullOrEmpty(paymentData.getAmountFiat().getRate().or("")) || Strings.isNullOrEmpty(paymentData.getAmountFiat().getExchangeName().or(""))) {
-        exchangeRateText = Languages.safeText(MessageKey.NOT_AVAILABLE);
-      } else {
-        exchangeRateText = paymentData.getAmountFiat().getRate().or("") + " (" + paymentData.getAmountFiat().getExchangeName().or("") + ")";
-      }
-      exchangeRateValue.setText(exchangeRateText);
     }
   }
 
@@ -301,30 +228,6 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
     return matchedContact;
   }
 
-  private void updateClientFee(LanguageConfiguration languageConfiguration, BitcoinConfiguration bitcoinConfiguration, TransactionData transactionData) {
-
-    Optional<Coin> clientFee = transactionData.getClientFee();
-    if (clientFee.isPresent()) {
-      String[] clientFeePaidArray = Formats.formatCoinAsSymbolic(clientFee.get(), languageConfiguration, bitcoinConfiguration, true);
-      clientFeePaidValue.setText(clientFeePaidArray[0] + clientFeePaidArray[1]);
-    } else {
-      clientFeePaidValue.setText(Languages.safeText(MessageKey.NO_CLIENT_FEE_WAS_ADDED));
-    }
-
-  }
-
-  private void updateMiningFee(LanguageConfiguration languageConfiguration, BitcoinConfiguration bitcoinConfiguration, TransactionData transactionData) {
-
-    Optional<Coin> miningFee = transactionData.getMiningFee();
-    if (miningFee.isPresent()) {
-      String[] minerFeePaidArray = Formats.formatCoinAsSymbolic(miningFee.get(), languageConfiguration, bitcoinConfiguration, true);
-      miningFeePaidValue.setText(minerFeePaidArray[0] + minerFeePaidArray[1]);
-    } else {
-      miningFeePaidValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
-    }
-
-  }
-
   private void updateMetadata(PaymentData paymentData, DateTime date) {
 
     // Display in the system timezone
@@ -338,33 +241,6 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
     LabelDecorator.applyPaymentStatusIconAndColor(paymentData.getStatus(), statusValue, paymentData.isCoinBase(), MultiBitUI.SMALL_ICON_SIZE);
 
     typeValue.setText(Languages.safeText(paymentData.getType().getLocalisationKey()));
-
-  }
-
-  private void updateAmountCoin(PaymentData paymentData, LanguageConfiguration languageConfiguration, BitcoinConfiguration bitcoinConfiguration) {
-
-    Coin amountCoin = paymentData.getAmountCoin();
-
-    String[] balanceArray = Formats.formatCoinAsSymbolic(amountCoin, languageConfiguration, bitcoinConfiguration, true);
-    amountBTCValue.setText(balanceArray[0] + balanceArray[1]);
-
-  }
-
-  private void updateAmountFiat(PaymentData paymentData, LanguageConfiguration languageConfiguration, BitcoinConfiguration bitcoinConfiguration) {
-
-    FiatPayment amountFiat = paymentData.getAmountFiat();
-    if (amountFiat.getAmount().isPresent()) {
-      amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount().get(), languageConfiguration.getLocale(), bitcoinConfiguration, true)));
-    } else {
-      amountFiatValue.setText("");
-    }
-
-    if (amountFiat.getCurrency().isPresent()) {
-      amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT) + " " + amountFiat.getCurrency().get().getCurrencyCode());
-    } else {
-      amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT));
-    }
-
   }
 
   // Display a gravatar if we have a contact

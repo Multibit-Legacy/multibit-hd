@@ -431,6 +431,7 @@ public enum MessageKey {
   EXPORT("export"),
   DELETE_PAYMENT_REQUEST("delete_payment_request"),
   TRANSACTION_OVERVIEW("transaction_overview"),
+  TRANSACTION_AMOUNT("transaction_amount"),
   TRANSACTION_DETAIL("transaction_detail"),
   CHOOSE_PAYMENT_REQUEST("choose_payment_request"),
   CHOOSE_PAYMENT_REQUEST_LABEL("choose_payment_request_label"),

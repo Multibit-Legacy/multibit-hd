@@ -31,6 +31,9 @@ public class PaymentsWizard extends AbstractWizard<PaymentsWizardModel> {
       PaymentsState.TRANSACTION_OVERVIEW.name(),
       new TransactionOverviewPanelView(this, PaymentsState.TRANSACTION_OVERVIEW.name()));
     wizardViewMap.put(
+      PaymentsState.TRANSACTION_AMOUNT.name(),
+      new TransactionAmountPanelView(this, PaymentsState.TRANSACTION_AMOUNT.name()));
+    wizardViewMap.put(
       PaymentsState.TRANSACTION_DETAIL.name(),
       new TransactionDetailPanelView(this, PaymentsState.TRANSACTION_DETAIL.name()));
     wizardViewMap.put(

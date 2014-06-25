@@ -88,7 +88,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
-      "[][][]", // Column constraints
+      "[]10[][]", // Column constraints
       "[]10[]10[]" // Row constraints
     ));
 

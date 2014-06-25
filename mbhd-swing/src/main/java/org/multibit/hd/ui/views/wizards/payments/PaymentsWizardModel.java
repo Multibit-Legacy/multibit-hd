@@ -58,6 +58,9 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
 
     switch (state) {
       case TRANSACTION_OVERVIEW:
+        state = PaymentsState.TRANSACTION_AMOUNT;
+        break;
+      case TRANSACTION_AMOUNT:
         state = PaymentsState.TRANSACTION_DETAIL;
         break;
       case TRANSACTION_DETAIL:
@@ -80,8 +83,11 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
         // Start - previous should not be enabled
         state = PaymentsState.TRANSACTION_OVERVIEW;
         break;
-      case TRANSACTION_DETAIL:
+      case TRANSACTION_AMOUNT:
         state = PaymentsState.TRANSACTION_OVERVIEW;
+        break;
+      case TRANSACTION_DETAIL:
+        state = PaymentsState.TRANSACTION_AMOUNT;
         break;
       case CHOOSE_PAYMENT_REQUEST:
         state = PaymentsState.TRANSACTION_DETAIL;
