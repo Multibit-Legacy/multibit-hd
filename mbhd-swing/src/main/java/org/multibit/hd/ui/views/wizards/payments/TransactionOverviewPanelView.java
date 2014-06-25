@@ -113,18 +113,22 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
 
     update();
 
-    contentPanel.add(dateLabel);
-    contentPanel.add(dateValue, "wrap");
-
-    contentPanel.add(statusLabel);
-    contentPanel.add(statusValue, "span 3,wrap");
-
-    contentPanel.add(typeLabel);
-    contentPanel.add(typeValue, "growx,wrap");
-
+    // Recipient is at the top for visual consistency with other screens
+    // Answers first question "Who was this for?"
     contentPanel.add(recipientLabel,"growx");
     contentPanel.add(recipientValue, "growx,span 2");
     contentPanel.add(recipientImageLabel, "shrink,align center,wrap");
+
+    // Status answers "Did it arrive?"
+    contentPanel.add(statusLabel);
+    contentPanel.add(statusValue, "span 3,wrap");
+
+    // Date answers "When did it arrive?"
+    contentPanel.add(dateLabel);
+    contentPanel.add(dateValue, "wrap");
+
+    contentPanel.add(typeLabel);
+    contentPanel.add(typeValue, "growx,wrap");
 
     contentPanel.add(descriptionLabel);
     contentPanel.add(descriptionValue, "growx,span 3,wrap");
