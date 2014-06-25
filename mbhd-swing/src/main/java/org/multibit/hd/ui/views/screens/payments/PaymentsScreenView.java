@@ -35,7 +35,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
 
@@ -53,6 +55,8 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
   private static final Logger log = LoggerFactory.getLogger(PaymentsScreenView.class);
 
   private JTable paymentsTable;
+
+  private JButton detailsButton;
 
   // View components
   private ModelAndView<EnterSearchModel, EnterSearchView> enterSearchMaV;
@@ -86,7 +90,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     // Create view components
     enterSearchMaV = Components.newEnterSearchMaV(getScreen().name());
 
-    final JButton detailsButton = Buttons.newDetailsButton(getDetailsAction());
+    detailsButton = Buttons.newDetailsButton(getDetailsAction());
     final JButton deleteRequestButton = Buttons.newDeletePaymentRequestButton(getDeletePaymentRequestAction());
     JButton undoButton = Buttons.newUndoButton(getUndoAction());
     JButton exportButton = Buttons.newExportButton(getExportAction());
@@ -99,6 +103,9 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     // Create the scroll pane and add the table to it.
     JScrollPane scrollPane = new JScrollPane(paymentsTable);
     scrollPane.setViewportBorder(null);
+
+    // Detect double clicks on the table
+    paymentsTable.addMouseListener(getTableMouseListener());
 
     // Ensure we maintain the overall theme
     ScrollBarUIDecorator.apply(scrollPane, paymentsTable);
@@ -279,6 +286,28 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
       }
     };
   }
+
+  /**
+    * @return The table mouse listener
+    */
+   private MouseAdapter getTableMouseListener() {
+
+     return new MouseAdapter() {
+
+       public void mousePressed(MouseEvent e) {
+
+         log.debug("Mouse click");
+
+         if (e.getClickCount() == 2) {
+
+           log.debug("Mouse click 2");
+
+           detailsButton.doClick();
+         }
+       }
+
+     };
+   }
 
   private void fireWalletDetailsChanged() {
 
