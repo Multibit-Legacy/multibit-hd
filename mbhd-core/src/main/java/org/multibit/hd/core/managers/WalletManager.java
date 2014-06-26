@@ -12,6 +12,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.primitives.Bytes;
 import org.bitcoinj.wallet.Protos;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.extensions.MatcherResponseWalletExtension;
@@ -33,6 +34,8 @@ import org.spongycastle.crypto.params.KeyParameter;
 
 import java.io.*;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -136,6 +139,8 @@ public enum WalletManager implements WalletEventListener {
   public static final int LOOK_AHEAD_SIZE = 50; // A smaller look ahead size than the bitcoinj default of 100 (speeds up syncing as te bloom filters are smaller)
 
   private Optional<WalletSummary> currentWalletSummary = Optional.absent();
+
+  private static final SecureRandom random = new SecureRandom();
 
   /**
    * The initialisation vector to use for AES encryption of output files (such as wallets)
@@ -708,8 +713,10 @@ public enum WalletManager implements WalletEventListener {
     // Save the wallet password, AES encrypted with a key derived from the wallet seed
     KeyParameter seedDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(seed, SCRYPT_SALT);
     byte[] passwordBytes = password.getBytes(Charsets.UTF_8);
-    byte[] encryptedWalletPassword = org.multibit.hd.brit.crypto.AESUtils.encrypt(passwordBytes, seedDerivedAESKey, AES_INITIALISATION_VECTOR);
-    walletSummary.setEncryptedPassword(encryptedWalletPassword);
+
+    byte[] paddedPasswordBytes = padPasswordBytes(passwordBytes);
+    byte[] encryptedPaddedPassword = org.multibit.hd.brit.crypto.AESUtils.encrypt(paddedPasswordBytes, seedDerivedAESKey, AES_INITIALISATION_VECTOR);
+    walletSummary.setEncryptedPassword(encryptedPaddedPassword);
 
     // Save the backupAESKey, AES encrypted with a key generated from the wallet password
     KeyParameter walletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(passwordBytes, SCRYPT_SALT);
@@ -827,5 +834,55 @@ public enum WalletManager implements WalletEventListener {
       e.printStackTrace();
       return new VerifyMessageResult(false, CoreMessageKey.VERIFY_MESSAGE_FAILURE, null);
     }
+  }
+
+  /**
+   * Password short passwords with extra bytes - this is done so that the existence of short passwords is not leaked by
+   * the length of the encrypted password (which is always a multiple of the AES block size (16 bytes).
+   *
+   * @param passwordBytes the password bytes to pad
+   * @return paddedPasswordBytes - this is guaranteed to be longer than 48 bytes. Byte 0 indicates the number of padding bytes,
+   * which are random bytes stored from byte 1 to byte <number of padding bytes). The real password is stored int he remaining bytes
+   */
+  public static byte[] padPasswordBytes(byte[] passwordBytes) {
+    if (passwordBytes.length > AESUtils.BLOCK_LENGTH * 3) {
+      // No padding required - add a zero to the beginning of the password bytes (to indicate no padding bytes)
+      return Bytes.concat(new byte[]{(byte) 0x0}, passwordBytes);
+    } else {
+      if (passwordBytes.length > AESUtils.BLOCK_LENGTH * 2) {
+        // Pad with 16 random bytes
+        byte[] paddingBytes = new byte[16];
+        random.nextBytes(paddingBytes);
+        return Bytes.concat(new byte[]{(byte) 0x10}, paddingBytes, passwordBytes);
+      } else {
+        if (passwordBytes.length > AESUtils.BLOCK_LENGTH) {
+          // Pad with 32 random bytes
+          byte[] paddingBytes = new byte[32];
+          random.nextBytes(paddingBytes);
+          return Bytes.concat(new byte[]{(byte) 0x20}, paddingBytes, passwordBytes);
+        } else {
+          // Pad with 48 random bytes
+          byte[] paddingBytes = new byte[48];
+          random.nextBytes(paddingBytes);
+          return Bytes.concat(new byte[]{(byte) 0x30}, paddingBytes, passwordBytes);
+        }
+      }
+    }
+  }
+
+  /**
+   * Unpad passowrd bytes, removing the random prefix bytes length marker byte and te random bytes themselves
+   */
+  public static byte[] unpadPasswordBytes(byte[] paddedPasswordBytes) {
+    Preconditions.checkNotNull(paddedPasswordBytes);
+    Preconditions.checkState(paddedPasswordBytes.length > 0);
+
+    // Get the length of the pad
+    int lengthOfPad = (int)paddedPasswordBytes[0];
+
+    if (lengthOfPad > paddedPasswordBytes.length - 1) {
+      throw new IllegalStateException("Stored encrypted password is not in the correct format");
+    }
+    return Arrays.copyOfRange(paddedPasswordBytes, 1 + lengthOfPad, paddedPasswordBytes.length);
   }
 }

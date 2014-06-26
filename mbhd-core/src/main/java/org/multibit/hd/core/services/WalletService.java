@@ -879,12 +879,15 @@ public class WalletService {
         }
 
         // Encrypt the new password with an the decryptedOldBackupAESKey
-        byte[] encryptedNewPassword = org.multibit.hd.brit.crypto.AESUtils.encrypt(newPassword.getBytes(Charsets.UTF_8), new KeyParameter(decryptedOldBackupAESKey), WalletManager.AES_INITIALISATION_VECTOR);
+        // Pad the new password
+        byte[] newPasswordBytes = newPassword.getBytes(Charsets.UTF_8);
+        byte[] paddedNewPassword = WalletManager.padPasswordBytes(newPasswordBytes);
+        byte[] encryptedPaddedNewPassword = org.multibit.hd.brit.crypto.AESUtils.encrypt(paddedNewPassword, new KeyParameter(decryptedOldBackupAESKey), WalletManager.AES_INITIALISATION_VECTOR);
 
         // Check the encryption is reversible
-        byte[] decryptedRebornNewPassword = org.multibit.hd.brit.crypto.AESUtils.decrypt(encryptedNewPassword, new KeyParameter(decryptedOldBackupAESKey), WalletManager.AES_INITIALISATION_VECTOR);
+        byte[] decryptedRebornPaddedNewPassword = org.multibit.hd.brit.crypto.AESUtils.decrypt(encryptedPaddedNewPassword, new KeyParameter(decryptedOldBackupAESKey), WalletManager.AES_INITIALISATION_VECTOR);
 
-        if (!Arrays.equals(newPassword.getBytes(Charsets.UTF_8), decryptedRebornNewPassword)) {
+        if (!Arrays.equals(newPasswordBytes, WalletManager.unpadPasswordBytes(decryptedRebornPaddedNewPassword))) {
           throw new IllegalStateException("The encryption of the new password was not reversible. Aborting change of wallet password");
         }
 
@@ -900,7 +903,7 @@ public class WalletService {
         wallet.decrypt(oldPassword);
         walletSummary.setPassword(newPassword);
         walletSummary.setEncryptedBackupKey(encryptedNewBackupAESKey);
-        walletSummary.setEncryptedPassword(encryptedNewPassword);
+        walletSummary.setEncryptedPassword(encryptedPaddedNewPassword);
 
         // Save the wallet summary file
         WalletManager.updateWalletSummary(WalletManager.INSTANCE.getCurrentWalletSummaryFile(applicationDataDirectory).get(), walletSummary);

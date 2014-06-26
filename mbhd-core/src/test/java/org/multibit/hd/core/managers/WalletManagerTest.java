@@ -21,6 +21,7 @@ import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.crypto.DeterministicKey;
+import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.io.Files;
 import org.junit.Before;
@@ -31,14 +32,20 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.spongycastle.crypto.params.KeyParameter;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class WalletManagerTest {
+  private static final Logger log = LoggerFactory.getLogger(WalletManagerTest.class);
 
   private final static String WALLET_DIRECTORY_1 = "mbhd-11111111-22222222-33333333-44444444-55555555";
   private final static String WALLET_DIRECTORY_2 = "mbhd-66666666-77777777-88888888-99999999-aaaaaaaa";
@@ -53,6 +60,11 @@ public class WalletManagerTest {
   private final static String SIGNING_PASSWORD = "throgmorton999";
   private final static String MESSAGE_TO_SIGN = "The quick brown fox jumps over the lazy dog.\n1234567890!@#$%^&*()";
 
+  private final static String SHORT_PASSWORD = "a"; // 1
+  private final static String MEDIUM_PASSWORD = "abcefghijklm"; // 12
+  private final static String LONG_PASSWORD = "abcefghijklmnopqrstuvwxyz"; // 26
+  private final static String LONGER_PASSWORD = "abcefghijklmnopqrstuvwxyz1234567890"; // 36
+  private final static String LONGEST_PASSWORD = "abcefghijklmnopqrstuvwxyzabcefghijklmnopqrstuvwxyz"; // 52
   @Before
   public void setUp() throws Exception {
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
@@ -74,14 +86,14 @@ public class WalletManagerTest {
     long nowInSeconds = Dates.nowInSeconds();
 
     WalletSummary walletSummary1 = walletManager
-      .getOrCreateWalletSummary(
-        temporaryDirectory1,
-        seed,
-        nowInSeconds,
-        "password",
-        "Example",
-        "Example"
-      );
+            .getOrCreateWalletSummary(
+                    temporaryDirectory1,
+                    seed,
+                    nowInSeconds,
+                    "password",
+                    "Example",
+                    "Example"
+            );
 
     // Uncomment this next line if you want a wallet created in your MultiBitHD user data directory.
     //walletManager.createWallet( seed, "password");
@@ -93,14 +105,14 @@ public class WalletManagerTest {
     BackupManager.INSTANCE.initialise(temporaryDirectory2, null);
 
     WalletSummary walletSummary2 = walletManager
-      .getOrCreateWalletSummary(
-        temporaryDirectory2,
-        seed,
-        nowInSeconds,
-        "password",
-        "Example",
-        "Example"
-      );
+            .getOrCreateWalletSummary(
+                    temporaryDirectory2,
+                    seed,
+                    nowInSeconds,
+                    "password",
+                    "Example",
+                    "Example"
+            );
 
     assertThat(walletSummary2).isNotNull();
 
@@ -110,13 +122,13 @@ public class WalletManagerTest {
     assertThat(key1).isEqualTo(key2);
 
     File expectedFile = new File(
-      temporaryDirectory2.getAbsolutePath()
-        + File.separator
-        + "mbhd-"
-        + walletSummary2.getWalletId().toFormattedString()
-        + File.separator
-        + WalletManager.MBHD_WALLET_NAME
-        + WalletManager.MBHD_AES_SUFFIX
+            temporaryDirectory2.getAbsolutePath()
+                    + File.separator
+                    + "mbhd-"
+                    + walletSummary2.getWalletId().toFormattedString()
+                    + File.separator
+                    + WalletManager.MBHD_WALLET_NAME
+                    + WalletManager.MBHD_AES_SUFFIX
     );
 
     assertThat(expectedFile.exists()).isTrue();
@@ -195,14 +207,14 @@ public class WalletManagerTest {
     long nowInSeconds = Dates.nowInSeconds();
 
     WalletSummary walletSummary = walletManager
-      .getOrCreateWalletSummary(
-        temporaryDirectory1,
-        seed,
-        nowInSeconds,
-        SIGNING_PASSWORD,
-        "Signing Example",
-        "Signing Example"
-      );
+            .getOrCreateWalletSummary(
+                    temporaryDirectory1,
+                    seed,
+                    nowInSeconds,
+                    SIGNING_PASSWORD,
+                    "Signing Example",
+                    "Signing Example"
+            );
 
     // Address not in wallet
     ECKey ecKey = new ECKey();
@@ -256,8 +268,61 @@ public class WalletManagerTest {
     signMessageResult = walletManager.signMessage(addressNotInWalletString, MESSAGE_TO_SIGN, SIGNING_PASSWORD);
     assertThat(signMessageResult.isSigningWasSuccessful()).isFalse();
     assertThat(signMessageResult.getSignatureKey()).isEqualTo(CoreMessageKey.SIGN_MESSAGE_NO_SIGNING_KEY);
-    assertThat(signMessageResult.getSignatureData()).isEqualTo(new Object[] {addressNotInWalletString});
+    assertThat(signMessageResult.getSignatureData()).isEqualTo(new Object[]{addressNotInWalletString});
     assertThat(signMessageResult.getSignature().isPresent()).isFalse();
+  }
+
+  @Test
+  public void testWriteOfEncryptedPasswordAndSeed() throws Exception {
+    List<String> passwordList = new ArrayList();
+    passwordList.add(SHORT_PASSWORD);
+    passwordList.add(MEDIUM_PASSWORD);
+    passwordList.add(LONG_PASSWORD);
+    passwordList.add(LONGER_PASSWORD);
+    passwordList.add(LONGEST_PASSWORD);
+
+    for (String passwordToCheck : passwordList) {
+      // Create a random temporary directory
+      File temporaryDirectory1 = makeRandomTemporaryApplicationDirectory();
+
+      WalletManager walletManager = WalletManager.INSTANCE;
+      BackupManager.INSTANCE.initialise(temporaryDirectory1, null);
+
+      SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+      byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
+      long nowInSeconds = Dates.nowInSeconds();
+
+
+      WalletSummary walletSummary = walletManager
+              .getOrCreateWalletSummary(
+                      temporaryDirectory1,
+                      seed,
+                      nowInSeconds,
+                      passwordToCheck,
+                      "Password/seed encryption Example",
+                      "Password/seed encryption Example"
+              );
+
+      // Check the encrypted wallet password and seed are correct
+      byte[] foundEncryptedBackupKey = walletSummary.getEncryptedBackupKey();
+      byte[] foundEncryptedPaddedPassword = walletSummary.getEncryptedPassword();
+
+      log.debug("Length of padded encrypted password = " + foundEncryptedPaddedPassword.length);
+
+      // Check that the encrypted password length is always equal to at least 3 x the AES block size of 16 bytes i.e 48 bytes.
+      // This ensures that the existence of short passwords is not leaked from the length of the encrypted password
+      assertThat(foundEncryptedPaddedPassword.length).isGreaterThanOrEqualTo(48);
+
+      KeyParameter seedDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(seed, WalletManager.SCRYPT_SALT);
+      byte[] passwordBytes = passwordToCheck.getBytes(Charsets.UTF_8);
+      byte[] decryptedFoundPaddedPasswordBytes = org.multibit.hd.brit.crypto.AESUtils.decrypt(foundEncryptedPaddedPassword, seedDerivedAESKey, WalletManager.AES_INITIALISATION_VECTOR);
+      byte[] decryptedFoundPasswordBytes = WalletManager.unpadPasswordBytes(decryptedFoundPaddedPasswordBytes);
+      assertThat(Arrays.equals(passwordBytes, decryptedFoundPasswordBytes)).isTrue();
+
+      KeyParameter walletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(passwordBytes, WalletManager.SCRYPT_SALT);
+      byte[] decryptedFoundBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.decrypt(foundEncryptedBackupKey, walletPasswordDerivedAESKey, WalletManager.AES_INITIALISATION_VECTOR);
+      assertThat(Arrays.equals(seedDerivedAESKey.getKey(), decryptedFoundBackupAESKey)).isTrue();
+    }
   }
 
   private String makeDirectory(File parentDirectory, String directoryName) {
@@ -270,7 +335,6 @@ public class WalletManagerTest {
 
   /**
    * @return A random temporary directory suitable for use as an application directory
-   *
    * @throws IOException If something goes wrong
    */
   public static File makeRandomTemporaryApplicationDirectory() throws IOException {

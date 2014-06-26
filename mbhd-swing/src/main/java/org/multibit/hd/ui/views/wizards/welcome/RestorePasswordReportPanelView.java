@@ -154,29 +154,38 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
       return;
     }
 
-    byte[] decryptedWalletPasswordBytes = org.multibit.hd.brit.crypto.AESUtils.decrypt(
-      // Get the password out of the wallet summary. This is put in when a wallet is created.
+    byte[] decryptedPaddedWalletPasswordBytes = org.multibit.hd.brit.crypto.AESUtils.decrypt(
+      // Get the padded password out of the wallet summary. This is put in when a wallet is created.
       walletSummary.getEncryptedPassword(),
       backupAESKey,
       WalletManager.AES_INITIALISATION_VECTOR
     );
 
-    // Check the result
-    if (decryptedWalletPasswordBytes == null || decryptedWalletPasswordBytes.length == 0) {
-      // Failed
+    try {
+      byte[] decryptedWalletPasswordBytes = WalletManager.unpadPasswordBytes(decryptedPaddedWalletPasswordBytes);
+
+      // Check the result
+      if (decryptedWalletPasswordBytes == null || decryptedWalletPasswordBytes.length == 0) {
+        // Failed
+        passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
+        AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL);
+        AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+        return;
+      }
+
+      // Must be OK to be here
+      String decryptedWalletPassword = new String(decryptedWalletPasswordBytes, Charsets.UTF_8);
+      passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_SUCCESS, decryptedWalletPassword));
+      AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_SUCCESS);
+      AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+
+    } catch (IllegalStateException ise) {
+      // Probably the unpad failed
       passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
       AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL);
       AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
       return;
-
     }
-
-    // Must be OK to be here
-    String decryptedWalletPassword = new String(decryptedWalletPasswordBytes, Charsets.UTF_8);
-    passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_SUCCESS, decryptedWalletPassword));
-    AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_SUCCESS);
-    AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
-
   }
 
 }

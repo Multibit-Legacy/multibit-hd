@@ -118,6 +118,11 @@ public class WalletSummary {
     this.notes = notes;
   }
 
+  /**
+   * Get the encrypted wallet password (which is padded)
+   * - use WalletManager#unpadPasswordBytes to unpad
+   * @return encrypted, padded wallet password
+   */
   public byte[] getEncryptedPassword() {
     return encryptedPassword;
   }
