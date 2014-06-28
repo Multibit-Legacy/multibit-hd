@@ -11,11 +11,13 @@ import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.utils.ClipboardUtils;
 import org.multibit.hd.ui.utils.WhitespaceTrimmer;
 import org.multibit.hd.ui.views.components.*;
+import org.multibit.hd.ui.views.components.borders.TextBubbleBorder;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.text_fields.FormattedBitcoinAddressField;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
@@ -42,7 +44,7 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
 
   FormattedBitcoinAddressField signingAddress;
   JTextArea signature;
-  JTextArea message;
+  JTextArea messageTextArea;
 
   JLabel reportLabel;
 
@@ -70,9 +72,9 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
   public void initialiseContent(JPanel contentPanel) {
 
     contentPanel.setLayout(new MigLayout(
-            Panels.migXYLayout(),
-            "[][][][]", // Column constraints
-            "5[][][][][20:n:]" // Row constraints
+      Panels.migXYLayout(),
+      "[][][][]", // Column constraints
+      "[][80][][30][30][20]" // Row constraints
     ));
 
     // Labels (also used in clipboard)
@@ -81,19 +83,39 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
     signatureLabel = Labels.newSignature();
 
     signingAddress = TextBoxes.newEnterBitcoinAddress(getWizardModel(), false);
-    message = TextBoxes.newEnterMessage(getWizardModel(), false);
+
+    messageTextArea = TextBoxes.newEnterMessage();
+
+    // The message is a wall of text so needs scroll bars in many cases
+    messageTextArea.setBorder(null);
+
+    // Message requires its own scroll pane
+    JScrollPane messageScrollPane = new JScrollPane();
+    messageScrollPane.setOpaque(true);
+    messageScrollPane.setBackground(Themes.currentTheme.dataEntryBackground());
+    messageScrollPane.setBorder(null);
+    messageScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    messageScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+    // View port requires special handling
+    messageScrollPane.setViewportView(messageTextArea);
+    messageScrollPane.getViewport().setBackground(Themes.currentTheme.dataEntryBackground());
+    messageScrollPane.setViewportBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
+
+    // Ensure we maintain the overall theme
+    ScrollBarUIDecorator.apply(messageScrollPane);
 
     signature = TextBoxes.newReadOnlyLengthLimitedTextArea(getWizardModel(), 5, 40);
     AccessibilityDecorator.apply(signature, MessageKey.SIGNATURE);
 
     // Add them to the panel
     contentPanel.add(signingAddressLabel);
-    contentPanel.add(signingAddress, "grow,span 3,push,wrap");
+    contentPanel.add(signingAddress, "growx,span 3,push,wrap");
 
     contentPanel.add(messageLabel);
-    contentPanel.add(message, "grow,span 3,push,wrap");
+    contentPanel.add(messageScrollPane, "grow,span 3,push,wrap");
 
-    contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "span 3, wrap");
+    contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "growx,span 3,wrap");
 
     contentPanel.add(Buttons.newSignMessageButton(getSignMessageAction()), "cell 1 3,align right");
     contentPanel.add(Buttons.newCopyAllButton(getCopyClipboardAction()), "cell 2 3");
@@ -104,7 +126,7 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
 
     reportLabel = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
     AccessibilityDecorator.apply(reportLabel, MessageKey.NOTES);
-    contentPanel.add(reportLabel, "span 4,wrap");
+    contentPanel.add(reportLabel, "growx,span 4");
   }
 
   @Override
@@ -180,7 +202,7 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
       @Override
       public void actionPerformed(ActionEvent e) {
         signingAddress.setText("");
-        message.setText("");
+        messageTextArea.setText("");
         enterPasswordMaV.getModel().setPassword("".toCharArray());
         enterPasswordMaV.getModel().setValue("");
         enterPasswordMaV.getView().updateViewFromModel();
@@ -205,7 +227,7 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
    */
   private void signMessage() {
     String addressText = WhitespaceTrimmer.trim(signingAddress.getText());
-    String messageText = message.getText();
+    String messageText = messageTextArea.getText();
     String walletPassword = enterPasswordMaV.getModel().getValue();
 
     SignMessageResult signMessageResult = WalletManager.INSTANCE.signMessage(addressText, messageText, walletPassword);
@@ -230,7 +252,7 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
 
         String clipboard = BitcoinMessages.formatAsBitcoinSignedMessage(
           signingAddress.getText(),
-          message.getText(),
+          messageTextArea.getText(),
           signature.getText()
         );
 

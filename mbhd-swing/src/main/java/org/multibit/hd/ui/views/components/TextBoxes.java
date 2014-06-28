@@ -457,21 +457,33 @@ public class TextBoxes {
   }
 
   /**
-   * @param listener The document listener for detecting changes to the content
-   *
    * @return A new "message" text area (usually for signing for verifying)
    */
-  public static JTextArea newEnterMessage(DocumentListener listener, boolean readOnly) {
+  public static JTextArea newEnterMessage() {
 
-    final JTextArea textArea;
-    if (readOnly) {
-      textArea = TextBoxes.newReadOnlyLengthLimitedTextArea(listener, 5, MultiBitUI.PASSWORD_LENGTH);
-    } else {
-      textArea = TextBoxes.newEnterPrivateNotes(listener, MultiBitUI.PASSWORD_LENGTH);
-    }
+    JTextArea textArea = new JTextArea(4, MultiBitUI.PASSWORD_LENGTH);
 
     // Ensure it is accessible
     AccessibilityDecorator.apply(textArea, MessageKey.MESSAGE, MessageKey.MESSAGE_TOOLTIP);
+
+    textArea.setOpaque(false);
+
+    // Ensure line wrapping occurs correctly
+    textArea.setLineWrap(true);
+    textArea.setWrapStyleWord(true);
+
+    // Ensure TAB transfers focus
+    AbstractAction transferFocus = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        ((Component) e.getSource()).transferFocus();
+      }
+    };
+    textArea.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "transferFocus");
+    textArea.getActionMap().put("transferFocus", transferFocus);
+
+    // Set the theme
+    textArea.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
+    textArea.setBackground(Themes.currentTheme.dataEntryBackground());
 
     return textArea;
   }

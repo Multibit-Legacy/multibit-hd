@@ -69,7 +69,7 @@ public class VerifyMessagePanelView extends AbstractWizardPanelView<VerifyMessag
 
     verifyingAddress = TextBoxes.newEnterBitcoinAddress(getWizardModel(), false);
 
-    messageTextArea = TextBoxes.newEnterMessage(getWizardModel(), false);
+    messageTextArea = TextBoxes.newEnterMessage();
 
     // The message is a wall of text so needs scroll bars in many cases
     messageTextArea.setBorder(null);
