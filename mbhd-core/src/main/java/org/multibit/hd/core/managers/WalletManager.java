@@ -406,7 +406,6 @@ public enum WalletManager implements WalletEventListener {
       Wallet wallet;
       try {
         wallet = loadWalletFromFile(walletFile, password);
-        log.debug("Wallet at read in from file:\n" + wallet.toString());
       } catch (WalletVersionException wve) {
         // We want this exception to propagate out.
         // Don't bother trying to load the rolling backups as they will most likely be an unreadable version too.
