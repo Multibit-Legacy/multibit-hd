@@ -1,7 +1,6 @@
 package org.multibit.hd.brit.payer;
 
 import com.google.bitcoin.crypto.KeyCrypterException;
-import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import org.bouncycastle.openpgp.PGPException;
 import org.multibit.hd.brit.crypto.AESUtils;
@@ -78,8 +77,6 @@ public class BasicPayer implements Payer {
       if (!tempFile.delete()) {
         throw new IOException("Could not delete file + '" + tempFile.getAbsolutePath() + "'");
       }
-
-      log.debug("Payload after encryption is :\n{}\n" ,new String(encryptedBytesOutputStream.toByteArray(), Charsets.UTF_8));
 
       return new EncryptedPayerRequest(encryptedBytesOutputStream.toByteArray());
     } catch (IOException | NoSuchProviderException | PGPException e) {

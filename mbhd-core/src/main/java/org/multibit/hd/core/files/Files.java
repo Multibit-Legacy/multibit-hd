@@ -4,8 +4,10 @@ import com.google.bitcoin.core.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.nio.channels.FileChannel;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * <p>Utility to provide the following to file system:</p>
@@ -24,42 +26,6 @@ public class Files {
    * Utilities have private constructor
    */
   private Files() {
-  }
-
-
-  // TODO Remove this
-  public static void copyFile(File sourceFile, File destinationFile) throws IOException {
-    if (!destinationFile.exists()) {
-      destinationFile.createNewFile();
-    }
-    FileInputStream fileInputStream = null;
-    FileOutputStream fileOutputStream = null;
-    FileChannel source = null;
-    FileChannel destination = null;
-    try {
-      fileInputStream = new FileInputStream(sourceFile);
-      source = fileInputStream.getChannel();
-      fileOutputStream = new FileOutputStream(destinationFile);
-      destination = fileOutputStream.getChannel();
-      long transferred = 0;
-      long bytes = source.size();
-      while (transferred < bytes) {
-        transferred += destination.transferFrom(source, 0, source.size());
-        destination.position(transferred);
-      }
-    } finally {
-      if (source != null) {
-        source.close();
-      } else if (fileInputStream != null) {
-        fileInputStream.close();
-      }
-      if (destination != null) {
-        destination.close();
-      } else if (fileOutputStream != null) {
-        fileOutputStream.flush();
-        fileOutputStream.close();
-      }
-    }
   }
 
   /**
@@ -95,9 +61,10 @@ public class Files {
       if (Utils.isWindows()) {
         // Work around an issue on Windows whereby you can't rename over existing files.
         File canonical = destFile.getCanonicalFile();
-        canonical.delete();
-        if (temp.renameTo(canonical))
-          return;  // else fall through.
+        if (canonical.exists() && !canonical.delete()) {
+          throw new IOException("Failed to delete canonical wallet file for replacement with autosave");
+        }
+        if (temp.renameTo(canonical)) return; // else fall through.
         throw new IOException("Failed to rename " + temp + " to " + canonical);
       } else if (!temp.renameTo(destFile)) {
         throw new IOException("Failed to rename " + temp + " to " + destFile);
