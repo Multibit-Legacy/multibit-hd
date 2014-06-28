@@ -66,7 +66,7 @@ public class Panels {
    * <li>Handles left-to-right and right-to-left presentation automatically</li>
    * </ul>
    *
-   * @return A default MiG layout constraint that fills all X with RTL appended
+   * @return A default MiG layout constraint that fills all X with RTL appended suitable for screens
    */
   public static String migXLayout() {
     return migLayout("fillx,insets 0");
@@ -95,10 +95,24 @@ public class Panels {
    * <li>Handles left-to-right and right-to-left presentation automatically</li>
    * </ul>
    *
-   * @return A default MiG layout constraint that fills all X and Y with RTL appended
+   * @return A MiG layout constraint that fills all X and Y with RTL appended suitable for detail views
    */
   public static String migXYDetailLayout() {
     return migLayout("fill,insets 10 5 5 5");
+  }
+
+  /**
+   * <p>A default MiG layout constraint with:</p>
+   * <ul>
+   * <li>Popover screen insets</li>
+   * <li>Fills all available space (X only)</li>
+   * <li>Handles left-to-right and right-to-left presentation automatically</li>
+   * </ul>
+   *
+   * @return A MiG layout constraint that fills all X with RTL appended suitable for popovers
+   */
+  public static String migXPopoverLayout() {
+    return migLayout("fill,insets 10 10 10 10");
   }
 
   /**

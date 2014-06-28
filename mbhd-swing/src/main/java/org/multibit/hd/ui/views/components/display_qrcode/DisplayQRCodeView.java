@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.components.display_qrcode;
 
 import com.google.common.base.Optional;
+import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.utils.OSUtils;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -40,21 +41,18 @@ public class DisplayQRCodeView extends AbstractComponentView<DisplayQRCodeModel>
   @Override
   public JPanel newComponentPanel() {
 
-    panel = Panels.newRoundedPanel();
+    panel = Panels.newRoundedPanel(new MigLayout(
+      Panels.migXPopoverLayout(),
+      "[]",
+      "[]5"
+    ));
 
     qrCodeImage = QRCodes.generateQRCode(getModel().get().getValue(), 3);
 
     panelCloseButton = Buttons.newPanelCloseButton(getClosePopoverAction());
 
     // Ensure it is accessible
-    panelCloseButton.setName("popover_"+ MessageKey.CLOSE.getKey());
-
-    // Add to the panel
-    // Bug in JDK 1.7 on Mac prevents clipboard image copy
-    // Possibly fixed in JDK 1.8
-    if (!OSUtils.isMac()) {
-      panel.add(Buttons.newCopyButton(getCopyClipboardAction()), "align left,push");
-    }
+    panelCloseButton.setName("popover_" + MessageKey.CLOSE.getKey());
 
     // QR code image
     JLabel imageLabel = Labels.newImageLabel(qrCodeImage);
@@ -63,11 +61,28 @@ public class DisplayQRCodeView extends AbstractComponentView<DisplayQRCodeModel>
     AccessibilityDecorator.apply(imageLabel, MessageKey.QR_CODE);
 
     panel.add(panelCloseButton, "align right,shrink,wrap");
-    panel.add(imageLabel, "span 2,grow,push,wrap");
 
+    // Determine if the copy button should be shown
+    // Bug in JDK 1.7 on Mac prevents clipboard image copy
+    // Possibly fixed in JDK 1.8
+    boolean isCopyAvailable = !OSUtils.isMac();
+
+    // Provide some descriptive text
+    JLabel qrCodePopoverNote = Labels.newQRCodePopoverNote(isCopyAvailable);
+    panel.add(qrCodePopoverNote, "push,wrap");
+
+    // Add the image filling as much space as possible
+    panel.add(imageLabel, "align center,grow,push,wrap");
+
+    // Place text immediately below it
     JLabel transactionLabel = Labels.newBlankLabel();
     transactionLabel.setText(getModel().get().getTransactionLabel());
     panel.add(transactionLabel, "align center,push,wrap");
+
+    // Add to the panel to bottom right where it will be seen quickly
+    if (isCopyAvailable) {
+      panel.add(Buttons.newCopyButton(getCopyClipboardAction()), "align right,push");
+    }
 
     // Set minimum size
     panel.setSize(MultiBitUI.POPOVER_MAX_WIDTH, MultiBitUI.POPOVER_MAX_HEIGHT);
@@ -112,7 +127,7 @@ public class DisplayQRCodeView extends AbstractComponentView<DisplayQRCodeModel>
         Panels.hideLightBoxPopoverIfPresent();
 
         // Issue the wizard popover hide event
-        ViewEvents.fireWizardPopoverHideEvent(getModel().get().getPanelName(),true);
+        ViewEvents.fireWizardPopoverHideEvent(getModel().get().getPanelName(), true);
 
       }
 

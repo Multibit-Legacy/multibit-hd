@@ -1244,4 +1244,24 @@ public class Labels {
 
   }
 
+  /**
+   * @param isCopyAvailable True if the additional "copy QR image" note should be included
+   *
+   * @return A new "QR popover" note
+   */
+  public static JLabel newQRCodePopoverNote(boolean isCopyAvailable) {
+
+    if (isCopyAvailable) {
+      return newNoteLabel(new MessageKey[]{
+        MessageKey.QR_CODE_NOTE_1,
+        MessageKey.QR_CODE_NOTE_2,
+      }, new Object[][]{});
+    }
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.QR_CODE_NOTE_1,
+    }, new Object[][]{});
+
+  }
+
 }
