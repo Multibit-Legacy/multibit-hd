@@ -2,9 +2,9 @@ package org.multibit.hd.ui.views.wizards.sign_message;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.SignMessageResult;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.utils.BitcoinMessages;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -170,10 +170,11 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
   }
 
   /**
-   * @return A new action for clearinging the signing address, message text and signature
+   * @return A new action for clearing the signing address, message text and signature
    */
   private Action getClearAllAction() {
-    // Sign the message
+
+    // Clear the fields and set focus
     return new AbstractAction() {
 
       @Override
@@ -227,29 +228,10 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        // Provide PGP-like signature wrapping
-        String beginSignedMessage = "-----BEGIN BITCOIN SIGNED MESSAGE-----";
-        String beginSignature = "-----BEGIN BITCOIN SIGNATURE-----";
-
-        String footer = "-----END BITCOIN SIGNATURE-----";
-        String version = "Version: MultiBit HD (" + Configurations.currentConfiguration.getVersion()+")";
-        String comment = "Comment: https://multibit.org";
-        String address = "Address: " + signingAddress.getText();
-
-        // Format the string suitable for the locale and operating system
-        // Layout is address and message outside of signature block
-        String clipboard = String.format(
-          Configurations.currentConfiguration.getLocale(),
-          "%s%n%s%n%s%n%s%n%s%n%s%n%n%s%n%s%n",
-          beginSignedMessage,
+        String clipboard = BitcoinMessages.formatAsBitcoinSignedMessage(
+          signingAddress.getText(),
           message.getText(),
-          beginSignature,
-          version,
-          comment,
-          address,
-          // TODO PGP standard wrapping is at column 65 but not sure if this is required
-          signature.getText(),
-          footer
+          signature.getText()
         );
 
         // Copy the image to the clipboard

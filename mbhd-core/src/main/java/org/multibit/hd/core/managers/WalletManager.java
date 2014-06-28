@@ -110,17 +110,17 @@ public enum WalletManager implements WalletEventListener {
   // The format of the wallet directories is WALLET_DIRECTORY_PREFIX + a wallet id.
   // A walletid is 5 groups of 4 bytes in lowercase hex, with a "-' separator e.g. mbhd-11111111-22222222-33333333-44444444-55555555
   private static final String REGEX_FOR_WALLET_DIRECTORY = "^"
-          + WALLET_DIRECTORY_PREFIX
-          + WALLET_ID_SEPARATOR
-          + "[0-9a-f]{8}"
-          + WALLET_ID_SEPARATOR
-          + "[0-9a-f]{8}"
-          + WALLET_ID_SEPARATOR
-          + "[0-9a-f]{8}"
-          + WALLET_ID_SEPARATOR
-          + "[0-9a-f]{8}"
-          + WALLET_ID_SEPARATOR
-          + "[0-9a-f]{8}$";
+    + WALLET_DIRECTORY_PREFIX
+    + WALLET_ID_SEPARATOR
+    + "[0-9a-f]{8}"
+    + WALLET_ID_SEPARATOR
+    + "[0-9a-f]{8}"
+    + WALLET_ID_SEPARATOR
+    + "[0-9a-f]{8}"
+    + WALLET_ID_SEPARATOR
+    + "[0-9a-f]{8}"
+    + WALLET_ID_SEPARATOR
+    + "[0-9a-f]{8}$";
 
   private static final Pattern walletDirectoryPattern = Pattern.compile(REGEX_FOR_WALLET_DIRECTORY);
 
@@ -147,7 +147,7 @@ public enum WalletManager implements WalletEventListener {
    * There is no particular significance to the value of these bytes
    */
   public static final byte[] AES_INITIALISATION_VECTOR = new byte[]{(byte) 0xa3, (byte) 0x44, (byte) 0x39, (byte) 0x1f, (byte) 0x53, (byte) 0x83, (byte) 0x11,
-          (byte) 0xb3, (byte) 0x29, (byte) 0x54, (byte) 0x86, (byte) 0x16, (byte) 0xc4, (byte) 0x89, (byte) 0x72, (byte) 0x3e};
+    (byte) 0xb3, (byte) 0x29, (byte) 0x54, (byte) 0x86, (byte) 0x16, (byte) 0xc4, (byte) 0x89, (byte) 0x72, (byte) 0x3e};
 
   /**
    * The salt used for deriving the KeyParameter from the password in AES encryption for wallets
@@ -220,17 +220,19 @@ public enum WalletManager implements WalletEventListener {
    * @param password              to use to encrypt the wallet
    * @param name                  The wallet name
    * @param notes                 Public notes associated with the wallet
+   *
    * @return Wallet summary containing the wallet object and the walletId (used in storage etc)
+   *
    * @throws IllegalStateException  if applicationDataDirectory is incorrect
    * @throws WalletLoadException    if there is already a simple wallet created but it could not be loaded
    * @throws WalletVersionException if there is already a simple wallet but the wallet version cannot be understood
    */
   public WalletSummary createWalletSummary(
-          byte[] seed,
-          long creationTimeInSeconds,
-          CharSequence password,
-          String name,
-          String notes
+    byte[] seed,
+    long creationTimeInSeconds,
+    CharSequence password,
+    String name,
+    String notes
 
   ) throws WalletLoadException, WalletVersionException, IOException {
 
@@ -254,18 +256,20 @@ public enum WalletManager implements WalletEventListener {
    * @param password                 The password to use to encrypt the wallet - if mull then the wallet is not loaded
    * @param name                     The wallet name
    * @param notes                    Public notes associated with the wallet
+   *
    * @return Wallet summary containing the wallet object and the walletId (used in storage etc)
+   *
    * @throws IllegalStateException  if applicationDataDirectory is incorrect
    * @throws WalletLoadException    if there is already a wallet created but it could not be loaded
    * @throws WalletVersionException if there is already a wallet but the wallet version cannot be understood
    */
   public WalletSummary getOrCreateWalletSummary(
-          File applicationDataDirectory,
-          byte[] seed,
-          long creationTimeInSeconds,
-          CharSequence password,
-          String name,
-          String notes
+    File applicationDataDirectory,
+    byte[] seed,
+    long creationTimeInSeconds,
+    CharSequence password,
+    String name,
+    String notes
   ) throws WalletLoadException, WalletVersionException, IOException {
 
     final WalletSummary walletSummary;
@@ -372,7 +376,9 @@ public enum WalletManager implements WalletEventListener {
    *
    * @param walletDirectory The wallet directory containing the various wallet files to load
    * @param password        The password to use to decrypt the wallet
+   *
    * @return Wallet - the loaded wallet
+   *
    * @throws WalletLoadException    If the wallet could not be loaded
    * @throws WalletVersionException If the wallet has an unsupported version number
    */
@@ -391,9 +397,9 @@ public enum WalletManager implements WalletEventListener {
       if (walletFile.exists() && isWalletSerialised(walletFile)) {
         // Serialised wallets are no longer supported.
         throw new WalletLoadException(
-                "Could not load wallet '"
-                        + walletFile
-                        + "'. Serialized wallets are no longer supported."
+          "Could not load wallet '"
+            + walletFile
+            + "'. Serialized wallets are no longer supported."
         );
       }
 
@@ -440,6 +446,7 @@ public enum WalletManager implements WalletEventListener {
 
   /**
    * @param walletFile the wallet to test serialisation for
+   *
    * @return true if the wallet file specified is serialised (this format is no longer supported)
    */
   private boolean isWalletSerialised(File walletFile) {
@@ -471,6 +478,7 @@ public enum WalletManager implements WalletEventListener {
    * Create the name of the directory in which the wallet is stored
    *
    * @param walletId The wallet id to use (e.g. "11111111-22222222-33333333-44444444-55555555")
+   *
    * @return A wallet root
    */
   public static String createWalletRoot(WalletId walletId) {
@@ -482,7 +490,9 @@ public enum WalletManager implements WalletEventListener {
    *
    * @param applicationDataDirectory The application data directory containing the wallet
    * @param walletRoot               The wallet root from which to make a sub-directory (e.g. "mbhd-11111111-22222222-33333333-44444444-55555555")
+   *
    * @return The directory composed of parent directory plus the wallet root
+   *
    * @throws IllegalStateException if wallet could not be created
    */
   // TODO (GR) Refactor this to take a WalletId and infer the prefix to avoid info leak
@@ -507,6 +517,7 @@ public enum WalletManager implements WalletEventListener {
    * This is achieved by looking for directories with a name like <code>"mbhd-walletId"</code>
    *
    * @param directoryToSearch The directory to search
+   *
    * @return A list of files of wallet directories
    */
   public static List<File> findWalletDirectories(File directoryToSearch) {
@@ -537,6 +548,7 @@ public enum WalletManager implements WalletEventListener {
    *
    * @param walletDirectories The candidate wallet directory references
    * @param walletRoot        The wallet root of the first entry
+   *
    * @return A list of wallet summaries
    */
   public static List<WalletSummary> findWalletSummaries(List<File> walletDirectories, Optional walletRoot) {
@@ -601,13 +613,13 @@ public enum WalletManager implements WalletEventListener {
     if (applicationDataDirectory != null && currentWalletSummary.isPresent()) {
 
       String walletFilename =
-              applicationDataDirectory
-                      + File.separator
-                      + WALLET_DIRECTORY_PREFIX
-                      + WALLET_ID_SEPARATOR
-                      + currentWalletSummary.get().getWalletId().toFormattedString()
-                      + File.separator
-                      + MBHD_WALLET_NAME;
+        applicationDataDirectory
+          + File.separator
+          + WALLET_DIRECTORY_PREFIX
+          + WALLET_ID_SEPARATOR
+          + currentWalletSummary.get().getWalletId().toFormattedString()
+          + File.separator
+          + MBHD_WALLET_NAME;
       return Optional.of(new File(walletFilename));
 
     } else {
@@ -624,13 +636,13 @@ public enum WalletManager implements WalletEventListener {
     if (applicationDataDirectory != null && currentWalletSummary.isPresent()) {
 
       String walletFilename =
-              applicationDataDirectory
-                      + File.separator
-                      + WALLET_DIRECTORY_PREFIX
-                      + WALLET_ID_SEPARATOR
-                      + currentWalletSummary.get().getWalletId().toFormattedString()
-                      + File.separator
-                      + MBHD_SUMMARY_NAME;
+        applicationDataDirectory
+          + File.separator
+          + WALLET_DIRECTORY_PREFIX
+          + WALLET_ID_SEPARATOR
+          + currentWalletSummary.get().getWalletId().toFormattedString()
+          + File.separator
+          + MBHD_SUMMARY_NAME;
       return Optional.of(new File(walletFilename));
 
     } else {
@@ -641,6 +653,7 @@ public enum WalletManager implements WalletEventListener {
 
   /**
    * @param walletDirectory The wallet directory containing the various wallet files
+   *
    * @return A wallet summary file
    */
   public static File getOrCreateWalletSummaryFile(File walletDirectory) {
@@ -671,6 +684,7 @@ public enum WalletManager implements WalletEventListener {
 
   /**
    * @param walletDirectory The wallet directory to read
+   *
    * @return The wallet summary if present, or a default if not
    */
   public static WalletSummary getOrCreateWalletSummary(File walletDirectory, WalletId walletId) {
@@ -726,6 +740,7 @@ public enum WalletManager implements WalletEventListener {
 
   /**
    * @param walletDirectory The candidate wallet directory (e.g. "/User/example/Application Support/MultiBitHD/mbhd-11111111-22222222-33333333-44444444-55555555")
+   *
    * @throws IllegalStateException If the wallet directory is malformed
    */
   private static void checkWalletDirectory(File walletDirectory) {
@@ -740,12 +755,13 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
-   * Method to sign a message
+   * <p>Method to sign a message</p>
    *
-   * @param addressText    address to use to sign
-   * @param messageText    message to use to sign
-   * @param walletPassword wallet password
-   * @return aSignMessageResult describing if the signing was successful or not
+   * @param addressText    Text address to use to sign (makes UI Address conversion code DRY)
+   * @param messageText    The message to sign
+   * @param walletPassword The wallet password
+   *
+   * @return A "sign message result" describing the outcome
    */
   public SignMessageResult signMessage(String addressText, String messageText, String walletPassword) {
     if (Strings.isNullOrEmpty(addressText)) {
@@ -799,12 +815,13 @@ public enum WalletManager implements WalletEventListener {
 
 
   /**
-   * Verify the message text against the address and signature specified
+   * <p>Method to verify a message</p>
    *
-   * @param addressText   address to use to sign
-   * @param messageText   message to use to sign
-   * @param signatureText the signature to verify
-   * @return aVerifyMessageResult describing if the verify was successful or not
+   * @param addressText   Text address to use to sign (makes UI Address conversion code DRY)
+   * @param messageText   The message to sign
+   * @param signatureText The signature text (can include CRLF characters which will be stripped)
+   *
+   * @return A "verify message result" describing the outcome
    */
   public VerifyMessageResult verifyMessage(String addressText, String messageText, String signatureText) {
     if (Strings.isNullOrEmpty(addressText)) {
@@ -821,6 +838,9 @@ public enum WalletManager implements WalletEventListener {
 
     try {
       Address signingAddress = new Address(BitcoinNetwork.current().get(), addressText);
+
+      // Strip CRLF from signature text
+      signatureText = signatureText.replaceAll("\n","").replaceAll("\r","");
 
       ECKey key = ECKey.signedMessageToKey(messageText, signatureText);
       Address gotAddress = key.toAddress(BitcoinNetwork.current().get());
@@ -841,6 +861,7 @@ public enum WalletManager implements WalletEventListener {
    * the length of the encrypted password (which is always a multiple of the AES block size (16 bytes).
    *
    * @param passwordBytes the password bytes to pad
+   *
    * @return paddedPasswordBytes - this is guaranteed to be longer than 48 bytes. Byte 0 indicates the number of padding bytes,
    * which are random bytes stored from byte 1 to byte <number of padding bytes). The real password is stored int he remaining bytes
    */
@@ -878,7 +899,7 @@ public enum WalletManager implements WalletEventListener {
     Preconditions.checkState(paddedPasswordBytes.length > 0);
 
     // Get the length of the pad
-    int lengthOfPad = (int)paddedPasswordBytes[0];
+    int lengthOfPad = (int) paddedPasswordBytes[0];
 
     if (lengthOfPad > paddedPasswordBytes.length - 1) {
       throw new IllegalStateException("Stored encrypted password is not in the correct format");

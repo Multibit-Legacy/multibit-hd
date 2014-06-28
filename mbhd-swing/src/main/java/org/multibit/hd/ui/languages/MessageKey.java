@@ -40,6 +40,7 @@ public enum MessageKey {
   BROWSE("browse"),
   PRINT("print"),
   PASTE("paste"),
+  PASTE_ALL("paste_all"),
   COPY("copy"),
   REPAIR("repair"),
   CLEAR_ALL("clear_all"),

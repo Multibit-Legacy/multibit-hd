@@ -4,14 +4,18 @@ import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.VerifyMessageResult;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.utils.BitcoinMessages;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.utils.ClipboardUtils;
 import org.multibit.hd.ui.utils.WhitespaceTrimmer;
 import org.multibit.hd.ui.views.components.*;
+import org.multibit.hd.ui.views.components.borders.TextBubbleBorder;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.text_fields.FormattedBitcoinAddressField;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
@@ -32,8 +36,8 @@ public class VerifyMessagePanelView extends AbstractWizardPanelView<VerifyMessag
 
   // View components
   FormattedBitcoinAddressField verifyingAddress;
-  JTextArea signature;
-  JTextArea message;
+  JTextArea signatureTextArea;
+  JTextArea messageTextArea;
 
   JLabel reportLabel;
 
@@ -60,33 +64,53 @@ public class VerifyMessagePanelView extends AbstractWizardPanelView<VerifyMessag
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[][][][]", // Column constraints
-      "[]5[][][][30:n:]" // Row constraints
+      "[]5[][100][30][30][30]" // Row constraints
     ));
 
-
     verifyingAddress = TextBoxes.newEnterBitcoinAddress(getWizardModel(), false);
-    message = TextBoxes.newEnterMessage(getWizardModel(), false);
 
-    signature = TextBoxes.newTextArea(5, 40);
-    AccessibilityDecorator.apply(signature, MessageKey.SIGNATURE);
+    messageTextArea = TextBoxes.newEnterMessage(getWizardModel(), false);
 
-    contentPanel.add(Labels.newVerifyMessageNote(), "span 4,wrap");
+    // The message is a wall of text so needs scroll bars in many cases
+    messageTextArea.setBorder(null);
+
+    // Message requires its own scroll pane
+    JScrollPane messageScrollPane = new JScrollPane();
+    messageScrollPane.setOpaque(true);
+    messageScrollPane.setBackground(Themes.currentTheme.dataEntryBackground());
+    messageScrollPane.setBorder(null);
+    messageScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    messageScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+    // View port requires special handling
+    messageScrollPane.setViewportView(messageTextArea);
+    messageScrollPane.getViewport().setBackground(Themes.currentTheme.dataEntryBackground());
+    messageScrollPane.setViewportBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
+
+    // Ensure we maintain the overall theme
+    ScrollBarUIDecorator.apply(messageScrollPane);
+
+    signatureTextArea = TextBoxes.newTextArea(5, 40);
+    AccessibilityDecorator.apply(signatureTextArea, MessageKey.SIGNATURE);
+
+    contentPanel.add(Labels.newVerifyMessageNote(), "growx,span 4,wrap");
 
     contentPanel.add(Labels.newBitcoinAddress());
-    contentPanel.add(verifyingAddress, "grow,span 3,push,wrap");
+    contentPanel.add(verifyingAddress, "growx,span 3,push,wrap");
 
     contentPanel.add(Labels.newMessage());
-    contentPanel.add(message, "grow,span 3,push,wrap");
+    contentPanel.add(messageScrollPane, "grow,span 3,push,wrap");
 
     contentPanel.add(Labels.newSignature());
-    contentPanel.add(signature, "grow,span 3,push,wrap");
+    contentPanel.add(signatureTextArea, "grow,span 3,push,wrap");
 
-    contentPanel.add(Buttons.newVerifyMessageButton(getSignMessageAction()), "cell 2 4,");
+    contentPanel.add(Buttons.newVerifyMessageButton(getSignMessageAction()), "align right,cell 2 4,");
+    contentPanel.add(Buttons.newPasteAllButton(getPasteAllAction()), "align right,cell 2 4,");
     contentPanel.add(Buttons.newClearAllButton(getClearAllAction()), "cell 3 4,wrap");
 
     reportLabel = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
     AccessibilityDecorator.apply(reportLabel, MessageKey.NOTES);
-    contentPanel.add(reportLabel, "span 4,wrap");
+    contentPanel.add(reportLabel, "growx,span 4");
   }
 
   @Override
@@ -142,7 +166,7 @@ public class VerifyMessagePanelView extends AbstractWizardPanelView<VerifyMessag
 
 
   /**
-   * @return A new action for signing the message
+   * @return A new "verify message" action
    */
   private Action getSignMessageAction() {
 
@@ -160,7 +184,7 @@ public class VerifyMessagePanelView extends AbstractWizardPanelView<VerifyMessag
   }
 
   /**
-   * @return A new action for signing the message
+   * @return A new "clear all" action
    */
   private Action getClearAllAction() {
 
@@ -171,8 +195,8 @@ public class VerifyMessagePanelView extends AbstractWizardPanelView<VerifyMessag
       public void actionPerformed(ActionEvent e) {
 
         verifyingAddress.setText("");
-        message.setText("");
-        signature.setText("");
+        messageTextArea.setText("");
+        signatureTextArea.setText("");
         reportLabel.setText("");
         reportLabel.setIcon(null);
       }
@@ -181,16 +205,41 @@ public class VerifyMessagePanelView extends AbstractWizardPanelView<VerifyMessag
   }
 
   /**
-    * Verify the message text against the address specified and update UI
-    */
-   private void verifyMessage() {
-     String addressText = WhitespaceTrimmer.trim(verifyingAddress.getText());
-     String messageText = message.getText();
-     String signatureText = signature.getText();
+   * @return A new "paste all" action
+   */
+  private Action getPasteAllAction() {
 
-     VerifyMessageResult verifyMessageResult = WalletManager.INSTANCE.verifyMessage(addressText, messageText, signatureText);
+    // Sign the message
+    return new AbstractAction() {
 
-     reportLabel.setText(Languages.safeText(verifyMessageResult.getVerifyKey(), verifyMessageResult.getVerifyData()));
-     Labels.decorateStatusLabel(reportLabel, Optional.of(verifyMessageResult.isVerifyWasSuccessful()));
-   }
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        BitcoinMessages.SignedMessage signedMessage = BitcoinMessages.parseSignedMessage(ClipboardUtils.pasteStringFromClipboard());
+
+        messageTextArea.setText(signedMessage.getMessage());
+        verifyingAddress.setText(signedMessage.getAddress());
+        signatureTextArea.setText(signedMessage.getSignature());
+
+        reportLabel.setText("");
+        reportLabel.setIcon(null);
+
+      }
+
+    };
+  }
+
+  /**
+   * Verify the message text against the address specified and update UI
+   */
+  private void verifyMessage() {
+    String addressText = WhitespaceTrimmer.trim(verifyingAddress.getText());
+    String messageText = messageTextArea.getText();
+    String signatureText = signatureTextArea.getText();
+
+    VerifyMessageResult verifyMessageResult = WalletManager.INSTANCE.verifyMessage(addressText, messageText, signatureText);
+
+    reportLabel.setText(Languages.safeText(verifyMessageResult.getVerifyKey(), verifyMessageResult.getVerifyData()));
+    Labels.decorateStatusLabel(reportLabel, Optional.of(verifyMessageResult.isVerifyWasSuccessful()));
+  }
 }
