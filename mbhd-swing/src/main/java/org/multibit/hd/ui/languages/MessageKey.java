@@ -398,6 +398,7 @@ public enum MessageKey {
   CHANGE_PASSWORD_NOTE_2("change_password_note_2"),
 
   VERIFY_NETWORK_NOTE_1("verify_network_note_1"),
+  VERIFY_NETWORK_NOTE_2("verify_network_note_2"),
 
   UNITS_SETTINGS_NOTE_1("units_settings_note_1"),
 

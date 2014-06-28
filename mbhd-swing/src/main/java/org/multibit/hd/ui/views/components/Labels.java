@@ -1180,7 +1180,8 @@ public class Labels {
   public static JLabel newVerifyNetworkNote() {
 
     return newNoteLabel(new MessageKey[]{
-      MessageKey.VERIFY_NETWORK_NOTE_1
+      MessageKey.VERIFY_NETWORK_NOTE_1,
+      MessageKey.VERIFY_NETWORK_NOTE_2
     }, new Object[][]{});
 
   }
