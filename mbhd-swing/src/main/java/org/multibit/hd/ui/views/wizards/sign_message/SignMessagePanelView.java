@@ -2,11 +2,13 @@ package org.multibit.hd.ui.views.wizards.sign_message;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.SignMessageResult;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.utils.ClipboardUtils;
 import org.multibit.hd.ui.utils.WhitespaceTrimmer;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
@@ -33,7 +35,11 @@ import java.awt.event.ActionEvent;
  */
 public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWizardModel, String> {
 
-  // View components
+  // Labels
+  JLabel signingAddressLabel;
+  JLabel messageLabel;
+  JLabel signatureLabel;
+
   FormattedBitcoinAddressField signingAddress;
   JTextArea signature;
   JTextArea message;
@@ -69,6 +75,11 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
             "5[][][][][20:n:]" // Row constraints
     ));
 
+    // Labels (also used in clipboard)
+    signingAddressLabel = Labels.newBitcoinAddress();
+    messageLabel = Labels.newMessage();
+    signatureLabel = Labels.newSignature();
+
     signingAddress = TextBoxes.newEnterBitcoinAddress(getWizardModel(), false);
     message = TextBoxes.newEnterMessage(getWizardModel(), false);
 
@@ -76,18 +87,19 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
     AccessibilityDecorator.apply(signature, MessageKey.SIGNATURE);
 
     // Add them to the panel
-    contentPanel.add(Labels.newBitcoinAddress());
+    contentPanel.add(signingAddressLabel);
     contentPanel.add(signingAddress, "grow,span 3,push,wrap");
 
-    contentPanel.add(Labels.newMessage());
+    contentPanel.add(messageLabel);
     contentPanel.add(message, "grow,span 3,push,wrap");
 
     contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "span 3, wrap");
 
-    contentPanel.add(Buttons.newSignMessageButton(getSignMessageAction()), "cell 2 3,");
+    contentPanel.add(Buttons.newSignMessageButton(getSignMessageAction()), "cell 1 3,align right");
+    contentPanel.add(Buttons.newCopyAllButton(getCopyClipboardAction()), "cell 2 3");
     contentPanel.add(Buttons.newClearAllButton(getClearAllAction()), "cell 3 3,wrap");
 
-    contentPanel.add(Labels.newSignature());
+    contentPanel.add(signatureLabel);
     contentPanel.add(signature, "grow,span 3,push,wrap");
 
     reportLabel = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
@@ -180,6 +192,9 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
         signature.setText("");
         reportLabel.setText("");
         reportLabel.setIcon(null);
+
+        // Reset focus
+        signingAddress.requestFocusInWindow();
       }
     };
   }
@@ -201,4 +216,48 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
       signature.setText(signMessageResult.getSignature().get());
     }
   }
+
+  /**
+   * @return A new action for copying the view contents to the clipboard
+   */
+  private Action getCopyClipboardAction() {
+
+    return new AbstractAction() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        // Provide PGP-like signature wrapping
+        String beginSignedMessage = "-----BEGIN BITCOIN SIGNED MESSAGE-----";
+        String beginSignature = "-----BEGIN BITCOIN SIGNATURE-----";
+
+        String footer = "-----END BITCOIN SIGNATURE-----";
+        String version = "Version: MultiBit HD (" + Configurations.currentConfiguration.getVersion()+")";
+        String comment = "Comment: https://multibit.org";
+        String address = "Address: " + signingAddress.getText();
+
+        // Format the string suitable for the locale and operating system
+        // Layout is address and message outside of signature block
+        String clipboard = String.format(
+          Configurations.currentConfiguration.getLocale(),
+          "%s%n%s%n%s%n%s%n%s%n%s%n%n%s%n%s%n",
+          beginSignedMessage,
+          message.getText(),
+          beginSignature,
+          version,
+          comment,
+          address,
+          // TODO PGP standard wrapping is at column 65 but not sure if this is required
+          signature.getText(),
+          footer
+        );
+
+        // Copy the image to the clipboard
+        ClipboardUtils.copyStringToClipboard(clipboard);
+
+      }
+
+    };
+  }
+
 }

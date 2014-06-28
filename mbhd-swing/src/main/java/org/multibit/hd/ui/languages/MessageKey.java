@@ -43,6 +43,7 @@ public enum MessageKey {
   COPY("copy"),
   REPAIR("repair"),
   CLEAR_ALL("clear_all"),
+  COPY_ALL("copy_all"),
   SIGN_MESSAGE("sign_message"),
   VERIFY_MESSAGE("verify_message"),
 

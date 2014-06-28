@@ -208,7 +208,22 @@ public class Buttons {
   /**
    * @param action The click action
    *
-   * @return A new "Clear all" button with icon
+   * @return A new "copy all" button with icon and text
+   */
+  public static JButton newCopyAllButton(Action action) {
+
+    JButton button = newButton(action, MessageKey.COPY_ALL);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.COPY, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
+
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "Clear all" button with icon and text
    */
   public static JButton newClearAllButton(Action action) {
 
