@@ -93,11 +93,10 @@ public class BitcoinMessages {
     String commentField = COMMENT + ": https://multibit.org";
     String addressField = ADDRESS + ": " + signingAddress.toString();
 
-    // Format the string suitable for the locale and operating system
+    // Format the string to approximate RFC 2440
     // Layout is address and message outside of signature block
     return String.format(
-      Configurations.currentConfiguration.getLocale(),
-      "-----%s-----%n%s%n-----%s-----%n%s%n%s%n%s%n%n%s%n-----%s-----%n",
+      "-----%s-----\n%s\n-----%s-----\n%s\n%s\n%s\n\n%s\n-----%s-----\n",
       BEGIN_SIGNED_MESSAGE,
       message,
       BEGIN_SIGNATURE,
@@ -145,6 +144,8 @@ public class BitcoinMessages {
       // Iterate over the lines extracting fields
       int state = 0;
 
+      boolean appendCrlf = false;
+
       for (String line : lines) {
 
         // Use line prefixes to switch state on next line
@@ -154,6 +155,10 @@ public class BitcoinMessages {
         }
         if (line.contains(BEGIN_SIGNATURE)) {
           state = 2;
+          if (message.length() > 0 && !appendCrlf) {
+            // Remove the CRLF from the Armor header
+            message = message.substring(0, message.length() - 1);
+          }
           continue;
         }
         if (line.contains(END_BITCOIN_SIGNATURE)) {
@@ -168,10 +173,19 @@ public class BitcoinMessages {
             break;
           case 1:
             // Building message
-            if (!Strings.isNullOrEmpty(message)) {
+            if (appendCrlf) {
+              // More than one line so replace CRLF
               message += "\n";
             }
-            message += line;
+            if (Strings.isNullOrEmpty(line)) {
+              // Blank line so treat as CRLF and ignore the rest
+              message += "\n";
+              appendCrlf = false;
+            } else {
+              // Normal line
+              message += line;
+              appendCrlf = true;
+            }
             break;
           case 2:
             // Building signature fields
