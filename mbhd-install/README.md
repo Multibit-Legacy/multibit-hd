@@ -1,3 +1,33 @@
+## How to build the installer
+
+JWrapper requires the use of a large JAR and a supporting package of JREs. Clearly these should not be held under
+version control and so it is necessary to manually copy the following when making an installer:
+
+* `mbhd-install/JRE-1.7` should contain the supported JREs by unzipping the provided JRE download from JWrapper
+* `jwrapper-000version.jar` should be copied into `mbhd-install`
+
+All the above, and the derivative files that are produced, are git ignored.
+
+Later these JREs will be automatically downloaded over HTTPS from the main site.
+
+Once the JREs are in place, the build command is
+
+```
+mvn -q -Dinstaller=true clean install
+```
+
+The first time this process is run it will take ages (typically 20mins) as `pack200` compresses large artifacts.
+Subsequent builds are a lot faster.
+
+The final installers are available in `mbhd-install/target` for subsequent upload to the main site.
+
+### Notes on the protocol handler code 
+
+In order to respond to Bitcoin URIs being clicked in external applications such as browsers a protocol handler
+has to be registered. The code to support this is within JWrapper in the `jwrapper_utils.jar` which is not under
+version control due to its size (1.5+Mb). Consequently the Maven dependency references a JAR within the project
+itself which gives rise to a Maven warning that is suppressed with the `-q` option.
+ 
 ## Notes on various installers
 
 The choice of a robust installer has been a difficult one. Here are the notes that lead to the current situation.
@@ -19,29 +49,6 @@ The choice of a robust installer has been a difficult one. Here are the notes th
 * OSX builds are troublesome (expert help may fix this)
 * Difficult to get build environment working smoothly (no Maven integration)
 * Lots of quirks in the XML configuration file to locate files (might be due to manual build)
-
-#### How to build an installer
-
-JWrapper requires the use of a large JAR and a supporting package of JREs. Clearly these should be held under
-version control and so it is necessary to manually copy the following when making an installer:
-
-* `JRE-1.7` should contain the supported JREs under `win32`, `macos64`,`linux32`,`linux64`
-* `jwrapper-000version.jar` should be copied into `mbhd-install`
-
-All the above, and the derivative files that are produced, are git ignored.
-
-Later these JREs will be automatically downloaded over HTTPS from the main site.
-
-Once the JREs are in place, the build command is
-
-```
-mvn -Dinstaller=true clean install
-```
-
-The first time this process is run it will take ages (typically 20mins) as pack200 compresses large artifacts.
-Subsequent builds are a lot faster.
-
-The final installers are available in `mbhd-install/target` for subsequent upload to the main site.
 
 ## Graveyard
 
