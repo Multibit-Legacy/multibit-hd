@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.views.wizards.edit_wallet;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletSummary;
@@ -150,11 +149,9 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
       }
     }
 
-    log.debug("selectFileMaV.getModel().getValue() = '" + selectFileMaV.getModel().getValue() + "'");
-    // TODO - a cancel on the file chooser cannot be distinguished from the user clearing the cloud backup location
-    // TODO - this will most likely also affect the file chooser usage in the create wallet wizard
+    log.debug("selectFileMaV.getModel().getValue() = '" + selectFileMaV.getModel().getValue() + "', isSelected = " + selectFileMaV.getModel().isSelected());
     if (Configurations.currentConfiguration != null) {
-      if (!Strings.isNullOrEmpty(selectFileMaV.getModel().getValue())) {
+      if (selectFileMaV.getModel().isSelected()) {
           Configurations.currentConfiguration.getApplication().setCloudBackupLocation(selectFileMaV.getModel().getValue());
       }
     }

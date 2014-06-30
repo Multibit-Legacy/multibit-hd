@@ -103,9 +103,10 @@ public class SelectFileView extends AbstractComponentView<SelectFileModel> {
           File file = fileChooser.getSelectedFile();
 
           getModel().get().setValue(file.getAbsolutePath());
+          getModel().get().setSelected(true);
 
         } else {
-          getModel().get().setValue("");
+          getModel().get().setSelected(false);
         }
 
         selectedFileTextField.setText(model.getValue());
