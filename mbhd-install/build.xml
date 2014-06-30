@@ -29,9 +29,10 @@
   <!-- Default target to build all native installers in one go -->
   <target name="release-all">
 
+    <!-- Begin the install process -->
     <java jar="${JWrapperJAR}" failonerror="true" fork="true">
       <jvmarg value="-Xmx512m"/>
-      <arg value="src/main/jwrapper/jwrapper-all.xml"/>
+      <arg value="src/main/resources/jwrapper-all.xml"/>
     </java>
 
     <!-- Windows -->

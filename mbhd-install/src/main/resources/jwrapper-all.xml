@@ -6,8 +6,8 @@
   <!-- The specification for one app within the bundle -->
   <App>
     <Name>MultiBit HD</Name>
-    <LogoPNG>src/main/jwrapper/logo.png</LogoPNG>
-    <MainClass>org.multibit.hd.ui.MultiBitHD</MainClass>
+    <LogoPNG>src/main/resources/logo.png</LogoPNG>
+    <MainClass>org.multibit.hd.installer.MultiBitHDLauncher</MainClass>
   </App>
 
   <!-- The support installer languages -->
@@ -17,19 +17,19 @@
   <InstallType>CurrentUser</InstallType>
 
   <!-- Splash and Logo -->
-  <SplashPNG>src/main/jwrapper/logo.png</SplashPNG>
-  <BundleLogoPNG>src/main/jwrapper/logo.png</BundleLogoPNG>
+  <SplashPNG>src/main/resources/logo.png</SplashPNG>
+  <BundleLogoPNG>src/main/resources/logo.png</BundleLogoPNG>
 
   <!-- JVM options (e.g. extra memory) -->
   <JvmOptions>
     <JvmOption>-Xmx256m</JvmOption>
   </JvmOptions>
 
-  <!-- The JREs JWrapper should use -->
+  <!-- The JREs JWrapper should use (follow the unzipped paths of the JRE-1.7 pack) -->
   <Windows32JRE>JRE-1.7/win32/jre1.7.0_05</Windows32JRE>
   <Windows64JRE>JRE-1.7/win32/jre1.7.0_05</Windows64JRE>
-  <Linux32JRE>JRE-1.7/linux32/jre1.7.0_13</Linux32JRE>
-  <Linux64JRE>JRE-1.7/linux64/jre1.7.0_13</Linux64JRE>
+  <Linux32JRE>JRE-1.7/linux/jre1.7.0_13</Linux32JRE>
+  <Linux64JRE>JRE-1.7/linuxx64/jre1.7.0_13</Linux64JRE>
   <Mac64JRE>JRE-1.7/macos64/jre1.7.0_45.jre</Mac64JRE>
 
   <!-- The final executable JAR -->
