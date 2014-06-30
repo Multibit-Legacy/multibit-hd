@@ -141,13 +141,23 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
 
     WalletSummary walletSummary = getWizardModel().getWalletSummary();
 
-    walletSummary.setName(name.getText());
-    walletSummary.setNotes(notes.getText());
-
-    if (Configurations.currentConfiguration != null) {
-      if (!Strings.isNullOrEmpty(selectFileMaV.getModel().getValue())) {
-        Configurations.currentConfiguration.getApplication().setCloudBackupLocation(selectFileMaV.getModel().getValue());
+    if (walletSummary != null) {
+      if (name != null) {
+        walletSummary.setName(name.getText());
+      }
+      if (notes != null) {
+        walletSummary.setNotes(notes.getText());
       }
     }
+
+    log.debug("selectFileMaV.getModel().getValue() = '" + selectFileMaV.getModel().getValue() + "'");
+    // TODO - a cancel on the file chooser cannot be distinguished from the user clearing the cloud backup location
+    // TODO - this will most likely also affect the file chooser usage in the create wallet wizard
+    if (Configurations.currentConfiguration != null) {
+      if (!Strings.isNullOrEmpty(selectFileMaV.getModel().getValue())) {
+          Configurations.currentConfiguration.getApplication().setCloudBackupLocation(selectFileMaV.getModel().getValue());
+      }
+    }
+    log.debug("Cloud backup location = '" + Configurations.currentConfiguration.getApplication().getCloudBackupLocation() + "'");
   }
 }
