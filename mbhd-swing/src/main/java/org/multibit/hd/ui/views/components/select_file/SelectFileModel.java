@@ -17,6 +17,11 @@ public class SelectFileModel implements Model<String> {
 
   private String selectedFile = "";
 
+  /**
+   * A file was selected (= true) or no file was seleced/ cancel (= false)
+   */
+  private boolean selected = false;
+
   private final String panelName;
 
   /**
@@ -39,4 +44,14 @@ public class SelectFileModel implements Model<String> {
     ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
 
   }
+
+  public boolean isSelected() {
+    return selected;
+  }
+
+  public void setSelected(boolean selected) {
+    this.selected = selected;
+  }
+
+
 }

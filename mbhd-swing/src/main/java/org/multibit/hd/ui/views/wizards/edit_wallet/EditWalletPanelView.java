@@ -2,11 +2,14 @@ package org.multibit.hd.ui.views.wizards.edit_wallet;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
+import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
+import org.multibit.hd.ui.views.components.select_file.SelectFileView;
 import org.multibit.hd.ui.views.components.wallet_detail.WalletDetailModel;
 import org.multibit.hd.ui.views.components.wallet_detail.WalletDetailView;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -25,13 +28,15 @@ import javax.swing.*;
  * @since 0.0.1
  *  
  */
-public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizardModel, String> {
+public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizardModel, SelectFileModel> {
 
   // View components
   JTextField name;
   JTextArea notes;
 
   private ModelAndView<WalletDetailModel, WalletDetailView> walletDetailMaV;
+
+  private ModelAndView<SelectFileModel, SelectFileView> selectFileMaV;
 
   /**
    * @param wizard    The wizard managing the states
@@ -40,14 +45,19 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
   public EditWalletPanelView(AbstractWizard<EditWalletWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, MessageKey.EDIT_WALLET_TITLE, AwesomeIcon.EDIT);
-
   }
 
   @Override
   public void newPanelModel() {
 
-    setPanelModel("");
+    selectFileMaV = Components.newSelectFileMaV(getPanelName());
+      setPanelModel(selectFileMaV.getModel());
+      if (Configurations.currentConfiguration != null) {
+        selectFileMaV.getModel().setValue(Configurations.currentConfiguration.getApplication().getCloudBackupLocation());
+      }
 
+      // Register components
+      registerComponents(selectFileMaV);
   }
 
   @Override
@@ -69,6 +79,9 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
     notes = TextBoxes.newEnterNotes(getWizardModel());
     contentPanel.add(notes, "push,wrap");
 
+    contentPanel.add(Labels.newLabel(MessageKey.CLOUD_BACKUP_LOCATION));
+    contentPanel.add(selectFileMaV.getView().newComponentPanel(), "span 2,wrap");
+
     // Details
     walletDetailMaV = Components.newWalletDetailMaV(getPanelName());
     contentPanel.add(walletDetailMaV.getView().newComponentPanel(), "grow,push,span 2");
@@ -78,14 +91,12 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
 
     // Register components
     registerComponents(walletDetailMaV);
-
   }
 
   @Override
   protected void initialiseButtons(AbstractWizard<EditWalletWizardModel> wizard) {
 
     PanelDecorator.addCancelApply(this, wizard);
-
   }
 
   @Override
@@ -93,7 +104,6 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
 
     // Apply button starts off enabled
     ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.APPLY, true);
-
   }
 
   @Override
@@ -108,7 +118,6 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
 
       }
     });
-
   }
 
   @Override
@@ -123,7 +132,6 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
 
     // Must be OK to proceed
     return true;
-
   }
 
 
@@ -132,9 +140,21 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
 
     WalletSummary walletSummary = getWizardModel().getWalletSummary();
 
-    walletSummary.setName(name.getText());
-    walletSummary.setNotes(notes.getText());
+    if (walletSummary != null) {
+      if (name != null) {
+        walletSummary.setName(name.getText());
+      }
+      if (notes != null) {
+        walletSummary.setNotes(notes.getText());
+      }
+    }
 
+    log.debug("selectFileMaV.getModel().getValue() = '" + selectFileMaV.getModel().getValue() + "', isSelected = " + selectFileMaV.getModel().isSelected());
+    if (Configurations.currentConfiguration != null) {
+      if (selectFileMaV.getModel().isSelected()) {
+          Configurations.currentConfiguration.getApplication().setCloudBackupLocation(selectFileMaV.getModel().getValue());
+      }
+    }
+    log.debug("Cloud backup location = '" + Configurations.currentConfiguration.getApplication().getCloudBackupLocation() + "'");
   }
-
 }
