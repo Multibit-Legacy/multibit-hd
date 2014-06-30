@@ -329,6 +329,8 @@ public enum MessageKey {
   RESTORE_FROM_SEED_PHRASE("restore_from_seed_phrase"),
   RESTORE_FROM_BACKUP("restore_from_backup"),
 
+  CLOUD_BACKUP_LOCATION("cloud_backup_location"),
+
   WALLET_DEFAULT_NOTES("wallet_default_notes"),
 
 

@@ -897,6 +897,13 @@ public class Labels {
   }
 
   /**
+   *
+   * @return a new Cloud backup location label
+   */
+  public static JLabel newCloudBackupLocation() {
+    return newLabel(MessageKey.CLOUD_BACKUP_LOCATION);
+  }
+  /**
    * @return A new "welcome" note
    */
   public static JLabel newWelcomeNote() {
