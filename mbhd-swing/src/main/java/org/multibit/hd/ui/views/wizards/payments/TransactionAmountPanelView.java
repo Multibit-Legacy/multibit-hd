@@ -4,7 +4,6 @@ import com.google.bitcoin.core.Coin;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
-import org.joda.time.DateTime;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
@@ -78,20 +77,31 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
 
     JLabel amountBTCLabel = Labels.newValueLabel("");
 
-    amountBTCValue = Labels.newValueLabel("");
-    // Bitcoin column
+    // Add bitcoin unit to amount label
     LabelDecorator.applyBitcoinSymbolLabel(
       amountBTCLabel,
       Configurations.currentConfiguration.getBitcoin(),
       Languages.safeText(MessageKey.LOCAL_AMOUNT) + " ");
 
+    amountBTCValue = Labels.newValueLabel("");
+
     amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT));
     amountFiatValue = Labels.newValueLabel("");
 
-    miningFeePaidLabel = Labels.newValueLabel(Languages.safeText(MessageKey.TRANSACTION_FEE));
+    miningFeePaidLabel = Labels.newValueLabel("");
+    // Add bitcoin unit to mining fee label
+    LabelDecorator.applyBitcoinSymbolLabel(
+      miningFeePaidLabel,
+      Configurations.currentConfiguration.getBitcoin(),
+      Languages.safeText(MessageKey.TRANSACTION_FEE) + " ");
     miningFeePaidValue = Labels.newValueLabel("");
 
     clientFeePaidLabel = Labels.newValueLabel(Languages.safeText(MessageKey.CLIENT_FEE));
+   // Add bitcoin unit to client fee label
+    LabelDecorator.applyBitcoinSymbolLabel(
+      clientFeePaidLabel,
+      Configurations.currentConfiguration.getBitcoin(),
+      Languages.safeText(MessageKey.CLIENT_FEE) + " ");
     clientFeePaidValue = Labels.newValueLabel("");
 
     JLabel exchangeRateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL));
@@ -144,8 +154,6 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
     PaymentData paymentData = getWizardModel().getPaymentData();
 
     if (paymentData != null) {
-
-      DateTime date = paymentData.getDate();
       LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage();
       BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
 
@@ -195,7 +203,7 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
 
     Optional<Coin> clientFee = transactionData.getClientFee();
     if (clientFee.isPresent()) {
-      String[] clientFeePaidArray = Formats.formatCoinAsSymbolic(clientFee.get(), languageConfiguration, bitcoinConfiguration, true);
+      String[] clientFeePaidArray = Formats.formatCoinAsSymbolic(clientFee.get().negate(), languageConfiguration, bitcoinConfiguration, true);
       clientFeePaidValue.setText(clientFeePaidArray[0] + clientFeePaidArray[1]);
     } else {
       clientFeePaidValue.setText(Languages.safeText(MessageKey.NO_CLIENT_FEE_WAS_ADDED));
@@ -203,10 +211,9 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
   }
 
   private void updateMiningFee(LanguageConfiguration languageConfiguration, BitcoinConfiguration bitcoinConfiguration, TransactionData transactionData) {
-
     Optional<Coin> miningFee = transactionData.getMiningFee();
     if (miningFee.isPresent()) {
-      String[] minerFeePaidArray = Formats.formatCoinAsSymbolic(miningFee.get(), languageConfiguration, bitcoinConfiguration, true);
+      String[] minerFeePaidArray = Formats.formatCoinAsSymbolic(miningFee.get().negate(), languageConfiguration, bitcoinConfiguration, true);
       miningFeePaidValue.setText(minerFeePaidArray[0] + minerFeePaidArray[1]);
     } else {
       miningFeePaidValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
@@ -222,7 +229,6 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
   }
 
   private void updateAmountFiat(PaymentData paymentData, LanguageConfiguration languageConfiguration, BitcoinConfiguration bitcoinConfiguration) {
-
     FiatPayment amountFiat = paymentData.getAmountFiat();
     if (amountFiat.getAmount().isPresent()) {
       amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount().get(), languageConfiguration.getLocale(), bitcoinConfiguration, true)));
