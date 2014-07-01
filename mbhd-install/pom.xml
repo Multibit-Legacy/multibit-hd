@@ -30,6 +30,8 @@
 
       <!-- Relies on the Shade profile having executed already in package phase -->
       <build>
+
+
         <plugins>
 
           <!-- AntRun plugin for JWrapper -->
@@ -128,6 +130,17 @@
       <artifactId>mbhd-swing</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
+
+    <!-- JWrapper Utils is bundled within JWrapper which may need to be expanded
+         so that it appears in the correct location -->
+    <dependency>
+      <groupId>jwrapper</groupId>
+      <artifactId>jwrapper-utils</artifactId>
+      <version>00028973924</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/jwrapper_utils.jar</systemPath>
+    </dependency>
+
   </dependencies>
 
 </project>
