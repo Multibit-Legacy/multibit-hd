@@ -107,6 +107,7 @@ public enum MessageKey {
 
   BITCOIN_AMOUNT("bitcoin_amount"),
   LOCAL_AMOUNT("local_amount"),
+  LOCAL_AMOUNT_INCLUDING_FEES("local_amount_including_fees"),
   AMOUNT_PAID("amount_paid"),
   TRANSACTION_FEE("transaction_fee"),
 

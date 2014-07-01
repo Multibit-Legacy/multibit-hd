@@ -35,6 +35,7 @@ import javax.swing.*;
  */
 public class TransactionAmountPanelView extends AbstractWizardPanelView<PaymentsWizardModel, TransactionOverviewPanelModel> {
 
+  private JLabel amountBTCLabel;
   private JLabel amountBTCValue;
   private JLabel amountFiatLabel;
   private JLabel amountFiatValue;
@@ -75,13 +76,8 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
-    JLabel amountBTCLabel = Labels.newValueLabel("");
-
-    // Add bitcoin unit to amount label
-    LabelDecorator.applyBitcoinSymbolLabel(
-      amountBTCLabel,
-      Configurations.currentConfiguration.getBitcoin(),
-      Languages.safeText(MessageKey.LOCAL_AMOUNT) + " ");
+    // Create amount BTC label, text value is added in updateAmountCoin()
+    amountBTCLabel = Labels.newValueLabel("");
 
     amountBTCValue = Labels.newValueLabel("");
 
@@ -221,8 +217,15 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
   }
 
   private void updateAmountCoin(PaymentData paymentData, LanguageConfiguration languageConfiguration, BitcoinConfiguration bitcoinConfiguration) {
-
     Coin amountCoin = paymentData.getAmountCoin();
+
+    MessageKey messageKey = getMessageKeyForAmount(paymentData);
+
+     // Add bitcoin unit to amount label
+    LabelDecorator.applyBitcoinSymbolLabel(
+      amountBTCLabel,
+      Configurations.currentConfiguration.getBitcoin(),
+      Languages.safeText(messageKey) + " ");
 
     String[] balanceArray = Formats.formatCoinAsSymbolic(amountCoin, languageConfiguration, bitcoinConfiguration, true);
     amountBTCValue.setText(balanceArray[0] + balanceArray[1]);
@@ -236,10 +239,24 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
       amountFiatValue.setText("");
     }
 
+    MessageKey messageKey = getMessageKeyForAmount(paymentData);
+
     if (amountFiat.getCurrency().isPresent()) {
-      amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT) + " " + amountFiat.getCurrency().get().getCurrencyCode());
+      amountFiatLabel = Labels.newValueLabel(Languages.safeText(messageKey) + " " + amountFiat.getCurrency().get().getCurrencyCode());
     } else {
-      amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT));
+      amountFiatLabel = Labels.newValueLabel(Languages.safeText(messageKey));
     }
+  }
+
+  private MessageKey getMessageKeyForAmount(PaymentData paymentData) {
+    Coin amountCoin = paymentData.getAmountCoin();
+
+       if (amountCoin.compareTo(Coin.ZERO) >= 0) {
+         // Receive
+         return MessageKey.LOCAL_AMOUNT;
+       } else {
+         // Send
+         return MessageKey.LOCAL_AMOUNT_INCLUDING_FEES;
+       }
   }
 }
