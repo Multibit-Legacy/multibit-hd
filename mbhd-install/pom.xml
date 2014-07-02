@@ -51,7 +51,7 @@
 
               <!-- Ensure we have a jwrapper_utils in place -->
               <execution>
-                <id>make-native-installers</id>
+                <id>make-native-installers-1</id>
                 <phase>install</phase>
                 <goals>
                   <goal>run</goal>
@@ -76,7 +76,7 @@
 
               <!-- Only create an installer under mvn install since it is lengthy -->
               <execution>
-                <id>make-native-installers</id>
+                <id>make-native-installers-2</id>
                 <phase>install</phase>
                 <goals>
                   <goal>run</goal>
