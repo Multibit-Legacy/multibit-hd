@@ -60,6 +60,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
   private JLabel amountFiatLabel;
   private JLabel amountFiatValue;
 
+  private JLabel exchangeRateLabel;
   private JLabel exchangeRateValue;
 
   // Support QR code popover
@@ -88,7 +89,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
-      "[]10[][]", // Column constraints
+      "[]20[][]", // Column constraints
       "[]10[]10[]" // Row constraints
     ));
 
@@ -124,7 +125,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
     amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT));
     amountFiatValue = Labels.newBlankLabel();
 
-    JLabel exchangeRateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL));
+    exchangeRateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL));
     exchangeRateValue = Labels.newBlankLabel();
 
     boolean paymentOK = readPaymentRequestData();
@@ -239,6 +240,17 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
       } else {
         amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT));
       }
+
+      if (amountFiat.getCurrency().isPresent()) {
+             // Add bitcoin unit to exchange rate label
+             LabelDecorator.applyBitcoinSymbolLabel(
+                     exchangeRateLabel,
+                     Configurations.currentConfiguration.getBitcoin(),
+                     Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL) + " " + amountFiat.getCurrency().get().getCurrencyCode()
+                             + " / ");
+           } else {
+             exchangeRateLabel.setText(Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL));
+           }
 
       String exchangeRateText;
       if (Strings.isNullOrEmpty(paymentRequestData.getAmountFiat().getRate().or("")) || Strings.isNullOrEmpty(paymentRequestData.getAmountFiat().getExchangeName().or(""))) {

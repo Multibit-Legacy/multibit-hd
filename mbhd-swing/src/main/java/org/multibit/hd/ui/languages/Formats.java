@@ -162,6 +162,36 @@ public class Formats {
   }
 
   /**
+   * <p>Provide a representation for the Bitcoin / fiat exchange rate </p>
+   * <p>For example, 589.00 will become "0.589 USD / mB"</p>
+   * <p>The amount will be adjusted by the symbolic multiplier from the current configuration</p>
+   *
+   * @param exchangeRate              The exchange rate in fiat per bitcoin
+   * @param languageConfiguration The  language configuration to use as the basis for presentation
+   * @param bitcoinConfiguration  The Bitcoin configuration to use as the basis for the symbol
+   *
+   * @return The left [0] and right [1] components suitable for presentation as a balance with no symbolic decoration
+   */
+  public static String formatExchangeRate(
+    String exchangeRate,
+    String fiatSymbol,
+    LanguageConfiguration languageConfiguration,
+    BitcoinConfiguration bitcoinConfiguration
+  ) {
+
+    Preconditions.checkNotNull(exchangeRate, "'exchangeRate' must be present");
+    Preconditions.checkNotNull(fiatSymbol, "'fiatSymbol' must be present");
+    Preconditions.checkNotNull(languageConfiguration, "'languageConfiguration' must be present");
+    Preconditions.checkNotNull(bitcoinConfiguration, "'bitcoinConfiguration' must be present");
+
+    Locale currentLocale = languageConfiguration.getLocale();
+    BitcoinSymbol bitcoinSymbol = BitcoinSymbol.of(bitcoinConfiguration.getBitcoinSymbol());
+
+    // TODO Need to size exchangeRate for millis etc
+    return exchangeRate + " " + fiatSymbol + "/" + bitcoinSymbol;
+  }
+
+  /**
    * @param dfs The decimal format symbols
    *
    * @return A decimal format suitable for Bitcoin balance representation
