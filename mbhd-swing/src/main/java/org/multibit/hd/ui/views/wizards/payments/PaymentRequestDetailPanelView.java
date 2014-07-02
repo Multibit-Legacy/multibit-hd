@@ -79,7 +79,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
     // Configure the panel model
     PaymentRequestDetailPanelModel panelModel = new PaymentRequestDetailPanelModel(
-      getPanelName()
+            getPanelName()
     );
     setPanelModel(panelModel);
   }
@@ -88,9 +88,9 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
   public void initialiseContent(JPanel contentPanel) {
 
     contentPanel.setLayout(new MigLayout(
-      Panels.migXYLayout(),
-      "[]20[][]", // Column constraints
-      "[]10[]10[]" // Row constraints
+            Panels.migXYLayout(),
+            "[]20[][]", // Column constraints
+            "[]10[]10[]" // Row constraints
     ));
 
     // Apply the theme
@@ -118,9 +118,9 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
     amountBTCValue = Labels.newBlankLabel();
     // Bitcoin column
     LabelDecorator.applyBitcoinSymbolLabel(
-      amountBTCLabel,
-      Configurations.currentConfiguration.getBitcoin(),
-      Languages.safeText(MessageKey.LOCAL_AMOUNT) + " ");
+            amountBTCLabel,
+            Configurations.currentConfiguration.getBitcoin(),
+            Languages.safeText(MessageKey.LOCAL_AMOUNT) + " ");
 
     amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT));
     amountFiatValue = Labels.newBlankLabel();
@@ -242,21 +242,23 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
       }
 
       if (amountFiat.getCurrency().isPresent()) {
-             // Add bitcoin unit to exchange rate label
-             LabelDecorator.applyBitcoinSymbolLabel(
-                     exchangeRateLabel,
-                     Configurations.currentConfiguration.getBitcoin(),
-                     Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL) + " " + amountFiat.getCurrency().get().getCurrencyCode()
-                             + " / ");
-           } else {
-             exchangeRateLabel.setText(Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL));
-           }
+        // Add bitcoin unit to exchange rate label
+        LabelDecorator.applyBitcoinSymbolLabel(
+                exchangeRateLabel,
+                Configurations.currentConfiguration.getBitcoin(),
+                Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL) + " " + amountFiat.getCurrency().get().getCurrencyCode()
+                        + Formats.EXCHANGE_RATE_SEPARATOR);
+      } else {
+        exchangeRateLabel.setText(Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL));
+      }
 
       String exchangeRateText;
       if (Strings.isNullOrEmpty(paymentRequestData.getAmountFiat().getRate().or("")) || Strings.isNullOrEmpty(paymentRequestData.getAmountFiat().getExchangeName().or(""))) {
         exchangeRateText = Languages.safeText(MessageKey.NOT_AVAILABLE);
       } else {
-        exchangeRateText = paymentRequestData.getAmountFiat().getRate().or("") + " (" + paymentRequestData.getAmountFiat().getExchangeName().or("") + ")";
+        // Convert the exchange rate (which is always stored as fiat currency per bitcoin)to match the unit of bitcoin being used
+        String convertedExchangeRateText = Formats.formatExchangeRate(paymentRequestData.getAmountFiat().getRate(), languageConfiguration, bitcoinConfiguration);
+        exchangeRateText = convertedExchangeRateText + " (" + paymentRequestData.getAmountFiat().getExchangeName().or("") + ")";
       }
       exchangeRateValue.setText(exchangeRateText);
     }
@@ -285,10 +287,10 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
         // Form a Bitcoin URI from the contents
         String bitcoinUri = BitcoinURI.convertToBitcoinURI(
-          bitcoinAddress,
-          coin,
-          label,
-          null
+                bitcoinAddress,
+                coin,
+                label,
+                null
         );
 
         displayQRCodePopoverMaV.getModel().setValue(bitcoinUri);
@@ -302,30 +304,30 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
   }
 
   /**
-    * @return A new action for opening the sign message wizard with the shown address
-    */
-   private Action getShowSignMessageWizardAction() {
-     // Open the sign message wizard
-     return new AbstractAction() {
+   * @return A new action for opening the sign message wizard with the shown address
+   */
+  private Action getShowSignMessageWizardAction() {
+    // Open the sign message wizard
+    return new AbstractAction() {
 
-       @Override
-       public void actionPerformed(ActionEvent e) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
 
-         PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData();
+        PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData();
 
-         String bitcoinAddressString = paymentRequestData.getAddress();
-         try {
-           Address bitcoinAddress = new Address(BitcoinNetwork.current().get(), bitcoinAddressString);
+        String bitcoinAddressString = paymentRequestData.getAddress();
+        try {
+          Address bitcoinAddress = new Address(BitcoinNetwork.current().get(), bitcoinAddressString);
 
-           // This does not work - main controller needs to do this
-           //Panels.showLightBox(Wizards.newSignMessageWizard(bitcoinAddress).getWizardScreenHolder());
-           log.debug("Want to open sign message for the address '" + bitcoinAddressString + "'");
+          // This does not work - main controller needs to do this
+          //Panels.showLightBox(Wizards.newSignMessageWizard(bitcoinAddress).getWizardScreenHolder());
+          log.debug("Want to open sign message for the address '" + bitcoinAddressString + "'");
 
-         } catch (AddressFormatException afe) {
-           afe.printStackTrace();
-         }
-       }
+        } catch (AddressFormatException afe) {
+          afe.printStackTrace();
+        }
+      }
 
-     };
-   }
+    };
+  }
 }

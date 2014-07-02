@@ -201,8 +201,9 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
       if (Strings.isNullOrEmpty(paymentData.getAmountFiat().getRate().or("")) || Strings.isNullOrEmpty(paymentData.getAmountFiat().getExchangeName().or(""))) {
         exchangeRateText = Languages.safeText(MessageKey.NOT_AVAILABLE);
       } else {
-        //String formattedExchangeRate = Formats.formatExchangeRate(paymentData.getAmountFiat().getRate().get(), paymentData.getAmountFiat().getCurrency().get().getCurrencyCode(), languageConfiguration, bitcoinConfiguration);
-        exchangeRateText = paymentData.getAmountFiat().getRate().or("") + " (" + paymentData.getAmountFiat().getExchangeName().or("") + ")";
+         // Convert the exchange rate (which is always stored as fiat currency per bitcoin)to match the unit of bitcoin being used
+        String convertedExchangeRateText = Formats.formatExchangeRate(paymentData.getAmountFiat().getRate(), languageConfiguration, bitcoinConfiguration);
+        exchangeRateText = convertedExchangeRateText + " (" + paymentData.getAmountFiat().getExchangeName().or("") + ")";
       }
       exchangeRateValue.setText(exchangeRateText);
     }

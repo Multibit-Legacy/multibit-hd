@@ -31,6 +31,13 @@ import java.util.Locale;
 public class Formats {
 
   /**
+   * The separator character to use between currencies in an exchange rate
+   */
+  public static String EXCHANGE_RATE_SEPARATOR = " / ";
+
+  public static int EXCHANGE_RATE_DECIMAL_PLACES = 4;
+
+  /**
    * <p>Provide a split representation for the Bitcoin balance display.</p>
    * <p>For example, 12345.6789 becomes "12,345.67", "89" </p>
    * <p>The amount will be adjusted by the symbolic multiplier from the current confiuration</p>
@@ -162,33 +169,39 @@ public class Formats {
   }
 
   /**
-   * <p>Provide a representation for the Bitcoin / fiat exchange rate </p>
-   * <p>For example, 589.00 will become "0.589 USD / mB"</p>
-   * <p>The amount will be adjusted by the symbolic multiplier from the current configuration</p>
+   * <p>Convert the bitcoin exchange rate to use the unit of bitcoin being displayed</p>
+   * <p>For example, 589.00 will become "0,589" if the unit of bitcoin is mB and the decimal separator is ","</p>
+   * <p>The value passed into formatExchangeRate must be in "fiat currency per bitcoin" and NOT localised</p>
    *
-   * @param exchangeRate              The exchange rate in fiat per bitcoin
+   * @param exchangeRate          The exchange rate in fiat per bitcoin
    * @param languageConfiguration The  language configuration to use as the basis for presentation
    * @param bitcoinConfiguration  The Bitcoin configuration to use as the basis for the symbol
    *
-   * @return The left [0] and right [1] components suitable for presentation as a balance with no symbolic decoration
+   * @return The localised string representing the bitcoin exchange rate in the display bitcoin unit
    */
   public static String formatExchangeRate(
-    String exchangeRate,
-    String fiatSymbol,
+    Optional<String> exchangeRate,
     LanguageConfiguration languageConfiguration,
     BitcoinConfiguration bitcoinConfiguration
   ) {
 
-    Preconditions.checkNotNull(exchangeRate, "'exchangeRate' must be present");
-    Preconditions.checkNotNull(fiatSymbol, "'fiatSymbol' must be present");
+    Preconditions.checkNotNull(exchangeRate, "'exchangeRate' must be non null");
+    Preconditions.checkState(exchangeRate.isPresent(), "'exchangeRate' must be present");
     Preconditions.checkNotNull(languageConfiguration, "'languageConfiguration' must be present");
     Preconditions.checkNotNull(bitcoinConfiguration, "'bitcoinConfiguration' must be present");
 
-    Locale currentLocale = languageConfiguration.getLocale();
-    BitcoinSymbol bitcoinSymbol = BitcoinSymbol.of(bitcoinConfiguration.getBitcoinSymbol());
+    BigDecimal exchangeRateBigDecimal = new BigDecimal(exchangeRate.get());
 
-    // TODO Need to size exchangeRate for millis etc
-    return exchangeRate + " " + fiatSymbol + "/" + bitcoinSymbol;
+    // Correct for non unitary bitcoin display units e.g 567 USD per BTCis identical to 0.567 USD per mBTC
+    BigDecimal correctedExchangeRateBigDecimal = exchangeRateBigDecimal.divide(BitcoinSymbol.current().multiplier());
+
+    Locale currentLocale = languageConfiguration.getLocale();
+
+    DecimalFormatSymbols dfs = configureDecimalFormatSymbols(bitcoinConfiguration, currentLocale);
+    DecimalFormat localFormat = configureLocalDecimalFormat(dfs, bitcoinConfiguration, false);
+
+    localFormat.setMinimumFractionDigits(Formats.EXCHANGE_RATE_DECIMAL_PLACES);
+    return localFormat.format(correctedExchangeRateBigDecimal);
   }
 
   /**
