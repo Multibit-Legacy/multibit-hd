@@ -35,7 +35,10 @@ public class Formats {
    */
   public static String EXCHANGE_RATE_SEPARATOR = " / ";
 
-  public static int EXCHANGE_RATE_DECIMAL_PLACES = 4;
+  /**
+   * The number of decimal places for showing the exchange rate depends on the bitcoin symbol used, with this offset
+   */
+  public static int EXCHANGE_RATE_DECIMAL_PLACES_OFFSET = 2;
 
   /**
    * <p>Provide a split representation for the Bitcoin balance display.</p>
@@ -200,7 +203,7 @@ public class Formats {
     DecimalFormatSymbols dfs = configureDecimalFormatSymbols(bitcoinConfiguration, currentLocale);
     DecimalFormat localFormat = configureLocalDecimalFormat(dfs, bitcoinConfiguration, false);
 
-    localFormat.setMinimumFractionDigits(Formats.EXCHANGE_RATE_DECIMAL_PLACES);
+    localFormat.setMinimumFractionDigits(Formats.EXCHANGE_RATE_DECIMAL_PLACES_OFFSET + (int)Math.log10(BitcoinSymbol.current().multiplier().doubleValue()));
     return localFormat.format(correctedExchangeRateBigDecimal);
   }
 
