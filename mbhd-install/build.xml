@@ -9,8 +9,8 @@
   <!-- Where to find official JREs -->
   <property name="jars.location" value="http://multibit.org/"/>
 
-  <!-- All JARs have this name -->
-  <property name="jars.prefix" value="mbhd"/>
+  <!-- All JARs have this prefix (build_version is provided through Maven) -->
+  <property name="jars.prefix" value="mbhd-${build_version}"/>
 
   <property name="jars.win32" value="${jars.prefix}-win.jar"/>
   <property name="jars.win64" value="${jars.prefix}-win-64.jar"/>
@@ -36,25 +36,25 @@
     </java>
 
     <!-- Windows -->
-    <move file="build/${app.name}-windows32-offline.exe" tofile="target/${jars.prefix}-${build_version}-win32.exe"/>
-    <move file="build/${app.name}-windows64-offline.exe" tofile="target/${jars.prefix}-${build_version}-win64.exe"/>
+    <move file="build/${app.name}-windows32-offline.exe" tofile="target/${jars.prefix}-win32.exe"/>
+    <move file="build/${app.name}-windows64-offline.exe" tofile="target/${jars.prefix}-win64.exe"/>
 
     <!-- Mac -->
-    <move file="build/${app.name}-macos64-offline.dmg" tofile="target/${jars.prefix}-${build_version}-macosx.dmg"/>
+    <move file="build/${app.name}-macos64-offline.dmg" tofile="target/${jars.prefix}-macosx.dmg"/>
 
     <!-- Linux -->
     <untar src="build/${app.name}-linux32-offline.tar" dest="build/"/>
-    <move file="build/${app.name}-linux32-offline" tofile="target/${jars.prefix}-${build_version}-linux"/>
-    <chmod file="target/${jars.prefix}-${build_version}-linux" perm="755"/>
+    <move file="build/${app.name}-linux32-offline" tofile="target/${jars.prefix}-linux"/>
+    <chmod file="target/${jars.prefix}-linux" perm="755"/>
 
     <untar src="build/${app.name}-linux64-offline.tar" dest="build/"/>
-    <move file="build/${app.name}-linux64-offline" tofile="target/${jars.prefix}-${build_version}-linux64"/>
-    <chmod file="target/${jars.prefix}-${build_version}-linux64" perm="755"/>
+    <move file="build/${app.name}-linux64-offline" tofile="target/${jars.prefix}-linux64"/>
+    <chmod file="target/${jars.prefix}-linux64" perm="755"/>
 
   </target>
 
-  <!-- Retrieve official JREs from the named server -->
-  <target name="download">
+  <!-- Cause the JWrapper  -->
+  <target name="extract-jwrapper">
 
     <!-- Not required at the moment
     <get src="${jars.location}${jars.win32}" dest="jars" verbose="true"/>
