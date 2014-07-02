@@ -14,6 +14,10 @@
   <name>MultiBit HD Installer</name>
   <description>Build the installers and perform any code signing.</description>
 
+  <properties>
+    <src.main.jwrapper>src/main/java</src.main.jwrapper>
+  </properties>
+
   <profiles>
 
     <!-- Create JWrapper installers based on the full dependency JAR -->
@@ -28,9 +32,13 @@
         </property>
       </activation>
 
+      <!-- Change the source directory -->
+      <properties>
+        <src.main.jwrapper>src/main/jwrapper</src.main.jwrapper>
+      </properties>
+
       <!-- Relies on the Shade profile having executed already in package phase -->
       <build>
-
 
         <plugins>
 
@@ -40,6 +48,33 @@
             <artifactId>maven-antrun-plugin</artifactId>
             <version>${maven-antrun.version}</version>
             <executions>
+
+              <!-- Ensure we have a jwrapper_utils in place -->
+              <execution>
+                <id>make-native-installers</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <!-- Transfer classpath over to Ant -->
+                    <property name="compile_classpath" refid="maven.compile.classpath"/>
+                    <property name="runtime_classpath" refid="maven.runtime.classpath"/>
+                    <property name="test_classpath" refid="maven.test.classpath"/>
+                    <property name="plugin_classpath" refid="maven.plugin.classpath"/>
+
+                    <property name="build_version" value="${project.version}"/>
+
+                    <ant antfile="${basedir}/build.xml">
+                      <target name="release-all"/>
+                    </ant>
+                  </target>
+
+                </configuration>
+              </execution>
+
+              <!-- Only create an installer under mvn install since it is lengthy -->
               <execution>
                 <id>make-native-installers</id>
                 <phase>install</phase>
@@ -65,6 +100,21 @@
               </execution>
             </executions>
 
+            <dependencies>
+
+              <!-- JWrapper contains jwrapper_utils.jar that will need to be expanded
+                   before the build so that it appears in the correct location -->
+              <dependency>
+                <groupId>jwrapper</groupId>
+                <artifactId>jwrapper-utils</artifactId>
+                <version>00028973924</version>
+                <scope>system</scope>
+                <systemPath>${basedir}/lib/jwrapper_utils.jar</systemPath>
+              </dependency>
+
+            </dependencies>
+
+
           </plugin>
 
         </plugins>
@@ -76,6 +126,8 @@
 
   <!-- These plugins will execute on every build -->
   <build>
+
+    <sourceDirectory>${src.main.jwrapper}</sourceDirectory>
     <plugins>
 
       <!-- Shade plugin is required to make a "slim" JAR -->
@@ -129,16 +181,6 @@
       <groupId>org.multibit.hd</groupId>
       <artifactId>mbhd-swing</artifactId>
       <version>0.0.1-SNAPSHOT</version>
-    </dependency>
-
-    <!-- JWrapper Utils is bundled within JWrapper which may need to be expanded
-         so that it appears in the correct location -->
-    <dependency>
-      <groupId>jwrapper</groupId>
-      <artifactId>jwrapper-utils</artifactId>
-      <version>00028973924</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/lib/jwrapper_utils.jar</systemPath>
     </dependency>
 
   </dependencies>
