@@ -10,6 +10,13 @@
     <MainClass>org.multibit.hd.installer.MultiBitHDLauncher</MainClass>
   </App>
 
+  <App>
+    <Name>JWrapperPostInstallApp</Name>
+    <LogoPNG>src/main/resources/logo.png</LogoPNG>
+    <MainClass>org.multibit.hd.installer.MultiBitHDPostInstall</MainClass>
+    <UserAccessible>false</UserAccessible>
+  </App>
+
   <!-- The support installer languages -->
   <SupportedLanguages>en</SupportedLanguages>
 
