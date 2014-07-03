@@ -237,18 +237,14 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
       if (amountFiat.getCurrency().isPresent()) {
         amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT) + " " + amountFiat.getCurrency().get().getCurrencyCode());
+        // Add Bitcoin unit to exchange rate label
+        LabelDecorator.applyBitcoinSymbolLabel(
+          exchangeRateLabel,
+          Configurations.currentConfiguration.getBitcoin(),
+          Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL) + " " + amountFiat.getCurrency().get().getCurrencyCode()
+            + Formats.EXCHANGE_RATE_SEPARATOR);
       } else {
         amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT));
-      }
-
-      if (amountFiat.getCurrency().isPresent()) {
-        // Add bitcoin unit to exchange rate label
-        LabelDecorator.applyBitcoinSymbolLabel(
-                exchangeRateLabel,
-                Configurations.currentConfiguration.getBitcoin(),
-                Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL) + " " + amountFiat.getCurrency().get().getCurrencyCode()
-                        + Formats.EXCHANGE_RATE_SEPARATOR);
-      } else {
         exchangeRateLabel.setText(Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL));
       }
 
