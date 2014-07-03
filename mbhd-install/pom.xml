@@ -78,7 +78,26 @@
           </plugin>
 
         </plugins>
+
       </build>
+
+      <dependencies>
+        <!-- JWrapper contains jwrapper_utils.jar that will need to be expanded
+             before the build so that it appears in the correct location
+
+             If you don't have jwrapper_utils.jar then this will show as an error
+             in the IDE, but Maven will still build the shaded JAR and ignore
+             the JWrapper installer
+
+         -->
+        <dependency>
+          <groupId>jwrapper</groupId>
+          <artifactId>jwrapper-utils</artifactId>
+          <version>00028973924</version>
+          <scope>system</scope>
+          <systemPath>${basedir}/lib/jwrapper_utils.jar</systemPath>
+        </dependency>
+      </dependencies>
 
     </profile>
 
@@ -143,16 +162,6 @@
       <artifactId>mbhd-swing</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
-
-      <!-- JWrapper contains jwrapper_utils.jar that will need to be expanded
-           before the build so that it appears in the correct location -->
-      <dependency>
-        <groupId>jwrapper</groupId>
-        <artifactId>jwrapper-utils</artifactId>
-        <version>00028973924</version>
-        <scope>system</scope>
-        <systemPath>${basedir}/lib/jwrapper_utils.jar</systemPath>
-      </dependency>
 
   </dependencies>
 
