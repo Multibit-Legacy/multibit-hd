@@ -47,6 +47,15 @@
 
   </target>
 
+  <!-- Overwrite the standard logo with the trademark one if present -->
+  <target name="trademark-logo">
+
+    <echo message="Use trademark logo if present" />
+    <copy file="target/classes/trademark-logo.png" tofile="target/classes/logo.png" failonerror="false" overwrite="true" />
+    <delete file="target/classes/trademark-logo.png" failonerror="false" />
+
+  </target>
+
   <!-- Compile the code that depends on JWrapper utilities -->
   <target name="compile-launcher" depends="jwrapper-exists" if="jwrapper.exists">
 
@@ -74,10 +83,7 @@
        Checks that JWrapper exists to reduce chance of error -->
   <target name="release-all" depends="jwrapper-exists" if="jwrapper.exists">
 
-    <echo message="Use trademark logo if present" />
-    <copy file="target/classes/trademark-logo.png" tofile="target/classes/logo.png" failonerror="false" force="true" />
-
-    <echo message="Building native installers (this may take 20 mins on first run)" />
+    <echo message="Building native installers (this may take up to 30 mins on first run)" />
 
     <!-- Begin the install process -->
     <java jar="${jwrapper.location}" failonerror="true" fork="true">

@@ -43,7 +43,7 @@
               <!-- Ensure the presence of the correct JWrapper JAR -->
               <execution>
                 <id>get-jwrapper</id>
-                <phase>process-resources</phase>
+                <phase>generate-resources</phase>
                 <goals>
                   <goal>run</goal>
                 </goals>
@@ -59,6 +59,24 @@
 
                     <ant antfile="${basedir}/build.xml">
                       <target name="get-jwrapper"/>
+                    </ant>
+                  </target>
+
+                </configuration>
+              </execution>
+
+              <!-- Ensure the presence of the correct logo (standard or trademark) -->
+              <execution>
+                <id>trademark-logo</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+
+                    <ant antfile="${basedir}/build.xml">
+                      <target name="trademark-logo"/>
                     </ant>
                   </target>
 
@@ -107,9 +125,9 @@
 
                     <property name="build_version" value="${project.version}"/>
 
-                    <ant antfile="${basedir}/build.xml">
-                      <target name="release-all"/>
-                    </ant>
+                    <!--<ant antfile="${basedir}/build.xml">-->
+                      <!--<target name="release-all"/>-->
+                    <!--</ant>-->
                   </target>
 
                 </configuration>
