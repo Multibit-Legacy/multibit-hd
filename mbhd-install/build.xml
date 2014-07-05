@@ -74,6 +74,9 @@
        Checks that JWrapper exists to reduce chance of error -->
   <target name="release-all" depends="jwrapper-exists" if="jwrapper.exists">
 
+    <echo message="Use trademark logo if present" />
+    <copy file="target/classes/trademark-logo.png" tofile="target/classes/logo.png" failonerror="false" force="true" />
+
     <echo message="Building native installers (this may take 20 mins on first run)" />
 
     <!-- Begin the install process -->

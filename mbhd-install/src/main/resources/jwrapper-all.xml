@@ -6,13 +6,13 @@
   <!-- The specification for one app within the bundle -->
   <App>
     <Name>MultiBit HD</Name>
-    <LogoPNG>src/main/resources/logo.png</LogoPNG>
+    <LogoPNG>target/classes/logo.png</LogoPNG>
     <MainClass>org.multibit.hd.installer.MultiBitHDLauncher</MainClass>
   </App>
 
   <App>
     <Name>JWrapperPostInstallApp</Name>
-    <LogoPNG>src/main/resources/logo.png</LogoPNG>
+    <LogoPNG>target/classes/logo.png</LogoPNG>
     <MainClass>org.multibit.hd.installer.MultiBitHDPostInstall</MainClass>
     <UserAccessible>false</UserAccessible>
   </App>
@@ -23,9 +23,9 @@
   <!-- App is a per-user app, it won't elevate and install for all users and the shared config folder will be per-user -->
   <InstallType>CurrentUser</InstallType>
 
-  <!-- Splash and Logo -->
-  <SplashPNG>src/main/resources/logo.png</SplashPNG>
-  <BundleLogoPNG>src/main/resources/logo.png</BundleLogoPNG>
+  <!-- Splash and Logo (use target/classes to allow for alternative images) -->
+  <SplashPNG>target/classes/logo.png</SplashPNG>
+  <BundleLogoPNG>target/classes/logo.png</BundleLogoPNG>
 
   <!-- JVM options (e.g. extra memory) -->
   <JvmOptions>
