@@ -48,6 +48,29 @@
 
   </target>
 
+  <!-- Compile the code that depends on JWrapper utilities -->
+  <target name="compile-launcher" depends="jwrapper-exists" if="jwrapper.exists">
+
+    <echo message="Compiling launcher code" />
+
+    <path id="classpath">
+      <!-- Add the JWrapper utilities -->
+      <fileset dir="${basedir}/lib">
+        <include name="jwrapper_utils.jar"/>
+      </fileset>
+
+      <!-- Maven provides the rest of the classpath -->
+      <pathelement path="${compile_classpath}"/>
+    </path>
+
+    <!-- Compile the JWrapper specific code -->
+    <javac destdir="${basedir}/target/classes">
+      <src path="${basedir}/src/main/jwrapper"/>
+      <classpath refid="classpath"/>
+    </javac>
+
+  </target>
+
   <!-- Default target to build all native installers in one go
        Checks that JWrapper exists to reduce chance of error -->
   <target name="release-all" depends="jwrapper-exists" if="jwrapper.exists">
