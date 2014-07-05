@@ -15,8 +15,7 @@
   <property name="jars.location" value="https://multibit.org/"/>
 
   <!-- All JARs have this prefix (build_version is provided through Maven) -->
-  <!--<property name="jars.prefix" value="mbhd-${build_version}"/>-->
-  <property name="jars.prefix" value="mbhd-test"/>
+  <property name="jars.prefix" value="mbhd-${build_version}"/>
 
   <!-- Provide the names for the application JARs to be wrapped -->
   <property name="jars.win32" value="${jars.prefix}-win.jar"/>
