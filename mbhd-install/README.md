@@ -1,14 +1,32 @@
-## How to build the installer
+## How to build the installers
 
-JWrapper requires the use of a large JAR and a supporting package of JREs. Clearly these should not be held under
-version control and so it is necessary to manually copy the following when making an installer:
+We use JWrapper to handle the process of creating native installers that wrap the MultiBit HD shaded JAR.
 
-* `mbhd-install/JRE-1.7` should contain the supported JREs by unzipping the provided JRE download from JWrapper
-* `jwrapper-000version.jar` should be copied into `mbhd-install`
+JWrapper requires the use of a large JAR (>15Mb) and a supporting package of JREs (>150Mb). Clearly these should not be 
+held under version control and so it is necessary to do some preparation before making an installer:
+
+### Semi-automatic preparation
+
+The Ant script will automatically download and extract the correct JWrapper JAR for the version of MultiBit HD but it
+will not pull down the JRE-1.7 pack since the final goal is to have the `multibit.org` site providing the latest tested
+JREs for each operating system.
+
+### Required files
+
+The following files are essential
+
+* `jwrapper-000version.jar` should be copied into `mbhd-install` (automatic)
+* `mbhd-install/JRE-1.7` should contain the supported JREs by unzipping the provided JRE download from JWrapper (manual)
 
 All the above, and the derivative files that are produced, are git ignored.
 
 Later these JREs will be automatically downloaded over HTTPS from the main site.
+
+During the build process the JWrapper JAR will be extracted into a substantial collection of supporting structures that
+are git ignored. Among these is `lib/jwrapper_utils.jar` that provides the native code to manage the Bitcoin URI protocol 
+handler so that browsers can hand over to MultiBit HD.
+
+### The build command
 
 Once the JREs are in place, the build command is
 
@@ -19,14 +37,7 @@ mvn -q -Dinstaller=true clean install
 The first time this process is run it will take ages (typically 20mins) as `pack200` compresses large artifacts.
 Subsequent builds are a lot faster.
 
-The final installers are available in `mbhd-install/target` for subsequent upload to the main site.
-
-### Notes on the protocol handler code 
-
-In order to respond to Bitcoin URIs being clicked in external applications such as browsers a protocol handler
-has to be registered. The code to support this is within JWrapper in the `jwrapper_utils.jar` which is not under
-version control due to its size (1.5+Mb). Consequently the Maven dependency references a JAR within the project
-itself which gives rise to a Maven warning that is suppressed with the `-q` option.
+The final installers are available in `mbhd-install/target` for upload to the `multibit.org` site.
  
 ## Notes on various installers
 

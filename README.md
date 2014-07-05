@@ -41,6 +41,8 @@ Ideally, developers should clone [Bitcoinj](https://code.google.com/p/bitcoinj/)
 $ mvn clean install
 ```
 
+When building ensure that no application is listening on port 8330.
+
 #### Start the application (from an IDE)
 
 To run the application within an IDE, simply execute `MultiBitHD.main()` in the `mbhd-swing` module. No command line parameters are needed, although a Bitcoin URI is accepted.

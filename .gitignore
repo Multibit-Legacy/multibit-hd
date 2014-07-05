@@ -32,6 +32,8 @@ mbhd-install/gu_version
 mbhd-install/LastExtractedJWrapperVersion
 mbhd-install/JWrapperLaunchTemp
 mbhd-install/build
+mbhd-install/build
+mbhd-install/src/main/resources/final-logo.png
 
 # Shade plugin
 mbhd-install/dependency-reduced-pom.xml
