@@ -3,6 +3,7 @@ package org.multibit.hd.installer;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.bitcoin.uri.BitcoinURIParseException;
 import com.google.common.base.Optional;
+import jwrapper.hidden.events.JWOSXEventListener;
 import jwrapper.jwutils.JWMacOS;
 import jwrapper.jwutils.JWWindowsOS;
 import org.multibit.hd.ui.MultiBitHD;
@@ -26,45 +27,89 @@ public class MultiBitHDLauncher {
 
   public static void main(String[] args) throws Exception {
 
-    System.out.println("Launching MultiBit HD");
+    // Post installer will have handled the registration process for protocol handlers
+    // so that this launcher will be called if the application is not already running
 
     // Check for any URLs when launching
-    Optional<String> url = Optional.absent();
+    Optional<String> url;
+
+    // Check for any URLs on the command line (could have launched from a browser link request)
     if (OS.isMacOS()) {
+
+      //JWMacOS.registerURLSchemeForVirtualApp("bitcoin", JWSystem.getMyAppName());
       url = Optional.fromNullable(JWMacOS.getRequestedURL());
-    }
-    if (OS.isWindows()) {
+
+    } else if (OS.isWindows()) {
+
+      //JWWindowsOS.registerURLSchemeForVirtualApp("bitcoin",JWSystem.getMyAppName());
       url = Optional.fromNullable(JWWindowsOS.getRequestedURL());
+    } else {
+
+      // Linux may put the URL on the arguments
+      url = Optional.fromNullable(args == null || args.length == 0 ? null : args[0]);
     }
 
     // Start the app if not done so already
     if (app == null) {
-      MultiBitHD.main(null);
+
+      if (url.isPresent()) {
+
+        // Launch with the Bitcoin URI
+        // If we are in a different JVM to an already running instance then this instance will
+        // quit after performing a handover of the URI
+        MultiBitHD.main(new String[]{url.get()});
+
+      } else {
+
+        // Launch without a Bitcoin URI (normal)
+        MultiBitHD.main(null);
+      }
+
+      // This must be a one-off at startup
+      if (OS.isMacOS()) {
+        // Add an OS X event listener, which is called every time a getURL request is received by JWrapper
+        JWMacOS.getMacOSInstance().setOSXEventListener(new JWOSXEventListener() {
+
+          public void openURL(final String url) {
+
+            showBitcoinUriAlert(url);
+
+          }
+
+        });
+      }
+
+    } else {
+
+      // App is already running within this JVM
+
+      if (url.isPresent()) {
+
+        // A second launch has been requested with a URL, so just display the alert directly
+        showBitcoinUriAlert(url.get());
+      }
+
+    }
+  }
+
+  private static void showBitcoinUriAlert(String url) {
+
+    // Validate the data
+    final BitcoinURI bitcoinURI;
+    try {
+      bitcoinURI = new BitcoinURI(url);
+    } catch (BitcoinURIParseException e) {
+      // Quietly ignore
+      return;
     }
 
-    // Trigger an alert if a Bitcoin URI is present
-    if (url.isPresent()) {
+    Optional<AlertModel> alertModel = Models.newBitcoinURIAlertModel(bitcoinURI);
 
-      System.out.println("Seen request url: " + url.orNull());
+    // If there is sufficient information in the Bitcoin URI display it to the user as an alert
+    if (alertModel.isPresent()) {
 
-      // Validate the data
-      final BitcoinURI bitcoinURI;
-      try {
-        bitcoinURI = new BitcoinURI(url.get());
-      } catch (BitcoinURIParseException e) {
-        // Quietly ignore
-        return;
-      }
-
-      Optional<AlertModel> alertModel = Models.newBitcoinURIAlertModel(bitcoinURI);
-
-      // If there is sufficient information in the Bitcoin URI display it to the user as an alert
-      if (alertModel.isPresent()) {
-
-        // Add the alert
-        ControllerEvents.fireAddAlertEvent(alertModel.get());
-      }
-
+      // Add the alert
+      ControllerEvents.fireAddAlertEvent(alertModel.get());
     }
   }
 
