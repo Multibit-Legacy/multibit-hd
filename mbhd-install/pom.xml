@@ -125,9 +125,9 @@
 
                     <property name="build_version" value="${project.version}"/>
 
-                    <!--<ant antfile="${basedir}/build.xml">-->
-                      <!--<target name="release-all"/>-->
-                    <!--</ant>-->
+                    <ant antfile="${basedir}/build.xml">
+                      <target name="release-all"/>
+                    </ant>
                   </target>
 
                 </configuration>
