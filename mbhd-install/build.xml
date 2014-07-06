@@ -6,31 +6,87 @@
   <!-- What the user will see -->
   <property name="app.name" value="MultiBit HD"/>
 
-  <!-- Where to find official JREs -->
-  <property name="jars.location" value="http://multibit.org/"/>
+  <!-- The JWrapper version to use -->
+  <property name="jwrapper.version" value="00029103852"/>
+  <property name="jwrapper.sha256" value=""/>
+  <property name="jwrapper.location" value="jwrapper-${jwrapper.version}.jar"/>
+
+  <!-- Where to find official updates -->
+  <property name="jars.location" value="https://multibit.org/"/>
 
   <!-- All JARs have this prefix (build_version is provided through Maven) -->
   <property name="jars.prefix" value="mbhd-${build_version}"/>
 
+  <!-- Provide the names for the application JARs to be wrapped -->
   <property name="jars.win32" value="${jars.prefix}-win.jar"/>
   <property name="jars.win64" value="${jars.prefix}-win-64.jar"/>
   <property name="jars.macosx" value="${jars.prefix}-osx.jar"/>
   <property name="jars.linux32" value="${jars.prefix}-linux.jar"/>
   <property name="jars.linux64" value="${jars.prefix}-linux-64.jar"/>
 
-  <!-- The JWrapper for building the native installers -->
-  <path id="jwrapper.jar.path">
-    <fileset dir=".">
-      <include name="jwrapper-00*.jar"/>
-    </fileset>
-  </path>
-  <property name="JWrapperJAR" refid="jwrapper.jar.path"/>
+  <!-- Detect if JWrapper main JAR exists (if not we should download it) -->
+  <target name="jwrapper-exists">
 
-  <!-- Default target to build all native installers in one go -->
-  <target name="release-all">
+    <available file="${jwrapper.location}" property="jwrapper.exists"/>
+
+  </target>
+
+  <!-- Download the required copy of JWrapper -->
+  <target name="get-jwrapper" depends="jwrapper-exists" unless="jwrapper.exists">
+
+    <echo message="Downloading '${jwrapper.location}' (this may take some time > 15Mb)" />
+
+    <!-- GET the required version of JWrapper -->
+    <get src="https://simple-help.com/media/static/jwrapper/jwrapper-${jwrapper.version}.jar" dest="${jwrapper.location}" verbose="true"/>
+
+    <!-- Extract the JAR contents -->
+    <java jar="${jwrapper.location}" failonerror="true" fork="true">
+      <jvmarg value="-Xmx512m"/>
+      <arg value="extractonly"/>
+    </java>
+
+  </target>
+
+  <!-- Overwrite the standard logo with the trademark one if present -->
+  <target name="trademark-logo">
+
+    <echo message="Use trademark logo if present" />
+    <copy file="target/classes/trademark-logo.png" tofile="target/classes/logo.png" failonerror="false" overwrite="true" />
+    <delete file="target/classes/trademark-logo.png" failonerror="false" />
+
+  </target>
+
+  <!-- Compile the code that depends on JWrapper utilities -->
+  <target name="compile-launcher" depends="jwrapper-exists" if="jwrapper.exists">
+
+    <echo message="Compiling launcher code" />
+
+    <path id="classpath">
+      <!-- Add the JWrapper utilities -->
+      <fileset dir="${basedir}/lib">
+        <include name="jwrapper_utils.jar"/>
+      </fileset>
+
+      <!-- Maven provides the rest of the classpath -->
+      <pathelement path="${compile_classpath}"/>
+    </path>
+
+    <!-- Compile the JWrapper specific code -->
+    <javac destdir="${basedir}/target/classes">
+      <src path="${basedir}/src/main/jwrapper"/>
+      <classpath refid="classpath"/>
+    </javac>
+
+  </target>
+
+  <!-- Default target to build all native installers in one go
+       Checks that JWrapper exists to reduce chance of error -->
+  <target name="release-all" depends="jwrapper-exists" if="jwrapper.exists">
+
+    <echo message="Building native installers (this may take up to 30 mins on first run)" />
 
     <!-- Begin the install process -->
-    <java jar="${JWrapperJAR}" failonerror="true" fork="true">
+    <java jar="${jwrapper.location}" failonerror="true" fork="true">
       <jvmarg value="-Xmx512m"/>
       <arg value="src/main/resources/jwrapper-all.xml"/>
     </java>
@@ -50,25 +106,6 @@
     <untar src="build/${app.name}-linux64-offline.tar" dest="build/"/>
     <move file="build/${app.name}-linux64-offline" tofile="target/${jars.prefix}-linux64"/>
     <chmod file="target/${jars.prefix}-linux64" perm="755"/>
-
-  </target>
-
-  <!-- Cause the JWrapper  -->
-  <target name="extract-jwrapper">
-
-    <!-- Not required at the moment
-    <get src="${jars.location}${jars.win32}" dest="jars" verbose="true"/>
-    <get src="${jars.location}${jars.win64}" dest="jars" verbose="true"/>
-    <get src="${jars.location}${jars.macosx}" dest="jars" verbose="true"/>
-    <get src="${jars.location}${jars.linux32}" dest="jars" verbose="true"/>
-    <get src="${jars.location}${jars.linux64}" dest="jars" verbose="true"/>
-
-    <move file="jars/${jars.win32}" tofile="jars/win32.jar"/>
-    <move file="jars/${jars.win64}" tofile="jars/win64.jar"/>
-    <move file="jars/${jars.macosx}" tofile="jars/macosx.jar"/>
-    <move file="jars/${jars.linux32}" tofile="jars/linux32.jar"/>
-    <move file="jars/${jars.linux64}" tofile="jars/linux64.jar"/>
-    -->
 
   </target>
 

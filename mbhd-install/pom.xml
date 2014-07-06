@@ -14,17 +14,13 @@
   <name>MultiBit HD Installer</name>
   <description>Build the installers and perform any code signing.</description>
 
-  <properties>
-    <src.main.jwrapper>src/main/java</src.main.jwrapper>
-  </properties>
-
   <profiles>
 
     <!-- Create JWrapper installers based on the full dependency JAR -->
     <profile>
 
       <!-- To activate this, build as 'mvn -Dinstaller=true clean package' -->
-      <id>installer</id>
+      <id>execute-jwrapper</id>
       <activation>
         <property>
           <name>installer</name>
@@ -32,26 +28,89 @@
         </property>
       </activation>
 
-      <!-- Change the source directory -->
-      <properties>
-        <src.main.jwrapper>src/main/jwrapper</src.main.jwrapper>
-      </properties>
-
-      <!-- Relies on the Shade profile having executed already in package phase -->
       <build>
 
         <plugins>
 
-          <!-- AntRun plugin for JWrapper -->
+          <!-- Ensure MultiBit HD launcher is compiled using JWrapper utilities -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
             <version>${maven-antrun.version}</version>
+
             <executions>
 
-              <!-- Only create an installer under mvn install since it is lengthy -->
+              <!-- Ensure the presence of the correct JWrapper JAR -->
               <execution>
-                <id>make-native-installers</id>
+                <id>get-jwrapper</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <!-- Transfer classpath over to Ant -->
+                    <property name="compile_classpath" refid="maven.compile.classpath"/>
+                    <property name="runtime_classpath" refid="maven.runtime.classpath"/>
+                    <property name="test_classpath" refid="maven.test.classpath"/>
+                    <property name="plugin_classpath" refid="maven.plugin.classpath"/>
+
+                    <property name="build_version" value="${project.version}"/>
+
+                    <ant antfile="${basedir}/build.xml">
+                      <target name="get-jwrapper"/>
+                    </ant>
+                  </target>
+
+                </configuration>
+              </execution>
+
+              <!-- Ensure the presence of the correct logo (standard or trademark) -->
+              <execution>
+                <id>trademark-logo</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+
+                    <ant antfile="${basedir}/build.xml">
+                      <target name="trademark-logo"/>
+                    </ant>
+                  </target>
+
+                </configuration>
+              </execution>
+
+              <!-- Compile the installer specific code (launcher etc) -->
+              <execution>
+                <id>compile-launcher</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <!-- Transfer classpath over to Ant -->
+                    <property name="compile_classpath" refid="maven.compile.classpath"/>
+                    <property name="runtime_classpath" refid="maven.runtime.classpath"/>
+                    <property name="test_classpath" refid="maven.test.classpath"/>
+                    <property name="plugin_classpath" refid="maven.plugin.classpath"/>
+
+                    <property name="build_version" value="${project.version}"/>
+
+                    <ant antfile="${basedir}/build.xml">
+                      <target name="compile-launcher"/>
+                    </ant>
+                  </target>
+
+                </configuration>
+              </execution>
+
+              <!-- Create the installer by wrapping the shaded executable JAR -->
+              <execution>
+                <id>release-all</id>
                 <phase>install</phase>
                 <goals>
                   <goal>run</goal>
@@ -73,7 +132,19 @@
 
                 </configuration>
               </execution>
+
             </executions>
+
+            <!-- Ensure Ant has access to tools.jar (groupId, artifactId and version are notional) -->
+            <dependencies>
+              <dependency>
+                <groupId>com.sun</groupId>
+                <artifactId>tools</artifactId>
+                <version>1.7</version>
+                <scope>system</scope>
+                <systemPath>${java.home}/../lib/tools.jar</systemPath>
+              </dependency>
+            </dependencies>
 
           </plugin>
 
@@ -81,32 +152,12 @@
 
       </build>
 
-      <dependencies>
-        <!-- JWrapper contains jwrapper_utils.jar that will need to be expanded
-             before the build so that it appears in the correct location
-
-             If you don't have jwrapper_utils.jar then this will show as an error
-             in the IDE, but Maven will still build the shaded JAR and ignore
-             the JWrapper installer
-
-         -->
-        <dependency>
-          <groupId>jwrapper</groupId>
-          <artifactId>jwrapper-utils</artifactId>
-          <version>00028973924</version>
-          <scope>system</scope>
-          <systemPath>${basedir}/lib/jwrapper_utils.jar</systemPath>
-        </dependency>
-      </dependencies>
-
     </profile>
 
   </profiles>
 
   <!-- These plugins will execute on every build -->
   <build>
-
-    <sourceDirectory>${src.main.jwrapper}</sourceDirectory>
 
     <plugins>
 
@@ -162,6 +213,23 @@
       <artifactId>mbhd-swing</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
+
+    <!-- JWrapper contains jwrapper_utils.jar that will need to be expanded
+        before the build so that it appears in the correct location
+
+        Unless you are actively developing the installer code this section
+        should remain commented out
+
+        Marking src/main/jwrapper as a source root will ensure the IDE
+        is able to resolve JWrapper utility classes
+    <dependency>
+      <groupId>jwrapper</groupId>
+      <artifactId>jwrapper-utils</artifactId>
+      <version>00028973924</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/jwrapper_utils.jar</systemPath>
+    </dependency>
+        -->
 
   </dependencies>
 
