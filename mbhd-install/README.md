@@ -27,6 +27,8 @@ In order to respond to Bitcoin URIs being clicked in external applications such 
 has to be registered. The code to support this is within JWrapper in the `jwrapper_utils.jar` which is not under
 version control due to its size (1.5+Mb). Consequently the Maven dependency references a JAR within the project
 itself which gives rise to a Maven warning that is suppressed with the `-q` option.
+
+(Jim) I had to manually unzip the wrapper-000version.jar and copy the lib/jwrapper_utils.jar to multibit-hd/mbhd-install/lib to get the build to run successfully.
  
 ## Notes on various installers
 
