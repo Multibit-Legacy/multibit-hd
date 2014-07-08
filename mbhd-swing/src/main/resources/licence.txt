@@ -6,8 +6,8 @@ the "Software".
 2) The installers for the Software, signed by one or more of 
 the MultiBit developers, are denoted the 'Installers'.
 
-3) As a precondition to using any of the Installers you agree 
-to pay a fee to the MultiBit developers of 1000 satoshi 
+3) If you install the Software using any of the Installers 
+you agree to pay a fee to the MultiBit developers of 1000 satoshi 
 (0.00001 bitcoin) for each Bitcoin transaction you send 
 using the Software.
 
