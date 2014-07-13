@@ -198,6 +198,7 @@ public class WalletService {
 
   /**
    * Subset the supplied payments and sort by date, descending
+   * (Sorting by amount coin is also done to make the order unique, within same date. This is to stop the order 'flicking' on sync)
    *
    * @param paymentType if PaymentType.SENDING return all sending payments for today
    *                    if PaymentType.RECEIVING return all requesting and receiving payments for today
@@ -234,13 +235,7 @@ public class WalletService {
 
     }
 
-    Collections.sort(subsetPaymentDataList, new Comparator<PaymentData>() {
-
-      @Override
-      public int compare(PaymentData o1, PaymentData o2) {
-        return -o1.getDate().compareTo(o2.getDate()); // note inverse sort
-      }
-    });
+    Collections.sort(subsetPaymentDataList, new PaymentComparator());
 
     return subsetPaymentDataList;
   }
@@ -285,6 +280,8 @@ public class WalletService {
         filteredPayments.add(paymentData);
       }
     }
+
+    Collections.sort(filteredPayments, new PaymentComparator());
 
     return filteredPayments;
   }
@@ -992,6 +989,18 @@ public class WalletService {
     } catch (PaymentsSaveException pse) {
       // Cannot do much as shutting down
       log.error("Failed to write payments.", pse);
+    }
+  }
+
+  class PaymentComparator implements Comparator<PaymentData> {
+    @Override
+    public int compare(PaymentData o1, PaymentData o2) {
+      int dateSort = -o1.getDate().compareTo(o2.getDate()); // note inverse sort
+      if (dateSort != 0) {
+        return dateSort;
+      } else {
+        return o1.getAmountCoin().compareTo(o2.getAmountCoin());
+      }
     }
   }
 }
