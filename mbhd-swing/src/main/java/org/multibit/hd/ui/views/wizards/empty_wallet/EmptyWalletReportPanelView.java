@@ -105,11 +105,12 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
     transactionConfirmationStatus = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
     AccessibilityDecorator.apply(transactionConfirmationStatus, MessageKey.TRANSACTION_CONFIRMATION_STATUS);
 
-    contentPanel.add(transactionConstructionStatusSummary, "grow,push,wrap");
-    contentPanel.add(transactionConstructionStatusDetail, "grow,push,wrap");
-    contentPanel.add(transactionBroadcastStatusSummary, "grow,push,wrap");
-    contentPanel.add(transactionBroadcastStatusDetail, "grow,push,wrap");
-    contentPanel.add(transactionConfirmationStatus, "grow,push,wrap");
+    // Ensure the labels wrap if the error messages are too wide
+    contentPanel.add(transactionConstructionStatusSummary, "grow,push," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
+    contentPanel.add(transactionConstructionStatusDetail, "grow,push," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
+    contentPanel.add(transactionBroadcastStatusSummary, "grow,push," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
+    contentPanel.add(transactionBroadcastStatusDetail, "grow,push," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
+    contentPanel.add(transactionConfirmationStatus, "grow,push," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
     initialised = true;
   }
