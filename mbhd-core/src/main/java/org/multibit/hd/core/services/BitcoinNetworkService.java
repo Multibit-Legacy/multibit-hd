@@ -244,7 +244,7 @@ public class BitcoinNetworkService extends AbstractService {
    * @param sendRequestSummary The information required to send bitcoin
    */
   public void send(final SendRequestSummary sendRequestSummary) {
-    getExecutorService().submit(new Runnable() {
+     getExecutorService().submit(new Runnable() {
       @Override
       public void run() {
 

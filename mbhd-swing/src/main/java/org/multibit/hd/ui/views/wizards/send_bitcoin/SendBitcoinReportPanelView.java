@@ -173,6 +173,8 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
       getPanelModel().get().setTransactionId(transactionCreationEvent.getTransactionId());
 
       transactionConstructionStatusSummary.setText(Languages.safeText(CoreMessageKey.TRANSACTION_CREATED_OK));
+      // for testing
+      // transactionConstructionStatusDetail.setText("This is a long text, really long, really really long. It signifies the hunting of the snark, as related to the endlessly dark and gloomy apparently bottomless cavern in the South Mines of Mordor");
       transactionConstructionStatusDetail.setText("");
       Labels.decorateStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.TRUE));
     } else {
