@@ -75,7 +75,7 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
 
     // Configure the panel model
     TransactionOverviewPanelModel panelModel = new TransactionOverviewPanelModel(
-      getPanelName()
+            getPanelName()
     );
     setPanelModel(panelModel);
   }
@@ -84,9 +84,9 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
   public void initialiseContent(JPanel contentPanel) {
 
     contentPanel.setLayout(new MigLayout(
-      Panels.migXYLayout(),
-      "[]10[][][]", // Column constraints
-      "[]10[]10[]10[]" // Row constraints
+            Panels.migXYLayout(),
+            "[]10[][][]", // Column constraints
+            "[]10[]10[]10[]" // Row constraints
     ));
 
     // Apply the theme
@@ -115,7 +115,7 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
 
     // Recipient is at the top for visual consistency with other screens
     // Answers first question "Who was this for?"
-    contentPanel.add(recipientLabel,"growx");
+    contentPanel.add(recipientLabel, "growx");
     contentPanel.add(recipientValue, "growx,span 2");
     contentPanel.add(recipientImageLabel, "shrink,align center,wrap");
 
@@ -184,7 +184,13 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
 
           Contact matchedContact = matchContact(addressList);
           if (matchedContact == null) {
-            recipientValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
+            if (addressList.size() == 1) {
+              // We can unambiguously set a recipient address (e.g. empty wallet tx)
+              recipientValue.setText(addressList.iterator().next());
+            } else {
+              // Do not know or multiple addresses
+              recipientValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
+            }
           }
         }
       }
