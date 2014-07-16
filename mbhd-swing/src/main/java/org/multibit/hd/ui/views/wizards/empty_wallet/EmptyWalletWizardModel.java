@@ -202,8 +202,9 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
     if (exchangeRateChangedEvent.isPresent()) {
       fiatPayment.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
-      // A send is denoted with a negative fiat amount
+       // A send is denoted with a negative fiat amount
       fiatPayment.setAmount(Optional.of(Coins.toLocalAmount(getCoinAmount(), exchangeRateChangedEvent.get().getRate().negate())));
+      fiatPayment.setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
     } else {
       fiatPayment.setRate(Optional.<String>absent());
       fiatPayment.setAmount(Optional.<BigDecimal>absent());

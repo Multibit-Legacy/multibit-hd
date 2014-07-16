@@ -567,6 +567,7 @@ public class WalletService {
     TransactionInfo newTransactionInfo = new TransactionInfo();
     newTransactionInfo.setHash(transactionHashAsString);
     newTransactionInfo.setAmountFiat(amountFiat);
+
     transactionInfoMap.put(transactionHashAsString, newTransactionInfo);
     return amountFiat;
   }
