@@ -149,7 +149,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   /**
    * <p>Verify the following:</p>
    * <ul>
-   * <li>Start with fresh application directory</li>
+   * <li>Start with standard application directory</li>
    * <li>Show the password unlock screen and restore from there</li>
    * </ul>
    */
@@ -161,6 +161,28 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
     // Restore a password through the welcome wizard
     WelcomeWizardRestorePasswordRequirements.verifyUsing(window);
+
+    // Unlock the wallet
+    QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
+
+  }
+
+  /**
+   * <p>Verify the following:</p>
+   * <ul>
+   * <li>Start with standard application directory</li>
+   * <li>Show the password unlock screen and click restore</li>
+   * <li>Back out of the restore by selecting an existing wallet</li>
+   * </ul>
+   */
+  @Test
+  public void verifyUseExistingWallet() throws Exception {
+
+    // Start with the standard empty wallet in a random application directory
+    arrangeStandard();
+
+    // Use  the welcome wizard
+    WelcomeWizardUseExistingWalletRequirements.verifyUsing(window);
 
     // Unlock the wallet
     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);

@@ -328,7 +328,8 @@ public class Panels {
    * @param createCommand          The create command name
    * @param restorePasswordCommand The restore password command name
    * @param restoreWalletCommand   The restore wallet command name
-   * @param hardwareCommand        The hardware command name
+   * @param hardwareWalletCommand  The hardware wallet command name
+   * @param existingWalletCommand  The existing wallet command name
    *
    * @return A new "wallet selector" panel
    */
@@ -337,7 +338,8 @@ public class Panels {
     String createCommand,
     String restorePasswordCommand,
     String restoreWalletCommand,
-    String hardwareCommand
+    String hardwareWalletCommand,
+    String existingWalletCommand
   ) {
 
     JPanel panel = Panels.newPanel();
@@ -353,9 +355,12 @@ public class Panels {
     radio3.setActionCommand(restoreWalletCommand);
 
     JRadioButton radio4 = RadioButtons.newRadioButton(listener, MessageKey.USE_HARDWARE_WALLET);
-    radio4.setActionCommand(hardwareCommand);
+    radio4.setActionCommand(hardwareWalletCommand);
     radio4.setEnabled(false);
     radio4.setForeground(UIManager.getColor("RadioButton.disabledText"));
+
+    JRadioButton radio5 = RadioButtons.newRadioButton(listener, MessageKey.USE_EXISTING_WALLET);
+    radio5.setActionCommand(existingWalletCommand);
 
     // Wallet selection is mutually exclusive
     ButtonGroup group = new ButtonGroup();
@@ -363,12 +368,14 @@ public class Panels {
     group.add(radio2);
     group.add(radio3);
     group.add(radio4);
+    group.add(radio5);
 
     // Add to the panel
     panel.add(radio1, "wrap");
     panel.add(radio2, "wrap");
     panel.add(radio3, "wrap");
     panel.add(radio4, "wrap");
+    panel.add(radio5, "wrap");
 
     return panel;
   }

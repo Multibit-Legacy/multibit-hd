@@ -164,6 +164,7 @@ public class MainController extends AbstractController implements
       if (WelcomeWizardState.CREATE_WALLET_REPORT.name().equals(event.getPanelName())
         || WelcomeWizardState.RESTORE_WALLET_REPORT.name().equals(event.getPanelName())
         || WelcomeWizardState.RESTORE_PASSWORD_REPORT.name().equals(event.getPanelName())
+        || WelcomeWizardState.WELCOME_SELECT_WALLET.name().equals(event.getPanelName())
         ) {
 
         // Need to hand over to the password wizard

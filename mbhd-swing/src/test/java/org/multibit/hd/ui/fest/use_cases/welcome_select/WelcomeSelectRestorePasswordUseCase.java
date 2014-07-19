@@ -52,6 +52,11 @@ public class WelcomeSelectRestorePasswordUseCase extends AbstractFestUseCase {
       .requireDisabled()
       .requireVisible();
 
+    window
+      .radioButton(MessageKey.USE_EXISTING_WALLET.getKey())
+      .requireNotSelected()
+      .requireVisible();
+
     // Select "restore password"
     window
       .radioButton(MessageKey.RESTORE_PASSWORD.getKey())

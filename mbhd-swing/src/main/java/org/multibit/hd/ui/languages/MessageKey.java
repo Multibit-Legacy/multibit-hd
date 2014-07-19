@@ -330,6 +330,7 @@ public enum MessageKey {
   RESTORE_PASSWORD("restore_password"),
   RESTORE_WALLET("restore_wallet"),
   USE_HARDWARE_WALLET("use_hardware_wallet"),
+  USE_EXISTING_WALLET("use_existing_wallet"),
 
   RESTORE_FROM_SEED_PHRASE("restore_from_seed_phrase"),
   RESTORE_FROM_BACKUP("restore_from_backup"),

@@ -75,6 +75,10 @@ public enum WelcomeWizardState {
    * Select wallet: Select a hardware wallet (Trezor etc)
    */
   SELECT_WALLET_HARDWARE,
+  /**
+   * Select wallet: Select a the unlock screen (bypass create/restore)
+   */
+  SELECT_EXISTING_WALLET,
 
   // End of enum
   ;

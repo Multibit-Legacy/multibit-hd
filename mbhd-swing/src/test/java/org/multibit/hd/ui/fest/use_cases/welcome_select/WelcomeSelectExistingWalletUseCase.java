@@ -9,16 +9,16 @@ import java.util.Map;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the welcome wizard "select wallet" panel view</li>
- * <li>Proceed with "restore wallet" selection</li>
+ * <li>Verify the welcome wizard "select password" panel view</li>
+ * <li>Proceed with "use existing wallet" selection</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class WelcomeSelectRestoreWalletUseCase extends AbstractFestUseCase {
+public class WelcomeSelectExistingWalletUseCase extends AbstractFestUseCase {
 
-  public WelcomeSelectRestoreWalletUseCase(FrameFixture window) {
+  public WelcomeSelectExistingWalletUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -57,15 +57,18 @@ public class WelcomeSelectRestoreWalletUseCase extends AbstractFestUseCase {
       .requireNotSelected()
       .requireVisible();
 
-    // Select "restore wallet"
+    // Select "use existing wallet"
     window
-      .radioButton(MessageKey.RESTORE_WALLET.getKey())
+      .radioButton(MessageKey.USE_EXISTING_WALLET.getKey())
       .click();
 
     // OK to proceed
     window
       .button(MessageKey.NEXT.getKey())
       .click();
+
+    // Expect a handover to the unlock screen
+    pauseForViewReset();
 
   }
 
