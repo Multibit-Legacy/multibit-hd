@@ -103,11 +103,13 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     transactionConfirmationStatus = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
     AccessibilityDecorator.apply(transactionConfirmationStatus, MessageKey.TRANSACTION_CONFIRMATION_STATUS);
 
-    contentPanel.add(transactionConstructionStatusSummary, "grow,push,wrap");
-    contentPanel.add(transactionConstructionStatusDetail, "grow,push,wrap");
-    contentPanel.add(transactionBroadcastStatusSummary, "grow,push,wrap");
-    contentPanel.add(transactionBroadcastStatusDetail, "grow,push,wrap");
-    contentPanel.add(transactionConfirmationStatus, "grow,push,wrap");
+    // Ensure the labels wrap if the error messages are too wide
+    // Note changes here should be reflected in EmptyWalletReportPanelView which has similar behaviour
+    contentPanel.add(transactionConstructionStatusSummary, "grow,push," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
+    contentPanel.add(transactionConstructionStatusDetail, "grow,push," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
+    contentPanel.add(transactionBroadcastStatusSummary, "grow,push," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
+    contentPanel.add(transactionBroadcastStatusDetail, "grow,push," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
+    contentPanel.add(transactionConfirmationStatus, "grow,push," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
     initialised = true;
   }
@@ -124,7 +126,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     SwingUtilities.invokeLater(new Runnable(){
       @Override
       public void run() {
-        transactionConstructionStatusSummary.setText(Languages.safeText(CoreMessageKey.CHANGE_PASSWORD_WORKING));
+        Labels.decorateWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.CHANGE_PASSWORD_WORKING));
         transactionConstructionStatusDetail.setText("");
       }
     });
@@ -171,17 +173,14 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     if (transactionCreationEvent.isTransactionCreationWasSuccessful()) {
       // We now have a transactionId so keep that in the panel model for filtering TransactionSeenEvents later
       getPanelModel().get().setTransactionId(transactionCreationEvent.getTransactionId());
-
-      transactionConstructionStatusSummary.setText(Languages.safeText(CoreMessageKey.TRANSACTION_CREATED_OK));
-      // for testing
-      // transactionConstructionStatusDetail.setText("This is a long text, really long, really really long. It signifies the hunting of the snark, as related to the endlessly dark and gloomy apparently bottomless cavern in the South Mines of Mordor");
-      transactionConstructionStatusDetail.setText("");
+      Labels.decorateWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATED_OK));
+      Labels.decorateWrappingLabel(transactionConstructionStatusDetail, "");
       Labels.decorateStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.TRUE));
     } else {
       String detailMessage = Languages.safeText(transactionCreationEvent.getTransactionCreationFailureReasonKey(),
         (Object[]) transactionCreationEvent.getTransactionCreationFailureReasonData());
-      transactionConstructionStatusSummary.setText(Languages.safeText(CoreMessageKey.TRANSACTION_CREATION_FAILED));
-      transactionConstructionStatusDetail.setText(detailMessage);
+      Labels.decorateWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATION_FAILED));
+      Labels.decorateWrappingLabel(transactionConstructionStatusDetail, detailMessage);
       Labels.decorateStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.FALSE));
     }
   }
@@ -198,13 +197,13 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     }
 
     if (bitcoinSentEvent.isSendWasSuccessful()) {
-      transactionBroadcastStatusSummary.setText(Languages.safeText(CoreMessageKey.BITCOIN_SENT_OK));
+      Labels.decorateWrappingLabel(transactionBroadcastStatusSummary, Languages.safeText(CoreMessageKey.BITCOIN_SENT_OK));
       Labels.decorateStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.TRUE));
     } else {
       String summaryMessage = Languages.safeText(CoreMessageKey.BITCOIN_SEND_FAILED);
       String detailMessage = Languages.safeText(bitcoinSentEvent.getSendFailureReasonKey(), (Object[]) bitcoinSentEvent.getSendFailureReasonData());
-      transactionBroadcastStatusSummary.setText(summaryMessage);
-      transactionBroadcastStatusDetail.setText(detailMessage);
+      Labels.decorateWrappingLabel(transactionBroadcastStatusSummary, summaryMessage);
+      Labels.decorateWrappingLabel(transactionBroadcastStatusDetail, detailMessage);
       Labels.decorateStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.FALSE));
     }
   }
