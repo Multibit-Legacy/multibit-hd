@@ -29,6 +29,7 @@ sound:
 wallet:
   currentWalletRoot: null
   wallets: {}
+licenceAccepted: false
 tor: false
 wibble:
   aardvark: 42

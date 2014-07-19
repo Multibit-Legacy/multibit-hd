@@ -337,12 +337,12 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     InstallationManager.currentApplicationDataDirectory = SecureFiles.verifyOrCreateDirectory(temporaryDirectory);
 
     // Continue with the set up
-    setUpAfterArrange();
+    setUpAfterArrange(false);
 
   }
 
   /**
-   * <p>Starts MultiBit HD with an application directory containing the empty wallet fixture</p>
+   * <p>Starts MultiBit HD with an application directory containing the empty wallet fixture and an accepted licence</p>
    *
    * @throws Exception If something goes wrong
    */
@@ -366,7 +366,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     WalletFixtures.createEmptyWalletFixture();
 
     // Continue with the set up
-    setUpAfterArrange();
+    setUpAfterArrange(true);
 
   }
 
@@ -395,7 +395,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     WalletFixtures.createStandardWalletFixture();
 
     // Continue with the set up
-    setUpAfterArrange();
+    setUpAfterArrange(true);
 
   }
 
@@ -404,7 +404,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    *
    * @throws Exception If something goes wrong
    */
-  private void setUpAfterArrange() throws Exception {
+  private void setUpAfterArrange(boolean licenceAccepted) throws Exception {
 
     log.info("Reset locale to en_US");
 
@@ -416,8 +416,9 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     // Always start without an exchange
     Configuration configuration = Configurations.newDefaultConfiguration();
     configuration.getBitcoin().setCurrentExchange(ExchangeKey.NONE.name());
+    configuration.setLicenceAccepted(licenceAccepted);
 
-    // Persist the new configuration
+    // Persist the new configuration ready for reading later
     try (FileOutputStream fos = new FileOutputStream(InstallationManager.getConfigurationFile())) {
       Configurations.writeYaml(fos, configuration);
     } catch (IOException e) {

@@ -88,7 +88,7 @@ public class VerifyMessagePanelView extends AbstractWizardPanelView<VerifyMessag
     messageScrollPane.setViewportBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
 
     // Ensure we maintain the overall theme
-    ScrollBarUIDecorator.apply(messageScrollPane);
+    ScrollBarUIDecorator.apply(messageScrollPane, true);
 
     signatureTextArea = TextBoxes.newTextArea(5, 40);
     AccessibilityDecorator.apply(signatureTextArea, MessageKey.SIGNATURE);

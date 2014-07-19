@@ -12,7 +12,11 @@ package org.multibit.hd.ui.views.wizards.welcome;
 public enum WelcomeWizardState {
 
   /**
-   * The initial welcome and language selection page
+   * The initial welcome and licence page
+   */
+  WELCOME_LICENCE,
+  /**
+   * The language selection page
    */
   WELCOME_SELECT_LANGUAGE,
   /**

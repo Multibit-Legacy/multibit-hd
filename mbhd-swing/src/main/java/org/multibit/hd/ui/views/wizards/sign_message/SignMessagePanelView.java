@@ -103,7 +103,7 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
     messageScrollPane.setViewportBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
 
     // Ensure we maintain the overall theme
-    ScrollBarUIDecorator.apply(messageScrollPane);
+    ScrollBarUIDecorator.apply(messageScrollPane, true);
 
     signature = TextBoxes.newReadOnlyLengthLimitedTextArea(getWizardModel(), 5, 40);
     AccessibilityDecorator.apply(signature, MessageKey.SIGNATURE);

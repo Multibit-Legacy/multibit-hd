@@ -29,6 +29,10 @@ public class WelcomeWizard extends AbstractWizard<WelcomeWizardModel> {
   protected void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap) {
 
     wizardViewMap.put(
+      WELCOME_LICENCE.name(),
+      new WelcomeLicencePanelView(this, WELCOME_LICENCE.name()));
+
+    wizardViewMap.put(
       WELCOME_SELECT_LANGUAGE.name(),
       new WelcomeSelectLanguagePanelView(this, WELCOME_SELECT_LANGUAGE.name()));
 

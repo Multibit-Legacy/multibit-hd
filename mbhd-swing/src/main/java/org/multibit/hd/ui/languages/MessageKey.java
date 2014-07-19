@@ -205,6 +205,7 @@ public enum MessageKey {
   SECURITY_TITLE("security_title"),
 
   WELCOME_TITLE("welcome_title"),
+  SELECT_LANGUAGE_TITLE("select_language_title"),
   SELECT_WALLET_TITLE("select_wallet_title"),
   CREATE_WALLET_SEED_PHRASE_TITLE("create_wallet_seed_phrase_title"),
   CONFIRM_WALLET_SEED_PHRASE_TITLE("confirm_wallet_seed_phrase_title"),
@@ -283,6 +284,9 @@ public enum MessageKey {
 
   HISTORY_WALLET_CREATED("history_wallet_created"),
   HISTORY_WALLET_OPENED("history_wallet_opened"),
+
+  ACCEPT_LICENCE("accept_licence"),
+  REJECT_LICENCE("reject_licence"),
 
   ALERT_REMAINING("alert_remaining"),
   EXCHANGE_FIAT_RATE("exchange_fiat_rate"),

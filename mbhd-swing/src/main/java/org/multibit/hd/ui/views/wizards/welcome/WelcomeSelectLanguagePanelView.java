@@ -1,21 +1,17 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
-import com.google.common.util.concurrent.ListeningExecutorService;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.events.SecurityEvent;
-import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.LanguageKey;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.*;
-import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertModel;
-import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertView;
+import org.multibit.hd.ui.views.components.ComboBoxes;
+import org.multibit.hd.ui.views.components.Labels;
+import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -38,9 +34,7 @@ import java.util.Locale;
  */
 public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> implements ActionListener {
 
-  private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV;
   private JComboBox<String> languagesComboBox;
-  private ListeningExecutorService localeExecutorService = SafeExecutors.newSingleThreadExecutor("locale-change");
 
   /**
    * @param wizard    The wizard managing the states
@@ -48,14 +42,12 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
    */
   public WelcomeSelectLanguagePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.WELCOME_TITLE, AwesomeIcon.GLOBE);
+    super(wizard, panelName, MessageKey.SELECT_LANGUAGE_TITLE, AwesomeIcon.GLOBE);
 
   }
 
   @Override
   public void newPanelModel() {
-
-    displaySecurityPopoverMaV = Popovers.newDisplaySecurityPopoverMaV(getPanelName());
 
     String localeCode = Languages.currentLocale().getLanguage();
     setPanelModel(localeCode);
@@ -64,7 +56,6 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
     getWizardModel().setLocaleCode(localeCode);
 
     // Register components
-    registerComponents(displaySecurityPopoverMaV);
 
   }
 
@@ -88,7 +79,7 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
   @Override
   protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
 
-    PanelDecorator.addExitCancelNext(this, wizard);
+    PanelDecorator.addExitCancelPreviousNext(this, wizard);
 
   }
 
@@ -108,17 +99,6 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
       public void run() {
 
         languagesComboBox.requestFocus();
-
-        // Check for any security alerts
-        Optional<SecurityEvent> securityEvent = CoreServices.getApplicationEventService().getLatestSecurityEvent();
-        if (securityEvent.isPresent()) {
-
-          displaySecurityPopoverMaV.getModel().setValue(securityEvent.get());
-
-          // Show the security alert as a popover
-          Panels.showLightBoxPopover(displaySecurityPopoverMaV.getView().newComponentPanel());
-
-        }
 
       }
     });

@@ -103,7 +103,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
     scrollPane.setViewportBorder(null);
 
     // Ensure we maintain the overall theme
-    ScrollBarUIDecorator.apply(scrollPane);
+    ScrollBarUIDecorator.apply(scrollPane, true);
 
     // Add to the panel
     contentPanel.add(backButton, "shrink");
