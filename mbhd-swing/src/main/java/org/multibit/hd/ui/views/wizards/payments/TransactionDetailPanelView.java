@@ -94,7 +94,7 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
     scrollPane.setViewportBorder(new TextBubbleBorder(Themes.currentTheme.readOnlyBorder()));
 
     // Ensure we maintain the overall theme
-    ScrollBarUIDecorator.apply(scrollPane);
+    ScrollBarUIDecorator.apply(scrollPane, false);
 
     JButton blockchainInfoBrowserButton = Buttons.newLaunchBrowserButton(getBlockchainInfoBrowserAction(), MessageKey.VIEW_IN_BLOCKCHAIN_INFO);
 

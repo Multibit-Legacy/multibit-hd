@@ -105,6 +105,8 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   public WelcomeWizardModel(WelcomeWizardState state) {
     super(state);
 
+    log.debug("Welcome wizard starting in state '{}'", state.name());
+
     this.seedPhraseGenerator = CoreServices.newSeedPhraseGenerator();
     this.restoring = WelcomeWizardState.WELCOME_SELECT_WALLET.equals(state);
 
@@ -114,6 +116,9 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   public void showNext() {
 
     switch (state) {
+      case WELCOME_LICENCE:
+        state = WELCOME_SELECT_LANGUAGE;
+        break;
       case WELCOME_SELECT_LANGUAGE:
         state = WELCOME_SELECT_WALLET;
         break;
@@ -177,8 +182,11 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   public void showPrevious() {
 
     switch (state) {
+      case WELCOME_LICENCE:
+        state = WELCOME_LICENCE;
+        break;
       case WELCOME_SELECT_LANGUAGE:
-        state = WELCOME_SELECT_LANGUAGE;
+        state = WELCOME_LICENCE;
         break;
       case WELCOME_SELECT_WALLET:
         state = WELCOME_SELECT_LANGUAGE;

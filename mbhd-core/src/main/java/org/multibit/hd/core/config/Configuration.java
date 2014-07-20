@@ -38,6 +38,11 @@ public class Configuration {
   private LoggingConfiguration logging = new LoggingConfiguration();
 
   /**
+   * True if the user has accepted the licence agreement
+   */
+  private boolean licenceAccepted = false;
+
+  /**
    * True if TOR should be used for Bitcoin connections
    */
   private boolean tor = false;
@@ -167,6 +172,17 @@ public class Configuration {
     this.configurationVersion = configurationVersion;
   }
 
+  /**
+   * @return True if the user has accepted the licence agreement
+   */
+  public boolean isLicenceAccepted() {
+    return licenceAccepted;
+  }
+
+  public void setLicenceAccepted(boolean licenceAccepted) {
+    this.licenceAccepted = licenceAccepted;
+  }
+
   //////////////// Labs properties are added to the top configuration before being allocated to a sub-section ///////////////////////
 
   /**
@@ -206,6 +222,9 @@ public class Configuration {
 
     // Copy top level properties
     configuration.setConfigurationVersion(getConfigurationVersion());
+    configuration.setLicenceAccepted(isLicenceAccepted());
+
+    // Labs properties
     configuration.setTor(isTor());
 
     return configuration;

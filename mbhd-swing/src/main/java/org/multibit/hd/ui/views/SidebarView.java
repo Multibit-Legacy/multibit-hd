@@ -131,7 +131,7 @@ public class SidebarView extends AbstractView {
     final JScrollPane sidebarPane = new JScrollPane();
 
     // Ensure we maintain the overall theme
-    ScrollBarUIDecorator.apply(sidebarPane);
+    ScrollBarUIDecorator.apply(sidebarPane, true);
 
     sidebarTree = new JTree(createSidebarTreeNodes());
 

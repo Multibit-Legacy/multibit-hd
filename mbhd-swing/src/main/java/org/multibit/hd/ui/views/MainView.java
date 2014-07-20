@@ -136,10 +136,14 @@ public class MainView extends JFrame {
 
       // This section must come after a deferred hide has completed
 
-      log.debug("Showing exiting welcome wizard");
-
-      // Force an exit if the user can't get through
-      Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardScreenHolder());
+      // Determine the appropriate starting screen for the welcome wizard
+      if (Configurations.currentConfiguration.isLicenceAccepted()) {
+        log.debug("Showing exiting welcome wizard (select language)");
+        Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardScreenHolder());
+      } else {
+        log.debug("Showing exiting welcome wizard (licence agreement)");
+        Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_LICENCE).getWizardScreenHolder());
+      }
 
     } else if (showExitingPasswordWizard) {
 

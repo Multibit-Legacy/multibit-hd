@@ -234,7 +234,7 @@ public class Panels {
    */
   public synchronized static void hideLightBoxIfPresent() {
 
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(),"LightBoxPopover requires the EDT");
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "LightBoxPopover requires the EDT");
 
     log.debug("Hide light box (if present)");
 
@@ -273,7 +273,7 @@ public class Panels {
    */
   public synchronized static void hideLightBoxPopoverIfPresent() {
 
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(),"LightBoxPopover requires the EDT");
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "LightBoxPopover requires the EDT");
 
     log.debug("Hide light box popover (if present)");
 
@@ -286,13 +286,50 @@ public class Panels {
   }
 
   /**
-   * <p>A "wallet selector" panel provides a means of choosing how a wallet is to be created/accessed</p>
+   * <p>A "licence selector" panel provides a means of ensuring the user agrees with the licence</p>
    *
    * @param listener        The action listener
-   * @param createCommand   The create command name
-   * @param restorePasswordCommand  The restore password command name
-   * @param restoreWalletCommand  The restore wallet command name
-   * @param hardwareCommand The hardware command name
+   * @param agreeCommand    The agree command name
+   * @param disagreeCommand The disagree command name
+   *
+   * @return A new "licence selector" panel
+   */
+  public static JPanel newLicenceSelector(
+    ActionListener listener,
+    String agreeCommand,
+    String disagreeCommand
+  ) {
+
+    JPanel panel = Panels.newPanel();
+
+    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.ACCEPT_LICENCE);
+    radio1.setActionCommand(agreeCommand);
+
+    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.REJECT_LICENCE);
+    radio2.setSelected(true);
+    radio2.setActionCommand(disagreeCommand);
+
+    // Wallet selection is mutually exclusive
+    ButtonGroup group = new ButtonGroup();
+    group.add(radio1);
+    group.add(radio2);
+
+    // Add to the panel
+    panel.add(radio1, "wrap");
+    panel.add(radio2, "wrap");
+
+    return panel;
+  }
+
+  /**
+   * <p>A "wallet selector" panel provides a means of choosing how a wallet is to be created/accessed</p>
+   *
+   * @param listener               The action listener
+   * @param createCommand          The create command name
+   * @param restorePasswordCommand The restore password command name
+   * @param restoreWalletCommand   The restore wallet command name
+   * @param hardwareWalletCommand  The hardware wallet command name
+   * @param existingWalletCommand  The existing wallet command name
    *
    * @return A new "wallet selector" panel
    */
@@ -301,7 +338,8 @@ public class Panels {
     String createCommand,
     String restorePasswordCommand,
     String restoreWalletCommand,
-    String hardwareCommand
+    String hardwareWalletCommand,
+    String existingWalletCommand
   ) {
 
     JPanel panel = Panels.newPanel();
@@ -317,9 +355,12 @@ public class Panels {
     radio3.setActionCommand(restoreWalletCommand);
 
     JRadioButton radio4 = RadioButtons.newRadioButton(listener, MessageKey.USE_HARDWARE_WALLET);
-    radio4.setActionCommand(hardwareCommand);
+    radio4.setActionCommand(hardwareWalletCommand);
     radio4.setEnabled(false);
     radio4.setForeground(UIManager.getColor("RadioButton.disabledText"));
+
+    JRadioButton radio5 = RadioButtons.newRadioButton(listener, MessageKey.USE_EXISTING_WALLET);
+    radio5.setActionCommand(existingWalletCommand);
 
     // Wallet selection is mutually exclusive
     ButtonGroup group = new ButtonGroup();
@@ -327,12 +368,14 @@ public class Panels {
     group.add(radio2);
     group.add(radio3);
     group.add(radio4);
+    group.add(radio5);
 
     // Add to the panel
     panel.add(radio1, "wrap");
     panel.add(radio2, "wrap");
     panel.add(radio3, "wrap");
     panel.add(radio4, "wrap");
+    panel.add(radio5, "wrap");
 
     return panel;
   }

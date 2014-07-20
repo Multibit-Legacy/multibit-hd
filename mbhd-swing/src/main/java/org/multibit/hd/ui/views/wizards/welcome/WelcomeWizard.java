@@ -4,6 +4,8 @@ import com.google.common.base.Optional;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.util.Map;
 
 import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
@@ -17,7 +19,7 @@ import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
  * </ol>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class WelcomeWizard extends AbstractWizard<WelcomeWizardModel> {
 
@@ -27,6 +29,10 @@ public class WelcomeWizard extends AbstractWizard<WelcomeWizardModel> {
 
   @Override
   protected void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap) {
+
+    wizardViewMap.put(
+      WELCOME_LICENCE.name(),
+      new WelcomeLicencePanelView(this, WELCOME_LICENCE.name()));
 
     wizardViewMap.put(
       WELCOME_SELECT_LANGUAGE.name(),
@@ -86,4 +92,37 @@ public class WelcomeWizard extends AbstractWizard<WelcomeWizardModel> {
 
   }
 
+  @Override
+  public <P> Action getNextAction(final AbstractWizardPanelView<WelcomeWizardModel, P> wizardPanelView) {
+
+    // Merge the Next and Finish button behaviour
+
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        // Ensure the panel updates its model (the button is outside of the panel itself)
+        wizardPanelView.updateFromComponentModels(Optional.absent());
+
+        if (WelcomeWizardState.SELECT_EXISTING_WALLET.equals(getWizardModel().getSelectWalletChoice())) {
+
+          // Treat as a Finish
+          hide(getWizardModel().getPanelName(), false);
+
+        } else {
+
+          // Treat as a Next
+
+          // Move to the next state
+          getWizardModel().showNext();
+
+          // Show the panel based on the state
+          show(getWizardModel().getPanelName());
+        }
+      }
+
+      ;
+    };
+
+  }
 }

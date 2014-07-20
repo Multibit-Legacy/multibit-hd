@@ -12,7 +12,11 @@ package org.multibit.hd.ui.views.wizards.welcome;
 public enum WelcomeWizardState {
 
   /**
-   * The initial welcome and language selection page
+   * The initial welcome and licence page
+   */
+  WELCOME_LICENCE,
+  /**
+   * The language selection page
    */
   WELCOME_SELECT_LANGUAGE,
   /**
@@ -71,6 +75,10 @@ public enum WelcomeWizardState {
    * Select wallet: Select a hardware wallet (Trezor etc)
    */
   SELECT_WALLET_HARDWARE,
+  /**
+   * Select wallet: Select a the unlock screen (bypass create/restore)
+   */
+  SELECT_EXISTING_WALLET,
 
   // End of enum
   ;

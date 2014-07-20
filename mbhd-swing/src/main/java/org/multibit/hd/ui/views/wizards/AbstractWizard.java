@@ -208,6 +208,11 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
+
+        // Can immediately close since no data will be lost
+        hide(wizardModel.getPanelName(), true);
+
+        // After panel has hidden fire the shutdown event
         CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.HARD);
       }
     };

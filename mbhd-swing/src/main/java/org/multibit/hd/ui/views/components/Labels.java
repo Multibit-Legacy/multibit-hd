@@ -222,6 +222,24 @@ public class Labels {
     return label;
   }
 
+  /**
+   * <p>Decorate a label with HTML-wrapped text respecting LTR/RTL to ensure line breaks occur predictably</p>
+   *
+   * @param label The label to decorate
+   * @param value The text to show (will be wrapped in HTML)
+   */
+  public static void decorateWrappingLabel(JLabel label, String value) {
+
+    String htmlText = HtmlUtils.localiseWithLineBreaks(new String[]{value});
+
+    label.setText(htmlText);
+
+  }
+
+  /**
+   * @param statusLabel The status label to decorate
+   * @param status      True for check, false for cross, absent for nothing (useful for initial message)
+   */
   public static void decorateStatusLabel(JLabel statusLabel, Optional<Boolean> status) {
 
     if (status.isPresent()) {
@@ -897,12 +915,12 @@ public class Labels {
   }
 
   /**
-   *
    * @return a new Cloud backup location label
    */
   public static JLabel newCloudBackupLocation() {
     return newLabel(MessageKey.CLOUD_BACKUP_LOCATION);
   }
+
   /**
    * @return A new "welcome" note
    */
@@ -1271,5 +1289,4 @@ public class Labels {
     }, new Object[][]{});
 
   }
-
 }

@@ -282,9 +282,9 @@ public class MultiBitHD {
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
     List<File> walletDirectories = WalletManager.findWalletDirectories(applicationDataDirectory);
 
-    if (walletDirectories.isEmpty()) {
+    if (walletDirectories.isEmpty() || !Configurations.currentConfiguration.isLicenceAccepted()) {
 
-      log.debug("No wallets in the directory - showing the welcome wizard");
+      log.debug("No wallets in the directory or licence not accepted - showing the welcome wizard");
       mainView.setShowExitingWelcomeWizard(true);
       mainView.setShowExitingPasswordWizard(false);
 

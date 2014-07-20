@@ -58,6 +58,8 @@ public class Configurations {
   /**
    * <p>Handle the process of switching to a new configuration</p>
    *
+   * <p>Provides locale and event notification of the change</p>
+   *
    * @param newConfiguration The new configuration
    */
   public static synchronized void switchConfiguration(Configuration newConfiguration) {
@@ -71,15 +73,28 @@ public class Configurations {
     // Set the replacement
     currentConfiguration = newConfiguration;
 
+    // Persist the changes
+    persistCurrentConfiguration();
+
+    // Update any JVM classes
+    Locale.setDefault(currentConfiguration.getLocale());
+
+    // Notify interested parties
+    CoreEvents.fireConfigurationChangedEvent();
+
+  }
+
+  /**
+   * <p>Persist the current configuration</p>
+   *
+   * <p>No locale change or event takes place (see {@link #switchConfiguration(Configuration)})</p>
+   */
+  public static synchronized void persistCurrentConfiguration() {
+
     // Persist the new configuration
     try (FileOutputStream fos = new FileOutputStream(InstallationManager.getConfigurationFile())) {
+
       Configurations.writeYaml(fos, Configurations.currentConfiguration);
-
-      // Update any JVM classes
-      Locale.setDefault(currentConfiguration.getLocale());
-
-      // Notify interested parties
-      CoreEvents.fireConfigurationChangedEvent();
 
     } catch (IOException e) {
       ExceptionHandler.handleThrowable(e);
