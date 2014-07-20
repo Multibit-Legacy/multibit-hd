@@ -82,7 +82,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[][][]", // Column constraints
-      "10[20!]10[20!]10[20!]10[20!]10[20!]10" // Row constraints
+      "10[][][][][]10" // Row constraints
     ));
 
     // Apply the theme
@@ -123,7 +123,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
   @Override
   public boolean beforeShow() {
-    SwingUtilities.invokeLater(new Runnable(){
+    SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
         Labels.decorateWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.CHANGE_PASSWORD_WORKING));
@@ -132,6 +132,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     });
     return true;
   }
+
   @Override
   public void afterShow() {
 
@@ -177,8 +178,11 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
       Labels.decorateWrappingLabel(transactionConstructionStatusDetail, "");
       Labels.decorateStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.TRUE));
     } else {
-      String detailMessage = Languages.safeText(transactionCreationEvent.getTransactionCreationFailureReasonKey(),
-        (Object[]) transactionCreationEvent.getTransactionCreationFailureReasonData());
+      String detailMessage = Languages.safeText(
+        transactionCreationEvent.getTransactionCreationFailureReasonKey(),
+        (Object[]) transactionCreationEvent.getTransactionCreationFailureReasonData()
+      );
+
       Labels.decorateWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATION_FAILED));
       Labels.decorateWrappingLabel(transactionConstructionStatusDetail, detailMessage);
       Labels.decorateStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.FALSE));

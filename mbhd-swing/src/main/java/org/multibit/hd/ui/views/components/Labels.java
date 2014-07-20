@@ -230,7 +230,9 @@ public class Labels {
    */
   public static void decorateWrappingLabel(JLabel label, String value) {
 
-    String htmlText = HtmlUtils.localiseWithLineBreaks(new String[]{value});
+    Preconditions.checkNotNull(value,"'value' must be present");
+
+    String htmlText = HtmlUtils.localiseWithLineBreaks(value.split("\n"));
 
     label.setText(htmlText);
 
