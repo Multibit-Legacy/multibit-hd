@@ -290,16 +290,27 @@ public class Formats {
     // Decode the "transaction seen" event
     final Coin amount = event.getAmount();
 
+    final Coin modulusAmount;
+    if (amount.compareTo(Coin.ZERO) >= 0) {
+      modulusAmount = amount;
+    } else {
+      modulusAmount = amount.negate();
+    }
     // Create a suitable representation for inline text (no icon)
     final String messageAmount = Formats.formatCoinAsSymbolicText(
-      amount,
+            modulusAmount,
       Configurations.currentConfiguration.getLanguage(),
       Configurations.currentConfiguration.getBitcoin()
     );
 
     // Construct a suitable alert message
-    return Languages.safeText(MessageKey.PAYMENT_RECEIVED_ALERT, messageAmount);
-
+    if (amount.compareTo(Coin.ZERO) >= 0) {
+      // Positive or zero amount, this is a receive
+      return Languages.safeText(MessageKey.PAYMENT_RECEIVED_ALERT, messageAmount);
+    } else {
+      // Negative amount, this is a send (probably from a wallet clone elsewhere)
+      return Languages.safeText(MessageKey.PAYMENT_SENT_ALERT, messageAmount);
+    }
   }
 
   /**
