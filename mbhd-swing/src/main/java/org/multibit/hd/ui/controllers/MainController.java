@@ -42,6 +42,8 @@ import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletState;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.exit.ExitState;
 import org.multibit.hd.ui.views.wizards.password.PasswordState;
+import org.multibit.hd.ui.views.wizards.password.PasswordWizard;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizard;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -646,12 +648,15 @@ public class MainController extends AbstractController implements
     mainView.setShowExitingPasswordWizard(true);
 
     // Use a new thread to handle the new wizard so that the handover can complete
-    SafeExecutors.newSingleThreadExecutor("password-handover").execute(new Runnable() {
+    handoverExecutorService.execute(new Runnable() {
       @Override
       public void run() {
 
-        // Allow time for the other wizard to finish hiding (200ms is sufficient)
-        Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
+        // Start building the wizard (takes a while)
+        final PasswordWizard passwordWizard = Wizards.newExitingPasswordWizard();
+
+        // Allow time for the other wizard to finish hiding
+        Uninterruptibles.sleepUninterruptibly(50, TimeUnit.MILLISECONDS);
 
         // Must execute on the EDT
         SwingUtilities.invokeLater(new Runnable() {
@@ -661,7 +666,7 @@ public class MainController extends AbstractController implements
             Panels.hideLightBoxIfPresent();
 
             log.debug("Showing exiting password wizard after handover");
-            Panels.showLightBox(Wizards.newExitingPasswordWizard().getWizardScreenHolder());
+            Panels.showLightBox(passwordWizard.getWizardScreenHolder());
 
           }
         });
@@ -687,8 +692,11 @@ public class MainController extends AbstractController implements
       @Override
       public void run() {
 
-        // Allow time for the other wizard to finish hiding (200ms is sufficient)
-        Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
+        // Start building the wizard (takes a while)
+        final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_WALLET);
+
+        // Allow time for the other wizard to finish hiding
+        Uninterruptibles.sleepUninterruptibly(50, TimeUnit.MILLISECONDS);
 
         // Must execute on the EDT
         SwingUtilities.invokeLater(new Runnable() {
@@ -698,7 +706,7 @@ public class MainController extends AbstractController implements
             Panels.hideLightBoxIfPresent();
 
             log.debug("Showing exiting welcome wizard after handover");
-            Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_WALLET).getWizardScreenHolder());
+            Panels.showLightBox(welcomeWizard.getWizardScreenHolder());
 
           }
         });

@@ -64,13 +64,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
   /**
    * Ensures we only have a single thread managing the wizard hide operation
    */
-  private final ListeningExecutorService wizardHideExecutorService = SafeExecutors.newSingleThreadExecutor("wizard-hide");
-
-  /**
-   * True if the wizard is restoring
-   */
-  private boolean restoring = false;
-
+  private final static ListeningExecutorService wizardHideExecutorService = SafeExecutors.newSingleThreadExecutor("wizard-hide");
 
   /**
    * @param wizardModel     The overall wizard data model containing the aggregate information of all components in the wizard
@@ -80,6 +74,8 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
   protected AbstractWizard(M wizardModel, boolean isExiting, Optional wizardParameter) {
 
     Preconditions.checkNotNull(wizardModel, "'model' must be present");
+
+    log.debug("Building wizard...");
 
     this.wizardModel = wizardModel;
     this.exiting = isExiting;
@@ -94,6 +90,8 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
     // TODO Bind the ENTER key to a Next/Finish/Apply event to speed up data entry through keyboard
     //wizardPanel.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "next");
     //wizardPanel.getActionMap().put("next", getNextAction(null));
+
+    log.debug("Populating view map and firing initial state view events...");
 
     // Populate based on the current locale
     populateWizardViewMap(wizardViewMap);
