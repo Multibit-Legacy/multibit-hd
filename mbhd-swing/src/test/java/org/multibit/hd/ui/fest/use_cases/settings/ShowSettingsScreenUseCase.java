@@ -51,7 +51,7 @@ public class ShowSettingsScreenUseCase extends AbstractFestUseCase {
       .requireEnabled();
 
     window
-      .button(MessageKey.SHOW_APPLICATION_WIZARD.getKey())
+      .button(MessageKey.SHOW_APPEARANCE_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
 

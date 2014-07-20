@@ -426,6 +426,15 @@ public class Labels {
   }
 
   /**
+   * @return A new "show balance" label
+   */
+  public static JLabel newShowBalance() {
+
+    return Labels.newLabel(MessageKey.SHOW_BALANCE);
+
+  }
+
+  /**
    * @return A new "select theme" label
    */
   public static JLabel newSelectTheme() {

@@ -160,7 +160,7 @@ public class SidebarView extends AbstractView {
     sidebarTree.expandPath(walletPath);
 
     // Ensure we use the previous selection
-    Screen startingScreen = Screen.valueOf(Configurations.currentConfiguration.getApplication().getCurrentScreen());
+    Screen startingScreen = Screen.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentScreen());
     for (int row = 0; row < sidebarTree.getRowCount(); row++) {
       TreePath screenPath = sidebarTree.getPathForRow(row);
       if (screenPath != null) {
@@ -264,7 +264,7 @@ public class SidebarView extends AbstractView {
           Panels.showLightBox(Wizards.newExitWizard().getWizardScreenHolder());
           break;
         default:
-          Configurations.currentConfiguration.getApplication().setCurrentScreen(nodeInfo.getDetailScreen().name());
+          Configurations.currentConfiguration.getAppearance().setCurrentScreen(nodeInfo.getDetailScreen().name());
           ControllerEvents.fireShowDetailScreenEvent(nodeInfo.getDetailScreen());
       }
     } else {

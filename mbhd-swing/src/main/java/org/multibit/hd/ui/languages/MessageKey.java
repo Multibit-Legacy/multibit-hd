@@ -132,6 +132,7 @@ public enum MessageKey {
 
   DISPLAY_LANGUAGE("display_language"),
 
+  SHOW_BALANCE("show_balance"),
   SELECT_THEME("select_theme"),
 
   SELECT_DECIMAL_SEPARATOR("select_decimal_separator"),
@@ -243,7 +244,7 @@ public enum MessageKey {
   LANGUAGE_SETTINGS_TITLE("language_settings_title"),
   EXCHANGE_SETTINGS_TITLE("exchange_settings_title"),
   UNITS_SETTINGS_TITLE("units_settings_title"),
-  APPLICATION_SETTINGS_TITLE("application_settings_title"),
+  APPEARANCE_SETTINGS_TITLE("appearance_settings_title"),
   SOUNDS_SETTINGS_TITLE("sounds_settings_title"),
   FEES_SETTINGS_TITLE("fees_settings_title"),
 
@@ -311,7 +312,7 @@ public enum MessageKey {
   SHOW_LAB_WIZARD("show_lab_wizard"),
   SHOW_UNITS_WIZARD("show_units_wizard"),
   SHOW_EXCHANGE_WIZARD("show_exchange_wizard"),
-  SHOW_APPLICATION_WIZARD("show_application_wizard"),
+  SHOW_APPEARANCE_WIZARD("show_appearance_wizard"),
   SHOW_LANGUAGE_WIZARD("show_language_wizard"),
   SHOW_EDIT_WALLET_WIZARD("show_edit_wallet_wizard"),
   SHOW_CHANGE_PASSWORD_WIZARD("show_change_password_wizard"),

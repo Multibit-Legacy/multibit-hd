@@ -167,7 +167,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
     String cloudBackupLocation = model.getCloudBackupLocation();
 
     if (Configurations.currentConfiguration != null) {
-      Configurations.currentConfiguration.getApplication().setCloudBackupLocation(cloudBackupLocation);
+      Configurations.currentConfiguration.getAppearance().setCloudBackupLocation(cloudBackupLocation);
     }
     SeedPhraseGenerator seedPhraseGenerator = getWizardModel().getSeedPhraseGenerator();
 

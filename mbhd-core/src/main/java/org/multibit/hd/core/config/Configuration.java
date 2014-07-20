@@ -26,7 +26,7 @@ public class Configuration {
 
   private LanguageConfiguration language = new LanguageConfiguration();
 
-  private ApplicationConfiguration application = new ApplicationConfiguration();
+  private AppearanceConfiguration appearance = new AppearanceConfiguration();
 
   private BitcoinConfiguration bitcoin = new BitcoinConfiguration();
 
@@ -82,7 +82,7 @@ public class Configuration {
    */
   @JsonIgnore
   public String getVersion() {
-    return getApplication().getVersion();
+    return getAppearance().getVersion();
   }
 
   /**
@@ -131,12 +131,12 @@ public class Configuration {
   /**
    * @return The application configuration
    */
-  public ApplicationConfiguration getApplication() {
-    return application;
+  public AppearanceConfiguration getAppearance() {
+    return appearance;
   }
 
-  public void setApplication(ApplicationConfiguration application) {
-    this.application = application;
+  public void setAppearance(AppearanceConfiguration appearance) {
+    this.appearance = appearance;
   }
 
   /**
@@ -204,7 +204,7 @@ public class Configuration {
   public Configuration deepCopy() {
 
     LanguageConfiguration language = getLanguage().deepCopy();
-    ApplicationConfiguration app = getApplication().deepCopy();
+    AppearanceConfiguration app = getAppearance().deepCopy();
     SoundConfiguration sound = getSound().deepCopy();
     WalletConfiguration wallet = getWallet().deepCopy();
     BitcoinConfiguration bitcoin = getBitcoin().deepCopy();
@@ -213,7 +213,7 @@ public class Configuration {
     Configuration configuration = new Configuration();
 
     // Bind the copies
-    configuration.setApplication(app);
+    configuration.setAppearance(app);
     configuration.setSound(sound);
     configuration.setWallet(wallet);
     configuration.setLanguage(language);

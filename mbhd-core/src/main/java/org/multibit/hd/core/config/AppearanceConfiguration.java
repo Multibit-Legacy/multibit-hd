@@ -6,11 +6,12 @@ package org.multibit.hd.core.config;
  * <li>Configuration of look and feel</li>
  * <li>Configuration of screen state</li>
  * </ul>
+ * <p>This configuration is for general appearance parameters</p>
  *
  * @since 0.0.1
  *  
  */
-public class ApplicationConfiguration {
+public class AppearanceConfiguration {
 
   private String currentScreen = "SEND_REQUEST";
 
@@ -20,12 +21,17 @@ public class ApplicationConfiguration {
 
   private String applicationDirectory = ".";
 
+  /**
+   * Default to true since most people will be using this in private
+   */
+  private boolean showBalance = true;
+
   private String currentTheme = "BOOTSTRAP";
 
   /**
    * The version field cannot contain "/" or "(" or ")" since it is used in the PeerGroup of Bitcoinj
    */
-  private String version = "0.0.1b-2";
+  private String version = "0.0.3";
 
   /**
    * Good default width and height for centered initial screen and balance displayed
@@ -81,6 +87,18 @@ public class ApplicationConfiguration {
     this.restoreApplicationLayoutOnStartup = restoreApplicationLayoutOnStartup;
   }
 
+
+  /**
+   * @return True if the balance header should be visible
+   */
+  public boolean isShowBalance() {
+    return showBalance;
+  }
+
+  public void setShowBalance(boolean showBalance) {
+    this.showBalance = showBalance;
+  }
+
   public String getCurrentTheme() {
     return currentTheme;
   }
@@ -133,17 +151,19 @@ public class ApplicationConfiguration {
   /**
    * @return A deep copy of this object
    */
-  public ApplicationConfiguration deepCopy() {
+  public AppearanceConfiguration deepCopy() {
 
-    ApplicationConfiguration app = new ApplicationConfiguration();
+    AppearanceConfiguration app = new AppearanceConfiguration();
 
     app.setCurrentScreen(getCurrentScreen());
-    app.setApplicationDirectory(getApplicationDirectory());
     app.setBitcoinUriHandling(getBitcoinUriHandling());
     app.setRestoreApplicationLayoutOnStartup(isRestoreApplicationLayoutOnStartup());
     app.setLastFrameBounds(getLastFrameBounds());
     app.setSidebarWidth(getSidebarWidth());
     app.setCurrentTheme(getCurrentTheme());
+
+    // TODO Consider moving these to a higher level
+    app.setApplicationDirectory(getApplicationDirectory());
     app.setVersion(getVersion());
     app.setCloudBackupLocation(getCloudBackupLocation());
 

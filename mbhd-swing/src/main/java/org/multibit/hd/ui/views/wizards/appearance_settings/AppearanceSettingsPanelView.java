@@ -1,8 +1,8 @@
-package org.multibit.hd.ui.views.wizards.application_settings;
+package org.multibit.hd.ui.views.wizards.appearance_settings;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.config.ApplicationConfiguration;
+import org.multibit.hd.core.config.AppearanceConfiguration;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -24,25 +24,26 @@ import java.awt.event.ActionListener;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Application settings: switch theme</li>
+ * <li>Appearance settings: switch theme</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
 
-public class ApplicationSettingsPanelView extends AbstractWizardPanelView<ApplicationSettingsWizardModel, ApplicationSettingsPanelModel> implements ActionListener {
+public class AppearanceSettingsPanelView extends AbstractWizardPanelView<AppearanceSettingsWizardModel, AppearanceSettingsPanelModel> implements ActionListener {
 
   // Panel specific components
   private JComboBox<String> themesComboBox;
+  private JComboBox<String> showBalanceComboBox;
 
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name
    */
-  public ApplicationSettingsPanelView(AbstractWizard<ApplicationSettingsWizardModel> wizard, String panelName) {
+  public AppearanceSettingsPanelView(AbstractWizard<AppearanceSettingsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.APPLICATION_SETTINGS_TITLE, AwesomeIcon.DESKTOP);
+    super(wizard, panelName, MessageKey.APPEARANCE_SETTINGS_TITLE, AwesomeIcon.DESKTOP);
 
   }
 
@@ -53,7 +54,7 @@ public class ApplicationSettingsPanelView extends AbstractWizardPanelView<Applic
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
 
     // Configure the panel model
-    setPanelModel(new ApplicationSettingsPanelModel(
+    setPanelModel(new AppearanceSettingsPanelModel(
       getPanelName(),
       configuration
     ));
@@ -69,20 +70,25 @@ public class ApplicationSettingsPanelView extends AbstractWizardPanelView<Applic
       "[][]" // Row constraints
     ));
 
-    ApplicationConfiguration applicationConfiguration = Configurations.currentConfiguration.getApplication().deepCopy();
+    AppearanceConfiguration appearanceConfiguration = Configurations.currentConfiguration.getAppearance().deepCopy();
 
-    themesComboBox = ComboBoxes.newThemesComboBox(this, applicationConfiguration);
+    themesComboBox = ComboBoxes.newThemesComboBox(this, appearanceConfiguration);
+    showBalanceComboBox = ComboBoxes.newShowBalanceYesNoComboBox(this, appearanceConfiguration.isShowBalance());
 
     contentPanel.add(Labels.newThemeChangeNote(), "growx,span 2,wrap");
 
     contentPanel.add(Labels.newSelectTheme(), "shrink");
     contentPanel.add(themesComboBox, "growx,shrinky,width min:250:,push,wrap");
+
+    contentPanel.add(Labels.newShowBalance(), "shrink");
+    contentPanel.add(showBalanceComboBox, "growx,shrinky,width min:250:,push,wrap");
+
     contentPanel.add(Labels.newBlankLabel(), "grow,span 2,push,wrap"); // Fill out the remainder
 
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<ApplicationSettingsWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<AppearanceSettingsWizardModel> wizard) {
 
     PanelDecorator.addCancelApply(this, wizard);
 
@@ -145,7 +151,7 @@ public class ApplicationSettingsPanelView extends AbstractWizardPanelView<Applic
 
     // Create a new configuration to allow for cancellation
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
-    configuration.getApplication().setCurrentTheme(themeName);
+    configuration.getAppearance().setCurrentTheme(themeName);
 
     // Update the model
     getWizardModel().setConfiguration(configuration);

@@ -53,7 +53,7 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
     selectFileMaV = Components.newSelectFileMaV(getPanelName());
       setPanelModel(selectFileMaV.getModel());
       if (Configurations.currentConfiguration != null) {
-        selectFileMaV.getModel().setValue(Configurations.currentConfiguration.getApplication().getCloudBackupLocation());
+        selectFileMaV.getModel().setValue(Configurations.currentConfiguration.getAppearance().getCloudBackupLocation());
       }
 
       // Register components
@@ -152,9 +152,9 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
     log.debug("selectFileMaV.getModel().getValue() = '" + selectFileMaV.getModel().getValue() + "', isSelected = " + selectFileMaV.getModel().isSelected());
     if (Configurations.currentConfiguration != null) {
       if (selectFileMaV.getModel().isSelected()) {
-          Configurations.currentConfiguration.getApplication().setCloudBackupLocation(selectFileMaV.getModel().getValue());
+          Configurations.currentConfiguration.getAppearance().setCloudBackupLocation(selectFileMaV.getModel().getValue());
       }
     }
-    log.debug("Cloud backup location = '" + Configurations.currentConfiguration.getApplication().getCloudBackupLocation() + "'");
+    log.debug("Cloud backup location = '" + Configurations.currentConfiguration.getAppearance().getCloudBackupLocation() + "'");
   }
 }
