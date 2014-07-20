@@ -647,13 +647,13 @@ public class MainController extends AbstractController implements
     mainView.setShowExitingWelcomeWizard(false);
     mainView.setShowExitingPasswordWizard(true);
 
+    // Start building the wizard on the EDT to prevent UI updates
+    final PasswordWizard passwordWizard = Wizards.newExitingPasswordWizard();
+
     // Use a new thread to handle the new wizard so that the handover can complete
     handoverExecutorService.execute(new Runnable() {
       @Override
       public void run() {
-
-        // Start building the wizard (takes a while)
-        final PasswordWizard passwordWizard = Wizards.newExitingPasswordWizard();
 
         // Allow time for the other wizard to finish hiding
         Uninterruptibles.sleepUninterruptibly(50, TimeUnit.MILLISECONDS);
@@ -687,13 +687,13 @@ public class MainController extends AbstractController implements
     mainView.setShowExitingWelcomeWizard(true);
     mainView.setShowExitingPasswordWizard(false);
 
+    // Start building the wizard on the EDT to prevent UI updates
+    final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_WALLET);
+
     // Use a new thread to handle the new wizard so that the handover can complete
     handoverExecutorService.execute(new Runnable() {
       @Override
       public void run() {
-
-        // Start building the wizard (takes a while)
-        final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_WALLET);
 
         // Allow time for the other wizard to finish hiding
         Uninterruptibles.sleepUninterruptibly(50, TimeUnit.MILLISECONDS);

@@ -347,6 +347,10 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
       @Override
       public void actionPerformed(ActionEvent e) {
 
+        // The UI will lock up during handover so prevent further events
+        JButton source = (JButton) e.getSource();
+        source.setEnabled(false);
+
         // Since #17 all restore work is done by the welcome wizard
         // See MainController for the hand over code
         hide(PasswordState.PASSWORD_RESTORE.name(), false);
