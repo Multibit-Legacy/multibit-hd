@@ -230,7 +230,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
     File cloudBackupLocation = null;
     if (Configurations.currentConfiguration != null) {
-      String cloudBackupLocationString = Configurations.currentConfiguration.getApplication().getCloudBackupLocation();
+      String cloudBackupLocationString = Configurations.currentConfiguration.getAppearance().getCloudBackupLocation();
       if (cloudBackupLocationString != null && !"".equals(cloudBackupLocationString)) {
         cloudBackupLocation = new File(cloudBackupLocationString);
       }

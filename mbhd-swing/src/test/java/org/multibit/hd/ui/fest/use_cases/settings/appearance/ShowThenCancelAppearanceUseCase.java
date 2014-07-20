@@ -16,9 +16,9 @@ import java.util.Map;
  * @since 0.0.1
  *  
  */
-public class ShowThenCancelApplicationUseCase extends AbstractFestUseCase {
+public class ShowThenCancelAppearanceUseCase extends AbstractFestUseCase {
 
-  public ShowThenCancelApplicationUseCase(FrameFixture window) {
+  public ShowThenCancelAppearanceUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -27,11 +27,11 @@ public class ShowThenCancelApplicationUseCase extends AbstractFestUseCase {
 
     // Click on "appearance"
     window
-      .button(MessageKey.SHOW_APPLICATION_WIZARD.getKey())
+      .button(MessageKey.SHOW_APPEARANCE_WIZARD.getKey())
       .click();
 
     // Verify the "appearance" wizard appears
-    assertLabelText(MessageKey.APPLICATION_SETTINGS_TITLE);
+    assertLabelText(MessageKey.APPEARANCE_SETTINGS_TITLE);
 
     // Verify cancel is present
     window

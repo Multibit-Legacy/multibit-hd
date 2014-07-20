@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.components;
 
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.common.base.Preconditions;
-import org.multibit.hd.core.config.ApplicationConfiguration;
+import org.multibit.hd.core.config.AppearanceConfiguration;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.PaymentRequestData;
@@ -30,7 +30,7 @@ import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Locale;
 
@@ -49,6 +49,10 @@ public class ComboBoxes {
    * The "languages" combo box action command
    */
   public static final String LANGUAGES_COMMAND = "languages";
+  /**
+   * The "show balance" combo box action command
+   */
+  public static final String SHOW_BALANCE_COMMAND = "showBalance";
   /**
    * The "themes" combo box action command
    */
@@ -253,6 +257,24 @@ public class ComboBoxes {
   }
 
   /**
+   * @param listener    The action listener to alert when the selection is made
+   * @param showBalance True if the "yes" option should be pre-selected
+   *
+   * @return A new "yes/no" combo box
+   */
+  public static JComboBox<String> newShowBalanceYesNoComboBox(ActionListener listener, boolean showBalance) {
+
+    JComboBox<String> comboBox = newYesNoComboBox(listener, showBalance);
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.SHOW_BALANCE);
+
+    comboBox.setActionCommand(SHOW_BALANCE_COMMAND);
+
+    return comboBox;
+  }
+
+  /**
    * @param listener The action listener to alert when the selection is made
    *
    * @return A new "contact checkbox" combo box (all, none)
@@ -322,11 +344,37 @@ public class ComboBoxes {
 
   /**
    * @param listener                 The action listener to alert when the selection is made
-   * @param applicationConfiguration The application configuration providing
+   * @param appearanceConfiguration The application configuration providing
    *
    * @return A new "language" combo box containing all supported languages and variants
    */
-  public static JComboBox<String> newThemesComboBox(ActionListener listener, ApplicationConfiguration applicationConfiguration) {
+  public static JComboBox<String> newThemesComboBox(ActionListener listener, AppearanceConfiguration appearanceConfiguration) {
+
+    // Get the current themes
+    // Populate the combo box and declare a suitable renderer
+    JComboBox<String> comboBox = newReadOnlyComboBox(ThemeKey.localisedNames());
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_THEME);
+
+    // Can use the ordinal due to the declaration ordering
+    comboBox.setSelectedIndex(ThemeKey.fromTheme(Themes.currentTheme).ordinal());
+
+    // Add the listener at the end to avoid false events
+    comboBox.setActionCommand(THEMES_COMMAND);
+    comboBox.addActionListener(listener);
+
+    return comboBox;
+
+  }
+
+  /**
+   * @param listener                 The action listener to alert when the selection is made
+   * @param appearanceConfiguration The application configuration providing
+   *
+   * @return A new "language" combo box containing all supported languages and variants
+   */
+  public static JComboBox<String> newShowBalanceComboBox(ActionListener listener, AppearanceConfiguration appearanceConfiguration) {
 
     // Get the current themes
     // Populate the combo box and declare a suitable renderer

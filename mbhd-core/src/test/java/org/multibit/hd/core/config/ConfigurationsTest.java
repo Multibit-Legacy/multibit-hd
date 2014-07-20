@@ -19,7 +19,7 @@ public class ConfigurationsTest {
     Optional<Configuration> configuration = Configurations.readYaml(is, Configuration.class);
 
     assertThat(configuration.isPresent()).isTrue();
-    assertThat(configuration.get().getApplication().getCurrentScreen()).isEqualTo("TOOLS");
+    assertThat(configuration.get().getAppearance().getCurrentScreen()).isEqualTo("TOOLS");
 
     assertThat(configuration.get().any().isEmpty()).isFalse();
   }
@@ -32,7 +32,7 @@ public class ConfigurationsTest {
     Optional<Configuration> configuration = Configurations.readYaml(is, Configuration.class);
 
     assertThat(configuration.isPresent()).isTrue();
-    assertThat(configuration.get().getApplication().getCurrentScreen()).isEqualTo("TOOLS");
+    assertThat(configuration.get().getAppearance().getCurrentScreen()).isEqualTo("TOOLS");
 
     assertThat(configuration.get().any().isEmpty()).isFalse();
 

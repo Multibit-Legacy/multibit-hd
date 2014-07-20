@@ -262,7 +262,7 @@ public class MainController extends AbstractController implements
           mainView.refresh();
 
           // Show the current detail screen
-          Screen screen = Screen.valueOf(Configurations.currentConfiguration.getApplication().getCurrentScreen());
+          Screen screen = Screen.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentScreen());
           ControllerEvents.fireShowDetailScreenEvent(screen);
 
           // Trigger the alert panels to refresh
@@ -522,7 +522,7 @@ public class MainController extends AbstractController implements
    */
   private void handleTheme() {
 
-    Theme newTheme = ThemeKey.valueOf(Configurations.currentConfiguration.getApplication().getCurrentTheme()).theme();
+    Theme newTheme = ThemeKey.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentTheme()).theme();
     Themes.switchTheme(newTheme);
 
   }
@@ -559,7 +559,7 @@ public class MainController extends AbstractController implements
     // Initialise backup (must be before Bitcoin network starts and on the main thread)
     Optional<File> cloudBackupLocation = Optional.absent();
     if (Configurations.currentConfiguration != null) {
-      String cloudBackupLocationString = Configurations.currentConfiguration.getApplication().getCloudBackupLocation();
+      String cloudBackupLocationString = Configurations.currentConfiguration.getAppearance().getCloudBackupLocation();
       if (cloudBackupLocationString != null && !"".equals(cloudBackupLocationString)) {
         File cloudBackupLocationAsFile = new File(cloudBackupLocationString);
         if (cloudBackupLocationAsFile.exists()) {
@@ -746,7 +746,7 @@ public class MainController extends AbstractController implements
     CoreServices.logHistory(Languages.safeText(MessageKey.HISTORY_WALLET_OPENED, walletSummary.get().getName()));
 
     // Show the initial detail screen
-    Screen screen = Screen.valueOf(Configurations.currentConfiguration.getApplication().getCurrentScreen());
+    Screen screen = Screen.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentScreen());
     ControllerEvents.fireShowDetailScreenEvent(screen);
 
     // Don't hold up the UI thread with these background operations

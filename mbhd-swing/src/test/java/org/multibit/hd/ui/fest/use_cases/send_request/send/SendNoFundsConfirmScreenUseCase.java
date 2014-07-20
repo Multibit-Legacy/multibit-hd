@@ -48,9 +48,9 @@ public class SendNoFundsConfirmScreenUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireText("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
 
-    assertDisplayAmount(SendBitcoinState.SEND_CONFIRM_AMOUNT.name(), "transaction", false);
-    assertDisplayAmount(SendBitcoinState.SEND_CONFIRM_AMOUNT.name(), "transaction_fee", false);
-    assertDisplayAmount(SendBitcoinState.SEND_CONFIRM_AMOUNT.name(), "client_fee", false);
+    assertDisplayAmount(SendBitcoinState.SEND_CONFIRM_AMOUNT.name(), "transaction", true, false);
+    assertDisplayAmount(SendBitcoinState.SEND_CONFIRM_AMOUNT.name(), "transaction_fee", true, false);
+    assertDisplayAmount(SendBitcoinState.SEND_CONFIRM_AMOUNT.name(), "client_fee", true, false);
 
     window
       .textBox(MessageKey.PRIVATE_NOTES.getKey())

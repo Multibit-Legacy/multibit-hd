@@ -86,7 +86,7 @@ public class MainView extends JFrame {
         Rectangle bounds = getBounds();
         String lastFrameBounds = String.format("%d,%d,%d,%d", bounds.x, bounds.y, bounds.width, bounds.height);
 
-        Configurations.currentConfiguration.getApplication().setLastFrameBounds(lastFrameBounds);
+        Configurations.currentConfiguration.getAppearance().setLastFrameBounds(lastFrameBounds);
 
       }
     });
@@ -163,8 +163,8 @@ public class MainView extends JFrame {
       // to get the effect of everything happening behind the wizard
       detailViewAfterWalletOpened();
 
-      // Show the header information
-      ViewEvents.fireViewChangedEvent(ViewKey.HEADER, true);
+      // Show the header information dependent on the overall configuration settings
+      ViewEvents.fireViewChangedEvent(ViewKey.HEADER, Configurations.currentConfiguration.getAppearance().isShowBalance());
 
     }
 
@@ -300,7 +300,7 @@ public class MainView extends JFrame {
 
     int sidebarWidth = MultiBitUI.SIDEBAR_LHS_PREF_WIDTH;
     try {
-      sidebarWidth = Integer.valueOf(Configurations.currentConfiguration.getApplication().getSidebarWidth());
+      sidebarWidth = Integer.valueOf(Configurations.currentConfiguration.getAppearance().getSidebarWidth());
     } catch (NumberFormatException e) {
       log.warn("Sidebar width configuration is not a number - using default");
     }
@@ -330,7 +330,7 @@ public class MainView extends JFrame {
         public void propertyChange(PropertyChangeEvent pce) {
 
           // Keep the current configuration up to date
-          Configurations.currentConfiguration.getApplication().setSidebarWidth(String.valueOf(pce.getNewValue()));
+          Configurations.currentConfiguration.getAppearance().setSidebarWidth(String.valueOf(pce.getNewValue()));
 
         }
       }
@@ -349,7 +349,7 @@ public class MainView extends JFrame {
    */
   private void resizeToLastFrameBounds() {
 
-    String frameDimension = Configurations.currentConfiguration.getApplication().getLastFrameBounds();
+    String frameDimension = Configurations.currentConfiguration.getAppearance().getLastFrameBounds();
 
     if (frameDimension != null) {
 

@@ -75,7 +75,7 @@ public class SettingsScreenView extends AbstractScreenView<SettingsScreenModel> 
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        Panels.showLightBox(Wizards.newApplicationSettingsWizard().getWizardScreenHolder());
+        Panels.showLightBox(Wizards.newAppearanceSettingsWizard().getWizardScreenHolder());
       }
     };
     Action showSoundAction = new AbstractAction() {

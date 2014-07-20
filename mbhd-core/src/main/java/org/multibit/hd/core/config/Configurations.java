@@ -68,7 +68,7 @@ public class Configurations {
     previousConfiguration = currentConfiguration;
 
     // Ensure the new configuration has the same frame bounds since MainView won't have updated it
-    newConfiguration.getApplication().setLastFrameBounds(currentConfiguration.getApplication().getLastFrameBounds());
+    newConfiguration.getAppearance().setLastFrameBounds(currentConfiguration.getAppearance().getLastFrameBounds());
 
     // Set the replacement
     currentConfiguration = newConfiguration;
