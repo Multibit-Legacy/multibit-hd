@@ -42,16 +42,16 @@ public class VerifyExchangeNoneUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled();
 
-    // Verify that a local amount will hide
-    verifyLocalAmountHides();
+    // Verify that a local amount will show (Bitstamp)
+    verifyLocalAmountShows();
 
     // Click on "exchange"
     window
       .button(MessageKey.SHOW_EXCHANGE_WIZARD.getKey())
       .click();
 
-    // Verify that a local amount will show
-    verifyLocalAmountShows();
+    // Verify that a local amount will hide (None)
+    verifyLocalAmountHides();
 
   }
 

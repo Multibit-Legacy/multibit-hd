@@ -153,8 +153,7 @@ public class AppearanceSettingsPanelView extends AbstractWizardPanelView<Appeara
 
       String themeName = ThemeKey.values()[source.getSelectedIndex()].name();
 
-      // Create a new configuration to allow for cancellation
-      Configuration configuration = Configurations.currentConfiguration.deepCopy();
+      Configuration configuration = getWizardModel().getConfiguration();
       configuration.getAppearance().setCurrentTheme(themeName);
 
       // Update the model
@@ -167,8 +166,7 @@ public class AppearanceSettingsPanelView extends AbstractWizardPanelView<Appeara
 
       boolean showBalance = source.getSelectedIndex() == 0;
 
-      // Create a new configuration to allow for cancellation
-      Configuration configuration = Configurations.currentConfiguration.deepCopy();
+      Configuration configuration = getWizardModel().getConfiguration();
       configuration.getAppearance().setShowBalance(showBalance);
 
       // Update the model
