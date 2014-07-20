@@ -3,7 +3,7 @@ package org.multibit.hd.ui.fest.requirements;
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.settings.ShowSettingsScreenUseCase;
-import org.multibit.hd.ui.fest.use_cases.settings.appearance.VerifyAppearanceThemeUseCase;
+import org.multibit.hd.ui.fest.use_cases.settings.appearance.VerifyAppearanceShowBalanceUseCase;
 
 import java.util.Map;
 
@@ -41,7 +41,8 @@ public class SettingsScreenRequirements {
 //    new VerifyExchangeOERUseCase(window).execute(parameters);
 
     // Application
-    new VerifyAppearanceThemeUseCase(window).execute(parameters);
+//    new VerifyAppearanceThemeUseCase(window).execute(parameters);
+    new VerifyAppearanceShowBalanceUseCase(window).execute(parameters);
 
     // Sounds
 

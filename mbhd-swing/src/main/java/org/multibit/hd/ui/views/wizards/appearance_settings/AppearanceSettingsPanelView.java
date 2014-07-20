@@ -147,14 +147,34 @@ public class AppearanceSettingsPanelView extends AbstractWizardPanelView<Appeara
   public void actionPerformed(ActionEvent e) {
 
     JComboBox source = (JComboBox) e.getSource();
-    String themeName = ThemeKey.values()[source.getSelectedIndex()].name();
 
-    // Create a new configuration to allow for cancellation
-    Configuration configuration = Configurations.currentConfiguration.deepCopy();
-    configuration.getAppearance().setCurrentTheme(themeName);
+    // Themes
+    if (ComboBoxes.THEMES_COMMAND.equalsIgnoreCase(e.getActionCommand())) {
 
-    // Update the model
-    getWizardModel().setConfiguration(configuration);
+      String themeName = ThemeKey.values()[source.getSelectedIndex()].name();
+
+      // Create a new configuration to allow for cancellation
+      Configuration configuration = Configurations.currentConfiguration.deepCopy();
+      configuration.getAppearance().setCurrentTheme(themeName);
+
+      // Update the model
+      getWizardModel().setConfiguration(configuration);
+
+    }
+
+    // Show balance
+    if (ComboBoxes.SHOW_BALANCE_COMMAND.equalsIgnoreCase(e.getActionCommand())) {
+
+      boolean showBalance = source.getSelectedIndex() == 0;
+
+      // Create a new configuration to allow for cancellation
+      Configuration configuration = Configurations.currentConfiguration.deepCopy();
+      configuration.getAppearance().setShowBalance(showBalance);
+
+      // Update the model
+      getWizardModel().setConfiguration(configuration);
+
+    }
 
   }
 

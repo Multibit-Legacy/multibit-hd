@@ -208,6 +208,7 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
+
         // Provide an immediate update
         leadingSymbolLabel.setVisible(visible);
         primaryBalanceLabel.setVisible(visible);

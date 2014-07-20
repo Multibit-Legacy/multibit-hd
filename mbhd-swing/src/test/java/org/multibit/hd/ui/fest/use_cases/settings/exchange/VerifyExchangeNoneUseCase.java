@@ -101,7 +101,7 @@ public class VerifyExchangeNoneUseCase extends AbstractFestUseCase {
       .requireEnabled();
 
     // Verify that balance with a local currency is showing in the header
-    assertDisplayAmount("header", "balance", true);
+    assertDisplayAmount("header", "balance", true, true);
 
   }
 
@@ -140,7 +140,7 @@ public class VerifyExchangeNoneUseCase extends AbstractFestUseCase {
       .requireEnabled();
 
     // Verify that balance with no local currency is showing in the header
-    assertDisplayAmount("header","balance",false);
+    assertDisplayAmount("header","balance", true, false);
 
   }
 

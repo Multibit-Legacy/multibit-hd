@@ -163,8 +163,8 @@ public class MainView extends JFrame {
       // to get the effect of everything happening behind the wizard
       detailViewAfterWalletOpened();
 
-      // Show the header information
-      ViewEvents.fireViewChangedEvent(ViewKey.HEADER, true);
+      // Show the header information dependent on the overall configuration settings
+      ViewEvents.fireViewChangedEvent(ViewKey.HEADER, Configurations.currentConfiguration.getAppearance().isShowBalance());
 
     }
 

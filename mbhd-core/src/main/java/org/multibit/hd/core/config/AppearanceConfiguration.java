@@ -161,6 +161,7 @@ public class AppearanceConfiguration {
     app.setLastFrameBounds(getLastFrameBounds());
     app.setSidebarWidth(getSidebarWidth());
     app.setCurrentTheme(getCurrentTheme());
+    app.setShowBalance(isShowBalance());
 
     // TODO Consider moving these to a higher level
     app.setApplicationDirectory(getApplicationDirectory());
