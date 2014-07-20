@@ -84,7 +84,7 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[][][]", // Column constraints
-      "[]10[]10[]" // Row constraints
+      "10[][][][][]10" // Row constraints
     ));
 
     // Apply the theme
@@ -168,8 +168,10 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
       transactionConstructionStatusDetail.setText("");
       Labels.decorateStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.TRUE));
     } else {
-      String detailMessage = Languages.safeText(transactionCreationEvent.getTransactionCreationFailureReasonKey(),
-        (Object[]) transactionCreationEvent.getTransactionCreationFailureReasonData());
+      String detailMessage = Languages.safeText(
+        transactionCreationEvent.getTransactionCreationFailureReasonKey(),
+        (Object[]) transactionCreationEvent.getTransactionCreationFailureReasonData()
+      );
       Labels.decorateWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATION_FAILED));
       Labels.decorateWrappingLabel(transactionConstructionStatusDetail, detailMessage);
       Labels.decorateStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.FALSE));
