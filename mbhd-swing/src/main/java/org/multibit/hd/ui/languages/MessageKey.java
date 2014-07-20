@@ -174,6 +174,7 @@ public enum MessageKey {
 
   BITCOIN_URI_ALERT("bitcoin_uri_label"),
   PAYMENT_RECEIVED_ALERT("payment_received_label"),
+  PAYMENT_SENT_ALERT("payment_sent_label"),
 
   PEER_COUNT("peer_count"),
   BLOCKS_LEFT("blocks_left"),

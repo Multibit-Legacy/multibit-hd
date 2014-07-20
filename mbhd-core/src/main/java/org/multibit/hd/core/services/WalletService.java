@@ -193,6 +193,7 @@ public class WalletService {
     // Union the transactionData set and paymentData set
     lastSeenPaymentDataList = Lists.newArrayList(Sets.union(transactionDataSet, paymentRequestsNotFullyFunded));
 
+    log.debug("lastSeenPaymentDataList:\n" + lastSeenPaymentDataList.toString());
     return lastSeenPaymentDataList;
   }
 

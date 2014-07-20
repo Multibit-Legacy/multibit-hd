@@ -367,6 +367,8 @@ public enum WalletManager implements WalletEventListener {
     WalletExtension[] walletExtensions = new WalletExtension[]{new SendFeeDtoWalletExtension(), new MatcherResponseWalletExtension()};
     Wallet wallet = new WalletProtobufSerializer().readWallet(BitcoinNetwork.current().get(), walletExtensions, walletProto);
     wallet.setKeychainLookaheadSize(WalletManager.LOOK_AHEAD_SIZE);
+
+    log.debug("Just loaded wallet:\n" + wallet.toString());
     return wallet;
   }
 
