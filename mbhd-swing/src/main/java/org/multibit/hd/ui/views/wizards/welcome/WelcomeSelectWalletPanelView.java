@@ -40,7 +40,7 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
    */
   public WelcomeSelectWalletPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.SELECT_WALLET_TITLE, AwesomeIcon.ELLIPSIS_V);
+    super(wizard, panelName, MessageKey.SELECT_WALLET_TITLE, AwesomeIcon.MAGIC);
 
   }
 

@@ -231,6 +231,7 @@ public class Panels {
 
   /**
    * <p>Hides the currently showing light box panel (and any popover)</p>
+   *
    */
   public synchronized static void hideLightBoxIfPresent() {
 
@@ -278,6 +279,7 @@ public class Panels {
     log.debug("Hide light box popover (if present)");
 
     if (lightBoxPopoverPanel.isPresent()) {
+      // A popover is not part of a handover so gets closed completely
       lightBoxPopoverPanel.get().close();
     }
 

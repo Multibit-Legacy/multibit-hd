@@ -62,7 +62,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
   private JLabel spinner;
 
-  final ListeningExecutorService restoreWalletExecutorService = SafeExecutors.newSingleThreadExecutor("restore-wallet");
+  private ListeningExecutorService restoreWalletExecutorService;
 
   /**
    * @param wizard    The wizard managing the states
@@ -86,6 +86,9 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
   @Override
   public void initialiseContent(JPanel contentPanel) {
+
+    // Postpone the creation of the executor service to the last moment
+    restoreWalletExecutorService = SafeExecutors.newSingleThreadExecutor("restore-wallet");
 
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
