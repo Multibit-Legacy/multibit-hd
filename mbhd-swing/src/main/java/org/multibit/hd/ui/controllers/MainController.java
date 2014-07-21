@@ -655,8 +655,8 @@ public class MainController extends AbstractController implements
       @Override
       public void run() {
 
-        // Allow time for the other wizard to finish hiding
-        Uninterruptibles.sleepUninterruptibly(50, TimeUnit.MILLISECONDS);
+        // Allow time for the other wizard to finish hiding (200ms is the minimum)
+        Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
 
         // Must execute on the EDT
         SwingUtilities.invokeLater(new Runnable() {
@@ -695,8 +695,8 @@ public class MainController extends AbstractController implements
       @Override
       public void run() {
 
-        // Allow time for the other wizard to finish hiding
-        Uninterruptibles.sleepUninterruptibly(50, TimeUnit.MILLISECONDS);
+        // Allow time for the other wizard to finish hiding (200ms is the minimum)
+        Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
 
         // Must execute on the EDT
         SwingUtilities.invokeLater(new Runnable() {
