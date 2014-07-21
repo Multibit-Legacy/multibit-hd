@@ -645,16 +645,16 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Now add in the transaction fee
       totalAmountIncludingTransactionAndClientFee = totalAmountIncludingTransactionAndClientFee.add(sendRequestSummary.getSendRequest().get().fee);
+
+      // Sends are negative
+      totalAmountIncludingTransactionAndClientFee = totalAmountIncludingTransactionAndClientFee.negate();
+
       log.debug("Added the transaction fee, bitcoin total is now " + totalAmountIncludingTransactionAndClientFee.toString());
 
       // Apply the exchange rate
       BigDecimal localAmount;
       if (sendRequestSummary.getFiatPayment().isPresent() && sendRequestSummary.getFiatPayment().get().getRate().isPresent()) {
         localAmount = Coins.toLocalAmount(totalAmountIncludingTransactionAndClientFee, new BigDecimal(sendRequestSummary.getFiatPayment().get().getRate().get()));
-        if (totalAmountIncludingTransactionAndClientFee.compareTo(Coin.ZERO) < 0) {
-          // Debits are negative
-          localAmount = localAmount.negate();
-        }
         sendRequestSummary.getFiatPayment().get().setAmount(Optional.of(localAmount));
       } else {
         localAmount = BigDecimal.ZERO;
