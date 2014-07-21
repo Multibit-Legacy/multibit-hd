@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.CoreMessageKey;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -363,6 +364,12 @@ public class Panels {
 
     JRadioButton radio5 = RadioButtons.newRadioButton(listener, MessageKey.USE_EXISTING_WALLET);
     radio5.setActionCommand(existingWalletCommand);
+
+    // Check for existing wallets
+    if (WalletManager.getWalletSummaries().isEmpty()) {
+      radio5.setEnabled(false);
+      radio5.setForeground(UIManager.getColor("RadioButton.disabledText"));
+    }
 
     // Wallet selection is mutually exclusive
     ButtonGroup group = new ButtonGroup();

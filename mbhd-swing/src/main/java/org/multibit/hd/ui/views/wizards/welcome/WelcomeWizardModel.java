@@ -12,12 +12,10 @@ import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.managers.BackupManager;
-import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSummaryModel;
@@ -45,11 +43,6 @@ import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
 public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> {
 
   private static final Logger log = LoggerFactory.getLogger(WelcomeWizardModel.class);
-
-  /**
-   * The "select language" locale code
-   */
-  private String localeCode = Languages.currentLocale().getLanguage();
 
   /**
    * The "select wallet" radio button choice (as a state)
@@ -279,36 +272,6 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
       log.error("The seed phrase is incorrect.");
       return false;
     }
-  }
-
-  public List<WalletSummary> getWalletList() {
-
-    // Ensure we start from a fresh list
-    walletList.clear();
-
-    // TODO (GR) Combine this into a single method on WalletManager
-    List<File> walletDirectories = WalletManager.findWalletDirectories(InstallationManager.getOrCreateApplicationDataDirectory());
-    Optional<String> walletRoot = WalletManager.INSTANCE.getCurrentWalletRoot();
-    walletList.addAll(WalletManager.findWalletSummaries(walletDirectories, walletRoot));
-
-    return walletList;
-
-  }
-
-  /**
-   * @return The user selection for the locale
-   */
-  public String getLocaleCode() {
-    return localeCode;
-  }
-
-  /**
-   * <p>Reduced visibility for panel models</p>
-   *
-   * @param localeCode The locale code
-   */
-  public void setLocaleCode(String localeCode) {
-    this.localeCode = localeCode;
   }
 
   /**

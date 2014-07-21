@@ -52,9 +52,6 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
     String localeCode = Languages.currentLocale().getLanguage();
     setPanelModel(localeCode);
 
-    // Bind it to the wizard model
-    getWizardModel().setLocaleCode(localeCode);
-
     // Register components
 
   }

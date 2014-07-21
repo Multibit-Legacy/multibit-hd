@@ -514,12 +514,23 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
+   * @return A list of wallet summaries based on the current application directory contents (never null)
+   */
+  public static List<WalletSummary> getWalletSummaries() {
+
+    List<File> walletDirectories = findWalletDirectories(InstallationManager.getOrCreateApplicationDataDirectory());
+    Optional<String> walletRoot = INSTANCE.getCurrentWalletRoot();
+    return findWalletSummaries(walletDirectories, walletRoot);
+
+  }
+
+  /**
    * <p>Work out what wallets are available in a directory (typically the user data directory).
    * This is achieved by looking for directories with a name like <code>"mbhd-walletId"</code>
    *
    * @param directoryToSearch The directory to search
    *
-   * @return A list of files of wallet directories
+   * @return A list of files of wallet directories (never null)
    */
   public static List<File> findWalletDirectories(File directoryToSearch) {
 
@@ -550,7 +561,7 @@ public enum WalletManager implements WalletEventListener {
    * @param walletDirectories The candidate wallet directory references
    * @param walletRoot        The wallet root of the first entry
    *
-   * @return A list of wallet summaries
+   * @return A list of wallet summaries (never null)
    */
   public static List<WalletSummary> findWalletSummaries(List<File> walletDirectories, Optional walletRoot) {
 
@@ -755,6 +766,7 @@ public enum WalletManager implements WalletEventListener {
 
   }
 
+
   /**
    * <p>Method to sign a message</p>
    *
@@ -814,7 +826,6 @@ public enum WalletManager implements WalletEventListener {
     }
   }
 
-
   /**
    * <p>Method to verify a message</p>
    *
@@ -841,7 +852,7 @@ public enum WalletManager implements WalletEventListener {
       Address signingAddress = new Address(BitcoinNetwork.current().get(), addressText);
 
       // Strip CRLF from signature text
-      signatureText = signatureText.replaceAll("\n","").replaceAll("\r","");
+      signatureText = signatureText.replaceAll("\n", "").replaceAll("\r", "");
 
       ECKey key = ECKey.signedMessageToKey(messageText, signatureText);
       Address gotAddress = key.toAddress(BitcoinNetwork.current().get());
