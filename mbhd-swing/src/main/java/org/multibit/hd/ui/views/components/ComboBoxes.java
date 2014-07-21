@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.components;
 
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.common.base.Preconditions;
-import org.multibit.hd.core.config.AppearanceConfiguration;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.PaymentRequestData;
@@ -343,38 +342,11 @@ public class ComboBoxes {
   }
 
   /**
-   * @param listener                 The action listener to alert when the selection is made
-   * @param appearanceConfiguration The application configuration providing
+   * @param listener The action listener to alert when the selection is made
    *
-   * @return A new "language" combo box containing all supported languages and variants
+   * @return A new "themes" combo box containing all supported languages and variants
    */
-  public static JComboBox<String> newThemesComboBox(ActionListener listener, AppearanceConfiguration appearanceConfiguration) {
-
-    // Get the current themes
-    // Populate the combo box and declare a suitable renderer
-    JComboBox<String> comboBox = newReadOnlyComboBox(ThemeKey.localisedNames());
-
-    // Ensure it is accessible
-    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_THEME);
-
-    // Can use the ordinal due to the declaration ordering
-    comboBox.setSelectedIndex(ThemeKey.fromTheme(Themes.currentTheme).ordinal());
-
-    // Add the listener at the end to avoid false events
-    comboBox.setActionCommand(THEMES_COMMAND);
-    comboBox.addActionListener(listener);
-
-    return comboBox;
-
-  }
-
-  /**
-   * @param listener                 The action listener to alert when the selection is made
-   * @param appearanceConfiguration The application configuration providing
-   *
-   * @return A new "language" combo box containing all supported languages and variants
-   */
-  public static JComboBox<String> newShowBalanceComboBox(ActionListener listener, AppearanceConfiguration appearanceConfiguration) {
+  public static JComboBox<String> newThemesComboBox(ActionListener listener) {
 
     // Get the current themes
     // Populate the combo box and declare a suitable renderer

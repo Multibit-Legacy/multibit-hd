@@ -72,7 +72,7 @@ public class AppearanceSettingsPanelView extends AbstractWizardPanelView<Appeara
 
     AppearanceConfiguration appearanceConfiguration = Configurations.currentConfiguration.getAppearance().deepCopy();
 
-    themesComboBox = ComboBoxes.newThemesComboBox(this, appearanceConfiguration);
+    themesComboBox = ComboBoxes.newThemesComboBox(this);
     showBalanceComboBox = ComboBoxes.newShowBalanceYesNoComboBox(this, appearanceConfiguration.isShowBalance());
 
     contentPanel.add(Labels.newThemeChangeNote(), "growx,span 2,wrap");
