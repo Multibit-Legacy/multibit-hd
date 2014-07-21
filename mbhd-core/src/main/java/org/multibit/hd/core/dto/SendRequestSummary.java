@@ -40,7 +40,10 @@ public class SendRequestSummary {
   /**
    * @param destinationAddress The destination address to send to
    * @param amount             The amount to send (in coins)
-   * @param fiatPayment        the fiat payment equivalent of te bitcoin amount
+   * @param fiatPayment        the fiat payment equivalent of the bitcoin amount
+   *                           Note that initially, this is filled up with only the exchange rate details.
+   *                           Only when bitcoin is sent are the fees and hence total bitcoin amount worked out.
+   *                           Then the fiat amount equivalent to the total bitcoin amount is computed and stored.
    * @param changeAddress      The change address
    * @param feePerKB           The fee per Kb (in coins)
    * @param password           The wallet password
@@ -192,7 +195,7 @@ public class SendRequestSummary {
 
   @Override
   public String toString() {
-    return "SendBitcoinData{" +
+    return "SendRequestSummary{" +
       "destinationAddress=" + destinationAddress +
       ", amount=" + amount +
       ", fiatPayment=" +fiatPayment +

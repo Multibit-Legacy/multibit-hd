@@ -21,6 +21,7 @@ import org.multibit.hd.core.managers.BlockStoreManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.network.MultiBitPeerEventListener;
+import org.multibit.hd.core.utils.Coins;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +29,7 @@ import javax.swing.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -296,6 +298,9 @@ public class BitcoinNetworkService extends AbstractService {
         return false;
       }
 
+      // Set the fiat equivalent amount into the sendRequestSummary - this will take into account the transaction fee and client fee
+      setFiatEquivalent(sendRequestSummary);
+
       // Attempt to commit it
       if (!commit(sendRequestSummary, wallet)) {
         return false;
@@ -358,6 +363,9 @@ public class BitcoinNetworkService extends AbstractService {
         return false;
       }
 
+      // Set the fiat equivalent amount into the emptyWalletSendRequestSummary - this will take into account the transaction fee and client fee
+      setFiatEquivalent(emptyWalletSendRequestSummary);
+
       // Attempt to commit it
       if (!commit(emptyWalletSendRequestSummary, wallet)) {
         return false;
@@ -373,7 +381,6 @@ public class BitcoinNetworkService extends AbstractService {
     log.debug("Send coins has completed");
 
     return true;
-
   }
 
   /**
@@ -419,7 +426,6 @@ public class BitcoinNetworkService extends AbstractService {
 
     // Must have failed to be here
     return false;
-
   }
 
   /**
@@ -494,7 +500,7 @@ public class BitcoinNetworkService extends AbstractService {
   }
 
   /**
-   * <p>Build and append a Bitcoinj send request using the summary</p>
+   * <p>Build and append a Bitcoinj send request using the summary. This also calculates the final fees and fiat equivalents</p>
    *
    * @param sendRequestSummary The information required to send bitcoin
    */
@@ -602,6 +608,46 @@ public class BitcoinNetworkService extends AbstractService {
     // Must be OK to be here
     return true;
 
+  }
+
+  /**
+   * Work out the fiat equivalent of the total bitcoin amount being spent.
+   * This includes the transaction fee and the client fee.
+   * The exchange rate used is already set into the SendRequestSummary.fiatPayment by the UI models
+   * @param sendRequestSummary Send information, including transaction fee, client fee and exchange rate information
+   */
+  private void setFiatEquivalent(SendRequestSummary sendRequestSummary) {
+    log.debug("sendRequestSummary = " + sendRequestSummary.toString());
+
+    Coin totalAmountIncludingTransactionAndClientFee = Coin.ZERO;
+    // Loop over all the tx outputs, adding up everything but the change address
+
+    log.debug("Calculating the fiat equivalent for transaction being sent");
+    for (TransactionOutput transactionOutput : sendRequestSummary.getSendRequest().get().tx.getOutputs()) {
+      log.debug("Examining tx output = " + transactionOutput.toString());
+      Address toAddress = transactionOutput.getScriptPubKey().getToAddress(networkParameters);
+      if (!toAddress.equals(sendRequestSummary.getChangeAddress())) {
+        // Add to the running total
+        totalAmountIncludingTransactionAndClientFee = totalAmountIncludingTransactionAndClientFee.add(transactionOutput.getValue());
+        log.debug("Adding a transaction output amount, total bitcoin is now " + totalAmountIncludingTransactionAndClientFee.toString());
+      } else {
+        log.debug("Skipping a transaction output as it is the change address");
+      }
+    }
+
+    // Now add in the transaction fee
+    totalAmountIncludingTransactionAndClientFee = totalAmountIncludingTransactionAndClientFee.add(sendRequestSummary.getSendRequest().get().fee);
+    log.debug("Added the transaction fee, bitcoin total is now " + totalAmountIncludingTransactionAndClientFee.toString());
+
+    // Apply the exchange rate
+    BigDecimal localAmount;
+    if (sendRequestSummary.getFiatPayment().isPresent() && sendRequestSummary.getFiatPayment().get().getRate().isPresent()) {
+      localAmount = Coins.toLocalAmount(totalAmountIncludingTransactionAndClientFee, new BigDecimal(sendRequestSummary.getFiatPayment().get().getRate().get()));
+      sendRequestSummary.getFiatPayment().get().setAmount(Optional.of(localAmount));
+    } else {
+      localAmount = BigDecimal.ZERO;
+    }
+    log.debug("Total transaction bitcoin amount = " + totalAmountIncludingTransactionAndClientFee.toString() + ", calculated fiat amount = " + localAmount.toString());
   }
 
   /**

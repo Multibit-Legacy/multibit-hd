@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.math.BigDecimal;
 
 import static org.multibit.hd.ui.views.wizards.empty_wallet.EmptyWalletState.EMPTY_WALLET_CONFIRM;
 import static org.multibit.hd.ui.views.wizards.empty_wallet.EmptyWalletState.EMPTY_WALLET_ENTER_DETAILS;
@@ -195,6 +196,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     // Append client fee info
     transactionInfo.setClientFee(transactionCreationEvent.getClientFeePaid());
 
+    // Set the fiat payment amount
     transactionInfo.setAmountFiat(transactionCreationEvent.getFiatPayment().orNull());
 
     WalletService walletService = CoreServices.getCurrentWalletService();
@@ -252,14 +254,15 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
       .get()
       .getBitcoinAddress();
 
-    // Create the fiat payment
+    // Create the fiat payment - note that the fiat amount is not populated, only the exchange rate data.
+    // This is because the client and transaction fee is only worked out at point of sending, and the fiat equivalent is computed from that
     Optional<FiatPayment> fiatPayment;
     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
     if (exchangeRateChangedEvent.isPresent()) {
       fiatPayment = Optional.of(new FiatPayment());
       fiatPayment.get().setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
        // A send is denoted with a negative fiat amount
-      fiatPayment.get().setAmount(Optional.of(Coins.toLocalAmount(getCoinAmount(), exchangeRateChangedEvent.get().getRate().negate())));
+      fiatPayment.get().setAmount(Optional.<BigDecimal>absent());
       fiatPayment.get().setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
       fiatPayment.get().setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
     } else {

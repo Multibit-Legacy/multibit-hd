@@ -193,7 +193,7 @@ public class WalletService {
     // Union the transactionData set and paymentData set
     lastSeenPaymentDataList = Lists.newArrayList(Sets.union(transactionDataSet, paymentRequestsNotFullyFunded));
 
-    log.debug("lastSeenPaymentDataList:\n" + lastSeenPaymentDataList.toString());
+    //log.debug("lastSeenPaymentDataList:\n" + lastSeenPaymentDataList.toString());
     return lastSeenPaymentDataList;
   }
 
@@ -573,12 +573,11 @@ public class WalletService {
     return amountFiat;
   }
 
-  public static Optional<FiatPayment> calculateFiatPaymentFromLocalAmount(Optional<BigDecimal> localAmount) {
-     if (!localAmount.isPresent()) {
-       // No fiat amount present
-       return Optional.absent();
-     }
-
+  /**
+   * Work out a fiatPayment holding the exchange rate information only.
+   * @return fiat payment containing exchange rate details
+   */
+  public static Optional<FiatPayment> calculateFiatPaymentHoldingExchangeRate() {
      FiatPayment fiatPayment = new FiatPayment();
 
      fiatPayment.setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
@@ -586,7 +585,7 @@ public class WalletService {
      Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
      if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
        fiatPayment.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
-       fiatPayment.setAmount(localAmount);
+       fiatPayment.setAmount(Optional.<BigDecimal>absent());
        fiatPayment.setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
      } else {
        fiatPayment.setRate(Optional.<String>absent());

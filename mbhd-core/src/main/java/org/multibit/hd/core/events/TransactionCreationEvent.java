@@ -118,6 +118,7 @@ public class TransactionCreationEvent implements CoreEvent {
   public String toString() {
     return "TransactionCreationEvent{" +
       "amount=" + amount +
+      ", fiatPayment=" + fiatPayment +
       ", miningFeePaid=" + miningFeePaid +
       ", clientFeePaid=" + clientFeePaid +
       ", destinationAddress='" + destinationAddress + '\'' +
