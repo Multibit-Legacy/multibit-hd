@@ -299,7 +299,10 @@ public class BitcoinNetworkService extends AbstractService {
       }
 
       // Set the fiat equivalent amount into the sendRequestSummary - this will take into account the transaction fee and client fee
-      setFiatEquivalent(sendRequestSummary);
+      if (!setFiatEquivalent(sendRequestSummary)) {
+        // The setting of the fiat amount failed, but the send can continue
+        log.warn("No fiat information was set for sendRequestSummary {}", sendRequestSummary.toString());
+      }
 
       // Attempt to commit it
       if (!commit(sendRequestSummary, wallet)) {
@@ -615,39 +618,53 @@ public class BitcoinNetworkService extends AbstractService {
    * This includes the transaction fee and the client fee.
    * The exchange rate used is already set into the SendRequestSummary.fiatPayment by the UI models
    * @param sendRequestSummary Send information, including transaction fee, client fee and exchange rate information
+   * @return boolean true if operation was successful, false otherwise
    */
-  private void setFiatEquivalent(SendRequestSummary sendRequestSummary) {
+  private boolean setFiatEquivalent(SendRequestSummary sendRequestSummary) {
+    Preconditions.checkState(sendRequestSummary.getSendRequest().isPresent(), "No send request is present");
+    Preconditions.checkNotNull(sendRequestSummary.getSendRequest().get().tx);
+
     log.debug("sendRequestSummary = " + sendRequestSummary.toString());
 
-    Coin totalAmountIncludingTransactionAndClientFee = Coin.ZERO;
-    // Loop over all the tx outputs, adding up everything but the change address
+    try {
+      Coin totalAmountIncludingTransactionAndClientFee = Coin.ZERO;
 
-    log.debug("Calculating the fiat equivalent for transaction being sent");
-    for (TransactionOutput transactionOutput : sendRequestSummary.getSendRequest().get().tx.getOutputs()) {
-      log.debug("Examining tx output = " + transactionOutput.toString());
-      Address toAddress = transactionOutput.getScriptPubKey().getToAddress(networkParameters);
-      if (!toAddress.equals(sendRequestSummary.getChangeAddress())) {
-        // Add to the running total
-        totalAmountIncludingTransactionAndClientFee = totalAmountIncludingTransactionAndClientFee.add(transactionOutput.getValue());
-        log.debug("Adding a transaction output amount, total bitcoin is now " + totalAmountIncludingTransactionAndClientFee.toString());
-      } else {
-        log.debug("Skipping a transaction output as it is the change address");
+      // Loop over all the tx outputs, adding up everything but the change address
+      log.debug("Calculating the fiat equivalent for transaction being sent");
+      for (TransactionOutput transactionOutput : sendRequestSummary.getSendRequest().get().tx.getOutputs()) {
+        log.debug("Examining tx output = " + transactionOutput.toString());
+        Address toAddress = transactionOutput.getScriptPubKey().getToAddress(networkParameters);
+        if (!toAddress.equals(sendRequestSummary.getChangeAddress())) {
+          // Add to the running total
+          totalAmountIncludingTransactionAndClientFee = totalAmountIncludingTransactionAndClientFee.add(transactionOutput.getValue());
+          log.debug("Adding a transaction output amount, total bitcoin is now " + totalAmountIncludingTransactionAndClientFee.toString());
+        } else {
+          log.debug("Skipping a transaction output as it is the change address");
+        }
       }
-    }
 
-    // Now add in the transaction fee
-    totalAmountIncludingTransactionAndClientFee = totalAmountIncludingTransactionAndClientFee.add(sendRequestSummary.getSendRequest().get().fee);
-    log.debug("Added the transaction fee, bitcoin total is now " + totalAmountIncludingTransactionAndClientFee.toString());
+      // Now add in the transaction fee
+      totalAmountIncludingTransactionAndClientFee = totalAmountIncludingTransactionAndClientFee.add(sendRequestSummary.getSendRequest().get().fee);
+      log.debug("Added the transaction fee, bitcoin total is now " + totalAmountIncludingTransactionAndClientFee.toString());
 
-    // Apply the exchange rate
-    BigDecimal localAmount;
-    if (sendRequestSummary.getFiatPayment().isPresent() && sendRequestSummary.getFiatPayment().get().getRate().isPresent()) {
-      localAmount = Coins.toLocalAmount(totalAmountIncludingTransactionAndClientFee, new BigDecimal(sendRequestSummary.getFiatPayment().get().getRate().get()));
-      sendRequestSummary.getFiatPayment().get().setAmount(Optional.of(localAmount));
-    } else {
-      localAmount = BigDecimal.ZERO;
+      // Apply the exchange rate
+      BigDecimal localAmount;
+      if (sendRequestSummary.getFiatPayment().isPresent() && sendRequestSummary.getFiatPayment().get().getRate().isPresent()) {
+        localAmount = Coins.toLocalAmount(totalAmountIncludingTransactionAndClientFee, new BigDecimal(sendRequestSummary.getFiatPayment().get().getRate().get()));
+        if (totalAmountIncludingTransactionAndClientFee.compareTo(Coin.ZERO) < 0) {
+          // Debits are negative
+          localAmount = localAmount.negate();
+        }
+        sendRequestSummary.getFiatPayment().get().setAmount(Optional.of(localAmount));
+      } else {
+        localAmount = BigDecimal.ZERO;
+      }
+      log.debug("Total transaction bitcoin amount = " + totalAmountIncludingTransactionAndClientFee.toString() + ", calculated fiat amount = " + localAmount.toString());
+      return true;
+    } catch (ScriptException e) {
+      log.error(e.getMessage(), e);
+      return false;
     }
-    log.debug("Total transaction bitcoin amount = " + totalAmountIncludingTransactionAndClientFee.toString() + ", calculated fiat amount = " + localAmount.toString());
   }
 
   /**
