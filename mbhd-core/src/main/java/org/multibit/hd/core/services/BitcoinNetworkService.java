@@ -337,6 +337,7 @@ public class BitcoinNetworkService extends AbstractService {
       SendRequestSummary emptyWalletSendRequestSummary = new SendRequestSummary(
         sendRequestSummary.getDestinationAddress(),
         recipientAmount,
+        sendRequestSummary.getFiatPayment(),
         sendRequestSummary.getChangeAddress(),
         sendRequestSummary.getFeePerKB(),
         sendRequestSummary.getPassword(),
@@ -405,6 +406,7 @@ public class BitcoinNetworkService extends AbstractService {
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
         null,
         sendRequestSummary.getTotalAmount(),
+        Optional.<FiatPayment>absent(),
         Optional.<Coin>absent(),
         Optional.<Coin>absent(),
         sendRequestSummary.getDestinationAddress(),
@@ -472,6 +474,7 @@ public class BitcoinNetworkService extends AbstractService {
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
         null,
         sendRequestSummary.getTotalAmount(),
+        Optional.<FiatPayment>absent(),
         Optional.<Coin>absent(),
         Optional.<Coin>absent(),
         sendRequestSummary.getDestinationAddress(),
@@ -580,6 +583,7 @@ public class BitcoinNetworkService extends AbstractService {
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
               null,
               sendRequestSummary.getTotalAmount(),
+              Optional.<FiatPayment>absent(),
               Optional.<Coin>absent(),
               Optional.<Coin>absent(),
               sendRequestSummary.getDestinationAddress(),
@@ -627,6 +631,7 @@ public class BitcoinNetworkService extends AbstractService {
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
         transactionId,
         sendRequestSummary.getTotalAmount(),
+        Optional.<FiatPayment>absent(),
         Optional.<Coin>absent(),
         Optional.<Coin>absent(),
         sendRequestSummary.getDestinationAddress(),
@@ -665,6 +670,7 @@ public class BitcoinNetworkService extends AbstractService {
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
         sendRequest.tx.getHashAsString(),
         sendRequestSummary.getTotalAmount(),
+        sendRequestSummary.getFiatPayment(),
         Optional.of(sendRequest.fee) /* the actual mining fee paid */,
         sendRequestSummary.getClientFeeAdded(),
         sendRequestSummary.getDestinationAddress(),
@@ -685,6 +691,7 @@ public class BitcoinNetworkService extends AbstractService {
       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
         transactionId,
         sendRequestSummary.getTotalAmount(),
+        Optional.<FiatPayment>absent(),
         Optional.<Coin>absent(),
         Optional.<Coin>absent(),
         sendRequestSummary.getDestinationAddress(),

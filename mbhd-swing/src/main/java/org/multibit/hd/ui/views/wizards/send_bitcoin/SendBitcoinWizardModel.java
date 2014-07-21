@@ -128,8 +128,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
    */
   public Recipient getRecipient() {
     return enterAmountPanelModel
-      .getEnterRecipientModel()
-      .getRecipient().get();
+            .getEnterRecipientModel()
+            .getRecipient().get();
   }
 
   /**
@@ -137,8 +137,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
    */
   public Coin getCoinAmount() {
     return enterAmountPanelModel
-      .getEnterAmountModel()
-      .getCoinAmount();
+            .getEnterAmountModel()
+            .getCoinAmount();
   }
 
   /**
@@ -146,8 +146,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
    */
   public Optional<BigDecimal> getLocalAmount() {
     return enterAmountPanelModel
-      .getEnterAmountModel()
-      .getLocalAmount();
+            .getEnterAmountModel()
+            .getLocalAmount();
   }
 
   /**
@@ -272,7 +272,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
       feeService = CoreServices.createFeeService();
     }
     if (WalletManager.INSTANCE.getCurrentWalletSummary() != null &&
-      WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+            WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
       Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
 
       File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
@@ -304,23 +304,25 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
     Coin coin = enterAmountPanelModel.getEnterAmountModel().getCoinAmount();
     Address bitcoinAddress = enterAmountPanelModel
-      .getEnterRecipientModel()
-      .getRecipient()
-      .get()
-      .getBitcoinAddress();
+            .getEnterRecipientModel()
+            .getRecipient()
+            .get()
+            .getBitcoinAddress();
+    Optional<BigDecimal> localAmount = enterAmountPanelModel.getEnterAmountModel().getLocalAmount();
     String password = confirmPanelModel.getPasswordModel().getValue();
 
     Optional<FeeState> feeState = calculateBRITFeeState();
 
     // Send the bitcoins
     final SendRequestSummary sendRequestSummary = new SendRequestSummary(
-      bitcoinAddress,
-      coin,
-      changeAddress,
-      BitcoinNetworkService.DEFAULT_FEE_PER_KB,
-      password,
-      feeState,
-      emptyWallet);
+            bitcoinAddress,
+            coin,
+            WalletService.calculateFiatPaymentFromLocalAmount(localAmount),
+            changeAddress,
+            BitcoinNetworkService.DEFAULT_FEE_PER_KB,
+            password,
+            feeState,
+            emptyWallet);
     if (confirmPanelModel.getNotes() != null) {
       sendRequestSummary.setNotes(Optional.of(confirmPanelModel.getNotes()));
     } else {

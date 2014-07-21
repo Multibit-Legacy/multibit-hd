@@ -573,6 +573,29 @@ public class WalletService {
     return amountFiat;
   }
 
+  public static Optional<FiatPayment> calculateFiatPaymentFromLocalAmount(Optional<BigDecimal> localAmount) {
+     if (!localAmount.isPresent()) {
+       // No fiat amount present
+       return Optional.absent();
+     }
+
+     FiatPayment fiatPayment = new FiatPayment();
+
+     fiatPayment.setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
+
+     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
+     if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
+       fiatPayment.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
+       fiatPayment.setAmount(localAmount);
+       fiatPayment.setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
+     } else {
+       fiatPayment.setRate(Optional.<String>absent());
+       fiatPayment.setAmount(Optional.<BigDecimal>absent());
+       fiatPayment.setCurrency(Optional.<Currency>absent());
+     }
+     return Optional.of(fiatPayment);
+   }
+
   private String calculateNote(TransactionData transactionData, String transactionHashAsString) {
     String note = "";
 

@@ -19,6 +19,7 @@ public class SendRequestSummary {
 
   private final Address destinationAddress;
   private final Coin amount;
+  private final Optional<FiatPayment> fiatPayment;
   private final Address changeAddress;
   private final Coin feePerKB;
   private final CharSequence password;
@@ -39,6 +40,7 @@ public class SendRequestSummary {
   /**
    * @param destinationAddress The destination address to send to
    * @param amount             The amount to send (in coins)
+   * @param fiatPayment        the fiat payment equivalent of te bitcoin amount
    * @param changeAddress      The change address
    * @param feePerKB           The fee per Kb (in coins)
    * @param password           The wallet password
@@ -48,6 +50,7 @@ public class SendRequestSummary {
   public SendRequestSummary(
     Address destinationAddress,
     Coin amount,
+    Optional<FiatPayment> fiatPayment,
     Address changeAddress,
     Coin feePerKB,
     CharSequence password,
@@ -56,6 +59,7 @@ public class SendRequestSummary {
 
     this.destinationAddress = destinationAddress;
     this.amount = amount;
+    this.fiatPayment = fiatPayment;
     this.changeAddress = changeAddress;
     this.feePerKB = feePerKB;
     this.password = password;
@@ -88,6 +92,13 @@ public class SendRequestSummary {
     } else {
       return amount;
     }
+  }
+
+  /**
+   * Get the fiat payment of the total amount being sent
+   */
+  public Optional<FiatPayment> getFiatPayment() {
+    return fiatPayment;
   }
 
   /**
@@ -184,6 +195,7 @@ public class SendRequestSummary {
     return "SendBitcoinData{" +
       "destinationAddress=" + destinationAddress +
       ", amount=" + amount +
+      ", fiatPayment=" +fiatPayment +
       ", changeAddress=" + changeAddress +
       ", feePerKB=" + feePerKB +
       ", password=***" +

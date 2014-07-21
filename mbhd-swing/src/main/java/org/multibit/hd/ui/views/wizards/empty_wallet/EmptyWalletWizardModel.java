@@ -8,7 +8,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.brit.services.FeeService;
-import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.dto.SendRequestSummary;
@@ -32,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.math.BigDecimal;
 
 import static org.multibit.hd.ui.views.wizards.empty_wallet.EmptyWalletState.EMPTY_WALLET_CONFIRM;
 import static org.multibit.hd.ui.views.wizards.empty_wallet.EmptyWalletState.EMPTY_WALLET_ENTER_DETAILS;
@@ -197,22 +195,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     // Append client fee info
     transactionInfo.setClientFee(transactionCreationEvent.getClientFeePaid());
 
-    // Create the empty fiat payment
-    FiatPayment fiatPayment = new FiatPayment();
-    Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
-    if (exchangeRateChangedEvent.isPresent()) {
-      fiatPayment.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
-       // A send is denoted with a negative fiat amount
-      fiatPayment.setAmount(Optional.of(Coins.toLocalAmount(getCoinAmount(), exchangeRateChangedEvent.get().getRate().negate())));
-      fiatPayment.setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
-    } else {
-      fiatPayment.setRate(Optional.<String>absent());
-      fiatPayment.setAmount(Optional.<BigDecimal>absent());
-      fiatPayment.setCurrency(Optional.of(Configurations.currentConfiguration.getLocalCurrency()));
-    }
-    fiatPayment.setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
-
-    transactionInfo.setAmountFiat(fiatPayment);
+    transactionInfo.setAmountFiat(transactionCreationEvent.getFiatPayment().orNull());
 
     WalletService walletService = CoreServices.getCurrentWalletService();
     walletService.addTransactionInfo(transactionInfo);
@@ -268,6 +251,21 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
       .getRecipient()
       .get()
       .getBitcoinAddress();
+
+    // Create the fiat payment
+    Optional<FiatPayment> fiatPayment;
+    Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
+    if (exchangeRateChangedEvent.isPresent()) {
+      fiatPayment = Optional.of(new FiatPayment());
+      fiatPayment.get().setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
+       // A send is denoted with a negative fiat amount
+      fiatPayment.get().setAmount(Optional.of(Coins.toLocalAmount(getCoinAmount(), exchangeRateChangedEvent.get().getRate().negate())));
+      fiatPayment.get().setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
+      fiatPayment.get().setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
+    } else {
+      fiatPayment = Optional.absent();
+    }
+
     String password = enterDetailsPanelModel.getEnterPasswordModel().getValue();
 
     Optional<FeeState> feeState = calculateBRITFeeState();
@@ -276,6 +274,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     final SendRequestSummary sendRequestSummary = new SendRequestSummary(
       bitcoinAddress,
       coinAmount,
+      fiatPayment,
       changeAddress,
       BitcoinNetworkService.DEFAULT_FEE_PER_KB,
       password,
