@@ -230,7 +230,7 @@ public enum WalletManager implements WalletEventListener {
   public WalletSummary createWalletSummary(
     byte[] seed,
     long creationTimeInSeconds,
-    CharSequence password,
+    String password,
     String name,
     String notes
 
@@ -267,7 +267,7 @@ public enum WalletManager implements WalletEventListener {
     File applicationDataDirectory,
     byte[] seed,
     long creationTimeInSeconds,
-    CharSequence password,
+    String password,
     String name,
     String notes
   ) throws WalletLoadException, WalletVersionException, IOException {
@@ -306,7 +306,7 @@ public enum WalletManager implements WalletEventListener {
     }
 
     // Create a wallet using the seed and password
-    DeterministicSeed deterministicSeed = new DeterministicSeed(seed, creationTimeInSeconds);
+    DeterministicSeed deterministicSeed = new DeterministicSeed(seed, password, creationTimeInSeconds);
     Wallet walletToReturn = Wallet.fromSeed(networkParameters, deterministicSeed);
     walletToReturn.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
     walletToReturn.encrypt(password);

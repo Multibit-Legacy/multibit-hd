@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import static com.google.bitcoin.core.Coin.parseCoin;
@@ -61,7 +62,7 @@ public class FeeServicesTest {
    */
   private static final NetworkParameters NETWORK_PARAMETERS = MainNetParams.get();
 
-  private final CharSequence WALLET_PASSWORD = "horatio nelson 123";
+  private final String WALLET_PASSWORD = "horatio nelson 123";
   private Wallet wallet1;
 
   /**
@@ -94,8 +95,9 @@ public class FeeServicesTest {
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(BRITWalletIdTest.SEED_PHRASE_1));
 
+
     // Create the wallet 'wallet1'
-    createWallet(seed, WALLET_PASSWORD);
+    createWallet(Bip39SeedPhraseGenerator.split(BRITWalletIdTest.SEED_PHRASE_1), WALLET_PASSWORD);
 
     toKey1 = wallet1.freshReceiveKey();
     toAddress1 = toKey1.toAddress(NETWORK_PARAMETERS);
@@ -176,10 +178,9 @@ public class FeeServicesTest {
     assertThat(upperLimitOfNextFeeSendCount).isGreaterThanOrEqualTo(feeState.getNextFeeSendCount());
   }
 
-  private void createWallet(byte[] seed, CharSequence password) throws Exception {
-
-    DeterministicSeed deterministicSeed = new DeterministicSeed(seed, DateTime.now().getMillis());
-    KeyChainGroup keyChainGroup = new KeyChainGroup(deterministicSeed);
+  private void createWallet(List<String> mnemonicCode, String password) throws Exception {
+    DeterministicSeed deterministicSeed = new DeterministicSeed( mnemonicCode, password, DateTime.now().getMillis() / 1000);
+    KeyChainGroup keyChainGroup = new KeyChainGroup(NETWORK_PARAMETERS, deterministicSeed);
 
     wallet1 = new Wallet(MainNetParams.get(), keyChainGroup);
 

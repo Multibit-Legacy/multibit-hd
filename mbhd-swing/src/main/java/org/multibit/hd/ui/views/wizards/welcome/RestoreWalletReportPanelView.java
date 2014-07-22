@@ -326,7 +326,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
   /**
    * Create a wallet from a seed phrase, timestamp and password
    */
-  private boolean createWalletFromSeedPhraseAndTimestamp(List<String> seedPhrase, String timestamp, CharSequence password) {
+  private boolean createWalletFromSeedPhraseAndTimestamp(List<String> seedPhrase, String timestamp, String password) {
 
     if (!verifySeedPhrase(seedPhrase)) return false;
 
@@ -356,7 +356,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       // Initialise the WalletService with the newly created wallet, which provides transaction information from the wallet
       Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
 
-      WalletManager.writeEncryptedPasswordAndBackupKey(currentWalletSummary.get(), seed, (String) password);
+      WalletManager.writeEncryptedPasswordAndBackupKey(currentWalletSummary.get(), seed, password);
 
       String walletRoot = WalletManager.createWalletRoot(currentWalletSummary.get().getWalletId());
       File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);

@@ -22,7 +22,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class CoreServicesTest {
 
-  private static final CharSequence PASSWORD = "bingAbongADingDong";
+  private static final String PASSWORD = "bingAbongADingDong";
 
   @Before
   public void setUp() throws Exception {
