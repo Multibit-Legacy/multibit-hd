@@ -3,6 +3,7 @@ package org.multibit.hd.ui.fest.requirements;
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.tools.ShowToolsScreenUseCase;
+import org.multibit.hd.ui.fest.use_cases.tools.about.ShowThenCancelAboutUseCase;
 import org.multibit.hd.ui.fest.use_cases.tools.empty_wallet.ShowThenCancelEmptyWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.tools.repair_wallet.ShowThenCancelRepairWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.tools.sign_message.ShowThenFinishSignMessageUseCase;
@@ -41,10 +42,8 @@ public class ToolsScreenRequirements {
     // Show the sign message wizard
     new ShowThenFinishSignMessageUseCase(window).execute(parameters);
 
-
     // Show then cancel the "about" wizard
-    // TODO Reinstate this
-    //new ShowThenCancelAboutUseCase(window).execute(parameters);
+    new ShowThenCancelAboutUseCase(window).execute(parameters);
 
   }
 }

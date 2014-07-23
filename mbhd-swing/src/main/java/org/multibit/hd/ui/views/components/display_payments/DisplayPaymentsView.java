@@ -96,6 +96,8 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
         int count = 0;
         for (PaymentData paymentData : paymentDataList) {
 
+          // TODO Address the EDT violation occurring here
+
           // Time label
           JLabel timeLabel = Labels.newBlankLabel();
           // Display in the system timezone

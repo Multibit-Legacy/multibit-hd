@@ -222,8 +222,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   @Test
   public void verifySendRequestScreen() throws Exception {
 
-    // Start with the empty wallet fixture
-    arrangeEmpty();
+    // Start with the standard wallet fixture (require contacts)
+    arrangeStandard();
 
     // Unlock the wallet
     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
@@ -393,7 +393,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   }
 
   /**
-   * <p>Starts MultiBit HD with an application directory containing a standard wallet fixture containing real transactions</p>
+   * <p>Starts MultiBit HD with an application directory containing a standard wallet fixture containing real transactions and contacts</p>
    *
    * @throws Exception If something goes wrong
    */

@@ -89,7 +89,7 @@ public class Themes {
 
     // TODO Introduce a theme-aware font factory for components to use
 
-    // TODO Add this to the configuration
+    // TODO Add this to the configuration in appearance for visually impaired users
     float multiplier = 1.0f;
     UIDefaults defaults = UIManager.getDefaults();
 
