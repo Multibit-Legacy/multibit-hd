@@ -1,6 +1,7 @@
 package org.multibit.hd.core.services;
 
 import com.google.bitcoin.core.Address;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -129,7 +130,7 @@ public class PersistentContactService implements ContactService {
   @Override
   public List<Contact> filterContactsByBitcoinAddress(Address address) {
 
-    Preconditions.checkNotNull(address,"'address' must be present");
+    Preconditions.checkNotNull(address, "'address' must be present");
 
     String queryAddress = address.toString();
 
@@ -161,17 +162,17 @@ public class PersistentContactService implements ContactService {
         continue;
       }
 
-      // TODO Add support for EPK in later releases
+      // TODO Add support for xpub in later releases
       // TODO (GR) Consider regex matching
 
-      // Note: Do not include a Bitcoin address or EPK in this search
+      // Note: Do not include a Bitcoin address or xpub in this search
       // because vanity addresses can cause an attack vector
       // Instead use the dedicated methods for those fields
       final boolean isNameMatched;
       final boolean isEmailMatched;
       final boolean isNoteMatched;
       if ("*".equals(query)) {
-        // Note: Do not include a Bitcoin address or EPK in this search
+        // Note: Do not include a Bitcoin address or xpub in this search
         // because vanity addresses can cause an attack vector
         // Instead use the dedicated methods for those fields
         isNameMatched = true;
@@ -179,7 +180,7 @@ public class PersistentContactService implements ContactService {
         isNoteMatched = true;
 
       } else {
-        // Note: Do not include a Bitcoin address or EPK in this search
+        // Note: Do not include a Bitcoin address or xpub in this search
         // because vanity addresses can cause an attack vector
         // Instead use the dedicated methods for those fields
         isNameMatched = contact.getName().toLowerCase().contains(lowerQuery);
@@ -209,6 +210,41 @@ public class PersistentContactService implements ContactService {
   }
 
   @Override
+  public Optional<Contact> filterContactsForSingleMatch(String query, boolean excludeNotPayable) {
+
+    Preconditions.checkNotNull(query, "'query' must be present. Use * for wildcard.");
+
+    String lowerQuery = query.toLowerCase();
+
+    List<Contact> filteredContacts = Lists.newArrayList();
+
+    for (Contact contact : contacts) {
+
+      // No Bitcoin address and excluding not payable
+      if (excludeNotPayable && Strings.isNullOrEmpty(contact.getBitcoinAddress().or("").trim())) {
+        continue;
+      }
+
+      // Note: Do not include a Bitcoin address or xpub in this search
+      // because vanity addresses can cause an attack vector
+      // Instead use the dedicated methods for those fields
+
+      // We apply a stricter rule here to force a single match
+      if (contact.getName().toLowerCase().equals(lowerQuery)) {
+        filteredContacts.add(contact);
+      }
+    }
+
+    // Test for exactly one match
+    if (filteredContacts.size() == 1) {
+      return Optional.of(filteredContacts.get(0));
+    }
+
+    // Must have failed to be here
+    return Optional.absent();
+  }
+
+  @Override
   public void addAll(Collection<Contact> selectedContacts) {
 
     contacts.addAll(selectedContacts);
@@ -222,9 +258,9 @@ public class PersistentContactService implements ContactService {
 
     try {
       ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(backingStoreFile,
-              WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(),
-              WalletManager.SCRYPT_SALT,
-              WalletManager.AES_INITIALISATION_VECTOR);
+        WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(),
+        WalletManager.SCRYPT_SALT,
+        WalletManager.AES_INITIALISATION_VECTOR);
       Set<Contact> loadedContacts = protobufSerializer.readContacts(decryptedInputStream);
       contacts.clear();
       contacts.addAll(loadedContacts);

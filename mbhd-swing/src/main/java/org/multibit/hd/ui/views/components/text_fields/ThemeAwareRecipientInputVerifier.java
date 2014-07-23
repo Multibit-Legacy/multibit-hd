@@ -5,6 +5,7 @@ import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.services.ContactService;
@@ -13,7 +14,6 @@ import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 
 /**
  * <p>Input verifier to provide the following to UI:</p>
@@ -59,7 +59,7 @@ public class ThemeAwareRecipientInputVerifier extends InputVerifier {
 
       String text = textField.getText();
 
-      if (text != null) {
+      if (!Strings.isNullOrEmpty(text)) {
 
         // Treat as an address first
         final Optional<Address> enteredAddress = verifyBitcoinAddress(text);
@@ -75,10 +75,11 @@ public class ThemeAwareRecipientInputVerifier extends InputVerifier {
         } else {
 
           // Try again as a recipient
-          List<Contact> contacts = contactService.filterContactsByContent(text, true);
-          if (contacts.size() == 1) {
+          Optional<Contact> contactOptional = contactService.filterContactsForSingleMatch(text, true);
+          if (contactOptional.isPresent()) {
 
-            Contact contact = contacts.get(0);
+            Contact contact = contactOptional.get();
+
             // Verify that the only possibility has a valid Bitcoin address
             Optional<String> bitcoinAddress = contact.getBitcoinAddress();
             if (bitcoinAddress.isPresent()) {

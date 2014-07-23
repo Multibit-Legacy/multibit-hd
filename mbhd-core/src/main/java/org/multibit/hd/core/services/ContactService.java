@@ -47,12 +47,24 @@ public interface ContactService {
   List<Contact> filterContactsByBitcoinAddress(Address address);
 
   /**
+   * <p>Perform a wide search across all fields to find any matching contact</p>
+   *
    * @param query             The text to match across all fields (name, tags, notes etc)
-   * @param excludeNotPayable True if contacts with no Bitcoin address or EPK should be excluded
+   * @param excludeNotPayable True if contacts with no Bitcoin address or xpub should be excluded
    *
    * @return Any matching contacts
    */
   List<Contact> filterContactsByContent(String query, boolean excludeNotPayable);
+
+  /**
+   * <p>Perform a narrow search across name for a single contact</p>
+   *
+   * @param query             The text to match across name
+   * @param excludeNotPayable True if contacts with no Bitcoin address or xpub should be excluded
+   *
+   * @return The single matching contact if present
+   */
+  com.google.common.base.Optional<Contact> filterContactsForSingleMatch(String query, boolean excludeNotPayable);
 
   /**
    * @param selectedContacts The selected contacts to add to the store
