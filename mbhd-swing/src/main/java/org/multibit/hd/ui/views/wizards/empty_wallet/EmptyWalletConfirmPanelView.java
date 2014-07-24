@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.wizards.empty_wallet;
 
 import com.google.bitcoin.core.Coin;
+import com.google.bitcoin.core.Transaction;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.brit.dto.FeeState;
@@ -147,41 +148,30 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
     transactionFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
     transactionFeeDisplayAmountMaV.getView().updateView(configuration);
 
-    // Update the model and view for the developer fee
+    // Update the model and view for the client fee
     Optional<FeeState> feeStateOptional = getWizardModel().calculateBRITFeeState();
+    log.debug("Fee state at beforeShow {0}", feeStateOptional);
     String feeText;
     if (feeStateOptional.isPresent()) {
       FeeState feeState = feeStateOptional.get();
 
-      if (feeState.getCurrentNumberOfSends() == feeState.getNextFeeSendCount()) {
-
-        // The fee is due now - so check for zero owing due to dust/force etc
-        if (feeState.getFeeOwed().compareTo(Coin.ZERO) == 0) {
-          feeText = "";
-        } else {
-          feeText = Languages.safeText(MessageKey.CLIENT_FEE_NOW);
-        }
-
-      } else if (feeState.getFeeOwed().compareTo(Coin.ZERO) < 0) {
+      // With an empty wallet you always pay the client fee now (if above the dust level)
+      if (feeState.getFeeOwed().compareTo(Coin.ZERO) < 0) {
         // The user has overpaid
         feeText = Languages.safeText(MessageKey.CLIENT_FEE_OVERPAID);
-      } else {
-        // It is due later
-        int dueLater = feeState.getNextFeeSendCount() - feeState.getCurrentNumberOfSends();
-        if (dueLater == 1) {
-          feeText = Languages.safeText(MessageKey.CLIENT_FEE_LATER_SINGULAR, dueLater);
+      }  else {
+        if (feeState.getFeeOwed().compareTo(Transaction.MIN_NONDUST_OUTPUT) <= 0) {
+          //Below dust limit
+          feeText = "";
         } else {
-          feeText = Languages.safeText(MessageKey.CLIENT_FEE_LATER_PLURAL, dueLater);
+          // The fee is due now
+          feeText = Languages.safeText(MessageKey.CLIENT_FEE_NOW);
+          clientFeeDisplayAmountMaV.getModel().setCoinAmount(feeState.getFeeOwed());
+          clientFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
+          clientFeeDisplayAmountMaV.getView().updateView(configuration);
         }
       }
-
-      clientFeeDisplayAmountMaV.getModel().setCoinAmount(feeState.getFeeOwed());
-      clientFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
-      clientFeeDisplayAmountMaV.getView().updateView(configuration);
-
-    } else
-
-    {
+    } else {
       // Possibly no wallet loaded
       feeText = "";
     }

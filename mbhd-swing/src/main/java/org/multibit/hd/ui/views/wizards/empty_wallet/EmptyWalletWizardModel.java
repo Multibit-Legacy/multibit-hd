@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.empty_wallet;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.Coin;
+import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -249,10 +250,10 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
 
 
     Address bitcoinAddress = enterDetailsPanelModel
-      .getEnterRecipientModel()
-      .getRecipient()
-      .get()
-      .getBitcoinAddress();
+            .getEnterRecipientModel()
+            .getRecipient()
+            .get()
+            .getBitcoinAddress();
 
     // Create the fiat payment - note that the fiat amount is not populated, only the exchange rate data.
     // This is because the client and transaction fee is only worked out at point of sending, and the fiat equivalent is computed from that
@@ -261,7 +262,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     if (exchangeRateChangedEvent.isPresent()) {
       fiatPayment = Optional.of(new FiatPayment());
       fiatPayment.get().setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
-       // A send is denoted with a negative fiat amount
+      // A send is denoted with a negative fiat amount
       fiatPayment.get().setAmount(Optional.<BigDecimal>absent());
       fiatPayment.get().setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
       fiatPayment.get().setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
@@ -275,20 +276,28 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
 
     // Send the bitcoins
     final SendRequestSummary sendRequestSummary = new SendRequestSummary(
-      bitcoinAddress,
-      coinAmount,
-      fiatPayment,
-      changeAddress,
-      BitcoinNetworkService.DEFAULT_FEE_PER_KB,
-      password,
-      feeState,
-      true);
+            bitcoinAddress,
+            coinAmount,
+            fiatPayment,
+            changeAddress,
+            BitcoinNetworkService.DEFAULT_FEE_PER_KB,
+            password,
+            feeState,
+            true);
     sendRequestSummary.setNotes(Optional.of(Languages.safeText(MessageKey.EMPTY_WALLET_TITLE)));
+
+    // Work out if a client fee is being paid now
+    if (feeState.isPresent()) {
+      // With an empty wallet you always pay the client fee now (if above the dust level)
+      if (feeState.get().getFeeOwed().compareTo(Transaction.MIN_NONDUST_OUTPUT) > 0) {
+        // The fee is due now
+        sendRequestSummary.setClientFeeAdded(Optional.of(feeState.get().getFeeOwed()));
+      }
+    }
 
     log.debug("Emptying wallet with: {}", sendRequestSummary);
     bitcoinNetworkService.send(sendRequestSummary);
 
     // The send throws TransactionCreationEvents and BitcoinSentEvents to which you subscribe to to work out success and failure.
-
   }
 }

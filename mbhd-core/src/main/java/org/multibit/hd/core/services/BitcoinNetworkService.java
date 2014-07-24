@@ -279,7 +279,7 @@ public class BitcoinNetworkService extends AbstractService {
     }
 
     // Build and append the client fee (if required)
-    if (!appendClientFee(sendRequestSummary)) {
+    if (!appendClientFee(sendRequestSummary, sendRequestSummary.isEmptyWallet())) {
       return false;
     }
 
@@ -354,6 +354,7 @@ public class BitcoinNetworkService extends AbstractService {
       );
       emptyWalletSendRequestSummary.setNotes(sendRequestSummary.getNotes());
       emptyWalletSendRequestSummary.setKeyParameter(sendRequestSummary.getKeyParameter().get());
+      emptyWalletSendRequestSummary.setClientFeeAdded(sendRequestSummary.getClientFeeAdded());
 
       // Attempt to build and append the send request as if it were standard
       // (This may now add on a client fee output and also adjust the size of the output amounts)
@@ -436,32 +437,28 @@ public class BitcoinNetworkService extends AbstractService {
    *
    * @return True if no error was encountered
    */
-  private boolean appendClientFee(SendRequestSummary sendRequestSummary) {
+  private boolean appendClientFee(SendRequestSummary sendRequestSummary, boolean forceNow) {
 
     log.debug("Appending client fee (if required)");
 
     final boolean isClientFeeRequired;
     if (sendRequestSummary.getFeeState().isPresent()) {
-
       int currentNumberOfSends = sendRequestSummary.getFeeState().get().getCurrentNumberOfSends();
       int nextFeeSendCount = sendRequestSummary.getFeeState().get().getNextFeeSendCount();
 
-      isClientFeeRequired = (currentNumberOfSends == nextFeeSendCount);
+      isClientFeeRequired = (currentNumberOfSends == nextFeeSendCount) || forceNow;
 
     } else {
-
       // Nothing more to be done
       return true;
     }
 
     // May need to add the client fee
     if (isClientFeeRequired) {
-
       Address feeAddress = sendRequestSummary.getFeeState().get().getNextFeeAddress();
       sendRequestSummary.setFeeAddress(feeAddress);
 
       log.debug("Added client fee to address: '{}'", feeAddress);
-
     }
 
     // Must be OK to be here
@@ -564,6 +561,7 @@ public class BitcoinNetworkService extends AbstractService {
           if (sendRequest.tx.getOutput(0).getValue().compareTo(Transaction.MIN_NONDUST_OUTPUT.add(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE)) > 0) {
             // There is enough bitcoin on the redemption output, decrease that
             sendRequest.tx.getOutput(0).setValue(sendRequest.tx.getOutput(0).getValue().subtract(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE));
+            log.debug("Adjusting transaction output 0 to  {0}", sendRequest.tx.getOutput(0).getValue());
           } else {
             // Try decreasing the client fee
             if (sendRequest.tx.getOutput(1).getValue().compareTo(Transaction.MIN_NONDUST_OUTPUT.add(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE)) > 0) {
@@ -571,12 +569,15 @@ public class BitcoinNetworkService extends AbstractService {
               Coin adjustedClientFee = sendRequest.tx.getOutput(1).getValue().subtract(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE);
               sendRequest.tx.getOutput(1).setValue(adjustedClientFee);
               sendRequestSummary.setClientFeeAdded(Optional.of(adjustedClientFee));
+              log.debug("Adjusting transaction output 1 to  {0}", adjustedClientFee);
             } else {
               // We cannot pay the mining fee for the extra client fee output so remove it.
               // Put back the original amount on the redemption output
               sendRequest.tx.clearOutputs();
               sendRequest.tx.addOutput(sendRequestSummary.getAmount(), sendRequestSummary.getDestinationAddress());
-              sendRequestSummary.setClientFeeAdded(Optional.<Coin>absent());              }
+              sendRequestSummary.setClientFeeAdded(Optional.<Coin>absent());
+              log.debug("Removing client fee as cannot be paid due to dust levels");
+            }
           }
         }
       }

@@ -94,4 +94,16 @@ public class FeeState {
   public Coin getFeeOwed() {
     return feeOwed;
   }
+
+  @Override
+  public String toString() {
+    return "FeeState{" +
+            "usingHardwiredBRITAddresses=" + usingHardwiredBRITAddresses +
+            ", nextFeeAddress=" + nextFeeAddress +
+            ", currentNumberOfSends=" + currentNumberOfSends +
+            ", nextFeeSendCount=" + nextFeeSendCount +
+            ", feePerSendSatoshi=" + feePerSendSatoshi +
+            ", feeOwed=" + feeOwed +
+            '}';
+  }
 }

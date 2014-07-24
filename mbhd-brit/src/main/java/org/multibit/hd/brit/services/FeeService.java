@@ -293,7 +293,7 @@ public class FeeService {
       }
     }
 
-    log.debug("Wallet at end of calculateFeeState: {}", wallet.toString(false, false, true, null));
+    //log.debug("Wallet at end of calculateFeeState: {}", wallet.toString(false, false, true, null));
 
     log.debug("The wallet has currentNumberOfSends = {}", currentNumberOfSends);
     log.debug("The wallet owes a GROSS total of {} satoshi in fees", grossFeeToBePaid);
