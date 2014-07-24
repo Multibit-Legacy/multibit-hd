@@ -355,6 +355,7 @@ public class BitcoinNetworkService extends AbstractService {
       emptyWalletSendRequestSummary.setNotes(sendRequestSummary.getNotes());
       emptyWalletSendRequestSummary.setKeyParameter(sendRequestSummary.getKeyParameter().get());
       emptyWalletSendRequestSummary.setClientFeeAdded(sendRequestSummary.getClientFeeAdded());
+      emptyWalletSendRequestSummary.setFeeAddress(sendRequestSummary.getFeeAddress());
 
       // Attempt to build and append the send request as if it were standard
       // (This may now add on a client fee output and also adjust the size of the output amounts)
@@ -456,9 +457,11 @@ public class BitcoinNetworkService extends AbstractService {
     // May need to add the client fee
     if (isClientFeeRequired) {
       Address feeAddress = sendRequestSummary.getFeeState().get().getNextFeeAddress();
-      sendRequestSummary.setFeeAddress(feeAddress);
+      sendRequestSummary.setFeeAddress(Optional.of(feeAddress));
 
       log.debug("Added client fee to address: '{}'", feeAddress);
+    } else {
+      log.debug("No client fee address added for this tx");
     }
 
     // Must be OK to be here
@@ -500,7 +503,7 @@ public class BitcoinNetworkService extends AbstractService {
   }
 
   /**
-   * <p>Build and append a Bitcoinj send request using the summary. This also calculates the final fees and fiat equivalents</p>
+   * <p>Build and append a Bitcoinj send request using the summary. This also calculates the final transaction fees and fiat equivalents</p>
    *
    * @param sendRequestSummary The information required to send bitcoin
    */
@@ -580,6 +583,8 @@ public class BitcoinNetworkService extends AbstractService {
             }
           }
         }
+      } else {
+        log.debug("Not adding client fee output due to !sendRequest.emptyWallet = {0} or sendRequestSummary.getFeeAddress().isPresent() = {1}", sendRequest.emptyWallet, sendRequestSummary.getFeeAddress().isPresent());
       }
 
       // Append the Bitcoinj send request to the summary

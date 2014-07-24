@@ -333,7 +333,7 @@ public class FeeService {
     for (Transaction transaction : transactions) {
       if (transaction.getValueSentFromMe(wallet).compareTo(Coin.ZERO) > 0) {
         if (transaction.getConfidence() != null && TransactionConfidence.Source.SELF.equals(transaction.getConfidence().getSource())) {
-          // This transaction sends from self
+          // This transaction sends from self - this will exclude unconfirmed tx
           sendTransactions.add(transaction);
         }
       }

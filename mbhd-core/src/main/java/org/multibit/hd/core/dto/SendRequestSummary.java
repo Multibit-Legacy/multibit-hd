@@ -150,8 +150,8 @@ public class SendRequestSummary {
     this.emptyWallet = emptyWallet;
   }
 
-  public void setFeeAddress(Address feeAddress) {
-    this.feeAddress = Optional.fromNullable(feeAddress);
+  public void setFeeAddress(Optional<Address> feeAddress) {
+    this.feeAddress = feeAddress;
   }
 
   /**
