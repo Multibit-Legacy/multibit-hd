@@ -213,7 +213,7 @@ public class BitcoinNetworkService extends AbstractService {
     log.info("Starting replay of wallet with id '" + WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId()
             + "' from date " + dateToReplayFrom);
 
-    // TODO (JB) The current best height should be remembered and used to generate percentage complete as
+    // TODO (JB) The current best height should be remembered and used to generate percentage completeWithoutSigning as
     // TODO (JB) then if the peer is replaced the percentage increases monotonically
 
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
@@ -277,115 +277,153 @@ public class BitcoinNetworkService extends AbstractService {
       return false;
     }
 
-    // Build and append the client fee (if required)
-    if (!appendClientFee(sendRequestSummary, sendRequestSummary.isEmptyWallet())) {
+    // Attempt to sign the transaction and signAndCommit it
+    if (!signAndCommit(sendRequestSummary, wallet)) {
       return false;
     }
 
-    if (!sendRequestSummary.isEmptyWallet()) {
-
-      // This is a standard send so proceed as normal
-      log.debug("Treating as standard send");
-
-      // Attempt to build and append the send request as if it were standard
-      if (!appendSendRequest(sendRequestSummary)) {
-        return false;
-      }
-
-      // Attempt to complete it
-      if (!complete(sendRequestSummary, wallet)) {
-        return false;
-      }
-
-      // Set the fiat equivalent amount into the sendRequestSummary - this will take into account the transaction fee and client fee
-      if (!setFiatEquivalent(sendRequestSummary)) {
-        // The setting of the fiat amount failed, but the send can continue
-        log.warn("No fiat information was set for sendRequestSummary {}", sendRequestSummary.toString());
-      }
-
-      // Attempt to commit it
-      if (!commit(sendRequestSummary, wallet)) {
-        return false;
-      }
-
-      // Attempt to broadcast it
-      if (!broadcast(sendRequestSummary, wallet)) {
-        return false;
-      }
-
-    } else {
-      // This is an empty wallet so perform a dry run to get fees
-      log.debug("Treating as an 'empty wallet' send");
-
-      // Attempt to build and append the send request as if it were standard
-      if (!appendSendRequest(sendRequestSummary)) {
-        return false;
-      }
-
-      // Attempt to complete it
-      if (!complete(sendRequestSummary, wallet)) {
-        return false;
-      }
-
-      log.debug("Adjusting outputs using 'dry run' values");
-
-      // Examine the result to determine miner fees - the calculated maximum amount is put on the (single) tx output
-      Wallet.SendRequest sendRequest = sendRequestSummary.getSendRequest().get();
-
-      // Determine the maximum amount allowing for client fees
-      Coin recipientAmount = sendRequest.tx.getOutput(0).getValue();
-      Coin clientFeeAmount = sendRequestSummary.getFeeState().get().getFeeOwed();
-
-      // Adjust the send request summary accordingly
-      recipientAmount = recipientAmount.subtract(clientFeeAmount);
-      log.debug("Adjusted recipientAmount = " + recipientAmount.toString() + ", clientFeeAmount = " + clientFeeAmount.toString());
-
-      // Update the SendRequestSummary with the new values and ensure it is not an "empty wallet"
-      SendRequestSummary emptyWalletSendRequestSummary = new SendRequestSummary(
-              sendRequestSummary.getDestinationAddress(),
-              recipientAmount,
-              sendRequestSummary.getFiatPayment(),
-              sendRequestSummary.getChangeAddress(),
-              sendRequestSummary.getFeePerKB(),
-              sendRequestSummary.getPassword(),
-              sendRequestSummary.getFeeState(),
-              false
-      );
-      emptyWalletSendRequestSummary.setNotes(sendRequestSummary.getNotes());
-      emptyWalletSendRequestSummary.setKeyParameter(sendRequestSummary.getKeyParameter().get());
-      emptyWalletSendRequestSummary.setClientFeeAdded(sendRequestSummary.getClientFeeAdded());
-      emptyWalletSendRequestSummary.setFeeAddress(sendRequestSummary.getFeeAddress());
-
-      // Attempt to build and append the send request as if it were standard
-      // (This may now add on a client fee output and also adjust the size of the output amounts)
-      if (!appendSendRequest(emptyWalletSendRequestSummary)) {
-        return false;
-      }
-
-      // Attempt to complete it
-      if (!complete(emptyWalletSendRequestSummary, wallet)) {
-        return false;
-      }
-
-      // Set the fiat equivalent amount into the emptyWalletSendRequestSummary - this will take into account the transaction fee and client fee
-      setFiatEquivalent(emptyWalletSendRequestSummary);
-
-      // Attempt to commit it
-      if (!commit(emptyWalletSendRequestSummary, wallet)) {
-        return false;
-      }
-
-      // Attempt to broadcast it
-      if (!broadcast(emptyWalletSendRequestSummary, wallet)) {
-        return false;
-      }
+    // Attempt to broadcast it
+    if (!broadcast(sendRequestSummary, wallet)) {
+      return false;
     }
 
     // Must be OK to be here
     log.debug("Send coins has completed");
 
     return true;
+
   }
+
+//  /**
+//   * @param sendRequestSummary The information required to send bitcoin
+//   * @return The send request
+//   */
+//  private boolean performSend(SendRequestSummary sendRequestSummary) {
+//    log.debug("Starting the send process");
+//
+//    // Verify the wallet summary
+//    if (!checkWalletSummary(sendRequestSummary)) {
+//      log.debug("Wallet summary check fail");
+//      return false;
+//    }
+//
+//    // Get the current wallet
+//    Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
+//
+//    // Derive and append the key parameter to unlock the wallet
+//    if (!appendKeyParameter(sendRequestSummary, wallet)) {
+//      return false;
+//    }
+//
+//    // Build and append the client fee (if required)
+//    if (!appendClientFee(sendRequestSummary, sendRequestSummary.isEmptyWallet())) {
+//      return false;
+//    }
+//
+//    if (!sendRequestSummary.isEmptyWallet()) {
+//
+//      // This is a standard send so proceed as normal
+//      log.debug("Treating as standard send");
+//
+//      // Attempt to build and append the send request as if it were standard
+//      if (!appendSendRequest(sendRequestSummary)) {
+//        return false;
+//      }
+//
+//      // Attempt to completeWithoutSigning it
+//      if (!completeWithoutSigning(sendRequestSummary, wallet)) {
+//        return false;
+//      }
+//
+//      // Set the fiat equivalent amount into the sendRequestSummary - this will take into account the transaction fee and client fee
+//      if (!setFiatEquivalent(sendRequestSummary)) {
+//        // The setting of the fiat amount failed, but the send can continue
+//        log.warn("No fiat information was set for sendRequestSummary {}", sendRequestSummary.toString());
+//      }
+//
+//      // Attempt to signAndCommit it
+//      if (!signAndCommit(sendRequestSummary, wallet)) {
+//        return false;
+//      }
+//
+//      // Attempt to broadcast it
+//      if (!broadcast(sendRequestSummary, wallet)) {
+//        return false;
+//      }
+//
+//    } else {
+//      // This is an empty wallet so perform a dry run to get fees
+//      log.debug("Treating as an 'empty wallet' send");
+//
+//      // Attempt to build and append the send request as if it were standard
+//      if (!appendSendRequest(sendRequestSummary)) {
+//        return false;
+//      }
+//
+//      // Attempt to completeWithoutSigning it
+//      if (!completeWithoutSigning(sendRequestSummary, wallet)) {
+//        return false;
+//      }
+//
+//      log.debug("Adjusting outputs using 'dry run' values");
+//
+//      // Examine the result to determine miner fees - the calculated maximum amount is put on the (single) tx output
+//      Wallet.SendRequest sendRequest = sendRequestSummary.getSendRequest().get();
+//
+//      // Determine the maximum amount allowing for client fees
+//      Coin recipientAmount = sendRequest.tx.getOutput(0).getValue();
+//      Coin clientFeeAmount = sendRequestSummary.getFeeState().get().getFeeOwed();
+//
+//      // Adjust the send request summary accordingly
+//      recipientAmount = recipientAmount.subtract(clientFeeAmount);
+//      log.debug("Adjusted recipientAmount = " + recipientAmount.toString() + ", clientFeeAmount = " + clientFeeAmount.toString());
+//
+//      // Update the SendRequestSummary with the new values and ensure it is not an "empty wallet"
+//      SendRequestSummary emptyWalletSendRequestSummary = new SendRequestSummary(
+//              sendRequestSummary.getDestinationAddress(),
+//              recipientAmount,
+//              sendRequestSummary.getFiatPayment(),
+//              sendRequestSummary.getChangeAddress(),
+//              sendRequestSummary.getFeePerKB(),
+//              sendRequestSummary.getPassword(),
+//              sendRequestSummary.getFeeState(),
+//              false
+//      );
+//      emptyWalletSendRequestSummary.setNotes(sendRequestSummary.getNotes());
+//      emptyWalletSendRequestSummary.setKeyParameter(sendRequestSummary.getKeyParameter().get());
+//      emptyWalletSendRequestSummary.setClientFeeAdded(sendRequestSummary.getClientFeeAdded());
+//      emptyWalletSendRequestSummary.setFeeAddress(sendRequestSummary.getFeeAddress());
+//
+//      // Attempt to build and append the send request as if it were standard
+//      // (This may now add on a client fee output and also adjust the size of the output amounts)
+//      if (!appendSendRequest(emptyWalletSendRequestSummary)) {
+//        return false;
+//      }
+//
+//      // Attempt to completeWithoutSigning it
+//      if (!completeWithoutSigning(emptyWalletSendRequestSummary, wallet)) {
+//        return false;
+//      }
+//
+//      // Set the fiat equivalent amount into the emptyWalletSendRequestSummary - this will take into account the transaction fee and client fee
+//      setFiatEquivalent(emptyWalletSendRequestSummary);
+//
+//      // Attempt to signAndCommit it
+//      if (!signAndCommit(emptyWalletSendRequestSummary, wallet)) {
+//        return false;
+//      }
+//
+//      // Attempt to broadcast it
+//      if (!broadcast(emptyWalletSendRequestSummary, wallet)) {
+//        return false;
+//      }
+//    }
+//
+//    // Must be OK to be here
+//    log.debug("Send coins has completed");
+//
+//    return true;
+//  }
 
   /**
    * @param sendRequestSummary The information required to send bitcoin
@@ -621,6 +659,107 @@ public class BitcoinNetworkService extends AbstractService {
   }
 
   /**
+   * @param sendRequestSummary The information required to prepare a transaction for sending (this is everything except the password)
+   * @return whether the prepareTransaction was successful or not
+   */
+  public boolean prepareTransaction(SendRequestSummary sendRequestSummary) {
+    log.debug("Starting the prepare transaction process");
+
+    // Verify the wallet summary
+    if (!checkWalletSummary(sendRequestSummary)) {
+      log.debug("Wallet summary check fail");
+      return false;
+    }
+
+    // Get the current wallet
+    Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
+
+    // Build and append the client fee (if required)
+    if (!appendClientFee(sendRequestSummary, sendRequestSummary.isEmptyWallet())) {
+      return false;
+    }
+
+    if (!sendRequestSummary.isEmptyWallet()) {
+
+      // This is a standard send so proceed as normal
+      log.debug("Treating as standard send");
+
+      // Attempt to build and append the send request as if it were standard
+      if (!appendSendRequest(sendRequestSummary)) {
+        return false;
+      }
+
+      // Attempt to completeWithoutSigning it
+      if (!completeWithoutSigning(sendRequestSummary, wallet)) {
+        return false;
+      }
+
+      // Set the fiat equivalent amount into the sendRequestSummary - this will take into account the transaction fee and client fee
+      setFiatEquivalent(sendRequestSummary);
+    } else {
+      // This is an empty wallet so perform a dry run to get fees
+      log.debug("Treating as an 'empty wallet' send");
+
+      // Attempt to build and append the send request as if it were standard
+      if (!appendSendRequest(sendRequestSummary)) {
+        return false;
+      }
+
+      // Attempt to completeWithoutSigning it
+      if (!completeWithoutSigning(sendRequestSummary, wallet)) {
+        return false;
+      }
+
+      log.debug("Adjusting outputs using 'dry run' values");
+
+      // Examine the result to determine miner fees - the calculated maximum amount is put on the (single) tx output
+      Wallet.SendRequest sendRequest = sendRequestSummary.getSendRequest().get();
+
+      // Determine the maximum amount allowing for client fees
+      Coin recipientAmount = sendRequest.tx.getOutput(0).getValue();
+      Coin clientFeeAmount = sendRequestSummary.getFeeState().get().getFeeOwed();
+
+      // Adjust the send request summary accordingly
+      recipientAmount = recipientAmount.subtract(clientFeeAmount);
+      log.debug("Adjusted recipientAmount = " + recipientAmount.toString() + ", clientFeeAmount = " + clientFeeAmount.toString());
+
+      // Update the SendRequestSummary with the new values and ensure it is not an "empty wallet"
+      SendRequestSummary emptyWalletSendRequestSummary = new SendRequestSummary(
+              sendRequestSummary.getDestinationAddress(),
+              recipientAmount,
+              sendRequestSummary.getFiatPayment(),
+              sendRequestSummary.getChangeAddress(),
+              sendRequestSummary.getFeePerKB(),
+              sendRequestSummary.getPassword(),
+              sendRequestSummary.getFeeState(),
+              false
+      );
+      emptyWalletSendRequestSummary.setNotes(sendRequestSummary.getNotes());
+      emptyWalletSendRequestSummary.setKeyParameter(sendRequestSummary.getKeyParameter().get());
+
+      // Attempt to build and append the send request as if it were standard
+      // (This may now add on a client fee output and also adjust the size of the output amounts)
+      if (!appendSendRequest(emptyWalletSendRequestSummary)) {
+        return false;
+      }
+
+      // Attempt to completeWithoutSigning it
+      if (!completeWithoutSigning(emptyWalletSendRequestSummary, wallet)) {
+        return false;
+      }
+
+      // Set the fiat equivalent amount into the emptyWalletSendRequestSummary - this will take into account the transaction fee and client fee
+      setFiatEquivalent(emptyWalletSendRequestSummary);
+    }
+
+    // Must be OK to be here
+    log.debug("Prepare transaction has completed");
+
+    return true;
+
+  }
+
+  /**
    * Work out the fiat equivalent of the total bitcoin amount being spent.
    * This includes the transaction fee and the client fee.
    * The exchange rate used is already set into the SendRequestSummary.fiatPayment by the UI models
@@ -676,11 +815,12 @@ public class BitcoinNetworkService extends AbstractService {
   }
 
   /**
+   * Complete the transaction to work out the fees but DO NOT sign it yet
    * @param sendRequestSummary The information required to send bitcoin
    * @param wallet             The wallet
-   * @return True if the complete and commit operations were successful
+   * @return True if the completeWithoutSigning and signAndCommit operations were successful
    */
-  private boolean complete(SendRequestSummary sendRequestSummary, Wallet wallet) {
+  private boolean completeWithoutSigning(SendRequestSummary sendRequestSummary, Wallet wallet) {
 
     log.debug("Completing send request...");
 
@@ -688,7 +828,8 @@ public class BitcoinNetworkService extends AbstractService {
 
     try {
 
-      // Complete it (works out fee and signs tx)
+      // Complete it (works out fee) but DO NOT sign it
+      sendRequest.signInputs=false;
       wallet.completeTx(sendRequest);
 
     } catch (Exception e) {
@@ -722,15 +863,17 @@ public class BitcoinNetworkService extends AbstractService {
   /**
    * @param sendRequestSummary The information required to send bitcoin
    * @param wallet             The wallet
-   * @return True if the complete and commit operations were successful
+   * @return True if the completeWithoutSigning and signAndCommit operations were successful
    */
-  private boolean commit(SendRequestSummary sendRequestSummary, Wallet wallet) {
+  private boolean signAndCommit(SendRequestSummary sendRequestSummary, Wallet wallet) {
 
     log.debug("Committing send request...");
 
     Wallet.SendRequest sendRequest = sendRequestSummary.getSendRequest().get();
 
     try {
+      // Sign the transaction
+      sendRequest.tx.signInputs(Transaction.SigHash.ALL, wallet, sendRequestSummary.getKeyParameter().get());
 
       // Commit to the wallet (informs the wallet of the transaction)
       wallet.commitTx(sendRequest.tx);
@@ -996,7 +1139,7 @@ public class BitcoinNetworkService extends AbstractService {
   }
 
   /**
-   * <p>Stops the current peer group blocking until complete</p>
+   * <p>Stops the current peer group blocking until completeWithoutSigning</p>
    */
   private void stopPeerGroup() {
 
