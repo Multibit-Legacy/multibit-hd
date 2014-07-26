@@ -22,7 +22,6 @@ public class SendRequestSummary {
   private final Optional<FiatPayment> fiatPayment;
   private final Address changeAddress;
   private final Coin feePerKB;
-  private final CharSequence password;
   private final Optional<FeeState> feeState;
 
   // Mutable values
@@ -31,6 +30,7 @@ public class SendRequestSummary {
   private Optional<KeyParameter> keyParameter = Optional.absent();
   private Optional<Wallet.SendRequest> sendRequest = Optional.absent();
   private Optional<String> notes = Optional.absent();
+  private String password;
 
   /**
    * The client fee added to the sendRequest.tx
@@ -56,7 +56,7 @@ public class SendRequestSummary {
     Optional<FiatPayment> fiatPayment,
     Address changeAddress,
     Coin feePerKB,
-    CharSequence password,
+    String password,
     Optional<FeeState> feeState,
     boolean emptyWallet) {
 
@@ -121,8 +121,12 @@ public class SendRequestSummary {
   /**
    * @return The wallet password
    */
-  public CharSequence getPassword() {
+  public String getPassword() {
     return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
   }
 
   /**
