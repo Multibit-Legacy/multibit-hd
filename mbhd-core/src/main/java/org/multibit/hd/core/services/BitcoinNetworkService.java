@@ -741,7 +741,7 @@ public class BitcoinNetworkService extends AbstractService {
    */
   private boolean signAndCommit(SendRequestSummary sendRequestSummary, Wallet wallet) {
 
-    log.debug("Committing send request...");
+    log.debug("Signing and committing send request...");
 
     Wallet.SendRequest sendRequest = sendRequestSummary.getSendRequest().get();
 
@@ -917,7 +917,6 @@ public class BitcoinNetworkService extends AbstractService {
     Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
 
     return wallet.freshKey(KeyChain.KeyPurpose.CHANGE).toAddress(networkParameters);
-
   }
 
   /**
@@ -968,7 +967,6 @@ public class BitcoinNetworkService extends AbstractService {
 
     // All DNS seeds failed
     return false;
-
   }
 
   /**
@@ -992,7 +990,6 @@ public class BitcoinNetworkService extends AbstractService {
         // Internal bug in Bitcoinj
       }
     }
-
   }
 
   /**
@@ -1009,7 +1006,6 @@ public class BitcoinNetworkService extends AbstractService {
         }
       }
     }
-
   }
 
   /**
@@ -1029,7 +1025,6 @@ public class BitcoinNetworkService extends AbstractService {
       peerGroup.stopAsync();
       log.debug("Service peerGroup stopped");
     }
-
   }
 
   /**

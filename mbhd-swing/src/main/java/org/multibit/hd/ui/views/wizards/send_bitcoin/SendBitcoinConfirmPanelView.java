@@ -211,9 +211,7 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
       clientFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
       clientFeeDisplayAmountMaV.getView().updateView(configuration);
 
-    } else
-
-    {
+    } else {
       // Possibly no wallet loaded
       feeText = "";
     }

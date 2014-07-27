@@ -213,7 +213,5 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
       WizardButton.NEXT,
       true
     );
-
   }
-
 }
