@@ -284,6 +284,10 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
             password,
             feeState,
             true);
+
+    // Prepare the transaction - this works out the fee etc
+    bitcoinNetworkService.prepareTransaction(sendRequestSummary);
+
     sendRequestSummary.setNotes(Optional.of(Languages.safeText(MessageKey.EMPTY_WALLET_TITLE)));
 
     // Work out if a client fee is being paid now

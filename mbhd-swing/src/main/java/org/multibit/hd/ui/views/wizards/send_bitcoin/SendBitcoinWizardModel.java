@@ -332,11 +332,6 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
             null,
             feeState,
             emptyWallet);
-    if (confirmPanelModel.getNotes() != null) {
-      sendRequestSummary.setNotes(Optional.of(confirmPanelModel.getNotes()));
-    } else {
-      sendRequestSummary.setNotes(Optional.<String>absent());
-    }
 
     log.debug("Just about to prepare transaction for sendRequestSummary: {}", sendRequestSummary);
     bitcoinNetworkService.prepareTransaction(sendRequestSummary);
@@ -348,10 +343,18 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     // Actually send the bitcoin by signing using the password, committing to the wallet and broadcasting to the Bitcoin network
     Preconditions.checkNotNull(confirmPanelModel);
 
+    // Copy the note into the sendRequestSummary
+    if (confirmPanelModel.getNotes() != null) {
+      sendRequestSummary.setNotes(Optional.of(confirmPanelModel.getNotes()));
+    } else {
+      sendRequestSummary.setNotes(Optional.<String>absent());
+    }
+
+    // Copy the password into the sendRequestSummary
+    sendRequestSummary.setPassword(confirmPanelModel.getPasswordModel().getValue());
+
     BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
     Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started");
-
-    sendRequestSummary.setPassword(confirmPanelModel.getPasswordModel().getValue());
 
     log.debug("Just about to send bitcoin: {}", sendRequestSummary);
     bitcoinNetworkService.send(sendRequestSummary);
