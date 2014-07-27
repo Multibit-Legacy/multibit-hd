@@ -271,7 +271,7 @@
         <dependency>
             <groupId>com.madgag.spongycastle</groupId>
             <artifactId>core</artifactId>
-            <version>1.50.0.0</version>
+            <version>1.51.0.0</version>
         </dependency>
 
       <!-- Joda time for timestamps -->
