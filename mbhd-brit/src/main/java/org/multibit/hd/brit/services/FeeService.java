@@ -145,7 +145,7 @@ public class FeeService {
    */
   public FeeState calculateFeeState(Wallet wallet, boolean forceNow) {
 
-    log.debug("Wallet at beginning of calculateFeeState = {}", wallet.toString(false, true, true, null));
+    //log.debug("Wallet at beginning of calculateFeeState = {}", wallet.toString(false, true, true, null));
 
     // Get all the send transactions sent by me, ordered by date
     List<Transaction> sendTransactions = getSentBySelfTransactionList(wallet);

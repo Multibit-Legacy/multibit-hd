@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.empty_wallet;
 
 import com.google.bitcoin.core.Coin;
 import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.Wallet;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.brit.dto.FeeState;
@@ -143,8 +144,11 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
     transactionDisplayAmountMaV.getModel().setLocalAmountVisible(false);
     transactionDisplayAmountMaV.getView().updateView(configuration);
 
-    // Update the model and view for the transaction fee
-    transactionFeeDisplayAmountMaV.getModel().setCoinAmount(getWizardModel().getTransactionFee());
+    // Update the model and view for the transaction fee - by this point the prepareTransaction will have been called by the EmptyWalletWizardModel#showNext
+    Optional<Wallet.SendRequest> sendRequest = getWizardModel().getSendRequestSummary().getSendRequest();
+    if (sendRequest.isPresent()) {
+      transactionFeeDisplayAmountMaV.getModel().setCoinAmount(sendRequest.get().fee);
+    }
     transactionFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
     transactionFeeDisplayAmountMaV.getView().updateView(configuration);
 

@@ -77,6 +77,14 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
    */
   private final Coin coinAmount;
 
+  private BitcoinNetworkService bitcoinNetworkService;
+
+
+  /**
+   * The prepared tx
+   */
+  private SendRequestSummary sendRequestSummary;
+
   /**
    * @param state The state object
    */
@@ -100,6 +108,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     switch (state) {
       case EMPTY_WALLET_ENTER_DETAILS:
         state = EMPTY_WALLET_CONFIRM;
+        prepareTransaction();
         break;
       case EMPTY_WALLET_CONFIRM:
 
@@ -144,6 +153,13 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
    */
   public String getPassword() {
     return enterDetailsPanelModel.getEnterPasswordModel().getValue();
+  }
+
+  /**
+   * @return the SendRequestSummary with the payment info in it
+   */
+  public SendRequestSummary getSendRequestSummary() {
+    return sendRequestSummary;
   }
 
   /**
@@ -238,16 +254,18 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     }
   }
 
-  private void emptyWallet() {
+  /**
+   * Prepare the transaction for sending - this does everything but sign the tx
+   */
+  private void prepareTransaction() {
 
-    // Actually send the bitcoin
+    // Prepare the transaction for sending
     Preconditions.checkNotNull(enterDetailsPanelModel);
 
-    BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
+    bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
     Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started");
 
     Address changeAddress = bitcoinNetworkService.getNextChangeAddress();
-
 
     Address bitcoinAddress = enterDetailsPanelModel
             .getEnterRecipientModel()
@@ -274,8 +292,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
 
     Optional<FeeState> feeState = calculateBRITFeeState();
 
-    // Send the bitcoins
-    final SendRequestSummary sendRequestSummary = new SendRequestSummary(
+    sendRequestSummary = new SendRequestSummary(
             bitcoinAddress,
             coinAmount,
             fiatPayment,
@@ -285,10 +302,10 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
             feeState,
             true);
 
+    sendRequestSummary.setNotes(Optional.of(Languages.safeText(MessageKey.EMPTY_WALLET_TITLE)));
+
     // Prepare the transaction - this works out the fee etc
     bitcoinNetworkService.prepareTransaction(sendRequestSummary);
-
-    sendRequestSummary.setNotes(Optional.of(Languages.safeText(MessageKey.EMPTY_WALLET_TITLE)));
 
     // Work out if a client fee is being paid now
     if (feeState.isPresent()) {
@@ -298,10 +315,16 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
         sendRequestSummary.setClientFeeAdded(Optional.of(feeState.get().getFeeOwed()));
       }
     }
-
-    log.debug("Emptying wallet with: {}", sendRequestSummary);
-    bitcoinNetworkService.send(sendRequestSummary);
-
-    // The send throws TransactionCreationEvents and BitcoinSentEvents to which you subscribe to to work out success and failure.
   }
+
+  /**
+   * Actually send the transaction
+   */
+  private void emptyWallet() {
+     log.debug("Emptying wallet with: {}", sendRequestSummary);
+     Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started");
+     bitcoinNetworkService.send(sendRequestSummary);
+
+     // The send throws TransactionCreationEvents and BitcoinSentEvents to which you subscribe to to work out success and failure.
+   }
 }
