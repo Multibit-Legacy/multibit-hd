@@ -127,7 +127,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
    */
   public void show(String panelName) {
 
-    log.debug("Show wizard panel: {}", panelName);
+    log.trace("Show wizard panel: {}", panelName);
 
     Preconditions.checkState(wizardViewMap.containsKey(panelName), "'" + panelName + "' is not a valid panel name. Check the panel has been registered in the view map.");
 
@@ -162,7 +162,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
    */
   public void hide(String panelName, boolean isExitCancel) {
 
-    log.debug("Hide wizard: '{}' ExitCancel: {}", panelName, isExitCancel);
+    log.trace("Hide wizard: '{}' ExitCancel: {}", panelName, isExitCancel);
 
     Preconditions.checkState(wizardViewMap.containsKey(panelName), "'" + panelName + "' is not a valid panel name");
 
@@ -380,7 +380,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
 
     // Fail fast
     if (wizardViewMap.isEmpty()) {
-      log.debug("Wizard panel view {} is still finalising.", event.getPanelName());
+      log.trace("Wizard panel view {} is still finalising.", event.getPanelName());
       return;
     }
 
@@ -406,7 +406,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
    */
   private void handleHide(final String panelName, boolean isExitCancel, AbstractWizardPanelView wizardPanelView) {
 
-    log.debug("Handle hide starting: '{}' ExitCancel: {}", panelName, isExitCancel);
+    log.trace("Handle hide starting: '{}' ExitCancel: {}", panelName, isExitCancel);
 
     // De-register
     wizardPanelView.deregisterDefaultButton();
@@ -419,17 +419,17 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
       @Override
       public void run() {
 
-        log.debug("Handle hide background cleanup: '{}'", panelName);
+        log.trace("Handle hide background cleanup: '{}'", panelName);
 
         // Require some extra time to get the rest of the UI started for password wizard
         if (PasswordState.PASSWORD_ENTER_PASSWORD.name().equals(panelName)) {
 
-          log.debug("Blocking to allow UI startup to complete");
+          log.trace("Blocking to allow UI startup to complete");
           Uninterruptibles.sleepUninterruptibly(4, TimeUnit.SECONDS);
         }
 
         // Work through the view map ensuring all components are deregistered from UI events
-        log.debug("Deregister {} views and their component(s)", wizardViewMap.size());
+        log.trace("Deregister {} views and their component(s)", wizardViewMap.size());
         for (Map.Entry<String, AbstractWizardPanelView> entry : wizardViewMap.entrySet()) {
 
           AbstractWizardPanelView panelView = entry.getValue();
@@ -437,11 +437,11 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
           // Ensure we deregister the wizard panel view (and model if present) for events
           try {
             CoreServices.uiEventBus.unregister(panelView);
-            log.debug("Deregistered wizard panel view '{}' from UI events", panelView.getPanelName());
+            log.trace("Deregistered wizard panel view '{}' from UI events", panelView.getPanelName());
             if (panelView.getPanelModel().isPresent()) {
               Object panelModel = panelView.getPanelModel().get();
               CoreServices.uiEventBus.unregister(panelModel);
-              log.debug("Deregistered wizard panel model '{}' from UI events", panelView.getPanelName());
+              log.trace("Deregistered wizard panel model '{}' from UI events", panelView.getPanelName());
             }
           } catch (NullPointerException | IllegalArgumentException e) {
             log.warn("Wizard panel model/view '{}' was not registered", panelView.getPanelName(), e);
@@ -453,7 +453,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
           for (ModelAndView mav : mavs) {
             mav.close();
           }
-          log.debug("Closed {} registered component(s) from wizard panel view '{}'", mavs.size(), panelView.getPanelName());
+          log.trace("Closed {} registered component(s) from wizard panel view '{}'", mavs.size(), panelView.getPanelName());
 
           // Remove the references
           mavs.clear();
@@ -468,7 +468,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
           @Override
           public void run() {
 
-            log.debug("Handle hide remove light box: '{}'", panelName);
+            log.trace("Handle hide remove light box: '{}'", panelName);
 
             // This removes the reference to the wizard allowing for garbage collection
             Panels.hideLightBoxIfPresent();
