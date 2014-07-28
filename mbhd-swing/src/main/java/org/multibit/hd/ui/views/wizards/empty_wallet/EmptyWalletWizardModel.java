@@ -6,7 +6,6 @@ import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.dto.FiatPayment;
@@ -14,16 +13,11 @@ import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.dto.SendRequestSummary;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
-import org.multibit.hd.core.events.TransactionCreationEvent;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
-import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.core.services.WalletService;
-import org.multibit.hd.core.store.TransactionInfo;
 import org.multibit.hd.core.utils.Coins;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -194,36 +188,36 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     return coinAmount;
   }
 
-  @Subscribe
-  public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
-
-    // Only store successful transactions
-    if (!transactionCreationEvent.isTransactionCreationWasSuccessful()) {
-      return;
-    }
-
-    // Create a transactionInfo to match the event created
-    TransactionInfo transactionInfo = new TransactionInfo();
-    transactionInfo.setHash(transactionCreationEvent.getTransactionId());
-    transactionInfo.setNote(Languages.safeText(MessageKey.EMPTY_WALLET_TITLE));
-
-    // Append miner's fee info
-    transactionInfo.setMinerFee(transactionCreationEvent.getMiningFeePaid());
-
-    // Append client fee info
-    transactionInfo.setClientFee(transactionCreationEvent.getClientFeePaid());
-
-    // Set the fiat payment amount
-    transactionInfo.setAmountFiat(transactionCreationEvent.getFiatPayment().orNull());
-
-    WalletService walletService = CoreServices.getCurrentWalletService();
-    walletService.addTransactionInfo(transactionInfo);
-    try {
-      walletService.writePayments();
-    } catch (PaymentsSaveException pse) {
-      ExceptionHandler.handleThrowable(pse);
-    }
-  }
+//  @Subscribe
+//  public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
+//
+//    // Only store successful transactions
+//    if (!transactionCreationEvent.isTransactionCreationWasSuccessful()) {
+//      return;
+//    }
+//
+//    // Create a transactionInfo to match the event created
+//    TransactionInfo transactionInfo = new TransactionInfo();
+//    transactionInfo.setHash(transactionCreationEvent.getTransactionId());
+//    transactionInfo.setNote(Languages.safeText(MessageKey.EMPTY_WALLET_TITLE));
+//
+//    // Append miner's fee info
+//    transactionInfo.setMinerFee(transactionCreationEvent.getMiningFeePaid());
+//
+//    // Append client fee info
+//    transactionInfo.setClientFee(transactionCreationEvent.getClientFeePaid());
+//
+//    // Set the fiat payment amount
+//    transactionInfo.setAmountFiat(transactionCreationEvent.getFiatPayment().orNull());
+//
+//    WalletService walletService = CoreServices.getCurrentWalletService();
+//    walletService.addTransactionInfo(transactionInfo);
+//    try {
+//      walletService.writePayments();
+//    } catch (PaymentsSaveException pse) {
+//      ExceptionHandler.handleThrowable(pse);
+//    }
+//  }
 
   /**
    * @return The BRIT fee state for the current wallet

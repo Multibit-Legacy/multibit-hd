@@ -225,39 +225,39 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   public SendRequestSummary getSendRequestSummary() {
     return sendRequestSummary;
   }
-
-  @Subscribe
-  public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
-
-    // Only store successful transactions
-    if (!transactionCreationEvent.isTransactionCreationWasSuccessful()) {
-      return;
-    }
-
-    // Create a transactionInfo to match the event created
-    TransactionInfo transactionInfo = new TransactionInfo();
-    transactionInfo.setHash(transactionCreationEvent.getTransactionId());
-    String note = transactionCreationEvent.getNotes().or("");
-    transactionInfo.setNote(note);
-
-    // Append miner's fee info
-    transactionInfo.setMinerFee(transactionCreationEvent.getMiningFeePaid());
-
-    // Append client fee info
-    transactionInfo.setClientFee(transactionCreationEvent.getClientFeePaid());
-
-    // Set the fiat payment amount
-    transactionInfo.setAmountFiat(transactionCreationEvent.getFiatPayment().orNull());
-
-    WalletService walletService = CoreServices.getCurrentWalletService();
-    walletService.addTransactionInfo(transactionInfo);
-    try {
-      walletService.writePayments();
-    } catch (PaymentsSaveException pse) {
-      ExceptionHandler.handleThrowable(pse);
-    }
-
-  }
+//
+//  @Subscribe
+//  public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
+//
+//    // Only store successful transactions
+//    if (!transactionCreationEvent.isTransactionCreationWasSuccessful()) {
+//      return;
+//    }
+//
+//    // Create a transactionInfo to match the event created
+//    TransactionInfo transactionInfo = new TransactionInfo();
+//    transactionInfo.setHash(transactionCreationEvent.getTransactionId());
+//    String note = transactionCreationEvent.getNotes().or("");
+//    transactionInfo.setNote(note);
+//
+//    // Append miner's fee info
+//    transactionInfo.setMinerFee(transactionCreationEvent.getMiningFeePaid());
+//
+//    // Append client fee info
+//    transactionInfo.setClientFee(transactionCreationEvent.getClientFeePaid());
+//
+//    // Set the fiat payment amount
+//    transactionInfo.setAmountFiat(transactionCreationEvent.getFiatPayment().orNull());
+//
+//    WalletService walletService = CoreServices.getCurrentWalletService();
+//    walletService.addTransactionInfo(transactionInfo);
+//    log.debug("Added transactionInfo {} to walletService {}", transactionInfo, walletService);
+//    try {
+//      walletService.writePayments();
+//    } catch (PaymentsSaveException pse) {
+//      ExceptionHandler.handleThrowable(pse);
+//    }
+//  }
 
   /**
    * @return The BRIT fee state for the current wallet

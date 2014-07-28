@@ -12,14 +12,14 @@ import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.*;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.services.BackupService;
-import org.multibit.hd.core.services.BitcoinNetworkService;
-import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.core.services.ExchangeTickerService;
+import org.multibit.hd.core.services.*;
+import org.multibit.hd.core.store.TransactionInfo;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardHideEvent;
@@ -781,5 +781,43 @@ public class MainController extends AbstractController implements
         }
       }
     });
+  }
+
+
+  /**
+   * MAke sure that when a transaction is successfully created its 'metadata' is stored in a transactionInfo
+   * @param transactionCreationEvent
+   */
+  @Subscribe
+  public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
+
+    // Only store successful transactions
+    if (!transactionCreationEvent.isTransactionCreationWasSuccessful()) {
+      return;
+    }
+
+    // Create a transactionInfo to match the event created
+    TransactionInfo transactionInfo = new TransactionInfo();
+    transactionInfo.setHash(transactionCreationEvent.getTransactionId());
+    String note = transactionCreationEvent.getNotes().or("");
+    transactionInfo.setNote(note);
+
+    // Append miner's fee info
+    transactionInfo.setMinerFee(transactionCreationEvent.getMiningFeePaid());
+
+    // Append client fee info
+    transactionInfo.setClientFee(transactionCreationEvent.getClientFeePaid());
+
+    // Set the fiat payment amount
+    transactionInfo.setAmountFiat(transactionCreationEvent.getFiatPayment().orNull());
+
+    WalletService walletService = CoreServices.getCurrentWalletService();
+    walletService.addTransactionInfo(transactionInfo);
+    log.debug("Added transactionInfo {} to walletService {}", transactionInfo, walletService);
+    try {
+      walletService.writePayments();
+    } catch (PaymentsSaveException pse) {
+      ExceptionHandler.handleThrowable(pse);
+    }
   }
 }
