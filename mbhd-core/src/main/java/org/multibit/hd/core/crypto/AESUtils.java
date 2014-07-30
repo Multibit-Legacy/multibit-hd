@@ -53,7 +53,7 @@ public class AESUtils {
 
     // Scrypt - scrypt is run using the seedBigInteger.toString() as the 'password'.
     // This returns a byte array (normally used as an AES256 key but here passed on to more trapdoor functions).
-    // The scrypt parameters used are the default, with a salt of '1'.
+    // The scrypt parameters used are the default, except for the salt which is passed in.
     Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(salt));
     Protos.ScryptParameters scryptParameters = scryptParametersBuilder.build();
     KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(scryptParameters);

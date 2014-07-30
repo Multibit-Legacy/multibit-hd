@@ -904,7 +904,7 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
-   * Unpad passowrd bytes, removing the random prefix bytes length marker byte and te random bytes themselves
+   * Unpad password bytes, removing the random prefix bytes length marker byte and te random bytes themselves
    */
   public static byte[] unpadPasswordBytes(byte[] paddedPasswordBytes) {
     Preconditions.checkNotNull(paddedPasswordBytes);
