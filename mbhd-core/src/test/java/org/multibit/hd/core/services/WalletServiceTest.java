@@ -2,6 +2,8 @@ package org.multibit.hd.core.services;
 
 import com.google.bitcoin.core.Coin;
 import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.wallet.DeterministicSeed;
 import com.google.common.base.Optional;
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -43,9 +45,9 @@ public class WalletServiceTest {
 
   public static final String CHANGED_PASSWORD2 = "3the quick brown fox jumps over the lazy dog";
 
-  private String firstAddress;
-
   private static final Logger log = LoggerFactory.getLogger(WalletServiceTest.class);
+
+  private String firstAddress;
 
 
   @Before
@@ -67,15 +69,15 @@ public class WalletServiceTest {
 
     long nowInSeconds = Dates.nowInSeconds();
     walletSummary = WalletManager
-      .INSTANCE
-      .getOrCreateWalletSummary(
-        temporaryDirectory,
-        seed1,
-        nowInSeconds,
-        PASSWORD,
-        "Example",
-        "Example"
-      );
+            .INSTANCE
+            .getOrCreateWalletSummary(
+                    temporaryDirectory,
+                    seed1,
+                    nowInSeconds,
+                    PASSWORD,
+                    "Example",
+                    "Example"
+            );
     WalletManager.INSTANCE.setCurrentWalletSummary(walletSummary);
 
     firstAddress = walletSummary.getWallet().freshReceiveKey().toString();
@@ -156,4 +158,31 @@ public class WalletServiceTest {
     assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
   }
 
+  @Ignore
+  /**
+   * Simple test to check decryption of a bitcoinj wallet - referenced in bitcoinj issue:
+   * https://code.google.com/p/bitcoinj/issues/detail?id=573&thanks=573&ts=1406733004
+   */
+  public void testChangePasswordSimple() throws Exception {
+    log.debug("Start of testChangePasswordSimple");
+
+    networkParameters = NetworkParameters.fromID(NetworkParameters.ID_MAINNET);
+
+    // Create a wallet from a seed
+    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
+
+    long nowInSeconds = Dates.nowInSeconds();
+
+    // Create a wallet using the seed and password
+    DeterministicSeed deterministicSeed = new DeterministicSeed(seed1, PASSWORD, nowInSeconds);
+
+    Wallet wallet = Wallet.fromSeed(networkParameters, deterministicSeed);
+    wallet.encrypt(PASSWORD);
+
+    assertThat(wallet.checkPassword(PASSWORD)).isTrue();
+
+    // Decrypt the wallet
+    wallet.decrypt(PASSWORD);
+  }
 }
