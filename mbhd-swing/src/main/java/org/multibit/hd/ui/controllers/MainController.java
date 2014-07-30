@@ -785,7 +785,7 @@ public class MainController extends AbstractController implements
 
 
   /**
-   * MAke sure that when a transaction is successfully created its 'metadata' is stored in a transactionInfo
+   * Make sure that when a transaction is successfully created its 'metadata' is stored in a transactionInfo
    * @param transactionCreationEvent
    */
   @Subscribe
