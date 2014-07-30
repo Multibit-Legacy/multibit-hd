@@ -97,7 +97,7 @@ public class FeeServicesTest {
 
 
     // Create the wallet 'wallet1'
-    createWallet(Bip39SeedPhraseGenerator.split(BRITWalletIdTest.SEED_PHRASE_1), WALLET_PASSWORD);
+    createWallet(Bip39SeedPhraseGenerator.split(BRITWalletIdTest.SEED_PHRASE_1));
 
     toKey1 = wallet1.freshReceiveKey();
     toAddress1 = toKey1.toAddress(NETWORK_PARAMETERS);
@@ -178,8 +178,8 @@ public class FeeServicesTest {
     assertThat(upperLimitOfNextFeeSendCount).isGreaterThanOrEqualTo(feeState.getNextFeeSendCount());
   }
 
-  private void createWallet(List<String> mnemonicCode, String password) throws Exception {
-    DeterministicSeed deterministicSeed = new DeterministicSeed( mnemonicCode, password, DateTime.now().getMillis() / 1000);
+  private void createWallet(List<String> mnemonicCode) throws Exception {
+    DeterministicSeed deterministicSeed = new DeterministicSeed( mnemonicCode, "", DateTime.now().getMillis() / 1000);
     KeyChainGroup keyChainGroup = new KeyChainGroup(NETWORK_PARAMETERS, deterministicSeed);
 
     wallet1 = new Wallet(MainNetParams.get(), keyChainGroup);

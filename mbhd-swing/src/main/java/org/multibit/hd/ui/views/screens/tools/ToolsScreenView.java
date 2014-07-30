@@ -72,7 +72,6 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
 
     // Disabled change password button as it is not working
     JButton changePasswordButton = Buttons.newShowChangePasswordButton(getShowChangePasswordAction());
-    changePasswordButton.setEnabled(false);
     contentPanel.add(changePasswordButton, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowVerifyNetworkButton(getShowVerifyNetworkAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowAboutButton(getShowAboutAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");

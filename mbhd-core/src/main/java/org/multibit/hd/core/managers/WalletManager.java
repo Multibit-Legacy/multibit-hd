@@ -306,7 +306,7 @@ public enum WalletManager implements WalletEventListener {
     }
 
     // Create a wallet using the seed and password
-    DeterministicSeed deterministicSeed = new DeterministicSeed(seed, password, creationTimeInSeconds);
+    DeterministicSeed deterministicSeed = new DeterministicSeed(seed, "", creationTimeInSeconds);
     Wallet walletToReturn = Wallet.fromSeed(networkParameters, deterministicSeed);
     walletToReturn.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
     walletToReturn.encrypt(password);

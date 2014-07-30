@@ -3,11 +3,13 @@ package org.multibit.hd.core.services;
 import com.google.bitcoin.core.Coin;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.crypto.MnemonicCode;
 import com.google.bitcoin.wallet.DeterministicSeed;
 import com.google.common.base.Optional;
+import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableList;
 import org.joda.time.DateTime;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
@@ -26,6 +28,7 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Currency;
+import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -138,8 +141,7 @@ public class WalletServiceTest {
     assertThat(fiatPayment.getExchangeName()).isEqualTo(otherFiatPayment.getExchangeName());
   }
 
-  @Ignore
-  // Currently not working
+  @Test
   public void testChangePassword() throws Exception {
     log.debug("Start of testChangePassword");
 
@@ -158,31 +160,30 @@ public class WalletServiceTest {
     assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
   }
 
-  @Ignore
+  @Test
   /**
    * Simple test to check decryption of a bitcoinj wallet - referenced in bitcoinj issue:
    * https://code.google.com/p/bitcoinj/issues/detail?id=573&thanks=573&ts=1406733004
    */
   public void testChangePasswordSimple() throws Exception {
-    log.debug("Start of testChangePasswordSimple");
+    NetworkParameters networkParameters = NetworkParameters.fromID(NetworkParameters.ID_MAINNET);
 
-    networkParameters = NetworkParameters.fromID(NetworkParameters.ID_MAINNET);
+    long creationTimeSecs = MnemonicCode.BIP39_STANDARDISATION_TIME_SECS;
+    String seedStr = "letter advice cage absurd amount doctor acoustic avoid letter advice cage above";
 
-    // Create a wallet from a seed
-    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-    byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
+    // Parse as mnemonic code.
+    final List<String> split = ImmutableList.copyOf(Splitter.on(" ").omitEmptyStrings().split(seedStr));
 
-    long nowInSeconds = Dates.nowInSeconds();
 
-    // Create a wallet using the seed and password
-    DeterministicSeed deterministicSeed = new DeterministicSeed(seed1, PASSWORD, nowInSeconds);
+    // Test encrypt / decrypt with empty passphrase
+    DeterministicSeed seed1 = new DeterministicSeed(split, "", creationTimeSecs);
 
-    Wallet wallet = Wallet.fromSeed(networkParameters, deterministicSeed);
-    wallet.encrypt(PASSWORD);
+    Wallet wallet1 = Wallet.fromSeed(networkParameters, seed1);
 
-    assertThat(wallet.checkPassword(PASSWORD)).isTrue();
+    // Encrypt wallet
+    wallet1.encrypt(PASSWORD);
 
     // Decrypt the wallet
-    wallet.decrypt(PASSWORD);
+    wallet1.decrypt(PASSWORD);
   }
 }
