@@ -2,10 +2,7 @@ package org.multibit.hd.ui.views.wizards.change_password;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.Uninterruptibles;
+import com.google.common.util.concurrent.*;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.WalletId;
@@ -54,6 +51,7 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
 
   private ModelAndView<EnterPasswordModel, EnterPasswordView> enterPasswordMaV;
   private ModelAndView<ConfirmPasswordModel, ConfirmPasswordView> confirmPasswordMaV;
+  private ListeningExecutorService executorService;
 
   /**
    * @param wizard The wizard managing the states
@@ -90,6 +88,9 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
   @Override
   public void initialiseContent(JPanel contentPanel) {
 
+    // Postpone initialisation until first showing
+    executorService = SafeExecutors.newSingleThreadExecutor("change-password");
+
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[]", // Column constraints
@@ -124,8 +125,6 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
 
   @Override
   public void afterShow() {
-
-    registerDefaultButton(getNextButton());
 
     SwingUtilities.invokeLater(new Runnable() {
       @Override
@@ -174,7 +173,7 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
 
     // Check the old password (might take a while so do it asynchronously while showing a spinner)
     // Tar pit (must be in a separate thread to ensure UI updates)
-    ListenableFuture<Boolean> passwordFuture = SafeExecutors.newSingleThreadExecutor("change-password").submit(new Callable<Boolean>() {
+    ListenableFuture<Boolean> passwordFuture = executorService.submit(new Callable<Boolean>() {
 
       @Override
       public Boolean call() {
