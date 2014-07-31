@@ -293,6 +293,13 @@ public abstract class AbstractFestUseCase {
   }
 
   /**
+   * The standard length of time for a wallet password to change
+   */
+  protected void pauseForWalletPasswordChange() {
+    Pause.pause(3, TimeUnit.SECONDS);
+  }
+
+  /**
    * The standard length of time for a wallet to be created (at least 15 seconds with CA certs which take at least 6 seconds on broadband)
    */
   protected void pauseForWalletCreation() {

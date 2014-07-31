@@ -92,7 +92,6 @@ public class LightBoxPanel extends JPanel {
    * <p>Close the light box</p>
    *
    * <p>During handover the dark panel is allowed to remain to give visual continuity</p>
-   *
    */
   public void close() {
 
@@ -114,26 +113,43 @@ public class LightBoxPanel extends JPanel {
 
     JLayeredPane layeredPane = Panels.applicationFrame.getLayeredPane();
 
-    try {
+    Component[] components = layeredPane.getComponents();
+
+    if (log.isDebugEnabled()) {
+      for (int i = 0; i < components.length; i++) {
+        log.debug("[{}]: {}", i, components[i].getClass().getSimpleName());
+      }
+    }
+
+    boolean popoverPresent = components.length > 3;
+
+    // Check for tooltips
+    if (components.length == 4 || components.length == 6) {
+
+      layeredPane.remove(0);
+
+      log.debug("Removed tooltip panel");
+
+    }
+
+    if (components.length > 2 && components.length < 7) {
 
       // Remove the dark panel
       layeredPane.remove(1);
 
-    } catch (ArrayIndexOutOfBoundsException e) {
-      log.warn("Light box failed to remove dark panel at position [1]");
-      // Ignore so that we can remove the content at position 0
-    }
-
-    try {
-
       // Remove the content panel (components will have shuffled)
       layeredPane.remove(0);
 
-      // Log on success
-      log.debug("Light box panel removed from application frame");
-
-    } catch (ArrayIndexOutOfBoundsException e) {
-      log.warn("Light box failed to remove at position [0]. Indicates a changed stacking order.");
+      if (popoverPresent) {
+        log.debug("Popover light box panel removed from application frame");
+      } else {
+        log.debug("Wizard light box panel removed from application frame");
+      }
+    } else {
+      log.error("Unknown component hierarchy in light box.");
+      for (int i = 0; i < components.length; i++) {
+        log.error("[{}]: {}", i, components[i].getClass().getSimpleName());
+      }
     }
 
     // Repaint

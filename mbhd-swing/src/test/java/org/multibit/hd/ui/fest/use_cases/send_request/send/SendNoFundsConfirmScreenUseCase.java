@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.fest.use_cases.send_request.send;
 
 import org.fest.swing.fixture.FrameFixture;
+import org.multibit.hd.testing.WalletFixtures;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState;
@@ -65,7 +66,7 @@ public class SendNoFundsConfirmScreenUseCase extends AbstractFestUseCase {
     // Enter password
     window
       .textBox(MessageKey.ENTER_PASSWORD.getKey())
-      .enterText("abc123");
+      .enterText(WalletFixtures.STANDARD_PASSWORD);
 
     // Send is enabled
     window

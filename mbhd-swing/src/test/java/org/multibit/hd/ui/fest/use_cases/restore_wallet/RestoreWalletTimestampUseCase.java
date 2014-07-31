@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.fest.use_cases.restore_wallet;
 
 import org.fest.swing.fixture.FrameFixture;
+import org.multibit.hd.testing.WalletFixtures;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
@@ -70,7 +71,7 @@ public class RestoreWalletTimestampUseCase extends AbstractFestUseCase {
     // Enter password
     window
       .textBox(MessageKey.ENTER_NEW_PASSWORD.getKey())
-      .enterText("abc123");
+      .enterText(WalletFixtures.STANDARD_PASSWORD);
 
     // Verification status is not showing so requires a modified search
     window
@@ -84,7 +85,7 @@ public class RestoreWalletTimestampUseCase extends AbstractFestUseCase {
     // Retype password
     window
       .textBox(MessageKey.RETYPE_NEW_PASSWORD.getKey())
-      .enterText("abc123");
+      .enterText(WalletFixtures.STANDARD_PASSWORD);
 
     // Verify the password verification status is showing
     window

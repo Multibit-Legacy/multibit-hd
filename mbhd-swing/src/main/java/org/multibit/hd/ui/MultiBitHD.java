@@ -199,6 +199,9 @@ public class MultiBitHD {
       new SidebarController()
     );
 
+    // Set the tooltip delay to be slightly longer
+    ToolTipManager.sharedInstance().setInitialDelay(1000);
+
     // Must be OK to be here
     return true;
 

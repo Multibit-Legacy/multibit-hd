@@ -3,8 +3,13 @@ package org.multibit.hd.ui.fest.requirements;
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.tools.ShowToolsScreenUseCase;
+import org.multibit.hd.ui.fest.use_cases.tools.about.ShowThenCancelAboutUseCase;
 import org.multibit.hd.ui.fest.use_cases.tools.change_password.ShowThenCancelChangePasswordUseCase;
 import org.multibit.hd.ui.fest.use_cases.tools.change_password.VerifyChangePasswordUseCase;
+import org.multibit.hd.ui.fest.use_cases.tools.empty_wallet.ShowThenCancelEmptyWalletUseCase;
+import org.multibit.hd.ui.fest.use_cases.tools.repair_wallet.ShowThenCancelRepairWalletUseCase;
+import org.multibit.hd.ui.fest.use_cases.tools.sign_message.ShowThenFinishSignMessageUseCase;
+import org.multibit.hd.ui.fest.use_cases.tools.verify_message.ShowThenFinishVerifyMessageUseCase;
 
 import java.util.Map;
 
@@ -28,23 +33,23 @@ public class ToolsScreenRequirements {
 
     // Show then cancel the "repair wallet" wizard
     // Verifying the repair will take too long
-//    new ShowThenCancelRepairWalletUseCase(window).execute(parameters);
+    new ShowThenCancelRepairWalletUseCase(window).execute(parameters);
+
+    // Show the "verify message" wizard
+    new ShowThenFinishVerifyMessageUseCase(window).execute(parameters);
+
+    // Show then cancel the "empty wallet" wizard
+    new ShowThenCancelEmptyWalletUseCase(window).execute(parameters);
 
     // Show the "sign message" wizard
-//    new ShowThenFinishSignMessageUseCase(window).execute(parameters);
+    new ShowThenFinishSignMessageUseCase(window).execute(parameters);
+
+    // Show then cancel the "about" wizard
+    new ShowThenCancelAboutUseCase(window).execute(parameters);
 
     // Verify the "change password" wizard
     new ShowThenCancelChangePasswordUseCase(window).execute(parameters);
     new VerifyChangePasswordUseCase(window).execute(parameters);
-
-    // Show the "verify message" wizard
-//    new ShowThenFinishVerifyMessageUseCase(window).execute(parameters);
-
-    // Show then cancel the "empty wallet" wizard
-//    new ShowThenCancelEmptyWalletUseCase(window).execute(parameters);
-
-    // Show then cancel the "about" wizard
-//    new ShowThenCancelAboutUseCase(window).execute(parameters);
 
   }
 }

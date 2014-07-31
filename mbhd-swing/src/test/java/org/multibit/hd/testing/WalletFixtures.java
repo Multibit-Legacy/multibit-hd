@@ -37,6 +37,7 @@ public class WalletFixtures {
   public static final String STANDARD_TIMESTAMP = "1984/44";
 
   public static final String STANDARD_PASSWORD = "abc123";
+  public static final String ALTERNATIVE_PASSWORD = "def456";
 
   /**
    * <p>Create an empty wallet in the current installation directory</p>
@@ -54,7 +55,7 @@ public class WalletFixtures {
 
     long nowInSeconds = Dates.nowInSeconds();
 
-    return walletManager.createWalletSummary(seed, nowInSeconds, STANDARD_PASSWORD, "Example", "Example empty wallet. Password is abc123.");
+    return walletManager.createWalletSummary(seed, nowInSeconds, STANDARD_PASSWORD, "Example", "Example empty wallet. Password is '" + STANDARD_PASSWORD + "'.");
 
   }
 
