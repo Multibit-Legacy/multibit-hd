@@ -174,3 +174,16 @@ Use the `FontAwesomeTools` to create the necessary enum entries for `AwesomeIcon
 ### Changing resource bundles
 
 Use the `ResourceBundleTools` to find similar entries and to arrange keys in the same order across all bundles.
+
+#### Updating the internationalisation files
+
+To do an i18n refresh:
+
+1) Download the i18n zip from : http://translate.multibit.org/project/multibit-hd (download button on that page)
+2) This unzip to a directory multibit-hd
+3) Copy multibit-hd to: mbhd-swing/src/main/resources/languages-from-crowdin
+4) Run a terminal and cd to mbhd-swing/src/main/resources/languages-from-crowdin
+5) Run the script ./move-files.sh
+
+This moves and renames all the files into the languages directory.
+If there are any files/ new languages it listes them at the end so that you can see there is something missing from the move-files script.
