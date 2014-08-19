@@ -27,7 +27,11 @@ public enum CoreMessageKey {
   // Sending bitcoin
   TRANSACTION_CREATED_OK("core_transaction_created_ok"),
   TRANSACTION_CREATION_FAILED("core_transaction_creation_failed"),
+
+  // Not used
+  @Deprecated
   SENDING_BITCOIN("core_sending_bitcoin"),
+
   BITCOIN_SENT_OK("core_bitcoin_sent_ok"),
   BITCOIN_SEND_FAILED("core_bitcoin_send_failed"),
 
@@ -64,7 +68,7 @@ public enum CoreMessageKey {
   TRANSACTION_TO("core_transaction_to"),
   @Deprecated
   TRANSACTION_BY("core_transaction_by"),
-
+  @Deprecated
   DEFAULT_WALLET_NAME("core_default_wallet_name"),
 
   // Exchange messages
@@ -72,9 +76,10 @@ public enum CoreMessageKey {
   EXCHANGE_ERROR("core_exchange_error"),
   EXCHANGE_DOWN("core_exchange_down"),
 
-  // Change password
-    // Change password
+  // Not used
+  @Deprecated
   CHANGE_PASSWORD_REPORT_TITLE("core_change_password_report_title"),
+
   CHANGE_PASSWORD_WORKING("core_change_password_working"),
   CHANGE_PASSWORD_SUCCESS("core_change_password_success"),
   CHANGE_PASSWORD_WRONG_OLD_PASSWORD("core_change_password_wrong_old_password"),
