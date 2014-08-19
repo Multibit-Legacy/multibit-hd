@@ -59,7 +59,10 @@ public enum CoreMessageKey {
   UNKNOWN("core_unknown"),
   NO_PAYMENT_REQUEST("core_no_payment_request"),
 
+  // These appear to be not used
+  @Deprecated
   TRANSACTION_TO("core_transaction_to"),
+  @Deprecated
   TRANSACTION_BY("core_transaction_by"),
 
   DEFAULT_WALLET_NAME("core_default_wallet_name"),
