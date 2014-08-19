@@ -230,7 +230,7 @@ public enum WalletManager implements WalletEventListener {
   public WalletSummary createWalletSummary(
     byte[] seed,
     long creationTimeInSeconds,
-    CharSequence password,
+    String password,
     String name,
     String notes
 
@@ -267,7 +267,7 @@ public enum WalletManager implements WalletEventListener {
     File applicationDataDirectory,
     byte[] seed,
     long creationTimeInSeconds,
-    CharSequence password,
+    String password,
     String name,
     String notes
   ) throws WalletLoadException, WalletVersionException, IOException {
@@ -306,7 +306,7 @@ public enum WalletManager implements WalletEventListener {
     }
 
     // Create a wallet using the seed and password
-    DeterministicSeed deterministicSeed = new DeterministicSeed(seed, creationTimeInSeconds);
+    DeterministicSeed deterministicSeed = new DeterministicSeed(seed, "", creationTimeInSeconds);
     Wallet walletToReturn = Wallet.fromSeed(networkParameters, deterministicSeed);
     walletToReturn.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
     walletToReturn.encrypt(password);
@@ -367,6 +367,8 @@ public enum WalletManager implements WalletEventListener {
     WalletExtension[] walletExtensions = new WalletExtension[]{new SendFeeDtoWalletExtension(), new MatcherResponseWalletExtension()};
     Wallet wallet = new WalletProtobufSerializer().readWallet(BitcoinNetwork.current().get(), walletExtensions, walletProto);
     wallet.setKeychainLookaheadSize(WalletManager.LOOK_AHEAD_SIZE);
+
+    log.debug("Just loaded wallet:\n" + wallet.toString());
     return wallet;
   }
 
@@ -512,12 +514,23 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
+   * @return A list of wallet summaries based on the current application directory contents (never null)
+   */
+  public static List<WalletSummary> getWalletSummaries() {
+
+    List<File> walletDirectories = findWalletDirectories(InstallationManager.getOrCreateApplicationDataDirectory());
+    Optional<String> walletRoot = INSTANCE.getCurrentWalletRoot();
+    return findWalletSummaries(walletDirectories, walletRoot);
+
+  }
+
+  /**
    * <p>Work out what wallets are available in a directory (typically the user data directory).
    * This is achieved by looking for directories with a name like <code>"mbhd-walletId"</code>
    *
    * @param directoryToSearch The directory to search
    *
-   * @return A list of files of wallet directories
+   * @return A list of files of wallet directories (never null)
    */
   public static List<File> findWalletDirectories(File directoryToSearch) {
 
@@ -548,7 +561,7 @@ public enum WalletManager implements WalletEventListener {
    * @param walletDirectories The candidate wallet directory references
    * @param walletRoot        The wallet root of the first entry
    *
-   * @return A list of wallet summaries
+   * @return A list of wallet summaries (never null)
    */
   public static List<WalletSummary> findWalletSummaries(List<File> walletDirectories, Optional walletRoot) {
 
@@ -753,6 +766,7 @@ public enum WalletManager implements WalletEventListener {
 
   }
 
+
   /**
    * <p>Method to sign a message</p>
    *
@@ -812,7 +826,6 @@ public enum WalletManager implements WalletEventListener {
     }
   }
 
-
   /**
    * <p>Method to verify a message</p>
    *
@@ -839,7 +852,7 @@ public enum WalletManager implements WalletEventListener {
       Address signingAddress = new Address(BitcoinNetwork.current().get(), addressText);
 
       // Strip CRLF from signature text
-      signatureText = signatureText.replaceAll("\n","").replaceAll("\r","");
+      signatureText = signatureText.replaceAll("\n", "").replaceAll("\r", "");
 
       ECKey key = ECKey.signedMessageToKey(messageText, signatureText);
       Address gotAddress = key.toAddress(BitcoinNetwork.current().get());
@@ -891,7 +904,7 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
-   * Unpad passowrd bytes, removing the random prefix bytes length marker byte and te random bytes themselves
+   * Unpad password bytes, removing the random prefix bytes length marker byte and te random bytes themselves
    */
   public static byte[] unpadPasswordBytes(byte[] paddedPasswordBytes) {
     Preconditions.checkNotNull(paddedPasswordBytes);

@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.fest.use_cases.password;
 
 import org.fest.swing.fixture.FrameFixture;
+import org.multibit.hd.testing.WalletFixtures;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
@@ -43,7 +44,7 @@ public class QuickUnlockWalletUseCase extends AbstractFestUseCase {
     // Enter password text
     window
       .textBox(MessageKey.ENTER_PASSWORD.getKey())
-      .enterText("abc123");
+      .enterText(WalletFixtures.STANDARD_PASSWORD);
 
     // Click on unlock
     window

@@ -84,7 +84,7 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[][][]", // Column constraints
-      "[]10[]10[]" // Row constraints
+      "10[][][][][]10" // Row constraints
     ));
 
     // Apply the theme
@@ -105,11 +105,12 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
     transactionConfirmationStatus = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
     AccessibilityDecorator.apply(transactionConfirmationStatus, MessageKey.TRANSACTION_CONFIRMATION_STATUS);
 
-    contentPanel.add(transactionConstructionStatusSummary, "grow,push,wrap");
-    contentPanel.add(transactionConstructionStatusDetail, "grow,push,wrap");
-    contentPanel.add(transactionBroadcastStatusSummary, "grow,push,wrap");
-    contentPanel.add(transactionBroadcastStatusDetail, "grow,push,wrap");
-    contentPanel.add(transactionConfirmationStatus, "grow,push,wrap");
+    // Ensure the labels wrap if the error messages are too wide
+    contentPanel.add(transactionConstructionStatusSummary, "grow,push," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
+    contentPanel.add(transactionConstructionStatusDetail, "grow,push," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
+    contentPanel.add(transactionBroadcastStatusSummary, "grow,push," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
+    contentPanel.add(transactionBroadcastStatusDetail, "grow,push," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
+    contentPanel.add(transactionConfirmationStatus, "grow,push," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
     initialised = true;
   }
@@ -163,14 +164,16 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
       // We now have a transactionId so keep that in the panel model for filtering TransactionSeenEvents later
       getPanelModel().get().setTransactionId(transactionCreationEvent.getTransactionId());
 
-      transactionConstructionStatusSummary.setText(Languages.safeText(CoreMessageKey.TRANSACTION_CREATED_OK));
+      Labels.decorateWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATED_OK));
       transactionConstructionStatusDetail.setText("");
       Labels.decorateStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.TRUE));
     } else {
-      String detailMessage = Languages.safeText(transactionCreationEvent.getTransactionCreationFailureReasonKey(),
-        (Object[]) transactionCreationEvent.getTransactionCreationFailureReasonData());
-      transactionConstructionStatusSummary.setText(Languages.safeText(CoreMessageKey.TRANSACTION_CREATION_FAILED));
-      transactionConstructionStatusDetail.setText(detailMessage);
+      String detailMessage = Languages.safeText(
+        transactionCreationEvent.getTransactionCreationFailureReasonKey(),
+        (Object[]) transactionCreationEvent.getTransactionCreationFailureReasonData()
+      );
+      Labels.decorateWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATION_FAILED));
+      Labels.decorateWrappingLabel(transactionConstructionStatusDetail, detailMessage);
       Labels.decorateStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.FALSE));
     }
   }
@@ -187,13 +190,13 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
     }
 
     if (bitcoinSentEvent.isSendWasSuccessful()) {
-      transactionBroadcastStatusSummary.setText(Languages.safeText(CoreMessageKey.BITCOIN_SENT_OK));
+      Labels.decorateWrappingLabel(transactionBroadcastStatusSummary, Languages.safeText(CoreMessageKey.BITCOIN_SENT_OK));
       Labels.decorateStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.TRUE));
     } else {
       String summaryMessage = Languages.safeText(CoreMessageKey.BITCOIN_SEND_FAILED);
       String detailMessage = Languages.safeText(bitcoinSentEvent.getSendFailureReasonKey(), (Object[]) bitcoinSentEvent.getSendFailureReasonData());
-      transactionBroadcastStatusSummary.setText(summaryMessage);
-      transactionBroadcastStatusDetail.setText(detailMessage);
+      Labels.decorateWrappingLabel(transactionBroadcastStatusSummary, summaryMessage);
+      Labels.decorateWrappingLabel(transactionBroadcastStatusDetail, detailMessage);
       Labels.decorateStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.FALSE));
     }
   }

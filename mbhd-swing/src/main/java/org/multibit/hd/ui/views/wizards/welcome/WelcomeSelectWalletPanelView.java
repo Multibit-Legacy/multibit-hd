@@ -40,7 +40,7 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
    */
   public WelcomeSelectWalletPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.SELECT_WALLET_TITLE, AwesomeIcon.ELLIPSIS_V);
+    super(wizard, panelName, MessageKey.SELECT_WALLET_TITLE, AwesomeIcon.MAGIC);
 
   }
 
@@ -69,7 +69,8 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
       CREATE_WALLET_SELECT_BACKUP_LOCATION.name(),
       RESTORE_PASSWORD_SEED_PHRASE.name(),
       RESTORE_WALLET_SEED_PHRASE.name(),
-      SELECT_WALLET_HARDWARE.name()
+      SELECT_WALLET_HARDWARE.name(),
+      SELECT_EXISTING_WALLET.name()
     ), "wrap");
 
   }
@@ -80,7 +81,8 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
     if (wizard.getWizardModel().isRestoring()) {
       // Do not allow a return to the password wizard
       // The logic is too complex to justify the operation
-      // It is much easier to just have the user Exit and restart instead
+      // It is much easier to just have the user either
+      // "exit and restart" or "use existing wallet" instead
       PanelDecorator.addExitCancelNext(this, wizard);
     } else {
       PanelDecorator.addExitCancelPreviousNext(this, wizard);
@@ -105,10 +107,15 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 
+    // Next has been clicked
+
     setPanelModel(currentSelection);
 
     // Bind this to the wizard model
     getWizardModel().setSelectWalletChoice(currentSelection);
+
+    // The welcome wizard overrides the Next button behaviour to simulate a Finish
+    // if this is a "use existing wallet" selection
 
   }
 

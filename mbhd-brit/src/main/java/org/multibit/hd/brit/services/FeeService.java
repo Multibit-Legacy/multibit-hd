@@ -145,7 +145,7 @@ public class FeeService {
    */
   public FeeState calculateFeeState(Wallet wallet, boolean forceNow) {
 
-    log.debug("Wallet at beginning of calculateFeeState = {}", wallet.toString(false, true, true, null));
+    //log.debug("Wallet at beginning of calculateFeeState = {}", wallet.toString(false, true, true, null));
 
     // Get all the send transactions sent by me, ordered by date
     List<Transaction> sendTransactions = getSentBySelfTransactionList(wallet);
@@ -293,7 +293,7 @@ public class FeeService {
       }
     }
 
-    log.debug("Wallet at end of calculateFeeState: {}", wallet.toString(false, false, true, null));
+    //log.debug("Wallet at end of calculateFeeState: {}", wallet.toString(false, false, true, null));
 
     log.debug("The wallet has currentNumberOfSends = {}", currentNumberOfSends);
     log.debug("The wallet owes a GROSS total of {} satoshi in fees", grossFeeToBePaid);
@@ -333,7 +333,7 @@ public class FeeService {
     for (Transaction transaction : transactions) {
       if (transaction.getValueSentFromMe(wallet).compareTo(Coin.ZERO) > 0) {
         if (transaction.getConfidence() != null && TransactionConfidence.Source.SELF.equals(transaction.getConfidence().getSource())) {
-          // This transaction sends from self
+          // This transaction sends from self - this will exclude unconfirmed tx
           sendTransactions.add(transaction);
         }
       }

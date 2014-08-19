@@ -218,33 +218,65 @@ public abstract class AbstractFestUseCase {
   /**
    * <p>Asserts that a "display amount" component is showing</p>
    *
-   * @param panelName             The panel name taken from the wizard state (e.g. WelcomeWizardState.RESTORE_PASSWORD_SEED_PHRASE)
-   * @param componentName         The component name to avoid conflict with multiple verifiable components (e.g. "client_fee")
-   * @param isExchangeRateVisible True if the exchange rate should be visible
+   * @param panelName      The panel name taken from the wizard state (e.g. WelcomeWizardState.RESTORE_PASSWORD_SEED_PHRASE)
+   * @param componentName  The component name to avoid conflict with multiple verifiable components (e.g. "client_fee")
+   * @param isVisible      True if the overall component is visible (overrides the exchange rate visibility)
+   * @param isLocalVisible True if the local amount should be visible
    */
-  protected void assertDisplayAmount(String panelName, String componentName, boolean isExchangeRateVisible) {
+  protected void assertDisplayAmount(String panelName, String componentName, boolean isVisible, boolean isLocalVisible) {
 
-    window
-      .label(panelName + "." + componentName + ".leading_balance")
-      .requireVisible();
-    window
-      .label(panelName + "." + componentName + ".primary_balance")
-      .requireVisible();
-    window
-      .label(panelName + "." + componentName + ".secondary_balance")
-      .requireVisible();
-    window
-      .label(newNotShowingJLabelFixture(panelName + "." + componentName + ".leading_balance"));
-    if (isExchangeRateVisible) {
+    if (isVisible) {
+
+      // Ensure all components are visible (allowing for exchange rate setting)
+
       window
-        .label(panelName + "." + componentName + ".exchange")
+        .label(panelName + "." + componentName + ".leading_balance")
         .requireVisible();
-    } else {
       window
-        .label(newNotShowingJLabelFixture(panelName + "." + componentName + ".exchange"));
+        .label(panelName + "." + componentName + ".primary_balance")
+        .requireVisible();
+      window
+        .label(panelName + "." + componentName + ".secondary_balance")
+        .requireVisible();
+      window
+        .label(newNotShowingJLabelFixture(panelName + "." + componentName + ".leading_balance"));
+
+      if (isLocalVisible) {
+
+        window
+          .label(panelName + "." + componentName + ".exchange")
+          .requireVisible();
+
+      } else {
+
+        window
+          .label(newNotShowingJLabelFixture(panelName + "." + componentName + ".exchange"))
+          .requireText("");
+
+      }
+
+    } else {
+
+      // Ensure all components are not visible (regardless of exchange rate setting)
+
+      window
+        .label(newNotShowingJLabelFixture(panelName + "." + componentName + ".leading_balance"))
+        .requireNotVisible();
+      window
+        .label(newNotShowingJLabelFixture(panelName + "." + componentName + ".primary_balance"))
+        .requireNotVisible();
+      window
+        .label(newNotShowingJLabelFixture(panelName + "." + componentName + ".secondary_balance"))
+        .requireNotVisible();
+      window
+        .label(newNotShowingJLabelFixture(panelName + "." + componentName + ".leading_balance"))
+        .requireNotVisible();
+      window
+        .label(newNotShowingJLabelFixture(panelName + "." + componentName + ".exchange"))
+        .requireNotVisible();
+
     }
   }
-
 
   /**
    * The standard length of time for a wallet to fail to unlock
@@ -258,6 +290,13 @@ public abstract class AbstractFestUseCase {
    */
   protected void pauseForWalletUnlock() {
     Pause.pause(7, TimeUnit.SECONDS);
+  }
+
+  /**
+   * The standard length of time for a wallet password to change
+   */
+  protected void pauseForWalletPasswordChange() {
+    Pause.pause(3, TimeUnit.SECONDS);
   }
 
   /**

@@ -69,7 +69,7 @@ public class DisplayQRCodeView extends AbstractComponentView<DisplayQRCodeModel>
 
     // Provide some descriptive text
     JLabel qrCodePopoverNote = Labels.newQRCodePopoverNote(isCopyAvailable);
-    panel.add(qrCodePopoverNote, "push,wrap");
+    panel.add(qrCodePopoverNote, "push,align center,wrap");
 
     // Add the image filling as much space as possible
     panel.add(imageLabel, "align center,grow,push,wrap");

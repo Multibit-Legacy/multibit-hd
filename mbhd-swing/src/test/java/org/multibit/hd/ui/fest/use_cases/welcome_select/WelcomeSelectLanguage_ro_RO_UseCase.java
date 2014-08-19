@@ -27,7 +27,7 @@ public class WelcomeSelectLanguage_ro_RO_UseCase extends AbstractFestUseCase {
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    assertLabelText(MessageKey.WELCOME_TITLE);
+    assertLabelText(MessageKey.SELECT_LANGUAGE_TITLE);
 
     // Verify that English (United States) is selected by default
     window

@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.fest.use_cases.password;
 
 import org.fest.swing.fixture.FrameFixture;
+import org.multibit.hd.testing.WalletFixtures;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -44,7 +45,7 @@ public class SlowUnlockWalletUseCase extends AbstractFestUseCase {
     // Enter incorrect password text
     window
       .textBox(MessageKey.ENTER_PASSWORD.getKey())
-      .enterText("def456");
+      .enterText(WalletFixtures.ALTERNATIVE_PASSWORD);
 
     // Verify show and hide
     window
@@ -74,7 +75,7 @@ public class SlowUnlockWalletUseCase extends AbstractFestUseCase {
     window
       .textBox(MessageKey.ENTER_PASSWORD.getKey())
       .deleteText()
-      .enterText("abc123");
+      .enterText(WalletFixtures.STANDARD_PASSWORD);
 
     // Verify new attempt colouring
     window

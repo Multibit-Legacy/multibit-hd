@@ -42,16 +42,16 @@ public class VerifyExchangeNoneUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled();
 
-    // Verify that a local amount will hide
-    verifyLocalAmountHides();
+    // Verify that a local amount will show (Bitstamp)
+    verifyLocalAmountShows();
 
     // Click on "exchange"
     window
       .button(MessageKey.SHOW_EXCHANGE_WIZARD.getKey())
       .click();
 
-    // Verify that a local amount will show
-    verifyLocalAmountShows();
+    // Verify that a local amount will hide (None)
+    verifyLocalAmountHides();
 
   }
 
@@ -101,7 +101,7 @@ public class VerifyExchangeNoneUseCase extends AbstractFestUseCase {
       .requireEnabled();
 
     // Verify that balance with a local currency is showing in the header
-    assertDisplayAmount("header", "balance", true);
+    assertDisplayAmount("header", "balance", true, true);
 
   }
 
@@ -140,7 +140,7 @@ public class VerifyExchangeNoneUseCase extends AbstractFestUseCase {
       .requireEnabled();
 
     // Verify that balance with no local currency is showing in the header
-    assertDisplayAmount("header","balance",false);
+    assertDisplayAmount("header","balance", true, false);
 
   }
 

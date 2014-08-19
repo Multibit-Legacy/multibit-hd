@@ -19,9 +19,9 @@ public class SendRequestSummary {
 
   private final Address destinationAddress;
   private final Coin amount;
+  private final Optional<FiatPayment> fiatPayment;
   private final Address changeAddress;
   private final Coin feePerKB;
-  private final CharSequence password;
   private final Optional<FeeState> feeState;
 
   // Mutable values
@@ -30,6 +30,7 @@ public class SendRequestSummary {
   private Optional<KeyParameter> keyParameter = Optional.absent();
   private Optional<Wallet.SendRequest> sendRequest = Optional.absent();
   private Optional<String> notes = Optional.absent();
+  private String password;
 
   /**
    * The client fee added to the sendRequest.tx
@@ -39,6 +40,10 @@ public class SendRequestSummary {
   /**
    * @param destinationAddress The destination address to send to
    * @param amount             The amount to send (in coins)
+   * @param fiatPayment        the fiat payment equivalent of the bitcoin amount
+   *                           Note that initially, this is filled up with only the exchange rate details.
+   *                           Only when bitcoin is sent are the fees and hence total bitcoin amount worked out.
+   *                           Then the fiat amount equivalent to the total bitcoin amount is computed and stored.
    * @param changeAddress      The change address
    * @param feePerKB           The fee per Kb (in coins)
    * @param password           The wallet password
@@ -48,14 +53,16 @@ public class SendRequestSummary {
   public SendRequestSummary(
     Address destinationAddress,
     Coin amount,
+    Optional<FiatPayment> fiatPayment,
     Address changeAddress,
     Coin feePerKB,
-    CharSequence password,
+    String password,
     Optional<FeeState> feeState,
     boolean emptyWallet) {
 
     this.destinationAddress = destinationAddress;
     this.amount = amount;
+    this.fiatPayment = fiatPayment;
     this.changeAddress = changeAddress;
     this.feePerKB = feePerKB;
     this.password = password;
@@ -91,6 +98,13 @@ public class SendRequestSummary {
   }
 
   /**
+   * Get the fiat payment of the total amount being sent
+   */
+  public Optional<FiatPayment> getFiatPayment() {
+    return fiatPayment;
+  }
+
+  /**
    * @return The change address
    */
   public Address getChangeAddress() {
@@ -107,8 +121,12 @@ public class SendRequestSummary {
   /**
    * @return The wallet password
    */
-  public CharSequence getPassword() {
+  public String getPassword() {
     return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
   }
 
   /**
@@ -136,8 +154,8 @@ public class SendRequestSummary {
     this.emptyWallet = emptyWallet;
   }
 
-  public void setFeeAddress(Address feeAddress) {
-    this.feeAddress = Optional.fromNullable(feeAddress);
+  public void setFeeAddress(Optional<Address> feeAddress) {
+    this.feeAddress = feeAddress;
   }
 
   /**
@@ -181,9 +199,10 @@ public class SendRequestSummary {
 
   @Override
   public String toString() {
-    return "SendBitcoinData{" +
+    return "SendRequestSummary{" +
       "destinationAddress=" + destinationAddress +
       ", amount=" + amount +
+      ", fiatPayment=" +fiatPayment +
       ", changeAddress=" + changeAddress +
       ", feePerKB=" + feePerKB +
       ", password=***" +

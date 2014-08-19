@@ -12,14 +12,14 @@ import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.*;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.services.BackupService;
-import org.multibit.hd.core.services.BitcoinNetworkService;
-import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.core.services.ExchangeTickerService;
+import org.multibit.hd.core.services.*;
+import org.multibit.hd.core.store.TransactionInfo;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardHideEvent;
@@ -42,6 +42,8 @@ import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletState;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.exit.ExitState;
 import org.multibit.hd.ui.views.wizards.password.PasswordState;
+import org.multibit.hd.ui.views.wizards.password.PasswordWizard;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizard;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -164,6 +166,7 @@ public class MainController extends AbstractController implements
       if (WelcomeWizardState.CREATE_WALLET_REPORT.name().equals(event.getPanelName())
         || WelcomeWizardState.RESTORE_WALLET_REPORT.name().equals(event.getPanelName())
         || WelcomeWizardState.RESTORE_PASSWORD_REPORT.name().equals(event.getPanelName())
+        || WelcomeWizardState.WELCOME_SELECT_WALLET.name().equals(event.getPanelName())
         ) {
 
         // Need to hand over to the password wizard
@@ -261,7 +264,7 @@ public class MainController extends AbstractController implements
           mainView.refresh();
 
           // Show the current detail screen
-          Screen screen = Screen.valueOf(Configurations.currentConfiguration.getApplication().getCurrentScreen());
+          Screen screen = Screen.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentScreen());
           ControllerEvents.fireShowDetailScreenEvent(screen);
 
           // Trigger the alert panels to refresh
@@ -521,7 +524,7 @@ public class MainController extends AbstractController implements
    */
   private void handleTheme() {
 
-    Theme newTheme = ThemeKey.valueOf(Configurations.currentConfiguration.getApplication().getCurrentTheme()).theme();
+    Theme newTheme = ThemeKey.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentTheme()).theme();
     Themes.switchTheme(newTheme);
 
   }
@@ -558,7 +561,7 @@ public class MainController extends AbstractController implements
     // Initialise backup (must be before Bitcoin network starts and on the main thread)
     Optional<File> cloudBackupLocation = Optional.absent();
     if (Configurations.currentConfiguration != null) {
-      String cloudBackupLocationString = Configurations.currentConfiguration.getApplication().getCloudBackupLocation();
+      String cloudBackupLocationString = Configurations.currentConfiguration.getAppearance().getCloudBackupLocation();
       if (cloudBackupLocationString != null && !"".equals(cloudBackupLocationString)) {
         File cloudBackupLocationAsFile = new File(cloudBackupLocationString);
         if (cloudBackupLocationAsFile.exists()) {
@@ -644,12 +647,15 @@ public class MainController extends AbstractController implements
     mainView.setShowExitingWelcomeWizard(false);
     mainView.setShowExitingPasswordWizard(true);
 
+    // Start building the wizard on the EDT to prevent UI updates
+    final PasswordWizard passwordWizard = Wizards.newExitingPasswordWizard();
+
     // Use a new thread to handle the new wizard so that the handover can complete
-    SafeExecutors.newSingleThreadExecutor("password-handover").execute(new Runnable() {
+    handoverExecutorService.execute(new Runnable() {
       @Override
       public void run() {
 
-        // Allow time for the other wizard to finish hiding (200ms is sufficient)
+        // Allow time for the other wizard to finish hiding (200ms is the minimum)
         Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
 
         // Must execute on the EDT
@@ -660,7 +666,7 @@ public class MainController extends AbstractController implements
             Panels.hideLightBoxIfPresent();
 
             log.debug("Showing exiting password wizard after handover");
-            Panels.showLightBox(Wizards.newExitingPasswordWizard().getWizardScreenHolder());
+            Panels.showLightBox(passwordWizard.getWizardScreenHolder());
 
           }
         });
@@ -681,12 +687,15 @@ public class MainController extends AbstractController implements
     mainView.setShowExitingWelcomeWizard(true);
     mainView.setShowExitingPasswordWizard(false);
 
+    // Start building the wizard on the EDT to prevent UI updates
+    final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_WALLET);
+
     // Use a new thread to handle the new wizard so that the handover can complete
     handoverExecutorService.execute(new Runnable() {
       @Override
       public void run() {
 
-        // Allow time for the other wizard to finish hiding (200ms is sufficient)
+        // Allow time for the other wizard to finish hiding (200ms is the minimum)
         Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
 
         // Must execute on the EDT
@@ -697,7 +706,7 @@ public class MainController extends AbstractController implements
             Panels.hideLightBoxIfPresent();
 
             log.debug("Showing exiting welcome wizard after handover");
-            Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_WALLET).getWizardScreenHolder());
+            Panels.showLightBox(welcomeWizard.getWizardScreenHolder());
 
           }
         });
@@ -745,7 +754,7 @@ public class MainController extends AbstractController implements
     CoreServices.logHistory(Languages.safeText(MessageKey.HISTORY_WALLET_OPENED, walletSummary.get().getName()));
 
     // Show the initial detail screen
-    Screen screen = Screen.valueOf(Configurations.currentConfiguration.getApplication().getCurrentScreen());
+    Screen screen = Screen.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentScreen());
     ControllerEvents.fireShowDetailScreenEvent(screen);
 
     // Don't hold up the UI thread with these background operations
@@ -772,5 +781,43 @@ public class MainController extends AbstractController implements
         }
       }
     });
+  }
+
+
+  /**
+   * Make sure that when a transaction is successfully created its 'metadata' is stored in a transactionInfo
+   * @param transactionCreationEvent
+   */
+  @Subscribe
+  public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
+
+    // Only store successful transactions
+    if (!transactionCreationEvent.isTransactionCreationWasSuccessful()) {
+      return;
+    }
+
+    // Create a transactionInfo to match the event created
+    TransactionInfo transactionInfo = new TransactionInfo();
+    transactionInfo.setHash(transactionCreationEvent.getTransactionId());
+    String note = transactionCreationEvent.getNotes().or("");
+    transactionInfo.setNote(note);
+
+    // Append miner's fee info
+    transactionInfo.setMinerFee(transactionCreationEvent.getMiningFeePaid());
+
+    // Append client fee info
+    transactionInfo.setClientFee(transactionCreationEvent.getClientFeePaid());
+
+    // Set the fiat payment amount
+    transactionInfo.setAmountFiat(transactionCreationEvent.getFiatPayment().orNull());
+
+    WalletService walletService = CoreServices.getCurrentWalletService();
+    walletService.addTransactionInfo(transactionInfo);
+    log.debug("Added transactionInfo {} to walletService {}", transactionInfo, walletService);
+    try {
+      walletService.writePayments();
+    } catch (PaymentsSaveException pse) {
+      ExceptionHandler.handleThrowable(pse);
+    }
   }
 }

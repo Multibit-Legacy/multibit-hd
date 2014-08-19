@@ -3,6 +3,7 @@ package org.multibit.hd.core.events;
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.Coin;
 import com.google.common.base.Optional;
+import org.multibit.hd.core.dto.FiatPayment;
 
 import java.util.Arrays;
 
@@ -17,9 +18,14 @@ import java.util.Arrays;
 public class TransactionCreationEvent implements CoreEvent {
 
   /**
-   * The total amount paid (including the client fee)
+   * The total amount paid in Bitcoin (including the client fee)
    */
   private final Coin amount;
+
+  /**
+   * The fiat equivalent to the Bitcoin payment
+   */
+  private final Optional<FiatPayment> fiatPayment;
 
   /**
    * The mining fee that was paid (if available) or Optional.absent() if not available
@@ -46,6 +52,7 @@ public class TransactionCreationEvent implements CoreEvent {
   public TransactionCreationEvent(
     String transactionId,
     Coin amount,
+    Optional<FiatPayment> fiatPayment,
     Optional<Coin> miningFeePaid,
     Optional<Coin> clientFeePaid,
     Address destinationAddress,
@@ -58,6 +65,7 @@ public class TransactionCreationEvent implements CoreEvent {
 
     this.transactionId = transactionId;
     this.amount = amount;
+    this.fiatPayment = fiatPayment;
     this.miningFeePaid = miningFeePaid;
     this.clientFeePaid = clientFeePaid;
     this.destinationAddress = destinationAddress;
@@ -74,6 +82,9 @@ public class TransactionCreationEvent implements CoreEvent {
     return amount;
   }
 
+  public Optional<FiatPayment> getFiatPayment() {
+    return fiatPayment;
+  }
 
   public Optional<Coin> getMiningFeePaid() {
     return miningFeePaid;
@@ -82,10 +93,6 @@ public class TransactionCreationEvent implements CoreEvent {
   public Optional<Coin> getClientFeePaid() {
      return clientFeePaid;
    }
-
-   public Address getDestinationAddress() {
-    return destinationAddress;
-  }
 
   public boolean isTransactionCreationWasSuccessful() {
     return transactionCreationWasSuccessful;
@@ -111,6 +118,7 @@ public class TransactionCreationEvent implements CoreEvent {
   public String toString() {
     return "TransactionCreationEvent{" +
       "amount=" + amount +
+      ", fiatPayment=" + fiatPayment +
       ", miningFeePaid=" + miningFeePaid +
       ", clientFeePaid=" + clientFeePaid +
       ", destinationAddress='" + destinationAddress + '\'' +

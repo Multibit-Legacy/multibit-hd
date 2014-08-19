@@ -23,6 +23,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
+import javax.swing.text.DefaultEditorKit;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.List;
 
@@ -115,6 +117,56 @@ public class MultiBitHD {
   }
 
   /**
+   * <p>Initialise the JVM. This occurs before anything else is called.</p>
+   */
+  private void initialiseJVM() throws Exception {
+
+    log.debug("Initialising JVM...");
+
+    // Although we guarantee the JVM through the packager it is possible that
+    // a power user will use their own
+    try {
+      // We guarantee the JVM through the packager so we should try it first
+      UIManager.setLookAndFeel(new NimbusLookAndFeel());
+    } catch (UnsupportedLookAndFeelException e) {
+      try {
+        UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1) {
+        log.error("No look and feel available. MultiBit HD requires Java 7 or higher.", e1);
+        System.exit(-1);
+      }
+    }
+
+    // Set any bespoke system properties
+    try {
+      // Fix for Windows / Java 7 / VPN bug
+      System.setProperty("java.net.preferIPv4Stack", "true");
+
+      // Fix for version.txt not visible for Java 7
+      System.setProperty("jsse.enableSNIExtension", "false");
+
+      if (OSUtils.isMac()) {
+
+        // Ensure the correct name is displayed in the application menu
+        System.setProperty("com.apple.mrj.application.apple.menu.about.name", "multiBit HD");
+
+        // Ensure OSX key bindings are used for copy, paste etc
+        // Use the Nimbus keys and ensure this occurs before any component creation
+        addOSXKeyStrokes((InputMap) UIManager.get("TextField.focusInputMap"));
+        addOSXKeyStrokes((InputMap) UIManager.get("FormattedTextField.focusInputMap"));
+        addOSXKeyStrokes((InputMap) UIManager.get("TextArea.focusInputMap"));
+        addOSXKeyStrokes((InputMap) UIManager.get("PasswordField.focusInputMap"));
+        addOSXKeyStrokes((InputMap) UIManager.get("EditorPane.focusInputMap"));
+
+      }
+
+    } catch (SecurityException se) {
+      log.error(se.getClass().getName() + " " + se.getMessage());
+    }
+
+  }
+
+  /**
    * <p>Initialise the UI controllers once all the core services are in place</p>
    * <p>This creates the singleton controllers that respond to generic events</p>
    * <p>At this stage none of the following will be running:</p>
@@ -147,48 +199,26 @@ public class MultiBitHD {
       new SidebarController()
     );
 
+    // Set the tooltip delay to be slightly longer
+    ToolTipManager.sharedInstance().setInitialDelay(1000);
+
     // Must be OK to be here
     return true;
 
   }
 
   /**
-   * <p>Initialise the JVM. This occurs before anything else is called.</p>
+   * <p>Apply OSX key strokes to input map for consistent UX</p>
+   *
+   * @param inputMap The input map
    */
-  private void initialiseJVM() throws Exception {
+  private void addOSXKeyStrokes(InputMap inputMap) {
 
-    log.debug("Initialising JVM...");
-
-    // Although we guarantee the JVM through the packager it is possible that
-    // a power user will use their own
-    try {
-      // We guarantee the JVM through the packager so we should try it first
-      UIManager.setLookAndFeel(new NimbusLookAndFeel());
-    } catch (UnsupportedLookAndFeelException e) {
-      try {
-        UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1) {
-        log.error("No look and feel available. MultiBit HD requires Java 7 or higher.", e1);
-        System.exit(-1);
-      }
-    }
-
-    // Set any bespoke system properties
-    try {
-      // Fix for Windows / Java 7 / VPN bug
-      System.setProperty("java.net.preferIPv4Stack", "true");
-
-      // Fix for version.txt not visible for Java 7
-      System.setProperty("jsse.enableSNIExtension", "false");
-
-      // Ensure the correct name is displayed in the application menu
-      if (OSUtils.isMac()) {
-        System.setProperty("com.apple.mrj.application.apple.menu.about.name", "multiBit HD");
-      }
-
-    } catch (SecurityException se) {
-      log.error(se.getClass().getName() + " " + se.getMessage());
-    }
+    // Undo and redo require more complex handling
+    inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.META_DOWN_MASK), DefaultEditorKit.copyAction);
+    inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.META_DOWN_MASK), DefaultEditorKit.cutAction);
+    inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.META_DOWN_MASK), DefaultEditorKit.pasteAction);
+    inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.META_DOWN_MASK), DefaultEditorKit.selectAllAction);
 
   }
 
@@ -244,7 +274,7 @@ public class MultiBitHD {
     Preconditions.checkNotNull(mainController, "'mainController' must be present. FEST will cause this if another instance is running.");
 
     // Ensure that we are using the configured theme
-    ThemeKey themeKey = ThemeKey.valueOf(Configurations.currentConfiguration.getApplication().getCurrentTheme());
+    ThemeKey themeKey = ThemeKey.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentTheme());
     Themes.switchTheme(themeKey.theme());
 
     // Build a new MainView
@@ -255,9 +285,9 @@ public class MultiBitHD {
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
     List<File> walletDirectories = WalletManager.findWalletDirectories(applicationDataDirectory);
 
-    if (walletDirectories.isEmpty()) {
+    if (walletDirectories.isEmpty() || !Configurations.currentConfiguration.isLicenceAccepted()) {
 
-      log.debug("No wallets in the directory - showing the welcome wizard");
+      log.debug("No wallets in the directory or licence not accepted - showing the welcome wizard");
       mainView.setShowExitingWelcomeWizard(true);
       mainView.setShowExitingPasswordWizard(false);
 

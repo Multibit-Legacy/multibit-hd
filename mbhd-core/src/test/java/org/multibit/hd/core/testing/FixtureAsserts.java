@@ -87,7 +87,7 @@ public class FixtureAsserts {
     String normalisedFixture = fixture(fixtureClasspath).replaceAll("\n","").replaceAll("\r","");
     String normalisedRepresentation = representation.replaceAll("\n","").replaceAll("\r","");
 
-    assertThat(normalisedFixture).isEqualTo(normalisedRepresentation).describedAs(reason);
+    assertThat(normalisedRepresentation).isEqualTo(normalisedFixture).describedAs(reason);
 
   }
 

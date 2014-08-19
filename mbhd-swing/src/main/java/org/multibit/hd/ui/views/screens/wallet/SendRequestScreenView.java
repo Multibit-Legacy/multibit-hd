@@ -129,7 +129,7 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
     sendingPaymentsScrollPane.setBorder(BorderFactory.createEmptyBorder());
 
     // Ensure we maintain the overall theme
-    ScrollBarUIDecorator.apply(sendingPaymentsScrollPane);
+    ScrollBarUIDecorator.apply(sendingPaymentsScrollPane, true);
 
     // Initialise panel with a blank list of today's requested payments
     List<PaymentData> todaysRequestedPayments = Lists.newArrayList(); //walletService.subsetPaymentsAndSort(allPayments, PaymentType.RECEIVING);
@@ -143,7 +143,7 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
     requestingPaymentsScrollPane.setBorder(BorderFactory.createEmptyBorder());
 
     // Ensure we maintain the overall theme
-    ScrollBarUIDecorator.apply(requestingPaymentsScrollPane);
+    ScrollBarUIDecorator.apply(requestingPaymentsScrollPane, true);
 
     contentPanel.add(Labels.newBlankLabel(), "width 47%,pushx");
     contentPanel.add(Labels.newBlankLabel(), "width 6%,pushx");

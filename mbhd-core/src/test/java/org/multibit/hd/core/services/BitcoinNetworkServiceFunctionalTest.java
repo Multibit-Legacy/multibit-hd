@@ -15,10 +15,7 @@ import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.dto.PaymentData;
-import org.multibit.hd.core.dto.SendRequestSummary;
-import org.multibit.hd.core.dto.WalletId;
-import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.managers.BackupManager;
@@ -222,6 +219,7 @@ public class BitcoinNetworkServiceFunctionalTest {
       final SendRequestSummary sendRequestSummary = new SendRequestSummary(
         destinationAddress,
         SEND_AMOUNT,
+        Optional.<FiatPayment>absent(),
         changeAddress,
         FEE_PER_KB,
         WALLET_PASSWORD,

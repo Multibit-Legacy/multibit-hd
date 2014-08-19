@@ -132,7 +132,7 @@ public class ShowThenFinishSignMessageUseCase extends AbstractFestUseCase {
 
     window
        .textBox(MessageKey.ENTER_PASSWORD.getKey())
-       .enterText(WalletFixtures.STANDARD_PASSWORD.toString());
+       .enterText(WalletFixtures.STANDARD_PASSWORD);
 
     // Click sign message
     window

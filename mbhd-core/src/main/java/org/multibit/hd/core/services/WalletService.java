@@ -193,11 +193,13 @@ public class WalletService {
     // Union the transactionData set and paymentData set
     lastSeenPaymentDataList = Lists.newArrayList(Sets.union(transactionDataSet, paymentRequestsNotFullyFunded));
 
+    //log.debug("lastSeenPaymentDataList:\n" + lastSeenPaymentDataList.toString());
     return lastSeenPaymentDataList;
   }
 
   /**
    * Subset the supplied payments and sort by date, descending
+   * (Sorting by amount coin is also done to make the order unique, within same date. This is to stop the order 'flicking' on sync)
    *
    * @param paymentType if PaymentType.SENDING return all sending payments for today
    *                    if PaymentType.RECEIVING return all requesting and receiving payments for today
@@ -234,13 +236,7 @@ public class WalletService {
 
     }
 
-    Collections.sort(subsetPaymentDataList, new Comparator<PaymentData>() {
-
-      @Override
-      public int compare(PaymentData o1, PaymentData o2) {
-        return -o1.getDate().compareTo(o2.getDate()); // note inverse sort
-      }
-    });
+    Collections.sort(subsetPaymentDataList, new PaymentComparator());
 
     return subsetPaymentDataList;
   }
@@ -285,6 +281,8 @@ public class WalletService {
         filteredPayments.add(paymentData);
       }
     }
+
+    Collections.sort(filteredPayments, new PaymentComparator());
 
     return filteredPayments;
   }
@@ -570,9 +568,32 @@ public class WalletService {
     TransactionInfo newTransactionInfo = new TransactionInfo();
     newTransactionInfo.setHash(transactionHashAsString);
     newTransactionInfo.setAmountFiat(amountFiat);
+
     transactionInfoMap.put(transactionHashAsString, newTransactionInfo);
     return amountFiat;
   }
+
+  /**
+   * Work out a fiatPayment holding the exchange rate information only.
+   * @return fiat payment containing exchange rate details
+   */
+  public static Optional<FiatPayment> calculateFiatPaymentHoldingExchangeRate() {
+     FiatPayment fiatPayment = new FiatPayment();
+
+     fiatPayment.setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
+
+     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
+     if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
+       fiatPayment.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
+       fiatPayment.setAmount(Optional.<BigDecimal>absent());
+       fiatPayment.setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
+     } else {
+       fiatPayment.setRate(Optional.<String>absent());
+       fiatPayment.setAmount(Optional.<BigDecimal>absent());
+       fiatPayment.setCurrency(Optional.<Currency>absent());
+     }
+     return Optional.of(fiatPayment);
+   }
 
   private String calculateNote(TransactionData transactionData, String transactionHashAsString) {
     String note = "";
@@ -992,6 +1013,18 @@ public class WalletService {
     } catch (PaymentsSaveException pse) {
       // Cannot do much as shutting down
       log.error("Failed to write payments.", pse);
+    }
+  }
+
+  class PaymentComparator implements Comparator<PaymentData> {
+    @Override
+    public int compare(PaymentData o1, PaymentData o2) {
+      int dateSort = -o1.getDate().compareTo(o2.getDate()); // note inverse sort
+      if (dateSort != 0) {
+        return dateSort;
+      } else {
+        return o1.getAmountCoin().compareTo(o2.getAmountCoin());
+      }
     }
   }
 }

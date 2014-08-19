@@ -2,28 +2,22 @@ package org.multibit.hd.ui.views.wizards.empty_wallet;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.Coin;
+import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.brit.services.FeeService;
-import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.dto.SendRequestSummary;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
-import org.multibit.hd.core.events.TransactionCreationEvent;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
-import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.core.services.WalletService;
-import org.multibit.hd.core.store.TransactionInfo;
 import org.multibit.hd.core.utils.Coins;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -77,6 +71,14 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
    */
   private final Coin coinAmount;
 
+  private BitcoinNetworkService bitcoinNetworkService;
+
+
+  /**
+   * The prepared tx
+   */
+  private SendRequestSummary sendRequestSummary;
+
   /**
    * @param state The state object
    */
@@ -100,6 +102,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     switch (state) {
       case EMPTY_WALLET_ENTER_DETAILS:
         state = EMPTY_WALLET_CONFIRM;
+        prepareTransaction();
         break;
       case EMPTY_WALLET_CONFIRM:
 
@@ -147,6 +150,13 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
   }
 
   /**
+   * @return the SendRequestSummary with the payment info in it
+   */
+  public SendRequestSummary getSendRequestSummary() {
+    return sendRequestSummary;
+  }
+
+  /**
    * <p>Reduced visibility for panel models only</p>
    *
    * @param enterDetailsPanelModel The "enter details" panel model
@@ -178,49 +188,36 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     return coinAmount;
   }
 
-  @Subscribe
-  public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
-
-    // Only store successful transactions
-    if (!transactionCreationEvent.isTransactionCreationWasSuccessful()) {
-      return;
-    }
-
-    // Create a transactionInfo to match the event created
-    TransactionInfo transactionInfo = new TransactionInfo();
-    transactionInfo.setHash(transactionCreationEvent.getTransactionId());
-    transactionInfo.setNote(Languages.safeText(MessageKey.EMPTY_WALLET_TITLE));
-
-    // Append miner's fee info
-    transactionInfo.setMinerFee(transactionCreationEvent.getMiningFeePaid());
-
-    // Append client fee info
-    transactionInfo.setClientFee(transactionCreationEvent.getClientFeePaid());
-
-    // Create the empty fiat payment
-    FiatPayment fiatPayment = new FiatPayment();
-    Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
-    if (exchangeRateChangedEvent.isPresent()) {
-      fiatPayment.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
-      // A send is denoted with a negative fiat amount
-      fiatPayment.setAmount(Optional.of(Coins.toLocalAmount(getCoinAmount(), exchangeRateChangedEvent.get().getRate().negate())));
-    } else {
-      fiatPayment.setRate(Optional.<String>absent());
-      fiatPayment.setAmount(Optional.<BigDecimal>absent());
-      fiatPayment.setCurrency(Optional.of(Configurations.currentConfiguration.getLocalCurrency()));
-    }
-    fiatPayment.setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
-
-    transactionInfo.setAmountFiat(fiatPayment);
-
-    WalletService walletService = CoreServices.getCurrentWalletService();
-    walletService.addTransactionInfo(transactionInfo);
-    try {
-      walletService.writePayments();
-    } catch (PaymentsSaveException pse) {
-      ExceptionHandler.handleThrowable(pse);
-    }
-  }
+//  @Subscribe
+//  public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
+//
+//    // Only store successful transactions
+//    if (!transactionCreationEvent.isTransactionCreationWasSuccessful()) {
+//      return;
+//    }
+//
+//    // Create a transactionInfo to match the event created
+//    TransactionInfo transactionInfo = new TransactionInfo();
+//    transactionInfo.setHash(transactionCreationEvent.getTransactionId());
+//    transactionInfo.setNote(Languages.safeText(MessageKey.EMPTY_WALLET_TITLE));
+//
+//    // Append miner's fee info
+//    transactionInfo.setMinerFee(transactionCreationEvent.getMiningFeePaid());
+//
+//    // Append client fee info
+//    transactionInfo.setClientFee(transactionCreationEvent.getClientFeePaid());
+//
+//    // Set the fiat payment amount
+//    transactionInfo.setAmountFiat(transactionCreationEvent.getFiatPayment().orNull());
+//
+//    WalletService walletService = CoreServices.getCurrentWalletService();
+//    walletService.addTransactionInfo(transactionInfo);
+//    try {
+//      walletService.writePayments();
+//    } catch (PaymentsSaveException pse) {
+//      ExceptionHandler.handleThrowable(pse);
+//    }
+//  }
 
   /**
    * @return The BRIT fee state for the current wallet
@@ -251,41 +248,77 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     }
   }
 
-  private void emptyWallet() {
+  /**
+   * Prepare the transaction for sending - this does everything but sign the tx
+   */
+  private void prepareTransaction() {
 
-    // Actually send the bitcoin
+    // Prepare the transaction for sending
     Preconditions.checkNotNull(enterDetailsPanelModel);
 
-    BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
+    bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
     Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started");
 
     Address changeAddress = bitcoinNetworkService.getNextChangeAddress();
 
-
     Address bitcoinAddress = enterDetailsPanelModel
-      .getEnterRecipientModel()
-      .getRecipient()
-      .get()
-      .getBitcoinAddress();
+            .getEnterRecipientModel()
+            .getRecipient()
+            .get()
+            .getBitcoinAddress();
+
+    // Create the fiat payment - note that the fiat amount is not populated, only the exchange rate data.
+    // This is because the client and transaction fee is only worked out at point of sending, and the fiat equivalent is computed from that
+    Optional<FiatPayment> fiatPayment;
+    Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
+    if (exchangeRateChangedEvent.isPresent()) {
+      fiatPayment = Optional.of(new FiatPayment());
+      fiatPayment.get().setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
+      // A send is denoted with a negative fiat amount
+      fiatPayment.get().setAmount(Optional.<BigDecimal>absent());
+      fiatPayment.get().setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
+      fiatPayment.get().setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
+    } else {
+      fiatPayment = Optional.absent();
+    }
+
     String password = enterDetailsPanelModel.getEnterPasswordModel().getValue();
 
     Optional<FeeState> feeState = calculateBRITFeeState();
 
-    // Send the bitcoins
-    final SendRequestSummary sendRequestSummary = new SendRequestSummary(
-      bitcoinAddress,
-      coinAmount,
-      changeAddress,
-      BitcoinNetworkService.DEFAULT_FEE_PER_KB,
-      password,
-      feeState,
-      true);
+    sendRequestSummary = new SendRequestSummary(
+            bitcoinAddress,
+            coinAmount,
+            fiatPayment,
+            changeAddress,
+            BitcoinNetworkService.DEFAULT_FEE_PER_KB,
+            password,
+            feeState,
+            true);
+
     sendRequestSummary.setNotes(Optional.of(Languages.safeText(MessageKey.EMPTY_WALLET_TITLE)));
 
-    log.debug("Emptying wallet with: {}", sendRequestSummary);
-    bitcoinNetworkService.send(sendRequestSummary);
+    // Prepare the transaction - this works out the fee etc
+    bitcoinNetworkService.prepareTransaction(sendRequestSummary);
 
-    // The send throws TransactionCreationEvents and BitcoinSentEvents to which you subscribe to to work out success and failure.
-
+    // Work out if a client fee is being paid now
+    if (feeState.isPresent()) {
+      // With an empty wallet you always pay the client fee now (if above the dust level)
+      if (feeState.get().getFeeOwed().compareTo(Transaction.MIN_NONDUST_OUTPUT) > 0) {
+        // The fee is due now
+        sendRequestSummary.setClientFeeAdded(Optional.of(feeState.get().getFeeOwed()));
+      }
+    }
   }
+
+  /**
+   * Actually send the transaction
+   */
+  private void emptyWallet() {
+     log.debug("Emptying wallet with: {}", sendRequestSummary);
+     Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started");
+     bitcoinNetworkService.send(sendRequestSummary);
+
+     // The send throws TransactionCreationEvents and BitcoinSentEvents to which you subscribe to to work out success and failure.
+   }
 }

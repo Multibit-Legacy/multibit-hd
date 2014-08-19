@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.util.Currency;
 import java.util.List;
 
 import static org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState.*;
@@ -76,6 +75,11 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   private final Optional<BitcoinURI> bitcoinURI;
 
   /**
+   * The SendRequestSummary that initially contains all the tx details, and then is signed prior to sending
+   */
+  private SendRequestSummary sendRequestSummary;
+
+  /**
    * @param state     The state object
    * @param parameter The "send bitcoin" parameter object
    */
@@ -93,6 +97,9 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     switch (state) {
       case SEND_ENTER_AMOUNT:
         state = SEND_CONFIRM_AMOUNT;
+
+        // The user has entered the send details so the tx can be prepared
+        prepareTransaction();
         break;
       case SEND_CONFIRM_AMOUNT:
 
@@ -128,8 +135,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
    */
   public Recipient getRecipient() {
     return enterAmountPanelModel
-      .getEnterRecipientModel()
-      .getRecipient().get();
+            .getEnterRecipientModel()
+            .getRecipient().get();
   }
 
   /**
@@ -137,8 +144,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
    */
   public Coin getCoinAmount() {
     return enterAmountPanelModel
-      .getEnterAmountModel()
-      .getCoinAmount();
+            .getEnterAmountModel()
+            .getCoinAmount();
   }
 
   /**
@@ -146,8 +153,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
    */
   public Optional<BigDecimal> getLocalAmount() {
     return enterAmountPanelModel
-      .getEnterAmountModel()
-      .getLocalAmount();
+            .getEnterAmountModel()
+            .getLocalAmount();
   }
 
   /**
@@ -212,56 +219,45 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     return bitcoinURI;
   }
 
-  @Subscribe
-  public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
-
-    // Only store successful transactions
-    if (!transactionCreationEvent.isTransactionCreationWasSuccessful()) {
-      return;
-    }
-
-    // Create a transactionInfo to match the event created
-    TransactionInfo transactionInfo = new TransactionInfo();
-    transactionInfo.setHash(transactionCreationEvent.getTransactionId());
-    String note = transactionCreationEvent.getNotes().or("");
-    transactionInfo.setNote(note);
-
-    // Append miner's fee info
-    transactionInfo.setMinerFee(transactionCreationEvent.getMiningFeePaid());
-
-    // Append client fee info
-    transactionInfo.setClientFee(transactionCreationEvent.getClientFeePaid());
-
-    // Create the fiat payment
-    FiatPayment fiatPayment = new FiatPayment();
-    // A send is denoted with a negative fiat amount
-    if (getLocalAmount().isPresent()) {
-      fiatPayment.setAmount(Optional.of(getLocalAmount().get().negate()));
-    } else {
-      fiatPayment.setAmount(Optional.<BigDecimal>absent());
-    }
-    fiatPayment.setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
-
-    Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
-    if (exchangeRateChangedEvent.isPresent()) {
-      fiatPayment.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
-      fiatPayment.setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
-    } else {
-      fiatPayment.setRate(Optional.<String>absent());
-      fiatPayment.setCurrency(Optional.<Currency>absent());
-    }
-
-    transactionInfo.setAmountFiat(fiatPayment);
-
-    WalletService walletService = CoreServices.getCurrentWalletService();
-    walletService.addTransactionInfo(transactionInfo);
-    try {
-      walletService.writePayments();
-    } catch (PaymentsSaveException pse) {
-      ExceptionHandler.handleThrowable(pse);
-    }
-
+  /**
+   * @return the SendRequestSummary that includes all the tx details
+   */
+  public SendRequestSummary getSendRequestSummary() {
+    return sendRequestSummary;
   }
+//
+//  @Subscribe
+//  public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
+//
+//    // Only store successful transactions
+//    if (!transactionCreationEvent.isTransactionCreationWasSuccessful()) {
+//      return;
+//    }
+//
+//    // Create a transactionInfo to match the event created
+//    TransactionInfo transactionInfo = new TransactionInfo();
+//    transactionInfo.setHash(transactionCreationEvent.getTransactionId());
+//    String note = transactionCreationEvent.getNotes().or("");
+//    transactionInfo.setNote(note);
+//
+//    // Append miner's fee info
+//    transactionInfo.setMinerFee(transactionCreationEvent.getMiningFeePaid());
+//
+//    // Append client fee info
+//    transactionInfo.setClientFee(transactionCreationEvent.getClientFeePaid());
+//
+//    // Set the fiat payment amount
+//    transactionInfo.setAmountFiat(transactionCreationEvent.getFiatPayment().orNull());
+//
+//    WalletService walletService = CoreServices.getCurrentWalletService();
+//    walletService.addTransactionInfo(transactionInfo);
+//    log.debug("Added transactionInfo {} to walletService {}", transactionInfo, walletService);
+//    try {
+//      walletService.writePayments();
+//    } catch (PaymentsSaveException pse) {
+//      ExceptionHandler.handleThrowable(pse);
+//    }
+//  }
 
   /**
    * @return The BRIT fee state for the current wallet
@@ -272,7 +268,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
       feeService = CoreServices.createFeeService();
     }
     if (WalletManager.INSTANCE.getCurrentWalletSummary() != null &&
-      WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+            WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
       Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
 
       File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
@@ -291,9 +287,10 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     }
   }
 
-  private void sendBitcoin() {
-
-    // Actually send the bitcoin
+  /**
+   * Prepare the Bitcoin transaction that will be sent after user confirmation
+   */
+  private void prepareTransaction() {
     Preconditions.checkNotNull(enterAmountPanelModel);
     Preconditions.checkNotNull(confirmPanelModel);
 
@@ -304,34 +301,65 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
     Coin coin = enterAmountPanelModel.getEnterAmountModel().getCoinAmount();
     Address bitcoinAddress = enterAmountPanelModel
-      .getEnterRecipientModel()
-      .getRecipient()
-      .get()
-      .getBitcoinAddress();
-    String password = confirmPanelModel.getPasswordModel().getValue();
+            .getEnterRecipientModel()
+            .getRecipient()
+            .get()
+            .getBitcoinAddress();
 
     Optional<FeeState> feeState = calculateBRITFeeState();
 
-    // Send the bitcoins
-    final SendRequestSummary sendRequestSummary = new SendRequestSummary(
-      bitcoinAddress,
-      coin,
-      changeAddress,
-      BitcoinNetworkService.DEFAULT_FEE_PER_KB,
-      password,
-      feeState,
-      emptyWallet);
+    // Create the fiat payment - note that the fiat amount is not populated, only the exchange rate data.
+    // This is because the client and transaction fee is only worked out at point of sending, and the fiat equivalent is computed from that
+    Optional<FiatPayment> fiatPayment;
+    Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
+    if (exchangeRateChangedEvent.isPresent()) {
+      fiatPayment = Optional.of(new FiatPayment());
+      fiatPayment.get().setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
+      // A send is denoted with a negative fiat amount
+      fiatPayment.get().setAmount(Optional.<BigDecimal>absent());
+      fiatPayment.get().setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
+      fiatPayment.get().setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
+    } else {
+      fiatPayment = Optional.absent();
+    }
+    // Prepare the transaction i.e work out the fee sizes
+    sendRequestSummary = new SendRequestSummary(
+            bitcoinAddress,
+            coin,
+            fiatPayment,
+            changeAddress,
+            BitcoinNetworkService.DEFAULT_FEE_PER_KB,
+            null,
+            feeState,
+            emptyWallet);
+
+    log.debug("Just about to prepare transaction for sendRequestSummary: {}", sendRequestSummary);
+    bitcoinNetworkService.prepareTransaction(sendRequestSummary);
+    log.debug("Prepare transaction completed: sendRequestSummary: {}", sendRequestSummary);
+  }
+
+  private void sendBitcoin() {
+
+    // Actually send the bitcoin by signing using the password, committing to the wallet and broadcasting to the Bitcoin network
+    Preconditions.checkNotNull(confirmPanelModel);
+
+    // Copy the note into the sendRequestSummary
     if (confirmPanelModel.getNotes() != null) {
       sendRequestSummary.setNotes(Optional.of(confirmPanelModel.getNotes()));
     } else {
       sendRequestSummary.setNotes(Optional.<String>absent());
     }
 
+    // Copy the password into the sendRequestSummary
+    sendRequestSummary.setPassword(confirmPanelModel.getPasswordModel().getValue());
+
+    BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
+    Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started");
+
     log.debug("Just about to send bitcoin: {}", sendRequestSummary);
     bitcoinNetworkService.send(sendRequestSummary);
 
     // The send throws TransactionCreationEvents and BitcoinSentEvents to which you subscribe to to work out success and failure.
-
   }
 
   /**
@@ -358,8 +386,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
         // Attempt to locate a contact with the address in the Bitcoin URI to reassure user
         List<Contact> contacts = CoreServices
-          .getOrCreateContactService(currentWalletSummary.get().getWalletId())
-          .filterContactsByBitcoinAddress(address.get());
+                .getOrCreateContactService(currentWalletSummary.get().getWalletId())
+                .filterContactsByBitcoinAddress(address.get());
 
         if (!contacts.isEmpty()) {
           // Offer the first contact with the matching address
@@ -383,14 +411,13 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
       // Must have a valid address and therefore recipient to be here
       enterAmountPanelModel
-        .getEnterRecipientModel()
-        .setValue(recipient.get());
+              .getEnterRecipientModel()
+              .setValue(recipient.get());
 
       // Add in any amount or treat as zero
       enterAmountPanelModel
-        .getEnterAmountModel()
-        .setCoinAmount(amount.or(Coin.ZERO));
-
+              .getEnterAmountModel()
+              .setCoinAmount(amount.or(Coin.ZERO));
     }
   }
 }

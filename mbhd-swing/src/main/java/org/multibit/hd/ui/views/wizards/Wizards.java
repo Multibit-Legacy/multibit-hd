@@ -10,9 +10,9 @@ import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.views.wizards.about.AboutState;
 import org.multibit.hd.ui.views.wizards.about.AboutWizard;
 import org.multibit.hd.ui.views.wizards.about.AboutWizardModel;
-import org.multibit.hd.ui.views.wizards.application_settings.ApplicationSettingsState;
-import org.multibit.hd.ui.views.wizards.application_settings.ApplicationSettingsWizard;
-import org.multibit.hd.ui.views.wizards.application_settings.ApplicationSettingsWizardModel;
+import org.multibit.hd.ui.views.wizards.appearance_settings.AppearanceSettingsState;
+import org.multibit.hd.ui.views.wizards.appearance_settings.AppearanceSettingsWizard;
+import org.multibit.hd.ui.views.wizards.appearance_settings.AppearanceSettingsWizardModel;
 import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordState;
 import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordWizard;
 import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordWizardModel;
@@ -316,16 +316,16 @@ public class Wizards {
   }
 
   /**
-   * @return A new "application settings" wizard for theme selection
+   * @return A new "appearance settings" wizard for theme selection
    */
-  public static ApplicationSettingsWizard newApplicationSettingsWizard() {
+  public static AppearanceSettingsWizard newAppearanceSettingsWizard() {
 
-    log.debug("New 'Application settings wizard'");
+    log.debug("New 'Appearance settings wizard'");
 
     // Ensure we work with a copy of the current configuration in case of cancellation
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
 
-    return new ApplicationSettingsWizard(new ApplicationSettingsWizardModel(ApplicationSettingsState.APPLICATION_ENTER_DETAILS, configuration));
+    return new AppearanceSettingsWizard(new AppearanceSettingsWizardModel(AppearanceSettingsState.APPEARANCE_ENTER_DETAILS, configuration));
   }
 
   /**

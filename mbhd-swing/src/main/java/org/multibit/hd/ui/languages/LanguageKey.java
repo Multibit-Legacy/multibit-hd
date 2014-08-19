@@ -116,6 +116,10 @@ public enum LanguageKey {
    */
   LV_LV("lv_LV", OPENSANS_SEMIBOLD),
   /**
+   * Lithuanian
+   */
+  LT_LT("lt_LT", OPENSANS_SEMIBOLD),
+  /**
    * Dutch
    */
   NL_NL("nl_NL", CORBEN_REGULAR),
@@ -127,6 +131,10 @@ public enum LanguageKey {
    * Polish
    */
   PL_PL("pl_PL", OPENSANS_SEMIBOLD),
+  /**
+   * Portuguese (Brazil)
+   */
+  PT_BR("pt_BR", CORBEN_REGULAR),
   /**
    * Portuguese (Portugal)
    */
@@ -179,6 +187,10 @@ public enum LanguageKey {
    * Chinese (Simplified)
    */
   ZH_CN("zh_CN", IMPACT_REGULAR),
+  /**
+   * Chinese (Traditional)
+   */
+  ZH_TW("zh_TW", IMPACT_REGULAR),
   // End of enum
   ;
 

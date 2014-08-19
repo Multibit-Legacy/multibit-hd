@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.components.display_seed_phrase;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseSize;
-import org.multibit.hd.ui.utils.PrintingUtils;
 import org.multibit.hd.ui.views.components.*;
 
 import javax.swing.*;
@@ -148,24 +147,6 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
 
         model.newSeedPhrase(model.getCurrentSeedSize());
         seedPhrase.setText(model.displaySeedPhrase());
-
-      }
-    };
-  }
-
-  /**
-   * @return A new action for generating a new seed phrase
-   */
-  private Action getPrintAction() {
-
-    return new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-
-        PrintingUtils.printSeedPhrase(
-          getModel().get().getSeedPhrase(),
-          getModel().get().getSeedTimestamp()
-        );
 
       }
     };

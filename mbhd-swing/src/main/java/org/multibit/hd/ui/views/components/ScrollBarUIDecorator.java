@@ -29,14 +29,17 @@ public class ScrollBarUIDecorator {
   /**
    * <p>Apply the scroll bar UI to the scroll pane</p>
    *
-   * @param scrollPane The scroll pane
+   * @param scrollPane      The scroll pane
+   * @param addVerticalLine True if the scroll pane wraps a flat component (not rounded)
    */
-  public static void apply(final JScrollPane scrollPane) {
+  public static void apply(final JScrollPane scrollPane, boolean addVerticalLine) {
 
     if (scrollPane.getVerticalScrollBar() != null) {
       scrollPane.getVerticalScrollBar().setUI(newScrollBarUI());
-      // Add a vertical line to the left of scroll bar track for better visual effect
-      scrollPane.getVerticalScrollBar().setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Themes.currentTheme.text()));
+      if (addVerticalLine) {
+        // Add a vertical line to the left of scroll bar track for better visual effect
+        scrollPane.getVerticalScrollBar().setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Themes.currentTheme.text()));
+      }
     }
     if (scrollPane.getHorizontalScrollBar() != null) {
       scrollPane.getHorizontalScrollBar().setUI(newScrollBarUI());

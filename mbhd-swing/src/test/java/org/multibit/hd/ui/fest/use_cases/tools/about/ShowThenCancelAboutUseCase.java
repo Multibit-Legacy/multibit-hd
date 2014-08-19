@@ -42,15 +42,15 @@ public class ShowThenCancelAboutUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled();
 
-    // Verify cancel is present
+    // Verify Finish is present
     window
-      .button(MessageKey.CANCEL.getKey())
+      .button(MessageKey.FINISH.getKey())
       .requireVisible()
       .requireEnabled();
 
-    // Click Cancel
+    // Click Finish
     window
-      .button(MessageKey.CANCEL.getKey())
+      .button(MessageKey.FINISH.getKey())
       .click();
 
     // Verify the underlying screen is back

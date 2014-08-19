@@ -28,7 +28,7 @@ public enum BitcoinUriHandling {
    */
   public static BitcoinUriHandling current() {
 
-    String rawBitcoinUriHandling = Configurations.currentConfiguration.getApplication().getBitcoinUriHandling();
+    String rawBitcoinUriHandling = Configurations.currentConfiguration.getAppearance().getBitcoinUriHandling();
 
     return valueOf(rawBitcoinUriHandling);
   }

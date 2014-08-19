@@ -694,9 +694,6 @@ public class Buttons {
 
     JButton button = newButton(action, key);
 
-    // Ensure it is accessible
-    AccessibilityDecorator.apply(button, MessageKey.BROWSE);
-
     AwesomeDecorator.applyIcon(AwesomeIcon.EXTERNAL_LINK, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
@@ -868,11 +865,11 @@ public class Buttons {
   /**
    * @param action The click action
    *
-   * @return A new "Application settings" wizard button with icon
+   * @return A new "Appearance settings" wizard button with icon
    */
   public static JButton newShowApplicationSettingsWizardButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.SHOW_APPLICATION_WIZARD);
+    JButton button = newLargeButton(action, MessageKey.SHOW_APPEARANCE_WIZARD);
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.DESKTOP,

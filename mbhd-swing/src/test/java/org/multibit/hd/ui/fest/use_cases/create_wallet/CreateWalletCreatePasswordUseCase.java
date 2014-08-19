@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.fest.use_cases.create_wallet;
 
 import org.fest.swing.fixture.FrameFixture;
+import org.multibit.hd.testing.WalletFixtures;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
@@ -84,14 +85,14 @@ public class CreateWalletCreatePasswordUseCase extends AbstractFestUseCase {
     // Matching password
     window
       .textBox(MessageKey.ENTER_NEW_PASSWORD.getKey())
-      .setText("abc123")
+      .setText(WalletFixtures.STANDARD_PASSWORD)
         // Trigger the key release action
       .pressKey(KeyEvent.VK_SHIFT)
       .releaseKey(KeyEvent.VK_SHIFT);
 
     window
       .textBox(MessageKey.RETYPE_NEW_PASSWORD.getKey())
-      .setText("abc123")
+      .setText(WalletFixtures.STANDARD_PASSWORD)
         // Trigger the key release action
       .pressKey(KeyEvent.VK_SHIFT)
       .releaseKey(KeyEvent.VK_SHIFT);
@@ -114,7 +115,7 @@ public class CreateWalletCreatePasswordUseCase extends AbstractFestUseCase {
 
     window
       .textBox(MessageKey.RETYPE_NEW_PASSWORD.getKey())
-      .setText("abc123")
+      .setText(WalletFixtures.STANDARD_PASSWORD)
         // Trigger the key release action
       .pressKey(KeyEvent.VK_SHIFT)
       .releaseKey(KeyEvent.VK_SHIFT);
@@ -131,14 +132,14 @@ public class CreateWalletCreatePasswordUseCase extends AbstractFestUseCase {
     // Almost correct (long)
     window
       .textBox(MessageKey.ENTER_NEW_PASSWORD.getKey())
-      .setText("abc123")
+      .setText(WalletFixtures.STANDARD_PASSWORD)
         // Trigger the key release action
       .pressKey(KeyEvent.VK_SHIFT)
       .releaseKey(KeyEvent.VK_SHIFT);
 
     window
       .textBox(MessageKey.RETYPE_NEW_PASSWORD.getKey())
-      .setText("abc1234")
+      .setText(WalletFixtures.STANDARD_PASSWORD+"4")
         // Trigger the key release action
       .pressKey(KeyEvent.VK_SHIFT)
       .releaseKey(KeyEvent.VK_SHIFT);
@@ -159,7 +160,7 @@ public class CreateWalletCreatePasswordUseCase extends AbstractFestUseCase {
    */
   private void verifyPasswordShows() {
 
-    String password1 = "abc123";
+    String password1 = WalletFixtures.STANDARD_PASSWORD;
 
     window
       .textBox(MessageKey.ENTER_NEW_PASSWORD.getKey())

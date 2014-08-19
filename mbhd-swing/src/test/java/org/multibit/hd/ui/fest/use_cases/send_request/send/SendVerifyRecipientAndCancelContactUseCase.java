@@ -50,20 +50,27 @@ public class SendVerifyRecipientAndCancelContactUseCase extends AbstractFestUseC
       .requireEnabled();
 
     // Use a public domain standard address
-    verifyBitcoinAddressField("", false);
-    verifyBitcoinAddressField(" ", false);
-    verifyBitcoinAddressField("AhN", false);
-    verifyBitcoinAddressField("AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty", false);
-    verifyBitcoinAddressField("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXht", false);
-    verifyBitcoinAddressField("1AhN6rPdrMuKBGFDKR1k9A8SCLYa", false);
-    verifyBitcoinAddressField("1AhN6rPdrMuKBGFDk9A8SCLYaNgXhty", false);
+    verifyRecipientField("", false);
+    verifyRecipientField(" ", false);
+    verifyRecipientField("AhN", false);
+    verifyRecipientField("AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty", false);
+    verifyRecipientField("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXht", false);
+    verifyRecipientField("1AhN6rPdrMuKBGFDKR1k9A8SCLYa", false);
+    verifyRecipientField("1AhN6rPdrMuKBGFDk9A8SCLYaNgXhty", false);
 
     // Use a public domain P2SH address
-    verifyBitcoinAddressField("35b9vsyH1KoFT5a5KtrKusaCcPLkiSo1tU", true);
-    verifyBitcoinAddressField("35b9vsyH1KoFT5a5KtrKusaCcPLkiSo1t", false);
+    verifyRecipientField("35b9vsyH1KoFT5a5KtrKusaCcPLkiSo1tU", true);
+    verifyRecipientField("35b9vsyH1KoFT5a5KtrKusaCcPLkiSo1t", false);
 
     // Set it to the MultiBit address
-    verifyBitcoinAddressField("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty", true);
+    verifyRecipientField("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty", true);
+
+    // Set it to the MultiBit recipient with insufficient clarity
+    verifyRecipientField("MultiBit", false);
+
+    // Set it to the MultiBit recipient with sufficient clarity
+    verifyRecipientField("MultiBit Donation", true);
+    verifyRecipientField("MultiBit Donation 2", true);
 
     // Cancel from wizard
 
@@ -80,12 +87,12 @@ public class SendVerifyRecipientAndCancelContactUseCase extends AbstractFestUseC
   }
 
   /**
-   * Verifies that an incorrect Bitcoin format is detected on focus loss
+   * Verifies that an incorrect recipient (Bitcoin address, xpub, name) is detected on focus loss
    *
-   * @param text    The text to use as a Bitcoin address
+   * @param text    The text to use
    * @param isValid True if the validation should pass
    */
-  private void verifyBitcoinAddressField(String text, boolean isValid) {
+  private void verifyRecipientField(String text, boolean isValid) {
 
     // Set the text directly on the combo box editor
     window

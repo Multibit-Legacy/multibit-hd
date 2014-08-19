@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.fest.use_cases.send_request.send;
 
 import org.fest.swing.fixture.FrameFixture;
+import org.multibit.hd.testing.WalletFixtures;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState;
@@ -48,9 +49,9 @@ public class SendNoFundsConfirmScreenUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireText("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
 
-    assertDisplayAmount(SendBitcoinState.SEND_CONFIRM_AMOUNT.name(), "transaction", false);
-    assertDisplayAmount(SendBitcoinState.SEND_CONFIRM_AMOUNT.name(), "transaction_fee", false);
-    assertDisplayAmount(SendBitcoinState.SEND_CONFIRM_AMOUNT.name(), "client_fee", false);
+    assertDisplayAmount(SendBitcoinState.SEND_CONFIRM_AMOUNT.name(), "transaction", true, false);
+    assertDisplayAmount(SendBitcoinState.SEND_CONFIRM_AMOUNT.name(), "transaction_fee", true, false);
+    assertDisplayAmount(SendBitcoinState.SEND_CONFIRM_AMOUNT.name(), "client_fee", true, false);
 
     window
       .textBox(MessageKey.PRIVATE_NOTES.getKey())
@@ -65,7 +66,7 @@ public class SendNoFundsConfirmScreenUseCase extends AbstractFestUseCase {
     // Enter password
     window
       .textBox(MessageKey.ENTER_PASSWORD.getKey())
-      .enterText("abc123");
+      .enterText(WalletFixtures.STANDARD_PASSWORD);
 
     // Send is enabled
     window

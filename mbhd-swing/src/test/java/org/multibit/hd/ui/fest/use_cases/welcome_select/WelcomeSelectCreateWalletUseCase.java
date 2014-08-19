@@ -52,6 +52,11 @@ public class WelcomeSelectCreateWalletUseCase extends AbstractFestUseCase {
       .requireDisabled()
       .requireVisible();
 
+    window
+      .radioButton(MessageKey.USE_EXISTING_WALLET.getKey())
+      .requireNotSelected()
+      .requireVisible();
+
     // OK to proceed
     window
       .button(MessageKey.NEXT.getKey())

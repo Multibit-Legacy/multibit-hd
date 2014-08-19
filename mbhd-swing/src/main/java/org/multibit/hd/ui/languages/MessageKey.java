@@ -132,6 +132,7 @@ public enum MessageKey {
 
   DISPLAY_LANGUAGE("display_language"),
 
+  SHOW_BALANCE("show_balance"),
   SELECT_THEME("select_theme"),
 
   SELECT_DECIMAL_SEPARATOR("select_decimal_separator"),
@@ -165,7 +166,7 @@ public enum MessageKey {
 
   // Placeholders
   APPROXIMATELY("approximately"),
-  PARANTHESES("parantheses"),
+  PARENTHESES("parentheses"),
   LIST_COMMA("list_comma"),
   LIST_ELLIPSIS("list_ellipsis"),
   DECIMAL_COMMA("decimal_comma"),
@@ -174,6 +175,7 @@ public enum MessageKey {
 
   BITCOIN_URI_ALERT("bitcoin_uri_label"),
   PAYMENT_RECEIVED_ALERT("payment_received_label"),
+  PAYMENT_SENT_ALERT("payment_sent_label"),
 
   PEER_COUNT("peer_count"),
   BLOCKS_LEFT("blocks_left"),
@@ -205,6 +207,7 @@ public enum MessageKey {
   SECURITY_TITLE("security_title"),
 
   WELCOME_TITLE("welcome_title"),
+  SELECT_LANGUAGE_TITLE("select_language_title"),
   SELECT_WALLET_TITLE("select_wallet_title"),
   CREATE_WALLET_SEED_PHRASE_TITLE("create_wallet_seed_phrase_title"),
   CONFIRM_WALLET_SEED_PHRASE_TITLE("confirm_wallet_seed_phrase_title"),
@@ -242,7 +245,7 @@ public enum MessageKey {
   LANGUAGE_SETTINGS_TITLE("language_settings_title"),
   EXCHANGE_SETTINGS_TITLE("exchange_settings_title"),
   UNITS_SETTINGS_TITLE("units_settings_title"),
-  APPLICATION_SETTINGS_TITLE("application_settings_title"),
+  APPEARANCE_SETTINGS_TITLE("appearance_settings_title"),
   SOUNDS_SETTINGS_TITLE("sounds_settings_title"),
   FEES_SETTINGS_TITLE("fees_settings_title"),
 
@@ -284,6 +287,9 @@ public enum MessageKey {
   HISTORY_WALLET_CREATED("history_wallet_created"),
   HISTORY_WALLET_OPENED("history_wallet_opened"),
 
+  ACCEPT_LICENCE("accept_licence"),
+  REJECT_LICENCE("reject_licence"),
+
   ALERT_REMAINING("alert_remaining"),
   EXCHANGE_FIAT_RATE("exchange_fiat_rate"),
   EXCHANGE_FIAT_RATE_WITH_PROVIDER("exchange_fiat_rate_with_provider"),
@@ -307,7 +313,7 @@ public enum MessageKey {
   SHOW_LAB_WIZARD("show_lab_wizard"),
   SHOW_UNITS_WIZARD("show_units_wizard"),
   SHOW_EXCHANGE_WIZARD("show_exchange_wizard"),
-  SHOW_APPLICATION_WIZARD("show_application_wizard"),
+  SHOW_APPEARANCE_WIZARD("show_appearance_wizard"),
   SHOW_LANGUAGE_WIZARD("show_language_wizard"),
   SHOW_EDIT_WALLET_WIZARD("show_edit_wallet_wizard"),
   SHOW_CHANGE_PASSWORD_WIZARD("show_change_password_wizard"),
@@ -326,6 +332,7 @@ public enum MessageKey {
   RESTORE_PASSWORD("restore_password"),
   RESTORE_WALLET("restore_wallet"),
   USE_HARDWARE_WALLET("use_hardware_wallet"),
+  USE_EXISTING_WALLET("use_existing_wallet"),
 
   RESTORE_FROM_SEED_PHRASE("restore_from_seed_phrase"),
   RESTORE_FROM_BACKUP("restore_from_backup"),
@@ -352,11 +359,6 @@ public enum MessageKey {
 
   SELECT_BACKUP_NOTE_1("select_backup_note_1"),
   SELECT_BACKUP_NOTE_2("select_backup_note_2"),
-
-  SEED_PRINT_NOTE_1("seed_print_note_1"),
-  SEED_PRINT_NOTE_2("seed_print_note_2"),
-  SEED_PRINT_NOTE_3("seed_print_note_3"),
-  SEED_PRINT_NOTE_4("seed_print_note_4"),
 
   SEED_WARNING_NOTE_1("seed_warning_note_1"),
   SEED_WARNING_NOTE_2("seed_warning_note_2"),

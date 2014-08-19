@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import com.google.bitcoin.core.Coin;
+import com.google.bitcoin.core.Wallet;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
@@ -176,12 +177,15 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     }
     transactionDisplayAmountMaV.getView().updateView(configuration);
 
-    // Update the model and view for the transaction fee
-    transactionFeeDisplayAmountMaV.getModel().setCoinAmount(getWizardModel().getTransactionFee());
+    // Update the model and view for the transaction fee - by this point the prepareTransaction will have been called by the SendBitcoinWizardModel#showNext
+    Optional<Wallet.SendRequest> sendRequest = getWizardModel().getSendRequestSummary().getSendRequest();
+    if (sendRequest.isPresent()) {
+      transactionFeeDisplayAmountMaV.getModel().setCoinAmount(sendRequest.get().fee);
+    }
     transactionFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
     transactionFeeDisplayAmountMaV.getView().updateView(configuration);
 
-    // Update the model and view for the developer fee
+    // Update the model and view for the client fee
     Optional<FeeState> feeStateOptional = getWizardModel().calculateBRITFeeState();
     String feeText;
     if (feeStateOptional.isPresent()) {
@@ -207,9 +211,7 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
       clientFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
       clientFeeDisplayAmountMaV.getView().updateView(configuration);
 
-    } else
-
-    {
+    } else {
       // Possibly no wallet loaded
       feeText = "";
     }

@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.application_settings;
+package org.multibit.hd.ui.views.wizards.appearance_settings;
 
 import com.google.common.base.Optional;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -15,9 +15,9 @@ import java.util.Map;
  * @since 0.0.1
  *  
  */
-public class ApplicationSettingsWizard extends AbstractWizard<ApplicationSettingsWizardModel> {
+public class AppearanceSettingsWizard extends AbstractWizard<AppearanceSettingsWizardModel> {
 
-  public ApplicationSettingsWizard(ApplicationSettingsWizardModel model) {
+  public AppearanceSettingsWizard(AppearanceSettingsWizardModel model) {
     super(model, false, Optional.absent());
   }
 
@@ -26,8 +26,8 @@ public class ApplicationSettingsWizard extends AbstractWizard<ApplicationSetting
 
     // Use the wizard parameter to retrieve the appropriate mode
     wizardViewMap.put(
-      ApplicationSettingsState.APPLICATION_ENTER_DETAILS.name(),
-      new ApplicationSettingsPanelView(this, ApplicationSettingsState.APPLICATION_ENTER_DETAILS.name())
+      AppearanceSettingsState.APPEARANCE_ENTER_DETAILS.name(),
+      new AppearanceSettingsPanelView(this, AppearanceSettingsState.APPEARANCE_ENTER_DETAILS.name())
     );
 
   }

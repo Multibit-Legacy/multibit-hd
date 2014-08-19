@@ -2,7 +2,12 @@ package org.multibit.hd.core.services;
 
 import com.google.bitcoin.core.Coin;
 import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.crypto.MnemonicCode;
+import com.google.bitcoin.wallet.DeterministicSeed;
 import com.google.common.base.Optional;
+import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableList;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +28,7 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Currency;
+import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -42,9 +48,9 @@ public class WalletServiceTest {
 
   public static final String CHANGED_PASSWORD2 = "3the quick brown fox jumps over the lazy dog";
 
-  private String firstAddress;
-
   private static final Logger log = LoggerFactory.getLogger(WalletServiceTest.class);
+
+  private String firstAddress;
 
 
   @Before
@@ -66,15 +72,15 @@ public class WalletServiceTest {
 
     long nowInSeconds = Dates.nowInSeconds();
     walletSummary = WalletManager
-      .INSTANCE
-      .getOrCreateWalletSummary(
-        temporaryDirectory,
-        seed1,
-        nowInSeconds,
-        PASSWORD,
-        "Example",
-        "Example"
-      );
+            .INSTANCE
+            .getOrCreateWalletSummary(
+                    temporaryDirectory,
+                    seed1,
+                    nowInSeconds,
+                    PASSWORD,
+                    "Example",
+                    "Example"
+            );
     WalletManager.INSTANCE.setCurrentWalletSummary(walletSummary);
 
     firstAddress = walletSummary.getWallet().freshReceiveKey().toString();
@@ -135,20 +141,6 @@ public class WalletServiceTest {
     assertThat(fiatPayment.getExchangeName()).isEqualTo(otherFiatPayment.getExchangeName());
   }
 
-//  @Test
-//  public void testGenerateNextReceivingAddress() throws Exception {
-//    // The generated addresses for indices 1, 2, 3, 4 respectively (index = 0 is added to the wallet at creation time)
-//    assertThat("1ELwsxsbJEWTn9RCmkViLVGehwxEk61SbY").isEqualTo(walletService.generateNextReceivingAddress(Optional.of(PASSWORD)));
-//    assertThat("1L8HQhmDbs2i662EgitrRnFUyzXFckK5t").isEqualTo(walletService.generateNextReceivingAddress(Optional.of(PASSWORD)));
-//    assertThat("1AoKyvbxbvLWHQqRo2xkWzzyaLq1u1Mr2j").isEqualTo(walletService.generateNextReceivingAddress(Optional.of(PASSWORD)));
-//    assertThat("1D8hgjF8pWBKDMsuN2N59JsvuUNaQs6dAz").isEqualTo(walletService.generateNextReceivingAddress(Optional.of(PASSWORD)));
-//
-//    // In real life you now need to save the payments db to save the lastIndexUsed !
-//
-//    // Test the 'no-generate' functionality works
-//    assertThat(firstAddress).isEqualTo(walletService.generateNextReceivingAddress(Optional.<CharSequence>absent()));
-//  }
-
   @Test
   public void testChangePassword() throws Exception {
     log.debug("Start of testChangePassword");
@@ -168,4 +160,30 @@ public class WalletServiceTest {
     assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
   }
 
+  @Test
+  /**
+   * Simple test to check decryption of a bitcoinj wallet - referenced in bitcoinj issue:
+   * https://code.google.com/p/bitcoinj/issues/detail?id=573&thanks=573&ts=1406733004
+   */
+  public void testChangePasswordSimple() throws Exception {
+    NetworkParameters networkParameters = NetworkParameters.fromID(NetworkParameters.ID_MAINNET);
+
+    long creationTimeSecs = MnemonicCode.BIP39_STANDARDISATION_TIME_SECS;
+    String seedStr = "letter advice cage absurd amount doctor acoustic avoid letter advice cage above";
+
+    // Parse as mnemonic code.
+    final List<String> split = ImmutableList.copyOf(Splitter.on(" ").omitEmptyStrings().split(seedStr));
+
+
+    // Test encrypt / decrypt with empty passphrase
+    DeterministicSeed seed1 = new DeterministicSeed(split, "", creationTimeSecs);
+
+    Wallet wallet1 = Wallet.fromSeed(networkParameters, seed1);
+
+    // Encrypt wallet
+    wallet1.encrypt(PASSWORD);
+
+    // Decrypt the wallet
+    wallet1.decrypt(PASSWORD);
+  }
 }

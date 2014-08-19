@@ -62,7 +62,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
   private JLabel spinner;
 
-  final ListeningExecutorService restoreWalletExecutorService = SafeExecutors.newSingleThreadExecutor("restore-wallet");
+  private ListeningExecutorService restoreWalletExecutorService;
 
   /**
    * @param wizard    The wizard managing the states
@@ -86,6 +86,9 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
   @Override
   public void initialiseContent(JPanel contentPanel) {
+
+    // Postpone the creation of the executor service to the last moment
+    restoreWalletExecutorService = SafeExecutors.newSingleThreadExecutor("restore-wallet");
 
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
@@ -230,7 +233,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
     File cloudBackupLocation = null;
     if (Configurations.currentConfiguration != null) {
-      String cloudBackupLocationString = Configurations.currentConfiguration.getApplication().getCloudBackupLocation();
+      String cloudBackupLocationString = Configurations.currentConfiguration.getAppearance().getCloudBackupLocation();
       if (cloudBackupLocationString != null && !"".equals(cloudBackupLocationString)) {
         cloudBackupLocation = new File(cloudBackupLocationString);
       }
@@ -323,7 +326,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
   /**
    * Create a wallet from a seed phrase, timestamp and password
    */
-  private boolean createWalletFromSeedPhraseAndTimestamp(List<String> seedPhrase, String timestamp, CharSequence password) {
+  private boolean createWalletFromSeedPhraseAndTimestamp(List<String> seedPhrase, String timestamp, String password) {
 
     if (!verifySeedPhrase(seedPhrase)) return false;
 
@@ -353,7 +356,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       // Initialise the WalletService with the newly created wallet, which provides transaction information from the wallet
       Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
 
-      WalletManager.writeEncryptedPasswordAndBackupKey(currentWalletSummary.get(), seed, (String) password);
+      WalletManager.writeEncryptedPasswordAndBackupKey(currentWalletSummary.get(), seed, password);
 
       String walletRoot = WalletManager.createWalletRoot(currentWalletSummary.get().getWalletId());
       File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);

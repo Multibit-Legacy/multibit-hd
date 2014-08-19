@@ -56,7 +56,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
   private JLabel cacertsInstalledStatusLabel;
   private JLabel spinner;
 
-  final ListeningExecutorService createWalletExecutorService = SafeExecutors.newSingleThreadExecutor("create-wallet");
+  private ListeningExecutorService createWalletExecutorService;
 
   /**
    * @param wizard    The wizard managing the states
@@ -80,6 +80,9 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
 
   @Override
   public void initialiseContent(JPanel contentPanel) {
+
+    // Postpone the creation of the executor service to the last moment
+    createWalletExecutorService = SafeExecutors.newSingleThreadExecutor("create-wallet");
 
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
@@ -167,7 +170,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
     String cloudBackupLocation = model.getCloudBackupLocation();
 
     if (Configurations.currentConfiguration != null) {
-      Configurations.currentConfiguration.getApplication().setCloudBackupLocation(cloudBackupLocation);
+      Configurations.currentConfiguration.getAppearance().setCloudBackupLocation(cloudBackupLocation);
     }
     SeedPhraseGenerator seedPhraseGenerator = getWizardModel().getSeedPhraseGenerator();
 

@@ -46,7 +46,7 @@ public class ShowHelpScreenUseCase extends AbstractFestUseCase {
       .requireDisabled();
 
     window
-      .button(MessageKey.BROWSE.getKey())
+      .button(MessageKey.VIEW_IN_EXTERNAL_BROWSER.getKey())
       .requireVisible()
       .requireEnabled();
 

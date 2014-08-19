@@ -74,6 +74,18 @@
   </issueManagement>
 
   <repositories>
+    <!-- Define the MultiBit staging repository for snapshots
+         GitHub requires mixture of raw and blob for POM and JAR -->
+    <repository>
+      <id>mbhd-maven-raw</id>
+      <url>https://raw.githubusercontent.com/bitcoin-solutions/mbhd-maven/master/snapshots</url>
+      <snapshots/>
+    </repository>
+    <repository>
+      <id>mbhd-maven-blob</id>
+      <url>https://github.com/bitcoin-solutions/mbhd-maven/blob/master/snapshots</url>
+      <snapshots/>
+    </repository>
     <!-- Bitcoinj releases -->
     <repository>
       <id>bitcoinj-releases</id>
@@ -87,18 +99,6 @@
       <name>Adam Gent Maven Repository</name>
       <url>http://mvn-adamgent.googlecode.com/svn/maven/release</url>
       <releases/>
-    </repository>
-    <!-- Define the MultiBit staging repository for snapshots
-         GitHub requires mixture of raw and blob for POM and JAR -->
-    <repository>
-      <id>mbhd-maven-raw</id>
-      <url>https://raw.githubusercontent.com/bitcoin-solutions/mbhd-maven/master/snapshots</url>
-      <snapshots/>
-    </repository>
-    <repository>
-      <id>mbhd-maven-blob</id>
-      <url>https://github.com/bitcoin-solutions/mbhd-maven/blob/master/snapshots</url>
-      <snapshots/>
     </repository>
 
   </repositories>
@@ -271,7 +271,7 @@
         <dependency>
             <groupId>com.madgag.spongycastle</groupId>
             <artifactId>core</artifactId>
-            <version>1.50.0.0</version>
+            <version>1.51.0.0</version>
         </dependency>
 
       <!-- Joda time for timestamps -->
@@ -356,7 +356,6 @@
     <dependency>
       <groupId>com.google</groupId>
       <artifactId>bitcoinj</artifactId>
-      <version>${bitcoinj.version}</version>
     </dependency>
 
     <!-- Joda time for timestamps -->

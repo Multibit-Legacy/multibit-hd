@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components.text_fields;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.NetworkParameters;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +18,8 @@ import javax.swing.*;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -37,12 +40,13 @@ public class ThemeAwareRecipientInputVerifierTest {
   }
 
   @Test
-  public void testVerifyText() throws Exception {
+  public void testVerifyText_NoContacts() throws Exception {
 
     List<Contact> allContacts = Lists.newArrayList();
 
     // Arrange
     when(contactService.allContacts()).thenReturn(allContacts);
+    when(contactService.filterContactsForSingleMatch(anyString(),anyBoolean())).thenReturn(Optional.<Contact>absent());
 
     JComboBox<Recipient> comboBox = ComboBoxes.newRecipientComboBox(contactService, BitcoinNetwork.current().get());
 

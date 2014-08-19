@@ -11,6 +11,7 @@ import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.components.AccessibilityDecorator;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
@@ -70,6 +71,7 @@ public class ChangePasswordReportPanelView extends AbstractWizardPanelView<Chang
 
     // Initialise to failure
     passwordChangedStatusLabel = Labels.newPasswordChangedStatus();
+    AccessibilityDecorator.apply(passwordChangedStatusLabel, MessageKey.PASSWORD_CHANGED_STATUS);
 
     contentPanel.add(passwordChangedStatusLabel, "wrap");
 
@@ -115,18 +117,19 @@ public class ChangePasswordReportPanelView extends AbstractWizardPanelView<Chang
   }
 
   @Subscribe
-  public void onChangePasswordResultEvent(ChangePasswordResultEvent changePasswordResultEvent) {
-
-    passwordChangedStatusLabel.setText(Languages.safeText(changePasswordResultEvent.getChangePasswordResultKey(), changePasswordResultEvent.getChangePasswordResultData()));
-    Labels.decorateStatusLabel(passwordChangedStatusLabel, Optional.of(changePasswordResultEvent.isChangePasswordWasSuccessful()));
+  public void onChangePasswordResultEvent(final ChangePasswordResultEvent changePasswordResultEvent) {
 
     // Enable and focus the finish button
     ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
+
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
+        passwordChangedStatusLabel.setText(Languages.safeText(changePasswordResultEvent.getChangePasswordResultKey(), changePasswordResultEvent.getChangePasswordResultData()));
+        Labels.decorateStatusLabel(passwordChangedStatusLabel, Optional.of(changePasswordResultEvent.isChangePasswordWasSuccessful()));
         getFinishButton().requestFocusInWindow();
       }
     });
+
   }
 }

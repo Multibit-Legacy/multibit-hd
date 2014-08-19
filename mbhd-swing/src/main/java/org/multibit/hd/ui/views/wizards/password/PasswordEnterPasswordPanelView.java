@@ -6,8 +6,8 @@ import com.google.common.util.concurrent.*;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.WalletLoadException;
@@ -34,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.io.File;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -133,10 +132,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
   @Override
   public boolean beforeShow() {
 
-    // TODO (GR) Combine this into a single method on WalletManager
-    List<File> walletDirectories = WalletManager.findWalletDirectories(InstallationManager.getOrCreateApplicationDataDirectory());
-    Optional<String> walletRoot = WalletManager.INSTANCE.getCurrentWalletRoot();
-    List<WalletSummary> wallets = WalletManager.findWalletSummaries(walletDirectories, walletRoot);
+    List<WalletSummary> wallets = WalletManager.getWalletSummaries();
 
     selectWalletMaV.getModel().setWalletList(wallets);
     selectWalletMaV.getView().setEnabled(true);
