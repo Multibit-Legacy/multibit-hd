@@ -3,11 +3,13 @@ package org.multibit.hd.ui.views.wizards.payments;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.PaymentData;
+import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.dto.TransactionData;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.borders.TextBubbleBorder;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
@@ -19,7 +21,6 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.net.URI;
 
 /**
@@ -34,6 +35,10 @@ import java.net.URI;
 public class TransactionDetailPanelView extends AbstractWizardPanelView<PaymentsWizardModel, TransactionDetailPanelModel> {
 
   private static final String BLOCKCHAIN_INFO_PREFIX = "https://blockchain.info/tx-index/";
+
+  private static final int  MAXIMUM_ERROR_LENGTH = 100;
+
+  private static final String ELLIPSIS = "...";
 
   private JLabel transactionHashValue;
 
@@ -165,15 +170,23 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
       @Override
       public void actionPerformed(ActionEvent e) {
 
+        URI blockchainInfoURL = null;
         try {
           PaymentData paymentData = getWizardModel().getPaymentData();
           if (paymentData != null && paymentData instanceof TransactionData) {
             TransactionData transactionData = (TransactionData) paymentData;
-            final URI blockchainInfoURL = URI.create(BLOCKCHAIN_INFO_PREFIX + transactionData.getTransactionId());
+            blockchainInfoURL = URI.create(BLOCKCHAIN_INFO_PREFIX + transactionData.getTransactionId());
             Desktop.getDesktop().browse(blockchainInfoURL);
           }
-        } catch (IOException ex) {
-          ExceptionHandler.handleThrowable(ex);
+        } catch (Exception ex) {
+          // Log the error but carry on (no need to shut down for this type of error - just show an alert)
+          log.error("Failed to open URL " + blockchainInfoURL, ex);
+          String message = ex.toString();
+          if (message.length() >MAXIMUM_ERROR_LENGTH) {
+            message = message.substring(0, MAXIMUM_ERROR_LENGTH) + ELLIPSIS;
+          }
+          AlertModel alertModel = new AlertModel(message, RAGStatus.AMBER);
+          ViewEvents.fireAlertAddedEvent(alertModel);
         }
       }
     };
