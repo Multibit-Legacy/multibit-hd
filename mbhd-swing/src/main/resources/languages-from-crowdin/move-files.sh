@@ -9,171 +9,171 @@
 # If you add languages to the project you will have to extend this shell script
 
 # Afrikaans
-mv ./multibit-hd/af/language.properties ../languages/language_af_AF.properties
+mv -f ./multibit-hd/af/language.properties ../languages/language_af_AF.properties
 rmdir ./multibit-hd/af/
 
 # Arabic 
-mv ./multibit-hd/ar/language.properties ../languages/language_ar_AR.properties
+mv -f ./multibit-hd/ar/language.properties ../languages/language_ar_AR.properties
 rmdir ./multibit-hd/ar/
 
 # Czech
-mv ./multibit-hd/cs/language.properties ../languages/language_cs_CZ.properties
+mv -f ./multibit-hd/cs/language.properties ../languages/language_cs_CZ.properties
 rmdir ./multibit-hd/cs/
 
 # Danish
-mv ./multibit-hd/da/language.properties ../languages/language_da_DK.properties
+mv -f ./multibit-hd/da/language.properties ../languages/language_da_DK.properties
 rmdir ./multibit-hd/da/
 
 # German
-mv ./multibit-hd/de/language.properties ../languages/language_de_DE.properties
+mv -f ./multibit-hd/de/language.properties ../languages/language_de_DE.properties
 rmdir ./multibit-hd/de/ 
 
 # Greek 
-mv ./multibit-hd/el/language.properties ../languages/language_el_GR.properties
+mv -f ./multibit-hd/el/language.properties ../languages/language_el_GR.properties
 rmdir ./multibit-hd/el/
 
 # English English
-mv ./multibit-hd/en/language.properties ../languages/language_en_EN.properties
+mv -f ./multibit-hd/en/language.properties ../languages/language_en_EN.properties
 rmdir ./multibit-hd/en/
 
 # American English 
-mv ./multibit-hd/en-US/language.properties ../languages/language_en_US.properties
+mv -f ./multibit-hd/en-US/language.properties ../languages/language_en_US.properties
 rmdir ./multibit-hd/en-US/
 
 # Esperanto
-mv ./multibit-hd/eo/language.properties ../languages/language_eo.properties
+mv -f ./multibit-hd/eo/language.properties ../languages/language_eo.properties
 rmdir ./multibit-hd/eo/ 
 
 # Spanish Spanish
-mv ./multibit-hd/es-ES/language.properties ../languages/language_es_ES.properties
+mv -f ./multibit-hd/es-ES/language.properties ../languages/language_es_ES.properties
 rmdir ./multibit-hd/es-ES/
 
 # Farsi / Persian
-mv ./multibit-hd/fa/language.properties ../languages/language_fa_IR.properties
+mv -f ./multibit-hd/fa/language.properties ../languages/language_fa_IR.properties
 rmdir ./multibit-hd/fa/
 
 # Finnish
-mv ./multibit-hd/fi/language.properties ../languages/language_fi_FI.properties
+mv -f ./multibit-hd/fi/language.properties ../languages/language_fi_FI.properties
 rmdir ./multibit-hd/fi/
 
 # French
-mv ./multibit-hd/fr/language.properties ../languages/language_fr_FR.properties
+mv -f ./multibit-hd/fr/language.properties ../languages/language_fr_FR.properties
 rmdir ./multibit-hd/fr/
 
 # Hebrew
-mv ./multibit-hd/he/language.properties ../languages/language_iw_IL.properties
+mv -f ./multibit-hd/he/language.properties ../languages/language_iw_IL.properties
 rmdir ./multibit-hd/he/
 
 # Hindi
-mv ./multibit-hd/hi/language.properties ../languages/language_hi_IN.properties
+mv -f ./multibit-hd/hi/language.properties ../languages/language_hi_IN.properties
 rmdir ./multibit-hd/hi/
 
 # Croatian
-mv ./multibit-hd/hr/language.properties ../languages/language_hr_HR.properties
+mv -f ./multibit-hd/hr/language.properties ../languages/language_hr_HR.properties
 rmdir ./multibit-hd/hr/
 
 # Hungarian
-mv ./multibit-hd/hu/language.properties ../languages/language_hu_HU.properties
+mv -f ./multibit-hd/hu/language.properties ../languages/language_hu_HU.properties
 rmdir ./multibit-hd/hu/
 
 # Indonesian
-mv ./multibit-hd/id/language.properties ../languages/language_in_ID.properties
+mv -f ./multibit-hd/id/language.properties ../languages/language_in_ID.properties
 rmdir ./multibit-hd/id/
 
 # Italian
-mv ./multibit-hd/it/language.properties ../languages/language_it_IT.properties
+mv -f ./multibit-hd/it/language.properties ../languages/language_it_IT.properties
 rmdir ./multibit-hd/it/
 
 # Japanese
-mv ./multibit-hd/ja/language.properties ../languages/language_hr_HR.properties
+mv -f ./multibit-hd/ja/language.properties ../languages/language_hr_HR.properties
 rmdir ./multibit-hd/ja/
 
 # Korean
-mv ./multibit-hd/ko/language.properties ../languages/language_ko_KR.properties
+mv -f ./multibit-hd/ko/language.properties ../languages/language_ko_KR.properties
 rmdir ./multibit-hd/ko/
 
 # Latvian
-mv ./multibit-hd/lt/language.properties ../languages/language_lt_LT.properties
+mv -f ./multibit-hd/lt/language.properties ../languages/language_lt_LT.properties
 rmdir ./multibit-hd/lt/
 
 # Lithuanian
-mv ./multibit-hd/lv/language.properties ../languages/language_lv_LV.properties
+mv -f ./multibit-hd/lv/language.properties ../languages/language_lv_LV.properties
 rmdir ./multibit-hd/lv/
 
 # Dutch
-mv ./multibit-hd/nl/language.properties ../languages/language_nl_NL.properties
+mv -f ./multibit-hd/nl/language.properties ../languages/language_nl_NL.properties
 rmdir ./multibit-hd/nl/
 
 # Norwegian
-mv ./multibit-hd/no/language.properties ../languages/language_no_NO.properties
+mv -f ./multibit-hd/no/language.properties ../languages/language_no_NO.properties
 rmdir ./multibit-hd/no/
 
 # Polish
-mv ./multibit-hd/pl/language.properties ../languages/language_pl_PL.properties
+mv -f ./multibit-hd/pl/language.properties ../languages/language_pl_PL.properties
 rmdir ./multibit-hd/pl/
 
 # Portuguese Portuguese
-mv ./multibit-hd/pt-PT/language.properties ../languages/language_pt_PT.properties
+mv -f ./multibit-hd/pt-PT/language.properties ../languages/language_pt_PT.properties
 rmdir ./multibit-hd/pt-PT/
 
 # Brazilian Portuguese
-mv ./multibit-hd/pt-BR/language.properties ../languages/language_pt_BR.properties
+mv -f ./multibit-hd/pt-BR/language.properties ../languages/language_pt_BR.properties
 rmdir ./multibit-hd/pt-BR/
 
 # Romanian
-mv ./multibit-hd/ro/language.properties ../languages/language_ro_RO.properties
+mv -f ./multibit-hd/ro/language.properties ../languages/language_ro_RO.properties
 rmdir ./multibit-hd/ro/
 
 # Russian
-mv ./multibit-hd/ru/language.properties ../languages/language_ru_RU.properties
+mv -f ./multibit-hd/ru/language.properties ../languages/language_ru_RU.properties
 rmdir ./multibit-hd/ru/
 
 # Slovakian
-mv ./multibit-hd/sk/language.properties ../languages/language_sk_SK.properties
+mv -f ./multibit-hd/sk/language.properties ../languages/language_sk_SK.properties
 rmdir ./multibit-hd/sk/
 
 # Slovenian
-mv ./multibit-hd/sl/language.properties ../languages/language_sl_SI.properties
+mv -f ./multibit-hd/sl/language.properties ../languages/language_sl_SI.properties
 rmdir ./multibit-hd/sl/
 
 # Swahili
-mv ./multibit-hd/sw/language.properties ../languages/language_sw_KE.properties
+mv -f ./multibit-hd/sw/language.properties ../languages/language_sw_KE.properties
 rmdir ./multibit-hd/sw/
 
 # Serbian
-mv ./multibit-hd/sr-CS/language.properties ../languages/language_sr_CS.properties
+mv -f ./multibit-hd/sr-CS/language.properties ../languages/language_sr_CS.properties
 rmdir ./multibit-hd/sr-CS/
 
 # Swedish
-mv ./multibit-hd/sv-SE/language.properties ../languages/language_sv_SV.properties
+mv -f ./multibit-hd/sv-SE/language.properties ../languages/language_sv_SV.properties
 rmdir ./multibit-hd/sv-SE/
 
 # Tamil
-mv ./multibit-hd/ta/language.properties ../languages/language_ta_LK.properties
+mv -f ./multibit-hd/ta/language.properties ../languages/language_ta_LK.properties
 rmdir ./multibit-hd/ta/
 
 # Thai
-mv ./multibit-hd/th/language.properties ../languages/language_th_TH.properties
+mv -f ./multibit-hd/th/language.properties ../languages/language_th_TH.properties
 rmdir ./multibit-hd/th/
 
 # Tagalog
-mv ./multibit-hd/tl/language.properties ../languages/language_tl_PH.properties
+mv -f ./multibit-hd/tl/language.properties ../languages/language_tl_PH.properties
 rmdir ./multibit-hd/tl/
 
 # Turkish
-mv ./multibit-hd/tr/language.properties ../languages/language_tr_TR.properties
+mv -f ./multibit-hd/tr/language.properties ../languages/language_tr_TR.properties
 rmdir ./multibit-hd/tr/
 
 # Vietnamese
-mv ./multibit-hd/vi/language.properties ../languages/language_vi_VN.properties
+mv -f ./multibit-hd/vi/language.properties ../languages/language_vi_VN.properties
 rmdir ./multibit-hd/vi/
 
 # Simplified Chinese
-mv ./multibit-hd/zh-CN/language.properties ../languages/language_zh_CN.properties
+mv -f ./multibit-hd/zh-CN/language.properties ../languages/language_zh_CN.properties
 rmdir ./multibit-hd/zh-CN/
 
 # Traditional Chinese
-mv ./multibit-hd/zh-TW/language.properties ../languages/language_zh_TW.properties
+mv -f ./multibit-hd/zh-TW/language.properties ../languages/language_zh_TW.properties
 rmdir ./multibit-hd/zh-TW/
 
 
