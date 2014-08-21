@@ -39,16 +39,23 @@ public class PaymentRequestConverter implements CSVEntryConverter<PaymentRequest
     // Note
     columns[5] = paymentRequestData.getNote() == null ? "" : paymentRequestData.getNote();
 
-    // Amount in BTC
+    // Amount in satoshi
     columns[6] = paymentRequestData.getAmountCoin() == null ? "" : paymentRequestData.getAmountCoin().toString();
 
-    // Amount in fiat
+    // Fiat currency
     columns[7] = "";
-    if (paymentRequestData.getAmountFiat() != null
-      && paymentRequestData.getAmountFiat().getAmount() != null
-      && paymentRequestData.getAmountFiat().getAmount().isPresent()) {
-      // Ensure we use plain string to avoid "E-05" etc
-      columns[7] = paymentRequestData.getAmountFiat().getAmount().get().stripTrailingZeros().toPlainString();
+
+    // Fiat amount
+    columns[8] = "";
+    if (paymentRequestData.getAmountFiat() != null) {
+      if (paymentRequestData.getAmountFiat().getCurrency().isPresent()) {
+        columns[7] = paymentRequestData.getAmountFiat().getCurrency().get().getCurrencyCode();
+      }
+      if (paymentRequestData.getAmountFiat().getAmount() != null
+        && paymentRequestData.getAmountFiat().getAmount().isPresent()){
+          // Ensure we use plain string to avoid "E-05"
+          columns[8] = paymentRequestData.getAmountFiat().getAmount().get().stripTrailingZeros().toPlainString();
+      }
     }
 
     // Exchange rate
@@ -63,7 +70,7 @@ public class PaymentRequestConverter implements CSVEntryConverter<PaymentRequest
       columns[9] = paymentRequestData.getAmountFiat().getExchangeName().or("");
     }
 
-    // Paid amount in coins
+    // Paid amount in satoshi
     columns[10] = paymentRequestData.getPaidAmountCoin() == null ? "" : paymentRequestData.getPaidAmountCoin().toString();
 
     // Funding transactions

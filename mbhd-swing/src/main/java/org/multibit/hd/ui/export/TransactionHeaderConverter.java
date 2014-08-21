@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.export;
 
 import com.googlecode.jcsv.writer.CSVEntryConverter;
-import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.TransactionData;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.ui.languages.Languages;
@@ -14,7 +13,7 @@ public class TransactionHeaderConverter implements CSVEntryConverter<Transaction
 
   @Override
   public String[] convertEntry(TransactionData transactionData) {
-    String[] columns = new String[13];
+    String[] columns = new String[14];
 
     // Date.
     columns[0] = Languages.safeText(MessageKey.DATE);
@@ -31,29 +30,32 @@ public class TransactionHeaderConverter implements CSVEntryConverter<Transaction
    // Note.
     columns[4] = Languages.safeText(MessageKey.PRIVATE_NOTES);
 
-    // Amount in BTC using text symbol for clarity
-    columns[5] = Languages.safeText(MessageKey.LOCAL_AMOUNT) + " "  + BitcoinSymbol.current().getTextSymbol();
+    // Amount in satoshi
+    columns[5] = Languages.safeText(MessageKey.LOCAL_AMOUNT) + " "  + BitcoinSymbol.SATOSHI.getTextSymbol();
 
-    // Amount in fiat using local currency symbol
-    columns[6] = Languages.safeText(MessageKey.LOCAL_AMOUNT) + " " + Configurations.currentConfiguration.getBitcoin().getLocalCurrencySymbol();
+    // Fiat currency symbol
+    columns[6] = Languages.safeText(MessageKey.FIAT_CURRENCY);
+
+    // Fiat currency amount
+    columns[7] = Languages.safeText(MessageKey.FIAT_AMOUNT);
 
     // Exchange rate
-    columns[7] = Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL);
+    columns[8] = Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL);
 
     // Exchange rate provider
-    columns[8] = Languages.safeText(MessageKey.EXCHANGE_RATE_PROVIDER);
+    columns[9] = Languages.safeText(MessageKey.EXCHANGE_RATE_PROVIDER);
 
     // Miner's fee
-    columns[9] = Languages.safeText(MessageKey.TRANSACTION_FEE);
+    columns[10] = Languages.safeText(MessageKey.TRANSACTION_FEE);
 
     // Client fee
-    columns[10] = Languages.safeText(MessageKey.CLIENT_FEE);
+    columns[11] = Languages.safeText(MessageKey.CLIENT_FEE);
 
     // coinbase
-    columns[11] = Languages.safeText(MessageKey.COINBASE);
+    columns[12] = Languages.safeText(MessageKey.COINBASE);
 
     // Transaction hash.
-    columns[12] = Languages.safeText(MessageKey.TRANSACTION_HASH);
+    columns[13] = Languages.safeText(MessageKey.TRANSACTION_HASH);
 
     return columns;
   }

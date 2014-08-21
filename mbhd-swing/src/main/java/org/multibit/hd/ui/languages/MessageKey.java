@@ -456,6 +456,8 @@ public enum MessageKey {
   DATE("date"),
   STATUS("status"),
   TYPE("type"),
+  FIAT_AMOUNT("fiat_amount"),
+  FIAT_CURRENCY("fiat_currency"),
 
   DESCRIPTION("description"),
   DESCRIPTION_READ_ONLY("description_read_only"),

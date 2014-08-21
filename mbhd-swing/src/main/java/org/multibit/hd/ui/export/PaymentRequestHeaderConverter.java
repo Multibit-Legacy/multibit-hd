@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.export;
 
 import com.googlecode.jcsv.writer.CSVEntryConverter;
-import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.ui.languages.Languages;
@@ -13,7 +12,7 @@ import org.multibit.hd.ui.languages.MessageKey;
 public class PaymentRequestHeaderConverter implements CSVEntryConverter<PaymentRequestData> {
   @Override
   public String[] convertEntry(PaymentRequestData paymentRequestData) {
-    String[] columns = new String[12];
+    String[] columns = new String[13];
 
    // Date
     columns[0] = Languages.safeText(MessageKey.DATE);
@@ -33,23 +32,26 @@ public class PaymentRequestHeaderConverter implements CSVEntryConverter<PaymentR
     // Private notes
     columns[5] = Languages.safeText(MessageKey.PRIVATE_NOTES);
 
-    // Amount in BTC
-    columns[6] = Languages.safeText(MessageKey.LOCAL_AMOUNT) + " "  + BitcoinSymbol.current().getTextSymbol();
+    // Amount in satoshi
+    columns[6] = Languages.safeText(MessageKey.LOCAL_AMOUNT) + " "  + BitcoinSymbol.SATOSHI.getTextSymbol();
 
-    // Amount in fiat
-    columns[7] = Languages.safeText(MessageKey.LOCAL_AMOUNT) + " " + Configurations.currentConfiguration.getBitcoin().getLocalCurrencySymbol();
+    // Fiat currency symbol
+    columns[7] = Languages.safeText(MessageKey.FIAT_CURRENCY);
+
+    // Fiat currency amount
+    columns[8] = Languages.safeText(MessageKey.FIAT_AMOUNT);
 
     // Exchange rate
-    columns[8] = Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL);
+    columns[9] = Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL);
 
     // Exchange rate provider
-    columns[9] = Languages.safeText(MessageKey.EXCHANGE_RATE_PROVIDER);
+    columns[10] = Languages.safeText(MessageKey.EXCHANGE_RATE_PROVIDER);
 
-    // Paid amount in BTC
-    columns[10] = Languages.safeText(MessageKey.AMOUNT_PAID) + " "  + BitcoinSymbol.current().getTextSymbol();
+    // Paid amount in satoshi
+    columns[11] = Languages.safeText(MessageKey.AMOUNT_PAID) + " " + BitcoinSymbol.SATOSHI.getTextSymbol();
 
     // Funding transactions
-    columns[11] = Languages.safeText(MessageKey.TRANSACTION_HASH);
+    columns[12] = Languages.safeText(MessageKey.TRANSACTION_HASH);
 
     return columns;
   }
