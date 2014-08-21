@@ -57,6 +57,7 @@ public enum MessageKey {
   ALL("all"),
   NONE("none"),
   ERROR("error"),
+  @Deprecated
   DEFAULT("default"),
   QR_CODE("qr_code"),
 
@@ -179,8 +180,11 @@ public enum MessageKey {
 
   PEER_COUNT("peer_count"),
   BLOCKS_LEFT("blocks_left"),
+
+  @Deprecated
   LAST_TRANSACTION_ID("last_transaction_id"),
 
+  @Deprecated
   TRANSACTION_COUNT("transaction_count"),
 
   // Panels
