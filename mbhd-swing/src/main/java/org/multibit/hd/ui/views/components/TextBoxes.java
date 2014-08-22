@@ -343,6 +343,9 @@ public class TextBoxes {
     // Detect changes
     textField.getDocument().addDocumentListener(listener);
 
+    // Currently the extended public field does nothing so disable
+    textField.setEnabled(false);
+
     return textField;
 
   }
