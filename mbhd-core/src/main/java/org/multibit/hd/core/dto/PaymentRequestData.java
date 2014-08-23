@@ -126,7 +126,6 @@ public class PaymentRequestData implements PaymentData {
 
     if (appendAddress) {
       builder
-        .append(": ")
         .append(getAddress());
     }
 

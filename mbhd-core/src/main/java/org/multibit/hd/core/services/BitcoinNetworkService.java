@@ -747,7 +747,8 @@ public class BitcoinNetworkService extends AbstractService {
 
     try {
       // Sign the transaction
-      sendRequest.tx.signInputs(Transaction.SigHash.ALL, wallet, sendRequestSummary.getKeyParameter().get());
+      wallet.signTransaction(sendRequest);
+      // sendRequest.tx.signInputs(Transaction.SigHash.ALL, wallet, sendRequestSummary.getKeyParameter().get());
 
       // Commit to the wallet (informs the wallet of the transaction)
       wallet.commitTx(sendRequest.tx);

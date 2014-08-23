@@ -57,6 +57,7 @@ public enum MessageKey {
   ALL("all"),
   NONE("none"),
   ERROR("error"),
+  @Deprecated
   DEFAULT("default"),
   QR_CODE("qr_code"),
 
@@ -179,8 +180,11 @@ public enum MessageKey {
 
   PEER_COUNT("peer_count"),
   BLOCKS_LEFT("blocks_left"),
+
+  @Deprecated
   LAST_TRANSACTION_ID("last_transaction_id"),
 
+  @Deprecated
   TRANSACTION_COUNT("transaction_count"),
 
   // Panels
@@ -452,6 +456,8 @@ public enum MessageKey {
   DATE("date"),
   STATUS("status"),
   TYPE("type"),
+  FIAT_AMOUNT("fiat_amount"),
+  FIAT_CURRENCY("fiat_currency"),
 
   DESCRIPTION("description"),
   DESCRIPTION_READ_ONLY("description_read_only"),

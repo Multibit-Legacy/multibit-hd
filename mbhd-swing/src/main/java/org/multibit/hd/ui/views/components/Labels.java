@@ -884,13 +884,6 @@ public class Labels {
   }
 
   /**
-   * @return a new "last transaction" for verifying network
-   */
-  public static JLabel newLastTransaction() {
-    return newLabel(MessageKey.LAST_TRANSACTION_ID);
-  }
-
-  /**
    * @return a new "blocks left" for verifying network
    */
   public static JLabel newBlocksLeft() {
