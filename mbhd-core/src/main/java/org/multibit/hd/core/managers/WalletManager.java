@@ -806,9 +806,9 @@ public enum WalletManager implements WalletEventListener {
         } else {
           if (signingKey.getKeyCrypter() != null) {
             KeyParameter aesKey = signingKey.getKeyCrypter().deriveKey(walletPassword);
-            ECKey decryptedSigingKey = signingKey.decrypt(aesKey);
+            ECKey decryptedSigningKey = signingKey.decrypt(aesKey);
 
-            String signatureBase64 = decryptedSigingKey.signMessage(messageText);
+            String signatureBase64 = decryptedSigningKey.signMessage(messageText);
             return new SignMessageResult(Optional.of(signatureBase64), true, CoreMessageKey.SIGN_MESSAGE_SUCCESS, null);
           } else {
             // The signing key is not encrypted but it should be
