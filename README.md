@@ -1,6 +1,6 @@
-Project status: Private beta. Expect minor bugs and API changes. Not suitable for production, but early adopter developers and early testers should get on board.
-
 Build status: [![Build Status](https://travis-ci.org/bitcoin-solutions/multibit-hd.png?branch=develop)](https://travis-ci.org/bitcoin-solutions/multibit-hd)
+
+Project status: Private beta. Expect minor bugs and API changes. Not suitable for production, but early adopter developers and early testers should get on board.
 
 ### MultiBit HD (MBHD)
 
@@ -181,11 +181,11 @@ Use the `ResourceBundleTools` to find similar entries and to arrange keys in the
 
 To do an i18n refresh:
 
-1) Download the i18n zip from : http://translate.multibit.org/project/multibit-hd (download button on that page)
-2) This unzip to a directory multibit-hd
-3) Copy multibit-hd to: mbhd-swing/src/main/resources/languages-from-crowdin
-4) Run a terminal and cd to mbhd-swing/src/main/resources/languages-from-crowdin
-5) Run the script ./move-files.sh
+1. [Download the i18n zip](http://translate.multibit.org/project/multibit-hd) using the Download button
+2. Unzip this to a directory `multibit-hd`
+3. Copy `multibit-hd` to: `mbhd-swing/src/main/resources/languages-from-crowdin`
+4. Run a terminal and cd to `mbhd-swing/src/main/resources/languages-from-crowdin`
+5. Run the script `./move-files.sh`
 
 This moves and renames all the files into the languages directory.
-If there are any files/ new languages it listes them at the end so that you can see there is something missing from the move-files script.
+If there are any files or new languages it lists them at the end so that you can see there is something missing from the `move-files` script.
