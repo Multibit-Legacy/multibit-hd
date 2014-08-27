@@ -55,6 +55,12 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   private SendBitcoinReportPanelModel reportPanelModel;
 
   /**
+   * Whether the transaction was prepared ok.
+   * (This means the fee was calculated correctly)
+   */
+  private boolean preparedOk = false;
+
+  /**
    * Default transaction fee
    */
   private final Coin transactionFee = Coins.fromPlainAmount("0.0001"); // TODO needs to be displayed from a wallet.completeTx SendRequest.fee
@@ -90,11 +96,18 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
     switch (state) {
       case SEND_ENTER_AMOUNT:
-        state = SEND_CONFIRM_AMOUNT;
 
         // The user has entered the send details so the tx can be prepared
+        // If the transaction was prepared ok this returns true, otherwise false
         // If there is insufficient money in the wallet a TransactionCreationEvent with the details will be thrown
-        prepareTransaction();
+        preparedOk = prepareTransaction();
+
+        if (preparedOk) {
+          state = SEND_CONFIRM_AMOUNT;
+        } else {
+          // Transaction did not prepare correctly
+          state = SEND_REPORT;
+        }
         break;
       case SEND_CONFIRM_AMOUNT:
 
@@ -252,7 +265,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   /**
    * Prepare the Bitcoin transaction that will be sent after user confirmation
    */
-  private void prepareTransaction() {
+  private boolean prepareTransaction() {
     Preconditions.checkNotNull(enterAmountPanelModel);
     Preconditions.checkNotNull(confirmPanelModel);
 
@@ -296,8 +309,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
             emptyWallet);
 
     log.debug("Just about to prepare transaction for sendRequestSummary: {}", sendRequestSummary);
-    bitcoinNetworkService.prepareTransaction(sendRequestSummary);
-    log.debug("Prepare transaction completed: sendRequestSummary: {}", sendRequestSummary);
+    return bitcoinNetworkService.prepareTransaction(sendRequestSummary);
   }
 
   private void sendBitcoin() {
