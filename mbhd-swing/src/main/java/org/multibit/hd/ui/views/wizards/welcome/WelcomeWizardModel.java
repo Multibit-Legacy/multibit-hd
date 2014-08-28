@@ -119,6 +119,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
         state = selectWalletChoice;
         break;
       case CREATE_WALLET_SELECT_BACKUP_LOCATION:
+        log.debug("Cloud backup location = " + getCloudBackupLocation());
         state = CREATE_WALLET_SEED_PHRASE;
         break;
       case CREATE_WALLET_SEED_PHRASE:
