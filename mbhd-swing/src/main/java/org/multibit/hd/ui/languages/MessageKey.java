@@ -162,6 +162,7 @@ public enum MessageKey {
   CONTACTS("contacts"),
   PAYMENTS("payments"),
   HISTORY("history"),
+
   PREFERENCES("preferences"),
   TOOLS("tools"),
 
