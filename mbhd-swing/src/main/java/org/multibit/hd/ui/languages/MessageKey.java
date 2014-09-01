@@ -151,6 +151,7 @@ public enum MessageKey {
 
   ALERT_SOUND("alert_sound"),
   RECEIVE_SOUND("receive_sound"),
+  PLAY_SOUND("play_sound"),
 
   SELECT_TOR("select_tor"),
 

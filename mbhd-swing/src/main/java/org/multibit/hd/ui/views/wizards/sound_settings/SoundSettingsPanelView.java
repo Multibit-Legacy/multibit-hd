@@ -5,8 +5,10 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.SoundConfiguration;
+import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.ComboBoxes;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
@@ -65,7 +67,7 @@ public class SoundSettingsPanelView extends AbstractWizardPanelView<SoundSetting
 
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
-      "[][]", // Column constraints
+      "[][][]", // Column constraints
       "[][][]" // Row constraints
     ));
 
@@ -74,13 +76,41 @@ public class SoundSettingsPanelView extends AbstractWizardPanelView<SoundSetting
     alertSoundYesNoComboBox = ComboBoxes.newAlertSoundYesNoComboBox(this, soundConfiguration.isAlertSound());
     receiveSoundYesNoComboBox = ComboBoxes.newReceiveSoundYesNoComboBox(this, soundConfiguration.isReceiveSound());
 
-    contentPanel.add(Labels.newSoundChangeNote(), "growx,span 2,wrap");
+    JButton playBeep = Buttons.newPlaySoundButton(getPlayBeepAction(), MessageKey.PLAY_SOUND);
+    JButton playPaymentReceived = Buttons.newPlaySoundButton(getPlayPaymentReceivedAction(), MessageKey.PLAY_SOUND);
+
+    contentPanel.add(Labels.newSoundChangeNote(), "growx,span 3,wrap");
 
     contentPanel.add(Labels.newSelectAlertSound(), "shrink");
-    contentPanel.add(alertSoundYesNoComboBox, "growx,wrap");
+    contentPanel.add(alertSoundYesNoComboBox, "growx");
+    contentPanel.add(playBeep, "shrink,wrap");
 
     contentPanel.add(Labels.newSelectReceiveSound(), "shrink");
-    contentPanel.add(receiveSoundYesNoComboBox, "growx,wrap");
+    contentPanel.add(receiveSoundYesNoComboBox, "growx");
+    contentPanel.add(playPaymentReceived, "shrink,wrap");
+
+  }
+
+  private Action getPlayPaymentReceivedAction() {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        Sounds.playPaymentReceived();
+
+      }
+    };
+  }
+
+  private Action getPlayBeepAction() {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        Sounds.playBeep();
+
+      }
+    };
   }
 
   @Override
