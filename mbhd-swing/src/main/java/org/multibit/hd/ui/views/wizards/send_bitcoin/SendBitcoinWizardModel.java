@@ -1,25 +1,24 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
-import com.google.bitcoin.core.*;
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.AddressFormatException;
+import com.google.bitcoin.core.Coin;
+import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.brit.dto.FeeState;
-import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.exchanges.ExchangeKey;
-import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.core.utils.Coins;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -61,14 +60,9 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   private boolean preparedOk = false;
 
   /**
-   * Default transaction fee
-   */
-  private final Coin transactionFee = Coins.fromPlainAmount("0.0001"); // TODO needs to be displayed from a wallet.completeTx SendRequest.fee
-
-  /**
    * The FeeService used to calculate the FeeState
    */
-  private FeeService feeService;
+  //private FeeService feeService;
 
   private final NetworkParameters networkParameters = BitcoinNetwork.current().get();
   private final boolean emptyWallet;
@@ -207,20 +201,6 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   }
 
   /**
-   * @return The transaction fee (a.k.a "miner's fee") in coins
-   */
-  public Coin getTransactionFee() {
-    return transactionFee;
-  }
-
-  /**
-   * @return True if the wallet should be emptied and all payable fees paid
-   */
-  public boolean isEmptyWallet() {
-    return emptyWallet;
-  }
-
-  /**
    * @return Any Bitcoin URI used to initiate this wizard
    */
   public Optional getBitcoinURI() {
@@ -232,34 +212,6 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
    */
   public SendRequestSummary getSendRequestSummary() {
     return sendRequestSummary;
-  }
-
-  /**
-   * @return The BRIT fee state for the current wallet
-   */
-  public Optional<FeeState> calculateBRITFeeState() {
-
-    if (feeService == null) {
-      feeService = CoreServices.createFeeService();
-    }
-    if (WalletManager.INSTANCE.getCurrentWalletSummary() != null &&
-            WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-      Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
-
-      File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-      Optional<File> walletFileOptional = WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory);
-      if (walletFileOptional.isPresent()) {
-        log.debug("Wallet file prior to calculateFeeState is " + walletFileOptional.get().length() + " bytes");
-      }
-      Optional<FeeState> feeState = Optional.of(feeService.calculateFeeState(wallet, false));
-      if (walletFileOptional.isPresent()) {
-        log.debug("Wallet file after to calculateFeeState is " + walletFileOptional.get().length() + " bytes");
-      }
-
-      return feeState;
-    } else {
-      return Optional.absent();
-    }
   }
 
   /**
@@ -281,7 +233,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
             .get()
             .getBitcoinAddress();
 
-    Optional<FeeState> feeState = calculateBRITFeeState();
+    Optional<FeeState> feeState = WalletManager.INSTANCE.calculateBRITFeeState();
 
     // Create the fiat payment - note that the fiat amount is not populated, only the exchange rate data.
     // This is because the client and transaction fee is only worked out at point of sending, and the fiat equivalent is computed from that
