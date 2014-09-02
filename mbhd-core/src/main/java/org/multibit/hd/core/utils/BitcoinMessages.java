@@ -96,7 +96,7 @@ public class BitcoinMessages {
     // Format the string to approximate RFC 2440
     // Layout is address and message outside of signature block
     return String.format(
-      "-----%s-----\n%s\n-----%s-----\n%s\n%s\n%s\n\n%s\n-----%s-----\n",
+      "-----%s-----%n%s%n-----%s-----%n%s%n%s%n%s%n%n%s%n-----%s-----%n",
       BEGIN_SIGNED_MESSAGE,
       message,
       BEGIN_SIGNATURE,
@@ -125,14 +125,18 @@ public class BitcoinMessages {
       return new SignedMessage("", "", "", "", "");
     }
 
+    // Configure line separator for platform
+    String ls = String.format("%n").intern();
+    int lsLength = ls.length();
+
     // Attempt to parse as Bitcoin signed message
     String block = signatureBlock.get();
 
     if ((block.contains(BEGIN_SIGNED_MESSAGE) || block.contains(BEGIN_SIGNATURE))
       && block.contains(END_BITCOIN_SIGNATURE)) {
 
-      // Split the block into lines
-      List<String> lines = Splitter.on("\n").splitToList(block);
+      // Split the block into lines using line separator
+      List<String> lines = Splitter.on(ls).splitToList(block);
 
       // Parse a fully formatted signature block
       String message = "";
@@ -144,7 +148,8 @@ public class BitcoinMessages {
       // Iterate over the lines extracting fields
       int state = 0;
 
-      boolean appendCrlf = false;
+      // Indicate if the line separator has been removed and needs to be replaced
+      boolean appendLs = false;
 
       for (String line : lines) {
 
@@ -155,9 +160,9 @@ public class BitcoinMessages {
         }
         if (line.contains(BEGIN_SIGNATURE)) {
           state = 2;
-          if (message.length() > 0 && !appendCrlf) {
-            // Remove the CRLF from the Armor header
-            message = message.substring(0, message.length() - 1);
+          if (message.length() > 0 && !appendLs) {
+            // Remove the line separator from the Armor header
+            message = message.substring(0, message.length() - lsLength);
           }
           continue;
         }
@@ -173,18 +178,18 @@ public class BitcoinMessages {
             break;
           case 1:
             // Building message
-            if (appendCrlf) {
-              // More than one line so replace CRLF
-              message += "\n";
+            if (appendLs) {
+              // More than one line so replace the line separator
+              message += ls;
             }
             if (Strings.isNullOrEmpty(line)) {
-              // Blank line so treat as CRLF and ignore the rest
-              message += "\n";
-              appendCrlf = false;
+              // Blank line so treat as line separator and ignore the rest
+              message += ls;
+              appendLs = false;
             } else {
               // Normal line
               message += line;
-              appendCrlf = true;
+              appendLs = true;
             }
             break;
           case 2:
@@ -211,14 +216,14 @@ public class BitcoinMessages {
             }
             // Allow for slightly malformed block
             if (!line.contains(":")) {
-              // Assume this is part of a signature without a CRLF separator
+              // Assume this is part of a signature without a line separator separator
               state = 3;
               signature += line;
               continue;
             }
             break;
           case 3:
-            // Building signature (stripping CRLF)
+            // Building signature (stripping line separator)
             signature += line;
             break;
           default:

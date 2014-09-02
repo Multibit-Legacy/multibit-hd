@@ -168,6 +168,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
     List<String> seedPhrase = model.getCreateWalletSeedPhrase();
     String password = model.getCreateWalletUserPassword();
     String cloudBackupLocation = model.getCloudBackupLocation();
+    log.debug("cloudBackupLocation = " + cloudBackupLocation);
 
     if (Configurations.currentConfiguration != null) {
       Configurations.currentConfiguration.getAppearance().setCloudBackupLocation(cloudBackupLocation);
@@ -318,6 +319,13 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       // Give the user the impression of work being done
       Uninterruptibles.sleepUninterruptibly(250, TimeUnit.MILLISECONDS);
 
+      // Write out configuration changes
+      Configurations.persistCurrentConfiguration();
+      if (Configurations.currentConfiguration != null) {
+        log.debug("Persisted configuration with cloudBackup set to " + Configurations.currentConfiguration.getAppearance().getCloudBackupLocation());
+      } else {
+        log.debug("No current configuration so nothing to write out");
+      }
       // Enable the finish button on the report page
       ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, true);
 

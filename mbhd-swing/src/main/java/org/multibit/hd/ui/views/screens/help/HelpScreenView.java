@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.languages.Languages;
@@ -198,7 +199,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
           URL url = e.getURL();
 
-          boolean isMultiBit = url.toString().startsWith("/") || url.toString().startsWith(MBHD_WEBSITE_HELP_BASE);
+          boolean isMultiBit = url.toString().startsWith("/") || url.toString().startsWith(InstallationManager.MBHD_WEBSITE_HELP_DOMAIN);
 
           // Ignore off site links
           if (!isMultiBit) {

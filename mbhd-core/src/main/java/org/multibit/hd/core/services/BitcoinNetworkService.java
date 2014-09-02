@@ -726,7 +726,7 @@ public class BitcoinNetworkService extends AbstractService {
               new String[]{e.getMessage()},
               sendRequestSummary.getNotes()));
 
-      // We cannot proceed to broadcast
+      // We cannot proceed to signing
       return false;
     }
 
@@ -746,7 +746,12 @@ public class BitcoinNetworkService extends AbstractService {
     Wallet.SendRequest sendRequest = sendRequestSummary.getSendRequest().get();
 
     try {
+      // Ensure the aeskey for decrypting the keys is present in the sendRequest
+      sendRequest.aesKey = wallet.getKeyCrypter().deriveKey(sendRequestSummary.getPassword());
+
       // Sign the transaction
+      sendRequest.signInputs=true;
+      log.debug("sendRequest just before signing " + sendRequest);
       wallet.signTransaction(sendRequest);
       // sendRequest.tx.signInputs(Transaction.SigHash.ALL, wallet, sendRequestSummary.getKeyParameter().get());
 

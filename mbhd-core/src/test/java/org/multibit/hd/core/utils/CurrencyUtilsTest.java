@@ -14,7 +14,7 @@ public class CurrencyUtilsTest {
   @Before
   public void setUp() throws Exception {
 
-    Configurations.switchConfiguration(Configurations.newDefaultConfiguration());
+    Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
     Locale.setDefault(Locale.UK);
 

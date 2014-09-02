@@ -1,11 +1,13 @@
 package org.multibit.hd.ui.views;
 
 import com.google.common.base.Preconditions;
+import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
+import org.multibit.hd.ui.events.controller.ShowScreenEvent;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
@@ -56,6 +58,12 @@ public class SidebarView extends AbstractView {
    * The wallet tree node
    */
   private DefaultMutableTreeNode walletNode;
+
+  /**
+   * The settings tree node
+   */
+  private DefaultMutableTreeNode settingsNode;
+
   private final boolean multiWallet;
 
   /**
@@ -238,7 +246,8 @@ public class SidebarView extends AbstractView {
     // Add application nodes
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.HELP, Screen.HELP));
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.HISTORY, Screen.HISTORY));
-    root.add(TreeNodes.newSidebarTreeNode(MessageKey.SETTINGS, Screen.SETTINGS));
+    settingsNode = TreeNodes.newSidebarTreeNode(MessageKey.SETTINGS, Screen.SETTINGS);
+    root.add(settingsNode);
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.TOOLS, Screen.TOOLS));
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.EXIT, Screen.EXIT));
 
@@ -287,5 +296,27 @@ public class SidebarView extends AbstractView {
     sidebarTree.setFocusable(true);
     sidebarTree.requestFocusInWindow();
 
+  }
+
+  @Subscribe
+  public void onShowDetailScreen(final ShowScreenEvent event) {
+
+    Preconditions.checkNotNull(event, "'event' must be present");
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+
+        Screen screen = event.getScreen();
+
+        // Double check that the settings / preferences screen has just been selected
+        if (Screen.SETTINGS.equals(screen)) {
+          if (settingsNode != null && sidebarTree != null) {
+            // Select the settings node
+            sidebarTree.setSelectionPath(new TreePath(settingsNode.getPath()));
+          }
+        }
+      }
+    });
   }
 }

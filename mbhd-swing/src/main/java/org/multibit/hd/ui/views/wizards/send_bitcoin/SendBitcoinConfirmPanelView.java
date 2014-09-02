@@ -8,6 +8,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -186,7 +187,7 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     transactionFeeDisplayAmountMaV.getView().updateView(configuration);
 
     // Update the model and view for the client fee
-    Optional<FeeState> feeStateOptional = getWizardModel().calculateBRITFeeState();
+    Optional<FeeState> feeStateOptional = WalletManager.INSTANCE.calculateBRITFeeState();
     String feeText;
     if (feeStateOptional.isPresent()) {
       FeeState feeState = feeStateOptional.get();

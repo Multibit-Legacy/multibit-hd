@@ -118,9 +118,8 @@ public class BitcoinMessagesTest {
 
     BitcoinMessages.SignedMessage actual = BitcoinMessages.parseSignedMessage(Optional.of(signatureBlock));
 
-    // Windows/Unix CRLF style varies but is consistent with a single CR
-    // which is sufficient for testing
-    assertThat(actual.getMessage().contains("Mary\n")).isTrue();
+    String ls = String.format("%n").intern();
+    assertThat(actual.getMessage().contains("Mary"+ls)).isTrue();
     assertThat(actual.getAddress()).isEqualTo("16R2kAxaUNM4xj6ykKbxEugpJdYyJzTP13");
     assertThat(actual.getSignature()).isEqualTo("ICt2ZS5hSnKuJtLTx3GImH611PgMK/cWKKuBktsMwxNmboa9ph3f1ypZ+Ti5GggEyhm1v7mc6B2H2ZSByhOWIr0=");
     assertThat(actual.getVersion()).startsWith("MultiBit HD");
