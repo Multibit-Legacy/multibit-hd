@@ -7,7 +7,12 @@ import org.joda.time.ReadableInstant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.multibit.hd.core.sntp.NtpMessage;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.Locale;
 
 /**
@@ -564,6 +569,62 @@ public class Dates {
    */
   public static DateTime parseBackupDate(String text) {
     return utcBackupFormatter.parseDateTime(text);
+  }
+
+  /**
+   * <p>Blocking call to an SNTP time server (max 1 second)</p>
+   *
+   * @param sntpHost The SNTP host (e.g. "pool.ntp.org")
+   * @return The number of milliseconds of drift from a SNTP timeserver time
+   */
+  public static int calculateDriftInMillis(String sntpHost) throws IOException {
+
+    // Send request
+    DatagramSocket socket = new DatagramSocket();
+    socket.setSoTimeout(1000);
+    InetAddress address = InetAddress.getByName(sntpHost);
+    byte[] buf = new NtpMessage().toByteArray();
+
+    // Build the SNTP datagram on port 123
+    DatagramPacket packet = new DatagramPacket(
+      buf,
+      buf.length,
+      address,
+      123
+    );
+
+    // Set the transmit timestamp *just* before sending the packet
+    NtpMessage.encodeTimestamp(
+      packet.getData(),
+      40,
+      // Offset from 01-01-1900T00:00:00Z
+      (System.currentTimeMillis() / 1000.0) + 2208988800.0
+    );
+
+    socket.send(packet);
+
+    // Wait for response response
+    packet = new DatagramPacket(buf, buf.length);
+    socket.receive(packet);
+
+    // Set the receive timestamp *just* after receiving the packet
+    double destinationTimestamp =
+      // Offset from 01-01-1900T00:00:00Z
+      (System.currentTimeMillis() / 1000.0) + 2208988800.0;
+
+    // Close the socket since we have all the data in the packet buffer
+    socket.close();
+
+    // Process response
+    NtpMessage msg = new NtpMessage(packet.getData());
+
+    // Calculate local offset in microseconds
+    double localClockOffset = ((msg.receiveTimestamp - msg.originateTimestamp)
+      + (msg.transmitTimestamp - destinationTimestamp)) / 2;
+
+    // Provide current time with offset applied
+    return (int) (localClockOffset * 1000);
+
   }
 
 }
