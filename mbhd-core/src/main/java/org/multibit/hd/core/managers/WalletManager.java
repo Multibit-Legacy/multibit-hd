@@ -15,8 +15,10 @@ import com.google.common.collect.Lists;
 import com.google.common.primitives.Bytes;
 import org.bitcoinj.wallet.Protos;
 import org.multibit.hd.brit.crypto.AESUtils;
+import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.brit.extensions.MatcherResponseWalletExtension;
 import org.multibit.hd.brit.extensions.SendFeeDtoWalletExtension;
+import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
@@ -28,6 +30,7 @@ import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.exceptions.WalletVersionException;
 import org.multibit.hd.core.files.SecureFiles;
+import org.multibit.hd.core.services.CoreServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -153,6 +156,8 @@ public enum WalletManager implements WalletEventListener {
    * The salt used for deriving the KeyParameter from the password in AES encryption for wallets
    */
   public static final byte[] SCRYPT_SALT = new byte[]{(byte) 0x35, (byte) 0x51, (byte) 0x03, (byte) 0x80, (byte) 0x75, (byte) 0xa3, (byte) 0xb0, (byte) 0xc5};
+
+  private FeeService feeService;
 
   /**
    * Open the given wallet
@@ -591,6 +596,50 @@ public enum WalletManager implements WalletEventListener {
     return walletList;
   }
 
+
+  /**
+   * Get the balance of the current wallet (this does not include a decrement due to the BRIT fees)
+   * This is Optional.absent() if there is no wallet
+   */
+  public Optional<Coin> getCurrentWalletBalance() {
+    Optional<WalletSummary> currentWalletSummary = getCurrentWalletSummary();
+    if (currentWalletSummary.isPresent()) {
+      // Use the real wallet data
+      return Optional.of(currentWalletSummary.get().getWallet().getBalance());
+    } else {
+      // Unknown at this time
+      return Optional.absent();
+    }
+  }
+
+  /**
+    * @return The BRIT fee state for the current wallet - this includes things like how much is
+    * currently owed to BRIT
+    */
+   public Optional<FeeState> calculateBRITFeeState() {
+
+     if (feeService == null) {
+       feeService = CoreServices.createFeeService();
+     }
+     if (getCurrentWalletSummary() != null && getCurrentWalletSummary().isPresent()) {
+       Wallet wallet = getCurrentWalletSummary().get().getWallet();
+
+       File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+       Optional<File> walletFileOptional = getCurrentWalletFile(applicationDataDirectory);
+       if (walletFileOptional.isPresent()) {
+         log.debug("Wallet file prior to calculateFeeState is " + walletFileOptional.get().length() + " bytes");
+       }
+       Optional<FeeState> feeState = Optional.of(feeService.calculateFeeState(wallet, false));
+       if (walletFileOptional.isPresent()) {
+         log.debug("Wallet file after to calculateFeeState is " + walletFileOptional.get().length() + " bytes");
+       }
+
+       return feeState;
+     } else {
+       return Optional.absent();
+     }
+   }
+
   /**
    * TODO (GR) Consider moving this to the same model as Configurations and Themes
    *
@@ -806,9 +855,9 @@ public enum WalletManager implements WalletEventListener {
         } else {
           if (signingKey.getKeyCrypter() != null) {
             KeyParameter aesKey = signingKey.getKeyCrypter().deriveKey(walletPassword);
-            ECKey decryptedSigingKey = signingKey.decrypt(aesKey);
+            ECKey decryptedSigningKey = signingKey.decrypt(aesKey);
 
-            String signatureBase64 = decryptedSigingKey.signMessage(messageText);
+            String signatureBase64 = decryptedSigningKey.signMessage(messageText);
             return new SignMessageResult(Optional.of(signatureBase64), true, CoreMessageKey.SIGN_MESSAGE_SUCCESS, null);
           } else {
             // The signing key is not encrypted but it should be

@@ -68,8 +68,6 @@ public enum CoreMessageKey {
   TRANSACTION_TO("core_transaction_to"),
   @Deprecated
   TRANSACTION_BY("core_transaction_by"),
-  @Deprecated
-  DEFAULT_WALLET_NAME("core_default_wallet_name"),
 
   // Exchange messages
   EXCHANGE_OK("core_exchange_ok"),

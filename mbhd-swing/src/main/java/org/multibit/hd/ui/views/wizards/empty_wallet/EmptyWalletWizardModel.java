@@ -3,29 +3,23 @@ package org.multibit.hd.ui.views.wizards.empty_wallet;
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.Coin;
 import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.Wallet;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.brit.dto.FeeState;
-import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.dto.SendRequestSummary;
-import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.exchanges.ExchangeKey;
-import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.core.utils.Coins;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.math.BigDecimal;
 
 import static org.multibit.hd.ui.views.wizards.empty_wallet.EmptyWalletState.EMPTY_WALLET_CONFIRM;
@@ -57,22 +51,11 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
   private EmptyWalletReportPanelModel reportPanelModel;
 
   /**
-   * Default transaction fee
-   */
-  private final Coin transactionFee = Coins.fromPlainAmount("0.0001"); // TODO needs to be displayed from a wallet.completeTx SendRequest.fee
-
-  /**
-   * The FeeService used to calculate the FeeState
-   */
-  private FeeService feeService;
-
-  /**
    * The current wallet balance in coins
    */
-  private final Coin coinAmount;
+  private final Optional<Coin> coinAmount;
 
   private BitcoinNetworkService bitcoinNetworkService;
-
 
   /**
    * The prepared tx
@@ -85,14 +68,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
   public EmptyWalletWizardModel(EmptyWalletState state) {
     super(state);
 
-    Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
-    if (currentWalletSummary.isPresent()) {
-      // Use the real wallet data
-      this.coinAmount = currentWalletSummary.get().getWallet().getBalance();
-    } else {
-      // Unknown at this time
-      this.coinAmount = Coin.ZERO;
-    }
+    coinAmount = WalletManager.INSTANCE.getCurrentWalletBalance();
 
   }
 
@@ -175,77 +151,10 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
   }
 
   /**
-   * @return The transaction fee (a.k.a "miner's fee") in coins
-   */
-  public Coin getTransactionFee() {
-    return transactionFee;
-  }
-
-  /**
    * @return The current wallet balance in coins
    */
-  public Coin getCoinAmount() {
+  public Optional<Coin> getCoinAmount() {
     return coinAmount;
-  }
-
-//  @Subscribe
-//  public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
-//
-//    // Only store successful transactions
-//    if (!transactionCreationEvent.isTransactionCreationWasSuccessful()) {
-//      return;
-//    }
-//
-//    // Create a transactionInfo to match the event created
-//    TransactionInfo transactionInfo = new TransactionInfo();
-//    transactionInfo.setHash(transactionCreationEvent.getTransactionId());
-//    transactionInfo.setNote(Languages.safeText(MessageKey.EMPTY_WALLET_TITLE));
-//
-//    // Append miner's fee info
-//    transactionInfo.setMinerFee(transactionCreationEvent.getMiningFeePaid());
-//
-//    // Append client fee info
-//    transactionInfo.setClientFee(transactionCreationEvent.getClientFeePaid());
-//
-//    // Set the fiat payment amount
-//    transactionInfo.setAmountFiat(transactionCreationEvent.getFiatPayment().orNull());
-//
-//    WalletService walletService = CoreServices.getCurrentWalletService();
-//    walletService.addTransactionInfo(transactionInfo);
-//    try {
-//      walletService.writePayments();
-//    } catch (PaymentsSaveException pse) {
-//      ExceptionHandler.handleThrowable(pse);
-//    }
-//  }
-
-  /**
-   * @return The BRIT fee state for the current wallet
-   */
-  public Optional<FeeState> calculateBRITFeeState() {
-
-    if (feeService == null) {
-      feeService = CoreServices.createFeeService();
-    }
-
-    if (WalletManager.INSTANCE.getCurrentWalletSummary() != null &&
-      WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-      Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
-
-      File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-      Optional<File> walletFileOptional = WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory);
-      if (walletFileOptional.isPresent()) {
-        log.debug("Wallet file prior to calculateFeeState is " + walletFileOptional.get().length() + " bytes");
-      }
-      Optional<FeeState> feeState = Optional.of(feeService.calculateFeeState(wallet, true));
-      if (walletFileOptional.isPresent()) {
-        log.debug("Wallet file after to calculateFeeState is " + walletFileOptional.get().length() + " bytes");
-      }
-
-      return feeState;
-    } else {
-      return Optional.absent();
-    }
   }
 
   /**
@@ -284,11 +193,11 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
 
     String password = enterDetailsPanelModel.getEnterPasswordModel().getValue();
 
-    Optional<FeeState> feeState = calculateBRITFeeState();
+    Optional<FeeState> feeState = WalletManager.INSTANCE.calculateBRITFeeState();
 
     sendRequestSummary = new SendRequestSummary(
             bitcoinAddress,
-            coinAmount,
+            coinAmount.or(Coin.ZERO),
             fiatPayment,
             changeAddress,
             BitcoinNetworkService.DEFAULT_FEE_PER_KB,

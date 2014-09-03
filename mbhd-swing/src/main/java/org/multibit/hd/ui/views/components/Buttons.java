@@ -702,6 +702,20 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "play sound" button with icon and message
+   */
+  public static JButton newPlaySoundButton(Action action, MessageKey key) {
+
+    JButton button = newButton(action);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.PLAY, button, true, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "restore" button with icon
    */
   public static JButton newRestoreButton(Action action) {

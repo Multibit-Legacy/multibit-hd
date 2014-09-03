@@ -8,6 +8,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -140,7 +141,7 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
     Configuration configuration = Configurations.currentConfiguration;
 
     // Update the model and view for the amount
-    transactionDisplayAmountMaV.getModel().setCoinAmount(getWizardModel().getCoinAmount());
+    transactionDisplayAmountMaV.getModel().setCoinAmount(getWizardModel().getCoinAmount().or(Coin.ZERO));
     transactionDisplayAmountMaV.getModel().setLocalAmountVisible(false);
     transactionDisplayAmountMaV.getView().updateView(configuration);
 
@@ -153,7 +154,7 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
     transactionFeeDisplayAmountMaV.getView().updateView(configuration);
 
     // Update the model and view for the client fee
-    Optional<FeeState> feeStateOptional = getWizardModel().calculateBRITFeeState();
+    Optional<FeeState> feeStateOptional = WalletManager.INSTANCE.calculateBRITFeeState();
     log.debug("Fee state at beforeShow {}", feeStateOptional);
     String feeText;
     if (feeStateOptional.isPresent()) {
