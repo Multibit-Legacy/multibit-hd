@@ -5,8 +5,11 @@ import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -222,6 +225,23 @@ public class DatesTest {
     DateTime expected = new DateTime(2014, 1, 27, 0, 0, 0, 0, DateTimeZone.UTC);
 
     assertThat(Dates.parseSeedTimestamp("1850/")).isEqualTo(expected);
+
+  }
+
+  // Must ignore since this may fail on non-internet connected systems
+  @Ignore
+  public void testCalculateDriftInMillis() throws IOException {
+
+    Dates.calculateDriftInMillis("pool.ntp.org");
+
+  }
+
+  // Must ignore since this may fail on non-internet connected systems
+  @Ignore
+  @Test(expected = SocketTimeoutException.class)
+  public void testCalculateDriftInMillis_Timeout() throws IOException {
+
+    Dates.calculateDriftInMillis("example.org");
 
   }
 
