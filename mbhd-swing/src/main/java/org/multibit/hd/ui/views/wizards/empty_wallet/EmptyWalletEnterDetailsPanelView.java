@@ -6,6 +6,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
+import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
@@ -34,6 +35,8 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
   // Panel specific components
   private ModelAndView<EnterRecipientModel, EnterRecipientView> enterRecipientMaV;
   private ModelAndView<EnterPasswordModel, EnterPasswordView> enterPasswordMaV;
+
+  private JLabel isAddressMineStatusLabel;
 
   /**
    * @param wizard    The wizard managing the states
@@ -77,8 +80,13 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
       "[]10[]" // Row constraints
     ));
 
+    isAddressMineStatusLabel = Labels.newAddressIsMineStatusLabel(getPanelModel().get().isAddressMine());
+    // Only show if the address shown is in the wallet
+    isAddressMineStatusLabel.setVisible(getPanelModel().get().isAddressMine());
+
     contentPanel.add(enterRecipientMaV.getView().newComponentPanel(), "wrap");
     contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "wrap");
+    contentPanel.add(isAddressMineStatusLabel, "wrap");
 
   }
 
@@ -94,7 +102,6 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
 
     // Next button starts off disabled
     ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, false);
-
   }
 
   @Override
@@ -103,6 +110,8 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
+        // Only show if the address shown is in the wallet
+        isAddressMineStatusLabel.setVisible(getPanelModel().get().isAddressMine());
         enterRecipientMaV.getView().requestInitialFocus();
       }
     });
@@ -112,7 +121,8 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 
-    // No need to update the wizard it has the references
+    // Only show if the address shown is in the wallet
+    isAddressMineStatusLabel.setVisible(getPanelModel().get().isAddressMine());
 
     // Determine any events
     ViewEvents.fireWizardButtonEnabledEvent(

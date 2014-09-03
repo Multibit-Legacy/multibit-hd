@@ -335,6 +335,14 @@ public class Labels {
   public static JLabel newSeedPhraseCreatedStatus(boolean status) {
     return newStatusLabel(MessageKey.SEED_PHRASE_CREATED_STATUS, null, status);
   }
+  /**
+   * @param status True if the address is acceptable (i.e. not mine)
+   *
+   * @return A new "address is mine" status label
+   */
+  public static JLabel newAddressIsMineStatusLabel (boolean status) {
+    return newStatusLabel(MessageKey.ADDRESS_IS_MINE_STATUS, null, status);
+  }
 
   /**
    * @param status True if the status is "good"

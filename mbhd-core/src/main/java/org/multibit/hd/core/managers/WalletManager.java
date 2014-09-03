@@ -815,6 +815,32 @@ public enum WalletManager implements WalletEventListener {
 
   }
 
+  /**
+   * Method to determine whether a message is 'mine', meaning an existing address in the current wallet
+   * @param address The address to test for wallet inclusion
+   * @return true if address is in current wallet, false otherwise
+   */
+  public boolean isAddressMine(Address address) {
+    try {
+
+      Optional<WalletSummary> walletSummaryOptional = WalletManager.INSTANCE.getCurrentWalletSummary();
+
+      if (walletSummaryOptional.isPresent()) {
+        WalletSummary walletSummary = walletSummaryOptional.get();
+
+        Wallet wallet = walletSummary.getWallet();
+        ECKey signingKey = wallet.findKeyFromPubHash(address.getHash160());
+
+        return signingKey != null;
+      } else {
+        // No wallet present
+        return false;
+      }
+    } catch (Exception e) {
+      // Some other problem
+      return false;
+    }
+  }
 
   /**
    * <p>Method to sign a message</p>
@@ -847,12 +873,9 @@ public enum WalletManager implements WalletEventListener {
         WalletSummary walletSummary = walletSummaryOptional.get();
 
         Wallet wallet = walletSummary.getWallet();
-        ECKey signingKey = wallet.findKeyFromPubHash(signingAddress.getHash160());
 
-        if (signingKey == null) {
-          // No signing key found.
-          return new SignMessageResult(Optional.<String>absent(), false, CoreMessageKey.SIGN_MESSAGE_NO_SIGNING_KEY, new Object[]{addressText});
-        } else {
+        ECKey signingKey = wallet.findKeyFromPubHash(signingAddress.getHash160());
+        if (signingKey != null) {
           if (signingKey.getKeyCrypter() != null) {
             KeyParameter aesKey = signingKey.getKeyCrypter().deriveKey(walletPassword);
             ECKey decryptedSigningKey = signingKey.decrypt(aesKey);
@@ -863,6 +886,9 @@ public enum WalletManager implements WalletEventListener {
             // The signing key is not encrypted but it should be
             return new SignMessageResult(Optional.<String>absent(), false, CoreMessageKey.SIGN_MESSAGE_SIGNING_KEY_NOT_ENCRYPTED, null);
           }
+        } else {
+          // No signing key found.
+          return new SignMessageResult(Optional.<String>absent(), false, CoreMessageKey.SIGN_MESSAGE_NO_SIGNING_KEY, new Object[]{addressText});
         }
       } else {
         return new SignMessageResult(Optional.<String>absent(), false, CoreMessageKey.SIGN_MESSAGE_NO_WALLET, null);

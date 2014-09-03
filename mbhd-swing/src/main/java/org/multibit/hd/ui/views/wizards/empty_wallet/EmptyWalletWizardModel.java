@@ -55,6 +55,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
    */
   private final Optional<Coin> coinAmount;
 
+
   private BitcoinNetworkService bitcoinNetworkService;
 
   /**
@@ -78,6 +79,22 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
     switch (state) {
       case EMPTY_WALLET_ENTER_DETAILS:
         state = EMPTY_WALLET_CONFIRM;
+
+        // See if the user has entered a recipient that is in the current wallet
+        Optional<Recipient> recipientOptional = enterDetailsPanelModel.getEnterRecipientModel().getRecipient();
+        if (recipientOptional.isPresent()) {
+          boolean isAddressMine = WalletManager.INSTANCE.isAddressMine(recipientOptional.get().getBitcoinAddress());
+
+          // Update model so that status note is shown
+          enterDetailsPanelModel.setAddressMine(isAddressMine);
+          if (isAddressMine) {
+            log.debug("The address being emptied to is in the wallet !");
+            // Do not traverse to next page
+
+            state = EmptyWalletState.EMPTY_WALLET_ENTER_DETAILS;
+            break;
+          }
+        }
         prepareTransaction();
         break;
       case EMPTY_WALLET_CONFIRM:

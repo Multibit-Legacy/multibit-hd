@@ -19,6 +19,12 @@ public class EmptyWalletEnterDetailsPanelModel extends AbstractWizardPanelModel 
   private final EnterPasswordModel enterPasswordModel;
 
   /**
+   * Whether the recipient address is in the current wallet
+   * true if it is, false if not or no recipient
+   */
+  private boolean isAddressMine = false;
+
+  /**
    * @param panelName           The panel name
    * @param enterRecipientModel The "enter recipient" component model
    * @param enterPasswordModel  The "enter password" component model
@@ -48,4 +54,11 @@ public class EmptyWalletEnterDetailsPanelModel extends AbstractWizardPanelModel 
     return enterPasswordModel;
   }
 
+  public boolean isAddressMine() {
+    return isAddressMine;
+  }
+
+  public void setAddressMine(boolean isAddressMine) {
+    this.isAddressMine = isAddressMine;
+  }
 }

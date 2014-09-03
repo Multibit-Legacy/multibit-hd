@@ -288,6 +288,8 @@ public enum MessageKey {
   WALLET_REPAIRED_STATUS("wallet_repaired_status"),
   SYNCHRONIZING_STATUS("synchronizing_status"),
 
+  ADDRESS_IS_MINE_STATUS("address_is_mine_status"),
+
   PASSWORD_CHANGED_STATUS("password_changed_status"),
 
   HISTORY_WALLET_CREATED("history_wallet_created"),

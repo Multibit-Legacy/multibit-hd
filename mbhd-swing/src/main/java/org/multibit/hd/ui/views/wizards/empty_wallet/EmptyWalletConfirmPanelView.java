@@ -166,7 +166,7 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
         feeText = Languages.safeText(MessageKey.CLIENT_FEE_OVERPAID);
       }  else {
         if (feeState.getFeeOwed().compareTo(Transaction.MIN_NONDUST_OUTPUT) <= 0) {
-          //Below dust limit
+          // Below dust limit
           feeText = "";
         } else {
           // The fee is due now
