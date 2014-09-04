@@ -13,6 +13,7 @@ import org.multibit.hd.ui.views.components.text_fields.FormattedDecimalField;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.DefaultStyledDocument;
 import java.awt.*;
@@ -434,6 +435,23 @@ public class TextBoxes {
     DefaultStyledDocument doc = new DefaultStyledDocument();
     doc.setDocumentFilter(new DocumentMaxLengthFilter(MultiBitUI.PASSWORD_LENGTH));
     passwordField.setDocument(doc);
+
+    doc.addDocumentListener(new DocumentListener() {
+      @Override
+      public void insertUpdate(DocumentEvent e) {
+        System.out.println("TextBoxes#newPassword#DocumentListener# saw an insertUpdate");
+      }
+
+      @Override
+      public void removeUpdate(DocumentEvent e) {
+        System.out.println("TextBoxes#newPassword#DocumentListener# saw an removeUpdate");
+      }
+
+      @Override
+      public void changedUpdate(DocumentEvent e) {
+        System.out.println("TextBoxes#newPassword#DocumentListener# saw an changeUpdate");
+      }
+    });
 
     // Set the theme
     passwordField.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
