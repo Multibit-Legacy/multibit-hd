@@ -13,12 +13,18 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Bytes;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import org.bitcoinj.wallet.Protos;
+import org.joda.time.DateTime;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.brit.extensions.MatcherResponseWalletExtension;
 import org.multibit.hd.brit.extensions.SendFeeDtoWalletExtension;
 import org.multibit.hd.brit.services.FeeService;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
@@ -30,16 +36,19 @@ import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.exceptions.WalletVersionException;
 import org.multibit.hd.core.files.SecureFiles;
+import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
+import javax.annotation.Nullable;
 import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -411,6 +420,7 @@ public enum WalletManager implements WalletEventListener {
       }
 
       Wallet wallet;
+      boolean performSync = false;
       try {
         wallet = loadWalletFromFile(walletFile, password);
       } catch (WalletVersionException wve) {
@@ -424,6 +434,9 @@ public enum WalletManager implements WalletEventListener {
         // Try loading one of the rolling backups - this will send a BackupWalletLoadedEvent containing the initial error
         // If the rolling backups don't load then loadRollingBackup will throw a WalletLoadException which will propagate out
         wallet = BackupManager.INSTANCE.loadRollingBackup(walletId, password);
+
+        // To be on the safe side, perform a sync of the wallet
+        performSync = true;
       }
 
       // Create the wallet summary with its wallet
@@ -440,6 +453,14 @@ public enum WalletManager implements WalletEventListener {
       // + local/ cloud backups are also saved where necessary
       wallet.autosaveToFile(new File(walletFilenameNoAESSuffix), AUTO_SAVE_DELAY, TimeUnit.SECONDS, new WalletAutoSaveListener());
 
+      if (performSync) {
+        // Perform a sync from the last seen block date to ensure all tx are seen
+        if (wallet.getLastBlockSeenTime() != null) {
+          final DateTime syncDate = new DateTime(wallet.getLastBlockSeenTime());
+          synchroniseFromDate(syncDate);
+        }
+
+      }
       return walletSummary;
 
     } catch (WalletVersionException wve) {
@@ -449,6 +470,46 @@ public enum WalletManager implements WalletEventListener {
       throw new WalletLoadException(e.getMessage(), e);
     }
   }
+
+  private void synchroniseFromDate(final DateTime syncDate) {
+    ListeningExecutorService walletExecutorService = SafeExecutors.newSingleThreadExecutor("sync-wallet");
+
+    // Start the Bitcoin network synchronization operation
+    ListenableFuture future = walletExecutorService.submit(new Callable<Boolean>() {
+
+      @Override
+      public Boolean call() throws Exception {
+
+        BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
+        // Bounce the network connection
+        bitcoinNetworkService.stopAndWait();
+        bitcoinNetworkService.start();
+
+        // Replay wallet
+        CoreServices.getOrCreateBitcoinNetworkService().replayWallet(syncDate);
+        return true;
+
+      }
+
+    });
+    Futures.addCallback(future, new FutureCallback() {
+      @Override
+      public void onSuccess(@Nullable Object result) {
+        // Do nothing this just means that the block chain download has begun
+        log.debug("Sync has begun");
+
+      }
+
+      @Override
+      public void onFailure(Throwable t) {
+        // Have a failure
+        log.debug("Sync failed, error was " + t.getClass().getCanonicalName() + " " + t.getMessage());
+
+      }
+    });
+  }
+
+
 
   /**
    * @param walletFile the wallet to test serialisation for
