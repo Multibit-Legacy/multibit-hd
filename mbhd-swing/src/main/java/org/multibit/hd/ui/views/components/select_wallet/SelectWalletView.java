@@ -25,7 +25,7 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
 
   // View components
   private JComboBox<WalletSummary> selectedWalletComboBox;
-  private JLabel descriptionLabel;
+  private JTextArea descriptionTextArea;
 
   /**
    * @param model The model backing this view
@@ -50,14 +50,15 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
     selectedWalletComboBox.setEnabled(false);
 
     // Create the labels
-    descriptionLabel = Labels.newBlankLabel();
-
+    descriptionTextArea = TextBoxes.newTextArea(3, 30);
+    descriptionTextArea.setEditable(false);
+    
     // Ensure it is accessible
-    AccessibilityDecorator.apply(descriptionLabel, MessageKey.DESCRIPTION);
+    AccessibilityDecorator.apply(descriptionTextArea, MessageKey.DESCRIPTION);
 
     // Add to the panel
     panel.add(selectedWalletComboBox, "grow,push,w min:501:,wrap");
-    panel.add(descriptionLabel, "grow,push,wrap");
+    panel.add(descriptionTextArea, "grow,push,wrap");
 
     return panel;
 
@@ -112,7 +113,7 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
       if (selectedWallet != null) {
 
         getModel().get().setValue(selectedWallet);
-        descriptionLabel.setText(selectedWallet.getNotes());
+        descriptionTextArea.setText(selectedWallet.getNotes());
 
       }
     }
@@ -134,7 +135,7 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
 
       getModel().get().setValue(selectedWallet);
 
-      descriptionLabel.setText(selectedWallet.getNotes());
+      descriptionTextArea.setText(selectedWallet.getNotes());
 
     }
   }
