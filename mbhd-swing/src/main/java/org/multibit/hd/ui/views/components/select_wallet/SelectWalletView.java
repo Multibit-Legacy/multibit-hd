@@ -52,7 +52,7 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
     // Create the labels
     descriptionTextArea = TextBoxes.newTextArea(3, 30);
     descriptionTextArea.setEditable(false);
-    
+
     // Ensure it is accessible
     AccessibilityDecorator.apply(descriptionTextArea, MessageKey.DESCRIPTION);
 

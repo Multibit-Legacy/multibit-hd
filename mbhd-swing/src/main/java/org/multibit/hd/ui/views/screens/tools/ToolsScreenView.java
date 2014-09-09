@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.screens.tools;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
@@ -37,6 +38,8 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
 
   private JButton showEmptyWalletButton;
 
+  private Optional<BitcoinNetworkChangedEvent> unprocessedBitcoinNetworkChangedEvent = Optional.absent();
+
   /**
    * @param panelModel The model backing this panel view
    * @param screen     The screen to filter events from components
@@ -66,6 +69,9 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
 
     showEmptyWalletButton = Buttons.newShowEmptyWalletButton(getShowEmptyWalletAction());
 
+    // Initially show the button disabled - it is enabled when the network is synced
+    showEmptyWalletButton.setEnabled(false);
+
     contentPanel.add(primaryButton, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(showEmptyWalletButton, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowRepairWalletButton(getShowRepairWalletAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
@@ -81,6 +87,18 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
     return contentPanel;
   }
 
+  @Override
+   public boolean beforeShow() {
+
+    // Ensure any unprocessed bitcoin network change events are dealt with
+    if (isInitialised() && unprocessedBitcoinNetworkChangedEvent.isPresent()) {
+      updateEmptyButton(unprocessedBitcoinNetworkChangedEvent.get());
+      unprocessedBitcoinNetworkChangedEvent = Optional.absent();
+    }
+
+    return true;
+   }
+
   /**
    * @param event The "Bitcoin network changed" event - one per block downloaded during synchronization
    */
@@ -88,6 +106,8 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
   public void onBitcoinNetworkChangeEvent(final BitcoinNetworkChangedEvent event) {
 
     if (!isInitialised()) {
+      // Remember the last bitcoin change event if the panel is not initialised
+      unprocessedBitcoinNetworkChangedEvent = Optional.of(event);
       return;
     }
 
@@ -279,7 +299,5 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
     }
 
   }
-
-
 
 }
