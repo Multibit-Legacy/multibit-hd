@@ -505,6 +505,8 @@ public enum MessageKey {
   REPAIR_WALLET_NOTE_3("repair_wallet_note_3"),
   REPAIR_WALLET_NOTE_4("repair_wallet_note_4"),
 
+  SPENDABLE_BALANCE_IS_LOWER("spendable_balance_is_lower"),
+
   // End of enum
   ;
 

@@ -89,6 +89,11 @@ public class MainController extends AbstractController implements
   // Start with the assumption that it is fine to avoid annoying "everything is OK" alert
   private RAGStatus lastExchangeSeverity = RAGStatus.GREEN;
 
+  // Keep a thread pool for transaction status checking
+  private static final ListeningExecutorService transactionCheckingExecutorService = SafeExecutors.newFixedThreadPool(10, "transaction-checking");
+
+  private static final int NUMBER_OF_SECONDS_TO_WAIT_BEFORE_TRANSACTION_CHECKING = 10;
+
   /**
    * @param bitcoinURIListeningService The Bitcoin URI listening service (must be present to permit a UI)
    * @param headerController           The header controller
@@ -494,6 +499,18 @@ public class MainController extends AbstractController implements
   }
 
   /**
+   * @return An action to show the help screen for 'spendable balance may be lower"
+   */
+  private AbstractAction getShowHelpAction() {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        ControllerEvents.fireShowDetailScreenEvent(Screen.HELP); // TODO show the 'spendable balance may be lower' help screen when it is written
+      }
+    };
+  }
+  /**
    * Handles the changes to the exchange ticker service
    */
   private void handleExchange() {
@@ -786,10 +803,12 @@ public class MainController extends AbstractController implements
 
   /**
    * Make sure that when a transaction is successfully created its 'metadata' is stored in a transactionInfo
-   * @param transactionCreationEvent
+   * @param transactionCreationEvent The transaction creation event from the EventBus
    */
   @Subscribe
   public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
+
+    initiateDelayedTransactionStatusCheck(transactionCreationEvent);
 
     // Only store successful transactions
     if (!transactionCreationEvent.isTransactionCreationWasSuccessful()) {
@@ -819,5 +838,41 @@ public class MainController extends AbstractController implements
     } catch (PaymentsSaveException pse) {
       ExceptionHandler.handleThrowable(pse);
     }
+  }
+
+  /**
+   * When a transaction is created, fire off a delayed check of the transaction confidence/ network status
+   * @param transactionCreationEvent The transaction creation event from the EventBus
+   */
+  private void initiateDelayedTransactionStatusCheck(final TransactionCreationEvent transactionCreationEvent) {
+    transactionCheckingExecutorService.submit(new Runnable() {
+
+      @Override
+      public void run() {
+        log.debug("Performing delayed status check on transaction '" + transactionCreationEvent.getTransactionId() + "'");
+        // Wait for a while to let the Bitcoin network respond to the tx being sent
+        Uninterruptibles.sleepUninterruptibly(NUMBER_OF_SECONDS_TO_WAIT_BEFORE_TRANSACTION_CHECKING, TimeUnit.SECONDS);
+
+        // See if the transaction has a RAGStatus if red.
+        // This could be the tx has not been transmitted ok or is only seen by zero or one peers.
+        // In this case the user will not have access to the tx change and notify them with a warning alert
+        WalletService currentWalletService = CoreServices.getCurrentWalletService();
+        if (currentWalletService != null) {
+          java.util.List<PaymentData> paymentDataList = currentWalletService.getPaymentDataList();
+          if (paymentDataList != null) {
+            for (PaymentData paymentData : paymentDataList) {
+              PaymentStatus status = paymentData.getStatus();
+              if (status.getStatus().equals(RAGStatus.RED)) {
+                JButton button = Buttons.newAlertPanelButton(getShowHelpAction(), MessageKey.DETAILS, AwesomeIcon.QUESTION);
+
+                // The transaction has not been sent correctly, or change is not spendable, throw a warning alert
+                AlertModel alertModel = Models.newAlertModel(Languages.safeText(MessageKey.SPENDABLE_BALANCE_IS_LOWER), RAGStatus.AMBER, button);
+                ViewEvents.fireAlertAddedEvent(alertModel);
+              }
+            }
+          }
+        }
+      }
+    });
   }
 }

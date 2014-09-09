@@ -241,7 +241,7 @@ public class BitcoinNetworkService extends AbstractService {
    * <li>the wallet to send from - when Trezor comes onstream</li>
    * <li>a CoinSelector - when HD subnodes are supported</li>
    * </ul>
-   * <p>The result of the operation is sent to the CoreEventBus as a TransactionCreationEvent and, if the tx is created ok, a BitcoinSentEvent</p>
+   * <p>The result of the operation is sent to the CoreEventBus as a TransactionCreationEvent and, if the tx is sent ok, a BitcoinSentEvent</p>
    *
    * @param sendRequestSummary The information required to send bitcoin
    */
