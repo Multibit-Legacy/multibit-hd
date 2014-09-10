@@ -184,7 +184,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
       editorPane.setDocument(doc);
 
       // Create the starting page
-      addPage(URI.create(MBHD_WEBSITE_HELP_BASE + "/help_contents.html").toURL());
+      addPage(URI.create(MBHD_WEBSITE_HELP_BASE + "/contents.html").toURL());
 
     } catch (IOException e) {
       log.error(e.getMessage(), e);
