@@ -9,8 +9,13 @@ import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.borders.TextBubbleBorder;
 import org.multibit.hd.ui.views.components.text_fields.ThemeAwareRecipientInputVerifier;
 import org.multibit.hd.ui.views.themes.Themes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
 import java.awt.event.ActionListener;
 
 /**
@@ -27,6 +32,10 @@ import java.awt.event.ActionListener;
 public class RecipientComboBoxEditor implements ComboBoxEditor {
 
   protected RecipientComboBoxTextField editor;
+
+  private static final Logger log = LoggerFactory.getLogger(RecipientComboBoxEditor.class);
+
+  private static final int MINIMUM_BITCOIN_ADDRESS_LENGTH = 26; // Source: https://en.bitcoin.it/wiki/Address
 
   /**
    * @param contactService The contact service for the current wallet
@@ -47,8 +56,43 @@ public class RecipientComboBoxEditor implements ComboBoxEditor {
     editor.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
 
     // Validate as a Contact with Bitcoin address, or a direct Bitcoin address
-    editor.setInputVerifier(new ThemeAwareRecipientInputVerifier(contactService, networkParameters));
+    final ThemeAwareRecipientInputVerifier verifier = new ThemeAwareRecipientInputVerifier(contactService, networkParameters);
+    editor.setInputVerifier(verifier);
 
+    editor.getDocument().addDocumentListener(new DocumentListener() {
+
+      @Override
+      public void insertUpdate(DocumentEvent e) {
+        handleEvent(e);
+      }
+
+      @Override
+      public void removeUpdate(DocumentEvent e) {
+        handleEvent(e);
+      }
+
+      @Override
+      public void changedUpdate(DocumentEvent e) {
+        handleEvent(e);
+      }
+
+      private void handleEvent(DocumentEvent e) {
+        // User has either typed or pasted - check the update text on every keystroke for early validation
+        try {
+          String text = e.getDocument().getText(0, e.getDocument().getLength());
+          log.debug("Saw a handleEvent with item = '" + text + "'");
+
+          int currentLength = text.length();
+          // If longer than the length of a minimum bitcoin address then verify.
+          // This will give some false positives if the user types in a long recipient address manually but works reasonably well
+          if (currentLength >= MINIMUM_BITCOIN_ADDRESS_LENGTH) {
+            verifier.verify(editor);
+          }
+        } catch (BadLocationException e1) {
+          e1.printStackTrace();
+        }
+      }
+    });
   }
 
   public JTextField getEditorComponent() {
@@ -68,6 +112,8 @@ public class RecipientComboBoxEditor implements ComboBoxEditor {
 
       editor.setText((String) item);
       editor.setRecipient(Optional.<Recipient>absent());
+
+      log.debug("Saw a setItem with item = '" + item + "'");
 
       return;
 
