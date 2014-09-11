@@ -35,6 +35,7 @@ public enum MessageKey {
   DELETE("delete"),
   RESTORE("restore"),
   SEARCH("search"),
+  SEARCH_TOOLTIP("search_tooltip"),
   BACK("back"),
   FORWARD("forward"),
   BROWSE("browse"),
@@ -93,6 +94,7 @@ public enum MessageKey {
 
   SELECT_FOLDER("select_folder"),
   SELECT_FILE("select_file"),
+  SELECT_FILE_TOOLTIP("select_file_tooltip"),
 
   SELECT_WALLET("select_wallet"),
 
@@ -107,7 +109,9 @@ public enum MessageKey {
   PASSWORD_FAILED("password_failed"),
 
   BITCOIN_AMOUNT("bitcoin_amount"),
+  BITCOIN_AMOUNT_TOOLTIP("bitcoin_amount_tooltip"),
   LOCAL_AMOUNT("local_amount"),
+  LOCAL_AMOUNT_TOOLTIP("local_amount_tooltip"),
   LOCAL_AMOUNT_INCLUDING_FEES("local_amount_including_fees"),
   AMOUNT_PAID("amount_paid"),
   TRANSACTION_FEE("transaction_fee"),
@@ -121,11 +125,16 @@ public enum MessageKey {
   COINBASE("coinbase"),
 
   NAME("name"),
+  NAME_TOOLTIP("name_tooltip"),
   NAMES("names"),
   EMAIL_ADDRESS("email_address"),
+  EMAIL_ADDRESS_TOOLTIP("email_address_tooltip"),
   BITCOIN_ADDRESS("bitcoin_address"),
+  BITCOIN_ADDRESS_TOOLTIP("bitcoin_address_tooltip"),
   EXTENDED_PUBLIC_KEY("extended_public_key"),
+  EXTENDED_PUBLIC_KEY_TOOLTIP("extended_public_key_tooltip"),
   TAGS("tags"),
+  TAGS_TOOLTIP("tags_tooltip"),
   EXAMPLE("example"),
   VERSION("version"),
 
@@ -145,6 +154,7 @@ public enum MessageKey {
   SELECT_EXCHANGE_RATE_PROVIDER("select_exchange_rate_provider"),
   SELECT_LOCAL_CURRENCY("select_local_currency"),
   ENTER_ACCESS_CODE("enter_access_code"),
+  ENTER_ACCESS_CODE_TOOLTIP("enter_access_code_tooltip"),
   EXCHANGE_RATE_LABEL("exchange_rate_label"),
   NOT_AVAILABLE("not_available"),
   NO_CLIENT_FEE_WAS_ADDED("no_client_fee_was_added"),
@@ -304,7 +314,9 @@ public enum MessageKey {
   SELECT_LANGUAGE("select_language"),
   SEED_SIZE("seed_size"),
   SEED_PHRASE("seed_phrase"),
+  SEED_PHRASE_TOOLTIP("seed_phrase_tooltip"),
   TIMESTAMP("timestamp"),
+  TIMESTAMP_TOOLTIP("timestamp_tooltip"),
   MULTI_EDIT_NOTE("multi_edit_note"),
 
   TRANSACTION_CONSTRUCTION_STATUS_SUMMARY("transaction_construction_status_summary"),

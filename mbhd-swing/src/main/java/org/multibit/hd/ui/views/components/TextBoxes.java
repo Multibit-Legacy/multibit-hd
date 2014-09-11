@@ -189,7 +189,7 @@ public class TextBoxes {
     JTextField textField = newTextField(20);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.TAGS);
+    AccessibilityDecorator.apply(textField, MessageKey.TAGS, MessageKey.TAGS_TOOLTIP);
 
     return textField;
   }
@@ -202,7 +202,7 @@ public class TextBoxes {
     JTextField textField = newTextField(60);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.SEARCH);
+    AccessibilityDecorator.apply(textField, MessageKey.SEARCH, MessageKey.SEARCH_TOOLTIP);
 
     return textField;
   }
@@ -215,7 +215,7 @@ public class TextBoxes {
     JTextField textField = newTextField(60);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.SELECT_FILE);
+    AccessibilityDecorator.apply(textField, MessageKey.SELECT_FILE, MessageKey.SELECT_FILE_TOOLTIP);
 
     return textField;
   }
@@ -230,7 +230,7 @@ public class TextBoxes {
     JTextField textField = newReadOnlyTextField(20);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.TIMESTAMP);
+    AccessibilityDecorator.apply(textField, MessageKey.TIMESTAMP, MessageKey.TIMESTAMP_TOOLTIP);
 
     textField.setText(seedTimestamp);
 
@@ -245,7 +245,7 @@ public class TextBoxes {
     JTextField textField = newTextField(20);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.TIMESTAMP);
+    AccessibilityDecorator.apply(textField, MessageKey.TIMESTAMP, MessageKey.TIMESTAMP_TOOLTIP);
 
     return textField;
 
@@ -262,7 +262,7 @@ public class TextBoxes {
     JTextField textField = readOnly ? newReadOnlyTextField(40) : newTextField(40);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.NAME);
+    AccessibilityDecorator.apply(textField, MessageKey.NAME, MessageKey.NAME_TOOLTIP);
 
     textField.getDocument().addDocumentListener(listener);
 
@@ -281,7 +281,7 @@ public class TextBoxes {
     JTextField textField = readOnly ? newReadOnlyTextField(40) : newTextField(40);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.EMAIL_ADDRESS);
+    AccessibilityDecorator.apply(textField, MessageKey.EMAIL_ADDRESS, MessageKey.EMAIL_ADDRESS_TOOLTIP);
 
     // Detect changes
     textField.getDocument().addDocumentListener(listener);
@@ -301,7 +301,7 @@ public class TextBoxes {
     FormattedBitcoinAddressField textField = new FormattedBitcoinAddressField(BitcoinNetwork.current().get(), readOnly);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.BITCOIN_ADDRESS);
+    AccessibilityDecorator.apply(textField, MessageKey.BITCOIN_ADDRESS, MessageKey.BITCOIN_ADDRESS_TOOLTIP);
 
     // Detect changes
     textField.getDocument().addDocumentListener(listener);
@@ -320,7 +320,7 @@ public class TextBoxes {
     JTextField textField = newReadOnlyTextField(34);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.BITCOIN_ADDRESS);
+    AccessibilityDecorator.apply(textField, MessageKey.BITCOIN_ADDRESS, MessageKey.BITCOIN_ADDRESS_TOOLTIP);
 
     textField.setText(bitcoinAddress);
 
@@ -338,7 +338,7 @@ public class TextBoxes {
     JTextField textField = readOnly ? newReadOnlyTextField(40) : newTextField(40);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.EXTENDED_PUBLIC_KEY);
+    AccessibilityDecorator.apply(textField, MessageKey.EXTENDED_PUBLIC_KEY, MessageKey.EXTENDED_PUBLIC_KEY_TOOLTIP);
 
     // Detect changes
     textField.getDocument().addDocumentListener(listener);
@@ -366,7 +366,7 @@ public class TextBoxes {
     FormattedDecimalField textField = new FormattedDecimalField(0, maximum, decimalPlaces, maxEditLength);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.BITCOIN_AMOUNT);
+    AccessibilityDecorator.apply(textField, MessageKey.BITCOIN_AMOUNT, MessageKey.BITCOIN_AMOUNT_TOOLTIP);
 
     Font font = textField.getFont().deriveFont((float) MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -401,7 +401,7 @@ public class TextBoxes {
     FormattedDecimalField textField = new FormattedDecimalField(0, maximum, decimalPlaces, maxEditLength);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.LOCAL_AMOUNT);
+    AccessibilityDecorator.apply(textField, MessageKey.LOCAL_AMOUNT, MessageKey.LOCAL_AMOUNT_TOOLTIP);
 
     Font font = textField.getFont().deriveFont((float) MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -577,7 +577,7 @@ public class TextBoxes {
     JTextArea textArea = newEnterSeedPhrase();
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textArea, MessageKey.SEED_PHRASE);
+    AccessibilityDecorator.apply(textArea, MessageKey.SEED_PHRASE, MessageKey.SEED_PHRASE_TOOLTIP);
 
     // Prevent copy/paste operations
     textArea.setTransferHandler(null);
@@ -604,7 +604,7 @@ public class TextBoxes {
     JTextArea textArea = new JTextArea(doc, "", 6, MultiBitUI.PASSWORD_LENGTH);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textArea, MessageKey.SEED_PHRASE);
+    AccessibilityDecorator.apply(textArea, MessageKey.SEED_PHRASE, MessageKey.SEED_PHRASE_TOOLTIP);
 
     // Ensure TAB transfers focus
     AbstractAction transferFocus = new AbstractAction() {
@@ -638,7 +638,7 @@ public class TextBoxes {
     JTextField textField = newTextField(40);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.ENTER_ACCESS_CODE);
+    AccessibilityDecorator.apply(textField, MessageKey.ENTER_ACCESS_CODE, MessageKey.ENTER_ACCESS_CODE_TOOLTIP);
 
     textField.getDocument().addDocumentListener(listener);
 
