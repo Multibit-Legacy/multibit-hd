@@ -212,7 +212,7 @@ public class ComboBoxes {
     JComboBox<String> comboBox = newYesNoComboBox(listener, alertSound);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(comboBox, MessageKey.ALERT_SOUND);
+    AccessibilityDecorator.apply(comboBox, MessageKey.ALERT_SOUND, MessageKey.ALERT_SOUND_TOOLTIP);
 
     comboBox.setActionCommand(ALERT_SOUND_COMMAND);
 
@@ -230,7 +230,7 @@ public class ComboBoxes {
     JComboBox<String> comboBox = newYesNoComboBox(listener, receiveSound);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(comboBox, MessageKey.RECEIVE_SOUND);
+    AccessibilityDecorator.apply(comboBox, MessageKey.RECEIVE_SOUND, MessageKey.RECEIVE_SOUND_TOOLTIP);
 
     comboBox.setActionCommand(RECEIVE_SOUND_COMMAND);
 
@@ -248,7 +248,7 @@ public class ComboBoxes {
     JComboBox<String> comboBox = newYesNoComboBox(listener, useTor);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_TOR);
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_TOR, MessageKey.SELECT_TOR_TOOLTIP);
 
     comboBox.setActionCommand(TOR_COMMAND);
 
@@ -266,7 +266,7 @@ public class ComboBoxes {
     JComboBox<String> comboBox = newYesNoComboBox(listener, showBalance);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(comboBox, MessageKey.SHOW_BALANCE);
+    AccessibilityDecorator.apply(comboBox, MessageKey.SHOW_BALANCE, MessageKey.SHOW_BALANCE_TOOLTIP);
 
     comboBox.setActionCommand(SHOW_BALANCE_COMMAND);
 
@@ -288,7 +288,7 @@ public class ComboBoxes {
     JComboBox<String> comboBox = newReadOnlyComboBox(items);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(comboBox, MessageKey.CONTACTS);
+    AccessibilityDecorator.apply(comboBox, MessageKey.CONTACTS, MessageKey.CONTACTS_TOOLTIP);
 
     // Add the listener at the end to avoid false events
     comboBox.addActionListener(listener);
@@ -307,7 +307,7 @@ public class ComboBoxes {
     JComboBox<String> comboBox = newContactsCheckboxComboBox(listener);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(comboBox, MessageKey.HISTORY);
+    AccessibilityDecorator.apply(comboBox, MessageKey.HISTORY, MessageKey.HISTORY_TOOLTIP);
 
     return comboBox;
 
@@ -325,7 +325,7 @@ public class ComboBoxes {
     JComboBox<String> comboBox = newReadOnlyComboBox(LanguageKey.localisedNames());
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_LANGUAGE);
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_LANGUAGE, MessageKey.SELECT_LANGUAGE_TOOLTIP);
 
     comboBox.setRenderer(new LanguageListCellRenderer());
     comboBox.setMaximumRowCount(MultiBitUI.COMBOBOX_MAX_ROW_COUNT);
@@ -353,7 +353,7 @@ public class ComboBoxes {
     JComboBox<String> comboBox = newReadOnlyComboBox(ThemeKey.localisedNames());
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_THEME);
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_THEME, MessageKey.SELECT_THEME_TOOLTIP);
 
     // Can use the ordinal due to the declaration ordering
     comboBox.setSelectedIndex(ThemeKey.fromTheme(Themes.currentTheme).ordinal());
@@ -378,7 +378,7 @@ public class ComboBoxes {
     JComboBox<PaymentRequestData> comboBox = newReadOnlyComboBox(paymentRequestDataList.toArray(new PaymentRequestData[paymentRequestDataList.size()]));
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(comboBox, MessageKey.CHOOSE_PAYMENT_REQUEST);
+    AccessibilityDecorator.apply(comboBox, MessageKey.CHOOSE_PAYMENT_REQUEST, MessageKey.CHOOSE_PAYMENT_REQUEST_TOOLTIP);
 
     // Can use the ordinal due to the declaration ordering
     if (paymentRequestDataList.size() > 0) {
@@ -405,7 +405,7 @@ public class ComboBoxes {
     JComboBox<String> comboBox = newReadOnlyComboBox(decimalSeparators);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_DECIMAL_SEPARATOR);
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_DECIMAL_SEPARATOR, MessageKey.SELECT_DECIMAL_SEPARATOR_TOOLTIP);
 
     // Determine the first matching separator
     String decimal = bitcoinConfiguration.getDecimalSeparator();
@@ -431,7 +431,7 @@ public class ComboBoxes {
     JComboBox<String> comboBox = newReadOnlyComboBox(groupingSeparators);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_GROUPING_SEPARATOR);
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_GROUPING_SEPARATOR, MessageKey.SELECT_GROUPING_SEPARATOR_TOOLTIP);
 
     // Determine the first matching separator
     String grouping = bitcoinConfiguration.getGroupingSeparator();
@@ -462,7 +462,7 @@ public class ComboBoxes {
     JComboBox<String> comboBox = newReadOnlyComboBox(localSymbols);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_LOCAL_SYMBOL);
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_LOCAL_SYMBOL, MessageKey.SELECT_LOCAL_SYMBOL_TOOLTIP);
 
     selectFirstMatch(comboBox, localSymbols, bitcoinConfiguration.getLocalCurrencySymbol());
 
@@ -488,7 +488,7 @@ public class ComboBoxes {
     JComboBox<BitcoinSymbol> comboBox = newReadOnlyComboBox(BitcoinSymbol.values());
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_BITCOIN_SYMBOL);
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_BITCOIN_SYMBOL, MessageKey.SELECT_BITCOIN_SYMBOL_TOOLTIP);
 
     // Increase default font size
     comboBox.setFont(comboBox.getFont().deriveFont(MultiBitUI.COMBO_BOX_TEXT_FONT_SIZE));
@@ -527,7 +527,7 @@ public class ComboBoxes {
     JComboBox<String> comboBox = newReadOnlyComboBox(positions);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_PLACEMENT);
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_PLACEMENT, MessageKey.SELECT_PLACEMENT_TOOLTIP);
 
     if (bitcoinConfiguration.isCurrencySymbolLeading()) {
       comboBox.setSelectedIndex(0);
@@ -558,7 +558,7 @@ public class ComboBoxes {
     JComboBox<Recipient> comboBox = newComboBox(filter.create());
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(comboBox, MessageKey.RECIPIENT);
+    AccessibilityDecorator.apply(comboBox, MessageKey.RECIPIENT, MessageKey.RECIPIENT_TOOLTIP);
 
     // Remove border
     comboBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -599,7 +599,7 @@ public class ComboBoxes {
     JComboBox<BackupSummary> comboBox = newReadOnlyComboBox(backupSummaryArray);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_BACKUP_NOTE_1);
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_BACKUP_NOTE_1, MessageKey.SELECT_BACKUP_NOTE_1_TOOLTIP);
 
     // Use a backup summary list cell renderer to ensure the correct fields are displayed
     ListCellRenderer<BackupSummary> renderer = new BackupSummaryListCellRenderer();
@@ -632,7 +632,7 @@ public class ComboBoxes {
     JComboBox<WalletSummary> comboBox = newReadOnlyComboBox(walletSummaryArray);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_WALLET);
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_WALLET, MessageKey.SELECT_WALLET_TOOLTIP);
 
     // Use a wallet list cell renderer to ensure the correct fields are displayed
     ListCellRenderer<WalletSummary> renderer = new WalletSummaryListCellRenderer();
@@ -664,7 +664,7 @@ public class ComboBoxes {
     comboBox.setMaximumRowCount(MultiBitUI.COMBOBOX_MAX_ROW_COUNT);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(comboBox, MessageKey.EXCHANGE_RATE_PROVIDER);
+    AccessibilityDecorator.apply(comboBox, MessageKey.EXCHANGE_RATE_PROVIDER, MessageKey.EXCHANGE_RATE_PROVIDER_TOOLTIP);
 
     // Determine the selected index
     ExchangeKey exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getCurrentExchange());
@@ -690,7 +690,7 @@ public class ComboBoxes {
     final JComboBox<String> comboBox = newReadOnlyComboBox(new String[]{});
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_LOCAL_CURRENCY);
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_LOCAL_CURRENCY, MessageKey.SELECT_LOCAL_CURRENCY_TOOLTIP);
 
     // Add the listener at the end to avoid false events
     comboBox.setActionCommand(ComboBoxes.CURRENCY_COMMAND);
@@ -714,7 +714,7 @@ public class ComboBoxes {
     });
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(comboBox, MessageKey.SEED_SIZE);
+    AccessibilityDecorator.apply(comboBox, MessageKey.SEED_SIZE, MessageKey.SEED_SIZE_TOOLTIP);
 
     comboBox.setSelectedIndex(0);
 

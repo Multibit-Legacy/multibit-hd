@@ -127,6 +127,8 @@ public enum MessageKey {
   // Field labels
 
   RECIPIENT("recipient"),
+  RECIPIENT_TOOLTIP("recipient_tooltip"),
+
   TRANSACTION_LABEL("transaction_label"),
   QR_CODE_LABEL("qr_code_label"),
   QR_CODE_NOTE_1("qr_code_note_1"),
@@ -157,6 +159,7 @@ public enum MessageKey {
   SELECT_FILE_TOOLTIP("select_file_tooltip"),
 
   SELECT_WALLET("select_wallet"),
+  SELECT_WALLET_TOOLTIP("select_wallet_tooltip"),
 
   ENTER_PASSWORD("enter_password"),
   ENTER_PASSWORD_TOOLTIP("enter_password_tooltip"),
@@ -204,16 +207,32 @@ public enum MessageKey {
   DISPLAY_LANGUAGE("display_language"),
 
   SHOW_BALANCE("show_balance"),
+  SHOW_BALANCE_TOOLTIP("show_balance_tooltip"),
+
   SELECT_THEME("select_theme"),
+  SELECT_THEME_TOOLTIP("select_theme_tooltip"),
 
   SELECT_DECIMAL_SEPARATOR("select_decimal_separator"),
+  SELECT_DECIMAL_SEPARATOR_TOOLTIP("select_decimal_separator_tooltip"),
+
   SELECT_GROUPING_SEPARATOR("select_grouping_separator"),
+  SELECT_GROUPING_SEPARATOR_TOOLTIP("select_grouping_separator_tooltip"),
+
   SELECT_LOCAL_SYMBOL("select_local_symbol"),
+  SELECT_LOCAL_SYMBOL_TOOLTIP("select_local_symbol_tooltip"),
+
   SELECT_BITCOIN_SYMBOL("select_bitcoin_symbol"),
+  SELECT_BITCOIN_SYMBOL_TOOLTIP("select_bitcoin_symbol_tooltip"),
+
   SELECT_PLACEMENT("select_placement"),
+  SELECT_PLACEMENT_TOOLTIP("select_placement_tooltip"),
 
   SELECT_EXCHANGE_RATE_PROVIDER("select_exchange_rate_provider"),
+  SELECT_EXCHANGE_RATE_PROVIDER_TOOLTIP("select_exchange_rate_provider_tooltip"),
+
   SELECT_LOCAL_CURRENCY("select_local_currency"),
+  SELECT_LOCAL_CURRENCY_TOOLTIP("select_local_currency_tooltip"),
+
   ENTER_ACCESS_CODE("enter_access_code"),
   ENTER_ACCESS_CODE_TOOLTIP("enter_access_code_tooltip"),
   EXCHANGE_RATE_LABEL("exchange_rate_label"),
@@ -221,21 +240,30 @@ public enum MessageKey {
   NO_CLIENT_FEE_WAS_ADDED("no_client_fee_was_added"),
 
   ALERT_SOUND("alert_sound"),
+  ALERT_SOUND_TOOLTIP("alert_sound_tooltip"),
+
   RECEIVE_SOUND("receive_sound"),
+  RECEIVE_SOUND_TOOLTIP("receive_sound_tooltip"),
 
   PLAY_SOUND("play_sound"),
   PLAY_SOUND_TOOLTIP("play_sound_tooltip"),
 
   SELECT_TOR("select_tor"),
+  SELECT_TOR_TOOLTIP("select_tor_tooltip"),
 
   // Sidebar
 
   SIDEBAR_TREE("sidebar_tree"),
   WALLET("wallet"),
   SEND_OR_REQUEST("send_or_request"),
+
   CONTACTS("contacts"),
+  CONTACTS_TOOLTIP("contacts_tooltip"),
+
   PAYMENTS("payments"),
+
   HISTORY("history"),
+  HISTORY_TOOLTIP("history_tooltip"),
 
   PREFERENCES("preferences"),
   TOOLS("tools"),
@@ -349,7 +377,10 @@ public enum MessageKey {
 
   // Labels
   CONFIRM_SEND_MESSAGE("confirm_send_message"),
+
   EXCHANGE_RATE_PROVIDER("exchange_rate_provider"),
+  EXCHANGE_RATE_PROVIDER_TOOLTIP("exchange_rate_provider_tooltip"),
+
   BROADCAST_STATUS("broadcast_status"),
   RELAY_STATUS("relay_status"),
   CONFIRMATION_STATUS("confirmation_status"),
@@ -378,8 +409,13 @@ public enum MessageKey {
   ALERT_REMAINING("alert_remaining"),
   EXCHANGE_FIAT_RATE("exchange_fiat_rate"),
   EXCHANGE_FIAT_RATE_WITH_PROVIDER("exchange_fiat_rate_with_provider"),
+
   SELECT_LANGUAGE("select_language"),
+  SELECT_LANGUAGE_TOOLTIP("select_language_tooltip"),
+
   SEED_SIZE("seed_size"),
+  SEED_SIZE_TOOLTIP("seed_size_tooltip"),
+
   SEED_PHRASE("seed_phrase"),
   SEED_PHRASE_TOOLTIP("seed_phrase_tooltip"),
   TIMESTAMP("timestamp"),
@@ -478,6 +514,7 @@ public enum MessageKey {
   SELECT_BACKUP_LOCATION_NOTE_4("select_backup_location_note_4"),
 
   SELECT_BACKUP_NOTE_1("select_backup_note_1"),
+  SELECT_BACKUP_NOTE_1_TOOLTIP("select_backup_note_1_tooltip"),
   SELECT_BACKUP_NOTE_2("select_backup_note_2"),
 
   SEED_WARNING_NOTE_1("seed_warning_note_1"),
@@ -569,7 +606,10 @@ public enum MessageKey {
   TRANSACTION_OVERVIEW("transaction_overview"),
   TRANSACTION_AMOUNT("transaction_amount"),
   TRANSACTION_DETAIL("transaction_detail"),
+
   CHOOSE_PAYMENT_REQUEST("choose_payment_request"),
+  CHOOSE_PAYMENT_REQUEST_TOOLTIP("choose_payment_request_tooltip"),
+
   CHOOSE_PAYMENT_REQUEST_LABEL("choose_payment_request_label"),
   PAYMENT_REQUEST_INFO_SINGULAR("payment_request_info_singular"),
   PAYMENT_REQUEST_INFO_PLURAL("payment_request_info_plural"),
