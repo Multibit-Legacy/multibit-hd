@@ -20,47 +20,105 @@ public enum MessageKey {
 
   // Verbs
   APPLY("apply"),
+  APPLY_TOOLTIP("apply_tooltip"),
+
   UNDO("undo"),
+  UNDO_TOOLTIP("undo_tooltip"),
+
   CANCEL("cancel"),
+  CANCEL_TOOLTIP("cancel_tooltip"),
+
   EXIT("exit"),
+  EXIT_TOOLTIP("exit_tooltip"),
+
   SEND("send"),
+  SEND_TOOLTIP("send_tooltip"),
+
   REQUEST("request"),
+  REQUEST_TOOLTIP("request_tooltip"),
+
   REFRESH("refresh"),
+  REFRESH_TOOLTIP("refresh_tooltip"),
+
   FINISH("finish"),
+  FINISH_TOOLTIP("finish_tooltip"),
+
   CLOSE("close"),
+  CLOSE_TOOLTIP("close_tooltip"),
+
   SHOW("show"),
   HIDE("hide"),
+
   ADD("add"),
+  ADD_TOOLTIP("add_tooltip"),
+
   EDIT("edit"),
+  EDIT_TOOLTIP("edit_tooltip"),
+
   DELETE("delete"),
+  DELETE_TOOLTIP("delete_tooltip"),
+
   RESTORE("restore"),
+  RESTORE_TOOLTIP("restore_tooltip"),
+
   SEARCH("search"),
   SEARCH_TOOLTIP("search_tooltip"),
+
   BACK("back"),
+  BACK_TOOLTIP("back_tooltip"),
+
   FORWARD("forward"),
+  FORWARD_TOOLTIP("forward_tooltip"),
+
   BROWSE("browse"),
-  PRINT("print"),
+  BROWSE_TOOLTIP("browse_tooltip"),
+
   PASTE("paste"),
+  PASTE_TOOLTIP("paste_tooltip"),
+
   PASTE_ALL("paste_all"),
+  PASTE_ALL_TOOLTIP("paste_all_tooltip"),
+
   COPY("copy"),
+  COPY_TOOLTIP("copy_tooltip"),
+
   REPAIR("repair"),
+  REPAIR_TOOLTIP("repair_tooltip"),
+
   CLEAR_ALL("clear_all"),
+  CLEAR_ALL_TOOLTIP("clear_all_tooltip"),
+
   COPY_ALL("copy_all"),
+  COPY_ALL_TOOLTIP("copy_all_tooltip"),
+
   SIGN_MESSAGE("sign_message"),
+  SIGN_MESSAGE_TOOLTIP("sign_message_tooltip"),
+
   VERIFY_MESSAGE("verify_message"),
+  VERIFY_MESSAGE_TOOLTIP("verify_message_tooltip"),
 
   // Nouns
 
   YES("yes"),
+  YES_TOOLTIP("yes_tooltip"),
+
   NO("no"),
+  NO_TOOLTIP("no_tooltip"),
+
   NEXT("next"),
+  NEXT_TOOLTIP("next_tooltip"),
+
   PREVIOUS("previous"),
+  PREVIOUS_TOOLTIP("previous_tooltip"),
+
   ALL("all"),
   NONE("none"),
   ERROR("error"),
   @Deprecated
   DEFAULT("default"),
+
   QR_CODE("qr_code"),
+  QR_CODE_TOOLTIP("qr_code_tooltip"),
 
   // Adjectives
   LEADING("leading"),
@@ -93,6 +151,8 @@ public enum MessageKey {
   THIS_BITCOIN_WAS_SENT_TO_YOU("this_bitcoin_was_sent_to_you"),
 
   SELECT_FOLDER("select_folder"),
+  SELECT_FOLDER_TOOLTIP("select_folder_tooltip"),
+
   SELECT_FILE("select_file"),
   SELECT_FILE_TOOLTIP("select_file_tooltip"),
 
@@ -139,6 +199,7 @@ public enum MessageKey {
   VERSION("version"),
 
   VISIT_WEBSITE("visit_website"),
+  VISIT_WEBSITE_TOOLTIP("visit_website_tooltip"),
 
   DISPLAY_LANGUAGE("display_language"),
 
@@ -161,7 +222,9 @@ public enum MessageKey {
 
   ALERT_SOUND("alert_sound"),
   RECEIVE_SOUND("receive_sound"),
+
   PLAY_SOUND("play_sound"),
+  PLAY_SOUND_TOOLTIP("play_sound_tooltip"),
 
   SELECT_TOR("select_tor"),
 
@@ -203,7 +266,9 @@ public enum MessageKey {
 
   NETWORK_CONFIGURATION_ERROR("network_configuration_error"),
   HELP("help"),
+
   SETTINGS("settings"),
+  SETTINGS_TOOLTIP("settings_tooltip"),
 
   // Titles
 
@@ -254,7 +319,9 @@ public enum MessageKey {
   EDIT_HISTORY_ENTRIES_TITLE("edit_history_entries_title"),
 
   PASSWORD_TITLE("password_title"),
+
   PASSWORD_UNLOCK("password_unlock"),
+  PASSWORD_UNLOCK_TOOLTIP("password_unlock_tooltip"),
 
   // Settings titles
 
@@ -327,22 +394,55 @@ public enum MessageKey {
 
   // Tool buttons
   SHOW_WELCOME_WIZARD("show_welcome_wizard"),
+  SHOW_WELCOME_WIZARD_TOOLTIP("show_welcome_wizard_tooltip"),
+
   SHOW_SEND_WIZARD("show_send_wizard"),
+  SHOW_SEND_WIZARD_TOOLTIP("show_send_wizard_tooltip"),
+
   SHOW_REQUEST_WIZARD("show_request_wizard"),
+  SHOW_REQUEST_WIZARD_TOOLTIP("show_request_wizard_tooltip"),
+
   SHOW_SOUNDS_WIZARD("show_sounds_wizard"),
+  SHOW_SOUNDS_WIZARD_TOOLTIP("show_sounds_wizard_tooltip"),
+
   SHOW_LAB_WIZARD("show_lab_wizard"),
+  SHOW_LAB_WIZARD_TOOLTIP("show_lab_wizard_tooltip"),
+
   SHOW_UNITS_WIZARD("show_units_wizard"),
+  SHOW_UNITS_WIZARD_TOOLTIP("show_units_wizard_tooltip"),
+
   SHOW_EXCHANGE_WIZARD("show_exchange_wizard"),
+  SHOW_EXCHANGE_WIZARD_TOOLTIP("show_exchange_wizard_tooltip"),
+
   SHOW_APPEARANCE_WIZARD("show_appearance_wizard"),
+  SHOW_APPEARANCE_WIZARD_TOOLTIP("show_appearance_wizard_tooltip"),
+
   SHOW_LANGUAGE_WIZARD("show_language_wizard"),
+  SHOW_LANGUAGE_WIZARD_TOOLTIP("show_language_wizard_tooltip"),
+
   SHOW_EDIT_WALLET_WIZARD("show_edit_wallet_wizard"),
+  SHOW_EDIT_WALLET_WIZARD_TOOLTIP("show_edit_wallet_wizard_tooltip"),
+
   SHOW_CHANGE_PASSWORD_WIZARD("show_change_password_wizard"),
+  SHOW_CHANGE_PASSWORD_WIZARD_TOOLTIP("show_change_password_wizard_tooltip"),
+
   SHOW_VERIFY_NETWORK_WIZARD("show_verify_network_wizard"),
+  SHOW_VERIFY_NETWORK_WIZARD_TOOLTIP("show_verify_network_wizard_tooltip"),
+
   SHOW_REPAIR_WALLET_WIZARD("show_repair_wallet_wizard"),
+  SHOW_REPAIR_WALLET_WIZARD_TOOLTIP("show_repair_wallet_wizard_tooltip"),
+
   SHOW_EMPTY_WALLET_WIZARD("show_empty_wallet_wizard"),
+  SHOW_EMPTY_WALLET_WIZARD_TOOLTIP("show_empty_wallet_wizard_tooltip"),
+
   SHOW_SIGN_WIZARD("show_sign_wizard"),
+  SHOW_SIGN_WIZARD_TOOLTIP("show_sign_wizard_tooltip"),
+
   SHOW_VERIFY_WIZARD("show_verify_wizard"),
+  SHOW_VERIFY_WIZARD_TOOLTIP("show_verify_wizard_tooltip"),
+
   SHOW_ABOUT_WIZARD("show_about_wizard"),
+  SHOW_ABOUT_WIZARD_TOOLTIP("show_about_wizard_tooltip"),
 
   SHOW_ALERT("show_alert"),
   HIDE_ALERT("hide_alert"),
@@ -458,8 +558,14 @@ public enum MessageKey {
 
   // Payments panel and wizard
   DETAILS("details"),
+  DETAILS_TOOLTIP("details_tooltip"),
+
   EXPORT("export"),
+  EXPORT_TOOLTIP("export_tooltip"),
+
   DELETE_PAYMENT_REQUEST("delete_payment_request"),
+  DELETE_PAYMENT_REQUEST_TOOLTIP("delete_payment_request_tooltip"),
+
   TRANSACTION_OVERVIEW("transaction_overview"),
   TRANSACTION_AMOUNT("transaction_amount"),
   TRANSACTION_DETAIL("transaction_detail"),
@@ -482,7 +588,10 @@ public enum MessageKey {
   RAW_TRANSACTION("raw_transaction"),
 
   VIEW_IN_BLOCKCHAIN_INFO("view_in_blockchain_info"),
+  VIEW_IN_BLOCKCHAIN_INFO_TOOLTIP("view_in_blockchain_info_tooltip"),
+
   VIEW_IN_EXTERNAL_BROWSER("view_in_external_browser"),
+  VIEW_IN_EXTERNAL_BROWSER_TOOLTIP("view_in_external_browser_tooltip"),
 
   SIZE("size"),
   SIZE_VALUE("size_value"),

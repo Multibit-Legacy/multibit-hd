@@ -76,8 +76,8 @@ public class SoundSettingsPanelView extends AbstractWizardPanelView<SoundSetting
     alertSoundYesNoComboBox = ComboBoxes.newAlertSoundYesNoComboBox(this, soundConfiguration.isAlertSound());
     receiveSoundYesNoComboBox = ComboBoxes.newReceiveSoundYesNoComboBox(this, soundConfiguration.isReceiveSound());
 
-    JButton playBeep = Buttons.newPlaySoundButton(getPlayBeepAction(), MessageKey.PLAY_SOUND);
-    JButton playPaymentReceived = Buttons.newPlaySoundButton(getPlayPaymentReceivedAction(), MessageKey.PLAY_SOUND);
+    JButton playBeep = Buttons.newPlaySoundButton(getPlayBeepAction(), MessageKey.PLAY_SOUND, MessageKey.PLAY_SOUND_TOOLTIP);
+    JButton playPaymentReceived = Buttons.newPlaySoundButton(getPlayPaymentReceivedAction(), MessageKey.PLAY_SOUND, MessageKey.PLAY_SOUND_TOOLTIP);
 
     contentPanel.add(Labels.newSoundChangeNote(), "growx,span 3,wrap");
 

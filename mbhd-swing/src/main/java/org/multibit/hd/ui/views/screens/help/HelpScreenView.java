@@ -87,7 +87,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
     backButton = Buttons.newBackButton(getBackAction());
     forwardButton = Buttons.newForwardButton(getForwardAction());
-    launchBrowserButton = Buttons.newLaunchBrowserButton(getLaunchBrowserAction(), MessageKey.VIEW_IN_EXTERNAL_BROWSER);
+    launchBrowserButton = Buttons.newLaunchBrowserButton(getLaunchBrowserAction(), MessageKey.VIEW_IN_EXTERNAL_BROWSER, MessageKey.VIEW_IN_EXTERNAL_BROWSER_TOOLTIP);
 
     // Control visibility and availability
     launchBrowserButton.setEnabled(Desktop.isDesktopSupported());

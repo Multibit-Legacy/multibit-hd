@@ -106,7 +106,7 @@ public class Models {
 
       }
     };
-    JButton button = Buttons.newAlertPanelButton(action, MessageKey.YES, AwesomeIcon.CHECK);
+    JButton button = Buttons.newAlertPanelButton(action, MessageKey.YES, MessageKey.YES_TOOLTIP, AwesomeIcon.CHECK);
 
     // Attempt to decode the Bitcoin URI
     Optional<String> alertMessage = Formats.formatAlertMessage(bitcoinURI);

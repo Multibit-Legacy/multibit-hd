@@ -372,7 +372,7 @@ public class MainController extends AbstractController implements
 
         }
       };
-      JButton button = Buttons.newAlertPanelButton(action, MessageKey.SETTINGS, AwesomeIcon.CHECK);
+      JButton button = Buttons.newAlertPanelButton(action, MessageKey.SETTINGS, MessageKey.SETTINGS_TOOLTIP, AwesomeIcon.CHECK);
 
       // Provide the alert
       ControllerEvents.fireAddAlertEvent(
@@ -422,7 +422,7 @@ public class MainController extends AbstractController implements
         break;
       case CERTIFICATE_FAILED:
         // Create a button to the repair wallet tool
-        JButton button = Buttons.newAlertPanelButton(getShowRepairWalletAction(), MessageKey.REPAIR, AwesomeIcon.MEDKIT);
+        JButton button = Buttons.newAlertPanelButton(getShowRepairWalletAction(), MessageKey.REPAIR, MessageKey.REPAIR_TOOLTIP, AwesomeIcon.MEDKIT);
 
         // Append general security advice allowing for LTR/RTL
         ControllerEvents.fireAddAlertEvent(
@@ -863,7 +863,7 @@ public class MainController extends AbstractController implements
             for (PaymentData paymentData : paymentDataList) {
               PaymentStatus status = paymentData.getStatus();
               if (status.getStatus().equals(RAGStatus.RED)) {
-                JButton button = Buttons.newAlertPanelButton(getShowHelpAction(), MessageKey.DETAILS, AwesomeIcon.QUESTION);
+                JButton button = Buttons.newAlertPanelButton(getShowHelpAction(), MessageKey.DETAILS, MessageKey.DETAILS_TOOLTIP, AwesomeIcon.QUESTION);
 
                 // The transaction has not been sent correctly, or change is not spendable, throw a warning alert
                 AlertModel alertModel = Models.newAlertModel(Languages.safeText(MessageKey.SPENDABLE_BALANCE_IS_LOWER), RAGStatus.AMBER, button);
