@@ -171,7 +171,7 @@ public class TextBoxes {
     JTextField textField = newTextField(MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.TRANSACTION_LABEL);
+    AccessibilityDecorator.apply(textField, MessageKey.TRANSACTION_LABEL, MessageKey.TRANSACTION_LABEL_TOOLTIP);
 
     // Limit the length of the underlying document
     DefaultStyledDocument doc = new DefaultStyledDocument();
@@ -180,6 +180,24 @@ public class TextBoxes {
 
     return textField;
   }
+
+  /**
+    * @return A new "enter QR code label" text field
+    */
+   public static JTextField newEnterQRCodeLabel() {
+
+     JTextField textField = newTextField(MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH);
+
+     // Ensure it is accessible
+     AccessibilityDecorator.apply(textField, MessageKey.QR_CODE_LABEL, MessageKey.QR_CODE_LABEL_TOOLTIP);
+
+     // Limit the length of the underlying document
+     DefaultStyledDocument doc = new DefaultStyledDocument();
+     doc.setDocumentFilter(new DocumentMaxLengthFilter(MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH));
+     textField.setDocument(doc);
+
+     return textField;
+   }
 
   /**
    * @return A new "enter tag" text field

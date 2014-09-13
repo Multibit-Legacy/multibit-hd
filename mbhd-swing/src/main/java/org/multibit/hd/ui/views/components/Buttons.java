@@ -530,7 +530,7 @@ public class Buttons {
     JButton button = newButton(action);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(button, MessageKey.CLOSE, MessageKey.CLOSE_TOOLTIP);
+    AccessibilityDecorator.apply(button, MessageKey.CLOSE);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, button, true, MultiBitUI.SMALL_ICON_SIZE);
 

@@ -80,7 +80,6 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
     enterAmountMaV = Components.newEnterAmountMaV(getPanelName());
 
     // See if there is a password entered for the wallet
-    // TODO (JB) remove when HD wallets supported - won't need a password to generate the next address
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
     Optional<CharSequence> passwordParameter = Optional.absent();
     CharSequence password = currentWalletSummary.get().getPassword();
@@ -102,7 +101,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
     // Create the QR code display
     displayQRCodePopoverMaV = Popovers.newDisplayQRCodePopoverMaV(getPanelName());
 
-    transactionLabel = TextBoxes.newEnterTransactionLabel();
+    transactionLabel = TextBoxes.newEnterQRCodeLabel();
     showQRCode = Buttons.newQRCodeButton(getShowQRCodePopoverAction());
     addressCommentLabel = Labels.newLabel(MessageKey.ONE_OF_YOUR_ADDRESSES);
 

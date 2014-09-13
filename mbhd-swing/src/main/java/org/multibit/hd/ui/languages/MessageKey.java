@@ -130,7 +130,9 @@ public enum MessageKey {
   RECIPIENT_TOOLTIP("recipient_tooltip"),
 
   TRANSACTION_LABEL("transaction_label"),
+  TRANSACTION_LABEL_TOOLTIP("transaction_label_tooltip"),
   QR_CODE_LABEL("qr_code_label"),
+  QR_CODE_LABEL_TOOLTIP("qr_code_label_tooltip"),
   QR_CODE_NOTE_1("qr_code_note_1"),
   QR_CODE_NOTE_2("qr_code_note_2"),
 
