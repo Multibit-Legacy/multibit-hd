@@ -20,6 +20,8 @@ import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.wizards.Wizards;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletState;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletWizardModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -35,6 +37,8 @@ import java.io.File;
  *  
  */
 public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
+
+  private static final Logger log = LoggerFactory.getLogger(ToolsScreenView.class);
 
   private JButton showEmptyWalletButton;
 
@@ -84,19 +88,18 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
     contentPanel.add(Buttons.newLargeShowSignMessageWizardButton(getShowSignMessageWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowVerifyMessageWizardButton(getShowVerifyMessageWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
 
+    setInitialised(true);
     return contentPanel;
   }
 
   @Override
-   public boolean beforeShow() {
+  public void afterShow() {
 
     // Ensure any unprocessed bitcoin network change events are dealt with
     if (isInitialised() && unprocessedBitcoinNetworkChangedEvent.isPresent()) {
       updateEmptyButton(unprocessedBitcoinNetworkChangedEvent.get());
       unprocessedBitcoinNetworkChangedEvent = Optional.absent();
     }
-
-    return true;
    }
 
   /**
@@ -108,6 +111,7 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
     if (!isInitialised()) {
       // Remember the last bitcoin change event if the panel is not initialised
       unprocessedBitcoinNetworkChangedEvent = Optional.of(event);
+      log.trace("Not initialised so remembering the the unprocessed Bitcoin network change event " + event.getSummary());
       return;
     }
 
@@ -268,18 +272,22 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
     // because it is possible that a second wallet is generating transactions using
     // addresses that this one has not displayed yet. This would lead to the same
     // address being used twice.
+    log.trace("Empty button status is " + currentEnabled);
     switch (event.getSummary().getSeverity()) {
       case RED:
         // Always disabled on RED
         newEnabled = false;
+        log.trace("Severity = red");
         break;
       case AMBER:
         // Enable on AMBER only if unrestricted
         newEnabled = InstallationManager.unrestricted;
+        log.trace("Severity = AMBER, newEnabled = " + newEnabled);
         break;
       case GREEN:
         // Enable on GREEN only if synchronized or unrestricted
         newEnabled = BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus()) || InstallationManager.unrestricted;
+        log.trace("Severity = GREEN, newEnabled = " + newEnabled);
         break;
       default:
         // Unknown status
@@ -292,6 +300,8 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
+          log.trace("Changing button enable state, newEnabled = " + newEnabled);
+
           showEmptyWalletButton.setEnabled(newEnabled);
         }
       });
