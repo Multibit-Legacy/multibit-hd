@@ -10,6 +10,7 @@ import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.WizardHideEvent;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -76,6 +77,10 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
     // Initially show the button disabled - it is enabled when the network is synced
     showEmptyWalletButton.setEnabled(false);
 
+    // Check for any Bitcoin network events that may have occurred before this screen
+    // is initialised
+    unprocessedBitcoinNetworkChangedEvent = CoreServices.getApplicationEventService().getLatestBitcoinNetworkChangedEvent();
+
     contentPanel.add(primaryButton, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(showEmptyWalletButton, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowRepairWalletButton(getShowRepairWalletAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
@@ -100,7 +105,7 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
       updateEmptyButton(unprocessedBitcoinNetworkChangedEvent.get());
       unprocessedBitcoinNetworkChangedEvent = Optional.absent();
     }
-   }
+  }
 
   /**
    * @param event The "Bitcoin network changed" event - one per block downloaded during synchronization
@@ -262,6 +267,11 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
 
   }
 
+  /**
+   * <p>Ensure that a wallet can only be emptied once synchronization has completed</p>
+   *
+   * @param event The "Bitcoin network changed" event - one per block downloaded during synchronization
+   */
   private void updateEmptyButton(BitcoinNetworkChangedEvent event) {
 
     boolean currentEnabled = showEmptyWalletButton.isEnabled();
