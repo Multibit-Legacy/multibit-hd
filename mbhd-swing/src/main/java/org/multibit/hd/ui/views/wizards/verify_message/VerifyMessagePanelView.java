@@ -91,7 +91,7 @@ public class VerifyMessagePanelView extends AbstractWizardPanelView<VerifyMessag
     ScrollBarUIDecorator.apply(messageScrollPane, true);
 
     signatureTextArea = TextBoxes.newTextArea(5, 40);
-    AccessibilityDecorator.apply(signatureTextArea, MessageKey.SIGNATURE);
+    AccessibilityDecorator.apply(signatureTextArea, MessageKey.SIGNATURE, MessageKey.SIGNATURE_TOOLTIP);
 
     contentPanel.add(Labels.newVerifyMessageNote(), "growx,span 4,wrap");
 

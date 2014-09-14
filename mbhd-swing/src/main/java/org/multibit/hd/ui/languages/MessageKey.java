@@ -148,6 +148,7 @@ public enum MessageKey {
   MESSAGE_TOOLTIP("message_tooltip"),
 
   SIGNATURE("signature"),
+  SIGNATURE_TOOLTIP("signature_tooltip"),
 
   CONTACT_IMAGE("contact_image"),
 
