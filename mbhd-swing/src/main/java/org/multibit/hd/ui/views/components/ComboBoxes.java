@@ -573,7 +573,10 @@ public class ComboBoxes {
     comboBox.setEditor(new RecipientComboBoxEditor(contactService, networkParameters));
 
     // Use a recipient list cell renderer to ensure recipient is set on selection
-    ListCellRenderer<Recipient> renderer = new RecipientListCellRenderer((JTextField) comboBox.getEditor().getEditorComponent());
+    JTextField textField = (JTextField) comboBox.getEditor().getEditorComponent();
+    ListCellRenderer<Recipient> renderer = new RecipientListCellRenderer(textField);
+    AccessibilityDecorator.apply(textField, MessageKey.RECIPIENT, MessageKey.RECIPIENT_TOOLTIP);
+
     comboBox.setRenderer(renderer);
 
     AutoCompleteDecorator.apply(comboBox, filter);
