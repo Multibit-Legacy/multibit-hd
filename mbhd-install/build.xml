@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="MultiBit HD Installer" default="release-all" basedir=".">
 
-  <description>Build the MultiBit HD native installers</description>
+  <description>Build the MultiBit HD native installers (requires Maven POM to supply parameters)</description>
 
   <!-- What the user will see -->
   <property name="app.name" value="MultiBit HD"/>
 
   <!-- The JWrapper version to use -->
-  <property name="jwrapper.version" value="00029103852"/>
+  <property name="jwrapper.version" value="00030438844"/>
   <property name="jwrapper.sha256" value=""/>
   <property name="jwrapper.location" value="jwrapper-${jwrapper.version}.jar"/>
 
@@ -34,10 +34,26 @@
   <!-- Download the required copy of JWrapper -->
   <target name="get-jwrapper" depends="jwrapper-exists" unless="jwrapper.exists">
 
+    <echo message="Upgrade required. Cleaning existing JWrapper directories" />
+
+    <delete quiet="true" failonerror="false">
+      <dirset dir="jwrapper" />
+      <dirset dir="jwrapperlib" />
+      <dirset dir="lib" />
+      <dirset dir="utils" />
+      <dirset dir="wrappers" />
+      <fileset file="gu_version" />
+      <dirset dir="JWrapperLaunchTemp" />
+      <dirset dir="LastExtractedJWrapperVersion" />
+    </delete>
+
     <echo message="Downloading '${jwrapper.location}' (this may take some time > 15Mb)" />
 
     <!-- GET the required version of JWrapper -->
-    <get src="https://simple-help.com/media/static/jwrapper/jwrapper-${jwrapper.version}.jar" dest="${jwrapper.location}" verbose="true"/>
+    <get src="https://simple-help.com/media/static/jwrapper/jwrapper-${jwrapper.version}.jar"
+         dest="${jwrapper.location}"
+         verbose="true"
+      />
 
     <!-- Extract the JAR contents -->
     <java jar="${jwrapper.location}" failonerror="true" fork="true">
@@ -63,7 +79,7 @@
 
     <path id="classpath">
       <!-- Add the JWrapper utilities -->
-      <fileset dir="${basedir}/lib">
+      <fileset dir="${basedir}/jwrapperlib">
         <include name="jwrapper_utils.jar"/>
       </fileset>
 
@@ -72,7 +88,7 @@
     </path>
 
     <!-- Compile the JWrapper specific code -->
-    <javac destdir="${basedir}/target/classes">
+    <javac destdir="${basedir}/target/classes" includeantruntime="false">
       <src path="${basedir}/src/main/jwrapper"/>
       <classpath refid="classpath"/>
     </javac>

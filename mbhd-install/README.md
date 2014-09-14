@@ -11,6 +11,8 @@ The Ant script will automatically download and extract the correct JWrapper JAR 
 will not pull down the JRE-1.7 pack since the final goal is to have the `multibit.org` site providing the latest tested
 JREs for each operating system.
 
+This script is controlled by the Maven POM.
+
 ### Required files
 
 The following files are essential
@@ -31,7 +33,7 @@ handler so that browsers can hand over to MultiBit HD.
 Once the JREs are in place, the build command is
 
 ```
-mvn -q -Dinstaller=true clean install
+mvn -Dinstaller=true clean install
 ```
 
 The first time this process is run it will take ages (typically 20mins) as `pack200` compresses large artifacts.
@@ -108,14 +110,8 @@ Many reports from developers of their clients having a terrible first installati
 the absence of a JRE. This will become the norm as OSX, Linux and then Windows are likely to drop
 a standard JRE leaving it to developers to package their own.
 
-### Launch4j
-
-
-
 ### JavaFX packager
 
 The JavaFX packager from Oracle has been hailed as the correct way to deploy a JavaFX application,
 but our experience has shown that it is very tricky to configure within a Maven build. Packaging a
 JRE with it leads to a huge download size and there are no facilities for OS-specific scripts.
-
-

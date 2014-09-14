@@ -26,9 +26,6 @@
     <xchange.version>2.0.0</xchange.version>
     <jackson.version>2.2.2</jackson.version>
 
-    <!-- Maven plugins -->
-    <maven-antrun.version>1.7</maven-antrun.version>
-
     <!-- 2.0M10/1.2.1 -->
     <fest.version>1.2.1</fest.version>
   </properties>
@@ -163,8 +160,14 @@
           <groupId>com.zenjava</groupId>
           <artifactId>javafx-maven-plugin</artifactId>
           <version>2.0</version>
-
         </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>1.7</version>
+        </plugin>
+
       </plugins>
     </pluginManagement>
 
@@ -268,11 +271,11 @@
       </dependency>
 
       <!-- Crypto -->
-        <dependency>
-            <groupId>com.madgag.spongycastle</groupId>
-            <artifactId>core</artifactId>
-            <version>1.51.0.0</version>
-        </dependency>
+      <dependency>
+        <groupId>com.madgag.spongycastle</groupId>
+        <artifactId>core</artifactId>
+        <version>1.51.0.0</version>
+      </dependency>
 
       <!-- Joda time for timestamps -->
       <dependency>

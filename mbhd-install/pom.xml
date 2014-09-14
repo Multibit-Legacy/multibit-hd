@@ -36,7 +36,6 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
-            <version>${maven-antrun.version}</version>
 
             <executions>
 
@@ -49,6 +48,7 @@
                 </goals>
                 <configuration>
                   <target>
+
                     <!-- Transfer classpath over to Ant -->
                     <property name="compile_classpath" refid="maven.compile.classpath"/>
                     <property name="runtime_classpath" refid="maven.runtime.classpath"/>
