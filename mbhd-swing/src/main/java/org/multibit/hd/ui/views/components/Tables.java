@@ -121,7 +121,7 @@ public class Tables {
     // Type column
     TableColumn typeTableColumn = table.getColumnModel().getColumn(PaymentTableModel.TYPE_COLUMN_INDEX);
     typeTableColumn.setCellRenderer(Renderers.newPaymentTypeRenderer());
-    resizeColumn(table, PaymentTableModel.TYPE_COLUMN_INDEX, 80, 100);
+    resizeColumn(table, PaymentTableModel.TYPE_COLUMN_INDEX, 100, 120);
 
     // Amount BTC column
     TableColumn column = table.getColumnModel().getColumn(PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX);
