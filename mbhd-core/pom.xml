@@ -72,7 +72,6 @@
 
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
-        <version>${maven-antrun.version}</version>
         <executions>
           <!-- Step 1: Set all timestamps to same value -->
           <execution>
