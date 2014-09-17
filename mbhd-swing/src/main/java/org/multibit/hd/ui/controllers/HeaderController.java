@@ -123,10 +123,9 @@ public class HeaderController extends AbstractController {
   @Subscribe
   public synchronized void onRemoveAlertEvent(RemoveAlertEvent event) {
 
-    // Remove the topmost alert model
-    alertModels.remove(0);
-
     if (!alertModels.isEmpty()) {
+      // Remove the topmost alert model
+      alertModels.remove(0);
 
       // Adjust the models to reflect the new M of N values
       updateRemaining();
