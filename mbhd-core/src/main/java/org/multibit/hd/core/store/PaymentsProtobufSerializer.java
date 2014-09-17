@@ -275,6 +275,10 @@ public class PaymentsProtobufSerializer {
           }
         }
 
+        if (transactionInfoProto.hasSentBySelf()) {
+          transactionInfo.setSentBySelf(transactionInfoProto.getSentBySelf());
+        }
+
         transactionInfos.add(transactionInfo);
       }
     }
@@ -383,6 +387,8 @@ public class PaymentsProtobufSerializer {
 
       transactionInfoBuilder.setAmountFiat(fiatPaymentBuilder);
     }
+
+    transactionInfoBuilder.setSentBySelf(transactionInfo.isSentBySelf());
 
     return transactionInfoBuilder.build();
   }

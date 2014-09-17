@@ -573,28 +573,6 @@ public class WalletService {
     return amountFiat;
   }
 
-  /**
-   * Work out a fiatPayment holding the exchange rate information only.
-   * @return fiat payment containing exchange rate details
-   */
-  public static Optional<FiatPayment> calculateFiatPaymentHoldingExchangeRate() {
-     FiatPayment fiatPayment = new FiatPayment();
-
-     fiatPayment.setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
-
-     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
-     if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
-       fiatPayment.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
-       fiatPayment.setAmount(Optional.<BigDecimal>absent());
-       fiatPayment.setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
-     } else {
-       fiatPayment.setRate(Optional.<String>absent());
-       fiatPayment.setAmount(Optional.<BigDecimal>absent());
-       fiatPayment.setCurrency(Optional.<Currency>absent());
-     }
-     return Optional.of(fiatPayment);
-   }
-
   private String calculateNote(TransactionData transactionData, String transactionHashAsString) {
     String note = "";
 
@@ -737,6 +715,11 @@ public class WalletService {
   public void addTransactionInfo(TransactionInfo transactionInfo) {
     transactionInfoMap.put(transactionInfo.getHash(), transactionInfo);
   }
+
+  public TransactionInfo getTransactionInfoByHash(String transactionHashAsString) {
+    return transactionInfoMap.get(transactionHashAsString);
+  }
+
 
   List<PaymentRequestData> getPaymentRequests() {
     return Lists.newArrayList(paymentRequestMap.values());

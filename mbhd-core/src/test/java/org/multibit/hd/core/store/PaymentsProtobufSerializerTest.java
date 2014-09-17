@@ -115,6 +115,7 @@ public class PaymentsProtobufSerializerTest {
     transactionInfos.add(transactionInfo1);
     transactionInfo1.setHash("010203");
     transactionInfo1.setNote("notes1");
+    transactionInfo1.setSentBySelf(false);
 
     FiatPayment fiatPayment1 = new FiatPayment();
     transactionInfo1.setAmountFiat(fiatPayment1);
@@ -130,6 +131,7 @@ public class PaymentsProtobufSerializerTest {
     transactionInfos.add(transactionInfo2);
     transactionInfo2.setHash("010203");
     transactionInfo2.setNote("notes1");
+    transactionInfo1.setSentBySelf(true);
 
     FiatPayment fiatPayment2 = new FiatPayment();
     transactionInfo2.setAmountFiat(fiatPayment2);

@@ -331,7 +331,8 @@ public class BitcoinNetworkService extends AbstractService {
               false,
               CoreMessageKey.THE_ERROR_WAS.getKey(),
               new String[]{e.getClass().getCanonicalName() + " " + e.getMessage()},
-              sendRequestSummary.getNotes()));
+              sendRequestSummary.getNotes(),
+              false));
     }
 
     // Must have failed to be here
@@ -394,7 +395,8 @@ public class BitcoinNetworkService extends AbstractService {
               false,
               CoreMessageKey.NO_ACTIVE_WALLET.getKey(),
               new String[]{""},
-              sendRequestSummary.getNotes()
+              sendRequestSummary.getNotes(),
+              false
       ));
 
       // Prevent fall-through to success
@@ -516,7 +518,8 @@ public class BitcoinNetworkService extends AbstractService {
               false,
               CoreMessageKey.THE_ERROR_WAS.getKey(),
               new String[]{e.getClass().getCanonicalName() + " " + e.getMessage()},
-              sendRequestSummary.getNotes()
+              sendRequestSummary.getNotes(),
+              false
       ));
 
       // We cannot proceed to broadcast
@@ -724,7 +727,8 @@ public class BitcoinNetworkService extends AbstractService {
               false,
               CoreMessageKey.THE_ERROR_WAS.getKey(),
               new String[]{e.getMessage()},
-              sendRequestSummary.getNotes()));
+              sendRequestSummary.getNotes(),
+              false));
 
       // We cannot proceed to signing
       return false;
@@ -770,7 +774,8 @@ public class BitcoinNetworkService extends AbstractService {
               true,
               null,
               null,
-              sendRequestSummary.getNotes()
+              sendRequestSummary.getNotes(),
+              true
       ));
 
     } catch (Exception e) {
@@ -791,7 +796,8 @@ public class BitcoinNetworkService extends AbstractService {
               false,
               CoreMessageKey.THE_ERROR_WAS.getKey(),
               new String[]{e.getMessage()},
-              sendRequestSummary.getNotes()));
+              sendRequestSummary.getNotes(),
+              false));
 
       // We cannot proceed to broadcast
       return false;

@@ -70,6 +70,8 @@ public class FeeService {
    */
   public final static double FIRST_SEND_DELTA_FACTOR = 0.5;
 
+  private TransactionSentBySelfProvider transactionSentBySelfProvider;
+
 
   private SecureRandom secureRandom;
 
@@ -87,6 +89,14 @@ public class FeeService {
     this.matcherPublicKey = matcherPublicKey;
     this.matcherURL = matcherURL;
     this.secureRandom = new SecureRandom();
+
+    // Use a default provider which uses the transaction confidence.
+    // This works ok but the user can do a repair wallet and all transaction become not sent by self.
+    transactionSentBySelfProvider = new TransactionConfidenceSentBySelfProvider();
+  }
+
+  public void setTransactionSentBySelfProvider(TransactionSentBySelfProvider transactionSentBySelfProvider) {
+    this.transactionSentBySelfProvider = transactionSentBySelfProvider;
   }
 
   /**
@@ -331,11 +341,11 @@ public class FeeService {
     List<Transaction> sendTransactions = Lists.newArrayList();
 
     for (Transaction transaction : transactions) {
-      if (transaction.getValueSentFromMe(wallet).compareTo(Coin.ZERO) > 0) {
-        if (transaction.getConfidence() != null && TransactionConfidence.Source.SELF.equals(transaction.getConfidence().getSource())) {
-          // This transaction sends from self - this will exclude unconfirmed tx
-          sendTransactions.add(transaction);
-        }
+      boolean sentBySelf = transactionSentBySelfProvider.isSentBySelf(wallet, transaction);
+
+      if (sentBySelf) {
+        // This transaction sends from self - this will exclude unconfirmed tx
+        sendTransactions.add(transaction);
       }
     }
 

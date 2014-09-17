@@ -24,6 +24,8 @@ import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.brit.extensions.MatcherResponseWalletExtension;
 import org.multibit.hd.brit.extensions.SendFeeDtoWalletExtension;
 import org.multibit.hd.brit.services.FeeService;
+import org.multibit.hd.brit.services.TransactionConfidenceSentBySelfProvider;
+import org.multibit.hd.brit.services.TransactionSentBySelfProvider;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
@@ -167,6 +169,8 @@ public enum WalletManager implements WalletEventListener {
   public static final byte[] SCRYPT_SALT = new byte[]{(byte) 0x35, (byte) 0x51, (byte) 0x03, (byte) 0x80, (byte) 0x75, (byte) 0xa3, (byte) 0xb0, (byte) 0xc5};
 
   private FeeService feeService;
+
+  private TransactionConfidenceSentBySelfProvider transactionConfidenceSentBySelfProvider;
 
   /**
    * Open the given wallet
@@ -682,8 +686,13 @@ public enum WalletManager implements WalletEventListener {
      if (feeService == null) {
        feeService = CoreServices.createFeeService();
      }
+
      if (getCurrentWalletSummary() != null && getCurrentWalletSummary().isPresent()) {
        Wallet wallet = getCurrentWalletSummary().get().getWallet();
+
+       // Set the transaction sent by self provider to use TransactionInfos
+       TransactionSentBySelfProvider transactionSentBySelfProvider = new TransactionInfoSentBySelfProvider(getCurrentWalletSummary().get().getWalletId());
+       feeService.setTransactionSentBySelfProvider(transactionSentBySelfProvider);
 
        File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
        Optional<File> walletFileOptional = getCurrentWalletFile(applicationDataDirectory);

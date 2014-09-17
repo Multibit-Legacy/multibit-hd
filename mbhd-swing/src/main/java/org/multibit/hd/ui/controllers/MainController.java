@@ -830,6 +830,8 @@ public class MainController extends AbstractController implements
     // Set the fiat payment amount
     transactionInfo.setAmountFiat(transactionCreationEvent.getFiatPayment().orNull());
 
+    transactionInfo.setSentBySelf(transactionCreationEvent.isSentByMe());
+
     WalletService walletService = CoreServices.getCurrentWalletService();
     walletService.addTransactionInfo(transactionInfo);
     log.debug("Added transactionInfo {} to walletService {}", transactionInfo, walletService);

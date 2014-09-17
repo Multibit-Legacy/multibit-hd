@@ -2706,7 +2706,7 @@ public final class MBHDPaymentsProtos {
      * <code>optional int64 client_fee = 6;</code>
      *
      * <pre>
-     * On a send transaction, he MultiBit/ client fee in satoshi. On any other type of transaction : 0 or missing
+     * On a send transaction, the MultiBit/ client fee in satoshi. On any other type of transaction : 0 or missing
      * </pre>
      */
     boolean hasClientFee();
@@ -2714,10 +2714,28 @@ public final class MBHDPaymentsProtos {
      * <code>optional int64 client_fee = 6;</code>
      *
      * <pre>
-     * On a send transaction, he MultiBit/ client fee in satoshi. On any other type of transaction : 0 or missing
+     * On a send transaction, the MultiBit/ client fee in satoshi. On any other type of transaction : 0 or missing
      * </pre>
      */
     long getClientFee();
+
+    // optional bool sent_by_self = 7 [default = false];
+    /**
+     * <code>optional bool sent_by_self = 7 [default = false];</code>
+     *
+     * <pre>
+     * Whether the transaction was sent by this wallet (=true) or not
+     * </pre>
+     */
+    boolean hasSentBySelf();
+    /**
+     * <code>optional bool sent_by_self = 7 [default = false];</code>
+     *
+     * <pre>
+     * Whether the transaction was sent by this wallet (=true) or not
+     * </pre>
+     */
+    boolean getSentBySelf();
   }
   /**
    * Protobuf type {@code TransactionInfo}
@@ -2806,6 +2824,11 @@ public final class MBHDPaymentsProtos {
             case 48: {
               bitField0_ |= 0x00000010;
               clientFee_ = input.readInt64();
+              break;
+            }
+            case 56: {
+              bitField0_ |= 0x00000020;
+              sentBySelf_ = input.readBool();
               break;
             }
           }
@@ -3023,7 +3046,7 @@ public final class MBHDPaymentsProtos {
      * <code>optional int64 client_fee = 6;</code>
      *
      * <pre>
-     * On a send transaction, he MultiBit/ client fee in satoshi. On any other type of transaction : 0 or missing
+     * On a send transaction, the MultiBit/ client fee in satoshi. On any other type of transaction : 0 or missing
      * </pre>
      */
     public boolean hasClientFee() {
@@ -3033,11 +3056,35 @@ public final class MBHDPaymentsProtos {
      * <code>optional int64 client_fee = 6;</code>
      *
      * <pre>
-     * On a send transaction, he MultiBit/ client fee in satoshi. On any other type of transaction : 0 or missing
+     * On a send transaction, the MultiBit/ client fee in satoshi. On any other type of transaction : 0 or missing
      * </pre>
      */
     public long getClientFee() {
       return clientFee_;
+    }
+
+    // optional bool sent_by_self = 7 [default = false];
+    public static final int SENT_BY_SELF_FIELD_NUMBER = 7;
+    private boolean sentBySelf_;
+    /**
+     * <code>optional bool sent_by_self = 7 [default = false];</code>
+     *
+     * <pre>
+     * Whether the transaction was sent by this wallet (=true) or not
+     * </pre>
+     */
+    public boolean hasSentBySelf() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    /**
+     * <code>optional bool sent_by_self = 7 [default = false];</code>
+     *
+     * <pre>
+     * Whether the transaction was sent by this wallet (=true) or not
+     * </pre>
+     */
+    public boolean getSentBySelf() {
+      return sentBySelf_;
     }
 
     private void initFields() {
@@ -3046,6 +3093,7 @@ public final class MBHDPaymentsProtos {
       note_ = "";
       minerFee_ = 0L;
       clientFee_ = 0L;
+      sentBySelf_ = false;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -3084,6 +3132,9 @@ public final class MBHDPaymentsProtos {
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeInt64(6, clientFee_);
       }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeBool(7, sentBySelf_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -3112,6 +3163,10 @@ public final class MBHDPaymentsProtos {
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt64Size(6, clientFee_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(7, sentBySelf_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -3249,6 +3304,8 @@ public final class MBHDPaymentsProtos {
         bitField0_ = (bitField0_ & ~0x00000008);
         clientFee_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000010);
+        sentBySelf_ = false;
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
 
@@ -3301,6 +3358,10 @@ public final class MBHDPaymentsProtos {
           to_bitField0_ |= 0x00000010;
         }
         result.clientFee_ = clientFee_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.sentBySelf_ = sentBySelf_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -3335,6 +3396,9 @@ public final class MBHDPaymentsProtos {
         }
         if (other.hasClientFee()) {
           setClientFee(other.getClientFee());
+        }
+        if (other.hasSentBySelf()) {
+          setSentBySelf(other.getSentBySelf());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -3777,7 +3841,7 @@ public final class MBHDPaymentsProtos {
        * <code>optional int64 client_fee = 6;</code>
        *
        * <pre>
-       * On a send transaction, he MultiBit/ client fee in satoshi. On any other type of transaction : 0 or missing
+       * On a send transaction, the MultiBit/ client fee in satoshi. On any other type of transaction : 0 or missing
        * </pre>
        */
       public boolean hasClientFee() {
@@ -3787,7 +3851,7 @@ public final class MBHDPaymentsProtos {
        * <code>optional int64 client_fee = 6;</code>
        *
        * <pre>
-       * On a send transaction, he MultiBit/ client fee in satoshi. On any other type of transaction : 0 or missing
+       * On a send transaction, the MultiBit/ client fee in satoshi. On any other type of transaction : 0 or missing
        * </pre>
        */
       public long getClientFee() {
@@ -3797,7 +3861,7 @@ public final class MBHDPaymentsProtos {
        * <code>optional int64 client_fee = 6;</code>
        *
        * <pre>
-       * On a send transaction, he MultiBit/ client fee in satoshi. On any other type of transaction : 0 or missing
+       * On a send transaction, the MultiBit/ client fee in satoshi. On any other type of transaction : 0 or missing
        * </pre>
        */
       public Builder setClientFee(long value) {
@@ -3810,12 +3874,61 @@ public final class MBHDPaymentsProtos {
        * <code>optional int64 client_fee = 6;</code>
        *
        * <pre>
-       * On a send transaction, he MultiBit/ client fee in satoshi. On any other type of transaction : 0 or missing
+       * On a send transaction, the MultiBit/ client fee in satoshi. On any other type of transaction : 0 or missing
        * </pre>
        */
       public Builder clearClientFee() {
         bitField0_ = (bitField0_ & ~0x00000010);
         clientFee_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      // optional bool sent_by_self = 7 [default = false];
+      private boolean sentBySelf_ ;
+      /**
+       * <code>optional bool sent_by_self = 7 [default = false];</code>
+       *
+       * <pre>
+       * Whether the transaction was sent by this wallet (=true) or not
+       * </pre>
+       */
+      public boolean hasSentBySelf() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>optional bool sent_by_self = 7 [default = false];</code>
+       *
+       * <pre>
+       * Whether the transaction was sent by this wallet (=true) or not
+       * </pre>
+       */
+      public boolean getSentBySelf() {
+        return sentBySelf_;
+      }
+      /**
+       * <code>optional bool sent_by_self = 7 [default = false];</code>
+       *
+       * <pre>
+       * Whether the transaction was sent by this wallet (=true) or not
+       * </pre>
+       */
+      public Builder setSentBySelf(boolean value) {
+        bitField0_ |= 0x00000020;
+        sentBySelf_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool sent_by_self = 7 [default = false];</code>
+       *
+       * <pre>
+       * Whether the transaction was sent by this wallet (=true) or not
+       * </pre>
+       */
+      public Builder clearSentBySelf() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        sentBySelf_ = false;
         onChanged();
         return this;
       }
@@ -5160,13 +5273,14 @@ public final class MBHDPaymentsProtos {
       "entRequest\022\017\n\007address\030\001 \002(\t\022\r\n\005label\030\002 \001" +
       "(\t\022\021\n\tamountBTC\030\003 \001(\003\022!\n\013amount_fiat\030\004 \001" +
       "(\0132\014.FiatPayment\022\014\n\004note\030\005 \001(\t\022\014\n\004date\030\006" +
-      " \001(\003\"w\n\017TransactionInfo\022\014\n\004hash\030\001 \002(\t\022!\n" +
-      "\013amount_fiat\030\003 \001(\0132\014.FiatPayment\022\014\n\004note" +
-      "\030\004 \001(\t\022\021\n\tminer_fee\030\005 \001(\003\022\022\n\nclient_fee\030" +
-      "\006 \001(\003\"`\n\010Payments\022(\n\017payment_request\030\001 \003",
-      "(\0132\017.PaymentRequest\022*\n\020transaction_info\030" +
-      "\002 \003(\0132\020.TransactionInfoB3\n\035org.multibit." +
-      "hd.core.protobufB\022MBHDPaymentsProtos"
+      " \001(\003\"\224\001\n\017TransactionInfo\022\014\n\004hash\030\001 \002(\t\022!" +
+      "\n\013amount_fiat\030\003 \001(\0132\014.FiatPayment\022\014\n\004not" +
+      "e\030\004 \001(\t\022\021\n\tminer_fee\030\005 \001(\003\022\022\n\nclient_fee" +
+      "\030\006 \001(\003\022\033\n\014sent_by_self\030\007 \001(\010:\005false\"`\n\010P",
+      "ayments\022(\n\017payment_request\030\001 \003(\0132\017.Payme" +
+      "ntRequest\022*\n\020transaction_info\030\002 \003(\0132\020.Tr" +
+      "ansactionInfoB3\n\035org.multibit.hd.core.pr" +
+      "otobufB\022MBHDPaymentsProtos"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -5190,7 +5304,7 @@ public final class MBHDPaymentsProtos {
           internal_static_TransactionInfo_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_TransactionInfo_descriptor,
-              new java.lang.String[] { "Hash", "AmountFiat", "Note", "MinerFee", "ClientFee", });
+              new java.lang.String[] { "Hash", "AmountFiat", "Note", "MinerFee", "ClientFee", "SentBySelf", });
           internal_static_Payments_descriptor =
             getDescriptor().getMessageTypes().get(3);
           internal_static_Payments_fieldAccessorTable = new
