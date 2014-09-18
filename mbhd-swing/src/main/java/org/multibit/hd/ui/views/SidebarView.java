@@ -229,7 +229,7 @@ public class SidebarView extends AbstractView {
     // This node gets overwritten by WalletSummary.getName()
     walletNode = TreeNodes.newSidebarTreeNode(MessageKey.WALLET, Screen.SEND_REQUEST);
 
-    // #61 At the moment all users don't use a Trezor or soft-wallet accounts
+    // #61 At the moment all users don't use a Trezor or soft-wallet trezor
     if (multiWallet) {
       // Add standard wallet nodes at the soft-wallet level
       walletNode.add(TreeNodes.newSidebarTreeNode(MessageKey.SEND_OR_REQUEST, Screen.SEND_REQUEST));

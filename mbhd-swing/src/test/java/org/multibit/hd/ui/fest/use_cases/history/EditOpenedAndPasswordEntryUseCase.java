@@ -67,7 +67,7 @@ public class EditOpenedAndPasswordEntryUseCase extends AbstractFestUseCase {
     // Private notes
     window
       .textBox(MessageKey.PRIVATE_NOTES.getKey())
-      .setText("Preparing Scrooge's accounts");
+      .setText("Preparing Scrooge's trezor");
 
     verifyCancel();
 
