@@ -57,7 +57,7 @@ public class BitcoinNetworkServiceFunctionalTest {
   /**
    * Separate from BitcoinNetworkService since some tests do not require it to be initialised
    */
-  private static final NetworkParameters networkParameters = BitcoinNetwork.current().get();
+  private static final NetworkParameters networkParameters = NetworkParameters.fromID(NetworkParameters.ID_MAINNET);
 
   private Properties seedProperties;
 

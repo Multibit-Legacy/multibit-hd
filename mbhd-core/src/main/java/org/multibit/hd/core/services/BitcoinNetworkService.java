@@ -904,6 +904,7 @@ public class BitcoinNetworkService extends AbstractService {
             Configurations.currentConfiguration.getAppearance().getVersion());
     peerGroup.setFastCatchupTimeSecs(0); // genesis block
     peerGroup.setMaxConnections(MAXIMUM_NUMBER_OF_PEERS);
+    peerGroup.setUseLocalhostPeerWhenPossible(false);
 
     peerEventListener = new MultiBitPeerEventListener();
     peerGroup.addEventListener(peerEventListener);
