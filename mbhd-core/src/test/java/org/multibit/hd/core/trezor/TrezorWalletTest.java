@@ -118,6 +118,8 @@ public class TrezorWalletTest {
     //Address address0= keyChainGroup.freshAddress(KeyChain.KeyPurpose.RECEIVE_FUNDS);
     //Wallet wallet = Wallet.fromWatchingKey(networkParameters, account44.getPubOnly());
 
+
+
     assertThat(address0.toString()).isEqualTo(EXPECTED_ADDRESS_0);
 
     assertThat(address1.toString()).isEqualTo(EXPECTED_ADDRESS_1);
