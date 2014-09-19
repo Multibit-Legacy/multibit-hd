@@ -47,29 +47,18 @@ public class TrezorWalletTest {
 
   @Test
   /**
-   * Create a wallet that derives addresses using BIP 44 - this is the HD account structure used by Trezor
+   * Create some keys that derives addresses using BIP 44 - this is the HD account structure used by Trezor
+   * This derivation uses the private master key
    */
-  public void testCreateWalletWithTrezorAccount() throws Exception {
-    // Create a wallet using a test seed phrase
-
-
+  public void testCreateKeysWithTrezorAccount() throws Exception {
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
     networkParameters = BitcoinNetwork.current().get();
 
-    // Create a random temporary directory where the wallet directory will be written
-    //File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
-
-    // Create a wallet from a seed
+    // Create a private master key from a seed
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-    byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(TREZOR_SEED_PHRASE));
+    byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(TREZOR_SEED_PHRASE));
 
-    DeterministicKey privateMasterKey = HDKeyDerivation.createMasterPrivateKey(seed1);
-    //DeterministicKey publicMasterKey = privateMasterKey.getPubOnly();
-
-    // Regular MBHD wallet (uses account 0)
-    // Standard derivation starts from M/0/0'
-    // DeterministicKey account0 = HDKeyDerivation.deriveChildKey(privateMasterKey, 0);
-    // walletRoot = HDKeyDerivation.deriveChildKey(account0, ChildNumber.ZERO_HARDENED);
+    DeterministicKey privateMasterKey = HDKeyDerivation.createMasterPrivateKey(seed);
 
     // Trezor uses BIP-44
     // BIP-44 starts from M/44'/0'
@@ -92,7 +81,6 @@ public class TrezorWalletTest {
     log.debug("key_m_44h_0h_0h_0_0 = " + key_m_44h_0h_0h_0_0);
     Address address0 = key_m_44h_0h_0h_0_0.toAddress(networkParameters);
 
-
     DeterministicKey key_m_44h_0h_0h_0_1 = deterministicHierarchy.deriveChild(key_m_44h_0h_0h_0.getPath(), false, false, new ChildNumber(1, false));
     log.debug("key_m_44h_0h_0h_0_1 = " + key_m_44h_0h_0h_0_1);
     Address address1 = key_m_44h_0h_0h_0_1.toAddress(networkParameters);
@@ -108,17 +96,6 @@ public class TrezorWalletTest {
     DeterministicKey key_m_44h_0h_0h_0_4 = deterministicHierarchy.deriveChild(key_m_44h_0h_0h_0.getPath(), false, false, new ChildNumber(4, false));
     log.debug("key_m_44h_0h_0h_0_4 = " + key_m_44h_0h_0h_0_4);
     Address address4 = key_m_44h_0h_0h_0_4.toAddress(networkParameters);
-
-    //KeyChainGroup keyChainGroup = new KeyChainGroup(networkParameters, account44.getPubOnly());
-    //log.debug("keyChainGroup = " + keyChainGroup);
-
-    // The ACCOUNT_ZERO ness is stored in DeterministicKeyChain
-    // DeterministicKeyChain#initializeHierarchyUnencrypted hardwired to use account zero
-
-    //Address address0= keyChainGroup.freshAddress(KeyChain.KeyPurpose.RECEIVE_FUNDS);
-    //Wallet wallet = Wallet.fromWatchingKey(networkParameters, account44.getPubOnly());
-
-
 
     assertThat(address0.toString()).isEqualTo(EXPECTED_ADDRESS_0);
 
