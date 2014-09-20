@@ -564,6 +564,7 @@ public enum WalletManager implements WalletEventListener {
       } catch (Exception e) {
         // Log the initial error
         log.error(e.getClass().getCanonicalName() + " " + e.getMessage());
+        e.printStackTrace();
 
         // Try loading one of the rolling backups - this will send a BackupWalletLoadedEvent containing the initial error
         // If the rolling backups don't load then loadRollingBackup will throw a WalletLoadException which will propagate out

@@ -284,7 +284,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
   }
 
   /**
-   * @return True if the selected wallet can be opened with the given password
+   * @return True if the selected wallet can be opened with the given password.
    */
   private boolean checkPassword() {
 
