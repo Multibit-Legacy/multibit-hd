@@ -1,9 +1,7 @@
 package org.multibit.hd.core.managers;
 
 import com.google.bitcoin.core.*;
-import com.google.bitcoin.crypto.DeterministicKey;
-import com.google.bitcoin.crypto.KeyCrypterException;
-import com.google.bitcoin.crypto.KeyCrypterScrypt;
+import com.google.bitcoin.crypto.*;
 import com.google.bitcoin.script.Script;
 import com.google.bitcoin.store.UnreadableWalletException;
 import com.google.bitcoin.store.WalletProtobufSerializer;
@@ -239,6 +237,7 @@ public enum WalletManager implements WalletEventListener {
    * @param password              to use to encrypt the wallet
    * @param name                  The wallet name
    * @param notes                 Public notes associated with the wallet
+   * @param isTrezor              if false, create an MBHD soft wallet, if true create a Trezor soft wallet
    *
    * @return Wallet summary containing the wallet object and the walletId (used in storage etc)
    *
@@ -251,17 +250,29 @@ public enum WalletManager implements WalletEventListener {
     long creationTimeInSeconds,
     String password,
     String name,
-    String notes
+    String notes,
+    boolean isTrezor
 
   ) throws WalletLoadException, WalletVersionException, IOException {
-
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-    return getOrCreateWalletSummary(applicationDataDirectory, seed, creationTimeInSeconds, password, name, notes);
 
+    if (isTrezor) {
+      DeterministicKey privateMasterKey = HDKeyDerivation.createMasterPrivateKey(seed);
+
+      // Trezor uses BIP-44
+      // BIP-44 starts from M/44'/0'/0'
+      // Create a root node from which all addresses will be generated
+      DeterministicKey trezorRootNode = WalletManager.generateTrezorRootNode(privateMasterKey);
+      log.debug("Creating a Trezor soft wallet with rootNode = " + trezorRootNode);
+      return getOrCreateWalletSummary(applicationDataDirectory, trezorRootNode, creationTimeInSeconds, password, name, notes);
+    } else {
+      log.debug("Creating a MBHD soft wallet");
+      return getOrCreateWalletSummary(applicationDataDirectory, seed, creationTimeInSeconds, password, name, notes);
+    }
   }
 
   /**
-     * Create a wallet.
+     * Create a MBHD soft wallet.
      * This is stored in the specified directory.
      * The name of the wallet directory is derived from the seed.
      * <p/>
@@ -300,6 +311,7 @@ public enum WalletManager implements WalletEventListener {
       final File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
 
       checkWalletDirectory(walletDirectory);
+      log.debug("walletDirectory = " + walletDirectory.toString());
 
       final File walletFile = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME);
       final File walletFileWithAES = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME + MBHD_AES_SUFFIX);
@@ -310,6 +322,7 @@ public enum WalletManager implements WalletEventListener {
         if (Configurations.currentConfiguration != null) {
           Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
         }
+        walletSummary.setWalletType(WalletType.MBHD_SOFT_WALLET);
         setCurrentWalletSummary(walletSummary);
 
         return walletSummary;
@@ -349,6 +362,7 @@ public enum WalletManager implements WalletEventListener {
       walletSummary.setName(name);
       walletSummary.setNotes(notes);
       walletSummary.setPassword(password);
+      walletSummary.setWalletType(WalletType.MBHD_SOFT_WALLET);
       setCurrentWalletSummary(walletSummary);
 
       try {
@@ -368,9 +382,9 @@ public enum WalletManager implements WalletEventListener {
       return walletSummary;
     }
   /**
-     * Create a wallet.
-     * This is stored in the specified directory.
-     * The name of the wallet directory is derived from the seed.
+     * Create a Trezor soft wallet.
+     * This is stored in the specified application directory.
+     * The name of the wallet directory is derived from the rootNode.
      * <p/>
      * If the wallet file already exists it is loaded and returned
      * <p/>
@@ -407,6 +421,7 @@ public enum WalletManager implements WalletEventListener {
       final File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
 
       checkWalletDirectory(walletDirectory);
+      log.debug("walletDirectory = " + walletDirectory.toString());
 
       final File walletFile = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME);
       final File walletFileWithAES = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME + MBHD_AES_SUFFIX);
@@ -417,6 +432,7 @@ public enum WalletManager implements WalletEventListener {
         if (Configurations.currentConfiguration != null) {
           Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
         }
+        walletSummary.setWalletType(WalletType.TREZOR_SOFT_WALLET);
         setCurrentWalletSummary(walletSummary);
 
         return walletSummary;
@@ -460,6 +476,7 @@ public enum WalletManager implements WalletEventListener {
       walletSummary.setName(name);
       walletSummary.setNotes(notes);
       walletSummary.setPassword(password);
+      walletSummary.setWalletType(WalletType.TREZOR_SOFT_WALLET);
       setCurrentWalletSummary(walletSummary);
 
       // TODO backup of Trezor wallets
@@ -674,7 +691,6 @@ public enum WalletManager implements WalletEventListener {
    *
    * @param applicationDataDirectory The application data directory containing the wallet
    * @param walletRoot               The wallet root from which to make a sub-directory (e.g. "mbhd-11111111-22222222-33333333-44444444-55555555")
-   *
    * @return The directory composed of parent directory plus the wallet root
    *
    * @throws IllegalStateException if wallet could not be created
@@ -1175,5 +1191,27 @@ public enum WalletManager implements WalletEventListener {
       throw new IllegalStateException("Stored encrypted password is not in the correct format");
     }
     return Arrays.copyOfRange(paddedPasswordBytes, 1 + lengthOfPad, paddedPasswordBytes.length);
+  }
+
+  /**
+   * Generate the public only DeterministicKey form the private master key
+   * <p/>
+   * For a real Trezor device this will be the result of a GetPublicKey od the M/44'/0'/0' path, received as an xpob and then converted to a DeterministicKey
+   *
+   * @param privateMasterKey the private master key derived from the wallet seed
+   * @return the public only DeterministicSeed corresponding to the root Trezor wallet node e.g. M/44'/0'/0'
+   */
+  public static DeterministicKey generateTrezorRootNode(DeterministicKey privateMasterKey) {
+    DeterministicKey key_m_44h = HDKeyDerivation.deriveChildKey(privateMasterKey, new ChildNumber(44 | ChildNumber.HARDENED_BIT));
+    log.debug("key_m_44h deterministic key = " + key_m_44h);
+
+    DeterministicKey key_m_44h_0h = HDKeyDerivation.deriveChildKey(key_m_44h, ChildNumber.ZERO_HARDENED);
+    log.debug("key_m_44h_0h deterministic key = " + key_m_44h_0h);
+
+    //DeterministicKey key_m_44h_0h_0h = deterministicHierarchy.deriveChild(key_m_44h_0h.getPath(), false, false, new ChildNumber(0, true));
+    DeterministicKey key_m_44h_0h_0h = HDKeyDerivation.deriveChildKey(key_m_44h_0h, ChildNumber.ZERO_HARDENED);
+    log.debug("key_m_44h_0h_0h = " + key_m_44h_0h_0h);
+
+    return key_m_44h_0h_0h;
   }
 }

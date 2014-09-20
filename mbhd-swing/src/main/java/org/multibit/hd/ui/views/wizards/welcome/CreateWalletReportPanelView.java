@@ -207,7 +207,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
         MessageKey.WALLET_DEFAULT_NOTES,
         Dates.formatDeliveryDateLocal(Dates.nowUtc(), Configurations.currentConfiguration.getLocale())
       );
-      walletSummary = walletManager.createWalletSummary(seed, Dates.nowInSeconds(), password, name, notes);
+      walletSummary = walletManager.createWalletSummary(seed, Dates.nowInSeconds(), password, name, notes, false);
 
       Preconditions.checkNotNull(walletSummary.getWalletId(), "'walletId' must be present");
 

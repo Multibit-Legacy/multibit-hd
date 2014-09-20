@@ -33,6 +33,8 @@ public class WalletSummary {
 
   private String notes;
 
+  private WalletType walletType;
+
   /**
    * The wallet password, encrypted with an AES key derived from the wallet seed
    */
@@ -139,11 +141,21 @@ public class WalletSummary {
     this.encryptedBackupKey = encryptedBackupKey;
   }
 
+  public WalletType getWalletType() {
+     return walletType;
+   }
+
+   public void setWalletType(WalletType walletType) {
+     this.walletType = walletType;
+   }
+
+
   @Override
   public String toString() {
     return "WalletSummary{" +
             "wallet=" + wallet +
             ", walletId=" + walletId +
+            ", walletType=" + walletType +
             ", password=" + password +
             ", name='" + name + '\'' +
             ", notes='" + notes + '\'' +

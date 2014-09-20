@@ -17,6 +17,7 @@ import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.dto.WalletType;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -81,7 +82,7 @@ public class TrezorWalletTest {
 
     // Trezor uses BIP-44
     // BIP-44 starts from M/44'/0'/0'
-    DeterministicKey trezorRootNode = generateTrezorRootNode(privateMasterKey);
+    DeterministicKey trezorRootNode = WalletManager.generateTrezorRootNode(privateMasterKey);
 
     DeterministicHierarchy deterministicHierarchy = new DeterministicHierarchy(trezorRootNode);
 
@@ -119,28 +120,6 @@ public class TrezorWalletTest {
     assertThat(address4.toString()).isEqualTo(EXPECTED_ADDRESS_4);
   }
 
-  /**
-   * Generate the public only DeterministicKey form the private master key
-   * <p/>
-   * For a real Trezor device this will be the result of a GetPublicKey od the M/44'/0'/0' path, received as an xpob and then converted to a DeterministicKey
-   *
-   * @param privateMasterKey the private master key derived from the wallet seed
-   * @return the public only DeterministicSeed corresponding to the root Trezor wallet node e.g. M/44'/0'/0'
-   */
-  private DeterministicKey generateTrezorRootNode(DeterministicKey privateMasterKey) {
-    DeterministicKey key_m_44h = HDKeyDerivation.deriveChildKey(privateMasterKey, new ChildNumber(44 | ChildNumber.HARDENED_BIT));
-    log.debug("key_m_44h deterministic key = " + key_m_44h);
-
-    DeterministicKey key_m_44h_0h = HDKeyDerivation.deriveChildKey(key_m_44h, ChildNumber.ZERO_HARDENED);
-    log.debug("key_m_44h_0h deterministic key = " + key_m_44h_0h);
-
-    //DeterministicKey key_m_44h_0h_0h = deterministicHierarchy.deriveChild(key_m_44h_0h.getPath(), false, false, new ChildNumber(0, true));
-    DeterministicKey key_m_44h_0h_0h = HDKeyDerivation.deriveChildKey(key_m_44h_0h, ChildNumber.ZERO_HARDENED);
-    log.debug("key_m_44h_0h_0h = " + key_m_44h_0h_0h);
-
-    return key_m_44h_0h_0h;
-  }
-
   @Test
   /**
    * Create a wallet that derives addresses using BIP 44 - this is the HD account structure used by Trezor
@@ -164,13 +143,12 @@ public class TrezorWalletTest {
     // Trezor uses BIP-44
     // BIP-44 starts from M/44'/0'/0'
     // Create a root node from which all addresses will be generated
-    DeterministicKey trezorRootNode = generateTrezorRootNode(privateMasterKey);
+    DeterministicKey trezorRootNode = WalletManager.generateTrezorRootNode(privateMasterKey);
 
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
     InstallationManager.setCurrentApplicationDataDirectory(temporaryDirectory);
 
-    // Create a wallet using the test seed phrase, using a BIP44 account structure
-
+    // Create a Trezor soft wallet using the test seed phrase, using a BIP44 account structure
     WalletSummary walletSummary = WalletManager
             .INSTANCE
             .getOrCreateWalletSummary(
@@ -181,6 +159,9 @@ public class TrezorWalletTest {
                     "trezor-example",
                     "trezor-example"
             );
+
+    assertThat(WalletType.TREZOR_SOFT_WALLET.equals(walletSummary.getWalletType()));
+
     WalletManager.INSTANCE.setCurrentWalletSummary(walletSummary);
 
     WalletService walletService = new WalletService(networkParameters);
@@ -209,22 +190,17 @@ public class TrezorWalletTest {
 
     assertThat(address4).isEqualTo(EXPECTED_ADDRESS_4);
 
-    // Sync the wallet to get the transactions
-    syncWallet();
+    // Remove comment if you want to: Sync the wallet to get the transactions
+    // syncWallet();
 
-    log.debug("Wallet after sync = " + walletSummary.getWallet().toString());
+    log.debug("Wallet at end of test = " + walletSummary.getWallet().toString());
 
   }
 
   private void syncWallet() throws Exception {
-    log.debug("ping1");
     BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
-    log.debug("ping2");
-
     bitcoinNetworkService.replayWallet(TREZOR_WALLET_CREATION_DATE);
-    log.debug("ping3");
     Uninterruptibles.sleepUninterruptibly(180, TimeUnit.SECONDS);
     bitcoinNetworkService.stopAndWait();
-    log.debug("ping4");
   }
 }
