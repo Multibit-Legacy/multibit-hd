@@ -2,10 +2,12 @@ package org.multibit.hd.core.trezor;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.crypto.ChildNumber;
 import com.google.bitcoin.crypto.DeterministicHierarchy;
 import com.google.bitcoin.crypto.DeterministicKey;
 import com.google.bitcoin.crypto.HDKeyDerivation;
+import com.google.bitcoin.wallet.KeyChain;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.joda.time.DateTime;
@@ -15,7 +17,7 @@ import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletType;
 import org.multibit.hd.core.managers.BackupManager;
@@ -24,7 +26,6 @@ import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.managers.WalletManagerTest;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.core.services.WalletService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,7 +125,8 @@ public class TrezorWalletTest {
   /**
    * Create a wallet that derives addresses using BIP 44 - this is the HD account structure used by Trezor
    *
-   * Even though it uses the private master key is is actually a read only wallet - no private keys
+   * Even though it uses the private master key is is actually a read only wallet - no private keys.
+   * This is because bitcoinj currently only supports adding watch only keychains
    */
   public void testCreateWalletWithTrezorAccountUsingMasterPrivateKey() throws Exception {
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
@@ -136,7 +138,6 @@ public class TrezorWalletTest {
     // Create a wallet from a seed
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(TREZOR_SEED_PHRASE));
-    WalletId walletId = new WalletId(seed);
 
     DeterministicKey privateMasterKey = HDKeyDerivation.createMasterPrivateKey(seed);
 
@@ -162,17 +163,28 @@ public class TrezorWalletTest {
 
     assertThat(WalletType.TREZOR_SOFT_WALLET.equals(walletSummary.getWalletType()));
 
-    WalletManager.INSTANCE.setCurrentWalletSummary(walletSummary);
+    Wallet wallet = walletSummary.getWallet();
 
-    WalletService walletService = new WalletService(networkParameters);
+    // Get the first five keys and addresses
+    DeterministicKey key0 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+    String address0 = key0.toAddress(networkParameters).toString();
 
-    walletService.initialise(temporaryDirectory, walletId);
+    DeterministicKey key1 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+    String address1 = key1.toAddress(networkParameters).toString();
 
-    String address0 = walletService.generateNextReceivingAddress(Optional.of(PASSWORD));
-    String address1 = walletService.generateNextReceivingAddress(Optional.of(PASSWORD));
-    String address2 = walletService.generateNextReceivingAddress(Optional.of(PASSWORD));
-    String address3 = walletService.generateNextReceivingAddress(Optional.of(PASSWORD));
-    String address4 = walletService.generateNextReceivingAddress(Optional.of(PASSWORD));
+    DeterministicKey key2 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+    String address2 = key2.toAddress(networkParameters).toString();
+
+    DeterministicKey key3 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+    String address3 = key3.toAddress(networkParameters).toString();
+
+    DeterministicKey key4 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+    String address4 = key4.toAddress(networkParameters).toString();
+
+    // Ensure it is saved with the newly generated addresses
+    File walletFile = WalletManager.INSTANCE.getCurrentWalletFile(temporaryDirectory).get();
+    wallet.saveToFile(walletFile);
+    EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(walletFile, PASSWORD);
 
     log.debug("address 0  = " + address0);
     log.debug("address 1  = " + address1);
@@ -181,14 +193,21 @@ public class TrezorWalletTest {
     log.debug("address 4  = " + address4);
 
     assertThat(address0).isEqualTo(EXPECTED_ADDRESS_0);
-
     assertThat(address1).isEqualTo(EXPECTED_ADDRESS_1);
-
     assertThat(address2).isEqualTo(EXPECTED_ADDRESS_2);
-
     assertThat(address3).isEqualTo(EXPECTED_ADDRESS_3);
-
     assertThat(address4).isEqualTo(EXPECTED_ADDRESS_4);
+
+    // Load the wallet up again to check it loads ok
+    Optional<WalletSummary> rereadWalletSummary = WalletManager.INSTANCE.open(temporaryDirectory, walletSummary.getWalletId(), PASSWORD);
+    assertThat(rereadWalletSummary.isPresent());
+
+    // Check the newly read in wallet has all the expected addresses
+    assertThat(rereadWalletSummary.get().getWallet().findKeyFromPubKey(key0.getPubKey())).isNotNull();
+    assertThat(rereadWalletSummary.get().getWallet().findKeyFromPubKey(key1.getPubKey())).isNotNull();
+    assertThat(rereadWalletSummary.get().getWallet().findKeyFromPubKey(key2.getPubKey())).isNotNull();
+    assertThat(rereadWalletSummary.get().getWallet().findKeyFromPubKey(key3.getPubKey())).isNotNull();
+    assertThat(rereadWalletSummary.get().getWallet().findKeyFromPubKey(key4.getPubKey())).isNotNull();
 
     // Remove comment if you want to: Sync the wallet to get the transactions
     // syncWallet();
