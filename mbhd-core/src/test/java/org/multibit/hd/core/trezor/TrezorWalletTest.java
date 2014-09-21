@@ -127,6 +127,8 @@ public class TrezorWalletTest {
    *
    * Even though it uses the private master key is is actually a read only wallet - no private keys.
    * This is because bitcoinj currently only supports adding watch only keychains
+   *
+   * The wallet is roundtripped through protobuf and the expected keys/ addresses checked
    */
   public void testCreateWalletWithTrezorAccountUsingMasterPrivateKey() throws Exception {
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
@@ -209,7 +211,7 @@ public class TrezorWalletTest {
     assertThat(rereadWalletSummary.get().getWallet().findKeyFromPubKey(key3.getPubKey())).isNotNull();
     assertThat(rereadWalletSummary.get().getWallet().findKeyFromPubKey(key4.getPubKey())).isNotNull();
 
-    // Remove comment if you want to: Sync the wallet to get the transactions
+    // Remove comment if you want to: Sync the wallet to get the wallet transactions
     // syncWallet();
 
     log.debug("Wallet at end of test = " + walletSummary.getWallet().toString());
