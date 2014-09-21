@@ -80,7 +80,7 @@
     </repository>
     <repository>
       <id>mbhd-maven-blob</id>
-      <url>https://github.com/bitcoin-solutions/mbhd-maven/blob/master/snapshots</url>
+      <url>https://github.com/bitcoin-solutions/mbhd-maven/raw/master/snapshots</url>
       <snapshots/>
     </repository>
     <!-- Bitcoinj releases -->
