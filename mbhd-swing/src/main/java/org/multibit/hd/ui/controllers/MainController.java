@@ -20,6 +20,7 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.*;
 import org.multibit.hd.core.store.TransactionInfo;
+import org.multibit.hd.hardware.core.events.HardwareWalletSystemEvent;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardHideEvent;
@@ -486,6 +487,69 @@ public class MainController extends AbstractController implements
   }
 
   /**
+   * Make sure that when a transaction is successfully created its 'metadata' is stored in a transactionInfo
+   *
+   * @param transactionCreationEvent The transaction creation event from the EventBus
+   */
+  @Subscribe
+  public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
+
+    initiateDelayedTransactionStatusCheck(transactionCreationEvent);
+
+    // Only store successful transactions
+    if (!transactionCreationEvent.isTransactionCreationWasSuccessful()) {
+      return;
+    }
+
+    // Create a transactionInfo to match the event created
+    TransactionInfo transactionInfo = new TransactionInfo();
+    transactionInfo.setHash(transactionCreationEvent.getTransactionId());
+    String note = transactionCreationEvent.getNotes().or("");
+    transactionInfo.setNote(note);
+
+    // Append miner's fee info
+    transactionInfo.setMinerFee(transactionCreationEvent.getMiningFeePaid());
+
+    // Append client fee info
+    transactionInfo.setClientFee(transactionCreationEvent.getClientFeePaid());
+
+    // Set the fiat payment amount
+    transactionInfo.setAmountFiat(transactionCreationEvent.getFiatPayment().orNull());
+
+    transactionInfo.setSentBySelf(transactionCreationEvent.isSentByMe());
+
+    WalletService walletService = CoreServices.getCurrentWalletService();
+    walletService.addTransactionInfo(transactionInfo);
+    log.debug("Added transactionInfo {} to walletService {}", transactionInfo, walletService);
+    try {
+      walletService.writePayments();
+    } catch (PaymentsSaveException pse) {
+      ExceptionHandler.handleThrowable(pse);
+    }
+  }
+
+  /**
+   * Respond to a hardware wallet system event
+   *
+   * @param event The event
+   */
+  @Subscribe
+  public void onHardwareWalletSystemEvent(final HardwareWalletSystemEvent event) {
+
+    // Ensure we return from this event quickly
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        // Attempt to create a suitable alert model
+        AlertModel alertModel = Models.newHardwareWalletSystemAlertModel(event);
+
+        ControllerEvents.fireAddAlertEvent(alertModel);
+      }
+    });
+
+  }
+
+  /**
    * @return An action to show the "repair wallet" tool
    */
   private AbstractAction getShowRepairWalletAction() {
@@ -510,6 +574,7 @@ public class MainController extends AbstractController implements
       }
     };
   }
+
   /**
    * Handles the changes to the exchange ticker service
    */
@@ -693,6 +758,7 @@ public class MainController extends AbstractController implements
 
   }
 
+
   /**
    * Password wizard needs to perform a restore so hand over to the welcome wizard
    */
@@ -800,50 +866,9 @@ public class MainController extends AbstractController implements
     });
   }
 
-
-  /**
-   * Make sure that when a transaction is successfully created its 'metadata' is stored in a transactionInfo
-   * @param transactionCreationEvent The transaction creation event from the EventBus
-   */
-  @Subscribe
-  public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
-
-    initiateDelayedTransactionStatusCheck(transactionCreationEvent);
-
-    // Only store successful transactions
-    if (!transactionCreationEvent.isTransactionCreationWasSuccessful()) {
-      return;
-    }
-
-    // Create a transactionInfo to match the event created
-    TransactionInfo transactionInfo = new TransactionInfo();
-    transactionInfo.setHash(transactionCreationEvent.getTransactionId());
-    String note = transactionCreationEvent.getNotes().or("");
-    transactionInfo.setNote(note);
-
-    // Append miner's fee info
-    transactionInfo.setMinerFee(transactionCreationEvent.getMiningFeePaid());
-
-    // Append client fee info
-    transactionInfo.setClientFee(transactionCreationEvent.getClientFeePaid());
-
-    // Set the fiat payment amount
-    transactionInfo.setAmountFiat(transactionCreationEvent.getFiatPayment().orNull());
-
-    transactionInfo.setSentBySelf(transactionCreationEvent.isSentByMe());
-
-    WalletService walletService = CoreServices.getCurrentWalletService();
-    walletService.addTransactionInfo(transactionInfo);
-    log.debug("Added transactionInfo {} to walletService {}", transactionInfo, walletService);
-    try {
-      walletService.writePayments();
-    } catch (PaymentsSaveException pse) {
-      ExceptionHandler.handleThrowable(pse);
-    }
-  }
-
   /**
    * When a transaction is created, fire off a delayed check of the transaction confidence/ network status
+   *
    * @param transactionCreationEvent The transaction creation event from the EventBus
    */
   private void initiateDelayedTransactionStatusCheck(final TransactionCreationEvent transactionCreationEvent) {

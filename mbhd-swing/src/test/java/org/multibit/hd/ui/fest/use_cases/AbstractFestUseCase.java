@@ -207,11 +207,24 @@ public abstract class AbstractFestUseCase {
    *
    * @param key The message key to use
    */
-  protected void assertLabelValue(MessageKey key, String value) {
+  protected void assertLabelContainsValue(MessageKey key, String value) {
 
-    String titleHtml = window.label(key.getKey()).text();
+    String label = window.label(key.getKey()).text();
 
-    assertThat(titleHtml).contains(value);
+    assertThat(label).contains(value);
+
+  }
+
+  /**
+   * <p>Asserts that a label contains the required value text in the current locale (ignores wrapping HTML if present)</p>
+   *
+   * @param key The message key to use
+   */
+  protected void assertLabelContainsValue(String key, String value) {
+
+    String label = window.label(key).text();
+
+    assertThat(label).contains(value);
 
   }
 

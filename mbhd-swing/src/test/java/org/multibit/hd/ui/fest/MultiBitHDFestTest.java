@@ -343,6 +343,28 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
   }
 
+  /**
+   * <p>Verify the following:</p>
+   * <ul>
+   * <li>Start with empty wallet fixture</li>
+   * <li>Unlock wallet</li>
+   * <li>Exercise the Trezor events</li>
+   * </ul>
+   */
+  @Test
+  public void verifyHardwareWalletEvents() throws Exception {
+
+    // Start with the standard wallet fixture
+    arrangeEmpty();
+
+    // Unlock the wallet
+    QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
+
+    // Verify
+    HardwareWalletEventRequirements.verifyUsing(window);
+
+  }
+
   ////////////////////////////////////////////////////////////////
 
   /**

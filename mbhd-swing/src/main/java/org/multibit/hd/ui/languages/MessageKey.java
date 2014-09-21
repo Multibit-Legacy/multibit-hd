@@ -284,6 +284,11 @@ public enum MessageKey {
   PAYMENT_RECEIVED_ALERT("payment_received_label"),
   PAYMENT_SENT_ALERT("payment_sent_label"),
 
+  // Trezor alerts
+  TREZOR_CONNECTED_ALERT("trezor_connected_alert"),
+  TREZOR_DISCONNECTED_ALERT("trezor_disconnected_alert"),
+  TREZOR_FAILURE_ALERT("trezor_failure_alert"),
+
   PEER_COUNT("peer_count"),
   BLOCKS_LEFT("blocks_left"),
 

@@ -35,7 +35,7 @@ public class RestorePasswordReportUseCase extends AbstractFestUseCase {
     assertLabelText(MessageKey.RESTORE_PASSWORD_REPORT_TITLE);
 
     // Restoring the password should be instant
-    assertLabelValue(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_SUCCESS, WalletFixtures.STANDARD_PASSWORD.toString());
+    assertLabelContainsValue(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_SUCCESS, WalletFixtures.STANDARD_PASSWORD.toString());
 
     // OK to proceed
     window

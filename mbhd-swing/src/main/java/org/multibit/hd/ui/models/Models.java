@@ -4,8 +4,10 @@ import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.events.TransactionSeenEvent;
+import org.multibit.hd.hardware.core.events.HardwareWalletSystemEvent;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.languages.Formats;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
@@ -126,7 +128,9 @@ public class Models {
   }
 
   /**
-   * @param transactionSeenEvent@return An alert model suitable for use for displaying the information, absent if the Bitcoin URI does not contain sufficient information
+   * @param transactionSeenEvent The transaction seen event
+   *
+   * @return An alert model suitable for use for displaying the information, absent if the Bitcoin URI does not contain sufficient information
    */
   public static AlertModel newPaymentReceivedAlertModel(TransactionSeenEvent transactionSeenEvent) {
 
@@ -137,6 +141,51 @@ public class Models {
       alertMessage,
       RAGStatus.GREEN
     );
+
+  }
+
+  /**
+   * @param hardwareWalletSystemEvent The hardware event
+   *
+   * @return An alert model suitable for use for displaying the information, absent if the Bitcoin URI does not contain sufficient information
+   */
+  public static AlertModel newHardwareWalletSystemAlertModel(HardwareWalletSystemEvent hardwareWalletSystemEvent) {
+
+    switch (hardwareWalletSystemEvent.getMessageType()) {
+      case DEVICE_CONNECTED:
+
+        // Provide action to allow user to switch wallet
+        // TODO (JB) Require more sophisticated logic and implementation
+        JButton button = Buttons.newAlertPanelButton(new AbstractAction() {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            // Do nothing
+          }
+        }, MessageKey.YES, MessageKey.YES_TOOLTIP, AwesomeIcon.CHECK);
+
+        return Models.newAlertModel(
+          Languages.safeText(MessageKey.TREZOR_CONNECTED_ALERT, "Aardvark"),
+          RAGStatus.GREEN,
+          button
+        );
+      case DEVICE_DISCONNECTED:
+        return Models.newAlertModel(
+          Languages.safeText(MessageKey.TREZOR_DISCONNECTED_ALERT),
+          RAGStatus.AMBER
+        );
+      case DEVICE_FAILURE:
+        return Models.newAlertModel(
+          Languages.safeText(MessageKey.TREZOR_FAILURE_ALERT),
+          RAGStatus.RED
+        );
+      case DEVICE_EOF:
+        return Models.newAlertModel(
+          Languages.safeText(MessageKey.TREZOR_FAILURE_ALERT),
+          RAGStatus.RED
+        );
+      default:
+        throw new IllegalStateException("Unknown hardware wallet system event");
+    }
 
   }
 
