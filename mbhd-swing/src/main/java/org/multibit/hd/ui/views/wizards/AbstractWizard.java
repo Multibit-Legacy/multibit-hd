@@ -18,7 +18,7 @@ import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.Popovers;
 import org.multibit.hd.ui.views.layouts.WizardCardLayout;
-import org.multibit.hd.ui.views.wizards.password.PasswordState;
+import org.multibit.hd.ui.views.wizards.credentials.CredentialsState;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -353,7 +353,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
 
         // Since #17 all restore work is done by the welcome wizard
         // See MainController for the hand over code
-        hide(PasswordState.PASSWORD_RESTORE.name(), false);
+        hide(CredentialsState.CREDENTIALS_RESTORE.name(), false);
 
       }
     };
@@ -421,8 +421,8 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
 
         log.trace("Handle hide background cleanup: '{}'", panelName);
 
-        // Require some extra time to get the rest of the UI started for password wizard
-        if (PasswordState.PASSWORD_ENTER_PASSWORD.name().equals(panelName)) {
+        // Require some extra time to get the rest of the UI started for credentials wizard
+        if (CredentialsState.CREDENTIALS_ENTER_PASSWORD.name().equals(panelName)) {
 
           log.trace("Blocking to allow UI startup to complete");
           Uninterruptibles.sleepUninterruptibly(4, TimeUnit.SECONDS);

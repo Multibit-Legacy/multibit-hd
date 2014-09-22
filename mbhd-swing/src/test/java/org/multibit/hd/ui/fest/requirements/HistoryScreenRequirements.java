@@ -24,13 +24,13 @@ public class HistoryScreenRequirements {
     // Select the history screen
     new ShowHistoryScreenUseCase(window).execute(parameters);
 
-    // Click Edit and update password verified
+    // Click Edit and update credentials verified
     new EditPasswordEntryUseCase(window).execute(parameters);
 
-    // Click Edit and fill in some extra info on password but then Cancel
+    // Click Edit and fill in some extra info on credentials but then Cancel
     new EditThenCancelPasswordEntryUseCase(window).execute(parameters);
 
-    // Select wallet created and password then use multi-edit
+    // Select wallet created and credentials then use multi-edit
     new EditOpenedAndPasswordEntryUseCase(window).execute(parameters);
 
     // Search for the first entry

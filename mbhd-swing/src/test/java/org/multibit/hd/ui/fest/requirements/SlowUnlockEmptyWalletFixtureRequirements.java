@@ -8,7 +8,7 @@ import org.multibit.hd.ui.fest.use_cases.security.CloseDebugSecurityPopoverUseCa
  * <p>FEST Swing UI test to provide:</p>
  * <ul>
  * <li>Unlock the empty wallet fixture</li>
- * <li>Include a password failure and exercise buttons</li>
+ * <li>Include a credentials failure and exercise buttons</li>
  * </ul>
  *
  * @since 0.0.1

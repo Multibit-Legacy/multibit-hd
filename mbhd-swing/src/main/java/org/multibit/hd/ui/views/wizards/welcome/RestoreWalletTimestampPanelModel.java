@@ -21,7 +21,7 @@ public class RestoreWalletTimestampPanelModel extends AbstractWizardPanelModel {
   /**
    * @param panelName            The panel name
    * @param enterSeedPhraseModel The "enter seed phrase" component model
-   * @param confirmPasswordModel The "confirm password" component model
+   * @param confirmPasswordModel The "confirm credentials" component model
    */
   public RestoreWalletTimestampPanelModel(
     String panelName,
@@ -41,7 +41,7 @@ public class RestoreWalletTimestampPanelModel extends AbstractWizardPanelModel {
   }
 
   /**
-   * @return The password model
+   * @return The credentials model
    */
   public ConfirmPasswordModel getConfirmPasswordModel() {
     return confirmPasswordModel;

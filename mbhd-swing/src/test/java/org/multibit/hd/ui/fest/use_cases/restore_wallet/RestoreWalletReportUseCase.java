@@ -54,7 +54,7 @@ public class RestoreWalletReportUseCase extends AbstractFestUseCase {
       .requireEnabled(timeout(2, TimeUnit.SECONDS))
       .click();
 
-    // Wait for password wizard Exit button to appear
+    // Wait for credentials wizard Exit button to appear
     pauseForViewReset();
 
     window

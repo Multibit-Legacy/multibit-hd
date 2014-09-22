@@ -79,7 +79,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
 
     enterAmountMaV = Components.newEnterAmountMaV(getPanelName());
 
-    // See if there is a password entered for the wallet
+    // See if there is a credentials entered for the wallet
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
     Optional<CharSequence> passwordParameter = Optional.absent();
     CharSequence password = currentWalletSummary.get().getPassword();

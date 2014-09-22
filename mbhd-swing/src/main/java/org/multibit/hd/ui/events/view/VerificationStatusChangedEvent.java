@@ -3,7 +3,7 @@ package org.multibit.hd.ui.events.view;
 /**
  * <p>Event to provide the following to View Event API:</p>
  * <ul>
- * <li>Indicates the password status has changed</li>
+ * <li>Indicates the credentials status has changed</li>
  * </ul>
  *
  * @since 0.0.1
@@ -16,7 +16,7 @@ public class VerificationStatusChangedEvent implements ViewEvent {
 
 
   /**
-   * @param panelName The panel name to uniquely identify a particular instance of a password status
+   * @param panelName The panel name to uniquely identify a particular instance of a credentials status
    * @param status    True if the verification is OK
    */
   public VerificationStatusChangedEvent(String panelName, boolean status) {

@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * <p>FEST Swing UI test to provide:</p>
  * <ul>
- * <li>Restore password starting from the unlock screen</li>
+ * <li>Restore credentials starting from the unlock screen</li>
  * </ul>
  *
  * @since 0.0.1

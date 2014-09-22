@@ -62,7 +62,7 @@ public class BackupManagerTest {
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
     long nowInSeconds = Dates.nowInSeconds();
-    String password = "password";
+    String password = "credentials";
     WalletSummary walletSummary = WalletManager
       .INSTANCE
       .getOrCreateWalletSummary(

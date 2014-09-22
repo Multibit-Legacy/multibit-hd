@@ -67,7 +67,7 @@ public class EncryptedFileReaderWriter {
       KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(makeScryptParameters(WalletManager.SCRYPT_SALT));
       KeyParameter keyParameter = keyCrypterScrypt.deriveKey(password);
 
-      // Create an AES encoded version of the unencryptedBytes, using the password
+      // Create an AES encoded version of the unencryptedBytes, using the credentials
       byte[] encryptedBytes = AESUtils.encrypt(unencryptedBytes, keyParameter, WalletManager.AES_INITIALISATION_VECTOR);
 
       //log.debug("Encrypted wallet bytes (original):\n" + Utils.HEX.encode(encryptedBytes));
@@ -90,9 +90,9 @@ public class EncryptedFileReaderWriter {
   }
 
   /**
-    * Encrypt the file specified using the backup AES key derived from the supplied password
+    * Encrypt the file specified using the backup AES key derived from the supplied credentials
     * @param fileToEncrypt file to encrypt
-    * @param password password to use to do the encryption
+    * @param password credentials to use to do the encryption
     * @return the resultant encrypted file
     * @throws EncryptedFileReaderWriterException
     */
@@ -114,9 +114,9 @@ public class EncryptedFileReaderWriter {
 
 
   /**
-   * Encrypt the file specified using an AES key derived from the supplied password
+   * Encrypt the file specified using an AES key derived from the supplied credentials
    * @param fileToEncrypt file to encrypt
-   * @param password password to use to do the encryption
+   * @param password credentials to use to do the encryption
    * @return the resultant encrypted file
    * @throws EncryptedFileReaderWriterException
    */

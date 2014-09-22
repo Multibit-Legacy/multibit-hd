@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "tools" screen change password wizard works</li>
+ * <li>Verify the "tools" screen change credentials wizard works</li>
  * </ul>
  * <p>Requires the "tools" screen to be showing</p>
  *
@@ -30,12 +30,12 @@ public class VerifyChangePasswordUseCase extends AbstractFestUseCase {
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    // Click on Change password
+    // Click on Change credentials
     window
       .button(MessageKey.SHOW_CHANGE_PASSWORD_WIZARD.getKey())
       .click();
 
-    // Verify the "change password" wizard appears
+    // Verify the "change credentials" wizard appears
     assertLabelText(MessageKey.CHANGE_PASSWORD_TITLE);
 
     // Verify buttons are present
@@ -48,13 +48,13 @@ public class VerifyChangePasswordUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled();
 
-    // Fill in the original password
+    // Fill in the original credentials
     window
       .textBox(MessageKey.ENTER_PASSWORD.getKey())
       .enterText(WalletFixtures.STANDARD_PASSWORD);
 
-    // Exercise the confirm password component
-    // finishing with a valid password
+    // Exercise the confirm credentials component
+    // finishing with a valid credentials
     verifyPassword();
 
     // Click next
@@ -64,7 +64,7 @@ public class VerifyChangePasswordUseCase extends AbstractFestUseCase {
 
     assertLabelText(MessageKey.CHANGE_PASSWORD_TITLE);
 
-    // Allow time for the password change to occur
+    // Allow time for the credentials change to occur
     pauseForWalletPasswordChange();
 
     // Verify the status message is OK
@@ -107,7 +107,7 @@ public class VerifyChangePasswordUseCase extends AbstractFestUseCase {
       .label(newNotShowingJLabelFixture(
         getVerificationStatusName(
           ChangePasswordState.CHANGE_PASSWORD_ENTER_PASSWORD.name(),
-          "password"
+          "credentials"
         )))
       .requireNotVisible();
 
@@ -131,11 +131,11 @@ public class VerifyChangePasswordUseCase extends AbstractFestUseCase {
       .label(newNotShowingJLabelFixture(
         getVerificationStatusName(
           ChangePasswordState.CHANGE_PASSWORD_ENTER_PASSWORD.name(),
-          "password"
+          "credentials"
         )))
       .requireNotVisible();
 
-    // Matching password
+    // Matching credentials
     window
       .textBox(MessageKey.ENTER_NEW_PASSWORD.getKey())
       .setText(WalletFixtures.ALTERNATIVE_PASSWORD)
@@ -154,7 +154,7 @@ public class VerifyChangePasswordUseCase extends AbstractFestUseCase {
       .label(
         getVerificationStatusName(
           ChangePasswordState.CHANGE_PASSWORD_ENTER_PASSWORD.name(),
-          "password"
+          "credentials"
         ))
       .requireVisible();
 

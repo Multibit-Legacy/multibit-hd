@@ -665,7 +665,7 @@ public class TextBoxes {
   }
 
   /**
-   * @return The themed echo character for password fields
+   * @return The themed echo character for credentials fields
    */
   public static char getPasswordEchoChar() {
     return '\u2022';

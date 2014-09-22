@@ -14,7 +14,7 @@ import static org.fest.assertions.Assertions.assertThat;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the welcome wizard "restore wallet timestamp and password" panel view</li>
+ * <li>Verify the welcome wizard "restore wallet timestamp and credentials" panel view</li>
  * </ul>
  *
  * @since 0.0.1
@@ -54,7 +54,7 @@ public class RestoreWalletTimestampUseCase extends AbstractFestUseCase {
       .pressKey(KeyEvent.VK_SHIFT)
       .releaseKey(KeyEvent.VK_SHIFT);
 
-    // Verify the password verification status is showing
+    // Verify the credentials verification status is showing
     window
       .label(
         getVerificationStatusName(
@@ -68,7 +68,7 @@ public class RestoreWalletTimestampUseCase extends AbstractFestUseCase {
       .button(MessageKey.SHOW.getKey())
       .requireVisible();
 
-    // Enter password
+    // Enter credentials
     window
       .textBox(MessageKey.ENTER_NEW_PASSWORD.getKey())
       .enterText(WalletFixtures.STANDARD_PASSWORD);
@@ -78,21 +78,21 @@ public class RestoreWalletTimestampUseCase extends AbstractFestUseCase {
       .label(newNotShowingJLabelFixture(
         getVerificationStatusName(
           WelcomeWizardState.RESTORE_WALLET_TIMESTAMP.name(),
-          "password"
+          "credentials"
         )))
       .requireNotVisible();
 
-    // Retype password
+    // Retype credentials
     window
       .textBox(MessageKey.RETYPE_NEW_PASSWORD.getKey())
       .enterText(WalletFixtures.STANDARD_PASSWORD);
 
-    // Verify the password verification status is showing
+    // Verify the credentials verification status is showing
     window
       .label(
         getVerificationStatusName(
           WelcomeWizardState.RESTORE_WALLET_TIMESTAMP.name(),
-          "password"
+          "credentials"
         ))
       .requireVisible();
 

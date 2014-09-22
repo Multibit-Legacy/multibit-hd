@@ -1,11 +1,11 @@
-package org.multibit.hd.ui.views.wizards.password;
+package org.multibit.hd.ui.views.wizards.credentials;
 
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.select_wallet.SelectWalletModel;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
 
 /**
- * <p>Panel model to provide the following to "enter password" wizard:</p>
+ * <p>Panel model to provide the following to "enter credentials" wizard:</p>
  * <ul>
  * <li>Storage of state for the "enter password" panel</li>
  * </ul>
@@ -13,7 +13,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
  * @since 0.0.1
  *  
  */
-public class PasswordEnterPasswordPanelModel extends AbstractWizardPanelModel {
+public class CredentialsEnterPasswordPanelModel extends AbstractWizardPanelModel {
 
   private final EnterPasswordModel enterPasswordModel;
   private final SelectWalletModel selectWalletModel;
@@ -22,10 +22,10 @@ public class PasswordEnterPasswordPanelModel extends AbstractWizardPanelModel {
    * @param panelName          The panel name
    * @param enterPasswordModel The "enter password" component model
    */
-  public PasswordEnterPasswordPanelModel(
-    String panelName,
-    EnterPasswordModel enterPasswordModel,
-    SelectWalletModel selectWalletModel
+  public CredentialsEnterPasswordPanelModel(
+          String panelName,
+          EnterPasswordModel enterPasswordModel,
+          SelectWalletModel selectWalletModel
   ) {
     super(panelName);
     this.enterPasswordModel = enterPasswordModel;
@@ -33,7 +33,7 @@ public class PasswordEnterPasswordPanelModel extends AbstractWizardPanelModel {
   }
 
   /**
-   * @return The "enter password" model
+   * @return The "enter pasword" model
    */
   public EnterPasswordModel getEnterPasswordModel() {
     return enterPasswordModel;

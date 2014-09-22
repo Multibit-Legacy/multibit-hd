@@ -57,9 +57,9 @@ public class PGPUtilsTest {
     char[] password = "herpDerp".toCharArray();
 
     // Generate a PGP secret key ring from the entropy source
-    //PGPSecretKeyRing secretKeyRing = org.multibit.hd.core.crypto.PGPUtils.createKey("herp@derp.com", password);
+    //PGPSecretKeyRing secretKeyRing = org.multibit.hd.core.crypto.PGPUtils.createKey("herp@derp.com", credentials);
     //assertThat(secretKeyRing).isNotNull();
-    //1) User wants to be able to recover their wallet password from the seed phrase.
+    //1) User wants to be able to recover their wallet credentials from the seed phrase.
     //log.debug("Secret key ring = " + secretKeyRing.toString());
     // Generate a PGP public key from the PGP private key
 

@@ -45,9 +45,9 @@ public class PGPUtilsTest {
   private static final String MBHD_BRIT_PREFIX = "mbhd-brit";
 
   /**
-   * The password used in the generation of the test PGP keys
+   * The credentials used in the generation of the test PGP keys
    */
-  public static final char[] TEST_DATA_PASSWORD = "password".toCharArray();
+  public static final char[] TEST_DATA_PASSWORD = "credentials".toCharArray();
 
 
   @Before

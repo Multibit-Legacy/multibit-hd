@@ -46,7 +46,7 @@ public class BRITWalletId {
 
     // Convert the seed to a BRIT wallet id using various trapdoor functions.
 
-    // Scrypt - scrypt is run using the seedBigInteger.toString() as the 'password'.
+    // Scrypt - scrypt is run using the seedBigInteger.toString() as the 'credentials'.
     // This returns a byte array (normally used as an AES256 key but here passed on to more trapdoor functions).
     // The scrypt parameters used are the default, with a salt of BRIT_WALLET_ID_SALT_USED_IN_SCRYPT.
     Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(BRIT_WALLET_ID_SALT_USED_IN_SCRYPT));

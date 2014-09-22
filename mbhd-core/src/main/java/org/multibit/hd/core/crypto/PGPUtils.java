@@ -103,7 +103,7 @@ public class PGPUtils {
    * @param encryptedInputStream  The input stream
    * @param decryptedOutputStream The output stream
    * @param keyInputStream        The key input stream
-   * @param password              The password
+   * @param password              The credentials
    * @throws Exception TODO This is too general (many exceptions wrapped up into one)
    */
   @SuppressWarnings("unchecked")
@@ -232,7 +232,7 @@ public class PGPUtils {
 
   /**
    * @param email    email to include in PGP key eg. herp@derp.com
-   * @param password password to use in generating the private key
+   * @param password credentials to use in generating the private key
    * @return PGPSecretKeyRing containing a PGP key and subkey.
    */
 
@@ -301,7 +301,7 @@ public class PGPUtils {
 //
 //    PGPKeyRingGenerator keyRingGen = new
 //            PGPKeyRingGenerator(PGPSignature.POSITIVE_CERTIFICATION, secretKey,
-//            email + "<" + email + ">", PGPEncryptedData.AES_256, password, true,
+//            email + "<" + email + ">", PGPEncryptedData.AES_256, credentials, true,
 //            signHashGenerator.generate(), null, new SecureRandom(), "BC");
 //
 //    keyRingGen.addSubKey(secretKey2);
@@ -340,9 +340,9 @@ public class PGPUtils {
 //  }
 
   // Note: s2kcount is a number between 0 and 0xff that controls the
-  // number of times to iterate the password hash before use. More
+  // number of times to iterate the credentials hash before use. More
   // iterations are useful against offline attacks, as it takes more
-  // time to check each password. The actual number of iterations is
+  // time to check each credentials. The actual number of iterations is
   // rather complex, and also depends on the hash function in use.
   // Refer to Section 3.7.1.3 in rfc4880.txt. Bigger numbers give
   // you more iterations.  As a rough rule of thumb, when using

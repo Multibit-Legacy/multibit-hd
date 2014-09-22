@@ -923,7 +923,7 @@ public class Buttons {
   /**
    * @param action The click action
    *
-   * @return A new "change password" button with icon
+   * @return A new "change credentials" button with icon
    */
   public static JButton newShowChangePasswordButton(Action action) {
 

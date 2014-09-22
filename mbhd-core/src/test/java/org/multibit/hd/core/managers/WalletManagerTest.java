@@ -90,13 +90,13 @@ public class WalletManagerTest {
                     temporaryDirectory1,
                     seed,
                     nowInSeconds,
-                    "password",
+                    "credentials",
                     "Example",
                     "Example"
             );
 
     // Uncomment this next line if you want a wallet created in your MultiBitHD user data directory.
-    //walletManager.createWallet( seed, "password");
+    //walletManager.createWallet( seed, "credentials");
 
     assertThat(walletSummary1).isNotNull();
 
@@ -109,7 +109,7 @@ public class WalletManagerTest {
                     temporaryDirectory2,
                     seed,
                     nowInSeconds,
-                    "password",
+                    "credentials",
                     "Example",
                     "Example"
             );
@@ -258,7 +258,7 @@ public class WalletManagerTest {
     assertThat(verifyMessageResult.getVerifyKey()).isEqualTo(CoreMessageKey.VERIFY_MESSAGE_FAILURE);
     assertThat(verifyMessageResult.getVerifyData()).isNull();
 
-    // Bad signing password
+    // Bad signing credentials
     signMessageResult = walletManager.signMessage(signingAddress.toString(), MESSAGE_TO_SIGN, "badPassword");
     assertThat(signMessageResult.isSigningWasSuccessful()).isFalse();
     assertThat(signMessageResult.getSignatureKey()).isEqualTo(CoreMessageKey.SIGN_MESSAGE_NO_PASSWORD);
@@ -303,14 +303,14 @@ public class WalletManagerTest {
                       "Password/seed encryption Example"
               );
 
-      // Check the encrypted wallet password and seed are correct
+      // Check the encrypted wallet credentials and seed are correct
       byte[] foundEncryptedBackupKey = walletSummary.getEncryptedBackupKey();
       byte[] foundEncryptedPaddedPassword = walletSummary.getEncryptedPassword();
 
-      log.debug("Length of padded encrypted password = " + foundEncryptedPaddedPassword.length);
+      log.debug("Length of padded encrypted credentials = " + foundEncryptedPaddedPassword.length);
 
-      // Check that the encrypted password length is always equal to at least 3 x the AES block size of 16 bytes i.e 48 bytes.
-      // This ensures that the existence of short passwords is not leaked from the length of the encrypted password
+      // Check that the encrypted credentials length is always equal to at least 3 x the AES block size of 16 bytes i.e 48 bytes.
+      // This ensures that the existence of short passwords is not leaked from the length of the encrypted credentials
       assertThat(foundEncryptedPaddedPassword.length).isGreaterThanOrEqualTo(48);
 
       KeyParameter seedDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(seed, WalletManager.SCRYPT_SALT);

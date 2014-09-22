@@ -163,7 +163,7 @@ public enum WalletManager implements WalletEventListener {
     (byte) 0xb3, (byte) 0x29, (byte) 0x54, (byte) 0x86, (byte) 0x16, (byte) 0xc4, (byte) 0x89, (byte) 0x72, (byte) 0x3e};
 
   /**
-   * The salt used for deriving the KeyParameter from the password in AES encryption for wallets
+   * The salt used for deriving the KeyParameter from the credentials in AES encryption for wallets
    */
   public static final byte[] SCRYPT_SALT = new byte[]{(byte) 0x35, (byte) 0x51, (byte) 0x03, (byte) 0x80, (byte) 0x75, (byte) 0xa3, (byte) 0xb0, (byte) 0xc5};
 
@@ -176,12 +176,12 @@ public enum WalletManager implements WalletEventListener {
    *
    * @param applicationDataDirectory The application data directory
    * @param walletId                 The wallet ID to locate the wallet
-   * @param password                 The password to use to decrypt the wallet
+   * @param password                 The credentials to use to decrypt the wallet
    */
   public Optional<WalletSummary> open(File applicationDataDirectory, WalletId walletId, CharSequence password) {
 
     Preconditions.checkNotNull(walletId, "'walletId' must be present");
-    Preconditions.checkNotNull(password, "'password' must be present");
+    Preconditions.checkNotNull(password, "'credentials' must be present");
 
     this.currentWalletSummary = Optional.absent();
 
@@ -230,7 +230,7 @@ public enum WalletManager implements WalletEventListener {
    * Create a wallet
    * This is stored in the MultiBitHD application data directory
    * The name of the wallet file is derived from the seed.
-   * If the wallet file already exists it is loaded and returned (and the input password is not used)
+   * If the wallet file already exists it is loaded and returned (and the input credentials is not used)
    *
    * @param seed                  the seed used to initialise the wallet
    * @param creationTimeInSeconds The creation time of the wallet, in seconds since epoch
@@ -283,7 +283,7 @@ public enum WalletManager implements WalletEventListener {
      * @param applicationDataDirectory The application data directory containing the wallet
      * @param seed                     The seed phrase to initialise the wallet
      * @param creationTimeInSeconds    The creation time of the wallet, in seconds since epoch
-     * @param password                 The password to use to encrypt the wallet - if null then the wallet is not loaded
+     * @param password                 The credentials to use to encrypt the wallet - if null then the wallet is not loaded
      * @param name                     The wallet name
      * @param notes                    Public notes associated with the wallet
      *
@@ -337,7 +337,7 @@ public enum WalletManager implements WalletEventListener {
         }
       }
 
-      // Create a wallet using the seed and password
+      // Create a wallet using the seed and credentials
       DeterministicSeed deterministicSeed = new DeterministicSeed(seed, "", creationTimeInSeconds);
       Wallet walletToReturn = Wallet.fromSeed(networkParameters, deterministicSeed);
       walletToReturn.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
@@ -370,7 +370,7 @@ public enum WalletManager implements WalletEventListener {
         File walletSummaryFile = WalletManager.getOrCreateWalletSummaryFile(walletDirectory);
         WalletManager.updateWalletSummary(walletSummaryFile, walletSummary);
       } catch (NoSuchAlgorithmException e) {
-        throw new WalletLoadException("could not store encrypted password and backup AES key", e);
+        throw new WalletLoadException("could not store encrypted credentials and backup AES key", e);
       }
 
       // See if there is a checkpoints file - if not then get the InstallationManager to copy one in
@@ -393,7 +393,7 @@ public enum WalletManager implements WalletEventListener {
      * @param applicationDataDirectory The application data directory containing the wallet
      * @param rootNode                 The root node that will be used to initialise the wallet (e.g. a BIP44 node)
      * @param creationTimeInSeconds    The creation time of the wallet, in seconds since epoch
-     * @param password                 The password to use to encrypt the wallet - if null then the wallet is not loaded
+     * @param password                 The credentials to use to encrypt the wallet - if null then the wallet is not loaded
      * @param name                     The wallet name
      * @param notes                    Public notes associated with the wallet
      *
@@ -447,7 +447,7 @@ public enum WalletManager implements WalletEventListener {
         }
       }
 
-      // Create a wallet using the seed and password
+      // Create a wallet using the seed and credentials
       //DeterministicSeed deterministicSeed = new DeterministicSeed(seed, "", creationTimeInSeconds);
       //Wallet walletToReturn = Wallet.fromSeed(networkParameters, deterministicSeed);
       DeterministicKey rootNodePubOnly = rootNode.getPubOnly();
@@ -481,11 +481,11 @@ public enum WalletManager implements WalletEventListener {
 
       // TODO backup of Trezor wallets
 //      try {
-//        WalletManager.writeEncryptedPasswordAndBackupKey(walletSummary, seed, password);
+//        WalletManager.writeEncryptedPasswordAndBackupKey(walletSummary, seed, credentials);
 //        File walletSummaryFile = WalletManager.getOrCreateWalletSummaryFile(walletDirectory);
 //        WalletManager.updateWalletSummary(walletSummaryFile, walletSummary);
 //      } catch (NoSuchAlgorithmException e) {
-//        throw new WalletLoadException("could not store encrypted password and backup AES key", e);
+//        throw new WalletLoadException("could not store encrypted credentials and backup AES key", e);
 //      }
 
       // See if there is a checkpoints file - if not then get the InstallationManager to copy one in
@@ -525,7 +525,7 @@ public enum WalletManager implements WalletEventListener {
    * <p>Reduced visibility for testing</p>
    *
    * @param walletDirectory The wallet directory containing the various wallet files to load
-   * @param password        The password to use to decrypt the wallet
+   * @param password        The credentials to use to decrypt the wallet
    *
    * @return Wallet - the loaded wallet
    *
@@ -535,7 +535,7 @@ public enum WalletManager implements WalletEventListener {
   WalletSummary loadFromWalletDirectory(File walletDirectory, CharSequence password) throws WalletLoadException, WalletVersionException {
 
     Preconditions.checkNotNull(walletDirectory, "'walletDirectory' must be present");
-    Preconditions.checkNotNull(password, "'password' must be present");
+    Preconditions.checkNotNull(password, "'credentials' must be present");
     checkWalletDirectory(walletDirectory);
 
     try {
@@ -981,11 +981,11 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
-   * Write the encrypted wallet password and backup AES key to the wallet configuration.
+   * Write the encrypted wallet credentials and backup AES key to the wallet configuration.
    * You probably want to save it afterwards with an updateSummary
    */
   public static void writeEncryptedPasswordAndBackupKey(WalletSummary walletSummary, byte[] seed, String password) throws NoSuchAlgorithmException {
-    // Save the wallet password, AES encrypted with a key derived from the wallet seed
+    // Save the wallet credentials, AES encrypted with a key derived from the wallet seed
     KeyParameter seedDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(seed, SCRYPT_SALT);
     byte[] passwordBytes = password.getBytes(Charsets.UTF_8);
 
@@ -993,7 +993,7 @@ public enum WalletManager implements WalletEventListener {
     byte[] encryptedPaddedPassword = org.multibit.hd.brit.crypto.AESUtils.encrypt(paddedPasswordBytes, seedDerivedAESKey, AES_INITIALISATION_VECTOR);
     walletSummary.setEncryptedPassword(encryptedPaddedPassword);
 
-    // Save the backupAESKey, AES encrypted with a key generated from the wallet password
+    // Save the backupAESKey, AES encrypted with a key generated from the wallet credentials
     KeyParameter walletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(passwordBytes, SCRYPT_SALT);
     byte[] encryptedBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.encrypt(seedDerivedAESKey.getKey(), walletPasswordDerivedAESKey, AES_INITIALISATION_VECTOR);
     walletSummary.setEncryptedBackupKey(encryptedBackupAESKey);
@@ -1047,7 +1047,7 @@ public enum WalletManager implements WalletEventListener {
    *
    * @param addressText    Text address to use to sign (makes UI Address conversion code DRY)
    * @param messageText    The message to sign
-   * @param walletPassword The wallet password
+   * @param walletPassword The wallet credentials
    *
    * @return A "sign message result" describing the outcome
    */
@@ -1145,16 +1145,16 @@ public enum WalletManager implements WalletEventListener {
 
   /**
    * Password short passwords with extra bytes - this is done so that the existence of short passwords is not leaked by
-   * the length of the encrypted password (which is always a multiple of the AES block size (16 bytes).
+   * the length of the encrypted credentials (which is always a multiple of the AES block size (16 bytes).
    *
-   * @param passwordBytes the password bytes to pad
+   * @param passwordBytes the credentials bytes to pad
    *
    * @return paddedPasswordBytes - this is guaranteed to be longer than 48 bytes. Byte 0 indicates the number of padding bytes,
-   * which are random bytes stored from byte 1 to byte <number of padding bytes). The real password is stored int he remaining bytes
+   * which are random bytes stored from byte 1 to byte <number of padding bytes). The real credentials is stored int he remaining bytes
    */
   public static byte[] padPasswordBytes(byte[] passwordBytes) {
     if (passwordBytes.length > AESUtils.BLOCK_LENGTH * 3) {
-      // No padding required - add a zero to the beginning of the password bytes (to indicate no padding bytes)
+      // No padding required - add a zero to the beginning of the credentials bytes (to indicate no padding bytes)
       return Bytes.concat(new byte[]{(byte) 0x0}, passwordBytes);
     } else {
       if (passwordBytes.length > AESUtils.BLOCK_LENGTH * 2) {
@@ -1179,7 +1179,7 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
-   * Unpad password bytes, removing the random prefix bytes length marker byte and te random bytes themselves
+   * Unpad credentials bytes, removing the random prefix bytes length marker byte and te random bytes themselves
    */
   public static byte[] unpadPasswordBytes(byte[] paddedPasswordBytes) {
     Preconditions.checkNotNull(paddedPasswordBytes);
@@ -1189,7 +1189,7 @@ public enum WalletManager implements WalletEventListener {
     int lengthOfPad = (int) paddedPasswordBytes[0];
 
     if (lengthOfPad > paddedPasswordBytes.length - 1) {
-      throw new IllegalStateException("Stored encrypted password is not in the correct format");
+      throw new IllegalStateException("Stored encrypted credentials is not in the correct format");
     }
     return Arrays.copyOfRange(paddedPasswordBytes, 1 + lengthOfPad, paddedPasswordBytes.length);
   }

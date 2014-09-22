@@ -16,7 +16,7 @@ import static org.fest.assertions.Assertions.assertThat;
  * <li>Verify the "history" screen edit Bob history</li>
  * </ul>
  * <p>Requires the "history" screen to be showing</p>
- * <p>Requires the "create wallet" and "password verified" entries to be present</p>
+ * <p>Requires the "create wallet" and "credentials verified" entries to be present</p>
  *
  * @since 0.0.1
  *  
@@ -61,7 +61,7 @@ public class EditPasswordEntryUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled();
 
-    // Update password entry private notes
+    // Update credentials entry private notes
     window
       .textBox(MessageKey.DESCRIPTION_READ_ONLY.getKey())
       .requireText(Languages.safeText(MessageKey.PASSWORD_VERIFIED))

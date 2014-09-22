@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.password;
+package org.multibit.hd.ui.views.wizards.credentials;
 
 import com.google.common.base.Optional;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -11,7 +11,7 @@ import javax.swing.*;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Password: Restore</li>
+ * <li>Credntials: Restore</li>
  * </ul>
  *
  * <p>This view is a transition view to ease the hand over process</p>
@@ -19,12 +19,12 @@ import javax.swing.*;
  * @since 0.0.1
  *  
  */
-public class PasswordRestorePanelView extends AbstractWizardPanelView<PasswordWizardModel, String> {
+public class CredentialsRestorePanelView extends AbstractWizardPanelView<CredentialsWizardModel, String> {
 
   /**
    * @param wizard The wizard managing the states
    */
-  public PasswordRestorePanelView(AbstractWizard<PasswordWizardModel> wizard, String panelName) {
+  public CredentialsRestorePanelView(AbstractWizard<CredentialsWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, MessageKey.PASSWORD_TITLE, AwesomeIcon.LOCK);
 
@@ -44,7 +44,7 @@ public class PasswordRestorePanelView extends AbstractWizardPanelView<PasswordWi
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<PasswordWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<CredentialsWizardModel> wizard) {
 
     // Do nothing
   }

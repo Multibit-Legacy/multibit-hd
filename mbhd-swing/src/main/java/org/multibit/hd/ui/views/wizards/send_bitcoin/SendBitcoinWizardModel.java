@@ -160,7 +160,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   }
 
   /**
-   * @return The password the user entered
+   * @return The credentials the user entered
    */
   public String getPassword() {
     return confirmPanelModel.getPasswordModel().getValue();
@@ -266,7 +266,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
   private void sendBitcoin() {
 
-    // Actually send the bitcoin by signing using the password, committing to the wallet and broadcasting to the Bitcoin network
+    // Actually send the bitcoin by signing using the credentials, committing to the wallet and broadcasting to the Bitcoin network
     Preconditions.checkNotNull(confirmPanelModel);
 
     // Copy the note into the sendRequestSummary
@@ -276,7 +276,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
       sendRequestSummary.setNotes(Optional.<String>absent());
     }
 
-    // Copy the password into the sendRequestSummary
+    // Copy the credentials into the sendRequestSummary
     sendRequestSummary.setPassword(confirmPanelModel.getPasswordModel().getValue());
 
     BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();

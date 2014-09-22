@@ -65,7 +65,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   private final SeedPhraseGenerator seedPhraseGenerator;
 
   /**
-   * The confirm password model
+   * The confirm credentials model
    */
   private ConfirmPasswordModel confirmPasswordModel;
 
@@ -329,7 +329,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   }
 
   /**
-   * @return The user entered password for the creation process
+   * @return The user entered credentials for the creation process
    */
   public String getCreateWalletUserPassword() {
     return confirmPasswordModel.getValue();
@@ -359,7 +359,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   /**
    * <p>Reduced visibility for panel models</p>
    *
-   * @param confirmPasswordModel The "confirm password" model
+   * @param confirmPasswordModel The "confirm credentials" model
    */
   void setConfirmPasswordModel(ConfirmPasswordModel confirmPasswordModel) {
     this.confirmPasswordModel = confirmPasswordModel;
@@ -482,7 +482,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   /**
    * <p>Reduced visibility for panel models</p>
    *
-   * @param restoreWalletConfirmPasswordModel The "enter password" model for the restore wallet panel
+   * @param restoreWalletConfirmPasswordModel The "enter credentials" model for the restore wallet panel
    */
   void setRestoreWalletConfirmPasswordModel(ConfirmPasswordModel restoreWalletConfirmPasswordModel) {
     this.restoreWalletConfirmPasswordModel = restoreWalletConfirmPasswordModel;
@@ -495,7 +495,7 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   /**
    * <p>Reduced visibility for panel models</p>
    *
-   * @param enterSeedPhraseModel The "restore password" seed phrase mode
+   * @param enterSeedPhraseModel The "restore credentials" seed phrase mode
    */
   void setRestorePasswordEnterSeedPhraseModel(EnterSeedPhraseModel enterSeedPhraseModel) {
     this.restorePasswordEnterSeedPhraseModel = enterSeedPhraseModel;

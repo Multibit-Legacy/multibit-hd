@@ -47,7 +47,7 @@ public class ToolsScreenRequirements {
     // Show then cancel the "about" wizard
     new ShowThenCancelAboutUseCase(window).execute(parameters);
 
-    // Verify the "change password" wizard
+    // Verify the "change credentials" wizard
     new ShowThenCancelChangePasswordUseCase(window).execute(parameters);
     new VerifyChangePasswordUseCase(window).execute(parameters);
 

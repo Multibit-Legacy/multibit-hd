@@ -36,7 +36,7 @@ public class SendBitcoinConfirmPanelModel extends AbstractWizardPanelModel {
   }
 
   /**
-   * @return The "enter password" model
+   * @return The "enter credentials" model
    */
   public EnterPasswordModel getPasswordModel() {
     return passwordModel;

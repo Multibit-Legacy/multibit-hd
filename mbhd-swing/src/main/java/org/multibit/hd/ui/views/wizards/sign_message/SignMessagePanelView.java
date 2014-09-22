@@ -207,7 +207,7 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
         enterPasswordMaV.getModel().setValue("");
         enterPasswordMaV.getView().updateViewFromModel();
 
-        // Clear the password on the UI as update view from model does not work
+        // Clear the credentials on the UI as update view from model does not work
         Component passwordField = enterPasswordMaV.getView().currentComponentPanel().getComponent(1);
         if (passwordField instanceof JPasswordField) {
           ((JPasswordField) passwordField).setText("");

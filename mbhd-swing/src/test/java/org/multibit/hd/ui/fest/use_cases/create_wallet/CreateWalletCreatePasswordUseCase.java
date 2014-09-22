@@ -14,7 +14,7 @@ import static org.fest.assertions.Assertions.assertThat;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the welcome wizard "create wallet create password" panel view</li>
+ * <li>Verify the welcome wizard "create wallet create credentials" panel view</li>
  * </ul>
  *
  * @since 0.0.1
@@ -65,7 +65,7 @@ public class CreateWalletCreatePasswordUseCase extends AbstractFestUseCase {
       .label(newNotShowingJLabelFixture(
         getVerificationStatusName(
           WelcomeWizardState.CREATE_WALLET_CREATE_PASSWORD.name(),
-          "password"
+          "credentials"
         )))
       .requireNotVisible();
 
@@ -82,7 +82,7 @@ public class CreateWalletCreatePasswordUseCase extends AbstractFestUseCase {
 
   private void verifyPassword() {
 
-    // Matching password
+    // Matching credentials
     window
       .textBox(MessageKey.ENTER_NEW_PASSWORD.getKey())
       .setText(WalletFixtures.STANDARD_PASSWORD)
@@ -101,7 +101,7 @@ public class CreateWalletCreatePasswordUseCase extends AbstractFestUseCase {
       .label(
         getVerificationStatusName(
           WelcomeWizardState.CREATE_WALLET_CREATE_PASSWORD.name(),
-          "password"
+          "credentials"
         ))
       .requireVisible();
 
@@ -125,7 +125,7 @@ public class CreateWalletCreatePasswordUseCase extends AbstractFestUseCase {
       .label(newNotShowingJLabelFixture(
         getVerificationStatusName(
           WelcomeWizardState.CREATE_WALLET_CREATE_PASSWORD.name(),
-          "password"
+          "credentials"
         )))
       .requireNotVisible();
 
@@ -149,14 +149,14 @@ public class CreateWalletCreatePasswordUseCase extends AbstractFestUseCase {
       .label(newNotShowingJLabelFixture(
         getVerificationStatusName(
           WelcomeWizardState.CREATE_WALLET_CREATE_PASSWORD.name(),
-          "password"
+          "credentials"
         )))
       .requireNotVisible();
 
   }
 
   /**
-   * This is purely a visual test since the password echo char cannot be detected by FEST
+   * This is purely a visual test since the credentials echo char cannot be detected by FEST
    */
   private void verifyPasswordShows() {
 
@@ -176,12 +176,12 @@ public class CreateWalletCreatePasswordUseCase extends AbstractFestUseCase {
       .pressKey(KeyEvent.VK_SHIFT)
       .releaseKey(KeyEvent.VK_SHIFT);
 
-    // Show the password
+    // Show the credentials
     window
       .button(MessageKey.SHOW.getKey())
       .click();
 
-    // Hide the password
+    // Hide the credentials
     window
       .button(MessageKey.HIDE.getKey())
       .click();

@@ -347,7 +347,7 @@ public class Labels {
   /**
    * @param status True if the status is "good"
    *
-   * @return A new "wallet password created" status label
+   * @return A new "wallet credentials created" status label
    */
   public static JLabel newWalletPasswordCreatedStatus(boolean status) {
     return newStatusLabel(MessageKey.WALLET_PASSWORD_CREATED_STATUS, null, status);
@@ -673,7 +673,7 @@ public class Labels {
   }
 
   /**
-   * @return A new "Enter password" label
+   * @return A new "Enter credentials" label
    */
   public static JLabel newEnterPassword() {
 
@@ -681,7 +681,7 @@ public class Labels {
   }
 
   /**
-   * @return A new "Enter new password" label
+   * @return A new "Enter new credentials" label
    */
   public static JLabel newEnterNewPassword() {
 
@@ -689,7 +689,7 @@ public class Labels {
   }
 
   /**
-   * @return A new "Retype new password" label
+   * @return A new "Retype new credentials" label
    */
   public static JLabel newRetypeNewPassword() {
 
@@ -697,7 +697,7 @@ public class Labels {
   }
 
   /**
-   * @return A new "Confirm password" label
+   * @return A new "Confirm credentials" label
    */
   public static JLabel newPasswordVerified() {
 
@@ -958,7 +958,7 @@ public class Labels {
   }
 
   /**
-   * @return A new "wallet password" note
+   * @return A new "wallet credentials" note
    */
   public static JLabel newWalletPasswordNote() {
 
@@ -1157,7 +1157,7 @@ public class Labels {
   }
 
   /**
-   * @return A new "password" note (password wizard)
+   * @return A new "password" note (credentials wizard)
    */
   public static JLabel newPasswordNote() {
 
@@ -1168,7 +1168,18 @@ public class Labels {
   }
 
   /**
-   * @return A new "select wallet" note (password wizard)
+   * @return A new "PIN introduction" note (credentials wizard)
+   */
+  public static JLabel newPinIntroductionNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.PIN_INTRODUCTION
+    }, new Object[][]{});
+
+  }
+
+  /**
+   * @return A new "select wallet" note (credentials wizard)
    */
   public static JLabel newSelectWalletNote() {
 
@@ -1179,7 +1190,7 @@ public class Labels {
   }
 
   /**
-   * @return A new "restore wallet" note (password wizard)
+   * @return A new "restore wallet" note (credentials wizard)
    */
   public static JLabel newRestoreWalletNote() {
 
@@ -1190,7 +1201,7 @@ public class Labels {
   }
 
   /**
-   * @return A new "change password note 1" (change password wizard)
+   * @return A new "change credentials note 1" (change credentials wizard)
    */
   public static JLabel newChangePasswordNote1() {
 
@@ -1201,7 +1212,7 @@ public class Labels {
   }
 
   /**
-   * @return A new "change password note 2" (change password wizard)
+   * @return A new "change credentials note 2" (change credentials wizard)
    */
   public static JLabel newChangePasswordNote2() {
 

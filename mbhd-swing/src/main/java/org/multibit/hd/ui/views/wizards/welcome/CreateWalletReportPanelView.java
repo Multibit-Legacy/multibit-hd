@@ -247,7 +247,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       } else {
         BackupManager.INSTANCE.initialise(applicationDataDirectory, Optional.<File>absent());
       }
-      // Remember the walletSummary and password so that it will be used for the next rolling backup
+      // Remember the walletSummary and credentials so that it will be used for the next rolling backup
       BackupService backupService = CoreServices.getOrCreateBackupService();
       backupService.rememberWalletSummaryAndPasswordForRollingBackup(walletSummary, password);
       backupService.rememberWalletIdAndPasswordForLocalZipBackup(walletSummary.getWalletId(), password);

@@ -52,7 +52,7 @@ public class RestorePasswordEnterSeedPhraseView extends AbstractWizardPanelView<
   @Override
   public void newPanelModel() {
 
-    // Don't need the timestamp for a password restore
+    // Don't need the timestamp for a credentials restore
     enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV(getPanelName(), false, true);
 
     // Bind it to the wizard model

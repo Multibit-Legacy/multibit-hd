@@ -396,7 +396,7 @@ public enum BackupManager {
    * A BackupWalletLoadedEvent is emitted
    *
    * @param walletId  The walletId of the wallet
-   * @param password  The password used to decrypt the encrypted wallet backup
+   * @param password  The credentials used to decrypt the encrypted wallet backup
    * @throws WalletLoadException if no rolling backup could be loaded successfully, or none are available
    */
   public Wallet loadRollingBackup(final WalletId walletId, CharSequence password) throws WalletLoadException {

@@ -8,9 +8,9 @@ import java.util.Map;
 
 
 /**
- * <p>Wizard to provide the following to UI for "change password" wizard:</p>
+ * <p>Wizard to provide the following to UI for "change credentials" wizard:</p>
  * <ol>
- * <li>Enter and confirm password</li>
+ * <li>Enter and confirm credentials</li>
  * </ol>
  *
  * @since 0.0.1

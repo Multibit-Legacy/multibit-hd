@@ -36,7 +36,7 @@ public enum SSLManager {
 
   /**
    * The certificates are only used to verify hard-coded hosts which are protected
-   * by a digital signature on the JAR therefore this password is meaningless
+   * by a digital signature on the JAR therefore this credentials is meaningless
    *
    * For convenience we use the same as the default JVM
    */

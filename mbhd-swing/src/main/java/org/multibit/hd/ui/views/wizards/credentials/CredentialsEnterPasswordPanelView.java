@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.password;
+package org.multibit.hd.ui.views.wizards.credentials;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
@@ -41,15 +41,15 @@ import java.util.concurrent.TimeUnit;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Password: Enter password</li>
+ * <li>Credentials: Enter password</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<PasswordWizardModel, PasswordEnterPasswordPanelModel> {
+public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<CredentialsWizardModel, CredentialsEnterPasswordPanelModel> {
 
-  private static final Logger log = LoggerFactory.getLogger(PasswordEnterPasswordPanelView.class);
+  private static final Logger log = LoggerFactory.getLogger(CredentialsEnterPasswordPanelView.class);
 
   // Panel specific components
   private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV;
@@ -61,7 +61,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
   /**
    * @param wizard The wizard managing the states
    */
-  public PasswordEnterPasswordPanelView(AbstractWizard<PasswordWizardModel> wizard, String panelName) {
+  public CredentialsEnterPasswordPanelView(AbstractWizard<CredentialsWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, MessageKey.PASSWORD_TITLE, AwesomeIcon.LOCK);
 
@@ -76,7 +76,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
     selectWalletMaV = Components.newSelectWalletMaV(getPanelName());
 
     // Configure the panel model
-    final PasswordEnterPasswordPanelModel panelModel = new PasswordEnterPasswordPanelModel(
+    final CredentialsEnterPasswordPanelModel panelModel = new CredentialsEnterPasswordPanelModel(
       getPanelName(),
       enterPasswordMaV.getModel(),
       selectWalletMaV.getModel()
@@ -111,7 +111,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<PasswordWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<CredentialsWizardModel> wizard) {
 
     PanelDecorator.addExitCancelRestoreUnlock(this, wizard);
 
@@ -120,7 +120,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
   @Override
   public void fireInitialStateViewEvents() {
 
-    // Initialise with "Unlock" disabled to force users to enter a password
+    // Initialise with "Unlock" disabled to force users to enter a credentials
     ViewEvents.fireWizardButtonEnabledEvent(
       getPanelName(),
       WizardButton.FINISH,
@@ -193,7 +193,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
       }
     });
 
-    // Check the password (might take a while so do it asynchronously while showing a spinner)
+    // Check the credentials (might take a while so do it asynchronously while showing a spinner)
     // Tar pit (must be in a separate thread to ensure UI updates)
     ListenableFuture<Boolean> passwordFuture = checkPasswordExecutorService.submit(new Callable<Boolean>() {
 
@@ -284,7 +284,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
   }
 
   /**
-   * @return True if the selected wallet can be opened with the given password.
+   * @return True if the selected wallet can be opened with the given credentials.
    */
   private boolean checkPassword() {
 
@@ -298,7 +298,7 @@ public class PasswordEnterPasswordPanelView extends AbstractWizardPanelView<Pass
       } catch (WalletLoadException wle) {
         // Mostly this will be from a bad 
         log.error(wle.getMessage());
-        // Assume bad password
+        // Assume bad credentials
         return false;
       }
       Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();

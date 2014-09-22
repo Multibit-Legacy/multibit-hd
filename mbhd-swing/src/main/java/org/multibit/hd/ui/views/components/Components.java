@@ -16,6 +16,8 @@ import org.multibit.hd.ui.views.components.enter_amount.EnterAmountModel;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountView;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordView;
+import org.multibit.hd.ui.views.components.enter_pin.EnterPinModel;
+import org.multibit.hd.ui.views.components.enter_pin.EnterPinView;
 import org.multibit.hd.ui.views.components.enter_recipient.EnterRecipientModel;
 import org.multibit.hd.ui.views.components.enter_recipient.EnterRecipientView;
 import org.multibit.hd.ui.views.components.enter_search.EnterSearchModel;
@@ -101,11 +103,11 @@ public class Components {
   }
 
   /**
-   * <p>A "confirm password" model and view handles a password with confirmation and reveal</p>
+   * <p>A "confirm credentials" model and view handles a credentials with confirmation and reveal</p>
    *
    * @param panelName The panel name to identify "verification status" and "next" buttons
    *
-   * @return A new "confirm password" model and view
+   * @return A new "confirm credentials" model and view
    */
   public static ModelAndView<ConfirmPasswordModel, ConfirmPasswordView> newConfirmPasswordMaV(String panelName) {
 
@@ -133,6 +135,22 @@ public class Components {
   }
 
   /**
+    * <p>An "enter pin" model and view handles pin entry with reveal</p>
+    *
+    * @param panelName The panel name to identify "next" buttons
+    *
+    * @return A new "enter pin" model and view
+    */
+   public static ModelAndView<EnterPinModel, EnterPinView> newEnterPinMaV(String panelName) {
+
+     EnterPinModel model = new EnterPinModel(panelName);
+     EnterPinView view = new EnterPinView(model);
+
+     return new ModelAndView<>(model, view);
+
+   }
+
+   /**
    * <p>A "display Bitcoin address" model and view displays a Bitcoin address with the following features:</p>
    * <ul>
    * <li>Non-editable text field showing the address</li>

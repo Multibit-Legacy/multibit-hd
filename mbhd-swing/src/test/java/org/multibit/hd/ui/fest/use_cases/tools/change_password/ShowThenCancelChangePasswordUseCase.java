@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "tools" screen change password wizard shows</li>
+ * <li>Verify the "tools" screen change credentials wizard shows</li>
  * </ul>
  * <p>Requires the "tools" screen to be showing</p>
  *
@@ -25,12 +25,12 @@ public class ShowThenCancelChangePasswordUseCase extends AbstractFestUseCase {
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    // Click on Change password
+    // Click on Change credentials
     window
       .button(MessageKey.SHOW_CHANGE_PASSWORD_WIZARD.getKey())
       .click();
 
-    // Verify the "change password" wizard appears
+    // Verify the "change credentials" wizard appears
     assertLabelText(MessageKey.CHANGE_PASSWORD_TITLE);
 
     // Verify buttons are present

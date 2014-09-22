@@ -136,7 +136,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
   }
 
   /**
-   * @return The password the user entered
+   * @return The credentials the user entered
    */
   public String getPassword() {
     return enterDetailsPanelModel.getEnterPasswordModel().getValue();

@@ -60,7 +60,7 @@ public class Bip39SeedPhraseGenerator implements SeedPhraseGenerator {
     try {
       mnemonicCode.check(seedPhrase);
 
-      // Convert to seed byte array using an empty password
+      // Convert to seed byte array using an empty credentials
       return MnemonicCode.toSeed(seedPhrase, "");
     } catch (MnemonicException e) {
       throw new SeedPhraseException("The seed phrase is not valid", e);

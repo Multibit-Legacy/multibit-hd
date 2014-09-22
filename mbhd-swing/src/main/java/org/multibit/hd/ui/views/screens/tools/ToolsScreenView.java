@@ -190,7 +190,7 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
   }
 
   /**
-   * @return An action to show the "change password" tool
+   * @return An action to show the "change credentials" tool
    */
   private AbstractAction getShowChangePasswordAction() {
     return new AbstractAction() {

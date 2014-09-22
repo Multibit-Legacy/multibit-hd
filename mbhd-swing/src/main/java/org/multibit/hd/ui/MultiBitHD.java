@@ -293,7 +293,7 @@ public class MultiBitHD {
 
     } else {
 
-      log.debug("Wallets are present - showing the password wizard");
+      log.debug("Wallets are present - showing the credentials wizard");
       mainView.setShowExitingPasswordWizard(true);
       mainView.setShowExitingWelcomeWizard(false);
 

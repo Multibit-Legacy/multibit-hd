@@ -17,7 +17,7 @@ import static org.fest.assertions.Assertions.assertThat;
  * <li>Verify the "history" screen edit Bob contact then cancel changes</li>
  * </ul>
  * <p>Requires the "history" screen to be showing</p>
- * <p>Requires the "password verified" entry to be present</p>
+ * <p>Requires the "credentials verified" entry to be present</p>
  * <p>Requires the "wallet opened" entry to be present</p>
  *
  * @since 0.0.1
@@ -37,7 +37,7 @@ public class EditThenCancelPasswordEntryUseCase extends AbstractFestUseCase {
       .table(MessageKey.HISTORY.getKey())
       .rowCount();
 
-    // Find the password verified row
+    // Find the credentials verified row
     int pvRow = window
       .table(MessageKey.HISTORY.getKey())
       .cell(Languages.safeText(MessageKey.PASSWORD_VERIFIED))
@@ -63,7 +63,7 @@ public class EditThenCancelPasswordEntryUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled();
 
-    // Update password entry details
+    // Update credentials entry details
     window
       .textBox(MessageKey.PRIVATE_NOTES.getKey())
       .setText("Updated information");

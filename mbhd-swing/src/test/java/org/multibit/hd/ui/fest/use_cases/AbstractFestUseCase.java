@@ -96,7 +96,7 @@ public abstract class AbstractFestUseCase {
    * <p>Provides a naming convention for the verification label</p>
    *
    * @param panelName     The panel name taken from the wizard state (e.g. WelcomeWizardState.RESTORE_PASSWORD_SEED_PHRASE)
-   * @param componentName The component name to avoid conflict with multiple verifiable components (e.g. "timestamp", "seedphrase", "password")
+   * @param componentName The component name to avoid conflict with multiple verifiable components (e.g. "timestamp", "seedphrase", "credentials")
    *
    * @return The appropriate FEST name for the verification label
    */
@@ -306,7 +306,7 @@ public abstract class AbstractFestUseCase {
   }
 
   /**
-   * The standard length of time for a wallet password to change
+   * The standard length of time for a wallet credentials to change
    */
   protected void pauseForWalletPasswordChange() {
     Pause.pause(3, TimeUnit.SECONDS);

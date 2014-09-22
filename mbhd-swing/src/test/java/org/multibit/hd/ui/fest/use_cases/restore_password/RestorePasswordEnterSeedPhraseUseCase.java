@@ -13,7 +13,7 @@ import static org.fest.assertions.Assertions.assertThat;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the welcome wizard "restore password enter seed phrase" panel view</li>
+ * <li>Verify the welcome wizard "restore credentials enter seed phrase" panel view</li>
  * </ul>
  *
  * @since 0.0.1

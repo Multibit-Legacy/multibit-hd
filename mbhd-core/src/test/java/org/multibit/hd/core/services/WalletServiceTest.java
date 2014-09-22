@@ -147,11 +147,11 @@ public class WalletServiceTest {
 
     assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
 
-    // Change the password once
+    // Change the credentials once
     WalletService.changeWalletPasswordInternal(walletSummary, PASSWORD, CHANGED_PASSWORD1);
     assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD1)).isTrue();
 
-    // Change the password again
+    // Change the credentials again
     WalletService.changeWalletPasswordInternal(walletSummary, CHANGED_PASSWORD1, CHANGED_PASSWORD2);
     assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD2)).isTrue();
 

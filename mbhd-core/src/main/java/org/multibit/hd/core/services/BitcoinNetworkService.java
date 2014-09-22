@@ -533,7 +533,7 @@ public class BitcoinNetworkService extends AbstractService {
   }
 
   /**
-   * @param sendRequestSummary The information required to prepare a transaction for sending (this is everything except the password)
+   * @param sendRequestSummary The information required to prepare a transaction for sending (this is everything except the credentials)
    *                           This prepares the transaction but does not sign it.
    * @return whether the prepareTransaction was successful or not
    */

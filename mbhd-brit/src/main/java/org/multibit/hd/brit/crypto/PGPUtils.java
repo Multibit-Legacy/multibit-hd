@@ -102,7 +102,7 @@ public class PGPUtils {
    * @param encryptedInputStream  The input stream
    * @param decryptedOutputStream The output stream
    * @param keyInputStream        The key input stream
-   * @param password              The password
+   * @param password              The credentials
    *
    * @throws Exception TODO This is too general (many exceptions wrapped up into one)
    */

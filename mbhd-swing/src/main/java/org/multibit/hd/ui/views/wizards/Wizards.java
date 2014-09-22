@@ -1,6 +1,5 @@
 package org.multibit.hd.ui.views.wizards;
 
-import com.google.bitcoin.core.Address;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.config.Configuration;
@@ -16,6 +15,8 @@ import org.multibit.hd.ui.views.wizards.appearance_settings.AppearanceSettingsWi
 import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordState;
 import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordWizard;
 import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordWizardModel;
+import org.multibit.hd.ui.views.wizards.credentials.CredentialsState;
+import org.multibit.hd.ui.views.wizards.credentials.CredentialsWizardModel;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactState;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactWizard;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactWizardModel;
@@ -45,8 +46,8 @@ import org.multibit.hd.ui.views.wizards.lab_settings.LabSettingsWizardModel;
 import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsState;
 import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsWizard;
 import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsWizardModel;
-import org.multibit.hd.ui.views.wizards.password.PasswordWizard;
-import org.multibit.hd.ui.views.wizards.password.PasswordWizardModel;
+import org.multibit.hd.ui.views.wizards.credentials.CredentialsRequestType;
+import org.multibit.hd.ui.views.wizards.credentials.CredentialsWizard;
 import org.multibit.hd.ui.views.wizards.payments.PaymentsState;
 import org.multibit.hd.ui.views.wizards.payments.PaymentsWizard;
 import org.multibit.hd.ui.views.wizards.payments.PaymentsWizardModel;
@@ -224,19 +225,6 @@ public class Wizards {
   }
 
   /**
-    * @return A new "sign message" wizard for a warm start, with the specified address filled in
-    */
-   public static SignMessageWizard newSignMessageWizard(Address signingAddress) {
-
-     log.debug("New 'Sign message wizard'");
-
-     SignMessageWizardModel signMessageWizardModel = new SignMessageWizardModel(SignMessageState.EDIT_MESSAGE);
-     signMessageWizardModel.setSigningAddress(signingAddress);
-     return new SignMessageWizard(signMessageWizardModel, false);
-
-   }
-
-  /**
    * @return A new "verify message" wizard for a warm start
    */
   public static VerifyMessageWizard newVerifyMessageWizard() {
@@ -248,22 +236,37 @@ public class Wizards {
   }
 
   /**
-   * @return A new "password" wizard for a warm start
+   * @return A new "credentials" wizard for a warm start - requesting the user enters a Password
    */
-  public static PasswordWizard newExitingPasswordWizard() {
+  public static CredentialsWizard newExitingCredentialsWizard() {
 
-    log.debug("New 'Password wizard'");
-
-    return new PasswordWizard(new PasswordWizardModel(), true);
+    return newExitingCredentialsWizard(CredentialsRequestType.PASSWORD);
 
   }
 
   /**
-   * @return A new "change password" wizard
+    * @return A new "credentials" wizard for a warm start
+    */
+   public static CredentialsWizard newExitingCredentialsWizard(CredentialsRequestType credentialsRequestType) {
+
+     log.debug("New 'Credentials wizard' with credentialsRequestType = " + credentialsRequestType);
+     switch (credentialsRequestType) {
+       case NO_TREZOR_PIN:
+         throw new UnsupportedOperationException("TODO: No Trezor PIN support in Credentials Wizard");
+       case TREZOR_PIN:
+         return new CredentialsWizard(new CredentialsWizardModel(CredentialsState.CREDENTIALS_ENTER_PIN, credentialsRequestType), true);
+       case PASSWORD:
+       default:
+         return new CredentialsWizard(new CredentialsWizardModel(CredentialsState.CREDENTIALS_ENTER_PASSWORD, credentialsRequestType), true);
+     }
+   }
+
+  /**
+   * @return A new "change credentials" wizard
    */
   public static ChangePasswordWizard newChangePasswordWizard() {
 
-    log.debug("New 'Change password wizard'");
+    log.debug("New 'Change credentials wizard'");
 
     return new ChangePasswordWizard(new ChangePasswordWizardModel(ChangePasswordState.CHANGE_PASSWORD_ENTER_PASSWORD), false);
 

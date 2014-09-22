@@ -57,13 +57,13 @@ public class SendNoFundsConfirmScreenUseCase extends AbstractFestUseCase {
       .textBox(MessageKey.PRIVATE_NOTES.getKey())
       .setText("Some notes");
 
-    // Have not entered password yet
+    // Have not entered credentials yet
     window
       .button(MessageKey.SEND.getKey())
       .requireVisible()
       .requireDisabled();
 
-    // Enter password
+    // Enter credentials
     window
       .textBox(MessageKey.ENTER_PASSWORD.getKey())
       .enterText(WalletFixtures.STANDARD_PASSWORD);

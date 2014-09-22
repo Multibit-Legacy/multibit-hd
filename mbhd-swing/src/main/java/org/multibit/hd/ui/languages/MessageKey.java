@@ -359,6 +359,9 @@ public enum MessageKey {
   PASSWORD_UNLOCK("password_unlock"),
   PASSWORD_UNLOCK_TOOLTIP("password_unlock_tooltip"),
 
+  PIN_TITLE("pin_title"),
+  PIN_INTRODUCTION("pin_introduction"),
+
   // Settings titles
 
   LANGUAGE_SETTINGS_TITLE("language_settings_title"),

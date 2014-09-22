@@ -36,12 +36,12 @@ public class WalletSummary {
   private WalletType walletType;
 
   /**
-   * The wallet password, encrypted with an AES key derived from the wallet seed
+   * The wallet credentials, encrypted with an AES key derived from the wallet seed
    */
   private byte[] encryptedPassword;
 
   /**
-   * The backup AES key, encrypted with an AES key derived from the wallet password
+   * The backup AES key, encrypted with an AES key derived from the wallet credentials
    */
   private byte[] encryptedBackupKey;
 
@@ -88,7 +88,7 @@ public class WalletSummary {
   }
 
   /**
-   * @return The wallet password
+   * @return The wallet credentials
    */
   public CharSequence getPassword() {
     return password;
@@ -121,9 +121,9 @@ public class WalletSummary {
   }
 
   /**
-   * Get the encrypted wallet password (which is padded)
+   * Get the encrypted wallet credentials (which is padded)
    * - use WalletManager#unpadPasswordBytes to unpad
-   * @return encrypted, padded wallet password
+   * @return encrypted, padded wallet credentials
    */
   public byte[] getEncryptedPassword() {
     return encryptedPassword;
@@ -156,7 +156,7 @@ public class WalletSummary {
             "wallet=" + wallet +
             ", walletId=" + walletId +
             ", walletType=" + walletType +
-            ", password=" + password +
+            ", credentials=" + password +
             ", name='" + name + '\'' +
             ", notes='" + notes + '\'' +
             ", encryptedPassword=" + Arrays.toString(encryptedPassword) +

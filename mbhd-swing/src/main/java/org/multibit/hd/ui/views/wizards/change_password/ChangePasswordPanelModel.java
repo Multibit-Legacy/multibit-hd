@@ -5,9 +5,9 @@ import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
 
 /**
- * <p>Panel model to provide the following to "change password" wizard:</p>
+ * <p>Panel model to provide the following to "change credentials" wizard:</p>
  * <ul>
- * <li>Storage of state for the "change password" panel</li>
+ * <li>Storage of state for the "change credentials" panel</li>
  * </ul>
  *
  * @since 0.0.1
@@ -20,8 +20,8 @@ public class ChangePasswordPanelModel extends AbstractWizardPanelModel {
 
   /**
    * @param panelName            The panel name
-   * @param enterPasswordModel   The "enter password" component model
-   * @param confirmPasswordModel The "confirm password" component model
+   * @param enterPasswordModel   The "enter credentials" component model
+   * @param confirmPasswordModel The "confirm credentials" component model
    */
   public ChangePasswordPanelModel(
     String panelName,
@@ -34,14 +34,14 @@ public class ChangePasswordPanelModel extends AbstractWizardPanelModel {
   }
 
   /**
-   * @return The "enter password" model
+   * @return The "enter credentials" model
    */
   public EnterPasswordModel getEnterPasswordModel() {
     return enterPasswordModel;
   }
 
   /**
-   * @return The "confirm password" model
+   * @return The "confirm credentials" model
    */
   public ConfirmPasswordModel getConfirmPasswordModel() {
     return confirmPasswordModel;

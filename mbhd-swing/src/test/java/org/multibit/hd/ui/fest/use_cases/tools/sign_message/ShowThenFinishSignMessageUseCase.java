@@ -81,7 +81,7 @@ public class ShowThenFinishSignMessageUseCase extends AbstractFestUseCase {
       .requireEnabled()
       .requireNotEditable();
 
-    // No address, message not password
+    // No address, message not credentials
     // Click sign message
     window
       .button(MessageKey.SIGN_MESSAGE.getKey())
@@ -99,7 +99,7 @@ public class ShowThenFinishSignMessageUseCase extends AbstractFestUseCase {
       .textBox(MessageKey.BITCOIN_ADDRESS.getKey())
       .setText(signingAddresString);
 
-    // No message nor password
+    // No message nor credentials
     // Click sign message
     window
       .button(MessageKey.SIGN_MESSAGE.getKey())
@@ -117,13 +117,13 @@ public class ShowThenFinishSignMessageUseCase extends AbstractFestUseCase {
       .textBox(MessageKey.MESSAGE.getKey())
       .setText(SIGNING_TEXT);
 
-    // No password
+    // No credentials
     // Click sign message
     window
       .button(MessageKey.SIGN_MESSAGE.getKey())
       .click();
 
-   // Check report notes - should be asking for password
+   // Check report notes - should be asking for credentials
     window
        .label(MessageKey.NOTES.getKey())
        .requireVisible()

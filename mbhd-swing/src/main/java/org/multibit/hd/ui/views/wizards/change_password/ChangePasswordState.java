@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.wizards.change_password;
 
 /**
- * <p>Enum to provide the following to "password" wizard model:</p>
+ * <p>Enum to provide the following to "credentials" wizard model:</p>
  * <ul>
  * <li>State identification</li>
  * </ul>

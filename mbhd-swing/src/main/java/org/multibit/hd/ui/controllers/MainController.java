@@ -39,11 +39,11 @@ import org.multibit.hd.ui.views.themes.Theme;
 import org.multibit.hd.ui.views.themes.ThemeKey;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.credentials.CredentialsState;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletState;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.exit.ExitState;
-import org.multibit.hd.ui.views.wizards.password.PasswordState;
-import org.multibit.hd.ui.views.wizards.password.PasswordWizard;
+import org.multibit.hd.ui.views.wizards.credentials.CredentialsWizard;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizard;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
@@ -175,19 +175,19 @@ public class MainController extends AbstractController implements
         || WelcomeWizardState.WELCOME_SELECT_WALLET.name().equals(event.getPanelName())
         ) {
 
-        // Need to hand over to the password wizard
+        // Need to hand over to the credentials wizard
         handoverToPasswordWizard();
 
       }
 
-      if (PasswordState.PASSWORD_ENTER_PASSWORD.name().equals(event.getPanelName())) {
+      if (CredentialsState.CREDENTIALS_ENTER_PASSWORD.name().equals(event.getPanelName())) {
 
         // Perform final initialisation
         hidePasswordWizard();
 
       }
 
-      if (PasswordState.PASSWORD_RESTORE.name().equals(event.getPanelName())) {
+      if (CredentialsState.CREDENTIALS_RESTORE.name().equals(event.getPanelName())) {
 
         // Need to hand over to the welcome wizard
         handoverToWelcomeWizard();
@@ -691,7 +691,7 @@ public class MainController extends AbstractController implements
 
     bitcoinNetworkService = Optional.of(CoreServices.getOrCreateBitcoinNetworkService());
 
-    // Start the network now that the password has been validated
+    // Start the network now that the credentials has been validated
     bitcoinNetworkService.get().start();
 
     if (bitcoinNetworkService.get().isStartedOk()) {
@@ -719,18 +719,18 @@ public class MainController extends AbstractController implements
   }
 
   /**
-   * Welcome wizard has created a new wallet so hand over to the password wizard for access
+   * Welcome wizard has created a new wallet so hand over to the credentials wizard for access
    */
   private void handoverToPasswordWizard() {
 
-    log.debug("Hand over to password wizard");
+    log.debug("Hand over to credentials wizard");
 
     // Handover
     mainView.setShowExitingWelcomeWizard(false);
     mainView.setShowExitingPasswordWizard(true);
 
     // Start building the wizard on the EDT to prevent UI updates
-    final PasswordWizard passwordWizard = Wizards.newExitingPasswordWizard();
+    final CredentialsWizard credentialsWizard = Wizards.newExitingCredentialsWizard();
 
     // Use a new thread to handle the new wizard so that the handover can complete
     handoverExecutorService.execute(new Runnable() {
@@ -747,8 +747,8 @@ public class MainController extends AbstractController implements
 
             Panels.hideLightBoxIfPresent();
 
-            log.debug("Showing exiting password wizard after handover");
-            Panels.showLightBox(passwordWizard.getWizardScreenHolder());
+            log.debug("Showing exiting credentials wizard after handover");
+            Panels.showLightBox(credentialsWizard.getWizardScreenHolder());
 
           }
         });

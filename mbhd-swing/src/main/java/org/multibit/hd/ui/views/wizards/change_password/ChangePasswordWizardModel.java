@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>Model object to provide the following to "password wizard":</p>
+ * <p>Model object to provide the following to "credentials wizard":</p>
  * <ul>
  * <li>Storage of panel data</li>
  * <li>State transition management</li>
@@ -23,7 +23,7 @@ public class ChangePasswordWizardModel extends AbstractWizardModel<ChangePasswor
   private static final Logger log = LoggerFactory.getLogger(ChangePasswordWizardModel.class);
 
   /**
-   * The "change password" panel model
+   * The "change credentials" panel model
    */
   private ChangePasswordPanelModel changePasswordPanelModel;
 
@@ -40,14 +40,14 @@ public class ChangePasswordWizardModel extends AbstractWizardModel<ChangePasswor
   }
 
   /**
-   * @return The password the user entered (must be able to unlock the current wallet)
+   * @return The credentials the user entered (must be able to unlock the current wallet)
    */
   public String getEnteredPassword() {
     return changePasswordPanelModel.getEnterPasswordModel().getValue();
   }
 
   /**
-   * @return The confirmed password (use this to lock up the current wallet)
+   * @return The confirmed credentials (use this to lock up the current wallet)
    */
   public String getConfirmedPassword() {
     return changePasswordPanelModel.getConfirmPasswordModel().getValue();
@@ -56,7 +56,7 @@ public class ChangePasswordWizardModel extends AbstractWizardModel<ChangePasswor
   /**
    * <p>Reduced visibility for panel models only</p>
    *
-   * @param changePasswordPanelModel The "enter password" panel model
+   * @param changePasswordPanelModel The "enter credentials" panel model
    */
   void setChangePasswordPanelModel(ChangePasswordPanelModel changePasswordPanelModel) {
     this.changePasswordPanelModel = changePasswordPanelModel;
