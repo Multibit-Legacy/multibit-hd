@@ -72,16 +72,22 @@
 
   <repositories>
     <!-- Define the MultiBit staging repository for snapshots
-         GitHub requires mixture of raw and blob for POM and JAR -->
+         GitHub requires mixture of raw text and blob for POMs and JARs -->
     <repository>
-      <id>mbhd-maven-raw</id>
+      <id>mbhd-maven-raw-text</id>
       <url>https://raw.githubusercontent.com/bitcoin-solutions/mbhd-maven/master/snapshots</url>
-      <snapshots/>
+      <!-- These artifacts change frequently during development iterations -->
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
     </repository>
     <repository>
-      <id>mbhd-maven-blob</id>
+      <id>mbhd-maven-raw-blob</id>
       <url>https://github.com/bitcoin-solutions/mbhd-maven/raw/master/snapshots</url>
-      <snapshots/>
+      <!-- These artifacts change frequently during development iterations -->
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
     </repository>
     <!-- Bitcoinj releases -->
     <repository>
