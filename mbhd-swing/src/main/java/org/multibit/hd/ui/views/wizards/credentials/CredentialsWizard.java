@@ -39,7 +39,24 @@ public class CredentialsWizard extends AbstractWizard<CredentialsWizardModel> {
     wizardViewMap.put(
       CredentialsState.CREDENTIALS_RESTORE.name(),
       new CredentialsRestorePanelView(this, CredentialsState.CREDENTIALS_RESTORE.name()));
-
   }
+
+
+  // TODO Ensure that restore buttons have somewhere to transition to before the Welcome wizard starts up
+//  @Override
+//   public void showNext() {
+//
+//     switch (getModel().) {
+//       case CREDENTIALS_ENTER_PASSWORD:
+//         state = CREDENTIALS_RESTORE;
+//         break;
+//       case CREDENTIALS_ENTER_PIN:
+//         state = CREDENTIALS_RESTORE;
+//         break;
+//       default:
+//         throw new IllegalStateException("Unknown state: " + state.name());
+//     }
+//
+//   }
 
 }

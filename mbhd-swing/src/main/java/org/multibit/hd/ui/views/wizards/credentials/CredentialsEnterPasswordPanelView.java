@@ -193,7 +193,7 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
       }
     });
 
-    // Check the credentials (might take a while so do it asynchronously while showing a spinner)
+    // Check the password (might take a while so do it asynchronously while showing a spinner)
     // Tar pit (must be in a separate thread to ensure UI updates)
     ListenableFuture<Boolean> passwordFuture = checkPasswordExecutorService.submit(new Callable<Boolean>() {
 
@@ -284,7 +284,7 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
   }
 
   /**
-   * @return True if the selected wallet can be opened with the given credentials.
+   * @return True if the selected wallet can be opened with the given password.
    */
   private boolean checkPassword() {
 

@@ -361,6 +361,7 @@ public enum MessageKey {
 
   PIN_TITLE("pin_title"),
   PIN_INTRODUCTION("pin_introduction"),
+  PIN_FAILURE("pin_failure"),
 
   // Settings titles
 

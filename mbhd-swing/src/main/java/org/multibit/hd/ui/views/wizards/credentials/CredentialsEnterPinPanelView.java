@@ -11,6 +11,7 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertModel;
@@ -18,6 +19,7 @@ import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurit
 import org.multibit.hd.ui.views.components.enter_pin.EnterPinModel;
 import org.multibit.hd.ui.views.components.enter_pin.EnterPinView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
+import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.fonts.TitleFontDecorator;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -52,6 +54,11 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
    * A visual indicator of the number of pin characters entered
    */
   private JLabel pinIndicator;
+
+  /**
+   * A status indicator used to tell the user if PIN is incorrect
+   */
+  private JLabel statusIndicator;
 
   /**
    * A button that removes the last pin character entered
@@ -96,12 +103,14 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
 
     contentPanel.setLayout(new MigLayout(
       Panels.migXLayout(),
-      "[]", // Column constraints
-      "[]12[]" // Row constraints
+      "[120][][][40]", // Column constraints
+      "[]12[][][30]" // Row constraints
     ));
 
     pinIndicator = Labels.newBlankLabel();
-    TitleFontDecorator.apply(pinIndicator, (float)(MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE * 0.75));
+    TitleFontDecorator.apply(pinIndicator, (float)(MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE * 0.6));
+
+    statusIndicator = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
 
     removeLast = Buttons.newDeleteButton(new AbstractAction() {
       @Override
@@ -111,10 +120,18 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
     });
 
 
-    contentPanel.add(Labels.newPinIntroductionNote(), "align center, wrap");
-    contentPanel.add(enterPinMaV.getView().newComponentPanel(), "align center, wrap");
-    contentPanel.add(pinIndicator, "growx");
-    contentPanel.add(removeLast, "wrap");
+    contentPanel.add(Labels.newBlankLabel());
+    contentPanel.add(Labels.newPinIntroductionNote(), "align left,span 2,wrap");
+
+    contentPanel.add(Labels.newBlankLabel());
+    contentPanel.add(enterPinMaV.getView().newComponentPanel(), "align left,span 2, wrap");
+
+    contentPanel.add(Labels.newBlankLabel());
+    contentPanel.add(pinIndicator, "align left, growx");
+    contentPanel.add(removeLast, "align right");
+    contentPanel.add(Labels.newBlankLabel(), "wrap");
+
+    contentPanel.add(statusIndicator, "span 4, wrap");
   }
 
   @Override
@@ -182,7 +199,7 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
       @Override
       public void run() {
 
-        // Ensure the view shows the spinner and disables components
+        // Ensure the view disables components
         getFinishButton().setEnabled(false);
         getExitButton().setEnabled(false);
         getRestoreButton().setEnabled(false);
@@ -190,8 +207,7 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
       }
     });
 
-    // Check the credentials (might take a while so do it asynchronously while showing a spinner)
-    // Tar pit (must be in a separate thread to ensure UI updates)
+    // Check the credentials
     ListenableFuture<Boolean> passwordFuture = checkPinExecutorService.submit(new Callable<Boolean>() {
 
       @Override
@@ -211,8 +227,6 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
 
           // Check the result
           if (result) {
-
-            // Maintain the spinner while the initialisation continues
 
             // Manually deregister the MaVs
             CoreServices.uiEventBus.unregister(displaySecurityPopoverMaV);
@@ -240,6 +254,9 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
 
                 enterPinMaV.getView().requestInitialFocus();
 
+                // Tell the user that the PIN check failed
+                statusIndicator.setText(Languages.safeText(MessageKey.PIN_FAILURE));
+                AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, statusIndicator, true, MultiBitUI.NORMAL_ICON_SIZE);
               }
             });
 
@@ -250,7 +267,7 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
         @Override
         public void onFailure(Throwable t) {
 
-          // Ensure the view hides the spinner and enables components
+          // Ensure the view enables components
           SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -278,6 +295,7 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
    */
   private boolean checkPin() {
 
+    log.debug("Performing a PIN check");
     CharSequence pin = enterPinMaV.getModel().getValue();
 
     // TODO talk to Trezor to check pin
@@ -293,6 +311,10 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
       builder.append("*");
     }
     pinIndicator.setText(builder.toString());
+
+    // Clear the PIN check status indicator
+    statusIndicator.setText("");
+    statusIndicator.setIcon(null);
 
     // Determine any events
     ViewEvents.fireWizardButtonEnabledEvent(

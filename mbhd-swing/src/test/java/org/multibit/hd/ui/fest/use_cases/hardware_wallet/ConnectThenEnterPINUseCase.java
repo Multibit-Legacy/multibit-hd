@@ -37,55 +37,58 @@ public class ConnectThenEnterPINUseCase extends AbstractFestUseCase {
 
     // Check the 'Yes' button on the alert is present
     window
-      .button(MessageKey.YES.getKey())
-      .requireVisible()
-      .requireEnabled();
+            .button(MessageKey.YES.getKey())
+            .requireVisible()
+            .requireEnabled();
 
-    // Click on the 'Yes' button and check the alert is dismissed
+    // Click on the 'Yes' button
     window
-        .button(MessageKey.YES.getKey())
-        .click();
+            .button(MessageKey.YES.getKey())
+            .click();
 
     // Verify the "Unlock screen" ("Enter PIN") appears by checking there is an exit button
     window
-      .button(MessageKey.EXIT.getKey())
-      .requireVisible()
-      .requireEnabled();
+            .button(MessageKey.EXIT.getKey())
+            .requireVisible()
+            .requireEnabled();
 
     // Allow time for the view to react
     pauseForViewReset();
 
-    // Click on each pin button 0 to 8 in turn
+    // Initially the 'Unlock' button should be disabled
+    window
+            .button(MessageKey.PASSWORD_UNLOCK.getKey())
+            .requireVisible()
+            .requireDisabled();
+
+    // Click on each pin button 0
     window.button("pin 0").click();
+
+    // Unlock should be enabled after some PIN entry
+    window
+            .button(MessageKey.PASSWORD_UNLOCK.getKey())
+            .requireVisible()
+            .requireEnabled();
+
+    // Click on each pin button 1 to 8 in turn
+    for (int i = 1; i < 8; i++) {
+      window.button("pin " + i).click();
+    }
+
+    // Remove the buttons entered using the delete button
+    for (int i = 0; i < 10; i++) {
+      window.button(MessageKey.DELETE.getKey()).click();
+    }
+
+    // Enter a pin of 1234
     window.button("pin 1").click();
     window.button("pin 2").click();
     window.button("pin 3").click();
     window.button("pin 4").click();
-    window.button("pin 5").click();
-    window.button("pin 6").click();
-    window.button("pin 7").click();
-    window.button("pin 8").click();
 
-    // Remove the buttons entered using the delete button
-    window.button(MessageKey.DELETE.getKey()).click();
-    window.button(MessageKey.DELETE.getKey()).click();
-    window.button(MessageKey.DELETE.getKey()).click();
-
-    window.button(MessageKey.DELETE.getKey()).click();
-    window.button(MessageKey.DELETE.getKey()).click();
-    window.button(MessageKey.DELETE.getKey()).click();
-
-    window.button(MessageKey.DELETE.getKey()).click();
-    window.button(MessageKey.DELETE.getKey()).click();
-    window.button(MessageKey.DELETE.getKey()).click();
-
-    window.button(MessageKey.DELETE.getKey()).click();
-
-   // Click on Exit
+    // Click on Unlock to perform check of PIN
     window
-      .button(MessageKey.EXIT.getKey())
+      .button(MessageKey.PASSWORD_UNLOCK.getKey())
       .click();
-
   }
-
 }

@@ -32,7 +32,7 @@ public class EnterPinView extends AbstractComponentView<EnterPinModel> {
 
     panel = Panels.newPanel(new MigLayout(
       Panels.migXLayout(), // Layout
-      "[][][]", // Columns
+      "[]12[]12[]", // Columns
       "[][][]" // Rows
     ));
 
