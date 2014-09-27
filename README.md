@@ -34,16 +34,9 @@ To quickly check that you have Maven 3+ installed check on the command line:
 $ mvn --version
 ```
 
-#### Manually build and install Bitcoinj (optional)
+#### We currently use a forked version of Bitcoinj
 
-The [MultiBit Staging repository](https://github.com/bitcoin-solutions/mbhd-maven) contains a `bitcoinj-0.12-SNAPSHOT` and Orchid JAR for TOR that is aligned with the MultiBit HD `develop` branch. This can be used for development builds but is certainly not suitable for production. The Bitcoinj occasionally gets updated but should not be relied upon.
-
-Ideally, developers should clone [Bitcoinj](https://code.google.com/p/bitcoinj/) and build it manually. You should start with the HEAD of the `master` branch:
-```
-$ mvn clean install
-```
-
-When building ensure that no application is listening on port 8330.
+The [MultiBit Staging repository](https://github.com/bitcoin-solutions/mbhd-maven) contains a `bitcoinj-0.12-SNAPSHOT` and supporting Orchid JAR for TOR that is aligned with the MultiBit HD `develop` branch. This should be used for development builds but is not yet suitable for production. As we make changes to our fork we update the staging repository. Wherever possible we will introduce our forked changes as a pull request into the upstream bitcoinj so that other projects can benefit but we must use a fork to ensure rapid updates are possible.
 
 #### Start the application (from an IDE)
 
