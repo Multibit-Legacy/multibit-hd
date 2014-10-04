@@ -122,21 +122,6 @@ public class CoreServices {
     securityCheckingService = new SecurityCheckingService();
     configurationService = new ConfigurationService();
 
-    // Use factory to statically bind the specific hardware wallet
-    // TODO Consider allowing relay clients here
-    TrezorV1UsbHardwareWallet wallet = HardwareWallets.newUsbInstance(
-      TrezorV1UsbHardwareWallet.class,
-      Optional.<Short>absent(),
-      Optional.<Short>absent(),
-      Optional.<String>absent()
-    );
-
-    // Wrap the hardware wallet in a suitable client to simplify message API
-    HardwareWalletClient client = new TrezorHardwareWalletClient(wallet);
-
-    // Wrap the client in a service for high level API suitable for downstream applications
-    hardwareWalletService = new HardwareWalletService(client);
-
   }
 
   private static ContactService currentContactService;
@@ -181,8 +166,10 @@ public class CoreServices {
     // Start security checking service
     securityCheckingService.start();
 
-    // Start the hardware service
-    hardwareWalletService.start();
+    // Attempt to start the hardware wallet service
+    if (getOrCreateHardwareWalletService() != null) {
+      hardwareWalletService.start();
+    }
 
   }
 
@@ -216,6 +203,10 @@ public class CoreServices {
           public void run() {
 
             log.info("Applying soft shutdown. Waiting for processes to clean up...");
+
+            if (hardwareWalletService != null) {
+              hardwareWalletService.stopAndWait();
+            }
 
             // Provide a short delay while modules deal with the ShutdownEvent
             Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
@@ -256,6 +247,39 @@ public class CoreServices {
   }
 
   /**
+   * @return Create a new hardware wallet service or return the extant one
+   */
+  public static synchronized HardwareWalletService getOrCreateHardwareWalletService() {
+
+    log.trace("Get hardware wallet service");
+    if (hardwareWalletService == null ) {
+
+      try {
+        // Use factory to statically bind the specific hardware wallet
+        // TODO Consider allowing relay clients here via the bitcoin configuration
+        TrezorV1UsbHardwareWallet wallet = HardwareWallets.newUsbInstance(
+          TrezorV1UsbHardwareWallet.class,
+          Optional.<Short>absent(),
+          Optional.<Short>absent(),
+          Optional.<String>absent()
+        );
+        // Wrap the hardware wallet in a suitable client to simplify message API
+        HardwareWalletClient client = new TrezorHardwareWalletClient(wallet);
+
+        // Wrap the client in a service for high level API suitable for downstream applications
+        hardwareWalletService = new HardwareWalletService(client);
+
+      } catch (Exception e) {
+        log.warn("Could not create the hardware wallet.", e);
+        hardwareWalletService = null;
+      }
+    }
+
+    return hardwareWalletService;
+
+  }
+
+  /**
    * @return Create a new backup service or return the extant one
    */
   public static BackupService getOrCreateBackupService() {
@@ -289,14 +313,6 @@ public class CoreServices {
   public static SecurityCheckingService getSecurityCheckingService() {
     log.trace("Get security checking service");
     return securityCheckingService;
-  }
-
-  /**
-   * @return The hardware wallet service singleton
-   */
-  public static HardwareWalletService getHardwareWalletService() {
-    log.trace("Get hardware wallet service");
-    return hardwareWalletService;
   }
 
   /**
@@ -462,4 +478,5 @@ public class CoreServices {
       throw new CoreException(e);
     }
   }
+
 }

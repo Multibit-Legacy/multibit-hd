@@ -20,6 +20,7 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.*;
 import org.multibit.hd.core.store.TransactionInfo;
+import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -75,6 +76,8 @@ public class MainController extends AbstractController implements
   private Optional<ExchangeTickerService> exchangeTickerService = Optional.absent();
 
   private Optional<BitcoinNetworkService> bitcoinNetworkService = Optional.absent();
+
+  private Optional<HardwareWalletService> hardwareWalletService = Optional.absent();
 
   private final BitcoinURIListeningService bitcoinURIListeningService;
 
